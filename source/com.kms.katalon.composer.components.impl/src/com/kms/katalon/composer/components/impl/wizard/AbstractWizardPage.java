@@ -1,9 +1,12 @@
-package com.kms.katalon.composer.integration.qtest.wizard;
+package com.kms.katalon.composer.components.impl.wizard;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 
@@ -12,7 +15,7 @@ public abstract class AbstractWizardPage implements IWizardPage {
     
     public Set<IWizardPageChangedListerner> getListeners() {
         if (fListeners == null) {
-            fListeners = new LinkedHashSet<IWizardPageChangedListerner>();
+            fListeners = new LinkedHashSet<>();
         }
         return fListeners;
     }
@@ -36,12 +39,25 @@ public abstract class AbstractWizardPage implements IWizardPage {
     }
     
     @Override
-    public String getTitle() {
-        return "";
+    public void setInput(Map<String, Object> sharedData) {
+    }
+
+    @Override
+    public void registerControlModifyListeners() {
+    }
+
+    @Override
+    public Map<String, Object> storeControlStates() {
+        return null;
     }
     
     @Override
-    public final boolean canFinish() {
+    public String getTitle() {
+        return StringUtils.EMPTY;
+    }
+    
+    @Override
+    public boolean canFinish() {
         return false;
     }
     

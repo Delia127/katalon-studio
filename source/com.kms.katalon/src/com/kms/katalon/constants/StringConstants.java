@@ -100,5 +100,7 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String PA_LBL_RECENT_PROJECT = "Recent Katalon Project";
     public static final String PA_TOOLTIP_OPEN_RECENT_PROJECT = "Open {0} project";
-    
+
+    //FunctionsIntroductionDialog
+    public static final String DIA_TITLE_FUNCTIONS_INTRODUCTION = "Functions Introduction";
 }

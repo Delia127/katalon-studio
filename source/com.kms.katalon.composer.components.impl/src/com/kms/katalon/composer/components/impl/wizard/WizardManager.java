@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.integration.qtest.wizard;
+package com.kms.katalon.composer.components.impl.wizard;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,12 +35,15 @@ public class WizardManager {
     }
 
     public IWizardPage getCurrentPage() {
-        return wizardPages.get(currentIdx);
+        if (currentIdx < 0 || currentIdx > getWizardPages().size() - 1) {
+            return null;
+        }
+        return getWizardPages().get(currentIdx);
     }
 
     public List<IWizardPage> getWizardPages() {
         if (wizardPages == null) {
-            wizardPages = new ArrayList<IWizardPage>();
+            wizardPages = new ArrayList<>();
         }
         return wizardPages;
     }

@@ -265,4 +265,19 @@ public class GlobalStringConstants {
     public static final String UNKNOWN = "unkown";
 
     public static final String OK = "OK";
+
+    // Wizard Common
+    public static final String WZ_SETUP_BTN_BACK = "< Back";
+
+    public static final String WZ_SETUP_BTN_NEXT = "Next >";
+
+    public static final String DIA_FINISH = "Finish";
+
+    public static final String DIA_CANCEL = "Cancel";
+
+    public static final String DIA_CLOSE = "Close";
+
+    public static final String DIA_YES = "Yes";
+
+    public static final String DIA_NO = "No";
 }

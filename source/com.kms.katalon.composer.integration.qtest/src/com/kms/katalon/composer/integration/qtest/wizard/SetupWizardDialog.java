@@ -3,20 +3,18 @@ package com.kms.katalon.composer.integration.qtest.wizard;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
@@ -24,7 +22,6 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -37,6 +34,8 @@ import org.eclipse.swt.widgets.Table;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
+import com.kms.katalon.composer.components.impl.wizard.IWizardPage;
+import com.kms.katalon.composer.components.impl.wizard.SimpleWizardDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
@@ -75,9 +74,7 @@ import com.kms.katalon.integration.qtest.setting.QTestResultSendingType;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 import com.kms.katalon.integration.qtest.setting.QTestVersion;
 
-public class SetupWizardDialog extends Dialog implements IWizardPageChangedListerner {
-
-    private static final int BUTTON_WIDTH = 80;
+public class SetupWizardDialog extends SimpleWizardDialog {
 
     private int lastTreeWidth;
 
@@ -86,27 +83,11 @@ public class SetupWizardDialog extends Dialog implements IWizardPageChangedListe
 
     private TableViewer tableViewer;
 
-    private Button backButton;
-
-    private Button nextButton;
-
-    private Button finishButton;
-
-    private Button cancelButton;
-
-    private Composite stepDetailsComposite;
-
     private Label lblStepHeader;
-
-    // Fields
-    private WizardManager wizardManager;
-
-    private Map<String, Object> sharedData;
 
     public SetupWizardDialog(Shell parentShell) {
         super(parentShell);
         lastTreeWidth = 220;
-        wizardManager = new WizardManager();
     }
 
     @Override
@@ -130,7 +111,7 @@ public class SetupWizardDialog extends Dialog implements IWizardPageChangedListe
 
     @Override
     protected Control createDialogArea(Composite parent) {
-        Composite dialogComposite = (Composite) super.createDialogArea(parent);
+        Composite dialogComposite = (Composite) super.oldDialogArea(parent);
         GridLayout glDialogComposite = (GridLayout) dialogComposite.getLayout();
         glDialogComposite.numColumns = 4;
         glDialogComposite.marginHeight = 0;
@@ -147,7 +128,7 @@ public class SetupWizardDialog extends Dialog implements IWizardPageChangedListe
         Label label = new Label(dialogComposite, SWT.SEPARATOR);
         label.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true, 1, 1));
 
-        createStepAreaComposite(dialogComposite);
+        createWizardArea(dialogComposite);
 
         return dialogComposite;
     }
@@ -167,7 +148,7 @@ public class SetupWizardDialog extends Dialog implements IWizardPageChangedListe
         return stepTreeComposite;
     }
 
-    private void createStepAreaComposite(Composite dialogComposite) {
+    protected Composite createStepAreaComposite(Composite dialogComposite) {
         stepArea = new Composite(dialogComposite, SWT.NONE);
         GridLayout glStepArea = new GridLayout(1, false);
         glStepArea.horizontalSpacing = 0;
@@ -196,37 +177,7 @@ public class SetupWizardDialog extends Dialog implements IWizardPageChangedListe
         stepDetailsComposite = new Composite(stepArea, SWT.NONE);
         stepDetailsComposite.setLayout(new FillLayout(SWT.HORIZONTAL));
         stepDetailsComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-
-        Label separator1 = new Label(stepArea, SWT.SEPARATOR | SWT.HORIZONTAL);
-        separator1.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-
-        Composite buttonBarComposite = new Composite(stepArea, SWT.NONE);
-        buttonBarComposite.setLayout(new GridLayout(4, false));
-        buttonBarComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, true, false, 1, 1));
-
-        backButton = new Button(buttonBarComposite, SWT.FLAT);
-        GridData gdBackButton = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
-        gdBackButton.widthHint = BUTTON_WIDTH;
-        backButton.setLayoutData(gdBackButton);
-        backButton.setText(StringConstants.WZ_SETUP_BTN_BACK);
-
-        nextButton = new Button(buttonBarComposite, SWT.FLAT);
-        GridData gdNextButton = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
-        gdNextButton.widthHint = BUTTON_WIDTH;
-        nextButton.setLayoutData(gdNextButton);
-        nextButton.setText(StringConstants.WZ_SETUP_BTN_NEXT);
-
-        finishButton = new Button(buttonBarComposite, SWT.FLAT);
-        GridData gdFinishButton = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
-        gdFinishButton.widthHint = BUTTON_WIDTH;
-        finishButton.setLayoutData(gdFinishButton);
-        finishButton.setText(StringConstants.CM_FINISH);
-
-        cancelButton = new Button(buttonBarComposite, SWT.FLAT);
-        GridData gdCancelButton = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
-        gdCancelButton.widthHint = BUTTON_WIDTH;
-        cancelButton.setLayoutData(gdCancelButton);
-        cancelButton.setText(StringConstants.CM_CANCEL);
+        return stepArea;
     }
 
     protected void layoutTreeAreaControl(Control control) {
@@ -312,31 +263,9 @@ public class SetupWizardDialog extends Dialog implements IWizardPageChangedListe
         registerControlModifyListeners();
     }
 
-    private void registerControlModifyListeners() {
-        cancelButton.addSelectionListener(new SelectionAdapter() {
-            public void widgetSelected(SelectionEvent e) {
-                cancelPressed();
-            }
-        });
-
-        backButton.addSelectionListener(new SelectionAdapter() {
-            public void widgetSelected(SelectionEvent e) {
-                backPressed();
-            }
-        });
-
-        nextButton.addSelectionListener(new SelectionAdapter() {
-            public void widgetSelected(SelectionEvent e) {
-                nextPressed();
-            }
-        });
-
-        finishButton.addSelectionListener(new SelectionAdapter() {
-            public void widgetSelected(SelectionEvent e) {
-                finishPressed();
-            }
-        });
-
+    @Override
+    protected void registerControlModifyListeners() {
+        super.registerControlModifyListeners();
         // Disable user click on step table
         tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
             @Override
@@ -371,74 +300,37 @@ public class SetupWizardDialog extends Dialog implements IWizardPageChangedListe
         });
 
     }
+    
 
-    private void backPressed() {
-        Map<String, Object> pageSharedData = wizardManager.getCurrentPage().storeControlStates();
-        if (pageSharedData != null) {
-            sharedData.putAll(pageSharedData);
-        }
 
-        showPage(wizardManager.backPage());
+    @Override
+    protected Collection<IWizardPage> getWizardPages() {
+        return Arrays.asList(new IWizardPage[] {
+                new AuthenticationWizardPage(),
+                new ProjectChoosingWizardPage(),
+                new QTestModuleSelectionWizardPage(),
+                new TestCaseFolderSelectionWizardPage(),
+                new TestSuiteFolderSelectionWizardPage(),
+                new OptionalSettingWizardPage(),
+                new FinishPage()
+        });
     }
 
-    private void nextPressed() {
-        Map<String, Object> pageSharedData = wizardManager.getCurrentPage().storeControlStates();
-        if (pageSharedData != null) {
-            sharedData.putAll(pageSharedData);
-        }
-
-        showPage(wizardManager.nextPage());
-    }
-
-    private void setInput() {
-        sharedData = new HashMap<String, Object>();
-
-        wizardManager.addPage(new AuthenticationWizardPage()).addPage(new ProjectChoosingWizardPage())
-                .addPage(new QTestModuleSelectionWizardPage()).addPage(new TestCaseFolderSelectionWizardPage())
-                .addPage(new TestSuiteFolderSelectionWizardPage()).addPage(new OptionalSettingWizardPage())
-                .addPage(new FinishPage());
+    @Override
+    protected void setInput() {
+        super.setInput();
         tableViewer.setLabelProvider(new WizardTableLabelProvider(wizardManager));
         tableViewer.setInput(wizardManager.getWizardPages());
-
-        showPage(wizardManager.getCurrentPage());
     }
 
-    private void showPage(IWizardPage page) {
+    @Override
+    protected void showPage(IWizardPage page) {
+        super.showPage(page);
         tableViewer.refresh(true);
-
-        if (page instanceof AbstractWizardPage) {
-            ((AbstractWizardPage) page).addChangedListeners(this);
-        }
 
         lblStepHeader.setText(MessageFormat.format(StringConstants.WZ_SETUP_STEP_TITLE,
                 Integer.toString(wizardManager.getWizardPages().indexOf(page) + 1),
                 Integer.toString(wizardManager.getWizardPages().size()), page.getTitle()));
-
-        updateStepArea(page);
-
-        updateButtonBar(page);
-
-        page.setInput(sharedData);
-        page.registerControlModifyListeners();
-    }
-
-    private void updateStepArea(IWizardPage page) {
-        while (stepDetailsComposite.getChildren().length > 0) {
-            stepDetailsComposite.getChildren()[0].dispose();
-        }
-
-        page.createStepArea(stepDetailsComposite);
-        stepDetailsComposite.getChildren();
-        stepDetailsComposite.layout(true, true);
-    }
-
-    private void updateButtonBar(IWizardPage page) {
-        finishButton.setEnabled(page.canFinish() && page.canFlipToNextPage());
-
-        backButton.setEnabled(wizardManager.getWizardPages().indexOf(page) > 0);
-
-        nextButton.setEnabled(page.canFlipToNextPage()
-                && wizardManager.getWizardPages().indexOf(page) < wizardManager.getWizardPages().size() - 1);
     }
 
     @Override
@@ -447,16 +339,12 @@ public class SetupWizardDialog extends Dialog implements IWizardPageChangedListe
     }
 
     @Override
-    protected void configureShell(Shell newShell) {
-        super.configureShell(newShell);
-        newShell.setText(getDialogTitle());
-    }
-
-    private String getDialogTitle() {
+    protected String getDialogTitle() {
         return StringConstants.WZ_SETUP_TITLE;
     }
 
-    private void finishPressed() {
+    @Override
+    protected void finishPressed() {
         updateQTestSetting();
         updateProject();
         super.okPressed();
@@ -615,14 +503,6 @@ public class SetupWizardDialog extends Dialog implements IWizardPageChangedListe
         }
     }
 
-    @Override
-    public void handlePageChanged(WizardPageChangedEvent event) {
-        if (event.getWizardPage() == null || !event.getWizardPage().equals(wizardManager.getCurrentPage())) {
-            return;
-        }
-        updateButtonBar(event.getWizardPage());
-    }
-
     public static IQTestCredential getCredential(final Map<String, Object> sharedData) {
         return new IQTestCredential() {
 
@@ -636,10 +516,14 @@ public class SetupWizardDialog extends Dialog implements IWizardPageChangedListe
              */
             @Override
             public String getServerUrl() {
+                if (sharedData == null || 
+                        !(sharedData.get(QTestSettingStore.SERVER_URL_PROPERTY) instanceof String)) {
+                    return StringUtils.EMPTY;
+                }
                 String serverUrl = (String) sharedData.get(QTestSettingStore.SERVER_URL_PROPERTY);
 
-                if (StringUtils.isBlank(serverUrl.trim())) {
-                    return "";
+                if (StringUtils.isBlank(serverUrl)) {
+                    return StringUtils.EMPTY;
                 }
 
                 serverUrl = serverUrl.trim();

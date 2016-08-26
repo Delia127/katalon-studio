@@ -18,13 +18,13 @@ import org.eclipse.swt.widgets.Label;
 
 import com.kms.katalon.composer.components.impl.dialogs.TreeEntitySelectionDialog;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
+import com.kms.katalon.composer.components.impl.wizard.AbstractWizardPage;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
 import com.kms.katalon.composer.explorer.providers.EntityProvider;
 import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.dialog.provider.TestCaseFolderEntityProvider;
-import com.kms.katalon.composer.integration.qtest.wizard.AbstractWizardPage;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.folder.FolderEntity;

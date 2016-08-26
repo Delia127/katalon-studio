@@ -42,4 +42,5 @@ Export-Package: com.kms.katalon.composer.components.impl.constants,
  com.kms.katalon.composer.components.impl.thread,
  com.kms.katalon.composer.components.impl.transfer,
  com.kms.katalon.composer.components.impl.tree,
- com.kms.katalon.composer.components.impl.util
+ com.kms.katalon.composer.components.impl.util,
+ com.kms.katalon.composer.components.impl.wizard
