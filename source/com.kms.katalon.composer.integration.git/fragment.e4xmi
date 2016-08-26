@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="ASCII"?>
 <fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_kki10FroEeaUtN11XiUV6w">
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_uHaoUFrqEeaUtN11XiUV6w" featurename="handlers" parentElementId="com.kms.katalon.composer.application">
+    <elements xsi:type="commands:Handler" xmi:id="_UL4QkGT0EeaO3oYZQbbJmA" elementId="com.kms.katalon.composer.integration.git.handler.clone" contributionURI="bundleclass://com.kms.katalon.composer.integration.git/com.kms.katalon.composer.integration.git.handlers.CloneHandler" command="_STUzgGT0EeaO3oYZQbbJmA"/>
     <elements xsi:type="commands:Handler" xmi:id="_0Uq0wFrqEeaUtN11XiUV6w" elementId="com.kms.katalon.composer.integration.git.handler.shareProject" contributionURI="bundleclass://com.kms.katalon.composer.integration.git/com.kms.katalon.composer.integration.git.handlers.ShareProjectHandler" command="_8Ep_QFrqEeaUtN11XiUV6w"/>
     <elements xsi:type="commands:Handler" xmi:id="_AxeIIFr1EeaUtN11XiUV6w" elementId="com.kms.katalon.composer.integration.git.handler.showHistory" contributionURI="bundleclass://com.kms.katalon.composer.integration.git/com.kms.katalon.composer.integration.git.handlers.ShowHistoryHandler" command="_8VCZEFr0EeaUtN11XiUV6w"/>
     <elements xsi:type="commands:Handler" xmi:id="_Do8K4Fr9EeaUtN11XiUV6w" elementId="com.kms.katalon.composer.integration.git.handler.0" contributionURI="bundleclass://com.kms.katalon.composer.integration.git/com.kms.katalon.composer.integration.git.handlers.CommitHandler" command="_Fawt0Fr9EeaUtN11XiUV6w"/>
@@ -10,6 +11,7 @@
     <elements xsi:type="commands:Handler" xmi:id="_UkKzMF09EeapguTfS-l63A" elementId="com.kms.katalon.composer.integration.git.handler.fetch" contributionURI="bundleclass://com.kms.katalon.composer.integration.git/com.kms.katalon.composer.integration.git.handlers.FetchHandler" command="_Tof1IF09EeapguTfS-l63A"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_4VtBQFrqEeaUtN11XiUV6w" featurename="commands" parentElementId="com.kms.katalon.composer.application">
+    <elements xsi:type="commands:Command" xmi:id="_STUzgGT0EeaO3oYZQbbJmA" elementId="com.kms.katalon.composer.integration.git.command.clone" commandName="Clone"/>
     <elements xsi:type="commands:Command" xmi:id="_8Ep_QFrqEeaUtN11XiUV6w" elementId="com.kms.katalon.composer.integration.git.command.shareproject" commandName="Share Project"/>
     <elements xsi:type="commands:Command" xmi:id="_8VCZEFr0EeaUtN11XiUV6w" elementId="com.kms.katalon.composer.integration.git.command.showHistory" commandName="Show History"/>
     <elements xsi:type="commands:Command" xmi:id="_Fawt0Fr9EeaUtN11XiUV6w" elementId="com.kms.katalon.composer.integration.git.command.commit" commandName="Commit"/>

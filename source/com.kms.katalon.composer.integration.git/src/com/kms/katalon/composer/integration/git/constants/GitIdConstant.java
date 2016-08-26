@@ -14,4 +14,6 @@ public interface GitIdConstant {
     public static final String GIT_PUSH_PROJECT_COMMAND_ID = "com.kms.katalon.composer.integration.git.command.push";
     
     public static final String GIT_SHOW_HISTORY_COMMAND_ID = "com.kms.katalon.composer.integration.git.command.showHistory";
+    
+    public static final String GIT_CLONE_COMMAND_ID = "com.kms.katalon.composer.integration.git.command.clone";
 }

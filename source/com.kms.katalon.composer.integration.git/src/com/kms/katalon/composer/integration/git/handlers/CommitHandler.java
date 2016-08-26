@@ -16,6 +16,6 @@ public class CommitHandler extends AbstractGitProjectHandler {
     public AbstractHandler getHandler() {
         CommitActionHandler handler = new CommitActionHandler();
         handler.setSelection(createIProjectSelection());
-        return new CommitActionHandler();
+        return handler;
     }
 }

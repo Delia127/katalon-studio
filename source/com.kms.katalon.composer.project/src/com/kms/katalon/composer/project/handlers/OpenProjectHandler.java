@@ -37,15 +37,11 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 
 public class OpenProjectHandler {
-
     @Inject
     private IEventBroker eventBroker;
 
     @Inject
     private EModelService modelService;
-
-    @Inject
-    private MApplication app;
 
     @Inject
     private EPartService partService;
@@ -65,18 +61,13 @@ public class OpenProjectHandler {
             if (directoryDialog.getFilterPath() != null) {
                 File projectDirectory = new File(directoryDialog.getFilterPath());
                 if (projectDirectory != null && projectDirectory.exists() && projectDirectory.isDirectory()) {
-                    File projectFile = null;
-                    for (File file : projectDirectory.listFiles()) {
-                        if (('.' + FilenameUtils.getExtension(file.getAbsolutePath())).equals(ProjectEntity
-                                .getProjectFileExtension())) {
-                            projectFile = file;
-                            break;
-                        }
-                    }
+                    File projectFile = getProjectFile(projectDirectory);
 
                     if (projectFile != null) {
                         if (!CloseProjectHandler.closeCurrentProject(partService, modelService, application,
-                                eventBroker)) return;
+                                eventBroker)) {
+                            return;
+                        }
                         openProjectEventHandler(shell, projectFile.getAbsolutePath());
                     } else {
                         MessageDialog.openWarning(null, StringConstants.WARN_TITLE,
@@ -91,16 +82,30 @@ public class OpenProjectHandler {
 
     }
 
+    public static File getProjectFile(File projectDirectory) {
+        for (File file : projectDirectory.listFiles()) {
+            if (('.' + FilenameUtils.getExtension(file.getAbsolutePath())).equals(ProjectEntity.getProjectFileExtension())) {
+                return file;
+            }
+        }
+        return null;
+    }
+
     @Inject
     @Optional
     private void openProjectEventHandler(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
             @UIEventTopic(EventConstants.PROJECT_OPEN) final String projectPk) throws InvocationTargetException,
             InterruptedException {
-        if (!CloseProjectHandler.closeCurrentProject(partService, modelService, application, eventBroker)) {
+        doOpenProject(shell, projectPk, sync, eventBroker, partService, modelService, application);
+    }
+
+    public static void doOpenProject(Shell shell, final String projectPk, final UISynchronize syncService,
+            final IEventBroker eventBrokerService, EPartService partService, final EModelService modelService,
+            final MApplication application) throws InvocationTargetException, InterruptedException {
+        if (!CloseProjectHandler.closeCurrentProject(partService, modelService, application, eventBrokerService)) {
             return;
         }
-
-        new ProgressMonitorDialog(shell).run(true, false, new IRunnableWithProgress() {
+        new ProgressMonitorDialog(shell).run(false, false, new IRunnableWithProgress() {
             @Override
             public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                 try {
@@ -110,32 +115,32 @@ public class OpenProjectHandler {
                     final ProjectEntity project = ProjectController.getInstance().openProjectForUI(projectPk,
                             new SubProgressMonitor(monitor, 7, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK));
                     monitor.subTask(StringConstants.HAND_REFRESHING_EXPLORER);
-                    sync.syncExec(new Runnable() {
+                    syncService.syncExec(new Runnable() {
                         @Override
                         public void run() {
                             try {
                                 if (project != null) {
                                     // Set project name on window title
-                                    OpenProjectHandler.updateProjectTitle(project, modelService, app);
+                                    OpenProjectHandler.updateProjectTitle(project, modelService, application);
                                 }
-                                eventBroker.post(EventConstants.EXPLORER_RELOAD_INPUT,
+                                eventBrokerService.post(EventConstants.EXPLORER_RELOAD_INPUT,
                                         TreeEntityUtil.getAllTreeEntity(project));
                             } catch (Exception e) {
                                 LoggerSingleton.logError(e);
                             }
                         }
                     });
-                    eventBroker.post(EventConstants.GLOBAL_VARIABLE_REFRESH, null);
+                    eventBrokerService.post(EventConstants.GLOBAL_VARIABLE_REFRESH, null);
                     monitor.worked(1);
                     LauncherManager.refresh();
-                    eventBroker.post(EventConstants.JOB_REFRESH, null);
+                    eventBrokerService.post(EventConstants.JOB_REFRESH, null);
                     monitor.worked(1);
 
                     TimeUnit.SECONDS.sleep(1);
-                    eventBroker.post(EventConstants.PROJECT_OPENED, null);
+                    eventBrokerService.post(EventConstants.PROJECT_OPENED, null);
                     return;
                 } catch (final Exception e) {
-                    sync.syncExec(new Runnable() {
+                    syncService.syncExec(new Runnable() {
 
                         @Override
                         public void run() {

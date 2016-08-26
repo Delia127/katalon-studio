@@ -35,6 +35,7 @@ public class GitMenuContribution {
         }
         MMenu gitMenu = menuFactory.createMenu();
         gitMenu.setLabel(GitStringConstants.GIT_MENU_LABEL);
+        addChildMenuItem(gitMenu, GitIdConstant.GIT_CLONE_COMMAND_ID, GitStringConstants.GIT_CLONE_MENU_ITEM_LABEL);
         addChildMenuItem(gitMenu, GitIdConstant.GIT_SHARE_PROJECT_COMMAND_ID, GitStringConstants.GIT_SHARE_PROJECT_MENU_ITEM_LABEL);
         addChildMenuItem(gitMenu, GitIdConstant.GIT_SHOW_HISTORY_COMMAND_ID, GitStringConstants.GIT_SHOW_HISTORY_MENU_ITEM_LABEL);
         addChildMenuItem(gitMenu, GitIdConstant.GIT_BRANCH_PROJECT_COMMAND_ID, GitStringConstants.GIT_BRANCH_MENU_ITEM_LABEL);

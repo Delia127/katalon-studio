@@ -9,7 +9,10 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.ui.internal.workbench.ApplicationPartServiceImpl;
+import org.eclipse.e4.ui.internal.workbench.PartServiceImpl;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
@@ -24,8 +27,11 @@ import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 
+@SuppressWarnings("restriction")
 public class CloseProjectHandler {
-
+    @Inject
+    private IEclipseContext context;
+    
     @Inject
     private IEventBroker eventBroker;
 
@@ -41,9 +47,11 @@ public class CloseProjectHandler {
     @PostConstruct
     private void registerEventHandler() {
         eventBroker.subscribe(EventConstants.PROJECT_CLOSE, new EventHandler() {
-
             @Override
             public void handleEvent(Event event) {
+                if (partService instanceof ApplicationPartServiceImpl) {
+                    partService = context.getActive(PartServiceImpl.class);
+                }
                 closeCurrentProject(partService, modelService, application, eventBroker);
             }
 

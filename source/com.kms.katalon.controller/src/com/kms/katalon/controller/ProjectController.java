@@ -96,6 +96,7 @@ public class ProjectController extends EntityController {
         if (project != null) {
             GroovyUtil.getGroovyProject(project).close(monitor);
         }
+        DataProviderState.getInstance().setCurrentProject(null);
     }
 
     public void updateProject(String name, String description, String projectPk) throws Exception {
