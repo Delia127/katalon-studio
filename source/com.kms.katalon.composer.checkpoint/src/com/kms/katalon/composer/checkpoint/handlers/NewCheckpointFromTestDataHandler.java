@@ -1,12 +1,14 @@
 package com.kms.katalon.composer.checkpoint.handlers;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
+import org.eclipse.jface.dialogs.Dialog;
 
-import com.kms.katalon.composer.checkpoint.dialogs.NewCheckpointDialog;
+import com.kms.katalon.composer.checkpoint.dialogs.NewCheckpointFromTestDataDialog;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.controller.FolderController;
+import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 
@@ -21,15 +23,21 @@ public class NewCheckpointFromTestDataHandler extends NewCheckpointHandler {
         return instance;
     }
 
+    @Override
     @CanExecute
     public boolean canExecute() {
         return getProject() != null && getFirstSelection() instanceof TestDataTreeEntity;
     }
 
     @Override
-    protected NewCheckpointDialog getNewCheckpointDialog() throws Exception {
+    protected CheckpointEntity getCheckpointFromDialog(FolderEntity parentFolder) throws Exception {
         DataFileEntity testdata = (DataFileEntity) getFirstSelection().getObject();
-        return new NewCheckpointDialog(parentShell, testdata, getSuggestedName(testdata.getName()));
+        NewCheckpointFromTestDataDialog dialog = new NewCheckpointFromTestDataDialog(parentShell, testdata,
+                getSuggestedName(testdata.getName()));
+        if (dialog.open() != Dialog.OK) {
+            return null;
+        }
+        return dialog.getEntity();
     }
 
     @Override

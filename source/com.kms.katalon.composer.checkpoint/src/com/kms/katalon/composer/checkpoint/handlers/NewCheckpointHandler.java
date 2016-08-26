@@ -13,7 +13,8 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.checkpoint.constants.StringConstants;
-import com.kms.katalon.composer.checkpoint.dialogs.NewCheckpointDialog;
+import com.kms.katalon.composer.checkpoint.dialogs.wizard.NewCheckpointWizardDialog;
+import com.kms.katalon.composer.checkpoint.dialogs.wizard.NewCheckpointWizard;
 import com.kms.katalon.composer.components.impl.tree.CheckpointTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -62,16 +63,24 @@ public class NewCheckpointHandler {
             }
 
             parentFolder = (FolderEntity) parent.getObject();
-            NewCheckpointDialog dialog = getNewCheckpointDialog();
-            if (dialog.open() != Dialog.OK) {
+            CheckpointEntity checkpoint = getCheckpointFromDialog(parentFolder);
+            if (checkpoint == null) {
+                // cancel or close the new checkpoint dialog
                 return;
             }
 
-            CheckpointEntity checkpoint = CheckpointController.getInstance().create(dialog.getEntity());
+            checkpoint = CheckpointController.getInstance().create(checkpoint);
             if (checkpoint == null) {
                 MessageDialog.openError(parentShell, StringConstants.ERROR,
                         StringConstants.HAND_MSG_UNABLE_TO_CREATE_CHECKPOINT);
                 return;
+            }
+
+            try {
+                CheckpointController.getInstance().takeSnapshot(checkpoint);
+            } catch (Exception e) {
+                // Ignore all exception on first screen. User may put the wrong info.
+                // Should not disturb them by any message of taking snapshot on creation.
             }
 
             eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parent);
@@ -83,8 +92,14 @@ public class NewCheckpointHandler {
         }
     }
 
-    protected NewCheckpointDialog getNewCheckpointDialog() throws Exception {
-        return new NewCheckpointDialog(parentShell, parentFolder, getSuggestedName(StringConstants.CHECKPOINT));
+    protected CheckpointEntity getCheckpointFromDialog(FolderEntity parentFolder) throws Exception {
+        NewCheckpointWizard newCheckpointWizard = new NewCheckpointWizard(getSuggestedName(StringConstants.CHECKPOINT),
+                parentFolder);
+        NewCheckpointWizardDialog dialog = new NewCheckpointWizardDialog(parentShell, newCheckpointWizard);
+        if (dialog.open() != Dialog.OK) {
+            return null;
+        }
+        return newCheckpointWizard.getCheckpoint();
     }
 
     protected static ProjectEntity getProject() {
