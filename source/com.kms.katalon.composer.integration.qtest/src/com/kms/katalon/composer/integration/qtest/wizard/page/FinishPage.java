@@ -9,8 +9,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
+import com.kms.katalon.composer.components.impl.wizard.IWizardPage;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
-import com.kms.katalon.composer.integration.qtest.wizard.IWizardPage;
 
 public class FinishPage implements IWizardPage {
 

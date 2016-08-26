@@ -27,4 +27,17 @@ public class ImageConstants {
     public static final Image IMG_HOW_TO_ARTICLES = ImageUtil.loadImage(CURRENT_BUNDLE, "/icons/how_to_articles.png");
     
     public static final String URI_IMG_WELCOME = "platform:/plugin/org.eclipse.ui.intro/icons/welcome16.gif";
+
+    // FunctionsIntroductionDialog
+    public static final Image IMG_INTRO_SCREEN_1 = ImageUtil.loadImage(CURRENT_BUNDLE, "/icons/intro/screen_1.png");
+
+    public static final Image IMG_INTRO_SCREEN_2 = ImageUtil.loadImage(CURRENT_BUNDLE, "/icons/intro/screen_2.png");
+
+    public static final Image IMG_INTRO_SCREEN_3 = ImageUtil.loadImage(CURRENT_BUNDLE, "/icons/intro/screen_3.png");
+
+    public static final Image IMG_INTRO_SCREEN_4 = ImageUtil.loadImage(CURRENT_BUNDLE, "/icons/intro/screen_4.png");
+
+    public static final Image IMG_INTRO_SCREEN_5 = ImageUtil.loadImage(CURRENT_BUNDLE, "/icons/intro/screen_5.png");
+
+    public static final Image IMG_INTRO_SCREEN_6 = ImageUtil.loadImage(CURRENT_BUNDLE, "/icons/intro/screen_6.png");
 }

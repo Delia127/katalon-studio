@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.integration.qtest.wizard;
+package com.kms.katalon.composer.components.impl.wizard;
 
 public interface IWizardPageChangedListerner {
     public void handlePageChanged(WizardPageChangedEvent event);

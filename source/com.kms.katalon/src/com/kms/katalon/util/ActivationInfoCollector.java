@@ -9,10 +9,16 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.util.Objects;
 
+import org.eclipse.core.commands.common.CommandException;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.window.Window;
 
 import com.kms.katalon.activation.dialog.ActivationDialog;
+import com.kms.katalon.composer.components.impl.handler.CommandCaller;
+import com.kms.katalon.composer.intro.FunctionsIntroductionDialog;
+import com.kms.katalon.composer.intro.FunctionsIntroductionFinishDialog;
+import com.kms.katalon.composer.project.constants.CommandId;
 import com.kms.katalon.core.application.Application.RunningModeParam;
 import com.kms.katalon.logging.LogUtil;
 
@@ -183,7 +189,20 @@ public class ActivationInfoCollector {
         if (result == Window.CANCEL) {
             return false;
         }
-
+        showFunctionsIntroductionForTheFirstTime();
         return true;
+    }
+
+    private static void showFunctionsIntroductionForTheFirstTime() {
+        FunctionsIntroductionDialog dialog = new FunctionsIntroductionDialog(null);
+        dialog.open();
+        FunctionsIntroductionFinishDialog finishDialog = new FunctionsIntroductionFinishDialog(null);
+        if (finishDialog.open() == Dialog.OK) {
+            try {
+                new CommandCaller().call(CommandId.PROJECT_ADD);
+            } catch (CommandException e) {
+                LogUtil.logError(e);
+            }
+        }
     }
 }

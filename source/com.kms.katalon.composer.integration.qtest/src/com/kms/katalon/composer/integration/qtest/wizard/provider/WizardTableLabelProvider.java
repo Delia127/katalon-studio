@@ -4,10 +4,10 @@ import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.ViewerCell;
 
 import com.kms.katalon.composer.components.impl.constants.ImageConstants;
+import com.kms.katalon.composer.components.impl.wizard.AbstractWizardPage;
+import com.kms.katalon.composer.components.impl.wizard.IWizardPage;
+import com.kms.katalon.composer.components.impl.wizard.WizardManager;
 import com.kms.katalon.composer.components.util.ColorUtil;
-import com.kms.katalon.composer.integration.qtest.wizard.AbstractWizardPage;
-import com.kms.katalon.composer.integration.qtest.wizard.IWizardPage;
-import com.kms.katalon.composer.integration.qtest.wizard.WizardManager;
 
 public class WizardTableLabelProvider extends StyledCellLabelProvider {
 
