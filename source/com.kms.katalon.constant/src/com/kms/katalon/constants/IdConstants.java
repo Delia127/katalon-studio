@@ -220,6 +220,8 @@ public interface IdConstants {
     public static final String MENU_ID_SEARCH_ = "com.kms.katalon.handledmenuitem.searchFile";
 
     public static final String MENU_ID_PROJECT = "com.kms.katalon.composer.menu.project";
+    
+    public static final String MENU_ID_INTEGRATION = "com.kms.katalon.menu.integration";
 
     public static final String MENU_ID_WINDOW = "com.kms.katalon.composer.menu.window";
 

@@ -22,7 +22,7 @@ public class PreferenceHandler extends AbstractHandler {
 
     private static final String DEFAULT_PREFERENCE_PAGE_ID = "com.kms.katalon.composer.preferences.GeneralPreferencePage";
 
-    private static final String[] UNNECESSARY_PREF_NODES = new String[] { "org.eclipse.team.ui.TeamPreferences" };
+    private static final String[] UNNECESSARY_PREF_NODES = new String[] { };
 
     @Override
     public boolean canExecute() {

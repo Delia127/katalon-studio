@@ -37,6 +37,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String MENU_CMD_NAME_SEARCH_ = "searchCommand";
 
     public static final String MENU_LBL_PROJECT = "Project";
+    
+    public static final String MENU_LBL_INTEGRATION = "Integration";
 
     public static final String MENU_LBL_WINDOW = "Window";
 
