@@ -305,6 +305,7 @@ public class TestCaseFileServiceManager {
 
         EntityService.getInstance().validateName(testCase.getName());
         String oldTestCaseLocation = testCase.getLocation();
+        String oldTestCaseRelativeLocation = testCase.getIdForDisplay();
         File oldTestCaseScriptFolder = new File(testCase.getProject().getFolderLocation() + File.separator
                 + GroovyUtil.getScriptPackageRelativePathForTestCase(testCase));
 
@@ -313,6 +314,10 @@ public class TestCaseFileServiceManager {
         // If move .tc file success
         if (!newTestCase.getLocation().equals(oldTestCaseLocation)) {
             refactorReferencingTestSuites(destinationFolder.getProject(), testCase, oldTestCaseLocation);
+
+            TestArtifactScriptRefactor.createForTestCaseEntity(oldTestCaseRelativeLocation).updateReferenceForProject(
+                    newTestCase.getIdForDisplay(), newTestCase.getProject());
+            
             File newTestCaseScriptFolder = new File(newTestCase.getProject().getFolderLocation() + File.separator
                     + GroovyUtil.getScriptPackageRelativePathForTestCase(newTestCase));
             // Ensure new folder for script file created
