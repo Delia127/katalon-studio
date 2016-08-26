@@ -18,15 +18,7 @@
     <elements xsi:type="commands:Command" xmi:id="_6zd1QF08EeapguTfS-l63A" elementId="com.kms.katalon.composer.integration.git.command.pull" commandName="Pull"/>
     <elements xsi:type="commands:Command" xmi:id="_Tof1IF09EeapguTfS-l63A" elementId="com.kms.katalon.composer.integration.git.command.fetch" commandName="Fetch"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_FvMx8FrrEeaUtN11XiUV6w" featurename="children" parentElementId="com.kms.katalon.composer.menu" positionInList="after:com.kms.katalon.composer.menu.project">
-    <elements xsi:type="menu:Menu" xmi:id="_Q5_nsFrxEeaUtN11XiUV6w" elementId="com.kms.katalon.composer.integration.git.menu" label="Git">
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_FvMx8VrrEeaUtN11XiUV6w" elementId="com.kms.katalon.composer.integration.git.handledmenuitem.shareProject" label="Share Project" tooltip="" command="_8Ep_QFrqEeaUtN11XiUV6w"/>
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_IOdeIFr1EeaUtN11XiUV6w" elementId="com.kms.katalon.composer.integration.git.handledmenuitem.showHistory" label="Show History" command="_8VCZEFr0EeaUtN11XiUV6w"/>
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_JvGQ0Fr9EeaUtN11XiUV6w" elementId="com.kms.katalon.composer.integration.git.handledmenuitem.commit" label="Commit" command="_Fawt0Fr9EeaUtN11XiUV6w"/>
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_lGLEwFr_EeaUtN11XiUV6w" elementId="com.kms.katalon.composer.integration.git.handledmenuitem.push" label="Push" command="_grS04Fr_EeaUtN11XiUV6w"/>
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_NRdUMF01EeapguTfS-l63A" elementId="com.kms.katalon.composer.integration.git.handledmenuitem.branch" label="Manage Branches" command="_PTdBIF01EeapguTfS-l63A"/>
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_MDbhMF09EeapguTfS-l63A" elementId="com.kms.katalon.composer.integration.git.handledmenuitem.pull" label="Pull" command="_6zd1QF08EeapguTfS-l63A"/>
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_pgxI8F09EeapguTfS-l63A" elementId="com.kms.katalon.composer.integration.git.handledmenuitem.fetch" label="Fetch" command="_Tof1IF09EeapguTfS-l63A"/>
-    </elements>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_FvMx8FrrEeaUtN11XiUV6w" featurename="children" parentElementId="com.kms.katalon.menu.integration" positionInList="first">
+    <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_fBpuQGRaEeaO3oYZQbbJmA" elementId="com.kms.katalon.composer.integration.git.dynamicmenucontribution" contributionURI="bundleclass://com.kms.katalon.composer.integration.git/com.kms.katalon.composer.integration.git.menu.GitMenuContribution"/>
   </fragments>
 </fragment:ModelFragments>

@@ -74,14 +74,17 @@ public class MenuProcessor {
         // Settings menu
         MMenu mSettings = createMenu(IdConstants.MENU_ID_SETTINGS, StringConstants.MENU_LBL_SETTINGS);
 
-        // Settings menu
+        // Search menu
         MMenu mSearch = createMenu(IdConstants.MENU_ID_SEARCH, StringConstants.MENU_LBL_SEARCH);
         mSearch.getChildren().add(
                 createHanldedMenuItem(IdConstants.MENU_ID_SEARCH_, StringConstants.MENU_LBL_SEARCH_, null,
                         createCommand(IdConstants.MENU_CMD_ID_SEARCH_, StringConstants.MENU_CMD_NAME_SEARCH_)));
 
-        // Settings menu
+        // Project menu
         MMenu mProject = createMenu(IdConstants.MENU_ID_PROJECT, StringConstants.MENU_LBL_PROJECT);
+        
+        // Integration menu
+        MMenu mIntegration = createMenu(IdConstants.MENU_ID_INTEGRATION, StringConstants.MENU_LBL_INTEGRATION);
 
         // Window menu
         MMenu mWindow = createMenu(IdConstants.MENU_ID_WINDOW, StringConstants.MENU_LBL_WINDOW);
@@ -93,7 +96,7 @@ public class MenuProcessor {
                         createCommand(IdConstants.MENU_CMD_ID_WINDOW_RESET_PERSPECTIVE,
                                 StringConstants.MENU_CMD_NAME_WINDOW_RESET_PERSPECTIVE)));
 
-        // Settings menu
+        // Help menu
         MMenu mHelp = createMenu(IdConstants.MENU_ID_HELP, StringConstants.MENU_LBL_HELP);
         mHelp.getChildren().add(
                 createHanldedMenuItem(IdConstants.MENU_ID_HELP_ABOUT, StringConstants.MENU_LBL_HELP_ABOUT, null,
@@ -105,6 +108,7 @@ public class MenuProcessor {
         menu.getChildren().add(mSettings);
         menu.getChildren().add(mSearch);
         menu.getChildren().add(mProject);
+        menu.getChildren().add(mIntegration);
         menu.getChildren().add(mWindow);
         menu.getChildren().add(mHelp);
 

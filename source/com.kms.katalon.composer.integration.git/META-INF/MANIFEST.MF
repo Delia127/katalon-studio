@@ -27,7 +27,8 @@ Require-Bundle: org.eclipse.e4.ui.model.workbench,
  org.eclipse.e4.core.commands,
  org.eclipse.text,
  org.eclipse.egit.core,
- org.eclipse.jgit
+ org.eclipse.jgit,
+ com.kms.katalon.preferences
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: javax.annotation;version="1.2.0",
  javax.inject;version="1.0.0"

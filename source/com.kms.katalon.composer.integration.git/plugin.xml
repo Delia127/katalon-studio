@@ -8,5 +8,21 @@
             uri="fragment.e4xmi">
       </fragment>
    </extension>
-
+   
+	<extension
+         point="com.kms.katalon.preferences.PreferencePages">
+      <page
+            category="com.kms.katalon.composer.preferences.GeneralPreferencePage"
+            class="com.kms.katalon.composer.integration.git.preference.GitPreferencePage"
+            id="com.kms.katalon.composer.integration.git"
+            name="Git">
+      </page>
+   </extension>
+   
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="com.kms.katalon.composer.integration.git.preference.GitPreferenceDefaulValueInitializer">
+      </initializer>
+   </extension>
 </plugin>
