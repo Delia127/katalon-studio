@@ -64,10 +64,14 @@ public class TestObjectPart implements EventHandler, IComposerPart {
 
         objPropertyView = new ObjectPropertyView(eventBroker, dirtyable);
         objPropertyView.createMainPage(parent);
-        originalTestObject = (WebElementEntity) part.getObject();
-        objPropertyView.changeOriginalTestObject(originalTestObject);
+        changeOriginalTestObject((WebElementEntity) part.getObject());
 
         registerListeners();
+    }
+
+    private void changeOriginalTestObject(WebElementEntity testObject) {
+        originalTestObject = testObject;
+        objPropertyView.changeOriginalTestObject(originalTestObject);
     }
 
     private void registerListeners() {
@@ -85,7 +89,7 @@ public class TestObjectPart implements EventHandler, IComposerPart {
                 if (elementId.equalsIgnoreCase(mPart.getElementId())) {
                     WebElementEntity webElement = (WebElementEntity) ((Object[]) object)[1];
                     updateTestObjectPart(webElement);
-                    objPropertyView.changeOriginalTestObject(webElement);
+                    changeOriginalTestObject(webElement);
                 }
             }
         } else if (event.getTopic().equals(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM)) {
@@ -98,8 +102,7 @@ public class TestObjectPart implements EventHandler, IComposerPart {
                         if (testObject != null && testObject.getId().equals(originalTestObject.getId())) {
                             if (ObjectRepositoryController.getInstance().getWebElement(testObject.getId()) != null) {
                                 if (!dirtyable.isDirty()) {
-                                    originalTestObject = testObject;
-                                    objPropertyView.changeOriginalTestObject(testObject);
+                                    changeOriginalTestObject(testObject);
                                 }
                             } else {
                                 dispose();
@@ -155,8 +158,7 @@ public class TestObjectPart implements EventHandler, IComposerPart {
                                 StringConstants.PA_CONFIRM_TITLE_FILE_CHANGED,
                                 MessageFormat.format(StringConstants.PA_CONFIRM_MSG_RELOAD_FILE,
                                         originalTestObject.getLocation()))) {
-                            originalTestObject = srcWebElement;
-                            objPropertyView.changeOriginalTestObject(srcWebElement);
+                            changeOriginalTestObject(srcWebElement);
                             dirtyable.setDirty(false);
                         }
                         isConfirmationDialogShowed = false;
