@@ -15,7 +15,7 @@ public class EventConstants {
     public static final String PROJECT_CLOSE = "PROJECT/CLOSE";
     public static final String PROJECT_CLOSED = "PROJECT/CLOSED";
     public static final String PROJECT_UPDATED = "PROJECT/UPDATED";
-    public static final String PROJECT_SWITCH = "PROJECT/SWITCH";
+    public static final String PROJECT_SAVE_SESSION = "PROJECT/SAVE_SESSION";
 
     // Eclipse Events
     public static final String ECLIPSE_EDITOR_CLOSED = "EDITORS_CLOSED";

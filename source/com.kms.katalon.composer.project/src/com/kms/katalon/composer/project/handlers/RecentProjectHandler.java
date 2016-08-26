@@ -35,7 +35,7 @@ public class RecentProjectHandler {
         if (projectPk != null) {
             if (ProjectController.getInstance().getCurrentProject() != null) {
                 // Send a notice of switching project
-                eventBroker.post(EventConstants.PROJECT_SWITCH, projectPk);
+                eventBroker.post(EventConstants.PROJECT_SAVE_SESSION, projectPk);
             }
             eventBroker.post(EventConstants.PROJECT_OPEN, projectPk);
         }

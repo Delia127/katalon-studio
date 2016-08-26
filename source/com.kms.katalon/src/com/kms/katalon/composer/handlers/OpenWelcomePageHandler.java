@@ -18,11 +18,10 @@ import com.kms.katalon.constants.StringConstants;
 
 public class OpenWelcomePageHandler {
 
-    private static final String KATALON_COLLECTION_BUNDLE_URI = "bundleclass://"
+    private static final String KATALON_BUNDLE_URI = "bundleclass://"
             + FrameworkUtil.getBundle(OpenWelcomePageHandler.class).getSymbolicName() + "/";
 
-    private static final String TEST_SUITE_COLLECTION_PART_URI = KATALON_COLLECTION_BUNDLE_URI
-            + WelcomePart.class.getName();
+    private static final String WELCOME_PART_URI = KATALON_BUNDLE_URI + WelcomePart.class.getName();
 
     @Inject
     private MApplication application;
@@ -59,7 +58,7 @@ public class OpenWelcomePageHandler {
     }
 
     private String getPartId() {
-        return TEST_SUITE_COLLECTION_PART_URI;
+        return IdConstants.WELCOME_PART_ID;
     }
 
     private String getIconURI() {
@@ -67,6 +66,6 @@ public class OpenWelcomePageHandler {
     }
 
     private String getContributionURI() {
-        return TEST_SUITE_COLLECTION_PART_URI;
+        return WELCOME_PART_URI;
     }
 }

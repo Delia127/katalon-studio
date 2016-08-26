@@ -28,6 +28,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.controller.TestDataController;
+import com.kms.katalon.controller.TestSuiteCollectionController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.file.FileEntity;
@@ -160,11 +161,11 @@ public class TreeEntityUtil {
         return null;
     }
 
-    public static TestSuiteCollectionTreeEntity getTestRunTreeEntity(TestSuiteCollectionEntity reportEntity,
-            ProjectEntity projectEntity) throws Exception {
-        FolderEntity testCaseRootFolder = FolderController.getInstance().getReportRoot(projectEntity);
-        return new TestSuiteCollectionTreeEntity(reportEntity, createSelectedTreeEntityHierachy(
-                reportEntity.getParentFolder(), testCaseRootFolder));
+    public static TestSuiteCollectionTreeEntity getTestRunTreeEntity(
+            TestSuiteCollectionEntity testSuiteCollectionEntity, ProjectEntity projectEntity) throws Exception {
+        FolderEntity testSuiteRootFolder = FolderController.getInstance().getTestSuiteRoot(projectEntity);
+        return new TestSuiteCollectionTreeEntity(testSuiteCollectionEntity, createSelectedTreeEntityHierachy(
+                testSuiteCollectionEntity.getParentFolder(), testSuiteRootFolder));
     }
 
     /**
@@ -226,12 +227,12 @@ public class TreeEntityUtil {
      */
     public static List<ITreeEntity> getExpandedTreeEntitiesFromIds(List<String> ids) throws Exception {
         List<ITreeEntity> treeEntities = new ArrayList<ITreeEntity>();
-        if (ids == null || ids.isEmpty())
+        if (ids == null || ids.isEmpty()) {
             return treeEntities;
+        }
         ProjectEntity project = ProjectController.getInstance().getCurrentProject();
         // Folder/Package Tree Entity
-        // Minor issue: Cannot detect default keyword package and keyword root
-        // folder
+        // Minor issue: Cannot detect default keyword package and keyword root folder
         for (String id : ids) {
             if (StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_TEST_CASE)
                     || StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_OBJECT_REPOSITORY)
@@ -242,31 +243,36 @@ public class TreeEntityUtil {
                     || StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_CHECKPOINT)) {
                 // Folder
                 FolderEntity folder = FolderController.getInstance().getFolderByDisplayId(project, id);
-                if (folder != null) {
-                    FolderEntity rootFolder = null;
-                    if (FolderType.TESTCASE.equals(folder.getFolderType())) {
-                        rootFolder = FolderController.getInstance().getTestCaseRoot(project);
-                    } else if (FolderType.WEBELEMENT.equals(folder.getFolderType())) {
-                        rootFolder = FolderController.getInstance().getObjectRepositoryRoot(project);
-                    } else if (FolderType.DATAFILE.equals(folder.getFolderType())) {
-                        rootFolder = FolderController.getInstance().getTestDataRoot(project);
-                    } else if (FolderType.TESTSUITE.equals(folder.getFolderType())) {
-                        rootFolder = FolderController.getInstance().getTestSuiteRoot(project);
-                    } else if (FolderType.KEYWORD.equals(folder.getFolderType())) {
-                        rootFolder = FolderController.getInstance().getKeywordRoot(project);
-                    } else if (FolderType.REPORT.equals(folder.getFolderType())) {
-                        rootFolder = FolderController.getInstance().getReportRoot(project);
-                    } else if (FolderType.CHECKPOINT.equals(folder.getFolderType())) {
-                        rootFolder = FolderController.getInstance().getCheckpointRoot(project);
-                    }
-                    if (rootFolder != null) {
-                        treeEntities.add(TreeEntityUtil.createSelectedTreeEntityHierachy(folder, rootFolder));
-                    }
+                if (folder == null) {
+                    continue;
                 }
-            } else {
-                // Keyword Package
-                treeEntities.add(TreeEntityUtil.getPackageTreeEntity(id, project));
+
+                FolderEntity rootFolder = null;
+                if (FolderType.TESTCASE.equals(folder.getFolderType())) {
+                    rootFolder = FolderController.getInstance().getTestCaseRoot(project);
+                } else if (FolderType.WEBELEMENT.equals(folder.getFolderType())) {
+                    rootFolder = FolderController.getInstance().getObjectRepositoryRoot(project);
+                } else if (FolderType.DATAFILE.equals(folder.getFolderType())) {
+                    rootFolder = FolderController.getInstance().getTestDataRoot(project);
+                } else if (FolderType.TESTSUITE.equals(folder.getFolderType())) {
+                    rootFolder = FolderController.getInstance().getTestSuiteRoot(project);
+                } else if (FolderType.KEYWORD.equals(folder.getFolderType())) {
+                    rootFolder = FolderController.getInstance().getKeywordRoot(project);
+                } else if (FolderType.REPORT.equals(folder.getFolderType())) {
+                    rootFolder = FolderController.getInstance().getReportRoot(project);
+                } else if (FolderType.CHECKPOINT.equals(folder.getFolderType())) {
+                    rootFolder = FolderController.getInstance().getCheckpointRoot(project);
+                }
+
+                if (rootFolder != null) {
+                    treeEntities.add(TreeEntityUtil.createSelectedTreeEntityHierachy(folder, rootFolder));
+                }
+
+                continue;
             }
+
+            // Keyword Package
+            treeEntities.add(TreeEntityUtil.getPackageTreeEntity(id, project));
         }
         return treeEntities;
     }
@@ -295,34 +301,61 @@ public class TreeEntityUtil {
                 if (tc != null) {
                     treeEntities.add(TreeEntityUtil.getTestCaseTreeEntity(tc, project));
                 }
-            } else if (StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_OBJECT_REPOSITORY)) {
+                continue;
+            }
+
+            if (StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_OBJECT_REPOSITORY)) {
                 // Test Object
                 WebElementEntity to = ObjectRepositoryController.getInstance().getWebElementByDisplayPk(id);
                 if (to != null) {
                     treeEntities.add(TreeEntityUtil.getWebElementTreeEntity(to, project));
                 }
-            } else if (StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_DATA_FILE)) {
+                continue;
+            }
+
+            if (StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_DATA_FILE)) {
                 // Test Data
                 DataFileEntity td = TestDataController.getInstance().getTestDataByDisplayId(id);
                 if (td != null) {
                     treeEntities.add(TreeEntityUtil.getTestDataTreeEntity(td, project));
                 }
-            } else if (StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_TEST_SUITE)) {
+                continue;
+            }
+
+            if (StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_TEST_SUITE)) {
                 // Test Suite
                 TestSuiteEntity ts = TestSuiteController.getInstance().getTestSuiteByDisplayId(id, project);
+
                 if (ts != null) {
                     treeEntities.add(TreeEntityUtil.getTestSuiteTreeEntity(ts, project));
+                    continue;
                 }
-            } else if (StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_REPORT)) {
+
+                // Reason 1: This Test Suite does not exist -> nothing to deal with
+                // Reason 2: This is Test Suite Collection, not Test Suite
+                TestSuiteCollectionEntity tsc = TestSuiteCollectionController.getInstance().getTestRunByDisplayId(id);
+                if (tsc != null) {
+                    treeEntities.add(TreeEntityUtil.getTestRunTreeEntity(tsc, project));
+                }
+                continue;
+            }
+
+            if (StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_REPORT)) {
                 // Report
                 ReportEntity rp = ReportController.getInstance().getReportEntityByDisplayId(id, project);
                 if (rp != null) {
                     treeEntities.add(TreeEntityUtil.getReportTreeEntity(rp, project));
                 }
-            } else if (StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_KEYWORD)) {
+                continue;
+            }
+
+            if (StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_KEYWORD)) {
                 // Keyword
                 treeEntities.add(TreeEntityUtil.getKeywordTreeEntity(id, project));
-            } else if (StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_CHECKPOINT)) {
+                continue;
+            }
+
+            if (StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_CHECKPOINT)) {
                 // Checkpoint
                 CheckpointEntity cp = CheckpointController.getInstance().getByDisplayedId(id);
                 if (cp != null) {

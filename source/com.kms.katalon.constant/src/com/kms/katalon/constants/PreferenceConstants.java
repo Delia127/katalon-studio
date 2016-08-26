@@ -5,6 +5,8 @@ public interface PreferenceConstants {
     // General preferences
     public static final String GENERAL_AUTO_RESTORE_PREVIOUS_SESSION = "general.autoRestorePreviousSession";
 
+    public static final String GENERAL_APP_CLOSE_SUDDENLY = "general.appCloseSuddenly";
+
     // Composer Execution
     public static final String EXECUTION_QUALIFIER = "com.kms.katalon.composer.execution";
 
