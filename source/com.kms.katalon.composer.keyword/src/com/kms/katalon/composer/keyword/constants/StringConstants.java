@@ -71,4 +71,10 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_WARN_DEFAULT_PACKAGE = "The use of the default package is discouraged.";
 
     public static final String DIA_WARN_KEYWORD_START_WITH_LOWERCASE = "Keyword name is discouraged. By convention, Keyword names usually start with an uppercase letter";
+    
+    public static final int MAX_PKG_AND_CLASS_NAME_LENGTH = 255;
+    
+    public static final String HAND_ERROR_MSG_EXCEED_PKG_NAME_LENGTH = "Cannot save package: file path length limit exceeded ({0}/{1}). You should shorten the name and try again.";
+    
+    public static final String HAND_ERROR_MSG_EXCEED_CLASS_NAME_LENGTH = "Cannot save keyword: file path length limit exceeded ({0}/{1}). You should shorten the name and try again.";
 }

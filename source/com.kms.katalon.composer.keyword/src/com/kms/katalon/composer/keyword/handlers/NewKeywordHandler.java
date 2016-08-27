@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.keyword.handlers;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -84,6 +85,14 @@ public class NewKeywordHandler {
                 NewKeywordDialog dialog = new NewKeywordDialog(parentShell, rootPackage, packageFragment);
                 dialog.open();
                 if (dialog.getReturnCode() == Dialog.OK) {
+                    int kwFilePathLength = dialog.getParentPackage().getElementName().length()
+                            + dialog.getName().length();
+                    if (kwFilePathLength > StringConstants.MAX_PKG_AND_CLASS_NAME_LENGTH) {
+                        MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE, MessageFormat.format(
+                                StringConstants.HAND_ERROR_MSG_EXCEED_CLASS_NAME_LENGTH, kwFilePathLength,
+                                StringConstants.MAX_PKG_AND_CLASS_NAME_LENGTH));
+                        return;
+                    }
                     // get new input package
                     packageFragment = dialog.getParentPackage();
                     IProgressMonitor monitor = new NullProgressMonitor();
