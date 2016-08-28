@@ -47,7 +47,7 @@ public class NewProjectHandler {
             eventBroker.post(EventConstants.JOB_REFRESH, null);
             eventBroker.post(EventConstants.CONSOLE_LOG_REFRESH, null);
         } catch (FilePathTooLongException ex) {
-            MessageDialog.openError(shell, StringConstants.ERROR_TITLE, ex.getMessage());
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, ex.getMessage());
         } catch (Exception ex) {            
             LoggerSingleton.getInstance().getLogger().error(ex);
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
