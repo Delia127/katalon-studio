@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.testcase.util;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,6 +33,7 @@ import com.kms.katalon.composer.testcase.model.InputParameter;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.preferences.TestCasePreferenceDefaultValueInitializer;
 import com.kms.katalon.composer.util.groovy.GroovyGuiUtil;
+import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.ast.GroovyParser;
@@ -475,14 +477,7 @@ public class AstKeywordsInputUtil {
             type = classLoader.loadClass(typeName);
             return type;
         } catch (ClassNotFoundException e) {
-            for (String importedPackage : GroovyParser.GROOVY_IMPORTED_PACKAGES) {
-                try {
-                    type = classLoader.loadClass(importedPackage + "." + typeName);
-                    return type;
-                } catch (ClassNotFoundException ex) {
-                    continue;
-                }
-            }
+            type = loadClassFromImportedPackage(typeName, classLoader);
         }
         try {
             type = ClassUtils.getClass(typeName);
@@ -492,7 +487,7 @@ public class AstKeywordsInputUtil {
         if (classNode == null) {
             return type;
         }
-        for (ImportNodeWrapper importNode : classNode.getImports()) {
+        for (ImportNodeWrapper importNode : classNode.getScriptClass().getImports()) {
             String className = importNode.getClassName();
             if (className == null || !className.endsWith("." + typeName)) {
                 continue;
@@ -504,6 +499,33 @@ public class AstKeywordsInputUtil {
             }
         }
         return type;
+    }
+
+    public static Class<?> loadClassFromImportedPackage(String typeName, ClassLoader classLoader) {
+        if (StringUtils.isEmpty(typeName) || classLoader == null) {
+            return null;
+        }
+        for (String importedPackage : GroovyParser.GROOVY_IMPORTED_PACKAGES) {
+            try {
+                return classLoader.loadClass(importedPackage + GlobalStringConstants.CR_DOT + typeName);
+            } catch (ClassNotFoundException ex) {
+                continue;
+            }
+        }
+        return null;
+    }
+    
+    public static Class<?> getFirstAccessibleMethodReturnType(Class<?> clazz, String methodName, boolean staticOnly) {
+        if (clazz == null || methodName == null) {
+            return null;
+        }
+        for (Method method : clazz.getDeclaredMethods()) {
+            if (!methodName.equals(method.getName()) && (!staticOnly || Modifier.isStatic(method.getModifiers()))) {
+                continue;
+            }
+            return method.getReturnType();
+        }
+        return null;
     }
 
     public static boolean isGlobalVariablePropertyExpression(PropertyExpressionWrapper propertyExprs) {

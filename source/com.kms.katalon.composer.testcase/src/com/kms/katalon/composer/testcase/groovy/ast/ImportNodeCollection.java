@@ -2,10 +2,14 @@ package com.kms.katalon.composer.testcase.groovy.ast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.Set;
+
+import org.apache.commons.lang.StringUtils;
+
+import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
 
 public class ImportNodeCollection {
 
@@ -15,13 +19,15 @@ public class ImportNodeCollection {
      * Key: class full name
      * Value: List of imported alias names. Ordered by declared import in script. The last one will be the best match.
      */
-    private Map<String, SortedSet<String>> importedAliasNamesForClassFullName;
+    private Map<String, Set<String>> importedAliasNamesForClassFullName;
 
     /**
      * Key: alias name
      * Value: class full name
      */
     private Map<String, String> importedClassNameForAlias;
+
+    private Map<String, ImportNodeWrapper> importedNodeForClassFullName;
 
     public List<ImportNodeWrapper> getImportNodes() {
         return importNodes;
@@ -35,6 +41,7 @@ public class ImportNodeCollection {
         importNodes = new ArrayList<>();
         importedAliasNamesForClassFullName = new HashMap<>();
         importedClassNameForAlias = new HashMap<>();
+        importedNodeForClassFullName = new HashMap<>();
     }
 
     public boolean hasAlias(String qualifiedName) {
@@ -50,17 +57,19 @@ public class ImportNodeCollection {
     }
 
     public String getBestMatchForAliasName(String qualifier) {
-        SortedSet<String> aliasNames = getAliasNames(qualifier);
+        Set<String> aliasNames = getAliasNames(qualifier);
         if (aliasNames.isEmpty()) {
             return null;
         }
-        return aliasNames.last();
+        int size = aliasNames.size();
+        return aliasNames.toArray(new String[size])[size - 1];
     }
 
     public void clear() {
         importNodes.clear();
         importedAliasNamesForClassFullName.clear();
         importedClassNameForAlias.clear();
+        importedNodeForClassFullName.clear();
     }
 
     public void addImportNode(ImportNodeWrapper newImportWrapper) {
@@ -74,17 +83,33 @@ public class ImportNodeCollection {
         }
 
         String qualifiedName = entry.getQualifiedName();
-        SortedSet<String> aliasNames = getAliasNames(qualifiedName);
+        Set<String> aliasNames = getAliasNames(qualifiedName);
         String newAliasName = entry.getAliasName();
         aliasNames.add(newAliasName);
         importedAliasNamesForClassFullName.put(qualifiedName, aliasNames);
         importedClassNameForAlias.put(newAliasName, qualifiedName);
+        importedNodeForClassFullName.put(qualifiedName, newImportWrapper);
     }
 
-    private SortedSet<String> getAliasNames(String qualifiedName) {
-        SortedSet<String> aliasNames = importedAliasNamesForClassFullName.get(qualifiedName);
+    public Class<?> resolve(String qualifiedName) {
+        ImportNodeWrapper wrapper = importedNodeForClassFullName.get(qualifiedName);
+        if (wrapper == null) {
+            return null;
+        }
+
+        Class<?> typeClass = wrapper.getType().getTypeClass();
+        String fieldName = wrapper.getFieldName();
+        if (ImportNodeStatistics.evaluate(wrapper) != ImportNodeStatistics.SIMPLE_STATIC_IMPORT
+                && StringUtils.isEmpty(fieldName)) {
+            return typeClass;
+        }
+        return AstKeywordsInputUtil.getFirstAccessibleMethodReturnType(typeClass, fieldName, true);
+    }
+
+    private Set<String> getAliasNames(String qualifiedName) {
+        Set<String> aliasNames = importedAliasNamesForClassFullName.get(qualifiedName);
         if (aliasNames == null) {
-            aliasNames = new TreeSet<>();
+            aliasNames = new LinkedHashSet<>();
             importedAliasNamesForClassFullName.put(qualifiedName, aliasNames);
         }
         return aliasNames;

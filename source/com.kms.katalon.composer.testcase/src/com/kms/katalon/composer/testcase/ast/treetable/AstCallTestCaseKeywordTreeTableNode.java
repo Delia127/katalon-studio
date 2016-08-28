@@ -18,6 +18,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpr
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MapExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
+import com.kms.katalon.composer.testcase.model.InputParameter;
 import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
 import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
 import com.kms.katalon.controller.TestCaseController;
@@ -93,26 +94,17 @@ public class AstCallTestCaseKeywordTreeTableNode extends AstBuiltInKeywordTreeTa
     }
 
     @Override
-    public Object getInput() {
+    protected List<InputParameter> getInputParameters() {
         ArgumentListExpressionWrapper argumentList = (ArgumentListExpressionWrapper) methodCall.getArguments();
         if (argumentList == null) {
             return null;
         }
-        return AstKeywordsInputUtil.generateInputParameters(
-                BuiltInMethodNodeFactory.findCallTestCaseMethod(getBuiltInKWClassSimpleName()), argumentList);
+        return AstKeywordsInputUtil.generateInputParameters(findKeywordMethod(), argumentList);
     }
 
     @Override
-    public boolean setInput(Object input) {
-        if (!(input instanceof List<?>)) {
-            return false;
-        }
-        List<?> inputParameters = (List<?>) input;
-        KeywordMethod keywordMethod = BuiltInMethodNodeFactory.findCallTestCaseMethod(getBuiltInKWClassSimpleName());
-        if (keywordMethod == null) {
-            return false;
-        }
-        return setInput(inputParameters, keywordMethod);
+    protected KeywordMethod findKeywordMethod() {
+        return BuiltInMethodNodeFactory.findCallTestCaseMethod(getBuiltInKWClassSimpleName());
     }
 
     public List<VariableEntity> getCallTestCaseVariables() {

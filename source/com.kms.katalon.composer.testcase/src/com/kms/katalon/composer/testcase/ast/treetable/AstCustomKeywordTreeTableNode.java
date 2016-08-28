@@ -129,23 +129,9 @@ public class AstCustomKeywordTreeTableNode extends AstAbstractKeywordTreeTableNo
     }
 
     @Override
-    public Object getInput() {
+    protected List<InputParameter> getInputParameters() {
         return AstKeywordsInputUtil.generateCustomKeywordInputParameters(getClassName(), getKeywordName(),
                 methodCall.getArguments().clone());
-    }
-
-    @Override
-    public boolean setInput(Object input) {
-        if (!(input instanceof List<?>)) {
-            return false;
-        }
-        List<?> inputParameters = (List<?>) input;
-        ArgumentListExpressionWrapper argumentListExpression = new ArgumentListExpressionWrapper(methodCall);
-        for (int i = 0; i < inputParameters.size(); i++) {
-            InputParameter inputParameter = (InputParameter) inputParameters.get(i);
-            argumentListExpression.addExpression(inputParameter.getValueAsExpression());
-        }
-        return methodCall.setArguments(argumentListExpression);
     }
 
     @Override

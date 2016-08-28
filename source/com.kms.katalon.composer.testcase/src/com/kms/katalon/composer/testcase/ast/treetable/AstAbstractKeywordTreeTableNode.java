@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.testcase.ast.treetable;
 
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.ast.tools.GeneralUtils;
 import org.eclipse.jface.viewers.CellEditor;
@@ -12,6 +14,7 @@ import com.kms.katalon.composer.testcase.ast.editors.InputCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.TestObjectCellEditor;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.groovy.ast.TokenWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.BinaryExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
@@ -19,6 +22,8 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpres
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.PropertyExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.VariableExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
+import com.kms.katalon.composer.testcase.model.InputParameter;
+import com.kms.katalon.composer.testcase.model.InputParameterBuilder;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.util.AstValueUtil;
 import com.kms.katalon.controller.KeywordController;
@@ -130,6 +135,30 @@ public abstract class AstAbstractKeywordTreeTableNode extends AstInputEditableSt
     @Override
     public CellEditor getCellEditorForInput(Composite parent) {
         return new InputCellEditor(parent, getInputText(), methodCall.getArguments());
+    }
+    
+    @Override
+    public final Object getInput() {
+        return InputParameterBuilder.createForMethodCall(getInputParameters());
+    }
+
+    protected abstract List<InputParameter> getInputParameters();
+
+    @Override
+    public final boolean setInput(Object input) {
+       if (input instanceof InputParameterBuilder) {
+           setInputParameters(((InputParameterBuilder) input).getOriginalParameters());
+           return true;
+       }
+       return false;
+    }
+
+    protected boolean setInputParameters(List<InputParameter> originalParameters) {
+        ArgumentListExpressionWrapper argumentListExpression = new ArgumentListExpressionWrapper(methodCall);
+        for (InputParameter input : originalParameters) {
+            argumentListExpression.addExpression(input.getValueAsExpression());
+        }
+        return methodCall.setArguments(argumentListExpression);
     }
 
     @Override

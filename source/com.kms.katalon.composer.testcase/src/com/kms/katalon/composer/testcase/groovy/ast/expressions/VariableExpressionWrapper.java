@@ -7,6 +7,7 @@ import org.codehaus.groovy.ast.expr.VariableExpression;
 
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ClassNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.ImportNodeCollection;
 
 public class VariableExpressionWrapper extends ExpressionWrapper {
     private static final String DEFAULT_VARIABLE_NAME = "a";
@@ -115,5 +116,21 @@ public class VariableExpressionWrapper extends ExpressionWrapper {
         }
         copyVariableProperties((VariableExpressionWrapper) input);
         return true;
+    }
+    
+    @Override
+    public Class<?> resolveType(ClassLoader classLoader) {
+        String potentialClassName = getText();
+        Class<?> loaded = loadClassQuietly(potentialClassName, classLoader);
+        if (loaded != null) {
+            return loaded;
+        }
+
+        Class<?> defaultClass = super.resolveType(classLoader);
+        ImportNodeCollection importNodeCollection = getScriptClass().getImportNodeCollection();
+        if (importNodeCollection == null || !importNodeCollection.isImported(potentialClassName)) {
+            return defaultClass;
+        }
+        return loadClassQuietly(importNodeCollection.getQualifierForAlias(potentialClassName), classLoader);
     }
 }
