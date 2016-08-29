@@ -294,8 +294,19 @@ public class MethodCallExpressionWrapper extends ExpressionWrapper {
     }
 
     public boolean isCallTestCaseMethodCall() {
-        return isBuiltInKeywordMethodCall() && CALL_TEST_CASE_METHOD_NAME.equals(getMethodAsString())
-                && getArguments().getExpressions().size() > 1;
+        if (getObjectExpression() == null) {
+            return false;
+        }
+
+        for (KeywordClass keywordClass : KeywordController.getInstance().getBuiltInKeywordClasses()) {
+            String classAliasName = keywordClass.getAliasName();
+            if ((isObjectExpressionOfClass(keywordClass.getType()))
+                    || (importHasAliasName(classAliasName) && isObjectExpressionOfClass(classAliasName))) {
+                return CALL_TEST_CASE_METHOD_NAME.equals(getMethodAsString())
+                        && getArguments().getExpressions().size() > 1;
+            }
+        }
+        return false;
     }
 
     public boolean isFindTestCaseMethodCall() {
