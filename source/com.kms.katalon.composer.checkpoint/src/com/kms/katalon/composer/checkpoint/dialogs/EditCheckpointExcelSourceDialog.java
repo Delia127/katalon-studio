@@ -92,7 +92,7 @@ public class EditCheckpointExcelSourceDialog extends AbstractDialog {
         new Label(compFileInfo, SWT.NONE);
         chkUsingFirstRowAsHeader = new Button(compFileInfo, SWT.CHECK);
         chkUsingFirstRowAsHeader.setText(StringConstants.DIA_CHK_USING_FIRST_ROW_AS_HEADER);
-        comboSheetNameOrCsvSeparator.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
+        chkUsingFirstRowAsHeader.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
         new Label(compFileInfo, SWT.NONE);
 
         new Label(compFileInfo, SWT.NONE);
