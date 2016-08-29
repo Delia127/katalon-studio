@@ -92,12 +92,12 @@ public class AstEntityInputUtil {
         argumentList.addExpression(createNewFindTestCaseMethodCall(testCase, argumentList));
         argumentList.addExpression(generateTestCaseVariableBindingMapExpression(testCase, argumentList));
         argumentList.addExpression(AstKeywordsInputUtil.getNewFailureHandlingPropertyExpression(argumentList));
-
+        ExpressionStatementWrapper newCallTestCaseExpression = new ExpressionStatementWrapper(
+                keywordMethodCallExpressionWrapper, parentNode);
         if (variablesToAdd != null) {
             variablesToAdd.addAll(getCallTestCaseVariables(keywordMethodCallExpressionWrapper));
         }
-
-        return new ExpressionStatementWrapper(keywordMethodCallExpressionWrapper, parentNode);
+        return newCallTestCaseExpression;
     }
 
     public static List<VariableEntity> getCallTestCaseVariables(MethodCallExpressionWrapper callTestCaseMethodCall) {
@@ -285,7 +285,7 @@ public class AstEntityInputUtil {
     public static String getTextValueForTestCaseArgument(MethodCallExpressionWrapper methodCall) {
         return getTextValueForTestArtifaceArgument(methodCall);
     }
-    
+
     private static String getTextValueForTestArtifaceArgument(MethodCallExpressionWrapper methodCall) {
         String relativeEntityId = getEntityRelativeIdFromMethodCall(methodCall);
         int lastIdSeparatorIdx = relativeEntityId.lastIndexOf(ENTITY_ID_SEPARATOR);
