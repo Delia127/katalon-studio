@@ -1,6 +1,7 @@
 package com.kms.katalon.core.webservice.common;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -49,8 +50,6 @@ public class RestfulClient implements Requestor {
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         con.setRequestMethod("GET");
 
-        // HTTP Headers
-        // con.setRequestProperty ("Authorization", token);
         // Default if not set
         con.setRequestProperty("User-Agent", DEFAULT_USER_AGENT);
         // RESTFul usually return JSON, but it is not always, if user not set it, default is JSON
@@ -59,19 +58,7 @@ public class RestfulClient implements Requestor {
             con.setRequestProperty(property.getName(), property.getValue());
         }
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        String inputLine;
-        StringBuffer sb = new StringBuffer();
-        while ((inputLine = in.readLine()) != null) {
-            sb.append(inputLine);
-        }
-        in.close();
-
-        ResponseObject responseObject = new ResponseObject(sb.toString());
-        responseObject.setContentType(con.getContentType());
-        responseObject.setHeaderFields(con.getHeaderFields());
-
-        return responseObject;
+        return response(con);
     }
 
     private ResponseObject sendPostRequest(RequestObject request) throws Exception {
@@ -90,9 +77,8 @@ public class RestfulClient implements Requestor {
         if (request.getRestUrl() != null && request.getRestUrl().toLowerCase().startsWith("https")) {
             ((HttpsURLConnection) httpConnection).setHostnameVerifier(getHostnameVerifier());
         }
-
         httpConnection.setRequestMethod(request.getRestRequestMethod());
-        // con.setRequestProperty("Authorization", token);
+
         // Default if not set
         httpConnection.setRequestProperty("User-Agent", DEFAULT_USER_AGENT);
         httpConnection.setRequestProperty("Content-Type", DEFAULT_ACCEPT_CONTENT_TYPE);
@@ -107,22 +93,7 @@ public class RestfulClient implements Requestor {
         os.flush();
         os.close();
 
-        // Read response content
-        BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
-        StringBuffer sb = new StringBuffer();
-        String inputLine;
-        while ((inputLine = reader.readLine()) != null) {
-            sb.append(inputLine);
-        }
-        reader.close();
-
-        ResponseObject responseObject = new ResponseObject(sb.toString());
-        responseObject.setContentType(httpConnection.getContentType());
-        responseObject.setHeaderFields(httpConnection.getHeaderFields());
-
-        httpConnection.disconnect();
-
-        return responseObject;
+        return response(httpConnection);
     }
 
     private ResponseObject sendDeleteRequest(RequestObject request) throws Exception {
@@ -132,6 +103,10 @@ public class RestfulClient implements Requestor {
             sc.init(null, getTrustManagers(), new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
         }
+
+        // If there are some parameters, they should be append after the Service URL
+        processRequestParams(request);
+
         URL url = new URL(request.getRestUrl());
         HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
         if (request.getRestUrl() != null && request.getRestUrl().toLowerCase().startsWith("https")) {
@@ -146,22 +121,7 @@ public class RestfulClient implements Requestor {
             httpConnection.setRequestProperty(property.getName(), property.getValue());
         }
 
-        // Read response content
-        BufferedReader reader = new BufferedReader(new InputStreamReader(httpConnection.getInputStream()));
-        StringBuffer sb = new StringBuffer();
-        String inputLine;
-        while ((inputLine = reader.readLine()) != null) {
-            sb.append(inputLine);
-        }
-        reader.close();
-
-        ResponseObject responseObject = new ResponseObject(sb.toString());
-        responseObject.setContentType(httpConnection.getContentType());
-        responseObject.setHeaderFields(httpConnection.getHeaderFields());
-
-        httpConnection.disconnect();
-
-        return responseObject;
+        return response(httpConnection);
     }
 
     private TrustManager[] getTrustManagers() {
@@ -206,5 +166,31 @@ public class RestfulClient implements Requestor {
             request.setRestUrl(request.getRestUrl() + (StringUtils.isEmpty(url.getQuery()) ? "?" : "&")
                     + paramString.toString());
         }
+    }
+
+    private ResponseObject response(HttpURLConnection conn) throws Exception {
+
+        if (conn == null) {
+            return null;
+        }
+
+        int statusCode = conn.getResponseCode();
+        StringBuffer sb = new StringBuffer();
+        try (InputStream inputStream = (statusCode >= 400) ? conn.getErrorStream() : conn.getInputStream();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+            String inputLine;
+            while ((inputLine = reader.readLine()) != null) {
+                sb.append(inputLine);
+            }
+        }
+
+        ResponseObject responseObject = new ResponseObject(sb.toString());
+        responseObject.setContentType(conn.getContentType());
+        responseObject.setHeaderFields(conn.getHeaderFields());
+        responseObject.setStatusCode(statusCode);
+
+        conn.disconnect();
+
+        return responseObject;
     }
 }
