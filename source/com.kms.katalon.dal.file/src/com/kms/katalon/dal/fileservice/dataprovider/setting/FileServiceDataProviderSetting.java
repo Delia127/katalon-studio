@@ -23,7 +23,7 @@ import com.kms.katalon.dal.fileservice.dataprovider.ImportFileServiceDataProvide
 import com.kms.katalon.dal.fileservice.dataprovider.ProjectFileServiceDataProvider;
 import com.kms.katalon.dal.fileservice.dataprovider.ReportFileServiceDataProvider;
 import com.kms.katalon.dal.fileservice.dataprovider.TestCaseFileServiceDataProvider;
-import com.kms.katalon.dal.fileservice.dataprovider.TestRunFileServiceDataProvider;
+import com.kms.katalon.dal.fileservice.dataprovider.TestSuiteCollectionFileServiceDataProvider;
 import com.kms.katalon.dal.fileservice.dataprovider.TestSuiteFileServiceDataProvider;
 import com.kms.katalon.dal.fileservice.dataprovider.WebElementFileServiceDataProvider;
 import com.kms.katalon.dal.setting.IDataProviderSetting;
@@ -111,7 +111,7 @@ public class FileServiceDataProviderSetting implements IDataProviderSetting {
 
     @Override
     public TestSuiteCollectionDataProvider getTestSuiteCollectionDataProvider() {
-        return new TestRunFileServiceDataProvider();
+        return new TestSuiteCollectionFileServiceDataProvider();
     }
 
     @Override

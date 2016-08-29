@@ -28,6 +28,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.ToolBar;
@@ -82,7 +83,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         createControls(parent);
         registerControlModifyListeners();
 
-        updateTestRun((TestSuiteCollectionEntity) mpart.getObject());
+        updateTestSuiteCollections((TestSuiteCollectionEntity) mpart.getObject());
     }
 
     private void registerEventListeners() {
@@ -92,19 +93,22 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         eventBroker.subscribe(EventConstants.TEST_SUITE_UPDATED, this);
     }
     
-    private IFileInfo getFileInfo(TestSuiteCollectionEntity testRun) {
-        return EFS.getLocalFileSystem().fromLocalFile(testRun.toFile()).fetchInfo();
+    private IFileInfo getFileInfo(TestSuiteCollectionEntity testSuiteCollection) {
+        return EFS.getLocalFileSystem().fromLocalFile(testSuiteCollection.toFile()).fetchInfo();
     }
 
-    private void updateTestRun(TestSuiteCollectionEntity testRun) {
-        originalTestSuite = testRun;
+    private void updateTestSuiteCollections(TestSuiteCollectionEntity testSuiteCollection) {
+        if (testSuiteCollection == null) {
+            close();
+        }
+        originalTestSuite = testSuiteCollection;
         cloneTestSuite = (TestSuiteCollectionEntity) originalTestSuite.clone();
-        
+        cloneTestSuite.reuseWrappers(originalTestSuite);
+
         mpart.setElementId(EntityPartUtil.getTestSuiteCollectionPartId(cloneTestSuite.getId()));
         mpart.setLabel(cloneTestSuite.getName());
         updateInput();
-        
-        
+
         lastModified = getFileInfo(originalTestSuite).getLastModified();
     }
 
@@ -124,6 +128,15 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
                 markDirty();
             }
         });
+
+        tableViewer.getTable().addListener(SWT.EraseItem, new Listener() {
+            
+            @Override
+            public void handleEvent(org.eclipse.swt.widgets.Event event) {
+                checkUpdated();
+            }
+        });
+        
     }
 
     private void createControls(Composite parent) {
@@ -253,7 +266,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
                 }
 
                 if (ObjectUtils.equals(originalTestSuite.getIdForDisplay(), objects[1])) {
-                    updateTestRun(originalTestSuite);
+                    updateTestSuiteCollections(originalTestSuite);
                 }
                 break;
             }
@@ -275,7 +288,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
                     return;
                 }
                 if (originalTestSuite.equals(objects[1])) {
-                    updateTestRun(originalTestSuite);
+                    updateTestSuiteCollections(originalTestSuite);
                 }
                 break;
             }
@@ -290,22 +303,27 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
 
     @Focus
     public void focus() {
+        checkUpdated();
+    }
+
+    private void checkUpdated() {
         if (lastModified != getFileInfo(originalTestSuite).getLastModified()) {
-            updateInput();
+            updateTestSuiteCollections(originalTestSuite);
         }
     }
 
     @Persist
     public void save() {
         TestSuiteCollectionEntity backup = (TestSuiteCollectionEntity) originalTestSuite.clone();
-        cloneTestSuite.reuseWrappers(originalTestSuite);
+        backup.reuseWrappers(originalTestSuite);
+        originalTestSuite.reuseWrappers(cloneTestSuite);
         try {
             TestSuiteCollectionController.getInstance().updateTestSuiteCollection(originalTestSuite);
-            updateTestRun(originalTestSuite);
+            updateTestSuiteCollections(originalTestSuite);
             mpart.setDirty(false);
         } catch (DALException e) {
             MultiStatusErrorDialog.showErrorDialog(e, StringConstants.PA_MSG_UNABLE_TO_UPDATE_TEST_SUITE_COLLECTION, e.getMessage());
-            backup.reuseWrappers(originalTestSuite);
+            originalTestSuite.reuseWrappers(backup);
         }
     }
 

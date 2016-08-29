@@ -12,6 +12,7 @@ import org.eclipse.e4.core.di.annotations.Creatable;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.constants.StringConstants;
+import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
@@ -21,6 +22,7 @@ import com.kms.katalon.entity.link.VariableLink;
 import com.kms.katalon.entity.link.VariableLink.VariableType;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
+import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.entity.util.Util;
 import com.kms.katalon.entity.variable.VariableEntity;
@@ -243,5 +245,17 @@ public class TestSuiteController extends EntityController {
 
     public void reloadTestSuite(TestSuiteEntity testSuite, Entity entity) throws Exception {
         entity = testSuite = getTestSuite(entity.getId());
+    }
+
+    public List<TestSuiteCollectionEntity> getTestSuiteCollectionReferences(TestSuiteEntity testSuite)
+            throws DALException {
+        return getDataProviderSetting().getTestSuiteCollectionDataProvider().getTestSuiteCollectionReferences(
+                testSuite, ProjectController.getInstance().getCurrentProject());
+    }
+
+    public void removeTestSuiteCollectionReferences(TestSuiteEntity testSuite,
+            List<TestSuiteCollectionEntity> testSuiteCollectionReferences) throws DALException {
+        getDataProviderSetting().getTestSuiteCollectionDataProvider().removeTestSuiteCollectionReferences(testSuite,
+                testSuiteCollectionReferences);
     }
 }
