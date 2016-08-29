@@ -10,6 +10,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -531,8 +532,12 @@ public class GroovyUtil {
     }
 
     public static List<ICompilationUnit> getAllGroovyClasses(IPackageFragment packageFragment)
-            throws JavaModelException {
-        List<ICompilationUnit> groovyClassFiles = new ArrayList<ICompilationUnit>();
+            throws CoreException {
+        if (packageFragment == null) {
+            return Collections.emptyList();
+        }
+        packageFragment.getResource().refreshLocal(IResource.DEPTH_ONE, new NullProgressMonitor());
+        List<ICompilationUnit> groovyClassFiles = new ArrayList<>();
         for (IJavaElement javaElement : packageFragment.getChildren()) {
             if (javaElement instanceof GroovyCompilationUnit) {
                 groovyClassFiles.add((GroovyCompilationUnit) javaElement);
