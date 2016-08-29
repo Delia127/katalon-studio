@@ -81,8 +81,9 @@ public class RenameTestObjectHandler {
                         return;
                     }
 
-                    eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, webElementTreeEntity.getParent());
+                    eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, webElementTreeEntity.getParent());
                     eventBroker.post(EventConstants.TEST_OBJECT_UPDATED, new Object[] { pk, webElement });
+                    eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, webElementTreeEntity);
                 }
             }
         } catch (Exception e) {

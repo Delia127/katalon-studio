@@ -120,6 +120,8 @@ public class RenameFolderHandler {
                             if (folderTreeEntity.getParent() != null) {
                                 eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY,
                                         folderTreeEntity.getParent());
+                                eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM,
+                                        folderTreeEntity);
                             }
 
                             partService.saveAll(false);

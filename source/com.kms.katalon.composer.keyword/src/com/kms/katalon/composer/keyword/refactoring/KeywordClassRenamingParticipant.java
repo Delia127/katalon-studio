@@ -31,7 +31,7 @@ public class KeywordClassRenamingParticipant extends RenameParticipant {
 		if (element instanceof ICompilationUnit) {
 			ICompilationUnit unit = (ICompilationUnit) element;
 			String filePath = unit.getResource().getRawLocation().toString();
-			if (GroovyUtil.isKeywordFile(filePath, ProjectController.getInstance().getCurrentProject())) {
+			if (GroovyUtil.isKeywordFile(filePath, getProjectEntity())) {
 				keywordClass = unit;
 				return true;
 			}
@@ -62,27 +62,29 @@ public class KeywordClassRenamingParticipant extends RenameParticipant {
 				+ arguments.getNewName()).replace(GroovyConstants.GROOVY_FILE_EXTENSION, "");		
 		
 		updateReferences(oldClassQualifier, newClassQualifier);
-		
+
+        try {
+            EventBrokerSingleton.getInstance().getEventBroker().send(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, 
+                    new FolderTreeEntity(FolderController.getInstance().getKeywordRoot(getProjectEntity()), null));
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        } 
 		return null;
 	}
 	
-	public static void updateReferences(String oldClassQualifier, String newClassQualifier) {
-	    String oldScript = GroovyConstants.CUSTOM_KEYWORD_LIB_FILE_NAME + ".'" + oldClassQualifier + ".";
+    public static void updateReferences(String oldClassQualifier, String newClassQualifier) {
+        String oldScript = GroovyConstants.CUSTOM_KEYWORD_LIB_FILE_NAME + ".'" + oldClassQualifier + ".";
         String newScript = GroovyConstants.CUSTOM_KEYWORD_LIB_FILE_NAME + ".'" + newClassQualifier + ".";
         try {
-            ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
-            GroovyRefreshUtil.updateScriptReferencesInTestCaseAndCustomScripts(oldScript, newScript, projectEntity);
-            try {
-                PartServiceSingleton.getInstance().getPartService().saveAll(false);
-            } catch (IllegalStateException ex) {
-                
-            }
-            
-            EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, 
-                    new FolderTreeEntity(FolderController.getInstance().getKeywordRoot(projectEntity), null));          
+            GroovyRefreshUtil.updateScriptReferencesInTestCaseAndCustomScripts(oldScript, newScript, getProjectEntity());
+            PartServiceSingleton.getInstance().getPartService().saveAll(false);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
-	}
+    }
+
+    private static ProjectEntity getProjectEntity() {
+        return ProjectController.getInstance().getCurrentProject();
+    }
 
 }
