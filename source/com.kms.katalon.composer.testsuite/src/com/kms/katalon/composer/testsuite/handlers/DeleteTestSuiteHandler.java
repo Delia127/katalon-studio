@@ -1,34 +1,33 @@
 package com.kms.katalon.composer.testsuite.handlers;
 
-import javax.inject.Inject;
+import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.e4.ui.model.application.MApplication;
-import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
-import com.kms.katalon.composer.explorer.handlers.deletion.IDeleteEntityHandler;
+import com.kms.katalon.composer.explorer.handlers.deletion.AbstractDeleteReferredEntityHandler;
 import com.kms.katalon.composer.testsuite.constants.StringConstants;
+import com.kms.katalon.composer.testsuite.dialogs.TestSuiteReferencesDialog;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.TestSuiteController;
+import com.kms.katalon.dal.exception.DALException;
+import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
-public class DeleteTestSuiteHandler implements IDeleteEntityHandler {
+public class DeleteTestSuiteHandler extends AbstractDeleteReferredEntityHandler {
 
-    @Inject
-    IEventBroker eventBroker;
+    private static TestSuiteController testSuiteController = TestSuiteController.getInstance();
 
-    @Inject
-    MApplication application;
-
-    @Inject
-    EModelService modelService;
+    @Override
+    public Class<? extends ITreeEntity> entityType() {
+        return TestSuiteTreeEntity.class;
+    }
 
     @Override
     public boolean execute(ITreeEntity treeEntity, IProgressMonitor monitor) {
@@ -41,17 +40,13 @@ public class DeleteTestSuiteHandler implements IDeleteEntityHandler {
             monitor.beginTask(taskName, 1);
 
             TestSuiteEntity testSuite = (TestSuiteEntity) treeEntity.getObject();
-
-            // remove TestSuite part from its partStack if it exists
-            EntityPartUtil.closePart(testSuite);
-
-            TestSuiteController.getInstance().deleteTestSuite(testSuite);
+            performDeleteTestSuite(testSuite);
 
             eventBroker.post(EventConstants.EXPLORER_DELETED_SELECTED_ITEM, testSuite.getIdForDisplay());
             return true;
         } catch (Exception e) {
             LoggerSingleton.logError(e);
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
+            MessageDialog.openError(getActiveShell(), StringConstants.ERROR_TITLE,
                     StringConstants.HAND_ERROR_MSG_UNABLE_TO_DEL_TEST_SUITE);
             return false;
         } finally {
@@ -59,8 +54,51 @@ public class DeleteTestSuiteHandler implements IDeleteEntityHandler {
         }
     }
 
-    @Override
-    public Class<? extends ITreeEntity> entityType() {
-        return TestSuiteTreeEntity.class;
+    protected boolean performDeleteTestSuite(TestSuiteEntity testSuite) throws Exception {
+        if (testSuite == null) {
+            return false;
+        }
+
+        if (!isDeleteReferenceConfirmed(testSuite)) {
+            return false;
+        }
+        // remove TestSuite part from its partStack if it exists
+        EntityPartUtil.closePart(testSuite);
+
+        testSuiteController.deleteTestSuite(testSuite);
+        return true;
+    }
+
+    private boolean isDeleteReferenceConfirmed(final TestSuiteEntity testSuite) throws DALException {
+        final List<TestSuiteCollectionEntity> affectedTestSuites = testSuiteController.getTestSuiteCollectionReferences(testSuite);
+        if (affectedTestSuites.isEmpty()) {
+            return true;
+        }
+        if (isDefaultResponse()) {
+            sync.syncExec(new Runnable() {
+
+                @Override
+                public void run() {
+
+                    TestSuiteReferencesDialog dialog = new TestSuiteReferencesDialog(getActiveShell(),
+                            testSuite.getIdForDisplay(), affectedTestSuites, needYesNoToAllButtons());
+                    setResponse(dialog.open());
+                }
+            });
+        }
+
+        if (isCancelResponse()) {
+            return false;
+        }
+
+        if (isYesResponse()) {
+            // remove test suite collection references in test suite
+            testSuiteController.removeTestSuiteCollectionReferences(testSuite, affectedTestSuites);
+        }
+        return true;
+    }
+
+    private Shell getActiveShell() {
+        return Display.getCurrent().getActiveShell();
     }
 }

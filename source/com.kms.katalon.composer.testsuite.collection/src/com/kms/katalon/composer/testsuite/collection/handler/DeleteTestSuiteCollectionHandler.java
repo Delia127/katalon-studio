@@ -29,13 +29,13 @@ public class DeleteTestSuiteCollectionHandler implements IDeleteEntityHandler {
             String taskName = "Deleting " + treeEntity.getTypeName() + " '" + treeEntity.getText() + "'...";
             monitor.beginTask(taskName, 1);
 
-            TestSuiteCollectionEntity testRun = (TestSuiteCollectionEntity) treeEntity.getObject();
+            TestSuiteCollectionEntity testSuiteCollection = (TestSuiteCollectionEntity) treeEntity.getObject();
 
-            EntityPartUtil.closePart(testRun);
+            EntityPartUtil.closePart(testSuiteCollection);
 
-            TestSuiteCollectionController.getInstance().deleteTestSuiteCollection(testRun);
+            TestSuiteCollectionController.getInstance().deleteTestSuiteCollection(testSuiteCollection);
 
-            eventBroker.post(EventConstants.EXPLORER_DELETED_SELECTED_ITEM, testRun.getIdForDisplay());
+            eventBroker.post(EventConstants.EXPLORER_DELETED_SELECTED_ITEM, testSuiteCollection.getIdForDisplay());
             return true;
         } catch (Exception e) {
             LoggerSingleton.logError(e);

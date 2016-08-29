@@ -6,9 +6,12 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.kms.katalon.dal.TestSuiteCollectionDataProvider;
+import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.dal.fileservice.EntityService;
 import com.kms.katalon.dal.fileservice.FileServiceConstant;
 import com.kms.katalon.dal.fileservice.constants.StringConstants;
+import com.kms.katalon.dal.fileservice.dataprovider.setting.FileServiceDataProviderSetting;
 import com.kms.katalon.dal.state.DataProviderState;
 import com.kms.katalon.entity.dal.exception.DuplicatedFileNameException;
 import com.kms.katalon.entity.file.FileEntity;
@@ -38,13 +41,22 @@ public class TestSuiteFileServiceManager {
         validateData(testSuite);
         testSuite = resetParentForChildElement(testSuite);
         // testSuite.setDateModified(new Date(System.currentTimeMillis()));
-        if (nameChanged(testSuite)) {
+        boolean nameChanged = nameChanged(testSuite);
+        if (nameChanged) {
             // Remove old name in cache, it will be added again when saving
             EntityService.getInstance().getEntityCache().remove(testSuite, true);
         }
         EntityService.getInstance().saveEntity(testSuite);
+        if (nameChanged) {
+            updateTestSuiteReferences(testSuite);
+        }
         FolderFileServiceManager.refreshFolder(testSuite.getParentFolder());
         return testSuite;
+    }
+
+    private static void updateTestSuiteReferences(TestSuiteEntity testSuite) throws DALException {
+        TestSuiteCollectionDataProvider tsCollectionDataProvider = new FileServiceDataProviderSetting().getTestSuiteCollectionDataProvider();
+        tsCollectionDataProvider.updateTestSuiteCollectionReferences(testSuite, testSuite.getProject());
     }
 
     /**
@@ -113,7 +125,12 @@ public class TestSuiteFileServiceManager {
 
     public static TestSuiteEntity moveTestSuite(TestSuiteEntity testSuite, FolderEntity destinationFolder)
             throws Exception {
-        return EntityFileServiceManager.move(testSuite, destinationFolder);
+        //Maybe the testSuite parameter is cloned from the real, so we need to get the real one from system.
+        TestSuiteEntity cachedTestSuite = (TestSuiteEntity) EntityService.getInstance().getEntityByPath(
+                testSuite.getId());
+        cachedTestSuite = EntityFileServiceManager.move(cachedTestSuite, destinationFolder);
+        updateTestSuiteReferences(cachedTestSuite);
+        return cachedTestSuite;
     }
 
     public static TestSuiteEntity getTestSuiteByName(FolderEntity parentFolder, String testSuiteName) throws Exception {

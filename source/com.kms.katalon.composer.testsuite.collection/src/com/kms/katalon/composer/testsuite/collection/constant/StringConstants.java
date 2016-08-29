@@ -47,4 +47,9 @@ public class StringConstants extends GlobalStringConstants {
     public static final String JOB_TASK_BUILDING_LAUNCHER = "Building launcher for ''{0}''";
     public static final String JOB_MSG_EMPTY_TEST_SUITE = "Test suite ''{0}'' has no test case to execute. Please check again.";
     public static final String JOB_MSG_UNABLE_TO_EXECUTE_TEST_SUITE = "Unable to executed test suite ''{0}''";
+
+    //DeleteTestSuiteFolderHandler
+    public static final String HAND_JOB_DELETING_ENTITY = "Deleting ''{0}''...";
+
+    public static final String HAND_JOB_DELETING_FOLDER = "Deleting folder: ''{0}''...";
 }
