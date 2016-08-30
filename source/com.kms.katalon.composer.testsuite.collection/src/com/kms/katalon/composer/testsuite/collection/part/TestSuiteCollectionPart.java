@@ -218,6 +218,8 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
 
         tableViewer.setContentProvider(new ArrayContentProvider());
         DefaultTableColumnViewerEditor.create(tableViewer);
+
+        tableViewer.enableTooltipSupport();
     }
 
     @Override

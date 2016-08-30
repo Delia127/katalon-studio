@@ -23,4 +23,6 @@ public interface CustomColumnViewer {
     ViewerRow getViewerRowFromWidgetItem(Widget item);
 
     TypeCheckedStyleCellLabelProvider<?> getCellLabelProvider(int columnIndex);
+    
+    void enableTooltipSupport();
 }
