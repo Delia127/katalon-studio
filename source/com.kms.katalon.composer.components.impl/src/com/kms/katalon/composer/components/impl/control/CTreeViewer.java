@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.components.impl.control;
 
+import org.apache.commons.lang.StringUtils;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerRow;
 import org.eclipse.swt.widgets.Composite;
@@ -31,5 +33,11 @@ public class CTreeViewer extends TreeViewer implements CustomColumnViewer {
     @Override
     public TypeCheckedStyleCellLabelProvider<?> getCellLabelProvider(int columnIndex) {
         return new CellLayoutColumnViewerHelper(this).getCellLabelProvider(columnIndex);
+    }
+
+    @Override
+    public void enableTooltipSupport() {
+        getTree().setToolTipText(StringUtils.EMPTY);
+        ColumnViewerToolTipSupport.enableFor(this);
     }
 }

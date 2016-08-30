@@ -80,4 +80,9 @@ public class TestSuiteRunConfigLabelProvider extends TypeCheckStyleCellTableLabe
         }
     }
 
+    @Override
+    protected String getElementToolTipText(TestSuiteRunConfiguration element) {
+        return getText(element);
+    }
+
 }
