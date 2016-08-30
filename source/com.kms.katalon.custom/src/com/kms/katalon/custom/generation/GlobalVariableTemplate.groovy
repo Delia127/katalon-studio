@@ -26,12 +26,12 @@ import groovy.transform.CompileStatic
  */
 <% if (deprecatedFlag) { %>@Deprecated<% } %>
 @CompileStatic
-class GlobalVariable {
+public class GlobalVariable {
 	<% globalVariables.each { %> 
     /**
      * <p><%= GlobalVariableTemplate.escapeHtmlForJavadoc(it.getDescription()) %></p>
      */
-	public static final Object <%= it.getName() %> = <%= it.getInitValue() %>
+	public static Object <%= it.getName() %> = <%= it.getInitValue() %>
 	<% } %> 
 }
 """
