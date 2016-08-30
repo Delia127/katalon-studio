@@ -105,4 +105,7 @@ public class StringConstants extends GlobalStringConstants {
 
     //FunctionsIntroductionDialog
     public static final String DIA_TITLE_FUNCTIONS_INTRODUCTION = "Functions Introduction";
+    
+    //Application
+    public static final String ERR_CONSOLE_MODE = "Unable to execute in console mode";
 }

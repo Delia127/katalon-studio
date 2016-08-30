@@ -54,7 +54,6 @@ import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.impl.dialogs.AddMailRecipientDialog;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
-import com.kms.katalon.composer.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.util.MobileDeviceUIProvider;
 import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
@@ -72,6 +71,7 @@ import com.kms.katalon.execution.collector.ConsoleOptionCollector;
 import com.kms.katalon.execution.collector.RunConfigurationCollector;
 import com.kms.katalon.execution.console.ConsoleMain;
 import com.kms.katalon.execution.console.entity.OsgiConsoleOptionContributor;
+import com.kms.katalon.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.execution.entity.DefaultRerunSetting;
 import com.kms.katalon.execution.entity.EmailConfig;
 import com.kms.katalon.execution.entity.ReportLocationSetting;
@@ -192,7 +192,7 @@ public class GenerateCommandDialog extends AbstractDialog {
         this.project = project;
         defaultOutputReportLocation = projectLocation() + File.separator + StringConstants.ROOT_FOLDER_NAME_REPORT;
 
-        ScopedPreferenceStore prefs = getPreferenceStore(GenerateCommandDialog.class);
+        ScopedPreferenceStore prefs = getPreferenceStore(ExecutionPreferenceConstants.EXECUTION_QUALIFIER);
         boolean isSendAttachmentPrefEnabled = prefs.getBoolean(ExecutionPreferenceConstants.MAIL_CONFIG_ATTACHMENT);
         if (isSendAttachmentPrefEnabled) {
             preferenceRecipients = prefs.getString(ExecutionPreferenceConstants.MAIL_CONFIG_REPORT_RECIPIENTS);

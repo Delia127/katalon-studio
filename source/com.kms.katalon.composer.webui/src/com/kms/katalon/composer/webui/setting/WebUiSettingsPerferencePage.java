@@ -21,7 +21,6 @@ import org.eclipse.swt.widgets.Text;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.webui.constants.StringConstants;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.controller.TestEnvironmentController;
 import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
 
 public class WebUiSettingsPerferencePage extends PreferencePage {
@@ -32,6 +31,10 @@ public class WebUiSettingsPerferencePage extends PreferencePage {
     private Composite fieldEditorParent;
 
     private Button radioNotUsePageLoadTimeout, radioUsePageLoadTimeout, chckIgnorePageLoadTimeoutException;
+    
+    public static final short PAGELOAD_TIMEOUT_MIN_VALUE = 0; 
+    
+    public static final short PAGELOAD_TIMEOUT_MAX_VALUE = 9999;
 
     public WebUiSettingsPerferencePage() {
         store = new WebUiExecutionSettingStore(ProjectController.getInstance().getCurrentProject());
@@ -153,8 +156,8 @@ public class WebUiSettingsPerferencePage extends PreferencePage {
             if (!isIntegerTextValid(integerText)) {
                 setErrorMessage(MessageFormat.format(   
                         com.kms.katalon.composer.execution.constants.StringConstants.PREF_ERROR_MSG_VAL_MUST_BE_AN_INT_BETWEEN_X_Y,
-                        TestEnvironmentController.getInstance().getPageLoadTimeOutMinimumValue(),
-                        TestEnvironmentController.getInstance().getPageLoadTimeOutMaximumValue()));
+                        PAGELOAD_TIMEOUT_MIN_VALUE,
+                        PAGELOAD_TIMEOUT_MAX_VALUE));
                 getApplyButton().setEnabled(false);
                 return;
             }
@@ -168,8 +171,8 @@ public class WebUiSettingsPerferencePage extends PreferencePage {
             }
             try {
                 int value = Integer.parseInt(integerText.getText());
-                return (value >= TestEnvironmentController.getInstance().getPageLoadTimeOutMinimumValue()
-                        && value <= TestEnvironmentController.getInstance().getPageLoadTimeOutMaximumValue());
+                return (value >= PAGELOAD_TIMEOUT_MIN_VALUE
+                        && value <= PAGELOAD_TIMEOUT_MAX_VALUE);
             } catch (NumberFormatException e) {
                 return false;
             }

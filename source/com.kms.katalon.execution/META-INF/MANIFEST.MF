@@ -24,6 +24,7 @@ Export-Package: com.kms.katalon.execution.classpath,
  com.kms.katalon.execution.launcher.process,
  com.kms.katalon.execution.launcher.result,
  com.kms.katalon.execution.logging,
+ com.kms.katalon.execution.preferences,
  com.kms.katalon.execution.setting,
  com.kms.katalon.execution.util
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
@@ -62,5 +63,6 @@ Require-Bundle: org.eclipse.e4.core.contexts,
  net.sf.jopt-simple.jopt-simple,
  com.kms.katalon.logging,
  com.kms.katalon.core.appium,
- org.eclipse.core.commands
+ org.eclipse.core.commands,
+ org.eclipse.jface
 Bundle-Activator: com.kms.katalon.execution.addon.ExecutionBundleActivator

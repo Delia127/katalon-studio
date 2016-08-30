@@ -25,9 +25,9 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.preferences.editor.MultiLineStringFieldEditor;
+import com.kms.katalon.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.execution.entity.EmailConfig;
 import com.kms.katalon.execution.util.MailUtil;
 import com.kms.katalon.execution.util.MailUtil.MailSecurityProtocolType;
@@ -44,7 +44,7 @@ public class MailPreferencePage extends FieldEditorPreferencePage {
 
     public MailPreferencePage() {
         super();
-        setPreferenceStore(PreferenceStoreManager.getPreferenceStore(MailPreferencePage.class));
+        setPreferenceStore(PreferenceStoreManager.getPreferenceStore(ExecutionPreferenceConstants.EXECUTION_QUALIFIER));
     }
 
     @Override

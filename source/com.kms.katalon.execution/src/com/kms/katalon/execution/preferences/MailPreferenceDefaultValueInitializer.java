@@ -1,10 +1,10 @@
-package com.kms.katalon.composer.execution.preferences;
+package com.kms.katalon.execution.preferences;
 
 import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 
-import com.kms.katalon.composer.execution.constants.ExecutionPreferenceConstants;
+import com.kms.katalon.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.execution.util.MailUtil;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
@@ -25,7 +25,7 @@ public class MailPreferenceDefaultValueInitializer extends AbstractPreferenceIni
 
     @Override
     public void initializeDefaultPreferences() {
-        ScopedPreferenceStore store = getPreferenceStore(MailPreferenceDefaultValueInitializer.class);
+        ScopedPreferenceStore store = getPreferenceStore(ExecutionPreferenceConstants.EXECUTION_QUALIFIER);
         store.setDefault(ExecutionPreferenceConstants.MAIL_CONFIG_HOST, MAIL_CONFIG_HOST_DEFAULT_VALUE);
         store.setDefault(ExecutionPreferenceConstants.MAIL_CONFIG_SECURITY_PROTOCOL,
                 MAIL_CONFIG_SECURITY_PROTOCOL_DEFAULT_VALUE);

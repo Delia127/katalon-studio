@@ -10,10 +10,10 @@ import org.eclipse.e4.ui.model.application.ui.menu.MToolItem;
 
 import com.kms.katalon.composer.components.application.ApplicationSingleton;
 import com.kms.katalon.composer.components.services.ModelServiceSingleton;
-import com.kms.katalon.composer.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.composer.execution.menu.ExecutionHandledMenuItem;
-import com.kms.katalon.composer.execution.preferences.ExecutionPreferenceDefaultValueInitializer;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.execution.constants.ExecutionPreferenceConstants;
+import com.kms.katalon.execution.preferences.ExecutionPreferenceDefaultValueInitializer;
 
 public class ComposerExecutionUtil {
 
@@ -21,7 +21,7 @@ public class ComposerExecutionUtil {
      * Update default label for Run drop-down item
      */
     public static void updateDefaultLabelForRunDropDownItem() {
-        String defaultItemLabel = getPreferenceStore(ComposerExecutionUtil.class).getString(
+        String defaultItemLabel = getPreferenceStore(ExecutionPreferenceConstants.EXECUTION_QUALIFIER).getString(
                 ExecutionPreferenceConstants.EXECUTION_DEFAULT_CONFIGURATION);
         if (isBlank(defaultItemLabel)) {
             defaultItemLabel = ExecutionPreferenceDefaultValueInitializer.EXECUTION_DEFAULT_RUN_CONFIGURATION;
@@ -36,14 +36,21 @@ public class ComposerExecutionUtil {
      * @param defaultItemLabel Menu Item label
      */
     public static void updateDefaultLabelForRunDropDownItem(String defaultItemLabel) {
-        MToolItem runToolItem = (MToolItem) ModelServiceSingleton.getInstance().getModelService()
+        MToolItem runToolItem = (MToolItem) ModelServiceSingleton.getInstance()
+                .getModelService()
                 .find(IdConstants.RUN_TOOL_ITEM_ID, ApplicationSingleton.getInstance().getApplication());
-        if (runToolItem == null) return;
+        if (runToolItem == null) {
+            return;
+        }
 
         final MMenu menu = runToolItem.getMenu();
-        if (menu == null || menu.getChildren() == null || menu.getChildren().isEmpty()) return;
+        if (menu == null || menu.getChildren() == null || menu.getChildren().isEmpty()) {
+            return;
+        }
 
-        if (isBlank(defaultItemLabel)) return;
+        if (isBlank(defaultItemLabel)) {
+            return;
+        }
 
         // Set new default label
         for (MMenuElement item : menu.getChildren()) {

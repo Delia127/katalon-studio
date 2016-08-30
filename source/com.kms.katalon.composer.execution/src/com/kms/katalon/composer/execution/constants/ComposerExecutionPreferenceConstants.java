@@ -1,10 +1,7 @@
 package com.kms.katalon.composer.execution.constants;
 
-import com.kms.katalon.constants.PreferenceConstants;
 
-public interface ExecutionPreferenceConstants extends PreferenceConstants {
-    public static final String EXECUTION_NOTIFY_AFTER_EXECUTING = "execution.notifyAfterExecuting";
-
+public interface ComposerExecutionPreferenceConstants {
     public static final String EXECUTION_SHOW_ALL_LOGS = "log.showAll";
 
     public static final String EXECUTION_SHOW_INFO_LOGS = "log.showInfo";

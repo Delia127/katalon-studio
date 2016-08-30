@@ -12,7 +12,7 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.ui.menu.MDirectMenuItem;
 
-import com.kms.katalon.composer.execution.constants.ExecutionPreferenceConstants;
+import com.kms.katalon.composer.execution.constants.ComposerExecutionPreferenceConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
@@ -27,7 +27,7 @@ public class WrapMessageLogHandler {
             ScopedPreferenceStore store = getPreferenceStore(WrapMessageLogHandler.class);
             switch (item.getElementId()) {
                 case IdConstants.LOG_VIEWER_MENU_ITEM_WORD_WRAP: {
-                    store.setValue(ExecutionPreferenceConstants.EXECUTION_ENABLE_WORD_WRAP, item.isSelected());
+                    store.setValue(ComposerExecutionPreferenceConstants.EXECUTION_ENABLE_WORD_WRAP, item.isSelected());
                     break;
                 }
                 default:

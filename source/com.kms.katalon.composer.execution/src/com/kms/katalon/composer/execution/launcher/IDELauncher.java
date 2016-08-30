@@ -22,7 +22,6 @@ import org.eclipse.e4.ui.workbench.UIEvents;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
@@ -31,6 +30,7 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
+import com.kms.katalon.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.launcher.ReportableLauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
@@ -151,7 +151,7 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener, 
             eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, null);
 
             // Open report by setting
-            ScopedPreferenceStore store = getPreferenceStore(IDELauncher.class);
+            ScopedPreferenceStore store = getPreferenceStore(ExecutionPreferenceConstants.EXECUTION_QUALIFIER);
             if (store.getBoolean(ExecutionPreferenceConstants.EXECUTION_OPEN_REPORT_AFTER_EXECUTING)) {
                 eventBroker.post(EventConstants.REPORT_OPEN, report);
             }

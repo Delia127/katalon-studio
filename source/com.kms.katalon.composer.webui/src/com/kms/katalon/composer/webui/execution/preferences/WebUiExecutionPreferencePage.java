@@ -53,15 +53,18 @@ public class WebUiExecutionPreferencePage extends PreferencePage {
 
     @Override
     protected void performDefaults() {
-        if (fieldEditorParent == null) {
+        if (fieldEditorParent == null || txtWaitForIEHanging == null) {
             return;
         }
-        super.performDefaults();
+        txtWaitForIEHanging.setText(Integer.toString(getPreferenceStore().getDefaultInt(
+                PreferenceConstants.WEBUI_EXECUTION_WAIT_FOR_IE_HANGING)));
     }
 
     @Override
     protected void performApply() {
-        if (fieldEditorParent == null) return;
+        if (fieldEditorParent == null) {
+            return;
+        }
 
         if (txtWaitForIEHanging != null) {
             getPreferenceStore().setValue(PreferenceConstants.WEBUI_EXECUTION_WAIT_FOR_IE_HANGING,

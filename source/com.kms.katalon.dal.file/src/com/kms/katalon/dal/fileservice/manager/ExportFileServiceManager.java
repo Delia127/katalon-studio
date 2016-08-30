@@ -1,7 +1,5 @@
 package com.kms.katalon.dal.fileservice.manager;
 
-import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
@@ -44,7 +42,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.core.ast.GroovyParser;
 import com.kms.katalon.core.ast.RequireAstTestStepTransformation;
 import com.kms.katalon.core.export.ExportTestCaseHelper;
@@ -59,7 +56,6 @@ import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.execution.webui.driver.SeleniumWebDriverProvider;
 import com.kms.katalon.groovy.constant.GroovyConstants;
 import com.kms.katalon.groovy.util.GroovyUtil;
-import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class ExportFileServiceManager {
     private int progress;
@@ -211,16 +207,12 @@ public class ExportFileServiceManager {
         return exportProjectLocation.getAbsolutePath() + File.separator + driverPath;
     }
 
-    private static ScopedPreferenceStore getStore() {
-        return getPreferenceStore(PreferenceConstants.EXECUTION_QUALIFIER);
-    }
-
     private String getDefaultDriver() {
-        return getStore().getString(PreferenceConstants.EXECUTION_DEFAULT_CONFIGURATION);
+        return "Firefox";
     }
 
     public static int getDefaultPageLoadTimeout() {
-        return getStore().getInt(PreferenceConstants.EXECUTION_DEFAULT_TIMEOUT);
+        return 30;
     }
 
     public void convertScriptFile(File file, File exportProjectFolder) throws IOException, Exception {
