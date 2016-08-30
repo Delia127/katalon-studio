@@ -1,8 +1,5 @@
 package com.kms.katalon.core.application;
 
-import static org.eclipse.ui.PlatformUI.getPreferenceStore;
-
-import java.io.File;
 import java.util.Map;
 
 import joptsimple.OptionParser;
@@ -18,12 +15,11 @@ import org.osgi.framework.BundleException;
 
 import com.kms.katalon.addons.MacOSAddon;
 import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.constants.PreferenceConstants;
-import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.execution.console.ConsoleMain;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
 import com.kms.katalon.util.ActivationInfoCollector;
 import com.kms.katalon.util.ApplicationInfo;
+import com.kms.katalon.util.ApplicationSession;
 
 /**
  * This class controls all aspects of the application's execution
@@ -41,6 +37,7 @@ public class Application implements IApplication {
      * @see org.eclipse.equinox.app.IApplication#start(org.eclipse.equinox.app.
      * IApplicationContext)
      */
+    @Override
     public Object start(IApplicationContext context) {
         if (!activeLoggingBundle()) {
             return IApplication.EXIT_OK;
@@ -67,6 +64,7 @@ public class Application implements IApplication {
     }
 
     private void preRunInit() {
+        ApplicationSession.clean();
         MacOSAddon.initDefaultJRE();
         ApplicationInfo.setAppInfoIntoUserHomeDir();
     }
@@ -108,7 +106,7 @@ public class Application implements IApplication {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            clearSession();
+            ApplicationSession.close();
             display.dispose();
         }
         return PlatformUI.RETURN_OK;
@@ -122,37 +120,25 @@ public class Application implements IApplication {
         if (!options.has(RUN_MODE_OPTION)) {
             return RunningModeParam.GUI;
         }
-        if (RUN_MODE_OPTION_CONSOLE.equals((String) options.valueOf(RUN_MODE_OPTION))) {
+        if (RUN_MODE_OPTION_CONSOLE.equals(options.valueOf(RUN_MODE_OPTION))) {
             return RunningModeParam.CONSOLE;
         }
         return RunningModeParam.INVALID;
-    }
-
-    private void clearSession() {
-        if (getPreferenceStore().getBoolean(PreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION)) {
-            return;
-        }
-        // Clear workbench layout
-        File workbenchXmi = new File(Platform.getLocation().toString()
-                + "/.metadata/.plugins/org.eclipse.e4.workbench/workbench.xmi");
-        if (workbenchXmi.exists()) {
-            workbenchXmi.delete();
-        }
-
-        // Clear working state of recent projects
-        ProjectController.getInstance().clearWorkingStateOfRecentProjects();
     }
 
     /*
      * (non-Javadoc)
      * @see org.eclipse.equinox.app.IApplication#stop()
      */
+    @Override
     public void stop() {
-        if (!PlatformUI.isWorkbenchRunning())
+        if (!PlatformUI.isWorkbenchRunning()) {
             return;
+        }
         final IWorkbench workbench = PlatformUI.getWorkbench();
         final Display display = workbench.getDisplay();
         display.syncExec(new Runnable() {
+            @Override
             public void run() {
                 if (!display.isDisposed())
                     workbench.close();

@@ -1,9 +1,6 @@
 package com.kms.katalon.composer.explorer.parts;
 
-import static com.kms.katalon.composer.components.impl.util.TreeEntityUtil.getTreeEntityIds;
-import static com.kms.katalon.composer.components.log.LoggerSingleton.logError;
 import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
-import static org.eclipse.ui.PlatformUI.getPreferenceStore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +20,6 @@ import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
-import org.eclipse.e4.ui.di.PersistState;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -69,7 +65,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IWorkbenchCommandConstants;
-import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.impl.control.CTreeViewer;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
@@ -98,10 +93,8 @@ import com.kms.katalon.composer.explorer.providers.TreeEntityDropListener;
 import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
-import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 @SuppressWarnings("restriction")
@@ -252,6 +245,7 @@ public class ExplorerPart {
         getViewer().setLabelProvider(entityLabelProvider);
 
         getViewer().addSelectionChangedListener(new ISelectionChangedListener() {
+            @Override
             public void selectionChanged(SelectionChangedEvent event) {
                 if (selectionService != null) {
                     selectionService.setSelection(((IStructuredSelection) event.getSelection()).toArray());
@@ -555,6 +549,9 @@ public class ExplorerPart {
                 getViewer().setSelection(new TreeSelection(dataProvider.getTreePath(treeEntities.get(0))), true);
             }
 
+            // --- IMPORTANT for saving and restore session ---
+            part.getTransientData().put(CTreeViewer.class.getSimpleName(), treeViewer);
+            // --- END ---
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
@@ -711,6 +708,7 @@ public class ExplorerPart {
         List<Transfer> treeEntityTransfers = TransferTypeCollection.getInstance().getTreeEntityTransfer();
         dragSource.setTransfer(treeEntityTransfers.toArray(new Transfer[treeEntityTransfers.size()]));
         dragSource.addDragListener(new DragSourceListener() {
+            @Override
             public void dragStart(DragSourceEvent event) {
                 TreeItem[] selection = getViewer().getTree().getSelection();
                 if (selection.length > 0) {
@@ -736,6 +734,7 @@ public class ExplorerPart {
                 }
             };
 
+            @Override
             public void dragSetData(DragSourceEvent event) {
                 TreeItem[] selection = getViewer().getTree().getSelection();
                 List<ITreeEntity> treeEntity = new ArrayList<ITreeEntity>();
@@ -745,6 +744,7 @@ public class ExplorerPart {
                 event.data = treeEntity.toArray(new ITreeEntity[treeEntity.size()]);
             }
 
+            @Override
             public void dragFinished(DragSourceEvent event) {
             }
         });
@@ -780,98 +780,4 @@ public class ExplorerPart {
         treeViewer.getTree().dispose();
     }
 
-    /**
-     * Restore saved state from last opened session.
-     * 
-     * @see #saveExplorerState()
-     */
-    @Inject
-    @Optional
-    private void restorePersistedState() {
-        if (isNotAutoRestoreSession()) {
-            return;
-        }
-        eventBroker.subscribe(EventConstants.PROJECT_OPENED, new EventHandler() {
-
-            @Override
-            public void handleEvent(org.osgi.service.event.Event event) {
-                try {
-                    ProjectEntity project = ProjectController.getInstance().getRecentProjects().get(0);
-                    restoreExplorerState(project.getRecentExpandedTreeEntityIds());
-                    restoreOpenedEntitiesState(project.getRecentOpenedTreeEntityIds());
-                } catch (Exception e) {
-                    LoggerSingleton.logError(e);
-                }
-            }
-        });
-    }
-
-    /**
-     * Restore Tests Explorer state from last opened session
-     * 
-     * @see #saveExplorerState()
-     * @param expandedTreeEntityIds
-     * @throws Exception
-     */
-    private void restoreExplorerState(List<String> expandedTreeEntityIds) throws Exception {
-        getViewer().getControl().setRedraw(false);
-        getViewer().setExpandedElements(TreeEntityUtil.getExpandedTreeEntitiesFromIds(expandedTreeEntityIds).toArray());
-        getViewer().getControl().setRedraw(true);
-    }
-
-    /**
-     * Restore opened entities from last session.
-     * 
-     * @see com.kms.katalon.composer.project.handlers.CloseProjectHandler#saveOpenedEntitiesState()
-     * @param openedEntityIds
-     * @throws Exception
-     */
-    private void restoreOpenedEntitiesState(List<String> openedEntityIds) throws Exception {
-        // Need to activate ExplorerPart before open any entity
-        partService.activate(part);
-
-        List<ITreeEntity> treeEntities = TreeEntityUtil.getOpenedTreeEntitiesFromIds(openedEntityIds);
-        for (ITreeEntity entity : treeEntities) {
-            if (entity != null && entity.getObject() != null) {
-                eventBroker.send(EventConstants.EXPLORER_OPEN_SELECTED_ITEM, entity.getObject());
-            }
-        }
-    }
-
-    /**
-     * Save Tests Explorer state for next open session
-     * 
-     * @see #restoreExplorerState(String, String)
-     */
-    @PersistState
-    public void savePersistedState() {
-        if (isNotAutoRestoreSession()) {
-            return;
-        }
-        try {
-            List<String> expandedTreeEntityIds = getTreeEntityIds(getViewer().getExpandedElements());
-            ProjectController.getInstance().keepStateOfExpandedTreeEntities(expandedTreeEntityIds);
-        } catch (Exception e) {
-            logError(e);
-        }
-    }
-
-    /**
-     * Save Tests Explorer state for next open session.
-     * <p>
-     * This method will run on the scenario of switching between projects. The state of current one will be saved before
-     * open the next target.
-     * 
-     * @see #savePersistedState()
-     * @param projectId
-     */
-    @Inject
-    @Optional
-    private void saveExplorerState(@UIEventTopic(EventConstants.PROJECT_SWITCH) String toProjectId) {
-        savePersistedState();
-    }
-
-    private boolean isNotAutoRestoreSession() {
-        return !getPreferenceStore().getBoolean(PreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION);
-    }
 }

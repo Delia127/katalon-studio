@@ -40,6 +40,7 @@ import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.editors.DefaultTableColumnViewerEditor;
 import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
+import com.kms.katalon.composer.components.part.IComposerPart;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.execution.handlers.AbstractExecutionHandler;
 import com.kms.katalon.composer.testsuite.collection.constant.ImageConstants;
@@ -58,7 +59,7 @@ import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteRunConfiguration;
 
-public class TestSuiteCollectionPart extends EventServiceAdapter implements TableViewerProvider {
+public class TestSuiteCollectionPart extends EventServiceAdapter implements TableViewerProvider, IComposerPart {
 
     @Inject
     private IEventBroker eventBroker;
@@ -72,7 +73,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
     private CTableViewer tableViewer;
 
     private TableColumn tblclmnRun;
-    
+
     private long lastModified;
 
     @PostConstruct
@@ -92,7 +93,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         eventBroker.subscribe(EventConstants.TEST_SUITE_COLLECTION_UPDATED, this);
         eventBroker.subscribe(EventConstants.TEST_SUITE_UPDATED, this);
     }
-    
+
     private IFileInfo getFileInfo(TestSuiteCollectionEntity testSuiteCollection) {
         return EFS.getLocalFileSystem().fromLocalFile(testSuiteCollection.toFile()).fetchInfo();
     }
@@ -130,13 +131,13 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         });
 
         tableViewer.getTable().addListener(SWT.EraseItem, new Listener() {
-            
+
             @Override
             public void handleEvent(org.eclipse.swt.widgets.Event event) {
                 checkUpdated();
             }
         });
-        
+
     }
 
     private void createControls(Composite parent) {
@@ -211,7 +212,8 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         tblclmnRun = tbvcRun.getColumn();
         tblclmnRun.setText(StringConstants.RUN);
         tbvcRun.setEditingSupport(new RunEnabledEditingSupport(this));
-        tbvcRun.setLabelProvider(new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.RUN_COLUMN_IDX));
+        tbvcRun.setLabelProvider(new TestSuiteRunConfigLabelProvider(this,
+                TestSuiteRunConfigLabelProvider.RUN_COLUMN_IDX));
         tableLayout.setColumnData(tblclmnRun, new ColumnWeightData(10, 70));
 
         tableViewer.setContentProvider(new ArrayContentProvider());
@@ -322,7 +324,8 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
             updateTestSuiteCollections(originalTestSuite);
             mpart.setDirty(false);
         } catch (DALException e) {
-            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.PA_MSG_UNABLE_TO_UPDATE_TEST_SUITE_COLLECTION, e.getMessage());
+            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.PA_MSG_UNABLE_TO_UPDATE_TEST_SUITE_COLLECTION,
+                    e.getMessage());
             originalTestSuite.reuseWrappers(backup);
         }
     }
@@ -350,4 +353,10 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
             }
         });
     }
+
+    @Override
+    public String getEntityId() {
+        return originalTestSuite.getIdForDisplay();
+    }
+
 }
