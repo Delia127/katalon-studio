@@ -71,12 +71,12 @@ public class RenameTestCaseHandler {
                             TestCaseController.getInstance().updateTestCase(testCase);
                             String newIdForDisplay = testCase.getIdForDisplay();
 
+                            eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY,
+                                    testCaseTreeEntity.getParent());
                             eventBroker.post(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, new Object[] {
                                     oldIdForDisplay, newIdForDisplay });
-                            eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY,
-                                    testCaseTreeEntity.getParent());
+                            eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, testCaseTreeEntity);
                             eventBroker.post(EventConstants.TESTCASE_UPDATED, new Object[] { pk, testCase });
-
                             partService.saveAll(false);
                         }
                     } catch (Exception ex) {
