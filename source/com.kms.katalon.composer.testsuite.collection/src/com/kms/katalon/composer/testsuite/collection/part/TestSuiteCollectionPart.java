@@ -15,6 +15,7 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -39,8 +40,10 @@ import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.editors.DefaultTableColumnViewerEditor;
 import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
+import com.kms.katalon.composer.components.impl.tree.TestSuiteCollectionTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
-import com.kms.katalon.composer.components.part.IComposerPart;
+import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.execution.handlers.AbstractExecutionHandler;
 import com.kms.katalon.composer.testsuite.collection.constant.ImageConstants;
@@ -53,16 +56,20 @@ import com.kms.katalon.composer.testsuite.collection.part.support.RunConfigurati
 import com.kms.katalon.composer.testsuite.collection.part.support.RunEnabledEditingSupport;
 import com.kms.katalon.composer.testsuite.collection.part.support.TestSuiteIdEditingSupport;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestSuiteCollectionController;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteRunConfiguration;
 
-public class TestSuiteCollectionPart extends EventServiceAdapter implements TableViewerProvider, IComposerPart {
+public class TestSuiteCollectionPart extends EventServiceAdapter implements TableViewerProvider {
 
     @Inject
     private IEventBroker eventBroker;
+
+    @Inject
+    private EPartService partService;
 
     private MPart mpart;
 
@@ -302,7 +309,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
     @PreDestroy
     public void close() {
         eventBroker.unsubscribe(this);
-        EntityPartUtil.closePart(originalTestSuite);
+        partService.hidePart(mpart, true);
     }
 
     @Focus
@@ -324,11 +331,23 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         try {
             TestSuiteCollectionController.getInstance().updateTestSuiteCollection(originalTestSuite);
             updateTestSuiteCollections(originalTestSuite);
+            refreshTreeEntity();
             mpart.setDirty(false);
         } catch (DALException e) {
             MultiStatusErrorDialog.showErrorDialog(e, StringConstants.PA_MSG_UNABLE_TO_UPDATE_TEST_SUITE_COLLECTION,
                     e.getMessage());
             originalTestSuite.reuseWrappers(backup);
+        }
+    }
+
+    private void refreshTreeEntity() {
+        try {
+            TestSuiteCollectionTreeEntity tsCollectionTreeEntity = TreeEntityUtil.getTestSuiteCollectionTreeEntity(
+                    originalTestSuite, ProjectController.getInstance().getCurrentProject());
+            eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, tsCollectionTreeEntity);
+            eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, tsCollectionTreeEntity);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
         }
     }
 
@@ -355,10 +374,4 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
             }
         });
     }
-
-    @Override
-    public String getEntityId() {
-        return originalTestSuite.getIdForDisplay();
-    }
-
 }

@@ -47,7 +47,6 @@ import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.testdata.constants.ImageConstants;
 import com.kms.katalon.composer.testdata.constants.StringConstants;
 import com.kms.katalon.composer.testdata.job.LoadExcelFileJob;
-import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.core.testdata.ExcelData;
@@ -554,7 +553,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
                     cbbSheets.getText(), ckcbUseRelativePath.getSelection(), ckcbEnableHeader.getSelection());
             updateDataFile(originalDataFile);
             dirtyable.setDirty(false);
-            eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, null);
+            refreshTreeEntity();
             sendTestDataUpdatedEvent(originalDataFile.getId());
         } catch (Exception e) {
             LoggerSingleton.logError(e);

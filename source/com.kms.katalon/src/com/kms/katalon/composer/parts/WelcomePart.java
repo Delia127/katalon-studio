@@ -15,6 +15,8 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.jface.resource.FontDescriptor;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
@@ -25,7 +27,6 @@ import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
@@ -54,8 +55,6 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 
 public class WelcomePart {
-    private static final String FONT_SEGOE_UI = "Segoe UI";
-
     @Inject
     private IEventBroker eventBroker;
 
@@ -289,15 +288,18 @@ public class WelcomePart {
     }
 
     private Font getLargeFont() {
-        return getSegoeUIFont(14, SWT.BOLD);
+        return getHeaderFont(14, SWT.BOLD);
     }
 
     private Font getSmallFont() {
-        return getSegoeUIFont(12, SWT.NONE);
+        return getHeaderFont(12, SWT.NONE);
     }
 
-    private Font getSegoeUIFont(int size, int style) {
-        return new Font(getCurrentDisplay(), new FontData(FONT_SEGOE_UI, size, style));
+    private Font getHeaderFont(int size, int style) {
+        return FontDescriptor.createFrom(JFaceResources.getHeaderFont())
+                .setHeight(size)
+                .setStyle(style)
+                .createFont(getCurrentDisplay());
     }
 
     @Focus
