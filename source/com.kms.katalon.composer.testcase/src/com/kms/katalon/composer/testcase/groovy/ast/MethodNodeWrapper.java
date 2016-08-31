@@ -56,14 +56,14 @@ public class MethodNodeWrapper extends AnnonatedNodeWrapper implements ASTHasBlo
         }
         this.name = methodNode.getName();
         this.modifiers = methodNode.getModifiers();
-        this.returnType = new ClassNodeWrapper(methodNode.getReturnType(), this);
+        this.returnType = ClassNodeWrapper.getClassWrapper(methodNode.getReturnType(), this);
         parameters = new ParameterWrapper[methodNode.getParameters().length];
         for (int index = 0; index < parameters.length; index++) {
             parameters[index] = new ParameterWrapper(methodNode.getParameters()[index], this);
         }
         exceptions = new ClassNodeWrapper[methodNode.getExceptions().length];
         for (int index = 0; index < methodNode.getExceptions().length; index++) {
-            exceptions[index] = new ClassNodeWrapper(methodNode.getExceptions()[index], this);
+            exceptions[index] = ClassNodeWrapper.getClassWrapper(methodNode.getExceptions()[index], this);
         }
     }
 

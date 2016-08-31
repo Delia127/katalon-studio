@@ -8,8 +8,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.codehaus.groovy.ast.ClassHelper;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.FieldNode;
 import org.codehaus.groovy.ast.ImportNode;
@@ -52,15 +55,17 @@ public class ClassNodeWrapper extends ASTNodeWrapper {
 
     protected ImportNodeCollection importNodeCollection = new ImportNodeCollection();
 
+    private static Map<ClassNode, ClassNodeWrapper> classCache = new HashMap<>();
+
     public ImportNodeCollection getImportNodeCollection() {
         return importNodeCollection;
     }
 
     public ClassNodeWrapper(Class<?> clazz, ASTNodeWrapper parentNodeWrapper) {
-        this(new ClassNode(clazz), parentNodeWrapper);
+        this(ClassHelper.makeCached(clazz), parentNodeWrapper);
     }
-
-    public ClassNodeWrapper(ClassNode classNode, ASTNodeWrapper parentNodeWrapper) {
+    
+    protected ClassNodeWrapper(ClassNode classNode, ASTNodeWrapper parentNodeWrapper) {
         super(classNode, parentNodeWrapper);
         copyProperties(classNode);
     }
@@ -72,6 +77,16 @@ public class ClassNodeWrapper extends ASTNodeWrapper {
     public ClassNodeWrapper(ClassNodeWrapper classNodeWrapper, ASTNodeWrapper parentNodeWrapper) {
         super(classNodeWrapper, parentNodeWrapper);
         copyClassProperties(classNodeWrapper);
+    }
+    
+    public static ClassNodeWrapper getClassWrapper(ClassNode classNode, ASTNodeWrapper parentNodeWrapper) {
+        ClassNodeWrapper cachedClass = classCache.get(classNode);
+        if (cachedClass != null) {
+            return cachedClass;
+        }
+        cachedClass = new ClassNodeWrapper(classNode, parentNodeWrapper);
+        classCache.put(classNode, cachedClass);
+        return cachedClass;
     }
 
     protected void copyProperties(ClassNode classNode) {

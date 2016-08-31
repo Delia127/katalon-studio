@@ -16,7 +16,7 @@ public class MapExpressionWrapper extends ExpressionWrapper {
 
     public MapExpressionWrapper(ASTNodeWrapper parentNodeWrapper) {
         super(parentNodeWrapper);
-        this.type = new ClassNodeWrapper(ClassHelper.MAP_TYPE, this);
+        this.type = ClassNodeWrapper.getClassWrapper(ClassHelper.MAP_TYPE, this);
     }
 
     public MapExpressionWrapper(List<MapEntryExpressionWrapper> mapEntryExpressions, ASTNodeWrapper parentNodeWrapper) {
@@ -31,7 +31,7 @@ public class MapExpressionWrapper extends ExpressionWrapper {
             mapEntryExpression.setParent(this);
         }
         this.mapEntryExpressions = mapEntryExpressions;
-        this.type = new ClassNodeWrapper(ClassHelper.MAP_TYPE, this);
+        this.type = ClassNodeWrapper.getClassWrapper(ClassHelper.MAP_TYPE, this);
     }
 
     public MapExpressionWrapper(MapExpression expression, ASTNodeWrapper parentNodeWrapper) {

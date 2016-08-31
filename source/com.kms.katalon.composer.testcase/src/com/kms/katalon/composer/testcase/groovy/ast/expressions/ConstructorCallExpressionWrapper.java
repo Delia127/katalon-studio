@@ -21,7 +21,7 @@ public class ConstructorCallExpressionWrapper extends ExpressionWrapper {
     public ConstructorCallExpressionWrapper(ConstructorCallExpression constructorCallExpression,
             ASTNodeWrapper parentNodeWrapper) {
         super(constructorCallExpression, parentNodeWrapper);
-        this.type = new ClassNodeWrapper(constructorCallExpression.getType(), this);
+        this.type = ClassNodeWrapper.getClassWrapper(constructorCallExpression.getType(), this);
         if (constructorCallExpression.getArguments() instanceof ArgumentListExpression) {
             arguments = new ArgumentListExpressionWrapper(
                     (ArgumentListExpression) constructorCallExpression.getArguments(), this);

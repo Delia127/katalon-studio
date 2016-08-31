@@ -29,7 +29,7 @@ public class ArrayExpressionWrapper extends ExpressionWrapper {
         for (Expression expression : arrayExpression.getSizeExpression()) {
             sizeExpression.add(ASTNodeWrapHelper.getExpressionNodeWrapperFromExpression(expression, this));
         }
-        elementType = new ClassNodeWrapper(arrayExpression.getElementType(), this);
+        elementType = ClassNodeWrapper.getClassWrapper(arrayExpression.getElementType(), this);
     }
 
     public ArrayExpressionWrapper(ArrayExpressionWrapper arrayExpressionWrapper, ASTNodeWrapper parentNodeWrapper) {

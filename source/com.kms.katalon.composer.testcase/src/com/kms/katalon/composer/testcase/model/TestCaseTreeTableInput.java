@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.testcase.model;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -7,7 +8,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -385,7 +389,11 @@ public class TestCaseTreeTableInput {
 
     private void refreshObjectWithoutReloading(Object object) {
         if (object == null) {
-            reloadTreeTableNodes();
+            try {
+                reloadTreeTableNodes();
+            } catch (InvocationTargetException | InterruptedException e) {
+                LoggerSingleton.logError(e);
+            }
             return;
         }
         if (object instanceof AstScriptTreeTableNode) {
@@ -396,11 +404,18 @@ public class TestCaseTreeTableInput {
     }
 
     // refresh treetable root
-    public void reloadTreeTableNodes() {
-        List<AstTreeTableNode> astTreeTableNodes = new ArrayList<AstTreeTableNode>();
-        mainClassTreeNode = new AstScriptTreeTableNode(mainClassNodeWrapper, null);
-        astTreeTableNodes.add(mainClassTreeNode);
-        reloadTestCaseVariables();
+    public void reloadTreeTableNodes() throws InvocationTargetException, InterruptedException {
+        final List<AstTreeTableNode> astTreeTableNodes = new ArrayList<AstTreeTableNode>();
+        new ProgressMonitorDialog(Display.getCurrent().getActiveShell()).run(true, false, new IRunnableWithProgress() {
+            @Override
+            public void run(IProgressMonitor monitor) {
+                monitor.beginTask(StringConstants.LOADING_TABLE_PROGRESS_NAME, IProgressMonitor.UNKNOWN);
+                mainClassTreeNode = new AstScriptTreeTableNode(mainClassNodeWrapper, null);
+                astTreeTableNodes.add(mainClassTreeNode);
+                reloadTestCaseVariables();
+                monitor.done();
+            }
+        });
         treeTableViewer.setInput(astTreeTableNodes);
     }
 
@@ -957,8 +972,10 @@ public class TestCaseTreeTableInput {
         } else {
             newBuiltinKeywordStatement = AstKeywordsInputUtil.createBuiltInKeywordStatement(
                     keywordClass.getAliasName(),
-                    KeywordController.getInstance().getBuiltInKeywords(keywordClass.getAliasName(), true).get(0).getName(),
-                    parentNodeWrapper);
+                    KeywordController.getInstance()
+                            .getBuiltInKeywords(keywordClass.getAliasName(), true)
+                            .get(0)
+                            .getName(), parentNodeWrapper);
         }
         addNewAstObject(newBuiltinKeywordStatement, destinationNode, addType);
     }

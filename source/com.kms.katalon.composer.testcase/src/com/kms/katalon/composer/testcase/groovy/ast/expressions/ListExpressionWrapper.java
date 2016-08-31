@@ -22,13 +22,13 @@ public class ListExpressionWrapper extends ExpressionWrapper {
 
     public ListExpressionWrapper(ASTNodeWrapper parentNodeWrapper) {
         super(parentNodeWrapper);
-        this.type = new ClassNodeWrapper(ClassHelper.LIST_TYPE, this);
+        this.type = ClassNodeWrapper.getClassWrapper(ClassHelper.LIST_TYPE, this);
     }
 
     public ListExpressionWrapper(List<ExpressionWrapper> expressions, ASTNodeWrapper parentNodeWrapper) {
         super(parentNodeWrapper);
         this.expressions = expressions;
-        this.type = new ClassNodeWrapper(ClassHelper.LIST_TYPE, this);
+        this.type = ClassNodeWrapper.getClassWrapper(ClassHelper.LIST_TYPE, this);
     }
 
     public ListExpressionWrapper(ListExpression listExpression, ASTNodeWrapper parentNodeWrapper) {

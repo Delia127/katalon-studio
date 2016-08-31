@@ -35,7 +35,7 @@ public class AnnotationNodeWrapper extends ASTNodeWrapper {
 
     public AnnotationNodeWrapper(AnnotationNode annotationNode, ASTNodeWrapper parentNodeWrapper) {
         super(annotationNode, parentNodeWrapper);
-        this.classNode = new ClassNodeWrapper(annotationNode.getClassNode(), this);
+        this.classNode = ClassNodeWrapper.getClassWrapper(annotationNode.getClassNode(), this);
         if (annotationNode.getMembers() == null || annotationNode.getMembers().isEmpty()) {
             return;
         }

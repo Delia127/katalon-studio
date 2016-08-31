@@ -17,7 +17,7 @@ public class GStringExpressionWrapper extends ExpressionWrapper {
     public GStringExpressionWrapper(String verbatimText, ASTNodeWrapper parentNodeWrapper) {
         super(parentNodeWrapper);
         this.verbatimText = verbatimText;
-        this.type = new ClassNodeWrapper(ClassHelper.GSTRING_TYPE, this);
+        this.type = ClassNodeWrapper.getClassWrapper(ClassHelper.GSTRING_TYPE, this);
     }
     
     public GStringExpressionWrapper(GStringExpressionWrapper gStringExpressionWrapper, ASTNodeWrapper parentNodeWrapper) {
