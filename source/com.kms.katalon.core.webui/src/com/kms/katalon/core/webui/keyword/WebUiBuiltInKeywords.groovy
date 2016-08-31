@@ -4545,7 +4545,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
                 WebUiCommonHelper.checkTestObjectParameter(to)
                 timeOut = WebUiCommonHelper.checkTimeout(timeOut);
                 isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to);
-                WebElement webElement = findWebElement(to);
+                WebElement webElement = findWebElement(to, timeOut);
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SCROLLING_TO_OBJ_X, to.getObjectId()));
                 ((JavascriptExecutor) DriverFactory.getWebDriver()).executeScript("arguments[0].scrollIntoView();", webElement);
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SCROLLING_TO_OBJ_X, to.getObjectId()));
