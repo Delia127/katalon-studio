@@ -161,7 +161,7 @@ public class TreeEntityUtil {
         return null;
     }
 
-    public static TestSuiteCollectionTreeEntity getTestRunTreeEntity(
+    public static TestSuiteCollectionTreeEntity getTestSuiteCollectionTreeEntity(
             TestSuiteCollectionEntity testSuiteCollectionEntity, ProjectEntity projectEntity) throws Exception {
         FolderEntity testSuiteRootFolder = FolderController.getInstance().getTestSuiteRoot(projectEntity);
         return new TestSuiteCollectionTreeEntity(testSuiteCollectionEntity, createSelectedTreeEntityHierachy(
@@ -335,7 +335,7 @@ public class TreeEntityUtil {
                 // Reason 2: This is Test Suite Collection, not Test Suite
                 TestSuiteCollectionEntity tsc = TestSuiteCollectionController.getInstance().getTestRunByDisplayId(id);
                 if (tsc != null) {
-                    treeEntities.add(TreeEntityUtil.getTestRunTreeEntity(tsc, project));
+                    treeEntities.add(TreeEntityUtil.getTestSuiteCollectionTreeEntity(tsc, project));
                 }
                 continue;
             }

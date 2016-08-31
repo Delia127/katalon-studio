@@ -592,9 +592,11 @@ public abstract class CheckpointAbstractPart implements EventHandler, IComposerP
             checkpoint.setCheckpointData(tempCheckpoint.getCheckpointData());
             CheckpointController.getInstance().update(checkpoint);
             setDirty(false);
-            eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, null);
             eventBroker.post(EventConstants.CHECKPOINT_UPDATED,
                     new Object[] { checkpoint.getIdForDisplay(), checkpoint });
+            CheckpointTreeEntity checkpointTreeEntity = TreeEntityUtil.getCheckpointTreeEntity(checkpoint);
+            eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, checkpointTreeEntity);
+            eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, checkpointTreeEntity);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MultiStatusErrorDialog.showErrorDialog(e, StringConstants.ERROR,

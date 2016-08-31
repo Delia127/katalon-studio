@@ -31,6 +31,7 @@ import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
+import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPart;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
@@ -41,6 +42,7 @@ import com.kms.katalon.composer.testsuite.util.TestSuiteEntityUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FolderController;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
@@ -263,7 +265,12 @@ public class TestSuiteCompositePart implements EventHandler, MultipleTabsComposi
 
         try {
             TestSuiteController.getInstance().updateTestSuite(originalTestSuite);
-            eventBroker.post(EventConstants.EXPLORER_REFRESH, null);
+
+            //Refresh on explorer
+            TestSuiteTreeEntity testSuiteTreeEntity = TreeEntityUtil.getTestSuiteTreeEntity(
+                    originalTestSuite, ProjectController.getInstance().getCurrentProject());
+            eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, testSuiteTreeEntity);
+            eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, testSuiteTreeEntity);
 
             // Send event if Test Suite name has changed
             if (!StringUtils.equalsIgnoreCase(temp.getName(), originalTestSuite.getName())) {
@@ -271,8 +278,8 @@ public class TestSuiteCompositePart implements EventHandler, MultipleTabsComposi
                         originalTestSuite.getIdForDisplay() });
             }
 
+            //Notify to others that this test suite is changed
             eventBroker.post(EventConstants.TEST_SUITE_UPDATED, new Object[] { testSuite.getId(), originalTestSuite });
-
             if (parent.isDisposed()) {
                 return;
             }

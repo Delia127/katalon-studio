@@ -52,7 +52,6 @@ import com.kms.katalon.composer.testdata.parts.provider.InternalDataColumViewerE
 import com.kms.katalon.composer.testdata.parts.provider.InternalDataEditingSupport;
 import com.kms.katalon.composer.testdata.parts.provider.InternalDataLabelProvider;
 import com.kms.katalon.composer.testdata.views.NewTestDataColumnDialog;
-import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity.DataFileDriverType;
@@ -424,7 +423,7 @@ public class InternalTestDataPart extends TestDataMainPart {
                     getCurrentDataColumnEntities(), tableInputToData());
             updateDataFile(originalDataFile);
             dirtyable.setDirty(false);
-            eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, null);
+            refreshTreeEntity();
             sendTestDataUpdatedEvent(originalDataFile.getId());
         } catch (Exception e) {
             LoggerSingleton.logError(e);

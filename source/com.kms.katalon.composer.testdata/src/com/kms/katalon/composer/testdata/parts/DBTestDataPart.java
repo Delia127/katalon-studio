@@ -51,7 +51,6 @@ import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.testdata.constants.ImageConstants;
 import com.kms.katalon.composer.testdata.constants.StringConstants;
 import com.kms.katalon.composer.testdata.dialog.EditTestDataQueryDialog;
-import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.core.db.DatabaseConnection;
 import com.kms.katalon.core.testdata.DBData;
@@ -408,7 +407,7 @@ public class DBTestDataPart extends TestDataMainPart {
         try {
             TestDataController.getInstance().updateTestData(originalDataFile, originalDataFile.getParentFolder());
             dirtyable.setDirty(false);
-            eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, null);
+            refreshTreeEntity();
             sendTestDataUpdatedEvent(originalDataFile.getId());
         } catch (Exception e) {
             LoggerSingleton.logError(e);

@@ -31,12 +31,14 @@ import org.xml.sax.SAXParseException;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
+import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPart;
 import com.kms.katalon.composer.testdata.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FolderController;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
@@ -312,5 +314,16 @@ public abstract class TestDataMainPart implements EventHandler, IPartListener, I
     @Override
     public String getEntityId() {
         return getDataFile().getIdForDisplay();
+    }
+    
+    protected void refreshTreeEntity() {
+        try {
+            TestDataTreeEntity testDataTreeEntity = TreeEntityUtil.getTestDataTreeEntity(
+                    originalDataFile, ProjectController.getInstance().getCurrentProject());
+            eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, testDataTreeEntity);
+            eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, testDataTreeEntity);
+        } catch (Exception e) {
+           LoggerSingleton.logError(e);
+        }
     }
 }

@@ -3,7 +3,6 @@ package com.kms.katalon.composer.codeassist.editor;
 import java.awt.Desktop;
 import java.lang.reflect.Field;
 import java.net.URI;
-import java.util.regex.Pattern;
 
 import org.apache.commons.codec.net.URLCodec;
 import org.codehaus.groovy.ast.ASTNode;
