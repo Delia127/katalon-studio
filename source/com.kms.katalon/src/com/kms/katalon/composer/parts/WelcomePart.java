@@ -119,35 +119,51 @@ public class WelcomePart {
 
         final Composite leftSections = createLeftSectionComposite(bottomComposite);
 
-        Composite separatorComposite = new Composite(bottomComposite, SWT.NONE);
-        separatorComposite.setLayout(new GridLayout(1, false));
-        separatorComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
+        final Composite separatorComposite = createSeparatorComposite(bottomComposite);
 
-        Label separator = new Label(separatorComposite, SWT.SEPARATOR | SWT.VERTICAL);
-        separator.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, true, true, 1, 1));
-
-        final Composite rightSection = createRightSectionComposite(bottomComposite);
+        final Composite rightSections = createRightSectionComposite(bottomComposite);
 
         mainComposite.addListener(SWT.Resize, new Listener() {
             @Override
             public void handleEvent(Event event) {
                 adjustTopCompositeSize(topCompositeLayoutData);
-                equalizeSectionsSize(leftSections, rightSection);
+                equalizeSectionsWidth(leftSections, rightSections);
+                mainComposite.layout();
+                equalizeSectionsHeight(leftSections, rightSections, separatorComposite);
                 mainComposite.layout();
             }
 
-            private void equalizeSectionsSize(final Composite leftSectionComposite,
-                    final Composite rightSectionComposite) {
+            private void adjustTopCompositeSize(GridData topCompositeLayoutData) {
+                topCompositeLayoutData.heightHint = mainComposite.getSize().y / 3;
+            }
+
+            private void equalizeSectionsWidth(Composite leftSectionComposite, Composite rightSectionComposite) {
                 int totalWidth = leftSectionComposite.getSize().x + rightSectionComposite.getSize().x;
                 GridData leftSectionLayoutData = (GridData) leftSectionComposite.getLayoutData();
                 GridData rightSectionLayoutData = (GridData) rightSectionComposite.getLayoutData();
                 leftSectionLayoutData.widthHint = rightSectionLayoutData.widthHint = totalWidth / 2;
             }
 
-            private void adjustTopCompositeSize(GridData topCompositeLayoutData) {
-                topCompositeLayoutData.heightHint = mainComposite.getSize().y / 3;
+            private void equalizeSectionsHeight(Composite leftSectionComposite, Composite rightSectionComposite,
+                    Composite separatorComposite) {
+                Point leftSectionsSize = leftSectionComposite.getSize();
+                Point rightSectionsSize = rightSectionComposite.getSize();
+                int maxHeight = Math.max(leftSectionsSize.y, rightSectionsSize.y);
+                leftSectionComposite.setSize(leftSectionsSize.x, maxHeight);
+                rightSectionComposite.setSize(rightSectionsSize.x, maxHeight);
+                separatorComposite.setSize(separatorComposite.getSize().x, maxHeight);
             }
         });
+    }
+
+    private Composite createSeparatorComposite(Composite bottomComposite) {
+        Composite separatorComposite = new Composite(bottomComposite, SWT.NONE);
+        separatorComposite.setLayout(new GridLayout(1, false));
+        separatorComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
+
+        Label separator = new Label(separatorComposite, SWT.SEPARATOR | SWT.VERTICAL);
+        separator.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, true, true, 1, 1));
+        return separatorComposite;
     }
 
     private Composite createRightSectionComposite(Composite bottomComposite) {
@@ -155,8 +171,7 @@ public class WelcomePart {
         GridLayout rightSectionLayout = new GridLayout(1, false);
         rightSectionLayout.verticalSpacing = 30;
         rightSections.setLayout(rightSectionLayout);
-        final GridData rightSectionLayoutData = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
-        rightSections.setLayoutData(rightSectionLayoutData);
+        rightSections.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 
         createSection(rightSections,
                 ImageConstants.IMG_FAQ, 
@@ -210,8 +225,7 @@ public class WelcomePart {
         GridLayout leftSectionLayout = new GridLayout(1, false);
         leftSectionLayout.verticalSpacing = 30;
         leftSections.setLayout(leftSectionLayout);
-        final GridData leftSectionLayoutData = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
-        leftSections.setLayoutData(leftSectionLayoutData);
+        leftSections.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 
         createSection(leftSections,
                 ImageConstants.IMG_NEW_PROJECT,
@@ -313,8 +327,8 @@ public class WelcomePart {
 
         public WelcomeSection(Composite parent, int style) {
             super(parent, style);
+            setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-            setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
             GridLayout sectionLayout = new GridLayout(2, false);
             sectionLayout.horizontalSpacing = 20;
             setLayout(sectionLayout);
@@ -418,7 +432,7 @@ public class WelcomePart {
                     }
                 };
                 txtRecentProjectName.setFont(getSmallFont());
-                txtRecentProjectName.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true, 1, 1));
+                txtRecentProjectName.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
                 txtRecentProjectName.setText(project.getName());
                 txtRecentProjectName.setToolTipText(MessageFormat.format(StringConstants.PA_TOOLTIP_OPEN_RECENT_PROJECT,
                         project.getName()));
