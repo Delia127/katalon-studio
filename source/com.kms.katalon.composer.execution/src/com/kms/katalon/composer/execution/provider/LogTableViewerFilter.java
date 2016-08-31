@@ -5,7 +5,7 @@ import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPre
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 
-import com.kms.katalon.composer.execution.constants.ExecutionPreferenceConstants;
+import com.kms.katalon.composer.execution.constants.ComposerExecutionPreferenceConstants;
 import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.logging.XmlLogRecord;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
@@ -34,13 +34,13 @@ public class LogTableViewerFilter extends ViewerFilter {
 
     private int getPreferenceShowedValue() {
         ScopedPreferenceStore store = getPreferenceStore(LogTableViewerFilter.class);
-        int showAllLogs = store.getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_ALL_LOGS) ? ALL : 0;
-        int showInfoLogs = store.getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_INFO_LOGS) ? INFO : 0;
-        int showPassedLogs = store.getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_PASSED_LOGS) ? PASSED : 0;
-        int showFailedLogs = store.getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_FAILED_LOGS) ? FAILED : 0;
-        int showIncompleteLogs = store.getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_ERROR_LOGS) ? ERROR : 0;
-        int showWarningLogs = store.getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_WARNING_LOGS) ? WARNING : 0;
-        int showNotRunLogs = store.getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_NOT_RUN_LOGS) ? NOT_RUN : 0;
+        int showAllLogs = store.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_ALL_LOGS) ? ALL : 0;
+        int showInfoLogs = store.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_INFO_LOGS) ? INFO : 0;
+        int showPassedLogs = store.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_PASSED_LOGS) ? PASSED : 0;
+        int showFailedLogs = store.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_FAILED_LOGS) ? FAILED : 0;
+        int showIncompleteLogs = store.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_ERROR_LOGS) ? ERROR : 0;
+        int showWarningLogs = store.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_WARNING_LOGS) ? WARNING : 0;
+        int showNotRunLogs = store.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_NOT_RUN_LOGS) ? NOT_RUN : 0;
 
         return (showAllLogs & ALL) | (showInfoLogs & INFO) | (showPassedLogs & PASSED) | (showFailedLogs & FAILED)
                 | (showIncompleteLogs & ERROR) | (showWarningLogs & WARNING) | (showNotRunLogs & NOT_RUN);

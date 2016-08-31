@@ -5,6 +5,7 @@ import java.util.Map;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
@@ -15,8 +16,10 @@ import org.osgi.framework.BundleException;
 
 import com.kms.katalon.addons.MacOSAddon;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.execution.console.ConsoleMain;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
+import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.util.ActivationInfoCollector;
 import com.kms.katalon.util.ApplicationInfo;
 import com.kms.katalon.util.ApplicationSession;
@@ -94,7 +97,8 @@ public class Application implements IApplication {
             }
             return ConsoleMain.launch(arguments);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            LogUtil.logError(e);
+            System.out.println(StringConstants.ERR_CONSOLE_MODE + ": " + ExceptionUtils.getStackTrace(e));
             return LauncherResult.RETURN_CODE_ERROR;
         }
     }
@@ -104,7 +108,7 @@ public class Application implements IApplication {
         try {
             return PlatformUI.createAndRunWorkbench(display, new ApplicationWorkbenchAdvisor());
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtil.logError(e);
         } finally {
             ApplicationSession.close();
             display.dispose();

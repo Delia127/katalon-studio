@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 
 import com.kms.katalon.composer.components.util.ColorUtil;
-import com.kms.katalon.composer.execution.constants.ExecutionPreferenceConstants;
+import com.kms.katalon.composer.execution.constants.ComposerExecutionPreferenceConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.logging.LogLevel;
@@ -136,7 +136,7 @@ public class LogTableViewer extends TableViewer {
     }
 
     private boolean isScrollLogEnable() {
-        return !store.getBoolean(ExecutionPreferenceConstants.EXECUTION_PIN_LOG);
+        return !store.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_PIN_LOG);
     }
 
     public List<XmlLogRecord> getRecords() {

@@ -74,7 +74,7 @@ import org.osgi.service.event.EventHandler;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
-import com.kms.katalon.composer.execution.constants.ExecutionPreferenceConstants;
+import com.kms.katalon.composer.execution.constants.ComposerExecutionPreferenceConstants;
 import com.kms.katalon.composer.execution.constants.ImageConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.dialog.LogPropertyDialog;
@@ -157,17 +157,17 @@ public class LogViewerPart implements EventHandler, LauncherListener {
             switch (toolItem.getElementId()) {
                 case IdConstants.LOG_VIEWER_TOOL_ITEM_TREE_ID:
                     toolItem.setSelected(preferenceStore
-                            .getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE));
+                            .getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE));
                     break;
                 case IdConstants.LOG_VIEWER_TOOL_ITEM_PIN_ID:
-                    toolItem.setSelected(preferenceStore.getBoolean(ExecutionPreferenceConstants.EXECUTION_PIN_LOG));
+                    toolItem.setSelected(preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_PIN_LOG));
                     break;
             }
         }
     }
 
     private void updateMenuStatus(MPart mpart) {
-        boolean isShowLogAsTree = preferenceStore.getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE);
+        boolean isShowLogAsTree = preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE);
         for (MMenu menu : mpart.getMenus()) {
             if (!IdConstants.LOG_VIEWER_MENU_TREEVIEW.equals(menu.getElementId())) {
                 continue;
@@ -180,7 +180,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                             && IdConstants.LOG_VIEWER_MENU_ITEM_WORD_WRAP.equals(childElement.getElementId())) {
                         MDirectMenuItem wordWrapElement = (MDirectMenuItem) childElement;
                         wordWrapElement.setSelected(preferenceStore
-                                .getBoolean(ExecutionPreferenceConstants.EXECUTION_ENABLE_WORD_WRAP));
+                                .getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_ENABLE_WORD_WRAP));
                     }
                 }
             } else {
@@ -208,7 +208,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
     private void createLogViewerControl(Composite parent) {
         disposeChildrenFromIndex(parent, AFTER_STATUS_MENU_INDEX);
 
-        boolean showLogsAsTree = preferenceStore.getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE);
+        boolean showLogsAsTree = preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE);
 
         if (showLogsAsTree) {
             createTreeCompositeContainer(parent);
@@ -635,43 +635,43 @@ public class LogViewerPart implements EventHandler, LauncherListener {
         toolBar.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true, 1, 1));
 
         btnShowAllLogs = new ToolItem(toolBar, SWT.CHECK);
-        btnShowAllLogs.setData(StringConstants.ID, ExecutionPreferenceConstants.EXECUTION_SHOW_ALL_LOGS);
+        btnShowAllLogs.setData(StringConstants.ID, ComposerExecutionPreferenceConstants.EXECUTION_SHOW_ALL_LOGS);
         btnShowAllLogs.setText(StringConstants.PA_TIP_ALL);
         btnShowAllLogs.setToolTipText(StringConstants.PA_TIP_ALL);
         btnShowAllLogs.setImage(ImageConstants.IMG_16_LOGVIEW_ALL);
 
         btnShowInfoLogs = new ToolItem(toolBar, SWT.CHECK);
-        btnShowInfoLogs.setData(StringConstants.ID, ExecutionPreferenceConstants.EXECUTION_SHOW_INFO_LOGS);
+        btnShowInfoLogs.setData(StringConstants.ID, ComposerExecutionPreferenceConstants.EXECUTION_SHOW_INFO_LOGS);
         btnShowInfoLogs.setText(StringConstants.PA_TIP_INFO);
         btnShowInfoLogs.setToolTipText(StringConstants.PA_TIP_INFO);
         btnShowInfoLogs.setImage(ImageConstants.IMG_16_LOGVIEW_INFO);
 
         btnShowPassedLogs = new ToolItem(toolBar, SWT.CHECK);
-        btnShowPassedLogs.setData(StringConstants.ID, ExecutionPreferenceConstants.EXECUTION_SHOW_PASSED_LOGS);
+        btnShowPassedLogs.setData(StringConstants.ID, ComposerExecutionPreferenceConstants.EXECUTION_SHOW_PASSED_LOGS);
         btnShowPassedLogs.setText(StringConstants.PA_TIP_PASSED);
         btnShowPassedLogs.setToolTipText(StringConstants.PA_TIP_PASSED);
         btnShowPassedLogs.setImage(ImageConstants.IMG_16_LOGVIEW_PASSED);
 
         btnShowFailedLogs = new ToolItem(toolBar, SWT.CHECK);
-        btnShowFailedLogs.setData(StringConstants.ID, ExecutionPreferenceConstants.EXECUTION_SHOW_FAILED_LOGS);
+        btnShowFailedLogs.setData(StringConstants.ID, ComposerExecutionPreferenceConstants.EXECUTION_SHOW_FAILED_LOGS);
         btnShowFailedLogs.setText(StringConstants.PA_TIP_FAILED);
         btnShowFailedLogs.setToolTipText(StringConstants.PA_TIP_FAILED);
         btnShowFailedLogs.setImage(ImageConstants.IMG_16_LOGVIEW_FAILED);
 
         btnShowErrorLogs = new ToolItem(toolBar, SWT.CHECK);
-        btnShowErrorLogs.setData(StringConstants.ID, ExecutionPreferenceConstants.EXECUTION_SHOW_ERROR_LOGS);
+        btnShowErrorLogs.setData(StringConstants.ID, ComposerExecutionPreferenceConstants.EXECUTION_SHOW_ERROR_LOGS);
         btnShowErrorLogs.setText(StringConstants.PA_TIP_ERROR);
         btnShowErrorLogs.setToolTipText(StringConstants.PA_TIP_ERROR);
         btnShowErrorLogs.setImage(ImageConstants.IMG_16_LOGVIEW_ERROR);
 
         btnShowWarningLogs = new ToolItem(toolBar, SWT.CHECK);
-        btnShowWarningLogs.setData(StringConstants.ID, ExecutionPreferenceConstants.EXECUTION_SHOW_WARNING_LOGS);
+        btnShowWarningLogs.setData(StringConstants.ID, ComposerExecutionPreferenceConstants.EXECUTION_SHOW_WARNING_LOGS);
         btnShowWarningLogs.setText(StringConstants.PA_TIP_WARNING);
         btnShowWarningLogs.setToolTipText(StringConstants.PA_TIP_WARNING);
         btnShowWarningLogs.setImage(ImageConstants.IMG_16_LOGVIEW_WARNING);
         
         btnShowNotRunLogs = new ToolItem(toolBar, SWT.CHECK);
-        btnShowNotRunLogs.setData(StringConstants.ID, ExecutionPreferenceConstants.EXECUTION_SHOW_NOT_RUN_LOGS);
+        btnShowNotRunLogs.setData(StringConstants.ID, ComposerExecutionPreferenceConstants.EXECUTION_SHOW_NOT_RUN_LOGS);
         btnShowNotRunLogs.setText(StringConstants.PA_TIP_NOT_RUN);
         btnShowNotRunLogs.setToolTipText(StringConstants.PA_TIP_NOT_RUN);
         btnShowNotRunLogs.setImage(ImageConstants.IMG_16_LOGVIEW_NOT_RUN);
@@ -710,18 +710,18 @@ public class LogViewerPart implements EventHandler, LauncherListener {
     }
 
     private void updateTableButtons() {
-        btnShowAllLogs.setSelection(preferenceStore.getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_ALL_LOGS));
-        btnShowInfoLogs.setSelection(preferenceStore.getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_INFO_LOGS));
+        btnShowAllLogs.setSelection(preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_ALL_LOGS));
+        btnShowInfoLogs.setSelection(preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_INFO_LOGS));
         btnShowPassedLogs.setSelection(preferenceStore
-                .getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_PASSED_LOGS));
+                .getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_PASSED_LOGS));
         btnShowFailedLogs.setSelection(preferenceStore
-                .getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_FAILED_LOGS));
+                .getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_FAILED_LOGS));
         btnShowErrorLogs.setSelection(preferenceStore
-                .getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_ERROR_LOGS));
+                .getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_ERROR_LOGS));
         btnShowWarningLogs.setSelection(preferenceStore
-                .getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_WARNING_LOGS));
+                .getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_WARNING_LOGS));
         btnShowNotRunLogs.setSelection(preferenceStore
-                .getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_NOT_RUN_LOGS));
+                .getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_NOT_RUN_LOGS));
     }
 
     private void createTableCompositeDetails(Composite container) {
@@ -908,7 +908,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
 
         try {
             boolean showLogsAsTree = preferenceStore
-                    .getBoolean(ExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE);
+                    .getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE);
 
             if (showLogsAsTree) {
                 treeViewer.addRecords(records);
@@ -1050,7 +1050,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
     }
 
     private void setWrapTxtMessage() {
-        boolean wrap = preferenceStore.getBoolean(ExecutionPreferenceConstants.EXECUTION_ENABLE_WORD_WRAP);
+        boolean wrap = preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_ENABLE_WORD_WRAP);
         if (txtMessage.getListeners(SWT.Modify).length == 0) {
             txtMessage.addListener(SWT.Modify, ControlUtils.getAutoHideStyledTextScrollbarListener);
             txtMessage.addListener(SWT.Resize, ControlUtils.getAutoHideStyledTextScrollbarListener);

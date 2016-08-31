@@ -17,12 +17,12 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-import com.kms.katalon.composer.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.util.ComposerExecutionUtil;
-import com.kms.katalon.controller.TestEnvironmentController;
 import com.kms.katalon.execution.collector.RunConfigurationCollector;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
+import com.kms.katalon.execution.constants.ExecutionPreferenceConstants;
+import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 
 public class ExecutionPreferencePage extends PreferencePage {
     private Button chckNotifyMe, chckOpenReport, chckQuitDrivers;
@@ -37,7 +37,12 @@ public class ExecutionPreferencePage extends PreferencePage {
 
     private String selectedExecutionConfiguration;
 
+    public static final short PAGELOAD_TIMEOUT_MIN_VALUE = 0;
+
+    public static final short PAGELOAD_TIMEOUT_MAX_VALUE = 9999;
+
     public ExecutionPreferencePage() {
+        setPreferenceStore(PreferenceStoreManager.getPreferenceStore(ExecutionPreferenceConstants.EXECUTION_QUALIFIER));
     }
 
     @Override
@@ -80,7 +85,7 @@ public class ExecutionPreferencePage extends PreferencePage {
 
         chckOpenReport = new Button(grpAfterExecuting, SWT.CHECK);
         chckOpenReport.setText(StringConstants.PREF_CHKBOX_OPEN_RPT_AFTER_EXE_COMPLETELY);
-        
+
         chckQuitDrivers = new Button(grpAfterExecuting, SWT.CHECK);
         chckQuitDrivers.setText(StringConstants.PREF_CHKBOX_QUIT_DRIVERS_AFTER_EXE_COMPLETELY);
 
@@ -98,8 +103,7 @@ public class ExecutionPreferencePage extends PreferencePage {
             public void modifyText(ModifyEvent e) {
                 if (!isTextPageLoadTimeOutValid()) {
                     setErrorMessage(MessageFormat.format(StringConstants.PREF_ERROR_MSG_VAL_MUST_BE_AN_INT_BETWEEN_X_Y,
-                            TestEnvironmentController.getInstance().getPageLoadTimeOutMinimumValue(),
-                            TestEnvironmentController.getInstance().getPageLoadTimeOutMaximumValue()));
+                            PAGELOAD_TIMEOUT_MIN_VALUE, PAGELOAD_TIMEOUT_MAX_VALUE));
                     getApplyButton().setEnabled(false);
                 } else {
                     setErrorMessage(null);
@@ -137,8 +141,7 @@ public class ExecutionPreferencePage extends PreferencePage {
         if (txtDefaultTimeout != null && txtDefaultTimeout.getText() != null) {
             try {
                 int value = Integer.parseInt(txtDefaultTimeout.getText());
-                if (value < TestEnvironmentController.getInstance().getPageLoadTimeOutMinimumValue()
-                        || value > TestEnvironmentController.getInstance().getPageLoadTimeOutMaximumValue()) {
+                if (value < PAGELOAD_TIMEOUT_MIN_VALUE || value > PAGELOAD_TIMEOUT_MAX_VALUE) {
                     return false;
                 }
                 return true;
@@ -201,7 +204,7 @@ public class ExecutionPreferencePage extends PreferencePage {
             getPreferenceStore().setValue(ExecutionPreferenceConstants.EXECUTION_OPEN_REPORT_AFTER_EXECUTING,
                     chckOpenReport.getSelection());
         }
-        
+
         if (chckQuitDrivers != null) {
             getPreferenceStore().setValue(ExecutionPreferenceConstants.EXECUTION_QUIT_DRIVERS_AFTER_EXECUTING,
                     chckQuitDrivers.getSelection());
@@ -222,7 +225,9 @@ public class ExecutionPreferencePage extends PreferencePage {
     }
 
     public boolean performOk() {
-        if (isValid()) performApply();
+        if (isValid()) {
+            performApply();
+        }
         return super.performOk();
     }
 }
