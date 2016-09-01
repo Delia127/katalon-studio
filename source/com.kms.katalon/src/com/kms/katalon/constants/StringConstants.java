@@ -87,17 +87,18 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_LBL_FAQ = "FAQs";
     public static final String PA_TOOLTIP_FAQ = "Navigate to Katalon's FAQs page";
     public static final String PA_LBL_FAQ_DESCRIPTION = "Find answers to commonly asked questions";
-    public static final String PA_URL_FAQ = "http://katalon.kms-technology.com/#/faqs";
+    public static final String PA_URL_FAQ = "http://docs.katalon.com/display/KD/FAQs";
 
     public static final String PA_LBL_GETTING_STARTED = "Getting Started";
     public static final String PA_TOOLTIP_GETTING_STARTED = "Navigate to Getting Started page";
-    public static final String PA_LBL_GETTING_STARTED_DESCRIPTION = "Be introduced to Katalon from download build to "
-            + "your first test script";
+    public static final String PA_LBL_GETTING_STARTED_DESCRIPTION = "Learn how to use Katalon from the initial "
+            + "downloading to build your first test script and more!";
     public static final String PA_URL_GETTING_STARTED = "http://docs.katalon.com/display/KD/Getting+Started";
 
     public static final String PA_LBL_ARTICLES = "How to Articles";
     public static final String PA_TOOLTIP_ARTICLES = "Navigate to How to Articles page";
-    public static final String PA_LBL_ARTICLES_DESCRIPTION = "Learn more about advanced concerns and get recommend solutions";
+    public static final String PA_LBL_ARTICLES_DESCRIPTION = "Learn more about advanced concerns and get recommended "
+            + "solutions to test automation problems";
     public static final String PA_URL_ARTICLES_STARTED = "http://docs.katalon.com/display/KD/How+To";
 
     public static final String PA_LBL_RECENT_PROJECT = "Recent Katalon Project";
