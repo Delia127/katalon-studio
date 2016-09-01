@@ -1115,7 +1115,9 @@ public class RecorderDialog extends Dialog {
 
         addBrowserMenuItem(browserMenu, WebUIDriverType.FIREFOX_DRIVER);
         addBrowserMenuItem(browserMenu, WebUIDriverType.CHROME_DRIVER);
-        addBrowserMenuItem(browserMenu, WebUIDriverType.IE_DRIVER);
+        if (Platform.getOS().equals(Platform.OS_WIN32)) {
+            addBrowserMenuItem(browserMenu, WebUIDriverType.IE_DRIVER);
+        }
 
         createInstantBrowserMenu(browserMenu);
 
@@ -1171,7 +1173,9 @@ public class RecorderDialog extends Dialog {
 
         addInstantBrowserMenuItem(instantBrowserMenu, WebUIDriverType.CHROME_DRIVER);
         addInstantBrowserMenuItem(instantBrowserMenu, WebUIDriverType.FIREFOX_DRIVER);
-        addInstantBrowserMenuItem(instantBrowserMenu, WebUIDriverType.IE_DRIVER);
+        if (Platform.getOS().equals(Platform.OS_WIN32)) {
+            addInstantBrowserMenuItem(instantBrowserMenu, WebUIDriverType.IE_DRIVER);
+        }
     }
 
     private MenuItem createBrowserMenuItem(Menu browserMenu, final WebUIDriverType webUIDriverType) {

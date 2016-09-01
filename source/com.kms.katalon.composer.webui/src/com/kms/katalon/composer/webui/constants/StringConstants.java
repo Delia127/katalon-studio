@@ -24,4 +24,9 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String PREF_LBL_IGNORE_DEFAULT_PAGE_LOAD_TIMEOUT_EXCEPTION = "After timeout, continue to run";
 	public static final String PREF_ERROR_MSG_VAL_MUST_BE_AN_INT_BIGGER_FROM_X = "Invalid number, number value must be >= {0}";
 	
+	//IEExecutionDynamicContribution
+	public static final String LBL_IE_EXECUTION_MENU_ITEM = "IE";
+	
+	//EdgeExecutionDynamicContribution
+	public static final String LBL_EDGE_EXECUTION_MENU_ITEM = "Edge";
 }
