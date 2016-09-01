@@ -1,7 +1,6 @@
 package com.kms.katalon.composer.testcase.providers;
 
-import groovy.json.StringEscapeUtils;
-
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.graphics.Image;
@@ -50,10 +49,14 @@ public class AstTreeLabelProvider extends StyledCellLabelProvider {
                 if (!(treeTableNode instanceof AstStatementTreeTableNode)) {
                     return "";
                 }
-                return StringEscapeUtils.escapeJava(((AstStatementTreeTableNode) treeTableNode).getDescription());
+                return getDescriptionString(treeTableNode);
             default:
                 return "";
         }
+    }
+
+    private String getDescriptionString(AstTreeTableNode treeTableNode) {
+        return StringUtils.defaultString(((AstStatementTreeTableNode) treeTableNode).getDescription());
     }
 
     @Override
@@ -113,7 +116,7 @@ public class AstTreeLabelProvider extends StyledCellLabelProvider {
                 }
                 return "";
             case CLMN_DESCRIPTION_IDX:
-                return StringEscapeUtils.escapeJava(((AstStatementTreeTableNode) treeTableNode).getDescription());
+                return getDescriptionString(treeTableNode);
             default:
                 return "";
         }

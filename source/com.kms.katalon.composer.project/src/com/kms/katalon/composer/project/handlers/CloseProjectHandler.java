@@ -1,11 +1,5 @@
 package com.kms.katalon.composer.project.handlers;
 
-import static com.kms.katalon.composer.components.impl.util.EntityPartUtil.getOpenedEntityIds;
-import static com.kms.katalon.composer.components.log.LoggerSingleton.logError;
-import static org.eclipse.ui.PlatformUI.getPreferenceStore;
-
-import java.util.List;
-
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
@@ -20,7 +14,6 @@ import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.project.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
-import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 
@@ -44,6 +37,7 @@ public class CloseProjectHandler {
 
             @Override
             public void handleEvent(Event event) {
+                eventBroker.send(EventConstants.PROJECT_SAVE_SESSION, null);
                 closeCurrentProject(partService, modelService, application, eventBroker);
             }
 
@@ -55,7 +49,6 @@ public class CloseProjectHandler {
         final ProjectEntity project = ProjectController.getInstance().getCurrentProject();
         if (project != null) {
             if (partService.saveAll(true)) {
-                saveOpenedEntitiesState(partService, project);
 
                 // Find and close all opened editor parts which is managed by PartService
                 for (MPart p : partService.getParts()) {
@@ -84,22 +77,4 @@ public class CloseProjectHandler {
 
     }
 
-    /**
-     * Save all opened entities for next working session
-     * 
-     * @see com.kms.katalon.composer.explorer.parts.ExplorerPart#restoreOpenedEntitiesState()
-     * @param partService
-     * @param project
-     */
-    private static void saveOpenedEntitiesState(EPartService partService, ProjectEntity project) {
-        if (!getPreferenceStore().getBoolean(PreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION)) {
-            return;
-        }
-        try {
-            List<String> openedEntityIds = getOpenedEntityIds(partService.getParts());
-            ProjectController.getInstance().keepStateOfOpenedEntities(openedEntityIds);
-        } catch (Exception e) {
-            logError(e);
-        }
-    }
 }

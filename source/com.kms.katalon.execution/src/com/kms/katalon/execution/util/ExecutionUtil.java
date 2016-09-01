@@ -22,7 +22,6 @@ import java.util.TreeSet;
 import org.apache.commons.io.FileUtils;
 
 import com.google.gson.Gson;
-import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.core.configuration.RunConfiguration;
@@ -34,6 +33,7 @@ import com.kms.katalon.execution.configuration.IDriverConnector;
 import com.kms.katalon.execution.configuration.IExecutionSetting;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
+import com.kms.katalon.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.execution.entity.DefaultRerunSetting;
 import com.kms.katalon.execution.entity.IExecutedEntity;
 import com.kms.katalon.execution.entity.TestCaseExecutedEntity;
@@ -73,11 +73,11 @@ public class ExecutionUtil {
     }
 
     private static ScopedPreferenceStore getStore() {
-        return getPreferenceStore(PreferenceConstants.EXECUTION_QUALIFIER);
+        return getPreferenceStore(ExecutionPreferenceConstants.EXECUTION_QUALIFIER);
     }
 
     public static IRunConfigurationContributor getDefaultExecutionConfiguration() {
-        String selectedRunConfiguration = getStore().getString(PreferenceConstants.EXECUTION_DEFAULT_CONFIGURATION);
+        String selectedRunConfiguration = getStore().getString(ExecutionPreferenceConstants.EXECUTION_DEFAULT_CONFIGURATION);
         IRunConfigurationContributor[] allBuiltinRunConfigurationContributor = RunConfigurationCollector.getInstance()
                 .getAllBuiltinRunConfigurationContributors();
         for (IRunConfigurationContributor runConfigurationContributor : allBuiltinRunConfigurationContributor) {
@@ -88,16 +88,16 @@ public class ExecutionUtil {
         return null;
     }
 
-    public static int getDefaultPageLoadTimeout() {
-        return getStore().getInt(PreferenceConstants.EXECUTION_DEFAULT_TIMEOUT);
+    public static int getDefaultImplicitTimeout() {
+        return getStore().getInt(ExecutionPreferenceConstants.EXECUTION_DEFAULT_TIMEOUT);
     }
 
     public static boolean openReportAfterExecuting() {
-        return getStore().getBoolean(PreferenceConstants.EXECUTION_OPEN_REPORT_AFTER_EXECUTING);
+        return getStore().getBoolean(ExecutionPreferenceConstants.EXECUTION_OPEN_REPORT_AFTER_EXECUTING);
     }
     
     public static boolean isQuitDriversAfterExecuting() {
-        return getStore().getBoolean(PreferenceConstants.EXECUTION_QUIT_DRIVERS_AFTER_EXECUTING);
+        return getStore().getBoolean(ExecutionPreferenceConstants.EXECUTION_QUIT_DRIVERS_AFTER_EXECUTING);
     }
 
     public static Map<String, Object> escapeGroovy(Map<String, Object> propertiesMap) {

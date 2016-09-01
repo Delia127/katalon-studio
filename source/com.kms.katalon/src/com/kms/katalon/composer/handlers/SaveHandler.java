@@ -3,7 +3,6 @@ package com.kms.katalon.composer.handlers;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor;
 
 import com.kms.katalon.composer.components.impl.handler.AbstractHandler;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -12,7 +11,6 @@ import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.StringConstants;
 
-@SuppressWarnings("restriction")
 public class SaveHandler extends AbstractHandler {
 
     @Override
@@ -49,7 +47,7 @@ public class SaveHandler extends AbstractHandler {
                     parentCompositePart.save();
                 }
             } else {
-                if (part.getObject() instanceof CompatibilityEditor) {
+                if (GroovyEditorUtil.isGroovyEditorPart(part)) {
                     GroovyEditorUtil.saveEditor(part);
                     eventBroker.post(EventConstants.ECLIPSE_EDITOR_SAVED, part);
                 } else {

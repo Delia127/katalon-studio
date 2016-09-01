@@ -23,6 +23,8 @@ import com.kms.katalon.groovy.util.GroovyUtil;
 
 @Creatable
 public class ProjectController extends EntityController {
+    private static final short DEFAULT_PAGELOAD_TIMEOUT = 30;
+
     private static EntityController _instance;
 
     private static final String RECENT_PROJECT_FILE_LOCATION = Platform.getLocation().toString() + File.separator
@@ -43,7 +45,7 @@ public class ProjectController extends EntityController {
 
     public ProjectEntity addNewProject(String name, String description, String projectLocation) throws Exception {
         ProjectEntity newProject = getDataProviderSetting().getProjectDataProvider().addNewProject(name, description,
-                TestEnvironmentController.getInstance().getPageLoadTimeOutDefaultValue(), projectLocation);
+                DEFAULT_PAGELOAD_TIMEOUT, projectLocation);
         addRecentProject(newProject);
         GlobalVariableController.getInstance().generateGlobalVariableLibFile(newProject, null);
         KeywordController.getInstance().parseAllCustomKeywordsWithoutRefreshing(newProject);
@@ -96,6 +98,7 @@ public class ProjectController extends EntityController {
         if (project != null) {
             GroovyUtil.getGroovyProject(project).close(monitor);
         }
+        DataProviderState.getInstance().setCurrentProject(null);
     }
 
     public void updateProject(String name, String description, String projectPk) throws Exception {

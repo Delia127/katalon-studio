@@ -60,6 +60,16 @@ public class ImportNodeWrapper extends AnnonatedNodeWrapper {
         this.isStatic = importNode.isStatic();
     }
 
+    public ImportNodeWrapper(String className, String classNameWithoutPackage, ASTNodeWrapper parentNodeWrapper) {
+        super(parentNodeWrapper);
+        this.type = new ClassNodeWrapper(className, classNameWithoutPackage, this);
+        this.isStar = false;
+        this.isStatic = false;
+        this.packageName = null;
+        this.fieldName = null;
+        this.alias = classNameWithoutPackage;
+    }
+
     public ClassNodeWrapper getType() {
         return type;
     }
@@ -67,7 +77,7 @@ public class ImportNodeWrapper extends AnnonatedNodeWrapper {
     public String getAlias() {
         return alias;
     }
-    
+
     public String getKnownAlias() {
         if (alias != null) {
             return alias;
@@ -75,7 +85,7 @@ public class ImportNodeWrapper extends AnnonatedNodeWrapper {
         if (fieldName != null) {
             return fieldName;
         }
-        
+
         return getType().getNameWithoutPackage();
     }
 

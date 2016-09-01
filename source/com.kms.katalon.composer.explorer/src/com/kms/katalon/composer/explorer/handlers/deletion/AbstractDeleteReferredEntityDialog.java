@@ -34,7 +34,7 @@ public abstract class AbstractDeleteReferredEntityDialog extends AbstractDialog 
     private String entityId;
 
     /** List of referenced entity */
-    private List<FileEntity> affectedEntities;
+    private List<? extends FileEntity> affectedEntities;
 
     protected TableViewer tableViewer;
 
@@ -214,7 +214,7 @@ public abstract class AbstractDeleteReferredEntityDialog extends AbstractDialog 
      * 
      * @return List of referenced entity
      */
-    public List<FileEntity> getAffectedEntities() {
+    public List<? extends FileEntity> getAffectedEntities() {
         return affectedEntities;
     }
 
@@ -223,7 +223,7 @@ public abstract class AbstractDeleteReferredEntityDialog extends AbstractDialog 
      * 
      * @param affectedEntities List of referenced entity
      */
-    public void setAffectedEntities(List<FileEntity> affectedEntities) {
+    public void setAffectedEntities(List<? extends FileEntity> affectedEntities) {
         this.affectedEntities = affectedEntities;
     }
 

@@ -94,6 +94,7 @@ public class ResetPerspectiveHandler extends AbstractHandler {
         MPartStack composerPartStack = switcher.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
         MPlaceholder area = switcher.find(IdConstants.SHARE_AREA_ID, application);
         List<MStackElement> composerPartStackChildren = composerPartStack.getChildren();
+        MStackElement firstVisibleTab = null;
         // Move all opened entities back to composer area
         for (MPart p : parts) {
             String elementId = p.getElementId();
@@ -101,11 +102,14 @@ public class ResetPerspectiveHandler extends AbstractHandler {
                     && modelService.find(elementId, area) == null) {
                 // not in MArea
                 composerPartStackChildren.add(p);
+                if (p.isVisible() && firstVisibleTab == null) {
+                    firstVisibleTab = p;
+                }
             }
         }
-        if (composerPartStackChildren != null && !composerPartStackChildren.isEmpty()) {
-            // reselect the first tab
-            composerPartStack.setSelectedElement(composerPartStackChildren.get(0));
+        if (firstVisibleTab != null) {
+            // reselect the first visible tab
+            composerPartStack.setSelectedElement(firstVisibleTab);
         }
 
         if (IdConstants.KEYWORD_PERSPECTIVE_ID.equals(perspective.getElementId())) {

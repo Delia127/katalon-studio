@@ -3,6 +3,7 @@ package com.kms.katalon.composer.testcase.groovy.ast;
 import groovy.lang.Script;
 import groovyjarjarasm.asm.Opcodes;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,6 +27,7 @@ import com.kms.katalon.core.testdata.TestDataFactory;
 import com.kms.katalon.core.testobject.ObjectRepository;
 import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.custom.keyword.KeywordClass;
+import com.kms.katalon.custom.parser.GlobalVariableParser;
 
 public class ClassNodeWrapper extends ASTNodeWrapper {
     protected Class<?> typeClass;
@@ -61,6 +63,15 @@ public class ClassNodeWrapper extends ASTNodeWrapper {
     public ClassNodeWrapper(ClassNode classNode, ASTNodeWrapper parentNodeWrapper) {
         super(classNode, parentNodeWrapper);
         copyProperties(classNode);
+    }
+
+    public ClassNodeWrapper(String className, String classNameWithoutPackage, ASTNodeWrapper parentNodeWrapper) {
+        this(new ClassNode(className, Modifier.PUBLIC, new ClassNode(Object.class)), parentNodeWrapper);
+    }
+
+    public ClassNodeWrapper(ClassNodeWrapper classNodeWrapper, ASTNodeWrapper parentNodeWrapper) {
+        super(classNodeWrapper, parentNodeWrapper);
+        copyClassProperties(classNodeWrapper);
     }
 
     protected void copyProperties(ClassNode classNode) {
@@ -122,7 +133,6 @@ public class ClassNodeWrapper extends ASTNodeWrapper {
             public int compare(ImportNodeWrapper import_1, ImportNodeWrapper import_2) {
                 return Integer.compare(import_1.getLineNumber(), import_2.getLineNumber());
             }
-
         });
     }
 
@@ -130,11 +140,6 @@ public class ClassNodeWrapper extends ASTNodeWrapper {
         for (ImportNode importNode : importsList) {
             importNodeCollection.addImportNode(new ImportNodeWrapper(importNode, this));
         }
-    }
-
-    public ClassNodeWrapper(ClassNodeWrapper classNodeWrapper, ASTNodeWrapper parentNodeWrapper) {
-        super(classNodeWrapper, parentNodeWrapper);
-        copyClassProperties(classNodeWrapper);
     }
 
     private void copyClassProperties(ClassNodeWrapper classNodeWrapper) {
@@ -155,7 +160,10 @@ public class ClassNodeWrapper extends ASTNodeWrapper {
         }
         importNodeCollection.clear();
         for (ImportNodeWrapper importNode : classNodeWrapper.getImports()) {
-            importNodeCollection.addImportNode(new ImportNodeWrapper(importNode, this));
+            // Prevent infinite loop
+            if (!importNode.equals(parentNodeWrapper)) {
+                importNodeCollection.addImportNode(new ImportNodeWrapper(importNode, this));
+            }
         }
         methods.clear();
         for (MethodNodeWrapper method : classNodeWrapper.getMethods()) {
@@ -349,6 +357,11 @@ public class ClassNodeWrapper extends ASTNodeWrapper {
         addImport(TestCase.class);
         addImport(TestData.class);
         addImport(TestObject.class);
+        addImport(GlobalVariableParser.INTERNAL_PACKAGE_NAME, GlobalVariableParser.GLOBAL_VARIABLE_CLASS_NAME);
+    }
+
+    public void addImport(String packageName, String className) {
+        importNodeCollection.addImportNode(new ImportNodeWrapper(packageName + "." + className, className, this));
     }
 
     public boolean isArray() {

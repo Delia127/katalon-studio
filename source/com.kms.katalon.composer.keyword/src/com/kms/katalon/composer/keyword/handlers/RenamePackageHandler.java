@@ -147,11 +147,26 @@ public class RenamePackageHandler {
                 }
                 eventBroker.post(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, new Object[] { oldPackagePath,
                         parentPackageFragmentFolder.getName() + IPath.SEPARATOR + newPkName });
+                refreshParentAndSelect(parentTreeEntity, newPkName);
             }
         } catch (Exception e) {
             MessageDialog.openError(null, StringConstants.ERROR_TITLE,
                     StringConstants.HAND_ERROR_MSG_UNABLE_TO_RENAME_PACKAGE);
             LoggerSingleton.logError(e);
+        }
+    }
+
+    protected void refreshParentAndSelect(ITreeEntity parentTreeEntity, String newName) throws Exception {
+        if (parentTreeEntity == null || newName == null) {
+            return;
+        }
+        eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
+        for (Object sibling : parentTreeEntity.getChildren()) {
+            ITreeEntity siblingTree = (ITreeEntity) sibling;
+            if (newName.equals(siblingTree.getText())) {
+                eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, siblingTree);
+                return;
+            }
         }
     }
 

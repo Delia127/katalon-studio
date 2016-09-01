@@ -6,11 +6,6 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import org.eclipse.core.commands.Command;
-import org.eclipse.core.commands.IParameter;
-import org.eclipse.core.commands.Parameterization;
-import org.eclipse.core.commands.ParameterizedCommand;
-import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.AboutToShow;
 import org.eclipse.e4.ui.model.application.commands.MCommand;
@@ -18,24 +13,17 @@ import org.eclipse.e4.ui.model.application.commands.MCommandsFactory;
 import org.eclipse.e4.ui.model.application.ui.menu.MHandledMenuItem;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuElement;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuFactory;
-import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.e4.ui.model.application.ui.menu.MMenuSeparator;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.EventConstants;
-import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.helper.ConstantsHelper;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 
-@SuppressWarnings("restriction")
 public class RecentProjectsMenuContribution implements EventHandler {
-    @Inject
-    private ECommandService commandService;
-
-    @Inject
-    EModelService modelService;
 
     @Inject
     private IEventBroker eventBroker;
@@ -53,6 +41,10 @@ public class RecentProjectsMenuContribution implements EventHandler {
     @AboutToShow
     public void aboutToShow(List<MMenuElement> menuItems) {
         try {
+            // Add a separator at top of items
+            menuItems.add(newMenuSeparator());
+            
+            RecentProjectParameterizedCommandBuilder commandBuilder = new RecentProjectParameterizedCommandBuilder();
             for (ProjectEntity project : recentProjects) {
                 // Add temp command to avoid warning message
                 MCommand command = MCommandsFactory.INSTANCE.createCommand();
@@ -67,21 +59,22 @@ public class RecentProjectsMenuContribution implements EventHandler {
                 recentProjectMenuItem.setCommand(command);
 
                 // Create parameterized command
-                Command recentProjectCommand = commandService.getCommand(IdConstants.OPEN_RECENT_PROJECT_COMMAND_ID);
-                List<Parameterization> parameterization = new ArrayList<Parameterization>();
-                IParameter param = recentProjectCommand
-                        .getParameter(IdConstants.OPEN_RECENT_PROJECT_COMMAND_PARAMETER_ID);
-                Parameterization params = new Parameterization(param, project.getId());
-                parameterization.add(params);
-                ParameterizedCommand parameterizedCommand = new ParameterizedCommand(recentProjectCommand,
-                        parameterization.toArray(new Parameterization[parameterization.size()]));
-                recentProjectMenuItem.setWbCommand(parameterizedCommand);
+                recentProjectMenuItem.setWbCommand(commandBuilder.createRecentProjectParameterizedCommand(project));
 
                 menuItems.add(recentProjectMenuItem);
             }
+
+            if (!recentProjects.isEmpty()) {
+                // Add a separator under these items
+                menuItems.add(newMenuSeparator());
+            }
         } catch (Exception e) {
-            LoggerSingleton.getInstance().getLogger().error(e);
+            LoggerSingleton.logError(e);
         }
+    }
+
+    private MMenuSeparator newMenuSeparator() {
+        return MMenuFactory.INSTANCE.createMenuSeparator();
     }
 
     private String getLocationStringLabel(String location) {

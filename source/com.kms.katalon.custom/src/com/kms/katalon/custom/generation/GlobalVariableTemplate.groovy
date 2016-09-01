@@ -1,45 +1,58 @@
 package com.kms.katalon.custom.generation
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
-
 import groovy.text.GStringTemplateEngine
+import groovy.transform.CompileStatic;
+
+import org.apache.commons.lang.StringEscapeUtils
 
 import com.kms.katalon.core.testdata.TestDataFactory
 import com.kms.katalon.core.testobject.ObjectRepository
+import com.kms.katalon.custom.parser.GlobalVariableParser;
 import com.kms.katalon.entity.global.GlobalVariableEntity
 
 class GlobalVariableTemplate {
-    def static tpl = """
+    private static final String DEPRECATED_STRING = "@deprecated Please use " + GlobalVariableParser.INTERNAL_PACKAGE_NAME + "." + GlobalVariableParser.GLOBAL_VARIABLE_CLASS_NAME +" instead";
+    private static final String PACKAGE_STRING = "package " + GlobalVariableParser.INTERNAL_PACKAGE_NAME;
+    
+    private static final String tpl = """<% if (!deprecatedFlag) { %>${PACKAGE_STRING}<% } %>
 import ${TestDataFactory.class.getName()}
 import ${ObjectRepository.class.getName()}
 import groovy.transform.CompileStatic
 
 
+/**
+ * This class is generated automatically by Katalon Studio and should not be modified or deleted.
+ * <% if (deprecatedFlag) { %>${DEPRECATED_STRING}<% } %>
+ */
+<% if (deprecatedFlag) { %>@Deprecated<% } %>
 @CompileStatic
-class GlobalVariable {
+public class GlobalVariable {
 	<% globalVariables.each { %> 
     /**
      * <p><%= GlobalVariableTemplate.escapeHtmlForJavadoc(it.getDescription()) %></p>
      */
-	def static <%= it.getName() %> = <%= it.getInitValue() %>
+	public static Object <%= it.getName() %> = <%= it.getInitValue() %>
 	<% } %> 
 }
 """
-    def generateGlobalVarialbeFile(File file, List<GlobalVariableEntity> globalVariables) {
+
+    @CompileStatic
+    public static void generateGlobalVariableFile(File file, List<GlobalVariableEntity> globalVariables, boolean isDeprecated) {
         def binding = [
+            "deprecatedFlag" : isDeprecated,
             "globalVariables" : globalVariables,
             "GlobalVariableTemplate" : GlobalVariableTemplate.class
         ]
-        
-        def engine = new GStringTemplateEngine()        
+
+        def engine = new GStringTemplateEngine()
         def tpl = engine.createTemplate(tpl).make(binding)
         if (file.canWrite()) {
             file.write(tpl.toString());
         }
     }
-    
-    def static escapeHtmlForJavadoc(String description) {
+
+    @CompileStatic
+    public static String escapeHtmlForJavadoc(String description) {
         return StringEscapeUtils.escapeHtml(description).replace("/", "&#47;")
     }
 }

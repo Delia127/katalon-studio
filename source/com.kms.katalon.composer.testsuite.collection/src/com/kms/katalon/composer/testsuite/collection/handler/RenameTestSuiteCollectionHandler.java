@@ -44,17 +44,17 @@ public class RenameTestSuiteCollectionHandler {
         });
     }
 
-    private void execute(TestSuiteCollectionTreeEntity testRunTree) {
+    private void execute(TestSuiteCollectionTreeEntity testSuiteCollectionTree) {
         try {
-            if (!(testRunTree.getObject() instanceof TestSuiteCollectionEntity)) {
+            if (!(testSuiteCollectionTree.getObject() instanceof TestSuiteCollectionEntity)) {
                 return;
             }
 
-            rename(testRunTree);
+            rename(testSuiteCollectionTree);
 
-            eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, testRunTree.getParent());
+            eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, testSuiteCollectionTree.getParent());
 
-            eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, testRunTree);
+            eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, testSuiteCollectionTree);
         } catch (Exception e) {
             MultiStatusErrorDialog.showErrorDialog(e, StringConstants.HDL_MSG_UNABLE_TO_RENAME_TEST_SUITE_COLLECTION,
                     e.getMessage());
@@ -64,7 +64,8 @@ public class RenameTestSuiteCollectionHandler {
 
     private void rename(TestSuiteCollectionTreeEntity testSuiteCollectionTree) throws Exception {
         TestSuiteCollectionEntity testSuiteCollectionEntity = (TestSuiteCollectionEntity) testSuiteCollectionTree.getObject();
-        RenameWizard renameWizard = new RenameWizard(testSuiteCollectionTree, getSibblingNames(testSuiteCollectionEntity));
+        RenameWizard renameWizard = new RenameWizard(testSuiteCollectionTree,
+                getSibblingNames(testSuiteCollectionEntity));
         if (new CWizardDialog(parentShell, renameWizard).open() != Window.OK) {
             return;
         }
@@ -77,8 +78,8 @@ public class RenameTestSuiteCollectionHandler {
         String oldIdForDisplay = testSuiteCollectionEntity.getIdForDisplay();
         TestSuiteCollectionController.getInstance().renameTestSuiteCollection(newName, testSuiteCollectionEntity);
 
-        eventBroker.post(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM,
-                new Object[] { oldIdForDisplay, testSuiteCollectionEntity.getIdForDisplay() });
+        eventBroker.post(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, new Object[] { oldIdForDisplay,
+                testSuiteCollectionEntity.getIdForDisplay() });
     }
 
     private List<String> getSibblingNames(TestSuiteCollectionEntity testRunEntity) throws Exception {

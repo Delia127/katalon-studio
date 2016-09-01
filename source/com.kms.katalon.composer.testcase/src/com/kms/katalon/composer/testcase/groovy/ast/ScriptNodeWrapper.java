@@ -14,6 +14,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.statements.BlockStatementWra
 
 public class ScriptNodeWrapper extends ClassNodeWrapper implements ASTHasBlock {
     private BlockStatementWrapper mainBlock;
+
     private String testCaseId;
 
     public ScriptNodeWrapper(String testCaseId) {
@@ -26,7 +27,8 @@ public class ScriptNodeWrapper extends ClassNodeWrapper implements ASTHasBlock {
         super(scriptClass, null);
         this.testCaseId = testCaseId;
         for (MethodNode methodNode : scriptClass.getMethods()) {
-            if (methodNode.getLineNumber() < 0 || !methodNode.getName().equals("run") || !(methodNode.getCode() instanceof BlockStatement)) {
+            if (methodNode.getLineNumber() < 0 || !methodNode.getName().equals("run")
+                    || !(methodNode.getCode() instanceof BlockStatement)) {
                 continue;
             }
             mainBlock = new BlockStatementWrapper((BlockStatement) methodNode.getCode(), this);
@@ -57,7 +59,7 @@ public class ScriptNodeWrapper extends ClassNodeWrapper implements ASTHasBlock {
     public BlockStatementWrapper getBlock() {
         return mainBlock;
     }
-    
+
     public String getTestCaseId() {
         return testCaseId;
     }

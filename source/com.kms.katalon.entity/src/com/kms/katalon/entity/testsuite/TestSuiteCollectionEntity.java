@@ -1,6 +1,7 @@
 package com.kms.katalon.entity.testsuite;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -70,8 +71,12 @@ public class TestSuiteCollectionEntity extends FileEntity {
                 .isEquals();
     }
 
-    public void reuseWrappers(TestSuiteCollectionEntity dest) {
-        dest.setTestSuiteRunConfigurations(this.getTestSuiteRunConfigurations());
+    public void reuseWrappers(TestSuiteCollectionEntity src) {
+        List<TestSuiteRunConfiguration> runConfigs = new ArrayList<>();
+        for (TestSuiteRunConfiguration eachSourceConfig : src.getTestSuiteRunConfigurations()) {
+            runConfigs.add(eachSourceConfig);
+        }
+        this.setTestSuiteRunConfigurations(runConfigs);
     }
 
     @Override
@@ -92,5 +97,22 @@ public class TestSuiteCollectionEntity extends FileEntity {
         for (TestSuiteRunConfiguration testSuiteRunConfig : getTestSuiteRunConfigurations()) {
             testSuiteRunConfig.setRunEnabled(runEnabled);
         }
+    }
+
+    public List<TestSuiteRunConfiguration> findRunConfigurations(TestSuiteEntity testSuite) {
+        if (testSuite == null) {
+            return Collections.emptyList();
+        }
+        List<TestSuiteRunConfiguration> runConfigurations = new ArrayList<>();
+        for (TestSuiteRunConfiguration config : getTestSuiteRunConfigurations()) {
+            if (testSuite.equals(config.getTestSuiteEntity())) {
+                runConfigurations.add(config);
+            }
+        }
+        return runConfigurations;
+    }
+
+    public boolean hasTestSuiteReferences(TestSuiteEntity testSuite) {
+        return !findRunConfigurations(testSuite).isEmpty();
     }
 }

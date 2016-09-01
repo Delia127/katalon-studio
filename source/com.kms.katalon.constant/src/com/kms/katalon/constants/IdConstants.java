@@ -70,6 +70,8 @@ public interface IdConstants {
 
     public static final String EXPLORER_TOOL_ITEM_LINK_PART = "com.kms.katalon.composer.explorer.handledtoolitem.linkPart";
 
+    public static final String WELCOME_PART_ID = "com.kms.katalon.part.welcome";
+
     // Test Case Part content
     public static final String TEST_CASE_PARENT_COMPOSITE_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID + ".testcase";
 
@@ -102,7 +104,7 @@ public interface IdConstants {
 
     // Test Data Part content
     public static final String TEST_SUITE_COLLECTION_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID
-            + ".testrun";
+            + ".testSuiteCollection";
 
     // Report Part content
     public static final String REPORT_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID + ".report";
@@ -220,6 +222,8 @@ public interface IdConstants {
     public static final String MENU_ID_SEARCH_ = "com.kms.katalon.handledmenuitem.searchFile";
 
     public static final String MENU_ID_PROJECT = "com.kms.katalon.composer.menu.project";
+    
+    public static final String MENU_ID_INTEGRATION = "com.kms.katalon.menu.integration";
 
     public static final String MENU_ID_WINDOW = "com.kms.katalon.composer.menu.window";
 

@@ -9,10 +9,18 @@
    <launcherArgs>
       <programArgs>-data config
       </programArgs>
+      <programArgsMac>-vm ../../../jre/Contents/Home/jre/lib/jli/libjli.dylib
+      </programArgsMac>
       <vmArgs>-Xms256m
--Xmx2048m
 -XX:PermSize=128M
 -XX:MaxPermSize=512M
+         <argsX86>-Xmx1280m</argsX86>
+         <argsX86_64>-Xmx2048m</argsX86_64>
+         <argsPPC>-Xmx2048m</argsPPC>
+         <argsIA_64>-Xmx2048m</argsIA_64>
+         <argsIA_64_32>-Xmx1280m</argsIA_64_32>
+         <argsPA_RISC>-Xmx2048m</argsPA_RISC>
+         <argsSPARC>-Xmx2048m</argsSPARC>
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>

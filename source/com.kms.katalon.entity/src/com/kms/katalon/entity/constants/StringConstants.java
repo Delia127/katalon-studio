@@ -19,8 +19,8 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String EXC_DUPLICATE_ENTITY = "Duplicated Entity";
 
 	// FilePathTooLongException
-	public static final String EXC_CANNOT_SAVE_FILE_PATH_LENG_LIMIT_EXCEEDED = "Cannot save entity: file path length limit exceeded ({0}/{1}).";
-	public static final String EXC_CANNOT_SAVE_CHILD_ENTITY_FILE_PATH_LIMIT_EXCEEDED = "Cannot save entity: child entity {0}''s file path length limit exceeded ({1}/{2}).";
+	public static final String EXC_CANNOT_SAVE_FILE_PATH_LENG_LIMIT_EXCEEDED = "Cannot save entity: file path length limit exceeded ({0}/{1}). You should shorten the name and try again";
+	public static final String EXC_CANNOT_SAVE_CHILD_ENTITY_FILE_PATH_LIMIT_EXCEEDED = "Cannot save entity: child entity {0}''s file path length limit exceeded ({1}/{2}). You should shorten the name and try again";
 
 	// LengthExceedLimitationException
 	public static final String EXC_X_COULDNT_EXCEED_200_CHARS = "{0} couldn''t exceed 200 characters.";

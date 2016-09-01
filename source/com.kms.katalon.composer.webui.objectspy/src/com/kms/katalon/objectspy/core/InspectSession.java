@@ -101,7 +101,7 @@ public class InspectSession implements Runnable {
         IDriverConnector webUIDriverConnector = WebUIExecutionUtil.getBrowserDriverConnector(webUIDriverType,
                 projectDir);
         DefaultExecutionSetting executionSetting = new DefaultExecutionSetting();
-        executionSetting.setTimeout(ExecutionUtil.getDefaultPageLoadTimeout());
+        executionSetting.setTimeout(ExecutionUtil.getDefaultImplicitTimeout());
 
         Map<String, IDriverConnector> driverConnectors = new HashMap<String, IDriverConnector>(1);
         driverConnectors.put(DriverFactory.WEB_UI_DRIVER_PROPERTY, webUIDriverConnector);
@@ -232,7 +232,7 @@ public class InspectSession implements Runnable {
         }
         generateVariableInitFileForChrome(chromeExtensionFolder);
         ChromeOptions options = new ChromeOptions();
-        options.addArguments(LOAD_EXTENSION_CHROME_PREFIX + chromeExtensionFolder.getAbsolutePath(), WebDriverPropertyUtil.CHROME_SWITCHES, WebDriverPropertyUtil.DISABLE_EXTENSIONS);
+        options.addArguments(LOAD_EXTENSION_CHROME_PREFIX + chromeExtensionFolder.getAbsolutePath());
         DesiredCapabilities capabilities = new DesiredCapabilities();
         capabilities.setCapability(ChromeOptions.CAPABILITY, options);
         return capabilities;

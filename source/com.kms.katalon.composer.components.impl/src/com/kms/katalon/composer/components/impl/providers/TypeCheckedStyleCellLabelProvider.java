@@ -18,7 +18,7 @@ import com.kms.katalon.composer.components.impl.control.CustomColumnViewer;
 
 public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLabelProvider {
 
-    private static final int SPACE = 5;
+    private static final int DF_MARGIN = 0;
 
     protected int columnIndex;
 
@@ -86,16 +86,23 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
         }
     }
 
-    protected int getSpace() {
-        return SPACE;
+    public CellLayoutInfo getCellLayoutInfo() {
+        return new DefaultCellLayoutInfo();
     }
 
-    protected int getLeftMargin() {
-        return SPACE;
+    protected final int getSpace() {
+        CellLayoutInfo layoutInfo = getCellLayoutInfo();
+        return layoutInfo != null ? layoutInfo.getSpace() : DF_MARGIN;
     }
 
-    protected int getRightMargin() {
-        return SPACE;
+    protected final int getLeftMargin() {
+        CellLayoutInfo layoutInfo = getCellLayoutInfo();
+        return layoutInfo != null ? layoutInfo.getLeftMargin() : DF_MARGIN;
+    }
+
+    protected final int getRightMargin() {
+        CellLayoutInfo layoutInfo = getCellLayoutInfo();
+        return layoutInfo != null ? layoutInfo.getRightMargin() : DF_MARGIN;
     }
 
     protected boolean canNotDrawSafely(Object element) {

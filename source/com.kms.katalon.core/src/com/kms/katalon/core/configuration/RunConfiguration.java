@@ -182,6 +182,10 @@ public class RunConfiguration {
 
         return doubleValue.intValue();
     }
+    
+    public static boolean getBooleanProperty(String propertyKey, Map<String, Object> jsonObjProperties) {
+        return Boolean.valueOf(getStringProperty(propertyKey, jsonObjProperties));
+    }
 
     public static Map<String, Object> getDriverExecutionProperties(String driverName) {
         Map<String, Object> driverProps = (Map<String, Object>) getExecutionProperties().get(EXECUTION_DRIVER_PROPERTY);

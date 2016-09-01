@@ -72,11 +72,14 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_oiLmoAOIEeWmYfckKw0_5w" elementId="com.kms.katalon.handledmenuitem.searchFile" label="Search..." command="_N5ChkARIEeWyKYoESvUc1g"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_0yMVUAmfEeWmsZWUQ_5cNA" elementId="com.kms.katalon.composer.menu.project" label="Project"/>
+      <children xsi:type="menu:Menu" xmi:id="__bFJIGRZEeaO3oYZQbbJmA" elementId="com.kms.katalon.menu.integration" label="Integration"/>
       <children xsi:type="menu:Menu" xmi:id="_IjUoUNnnEeWQyuuwTERZYg" elementId="com.kms.katalon.composer.menu.window" label="Window">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_xoCTINn4EeWQyuuwTERZYg" elementId="com.kms.katalon.composer.menu.window.resetPerspective" label="Reset Perspective..." command="_oilxkNn4EeWQyuuwTERZYg"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_hQQH7hYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.help" label="Help">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_hQQH7xYMEeSUMbyEN2kbFQ" label="About" command="_hQQH5hYMEeSUMbyEN2kbFQ"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_dj8ScGgxEeatJ4Re1SnNtw" elementId="com.kms.katalon.handledmenuitem.welcome" label="Welcome" iconURI="platform:/plugin/org.eclipse.ui.intro/icons/welcome16.gif" command="_jm89wGgxEeatJ4Re1SnNtw"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_iImwQGp9EeakEakFblwi9Q" elementId="com.kms.katalon.handledmenuitem.functionsintroduction" label="Functions Introduction" command="_agaP0Gp9EeakEakFblwi9Q"/>
       </children>
     </mainMenu>
     <sharedElements xsi:type="basic:Part" xmi:id="_yewVQD8LEeSqW-o8jtXO1g" elementId="org.eclipse.ui.console.ConsoleView" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Console" iconURI="platform:/plugin/org.eclipse.ui.console/icons/full/cview16/console_view.png">
@@ -87,6 +90,7 @@
       <children xsi:type="basic:PartStack" xmi:id="_Hi9d8D8DEeSqW-o8jtXO1g" elementId="com.kms.katalon.composer.content" containerData="100">
         <tags>NoAutoCollapse</tags>
         <tags>NoMove</tags>
+        <children xsi:type="basic:Part" xmi:id="_O4SpgGUUEeaFXcvzM5e4Jg" elementId="com.kms.katalon.part.welcome" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.parts.WelcomePart" label="Welcome" iconURI="platform:/plugin/org.eclipse.ui.intro/icons/welcome16.gif" closeable="true"/>
       </children>
     </sharedElements>
     <sharedElements xsi:type="basic:Part" xmi:id="_PY0KMCUhEeWUFICrCSQG_A" elementId="org.eclipse.debug.ui.DebugView" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Debug" iconURI="platform:/plugin/org.eclipse.debug.ui/icons/full/eview16/debug_view.png"/>
@@ -104,12 +108,16 @@
       <children xsi:type="menu:ToolBar" xmi:id="_hQQH9hYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.toolbar">
         <tags>Draggable</tags>
         <children xsi:type="menu:HandledToolItem" xmi:id="_hQQH-BYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.toolbar.save" iconURI="platform:/plugin/com.kms.katalon/icons/save_28.png" tooltip="Save" command="_hQQH4xYMEeSUMbyEN2kbFQ">
+          <persistedState key="index" value="0"/>
           <tags>Opaque</tags>
         </children>
         <children xsi:type="menu:HandledToolItem" xmi:id="_5oUMAEO4EeSlQuaMBzQJOw" elementId="com.kms.katalon.composer.toolbar.saveAll" iconURI="platform:/plugin/com.kms.katalon/icons/save_all_28.png" tooltip="Save All" command="_8qJlUEO4EeSlQuaMBzQJOw">
+          <persistedState key="index" value="1"/>
           <tags>Opaque</tags>
         </children>
-        <children xsi:type="menu:ToolBarSeparator" xmi:id="_3PTrMBQXEeWFKqx225rIVg" elementId="com.kms.katalon.toolbarseparator.0"/>
+        <children xsi:type="menu:ToolBarSeparator" xmi:id="_3PTrMBQXEeWFKqx225rIVg" elementId="com.kms.katalon.toolbarseparator.0">
+          <persistedState key="index" value="2"/>
+        </children>
       </children>
       <children xsi:type="menu:ToolControl" xmi:id="_1-cu4OJUEeSyVPtKyNklew" elementId="PerspectiveSpacer" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.renderers.swt/org.eclipse.e4.ui.workbench.renderers.swt.LayoutModifierToolControl">
         <tags>stretch</tags>
@@ -132,6 +140,8 @@
   <handlers xmi:id="_TBljYHR3EeSsHsBQ5R8Vbg" elementId="com.kms.katalon.composer.handler.closeCommand" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.CloseHandler" command="_On9QsHR3EeSsHsBQ5R8Vbg"/>
   <handlers xmi:id="_5GOAsAOIEeWmYfckKw0_5w" elementId="com.kms.katalon.handler.search" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.SearchHandler" command="_N5ChkARIEeWyKYoESvUc1g"/>
   <handlers xmi:id="_uIDlQNn4EeWQyuuwTERZYg" elementId="com.kms.katalon.composer.menu.handler.resetPerspective" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.ResetPerspectiveHandler" command="_oilxkNn4EeWQyuuwTERZYg"/>
+  <handlers xmi:id="_oHfwwGgxEeatJ4Re1SnNtw" elementId="com.kms.katalon.handler.welcome" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenWelcomePageHandler" command="_jm89wGgxEeatJ4Re1SnNtw"/>
+  <handlers xmi:id="_Z3rb4Gp9EeakEakFblwi9Q" elementId="com.kms.katalon.handler.functionsIntroduction" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenFunctionsIntroductionHandler" command="_agaP0Gp9EeakEakFblwi9Q"/>
   <bindingTables xmi:id="_GQOAAAONEeWmYfckKw0_5w" elementId="com.kms.katalon.bindingtable.window" bindingContext="_mWGB8AQqEeWyKYoESvUc1g">
     <bindings xmi:id="_RvI6YAONEeWmYfckKw0_5w" elementId="com.kms.katalon.keybinding.search" keySequence="M1+H" command="_N5ChkARIEeWyKYoESvUc1g">
       <tags>type:user</tags>
@@ -145,6 +155,8 @@
   <commands xmi:id="_On9QsHR3EeSsHsBQ5R8Vbg" elementId="com.kms.katalon.command.close" commandName="closeCommand"/>
   <commands xmi:id="_N5ChkARIEeWyKYoESvUc1g" elementId="com.kms.katalon.command.search" commandName="searchCommand"/>
   <commands xmi:id="_oilxkNn4EeWQyuuwTERZYg" elementId="com.kms.katalon.composer.command.window.resetPerspective" commandName="resetPerspectiveCommand"/>
+  <commands xmi:id="_jm89wGgxEeatJ4Re1SnNtw" elementId="com.kms.katalon.command.welcome" commandName="openWelcomePageCommand"/>
+  <commands xmi:id="_agaP0Gp9EeakEakFblwi9Q" elementId="com.kms.katalon.command.openFunctionsIntroductionCommand" commandName="openFunctionsIntroductionCommand"/>
   <addons xmi:id="_hQQH0hYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_hQQH0xYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_hQQH1BYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>

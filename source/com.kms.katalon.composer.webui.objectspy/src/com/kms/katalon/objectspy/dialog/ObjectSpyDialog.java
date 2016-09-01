@@ -279,7 +279,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         startChrome.setText(WebUIDriverType.CHROME_DRIVER.toString());
         startChrome.addSelectionListener(browserSelectionListener);
 
-        if (Platform.getOS().equals(Platform.WS_WIN32)) {
+        if (Platform.getOS().equals(Platform.OS_WIN32)) {
             MenuItem startIE = new MenuItem(menu, SWT.PUSH);
             startIE.setImage(ImageConstants.IMG_16_BROWSER_IE);
             startIE.setText(WebUIDriverType.IE_DRIVER.toString());
@@ -327,10 +327,12 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         startFirefox.setText(WebUIDriverType.FIREFOX_DRIVER.toString());
         startFirefox.addSelectionListener(new InstantBrowserSelectionAdapter(WebUIDriverType.FIREFOX_DRIVER));
 
-        final MenuItem startIE = new MenuItem(instantBrowserMenu, SWT.PUSH);
-        startIE.setImage(ImageConstants.IMG_16_BROWSER_IE);
-        startIE.setText(WebUIDriverType.IE_DRIVER.toString());
-        startIE.addSelectionListener(new InstantBrowserSelectionAdapter(WebUIDriverType.IE_DRIVER));
+        if (Platform.getOS().equals(Platform.OS_WIN32)) {
+            final MenuItem startIE = new MenuItem(instantBrowserMenu, SWT.PUSH);
+            startIE.setImage(ImageConstants.IMG_16_BROWSER_IE);
+            startIE.setText(WebUIDriverType.IE_DRIVER.toString());
+            startIE.addSelectionListener(new InstantBrowserSelectionAdapter(WebUIDriverType.IE_DRIVER));
+        }
     }
 
     private final class InstantBrowserSelectionAdapter extends SelectionAdapter {

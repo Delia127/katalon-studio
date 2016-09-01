@@ -9,7 +9,9 @@ import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.FileLocator;
@@ -915,6 +917,18 @@ public class RecorderDialog extends Dialog {
                 } else {
                     htmlActions.addAll(HTMLActionUtil.getAllHTMLActions());
                 }
+                
+                // remove duplicate keyword
+                Map<String, IHTMLAction> keywords = new LinkedHashMap<>();
+                for (int i = 0; i < htmlActions.size(); ++i) {
+                    action = htmlActions.get(i);
+                    if (!keywords.containsKey(action.getName())) {
+                        keywords.put(action.getName(), htmlActions.get(i));
+                    }
+                }
+                htmlActions.clear();
+                htmlActions.addAll(keywords.values());
+                
                 for (IHTMLAction htmlAction : htmlActions) {
                     actionNames.add(TreeEntityUtil.getReadableKeywordName(htmlAction.getName()));
                 }
@@ -1101,7 +1115,9 @@ public class RecorderDialog extends Dialog {
 
         addBrowserMenuItem(browserMenu, WebUIDriverType.FIREFOX_DRIVER);
         addBrowserMenuItem(browserMenu, WebUIDriverType.CHROME_DRIVER);
-        addBrowserMenuItem(browserMenu, WebUIDriverType.IE_DRIVER);
+        if (Platform.getOS().equals(Platform.OS_WIN32)) {
+            addBrowserMenuItem(browserMenu, WebUIDriverType.IE_DRIVER);
+        }
 
         createInstantBrowserMenu(browserMenu);
 
@@ -1157,7 +1173,9 @@ public class RecorderDialog extends Dialog {
 
         addInstantBrowserMenuItem(instantBrowserMenu, WebUIDriverType.CHROME_DRIVER);
         addInstantBrowserMenuItem(instantBrowserMenu, WebUIDriverType.FIREFOX_DRIVER);
-        addInstantBrowserMenuItem(instantBrowserMenu, WebUIDriverType.IE_DRIVER);
+        if (Platform.getOS().equals(Platform.OS_WIN32)) {
+            addInstantBrowserMenuItem(instantBrowserMenu, WebUIDriverType.IE_DRIVER);
+        }
     }
 
     private MenuItem createBrowserMenuItem(Menu browserMenu, final WebUIDriverType webUIDriverType) {

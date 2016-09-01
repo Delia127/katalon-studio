@@ -53,6 +53,7 @@ import org.osgi.service.event.EventHandler;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
+import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.parts.MultipleTabsCompositePart;
@@ -62,6 +63,7 @@ import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.exceptions.GroovyParsingException;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
+import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput;
 import com.kms.katalon.composer.testcase.preferences.TestCasePreferenceDefaultValueInitializer;
 import com.kms.katalon.composer.testcase.util.TestCaseEntityUtil;
 import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
@@ -69,6 +71,7 @@ import com.kms.katalon.composer.util.groovy.GroovyGuiUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FolderController;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.core.ast.GroovyParser;
 import com.kms.katalon.entity.folder.FolderEntity;
@@ -467,14 +470,18 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
                     eventBroker.post(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, new Object[] { oldIdForDisplay,
                             originalTestCase.getIdForDisplay() });
 
-                    // refresh TreeExplorer
-                    eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, null);
                 }
+
+                // refresh TreeExplorer
+                TestCaseTreeEntity testCaseTreeEntity = TreeEntityUtil.getTestCaseTreeEntity(originalTestCase,
+                        ProjectController.getInstance().getCurrentProject());
+                eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, testCaseTreeEntity);
+                eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, testCaseTreeEntity);
 
                 // raise Event to update Test Suite Part and others Test Case
                 // Part
                 // which refer to test case
-                eventBroker.send(EventConstants.TESTCASE_UPDATED, new Object[] { oldPk, originalTestCase });
+                eventBroker.post(EventConstants.TESTCASE_UPDATED, new Object[] { oldPk, originalTestCase });
 
                 originalTestCase.setScriptContents(new byte[0]);
                 temp.setScriptContents(new byte[0]);
@@ -578,7 +585,10 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
                                 boolean isDirty = dirty.isDirty();
                                 changeOriginalTestCase(testCase);
                                 childTestCaseVariablesPart.loadVariables();
-                                childTestCasePart.getTreeTableInput().reloadTestCaseVariables();
+                                TestCaseTreeTableInput treeTableInput = childTestCasePart.getTreeTableInput();
+                                if (treeTableInput != null) {
+                                    treeTableInput.reloadTestCaseVariables();
+                                }
                                 updatePart(testCase);
                                 childTestCaseIntegrationPart.loadInput();
                                 checkDirty();

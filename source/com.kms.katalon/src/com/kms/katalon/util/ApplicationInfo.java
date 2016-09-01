@@ -2,7 +2,6 @@ package com.kms.katalon.util;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -35,6 +34,8 @@ public class ApplicationInfo {
     private static final String ABOUT_VERSION_NUMBER_KEY = "1";
 
     private static Properties aboutMappingsProperties;
+
+    private static Properties appProperties;
 
     private static Properties getAboutMappingsProperties() {
         if (aboutMappingsProperties != null && !aboutMappingsProperties.isEmpty()) {
@@ -81,34 +82,77 @@ public class ApplicationInfo {
     }
 
     public static void setAppInfoIntoUserHomeDir() {
-        File katalonDir = new File(userDirLocation());
+        String version = versionNo();
+        String buildNo = buildNo();
+
+        getAppProperties();
+        logInfo(StringConstants.APP_VERSION_NUMBER_KEY + "=" + version);
+        logInfo(StringConstants.APP_BUILD_NUMBER_KEY + "=" + buildNo);
+
+        if (version.equals(getAppProperty(StringConstants.APP_VERSION_NUMBER_KEY))
+                && buildNo.equals(getAppProperty(StringConstants.APP_BUILD_NUMBER_KEY))) {
+            return;
+        }
+
+        setAppProperty(StringConstants.APP_VERSION_NUMBER_KEY, version, false);
+        setAppProperty(StringConstants.APP_BUILD_NUMBER_KEY, buildNo, false);
+        saveAppProperties();
+    }
+
+    private static Properties getAppProperties() {
+        if (appProperties != null) {
+            return appProperties;
+        }
+
         File appPropFile = new File(StringConstants.APP_INFO_FILE_LOCATION);
-        Properties appProp = new Properties();
-        try {
-            if (!appPropFile.exists()) {
-
-                if (!katalonDir.exists()) {
-                    katalonDir.mkdir();
-                }
+        File katalonDir = new File(userDirLocation());
+        if (!appPropFile.exists()) {
+            if (!katalonDir.exists()) {
+                katalonDir.mkdir();
+            }
+            try {
                 appPropFile.createNewFile();
+            } catch (Exception ex) {
+                LogUtil.logError(ex);
             }
+        }
+        try (FileInputStream in = new FileInputStream(appPropFile)) {
+            appProperties = new Properties();
+            appProperties.load(in);
+        } catch (Exception ex) {
+            appProperties = null;
+            LogUtil.logError(ex);
+        }
 
-            appProp.load(new FileInputStream(appPropFile));
-            logInfo(StringConstants.APP_VERSION_NUMBER_KEY + "=" + versionNo());
-            logInfo(StringConstants.APP_BUILD_NUMBER_KEY + "=" + buildNo());
+        return appProperties;
+    }
 
-            if (versionNo().equals(appProp.getProperty(StringConstants.APP_VERSION_NUMBER_KEY))
-                    && buildNo().equals(appProp.getProperty(StringConstants.APP_BUILD_NUMBER_KEY))) {
-                return;
-            }
+    public static void setAppProperty(String key, String value, boolean autoSave) {
+        Properties appProps = getAppProperties();
 
-            appProp.setProperty(StringConstants.APP_VERSION_NUMBER_KEY, versionNo());
-            appProp.setProperty(StringConstants.APP_BUILD_NUMBER_KEY, buildNo());
-            appProp.store(new FileOutputStream(appPropFile), installLocation());
-        } catch (FileNotFoundException e) {
-            LogUtil.logError(e);
-        } catch (IOException e) {
-            LogUtil.logError(e);
+        appProps.setProperty(key, value);
+        if (autoSave) {
+            saveAppProperties();
+        }
+    }
+
+    public static String getAppProperty(String key) {
+        Properties appProps = getAppProperties();
+
+        if (appProps != null && appProps.containsKey(key)) {
+            return appProps.getProperty(key);
+        }
+        return null;
+    }
+
+    private static void saveAppProperties() {
+        if (appProperties == null) {
+            return;
+        }
+        try (FileOutputStream out = new FileOutputStream(StringConstants.APP_INFO_FILE_LOCATION)) {
+            appProperties.store(out, installLocation());
+        } catch (Exception ex) {
+            LogUtil.logError(ex);
         }
     }
 

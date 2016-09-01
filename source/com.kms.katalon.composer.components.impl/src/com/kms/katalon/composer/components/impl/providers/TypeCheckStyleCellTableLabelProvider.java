@@ -9,8 +9,11 @@ import com.kms.katalon.composer.components.impl.control.CTableViewer;
 
 public abstract class TypeCheckStyleCellTableLabelProvider <T> extends TypeCheckedStyleCellLabelProvider<T> {
 
+    private CellLayoutInfo cellLayoutInfo;
+
     public TypeCheckStyleCellTableLabelProvider(int columnIndex) {
         super(columnIndex);
+        cellLayoutInfo = new TableCellLayoutInfo();
     }
 
     @Override
@@ -26,5 +29,10 @@ public abstract class TypeCheckStyleCellTableLabelProvider <T> extends TypeCheck
     @Override
     protected boolean canNotDrawSafely(Object element) {
         return super.canNotDrawSafely(element) || !(getViewer() instanceof CTableViewer);
+    }
+    
+    @Override
+    public CellLayoutInfo getCellLayoutInfo() {
+        return cellLayoutInfo;
     }
 }

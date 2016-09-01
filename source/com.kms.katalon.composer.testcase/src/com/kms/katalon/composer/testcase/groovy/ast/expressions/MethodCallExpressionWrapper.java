@@ -12,6 +12,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapHelper;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ImportNodeCollection;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
+import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.testcase.TestCaseFactory;
@@ -293,8 +294,19 @@ public class MethodCallExpressionWrapper extends ExpressionWrapper {
     }
 
     public boolean isCallTestCaseMethodCall() {
-        return isBuiltInKeywordMethodCall() && CALL_TEST_CASE_METHOD_NAME.equals(getMethodAsString())
-                && getArguments().getExpressions().size() > 1;
+        if (getObjectExpression() == null) {
+            return false;
+        }
+
+        for (KeywordClass keywordClass : KeywordController.getInstance().getBuiltInKeywordClasses()) {
+            String classAliasName = keywordClass.getAliasName();
+            if ((isObjectExpressionOfClass(keywordClass.getType()))
+                    || (importHasAliasName(classAliasName) && isObjectExpressionOfClass(classAliasName))) {
+                return CALL_TEST_CASE_METHOD_NAME.equals(getMethodAsString())
+                        && getArguments().getExpressions().size() > 1;
+            }
+        }
+        return false;
     }
 
     public boolean isFindTestCaseMethodCall() {
@@ -323,5 +335,54 @@ public class MethodCallExpressionWrapper extends ExpressionWrapper {
 
     public boolean isKeysArgumentExpression() {
         return isObjectExpressionOfClass(Keys.class) && getMethodAsString().equals(KEYS_CHORDS_METHOD_NAME);
+    }
+    
+    public boolean isStaticMethodCall(ClassLoader classLoader) {
+        String objectAsString = objectExpression.getText();
+        if (StringUtils.isEmpty(objectAsString)) {
+            return false;
+        }
+        Class<?> callerClass = objectExpression.resolveType(classLoader);
+        if (callerClass == null) {
+            return false;
+        }
+
+        String fullCallerClassName = callerClass.getName();
+        if (fullCallerClassName.equals(objectAsString) || callerClass.getSimpleName().equals(objectAsString)) {
+            return true;
+        }
+
+        if (fullCallerClassName.equals(getImportNodeCollection().getQualifierForAlias(objectAsString))) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public Class<?> resolveType(ClassLoader classLoader) {
+        return resolveObjectType(classLoader, false);
+    }
+    
+    private Class<?> resolveObjectType(ClassLoader classLoader, boolean parentResolved) {
+        if (THIS_VARIABLE.equals(getObjectExpressionAsString())) {
+            String methodAsString = getMethodAsString();
+            ImportNodeCollection importNodeCollection = getImportNodeCollection();
+            if (importNodeCollection == null || !importHasAliasName(methodAsString)) {
+                return null;
+            }
+            return importNodeCollection.resolve(importNodeCollection.getQualifierForAlias(methodAsString));
+        }
+        if (objectExpression instanceof MethodCallExpressionWrapper) {
+            return ((MethodCallExpressionWrapper) objectExpression).resolveObjectType(classLoader, true);
+        }
+        Class<?> objectExpressionResult = objectExpression.resolveType(classLoader);
+        if (objectExpressionResult == null) {
+            return null;
+        }
+        if (!parentResolved) {
+            return objectExpressionResult;
+        }
+        return AstKeywordsInputUtil.getFirstAccessibleMethodReturnType(objectExpressionResult, getMethodAsString(),
+                isStaticMethodCall(classLoader));
     }
 }

@@ -11,6 +11,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
@@ -77,9 +78,10 @@ public class GroovyEditorUtil {
         if (!part.isDirty()) {
             return;
         }
-        GroovyEditor editor= (GroovyEditor) getEditor(part);
+        IEditorPart editor = getEditor(part);
         if (editor instanceof GroovyEditor) {
-            ICompilationUnit unit = (ICompilationUnit) editor.getGroovyCompilationUnit();
+            GroovyEditor groovyEditor = (GroovyEditor) editor;
+            ICompilationUnit unit = (ICompilationUnit) groovyEditor.getGroovyCompilationUnit();
             try {
                 if (!unit.isWorkingCopy()) {
                    unit.becomeWorkingCopy(null);
@@ -91,7 +93,14 @@ public class GroovyEditorUtil {
             } finally {
                 part.setDirty(false);
             }
+            return;
         }
+        editor.doSave(new NullProgressMonitor());
+    }
+    
+    public static boolean isGroovyEditorPart(MPart part) {
+        IEditorPart editor = getEditor(part);
+        return editor instanceof GroovyEditor;
     }
     
     private static void updateActiveEditorSources(MPart part) {

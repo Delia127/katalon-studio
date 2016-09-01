@@ -25,21 +25,6 @@ public abstract class TypeCheckedStyleTreeCellLabelProvider<T> extends TypeCheck
     }
 
     @Override
-    protected int getSpace() {
-        return 0;
-    }
-
-    @Override
-    protected int getLeftMargin() {
-        return 0;
-    }
-    
-    @Override
-    protected int getRightMargin() {
-        return 0;
-    }
-    
-    @Override
     protected boolean canNotDrawSafely(Object element) {
         return super.canNotDrawSafely(element) || !(getViewer() instanceof CTreeViewer);
     }

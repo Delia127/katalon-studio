@@ -19,7 +19,6 @@ import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.window.Window;
@@ -48,12 +47,11 @@ import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testdata.constants.ImageConstants;
 import com.kms.katalon.composer.testdata.constants.StringConstants;
-import com.kms.katalon.composer.testdata.parts.provider.InternalDataColumViewerEditor;
 import com.kms.katalon.composer.testdata.parts.provider.InternalDataAddColumnLabelProvider;
+import com.kms.katalon.composer.testdata.parts.provider.InternalDataColumViewerEditor;
 import com.kms.katalon.composer.testdata.parts.provider.InternalDataEditingSupport;
 import com.kms.katalon.composer.testdata.parts.provider.InternalDataLabelProvider;
 import com.kms.katalon.composer.testdata.views.NewTestDataColumnDialog;
-import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity.DataFileDriverType;
@@ -81,7 +79,7 @@ public class InternalTestDataPart extends TestDataMainPart {
 
     private Table table;
 
-    private TableViewer tableViewer;
+    private CTableViewer tableViewer;
 
     @Override
     protected EPartService getPartService() {
@@ -425,7 +423,7 @@ public class InternalTestDataPart extends TestDataMainPart {
                     getCurrentDataColumnEntities(), tableInputToData());
             updateDataFile(originalDataFile);
             dirtyable.setDirty(false);
-            eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, null);
+            refreshTreeEntity();
             sendTestDataUpdatedEvent(originalDataFile.getId());
         } catch (Exception e) {
             LoggerSingleton.logError(e);

@@ -52,14 +52,12 @@
             name="Email">
       </page>   
    </extension>
+   
+   
    <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer
-            class="com.kms.katalon.composer.execution.preferences.ExecutionPreferenceDefaultValueInitializer">
-      </initializer>
-      
-      <initializer
-            class="com.kms.katalon.composer.execution.preferences.MailPreferenceDefaultValueInitializer">
+            class="com.kms.katalon.composer.execution.preferences.ComposerExecutionPreferenceDefaultValueInitializer">
       </initializer>
    </extension>
    

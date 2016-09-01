@@ -117,7 +117,7 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
             } else if (treeEntity instanceof TestSuiteCollectionTreeEntity) {
                 TestSuiteCollectionEntity movedTo = EntityProcessingUtil.moveTestSuiteCollection(
                         (TestSuiteCollectionEntity) ((TestSuiteCollectionTreeEntity) treeEntity).getObject(), targetFolder);
-                lastMovedTreeEntity = TreeEntityUtil.getTestRunTreeEntity(movedTo, targetFolder.getProject());
+                lastMovedTreeEntity = TreeEntityUtil.getTestSuiteCollectionTreeEntity(movedTo, targetFolder.getProject());
             } else if (treeEntity instanceof CheckpointTreeEntity) {
                 CheckpointEntity movedCheckpoint = EntityProcessingUtil.moveCheckpoint(
                         ((CheckpointTreeEntity) treeEntity).getObject(), targetFolder);

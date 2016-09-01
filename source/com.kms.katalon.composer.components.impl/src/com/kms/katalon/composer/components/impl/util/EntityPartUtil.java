@@ -49,8 +49,8 @@ public class EntityPartUtil {
         return IdConstants.TESTSUITE_CONTENT_PART_ID_PREFIX + "(" + testSuitePk + ")";
     }
 
-    public static String getTestSuiteCollectionPartId(String testRunId) {
-        return IdConstants.TEST_SUITE_COLLECTION_CONTENT_PART_ID_PREFIX + "(" + testRunId + ")";
+    public static String getTestSuiteCollectionPartId(String testSuiteCollectionId) {
+        return IdConstants.TEST_SUITE_COLLECTION_CONTENT_PART_ID_PREFIX + "(" + testSuiteCollectionId + ")";
     }
 
     public static String getTestDataPartId(String testDataPk) {

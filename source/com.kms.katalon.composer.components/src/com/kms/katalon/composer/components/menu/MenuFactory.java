@@ -7,8 +7,7 @@ import org.eclipse.e4.ui.model.application.ui.menu.MMenu;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuFactory;
 
 public class MenuFactory {
-	public static MHandledMenuItem createPopupMenuItem(ParameterizedCommand command, String label, String contributorURI) 
-			throws Exception {
+	public static MHandledMenuItem createPopupMenuItem(ParameterizedCommand command, String label, String contributorURI) {
 		if (command != null) {
 			MHandledMenuItem popupMenuItem = MMenuFactory.INSTANCE.createHandledMenuItem();
 			popupMenuItem.setLabel(label);

@@ -48,7 +48,7 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String HAND_ERROR_MSG_NO_DEVICE = "No device is selected";
 
-    public static final String HAND_ERROR_MSG_UNABLE_TO_EXECUTE_TEST_SCRIPT = "Unable to execute test script";
+    public static final String HAND_ERROR_MSG_UNABLE_TO_EXECUTE_TEST_SCRIPT_ROOT_CAUSE = "Unable to execute test script. (Root cause: {0})";
 
     public static final String HAND_ERROR_MSG_UNABLE_TO_EXECUTE_SELECTED_TEST_CASE = "Unable to execute the current selected test case.";
 
@@ -58,17 +58,23 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String HAND_ERROR_MSG_REASON_WRONG_SYNTAX = "Wrong syntax";
 
-    public static final String HAND_ERROR_MSG_REASON_INVALID_TEST_SUITE = "Test suite is not valid.";
+    public static final String HAND_ERROR_MSG_REASON_INVALID_TEST_SUITE = "Test suite is invalid.";
 
-    public static final String HAND_LAUNCHING_TEST_CASE = "Launching test case...";
+    public static final String HAND_JOB_LAUNCHING_TEST_CASE = "Launching test case...";
 
-    public static final String HAND_LAUNCHING_TEST_SUITE = "Launching test suite...";
+    public static final String HAND_JOB_LAUNCHING_TEST_SUITE = "Launching test suite...";
 
-    public static final String HAND_VALIDATING_TEST_SUITE = "Validating test suite...";
+    public static final String HAND_JOB_VALIDATING_TEST_SUITE = "Validating test suite...";
 
-    public static final String HAND_ACTIVATING_VIEWERS = "Activating viewers...";
+    public static final String HAND_JOB_ACTIVATING_VIEWERS = "Activating viewers...";
 
-    public static final String HAND_BUILDING_SCRIPTS = "Building scripts...";
+    public static final String HAND_JOB_BUILDING_SCRIPTS = "Building scripts...";
+
+    public static final String HAND_TITLE_INFORMATION = "Information";
+
+    public static final String HAND_CONFIRM_MSG_NO_TEST_CASE_IN_TEST_SUITE = "The Test Suite has no Test Case to run. Do you want to add some Test Cases?";
+
+    public static final String HAND_WARN_MSG_NO_TEST_CASE_SELECTED = "There is no test case selected.\n Please select test cases you want to execute by checking their checkboxes at 'Run' column.";
 
     // ToggleBreakpointHandler
     public static final String HAND_ERROR_MSG_CANNOT_TOGGLE_LINE_BREAKPOINT = "Cannot toggle line breakpoint";
@@ -151,7 +157,7 @@ public class StringConstants extends GlobalStringConstants {
     // ExecutionPreferencePage
     public static final String PREF_GRP_DEFAULT_EXECUTION_CONFIG = "Default execution";
 
-    public static final String PREF_LBL_DEFAULT_PAGE_LOAD_TIMEOUT = "Default load timeout (in seconds)";
+    public static final String PREF_LBL_DEFAULT_IMPLICIT_TIMEOUT = "Default implicit timeout (in seconds)";
 
     public static final String PREF_GRP_POST_EXECUTION_OPTIONS = "Post-Execution Options";
 

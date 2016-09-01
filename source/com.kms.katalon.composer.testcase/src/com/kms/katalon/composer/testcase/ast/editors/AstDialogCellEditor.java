@@ -34,12 +34,16 @@ public abstract class AstDialogCellEditor extends AbstractDialogCellEditor {
         try {
             IAstDialogBuilder dialog = getDialog(Display.getCurrent().getActiveShell());
             if (dialog != null && dialog.open() == Window.OK) {
-                return dialog.getReturnValue();
+                return getReturnValue(dialog);
             }
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
         return null;
+    }
+
+    protected Object getReturnValue(IAstDialogBuilder dialog) {
+        return dialog.getReturnValue();
     }
 
     protected abstract IAstDialogBuilder getDialog(Shell shell);

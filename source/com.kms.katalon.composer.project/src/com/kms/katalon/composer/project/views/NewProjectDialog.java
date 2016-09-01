@@ -6,13 +6,21 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.FontMetrics;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -31,11 +39,15 @@ public class NewProjectDialog extends TitleAreaDialog {
     private static final String DEFAULT_PROJECT_LOCATION = System.getProperty("user.home") + File.separator
             + StringConstants.APP_NAME;
 
+    private static final int PROJECT_DESC_TEXT_LEFT_MARGIN = 3;
+
+    private static final int PROJECT_DESC_DISPLAY_LINE_NUMBER = 4;
+
     private Text txtProjectName;
 
     private Text txtProjectLocation;
 
-    private Text txtProjectDescription;
+    private StyledText txtProjectDescription;
 
     private String name, loc, desc;
 
@@ -81,8 +93,21 @@ public class NewProjectDialog extends TitleAreaDialog {
         l = new Label(container, SWT.NONE);
         l.setText(StringConstants.VIEW_LBL_DESCRIPTION);
 
-        txtProjectDescription = new Text(container, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
-        txtProjectDescription.setLayoutData(new GridData(GridData.FILL_BOTH));
+        txtProjectDescription = new StyledText(container, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
+        // increase projectDescription's height on MAC OS so that it is able to show 4 text line
+        // and modify the left margin so that it is vertical alignment with project name and project location
+        if (Platform.getOS().equals(Platform.OS_MACOSX)) {
+            GridData layout = new GridData(GridData.FILL_BOTH);
+            GC graphicContext = new GC(txtProjectDescription);
+            FontMetrics fm = graphicContext.getFontMetrics();
+            layout.heightHint = PROJECT_DESC_DISPLAY_LINE_NUMBER * fm.getHeight();
+            txtProjectDescription.setLayoutData(layout);
+            graphicContext.dispose();
+
+            txtProjectDescription.setLeftMargin(PROJECT_DESC_TEXT_LEFT_MARGIN);
+        } else {
+            txtProjectDescription.setLayoutData(new GridData(GridData.FILL_BOTH));
+        }
 
         if (project != null) {
             txtProjectName.setText(project.getName());
@@ -132,6 +157,29 @@ public class NewProjectDialog extends TitleAreaDialog {
                 checkInput();
             }
         });
+        if (Platform.getOS().equals(Platform.OS_MACOSX)) {
+            txtProjectName.addKeyListener(new KeyAdapter() {
+                @Override
+                public void keyReleased(KeyEvent e) {
+                    checkInput();
+                }
+
+            });
+        }
+        // On MAC OS, with some input source language that enable Auto correct spelling (ex: Telex or VNI)
+        // if the input text not accept by the system then when the input control lost focus the text will be remove as
+        // default.
+        if (Platform.getOS().equals(Platform.OS_MACOSX)) {
+            txtProjectName.addFocusListener(new FocusAdapter() {
+                @Override
+                public void focusLost(FocusEvent e) {
+                    String projectName = txtProjectName.getText();
+                    super.focusLost(e);
+                    txtProjectName.setText(projectName);
+                }
+            });
+        }
+
         if (btnFolderChooser == null) {
             return;
         }

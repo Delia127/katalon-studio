@@ -1,12 +1,12 @@
 package com.kms.katalon.composer.testcase.ast.treetable;
 
-import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
-import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
-import com.kms.katalon.composer.testcase.util.StatementInputCellEditorProvider;
-
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+
+import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
+import com.kms.katalon.composer.testcase.util.StatementInputCellEditorProvider;
 
 /**
  * Created by taittle on 3/24/16.

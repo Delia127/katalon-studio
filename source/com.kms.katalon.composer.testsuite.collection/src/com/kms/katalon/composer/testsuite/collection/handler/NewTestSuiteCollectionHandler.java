@@ -54,6 +54,9 @@ public class NewTestSuiteCollectionHandler extends TestSuiteTreeRootCatcher {
                 return;
             }
             TestSuiteCollectionEntity testRunEntity = dialog.getEntity();
+            if (testRunEntity == null) {
+                return;
+            }
             TestSuiteCollectionTreeEntity newTreeEntity = new TestSuiteCollectionTreeEntity(testRunEntity,
                     parentTreeFolder);
             eventBroker.send(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, parentTreeFolder);

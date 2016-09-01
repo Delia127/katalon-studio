@@ -30,6 +30,7 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestDataController;
+import com.kms.katalon.entity.dal.exception.FilePathTooLongException;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.testdata.DataFileEntity;
@@ -103,8 +104,9 @@ public class NewTestDataHandler {
             eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, new TestDataTreeEntity(dataFile,
                     parentTreeEntity));
             eventBroker.post(EventConstants.TEST_DATA_OPEN, dataFile);
+        } catch (FilePathTooLongException e) {
+            MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE, e.getMessage());
         } catch (Exception e) {
-            LoggerSingleton.logError(e);
             MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE,
                     StringConstants.HAND_ERROR_MSG_UNABLE_TO_CREATE_TEST_DATA);
         }

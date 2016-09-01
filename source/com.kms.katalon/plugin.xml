@@ -71,8 +71,13 @@
        point="org.eclipse.e4.workbench.model">
     <processor
           apply="always"
-          beforefragment="true"
+          beforefragment="false"
           class="com.kms.katalon.processors.MenuProcessor">
+    </processor>
+    <processor
+          apply="always"
+          beforefragment="false"
+          class="com.kms.katalon.processors.ToolbarProcessor">
     </processor>
  </extension>
  <extension

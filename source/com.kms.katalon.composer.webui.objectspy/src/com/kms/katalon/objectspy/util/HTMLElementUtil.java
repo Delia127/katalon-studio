@@ -2,7 +2,6 @@ package com.kms.katalon.objectspy.util;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +34,8 @@ import com.kms.katalon.objectspy.element.HTMLPageElement;
 import com.kms.katalon.objectspy.element.HTMLRawElement;
 
 public class HTMLElementUtil {
+    private static final String PAGE_ELEMENT_NAME_PREFIX = "Page_";
+
     private static final String ELEMENT_ATTRIBUTES_STYLE_KEY = "style";
 
     private static final int NAME_LENGTH_LIMIT = 30;
@@ -63,19 +64,18 @@ public class HTMLElementUtil {
 
     private static final String XPATH_KEY = "xpath";
 
-    public static String generateHTMLElementName(String elementType, Map<String, String> attributes)
-            throws UnsupportedEncodingException {
+    public static String generateHTMLElementName(String elementType, Map<String, String> attributes) {
         String content = attributes.get(ELEMENT_TEXT_KEY);
         if (content != null) {
-            return elementType + "_" + URLEncoder.encode(content, "UTF-8");
+            return elementType + "_" + toValidFileName(content);
         }
         String id = attributes.get(ELEMENT_ID_KEY);
         if (id != null) {
-            return elementType + "_" + id;
+            return elementType + "_" + toValidFileName(id);
         }
         String cssClass = attributes.get(ELEMENT_CLASS_KEY);
         if (cssClass != null) {
-            return elementType + "_" + cssClass;
+            return elementType + "_" + toValidFileName(cssClass);
         }
         return elementType;
     }
@@ -120,6 +120,10 @@ public class HTMLElementUtil {
                     new ArrayList<HTMLElement>());
         }
         return new HTMLElement(newName, elementType, attributesMap, parentElement);
+    }
+
+    public static String toValidFileName(String fileName) {
+        return fileName.replaceAll("[^A-Za-z-0-9_().\\- ]", "");
     }
 
     private static HTMLFrameElement getParentElement(JsonObject elementJsonObject) throws UnsupportedEncodingException {
@@ -186,8 +190,7 @@ public class HTMLElementUtil {
                 && !StringUtils.isBlank(contentArray.get(0).getAsString());
     }
 
-    private static HTMLPageElement buildHTMLPageElement(JsonObject parentPageJsonObject)
-            throws UnsupportedEncodingException {
+    private static HTMLPageElement buildHTMLPageElement(JsonObject parentPageJsonObject) {
         if (parentPageJsonObject == null) {
             return null;
         }
@@ -202,11 +205,8 @@ public class HTMLElementUtil {
                 new ArrayList<HTMLElement>(), pageUrlString);
     }
 
-    private static String generateHTMLPageElementName(String pageTitleString) throws UnsupportedEncodingException {
-        return "Page_"
-                + URLEncoder.encode(
-                        (pageTitleString.length() > NAME_LENGTH_LIMIT) ? pageTitleString
-                                .substring(0, NAME_LENGTH_LIMIT) : pageTitleString, "UTF-8");
+    private static String generateHTMLPageElementName(String pageTitleString) {
+        return PAGE_ELEMENT_NAME_PREFIX + StringUtils.substring(toValidFileName(pageTitleString), 0, NAME_LENGTH_LIMIT);
     }
 
     public static WebElementEntity convertElementToWebElementEntity(HTMLElement element, WebElementEntity refElement,
@@ -258,7 +258,8 @@ public class HTMLElementUtil {
         Map<String, String> attributes = new HashMap<String, String>();
         attributes.put(PAGE_TITLE_KEY, title);
         attributes.put(PAGE_URL_KEY, url);
-        return new HTMLPageElement("Page_" + currentTime, attributes, new ArrayList<HTMLElement>(), url);
+        return new HTMLPageElement(PAGE_ELEMENT_NAME_PREFIX + currentTime, attributes, new ArrayList<HTMLElement>(),
+                url);
     }
 
     public static HTMLFrameElement generateNewFrameElement(HTMLFrameElement parentElement) {
@@ -436,11 +437,11 @@ public class HTMLElementUtil {
             }
             HTMLElement element = null;
             if (isFrame) {
-                element = new HTMLFrameElement(webElement.getName(), "", attributes,
-                        parentFrameElement != null ? parentFrameElement : pageElement, new ArrayList<HTMLElement>());
+                element = new HTMLFrameElement(webElement.getName(), "", attributes, parentFrameElement != null
+                        ? parentFrameElement : pageElement, new ArrayList<HTMLElement>());
             } else {
-                element = new HTMLElement(webElement.getName(), "", attributes,
-                        parentFrameElement != null ? parentFrameElement : pageElement);
+                element = new HTMLElement(webElement.getName(), "", attributes, parentFrameElement != null
+                        ? parentFrameElement : pageElement);
             }
             elementsMap.put(webElement.getId(), element);
             return element;

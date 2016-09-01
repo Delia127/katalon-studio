@@ -7,10 +7,6 @@ public class CheckpointSourceInfo extends ClonableObject {
 
     private static final long serialVersionUID = 6207338109094018009L;
 
-    public static final String[] SUPPORTED_SELF_DEFINED_DATA_SOURCE = new String[] {
-            DataFileDriverType.ExcelFile.toString(), DataFileDriverType.CSV.toString(),
-            DataFileDriverType.DBData.toString() };
-
     /** Checkpoint indicator. Whether data will be fetched from existing Test Data of new defined source */
     private boolean fromTestData;
 

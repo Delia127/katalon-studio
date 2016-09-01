@@ -318,6 +318,9 @@ public class TestCaseExecutor {
         Stack<KeywordStackElement> keywordStack = new Stack<KeywordStackElement>();
         Map<String, String> startKeywordAttributeMap = new HashMap<String, String>();
         startKeywordAttributeMap.put(StringConstants.XML_LOG_STEP_INDEX, String.valueOf(index));
+        if (ignoreIfFailed) {
+            startKeywordAttributeMap.put(StringConstants.XML_LOG_IS_IGNORED_IF_FAILED, String.valueOf(ignoreIfFailed));
+        }
         logger.startKeyword(methodName, startKeywordAttributeMap, keywordStack);
         try {
             runMethod(getScriptFile(), methodName);

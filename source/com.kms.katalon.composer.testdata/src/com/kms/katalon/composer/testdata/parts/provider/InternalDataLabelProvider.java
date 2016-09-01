@@ -57,9 +57,4 @@ public class InternalDataLabelProvider extends TypeCheckedStyleCellLabelProvider
         }
         return getText(element);
     }
-
-    @Override
-    protected int getLeftMargin() {
-        return 0;
-    }
 }

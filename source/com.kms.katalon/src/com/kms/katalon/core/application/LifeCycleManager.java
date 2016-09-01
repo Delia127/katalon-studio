@@ -28,17 +28,19 @@ import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.handlers.CloseHandler;
+import com.kms.katalon.composer.handlers.PreferenceHandler;
 import com.kms.katalon.composer.handlers.ResetPerspectiveHandler;
 import com.kms.katalon.composer.handlers.SaveHandler;
 import com.kms.katalon.composer.handlers.SearchHandler;
-import com.kms.katalon.composer.handlers.PreferenceHandler;
 import com.kms.katalon.composer.handlers.WorkbenchSaveHandler;
 import com.kms.katalon.composer.initializer.CommandBindingInitializer;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.StringConstants;
+import com.kms.katalon.core.application.Application.RunningModeParam;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
+import com.kms.katalon.util.ActivationInfoCollector;
 
 @SuppressWarnings("restriction")
 public class LifeCycleManager {
@@ -175,6 +177,10 @@ public class LifeCycleManager {
             public void handleEvent(Event event) {
                 try {
                     startUpGUIMode();
+                    if (!(ActivationInfoCollector.checkActivation(RunningModeParam.GUI))) {
+                        eventBroker.send(EventConstants.PROJECT_CLOSE, null);
+                        PlatformUI.getWorkbench().close();
+                    }
                 } catch (Exception e) {
                     logError(e);
                 }

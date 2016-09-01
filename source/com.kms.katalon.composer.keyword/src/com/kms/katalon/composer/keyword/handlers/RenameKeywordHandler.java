@@ -21,6 +21,7 @@ import org.osgi.service.event.EventHandler;
 import com.kms.katalon.composer.components.impl.tree.KeywordTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.PackageTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.keyword.dialogs.RenameKeywordDialog;
 import com.kms.katalon.composer.keyword.refactoring.KeywordClassRenamingParticipant;
 import com.kms.katalon.constants.EventConstants;
@@ -29,7 +30,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.groovy.constant.GroovyConstants;
 
-public class RenameKeywordHandler {
+public class RenameKeywordHandler extends RenamePackageHandler {
 
     @Inject
     private IEventBroker eventBroker;
@@ -52,10 +53,10 @@ public class RenameKeywordHandler {
 
     private void execute(KeywordTreeEntity keywordTreeEntity) {
         try {
-            if (keywordTreeEntity.getParent() instanceof PackageTreeEntity) {
+            ITreeEntity parentTreeEntity = keywordTreeEntity.getParent();
+            if (parentTreeEntity instanceof PackageTreeEntity) {
                 IFile keywordFile = (IFile) ((ICompilationUnit) keywordTreeEntity.getObject()).getResource();
-                IPackageFragment packageFragment = ((IPackageFragment) ((PackageTreeEntity) keywordTreeEntity
-                        .getParent()).getObject());
+                IPackageFragment packageFragment = ((IPackageFragment) ((PackageTreeEntity) parentTreeEntity).getObject());
                 RenameKeywordDialog dialog = new RenameKeywordDialog(parentShell, packageFragment);
                 String kwName = StringUtils.removeEndIgnoreCase(keywordTreeEntity.getText(),
                         GroovyConstants.GROOVY_FILE_EXTENSION);
@@ -75,8 +76,7 @@ public class RenameKeywordHandler {
                         throw new InterruptedException();
                     }
 
-                    eventBroker.post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, keywordTreeEntity.getParent());
-                    KeywordController.getInstance().parseCustomKeywordInPackage(packageFragment, project);
+                    refreshParentAndSelect(parentTreeEntity, dialog.getName() + GroovyConstants.GROOVY_FILE_EXTENSION);
                 }
             }
         } catch (Exception e) {

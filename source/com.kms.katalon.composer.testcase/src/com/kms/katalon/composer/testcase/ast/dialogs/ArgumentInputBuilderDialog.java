@@ -1,7 +1,6 @@
 package com.kms.katalon.composer.testcase.ast.dialogs;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -21,12 +20,14 @@ import org.eclipse.swt.widgets.Shell;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.ast.editors.EnumPropertyComboBoxCellEditor;
+import com.kms.katalon.composer.testcase.ast.editors.StringConstantCellEditor;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.PropertyExpressionWrapper;
 import com.kms.katalon.composer.testcase.model.InputParameter;
+import com.kms.katalon.composer.testcase.model.InputParameterBuilder;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
 import com.kms.katalon.composer.testcase.providers.UneditableTableCellLabelProvider;
@@ -47,26 +48,13 @@ public class ArgumentInputBuilderDialog extends AbstractAstBuilderWithTableDialo
 
     private ASTNodeWrapper parent;
 
-    public ArgumentInputBuilderDialog(Shell parentShell, List<InputParameter> inputParameters, ASTNodeWrapper parent) {
-        super(parentShell);
-        originalParameters = inputParameters;
-        this.parent = parent;
-        this.inputParameters = new ArrayList<InputParameter>();
-        filterInputParameters(inputParameters);
-    }
+    protected StringConstantCellEditor valueCellEditor;
 
-    public void filterInputParameters(List<InputParameter> inputParameters) {
-        boolean hasTestObjectParam = false;
-        for (InputParameter inputParameter : inputParameters) {
-            if (inputParameter.isTestObjectInputParameter() && !hasTestObjectParam) {
-                hasTestObjectParam = true;
-                continue;
-            }
-            if (!inputParameter.isEditable()) {
-                continue;
-            }
-            this.inputParameters.add(inputParameter);
-        }
+    public ArgumentInputBuilderDialog(Shell parentShell, InputParameterBuilder parameterBuilder, ASTNodeWrapper parent) {
+        super(parentShell);
+        originalParameters = parameterBuilder.getOriginalParameters();
+        this.parent = parent;
+        this.inputParameters = parameterBuilder.getFilteredInputParameters();
     }
 
     protected void updateTestCaseBindingInputParameters(MethodCallExpressionWrapper testCaseArgument) {
@@ -161,9 +149,22 @@ public class ArgumentInputBuilderDialog extends AbstractAstBuilderWithTableDialo
                     return new EnumPropertyComboBoxCellEditor((Composite) getViewer().getControl(),
                             FailureHandling.class);
                 }
-                return super.getCellEditor(((InputParameter) element).getValue());
+                CellEditor cellEditor = super.getCellEditor(((InputParameter) element).getValue());
+                valueCellEditor = null;
+                if (cellEditor instanceof StringConstantCellEditor) {
+                    valueCellEditor = (StringConstantCellEditor) cellEditor;
+                }
+
+                return cellEditor;
             }
         });
+    }
+
+    @Override
+    protected void processEditingValueWhenOKPressed() {
+        if (tableViewer.isCellEditorActive() && valueCellEditor != null) {
+            valueCellEditor.applyEditingValue();
+        }
     }
 
     private void addTableColumnValueType() {

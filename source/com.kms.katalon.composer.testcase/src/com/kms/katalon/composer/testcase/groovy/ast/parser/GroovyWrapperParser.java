@@ -1,7 +1,9 @@
 package com.kms.katalon.composer.testcase.groovy.ast.parser;
 
+import static com.kms.katalon.composer.testcase.preferences.ManualPreferenceValueInitializer.getMaximumLineWidth;
+import static com.kms.katalon.composer.testcase.preferences.ManualPreferenceValueInitializer.isLineWrappingEnabled;
+
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +27,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.AnnotationNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ClassNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.CommentWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.GenericsTypeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.ImportNodeCollection;
 import com.kms.katalon.composer.testcase.groovy.ast.ImportNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.MethodNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ParameterWrapper;
@@ -81,8 +84,6 @@ import com.kms.katalon.composer.testcase.groovy.ast.statements.SynchronizedState
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ThrowStatementWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.TryCatchStatementWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.WhileStatementWrapper;
-import static com.kms.katalon.composer.testcase.preferences.ManualPreferenceValueInitializer.getMaximumLineWidth;
-import static com.kms.katalon.composer.testcase.preferences.ManualPreferenceValueInitializer.isLineWrappingEnabled;
 
 public class GroovyWrapperParser {
     private static final String DEFAULT_INDENT_INCREASEMENT = "    ";
@@ -91,8 +92,6 @@ public class GroovyWrapperParser {
             "groovy.lang", "groovy.util" };
 
     public static final String[] GROOVY_IMPORTED_CLASSES = { "java.math.BigDecimal", "java.math.BigInteger" };
-
-    private List<ClassNodeWrapper> importedTypes = new ArrayList<ClassNodeWrapper>();
 
     private Stack<String> classNameStack = new Stack<String>();
 
@@ -1108,8 +1107,9 @@ public class GroovyWrapperParser {
         } else if (classNode.getName().equals(Object.class.getName())) {
             print("def");
         } else {
-            if (importedTypes.contains(classNode)) {
-                print(classNode.getNameWithoutPackage());
+            ImportNodeCollection importNodeCollection = classNode.getScriptClass().getImportNodeCollection();
+            if (importNodeCollection != null && importNodeCollection.hasAlias(name)) {
+                print(importNodeCollection.getBestMatchForAliasName(name));
             } else {
                 boolean isImported = false;
                 for (String groovyImportedClass : GROOVY_IMPORTED_CLASSES) {
@@ -1223,7 +1223,6 @@ public class GroovyWrapperParser {
             return;
         }
         preParseASTNode(importNodeWrapper);
-        importedTypes.add(importNodeWrapper.getType());
         for (AnnotationNodeWrapper annotationNodeWrapper : importNodeWrapper.getAnnotations()) {
             parseAnnotationNode(annotationNodeWrapper);
             printLineBreak();
@@ -1391,7 +1390,6 @@ public class GroovyWrapperParser {
     }
 
     public void parseGroovyAstIntoScript(ScriptNodeWrapper script) {
-        importedTypes.clear();
         for (ImportNodeWrapper importNodeWrapper : script.getImports()) {
             parseImport(importNodeWrapper);
         }

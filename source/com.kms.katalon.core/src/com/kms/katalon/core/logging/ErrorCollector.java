@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.codehaus.groovy.runtime.InvokerInvocationException;
 
-import com.kms.katalon.core.exception.StepErrorException;
 import com.kms.katalon.core.exception.StepFailedException;
 
 public class ErrorCollector {
@@ -61,22 +60,6 @@ public class ErrorCollector {
             return isErrorFailed(error.getCause());
         }
         return false;
-    }
-
-    public static void throwError(Throwable error) {
-        if (ErrorCollector.isErrorFailed(error)) {
-            if (error instanceof InvokerInvocationException) {
-                throw (InvokerInvocationException) error;
-            } else if (error instanceof AssertionError) {
-                throw (AssertionError) error;
-            } else if (error instanceof StepFailedException) {
-                throw (StepFailedException) error;
-            } else {
-                throw new StepFailedException(error);
-            }
-        } else {
-            throw new StepErrorException(error);
-        }
     }
 
     public boolean isLastErrorFailed() {

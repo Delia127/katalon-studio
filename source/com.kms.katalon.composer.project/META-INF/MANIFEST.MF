@@ -25,7 +25,12 @@ Require-Bundle: org.eclipse.e4.core.di,
  com.kms.katalon.groovy,
  com.kms.katalon.preferences,
  org.apache.commons.io,
- org.apache.commons.lang
+ org.apache.commons.lang,
+ net.lingala.zip4j
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: javax.annotation;version="1.2.0",
  javax.inject;version="1.0.0"
+Export-Package: com.kms.katalon.composer.project.constants,
+ com.kms.katalon.composer.project.menu,
+ com.kms.katalon.composer.project.handlers,
+ com.kms.katalon.composer.project.views

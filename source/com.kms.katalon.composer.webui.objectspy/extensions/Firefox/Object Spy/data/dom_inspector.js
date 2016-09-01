@@ -1,12 +1,11 @@
 //GLOBALS
-var gHoverElement;		//whatever element the mouse is over
-
-//extended	
-var infoDiv;		//currently just container for InfoDivHover, might add more here
-var infoDivHover;	//container for hoverText text node.
-var instructionDiv; //instruction element for user
-var hoverText;		//show information about current element that the mouse is over
-var currentEventOrigin; //store event origin for posting message
+var gHoverElement; // whatever element the mouse is over
+var infoDiv; // parent div to contains information
+var instructionDiv; // instruction div to guide user how to capture object
+var elementInfoDiv; // informational div to show xpath of current hovered
+					// element
+var elementInfoDivText; // xpath text to show in elementInfoDiv
+var currentEventOrigin; // store event origin for posting message
 
 // setup
 function setupEventListeners() {
@@ -17,111 +16,99 @@ function setupEventListeners() {
 	window.onmouseout = mouseOutWindow;
 }
 
-//setup informational div to show which element the mouse is over.
-function createInfoDiv() {
-	infoDiv = document.createElement('div');
-	var s = infoDiv.style;
-	s.position = 'fixed';
-	s.top = '0';
-	s.right = '0';
-	s.display = 'block';
-	s.padding = '0px';
-	s.zIndex = "9999999";
-	document.body.appendChild(infoDiv);
-	
-	infoDivHover = document.createElement('div');
-	s=infoDivHover.style;
-	s.fontWeight = 'bold';			
-	s.padding = '2px';
-	s.Opacity = '0.8';
-	s.borderWidth = 'thin';
-	s.borderStyle = 'solid';
-	s.borderColor = INFO_DIV_DEFAULT_BORDER_COLOR;
-	s.backgroundColor = INFO_DIV_DEFAULT_BACKGROUND_COLOR;
-	s.color = INFO_DIV_DEFAULT_FOREGROUND_COLOR;
-	infoDiv.appendChild(infoDivHover);			
-	hoverText = document.createTextNode('selecting');
-	infoDivHover.appendChild(hoverText);
+function addElementToElement(tag, text, element) {
+	var childElement = document.createElement(tag);
+	childElement.appendChild(document.createTextNode(text));
+	element.appendChild(childElement);
 }
 
-// create instruction div to guide user how to capture object
+function addKbdElementToElement(text, element) {
+	addElementToElement('kbd', text, element);
+}
+
+function addSpanElementToElement(text, element) {
+	addElementToElement('span', text, element);
+}
+
+// setup informational div to show which element the mouse is over.
+function createInfoDiv() {
+	addCustomStyle();
+	infoDiv = document.createElement('div');
+	infoDiv.id = 'katalon';
+	if (isInTopWindow()) {
+		createInstructionDiv();
+	}
+	createXpathDiv();
+	document.body.appendChild(infoDiv);
+}
+
+function addCustomStyle() {
+	var kbdstyle = document.createElement('style');
+	kbdstyle.type = 'text/css';
+	var styleText = document
+			.createTextNode('#katalon{font-family:monospace;font-size:13px;background-color:rgba(0,0,0,.7);position:fixed;top:0;left:0;right:0;display:block;z-index:999999999;line-height: normal} #katalon div{padding:0;margin:0;color:#fff;} #katalon kbd{display:inline-block;padding:3px 5px;font:13px Consolas,"Liberation Mono",Menlo,Courier,monospace;line-height:10px;color:#555;vertical-align:middle;background-color:#fcfcfc;border:1px solid #ccc;border-bottom-color:#bbb;border-radius:3px;box-shadow:inset 0 -1px 0 #bbb;font-weight: bold} div#katalon-elementInfoDiv {color: lightblue; padding: 0px 5px 5px} div#katalon-instructionDiv {padding: 5px 5px 2.5px}');
+	kbdstyle.appendChild(styleText);
+	document.head.appendChild(kbdstyle);
+}
+
 function createInstructionDiv() {
 	instructionDiv = document.createElement('div');
-	instructionDiv.style.position = 'fixed';
-	instructionDiv.style.zIndex = '99999999';
-	instructionDiv.style.display = 'none';
-	instructionDiv.style.opacity = '0.9';
-	var instructionImg = document.createElement('img');
-	instructionImg.src = INSTRUCTION_IMAGE;
-	instructionDiv.appendChild(instructionImg);
-	document.body.appendChild(instructionDiv);
+	instructionDiv.id = 'katalon-instructionDiv';
+
+	var space = '\u00A0';
+	var dot = '\u25CF';
+
+	addSpanElementToElement('Capture object: ', instructionDiv)
+	addKbdElementToElement('Alt', instructionDiv);
+	instructionDiv.appendChild(document.createTextNode(space));
+	addKbdElementToElement('~', instructionDiv);
+	instructionDiv.appendChild(document.createTextNode(space));
+	addSpanElementToElement(dot + ' Load DOM Map: ', instructionDiv)
+	addKbdElementToElement('Ctrl', instructionDiv);
+	instructionDiv.appendChild(document.createTextNode(space));
+	addKbdElementToElement('Alt', instructionDiv);
+	instructionDiv.appendChild(document.createTextNode(space));
+	addKbdElementToElement('~', instructionDiv);
+
+	infoDiv.appendChild(instructionDiv);
 }
-	
+
+function createXpathDiv() {
+	elementInfoDiv = document.createElement('div');
+	elementInfoDiv.id = 'katalon-elementInfoDiv';
+	elementInfoDiv.style.display = 'none'; 
+	infoDiv.appendChild(elementInfoDiv);
+}
+
 function setupDOMSelection() {
 	setupEventListeners();
 	createInfoDiv();
-	createInstructionDiv();
-}
-
-// Update info div with the new text, color, background color or border color
-function updateInfoDiv(text, color, bgColor, borderColor) {
-	var s = infoDivHover.style;
-	if (color) {
-		s.color = color;
-	}
-	if (bgColor) {
-		s.backgroundColor = bgColor;
-	}
-	if (borderColor) {
-		s.borderColor = borderColor;
-	}
-	if (text) {
-		hoverText.data=text;
-	}
 }
 
 function getElementInfo(element) {
 	if (!element) {
 		return '';
 	}
-	var txt = element.nodeName.toLowerCase();
-	txt = appendAttributeToText(txt, element, 'id');
-	txt = appendAttributeToText(txt, element, 'class');	
-	txt = '//' + txt;
-	return txt;
-	
-	function appendAttributeToText(txt,element,a) {			
-		if ((element.getAttribute(a) != null) && (element.getAttribute(a) !== '')) {
-			txt += "[@"+a+"='"+element.getAttribute(a)+"']";
-		}
-		return txt;
-	}
-	
+	return createXPathFromElement(element);
 }
 
 function mouseMoveWindow(e) {
-	var x = e.clientX, y = e.clientY - 10;
-	var paddingSize = 20;
-	var windowWidth = Math.max(
-			document.documentElement.clientWidth,
-			window.innerWidth || 0);
-	if ((e.clientX + INSTRUCTION_IMAGE_SIZE + paddingSize) >= windowWidth) {
-		x = e.clientX - INSTRUCTION_IMAGE_SIZE - paddingSize;
-	} else {
-		x = e.clientX + paddingSize;
+	var y = 0;
+	var windowHeight = $(window).height();
+	if (e.clientY - infoDiv.offsetHeight - 20 < 0) {
+		y = windowHeight - infoDiv.offsetHeight;
 	}
-	instructionDiv.style.display = 'block';
-	instructionDiv.style.left = x + 'px';
-	instructionDiv.style.top = y + 'px';
+	infoDiv.style.top = y + 'px';
 }
 
-function mouseOutWindow() {
-	instructionDiv.style.display = 'none';
+function mouseOutWindow(e) {
+	mouseMoveWindow(e);
 }
 
 function mouseOver(e) {
 	var selectedElement = e ? e.target : window.event.srcElement;
-	if (selectedElement.nodeName.toLowerCase() == 'iframe' || selectedElement.nodeName.toLowerCase() == 'frame') {
+	if (selectedElement.nodeName.toLowerCase() == 'iframe'
+			|| selectedElement.nodeName.toLowerCase() == 'frame') {
 		var iframeContentWindow = selectedElement.contentWindow;
 		if (iframeContentWindow) {
 			iframeContentWindow.focus();
@@ -131,14 +118,25 @@ function mouseOver(e) {
 		var win = doc.defaultView || doc.parentWindow;
 		win.focus();
 	}
-	
-	if (selectedElement == gHoverElement) {	
+
+	if (selectedElement == gHoverElement) {
 		return;
+	}
+	if (gHoverElement != null) {
+		gHoverElement.style.outline = '';
 	}
 	gHoverElement = selectedElement;
 	gHoverElement.style.outline = ELEMENT_HOVER_OUTLINE_STYLE;
-	updateInfoDiv(getElementInfo(gHoverElement), INFO_DIV_HOVER_FOREGROUND_COLOR, 
-		INFO_DIV_HOVER_BACKGROUND_COLOR, INFO_DIV_HOVER_BORDER_COLOR);
+	elementInfoDiv.style.display = 'block'; 
+	updateInfoDiv(getElementInfo(gHoverElement));
+}
+
+function updateInfoDiv(text) {
+	if (elementInfoDivText == null) {
+		elementInfoDivText = document.createTextNode('');
+		elementInfoDiv.appendChild(elementInfoDivText);
+	}
+	elementInfoDivText.nodeValue = (text);
 }
 
 function mouseOut(e) {
@@ -147,27 +145,47 @@ function mouseOut(e) {
 		return;
 	}
 	gHoverElement.style.outline = '';
-	updateInfoDiv('-','white','black','white');	
-	gHoverElement=null;
+	elementInfoDiv.style.display = 'none';
+	updateInfoDiv("");
+	gHoverElement = null;
 }
 
 function flashElement() {
-	if (!gHoverElement) {	
+	if (!gHoverElement) {
 		return;
 	}
-	$(gHoverElement).css({outline: ELEMENT_FLASHING_OUTLINE_STYLE
-		}).animate({outlineColor: ELEMENT_FLASHING_OUTLINE_COLOR_1}, 100)
-		.animate({outlineColor: ELEMENT_FLASHING_OUTLINE_COLOR_2}, 100)
-		.animate({outlineColor: ELEMENT_FLASHING_OUTLINE_COLOR_1}, 100)
-		.animate({outlineColor: ELEMENT_FLASHING_OUTLINE_COLOR_2}, 100)
-		.animate({outlineColor: ELEMENT_FLASHING_OUTLINE_COLOR_3}, 100, function() {
-			if (gHoverElement && (gHoverElement.nodeName.toLowerCase() == 'iframe' || gHoverElement.nodeName.toLowerCase() == 'frame')) {
-				var iframeContentWindow = gHoverElement.contentWindow;
-				if (iframeContentWindow && currentEventOrigin) {
-					iframeContentWindow.postMessage("responseSuccess",  currentEventOrigin);
-				}
-			}
-		});
+	$(gHoverElement)
+			.css({
+				outline : ELEMENT_FLASHING_OUTLINE_STYLE
+			})
+			.animate({
+				outlineColor : ELEMENT_FLASHING_OUTLINE_COLOR_1
+			}, 100)
+			.animate({
+				outlineColor : ELEMENT_FLASHING_OUTLINE_COLOR_2
+			}, 100)
+			.animate({
+				outlineColor : ELEMENT_FLASHING_OUTLINE_COLOR_1
+			}, 100)
+			.animate({
+				outlineColor : ELEMENT_FLASHING_OUTLINE_COLOR_2
+			}, 100)
+			.animate(
+					{
+						outlineColor : ELEMENT_FLASHING_OUTLINE_COLOR_3
+					},
+					100,
+					function() {
+						if (gHoverElement
+								&& (gHoverElement.nodeName.toLowerCase() == 'iframe' || gHoverElement.nodeName
+										.toLowerCase() == 'frame')) {
+							var iframeContentWindow = gHoverElement.contentWindow;
+							if (iframeContentWindow && currentEventOrigin) {
+								iframeContentWindow.postMessage(
+										"responseSuccess", currentEventOrigin);
+							}
+						}
+					});
 }
 
 function sendData() {
@@ -175,7 +193,7 @@ function sendData() {
 		return;
 	}
 	if (gHoverElement.nodeName.toLowerCase() == 'iframe') {
-		gHoverElement.contentWindow.postMessage("keyboardTriggerEvent",  "*");
+		gHoverElement.contentWindow.postMessage("keyboardTriggerEvent", "*");
 	} else {
 		var jsonObject = mapDOM(gHoverElement, window);
 		processObject(jsonObject);
@@ -197,7 +215,7 @@ function keyUp(e) {
 	// Alt + '~'
 	if (keyCode === 192) {
 		sendData();
-	} 
+	}
 }
 
 function postData(url, object) {
@@ -229,7 +247,10 @@ function postData(url, object) {
 		}
 		return;
 	}
-	self.port.emit("postData", { url : url, data : data });
+	self.port.emit("postData", {
+		url : url,
+		data : data
+	});
 }
 
 function setParentJson(object, parentJson) {
@@ -240,8 +261,12 @@ function setParentJson(object, parentJson) {
 	object['parent'] = parentJson;
 }
 
+function isInTopWindow() {
+	return window.location === window.parent.location;
+}
+
 function processObject(object) {
-	if (window.location !== window.parent.location) {
+	if (!isInTopWindow()) {
 		var event = {};
 		event['name'] = 'forwardObject';
 		event['data'] = object;
@@ -305,11 +330,15 @@ function receiveMessage(event) {
 		break;
 	}
 }
-	
+
 function startInspection() {
-	if (!window.console) console = {log: function() {
-	}};
-	//START
+	if (!window.console) {
+		console = {
+			log : function() {
+			}
+		};
+	}
+	// START
 	setupDOMSelection();
 
 	// for Firefox
@@ -319,12 +348,13 @@ function startInspection() {
 			console.log(message.text)
 			if (message.kind == "postSuccess") {
 				flashElement();
-			} else if (message.kind == "postFail" || message.kind == "postDomMapSuccess") {
+			} else if (message.kind == "postFail"
+					|| message.kind == "postDomMapSuccess") {
 				alert(message.text);
-			} 
+			}
 		});
 	}
-	
+
 	if (window.addEventListener) {
 		window.addEventListener("message", receiveMessage, false);
 	} else {

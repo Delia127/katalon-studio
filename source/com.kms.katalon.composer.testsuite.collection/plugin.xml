@@ -15,5 +15,11 @@
             handler="com.kms.katalon.composer.testsuite.collection.handler.DeleteTestSuiteCollectionHandler">
       </client>
    </extension>
+   <extension
+         point="com.kms.katalon.composer.folder.delete">
+      <client
+            handler="com.kms.katalon.composer.testsuite.collection.handler.DeleteTestSuiteFolderHandler">
+      </client>
+   </extension>
 
 </plugin>

@@ -9,6 +9,7 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Display;
 
 import com.kms.katalon.composer.components.impl.handler.CommonExplorerHandler;
+import com.kms.katalon.composer.components.impl.transfer.TreeEntityTransfer;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.transfer.TransferMoveFlag;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
@@ -43,8 +44,7 @@ public class PasteHandler extends CommonExplorerHandler {
             Object transferingObjects = entityTransfer != null ? clipboard.getContents(entityTransfer) : null;
 
             if (entityTransfer == null || transferingObjects == null || !transferingObjects.getClass().isArray()
-                    || ((Object[]) transferingObjects).length == 0
-                    || !(((Object[]) transferingObjects)[0] instanceof ITreeEntity)) {
+                    || ((Object[]) transferingObjects).length == 0) {
                 return false;
             }
 
@@ -53,9 +53,12 @@ public class PasteHandler extends CommonExplorerHandler {
             }
 
             // parent tree entity is destination folder tree entity
-            ITreeEntity parentTreeEntity = ((ITreeEntity) ((Object[]) transferingObjects)[0]).getParent();
-            ITreeEntity destinationTreeEntity = (entity instanceof FolderTreeEntity) ? entity : entity.getParent();
-            return !parentTreeEntity.equals(destinationTreeEntity);
+            if (TreeEntityTransfer.getInstance().equals(entityTransfer)) {
+                ITreeEntity parentTreeEntity = ((ITreeEntity) ((Object[]) transferingObjects)[0]).getParent();
+                ITreeEntity destinationTreeEntity = (entity instanceof FolderTreeEntity) ? entity : entity.getParent();
+                return !parentTreeEntity.equals(destinationTreeEntity);
+            }
+            return true;
         } catch (Exception e) {
             logError(e);
             return false;

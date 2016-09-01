@@ -10,6 +10,8 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.composer.components.impl.tree.KeywordTreeEntity;
+import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
 import com.kms.katalon.constants.EventConstants;
@@ -34,16 +36,28 @@ public class EditorSavedHandler implements EventHandler {
                 if (!(object instanceof MPart)) {
                     return;
                 }
-                final IFile file = ((FileEditorInput) (GroovyEditorUtil.getEditor((MPart) object).getEditorInput()))
+                MPart part = (MPart) object;
+                if (!GroovyEditorUtil.isGroovyEditorPart(part)) {
+                    return;
+                }
+                final IFile file = ((FileEditorInput) (GroovyEditorUtil.getEditor(part).getEditorInput()))
                         .getFile();
                 try {
                     KeywordController.getInstance().parseCustomKeywordFile(file,
                             ProjectController.getInstance().getCurrentProject());
+                    refreshKeywordTreeEntity(file);
                 } catch (Exception e) {
                     LoggerSingleton.logError(e);
                 }
                 break;
             }
         }
+    }
+
+    private void refreshKeywordTreeEntity(final IFile file) throws Exception {
+        KeywordTreeEntity keywordTreeEntity = TreeEntityUtil.getKeywordTreeEntity(file.getProjectRelativePath()
+                .toString(), ProjectController.getInstance().getCurrentProject());
+        eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, keywordTreeEntity);
+        eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, keywordTreeEntity);
     }
 }

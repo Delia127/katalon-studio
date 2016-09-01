@@ -20,6 +20,7 @@ import org.eclipse.e4.ui.model.application.ui.MUIElement;
 import org.eclipse.e4.ui.model.application.ui.advanced.MPerspective;
 import org.eclipse.e4.ui.model.application.ui.advanced.MPerspectiveStack;
 import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
+import org.eclipse.e4.ui.model.application.ui.menu.MMenu;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 
 import com.kms.katalon.constants.EventConstants;
@@ -79,6 +80,14 @@ public class PerspectiveResetAddon {
             // no snippet exists so far, create a new one
             modelService.cloneElement(perspective, application);
         }
+
+        // backup main menu
+        MMenu mainMenu = application.getChildren().get(0).getMainMenu();
+        if (mainMenu == null || !IdConstants.MAIN_MENU_ID.equals(mainMenu.getElementId())
+                || modelService.findSnippet(application, IdConstants.MAIN_MENU_ID) != null) {
+            return;
+        }
+        modelService.cloneElement(mainMenu, application);
     }
 
     /**
@@ -112,6 +121,7 @@ public class PerspectiveResetAddon {
          * Uses the application snippet container to retrieve/reload a {@link MPerspective} state.
          * </p>
          */
+        @Override
         public MPerspective reloadPerspective(String perspectiveID, MWindow window) {
             EModelService modelService = appContext.get(EModelService.class);
             if (window == null || perspectiveID == null || modelService == null) {

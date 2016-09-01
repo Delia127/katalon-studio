@@ -28,17 +28,22 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
+import org.eclipse.swt.events.MenuDetectEvent;
+import org.eclipse.swt.events.MenuDetectListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
@@ -112,6 +117,8 @@ public abstract class CheckpointAbstractPart implements EventHandler, IComposerP
 
     protected CheckpointEntity tempCheckpoint;
 
+    private int selectedColumnIndex = -1;
+
     @PostConstruct
     public void postConstruct(Composite parent) {
         createControls(parent);
@@ -177,7 +184,8 @@ public abstract class CheckpointAbstractPart implements EventHandler, IComposerP
 
         tableViewer = new TableViewer(compTable, SWT.FULL_SELECTION | SWT.HIDE_SELECTION | SWT.SINGLE);
         tableViewer.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        tableViewer.getTable().setLinesVisible(true);
+        final Table table = tableViewer.getTable();
+        table.setLinesVisible(true);
 
         TableViewerColumn tableViewerColumnNo = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tableColumnNo = tableViewerColumnNo.getColumn();
@@ -187,12 +195,159 @@ public abstract class CheckpointAbstractPart implements EventHandler, IComposerP
 
             @Override
             public void update(ViewerCell cell) {
-                int order = tableViewer.getTable().indexOf((TableItem) cell.getItem()) + 1;
+                int order = table.indexOf((TableItem) cell.getItem()) + 1;
                 cell.setText(Integer.toString(order));
             }
         });
         tableViewer.setContentProvider(ArrayContentProvider.getInstance());
+
+        createContextMenu(table);
         return parent;
+    }
+
+    private void createContextMenu(final Table table) {
+        // Create table context menu
+        Menu tableContextMenu = new Menu(table);
+        table.setMenu(tableContextMenu);
+
+        // Create menu items
+        MenuItem checkColumn = new MenuItem(tableContextMenu, SWT.PUSH);
+        checkColumn.setText(StringConstants.PART_MENU_CHECK_COLUMN);
+        checkColumn.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                checkUncheckTableColumn(true);
+            }
+        });
+        MenuItem uncheckColumn = new MenuItem(tableContextMenu, SWT.PUSH);
+        uncheckColumn.setText(StringConstants.PART_MENU_UNCHECK_COLUMN);
+        uncheckColumn.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                checkUncheckTableColumn(false);
+            }
+        });
+
+        MenuItem checkRow = new MenuItem(tableContextMenu, SWT.PUSH);
+        checkRow.setText(StringConstants.PART_MENU_CHECK_ROW);
+        checkRow.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                checkUncheckTableRow(true);
+            }
+        });
+        MenuItem uncheckRow = new MenuItem(tableContextMenu, SWT.PUSH);
+        uncheckRow.setText(StringConstants.PART_MENU_UNCHECK_ROW);
+        uncheckRow.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                checkUncheckTableRow(false);
+            }
+        });
+
+        MenuItem checkAll = new MenuItem(tableContextMenu, SWT.PUSH);
+        checkAll.setText(StringConstants.PART_MENU_CHECK_ALL);
+        checkAll.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                checkUncheckAll(true);
+            }
+        });
+        MenuItem uncheckAll = new MenuItem(tableContextMenu, SWT.PUSH);
+        uncheckAll.setText(StringConstants.PART_MENU_UNCHECK_ALL);
+        uncheckAll.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                checkUncheckAll(false);
+            }
+        });
+
+        table.addMenuDetectListener(new MenuDetectListener() {
+
+            @Override
+            public void menuDetected(MenuDetectEvent e) {
+                selectedColumnIndex = -1;
+                ViewerCell cell = tableViewer.getCell(Display.getDefault().map(null, table, new Point(e.x, e.y)));
+                if (cell != null) {
+                    selectedColumnIndex = cell.getColumnIndex();
+                }
+                e.doit = selectedColumnIndex != -1;
+            }
+        });
+    }
+
+    private void checkUncheckTableColumn(boolean isChecked) {
+        if (selectedColumnIndex == -1) {
+            return;
+        }
+
+        TableItem[] rows = tableViewer.getTable().getItems();
+        if (rows == null || rows.length == 0) {
+            return;
+        }
+
+        for (TableItem row : rows) {
+            Object rowData = row.getData();
+            if (rowData == null || !(rowData instanceof List<?>) || ((List<?>) rowData).isEmpty()
+                    || selectedColumnIndex > ((List<?>) rowData).size()) {
+                continue;
+            }
+
+            ((CheckpointCell) ((List<?>) rowData).get(selectedColumnIndex - 1)).setChecked(isChecked);
+        }
+
+        tableViewer.refresh();
+        dirtyable.setDirty(true);
+    }
+
+    protected void checkUncheckTableRow(boolean isChecked) {
+        Table table = tableViewer.getTable();
+        int index = table.getSelectionIndex();
+        if (index == -1) {
+            // no row selected
+            return;
+        }
+
+        Object rowData = table.getItem(index).getData();
+        if (rowData == null || !(rowData instanceof List<?>) || ((List<?>) rowData).isEmpty()) {
+            return;
+        }
+        for (Object cellData : (List<?>) rowData) {
+            if (!(cellData instanceof CheckpointCell)) {
+                continue;
+            }
+            ((CheckpointCell) cellData).setChecked(isChecked);
+        }
+        tableViewer.refresh(rowData);
+        dirtyable.setDirty(true);
+    }
+
+    protected void checkUncheckAll(boolean isChecked) {
+        TableItem[] rows = tableViewer.getTable().getItems();
+        if (rows == null || rows.length == 0) {
+            return;
+        }
+        for (TableItem row : rows) {
+            Object rowData = row.getData();
+            if (rowData == null || !(rowData instanceof List<?>) || ((List<?>) rowData).isEmpty()) {
+                continue;
+            }
+
+            for (Object cellData : (List<?>) rowData) {
+                if (!(cellData instanceof CheckpointCell)) {
+                    continue;
+                }
+                ((CheckpointCell) cellData).setChecked(isChecked);
+            }
+        }
+        tableViewer.refresh();
+        dirtyable.setDirty(true);
     }
 
     private void redrawArrowIndicator() {
@@ -437,9 +592,11 @@ public abstract class CheckpointAbstractPart implements EventHandler, IComposerP
             checkpoint.setCheckpointData(tempCheckpoint.getCheckpointData());
             CheckpointController.getInstance().update(checkpoint);
             setDirty(false);
-            eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, null);
             eventBroker.post(EventConstants.CHECKPOINT_UPDATED,
                     new Object[] { checkpoint.getIdForDisplay(), checkpoint });
+            CheckpointTreeEntity checkpointTreeEntity = TreeEntityUtil.getCheckpointTreeEntity(checkpoint);
+            eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, checkpointTreeEntity);
+            eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, checkpointTreeEntity);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MultiStatusErrorDialog.showErrorDialog(e, StringConstants.ERROR,

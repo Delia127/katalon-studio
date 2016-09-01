@@ -15,9 +15,13 @@ public class StringConstants extends GlobalStringConstants {
     // NewCheckpointDialog
     public static final String DIA_MSG_CREATE_CHECKPOINT = "Create Checkpoint";
 
+    public static final String DIA_MSG_CREATE_CHECKPOINT_FROM_TEST_DATA = "Create Checkpoint from Test Data";
+
     public static final String DIA_CHK_IS_TEST_DATA_SOURCE = "Is Test Data source?";
 
     public static final String DIA_LBL_DATA_TYPE = "Data Type";
+
+    public static final String DIA_LBL_TEST_DATA_ID = "Test Data ID";
 
     // NewCheckpointFromTestDataPopupMenu
     public static final String MENU_LBL_CHECKPOINT_FROM_TEST_DATA = "Checkpoint from selection";
@@ -70,6 +74,18 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String PART_BTN_TAKE_SNAPSHOT = "Take Snapshot";
 
+    public static final String PART_MENU_CHECK_COLUMN = "Check column";
+
+    public static final String PART_MENU_UNCHECK_COLUMN = "Uncheck column";
+
+    public static final String PART_MENU_CHECK_ROW = "Check row";
+
+    public static final String PART_MENU_UNCHECK_ROW = "Uncheck row";
+
+    public static final String PART_MENU_CHECK_ALL = "Check all";
+
+    public static final String PART_MENU_UNCHECK_ALL = "Uncheck all";
+
     // CheckpointDatabasePart
     public static final String PART_LBL_SQL_QUERY = "SQL Query";
 
@@ -82,5 +98,23 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PART_MSG_PLEASE_SELECT_A_TEST_DATA = "Please select a Test Data!";
 
     public static final String PART_MSG_UNABLE_TO_SELECT_TEST_DATA = "Unable to select Test Data";
+
+    // NewCheckpointExcelPage
+    public static final String WIZ_EXCEL_SOURCE_CONFIGURATION = "Excel source configuration.";
+
+    public static final String WIZ_TITLE_EXCEL_DATA = "Excel Data";
+
+    // NewCheckpointCsvPage
+    public static final String WIZ_CSV_SOURCE_CONFIGURATION = "CSV source configuration.";
+
+    public static final String WIZ_TITLE_CSV_DATA = "CSV Data";
+
+    // NewCheckpointDatabasePage
+    public static final String WIZ_DATABASE_SOURCE_CONFIGURATION = "Database source configuration.";
+
+    public static final String WIZ_TITLE_DATABASE = "Database";
+
+    // NewCheckpointTestDataPage
+    public static final String WIZ_TEST_DATA_SOURCE_CONFIGURATION = "Test Data source configuration.";
 
 }

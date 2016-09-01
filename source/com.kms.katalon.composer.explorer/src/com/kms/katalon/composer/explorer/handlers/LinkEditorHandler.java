@@ -121,7 +121,7 @@ public class LinkEditorHandler implements EventHandler {
                 } else if (entity instanceof ReportEntity) {
                     treeEntity = TreeEntityUtil.getReportTreeEntity((ReportEntity) entity, projectEntity);
                 } else if (entity instanceof TestSuiteCollectionEntity) {
-                    treeEntity = TreeEntityUtil.getTestRunTreeEntity((TestSuiteCollectionEntity) entity, projectEntity);
+                    treeEntity = TreeEntityUtil.getTestSuiteCollectionTreeEntity((TestSuiteCollectionEntity) entity, projectEntity);
                 }
             } else {
                 treeEntity = getKeywordTreeEntity(mpart);

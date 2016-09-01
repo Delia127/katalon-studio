@@ -1,10 +1,14 @@
 package com.kms.katalon.composer.components.impl.control;
 
+import org.apache.commons.lang.StringUtils;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.ViewerRow;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Widget;
+
+import com.kms.katalon.composer.components.impl.providers.TypeCheckedStyleCellLabelProvider;
 
 public class CTableViewer extends TableViewer implements CustomColumnViewer {
 
@@ -36,5 +40,16 @@ public class CTableViewer extends TableViewer implements CustomColumnViewer {
         if (lastItemIndex >= 0) {
             table.showItem(table.getItem(lastItemIndex));
         }
+    }
+
+    @Override
+    public TypeCheckedStyleCellLabelProvider<?> getCellLabelProvider(int columnIndex) {
+        return new CellLayoutColumnViewerHelper(this).getCellLabelProvider(columnIndex);
+    }
+
+    @Override
+    public void enableTooltipSupport() {
+        getTable().setToolTipText(StringUtils.EMPTY);
+        ColumnViewerToolTipSupport.enableFor(this);
     }
 }

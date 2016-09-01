@@ -265,4 +265,22 @@ public class GlobalStringConstants {
     public static final String UNKNOWN = "unkown";
 
     public static final String OK = "OK";
+    
+    public static final String TEST_CASE_SCRIPT_ROOT_FOLDER_NAME = "Scripts";
+    
+    public static final String ROOT_FOLDER_NAME_DRIVERS = "Drivers";
+
+    public static final String WZ_SETUP_BTN_BACK = "< Back";
+
+    public static final String WZ_SETUP_BTN_NEXT = "Next >";
+
+    public static final String DIA_FINISH = "Finish";
+
+    public static final String DIA_CANCEL = "Cancel";
+
+    public static final String DIA_CLOSE = "Close";
+
+    public static final String DIA_YES = "Yes";
+
+    public static final String DIA_NO = "No";
 }

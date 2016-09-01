@@ -28,6 +28,7 @@ import com.kms.katalon.composer.webservice.view.NewRequestDialog;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.entity.dal.exception.FilePathTooLongException;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.repository.WebElementEntity;
@@ -96,6 +97,8 @@ public class NewWebServiceRequestObjectHandler {
             eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, new WebElementTreeEntity(requestEntity,
                     parentTreeEntity));
             eventBroker.post(EventConstants.WEBSERVICE_REQUEST_OBJECT_OPEN, requestEntity);
+        } catch (FilePathTooLongException e) {
+            MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE, e.getMessage());
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE,

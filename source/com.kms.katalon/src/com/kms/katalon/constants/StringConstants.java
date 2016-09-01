@@ -37,6 +37,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String MENU_CMD_NAME_SEARCH_ = "searchCommand";
 
     public static final String MENU_LBL_PROJECT = "Project";
+    
+    public static final String MENU_LBL_INTEGRATION = "Integration";
 
     public static final String MENU_LBL_WINDOW = "Window";
 
@@ -71,4 +73,40 @@ public class StringConstants extends GlobalStringConstants {
 
     // LifeCycleManager
     public static final String PREF_FIST_TIME_SETUP_COMPLETED = "firstTimeSetupCompleted";
+
+    //WelcomePart
+    public static final String PA_WELCOME = "Welcome";
+    public static final String PA_LBL_NEW_PROJECT = "New Katalon Project";
+    public static final String PA_TOOLTIP_NEW_PROJECT = "Click here to create new project";
+    public static final String PA_LBL_NEW_PROJECT_DESCRIPTION = "Create a new Katalon Project";
+
+    public static final String PA_LBL_OPEN_PROJECT = "Open Katalon Project";
+    public static final String PA_TOOLTIP_OPEN_PROJECT = "Click here to open a project";
+    public static final String PA_LBL_OPEN_PROJECT_DESCRIPTION = "Open an existing Katalon Project";
+
+    public static final String PA_LBL_FAQ = "FAQs";
+    public static final String PA_TOOLTIP_FAQ = "Navigate to Katalon's FAQs page";
+    public static final String PA_LBL_FAQ_DESCRIPTION = "Find answers to commonly asked questions";
+    public static final String PA_URL_FAQ = "http://docs.katalon.com/display/KD/FAQs";
+
+    public static final String PA_LBL_GETTING_STARTED = "Getting Started";
+    public static final String PA_TOOLTIP_GETTING_STARTED = "Navigate to Getting Started page";
+    public static final String PA_LBL_GETTING_STARTED_DESCRIPTION = "Learn how to use Katalon from the initial "
+            + "downloading to build your first test script and more!";
+    public static final String PA_URL_GETTING_STARTED = "http://docs.katalon.com/display/KD/Getting+Started";
+
+    public static final String PA_LBL_ARTICLES = "How to Articles";
+    public static final String PA_TOOLTIP_ARTICLES = "Navigate to How to Articles page";
+    public static final String PA_LBL_ARTICLES_DESCRIPTION = "Learn more about advanced concerns and get recommended "
+            + "solutions to test automation problems";
+    public static final String PA_URL_ARTICLES_STARTED = "http://docs.katalon.com/display/KD/How+To";
+
+    public static final String PA_LBL_RECENT_PROJECT = "Recent Katalon Project";
+    public static final String PA_TOOLTIP_OPEN_RECENT_PROJECT = "Open {0} project";
+
+    //FunctionsIntroductionDialog
+    public static final String DIA_TITLE_FUNCTIONS_INTRODUCTION = "Functions Introduction";
+    
+    //Application
+    public static final String ERR_CONSOLE_MODE = "Unable to execute in console mode";
 }

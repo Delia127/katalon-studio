@@ -10,7 +10,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Composite;
 
-import com.kms.katalon.composer.execution.constants.ExecutionPreferenceConstants;
+import com.kms.katalon.composer.execution.constants.ComposerExecutionPreferenceConstants;
 import com.kms.katalon.composer.execution.tree.ILogParentTreeNode;
 import com.kms.katalon.composer.execution.tree.ILogTreeNode;
 import com.kms.katalon.composer.execution.tree.LogChildTreeNode;
@@ -270,7 +270,7 @@ public class LogRecordTreeViewer extends TreeViewer {
     }
 
     private boolean isScrollLogEnable() {
-        return !store.getBoolean(ExecutionPreferenceConstants.EXECUTION_PIN_LOG);
+        return !store.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_PIN_LOG);
     }
 
 }

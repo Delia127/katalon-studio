@@ -169,7 +169,7 @@ public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableN
     }
 
     @Override
-    public Object getInput() {
+    protected List<InputParameter> getInputParameters() {
         ArgumentListExpressionWrapper argumentList = methodCall.getArguments();
         if (argumentList == null) {
             return null;
@@ -179,29 +179,8 @@ public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableN
     }
 
     @Override
-    public boolean setInput(Object input) {
-        if (!(input instanceof List<?>)) {
-            return false;
-        }
-        List<?> inputParameters = (List<?>) input;
-        KeywordMethod keywordMethod = findKeywordMethod();
-        if (keywordMethod == null) {
-            return false;
-        }
-        return setInput(inputParameters, keywordMethod);
-    }
-
-    protected boolean setInput(List<?> inputParameters, KeywordMethod keywordMethod) {
-        ArgumentListExpressionWrapper argumentListExpression = new ArgumentListExpressionWrapper(methodCall);
-        for (int i = 0; i < keywordMethod.getParameters().length; i++) {
-            if (!(inputParameters.get(i) instanceof InputParameter)) {
-                continue;
-            }
-            InputParameter inputParameter = (InputParameter) inputParameters.get(i);
-            argumentListExpression.addExpression(inputParameter.getValueAsExpression());
-
-        }
-        return methodCall.setArguments(argumentListExpression);
+    public boolean setInputParameters(List<InputParameter> inputParameters) {
+        return (findKeywordMethod() != null) && super.setInputParameters(inputParameters);
     }
 
     @Override
@@ -251,7 +230,7 @@ public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableN
      * Find the keyword method that most suitable for the given method call
      * @return most suitable eywordMethod
      */
-    private KeywordMethod findKeywordMethod() {
+    protected KeywordMethod findKeywordMethod() {
         KeywordMethod keywordMethod = KeywordController.getInstance().getBuiltInKeywordByName(
                 getBuiltInKWClassSimpleName(), getKeywordName(),
                 methodCall.getArguments().getArgumentListParameterTypes());

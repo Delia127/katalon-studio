@@ -27,6 +27,8 @@ public class ResponseObject {
 	
 	private String responseText;
 	
+	private int statusCode;
+	
 	private Map<String, List<String>> headerFields;
 	
 	public ResponseObject(){}
@@ -103,5 +105,13 @@ public class ResponseObject {
 
 	public void setHeaderFields(Map<String, List<String>> headerFields) {
 		this.headerFields = headerFields;
+	}
+	
+	public int getStatusCode() {
+		return statusCode;
+	}
+
+	public void setStatusCode(int statusCode) {
+		this.statusCode = statusCode;
 	}
 }

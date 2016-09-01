@@ -10,6 +10,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.AnnonatedNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ClassNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
+import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
 
 // Base class for all expression
 public abstract class ExpressionWrapper extends AnnonatedNodeWrapper {
@@ -50,7 +51,7 @@ public abstract class ExpressionWrapper extends AnnonatedNodeWrapper {
         type.setParent(this);
         this.type = type;
     }
-    
+
     public void setType(Class<?> typeClass) {
         ScriptNodeWrapper scriptClass = getScriptClass();
         if (scriptClass != null) {
@@ -58,7 +59,7 @@ public abstract class ExpressionWrapper extends AnnonatedNodeWrapper {
         }
         type.setType(typeClass);
     }
-    
+
     @Override
     public abstract ExpressionWrapper clone();
 
@@ -66,9 +67,25 @@ public abstract class ExpressionWrapper extends AnnonatedNodeWrapper {
     public ExpressionWrapper copy(ASTNodeWrapper newParent) {
         return (ExpressionWrapper) super.copy(newParent);
     }
-    
+
     @Override
     public String getInputText() {
         return getText();
+    }
+
+    public Class<?> resolveType(ClassLoader classLoader) {
+        Class<?> foundClass = loadClassQuietly(getType().getName(), classLoader);
+        if (foundClass != null) {
+            return foundClass;
+        }
+        return null;
+    }
+
+    protected final Class<?> loadClassQuietly(String className, ClassLoader classLoader) {
+        try {
+            return classLoader.loadClass(className);
+        } catch (ClassNotFoundException e) {
+            return AstKeywordsInputUtil.loadClassFromImportedPackage(className, classLoader);
+        }
     }
 }

@@ -26,7 +26,7 @@ import org.apache.commons.mail.HtmlEmail;
 import org.apache.commons.mail.ImageHtmlEmail;
 import org.apache.commons.mail.resolver.DataSourceUrlResolver;
 
-import com.kms.katalon.constants.PreferenceConstants;
+import com.kms.katalon.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.execution.entity.EmailConfig;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
@@ -202,18 +202,18 @@ public class MailUtil {
     }
 
     public static EmailConfig getDefaultEmailConfig() {
-        ScopedPreferenceStore prefs = getPreferenceStore(PreferenceConstants.EXECUTION_QUALIFIER);
+        ScopedPreferenceStore prefs = getPreferenceStore(ExecutionPreferenceConstants.EXECUTION_QUALIFIER);
 
         EmailConfig conf = new EmailConfig();
-        conf.setHost(prefs.getString(PreferenceConstants.MAIL_CONFIG_HOST));
-        conf.setPort(prefs.getString(PreferenceConstants.MAIL_CONFIG_PORT));
-        conf.setFrom(prefs.getString(PreferenceConstants.MAIL_CONFIG_USERNAME));
-        conf.setSecurityProtocol(MailSecurityProtocolType.valueOf(prefs.getString(PreferenceConstants.MAIL_CONFIG_SECURITY_PROTOCOL)));
-        conf.setUsername(prefs.getString(PreferenceConstants.MAIL_CONFIG_USERNAME));
-        conf.setPassword(prefs.getString(PreferenceConstants.MAIL_CONFIG_PASSWORD));
-        conf.setSignature(prefs.getString(PreferenceConstants.MAIL_CONFIG_SIGNATURE));
-        conf.setSendAttachment(prefs.getBoolean(PreferenceConstants.MAIL_CONFIG_ATTACHMENT));
-        conf.addRecipients(splitRecipientsString(prefs.getString(PreferenceConstants.MAIL_CONFIG_REPORT_RECIPIENTS)));
+        conf.setHost(prefs.getString(ExecutionPreferenceConstants.MAIL_CONFIG_HOST));
+        conf.setPort(prefs.getString(ExecutionPreferenceConstants.MAIL_CONFIG_PORT));
+        conf.setFrom(prefs.getString(ExecutionPreferenceConstants.MAIL_CONFIG_USERNAME));
+        conf.setSecurityProtocol(MailSecurityProtocolType.valueOf(prefs.getString(ExecutionPreferenceConstants.MAIL_CONFIG_SECURITY_PROTOCOL)));
+        conf.setUsername(prefs.getString(ExecutionPreferenceConstants.MAIL_CONFIG_USERNAME));
+        conf.setPassword(prefs.getString(ExecutionPreferenceConstants.MAIL_CONFIG_PASSWORD));
+        conf.setSignature(prefs.getString(ExecutionPreferenceConstants.MAIL_CONFIG_SIGNATURE));
+        conf.setSendAttachment(prefs.getBoolean(ExecutionPreferenceConstants.MAIL_CONFIG_ATTACHMENT));
+        conf.addRecipients(splitRecipientsString(prefs.getString(ExecutionPreferenceConstants.MAIL_CONFIG_REPORT_RECIPIENTS)));
         return conf;
     }
 }

@@ -1,12 +1,12 @@
 package com.kms.katalon.composer.keyword.handlers;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.codehaus.jdt.groovy.model.GroovyCompilationUnit;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -56,14 +56,7 @@ public class NewKeywordHandler {
 
     @CanExecute
     private boolean canExecute() {
-        try {
-            if (ProjectController.getInstance().getCurrentProject() != null) {
-                return true;
-            }
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-        }
-        return false;
+        return ProjectController.getInstance().getCurrentProject() != null;
     }
 
     @Execute
@@ -92,6 +85,14 @@ public class NewKeywordHandler {
                 NewKeywordDialog dialog = new NewKeywordDialog(parentShell, rootPackage, packageFragment);
                 dialog.open();
                 if (dialog.getReturnCode() == Dialog.OK) {
+                    int kwFilePathLength = dialog.getParentPackage().getElementName().length()
+                            + dialog.getName().length();
+                    if (kwFilePathLength > StringConstants.MAX_PKG_AND_CLASS_NAME_LENGTH) {
+                        MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE, MessageFormat.format(
+                                StringConstants.HAND_ERROR_MSG_EXCEED_CLASS_NAME_LENGTH, kwFilePathLength,
+                                StringConstants.MAX_PKG_AND_CLASS_NAME_LENGTH));
+                        return;
+                    }
                     // get new input package
                     packageFragment = dialog.getParentPackage();
                     IProgressMonitor monitor = new NullProgressMonitor();
@@ -139,22 +140,28 @@ public class NewKeywordHandler {
     }
 
     public static ITreeEntity findParentTreeEntity(Object[] selectedObjects) throws Exception {
-        if (selectedObjects != null) {
-            for (Object entity : selectedObjects) {
-                if (entity instanceof ITreeEntity) {
-                    Object entityObject = ((ITreeEntity) entity).getObject();
-                    if (entityObject instanceof IPackageFragment) {
-                        return (ITreeEntity) entity;
-                    } else if (entityObject instanceof IFile) {
-                        IFile file = (IFile) entityObject;
-                        if (file.getName().endsWith(GroovyConstants.GROOVY_FILE_EXTENSION)) {
-                            return (ITreeEntity) ((ITreeEntity) entity).getParent();
-                        }
-                    } else if (entityObject instanceof FolderEntity
-                            && ((FolderEntity) entityObject).getFolderType() == FolderType.KEYWORD) {
-                        return (ITreeEntity) entity;
-                    }
-                }
+        if (selectedObjects == null) {
+            return null;
+        }
+        for (Object entity : selectedObjects) {
+            if (!(entity instanceof ITreeEntity)) {
+                continue;
+            }
+
+            Object entityObject = ((ITreeEntity) entity).getObject();
+            if (entityObject instanceof IPackageFragment) {
+                return (ITreeEntity) entity;
+            }
+
+            if (entityObject instanceof ICompilationUnit
+                    && ((ICompilationUnit) entityObject).getElementName().endsWith(
+                            GroovyConstants.GROOVY_FILE_EXTENSION)) {
+                return ((ITreeEntity) entity).getParent();
+            }
+
+            if (entityObject instanceof FolderEntity
+                    && ((FolderEntity) entityObject).getFolderType() == FolderType.KEYWORD) {
+                return (ITreeEntity) entity;
             }
         }
         return null;

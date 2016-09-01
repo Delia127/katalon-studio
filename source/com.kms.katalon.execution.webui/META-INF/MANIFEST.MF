@@ -7,6 +7,7 @@ Bundle-ClassPath: .
 Bundle-Vendor: KMS
 Export-Package: com.kms.katalon.execution.webui.configuration,
  com.kms.katalon.execution.webui.driver,
+ com.kms.katalon.execution.webui.setting,
  com.kms.katalon.execution.webui.util
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: javax.annotation;version="1.2.0",
@@ -24,4 +25,5 @@ Require-Bundle: org.eclipse.swt,
  com.kms.katalon.preferences,
  org.eclipse.equinox.preferences,
  org.eclipse.jface,
- org.apache.commons.lang
+ org.apache.commons.lang,
+ com.kms.katalon.logging

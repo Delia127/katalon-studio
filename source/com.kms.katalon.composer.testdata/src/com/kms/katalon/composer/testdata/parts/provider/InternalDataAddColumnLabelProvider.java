@@ -48,9 +48,4 @@ public class InternalDataAddColumnLabelProvider extends ImageCenterLabelProvider
         }
         return getText(element);
     }
-
-    @Override
-    protected int getLeftMargin() {
-        return 0;
-    }
 }

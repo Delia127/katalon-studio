@@ -10,6 +10,7 @@ import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testcase.TestCaseFactory;
 import com.kms.katalon.core.testdata.TestDataFactory;
 import com.kms.katalon.core.testobject.ObjectRepository;
+import com.kms.katalon.custom.parser.GlobalVariableParser;
 
 public class GroovyConstants {
     public static final String GROOVY_FILE_EXTENSION = ".groovy";
@@ -31,6 +32,7 @@ public class GroovyConstants {
         for (IKeywordContributor keywordContribution : KeywordContributorCollection.getKeywordContributors()) {
             classList.add(keywordContribution.getKeywordClass().getName());
         }
+        classList.add(GlobalVariableParser.INTERNAL_PACKAGE_NAME + "." + GlobalVariableParser.GLOBAL_VARIABLE_CLASS_NAME);
         return classList.toArray(new String[classList.size()]);
     }
 

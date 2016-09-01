@@ -15,6 +15,7 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -28,6 +29,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.ToolBar;
@@ -36,8 +38,12 @@ import org.osgi.service.event.Event;
 
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
+import com.kms.katalon.composer.components.impl.editors.DefaultTableColumnViewerEditor;
 import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
+import com.kms.katalon.composer.components.impl.tree.TestSuiteCollectionTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
+import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.execution.handlers.AbstractExecutionHandler;
 import com.kms.katalon.composer.testsuite.collection.constant.ImageConstants;
@@ -50,6 +56,7 @@ import com.kms.katalon.composer.testsuite.collection.part.support.RunConfigurati
 import com.kms.katalon.composer.testsuite.collection.part.support.RunEnabledEditingSupport;
 import com.kms.katalon.composer.testsuite.collection.part.support.TestSuiteIdEditingSupport;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestSuiteCollectionController;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
@@ -61,16 +68,19 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
     @Inject
     private IEventBroker eventBroker;
 
+    @Inject
+    private EPartService partService;
+
     private MPart mpart;
 
     private TestSuiteCollectionEntity originalTestSuite;
 
     private TestSuiteCollectionEntity cloneTestSuite;
 
-    private TableViewer tableViewer;
+    private CTableViewer tableViewer;
 
     private TableColumn tblclmnRun;
-    
+
     private long lastModified;
 
     @PostConstruct
@@ -81,7 +91,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         createControls(parent);
         registerControlModifyListeners();
 
-        updateTestRun((TestSuiteCollectionEntity) mpart.getObject());
+        updateTestSuiteCollections((TestSuiteCollectionEntity) mpart.getObject());
     }
 
     private void registerEventListeners() {
@@ -90,20 +100,23 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         eventBroker.subscribe(EventConstants.TEST_SUITE_COLLECTION_UPDATED, this);
         eventBroker.subscribe(EventConstants.TEST_SUITE_UPDATED, this);
     }
-    
-    private IFileInfo getFileInfo(TestSuiteCollectionEntity testRun) {
-        return EFS.getLocalFileSystem().fromLocalFile(testRun.toFile()).fetchInfo();
+
+    private IFileInfo getFileInfo(TestSuiteCollectionEntity testSuiteCollection) {
+        return EFS.getLocalFileSystem().fromLocalFile(testSuiteCollection.toFile()).fetchInfo();
     }
 
-    private void updateTestRun(TestSuiteCollectionEntity testRun) {
-        originalTestSuite = testRun;
+    private void updateTestSuiteCollections(TestSuiteCollectionEntity testSuiteCollection) {
+        if (testSuiteCollection == null) {
+            close();
+        }
+        originalTestSuite = testSuiteCollection;
         cloneTestSuite = (TestSuiteCollectionEntity) originalTestSuite.clone();
-        
+        cloneTestSuite.reuseWrappers(originalTestSuite);
+
         mpart.setElementId(EntityPartUtil.getTestSuiteCollectionPartId(cloneTestSuite.getId()));
         mpart.setLabel(cloneTestSuite.getName());
         updateInput();
-        
-        
+
         lastModified = getFileInfo(originalTestSuite).getLastModified();
     }
 
@@ -123,6 +136,15 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
                 markDirty();
             }
         });
+
+        tableViewer.getTable().addListener(SWT.EraseItem, new Listener() {
+
+            @Override
+            public void handleEvent(org.eclipse.swt.widgets.Event event) {
+                checkUpdated();
+            }
+        });
+
     }
 
     private void createControls(Composite parent) {
@@ -197,10 +219,14 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         tblclmnRun = tbvcRun.getColumn();
         tblclmnRun.setText(StringConstants.RUN);
         tbvcRun.setEditingSupport(new RunEnabledEditingSupport(this));
-        tbvcRun.setLabelProvider(new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.RUN_COLUMN_IDX));
+        tbvcRun.setLabelProvider(new TestSuiteRunConfigLabelProvider(this,
+                TestSuiteRunConfigLabelProvider.RUN_COLUMN_IDX));
         tableLayout.setColumnData(tblclmnRun, new ColumnWeightData(10, 70));
 
         tableViewer.setContentProvider(new ArrayContentProvider());
+        DefaultTableColumnViewerEditor.create(tableViewer);
+
+        tableViewer.enableTooltipSupport();
     }
 
     @Override
@@ -251,7 +277,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
                 }
 
                 if (ObjectUtils.equals(originalTestSuite.getIdForDisplay(), objects[1])) {
-                    updateTestRun(originalTestSuite);
+                    updateTestSuiteCollections(originalTestSuite);
                 }
                 break;
             }
@@ -273,7 +299,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
                     return;
                 }
                 if (originalTestSuite.equals(objects[1])) {
-                    updateTestRun(originalTestSuite);
+                    updateTestSuiteCollections(originalTestSuite);
                 }
                 break;
             }
@@ -283,27 +309,45 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
     @PreDestroy
     public void close() {
         eventBroker.unsubscribe(this);
-        EntityPartUtil.closePart(originalTestSuite);
+        partService.hidePart(mpart, true);
     }
 
     @Focus
     public void focus() {
+        checkUpdated();
+    }
+
+    private void checkUpdated() {
         if (lastModified != getFileInfo(originalTestSuite).getLastModified()) {
-            updateInput();
+            updateTestSuiteCollections(originalTestSuite);
         }
     }
 
     @Persist
     public void save() {
         TestSuiteCollectionEntity backup = (TestSuiteCollectionEntity) originalTestSuite.clone();
-        cloneTestSuite.reuseWrappers(originalTestSuite);
+        backup.reuseWrappers(originalTestSuite);
+        originalTestSuite.reuseWrappers(cloneTestSuite);
         try {
             TestSuiteCollectionController.getInstance().updateTestSuiteCollection(originalTestSuite);
-            updateTestRun(originalTestSuite);
+            updateTestSuiteCollections(originalTestSuite);
+            refreshTreeEntity();
             mpart.setDirty(false);
         } catch (DALException e) {
-            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.PA_MSG_UNABLE_TO_UPDATE_TEST_SUITE_COLLECTION, e.getMessage());
-            backup.reuseWrappers(originalTestSuite);
+            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.PA_MSG_UNABLE_TO_UPDATE_TEST_SUITE_COLLECTION,
+                    e.getMessage());
+            originalTestSuite.reuseWrappers(backup);
+        }
+    }
+
+    private void refreshTreeEntity() {
+        try {
+            TestSuiteCollectionTreeEntity tsCollectionTreeEntity = TreeEntityUtil.getTestSuiteCollectionTreeEntity(
+                    originalTestSuite, ProjectController.getInstance().getCurrentProject());
+            eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, tsCollectionTreeEntity);
+            eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, tsCollectionTreeEntity);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
         }
     }
 
