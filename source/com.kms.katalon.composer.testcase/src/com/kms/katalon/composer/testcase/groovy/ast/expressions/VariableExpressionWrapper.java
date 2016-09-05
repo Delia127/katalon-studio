@@ -39,7 +39,7 @@ public class VariableExpressionWrapper extends ExpressionWrapper {
     public VariableExpressionWrapper(VariableExpression expression, ASTNodeWrapper parentNodeWrapper) {
         super(expression, parentNodeWrapper);
         this.variable = expression.getName();
-        this.originType = new ClassNodeWrapper(expression.getOriginType(), this);
+        this.originType = ClassNodeWrapper.getClassWrapper(expression.getOriginType(), this);
     }
 
     public VariableExpressionWrapper(VariableExpressionWrapper variableExpressionWrapper,

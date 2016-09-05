@@ -25,7 +25,7 @@ public class BooleanExpressionWrapper extends ExpressionWrapper {
         super(parentNodeWrapper);
         this.expression = new ConstantExpressionWrapper(true, this);
         this.isReverse = false;
-        this.type = new ClassNodeWrapper(ClassHelper.boolean_TYPE, this);
+        this.type = ClassNodeWrapper.getClassWrapper(ClassHelper.boolean_TYPE, this);
     }
 
     public BooleanExpressionWrapper(BooleanExpression expression, ASTNodeWrapper parentNodeWrapper) {

@@ -24,7 +24,7 @@ public class ClosureExpressionWrapper extends ExpressionWrapper implements ASTHa
         super(parentNodeWrapper);
         this.parameters = parameters;
         this.code = new BlockStatementWrapper(this);
-        this.type = new ClassNodeWrapper(ClassHelper.CLOSURE_TYPE, this);
+        this.type = ClassNodeWrapper.getClassWrapper(ClassHelper.CLOSURE_TYPE, this);
     }
 
     public ClosureExpressionWrapper(ClosureExpression closureExpression, ASTNodeWrapper parentNodeWrapper) {

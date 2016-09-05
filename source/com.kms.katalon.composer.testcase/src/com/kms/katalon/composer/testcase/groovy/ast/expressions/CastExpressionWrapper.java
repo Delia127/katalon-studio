@@ -15,7 +15,7 @@ public class CastExpressionWrapper extends ExpressionWrapper {
 
     public CastExpressionWrapper(CastExpression castExpression, ASTNodeWrapper parentNodeWrapper) {
         super(castExpression, parentNodeWrapper);
-        type = new ClassNodeWrapper(castExpression.getType(), this);
+        type = ClassNodeWrapper.getClassWrapper(castExpression.getType(), this);
         expression = ASTNodeWrapHelper.getExpressionNodeWrapperFromExpression(castExpression.getExpression(), this);
     }
 
@@ -27,7 +27,7 @@ public class CastExpressionWrapper extends ExpressionWrapper {
 
     public CastExpressionWrapper(ClassNode typeClass, ExpressionWrapper expression, ASTNodeWrapper parentNodeWrapper) {
         super(parentNodeWrapper);
-        type = new ClassNodeWrapper(typeClass, this);
+        type = ClassNodeWrapper.getClassWrapper(typeClass, this);
         setExpression(expression);
     }
 

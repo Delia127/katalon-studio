@@ -57,7 +57,7 @@ public class ConstantExpressionWrapper extends ExpressionWrapper {
         if (value == null) {
             return;
         }
-        setType(new ClassNodeWrapper(ClassHelper.make(value.getClass()), this));
+        setType(ClassNodeWrapper.getClassWrapper(ClassHelper.make(value.getClass()), this));
     }
 
     @Override
