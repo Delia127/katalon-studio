@@ -279,6 +279,9 @@ public class InspectSession implements Runnable {
                 serverSettingFile.delete();
             }
         } catch (UnreachableBrowserException e) {}
+        catch (WebDriverException e) {
+            LoggerSingleton.logError(e);
+        }
     }
 
     public boolean isRunning() {
