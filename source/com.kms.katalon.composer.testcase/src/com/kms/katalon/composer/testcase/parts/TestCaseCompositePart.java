@@ -169,12 +169,19 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
     public void initDefaultSelectedPart() {
         String defaultTestCaseView = TestCasePreferenceDefaultValueInitializer.getTestCasePartStartView();
         if (StringUtils.equals(defaultTestCaseView, MANUAL_TAB_TITLE)) {
-            setSelectedPart(getChildManualPart());
-            setScriptContentToManual();
+            if (tabFolder.getSelectionIndex() != CHILD_TEST_CASE_MANUAL_PART_INDEX) {
+                setSelectedPart(getChildManualPart());
+            } else if (isScriptChanged) {
+                setScriptContentToManual();
+            }
         } else if (StringUtils.equals(defaultTestCaseView, SCRIPT_TAB_TITLE)) {
-            setSelectedPart(getChildCompatibilityPart());
-            isScriptChanged = true;
+            if (tabFolder.getSelectionIndex() != CHILD_TEST_CASE_EDITOR_PART_INDEX) {
+                setSelectedPart(getChildCompatibilityPart());
+            } else if (childTestCasePart.isManualScriptChanged()) {
+                setChildEditorContents(scriptNode);
+            }
         }
+
     }
 
     public void initComponent() {
@@ -228,7 +235,11 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
 
                 tabFolder.addSelectionListener(new SelectionAdapter() {
                     public void widgetSelected(SelectionEvent event) {
-                        if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_MANUAL_PART_INDEX && isScriptChanged) {
+                        if (tabFolder == null || childTestCasePart == null) {
+                            return;
+                        }
+                        if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_MANUAL_PART_INDEX
+                                && (isScriptChanged || !isInitialized)) {
                             setScriptContentToManual();
                         } else if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_EDITOR_PART_INDEX
                                 && childTestCasePart.isManualScriptChanged()) {
@@ -239,9 +250,12 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
             }
             childTestCaseVariablesPart.loadVariables();
             childTestCaseIntegrationPart.loadInput();
+            initDefaultSelectedPart();
+            if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_MANUAL_PART_INDEX) {
+                setScriptContentToManual();
+            }
             isInitialized = true;
         }
-        initDefaultSelectedPart();
     }
 
     private void initChildEditorPart(CompatibilityEditor compatibilityEditor) {
@@ -414,7 +428,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
     public TestCaseEntity getTestCase() {
         return testCase;
     }
-    
+
     public TestCaseEntity getOriginalTestCase() {
         return originalTestCase;
     }
@@ -680,6 +694,12 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
     public void setSelectedPart(MPart partToSelect) {
         if (subPartStack.getChildren().contains(partToSelect)) {
             subPartStack.setSelectedElement(partToSelect);
+            if (partToSelect == getChildManualPart() && (isScriptChanged || !isInitialized)) {
+                setScriptContentToManual();
+            } else if (partToSelect == getChildCompatibilityPart() && childTestCasePart.isManualScriptChanged()) {
+                setChildEditorContents(scriptNode);
+            }
+
         }
     }
 
