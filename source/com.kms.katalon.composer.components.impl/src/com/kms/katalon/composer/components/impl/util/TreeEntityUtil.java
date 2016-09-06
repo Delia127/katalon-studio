@@ -20,6 +20,7 @@ import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteCollectionTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.controller.CheckpointController;
 import com.kms.katalon.controller.FolderController;
@@ -149,8 +150,10 @@ public class TreeEntityUtil {
 
     public static KeywordTreeEntity getKeywordTreeEntity(String keywordRelativeLocation, ProjectEntity projectEntity)
             throws Exception {
-        String packageLocation = StringUtils.substringBeforeLast(keywordRelativeLocation, StringConstants.ENTITY_ID_SEPARATOR);
-        String keywordName = StringUtils.substringAfterLast(keywordRelativeLocation, StringConstants.ENTITY_ID_SEPARATOR);
+        String packageLocation = StringUtils.substringBeforeLast(keywordRelativeLocation,
+                StringConstants.ENTITY_ID_SEPARATOR);
+        String keywordName = StringUtils.substringAfterLast(keywordRelativeLocation,
+                StringConstants.ENTITY_ID_SEPARATOR);
         PackageTreeEntity packageTreeEntity = getPackageTreeEntity(packageLocation, projectEntity);
         if (packageTreeEntity != null) {
             ICompilationUnit keywordFile = ((IPackageFragment) packageTreeEntity.getObject()).getCompilationUnit(keywordName);
@@ -381,6 +384,16 @@ public class TreeEntityUtil {
         treeEntities.add(new FolderTreeEntity(folderController.getKeywordRoot(project), null));
         treeEntities.add(new FolderTreeEntity(folderController.getReportRoot(project), null));
         return treeEntities;
+    }
+
+    public static boolean isValidTreeEntitySelectionType(Object[] selection, String typeName) {
+        try {
+            return selection != null && selection.length > 0
+                    && StringUtils.equals(typeName, ((ITreeEntity) selection[0]).getTypeName());
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            return false;
+        }
     }
 
 }

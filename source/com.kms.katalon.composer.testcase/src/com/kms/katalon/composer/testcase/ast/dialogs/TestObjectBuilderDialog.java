@@ -3,6 +3,8 @@ package com.kms.katalon.composer.testcase.ast.dialogs;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -23,6 +25,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Tree;
+import org.eclipse.ui.dialogs.ISelectionStatusValidator;
+import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.composer.components.impl.dialogs.TreeEntitySelectionDialog;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
@@ -50,6 +54,9 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 
 public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implements IAstDialogBuilder {
+
+    private static final String pluginId = FrameworkUtil.getBundle(TestObjectBuilderDialog.class).getSymbolicName();
+
     private static final InputValueType[] defaultInputValueTypes = { InputValueType.Variable };
 
     private static final String OBJECT_FINDER_TAB_NAME = TreeEntityUtil.getReadableKeywordName(InputValueType.TestObject.getName());
@@ -153,6 +160,17 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         Tree treeWidget = treeViewer.getTree();
         treeWidget.setLayoutData(data);
         treeWidget.setFont(parent.getFont());
+        setValidator(new ISelectionStatusValidator() {
+
+            @Override
+            public IStatus validate(Object[] selection) {
+                if (TreeEntityUtil.isValidTreeEntitySelectionType(selection,
+                        com.kms.katalon.composer.components.impl.constants.StringConstants.TREE_OBJECT_TYPE_NAME)) {
+                    return new Status(IStatus.OK, pluginId, IStatus.OK, null, null);
+                }
+                return new Status(IStatus.ERROR, pluginId, IStatus.ERROR, null, null);
+            }
+        });
 
         treeWidget.setEnabled(true);
         stackLayout.topControl = objectFinderComposite;
@@ -191,7 +209,7 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         ColumnViewerUtil.setTableActivation(tableViewer);
 
         createTableColumns(parent);
-        
+
         addSwitchTypeComboListener(parent);
     }
 
@@ -249,7 +267,7 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         tableViewerColumnValue.getColumn().setText(StringConstants.DIA_COL_VALUE);
         tableViewerColumnValue.getColumn().setWidth(300);
         tableViewerColumnValue.setLabelProvider(new AstInputValueLabelProvider());
-        tableViewerColumnValue.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer));        
+        tableViewerColumnValue.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer));
     }
 
     private static FolderTreeEntity createSelectedTreeEntityHierachy(FolderEntity folderEntity, FolderEntity rootFolder) {
