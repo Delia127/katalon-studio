@@ -14,7 +14,9 @@ import com.kms.katalon.entity.link.VariableLink;
 public class ScriptVariableValueEditingSupport extends TypeCheckedEditingSupport<VariableLink> {
 
     private ExpressionWrapper expression;
-
+    
+    private CellEditor editor;
+    
     public ScriptVariableValueEditingSupport(ColumnViewer viewer) {
         super(viewer);
     }
@@ -26,13 +28,15 @@ public class ScriptVariableValueEditingSupport extends TypeCheckedEditingSupport
 
     @Override
     protected CellEditor getCellEditorByElement(VariableLink element) {
+        editor = null;
         expression = GroovyWrapperParser.parseGroovyScriptAndGetFirstExpression(element.getValue());
         if (expression == null) {
             return null;
         }
         InputValueType inputValueType = AstValueUtil.getTypeValue(expression);
         if (inputValueType != null) {
-            return inputValueType.getCellEditorForValue(getComposite(), expression);
+            editor = inputValueType.getCellEditorForValue(getComposite(), expression);
+            return editor;
         }
         return null;
     }
@@ -67,5 +71,8 @@ public class ScriptVariableValueEditingSupport extends TypeCheckedEditingSupport
         element.setValue(((ASTNodeWrapper) object).getText());
         getViewer().refresh(element);
     }
-
+    
+    public CellEditor getEditor() {
+        return editor;
+    }
 }

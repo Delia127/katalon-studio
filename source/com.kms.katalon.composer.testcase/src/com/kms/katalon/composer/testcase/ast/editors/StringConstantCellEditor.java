@@ -4,9 +4,10 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.widgets.Composite;
 
+import com.kms.katalon.composer.components.dialogs.ApplyingEditingValue;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
 
-public class StringConstantCellEditor extends TextCellEditor {
+public class StringConstantCellEditor extends TextCellEditor implements ApplyingEditingValue {
     private ConstantExpressionWrapper constantExpression;
 
     public StringConstantCellEditor(Composite parent) {

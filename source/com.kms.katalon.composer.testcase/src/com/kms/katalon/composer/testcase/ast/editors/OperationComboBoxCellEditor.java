@@ -6,9 +6,10 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.swt.widgets.Composite;
 
+import com.kms.katalon.composer.components.dialogs.ApplyingEditingValue;
 import com.kms.katalon.composer.testcase.groovy.ast.TokenWrapper;
 
-public class OperationComboBoxCellEditor extends ComboBoxCellEditor {
+public class OperationComboBoxCellEditor extends ComboBoxCellEditor implements ApplyingEditingValue {
     private TokenWrapper token;
 
     public static final int[] OPERATION_CODES = new int[] { Types.COMPARE_EQUAL, Types.COMPARE_GREATER_THAN,
@@ -60,5 +61,9 @@ public class OperationComboBoxCellEditor extends ComboBoxCellEditor {
         }
         token.setToken(Token.newSymbol(OPERATION_CODES[selectionIndex], -1, -1));
         return token;
+    }
+    
+    public void applyEditingValue() {
+        fireApplyEditorValue();
     }
 }

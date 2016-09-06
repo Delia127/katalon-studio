@@ -8,7 +8,9 @@ import java.util.List;
 import org.eclipse.swt.widgets.Composite;
 import org.openqa.selenium.Keys;
 
-public class KeyInputComboBoxCellEditor extends PropertyComboBoxCellEditor {
+import com.kms.katalon.composer.components.dialogs.ApplyingEditingValue;
+
+public class KeyInputComboBoxCellEditor extends PropertyComboBoxCellEditor implements ApplyingEditingValue {
 
     private static String[] keyNames;
 
@@ -32,5 +34,8 @@ public class KeyInputComboBoxCellEditor extends PropertyComboBoxCellEditor {
         Arrays.sort(keyNames);
         return keyNames;
     }
-
+    
+    public void applyEditingValue() {
+        fireApplyEditorValue();
+    }
 }
