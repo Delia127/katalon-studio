@@ -178,7 +178,7 @@ public class FocusCellOwnerDrawHighlighterForMultiSelection extends FocusCellHig
     @Override
     protected void focusCellChanged(ViewerCell newCell, ViewerCell oldCell) {
         if (oldCell != null && Platform.getOS().equals(Platform.OS_MACOSX)) {
-            oldCell.setBackground(null);
+            oldCell.setBackground(getBackgroundLostFocusCell(oldCell));
         }
         
         super.focusCellChanged(newCell, oldCell);
@@ -205,5 +205,9 @@ public class FocusCellOwnerDrawHighlighterForMultiSelection extends FocusCellHig
 
     public ViewerCell getMarkedCell() {
         return focusedCell;
+    }
+    
+    protected Color getBackgroundLostFocusCell(ViewerCell cell) {
+        return null;
     }
 }
