@@ -121,9 +121,13 @@ import com.kms.katalon.objectspy.element.tree.HTMLElementTreeContentProvider;
 import com.kms.katalon.objectspy.exception.IEAddonNotInstalledException;
 import com.kms.katalon.objectspy.util.WinRegistry;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
+import com.sun.jna.platform.win32.User32;
+import com.sun.jna.platform.win32.WinDef.HWND;
 
 @SuppressWarnings("restriction")
 public class RecorderDialog extends Dialog {
+    private static final String IE_WINDOW_CLASS = "IEFrame";
+    
     private static final String relativePathToIEAddonSetup = File.separator + "extensions" + File.separator + "IE"
             + File.separator + RecordSession.RECORDER_ADDON_NAME + File.separator + "setup.exe";
 
@@ -201,11 +205,11 @@ public class RecorderDialog extends Dialog {
             if (isInstant) {
                 startServer(getInstantBrowsersPort());
                 if (selectedBrowser == WebUIDriverType.IE_DRIVER) {
-                    startRecordSession(selectedBrowser, isInstant);
+                    runInstantIE();
                 }
             } else {
                 startServer();
-                startRecordSession(selectedBrowser, isInstant);
+                startRecordSession(selectedBrowser);
             }
 
             tltmPause.setEnabled(true);
@@ -224,6 +228,22 @@ public class RecorderDialog extends Dialog {
             logger.error(e);
             MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE, e.getMessage());
         }
+    }
+    
+    protected void runInstantIE() throws Exception {
+        session = new RecordSession(server, selectedBrowser, ProjectController.getInstance().getCurrentProject(),
+                logger);
+        session.setupIE();
+        HWND hwnd = User32.INSTANCE.FindWindow(IE_WINDOW_CLASS, null);
+        if (hwnd == null) {
+            return;
+        }
+        shiftFocusToWindow(hwnd);
+    }
+
+    private void shiftFocusToWindow(HWND hwnd) {
+        User32.INSTANCE.ShowWindow(hwnd, 9);        // SW_RESTORE
+        User32.INSTANCE.SetForegroundWindow(hwnd);   // bring to front
     }
 
     private void checkIEAddon() throws IllegalAccessException, InvocationTargetException, IEAddonNotInstalledException {
@@ -279,10 +299,10 @@ public class RecorderDialog extends Dialog {
         actionTableViewer.refresh();
     }
 
-    private void startRecordSession(WebUIDriverType webUiDriverType, boolean isInstant) throws Exception {
+    private void startRecordSession(WebUIDriverType webUiDriverType) throws Exception {
         stopRecordSession();
-        session = new RecordSession(server, webUiDriverType, isInstant, ProjectController.getInstance()
-                .getCurrentProject(), logger);
+        session = new RecordSession(server, webUiDriverType, ProjectController.getInstance().getCurrentProject(),
+                logger);
         new Thread(session).start();
     }
 
@@ -326,10 +346,10 @@ public class RecorderDialog extends Dialog {
         protected Menu getMenu() {
             return menu;
         }
-        
+
         @Override
         protected void centerWigetSelected(SelectionEvent event) {
-            ToolItem item = (ToolItem) event.widget;;
+            ToolItem item = (ToolItem) event.widget;
             if (item.getText().equals(StringConstants.INSTANT_BROWSER_PREFIX)) {
                 startBrowser(true);
                 return;
@@ -534,11 +554,11 @@ public class RecorderDialog extends Dialog {
         addActionMenuItem.addListener(SWT.Selection, new Listener() {
             @Override
             public void handleEvent(Event event) {
-               addDefaultAction(getFirstSelectedHTMLAction());
+                addDefaultAction(getFirstSelectedHTMLAction());
             }
         });
     }
-    
+
     private void createAddValidationPointItem(Item addValidationPointMenuItem) {
         addValidationPointMenuItem.setText(StringConstants.DIA_MENU_ADD_VALIDATION_POINT);
         addValidationPointMenuItem.addListener(SWT.Selection, new Listener() {
@@ -557,12 +577,12 @@ public class RecorderDialog extends Dialog {
             @Override
             public void handleEvent(Event event) {
                 HTMLActionMapping firstSelectedHTMLAction = getFirstSelectedHTMLAction();
-                addSynchonizationPoint(firstSelectedHTMLAction != null ? firstSelectedHTMLAction.getTargetElement() : null,
-                        firstSelectedHTMLAction);
+                addSynchonizationPoint(firstSelectedHTMLAction != null ? firstSelectedHTMLAction.getTargetElement()
+                        : null, firstSelectedHTMLAction);
             }
         });
     }
-    
+
     private HTMLActionMapping getFirstSelectedHTMLAction() {
         ISelection selection = actionTableViewer.getSelection();
         if (!(selection instanceof IStructuredSelection)) {
@@ -729,15 +749,15 @@ public class RecorderDialog extends Dialog {
         addSynchonizationPoint(element, recordedActions.size() > 0 ? recordedActions.get(recordedActions.size() - 1)
                 : null);
     }
-    
+
     private void addDefaultAction(HTMLActionMapping selectedHTMLActionMapping) {
         IHTMLAction defaultHTMLAction = HTMLActionUtil.getAllHTMLActions().get(0);
         addAction(
                 defaultHTMLAction,
                 selectedHTMLActionMapping != null ? selectedHTMLActionMapping.getTargetElement() : null,
                 selectedHTMLActionMapping != null ? selectedHTMLActionMapping.getWindowId() : null,
-                selectedHTMLActionMapping != null ? recordedActions.indexOf(selectedHTMLActionMapping) + 1 
-                        : Math.max(0, recordedActions.size() - 1));
+                selectedHTMLActionMapping != null ? recordedActions.indexOf(selectedHTMLActionMapping) + 1 : Math.max(
+                        0, recordedActions.size() - 1));
     }
 
     private void addAction(IHTMLAction newAction, HTMLElement element, String windowId, int selectedActionIndex) {
@@ -917,7 +937,7 @@ public class RecorderDialog extends Dialog {
                 } else {
                     htmlActions.addAll(HTMLActionUtil.getAllHTMLActions());
                 }
-                
+
                 // remove duplicate keyword
                 Map<String, IHTMLAction> keywords = new LinkedHashMap<>();
                 for (int i = 0; i < htmlActions.size(); ++i) {
@@ -928,7 +948,7 @@ public class RecorderDialog extends Dialog {
                 }
                 htmlActions.clear();
                 htmlActions.addAll(keywords.values());
-                
+
                 for (IHTMLAction htmlAction : htmlActions) {
                     actionNames.add(TreeEntityUtil.getReadableKeywordName(htmlAction.getName()));
                 }
@@ -1094,7 +1114,7 @@ public class RecorderDialog extends Dialog {
         hookDropEvent();
 
         actionTableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-            
+
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
                 tltmDelete.setEnabled(isAnyTableItemSelected());

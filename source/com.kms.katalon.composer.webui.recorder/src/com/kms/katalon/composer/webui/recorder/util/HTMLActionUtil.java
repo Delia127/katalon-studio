@@ -40,6 +40,8 @@ import com.kms.katalon.objectspy.element.HTMLPageElement;
 import com.kms.katalon.objectspy.util.HTMLElementUtil;
 
 public class HTMLActionUtil {
+    private static final String ABOUT_BLANK = "\"about:blank\"";
+
     public static final int DF_SELECTED_INDEX_IF_NULL = 0;
 
     private static List<HTMLValidationAction> validationActions;
@@ -103,7 +105,9 @@ public class HTMLActionUtil {
         if (actionMapping == null || actionMapping.getAction() == null) {
             return false;
         }
-        if (actionMapping.getAction() == HTMLAction.Navigate && existingActionMappings.size() > 0) {
+        if (actionMapping.getAction() == HTMLAction.Navigate
+                && (existingActionMappings.size() > 0 || (actionMapping.getData().length == 0 || String.valueOf(
+                        actionMapping.getData()[0].getValue()).equals(ABOUT_BLANK)))) {
             return false;
         }
         if (actionMapping.getAction().getName().equals(HTMLActionJson.DOUBLE_CLICK_ACTION_KEY)

@@ -117,9 +117,13 @@ import com.kms.katalon.objectspy.util.HTMLElementUtil;
 import com.kms.katalon.objectspy.util.InspectSessionUtil;
 import com.kms.katalon.objectspy.util.WinRegistry;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
+import com.sun.jna.platform.win32.User32;
+import com.sun.jna.platform.win32.WinDef.HWND;
 
 @SuppressWarnings("restriction")
 public class ObjectSpyDialog extends Dialog implements EventHandler {
+    private static final String IE_WINDOW_CLASS = "IEFrame";
+    
     private static final String relativePathToIEAddonSetup = File.separator + "extensions" + File.separator + "IE"
             + File.separator + "Object Spy" + File.separator + "setup.exe";
 
@@ -1077,13 +1081,13 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
             changeBrowserToolItemName();
             if (isInstant) {
                 startServerWithPort(getInstantBrowsersPort());
-                if (browser != WebUIDriverType.IE_DRIVER) {
-                    return;
+                if (browser == WebUIDriverType.IE_DRIVER) {
+                    runInstantIE();
                 }
-            } else {
-                startServerWithPort(0);
+                return;
             }
-            startInspectSession(browser, isInstant);
+            startServerWithPort(0);
+            startInspectSession(browser);
         } catch (final IEAddonNotInstalledException e) {
             stop();
             showMessageForMissingIEAddon();
@@ -1097,12 +1101,28 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
             MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE, ex.getMessage());
         }
     }
+    
+    protected void runInstantIE() throws Exception {
+        session = new InspectSession(server, WebUIDriverType.IE_DRIVER, ProjectController.getInstance().getCurrentProject(),
+                logger);
+        session.setupIE();
+        HWND hwnd = User32.INSTANCE.FindWindow(IE_WINDOW_CLASS, null);
+        if (hwnd == null) {
+            return;
+        }
+        shiftFocusToWindow(hwnd);
+    }
 
-    private void startInspectSession(WebUIDriverType browser, boolean isInstant) throws Exception {
+    private void shiftFocusToWindow(HWND hwnd) {
+        User32.INSTANCE.ShowWindow(hwnd, 9);        // SW_RESTORE
+        User32.INSTANCE.SetForegroundWindow(hwnd);   // bring to front
+    }
+
+    private void startInspectSession(WebUIDriverType browser) throws Exception {
         if (session != null) {
             session.stop();
         }
-        session = new InspectSession(server, browser, isInstant, ProjectController.getInstance().getCurrentProject(),
+        session = new InspectSession(server, browser, ProjectController.getInstance().getCurrentProject(),
                 logger);
         new Thread(session).start();
     }
