@@ -4,10 +4,11 @@ import org.codehaus.groovy.syntax.Numbers;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.widgets.Composite;
 
+import com.kms.katalon.composer.components.dialogs.ApplyingEditingValue;
 import com.kms.katalon.composer.testcase.editors.NumberCellEditor;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
 
-public class NumberConstantCellEditor extends NumberCellEditor {
+public class NumberConstantCellEditor extends NumberCellEditor implements ApplyingEditingValue {
     private ConstantExpressionWrapper constantExpression;
     
     public NumberConstantCellEditor(Composite parent) {
@@ -37,5 +38,9 @@ public class NumberConstantCellEditor extends NumberCellEditor {
         }
         constantExpression.setValue(numValue);
         return constantExpression;
+    }
+    
+    public void applyEditingValue() {
+        fireApplyEditorValue();
     }
 }

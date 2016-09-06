@@ -4,9 +4,10 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.swt.widgets.Composite;
 
+import com.kms.katalon.composer.components.dialogs.ApplyingEditingValue;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
 
-public class BooleanConstantComboBoxCellEditor extends ComboBoxCellEditor {
+public class BooleanConstantComboBoxCellEditor extends ComboBoxCellEditor implements ApplyingEditingValue {
     private ConstantExpressionWrapper constantExpression;
 
     private static final String[] BOOLEAN_CONSTANTS = new String[] { Boolean.TRUE.toString(), Boolean.FALSE.toString() };
@@ -51,5 +52,9 @@ public class BooleanConstantComboBoxCellEditor extends ComboBoxCellEditor {
             break;
         }
         return;
+    }
+    
+    public void applyEditingValue() {
+        fireApplyEditorValue();
     }
 }

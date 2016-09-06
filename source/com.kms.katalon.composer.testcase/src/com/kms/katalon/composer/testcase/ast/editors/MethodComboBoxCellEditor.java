@@ -16,10 +16,11 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.swt.widgets.Composite;
 
+import com.kms.katalon.composer.components.dialogs.ApplyingEditingValue;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 
-public class MethodComboBoxCellEditor extends ComboBoxCellEditor {
+public class MethodComboBoxCellEditor extends ComboBoxCellEditor implements ApplyingEditingValue {
     private List<Method> methods = new ArrayList<Method>();
 
     private boolean staticOnly;
@@ -245,5 +246,9 @@ public class MethodComboBoxCellEditor extends ComboBoxCellEditor {
 
     public enum MethodComparation {
         NOT_EQUAL_NAME, EQUAL_NAME_ONLY, EQUAL_NAME_AND_PARAM
+    }
+    
+    public void applyEditingValue() {
+        fireApplyEditorValue();
     }
 }

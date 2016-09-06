@@ -4,9 +4,10 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.swt.widgets.Composite;
 
+import com.kms.katalon.composer.components.dialogs.ApplyingEditingValue;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.PropertyExpressionWrapper;
 
-public abstract class PropertyComboBoxCellEditor extends ComboBoxCellEditor {
+public abstract class PropertyComboBoxCellEditor extends ComboBoxCellEditor implements ApplyingEditingValue {
     private PropertyExpressionWrapper propertyExpression;
 
     public PropertyComboBoxCellEditor(Composite parent, String[] items) {
