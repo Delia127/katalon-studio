@@ -54,10 +54,10 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 
 public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implements IAstDialogBuilder {
+    private static final InputValueType[] defaultInputValueTypes = { InputValueType.Variable, InputValueType.GlobalVariable };
 
     private static final String pluginId = FrameworkUtil.getBundle(TestObjectBuilderDialog.class).getSymbolicName();
 
-    private static final InputValueType[] defaultInputValueTypes = { InputValueType.Variable };
 
     private static final String OBJECT_FINDER_TAB_NAME = TreeEntityUtil.getReadableKeywordName(InputValueType.TestObject.getName());
 
