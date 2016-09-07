@@ -43,7 +43,7 @@ public class ActivationInfoCollector {
     }
 
     private static HttpURLConnection createConnection() throws Exception {
-        URL url = new URL("https://mar-staging.katalon.com/api/segment/identify");
+        URL url = new URL("https://mar.katalon.com/api/segment/identify");
         HttpURLConnection uc = (HttpURLConnection) url.openConnection();
 
         uc.setRequestMethod("POST");
@@ -59,22 +59,25 @@ public class ActivationInfoCollector {
         StringBuilder userInfo = new StringBuilder();
         String os = Platform.getOS();
         String katVersion = ApplicationInfo.versionNo() + " build " + ApplicationInfo.buildNo();
+        String osType = Platform.getOSArch().contains("64") ? "64" : "32";
+        String katType = System.getProperty("sun.arch.data.model");
         String hostName = inetAddress.getHostName();
-
+        
         userInfo.append("{ \"userId\":\"")
                 .append(userName)
                 .append("\", \"traits\": { ")
                 .append("\"password\": \"")
                 .append(pass)
-                .append("\"")
-                .append(", \"host_name\": \"")
+                .append("\", \"host_name\": \"")
                 .append(hostName)
-                .append("\"")
-                .append(", \"os\": \"")
+                .append("\",  \"os\": \"")
                 .append(os)
-                .append("\"")
-                .append(", \"kat_version\": \"")
+                .append("\", \"os_type\": \"")
+                .append(osType)
+                .append("\", \"kat_version\": \"")
                 .append(katVersion)
+                .append("\", \"kat_type\": \"")
+                .append(katType)
                 .append("\" } }");
 
         return userInfo.toString();

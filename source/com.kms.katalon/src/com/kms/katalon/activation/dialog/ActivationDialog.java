@@ -34,11 +34,11 @@ import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.util.ActivationInfoCollector;
 
 public class ActivationDialog extends Dialog {
-    private static final String FORGOT_PASS_LINK = "https://wp-staging.katalon.com/#katalon-reset-password";
+    private static final String FORGOT_PASS_LINK = "https://www.katalon.com/#katalon-reset-password";
 
     private static final String LINK_LABEL_FORGOT_PASS_TEXT = "<a>Forgot Password?</a>";
-
-    private static final String REGISTER_LINK = "https://wp-staging.katalon.com/#katalon-register";
+    
+    private static final String REGISTER_LINK = "https://www.katalon.com/#katalon-register";
 
     private static final String LINK_LABEL_REGISTER_TEXT = "<a>Register</a>";
 
