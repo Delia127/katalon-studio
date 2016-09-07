@@ -12,10 +12,13 @@ import org.openqa.selenium.Dimension
 import org.openqa.selenium.JavascriptExecutor
 import org.openqa.selenium.NoSuchElementException
 import org.openqa.selenium.NoSuchWindowException
+import org.openqa.selenium.Platform;
+import org.openqa.selenium.Point
 import org.openqa.selenium.TimeoutException
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.WebDriverException
 import org.openqa.selenium.WebElement
+import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.interactions.Actions
 import org.openqa.selenium.support.ui.ExpectedCondition
 import org.openqa.selenium.support.ui.ExpectedConditions
@@ -360,7 +363,19 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     public static void maximizeWindow(FailureHandling flowControl) throws StepFailedException {
         WebUIKeywordMain.runKeyword({
             logger.logInfo(StringConstants.KW_LOG_INFO_MAX_CURR_WINDOW);
-            DriverFactory.getWebDriver().manage().window().maximize();
+            
+            WebDriver webDriver = DriverFactory.getWebDriver();
+            if (webDriver instanceof ChromeDriver && System.getProperty("os.name").toLowerCase().contains("mac")) {
+                java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+                webDriver.manage().window().setPosition(new Point(0, 0));
+                Dimension maximizedScreenSize =
+                    new Dimension((int) screenSize.getWidth(), (int) screenSize.getHeight());
+                webDriver.manage().window().setSize(maximizedScreenSize);
+            }
+            else {
+                webDriver.manage().window().maximize();
+            }
+            
             logger.logPassed(StringConstants.KW_LOG_PASSED_MAX_CURR_WINDOW);
         }
         , flowControl, true, StringConstants.KW_MSG_CANNOT_MAX_CURR_WINDOW)
