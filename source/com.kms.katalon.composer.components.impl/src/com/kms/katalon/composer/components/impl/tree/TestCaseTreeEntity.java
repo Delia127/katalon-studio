@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.components.impl.tree;
 
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Image;
@@ -8,8 +10,9 @@ import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.impl.transfer.TreeEntityTransfer;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
+import com.kms.katalon.composer.components.tree.TooltipPropertyDescription;
 import com.kms.katalon.controller.TestCaseController;
-import com.kms.katalon.entity.Entity;
+import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 
@@ -111,7 +114,7 @@ public class TestCaseTreeEntity extends AbstractTreeEntity {
     @Override
     public void setObject(Object object) throws Exception {
         if (object instanceof TestCaseEntity) {
-            entity = (Entity) object;
+            entity = (FileEntity) object;
             testCase = (TestCaseEntity) object;
         }
     }
@@ -119,5 +122,12 @@ public class TestCaseTreeEntity extends AbstractTreeEntity {
     @Override
     public void loadAllDescentdantEntities() throws Exception {
         TestCaseController.getInstance().loadAllDescentdantEntities(testCase);
+    }
+
+    @Override
+    public List<TooltipPropertyDescription> getTooltipDescriptions() {
+        List<TooltipPropertyDescription> properties = super.getTooltipDescriptions();
+        properties.add(TooltipPropertyDescription.createWithDefaultLength(StringConstants.TAG, testCase.getTag()));
+        return properties;
     }
 }

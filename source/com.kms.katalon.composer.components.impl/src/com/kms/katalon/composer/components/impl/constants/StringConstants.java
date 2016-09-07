@@ -66,6 +66,8 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String TREE_TEST_DATA_KW = ENTITY_KW_TEST_DATA;
 
+    public static final String TREE_TEST_DATA_PROP_DATA_TYPE = "Data Type";
+
     // TestSuiteTreeEntity
     public static final String TREE_TEST_SUITE_TYPE_NAME = TEST_SUITE;
 
@@ -75,6 +77,9 @@ public class StringConstants extends GlobalStringConstants {
     public static final String TREE_OBJECT_TYPE_NAME = OBJECT;
 
     public static final String TREE_OBJECT_KW = ENTITY_KW_TEST_OBJECT;
+
+    // CheckpointTreeEntity
+    public static final String TREE_CHECK_POINT_PROP_TAKEN_DATE = "Taken Date";
 
     // DatabaseQueryDialog
     public static final String DIA_TITLE_DB_CONNECTION_QUERY_SETTINGS = "Database Connection and Query Settings";

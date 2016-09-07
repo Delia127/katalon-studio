@@ -1,5 +1,8 @@
 package com.kms.katalon.composer.components.impl.tree;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -11,6 +14,7 @@ import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
+import com.kms.katalon.composer.components.tree.TooltipPropertyDescription;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 
 public class KeywordTreeEntity implements ITreeEntity {
@@ -143,4 +147,8 @@ public class KeywordTreeEntity implements ITreeEntity {
 	public void loadAllDescentdantEntities() throws Exception {
 	}
 
+    @Override
+    public List<TooltipPropertyDescription> getTooltipDescriptions() {
+        return Collections.emptyList();
+    }
 }

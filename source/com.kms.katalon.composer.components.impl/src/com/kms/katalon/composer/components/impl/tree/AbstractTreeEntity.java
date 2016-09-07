@@ -1,17 +1,23 @@
 package com.kms.katalon.composer.components.impl.tree;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
+import com.kms.katalon.composer.components.tree.TooltipPropertyDescription;
 import com.kms.katalon.entity.Entity;
+import com.kms.katalon.entity.file.FileEntity;
 
 public abstract class AbstractTreeEntity implements ITreeEntity {
 	protected static final long serialVersionUID = 1L;
-	protected Entity entity;
+	protected FileEntity entity;
 	protected ITreeEntity parentTreeEntity;
 
-	protected AbstractTreeEntity(Entity entity, ITreeEntity parentTreeEntity) {
+	protected AbstractTreeEntity(FileEntity entity, ITreeEntity parentTreeEntity) {
 		this.entity = entity;
 		this.parentTreeEntity = parentTreeEntity;
 	}
@@ -28,8 +34,8 @@ public abstract class AbstractTreeEntity implements ITreeEntity {
 
 	@Override
 	public void setObject(Object object) throws Exception {
-		if (object instanceof Entity) {
-			entity = (Entity) object;
+		if (object instanceof FileEntity) {
+			entity = (FileEntity) object;
 		}
 	}
 
@@ -61,4 +67,12 @@ public abstract class AbstractTreeEntity implements ITreeEntity {
 		return new HashCodeBuilder(7, 31).append(entity.hashCode()).toHashCode();
 	}
 
+    @Override
+    public List<TooltipPropertyDescription> getTooltipDescriptions() {
+        List<TooltipPropertyDescription> properties = new ArrayList<>();
+        properties.add(TooltipPropertyDescription.createWithDefaultLength(StringConstants.ID, entity.getIdForDisplay()));
+        properties.add(TooltipPropertyDescription.createWithDefaultLength(StringConstants.NAME, entity.getName()));
+        properties.add(TooltipPropertyDescription.create(StringConstants.DESCRIPTION, entity.getDescription()));
+        return properties;
+    }
 }

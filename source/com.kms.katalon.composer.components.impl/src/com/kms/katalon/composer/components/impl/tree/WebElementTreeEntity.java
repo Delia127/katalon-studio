@@ -11,7 +11,7 @@ import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.impl.transfer.TreeEntityTransfer;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.controller.ObjectRepositoryController;
-import com.kms.katalon.entity.Entity;
+import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
@@ -86,7 +86,7 @@ public class WebElementTreeEntity extends AbstractTreeEntity {
     @Override
     public void setObject(Object object) throws Exception {
         if (object instanceof WebElementEntity) {
-            entity = (Entity) object;
+            entity = (FileEntity) object;
             webElement = (WebElementEntity) object;
         }
     }

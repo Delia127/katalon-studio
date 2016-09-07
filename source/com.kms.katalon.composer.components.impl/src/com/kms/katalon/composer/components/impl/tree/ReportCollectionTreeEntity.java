@@ -1,11 +1,15 @@
 package com.kms.katalon.composer.components.impl.tree;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Image;
 
 import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
+import com.kms.katalon.composer.components.tree.TooltipPropertyDescription;
 import com.kms.katalon.entity.report.ReportCollectionEntity;
 
 public class ReportCollectionTreeEntity extends AbstractTreeEntity {
@@ -96,4 +100,8 @@ public class ReportCollectionTreeEntity extends AbstractTreeEntity {
         // No children to load here
     }
 
+    @Override
+    public List<TooltipPropertyDescription> getTooltipDescriptions() {
+        return Collections.emptyList();
+    }
 }
