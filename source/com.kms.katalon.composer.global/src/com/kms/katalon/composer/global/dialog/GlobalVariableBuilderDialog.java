@@ -57,6 +57,8 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
     private TableViewer tableViewer;
 
     private List<String> globalVariableNames = new ArrayList<String>();
+    
+    private CellEditor cellEditor;
 
     public GlobalVariableBuilderDialog(Shell parentShell, Point location, List<String> globalVariableNames) {
         this(parentShell, new GlobalVariableEntity("", "''"), DialogType.NEW, location, globalVariableNames);
@@ -221,6 +223,7 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
 
             @Override
             protected CellEditor getCellEditor(Object element) {
+                cellEditor = null;
                 expression = GroovyWrapperParser
                         .parseGroovyScriptAndGetFirstExpression(((GlobalVariableEntity) element).getInitValue());
                 if (expression == null) {
@@ -228,7 +231,8 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
                 }
                 InputValueType inputValueType = AstValueUtil.getTypeValue(expression);
                 if (inputValueType != null) {
-                    return inputValueType.getCellEditorForValue((Composite) getViewer().getControl(), expression);
+                    cellEditor = inputValueType.getCellEditorForValue((Composite) getViewer().getControl(), expression);
+                    return cellEditor;
                 }
                 return null;
             }
@@ -387,5 +391,13 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
     protected void registerControlModifyListeners() {
         // Do nothing
 
+    }
+    
+    @Override
+    protected void okPressed() {
+        if (cellEditor != null) {
+            AstValueUtil.applyEditingValue(cellEditor);
+        }
+        super.okPressed();
     }
 }
