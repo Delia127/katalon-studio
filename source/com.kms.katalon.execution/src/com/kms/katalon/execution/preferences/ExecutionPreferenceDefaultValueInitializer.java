@@ -7,7 +7,7 @@ import com.kms.katalon.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 
 public class ExecutionPreferenceDefaultValueInitializer extends AbstractPreferenceInitializer {
-    private static final boolean EXECUTION_DEFAULT_QUIT_DRIVERS_AFTER_EXECUTING = true;
+    private static final boolean EXECUTION_DEFAULT_QUIT_DRIVERS_AFTER_EXECUTING = false;
 
     public static final int EXECUTION_DEFAULT_TIMEOUT_VALUE = 30;
 
