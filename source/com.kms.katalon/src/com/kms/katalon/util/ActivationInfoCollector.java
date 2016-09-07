@@ -35,7 +35,7 @@ public class ActivationInfoCollector {
 
     private static final String NETWORK_ERROR = "Network error! Cannot execute activation.";
 
-    private static final String ACTIVATE_INFO_INVALID = "Username or Password is invalid!";
+    private static final String ACTIVATE_INFO_INVALID = "Email or Password is invalid!";
     
     private static final String KATALON_NOT_ACTIVATED = "Katalon is NOT activated!";
 

@@ -34,17 +34,17 @@ import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.util.ActivationInfoCollector;
 
 public class ActivationDialog extends Dialog {
-    private static final String FORGOT_PASS_LINK = "http://katalon.kms-technology.com/forum/ucp.php?mode=sendpassword";
+    private static final String FORGOT_PASS_LINK = "https://wp-staging.katalon.com/#katalon-reset-password";
 
     private static final String LINK_LABEL_FORGOT_PASS_TEXT = "<a>Forgot Password?</a>";
 
-    private static final String REGISTER_LINK = "http://katalon.kms-technology.com/forum/ucp.php?mode=register";
+    private static final String REGISTER_LINK = "https://wp-staging.katalon.com/#katalon-register";
 
     private static final String LINK_LABEL_REGISTER_TEXT = "<a>Register</a>";
 
-    private static final String PROMT_ENTER_USERNAME_PASSWORD = "Enter username and password.";
+    private static final String PROMT_ENTER_USERNAME_PASSWORD = "Enter email and password.";
 
-    private static final String USERNAME_TITLE = "Username";
+    private static final String USERNAME_TITLE = "Email";
 
     private static final String PASSSWORD_TITLE = "Password";
 
@@ -127,7 +127,7 @@ public class ActivationDialog extends Dialog {
 
         Composite composite = new Composite(container, SWT.NONE);
         GridData gd_composite = new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1);
-        gd_composite.widthHint = 311;
+        gd_composite.widthHint = 321;
         composite.setLayoutData(gd_composite);
         composite.setLayout(new GridLayout(5, false));
 
