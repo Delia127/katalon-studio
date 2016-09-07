@@ -39,7 +39,7 @@ public class AstInputValueTypeOptionsProvider {
 
     private static final InputValueType[] globalVariableOptions = { InputValueType.String, InputValueType.Number,
             InputValueType.Boolean, InputValueType.Null, InputValueType.TestDataValue, InputValueType.TestObject,
-            InputValueType.TestData, InputValueType.Range, InputValueType.Property, InputValueType.List,
+            InputValueType.TestData, InputValueType.Range, InputValueType.List,
             InputValueType.Map };
 
     private static final InputValueType[] caseOptions = { InputValueType.Variable, InputValueType.GlobalVariable,

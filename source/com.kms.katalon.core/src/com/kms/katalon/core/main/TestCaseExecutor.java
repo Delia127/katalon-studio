@@ -186,6 +186,9 @@ public class TestCaseExecutor {
             engine.setConfig(getConfigForExecutingScript(engine.getGroovyClassLoader()));
             setupContextClassLoader();
             testCaseResult.setScriptResult(runScript(getScriptFile()));
+        } catch (ExceptionInInitializerError e) {
+            // errors happened in static initilalizer like for Global Variable
+            errorCollector.addError(e.getCause());
         } catch (Throwable e) {
             // logError(e, ExceptionsUtil.getMessageForThrowable(e));
             errorCollector.addError(e);
