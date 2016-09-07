@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -99,6 +100,9 @@ public class DeviceSelectionComposite extends Composite {
                 }
                 break;
             case IOS_DRIVER:
+                if (Platform.getOS() != Platform.OS_MACOSX) {
+                    break;
+                }
                 try {
                     devicesList.addAll(MobileDeviceProvider.getIosDevices());
                 } catch (IOException | InterruptedException e) {
