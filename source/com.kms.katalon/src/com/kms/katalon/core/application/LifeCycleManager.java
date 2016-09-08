@@ -139,13 +139,8 @@ public class LifeCycleManager {
     private void setupResourcePlugin() {
         try {
             ScopedPreferenceStore runtimePrefStore = getPreferenceStore(ResourcesPlugin.PI_RESOURCES);
-            if (runtimePrefStore.getBoolean(ResourcesPlugin.PREF_AUTO_REFRESH)) {
-                runtimePrefStore.setValue(ResourcesPlugin.PREF_AUTO_REFRESH, false);
-            }
-
-            // Prevent auto-build current projects when Katalon starts
-            if (runtimePrefStore.getBoolean(ResourcesPlugin.PREF_AUTO_BUILDING)) {
-                runtimePrefStore.setValue(ResourcesPlugin.PREF_AUTO_BUILDING, false);
+            if (!runtimePrefStore.getBoolean(ResourcesPlugin.PREF_AUTO_BUILDING)) {
+                runtimePrefStore.setValue(ResourcesPlugin.PREF_AUTO_BUILDING, true);
             }
 
             // Prevent out-of-sync resources when accessing
