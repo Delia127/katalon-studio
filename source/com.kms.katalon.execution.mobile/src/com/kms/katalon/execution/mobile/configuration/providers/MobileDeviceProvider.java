@@ -67,6 +67,9 @@ public class MobileDeviceProvider {
     }
     
     public static List<IosDeviceInfo> getIosSimulators() throws IOException, InterruptedException {
+        if (!isRunningOnMacOSX()) {
+            return Collections.emptyList();
+        }
         List<IosDeviceInfo> iosDevices = new ArrayList<IosDeviceInfo>();
         Map<String, String> iosAdditionalEnvironmentVariables = IosDeviceInfo.getIosAdditionalEnvironmentVariables();
         List<String> simulatorsList = ConsoleCommandExecutor.runConsoleCommandAndCollectResults(

@@ -100,9 +100,6 @@ public class DeviceSelectionComposite extends Composite {
                 }
                 break;
             case IOS_DRIVER:
-                if (Platform.getOS() != Platform.OS_MACOSX) {
-                    break;
-                }
                 try {
                     devicesList.addAll(MobileDeviceProvider.getIosDevices());
                 } catch (IOException | InterruptedException e) {
