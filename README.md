@@ -2,9 +2,14 @@
 ##  Development environment build
 - Check out source code from Git to your local, please make sure you have all Katalon plug-ins (sub projects with prefix names "com.kms.katalon...") under "source" folder
 
-- Get Eclipse RCP version 4.4.2 or higher
+- Get Eclipse RCP version 4.4.2 at https://eclipse.org/downloads/packages/eclipse-rcp-and-rap-developers/lunasr2
 
-- Get Maven installed, update PATH environment variable to include Maven Home\bin folder. Make sure you can execute "mvn" command from a console (terminal/cmd) window
+- Open the downloaded Eclipse, click on menu Help/Install New Software and installed all the plugins in these repos:
+  + http://download.eclipse.org/eclipse/updates/4.4/R-4.4.2-201502041700/
+  + http://dist.springsource.org/snapshot/GRECLIPSE/e4.4
+  + http://download.eclipse.org/egit/updates
+
+- Installed Maven found at https://maven.apache.org/download.cgi, update PATH environment variable to include <Maven Home>\bin folder. Make sure you can execute "mvn" command from a console (terminal/cmd) window
 
 - Open a console (terminal for Mac, cmd for Win) Windows.
   Go to Katalon source\com.kms.katalon.repo.
@@ -23,12 +28,12 @@
   
 - Open/expand sub project "com.kms.katalon" (it is usually in the top of projects list in Package Explorer).
   Double click to open file "com.kms.katalon.product". 
-  On the bottom left corner of "com.kms.katalon.product" tab pane, click on "Launch an Eclipse application" or "Launch an Eclipse application in Debug mode" link to start Katalon.
+  On the bottom left corner of "com.kms.katalon.product" tab pane, first click on "Synchronize" to synchronize all the plugins, then click on "Launch an Eclipse application" or "Launch an Eclipse application in Debug mode" link to start Katalon.
 
 ## Production build
 - Check out source code from Git to your local, please make sure you have all Katalon plug-ins (sub projects with prefix names "com.kms.katalon...") under "source" folder
 
-- Get Maven installed, update PATH environment variable to include Maven Home\bin folder. Make sure you can execute "mvn" command from a console (terminal/cmd) window
+- Installed Maven found at https://maven.apache.org/download.cgi, update PATH environment variable to include <Maven Home>\bin folder. Make sure you can execute "mvn" command from a console (terminal/cmd) window
 
 - Open a console (terminal for Mac, cmd for Win) Windows.
   Go to Katalon source\com.kms.katalon.repo. 
