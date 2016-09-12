@@ -40,4 +40,7 @@ public class ImageConstants {
     public static final Image IMG_INTRO_SCREEN_5 = ImageUtil.loadImage(CURRENT_BUNDLE, "/icons/intro/screen_5.png");
 
     public static final Image IMG_INTRO_SCREEN_6 = ImageUtil.loadImage(CURRENT_BUNDLE, "/icons/intro/screen_6.png");
+    
+    //Activation
+    public static final Image KATALON_IMAGE = ImageUtil.loadImage(CURRENT_BUNDLE, "/icons/branding_16.png");
 }

@@ -13,7 +13,7 @@ import org.eclipse.swt.widgets.Listener;
 
 import com.kms.katalon.composer.components.constants.StringConstants;
 
-public abstract class AbstractDialogCellEditor extends DialogCellEditor {
+public abstract class AbstractDialogCellEditor extends DialogCellEditor implements ApplyingEditingValue {
     protected String defaultContent;
     protected Composite editor;
     protected boolean isEditorClosed;
@@ -116,5 +116,8 @@ public abstract class AbstractDialogCellEditor extends DialogCellEditor {
     protected final Control createControl(Composite parent) {
         return null;
     }
-
+    
+    public void applyEditingValue() {
+        fireApplyEditorValue();
+    }
 }

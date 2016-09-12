@@ -13,7 +13,7 @@ public class ClassExpressionWrapper extends ExpressionWrapper {
 
     public ClassExpressionWrapper(ClassExpression classExpression, ASTNodeWrapper parentNodeWrapper) {
         super(classExpression, parentNodeWrapper);
-        this.type = new ClassNodeWrapper(classExpression.getType(), this);
+        this.type = ClassNodeWrapper.getClassWrapper(classExpression.getType(), this);
     }
 
     public ClassExpressionWrapper(ClassExpressionWrapper classExpressionWrapper, ASTNodeWrapper parentNodeWrapper) {

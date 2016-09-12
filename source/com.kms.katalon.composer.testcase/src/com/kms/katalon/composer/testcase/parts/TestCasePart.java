@@ -16,11 +16,14 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.viewers.CellLabelProvider;
+import org.eclipse.jface.viewers.ColumnViewerEditor;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
+import org.eclipse.jface.viewers.TreeViewerEditor;
+import org.eclipse.jface.viewers.TreeViewerFocusCellManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
@@ -54,6 +57,8 @@ import com.kms.katalon.composer.components.impl.control.CTreeViewer;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPart;
 import com.kms.katalon.composer.components.util.ColumnViewerUtil;
+import com.kms.katalon.composer.components.viewer.CustomEditorActivationStrategy;
+import com.kms.katalon.composer.components.viewer.FocusCellOwnerDrawHighlighterForMultiSelection;
 import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
 import com.kms.katalon.composer.testcase.ast.treetable.AstMethodTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
@@ -80,6 +85,7 @@ import com.kms.katalon.composer.testcase.support.TestObjectEditingSupport;
 import com.kms.katalon.composer.testcase.treetable.transfer.ScriptTransfer;
 import com.kms.katalon.composer.testcase.treetable.transfer.ScriptTransferData;
 import com.kms.katalon.composer.testcase.util.TestCaseMenuUtil;
+import com.kms.katalon.composer.testcase.views.FocusCellOwnerDrawForManualTestcase;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
@@ -271,7 +277,7 @@ public class TestCasePart implements IComposerPart, EventHandler {
 
         treeTable.setContentProvider(new AstTreeTableContentProvider());
 
-        ColumnViewerUtil.setTreeTableActivation(treeTable);
+        setTreeTableActivation();
 
         treeTable.getControl().addListener(SWT.MeasureItem, new Listener() {
             @Override
@@ -288,6 +294,16 @@ public class TestCasePart implements IComposerPart, EventHandler {
         createContextMenu();
         hookDragEvent();
         hookDropEvent();
+    }
+    
+    private void setTreeTableActivation() {
+        int activationBitMask = ColumnViewerEditor.TABBING_HORIZONTAL | ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR
+                | ColumnViewerEditor.KEYBOARD_ACTIVATION;
+        FocusCellOwnerDrawHighlighterForMultiSelection focusCellHighlighter = new FocusCellOwnerDrawForManualTestcase(
+                treeTable);
+        TreeViewerEditor.create(treeTable, new TreeViewerFocusCellManager(treeTable, focusCellHighlighter),
+                new CustomEditorActivationStrategy(treeTable, focusCellHighlighter), activationBitMask);
+
     }
 
     public void addFailureHandlingSubMenu(Menu menu) {

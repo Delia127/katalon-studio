@@ -28,8 +28,8 @@ public class RecordSession extends InspectSession {
 
     private static final String RECORDER_FIREFOX_ON_OFF_PREFERENCE_KEY = "extensions.@recorder.katalonOnOffStatus";
 
-	public RecordSession(HTMLElementCaptureServer server, WebUIDriverType webUiDriverType, boolean isInstant, ProjectEntity currentProject, Logger logger) throws Exception {
-		super(server, webUiDriverType, isInstant, currentProject, logger);
+	public RecordSession(HTMLElementCaptureServer server, WebUIDriverType webUiDriverType, ProjectEntity currentProject, Logger logger) throws Exception {
+		super(server, webUiDriverType, currentProject, logger);
 	}
 	
 	protected String getChromeExtensionPath() {

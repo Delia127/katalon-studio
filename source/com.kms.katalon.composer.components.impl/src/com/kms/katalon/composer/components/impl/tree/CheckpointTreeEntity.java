@@ -1,5 +1,8 @@
 package com.kms.katalon.composer.components.impl.tree;
 
+import java.util.Date;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Image;
@@ -8,6 +11,7 @@ import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.impl.transfer.TreeEntityTransfer;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
+import com.kms.katalon.composer.components.tree.TooltipPropertyDescription;
 import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 
@@ -130,4 +134,12 @@ public class CheckpointTreeEntity extends AbstractTreeEntity {
         // nothing to do
     }
 
+    @Override
+    public List<TooltipPropertyDescription> getTooltipDescriptions() {
+        List<TooltipPropertyDescription> properties = super.getTooltipDescriptions();
+        Date takenDate = ((CheckpointEntity) entity).getTakenDate();
+        properties.add(TooltipPropertyDescription.create(StringConstants.TREE_CHECK_POINT_PROP_TAKEN_DATE,
+                takenDate != null ? takenDate.toString() : StringConstants.EMPTY));
+        return properties;
+    }
 }

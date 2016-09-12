@@ -107,6 +107,10 @@ public class ColorUtil {
         return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
     }
 
+    public static Color getTooltipPlaceHolderForegroundColor() {
+        return new Color(Display.getCurrent(), 100, 84, 84);
+    }
+
     // #F0F0F0
     public static Color getDefaultBackgroundColor() {
         return new Color(Display.getCurrent(), 240, 240, 240);

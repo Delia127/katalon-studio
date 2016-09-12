@@ -11,7 +11,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrappe
 
 public class ParameterWrapper extends AnnonatedNodeWrapper {
     private int modifiers;
-    private ClassNodeWrapper type = new ClassNodeWrapper(ClassHelper.DYNAMIC_TYPE, this);
+    private ClassNodeWrapper type = ClassNodeWrapper.getClassWrapper(ClassHelper.DYNAMIC_TYPE, this);
     private String name;
     private ExpressionWrapper initialExpression;
 
@@ -35,7 +35,7 @@ public class ParameterWrapper extends AnnonatedNodeWrapper {
         super(parameter, parentNodeWrapper);
         this.name = parameter.getName();
         this.modifiers = parameter.getModifiers();
-        this.type = new ClassNodeWrapper(parameter.getType(), this);
+        this.type = ClassNodeWrapper.getClassWrapper(parameter.getType(), this);
         this.initialExpression = ASTNodeWrapHelper.getExpressionNodeWrapperFromExpression(
                 parameter.getInitialExpression(), this);
     }

@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.TableColumn;
 
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
+import com.kms.katalon.composer.testcase.util.AstValueUtil;
 import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.composer.testsuite.dialogs.provider.ScriptVariableTypeEditingSupport;
 import com.kms.katalon.composer.testsuite.dialogs.provider.ScriptVariableValueEditingSupport;
@@ -36,6 +37,8 @@ public class VariableBindingScriptBuilderDialog extends AbstractDialog {
     private CTableViewer tableViewer;
 
     private Composite composite;
+    
+    private ScriptVariableValueEditingSupport editingSupport;
 
     public VariableBindingScriptBuilderDialog(Shell parentShell, TestSuiteTestCaseLink testCaseLink,
             VariableLink variableLink) {
@@ -111,6 +114,9 @@ public class VariableBindingScriptBuilderDialog extends AbstractDialog {
 
         if (editingSupport != null) {
             tableViewerColumn.setEditingSupport(editingSupport);
+            if (StringConstants.VALUE.equals(tableName)) {
+                this.editingSupport = (ScriptVariableValueEditingSupport)editingSupport;
+            }
         }
         return tableColumn;
     }
@@ -128,5 +134,17 @@ public class VariableBindingScriptBuilderDialog extends AbstractDialog {
 
     public VariableLink getNewValue() {
         return variableLink;
+    }
+    
+    @Override
+    protected void okPressed() {
+        if (editingSupport != null) {
+            AstValueUtil.applyEditingValue(editingSupport.getEditor());
+        }
+        super.okPressed();
+    }
+    
+    public ScriptVariableValueEditingSupport getEditor() {
+        return editingSupport;
     }
 }

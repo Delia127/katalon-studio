@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.Display;
 import com.kms.katalon.composer.execution.handlers.AbstractExecutionHandler;
 import com.kms.katalon.composer.mobile.constants.StringConstants;
 import com.kms.katalon.composer.mobile.dialog.DeviceSelectionDialog;
+import com.kms.katalon.composer.mobile.util.MobileUtil;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.execution.mobile.configuration.contributor.MobileRunConfigurationContributor;
 import com.kms.katalon.execution.mobile.configuration.providers.MobileDeviceProvider;
@@ -20,6 +21,7 @@ import com.kms.katalon.execution.mobile.exception.MobileSetupException;
 
 public abstract class MobileExecutionHandler extends AbstractExecutionHandler {
     protected static MobileDeviceInfo getDevice(MobileDriverType platform) {
+        MobileUtil.detectAppiumAndNodeJs(Display.getCurrent().getActiveShell());
         DeviceSelectionDialog dialog = new DeviceSelectionDialog(Display.getCurrent().getActiveShell(), platform);
         dialog.open();
         if (dialog.getReturnCode() != Dialog.OK) {

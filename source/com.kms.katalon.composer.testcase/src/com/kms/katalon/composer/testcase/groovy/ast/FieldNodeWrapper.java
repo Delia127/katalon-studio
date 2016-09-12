@@ -28,7 +28,7 @@ public class FieldNodeWrapper extends AnnonatedNodeWrapper {
         super(fieldNode, parentNodeWrapper);
         this.name = fieldNode.getName();
         this.modifiers = fieldNode.getModifiers();
-        this.type = new ClassNodeWrapper(fieldNode.getType(), this);
+        this.type = ClassNodeWrapper.getClassWrapper(fieldNode.getType(), this);
         this.initialValueExpression = ASTNodeWrapHelper.getExpressionNodeWrapperFromExpression(
                 fieldNode.getInitialExpression(), this);
     }

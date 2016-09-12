@@ -1,6 +1,10 @@
 package com.kms.katalon.composer.testcase.editors;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.dialogs.ISelectionStatusValidator;
+import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
@@ -15,8 +19,22 @@ import com.kms.katalon.entity.testdata.DataFileEntity;
 
 public class TestDataSelectionDialogCellEditor extends EntitySelectionDialogCellEditor {
 
+    private static final String pluginId = FrameworkUtil.getBundle(TestDataSelectionDialogCellEditor.class)
+            .getSymbolicName();
+
     public TestDataSelectionDialogCellEditor(Composite parent, String defaultContent) {
         super(parent, defaultContent);
+        setDialogValidator(new ISelectionStatusValidator() {
+
+            @Override
+            public IStatus validate(Object[] selection) {
+                if (TreeEntityUtil.isValidTreeEntitySelectionType(selection,
+                        com.kms.katalon.composer.components.impl.constants.StringConstants.TREE_TEST_DATA_TYPE_NAME)) {
+                    return new Status(IStatus.OK, pluginId, IStatus.OK, null, null);
+                }
+                return new Status(IStatus.ERROR, pluginId, IStatus.ERROR, null, null);
+            }
+        });
     }
 
     @Override
@@ -60,7 +78,7 @@ public class TestDataSelectionDialogCellEditor extends EntitySelectionDialogCell
         if (!(value instanceof DataFileEntity)) {
             return null;
         }
-        return (DataFileEntity) value;
+        return value;
     }
 
 }

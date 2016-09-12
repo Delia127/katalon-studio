@@ -1,11 +1,15 @@
 package com.kms.katalon.composer.components.impl.tree;
 
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Image;
 
 import com.kms.katalon.composer.components.impl.constants.ImageConstants;
+import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.impl.transfer.TreeEntityTransfer;
+import com.kms.katalon.composer.components.tree.TooltipPropertyDescription;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
@@ -114,4 +118,10 @@ public class TestSuiteCollectionTreeEntity extends AbstractTreeEntity {
         }
     }
 
+    @Override
+    public List<TooltipPropertyDescription> getTooltipDescriptions() {
+        List<TooltipPropertyDescription> properties = super.getTooltipDescriptions();
+        properties.add(TooltipPropertyDescription.createWithDefaultLength(StringConstants.TAG, testSuiteCollection.getTag()));
+        return properties;
+    }
 }

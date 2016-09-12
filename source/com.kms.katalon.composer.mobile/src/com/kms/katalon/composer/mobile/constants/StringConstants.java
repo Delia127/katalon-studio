@@ -31,4 +31,18 @@ public class StringConstants extends GlobalStringConstants {
 
     // IosExecutionDynamicContribution
     public static final String LBL_IOS_EXECUTION_MENU_ITEM = "iOS";
+
+    public static final String WARNING_TITLE = "Warning";
+
+    public static final String MSG_NO_APPIUM = "It appears that you don't have Appium installed and setup correctly, please setup it by following the user guide in this page:";
+
+    public static final String MSG_NO_NODEJS = "It appears that you don't have NodeJS installed and setup correctly, please setup it by following the user guide in this page:";
+
+    public static final String MSG_NO_APPIUM_AND_NODEJS = "It appears that you don't have Appium and NodeJS installed and setup correctly, please setup them by following the user guide in this page:";
+
+    public static final String MSG_FAILED_DETECT_NODEJS = "Failed to detect NodeJS on your machine";
+
+    public static final String LINK = "http://docs.katalon.com/display/KD/Installation+and+Setup";
+    
+    public static final String MAC_DEFAULT_NODEJS_LOCATION = "/usr/local/bin/node";
 }

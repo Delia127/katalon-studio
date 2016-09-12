@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.project.handlers;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.List;
 
@@ -38,32 +39,48 @@ public class NewProjectHandler {
         if (wizardDialog.open() != WizardDialog.OK) {
             return;
         }
-        try {
-            ProjectEntity newProject = createNewProject(wizard.getProjectName(), wizard.getProjectLocation(),
-                    wizard.getProjectDescription());
-            if (newProject == null) {
-                return;
-            }
+        try {            
+            String projectName = wizard.getProjectName();
+            String projectLocation = wizard.getProjectLocation();
+            String projectDescription = wizard.getProjectDescription();
+            String projectId = "";
             boolean isTemplateSelected = false;
             if (wizardDialog.getCurrentPage() == wizard.getPage(StringConstants.VIEW_TESTING_TYPES_PROJECT_PAGE_NAME)) {
                 // Copy template project if user selected any template option
                 List<String> selectedTemplates = wizard.getSelectedTemplates();
                 if (selectedTemplates != null && selectedTemplates.size() > 0) {
                     isTemplateSelected = true;
-                    new TemplateProjectGenerator(newProject).copyTemplates(selectedTemplates);
+                    new TemplateProjectGenerator(projectLocation, projectName).copyTemplates(selectedTemplates);
                 }
             }
-            eventBroker.send(EventConstants.PROJECT_CREATED, newProject);
+            //If user select to create new blank project, and no template selected
+            if(!isTemplateSelected){
+                ProjectEntity newProject = createNewProject(projectName, projectLocation, projectDescription);
+                if (newProject == null) {
+                    return;
+                }
+                eventBroker.send(EventConstants.PROJECT_CREATED, newProject);
+                projectId = newProject.getId();
+            }
+            else{
+                projectId = projectLocation + File.separator + projectName + File.separator + projectName + ".prj";
+            }
+
             // Open created project
-            eventBroker.send(EventConstants.PROJECT_OPEN, newProject.getId());
+            eventBroker.send(EventConstants.PROJECT_OPEN, projectId);
+
             LauncherManager.refresh();
             eventBroker.post(EventConstants.JOB_REFRESH, null);
-            //If user chose to generate template project, refresh keywords node too
-            if(isTemplateSelected){
-                PackageTreeEntity pack = TreeEntityUtil.getPackageTreeEntity(StringConstants.TEMPL_CUSTOM_KW_PKG_REL_PATH, newProject);
-                eventBroker.post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, pack);    
-            }
             eventBroker.post(EventConstants.CONSOLE_LOG_REFRESH, null);
+
+            //If user select to generate templates, 
+            //extract template project, re-name and open it, 
+            //no need to create new to improve performance
+            if(isTemplateSelected){
+                ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+                PackageTreeEntity pack = TreeEntityUtil.getPackageTreeEntity(StringConstants.TEMPL_CUSTOM_KW_PKG_REL_PATH, currentProject);
+                eventBroker.post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, pack);                 
+            }
         } catch (FilePathTooLongException ex) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, ex.getMessage());
         } catch (Exception ex) {            

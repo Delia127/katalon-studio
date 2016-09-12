@@ -138,13 +138,14 @@ public class LifeCycleManager {
 
     private void setupResourcePlugin() {
         try {
-            ScopedPreferenceStore runtimePrefStore = getPreferenceStore(ResourcesPlugin.PLUGIN_PREFERENCE_SCOPE);
-            if (runtimePrefStore.getBoolean(ResourcesPlugin.PREF_AUTO_REFRESH)) {
-                runtimePrefStore.setValue(ResourcesPlugin.PREF_AUTO_REFRESH, false);
+            ScopedPreferenceStore runtimePrefStore = getPreferenceStore(ResourcesPlugin.PI_RESOURCES);
+            if (!runtimePrefStore.getBoolean(ResourcesPlugin.PREF_AUTO_BUILDING)) {
+                runtimePrefStore.setValue(ResourcesPlugin.PREF_AUTO_BUILDING, true);
             }
 
-            if (runtimePrefStore.getBoolean(ResourcesPlugin.PREF_AUTO_BUILDING)) {
-                runtimePrefStore.setValue(ResourcesPlugin.PREF_AUTO_BUILDING, false);
+            // Prevent out-of-sync resources when accessing
+            if (!runtimePrefStore.getBoolean(ResourcesPlugin.PREF_LIGHTWEIGHT_AUTO_REFRESH)) {
+                runtimePrefStore.setValue(ResourcesPlugin.PREF_LIGHTWEIGHT_AUTO_REFRESH, true);
             }
             runtimePrefStore.save();
         } catch (IOException e) {

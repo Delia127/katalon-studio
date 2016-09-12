@@ -25,7 +25,7 @@ public class StaticMethodCallExpressionWrapper extends ExpressionWrapper {
     public StaticMethodCallExpressionWrapper(StaticMethodCallExpression staticMethodCallExpression,
             ASTNodeWrapper parentNodeWrapper) {
         super(staticMethodCallExpression, parentNodeWrapper);
-        this.ownerType = new ClassNodeWrapper(staticMethodCallExpression.getOwnerType(), this);
+        this.ownerType = ClassNodeWrapper.getClassWrapper(staticMethodCallExpression.getOwnerType(), this);
         this.method = staticMethodCallExpression.getMethod();
         this.arguments = ASTNodeWrapHelper.getExpressionNodeWrapperFromExpression(
                 staticMethodCallExpression.getArguments(), this);

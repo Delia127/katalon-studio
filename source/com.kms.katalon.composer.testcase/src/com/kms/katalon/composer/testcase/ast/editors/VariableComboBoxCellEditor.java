@@ -5,10 +5,11 @@ import java.util.List;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.widgets.Composite;
 
+import com.kms.katalon.composer.components.dialogs.ApplyingEditingValue;
 import com.kms.katalon.composer.components.impl.editors.StringComboBoxCellEditor;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.VariableExpressionWrapper;
 
-public class VariableComboBoxCellEditor extends StringComboBoxCellEditor {
+public class VariableComboBoxCellEditor extends StringComboBoxCellEditor implements ApplyingEditingValue {
     private VariableExpressionWrapper variableExpression;
 
     public VariableComboBoxCellEditor(Composite parent, List<String> variableStringList) {
@@ -26,5 +27,9 @@ public class VariableComboBoxCellEditor extends StringComboBoxCellEditor {
     protected VariableExpressionWrapper doGetValue() {
         variableExpression.setVariable((String) super.doGetValue());
         return variableExpression;
+    }
+    
+    public void applyEditingValue() {
+        fireApplyEditorValue();
     }
 }

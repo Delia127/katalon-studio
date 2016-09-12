@@ -11,7 +11,7 @@ import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.impl.transfer.TreeEntityTransfer;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.controller.TestSuiteController;
-import com.kms.katalon.entity.Entity;
+import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
@@ -82,7 +82,7 @@ public class TestSuiteTreeEntity extends AbstractTreeEntity {
     @Override
     public void setObject(Object object) throws Exception {
         if (object instanceof TestSuiteEntity) {
-            entity = (Entity) object;
+            entity = (FileEntity) object;
             testSuite = (TestSuiteEntity) object;
         }
     }

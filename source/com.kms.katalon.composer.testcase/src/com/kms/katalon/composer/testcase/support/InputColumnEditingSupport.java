@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.testcase.support;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -7,6 +8,7 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.TreeViewer;
 
 import com.kms.katalon.composer.components.impl.support.TypeCheckedEditingSupport;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.ast.treetable.AstStatementTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.IAstInputEditableNode;
@@ -65,7 +67,11 @@ public class InputColumnEditingSupport extends TypeCheckedEditingSupport<IAstInp
             treeTableInput.refresh(parentNode);
             return;
         }
-        treeTableInput.reloadTreeTableNodes();
+        try {
+            treeTableInput.reloadTreeTableNodes();
+        } catch (InvocationTargetException | InterruptedException e) {
+            LoggerSingleton.logError(e);
+        }
     }
 
     private boolean isNodeTransformed(IAstInputEditableNode element, Object value) {

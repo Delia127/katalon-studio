@@ -13,6 +13,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.UnreachableBrowserException;
@@ -31,14 +32,12 @@ import com.kms.katalon.execution.webui.util.WebUIExecutionUtil;
 import com.kms.katalon.objectspy.exception.BrowserNotSupportedException;
 import com.kms.katalon.objectspy.exception.ExtensionNotFoundException;
 import com.kms.katalon.objectspy.util.FileUtil;
-import com.sun.jna.platform.win32.User32;
-import com.sun.jna.platform.win32.WinDef.HWND;
 
 @SuppressWarnings("restriction")
 public class InspectSession implements Runnable {
-    public static final String OBJECT_SPY_ADD_ON_NAME = "Object Spy";
+    private static final String ABOUT_BLANK = "about:blank";
 
-    private static final String IE_WINDOW_CLASS = "IEFrame";
+    public static final String OBJECT_SPY_ADD_ON_NAME = "Object Spy";
 
     protected static final String LOAD_EXTENSION_CHROME_PREFIX = "load-extension=";
 
@@ -83,15 +82,12 @@ public class InspectSession implements Runnable {
 
     protected ProjectEntity currentProject;
 
-    private boolean isInstant;
-
-    public InspectSession(HTMLElementCaptureServer server, WebUIDriverType webUiDriverType, boolean isInstant,
+    public InspectSession(HTMLElementCaptureServer server, WebUIDriverType webUiDriverType,
             ProjectEntity currentProject, Logger logger) throws Exception {
         this.server = server;
         this.webUiDriverType = webUiDriverType;
         this.currentProject = currentProject;
         isRunFlag = true;
-        this.isInstant = isInstant;
     }
 
     protected void setUp(WebUIDriverType webUIDriverType, ProjectEntity currentProject) throws IOException,
@@ -108,15 +104,15 @@ public class InspectSession implements Runnable {
 
         RunConfiguration.setExecutionSetting(ExecutionUtil.getExecutionProperties(executionSetting, driverConnectors));
         options = createDriverOptions(webUIDriverType);
+
+        if (webUiDriverType == WebUIDriverType.IE_DRIVER) {
+            setupIE();
+        }
     }
 
     @Override
     public void run() {
         try {
-            if (webUiDriverType == WebUIDriverType.IE_DRIVER) {
-                runIE();
-                return;
-            }
             setUp(webUiDriverType, currentProject);
             runSeleniumWebDriver();
         } catch (IOException | ExtensionNotFoundException | BrowserNotSupportedException e) {
@@ -124,46 +120,13 @@ public class InspectSession implements Runnable {
         }
     }
 
-    protected void runIE() throws IOException, ExtensionNotFoundException, BrowserNotSupportedException {
-        setupIE();
-        if (isInstant) {
-            runInstantIE();
-        } else {
-            openNewIEInstance();
-        }
-    }
-
-    private void setupIE() throws IOException {
+    public void setupIE() throws IOException {
         File settingFolder = new File(getIEApplicationDataFolder());
         if (!settingFolder.exists()) {
             settingFolder.mkdirs();
         }
         File serverSettingFile = new File(getIEApplicationServerSettingFile());
         FileUtils.writeStringToFile(serverSettingFile, server.getServerUrl());
-    }
-
-    protected void runInstantIE() throws IOException {
-        HWND hwnd = User32.INSTANCE.FindWindow(IE_WINDOW_CLASS, null);
-        if (hwnd == null) {
-            openNewIEInstance();
-            return;
-        }
-        shiftFocusToWindow(hwnd);
-    }
-
-    private void shiftFocusToWindow(HWND hwnd) {
-        User32.INSTANCE.ShowWindow(hwnd, 9);        // SW_RESTORE
-        User32.INSTANCE.SetForegroundWindow(hwnd);   // bring to front
-    }
-
-    private void openNewIEInstance() throws IOException {
-        File ieExecutingFile = new File(IE_32BIT_ABSOLUTE_PATH);
-        if (!ieExecutingFile.exists()) {
-            ieExecutingFile = new File(IE_ABSOLUTE_PATH);
-        }
-        if (ieExecutingFile.exists() && ieExecutingFile.isFile()) {
-            Runtime.getRuntime().exec(ieExecutingFile.getAbsolutePath());
-        }
     }
 
     protected String getIEApplicationServerSettingFile() {
@@ -211,7 +174,16 @@ public class InspectSession implements Runnable {
         if (driverType == WebUIDriverType.FIREFOX_DRIVER) {
             return createFireFoxProfile();
         }
+        if (driverType == WebUIDriverType.IE_DRIVER) {
+            return createIEDesiredCapabilities();
+        }
         return null;
+    }
+
+    private DesiredCapabilities createIEDesiredCapabilities() {
+        DesiredCapabilities desiredCapabilities = DesiredCapabilities.internetExplorer();
+        desiredCapabilities.setCapability(InternetExplorerDriver.INITIAL_BROWSER_URL, ABOUT_BLANK);
+        return desiredCapabilities;
     }
 
     protected FirefoxProfile createFireFoxProfile() throws IOException {
@@ -279,6 +251,9 @@ public class InspectSession implements Runnable {
                 serverSettingFile.delete();
             }
         } catch (UnreachableBrowserException e) {}
+        catch (WebDriverException e) {
+            LoggerSingleton.logError(e);
+        }
     }
 
     public boolean isRunning() {
@@ -299,14 +274,6 @@ public class InspectSession implements Runnable {
 
     protected String getIEAddonRegistryKey() {
         return IE_ADDON_BHO_KEY;
-    }
-
-    public boolean isInstant() {
-        return isInstant;
-    }
-
-    public void setInstant(boolean isInstant) {
-        this.isInstant = isInstant;
     }
 
 }

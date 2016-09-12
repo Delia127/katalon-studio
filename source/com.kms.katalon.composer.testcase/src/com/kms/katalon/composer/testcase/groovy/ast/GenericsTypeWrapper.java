@@ -17,13 +17,13 @@ public class GenericsTypeWrapper extends ASTNodeWrapper {
         if (genericsType.getUpperBounds() != null) {
             upperBounds = new ClassNodeWrapper[genericsType.getUpperBounds().length];
             for (int index = 0; index < upperBounds.length; index++) {
-                upperBounds[index] = new ClassNodeWrapper(genericsType.getUpperBounds()[index], this);
+                upperBounds[index] = ClassNodeWrapper.getClassWrapper(genericsType.getUpperBounds()[index], this);
             }
         }
         if (genericsType.getLowerBound() != null) {
-            lowerBound = new ClassNodeWrapper(genericsType.getLowerBound(), this);
+            lowerBound = ClassNodeWrapper.getClassWrapper(genericsType.getLowerBound(), this);
         }
-        type = new ClassNodeWrapper(genericsType.getType(), this);
+        type = ClassNodeWrapper.getClassWrapper(genericsType.getType(), this);
     }
     
     public GenericsTypeWrapper(GenericsTypeWrapper genericsTypeWrapper, ASTNodeWrapper parentNodeWrapper) {

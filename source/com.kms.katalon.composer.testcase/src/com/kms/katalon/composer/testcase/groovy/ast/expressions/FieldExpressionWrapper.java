@@ -35,7 +35,7 @@ public class FieldExpressionWrapper extends ExpressionWrapper {
 
     @Override
     public ClassNodeWrapper getType() {
-        return new ClassNodeWrapper(fieldNode.getType(), this);
+        return ClassNodeWrapper.getClassWrapper(fieldNode.getType(), this);
     }
 
     @Override

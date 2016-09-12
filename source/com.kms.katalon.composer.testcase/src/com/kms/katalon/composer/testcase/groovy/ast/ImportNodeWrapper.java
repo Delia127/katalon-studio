@@ -51,7 +51,7 @@ public class ImportNodeWrapper extends AnnonatedNodeWrapper {
     public ImportNodeWrapper(ImportNode importNode, ASTNodeWrapper parentNodeWrapper) {
         super(importNode, parentNodeWrapper);
         if (importNode.getType() != null) {
-            this.type = new ClassNodeWrapper(importNode.getType(), this);
+            this.type = ClassNodeWrapper.getClassWrapper(importNode.getType(), this);
         }
         this.alias = importNode.getAlias();
         this.fieldName = importNode.getFieldName();

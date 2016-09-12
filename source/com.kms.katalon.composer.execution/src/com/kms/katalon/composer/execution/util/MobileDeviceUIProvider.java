@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 
@@ -23,9 +22,6 @@ public class MobileDeviceUIProvider {
         } catch (InterruptedException | MobileSetupException | IOException e) {
             MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "Error", e.getClass().getName() + ": "
                     + e.getMessage());
-        }
-        if (!Platform.OS_MACOSX.equals(Platform.getOS())) {
-            return mobileDeviceInfos;
         }
         try {
             mobileDeviceInfos.addAll(MobileDeviceProvider.getIosDevices());

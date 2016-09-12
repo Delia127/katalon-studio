@@ -10,4 +10,8 @@ public class GlobalVariablePropertyComboBoxCellEditor extends PropertyComboBoxCe
         super(parent, GlobalVariableController.getInstance().getAllGlobalVariableNames(
                 ProjectController.getInstance().getCurrentProject()));
     }
+    
+    public void applyEditingValue() {
+        fireApplyEditorValue();
+    }
 }

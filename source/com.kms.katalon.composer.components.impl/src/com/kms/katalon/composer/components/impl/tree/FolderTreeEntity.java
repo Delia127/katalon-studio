@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.components.impl.tree;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -13,8 +14,9 @@ import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.impl.transfer.TreeEntityTransfer;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
+import com.kms.katalon.composer.components.tree.TooltipPropertyDescription;
 import com.kms.katalon.controller.FolderController;
-import com.kms.katalon.entity.Entity;
+import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.groovy.util.GroovyUtil;
@@ -120,7 +122,7 @@ public class FolderTreeEntity extends AbstractTreeEntity {
     @Override
     public void setObject(Object object) throws Exception {
         if (object instanceof FolderEntity) {
-            entity = (Entity) object;
+            entity = (FileEntity) object;
             folder = (FolderEntity) object;
         }
     }
@@ -203,4 +205,8 @@ public class FolderTreeEntity extends AbstractTreeEntity {
         FolderController.getInstance().loadAllDescentdantEntities(folder);
     }
 
+    @Override
+    public List<TooltipPropertyDescription> getTooltipDescriptions() {
+        return Collections.emptyList();
+    }
 }

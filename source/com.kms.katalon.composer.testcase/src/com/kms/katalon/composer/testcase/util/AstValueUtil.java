@@ -6,6 +6,7 @@ import java.util.List;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.swt.widgets.Composite;
 
+import com.kms.katalon.composer.components.dialogs.ApplyingEditingValue;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.ast.editors.BinaryCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.BooleanCellEditor;
@@ -206,5 +207,12 @@ public class AstValueUtil {
             LoggerSingleton.logError(e);
         }
         return null;
+    }
+
+    public static void applyEditingValue(CellEditor editor) {
+        if (editor instanceof ApplyingEditingValue) {
+            ((ApplyingEditingValue)editor).applyEditingValue();
+        }
+        
     }
 }

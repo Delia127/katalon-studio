@@ -308,6 +308,10 @@ public class DriverFactory {
                     break;
                 case IE_DRIVER:
                     System.setProperty(IE_DRIVER_PATH_PROPERTY_KEY, getIEDriverPath());
+                    if (options instanceof DesiredCapabilities) {
+                        webDriver = new InternetExplorerDriver((DesiredCapabilities) options);
+                        break;
+                    }
                     webDriver = new InternetExplorerDriver();
                     break;
                 case SAFARI_DRIVER:

@@ -5,6 +5,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.dialogs.ISelectionStatusValidator;
 
 import com.kms.katalon.composer.components.dialogs.AbstractDialogCellEditor;
 import com.kms.katalon.composer.components.impl.dialogs.TreeEntitySelectionDialog;
@@ -20,6 +21,9 @@ import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.folder.FolderEntity;
 
 public abstract class EntitySelectionDialogCellEditor extends AbstractDialogCellEditor {
+
+    private ISelectionStatusValidator validator = null;
+
     public EntitySelectionDialogCellEditor(Composite parent, String defaultContent) {
         super(parent, defaultContent);
     }
@@ -33,6 +37,7 @@ public abstract class EntitySelectionDialogCellEditor extends AbstractDialogCell
                 new EntityLabelProvider(), new EntityProvider(), new EntityViewerFilter(new EntityProvider()));
         dialog.setAllowMultiple(false);
         dialog.setTitle(getDialogTitle());
+        dialog.setValidator(validator);
         FolderEntity rootFolder = getRootFolder();
         if (rootFolder == null) {
             return null;
@@ -75,6 +80,11 @@ public abstract class EntitySelectionDialogCellEditor extends AbstractDialogCell
         if (!(value instanceof Entity)) {
             return null;
         }
-        return (Entity) value;
+        return value;
     }
+
+    protected void setDialogValidator(ISelectionStatusValidator validator) {
+        this.validator = validator;
+    }
+
 }

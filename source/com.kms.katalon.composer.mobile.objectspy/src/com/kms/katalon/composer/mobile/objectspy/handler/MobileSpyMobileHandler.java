@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Shell;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileObjectSpyDialog;
+import com.kms.katalon.composer.mobile.util.MobileUtil;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.repository.WebElementEntity;
 
@@ -34,6 +35,7 @@ public class MobileSpyMobileHandler {
 
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell activeShell) {
+        MobileUtil.detectAppiumAndNodeJs(activeShell);
         openAndAddElements(activeShell, new ArrayList<WebElementEntity>());
     }
 

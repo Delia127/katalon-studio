@@ -80,6 +80,7 @@ import com.kms.katalon.composer.explorer.constants.ExplorerPreferenceConstants;
 import com.kms.katalon.composer.explorer.constants.ImageConstants;
 import com.kms.katalon.composer.explorer.constants.StringConstants;
 import com.kms.katalon.composer.explorer.custom.AdvancedSearchDialog;
+import com.kms.katalon.composer.explorer.custom.EntityTooltip;
 import com.kms.katalon.composer.explorer.custom.SearchDropDownBox;
 import com.kms.katalon.composer.explorer.handlers.CopyHandler;
 import com.kms.katalon.composer.explorer.handlers.CutHandler;
@@ -255,7 +256,9 @@ public class ExplorerPart {
 
         entityViewerFilter = new EntityViewerFilter(contentProvider);
         getViewer().addFilter(entityViewerFilter);
-
+        treeViewer.getTree().setToolTipText(StringUtils.EMPTY);
+        EntityTooltip.createFor(treeViewer);
+        
         // label Search
         Canvas canvasSearch = new Canvas(searchComposite, SWT.NONE);
         canvasSearch.setLayout(new FillLayout(SWT.HORIZONTAL));

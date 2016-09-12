@@ -46,4 +46,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String LIS_ERROR_MSG_CANNOT_MOVE_THE_SELECTION = "Unable to move the selection: {0}";
 
     public static final String LIS_ERROR_MSG_CANNOT_MOVE_INTO_DIFF_REGION = "Cannot move ''{0}'' type into ''{1}'' region";
+
+    // EntityTooltip
+    public static final String TOOLTIP_MESSAGE_PROPERTIES_ENTITY = "Right-click and choose Properties to edit";
 }

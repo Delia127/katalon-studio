@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.components.tree;
 
 import java.io.Serializable;
+import java.util.List;
 
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Image;
@@ -39,4 +40,6 @@ public interface ITreeEntity extends Serializable {
 	public Image getEntryImage() throws Exception;
 	
 	public void loadAllDescentdantEntities() throws Exception;
+	
+    public List<TooltipPropertyDescription> getTooltipDescriptions();
 }
