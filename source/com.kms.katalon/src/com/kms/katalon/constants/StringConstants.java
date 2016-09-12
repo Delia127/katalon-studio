@@ -109,4 +109,67 @@ public class StringConstants extends GlobalStringConstants {
     
     //Application
     public static final String ERR_CONSOLE_MODE = "Unable to execute in console mode";
+    
+    //Activation
+    public static final String FORGOT_PASS_LINK = "https://www.katalon.com/#katalon-reset-password";
+
+    public static final String LINK_LABEL_FORGOT_PASS_TEXT = "<a>Forgot Password?</a>";
+
+    public static final String REGISTER_LINK = "https://www.katalon.com/#katalon-register";
+
+    public static final String LINK_LABEL_REGISTER_TEXT = "<a>Register</a>";
+
+    public static final String PROMT_ENTER_USERNAME_PASSWORD = "Enter email and password.";
+
+    public static final String USERNAME_TITLE = "Email";
+
+    public static final String PASSSWORD_TITLE = "Password";
+
+    public static final String SEPARATE_LINK = "|";
+
+    public static final String DIALOG_TITLE = "Product Activation";
+
+    public static final String BTN_CLEAR_TILE = "Clear";
+
+    public static final String BTN_ACTIVATE_TILE = "Activate";
+
+    public static final String WAITTING_MESSAGE = "Activating product...";
+
+    public static final String LINK_OPEN_ACTIVATE_FORM_OFFLINE = "<a>Offline Activation</a>";
+    
+    public static final String DIALOG_OFFLINE_TITLE = "Product Offline Activation";
+
+    public static final String BTN_CLOSE_TILE = "Close";
+
+    public static final String LBL_ACTIVATE_CODE = "Activation Code";
+
+    public static final String LBL_ACTIVATE_OFFLINE_HELP = "In case you can't activate online due to network connection error, please send us an email to\nsupport@katalon.com with the 'Activation Request Code' below. We will send you back the\n'Activation Code' based on that.\nPlease input the 'Activation Code' when you have already had it in the 'Activation Code' below.";
+    
+    public static final String ACTIVATION_REQUEST_CODE = "Activation Request Code";
+
+    public static final String BTN_COPY_TITLE = "Copy To Clipboard";
+
+    public static final String PROMT_ENTER_ACTIVATE_CODE = "Enter activation code.";
+    
+    public static final String ACTIVATION_COLLECT_FAIL_MESSAGE = "Activation collection is failed";
+
+    public static final String SEND_SUCCESS_RESPONSE = "OK";
+
+    public static final String ACTIVATED_PROP_NAME = "activated";
+
+    public static final String SEND_ACTIVATION_INFO_FAILED = "Send activation info failed!";
+
+    public static final String DEFAULT_HOST_NAME = "can.not.get.host.name";
+
+    public static final String NETWORK_ERROR = "Network error! Cannot execute activation.";
+
+    public static final String ACTIVATE_INFO_INVALID = "Email or Password is invalid!";
+
+    public static final String KATALON_NOT_ACTIVATED = "Katalon is NOT activated!";
+
+    public static final String ACTIVATION_CODE_INVALID = "Activation code is invalid!";
+    
+    public static final String REQUEST_CODE_PROP_NAME = "activatedRequestCode";
+
+
 }

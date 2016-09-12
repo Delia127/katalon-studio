@@ -159,4 +159,13 @@ public class ApplicationInfo {
     private static void logInfo(String message) {
         LogUtil.println(LogManager.getOutputLogger(), message, LogMode.LOG);
     }
+    
+    public static void removeAppProperty(String key) {
+        Properties appProps = getAppProperties();
+
+        if (appProps != null && appProps.containsKey(key)) {
+            appProps.remove(key);
+            saveAppProperties();
+        }
+    }
 }

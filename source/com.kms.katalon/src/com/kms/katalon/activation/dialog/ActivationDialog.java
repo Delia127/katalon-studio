@@ -30,37 +30,14 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.constants.ImageConstants;
+import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.util.ActivationInfoCollector;
 
 public class ActivationDialog extends Dialog {
-    private static final String FORGOT_PASS_LINK = "https://www.katalon.com/#katalon-reset-password";
 
-    private static final String LINK_LABEL_FORGOT_PASS_TEXT = "<a>Forgot Password?</a>";
-    
-    private static final String REGISTER_LINK = "https://www.katalon.com/#katalon-register";
-
-    private static final String LINK_LABEL_REGISTER_TEXT = "<a>Register</a>";
-
-    private static final String PROMT_ENTER_USERNAME_PASSWORD = "Enter email and password.";
-
-    private static final String USERNAME_TITLE = "Email";
-
-    private static final String PASSSWORD_TITLE = "Password";
-
-    private static final String SEPARATE_LINK = "|";
-
-    private static final String DIALOG_TITLE = "Product Activation";
-
-    private static final String KATALON_IMAGE = "icons/branding_16.png";
-
-    private static final String BTN_CLEAR_TILE = "Clear";
-
-    private static final String BTN_ACTIVATE_TILE = "Activate";
-    
-    private static final String WAITTING_MESSAGE = "Activating product...";
-    
-    private static final Character PASSWORD_CHAR_MASK = (char)0x25cf;
+    private static final Character PASSWORD_CHAR_MASK = (char) 0x25cf;
 
     private Button btnActivate;
 
@@ -79,80 +56,102 @@ public class ActivationDialog extends Dialog {
     @Override
     protected Control createDialogArea(Composite parent) {
         Composite container = (Composite) super.createDialogArea(parent);
-        GridLayout gl_container = new GridLayout(2, false);
-        gl_container.marginRight = 10;
-        gl_container.marginTop = 10;
-        gl_container.marginLeft = 10;
-        gl_container.marginWidth = 0;
-        gl_container.marginHeight = 0;
-        gl_container.horizontalSpacing = 0;
-        gl_container.verticalSpacing = 0;
-        container.setLayout(gl_container);
+        GridLayout glContainer = new GridLayout(2, false);
+        glContainer.marginRight = 10;
+        glContainer.marginTop = 10;
+        glContainer.marginLeft = 10;
+        glContainer.marginWidth = 0;
+        glContainer.marginHeight = 0;
+        glContainer.horizontalSpacing = 0;
+        glContainer.verticalSpacing = 0;
+        container.setLayout(glContainer);
 
         Label lblUsername = new Label(container, SWT.NONE);
-        GridData gd_lblUsername = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
-        gd_lblUsername.widthHint = 73;
-        lblUsername.setLayoutData(gd_lblUsername);
-        lblUsername.setText(USERNAME_TITLE);
+        GridData gdLblUsername = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
+        gdLblUsername.widthHint = 73;
+        lblUsername.setLayoutData(gdLblUsername);
+        lblUsername.setText(StringConstants.USERNAME_TITLE);
 
         txtUserName = new Text(container, SWT.BORDER);
-        GridData gd_txtUserName = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-        gd_txtUserName.widthHint = 200;
-        gd_txtUserName.heightHint = 22;
-        txtUserName.setLayoutData(gd_txtUserName);
+        GridData gdTxtUserName = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+        gdTxtUserName.widthHint = 356;
+        gdTxtUserName.heightHint = 22;
+        txtUserName.setLayoutData(gdTxtUserName);
 
         Composite compSeparate = new Composite(container, SWT.NONE);
-        GridData gd_compSeparate = new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1);
-        gd_compSeparate.heightHint = 5;
-        compSeparate.setLayoutData(gd_compSeparate);
+        GridData gdCompSeparate = new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1);
+        gdCompSeparate.heightHint = 5;
+        compSeparate.setLayoutData(gdCompSeparate);
 
         Label lblPassword = new Label(container, SWT.NONE);
-        lblPassword.setText(PASSSWORD_TITLE);
+        lblPassword.setText(StringConstants.PASSSWORD_TITLE);
 
         txtPassword = new Text(container, SWT.BORDER);
-        GridData gd_txtPassword = new GridData(SWT.FILL, SWT.BOTTOM, true, false, 1, 1);
-        gd_txtPassword.widthHint = 200;
-        gd_txtPassword.heightHint = 22;
-        txtPassword.setLayoutData(gd_txtPassword);
+        GridData gdTxtPassword = new GridData(SWT.LEFT, SWT.BOTTOM, true, false, 1, 1);
+        gdTxtPassword.widthHint = 356;
+        gdTxtPassword.heightHint = 22;
+        txtPassword.setLayoutData(gdTxtPassword);
         txtPassword.setEchoChar(PASSWORD_CHAR_MASK);
-        
+
         lblError = new Label(container, SWT.NONE);
         lblError.setAlignment(SWT.CENTER);
-        GridData gd_lblError = new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1);
-        gd_lblError.verticalIndent = 5;
-        gd_lblError.widthHint = 365;
-        gd_lblError.heightHint = 22;
-        lblError.setLayoutData(gd_lblError);
+        GridData gdLblError = new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1);
+        gdLblError.verticalIndent = 5;
+        gdLblError.widthHint = 432;
+        gdLblError.heightHint = 22;
+        lblError.setLayoutData(gdLblError);
         lblError.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_RED));
 
         Composite composite = new Composite(container, SWT.NONE);
-        GridData gd_composite = new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1);
-        gd_composite.widthHint = 321;
-        composite.setLayoutData(gd_composite);
-        composite.setLayout(new GridLayout(5, false));
+        GridData gdComposite = new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1);
+        gdComposite.widthHint = 430;
+        composite.setLayoutData(gdComposite);
+        composite.setLayout(new GridLayout(9, false));
 
         btnClear = new Button(composite, SWT.NONE);
-        GridData gd_btnClear = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gd_btnClear.heightHint = 26;
-        gd_btnClear.widthHint = 62;
-        btnClear.setLayoutData(gd_btnClear);
-        btnClear.setText(BTN_CLEAR_TILE);
+        GridData gdBtnClear = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        gdBtnClear.heightHint = 26;
+        gdBtnClear.widthHint = 62;
+        btnClear.setLayoutData(gdBtnClear);
+        btnClear.setText(StringConstants.BTN_CLEAR_TILE);
 
         btnActivate = new Button(composite, SWT.NONE);
-        GridData gd_btnActivate = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gd_btnActivate.heightHint = 26;
-        gd_btnActivate.widthHint = 72;
-        btnActivate.setLayoutData(gd_btnActivate);
-        btnActivate.setText(BTN_ACTIVATE_TILE);
+        GridData gdBtnActivate = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        gdBtnActivate.heightHint = 26;
+        gdBtnActivate.widthHint = 72;
+        btnActivate.setLayoutData(gdBtnActivate);
+        btnActivate.setText(StringConstants.BTN_ACTIVATE_TILE);
 
         Link linkForgotPass = new Link(composite, SWT.NONE);
-        linkForgotPass.setText(LINK_LABEL_FORGOT_PASS_TEXT);
+        linkForgotPass.setText(StringConstants.LINK_LABEL_FORGOT_PASS_TEXT);
 
         Label lblVertialSeparate = new Label(composite, SWT.NONE);
-        lblVertialSeparate.setText(SEPARATE_LINK);
+        lblVertialSeparate.setText(StringConstants.SEPARATE_LINK);
 
         Link linkRegister = new Link(composite, SWT.NONE);
-        linkRegister.setText(LINK_LABEL_REGISTER_TEXT);
+        linkRegister.setText(StringConstants.LINK_LABEL_REGISTER_TEXT);
+
+        Label lblNewLabel = new Label(composite, SWT.NONE);
+        lblNewLabel.setText(StringConstants.SEPARATE_LINK);
+
+        Link link = new Link(composite, SWT.NONE);
+        link.setText(StringConstants.LINK_OPEN_ACTIVATE_FORM_OFFLINE);
+        new Label(composite, SWT.NONE);
+        new Label(composite, SWT.NONE);
+        link.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseUp(MouseEvent e) {
+                try {
+                    int result = new ActivationOfflineDialog(ActivationDialog.this.getShell()).open();
+                    if (result == Dialog.OK) {
+                        setReturnCode(Window.OK);
+                        close();
+                    }
+                } catch (Exception ex) {
+                    LogUtil.logError(ex);
+                }
+            }
+        });
 
         ActivateDialogKeyAdapter keyAdapter = new ActivateDialogKeyAdapter();
         txtUserName.addKeyListener(keyAdapter);
@@ -180,7 +179,7 @@ public class ActivationDialog extends Dialog {
             @Override
             public void mouseUp(MouseEvent e) {
                 try {
-                    Desktop.getDesktop().browse(new URI(FORGOT_PASS_LINK));
+                    Desktop.getDesktop().browse(new URI(StringConstants.FORGOT_PASS_LINK));
                 } catch (Exception ex) {
                     LogUtil.logError(ex);
                 }
@@ -190,7 +189,7 @@ public class ActivationDialog extends Dialog {
             @Override
             public void mouseUp(MouseEvent e) {
                 try {
-                    Desktop.getDesktop().browse(new URI(REGISTER_LINK));
+                    Desktop.getDesktop().browse(new URI(StringConstants.REGISTER_LINK));
                 } catch (Exception ex) {
                     LogUtil.logError(ex);
                 }
@@ -207,47 +206,46 @@ public class ActivationDialog extends Dialog {
     }
 
     protected void processActivate() {
-        if (isFullFillActivateInfo()) {
-            lblError.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_BLACK));
-            lblError.setText(WAITTING_MESSAGE);
-            
-            Display.getCurrent().asyncExec(new Runnable() {
-                public void run() {
-                    StringBuilder errorMessage = new StringBuilder();
-                    boolean result = ActivationInfoCollector.activate(txtUserName.getText(), txtPassword.getText(),
-                            errorMessage);
-                    lblError.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_RED));
-                    if (result == true) {
-                        setReturnCode(Window.OK);
-                        close();
-                    } else {
-                        lblError.setText(errorMessage.toString());
-                    }
-                }
-            });
-            
+        if (!isFullFillActivateInfo()) {
+            return;
         }
+        lblError.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_BLACK));
+        lblError.setText(StringConstants.WAITTING_MESSAGE);
+
+        Display.getCurrent().asyncExec(new Runnable() {
+            public void run() {
+                StringBuilder errorMessage = new StringBuilder();
+                boolean result = ActivationInfoCollector.activate(txtUserName.getText(), txtPassword.getText(),
+                        errorMessage);
+                lblError.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_RED));
+                if (result == true) {
+                    setReturnCode(Window.OK);
+                    close();
+                } else {
+                    lblError.setText(errorMessage.toString());
+                }
+            }
+        });
     }
 
     private void enableActivateButton() {
         boolean enable = isFullFillActivateInfo();
-        lblError.setText(isFullFillActivateInfo() ? "" : PROMT_ENTER_USERNAME_PASSWORD);
+        lblError.setText(isFullFillActivateInfo() ? "" : StringConstants.PROMT_ENTER_USERNAME_PASSWORD);
         btnActivate.setEnabled(enable);
     }
 
     @Override
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
-        newShell.setText(DIALOG_TITLE);
-        ImageDescriptor imgDesc = ImageDescriptor.createFromURL(FileLocator.find(
-                Platform.getBundle(IdConstants.APPLICATION_ID), new Path(KATALON_IMAGE), null));
-        newShell.setImage(imgDesc.createImage());
+        newShell.setText(StringConstants.DIALOG_TITLE);
+        newShell.setImage(ImageConstants.KATALON_IMAGE);
     }
 
     @Override
     protected void createButtonsForButtonBar(final Composite parent) {
         GridLayout layout = (GridLayout) parent.getLayout();
         layout.marginHeight = 0;
+        parent.getShell().setDefaultButton(btnActivate);
     }
 
     private class ActivateDialogKeyAdapter extends KeyAdapter {

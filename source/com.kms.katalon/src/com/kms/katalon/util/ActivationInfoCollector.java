@@ -8,6 +8,7 @@ import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.URL;
 import java.util.Objects;
+import java.util.Random;
 
 import org.eclipse.core.commands.common.CommandException;
 import org.eclipse.core.runtime.Platform;
@@ -19,26 +20,15 @@ import com.kms.katalon.composer.components.impl.handler.CommandCaller;
 import com.kms.katalon.composer.intro.FunctionsIntroductionDialog;
 import com.kms.katalon.composer.intro.FunctionsIntroductionFinishDialog;
 import com.kms.katalon.composer.project.constants.CommandId;
+import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.core.application.Application.RunningModeParam;
 import com.kms.katalon.logging.LogUtil;
 
 public class ActivationInfoCollector {
-    private static final String ACTIVATION_COLLECT_FAIL_MESSAGE = "Activation collection is failed";
+    private static final long RANDOM_MIN = 78364164096L;
 
-    private static final String SEND_SUCCESS_RESPONSE = "OK";
-
-    private static final String ACTIVATED_PROP_NAME = "activated";
-
-    private static final String SEND_ACTIVATION_INFO_FAILED = "Send activation info failed!";
-
-    private static final String DEFAULT_HOST_NAME = "can.not.get.host.name";
-
-    private static final String NETWORK_ERROR = "Network error! Cannot execute activation.";
-
-    private static final String ACTIVATE_INFO_INVALID = "Email or Password is invalid!";
+    private static final long RANDOM_MAX = 2821109907455L;
     
-    private static final String KATALON_NOT_ACTIVATED = "Katalon is NOT activated!";
-
     private ActivationInfoCollector() {
     }
 
@@ -62,7 +52,7 @@ public class ActivationInfoCollector {
         String osType = Platform.getOSArch().contains("64") ? "64" : "32";
         String katType = System.getProperty("sun.arch.data.model");
         String hostName = inetAddress.getHostName();
-        
+
         userInfo.append("{ \"userId\":\"")
                 .append(userName)
                 .append("\", \"traits\": { ")
@@ -91,7 +81,7 @@ public class ActivationInfoCollector {
         try (DataOutputStream wr = new DataOutputStream(uc.getOutputStream())) {
             wr.writeBytes(userInfo);
         } catch (IOException ex) {
-            LogUtil.logError(ex, SEND_ACTIVATION_INFO_FAILED);
+            LogUtil.logError(ex, StringConstants.SEND_ACTIVATION_INFO_FAILED);
             throw ex;
         }
 
@@ -102,7 +92,7 @@ public class ActivationInfoCollector {
             }
             result = response.toString().trim();
         } catch (IOException ex) {
-            LogUtil.logError(ex, SEND_ACTIVATION_INFO_FAILED);
+            LogUtil.logError(ex, StringConstants.SEND_ACTIVATION_INFO_FAILED);
             throw ex;
         }
 
@@ -112,11 +102,12 @@ public class ActivationInfoCollector {
     private static void markActivated() throws Exception {
         String activatedVal = Integer.toString(getHostNameHashValue());
         String curVersion = new StringBuilder(ApplicationInfo.versionNo().replaceAll("\\.", "")).reverse().toString();
-        ApplicationInfo.setAppProperty(ACTIVATED_PROP_NAME, curVersion + "_" + activatedVal, true);
+        ApplicationInfo.removeAppProperty(StringConstants.REQUEST_CODE_PROP_NAME);
+        ApplicationInfo.setAppProperty(StringConstants.ACTIVATED_PROP_NAME, curVersion + "_" + activatedVal, true);
     }
 
     public static boolean isActivated() {
-        String activatedVal = ApplicationInfo.getAppProperty(ACTIVATED_PROP_NAME);
+        String activatedVal = ApplicationInfo.getAppProperty(StringConstants.ACTIVATED_PROP_NAME);
         if (activatedVal == null) {
             return false;
         }
@@ -140,7 +131,7 @@ public class ActivationInfoCollector {
         String ipAddress = InetAddress.getLocalHost().getHostAddress();
 
         if (hostName.equals(ipAddress)) {
-            hostName = DEFAULT_HOST_NAME;
+            hostName = StringConstants.DEFAULT_HOST_NAME;
         }
 
         return Objects.hash(hostName);
@@ -149,28 +140,26 @@ public class ActivationInfoCollector {
     public static boolean activate(String userName, String pass, StringBuilder errorMessage) {
         HttpURLConnection urlConnection = null;
         boolean activated = false;
-        
+
         try {
             urlConnection = createConnection();
             String userInfo = collectActivationInfo(userName, pass);
             String result = sendActivationInfo(urlConnection, userInfo);
-            if (result.equals(SEND_SUCCESS_RESPONSE)) {
+            if (result.equals(StringConstants.SEND_SUCCESS_RESPONSE)) {
                 markActivated();
                 activated = true;
-            }
-            else {
-                errorMessage.append(ACTIVATE_INFO_INVALID);
+            } else {
+                errorMessage.append(StringConstants.ACTIVATE_INFO_INVALID);
             }
         } catch (Exception ex) {
             errorMessage.delete(0, errorMessage.length());
             if (ex instanceof IOException) {
-                errorMessage.append(NETWORK_ERROR);
-            }
-            else {
-                errorMessage.append(ACTIVATE_INFO_INVALID);
+                errorMessage.append(StringConstants.NETWORK_ERROR);
+            } else {
+                errorMessage.append(StringConstants.ACTIVATE_INFO_INVALID);
             }
 
-            LogUtil.logError(ex, ACTIVATION_COLLECT_FAIL_MESSAGE);
+            LogUtil.logError(ex, StringConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -180,12 +169,31 @@ public class ActivationInfoCollector {
         return activated;
     }
 
+    public static boolean activate(String activationCode, StringBuilder errorMessage) {
+        try {
+            String checkCode = activationCode.substring(0, 2);
+            activationCode = new StringBuilder(activationCode.substring(2)).reverse().toString();
+            int idx = Integer.parseInt(checkCode.charAt(0) + "");
+            if (activationCode.charAt(idx) == checkCode.charAt(1)) {
+                markActivated();
+                return true;
+            } else {
+                errorMessage.append(StringConstants.ACTIVATION_CODE_INVALID);
+            }
+        } catch (Exception ex) {
+            LogUtil.logError(ex);
+            errorMessage.append(StringConstants.ACTIVATION_CODE_INVALID);
+        }
+
+        return false;
+    }
+
     public static boolean checkActivation(RunningModeParam runningMode) {
         if (isActivated()) {
             return true;
         }
         if (runningMode == RunningModeParam.CONSOLE) {
-            System.out.println(KATALON_NOT_ACTIVATED);
+            System.out.println(StringConstants.KATALON_NOT_ACTIVATED);
             return false;
         }
         int result = new ActivationDialog(null).open();
@@ -207,5 +215,21 @@ public class ActivationInfoCollector {
                 LogUtil.logError(e);
             }
         }
+    }
+
+    public static String genRequestActivationInfo() {
+        String requestActivationCode = ApplicationInfo.getAppProperty(StringConstants.REQUEST_CODE_PROP_NAME);
+
+        if (requestActivationCode == null || requestActivationCode.trim().length() < 1) {
+            requestActivationCode = genRequestActivateOfflineCode();
+            ApplicationInfo.setAppProperty(StringConstants.REQUEST_CODE_PROP_NAME, requestActivationCode, true);
+        }
+        return requestActivationCode;
+    }
+
+    private static String genRequestActivateOfflineCode() {
+        Random random = new Random();
+        long num = RANDOM_MIN + (long) ((RANDOM_MAX - RANDOM_MIN) * random.nextFloat());
+        return Long.toString(num, 36).toUpperCase();
     }
 }
