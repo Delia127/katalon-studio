@@ -3,6 +3,7 @@ package com.kms.katalon.groovy.util;
 import groovy.lang.GroovyClassLoader;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
@@ -18,6 +19,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.codehaus.groovy.eclipse.core.model.GroovyRuntime;
 import org.codehaus.jdt.groovy.model.GroovyCompilationUnit;
+import org.eclipse.core.internal.resources.ModelObjectWriter;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -457,9 +459,12 @@ public class GroovyUtil {
     }
 
     private static void initGroovyProjectDescription(ProjectEntity projectEntity, IProgressMonitor monitor)
-            throws CoreException {
+            throws CoreException, IOException {
         IProject groovyProject = getGroovyProject(projectEntity);
-        if (groovyProject == null || !groovyProject.exists()) {
+        if (groovyProject == null) {
+            return;
+        }
+        if (!groovyProject.exists()) {
             IProjectDescription projectDescription = ResourcesPlugin.getWorkspace().newProjectDescription(
                     projectEntity.getName());
             projectDescription.setLocation(new Path(projectEntity.getFolderLocation()));
@@ -468,12 +473,21 @@ public class GroovyUtil {
             groovyProject.open(null);
 
         } else if (!groovyProject.isOpen()) {
+            // If user has unintentionally deleted .project file
+            File descriptionFile = new File(projectEntity.getFolderLocation(), IProjectDescription.DESCRIPTION_FILE_NAME);
+            if (!descriptionFile.exists()) {
+                IProjectDescription projectDescription = ResourcesPlugin.getWorkspace().newProjectDescription(
+                        projectEntity.getName());
+                projectDescription.setLocation(new Path(projectEntity.getFolderLocation()));
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                new ModelObjectWriter().write(projectDescription, out, System.lineSeparator());
+                FileUtils.writeByteArrayToFile(descriptionFile, out.toByteArray(), false);
+            }
             groovyProject.open(null);
         }
 
         IProjectDescription projectDescription = groovyProject.getDescription();
         projectDescription.setNatureIds(new String[] { GROOVY_NATURE, JavaCore.NATURE_ID });
-        groovyProject.setDescription(projectDescription, monitor);
         groovyProject.refreshLocal(IResource.DEPTH_ZERO, monitor);
     }
 
