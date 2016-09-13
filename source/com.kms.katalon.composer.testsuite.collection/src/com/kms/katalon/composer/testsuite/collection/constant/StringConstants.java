@@ -20,7 +20,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String HDL_MSG_UNABLE_TO_RENAME_TEST_SUITE_COLLECTION = "Unable to rename test suite";
     
     // NewTestSuiteCollectionHandler
-    public static final String HDL_NEW_TEST_SUITE_COLLECTION_NAME = "New Test Suite";
+    public static final String HDL_NEW_TEST_SUITE_COLLECTION_NAME = "New Test Suite Collection";
     public static final String HDL_MSG_UNABLE_TO_CREATE_TEST_SUITE_COLLECTION = "Unable to create test suite";
     
     // RunConfigurationSelectionDialog
