@@ -178,7 +178,7 @@ public class LifeCycleManager {
             public void handleEvent(Event event) {
                 try {
                     startUpGUIMode();
-                    if (!(ActivationInfoCollector.checkActivation(RunningModeParam.GUI))) {
+                    if (!(ActivationInfoCollector.checkActivation())) {
                         eventBroker.send(EventConstants.PROJECT_CLOSE, null);
                         PlatformUI.getWorkbench().close();
                     }

@@ -10,6 +10,9 @@ import java.net.URL;
 import java.util.Objects;
 import java.util.Random;
 
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+
 import org.eclipse.core.commands.common.CommandException;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.Dialog;
@@ -21,14 +24,13 @@ import com.kms.katalon.composer.intro.FunctionsIntroductionDialog;
 import com.kms.katalon.composer.intro.FunctionsIntroductionFinishDialog;
 import com.kms.katalon.composer.project.constants.CommandId;
 import com.kms.katalon.constants.StringConstants;
-import com.kms.katalon.core.application.Application.RunningModeParam;
 import com.kms.katalon.logging.LogUtil;
 
 public class ActivationInfoCollector {
     private static final long RANDOM_MIN = 78364164096L;
 
     private static final long RANDOM_MAX = 2821109907455L;
-    
+
     private ActivationInfoCollector() {
     }
 
@@ -139,7 +141,7 @@ public class ActivationInfoCollector {
 
     public static boolean activate(String userName, String pass, StringBuilder errorMessage) {
         HttpURLConnection urlConnection = null;
-        boolean activated = false;
+        boolean activatedResult = false;
 
         try {
             urlConnection = createConnection();
@@ -147,26 +149,27 @@ public class ActivationInfoCollector {
             String result = sendActivationInfo(urlConnection, userInfo);
             if (result.equals(StringConstants.SEND_SUCCESS_RESPONSE)) {
                 markActivated();
-                activated = true;
-            } else {
+                activatedResult = true;
+            } else if (errorMessage != null) {
                 errorMessage.append(StringConstants.ACTIVATE_INFO_INVALID);
             }
         } catch (Exception ex) {
-            errorMessage.delete(0, errorMessage.length());
-            if (ex instanceof IOException) {
-                errorMessage.append(StringConstants.NETWORK_ERROR);
-            } else {
-                errorMessage.append(StringConstants.ACTIVATE_INFO_INVALID);
-            }
-
             LogUtil.logError(ex, StringConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
+            if (errorMessage != null) {
+                errorMessage.delete(0, errorMessage.length());
+                if (ex instanceof IOException) {
+                    errorMessage.append(StringConstants.NETWORK_ERROR);
+                } else {
+                    errorMessage.append(StringConstants.ACTIVATE_INFO_INVALID);
+                }
+            }
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
             }
         }
 
-        return activated;
+        return activatedResult;
     }
 
     public static boolean activate(String activationCode, StringBuilder errorMessage) {
@@ -177,24 +180,22 @@ public class ActivationInfoCollector {
             if (activationCode.charAt(idx) == checkCode.charAt(1)) {
                 markActivated();
                 return true;
-            } else {
+            } else if (errorMessage != null) {
                 errorMessage.append(StringConstants.ACTIVATION_CODE_INVALID);
             }
         } catch (Exception ex) {
             LogUtil.logError(ex);
-            errorMessage.append(StringConstants.ACTIVATION_CODE_INVALID);
+            if (errorMessage != null) {
+                errorMessage.append(StringConstants.ACTIVATION_CODE_INVALID);
+            }
         }
 
         return false;
     }
 
-    public static boolean checkActivation(RunningModeParam runningMode) {
+    public static boolean checkActivation() {
         if (isActivated()) {
             return true;
-        }
-        if (runningMode == RunningModeParam.CONSOLE) {
-            System.out.println(StringConstants.KATALON_NOT_ACTIVATED);
-            return false;
         }
         int result = new ActivationDialog(null).open();
         if (result == Window.CANCEL) {
@@ -202,6 +203,37 @@ public class ActivationInfoCollector {
         }
         showFunctionsIntroductionForTheFirstTime();
         return true;
+    }
+
+    public static boolean checkConsoleActivation(String[] arguments) {
+        if (isActivated()) {
+            return true;
+        }
+        String[] emailPass = getEmailAndPassword(arguments);
+        String email = emailPass[0], password = emailPass[1];
+        StringBuilder errorMessage = new StringBuilder();
+        if (email == null || password == null || !activate(email, password, errorMessage)) {
+            System.out.println(email == null || password == null ? StringConstants.KATALON_NOT_ACTIVATED : errorMessage.toString());
+            return false;
+        }
+        return true;
+    }
+
+    private static String[] getEmailAndPassword(String[] arguments) {
+        OptionParser parser = new OptionParser(false);
+        parser.allowsUnrecognizedOptions();
+        parser.accepts(StringConstants.ARG_EMAIL).withRequiredArg().ofType(String.class);
+        parser.accepts(StringConstants.ARG_PASSWORD).withRequiredArg().ofType(String.class);
+
+        OptionSet argumentSet = parser.parse(arguments);
+        String[] emailPass = { null, null };
+        if (argumentSet.has(StringConstants.ARG_EMAIL)) {
+            emailPass[0] = argumentSet.valueOf(StringConstants.ARG_EMAIL).toString();
+        }
+        if (argumentSet.has(StringConstants.ARG_EMAIL)) {
+            emailPass[1] = argumentSet.valueOf(StringConstants.ARG_PASSWORD).toString();
+        }
+        return emailPass;
     }
 
     private static void showFunctionsIntroductionForTheFirstTime() {
