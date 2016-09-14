@@ -488,6 +488,7 @@ public class GroovyUtil {
 
         IProjectDescription projectDescription = groovyProject.getDescription();
         projectDescription.setNatureIds(new String[] { GROOVY_NATURE, JavaCore.NATURE_ID });
+        groovyProject.setDescription(projectDescription, monitor);
         groovyProject.refreshLocal(IResource.DEPTH_ZERO, monitor);
     }
 
