@@ -53,7 +53,6 @@ public class LifeCycleManager {
 
     protected void setupHandlers() {
         IHandlerService handlerService = (IHandlerService) PlatformUI.getWorkbench()
-                .getActiveWorkbenchWindow()
                 .getService(IHandlerService.class);
         handlerService.activateHandler(IWorkbenchCommandConstants.FILE_SAVE, new SaveHandler());
         handlerService.activateHandler(IWorkbenchCommandConstants.FILE_CLOSE, new CloseHandler());
