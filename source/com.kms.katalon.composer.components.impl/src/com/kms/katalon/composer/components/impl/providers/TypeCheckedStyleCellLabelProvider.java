@@ -270,11 +270,11 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
     }
 
     protected Color getBackground(Color background, T element) {
-        return background;
+        return null;
     }
 
     protected Color getForeground(Color foreground, T element) {
-        return foreground;
+        return null;
     }
 
     protected abstract Image getImage(T element);
