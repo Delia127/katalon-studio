@@ -213,7 +213,7 @@ public class HTMLElementUtil {
             FolderEntity parentFolder) throws Exception {
         WebElementEntity newWebElement = new WebElementEntity();
         newWebElement.setName(ObjectRepositoryController.getInstance().getAvailableWebElementName(parentFolder,
-                element.getName()));
+                toValidFileName(StringUtils.trim(element.getName()))));
         newWebElement.setParentFolder(parentFolder);
         newWebElement.setElementGuidId(Util.generateGuid());
         newWebElement.setProject(parentFolder.getProject());
@@ -242,7 +242,7 @@ public class HTMLElementUtil {
     public static FolderEntity convertPageElementToFolderEntity(HTMLPageElement pageElement, FolderEntity parentFolder)
             throws Exception {
         FolderEntity newFolder = new FolderEntity();
-        newFolder.setName(pageElement.getName());
+        newFolder.setName(toValidFileName(StringUtils.trim(pageElement.getName())));
         newFolder.setParentFolder(parentFolder);
         newFolder.setDescription("folder");
         newFolder.setFolderType(parentFolder.getFolderType());
