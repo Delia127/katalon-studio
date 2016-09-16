@@ -17,7 +17,6 @@ import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.webservice.constants.ImageConstants;
-import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.parts.RestRequestObjectPart;
 import com.kms.katalon.composer.webservice.parts.SoapRequestObjectPart;
 import com.kms.katalon.constants.EventConstants;
@@ -25,44 +24,46 @@ import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 
 public class OpenWebServiceRequestObjectHandler {
+    public static final String BUNDLE_URI_WEBSERVICE = "bundleclass://com.kms.katalon.composer.webservice/";
 
-	private static final String WEBSERVICE_SOAP_OBJECT_PART_URI = StringConstants.BUNDLE_URI_WEBSERVICE
+    private static final String WEBSERVICE_SOAP_OBJECT_PART_URI = BUNDLE_URI_WEBSERVICE
             + SoapRequestObjectPart.class.getName();
-    
-	private static final String WEBSERVICE_REST_OBJECT_PART_URI = StringConstants.BUNDLE_URI_WEBSERVICE
+
+    private static final String WEBSERVICE_REST_OBJECT_PART_URI = BUNDLE_URI_WEBSERVICE
             + RestRequestObjectPart.class.getName();
-	
+
     @Inject
     MApplication application;
 
     @Inject
     EPartService partService;
-    
+
     @Inject
     EModelService modelService;
-    
-    //@Inject
+
+    // @Inject
     @PostConstruct
     public void registerEventHandler(IEventBroker eventBroker) {
         eventBroker.subscribe(EventConstants.EXPLORER_OPEN_SELECTED_ITEM, new EventHandler() {
-			@Override
-			public void handleEvent(Event event) {
-				Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
+            @Override
+            public void handleEvent(Event event) {
+                Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
                 if (object != null && object.getClass() == WebServiceRequestEntity.class) {
                     excute((WebServiceRequestEntity) object);
                 }
-			}
+            }
         });
     }
-    
+
     @Inject
     @Optional
-    private void getNotifications(@UIEventTopic(EventConstants.WEBSERVICE_REQUEST_OBJECT_OPEN) WebServiceRequestEntity entity){
+    private void getNotifications(
+            @UIEventTopic(EventConstants.WEBSERVICE_REQUEST_OBJECT_OPEN) WebServiceRequestEntity entity) {
         excute(entity);
     }
-    
+
     public void excute(WebServiceRequestEntity requestObject) {
-    	
+
         if (requestObject != null) {
             String partId = EntityPartUtil.getTestObjectPartId(requestObject.getId());
             MPartStack stack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
@@ -71,17 +72,16 @@ public class OpenWebServiceRequestObjectHandler {
                 mPart = modelService.createModelElement(MPart.class);
                 mPart.setElementId(partId);
                 mPart.setLabel(requestObject.getName());
-                if(WebServiceRequestEntity.SERVICE_TYPES[0].equals(requestObject.getServiceType())){
-                	mPart.setContributionURI(WEBSERVICE_SOAP_OBJECT_PART_URI);
-                }
-                else if(WebServiceRequestEntity.SERVICE_TYPES[1].equals(requestObject.getServiceType())){
-                	mPart.setContributionURI(WEBSERVICE_REST_OBJECT_PART_URI);
+                if (WebServiceRequestEntity.SERVICE_TYPES[0].equals(requestObject.getServiceType())) {
+                    mPart.setContributionURI(WEBSERVICE_SOAP_OBJECT_PART_URI);
+                } else if (WebServiceRequestEntity.SERVICE_TYPES[1].equals(requestObject.getServiceType())) {
+                    mPart.setContributionURI(WEBSERVICE_REST_OBJECT_PART_URI);
                 }
                 mPart.setCloseable(true);
                 mPart.setIconURI(ImageConstants.URL_16_WS_TEST_OBJECT);
-                stack.getChildren().add(mPart);    
+                stack.getChildren().add(mPart);
             }
-            
+
             if (mPart.getObject() == null) {
                 mPart.setObject(requestObject);
             }

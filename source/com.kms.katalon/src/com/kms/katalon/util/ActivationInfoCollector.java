@@ -31,6 +31,8 @@ public class ActivationInfoCollector {
 
     private static final long RANDOM_MAX = 2821109907455L;
 
+    public static final String DEFAULT_HOST_NAME = "can.not.get.host.name";
+    
     private ActivationInfoCollector() {
     }
 
@@ -133,7 +135,7 @@ public class ActivationInfoCollector {
         String ipAddress = InetAddress.getLocalHost().getHostAddress();
 
         if (hostName.equals(ipAddress)) {
-            hostName = StringConstants.DEFAULT_HOST_NAME;
+            hostName = DEFAULT_HOST_NAME;
         }
 
         return Objects.hash(hostName);

@@ -30,12 +30,33 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchSite;
 
+import com.kms.katalon.composer.codeassist.constant.ComposerCodeAssistMessageConstants;
 import com.kms.katalon.composer.codeassist.constant.ImageConstants;
-import com.kms.katalon.composer.codeassist.constant.StringConstants;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.core.keyword.BuiltinKeywords;
+import com.kms.katalon.core.mobile.keyword.MobileBuiltInKeywords;
+import com.kms.katalon.core.webservice.keyword.WSBuiltInKeywords;
+import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords;
 
 @SuppressWarnings("restriction")
 public class ImprovedGroovyTextEditorHover extends GroovyExtraInformationHover {
+
+    public static final String WEB_UI_CLASSNAME = WebUiBuiltInKeywords.class.getSimpleName();
+
+    public static final String MOBILE_CLASSNAME = MobileBuiltInKeywords.class.getSimpleName();
+
+    public static final String WEB_SERVICE_CLASSNAME = WSBuiltInKeywords.class.getSimpleName();
+    
+    public static final String BUILTIN_CLASSNAME = BuiltinKeywords.class.getSimpleName();
+
+    public static final String WEB_PLATFORM = "[WebUI] ";
+
+    public static final String MOBILE_PLATFORM = "[Mobile] ";
+
+    public static final String WEB_SERVICE_PLATFORM = "[WS] ";
+    
+    public static final String BUILTIN_PLATFORM = "";
+    
     private KatalonInformationControlCreator katalonInformationControl;
 
     private static String keywordDescURI = null;
@@ -98,7 +119,7 @@ public class ImprovedGroovyTextEditorHover extends GroovyExtraInformationHover {
                 return null;
             }
 
-            return StringConstants.KEYWORD_DESC_PATH + new URLCodec().encode(platform + getKeywordName(key));
+            return ComposerCodeAssistMessageConstants.KEYWORD_DESC_PATH + new URLCodec().encode(platform + getKeywordName(key));
         } catch (Exception ex) {
             LoggerSingleton.logError(ex);
             return null;
@@ -110,17 +131,17 @@ public class ImprovedGroovyTextEditorHover extends GroovyExtraInformationHover {
         String packageName = parts[0];
         String className = packageName.substring(packageName.lastIndexOf('/') + 1);
 
-        if (className.equals(StringConstants.WEB_UI_CLASSNAME)) {
-            return StringConstants.WEB_PLATFORM;
+        if (className.equals(WEB_UI_CLASSNAME)) {
+            return WEB_PLATFORM;
         }
-        if (className.equals(StringConstants.MOBILE_CLASSNAME)) {
-            return StringConstants.MOBILE_PLATFORM;
+        if (className.equals(MOBILE_CLASSNAME)) {
+            return MOBILE_PLATFORM;
         }
-        if (className.equals(StringConstants.WEB_SERVICE_CLASSNAME)) {
-            return StringConstants.WEB_SERVICE_PLATFORM;
+        if (className.equals(WEB_SERVICE_CLASSNAME)) {
+            return WEB_SERVICE_PLATFORM;
         }
-        if (className.equals(StringConstants.BUILTIN_CLASSNAME)) {
-            return StringConstants.BUILTIN_PLATFORM;
+        if (className.equals(BUILTIN_CLASSNAME)) {
+            return BUILTIN_PLATFORM;
         }
 
         return null;
@@ -173,7 +194,7 @@ public class ImprovedGroovyTextEditorHover extends GroovyExtraInformationHover {
                 f.setAccessible(true);
                 ToolBar tb = (ToolBar) f.get(bi);
                 ToolItem katItem = new ToolItem(tb, SWT.NONE);
-                katItem.setToolTipText(StringConstants.KEYWORD_DESC_BUTTON_TOOLTIP);
+                katItem.setToolTipText(ComposerCodeAssistMessageConstants.KEYWORD_DESC_BUTTON_TOOLTIP);
                 katItem.setImage(ImageConstants.IMG_16_KEYWORD_WIKI);
                 katItem.addListener(SWT.Selection, new Listener() {
 

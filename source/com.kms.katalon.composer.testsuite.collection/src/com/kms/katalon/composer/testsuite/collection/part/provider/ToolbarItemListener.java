@@ -46,27 +46,25 @@ public class ToolbarItemListener extends SelectionAdapter {
         }
 
         String name = StringUtils.defaultString(((ToolItem) source).getText());
-        switch (name) {
-            case StringConstants.ADD: {
-                addTestSuiteRunConfigs();
-                return;
-            }
-            case StringConstants.REMOVE: {
-                deleteSelectedTestSuiteRunConfigs();
-                return;
-            }
-            case StringConstants.UP: {
-                moveUpSelectedTestSuiteRunConfigs();
-                return;
-            }
-            case StringConstants.DOWN: {
-                moveDownSelectedTestSuiteRunConfigs();
-                return;
-            }
-            case StringConstants.PA_ACTION_EXECUTE_TEST_SUITE_COLLECTION: {
-                executeTestRun((ToolItem) source);
-                return;
-            }
+        if (StringConstants.ADD.equals(name)) {
+            addTestSuiteRunConfigs();
+            return;
+        }
+        if (StringConstants.REMOVE.equals(name)) {
+            deleteSelectedTestSuiteRunConfigs();
+            return;
+        }
+        if (StringConstants.UP.equals(name)) {
+            moveUpSelectedTestSuiteRunConfigs();
+            return;
+        }
+        if (StringConstants.DOWN.equals(name)) {
+            moveDownSelectedTestSuiteRunConfigs();
+            return;
+        }
+        if (StringConstants.PA_ACTION_EXECUTE_TEST_SUITE_COLLECTION.equals(name)) {
+            executeTestRun((ToolItem) source);
+            return;
         }
     }
 

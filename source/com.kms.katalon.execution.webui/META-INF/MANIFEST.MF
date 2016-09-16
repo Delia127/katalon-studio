@@ -26,4 +26,5 @@ Require-Bundle: org.eclipse.swt,
  org.eclipse.equinox.preferences,
  org.eclipse.jface,
  org.apache.commons.lang,
- com.kms.katalon.logging
+ com.kms.katalon.logging,
+ org.eclipse.osgi

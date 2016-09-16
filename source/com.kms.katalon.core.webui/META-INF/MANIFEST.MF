@@ -12,7 +12,8 @@ Require-Bundle: org.codehaus.groovy,
  com.kms.katalon.core.appium,
  io.appium.java-client,
  org.apache.commons.lang,
- org.apache.commons.lang3
+ org.apache.commons.lang3,
+ org.eclipse.osgi
 Export-Package: com.kms.katalon.core.webui.constants,
  com.kms.katalon.core.webui.driver,
  com.kms.katalon.core.webui.keyword,

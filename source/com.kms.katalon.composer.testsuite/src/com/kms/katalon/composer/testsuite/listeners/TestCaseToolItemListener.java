@@ -47,22 +47,21 @@ public class TestCaseToolItemListener extends SelectionAdapter {
         if (data == null || data.isEmpty()) {
             return;
         }
-
-        switch (data) {
-            case ToolItemConstants.ADD:
-                addTestCaseLink();
-                return;
-            case ToolItemConstants.REMOVE:
-                removeTestCaseLink();
-                return;
-            case ToolItemConstants.UP:
-                moveUpTestCaseLink();
-                return;
-            case ToolItemConstants.DOWN:
-                moveDownTestCaseLink();
-                return;
-            default:
-                return;
+        if (ToolItemConstants.ADD.equals(data)) {
+            addTestCaseLink();
+            return;
+        }
+        if (ToolItemConstants.REMOVE.equals(data)) {
+            removeTestCaseLink();
+            return;
+        }
+        if (ToolItemConstants.UP.equals(data)) {
+            moveUpTestCaseLink();
+            return;
+        }
+        if (ToolItemConstants.DOWN.equals(data)) {
+            moveDownTestCaseLink();
+            return;
         }
     }
 

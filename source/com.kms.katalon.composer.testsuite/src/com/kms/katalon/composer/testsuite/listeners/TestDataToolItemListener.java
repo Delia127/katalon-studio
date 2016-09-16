@@ -83,48 +83,53 @@ public class TestDataToolItemListener extends SelectionAdapter {
     private void toolItemSelected(SelectionEvent e) {
         ToolItem toolItem = (ToolItem) e.getSource();
 
-        if (toolItem.getText() == null) return;
-
-        switch (toolItem.getToolTipText()) {
-            case ToolItemConstants.ADD:
-                if (e.detail == SWT.ARROW) {
-                    createDropdownMenuAddItem(toolItem);
-                } else {
-                    performAddTestDataLink(ToolItemConstants.ADD_AFTER);
-                }
-                return;
-            case ToolItemConstants.REMOVE:
-                removeTestDataLink();
-                return;
-            case ToolItemConstants.UP:
-                upTestDataLink();
-                return;
-            case ToolItemConstants.DOWN:
-                downTestDataLink();
-                return;
-            case ToolItemConstants.MAP:
-                mapTestDataLink();
-                return;
-            case ToolItemConstants.MAPALL:
-                mapAllTestDataLink();
-                return;
-            default:
-                return;
+        final String text = toolItem.getText();
+        if (text == null) {
+            return;
+        }
+        if (ToolItemConstants.ADD.equals(text)) {
+            if (e.detail == SWT.ARROW) {
+                createDropdownMenuAddItem(toolItem);
+            } else {
+                performAddTestDataLink(ToolItemConstants.ADD_AFTER);
+            }
+            return;
+        }
+        if (ToolItemConstants.REMOVE.equals(text)) {
+            removeTestDataLink();
+            return;
+        }
+        if (ToolItemConstants.UP.equals(text)) {
+            upTestDataLink();
+            return;
+        }
+        if (ToolItemConstants.DOWN.equals(text)) {
+            downTestDataLink();
+            return;
+        }
+        if (ToolItemConstants.MAP.equals(text)) {
+            mapTestDataLink();
+            return;
+        }
+        if (ToolItemConstants.MAPALL.equals(text)) {
+            mapAllTestDataLink();
+            return;
         }
     }
 
     private void menuItemSelected(SelectionEvent e) {
         MenuItem menuItem = (MenuItem) e.getSource();
-        if (menuItem.getText() == null) return;
-        switch (menuItem.getText()) {
-            case ToolItemConstants.ADD_AFTER:
-                performAddTestDataLink(ToolItemConstants.ADD_AFTER);
-                return;
-            case ToolItemConstants.ADD_BEFORE:
-                performAddTestDataLink(ToolItemConstants.ADD_BEFORE);
-                return;
-            default:
-                return;
+        final String text = menuItem.getText();
+        if (text == null) {
+            return;
+        }
+        if (ToolItemConstants.ADD_AFTER.equals(text)) {
+            performAddTestDataLink(ToolItemConstants.ADD_AFTER);
+            return;
+        }
+        if (ToolItemConstants.ADD_BEFORE.equals(text)) {
+            performAddTestDataLink(ToolItemConstants.ADD_BEFORE);
+            return;
         }
     }
 
@@ -200,27 +205,22 @@ public class TestDataToolItemListener extends SelectionAdapter {
             DataFileEntity testData = testDataEntities.get(i);
 
             TestCaseTestDataLink newTestDataLink = createTestDataLink(testData);
-            switch (offset) {
-                case ToolItemConstants.ADD_AFTER: {
-                    if (selectedIndex < 0) {
-                        int itemCount = tableViewer.getTable().getItemCount();
-                        getTableItems().add(itemCount, newTestDataLink);
-                        selectedIndex = itemCount;
-                    } else {
-                        getTableItems().add(selectedIndex + 1, newTestDataLink);
-                        selectedIndex++;
-                    }
-                    break;
+            if (ToolItemConstants.ADD_AFTER.equals(offset)) {
+                if (selectedIndex < 0) {
+                    int itemCount = tableViewer.getTable().getItemCount();
+                    getTableItems().add(itemCount, newTestDataLink);
+                    selectedIndex = itemCount;
+                } else {
+                    getTableItems().add(selectedIndex + 1, newTestDataLink);
+                    selectedIndex++;
                 }
-                case ToolItemConstants.ADD_BEFORE: {
-                    if (selectedIndex <= 0) {
-                        getTableItems().add(0, newTestDataLink);
-                        selectedIndex = 1;
-                    } else {
-                        getTableItems().add(selectedIndex, newTestDataLink);
-                        selectedIndex++;
-                    }
-                    break;
+            } else if (ToolItemConstants.ADD_BEFORE.equals(offset)) {
+                if (selectedIndex <= 0) {
+                    getTableItems().add(0, newTestDataLink);
+                    selectedIndex = 1;
+                } else {
+                    getTableItems().add(selectedIndex, newTestDataLink);
+                    selectedIndex++;
                 }
             }
             addedTestDataLinkTreeNodes.add(newTestDataLink);

@@ -25,7 +25,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.StringBuilderWriter;
 
-import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.logging.XMLLoggerParser;
@@ -44,13 +43,13 @@ import com.kms.katalon.core.testdata.reader.CsvWriter;
 public class ReportUtil {
 
     private static final String LOG_END_TAG = "</log>";
+
     private static final String EXECUTION_LOG_FILE_BASE = "execution";
 
     private static StringBuilder generateVars(List<String> strings, TestSuiteLogRecord suiteLogEntity,
             StringBuilder model) throws IOException {
         StringBuilder sb = new StringBuilder();
-        List<String> lines =
-                IOUtils.readLines(ResourceLoader.class.getResourceAsStream(ResourceLoader.HTML_TEMPLATE_VARS));
+        List<String> lines = IOUtils.readLines(ResourceLoader.class.getResourceAsStream(ResourceLoader.HTML_TEMPLATE_VARS));
         for (String line : lines) {
             if (line.equals(ResourceLoader.HTML_TEMPLATE_SUITE_MODEL_TOKEN)) {
                 sb.append(model);
@@ -62,7 +61,7 @@ public class ReportUtil {
                 envInfoSb.append("{");
                 envInfoSb.append(String.format("\"host\" : \"%s\", ", suiteLogEntity.getHostName()));
                 envInfoSb.append(String.format("\"os\" : \"%s\", ", suiteLogEntity.getOs()));
-                envInfoSb.append(String.format("\"" + GlobalStringConstants.APP_VERSION + "\" : \"%s\", ",
+                envInfoSb.append(String.format("\"" + StringConstants.APP_VERSION + "\" : \"%s\", ",
                         suiteLogEntity.getAppVersion()));
                 if (suiteLogEntity.getBrowser() != null && !suiteLogEntity.getBrowser().equals("")) {
                     if (suiteLogEntity.getRunData().containsKey("browser")) {
@@ -100,8 +99,7 @@ public class ReportUtil {
             InetAddress addr;
             addr = InetAddress.getLocalHost();
             hostName = addr.getCanonicalHostName();
-        } catch (UnknownHostException ex) {
-        }
+        } catch (UnknownHostException ex) {}
         return hostName;
     }
 
@@ -112,17 +110,18 @@ public class ReportUtil {
                 sb.append(",");
             }
             sb.append("\""
-                    + (strings.get(idx) == null ? "" : strings.get(idx).equals("*") ? strings.get(idx) : ("*" + strings
-                            .get(idx))) + "\"");
+                    + (strings.get(idx) == null ? "" : strings.get(idx).equals("*") ? strings.get(idx)
+                            : ("*" + strings.get(idx))) + "\"");
         }
         return sb;
     }
 
     private static void collectInfoLines(ILogRecord logRecord, List<ILogRecord> rmvLogs) {
         if (logRecord instanceof MessageLogRecord) {
-        	if(logRecord.getStatus().getStatusValue() == TestStatusValue.INCOMPLETE || logRecord.getStatus().getStatusValue() == TestStatusValue.INFO){
-        		rmvLogs.add(logRecord);	
-        	}
+            if (logRecord.getStatus().getStatusValue() == TestStatusValue.INCOMPLETE
+                    || logRecord.getStatus().getStatusValue() == TestStatusValue.INFO) {
+                rmvLogs.add(logRecord);
+            }
         }
         for (ILogRecord childLogRecord : logRecord.getChildRecords()) {
             collectInfoLines(childLogRecord, rmvLogs);
@@ -155,7 +154,6 @@ public class ReportUtil {
         // Write main HTML Report
         FileUtils.writeStringToFile(new File(logFolder, logFolder.getName() + ".html"), htmlSb.toString());
 
-        
         // Write CSV file
         CsvWriter.writeCsvReport(suiteLogEntity, new File(logFolder, logFolder.getName() + ".csv"),
                 Arrays.asList(suiteLogEntity.getChildRecords()));
@@ -173,7 +171,7 @@ public class ReportUtil {
         htmlSb.append(generateVars(strings, suiteLogEntity, sbModel));
         readFileToStringBuilder(ResourceLoader.HTML_TEMPLATE_CONTENT, htmlSb);
         FileUtils.writeStringToFile(new File(logFolder, "Report.html"), htmlSb.toString());
-        
+
     }
 
     public static void writeLogRecordToHTMLFile(TestSuiteLogRecord suiteLogEntity, File destFile,
@@ -216,10 +214,10 @@ public class ReportUtil {
         Arrays.sort(files, new Comparator<File>() {
             @Override
             public int compare(File f1, File f2) {
-                int num1 =
-                        Integer.parseInt(FilenameUtils.getBaseName(f1.getName()).replace(EXECUTION_LOG_FILE_BASE, ""));
-                int num2 =
-                        Integer.parseInt(FilenameUtils.getBaseName(f2.getName()).replace(EXECUTION_LOG_FILE_BASE, ""));
+                int num1 = Integer.parseInt(FilenameUtils.getBaseName(f1.getName())
+                        .replace(EXECUTION_LOG_FILE_BASE, ""));
+                int num2 = Integer.parseInt(FilenameUtils.getBaseName(f2.getName())
+                        .replace(EXECUTION_LOG_FILE_BASE, ""));
                 return num2 - num1;
             }
         });
@@ -229,32 +227,28 @@ public class ReportUtil {
         for (File file : files) {
             StringBuilder sb = new StringBuilder();
             sb.append(FileUtils.readFileToString(file, "UTF-8"));
-            
-            if (sb.toString().isEmpty()) return null;
+
+            if (sb.toString().isEmpty())
+                return null;
             if (sb.indexOf(LOG_END_TAG) == -1) {
                 sb.append(LOG_END_TAG);
-            }            
+            }
             List<XmlLogRecord> xmlLogRecords = XMLLoggerParser.parseLogString(sb.toString());
             for (XmlLogRecord xmlLogRecord : xmlLogRecords) {
+                final String sourceMethodName = xmlLogRecord.getSourceMethodName();
                 if (xmlLogRecord.getLevel().getName().equals(LogLevel.START.toString())) {
-                    switch (xmlLogRecord.getSourceMethodName()) {
-                        case StringConstants.LOG_START_SUITE_METHOD:
-                            testSuiteLogRecord = processStartTestSuiteLog(stack, logFolder, xmlLogRecord);
-                            break;
-                        case StringConstants.LOG_START_TEST_METHOD:
-                            processStartTestCaseLog(stack, xmlLogRecord);
-                            break;
-                        case StringConstants.LOG_START_KEYWORD_METHOD:
-                            processStartKeywordLog(stack, xmlLogRecord);
-                            break;
+                    if (StringConstants.LOG_START_SUITE_METHOD.equals(sourceMethodName)) {
+                        testSuiteLogRecord = processStartTestSuiteLog(stack, logFolder, xmlLogRecord);
+                    } else if (StringConstants.LOG_START_TEST_METHOD.equals(sourceMethodName)) {
+                        processStartTestCaseLog(stack, xmlLogRecord);
+                    } else if (StringConstants.LOG_START_KEYWORD_METHOD.equals(sourceMethodName)) {
+                        processStartKeywordLog(stack, xmlLogRecord);
                     }
                 } else if (xmlLogRecord.getLevel().getName().equals(LogLevel.END.toString())) {
-                    switch (xmlLogRecord.getSourceMethodName()) {
-                        case StringConstants.LOG_END_KEYWORD_METHOD:
-                        case StringConstants.LOG_END_TEST_METHOD:
-                        case StringConstants.LOG_END_SUITE_METHOD:
-                            processEndLog(stack, xmlLogRecord);
-                            break;
+                    if (StringConstants.LOG_END_KEYWORD_METHOD.equals(sourceMethodName)
+                            || StringConstants.LOG_END_TEST_METHOD.equals(sourceMethodName)
+                            || StringConstants.LOG_END_SUITE_METHOD.equals(sourceMethodName)) {
+                        processEndLog(stack, xmlLogRecord);
                     }
                 } else if (xmlLogRecord.getLevel().getName().equals(LogLevel.RUN_DATA.toString())) {
                     testSuiteLogRecord.addRunData(xmlLogRecord.getProperties());
@@ -282,8 +276,8 @@ public class ReportUtil {
         ILogRecord[] childRecords = logRecord.getChildRecords();
         if (childRecords != null && childRecords.length > 0) {
             ILogRecord lastLogRecord = childRecords[childRecords.length - 1];
-            logRecord.setEndTime(lastLogRecord.getEndTime() != 0 ? lastLogRecord.getEndTime() : lastLogRecord
-                    .getStartTime());
+            logRecord.setEndTime(lastLogRecord.getEndTime() != 0 ? lastLogRecord.getEndTime()
+                    : lastLogRecord.getStartTime());
         } else {
             logRecord.setEndTime(logRecord.getStartTime());
         }
@@ -351,10 +345,9 @@ public class ReportUtil {
     }
 
     private static void processStartTestCaseLog(Deque<Object> stack, XmlLogRecord xmlLogRecord) {
-        TestCaseLogRecord testCaseLogRecord =
-                new TestCaseLogRecord(xmlLogRecord.getProperties().containsKey(StringConstants.XML_LOG_NAME_PROPERTY)
-                        ? xmlLogRecord.getProperties().get(StringConstants.XML_LOG_NAME_PROPERTY)
-                        : getTestLogName(xmlLogRecord));
+        TestCaseLogRecord testCaseLogRecord = new TestCaseLogRecord(xmlLogRecord.getProperties().containsKey(
+                StringConstants.XML_LOG_NAME_PROPERTY) ? xmlLogRecord.getProperties().get(
+                StringConstants.XML_LOG_NAME_PROPERTY) : getTestLogName(xmlLogRecord));
         testCaseLogRecord.setStartTime(xmlLogRecord.getMillis());
         testCaseLogRecord.setId(xmlLogRecord.getProperties().containsKey(StringConstants.XML_LOG_ID_PROPERTY)
                 ? xmlLogRecord.getProperties().get(StringConstants.XML_LOG_ID_PROPERTY) : "");
@@ -363,9 +356,8 @@ public class ReportUtil {
         testCaseLogRecord.setDescription(xmlLogRecord.getProperties().containsKey(
                 StringConstants.XML_LOG_DESCRIPTION_PROPERTY) ? xmlLogRecord.getProperties().get(
                 StringConstants.XML_LOG_DESCRIPTION_PROPERTY) : "");
-        testCaseLogRecord.setOptional(xmlLogRecord.getProperties().containsKey(
-                StringConstants.XML_LOG_IS_OPTIONAL) ? Boolean.valueOf(xmlLogRecord.getProperties().get(
-                StringConstants.XML_LOG_IS_OPTIONAL)) : false);
+        testCaseLogRecord.setOptional(xmlLogRecord.getProperties().containsKey(StringConstants.XML_LOG_IS_OPTIONAL)
+                ? Boolean.valueOf(xmlLogRecord.getProperties().get(StringConstants.XML_LOG_IS_OPTIONAL)) : false);
         Object object = stack.peekLast();
         if (object instanceof TestSuiteLogRecord || object instanceof TestStepLogRecord) {
             ((ILogRecord) object).addChildRecord(testCaseLogRecord);

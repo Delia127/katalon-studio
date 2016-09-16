@@ -4,74 +4,73 @@ import com.kms.katalon.constants.GlobalStringConstants;
 
 public class StringConstants extends GlobalStringConstants {
     // NewTestObjectDialog
-    public static final String DIA_TITLE_TEST_OBJECT = "Test Object";
-    public static final String DIA_MSG_CREATE_NEW_TEST_OBJECT = "Create Test Object";
+    public static final String DIA_TITLE_TEST_OBJECT = ComposerObjectRepositoryMessageConstants.DIA_TITLE_TEST_OBJECT;
+    public static final String DIA_MSG_CREATE_NEW_TEST_OBJECT = ComposerObjectRepositoryMessageConstants.DIA_MSG_CREATE_NEW_TEST_OBJECT;
 
     // DeleteTestObjectHandler
     public static final String ERROR_TITLE = ERROR;
-    public static final String HAND_ERROR_MSG_UNABLE_TO_DEL_TEST_OBJ = "Unable to delete Test Object";
-    public static final String HAND_DELETE_OBJECT_TASK_NAME = "Deleting {0} ''{1}''...";
+    public static final String HAND_ERROR_MSG_UNABLE_TO_DEL_TEST_OBJ = ComposerObjectRepositoryMessageConstants.HAND_ERROR_MSG_UNABLE_TO_DEL_TEST_OBJ;
+    public static final String HAND_DELETE_OBJECT_TASK_NAME = ComposerObjectRepositoryMessageConstants.HAND_DELETE_OBJECT_TASK_NAME;
     
     // DeleteTestObjectFolderHandler
-    public static final String HAND_DELETE_OBJECT_FOLDER_TASK_NAME = "Deleting folder ''{0}''...";
-    public static final String HAND_DELETE_OBJECT_SUB_TASK_NAME = "Deleting test object ''{0}''...";
-    public static final String HAND_ERROR_MSG_UNABLE_TO_DEL_TEST_OBJ_FOLDER = "Unable to delete Test Object folder";
+    public static final String HAND_DELETE_OBJECT_FOLDER_TASK_NAME = ComposerObjectRepositoryMessageConstants.HAND_DELETE_OBJECT_FOLDER_TASK_NAME;
+    public static final String HAND_DELETE_OBJECT_SUB_TASK_NAME = ComposerObjectRepositoryMessageConstants.HAND_DELETE_OBJECT_SUB_TASK_NAME;
+    public static final String HAND_ERROR_MSG_UNABLE_TO_DEL_TEST_OBJ_FOLDER = ComposerObjectRepositoryMessageConstants.HAND_ERROR_MSG_UNABLE_TO_DEL_TEST_OBJ_FOLDER;
     
     // NewTestObjectHandler
-    public static final String HAND_NEW_TEST_OBJ = "New Test Object";
-    public static final String HAND_ERROR_MSG_UNABLE_TO_CREATE_TEST_OBJ = "Unable to create Test Object";
+    public static final String HAND_NEW_TEST_OBJ = ComposerObjectRepositoryMessageConstants.HAND_NEW_TEST_OBJ;
+    public static final String HAND_ERROR_MSG_UNABLE_TO_CREATE_TEST_OBJ = ComposerObjectRepositoryMessageConstants.HAND_ERROR_MSG_UNABLE_TO_CREATE_TEST_OBJ;
 
     // RenameTestObjectHandler
-    public static final String HAND_ERROR_MSG_UNABLE_TO_RENAME_TEST_OBJECT = "Unable to rename Test Object";
+    public static final String HAND_ERROR_MSG_UNABLE_TO_RENAME_TEST_OBJECT = ComposerObjectRepositoryMessageConstants.HAND_ERROR_MSG_UNABLE_TO_RENAME_TEST_OBJECT;
 
     // SaveTestObjectHandler
-    public static final String HAND_ERROR_MSG_UNABLE_TO_SAVE_TEST_OBJ = "Unable to save Test Object";
+    public static final String HAND_ERROR_MSG_UNABLE_TO_SAVE_TEST_OBJ = ComposerObjectRepositoryMessageConstants.HAND_ERROR_MSG_UNABLE_TO_SAVE_TEST_OBJ;
 
     // AddToObjectSpyMenuContribution
-    public static final String MENU_CONTEXT_ADD_TO_OBJECTSPY = "Add to object spy";
+    public static final String MENU_CONTEXT_ADD_TO_OBJECTSPY = ComposerObjectRepositoryMessageConstants.MENU_CONTEXT_ADD_TO_OBJECTSPY;
 
     // NewTestObjectPopupMenuContribution
-    public static final String MENU_CONTEXT_NEW_TEST_OBJ = "Test Object";
+    public static final String MENU_CONTEXT_NEW_TEST_OBJ = ComposerObjectRepositoryMessageConstants.MENU_CONTEXT_NEW_TEST_OBJ;
 
     // TestObjectPart
-    public static final String PA_CONFIRM_TITLE_FILE_CHANGED = "Test Object";
-    public static final String PA_CONFIRM_MSG_RELOAD_FILE = "The file ''{0}'' has been changed on the file system. Do you want to reload it?";
+    public static final String PA_CONFIRM_TITLE_FILE_CHANGED = ComposerObjectRepositoryMessageConstants.PA_CONFIRM_TITLE_FILE_CHANGED;
+    public static final String PA_CONFIRM_MSG_RELOAD_FILE = ComposerObjectRepositoryMessageConstants.PA_CONFIRM_MSG_RELOAD_FILE;
 
     // AddPropertyDialog
     public static final String VIEW_LBL_NAME = NAME;
-    public static final String VIEW_LBL_MATCH_COND = "Match condition";
+    public static final String VIEW_LBL_MATCH_COND = ComposerObjectRepositoryMessageConstants.VIEW_LBL_MATCH_COND;
     public static final String VIEW_LBL_VALUE = VALUE;
-    public static final String VIEW_LBL_ADD_PROPERTY = "Add property";
+    public static final String VIEW_LBL_ADD_PROPERTY = ComposerObjectRepositoryMessageConstants.VIEW_LBL_ADD_PROPERTY;
     public static final String WARN_TITLE = WARN;
-    public static final String VIEW_WARN_MSG_PROPERTY_CANNOT_BE_BLANK = "Property name can not be blank";
+    public static final String VIEW_WARN_MSG_PROPERTY_CANNOT_BE_BLANK = ComposerObjectRepositoryMessageConstants.VIEW_WARN_MSG_PROPERTY_CANNOT_BE_BLANK;
 
     // ObjectPropertyView
-    public static final String VIEW_TEST_OBJECT_BROWSE = "Object Repository Browser";
+    public static final String VIEW_TEST_OBJECT_BROWSE = ComposerObjectRepositoryMessageConstants.VIEW_TEST_OBJECT_BROWSE;
     public static final String VIEW_COL_NAME = NAME;
-    public static final String VIEW_COL_MATCH_COND = "Match Condition";
+    public static final String VIEW_COL_MATCH_COND = ComposerObjectRepositoryMessageConstants.VIEW_COL_MATCH_COND;
     public static final String VIEW_COL_VALUE = VALUE;
-    public static final String VIEW_COL_CHKBOX = "Detect object by?";
+    public static final String VIEW_COL_CHKBOX = ComposerObjectRepositoryMessageConstants.VIEW_COL_CHKBOX;
     public static final String VIEW_LBL_IMAGE = IMAGE;
-    public static final String VIEW_CHKBOX_LBL_USE_RELATIVE_PATH = "Use relative path for image";
+    public static final String VIEW_CHKBOX_LBL_USE_RELATIVE_PATH = ComposerObjectRepositoryMessageConstants.VIEW_CHKBOX_LBL_USE_RELATIVE_PATH;
     public static final String VIEW_BTN_BROWSE = BROWSE;
-    public static final String VIEW_BTN_TIP_BROWSE = "Browse to select image file";
+    public static final String VIEW_BTN_TIP_BROWSE = ComposerObjectRepositoryMessageConstants.VIEW_BTN_TIP_BROWSE;
     public static final String VIEW_LBL_ADD = ADD;
     public static final String VIEW_LBL_DELETE = DELETE;
     public static final String VIEW_LBL_CLEAR = CLEAR;
-    public static final String VIEW_LBL_HIGHLIGHT = "Highlight";
-    public static final String VIEW_ERROR_MSG_FAILED_TO_LOAD_OBJ_REPOSITORY = "Failed to load Object Repository";
-    public static final String VIEW_ERROR_MSG_UNABLE_TO_SAVE_TEST_OBJ = "Unable to save Test Object";
-    public static final String VIEW_ERROR_REASON_OBJ_EXISTED = "Object ''{0}'' has already existed";
-    public static final String VIEW_ERROR_REASON_OBJ_PROP_EXISTED = "Duplicated test object property name ''{0}''";
-    public static final String VIEW_LBL_USE_IFRAME = "Use below object as parent iframe of this object";
-    public static final String VIEW_WARN_FILE_NOT_FOUND = "File not found. Please choose another file.";
-    public static final String VIEW_LBL_SETTINGS = "Settings";
-    public static final String VIEW_LBL_OBJ_PROPERTIES = "Object's Properties";
-    public static final String VIEW_TITLE_TEST_OBJ_PROPERTIES = "Test Object Properties";
+    public static final String VIEW_LBL_HIGHLIGHT = ComposerObjectRepositoryMessageConstants.VIEW_LBL_HIGHLIGHT;
+    public static final String VIEW_ERROR_MSG_FAILED_TO_LOAD_OBJ_REPOSITORY = ComposerObjectRepositoryMessageConstants.VIEW_ERROR_MSG_FAILED_TO_LOAD_OBJ_REPOSITORY;
+    public static final String VIEW_ERROR_MSG_UNABLE_TO_SAVE_TEST_OBJ = ComposerObjectRepositoryMessageConstants.VIEW_ERROR_MSG_UNABLE_TO_SAVE_TEST_OBJ;
+    public static final String VIEW_ERROR_REASON_OBJ_EXISTED = ComposerObjectRepositoryMessageConstants.VIEW_ERROR_REASON_OBJ_EXISTED;
+    public static final String VIEW_ERROR_REASON_OBJ_PROP_EXISTED = ComposerObjectRepositoryMessageConstants.VIEW_ERROR_REASON_OBJ_PROP_EXISTED;
+    public static final String VIEW_LBL_USE_IFRAME = ComposerObjectRepositoryMessageConstants.VIEW_LBL_USE_IFRAME;
+    public static final String VIEW_WARN_FILE_NOT_FOUND = ComposerObjectRepositoryMessageConstants.VIEW_WARN_FILE_NOT_FOUND;
+    public static final String VIEW_LBL_SETTINGS = ComposerObjectRepositoryMessageConstants.VIEW_LBL_SETTINGS;
+    public static final String VIEW_LBL_OBJ_PROPERTIES = ComposerObjectRepositoryMessageConstants.VIEW_LBL_OBJ_PROPERTIES;
+    public static final String VIEW_TITLE_TEST_OBJ_PROPERTIES = ComposerObjectRepositoryMessageConstants.VIEW_TITLE_TEST_OBJ_PROPERTIES;
 
     // TestObjectReferencesDialog
-    public static final String DIA_MSG_HEADER_TEST_OBJECT_REFERENCES = "Test object ''{0}'' has been referred by some test "
-            + "objects listed below.\nDo you want to delete all these references?";
-    public static final String DIA_FIELD_TEST_OBJECT_ID = "Test Object ID";
-    public static final String DIA_TITLE_TEST_OBJECT_REFERENCES = "Test Object's References";
+    public static final String DIA_MSG_HEADER_TEST_OBJECT_REFERENCES = ComposerObjectRepositoryMessageConstants.DIA_MSG_HEADER_TEST_OBJECT_REFERENCES;
+    public static final String DIA_FIELD_TEST_OBJECT_ID = ComposerObjectRepositoryMessageConstants.DIA_FIELD_TEST_OBJECT_ID;
+    public static final String DIA_TITLE_TEST_OBJECT_REFERENCES = ComposerObjectRepositoryMessageConstants.DIA_TITLE_TEST_OBJECT_REFERENCES;
 }

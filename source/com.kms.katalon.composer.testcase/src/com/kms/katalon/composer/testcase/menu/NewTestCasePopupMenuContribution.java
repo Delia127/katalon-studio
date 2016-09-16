@@ -22,7 +22,8 @@ import com.kms.katalon.constants.helper.ConstantsHelper;
 @SuppressWarnings("restriction")
 public class NewTestCasePopupMenuContribution {
 	private static final String NEW_TESTCASE_POPUP_MENUITEM_LABEL = StringConstants.MENU_CONTEXT_TEST_CASE;
-	private static final String NEW_TESTCASE_COMMAND_ID = StringConstants.COMMAND_ID_ADD_TEST_CASE;
+
+	private static final String NEW_TESTCASE_COMMAND_ID = "com.kms.katalon.composer.testcase.command.add";
 	
 	@Inject
 	private ECommandService commandService;

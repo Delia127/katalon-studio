@@ -1,0 +1,59 @@
+package com.kms.katalon.composer.testsuite.collection.constant;
+
+import org.eclipse.osgi.util.NLS;
+
+public class ComposerTestsuiteCollectionMessageConstants extends NLS {
+    private static final String BUNDLE_NAME = "com.kms.katalon.composer.testsuite.collection.constant.composerTestsuiteCollectionMessages";
+
+    public static String PA_ACTION_EXECUTE_TEST_SUITE_COLLECTION;
+
+    public static String PA_TABLE_COLUMN_RUN_WITH;
+
+    public static String PA_MSG_UNABLE_TO_UPDATE_TEST_SUITE_COLLECTION;
+
+    public static String DIA_TITLE_TEST_SUITE_BROWSER;
+
+    public static String LS_MSG_UNABLE_TO_ADD_TEST_SUITE;
+
+    public static String HDL_MSG_UNABLE_TO_RENAME_TEST_SUITE_COLLECTION;
+
+    public static String HDL_NEW_TEST_SUITE_COLLECTION_NAME;
+
+    public static String HDL_MSG_UNABLE_TO_CREATE_TEST_SUITE_COLLECTION;
+
+    public static String DIA_TITLE_RUN_CONFIG_SELECTION;
+
+    public static String DIA_TITLE_TEST_COLLECTION_SUITE_PROPERTIES;
+
+    public static String PA_LBL_LAST_UPDATED;
+
+    public static String PA_LBL_CREATED_DATE;
+
+    public static String HDL_MSG_UNABLE_TO_UPDATE_TEST_SUITE_COLLECTION_PROPERTIES;
+
+    public static String DIA_TITLE_NEW_TEST_SUITE_COLLECTION;
+
+    public static String DIA_MSG_NEW_TEST_SUITE_COLLECTION;
+
+    public static String JOB_TITLE_TEST_SUITE_COLLECTION_BUILDER;
+
+    public static String JOB_TASK_BUILDING_TEST_SUITE_COLLECTION;
+
+    public static String JOB_TASK_BUILDING_LAUNCHER;
+
+    public static String JOB_MSG_EMPTY_TEST_SUITE;
+
+    public static String JOB_MSG_UNABLE_TO_EXECUTE_TEST_SUITE;
+
+    public static String HAND_JOB_DELETING_ENTITY;
+
+    public static String HAND_JOB_DELETING_FOLDER;
+
+    static {
+        // initialize resource bundle
+        NLS.initializeMessages(BUNDLE_NAME, ComposerTestsuiteCollectionMessageConstants.class);
+    }
+
+    private ComposerTestsuiteCollectionMessageConstants() {
+    }
+}

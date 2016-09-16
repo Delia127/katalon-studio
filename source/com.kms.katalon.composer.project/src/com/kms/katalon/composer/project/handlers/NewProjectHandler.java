@@ -28,7 +28,8 @@ import com.kms.katalon.execution.launcher.manager.LauncherManager;
 
 @SuppressWarnings("restriction")
 public class NewProjectHandler {
-
+    public static final String TEMPL_CUSTOM_KW_PKG_REL_PATH = "Keywords/com/example";
+    
     @Inject
     private IEventBroker eventBroker;
 
@@ -78,7 +79,7 @@ public class NewProjectHandler {
             //no need to create new to improve performance
             if(isTemplateSelected){
                 ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-                PackageTreeEntity pack = TreeEntityUtil.getPackageTreeEntity(StringConstants.TEMPL_CUSTOM_KW_PKG_REL_PATH, currentProject);
+                PackageTreeEntity pack = TreeEntityUtil.getPackageTreeEntity(TEMPL_CUSTOM_KW_PKG_REL_PATH, currentProject);
                 eventBroker.post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, pack);                 
             }
         } catch (FilePathTooLongException ex) {

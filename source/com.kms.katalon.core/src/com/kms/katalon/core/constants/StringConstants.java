@@ -32,170 +32,149 @@ public class StringConstants {
 
     public static final String DF_LOCAL_HOST_ADDRESS = "127.0.0.1";
 
-    // LogLevel
-    public static final String LOG_LVL_PASSED = "PASSED";
-
-    public static final String LOG_LVL_ERROR = "ERROR";
-
-    public static final String LOG_LVL_INFO = "INFO";
-
-    public static final String LOG_LVL_WARNING = "WARNING";
-
-    public static final String LOG_LVL_FAILED = "FAILED";
-
-    public static final String LOG_LVL_ABORTED = "ABORTED";
-
-    public static final String LOG_LVL_START = "START";
-
-    public static final String LOG_LVL_END = "END";
-
-    public static final String LOG_LVL_INCOMPLETE = "INCOMPLETE";
-
-    public static final String LOG_LVL_RUN_DATA = "RUN_DATA";
-
     // TestCaseMain
-    public static final String MAIN_LOG_ERROR_UNKNOWN_PROP_OF_TEST_CASE = "System doesn''t know property: {0} of Test Case: {1}";
+    public static final String MAIN_LOG_ERROR_UNKNOWN_PROP_OF_TEST_CASE = CoreMessageConstants.MAIN_LOG_ERROR_UNKNOWN_PROP_OF_TEST_CASE;
 
-    public static final String MAIN_LOG_PASSED_METHOD_COMPLETED = "Method ''{0}'' complete successfully";
+    public static final String MAIN_LOG_PASSED_METHOD_COMPLETED = CoreMessageConstants.MAIN_LOG_PASSED_METHOD_COMPLETED;
 
-    public static final String MAIN_LOG_WARNING_ERROR_OCCURRED_WHEN_RUN_METHOD = "Error occurred when try to run method ''{0}'' (Root cause: {1} - {2})";
+    public static final String MAIN_LOG_WARNING_ERROR_OCCURRED_WHEN_RUN_METHOD = CoreMessageConstants.MAIN_LOG_WARNING_ERROR_OCCURRED_WHEN_RUN_METHOD;
 
-    public static final String MAIN_MSG_START_RUNNING_SETUP_METHODS_FOR_TC = "Start running set up methods for Test Case";
+    public static final String MAIN_MSG_START_RUNNING_SETUP_METHODS_FOR_TC = CoreMessageConstants.MAIN_MSG_START_RUNNING_SETUP_METHODS_FOR_TC;
 
-    public static final String MAIN_MSG_START_RUNNING_TEAR_DOWN_METHODS_FOR_PASSED_TC = "Start running tear down methods for passed Test Case";
+    public static final String MAIN_MSG_START_RUNNING_TEAR_DOWN_METHODS_FOR_PASSED_TC = CoreMessageConstants.MAIN_MSG_START_RUNNING_TEAR_DOWN_METHODS_FOR_PASSED_TC;
 
-    public static final String MAIN_MSG_START_RUNNING_TEAR_DOWN_METHODS_FOR_TC = "Start running tear down methods for Test Case";
+    public static final String MAIN_MSG_START_RUNNING_TEAR_DOWN_METHODS_FOR_TC = CoreMessageConstants.MAIN_MSG_START_RUNNING_TEAR_DOWN_METHODS_FOR_TC;
 
-    public static final String MAIN_MSG_START_RUNNING_TEAR_DOWN_METHODS_FOR_FAILED_TC = "Start running tear down methods for failed Test Case";
+    public static final String MAIN_MSG_START_RUNNING_TEAR_DOWN_METHODS_FOR_FAILED_TC = CoreMessageConstants.MAIN_MSG_START_RUNNING_TEAR_DOWN_METHODS_FOR_FAILED_TC;
 
-    public static final String MAIN_MSG_START_RUNNING_TEAR_DOWN_METHODS_FOR_ERROR_TC = "Start running tear down methods for error Test Case";
+    public static final String MAIN_MSG_START_RUNNING_TEAR_DOWN_METHODS_FOR_ERROR_TC = CoreMessageConstants.MAIN_MSG_START_RUNNING_TEAR_DOWN_METHODS_FOR_ERROR_TC;
 
-    public static final String MAIN_LOG_MSG_FAILED_BECAUSE_OF = "{0} FAILED because (of) {1}";
+    public static final String MAIN_LOG_MSG_FAILED_BECAUSE_OF = CoreMessageConstants.MAIN_LOG_MSG_FAILED_BECAUSE_OF;
 
-    public static final String MAIN_LOG_MSG_ERROR_BECAUSE_OF = "{0} has ERROR(s) because (of) {1}";
+    public static final String MAIN_LOG_MSG_ERROR_BECAUSE_OF = CoreMessageConstants.MAIN_LOG_MSG_ERROR_BECAUSE_OF;
 
-    public static final String MAIN_LOG_INFO_START_EVALUATE_VARIABLE = "Evaluating variables for test case";
+    public static final String MAIN_LOG_INFO_START_EVALUATE_VARIABLE = CoreMessageConstants.MAIN_LOG_INFO_START_EVALUATE_VARIABLE;
 
-    public static final String MAIN_LOG_INFO_VARIABLE_NAME_X_IS_SET_TO_Y = "Variable ''{0}'' is set to {1}";
+    public static final String MAIN_LOG_INFO_VARIABLE_NAME_X_IS_SET_TO_Y = CoreMessageConstants.MAIN_LOG_INFO_VARIABLE_NAME_X_IS_SET_TO_Y;
 
-    public static final String MAIN_LOG_INFO_VARIABLE_NAME_X_IS_SET_TO_Y_AS_DEFAULT = "Variable ''{0}'' is set to {1} as default";
+    public static final String MAIN_LOG_INFO_VARIABLE_NAME_X_IS_SET_TO_Y_AS_DEFAULT = CoreMessageConstants.MAIN_LOG_INFO_VARIABLE_NAME_X_IS_SET_TO_Y_AS_DEFAULT;
 
-    public static final String MAIN_LOG_MSG_SET_TEST_VARIABLE_ERROR_BECAUSE_OF = "Unable to set variable ''{0}'' for test case because (of) {1}";
+    public static final String MAIN_LOG_MSG_SET_TEST_VARIABLE_ERROR_BECAUSE_OF = CoreMessageConstants.MAIN_LOG_MSG_SET_TEST_VARIABLE_ERROR_BECAUSE_OF;
 
     // TestData
-    public static final String TD_ROW_INDEX_X_FOR_TEST_DATA_Y_INVALID = "Invalid row index {0} for test data ''{1}''. Row index must be between 1..{2}";
+    public static final String TD_ROW_INDEX_X_FOR_TEST_DATA_Y_INVALID = CoreMessageConstants.TD_ROW_INDEX_X_FOR_TEST_DATA_Y_INVALID;
 
-    public static final String TD_COLUMN_INDEX_X_FOR_TEST_DATA_Y_INVALID = "Invalid column index {0} for test data ''{1}''. Column index must be between 1..{2}";
+    public static final String TD_COLUMN_INDEX_X_FOR_TEST_DATA_Y_INVALID = CoreMessageConstants.TD_COLUMN_INDEX_X_FOR_TEST_DATA_Y_INVALID;
 
-    public static final String TD_COLUMN_NAME_X_FOR_TEST_DATA_Y_INVALID = "Invalid column name ''{0}'' for test data ''{1}''. Possible values are ''{2}''";
+    public static final String TD_COLUMN_NAME_X_FOR_TEST_DATA_Y_INVALID = CoreMessageConstants.TD_COLUMN_NAME_X_FOR_TEST_DATA_Y_INVALID;
 
     // AppPOI
-    public static final String UTIL_EXC_FILE_IS_UNSUPPORTED = "File is unsupported: {0}";
+    public static final String UTIL_EXC_FILE_IS_UNSUPPORTED = CoreMessageConstants.UTIL_EXC_FILE_IS_UNSUPPORTED;
 
-    public static final String UTIL_EXC_FILE_IS_NOT_HTML_FORMAT = "File is not in HTML format.";
+    public static final String UTIL_EXC_FILE_IS_NOT_HTML_FORMAT = CoreMessageConstants.UTIL_EXC_FILE_IS_NOT_HTML_FORMAT;
 
-    public static final String UTIL_EXC_FILE_NOT_FOUND = "File: {0} not found.";
+    public static final String UTIL_EXC_FILE_NOT_FOUND = CoreMessageConstants.UTIL_EXC_FILE_NOT_FOUND;
 
     // ShettPOI
-    public static final String EXCEL_INVALID_ROW_NUMBER = "Invalid row index: {0}. Posible index cannot be greater than {1}.";
+    public static final String EXCEL_INVALID_ROW_NUMBER = CoreMessageConstants.EXCEL_INVALID_ROW_NUMBER;
 
-    public static final String EXCEL_INVALID_COL_NUMBER = "Invalid column index: {0}. Posible index cannot be greater than {1}.";
+    public static final String EXCEL_INVALID_COL_NUMBER = CoreMessageConstants.EXCEL_INVALID_COL_NUMBER;
 
     // ObjectRepository
-    public static final String TO_LOG_WARNING_TEST_OBJ_NULL = "Test object id is null";
+    public static final String TO_LOG_WARNING_TEST_OBJ_NULL = CoreMessageConstants.TO_LOG_WARNING_TEST_OBJ_NULL;
 
-    public static final String TO_LOG_INFO_FINDING_TEST_OBJ_W_ID = "Finding Test Object with id ''{0}''";
+    public static final String TO_LOG_INFO_FINDING_TEST_OBJ_W_ID = CoreMessageConstants.TO_LOG_INFO_FINDING_TEST_OBJ_W_ID;
 
-    public static final String TO_LOG_WARNING_TEST_OBJ_DOES_NOT_EXIST = "Test object with id ''{0}'' does not exist";
+    public static final String TO_LOG_WARNING_TEST_OBJ_DOES_NOT_EXIST = CoreMessageConstants.TO_LOG_WARNING_TEST_OBJ_DOES_NOT_EXIST;
 
-    public static final String TO_LOG_WARNING_CANNOT_GET_TEST_OBJECT_X_BECAUSE_OF_Y = "Cannot find test object with id ''{0}'' because of ''{1}''";
+    public static final String TO_LOG_WARNING_CANNOT_GET_TEST_OBJECT_X_BECAUSE_OF_Y = CoreMessageConstants.TO_LOG_WARNING_CANNOT_GET_TEST_OBJECT_X_BECAUSE_OF_Y;
 
     // BuiltinKeywords
-    public static final String KW_LOG_INFO_MATCHING_ACTUAL_TXT_W_EXPECTED_TXT = "Matching actual text ''{0}'' with expected text ''{1}''{2}";
+    public static final String KW_LOG_INFO_MATCHING_ACTUAL_TXT_W_EXPECTED_TXT = CoreMessageConstants.KW_LOG_INFO_MATCHING_ACTUAL_TXT_W_EXPECTED_TXT;
 
-    public static final String KW_LOG_PASSED_ACTUAL_TXT_MATCHED_EXPECTED_TXT = "Actual text ''{0}'' and expected text ''{1}'' are matched {2}";
+    public static final String KW_LOG_PASSED_ACTUAL_TXT_MATCHED_EXPECTED_TXT = CoreMessageConstants.KW_LOG_PASSED_ACTUAL_TXT_MATCHED_EXPECTED_TXT;
 
-    public static final String KW_MSG_ACTUAL_TXT_NOT_MATCHED_EXPECTED_TXT = "Actual text ''{0}'' and expected text ''{1}'' are not matched{2}";
+    public static final String KW_MSG_ACTUAL_TXT_NOT_MATCHED_EXPECTED_TXT = CoreMessageConstants.KW_MSG_ACTUAL_TXT_NOT_MATCHED_EXPECTED_TXT;
 
-    public static final String KW_MSG_CANNOT_VERIFY_MATCHING_BETWEEN_TXTS = "Unable to verify match between actual text ''{0}'' and expected text ''{1}''{2}";
+    public static final String KW_MSG_CANNOT_VERIFY_MATCHING_BETWEEN_TXTS = CoreMessageConstants.KW_MSG_CANNOT_VERIFY_MATCHING_BETWEEN_TXTS;
 
-    public static final String KW_LOG_INFO_MATCHING_ACTUAL_TXT_W_EXPECTED_VAL = "Matching actual text ''{0}'' with expected value ''{1}''{2}";
+    public static final String KW_LOG_INFO_MATCHING_ACTUAL_TXT_W_EXPECTED_VAL = CoreMessageConstants.KW_LOG_INFO_MATCHING_ACTUAL_TXT_W_EXPECTED_VAL;
 
-    public static final String KW_MSG_TXTS_MATCHED_BUT_EXPECTED_UNMATCHED = "Actual text ''{0}'' and expected text ''{1}'' are matched {2}, but expected not to be matched";
+    public static final String KW_MSG_TXTS_MATCHED_BUT_EXPECTED_UNMATCHED = CoreMessageConstants.KW_MSG_TXTS_MATCHED_BUT_EXPECTED_UNMATCHED;
 
-    public static final String KW_LOG_PASSED_TXTS_UNMATCHED = "Actual text ''{0}'' and expected text ''{1}'' are not matched {2}";
+    public static final String KW_LOG_PASSED_TXTS_UNMATCHED = CoreMessageConstants.KW_LOG_PASSED_TXTS_UNMATCHED;
 
-    public static final String KW_MSG_CANNOT_VERIFY_TXTS_ARE_UNMATCHED = "Unable to verify not match between actual text ''{0}'' and expected text ''{1}'' {2}";
+    public static final String KW_MSG_CANNOT_VERIFY_TXTS_ARE_UNMATCHED = CoreMessageConstants.KW_MSG_CANNOT_VERIFY_TXTS_ARE_UNMATCHED;
 
-    public static final String KW_MSG_OBJECTS_ARE_NOT_EQUAL = "Actual object ''{0}'' and expected object ''{1}'' are not equal";
+    public static final String KW_MSG_OBJECTS_ARE_NOT_EQUAL = CoreMessageConstants.KW_MSG_OBJECTS_ARE_NOT_EQUAL;
 
-    public static final String KW_LOG_PASSED_OBJECTS_ARE_EQUAL = "Actual object ''{0}'' and expected object ''{1}'' are equal";
+    public static final String KW_LOG_PASSED_OBJECTS_ARE_EQUAL = CoreMessageConstants.KW_LOG_PASSED_OBJECTS_ARE_EQUAL;
 
-    public static final String KW_MSG_CANNOT_VERIFY_OBJECTS_ARE_EQUAL = "Unable to verify equal between actual object ''{0}'' and expected object ''{1}''";
+    public static final String KW_MSG_CANNOT_VERIFY_OBJECTS_ARE_EQUAL = CoreMessageConstants.KW_MSG_CANNOT_VERIFY_OBJECTS_ARE_EQUAL;
 
-    public static final String KW_MSG_OBJECTS_ARE_EQUAL = "Actual object ''{0}'' and expected object ''{1}'' are equal";
+    public static final String KW_MSG_OBJECTS_ARE_EQUAL = CoreMessageConstants.KW_MSG_OBJECTS_ARE_EQUAL;
 
-    public static final String KW_LOG_PASSED_OBJECTS_ARE_NOT_EQUAL = "Actual object ''{0}'' and expected object ''{1}'' are not equal";
+    public static final String KW_LOG_PASSED_OBJECTS_ARE_NOT_EQUAL = CoreMessageConstants.KW_LOG_PASSED_OBJECTS_ARE_NOT_EQUAL;
 
-    public static final String KW_MSG_CANNOT_VERIFY_OBJECTS_ARE_NOT_EQUAL = "Unable to verify not equal between actual object ''{0}'' and expected object ''{1}''";
+    public static final String KW_MSG_CANNOT_VERIFY_OBJECTS_ARE_NOT_EQUAL = CoreMessageConstants.KW_MSG_CANNOT_VERIFY_OBJECTS_ARE_NOT_EQUAL;
 
-    public static final String KW_LOG_PASSED_ACTUAL_NUM_IS_GREATER_THAN_EXPECTED_NUM = "Actual number ''{0}'' is greater than expected number ''{1}''";
+    public static final String KW_LOG_PASSED_ACTUAL_NUM_IS_GREATER_THAN_EXPECTED_NUM = CoreMessageConstants.KW_LOG_PASSED_ACTUAL_NUM_IS_GREATER_THAN_EXPECTED_NUM;
 
-    public static final String KW_MSG_ACTUAL_NUM_IS_NOT_GREATER_THAN_EXPECTED_NUM = "Actual number ''{0}'' is not greater than expected number ''{1}''";
+    public static final String KW_MSG_ACTUAL_NUM_IS_NOT_GREATER_THAN_EXPECTED_NUM = CoreMessageConstants.KW_MSG_ACTUAL_NUM_IS_NOT_GREATER_THAN_EXPECTED_NUM;
 
-    public static final String KW_MSG_CANNOT_VERIFY_WHICH_NUM_IS_GREATER = "Unable to verify greater between actual number ''{0}'' and expected number ''{1}'''";
+    public static final String KW_MSG_CANNOT_VERIFY_WHICH_NUM_IS_GREATER = CoreMessageConstants.KW_MSG_CANNOT_VERIFY_WHICH_NUM_IS_GREATER;
 
-    public static final String KW_LOG_PASSED_ACTUAL_NUM_IS_GT_OR_EQ_TO_EXPECTED_NUM = "Actual number ''{0}'' is greater than or equal to expected number ''{1}''";
+    public static final String KW_LOG_PASSED_ACTUAL_NUM_IS_GT_OR_EQ_TO_EXPECTED_NUM = CoreMessageConstants.KW_LOG_PASSED_ACTUAL_NUM_IS_GT_OR_EQ_TO_EXPECTED_NUM;
 
-    public static final String KW_MSG_ACTUAL_NUM_IS_NOT_GT_OR_EQ_TO_EXPECTED_NUM = "Actual number ''{0}'' is NOT greater than or equal to expected number ''{1}''";
+    public static final String KW_MSG_ACTUAL_NUM_IS_NOT_GT_OR_EQ_TO_EXPECTED_NUM = CoreMessageConstants.KW_MSG_ACTUAL_NUM_IS_NOT_GT_OR_EQ_TO_EXPECTED_NUM;
 
-    public static final String KW_MSG_CANNOT_VERIFY_NUMS_ARE_GT_OR_EQ = "Unable to verify actual number ''{0}'' greater than or equal with expected number ''{1}''";
+    public static final String KW_MSG_CANNOT_VERIFY_NUMS_ARE_GT_OR_EQ = CoreMessageConstants.KW_MSG_CANNOT_VERIFY_NUMS_ARE_GT_OR_EQ;
 
-    public static final String KW_LOG_PASSED_ACTUAL_NUM_IS_LT_EXPECTED_NUM = "Actual number ''{0}'' is less than expected number ''{1}''";
+    public static final String KW_LOG_PASSED_ACTUAL_NUM_IS_LT_EXPECTED_NUM = CoreMessageConstants.KW_LOG_PASSED_ACTUAL_NUM_IS_LT_EXPECTED_NUM;
 
-    public static final String KW_MSG_ACTUAL_NUM_IS_NOT_LT_EXPECTED_NUM = "Actual number ''{0}'' is NOT less than expected number ''{1}''";
+    public static final String KW_MSG_ACTUAL_NUM_IS_NOT_LT_EXPECTED_NUM = CoreMessageConstants.KW_MSG_ACTUAL_NUM_IS_NOT_LT_EXPECTED_NUM;
 
-    public static final String KW_MSG_CANNOT_VERIFY_WHICH_NUM_IS_LT = "Unable to verify actual number ''{0}'' less than expected number ''{1}''";
+    public static final String KW_MSG_CANNOT_VERIFY_WHICH_NUM_IS_LT = CoreMessageConstants.KW_MSG_CANNOT_VERIFY_WHICH_NUM_IS_LT;
 
-    public static final String KW_LOG_PASSED_ACTUAL_NUM_IS_LT_OR_EQ_TO_EXPECTED_NUM = "Actual number ''{0}'' is less than or equal to expected number ''{1}''";
+    public static final String KW_LOG_PASSED_ACTUAL_NUM_IS_LT_OR_EQ_TO_EXPECTED_NUM = CoreMessageConstants.KW_LOG_PASSED_ACTUAL_NUM_IS_LT_OR_EQ_TO_EXPECTED_NUM;
 
-    public static final String KW_MSG_ACTUAL_NUM_IS_NOT_LT_OR_EQ_EXPECTED_NUM = "Actual number ''{0}'' is NOT less than or equal to expected number ''{1}''";
+    public static final String KW_MSG_ACTUAL_NUM_IS_NOT_LT_OR_EQ_EXPECTED_NUM = CoreMessageConstants.KW_MSG_ACTUAL_NUM_IS_NOT_LT_OR_EQ_EXPECTED_NUM;
 
-    public static final String KW_MSG_CANNOT_VERIFY_WHICH_NUM_IS_LT_OR_EQ_TO = "Unable to verify actual number ''{0}'' less than or equal to expected number ''{1}''";
+    public static final String KW_MSG_CANNOT_VERIFY_WHICH_NUM_IS_LT_OR_EQ_TO = CoreMessageConstants.KW_MSG_CANNOT_VERIFY_WHICH_NUM_IS_LT_OR_EQ_TO;
 
-    public static final String KW_LOG_INFO_CHECING_STRINGS_PARAM = "Checking strings parameter";
+    public static final String KW_LOG_INFO_CHECING_STRINGS_PARAM = CoreMessageConstants.KW_LOG_INFO_CHECING_STRINGS_PARAM;
 
-    public static final String KW_EXC_STRS_PARAM_IS_NULL = "Strings parameter is null";
+    public static final String KW_EXC_STRS_PARAM_IS_NULL = CoreMessageConstants.KW_EXC_STRS_PARAM_IS_NULL;
 
-    public static final String KW_LOG_INFO_CONCAT_STR_ARRAY = "Concatenating string array: ''{0}''";
+    public static final String KW_LOG_INFO_CONCAT_STR_ARRAY = CoreMessageConstants.KW_LOG_INFO_CONCAT_STR_ARRAY;
 
-    public static final String KW_LOG_PASSED_CONCAT_STR_ARRAY = "Concatenated string array: ''{0}'' into ''{1}''";
+    public static final String KW_LOG_PASSED_CONCAT_STR_ARRAY = CoreMessageConstants.KW_LOG_PASSED_CONCAT_STR_ARRAY;
 
-    public static final String KW_CANNOT_CONCAT_STR_ARRAY = "Unable to concatenate string array: ''{0}''";
+    public static final String KW_CANNOT_CONCAT_STR_ARRAY = CoreMessageConstants.KW_CANNOT_CONCAT_STR_ARRAY;
 
-    public static final String KW_CANNOT_CONCAT = "Unable to concatenate";
+    public static final String KW_CANNOT_CONCAT = CoreMessageConstants.KW_CANNOT_CONCAT;
 
-    public static final String KW_LOG_INFO_CHECKING_CALLED_TC = "Checking called Test Case";
+    public static final String KW_LOG_INFO_CHECKING_CALLED_TC = CoreMessageConstants.KW_LOG_INFO_CHECKING_CALLED_TC;
 
-    public static final String KW_EXC_CALLED_TC_IS_NULL = "Called Test Case is null";
+    public static final String KW_EXC_CALLED_TC_IS_NULL = CoreMessageConstants.KW_EXC_CALLED_TC_IS_NULL;
 
-    public static final String KW_LOG_INFO_STARTING_TO_CALL_TC = "Starting to call Test Case ''{0}''";
+    public static final String KW_LOG_INFO_STARTING_TO_CALL_TC = CoreMessageConstants.KW_LOG_INFO_STARTING_TO_CALL_TC;
 
-    public static final String KW_MSG_CALL_TC_FAILED = "Call Test Case ''{0}'' failed";
+    public static final String KW_MSG_CALL_TC_FAILED = CoreMessageConstants.KW_MSG_CALL_TC_FAILED;
 
-    public static final String KW_MSG_CALL_TC_X_FAILED_BECAUSE_OF_ERROR = "Call Test Case ''{0}'' failed because of error(s)";
+    public static final String KW_MSG_CALL_TC_X_FAILED_BECAUSE_OF_ERROR = CoreMessageConstants.KW_MSG_CALL_TC_X_FAILED_BECAUSE_OF_ERROR;
 
-    public static final String KW_LOG_PASSED_CALL_TC_X_SUCCESSFULLY = "Call Test Case ''{0}'' sucessfully";
+    public static final String KW_LOG_PASSED_CALL_TC_X_SUCCESSFULLY = CoreMessageConstants.KW_LOG_PASSED_CALL_TC_X_SUCCESSFULLY;
 
-    public static final String KW_MSG_CANNOT_CALL_TC_W_ID_X = "Unable to call Test Case with id ''{0}''";
+    public static final String KW_MSG_CANNOT_CALL_TC_W_ID_X = CoreMessageConstants.KW_MSG_CANNOT_CALL_TC_W_ID_X;
 
-    public static final String KW_MSG_CANNOT_CALL_TC = "Unable to call Test Case";
+    public static final String KW_MSG_CANNOT_CALL_TC = CoreMessageConstants.KW_MSG_CANNOT_CALL_TC;
 
-    public static final String KW_LOG_INFO_DELAYING_BROWSER_IN_SEC = "Delaying browser in {0} second(s)";
+    public static final String KW_LOG_INFO_DELAYING_BROWSER_IN_SEC = CoreMessageConstants.KW_LOG_INFO_DELAYING_BROWSER_IN_SEC;
 
-    public static final String KW_LOG_PASSED_DELAYED_SEC = "Delayed {0} second(s)";
+    public static final String KW_LOG_PASSED_DELAYED_SEC = CoreMessageConstants.KW_LOG_PASSED_DELAYED_SEC;
 
-    public static final String KW_MSG_CANNOT_DELAY_BROWSER = "Unable to delay browser";
+    public static final String KW_MSG_CANNOT_DELAY_BROWSER = CoreMessageConstants.KW_MSG_CANNOT_DELAY_BROWSER;
 
     public static final String KW_CATEGORIZE_NUMBER = "Number";
 
@@ -203,64 +182,64 @@ public class StringConstants {
 
     public static final String KW_CATEGORIZE_UTILITIES = "Utilities";
 
-    public static final String KW_MSG_VERIFY_CHECKPOINT = "Verify Checkpoint";
+    public static final String KW_MSG_VERIFY_CHECKPOINT = CoreMessageConstants.KW_MSG_VERIFY_CHECKPOINT;
 
-    public static final String KW_MSG_CHECKPOINT_IS_NULL = "Checkpoint is null";
+    public static final String KW_MSG_CHECKPOINT_IS_NULL = CoreMessageConstants.KW_MSG_CHECKPOINT_IS_NULL;
 
-    public static final String KW_MSG_CHECKPOINT_ID_X = "Checkpoint ID: ''{0}''";
+    public static final String KW_MSG_CHECKPOINT_ID_X = CoreMessageConstants.KW_MSG_CHECKPOINT_ID_X;
 
-    public static final String KW_MSG_NO_SNAPSHOT = "No Checkpoint snapshot was taken";
+    public static final String KW_MSG_NO_SNAPSHOT = CoreMessageConstants.KW_MSG_NO_SNAPSHOT;
 
-    public static final String KW_MSG_CHECKPOINT_DATA_IS_NULL = "Checkpoint data is null";
+    public static final String KW_MSG_CHECKPOINT_DATA_IS_NULL = CoreMessageConstants.KW_MSG_CHECKPOINT_DATA_IS_NULL;
 
-    public static final String KW_MSG_CHECKPOINT_SRC_DATA_IS_NULL = "Checkpoint source data is null";
+    public static final String KW_MSG_CHECKPOINT_SRC_DATA_IS_NULL = CoreMessageConstants.KW_MSG_CHECKPOINT_SRC_DATA_IS_NULL;
 
-    public static final String KW_MSG_CHECKPOINT_DATA_MATCHES_WITH_NULL = "Checkpoint data and Source data are matched with null value";
+    public static final String KW_MSG_CHECKPOINT_DATA_MATCHES_WITH_NULL = CoreMessageConstants.KW_MSG_CHECKPOINT_DATA_MATCHES_WITH_NULL;
 
-    public static final String KW_MSG_CHECKPOINT_DATA_DOES_NOT_MATCH = "Checkpoint data and Source data are NOT matched";
+    public static final String KW_MSG_CHECKPOINT_DATA_DOES_NOT_MATCH = CoreMessageConstants.KW_MSG_CHECKPOINT_DATA_DOES_NOT_MATCH;
 
-    public static final String KW_MSG_CHECKPOINT_DATA_MATCHES = "Checkpoint data and Source data are matched";
+    public static final String KW_MSG_CHECKPOINT_DATA_MATCHES = CoreMessageConstants.KW_MSG_CHECKPOINT_DATA_MATCHES;
 
-    public static final String KW_MSG_CHECKPOINT_ROW_NUMBER_MATCHES = "Number of rows matches";
+    public static final String KW_MSG_CHECKPOINT_ROW_NUMBER_MATCHES = CoreMessageConstants.KW_MSG_CHECKPOINT_ROW_NUMBER_MATCHES;
 
-    public static final String KW_MSG_CHECKPOINT_ROW_NUMBER_DOES_NOT_MATCH = "Number of rows does NOT match. Checked values might be still valid.";
+    public static final String KW_MSG_CHECKPOINT_ROW_NUMBER_DOES_NOT_MATCH = CoreMessageConstants.KW_MSG_CHECKPOINT_ROW_NUMBER_DOES_NOT_MATCH;
 
-    public static final String KW_MSG_CHECKPOINT_COL_NUMBER_MATCHES = "Number of columns matches";
+    public static final String KW_MSG_CHECKPOINT_COL_NUMBER_MATCHES = CoreMessageConstants.KW_MSG_CHECKPOINT_COL_NUMBER_MATCHES;
 
-    public static final String KW_MSG_CHECKPOINT_COL_NUMBER_DOES_NOT_MATCH = "Number of columns does NOT match. Checked values might be still valid.";
+    public static final String KW_MSG_CHECKPOINT_COL_NUMBER_DOES_NOT_MATCH = CoreMessageConstants.KW_MSG_CHECKPOINT_COL_NUMBER_DOES_NOT_MATCH;
 
-    public static final String KW_MSG_VERIFY_CHECKED_VALUES = "Verify checked values";
+    public static final String KW_MSG_VERIFY_CHECKED_VALUES = CoreMessageConstants.KW_MSG_VERIFY_CHECKED_VALUES;
 
-    public static final String KW_MSG_CHECKPOINT_NOT_MATCH_AT_ROW_X_COL_Y_CHECKED_VAL_NEW_VAL = "Checked value does NOT match at position row = {0}, column = {1}. Checked value: {2}. Current value: {3}";
+    public static final String KW_MSG_CHECKPOINT_NOT_MATCH_AT_ROW_X_COL_Y_CHECKED_VAL_NEW_VAL = CoreMessageConstants.KW_MSG_CHECKPOINT_NOT_MATCH_AT_ROW_X_COL_Y_CHECKED_VAL_NEW_VAL;
 
-    public static final String KW_MSG_UNABLE_TO_VERIFY_CHECKPOINT_X = "Unable to verify Checkpoint ''{0}''";
+    public static final String KW_MSG_UNABLE_TO_VERIFY_CHECKPOINT_X = CoreMessageConstants.KW_MSG_UNABLE_TO_VERIFY_CHECKPOINT_X;
 
     // KeywordHelper
-    public static final String COMM_LOG_INFO_CHECKING_OBJ = "Checking object";
+    public static final String COMM_LOG_INFO_CHECKING_OBJ = CoreMessageConstants.COMM_LOG_INFO_CHECKING_OBJ;
 
-    public static final String COMM_EXC_OBJ_IS_NULL = "Object is null";
+    public static final String COMM_EXC_OBJ_IS_NULL = CoreMessageConstants.COMM_EXC_OBJ_IS_NULL;
 
-    public static final String COMM_LOG_INFO_CHECKING_TIMEOUT = "Checking timeout";
+    public static final String COMM_LOG_INFO_CHECKING_TIMEOUT = CoreMessageConstants.COMM_LOG_INFO_CHECKING_TIMEOUT;
 
-    public static final String COMM_LOG_WARNING_INVALID_TIMEOUT = "Timeout ''{0}'' is invalid. Using default page load timeout: ''{1}''";
+    public static final String COMM_LOG_WARNING_INVALID_TIMEOUT = CoreMessageConstants.COMM_LOG_WARNING_INVALID_TIMEOUT;
 
-    public static final String COMM_EXC_ACTUAL_NUM_IS_NULL = "Actual number is null";
+    public static final String COMM_EXC_ACTUAL_NUM_IS_NULL = CoreMessageConstants.COMM_EXC_ACTUAL_NUM_IS_NULL;
 
-    public static final String COMM_EXC_EXPECTED_NUM_IS_NULL = "Expected number is null";
+    public static final String COMM_EXC_EXPECTED_NUM_IS_NULL = CoreMessageConstants.COMM_EXC_EXPECTED_NUM_IS_NULL;
 
-    public static final String COMM_EXC_INVALID_ACTUAL_NUM = "Actual number with value ''{0}'' is not a valid number";
+    public static final String COMM_EXC_INVALID_ACTUAL_NUM = CoreMessageConstants.COMM_EXC_INVALID_ACTUAL_NUM;
 
-    public static final String COMM_EXC_INVALID_EXPECTED_NUM = "Expected number with value ''{0}'' is not a valid number";
+    public static final String COMM_EXC_INVALID_EXPECTED_NUM = CoreMessageConstants.COMM_EXC_INVALID_EXPECTED_NUM;
 
-    public static final String COMM_LOG_INFO_COMPARE_ACTUAL_W_EXPECTED = "Comparing actual object ''{0}'' with expected object ''{1}''";
+    public static final String COMM_LOG_INFO_COMPARE_ACTUAL_W_EXPECTED = CoreMessageConstants.COMM_LOG_INFO_COMPARE_ACTUAL_W_EXPECTED;
 
-    public static final String COMM_LOG_INFO_CONVERTING_RANGE_PARAM_TO_INDEX_ARRAY = "Converting range parameter ''{0}'' to index array";
+    public static final String COMM_LOG_INFO_CONVERTING_RANGE_PARAM_TO_INDEX_ARRAY = CoreMessageConstants.COMM_LOG_INFO_CONVERTING_RANGE_PARAM_TO_INDEX_ARRAY;
 
-    public static final String COMM_EXC_INVALID_RANGE = "Range ''{0}'' is invalid ({1})";
+    public static final String COMM_EXC_INVALID_RANGE = CoreMessageConstants.COMM_EXC_INVALID_RANGE;
 
-    public static final String COMM_LOG_INFO_RANGE_PARAM_IS_CONVERTED_TO_INDEX_ARRAY = "Range parameter ''{0}'' is converted to index array {1}";
+    public static final String COMM_LOG_INFO_RANGE_PARAM_IS_CONVERTED_TO_INDEX_ARRAY = CoreMessageConstants.COMM_LOG_INFO_RANGE_PARAM_IS_CONVERTED_TO_INDEX_ARRAY;
 
-    public static final String COMM_LOG_INFO_CHECKING_NUM_PARAMS = "Checking number parameters";
+    public static final String COMM_LOG_INFO_CHECKING_NUM_PARAMS = CoreMessageConstants.COMM_LOG_INFO_CHECKING_NUM_PARAMS;
 
     // XML LOG
     public static final String XML_LOG_DESCRIPTION_PROPERTY = "description";
@@ -294,57 +273,56 @@ public class StringConstants {
     public static final String XML_LOG_DB_SERVER_INFO = "dbServerInfo";
 
     public static final String XML_LOG_IS_IGNORED_IF_FAILED = "isIgnoredIfFailed";
-
-    // CustomKeywords
-    public static final String GENERATED_SCRIPT_FOLDER = "Libs";
-
-    public static final String SCRIPT_FILE_EXT = "groovy";
-
-    public static final String CUSTOM_KEYWORD_FOLDER_NAME = "Keywords";
-
-    public static final String CUSTOM_KEYWORD_CLASS_NAME = "CustomKeywords";
-
-    public static final String GLOBAL_VARIABLE_CLASS_NAME = "GlobalVariable";
-
-    public static final String GLOBAL_VARIABLE_FILE_NAME = GENERATED_SCRIPT_FOLDER + File.separator + "GlobalVariable."
-            + SCRIPT_FILE_EXT;
+    
+    // CustomKeywords 
+    public static final String GENERATED_SCRIPT_FOLDER = "Libs"; 
+ 
+    public static final String SCRIPT_FILE_EXT = "groovy"; 
+ 
+    public static final String CUSTOM_KEYWORD_FOLDER_NAME = "Keywords"; 
+ 
+    public static final String CUSTOM_KEYWORD_CLASS_NAME = "CustomKeywords"; 
+ 
+    public static final String GLOBAL_VARIABLE_CLASS_NAME = "GlobalVariable"; 
+ 
+    public static final String GLOBAL_VARIABLE_FILE_NAME = GENERATED_SCRIPT_FOLDER + File.separator + "GlobalVariable." + SCRIPT_FILE_EXT; 
 
     // TestDataFactory
-    public static final String XML_LOG_TEST_DATA_CHECKING_TEST_DATA_ID = "Checking test data id";
+    public static final String XML_LOG_TEST_DATA_CHECKING_TEST_DATA_ID = CoreMessageConstants.XML_LOG_TEST_DATA_CHECKING_TEST_DATA_ID;
 
-    public static final String XML_LOG_TEST_DATA_FINDING_TEST_DATA_WITH_ID_X = "Finding test data with id ''{0}''";
+    public static final String XML_LOG_TEST_DATA_FINDING_TEST_DATA_WITH_ID_X = CoreMessageConstants.XML_LOG_TEST_DATA_FINDING_TEST_DATA_WITH_ID_X;
 
-    public static final String XML_LOG_ERROR_TEST_DATA_NULL_TEST_DATA_ID = "Test data id is null";
+    public static final String XML_LOG_ERROR_TEST_DATA_NULL_TEST_DATA_ID = CoreMessageConstants.XML_LOG_ERROR_TEST_DATA_NULL_TEST_DATA_ID;
 
-    public static final String XML_LOG_ERROR_TEST_DATA_X_NOT_EXISTS = "Test data with id ''{0}'' does not exist";
+    public static final String XML_LOG_ERROR_TEST_DATA_X_NOT_EXISTS = CoreMessageConstants.XML_LOG_ERROR_TEST_DATA_X_NOT_EXISTS;
 
-    public static final String XML_LOG_ERROR_TEST_DATA_CANNOT_FIND_TEST_DATA_X_BECAUSE_OF_Y = "Cannot find test data with id ''{0}'' because (of) ''{1}''";
+    public static final String XML_LOG_ERROR_TEST_DATA_CANNOT_FIND_TEST_DATA_X_BECAUSE_OF_Y = CoreMessageConstants.XML_LOG_ERROR_TEST_DATA_CANNOT_FIND_TEST_DATA_X_BECAUSE_OF_Y;
 
-    public static final String XML_LOG_ERROR_TEST_DATA_MISSING_ELEMENT = "Test data missing ''{0}'' element";
+    public static final String XML_LOG_ERROR_TEST_DATA_MISSING_ELEMENT = CoreMessageConstants.XML_LOG_ERROR_TEST_DATA_MISSING_ELEMENT;
 
-    public static final String XML_LOG_TEST_DATA_READING_EXCEL_DATA = "Test data is excel file, reading excel file";
+    public static final String XML_LOG_TEST_DATA_READING_EXCEL_DATA = CoreMessageConstants.XML_LOG_TEST_DATA_READING_EXCEL_DATA;
 
-    public static final String XML_LOG_TEST_DATA_READING_INTERNAL_DATA = "Test data is internal data, reading internal data";
+    public static final String XML_LOG_TEST_DATA_READING_INTERNAL_DATA = CoreMessageConstants.XML_LOG_TEST_DATA_READING_INTERNAL_DATA;
 
-    public static final String XML_LOG_TEST_DATA_READING_CSV_DATA = "Test data is csv file, reading csv file";
+    public static final String XML_LOG_TEST_DATA_READING_CSV_DATA = CoreMessageConstants.XML_LOG_TEST_DATA_READING_CSV_DATA;
 
-    public static final String XML_LOG_TEST_DATA_READING_DB_DATA = "Test data is database data, reading database data";
+    public static final String XML_LOG_TEST_DATA_READING_DB_DATA = CoreMessageConstants.XML_LOG_TEST_DATA_READING_DB_DATA;
 
-    public static final String XML_LOG_TEST_DATA_READING_EXCEL_DATA_WITH_SOURCE_X_SHEET_Y = "Reading excel file with source file ''{0}'' and sheet name ''{1}''";
+    public static final String XML_LOG_TEST_DATA_READING_EXCEL_DATA_WITH_SOURCE_X_SHEET_Y = CoreMessageConstants.XML_LOG_TEST_DATA_READING_EXCEL_DATA_WITH_SOURCE_X_SHEET_Y;
 
-    public static final String XML_LOG_TEST_DATA_READING_CSV_DATA_WITH_SOURCE_X_SEPERATOR_Y_AND_Z = "Reading csv file with source file ''{0}'', seperator ''{1}'' and ''{2}''";
+    public static final String XML_LOG_TEST_DATA_READING_CSV_DATA_WITH_SOURCE_X_SEPERATOR_Y_AND_Z = CoreMessageConstants.XML_LOG_TEST_DATA_READING_CSV_DATA_WITH_SOURCE_X_SEPERATOR_Y_AND_Z;
 
-    public static final String XML_ERROR_TEST_DATA_CONNECTION_URL_IS_BLANK = "Database connection URL is blank";
+    public static final String XML_ERROR_TEST_DATA_CONNECTION_URL_IS_BLANK = CoreMessageConstants.XML_ERROR_TEST_DATA_CONNECTION_URL_IS_BLANK;
 
-    public static final String XML_ERROR_TEST_DATA_CONNECTION_IS_NULL = "Database connection is null. Root cause: {0}";
+    public static final String XML_ERROR_TEST_DATA_CONNECTION_IS_NULL = CoreMessageConstants.XML_ERROR_TEST_DATA_CONNECTION_IS_NULL;
 
-    public static final String XML_ERROR_TEST_DATA_SQL_QUERY_IS_BLANK = "Database connection URL is blank";
+    public static final String XML_ERROR_TEST_DATA_SQL_QUERY_IS_BLANK = CoreMessageConstants.XML_ERROR_TEST_DATA_SQL_QUERY_IS_BLANK;
 
-    public static final String XML_LOG_TEST_DATA_READING_DB_DATA_WITH_QUERY_X = "Reading database data with query ''{0}''";
+    public static final String XML_LOG_TEST_DATA_READING_DB_DATA_WITH_QUERY_X = CoreMessageConstants.XML_LOG_TEST_DATA_READING_DB_DATA_WITH_QUERY_X;
 
     // ExcelData
-    public static final String XML_LOG_ERROR_SHEET_NAME_X_NOT_EXISTS = "Sheet with name ''{0}'' does not exists";
-
+    public static final String XML_LOG_ERROR_SHEET_NAME_X_NOT_EXISTS = CoreMessageConstants.XML_LOG_ERROR_SHEET_NAME_X_NOT_EXISTS;
+    
     // RunConfiguration
     public static final String CONF_PROPERTY_WEBUI_DRIVER = "WebUI";
 
@@ -398,14 +376,15 @@ public class StringConstants {
 
     public static final String CONF_PROPERTY_TEST_DATA_INFO = "testDataInfo";
 
+    public static final String APP_VERSION = "katalonVersion";
+
     // TestCaseExecutor
     public static final String TEST_STEP_TRANSFORMATION_CLASS = "com.kms.katalon.core.ast.RequireAstTestStepTransformation";
 
     public static final String NULL_AS_STRING = "null";
 
     // alias of GlobalStringConstants.APP_INFO_FILE_LOCATION
-    public static final String APP_INFO_FILE_LOCATION = System.getProperty("user.home") + File.separator + ".katalon"
-            + File.separator + "application.properties";
+    public static final String APP_INFO_FILE_LOCATION = System.getProperty("user.home") + File.separator + ".katalon" + File.separator + "application.properties"; //$NON-NLS-1$
 
     // MobileDriverType
     public static final String ANDROID = "Android";
@@ -413,52 +392,51 @@ public class StringConstants {
     public static final String IOS = "iOS";
 
     // SqlRunner
-    public static final String EXC_DATABASE_CONNECTION_IS_CLOSED = "Database connection is closed.";
+    public static final String EXC_DATABASE_CONNECTION_IS_CLOSED = CoreMessageConstants.EXC_DATABASE_CONNECTION_IS_CLOSED;
 
-    public static final String EXC_DATABASE_CONNECTION_IS_NULL = "Database connection is null.";
+    public static final String EXC_DATABASE_CONNECTION_IS_NULL = CoreMessageConstants.EXC_DATABASE_CONNECTION_IS_NULL;
 
     // AstTestStepTransformation
     public static final String NOT_RUN_LABEL = "not_run";
 
     // KeywordMain
-    public static final String KW_LOG_WARNING_CANNOT_TAKE_SCREENSHOT = "Cannot take screenshot (Root cause: {0})";
+    public static final String KW_LOG_WARNING_CANNOT_TAKE_SCREENSHOT = CoreMessageConstants.KW_LOG_WARNING_CANNOT_TAKE_SCREENSHOT;
 
     public static final String TESTCASE_SETTINGS_FILE_NAME = "com.kms.katalon.composer.testcase.settings";
 
     // JsonUtils
-    public static final String EXC_MSG_INVALID_JSON_SYNTAX = "Invalid JSON syntax. Root cause: {0}";
+    public static final String EXC_MSG_INVALID_JSON_SYNTAX = CoreMessageConstants.EXC_MSG_INVALID_JSON_SYNTAX;
 
     // CheckpointFactory
-    public static final String EXC_MSG_CHECKPOINT_ID_IS_NULL = "Checkpoint ID is null.";
+    public static final String EXC_MSG_CHECKPOINT_ID_IS_NULL = CoreMessageConstants.EXC_MSG_CHECKPOINT_ID_IS_NULL;
 
-    public static final String INFO_MSG_FINDING_CHECKPOINT_WITH_ID = "Finding checkpoint with ID ''{0}''";
+    public static final String INFO_MSG_FINDING_CHECKPOINT_WITH_ID = CoreMessageConstants.INFO_MSG_FINDING_CHECKPOINT_WITH_ID;
 
-    public static final String EXC_MSG_CHECKPOINT_DOES_NOT_EXIST = "Checkpoint does not exist.";
+    public static final String EXC_MSG_CHECKPOINT_DOES_NOT_EXIST = CoreMessageConstants.EXC_MSG_CHECKPOINT_DOES_NOT_EXIST;
 
-    public static final String EXC_MSG_CHECKPOINT_INVALID_SOURCE_TYPE = "Invalid data source type ''{0}''";
+    public static final String EXC_MSG_CHECKPOINT_INVALID_SOURCE_TYPE = CoreMessageConstants.EXC_MSG_CHECKPOINT_INVALID_SOURCE_TYPE;
 
-    public static final String INFO_MSG_CHECKPOINT_HAS_SOURCE_FROM_X = "Checkpoint has source data from {0}";
+    public static final String INFO_MSG_CHECKPOINT_HAS_SOURCE_FROM_X = CoreMessageConstants.INFO_MSG_CHECKPOINT_HAS_SOURCE_FROM_X;
 
-    public static final String EXC_MSG_CANNOT_FIND_CHECKPOINT_WITH_ID_ROOT_CAUSE = "Cannot find checkpoint with ID ''{0}''. Root cause: ''{1}''";
+    public static final String EXC_MSG_CANNOT_FIND_CHECKPOINT_WITH_ID_ROOT_CAUSE = CoreMessageConstants.EXC_MSG_CANNOT_FIND_CHECKPOINT_WITH_ID_ROOT_CAUSE;
 
-    public static final String EXC_MSG_NOT_FOUND_TEST_DATA_WITH_ID = "Not found Test Data with ID ''{0}''";
+    public static final String EXC_MSG_NOT_FOUND_TEST_DATA_WITH_ID = CoreMessageConstants.EXC_MSG_NOT_FOUND_TEST_DATA_WITH_ID;
 
-    public static final String EXC_MSG_DB_CONNECTION_SETTIGNS_ARE_EMPTY = "Database Connection settings are empty.";
+    public static final String EXC_MSG_DB_CONNECTION_SETTIGNS_ARE_EMPTY = CoreMessageConstants.EXC_MSG_DB_CONNECTION_SETTIGNS_ARE_EMPTY;
 
-    public static final String EXC_MSG_EXCEL_SHEET_NAME_IS_EMPTY = "Excel sheet name is null or empty.";
+    public static final String EXC_MSG_EXCEL_SHEET_NAME_IS_EMPTY = CoreMessageConstants.EXC_MSG_EXCEL_SHEET_NAME_IS_EMPTY;
 
-    public static final String EXC_MSG_INVALID_CSV_SEPARATOR = "Invalid CSV separator.";
+    public static final String EXC_MSG_INVALID_CSV_SEPARATOR = CoreMessageConstants.EXC_MSG_INVALID_CSV_SEPARATOR;
 
-    public static final String EXC_MSG_CHECKPOINT_IS_MISSING_ELEMENT = "Checkpoint is missing ''{0}'' element";
+    public static final String EXC_MSG_CHECKPOINT_IS_MISSING_ELEMENT = CoreMessageConstants.EXC_MSG_CHECKPOINT_IS_MISSING_ELEMENT;
 
     // TestCaseFactory
-    public static final String TEST_CASE_FACTORY_MSG_ID_IS_NULL = "Test case id is null";
+    public static final String TEST_CASE_FACTORY_MSG_ID_IS_NULL = CoreMessageConstants.TEST_CASE_FACTORY_MSG_ID_IS_NULL;
 
-    public static final String TEST_CASE_FACTORY_MSG_TC_NOT_EXISTED = "Cannot find test case with id ''{0}''";
+    public static final String TEST_CASE_FACTORY_MSG_TC_NOT_EXISTED = CoreMessageConstants.TEST_CASE_FACTORY_MSG_TC_NOT_EXISTED;
 
-    public static final String TEST_CASE_FACTORY_MSG_TC_NOT_EXISTED_WITH_REASON = "Cannot find test case with id ''{0}''"
-            + " because (of) ''{1}''";
-
+    public static final String TEST_CASE_FACTORY_MSG_TC_NOT_EXISTED_WITH_REASON = CoreMessageConstants.TEST_CASE_FACTORY_MSG_TC_NOT_EXISTED_WITH_REASON;
+    
     // Common method name
     public static final String METHOD_FIND_TEST_CASE = "findTestCase";
 

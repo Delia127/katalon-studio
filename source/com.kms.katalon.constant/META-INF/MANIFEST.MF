@@ -8,3 +8,4 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: com.kms.katalon.constants,
  com.kms.katalon.constants.helper
 Bundle-ActivationPolicy: lazy
+Require-Bundle: org.eclipse.osgi

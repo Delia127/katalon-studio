@@ -55,24 +55,29 @@ public class FolderTreeEntity extends AbstractTreeEntity {
 
     @Override
     public Image getImage() throws Exception {
-        switch (folder.getIdForDisplay()) {
-            case StringConstants.ROOT_FOLDER_NAME_TEST_CASE:
-                return ImageConstants.IMG_16_FOLDER_TEST_CASE;
-            case StringConstants.ROOT_FOLDER_NAME_TEST_SUITE:
-                return ImageConstants.IMG_16_FOLDER_TEST_SUITE;
-            case StringConstants.ROOT_FOLDER_NAME_OBJECT_REPOSITORY:
-                return ImageConstants.IMG_16_FOLDER_OBJECT;
-            case StringConstants.ROOT_FOLDER_NAME_DATA_FILE:
-                return ImageConstants.IMG_16_FOLDER_DATA;
-            case StringConstants.ROOT_FOLDER_NAME_KEYWORD:
-                return ImageConstants.IMG_16_FOLDER_KEYWORD;
-            case StringConstants.ROOT_FOLDER_NAME_REPORT:
-                return ImageConstants.IMG_16_FOLDER_REPORT;
-            case StringConstants.ROOT_FOLDER_NAME_CHECKPOINT:
-                return ImageConstants.IMG_16_FOLDER_CHECKPOINT;
-            default:
-                return ImageConstants.IMG_16_FOLDER;
+        final String idForDisplay = folder.getIdForDisplay();
+        if (StringConstants.ROOT_FOLDER_NAME_TEST_CASE.equals(idForDisplay)) {
+            return ImageConstants.IMG_16_FOLDER_TEST_CASE;
         }
+        if (StringConstants.ROOT_FOLDER_NAME_TEST_SUITE.equals(idForDisplay)) {
+            return ImageConstants.IMG_16_FOLDER_TEST_SUITE;
+        }
+        if (StringConstants.ROOT_FOLDER_NAME_OBJECT_REPOSITORY.equals(idForDisplay)) {
+            return ImageConstants.IMG_16_FOLDER_OBJECT;
+        }
+        if (StringConstants.ROOT_FOLDER_NAME_DATA_FILE.equals(idForDisplay)) {
+            return ImageConstants.IMG_16_FOLDER_DATA;
+        }
+        if (StringConstants.ROOT_FOLDER_NAME_KEYWORD.equals(idForDisplay)) {
+            return ImageConstants.IMG_16_FOLDER_KEYWORD;
+        }
+        if (StringConstants.ROOT_FOLDER_NAME_REPORT.equals(idForDisplay)) {
+            return ImageConstants.IMG_16_FOLDER_REPORT;
+        }
+        if (StringConstants.ROOT_FOLDER_NAME_CHECKPOINT.equals(idForDisplay)) {
+            return ImageConstants.IMG_16_FOLDER_CHECKPOINT;
+        }
+        return ImageConstants.IMG_16_FOLDER;
     }
 
     @Override
@@ -82,18 +87,13 @@ public class FolderTreeEntity extends AbstractTreeEntity {
 
     @Override
     public boolean isRemoveable() throws Exception {
-        switch (folder.getIdForDisplay()) {
-            case StringConstants.ROOT_FOLDER_NAME_TEST_CASE:
-            case StringConstants.ROOT_FOLDER_NAME_TEST_SUITE:
-            case StringConstants.ROOT_FOLDER_NAME_OBJECT_REPOSITORY:
-            case StringConstants.ROOT_FOLDER_NAME_DATA_FILE:
-            case StringConstants.ROOT_FOLDER_NAME_KEYWORD:
-            case StringConstants.ROOT_FOLDER_NAME_REPORT:
-            case StringConstants.ROOT_FOLDER_NAME_CHECKPOINT:
-                return false;
-            default:
-                return true;
-        }
+        final String idForDisplay = folder.getIdForDisplay();
+        return (idForDisplay.equals(StringConstants.ROOT_FOLDER_NAME_TEST_CASE)
+                || idForDisplay.equals(StringConstants.ROOT_FOLDER_NAME_TEST_SUITE)
+                || idForDisplay.equals(StringConstants.ROOT_FOLDER_NAME_OBJECT_REPOSITORY)
+                || idForDisplay.equals(StringConstants.ROOT_FOLDER_NAME_DATA_FILE)
+                || idForDisplay.equals(StringConstants.ROOT_FOLDER_NAME_KEYWORD)
+                || idForDisplay.equals(StringConstants.ROOT_FOLDER_NAME_REPORT) || idForDisplay.equals(StringConstants.ROOT_FOLDER_NAME_CHECKPOINT));
     }
 
     @Override

@@ -56,7 +56,6 @@ import org.osgi.service.event.EventHandler;
 import com.kms.katalon.composer.components.impl.control.CTreeViewer;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPart;
-import com.kms.katalon.composer.components.util.ColumnViewerUtil;
 import com.kms.katalon.composer.components.viewer.CustomEditorActivationStrategy;
 import com.kms.katalon.composer.components.viewer.FocusCellOwnerDrawHighlighterForMultiSelection;
 import com.kms.katalon.composer.explorer.util.TransferTypeCollection;

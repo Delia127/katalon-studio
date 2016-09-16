@@ -36,7 +36,6 @@ import com.kms.katalon.composer.handlers.WorkbenchSaveHandler;
 import com.kms.katalon.composer.initializer.CommandBindingInitializer;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.core.application.Application.RunningModeParam;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
@@ -44,6 +43,9 @@ import com.kms.katalon.util.ActivationInfoCollector;
 
 @SuppressWarnings("restriction")
 public class LifeCycleManager {
+
+    private static final String PREF_FIST_TIME_SETUP_COMPLETED = "firstTimeSetupCompleted";
+
     private void startUpGUIMode() throws Exception {
         refreshAllProjects();
         setupHandlers();
@@ -118,7 +120,7 @@ public class LifeCycleManager {
     private void setupWorkbenchPlugin() {
         ScopedPreferenceStore store = PreferenceStoreManager.getPreferenceStore(IdConstants.WORKBENCH_WINDOW_ID);
 
-        if (store.getBoolean(StringConstants.PREF_FIST_TIME_SETUP_COMPLETED)) {
+        if (store.getBoolean(PREF_FIST_TIME_SETUP_COMPLETED)) {
             return;
         }
 
@@ -126,7 +128,7 @@ public class LifeCycleManager {
         defaultFont.setHeight(12);
 
         store.setValue(JFaceResources.TEXT_FONT, defaultFont.toString());
-        store.setValue(StringConstants.PREF_FIST_TIME_SETUP_COMPLETED, true);
+        store.setValue(PREF_FIST_TIME_SETUP_COMPLETED, true);
 
         try {
             store.save();
