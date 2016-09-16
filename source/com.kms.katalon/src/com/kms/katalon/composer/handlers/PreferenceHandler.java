@@ -1,20 +1,18 @@
 package com.kms.katalon.composer.handlers;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.jface.preference.IPreferenceNode;
 import org.eclipse.jface.preference.PreferenceManager;
-import org.eclipse.jface.viewers.ContentViewer;
-import org.eclipse.jface.viewers.IBaseLabelProvider;
-import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.internal.dialogs.WorkbenchPreferenceDialog;
 
 import com.kms.katalon.composer.components.impl.handler.AbstractHandler;
+import com.kms.katalon.composer.components.impl.providers.TypeCheckedStyleCellLabelProvider;
 import com.kms.katalon.preferences.internal.PreferencesRegistry;
 
 @SuppressWarnings("restriction")
@@ -22,7 +20,7 @@ public class PreferenceHandler extends AbstractHandler {
 
     private static final String DEFAULT_PREFERENCE_PAGE_ID = "com.kms.katalon.composer.preferences.GeneralPreferencePage";
 
-    private static final String[] UNNECESSARY_PREF_NODES = new String[] { };
+    private static final String[] UNNECESSARY_PREF_NODES = new String[] {};
 
     @Override
     public boolean canExecute() {
@@ -128,16 +126,10 @@ public class PreferenceHandler extends AbstractHandler {
         }
 
         private String getLabel(Viewer viewer, Object node) {
-            if (!(viewer instanceof ContentViewer)) {
-                return ObjectUtils.toString(node);
+            if (node instanceof IPreferenceNode) {
+                return ((IPreferenceNode) node).getLabelText();
             }
-
-            IBaseLabelProvider prov = ((ContentViewer) viewer).getLabelProvider();
-            if (prov instanceof ILabelProvider) {
-                ILabelProvider labelProvider = (ILabelProvider) prov;
-                return StringUtils.defaultString(labelProvider.getText(node));
-            }
-            return ObjectUtils.toString(node);
+            return StringUtils.EMPTY;
         }
 
     }
@@ -152,6 +144,28 @@ public class PreferenceHandler extends AbstractHandler {
         protected String getSelectedNodePreference() {
             String selectedNode = super.getSelectedNodePreference();
             return StringUtils.isNotEmpty(selectedNode) ? selectedNode : DEFAULT_PREFERENCE_PAGE_ID;
+        }
+
+        @Override
+        protected void setContentAndLabelProviders(TreeViewer treeViewer) {
+            super.setContentAndLabelProviders(treeViewer);
+            treeViewer.setLabelProvider(new TypeCheckedStyleCellLabelProvider<IPreferenceNode>(0) {
+
+                @Override
+                protected Class<IPreferenceNode> getElementType() {
+                    return IPreferenceNode.class;
+                }
+
+                @Override
+                protected Image getImage(IPreferenceNode element) {
+                    return null;
+                }
+
+                @Override
+                protected String getText(IPreferenceNode element) {
+                    return element.getLabelText();
+                }
+            });
         }
     }
 }
