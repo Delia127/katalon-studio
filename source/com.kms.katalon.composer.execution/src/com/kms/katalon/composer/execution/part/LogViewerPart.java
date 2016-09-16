@@ -204,7 +204,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
         registerEventListeners();
         getChangingViewToolItem().setEnabled(true);
     }
-
+    
     private void createLogViewerControl(Composite parent) {
         disposeChildrenFromIndex(parent, AFTER_STATUS_MENU_INDEX);
 

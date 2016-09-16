@@ -23,7 +23,7 @@ public class ComposerExecutionPreferenceDefaultValueInitializer extends Abstract
 
     public static final boolean EXECUTION_DEFAULT_PIN_LOG = false;
 
-    public static final boolean EXECUTION_DEFAULT_ENABLE_WORD_WRAP = false;
+    public static final boolean EXECUTION_DEFAULT_ENABLE_WORD_WRAP = true;
 
     @Override
     public void initializeDefaultPreferences() {
