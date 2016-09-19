@@ -31,7 +31,7 @@ public class NewCheckpointStartingPage extends AbstractCheckpointWizardPage {
 
     private String typeName = StringConstants.TEST_DATA;
 
-    private String description;
+    private String checkpointDescription = StringConstants.EMPTY;
 
     private FolderEntity parentFolder;
 
@@ -107,7 +107,7 @@ public class NewCheckpointStartingPage extends AbstractCheckpointWizardPage {
 
             @Override
             public void modifyText(ModifyEvent e) {
-                setDescription(((Text) e.getSource()).getText());
+                setCheckpointDescription(((Text) e.getSource()).getText());
             }
         });
     }
@@ -133,14 +133,12 @@ public class NewCheckpointStartingPage extends AbstractCheckpointWizardPage {
         this.typeName = typeName;
     }
 
-    @Override
-    public String getDescription() {
-        return description;
+    public String getCheckpointDescription() {
+        return checkpointDescription;
     }
 
-    @Override
-    public void setDescription(String description) {
-        this.description = description;
+    public void setCheckpointDescription(String checkpointDescription) {
+        this.checkpointDescription = checkpointDescription;
     }
 
     /**

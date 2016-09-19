@@ -102,7 +102,7 @@ public class NewCheckpointWizard extends Wizard {
     public CheckpointEntity getCheckpoint() {
         CheckpointEntity checkpoint = new CheckpointEntity();
         checkpoint.setName(name);
-        checkpoint.setDescription(startingPage.getDescription());
+        checkpoint.setDescription(startingPage.getCheckpointDescription());
         checkpoint.setParentFolder(parentFolder);
         checkpoint.setProject(parentFolder.getProject());
         checkpoint.setSourceInfo(sourceInfo);
