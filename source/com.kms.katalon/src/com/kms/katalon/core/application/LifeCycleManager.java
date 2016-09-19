@@ -8,6 +8,7 @@ import java.io.IOException;
 import org.eclipse.core.filesystem.IFileInfo;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.ui.basic.MTrimmedWindow;
@@ -36,7 +37,6 @@ import com.kms.katalon.composer.handlers.WorkbenchSaveHandler;
 import com.kms.katalon.composer.initializer.CommandBindingInitializer;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.core.application.Application.RunningModeParam;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.util.ActivationInfoCollector;
@@ -55,12 +55,21 @@ public class LifeCycleManager {
 
     protected void setupHandlers() {
         IHandlerService handlerService = (IHandlerService) PlatformUI.getWorkbench()
+                .getActiveWorkbenchWindow()
                 .getService(IHandlerService.class);
         handlerService.activateHandler(IWorkbenchCommandConstants.FILE_SAVE, new SaveHandler());
         handlerService.activateHandler(IWorkbenchCommandConstants.FILE_CLOSE, new CloseHandler());
         handlerService.activateHandler(IdConstants.SEARCH_COMMAND_ID, new SearchHandler());
         handlerService.activateHandler(IdConstants.RESET_PERSPECTIVE_HANDLER_ID, new ResetPerspectiveHandler());
-        handlerService.activateHandler(IWorkbenchCommandConstants.WINDOW_PREFERENCES, new PreferenceHandler());
+
+        // Need this as on MacOSX, Preferences Menu is always present and need to be active on a global context
+        if (Platform.getOS().equals(Platform.OS_MACOSX)) {
+            IHandlerService globalHandlerService = (IHandlerService) PlatformUI.getWorkbench().getService(
+                    IHandlerService.class);
+            globalHandlerService.activateHandler(IWorkbenchCommandConstants.WINDOW_PREFERENCES, new PreferenceHandler());
+        } else {
+            handlerService.activateHandler(IWorkbenchCommandConstants.WINDOW_PREFERENCES, new PreferenceHandler());
+        }
 
         MTrimmedWindow model = (MTrimmedWindow) PlatformUI.getWorkbench()
                 .getActiveWorkbenchWindow()
@@ -107,7 +116,7 @@ public class LifeCycleManager {
             public void partActivated(IWorkbenchPartReference partRef) {
             }
         });
-        
+
         new CommandBindingInitializer().setup();
     }
 
