@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.testsuite.collection.part;
 
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -30,12 +31,14 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.osgi.service.event.Event;
 
+import com.kms.katalon.composer.components.impl.control.CMenu;
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.editors.DefaultTableColumnViewerEditor;
@@ -65,6 +68,16 @@ import com.kms.katalon.entity.testsuite.TestSuiteRunConfiguration;
 
 public class TestSuiteCollectionPart extends EventServiceAdapter implements TableViewerProvider {
 
+    private static final String HK_NEW = "M1+N";
+
+    private static final String HK_DEL = "Delete";
+
+    private static final String HK_MOVE_ITEMS_UP = "M1+ARROW_UP";
+
+    private static final String HK_MOVE_ITEMS_DOWN = "M1+ARROW_DOWN";
+
+    private static final String HK_EXECUTE = "M1+E";
+
     @Inject
     private IEventBroker eventBroker;
 
@@ -82,6 +95,10 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
     private TableColumn tblclmnRun;
 
     private long lastModified;
+
+    private ToolItem toolItemExecute;
+
+    private ToolbarItemListener selectionListener;
 
     @PostConstruct
     public void initialize(Composite parent, MPart mpart) {
@@ -163,23 +180,25 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         ToolBar toolBar = new ToolBar(toolbarComposite, SWT.FLAT | SWT.RIGHT);
         toolBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-        SelectionAdapter selectionListener = new ToolbarItemListener(this);
+        selectionListener = new ToolbarItemListener(this);
         createToolItemWithSelectionListener(toolBar, StringConstants.ADD, ImageConstants.IMG_24_ADD, selectionListener);
         createToolItemWithSelectionListener(toolBar, StringConstants.REMOVE, ImageConstants.IMG_24_REMOVE,
                 selectionListener);
         createToolItemWithSelectionListener(toolBar, StringConstants.UP, ImageConstants.IMG_24_UP, selectionListener);
         createToolItemWithSelectionListener(toolBar, StringConstants.DOWN, ImageConstants.IMG_24_DOWN,
                 selectionListener);
-        createToolItemWithSelectionListener(toolBar, StringConstants.PA_ACTION_EXECUTE_TEST_SUITE_COLLECTION,
-                ImageConstants.IMG_24_EXECUTE, selectionListener);
+        toolItemExecute = createToolItemWithSelectionListener(toolBar,
+                StringConstants.PA_ACTION_EXECUTE_TEST_SUITE_COLLECTION, ImageConstants.IMG_24_EXECUTE,
+                selectionListener);
     }
 
-    private void createToolItemWithSelectionListener(ToolBar toolbar, String name, Image image,
+    private ToolItem createToolItemWithSelectionListener(ToolBar toolbar, String name, Image image,
             SelectionAdapter selectionListener) {
         ToolItem toolItem = new ToolItem(toolbar, SWT.NONE);
         toolItem.setText(name);
         toolItem.setImage(image);
         toolItem.addSelectionListener(selectionListener);
+        return toolItem;
     }
 
     private void createTableComposite(Composite parent) {
@@ -227,6 +246,51 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         DefaultTableColumnViewerEditor.create(tableViewer);
 
         tableViewer.enableTooltipSupport();
+
+        createTableMenu(tableViewer.getTable());
+    }
+
+    /**
+     * Create menu for the given <code>table</code> like this
+     * <pre>
+     * --------------------------------------
+     * Add          Ctrl/Command + N
+     * Remove       Delete
+     * --------------------------------------
+     * Move Up      Ctrl/Command + Arrow Up
+     * Move Down    Ctrl/Command + Arrow Down
+     * --------------------------------------
+     * Execute      Ctrl/Command + E
+     * --------------------------------------
+     * </pre>
+     */
+    private void createTableMenu(Table table) {
+        CMenu menu = new CMenu(table, selectionListener);
+        table.setMenu(menu);
+
+        Callable<Boolean> visibleWhenItemSelected = new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                return !tableViewer.getSelection().isEmpty();
+            }
+        };
+        menu.createMenuItem(StringConstants.ADD, HK_NEW);
+        menu.createMenuItem(StringConstants.REMOVE, HK_DEL, visibleWhenItemSelected);
+
+        new MenuItem(menu, SWT.SEPARATOR);
+
+        menu.createMenuItem(StringConstants.UP, HK_MOVE_ITEMS_UP, visibleWhenItemSelected);
+        menu.createMenuItem(StringConstants.DOWN, HK_MOVE_ITEMS_DOWN, visibleWhenItemSelected);
+
+        new MenuItem(menu, SWT.SEPARATOR);
+
+        menu.createMenuItem(StringConstants.PA_ACTION_EXECUTE_TEST_SUITE_COLLECTION, HK_EXECUTE,
+                new Callable<Boolean>() {
+                    @Override
+                    public Boolean call() throws Exception {
+                        return cloneTestSuite.isAnyRunEnabled();
+                    }
+                });
     }
 
     @Override
@@ -352,13 +416,13 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
     }
 
     @Override
-    public void executeTestRun(final ToolItem toolItem) {
+    public void executeTestRun() {
         if (mpart.isDirty()) {
             MessageDialog.openInformation(null, StringConstants.INFO, "Please save before executing.");
             return;
         }
         AbstractExecutionHandler.openConsoleLog();
-        toolItem.setEnabled(false);
+        toolItemExecute.setEnabled(false);
 
         TestSuiteCollectionBuilderJob job = new TestSuiteCollectionBuilderJob(originalTestSuite);
         job.schedule();
@@ -368,7 +432,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
                 UISynchronizeService.syncExec(new Runnable() {
                     @Override
                     public void run() {
-                        toolItem.setEnabled(true);
+                        toolItemExecute.setEnabled(true);
                     }
                 });
             }

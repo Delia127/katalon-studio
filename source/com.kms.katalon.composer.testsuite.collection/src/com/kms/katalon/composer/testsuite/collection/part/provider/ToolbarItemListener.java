@@ -15,6 +15,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ToolItem;
 
+import com.kms.katalon.composer.components.impl.control.HotkeyActiveListener;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.dialogs.TreeEntitySelectionDialog;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
@@ -31,7 +32,7 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteRunConfiguration;
 
-public class ToolbarItemListener extends SelectionAdapter {
+public class ToolbarItemListener extends SelectionAdapter implements HotkeyActiveListener {
 
     private TableViewerProvider provider;
 
@@ -45,26 +46,33 @@ public class ToolbarItemListener extends SelectionAdapter {
             return;
         }
 
-        String name = StringUtils.defaultString(((ToolItem) source).getText());
-        if (StringConstants.ADD.equals(name)) {
-            addTestSuiteRunConfigs();
-            return;
-        }
-        if (StringConstants.REMOVE.equals(name)) {
-            deleteSelectedTestSuiteRunConfigs();
-            return;
-        }
-        if (StringConstants.UP.equals(name)) {
-            moveUpSelectedTestSuiteRunConfigs();
-            return;
-        }
-        if (StringConstants.DOWN.equals(name)) {
-            moveDownSelectedTestSuiteRunConfigs();
-            return;
-        }
-        if (StringConstants.PA_ACTION_EXECUTE_TEST_SUITE_COLLECTION.equals(name)) {
-            executeTestRun((ToolItem) source);
-            return;
+        String actionId = StringUtils.defaultString(((ToolItem) source).getText());
+        executeAction(actionId);
+    }
+
+    @Override
+    public void executeAction(String actionId) {
+        switch (ActionId.parse(actionId)) {
+            case ADD: {
+                addTestSuiteRunConfigs();
+                return;
+            }
+            case REMOVE: {
+                deleteSelectedTestSuiteRunConfigs();
+                return;
+            }
+            case UP: {
+                moveUpSelectedTestSuiteRunConfigs();
+                return;
+            }
+            case DOWN: {
+                moveDownSelectedTestSuiteRunConfigs();
+                return;
+            }
+            case EXECUTE: {
+                executeTestRun();
+                return;
+            }
         }
     }
 
@@ -76,10 +84,10 @@ public class ToolbarItemListener extends SelectionAdapter {
         return provider.getTableItems();
     }
 
-    private void executeTestRun(ToolItem toolItem) {
-        provider.executeTestRun(toolItem);
+    private void executeTestRun() {
+        provider.executeTestRun();
     }
-    
+
     private void addTestSuiteRunConfigs() {
         try {
             List<TestSuiteEntity> chosenTestSuites = getSelectedTestSuitesOnDialog();
@@ -270,4 +278,33 @@ public class ToolbarItemListener extends SelectionAdapter {
         }
     }
 
+    public enum ActionId {
+        ADD(StringConstants.ADD),
+        REMOVE(StringConstants.REMOVE),
+        UP(StringConstants.UP),
+        DOWN(StringConstants.DOWN),
+        EXECUTE(StringConstants.PA_ACTION_EXECUTE_TEST_SUITE_COLLECTION);
+
+        private final String id;
+
+        private ActionId(final String id) {
+            this.id = id;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public static ActionId parse(String id) {
+            if (id == null) {
+                return null;
+            }
+            for (ActionId actionId : values()) {
+                if (actionId.getId().equals(id)) {
+                    return actionId;
+                }
+            }
+            return null;
+        }
+    }
 }

@@ -3,7 +3,6 @@ package com.kms.katalon.composer.testsuite.collection.part.provider;
 import java.util.List;
 
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.swt.widgets.ToolItem;
 
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteRunConfiguration;
@@ -19,5 +18,5 @@ public interface TableViewerProvider {
     
     void updateRunColumn();
     
-    void executeTestRun(ToolItem toolItem);
+    void executeTestRun();
 }

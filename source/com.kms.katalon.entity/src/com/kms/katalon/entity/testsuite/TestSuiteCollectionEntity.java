@@ -84,6 +84,15 @@ public class TestSuiteCollectionEntity extends FileEntity {
         return super.clone();
     }
 
+    public boolean isAnyRunEnabled() {
+        for (TestSuiteRunConfiguration testSuiteRunConfig : getTestSuiteRunConfigurations()) {
+            if (testSuiteRunConfig.isRunEnabled()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean isAllRunEnabled() {
         for (TestSuiteRunConfiguration testSuiteRunConfig : getTestSuiteRunConfigurations()) {
             if (!testSuiteRunConfig.isRunEnabled()) {
