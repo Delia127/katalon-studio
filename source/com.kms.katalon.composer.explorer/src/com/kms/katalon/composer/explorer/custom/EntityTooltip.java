@@ -96,7 +96,7 @@ public class EntityTooltip extends ColumnViewerToolTipSupport {
     private void createPropertiesControls(Composite result, ViewerCell cell) {
         ITreeEntity treeEntity = getTreeEntity(cell);
         for (TooltipPropertyDescription property : treeEntity.getTooltipDescriptions()) {
-            Label lblPropKey = new Label(result, SWT.NONE);
+            StyledText lblPropKey = new StyledText(result, SWT.NONE);
             lblPropKey.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
             lblPropKey.setText(property.getKey() + ":");
             ControlUtils.setFontToBeBold(lblPropKey);
