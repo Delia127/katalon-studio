@@ -8,7 +8,6 @@ import java.io.IOException;
 import org.eclipse.core.filesystem.IFileInfo;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.ui.basic.MTrimmedWindow;
@@ -22,6 +21,7 @@ import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IWorkbenchCommandConstants;
 import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.internal.ide.dialogs.IDEResourceInfoUtils;
 import org.osgi.service.event.Event;
@@ -29,7 +29,6 @@ import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.handlers.CloseHandler;
-import com.kms.katalon.composer.handlers.PreferenceHandler;
 import com.kms.katalon.composer.handlers.ResetPerspectiveHandler;
 import com.kms.katalon.composer.handlers.SaveHandler;
 import com.kms.katalon.composer.handlers.SearchHandler;
@@ -62,14 +61,8 @@ public class LifeCycleManager {
         handlerService.activateHandler(IdConstants.SEARCH_COMMAND_ID, new SearchHandler());
         handlerService.activateHandler(IdConstants.RESET_PERSPECTIVE_HANDLER_ID, new ResetPerspectiveHandler());
 
-        // Need this as on MacOSX, Preferences Menu is always present and need to be active on a global context
-        if (Platform.getOS().equals(Platform.OS_MACOSX)) {
-            IHandlerService globalHandlerService = (IHandlerService) PlatformUI.getWorkbench().getService(
-                    IHandlerService.class);
-            globalHandlerService.activateHandler(IWorkbenchCommandConstants.WINDOW_PREFERENCES, new PreferenceHandler());
-        } else {
-            handlerService.activateHandler(IWorkbenchCommandConstants.WINDOW_PREFERENCES, new PreferenceHandler());
-        }
+        IContextService contextService = (IContextService) PlatformUI.getWorkbench().getService(IContextService.class);
+        contextService.activateContext(IdConstants.KATALON_CONTEXT_ID);
 
         MTrimmedWindow model = (MTrimmedWindow) PlatformUI.getWorkbench()
                 .getActiveWorkbenchWindow()

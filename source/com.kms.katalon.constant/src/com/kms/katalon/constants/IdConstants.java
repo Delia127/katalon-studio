@@ -3,6 +3,9 @@ package com.kms.katalon.constants;
 public interface IdConstants {
     // Application
     public static final String APPLICATION_ID = "com.kms.katalon";
+    
+    // LifeCycleManager
+    public static final String KATALON_CONTEXT_ID = "katalonContext";
 
     // Main Window
     public static final String MAIN_WINDOW_ID = "com.kms.katalon.composer.window.main";
