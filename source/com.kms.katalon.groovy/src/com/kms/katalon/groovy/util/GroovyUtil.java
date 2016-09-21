@@ -470,7 +470,7 @@ public class GroovyUtil {
             IProjectDescription projectDescription = ResourcesPlugin.getWorkspace().newProjectDescription(
                     projectEntity.getName());
             projectDescription.setLocation(new Path(projectEntity.getFolderLocation()));
-            projectDescription.setNatureIds(KAT_PROJECT_NATURES);
+
             groovyProject.create(projectDescription, null);
             groovyProject.open(null);
 
@@ -481,7 +481,6 @@ public class GroovyUtil {
             IProjectDescription projectDescription = null;
             if (!descriptionFile.exists()) {
                 projectDescription = ResourcesPlugin.getWorkspace().newProjectDescription(projectEntity.getName());
-                projectDescription.setNatureIds(KAT_PROJECT_NATURES);
                 projectDescription.setLocation(new Path(projectEntity.getFolderLocation()));
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 new ModelObjectWriter().write(projectDescription, out, System.lineSeparator());
@@ -489,16 +488,17 @@ public class GroovyUtil {
             }
             groovyProject.open(null);
             if (projectDescription != null) {
+                projectDescription.setNatureIds(KAT_PROJECT_NATURES);
                 groovyProject.setDescription(projectDescription, monitor);
             }
-        } else {
-            IProjectDescription projectDescription = groovyProject.getDescription();
-            projectDescription.setNatureIds(KAT_PROJECT_NATURES);
-            groovyProject.setDescription(projectDescription, monitor);
         }
+
+        IProjectDescription projectDescription = groovyProject.getDescription();
+        projectDescription.setNatureIds(new String[] { GROOVY_NATURE, JavaCore.NATURE_ID });
+        groovyProject.setDescription(projectDescription, monitor);
         groovyProject.refreshLocal(IResource.DEPTH_ZERO, monitor);
     }
-
+    
     public static void updateGroovyProject(ProjectEntity projectEntity, IProject oldGroovyProject) throws CoreException {
         IProjectDescription projectDescription = oldGroovyProject.getDescription();
         projectDescription.setName(getProjectNameIdFromLocation(projectEntity.getLocation()));
