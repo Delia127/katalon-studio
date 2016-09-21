@@ -88,12 +88,13 @@ public class FolderTreeEntity extends AbstractTreeEntity {
     @Override
     public boolean isRemoveable() throws Exception {
         final String idForDisplay = folder.getIdForDisplay();
-        return (idForDisplay.equals(StringConstants.ROOT_FOLDER_NAME_TEST_CASE)
+        return !(idForDisplay.equals(StringConstants.ROOT_FOLDER_NAME_TEST_CASE)
                 || idForDisplay.equals(StringConstants.ROOT_FOLDER_NAME_TEST_SUITE)
                 || idForDisplay.equals(StringConstants.ROOT_FOLDER_NAME_OBJECT_REPOSITORY)
                 || idForDisplay.equals(StringConstants.ROOT_FOLDER_NAME_DATA_FILE)
                 || idForDisplay.equals(StringConstants.ROOT_FOLDER_NAME_KEYWORD)
-                || idForDisplay.equals(StringConstants.ROOT_FOLDER_NAME_REPORT) || idForDisplay.equals(StringConstants.ROOT_FOLDER_NAME_CHECKPOINT));
+                || idForDisplay.equals(StringConstants.ROOT_FOLDER_NAME_REPORT) 
+                || idForDisplay.equals(StringConstants.ROOT_FOLDER_NAME_CHECKPOINT));
     }
 
     @Override
