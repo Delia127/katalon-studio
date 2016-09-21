@@ -231,7 +231,7 @@ public class ActivationInfoCollector {
         if (argumentSet.has(StringConstants.ARG_EMAIL)) {
             emailPass[0] = argumentSet.valueOf(StringConstants.ARG_EMAIL).toString();
         }
-        if (argumentSet.has(StringConstants.ARG_EMAIL)) {
+        if (argumentSet.has(StringConstants.ARG_PASSWORD)) {
             emailPass[1] = argumentSet.valueOf(StringConstants.ARG_PASSWORD).toString();
         }
         return emailPass;
