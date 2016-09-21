@@ -1,10 +1,7 @@
 package com.kms.katalon.activation.dialog;
 
-import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
@@ -25,13 +22,12 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.util.ColorUtil;
-import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.ImageConstants;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.util.ActivationInfoCollector;
 
 public class ActivationOfflineDialog extends Dialog {
-    
+
     private Button btnActivate;
 
     private Button btnClose;
@@ -201,6 +197,7 @@ public class ActivationOfflineDialog extends Dialog {
             lblError.setText(StringConstants.WAITTING_MESSAGE);
 
             Display.getCurrent().asyncExec(new Runnable() {
+                @Override
                 public void run() {
                     StringBuilder errorMessage = new StringBuilder();
                     boolean result = ActivationInfoCollector.activate(txtActivationCode.getText().trim(), errorMessage);

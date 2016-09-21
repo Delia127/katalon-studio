@@ -13,11 +13,13 @@ import java.util.Random;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.core.commands.common.CommandException;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.window.Window;
 
+import com.google.gson.JsonObject;
 import com.kms.katalon.activation.dialog.ActivationDialog;
 import com.kms.katalon.composer.components.impl.handler.CommandCaller;
 import com.kms.katalon.composer.intro.FunctionsIntroductionDialog;
@@ -49,32 +51,28 @@ public class ActivationInfoCollector {
     }
 
     private static String collectActivationInfo(String userName, String pass) throws Exception {
-        InetAddress inetAddress = InetAddress.getLocalHost();
-        StringBuilder userInfo = new StringBuilder();
-        String os = Platform.getOS();
         String katVersion = ApplicationInfo.versionNo() + " build " + ApplicationInfo.buildNo();
         String osType = Platform.getOSArch().contains("64") ? "64" : "32";
-        String katType = System.getProperty("sun.arch.data.model");
-        String hostName = inetAddress.getHostName();
 
-        userInfo.append("{ \"userId\":\"")
-                .append(userName)
-                .append("\", \"traits\": { ")
-                .append("\"password\": \"")
-                .append(pass)
-                .append("\", \"host_name\": \"")
-                .append(hostName)
-                .append("\",  \"os\": \"")
-                .append(os)
-                .append("\", \"os_type\": \"")
-                .append(osType)
-                .append("\", \"kat_version\": \"")
-                .append(katVersion)
-                .append("\", \"kat_type\": \"")
-                .append(katType)
-                .append("\" } }");
+        JsonObject traits = new JsonObject();
+        // Need to escape Java string for password and single quote character for EcmaScript
+        // NOTE that StringEscapeUtils.escapeEcmaScript() will do the same as StringEscapeUtils.escapeJava()
+        // and escape single quote (') and slash (/) also. But we do not want to escape slash in Java
+        traits.addProperty("password", StringEscapeUtils.escapeJava(pass).replace("'", "\\'"));
+        traits.addProperty("host_name", InetAddress.getLocalHost().getHostName());
+        traits.addProperty("os", Platform.getOS());
+        traits.addProperty("os_type", osType);
+        traits.addProperty("kat_version", katVersion);
+        traits.addProperty("kat_type", System.getProperty("sun.arch.data.model"));
 
-        return userInfo.toString();
+        JsonObject activationObject = new JsonObject();
+        activationObject.addProperty("userId", userName);
+        activationObject.add("traits", traits);
+
+        // IMPORTANT: Please do NOT use Gson nor GsonBuilder to build the JSON string
+        // They will encode single quote (') character as \u0027
+        // The better way is use JsonObject.toString()
+        return activationObject.toString();
     }
 
     private static String sendActivationInfo(HttpURLConnection uc, String userInfo) throws Exception {
@@ -215,7 +213,8 @@ public class ActivationInfoCollector {
         String email = emailPass[0], password = emailPass[1];
         StringBuilder errorMessage = new StringBuilder();
         if (email == null || password == null || !activate(email, password, errorMessage)) {
-            System.out.println(email == null || password == null ? StringConstants.KATALON_NOT_ACTIVATED : errorMessage.toString());
+            System.out.println(email == null || password == null ? StringConstants.KATALON_NOT_ACTIVATED
+                    : errorMessage.toString());
             return false;
         }
         return true;
