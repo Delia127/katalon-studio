@@ -79,10 +79,10 @@ public class TestSuiteRunConfigLabelProvider extends TypeCheckStyleCellTableLabe
                 return StringUtils.EMPTY;
         }
     }
-
+    
     @Override
     protected String getElementToolTipText(TestSuiteRunConfiguration element) {
-        return getText(element);
+        return StringUtils.defaultIfEmpty(getText(element), null);
     }
-
+    
 }
