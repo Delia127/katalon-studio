@@ -25,6 +25,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
 import com.kms.katalon.composer.explorer.providers.EntityProvider;
 import com.kms.katalon.composer.testsuite.collection.constant.StringConstants;
+import com.kms.katalon.composer.testsuite.collection.dialog.TestSuiteSelectionDialog;
 import com.kms.katalon.composer.testsuite.collection.execution.collector.TestExecutionGroupCollector;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
@@ -122,13 +123,9 @@ public class ToolbarItemListener extends SelectionAdapter implements HotkeyActiv
 
     private List<TestSuiteEntity> getSelectedTestSuitesOnDialog() throws Exception {
         EntityProvider entityProvider = new EntityProvider();
-        TreeEntitySelectionDialog dialog = new TreeEntitySelectionDialog(Display.getCurrent().getActiveShell(),
+        TestSuiteSelectionDialog dialog = new TestSuiteSelectionDialog(Display.getCurrent().getActiveShell(),
                 new EntityLabelProvider(), new EntityProvider(), new TestSuiteViewerFilter(entityProvider));
-
-        dialog.setAllowMultiple(true);
-        dialog.setTitle(StringConstants.DIA_TITLE_TEST_SUITE_BROWSER);
         ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-
         dialog.setInput(TreeEntityUtil.getChildren(null, FolderController.getInstance()
                 .getTestSuiteRoot(currentProject)));
         if (dialog.open() != Dialog.OK) {
