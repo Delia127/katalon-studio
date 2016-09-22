@@ -196,14 +196,15 @@ public class AddToObjectRepositoryDialog extends TreeEntitySelectionDialog {
         btnPageAsFolder.setText(StringConstants.DIA_CHCK_BTN_CREATE_FOLDER_AS_PAGE_NAME);
 
         HTMLElementTreeContentProvider contentProvider = new HTMLElementTreeContentProvider();
+        CheckboxTreeSelectionHelper checkboxSelectionHelper = null;
         if (isCheckable) {
             htmlElementTreeViewer = new CheckboxTreeViewer(htmlObjectTreeComposite, SWT.BORDER | SWT.MULTI);
-            CheckboxTreeSelectionHelper.attach((CheckboxTreeViewer) htmlElementTreeViewer, contentProvider);
+            checkboxSelectionHelper = CheckboxTreeSelectionHelper.attach((CheckboxTreeViewer) htmlElementTreeViewer,
+                    contentProvider);
         } else {
             htmlElementTreeViewer = new TreeViewer(htmlObjectTreeComposite, SWT.BORDER | SWT.MULTI);
         }
         htmlElementTreeViewer.getTree().setLayoutData(new GridData(GridData.FILL_BOTH));
-
         htmlElementTreeViewer.setContentProvider(contentProvider);
         htmlElementTreeViewer.setLabelProvider(new HTMLElementLabelProvider());
 
@@ -215,6 +216,9 @@ public class AddToObjectRepositoryDialog extends TreeEntitySelectionDialog {
                 htmlElementTreeViewer.setExpandedState(expandedHTMLElement, true);
             }
             htmlElementTreeViewer.getControl().setRedraw(true);
+        }
+        if (checkboxSelectionHelper != null) {
+            checkboxSelectionHelper.checkAllItemInTree(htmlElements);
         }
     }
 
@@ -365,7 +369,7 @@ public class AddToObjectRepositoryDialog extends TreeEntitySelectionDialog {
         public FolderTreeEntity getSelectedParentFolder() {
             return selectedParentFolder;
         }
-        
+
         public FolderTreeEntity createTreeFolderForPageElement(HTMLPageElement pageElement) throws Exception {
             if (createFolderAsPageNameAllowed) {
                 return new FolderTreeEntity(createFolderForPageElement(pageElement), selectedParentFolder);
@@ -375,8 +379,7 @@ public class AddToObjectRepositoryDialog extends TreeEntitySelectionDialog {
 
         public FolderEntity createFolderForPageElement(HTMLPageElement pageElement) throws Exception {
             FolderEntity parentFolder = (FolderEntity) (getSelectedParentFolder()).getObject();
-            return createFolderAsPageNameAllowed ? newPageWebElementAsFolder(parentFolder, pageElement)
-                    : parentFolder;
+            return createFolderAsPageNameAllowed ? newPageWebElementAsFolder(parentFolder, pageElement) : parentFolder;
         }
 
         private FolderEntity newPageWebElementAsFolder(FolderEntity parentFolder, HTMLPageElement pageElement)
