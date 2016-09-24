@@ -12,6 +12,8 @@ public class ComposerTestsuiteCollectionMessageConstants extends NLS {
     public static String PA_MSG_UNABLE_TO_UPDATE_TEST_SUITE_COLLECTION;
 
     public static String DIA_TITLE_TEST_SUITE_BROWSER;
+    
+    public static String DIA_TITLE_INFORMATION;
 
     public static String LS_MSG_UNABLE_TO_ADD_TEST_SUITE;
 
@@ -40,7 +42,11 @@ public class ComposerTestsuiteCollectionMessageConstants extends NLS {
     public static String JOB_TASK_BUILDING_TEST_SUITE_COLLECTION;
 
     public static String JOB_TASK_BUILDING_LAUNCHER;
+    
+    public static String JOB_MSG_UNSAVED_TEST_SUITE_COLLECTION;
 
+    public static String JOB_MSG_EMPTY_TEST_SUITE_COLLECTION;
+    
     public static String JOB_MSG_EMPTY_TEST_SUITE;
 
     public static String JOB_MSG_UNABLE_TO_EXECUTE_TEST_SUITE;

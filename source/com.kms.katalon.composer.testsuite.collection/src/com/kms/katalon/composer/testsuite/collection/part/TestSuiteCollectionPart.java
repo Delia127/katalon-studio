@@ -55,6 +55,7 @@ import com.kms.katalon.composer.testsuite.collection.part.job.TestSuiteCollectio
 import com.kms.katalon.composer.testsuite.collection.part.provider.TableViewerProvider;
 import com.kms.katalon.composer.testsuite.collection.part.provider.TestSuiteRunConfigLabelProvider;
 import com.kms.katalon.composer.testsuite.collection.part.provider.ToolbarItemListener;
+import com.kms.katalon.composer.testsuite.collection.part.provider.ToolbarItemListener.ActionId;
 import com.kms.katalon.composer.testsuite.collection.part.support.RunConfigurationChooserEditingSupport;
 import com.kms.katalon.composer.testsuite.collection.part.support.RunEnabledEditingSupport;
 import com.kms.katalon.composer.testsuite.collection.part.support.TestSuiteIdEditingSupport;
@@ -252,6 +253,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
 
     /**
      * Create menu for the given <code>table</code> like this
+     * 
      * <pre>
      * --------------------------------------
      * Add          Ctrl/Command + N
@@ -418,9 +420,18 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
     @Override
     public void executeTestRun() {
         if (mpart.isDirty()) {
-            MessageDialog.openInformation(null, StringConstants.INFO, "Please save before executing.");
+            MessageDialog.openInformation(null, StringConstants.DIA_TITLE_INFORMATION,
+                    StringConstants.JOB_MSG_UNSAVED_TEST_SUITE_COLLECTION);
             return;
         }
+        if (originalTestSuite.isEmpty()) {
+            if (MessageDialog.openQuestion(null, StringConstants.DIA_TITLE_INFORMATION,
+                    StringConstants.JOB_MSG_EMPTY_TEST_SUITE_COLLECTION)) {
+                selectionListener.executeAction(ActionId.ADD.getId());
+            }
+            return;
+        }
+
         AbstractExecutionHandler.openConsoleLog();
         toolItemExecute.setEnabled(false);
 

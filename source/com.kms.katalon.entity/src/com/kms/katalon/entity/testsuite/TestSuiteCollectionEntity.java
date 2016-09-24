@@ -124,4 +124,8 @@ public class TestSuiteCollectionEntity extends FileEntity {
     public boolean hasTestSuiteReferences(TestSuiteEntity testSuite) {
         return !findRunConfigurations(testSuite).isEmpty();
     }
+
+    public boolean isEmpty() {
+        return testSuiteRunConfigurations.isEmpty();
+    }
 }

@@ -13,6 +13,8 @@ public class StringConstants extends GlobalStringConstants {
     // TestSuiteSelectionCellEditor
     public static final String DIA_TITLE_TEST_SUITE_BROWSER = ComposerTestsuiteCollectionMessageConstants.DIA_TITLE_TEST_SUITE_BROWSER;
 
+    public static final String DIA_TITLE_INFORMATION = ComposerTestsuiteCollectionMessageConstants.DIA_TITLE_INFORMATION;
+
     // ToolbarItemListener
     public static final String LS_MSG_UNABLE_TO_ADD_TEST_SUITE = ComposerTestsuiteCollectionMessageConstants.LS_MSG_UNABLE_TO_ADD_TEST_SUITE;
 
@@ -48,6 +50,10 @@ public class StringConstants extends GlobalStringConstants {
     public static final String JOB_TASK_BUILDING_TEST_SUITE_COLLECTION = ComposerTestsuiteCollectionMessageConstants.JOB_TASK_BUILDING_TEST_SUITE_COLLECTION;
 
     public static final String JOB_TASK_BUILDING_LAUNCHER = ComposerTestsuiteCollectionMessageConstants.JOB_TASK_BUILDING_LAUNCHER;
+
+    public static final String JOB_MSG_UNSAVED_TEST_SUITE_COLLECTION = ComposerTestsuiteCollectionMessageConstants.JOB_MSG_UNSAVED_TEST_SUITE_COLLECTION;
+
+    public static final String JOB_MSG_EMPTY_TEST_SUITE_COLLECTION = ComposerTestsuiteCollectionMessageConstants.JOB_MSG_EMPTY_TEST_SUITE_COLLECTION;
 
     public static final String JOB_MSG_EMPTY_TEST_SUITE = ComposerTestsuiteCollectionMessageConstants.JOB_MSG_EMPTY_TEST_SUITE;
 
