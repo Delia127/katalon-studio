@@ -2,6 +2,9 @@ To pack extensions for web browsers after update the scripts to use with the app
 
 * Firefox:
 - Install jpm (https://developer.mozilla.org/en-US/Add-ons/SDK/Tools/jpm)
+- To debug the addon:
+	+ installed Firefox Nightly here https://nightly.mozilla.org/
+	+ Run jpm run -b nightly to start Nightly Firefox with the addon
 - Build the extension using jpm xpi
 - Sign the exension xpi file with jpm sign (https://wiki.mozilla.org/Add-ons/Extension_Signing)
 

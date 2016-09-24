@@ -1,8 +1,9 @@
 var lastEvent;
-var gHoverElement;		//whatever element the mouse is over
-var infoDiv;		//currently just container for InfoDivHover, might add more here
-var infoDivHover;	//container for hoverText text node.
-var hoverText;		//show information about current element that the mouse is over
+var gHoverElement; // whatever element the mouse is over
+
+var infoDiv; // parent div to contains information
+var elementInfoDiv; // informational div to show xpath of current hovered element
+var elementInfoDivText; // xpath text to show in elementInfoDiv
 
 function setupDOMSelection() {
 	setupEventListeners();
@@ -16,13 +17,15 @@ function setupEventListeners() {
 	document.onmouseout = mouseOut;
 	document.ondblclick = dblClick;
 	document.onkeydown = keyDown;
+	window.onmousemove = mouseMoveWindow;
+	window.onmouseout = mouseOutWindow;
 	var forms = document.getElementsByTagName('form');
-	for (i = 0; i < forms.length; i++) { 
+	for (i = 0; i < forms.length; i++) {
 		forms[i].onsubmit = submit;
 	}
-	
+
 	var selects = document.getElementsByTagName('select');
-	for (i = 0; i < selects.length; i++) { 
+	for (i = 0; i < selects.length; i++) {
 		selects[i].onfocus = focus;
 	}
 }
@@ -37,48 +40,43 @@ function addNavigationAction() {
 	sendData(action, document);
 }
 
-//setup informational div to show which element the mouse is over.
-function createInfoDiv() {
-	infoDiv = document.createElement('div');
-	var s = infoDiv.style;
-	s.position = 'fixed';
-	s.top = '0';
-	s.right = '0';
-	s.display = 'block';
-	s.padding = '0px';
-	s.zIndex = "9999999";
-	document.body.appendChild(infoDiv);
-	
-	infoDivHover = document.createElement('div');
-	s=infoDivHover.style;
-	s.fontWeight = 'bold';			
-	s.padding = '2px';
-	s.Opacity = '0.8';
-	s.borderWidth = 'thin';
-	s.borderStyle = 'solid';
-	s.borderColor = INFO_DIV_DEFAULT_BORDER_COLOR;
-	s.backgroundColor = INFO_DIV_DEFAULT_BACKGROUND_COLOR;
-	s.color = INFO_DIV_DEFAULT_FOREGROUND_COLOR;
-	infoDiv.appendChild(infoDivHover);			
-	hoverText = document.createTextNode('selecting');
-	infoDivHover.appendChild(hoverText);
+function addElementToElement(tag, text, element) {
+	var childElement = document.createElement(tag);
+	childElement.appendChild(document.createTextNode(text));
+	element.appendChild(childElement);
 }
 
-// Update info div with the new text, color, background color or border color
-function updateInfoDiv(text, color, bgColor, borderColor) {
-	var s = infoDivHover.style;
-	if (color) {
-		s.color = color;
-	}
-	if (bgColor) {
-		s.backgroundColor = bgColor;
-	}
-	if (borderColor) {
-		s.borderColor = borderColor;
-	}
-	if (text) {
-		hoverText.data=text;
-	}
+function addKbdElementToElement(text, element) {
+	addElementToElement('kbd', text, element);
+}
+
+function addSpanElementToElement(text, element) {
+	addElementToElement('span', text, element);
+}
+
+// setup informational div to show which element the mouse is over.
+function createInfoDiv() {
+	addCustomStyle();
+	infoDiv = document.createElement('div');
+	infoDiv.id = 'katalon';
+	createXpathDiv();
+	document.body.appendChild(infoDiv);
+}
+
+function addCustomStyle() {
+	var kbdstyle = document.createElement('style');
+	kbdstyle.type = 'text/css';
+	var styleText = document
+			.createTextNode('#katalon{font-family:monospace;font-size:13px;background-color:rgba(0,0,0,.7);position:fixed;top:0;left:0;right:0;display:block;z-index:999999999;line-height: normal} #katalon div{padding:0;margin:0;color:#fff;} #katalon kbd{display:inline-block;padding:3px 5px;font:13px Consolas,"Liberation Mono",Menlo,Courier,monospace;line-height:10px;color:#555;vertical-align:middle;background-color:#fcfcfc;border:1px solid #ccc;border-bottom-color:#bbb;border-radius:3px;box-shadow:inset 0 -1px 0 #bbb;font-weight: bold} div#katalon-elementInfoDiv {color: lightblue; padding: 5px}');
+	kbdstyle.appendChild(styleText);
+	document.head.appendChild(kbdstyle);
+}
+
+function createXpathDiv() {
+	elementInfoDiv = document.createElement('div');
+	elementInfoDiv.id = 'katalon-elementInfoDiv';
+	elementInfoDiv.style.display = 'none'; 
+	infoDiv.appendChild(elementInfoDiv);
 }
 
 // Get info from for hovered element
@@ -86,18 +84,28 @@ function getElementInfo(element) {
 	if (!element) {
 		return '';
 	}
-	var txt = element.nodeName.toLowerCase();
-	txt = appendAttributeToText(txt, element, 'id');
-	txt = appendAttributeToText(txt, element, 'class');	
-	txt = '//' + txt;
-	return txt;
-	
-	function appendAttributeToText(txt,element,a) {			
-		if ((element.getAttribute(a) != null) && (element.getAttribute(a) !== '')) {
-			txt += "[@"+a+"='"+element.getAttribute(a)+"']";
-		}
-		return txt;
+	return createXPathFromElement(element);
+}
+
+function updateInfoDiv(text) {
+	if (elementInfoDivText == null) {
+		elementInfoDivText = document.createTextNode('');
+		elementInfoDiv.appendChild(elementInfoDivText);
 	}
+	elementInfoDivText.nodeValue = (text);
+}
+
+function mouseMoveWindow(e) {
+	var y = 0;
+	var windowHeight = $(window).height();
+	if (e.clientY - infoDiv.offsetHeight - 20 < 0) {
+		y = windowHeight - infoDiv.offsetHeight;
+	}
+	infoDiv.style.top = y + 'px';
+}
+
+function mouseOutWindow(e) {
+	mouseMoveWindow(e);
 }
 
 function mouseOver(e) {
@@ -112,14 +120,14 @@ function mouseOver(e) {
 		var win = doc.defaultView || doc.parentWindow;
 		win.focus();
 	}
-	
-	if (selectedElement == gHoverElement) {	
+
+	if (selectedElement == gHoverElement) {
 		return;
 	}
 	gHoverElement = selectedElement;
 	gHoverElement.style.outline = ELEMENT_HOVER_OUTLINE_STYLE;
-	updateInfoDiv(getElementInfo(gHoverElement), INFO_DIV_HOVER_FOREGROUND_COLOR, 
-		INFO_DIV_HOVER_BACKGROUND_COLOR, INFO_DIV_HOVER_BORDER_COLOR);
+	elementInfoDiv.style.display = 'block'; 
+	updateInfoDiv(getElementInfo(gHoverElement));
 }
 
 function mouseOut(e) {
@@ -128,7 +136,8 @@ function mouseOut(e) {
 		return;
 	}
 	gHoverElement.style.outline = '';
-	updateInfoDiv('-','white','black','white');	
+	elementInfoDiv.style.display = 'none';
+	updateInfoDiv("");
 	gHoverElement = null;
 }
 
@@ -161,8 +170,7 @@ function change(e) {
 	}
 	var elementTagName = selectedElement.tagName.toLowerCase();
 	var elementTypeName = selectedElement.type.toLowerCase();
-	var isRecorded = ((elementTagName != 'input') 
-		|| (elementTagName == 'input' && elementTypeName != 'radio' && elementTypeName != 'checkbox'));
+	var isRecorded = ((elementTagName != 'input') || (elementTagName == 'input' && elementTypeName != 'radio' && elementTypeName != 'checkbox'));
 	if (!isRecorded) {
 		return;
 	}
@@ -210,8 +218,8 @@ function isElementMouseUpEventRecordable(selectedElement, clickType) {
 	var elementTag = selectedElement.tagName.toLowerCase();
 	if (elementTag == 'input') {
 		var elementInputType = selectedElement.type.toLowerCase();
-		if (elementInputType == 'button' || elementInputType == 'submit' || elementInputType == 'radio' 
-			|| elementInputType == 'image' || elementInputType == 'checkbox') {
+		if (elementInputType == 'button' || elementInputType == 'submit' || elementInputType == 'radio'
+				|| elementInputType == 'image' || elementInputType == 'checkbox') {
 			return true;
 		}
 		return false;
@@ -242,7 +250,7 @@ function dblClick(e) {
 	sendData(action, selectedElement);
 }
 
-function keyDown(e) {	
+function keyDown(e) {
 	var keycode = (e) ? e.which : window.event.keyCode;
 	if (keycode == 13) {
 		lastEvent = 'enter';
@@ -295,8 +303,8 @@ function postData(url, object) {
 		});
 		return;
 	}
-	var data = 'element=' + encodeURIComponent(JSON.stringify(object));
 	if (detectIE() && window.httpRequestExtension) {
+		var data = 'element=' + encodeURIComponent(JSON.stringify(object));
 		var response = window.httpRequestExtension.postRequest(data, url);
 		if (response === '200') {
 			console.log("POST success");
@@ -305,7 +313,10 @@ function postData(url, object) {
 		}
 		return;
 	}
-	self.port.emit("postData", { url : url, data : data });
+	self.port.emit("postData", {
+		url : url,
+		data : object
+	});
 }
 
 function processObject(object) {
@@ -317,7 +328,7 @@ function processObject(object) {
 }
 
 function receiveMessage(event) {
-	// Check if sender is from any child frame belong to this window	
+	// Check if sender is from any child frame belong to this window
 	var childFrame = null;
 	var arrFrames = document.getElementsByTagName("IFRAME");
 	for (var i = 0; i < arrFrames.length; i++) {
@@ -348,9 +359,13 @@ function receiveMessage(event) {
 }
 
 function startRecord() {
-	if (!window.console) console = {log: function() {
-	}};
-	//START
+	if (!window.console) {
+		console = {
+			log : function() {
+			}
+		};
+	}
+	// START
 	setupDOMSelection();
 	addNavigationAction();
 
@@ -358,13 +373,13 @@ function startRecord() {
 	if (!detectChrome() && !detectIE() && !(typeof self === 'undefined')) {
 		self.on('message', function(message) {
 			if (message.kind == "postSuccess") {
-				flashElement();
+				console.log("POST recorded element successful")
 			} else if (message.kind == "postFail") {
 				alert(message.text);
-			} 
+			}
 		});
 	}
-	
+
 	if (window.addEventListener) {
 		window.addEventListener("message", receiveMessage, false);
 	} else {

@@ -67,6 +67,9 @@ public class HTMLActionJsonParser {
 
         private void init(JsonObject jsonObject) throws UnsupportedEncodingException {
             actionObject = getActionObject(jsonObject);
+            if (actionObject == null) {
+                throw new IllegalArgumentException();
+            }
             actionName = getActionName(actionObject);
             if (actionName == null) {
                 throw new IllegalArgumentException();

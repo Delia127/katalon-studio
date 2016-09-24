@@ -11,6 +11,7 @@ using System.Reflection;
 using System.Net;
 using System.Collections.Specialized;
 using System.Text;
+using System.Diagnostics;
 
 namespace RecorderExtension
 {
@@ -161,30 +162,42 @@ namespace RecorderExtension
 
         private string GetKatalonServerUrl()
         {
-            if (!Directory.Exists(addonDataFolder))
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            string serverSettingFile;
+            while (true)
             {
-                return null;
-            }
-            string serverSettingFile = Path.Combine(addonDataFolder, "serverUrl.txt");
-            if (!File.Exists(serverSettingFile))
-            {
-                return null;
-            }
-            string serverUrl = File.ReadAllText(serverSettingFile);
-            try
-            {
-                WebRequest request = WebRequest.Create(serverUrl);
-                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                if (response.StatusCode == HttpStatusCode.OK)
+                if (!Directory.Exists(addonDataFolder))
                 {
-                    return serverUrl;
+                    return null;
                 }
+                serverSettingFile = Path.Combine(addonDataFolder, "serverUrl.txt");
+                if (!File.Exists(serverSettingFile))
+                {
+                    return null;
+                }
+                string serverUrl = File.ReadAllText(serverSettingFile);
+                try
+                {
+                    WebRequest request = WebRequest.Create(serverUrl);
+                    HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                    if (response.StatusCode == HttpStatusCode.OK)
+                    {
+                        return serverUrl;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // server not available at all, for some reason
+                }
+                if (sw.ElapsedMilliseconds > 5000)
+                {
+                    break;
+                };
             }
-            catch (Exception ex)
-            {
-                // server not available at all, for some reason
+            if (serverSettingFile != null) {
+                File.Delete(serverSettingFile);
             }
-            File.Delete(serverSettingFile);
             return null;
         }
 
