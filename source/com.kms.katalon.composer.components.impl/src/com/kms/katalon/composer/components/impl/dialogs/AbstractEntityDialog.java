@@ -37,7 +37,7 @@ public class AbstractEntityDialog extends TitleAreaDialog {
     /** The valid message types are one of NONE, INFORMATION,WARNING, or ERROR */
     private int msgType = IMessageProvider.INFORMATION;
 
-    private Text txtName;
+    protected Text txtName;
 
     protected Composite container;
 
