@@ -61,7 +61,7 @@ public class MessageConstants extends NLS {
 
     public static String PA_TOOLTIP_OPEN_RECENT_PROJECT;
 
-    public static String DIA_TITLE_FUNCTIONS_INTRODUCTION;
+    public static String DIA_TITLE_QUICK_GUIDE;
 
     public static String ERR_CONSOLE_MODE;
 

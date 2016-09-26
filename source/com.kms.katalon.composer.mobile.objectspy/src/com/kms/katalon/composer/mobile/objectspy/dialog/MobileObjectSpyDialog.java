@@ -103,7 +103,7 @@ public class MobileObjectSpyDialog extends Dialog {
 
     public static final Point DIALOG_SIZE = new Point(800, 800);
 
-    private static final String DIALOG_TITLE = StringConstants.DIA_DIALOG_TITLE_MOBILE_OBJ_INSPECTOR;
+    private static final String DIALOG_TITLE = StringConstants.DIA_DIALOG_TITLE_MOBILE_OBJ_SPY;
 
     private static final int DIALOG_MARGIN_OFFSET = 5;
 

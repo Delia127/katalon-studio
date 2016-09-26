@@ -267,6 +267,8 @@ public class GlobalStringConstants {
 
     public static final String DIA_FINISH = GlobalMessageConstants.DIA_FINISH;
 
+    public static final String DIA_OK = GlobalMessageConstants.DIA_OK;
+    
     public static final String DIA_CANCEL = GlobalMessageConstants.DIA_CANCEL;
 
     public static final String DIA_CLOSE = GlobalMessageConstants.DIA_CLOSE;

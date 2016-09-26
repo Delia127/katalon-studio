@@ -62,7 +62,7 @@ public class FunctionsIntroductionDialog extends SimpleWizardDialog {
     }
     
     protected String getDialogTitle() {
-        return StringConstants.DIA_TITLE_FUNCTIONS_INTRODUCTION;
+        return StringConstants.DIA_TITLE_QUICK_GUIDE;
     }
 
     protected Point getInitialSize() {

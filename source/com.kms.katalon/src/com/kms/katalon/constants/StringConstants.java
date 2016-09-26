@@ -64,7 +64,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_TOOLTIP_OPEN_RECENT_PROJECT = MessageConstants.PA_TOOLTIP_OPEN_RECENT_PROJECT;
 
     // FunctionsIntroductionDialog
-    public static final String DIA_TITLE_FUNCTIONS_INTRODUCTION = MessageConstants.DIA_TITLE_FUNCTIONS_INTRODUCTION;
+    public static final String DIA_TITLE_QUICK_GUIDE = MessageConstants.DIA_TITLE_QUICK_GUIDE;
 
     // Application
     public static final String ERR_CONSOLE_MODE = MessageConstants.ERR_CONSOLE_MODE;

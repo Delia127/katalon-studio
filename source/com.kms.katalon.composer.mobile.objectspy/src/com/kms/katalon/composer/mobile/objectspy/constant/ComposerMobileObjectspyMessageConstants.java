@@ -11,7 +11,7 @@ public class ComposerMobileObjectspyMessageConstants extends NLS {
 
     public static String DIA_ERROR_MSG_UNABLE_TO_CAPTURE_SCREEN;
 
-    public static String DIA_DIALOG_TITLE_MOBILE_OBJ_INSPECTOR;
+    public static String DIA_DIALOG_TITLE_MOBILE_OBJ_SPY;
 
     public static String DIA_LBL_DEVICE_NAME;
 

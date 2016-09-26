@@ -15,7 +15,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_ERROR_MSG_UNABLE_TO_CAPTURE_SCREEN = ComposerMobileObjectspyMessageConstants.DIA_ERROR_MSG_UNABLE_TO_CAPTURE_SCREEN;
 
     // MobileObjectSpyDialog
-    public static final String DIA_DIALOG_TITLE_MOBILE_OBJ_INSPECTOR = ComposerMobileObjectspyMessageConstants.DIA_DIALOG_TITLE_MOBILE_OBJ_INSPECTOR;
+    public static final String DIA_DIALOG_TITLE_MOBILE_OBJ_SPY = ComposerMobileObjectspyMessageConstants.DIA_DIALOG_TITLE_MOBILE_OBJ_SPY;
 
     public static final String DIA_LBL_DEVICE_NAME = ComposerMobileObjectspyMessageConstants.DIA_LBL_DEVICE_NAME;
 

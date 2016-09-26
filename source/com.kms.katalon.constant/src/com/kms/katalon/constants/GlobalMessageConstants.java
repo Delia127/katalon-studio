@@ -172,6 +172,8 @@ public class GlobalMessageConstants extends NLS {
     public static String WZ_SETUP_BTN_NEXT;
 
     public static String DIA_FINISH;
+    
+    public static String DIA_OK;
 
     public static String DIA_CANCEL;
 
