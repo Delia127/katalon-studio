@@ -8,14 +8,17 @@ import java.io.IOException;
 import org.eclipse.core.filesystem.IFileInfo;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.ui.basic.MTrimmedWindow;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.lifecycle.PostContextCreate;
 import org.eclipse.e4.ui.workbench.modeling.ISaveHandler;
+import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.search.ui.NewSearchUI;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IWorkbenchCommandConstants;
@@ -42,7 +45,7 @@ import com.kms.katalon.util.ActivationInfoCollector;
 
 @SuppressWarnings("restriction")
 public class LifeCycleManager {
-
+    private static final String DF_TEXT_FONT = "Courier New";
     private static final String PREF_FIST_TIME_SETUP_COMPLETED = "firstTimeSetupCompleted";
 
     private void startUpGUIMode() throws Exception {
@@ -126,9 +129,8 @@ public class LifeCycleManager {
             return;
         }
 
-        FontData defaultFont = JFaceResources.getTextFont().getFontData()[0];
-        defaultFont.setHeight(12);
-
+        int fontSize = (Platform.OS_MACOSX.equals(Platform.getOS())) ? 15 : 11;
+        FontData defaultFont = FontDescriptor.createFrom(DF_TEXT_FONT, fontSize, SWT.NORMAL).getFontData()[0];
         store.setValue(JFaceResources.TEXT_FONT, defaultFont.toString());
         store.setValue(PREF_FIST_TIME_SETUP_COMPLETED, true);
 
