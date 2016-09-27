@@ -14,6 +14,7 @@ import org.eclipse.e4.ui.model.application.ui.MGenericTile;
 import org.eclipse.e4.ui.model.application.ui.basic.MCompositePart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.jface.bindings.keys.IKeyLookup;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerEditor;
@@ -54,6 +55,7 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.impl.control.CTreeViewer;
+import com.kms.katalon.composer.components.impl.util.KeyEventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPart;
 import com.kms.katalon.composer.components.viewer.CustomEditorActivationStrategy;
@@ -289,12 +291,12 @@ public class TestCasePart implements IComposerPart, EventHandler {
         treeTable.getTree().setToolTipText("");
         ColumnViewerToolTipSupport.enableFor(treeTable);
 
-        addTreeTableKeyListener();
         createContextMenu();
+        addTreeTableKeyListener();
         hookDragEvent();
         hookDropEvent();
     }
-    
+
     private void setTreeTableActivation() {
         int activationBitMask = ColumnViewerEditor.TABBING_HORIZONTAL | ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR
                 | ColumnViewerEditor.KEYBOARD_ACTIVATION;
@@ -336,6 +338,7 @@ public class TestCasePart implements IComposerPart, EventHandler {
 
     private void createContextMenu() {
         treeTable.getTree().addListener(SWT.MenuDetect, new Listener() {
+            @Override
             public void handleEvent(org.eclipse.swt.widgets.Event event) {
                 Menu menu = treeTable.getTree().getMenu();
                 if (menu != null) {
@@ -364,45 +367,55 @@ public class TestCasePart implements IComposerPart, EventHandler {
                 }
 
                 MenuItem removeMenuItem = new MenuItem(menu, SWT.PUSH);
-                removeMenuItem.setText(StringConstants.ADAP_MENU_CONTEXT_REMOVE);
+                removeMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_REMOVE,
+                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.DEL_NAME })));
                 removeMenuItem.addSelectionListener(selectionListener);
                 removeMenuItem.setID(TreeTableMenuItemConstants.REMOVE_MENU_ITEM_ID);
 
                 MenuItem copyMenuItem = new MenuItem(menu, SWT.PUSH);
-                copyMenuItem.setText(StringConstants.ADAP_MENU_CONTEXT_COPY);
+                copyMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_COPY,
+                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "C" })));
                 copyMenuItem.addSelectionListener(selectionListener);
                 copyMenuItem.setID(TreeTableMenuItemConstants.COPY_MENU_ITEM_ID);
 
                 MenuItem cutMenuItem = new MenuItem(menu, SWT.PUSH);
-                cutMenuItem.setText(StringConstants.ADAP_MENU_CONTEXT_CUT);
+                cutMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_CUT,
+                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "X" })));
                 cutMenuItem.addSelectionListener(selectionListener);
                 cutMenuItem.setID(TreeTableMenuItemConstants.CUT_MENU_ITEM_ID);
 
                 MenuItem pasteMenuItem = new MenuItem(menu, SWT.PUSH);
-                pasteMenuItem.setText(StringConstants.ADAP_MENU_CONTEXT_PASTE);
+                pasteMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_PASTE,
+                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "V" })));
                 pasteMenuItem.addSelectionListener(selectionListener);
                 pasteMenuItem.setID(TreeTableMenuItemConstants.PASTE_MENU_ITEM_ID);
 
                 addFailureHandlingSubMenu(menu);
-                
+
                 MenuItem disableMenuItem = new MenuItem(menu, SWT.PUSH);
-                disableMenuItem.setText(StringConstants.ADAP_MENU_CONTEXT_DISABLE);
+                disableMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_DISABLE,
+                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "D" })));
                 disableMenuItem.addSelectionListener(selectionListener);
                 disableMenuItem.setID(TreeTableMenuItemConstants.DISABLE_MENU_ITEM_ID);
-                
+
                 MenuItem enableMenuItem = new MenuItem(menu, SWT.PUSH);
-                enableMenuItem.setText(StringConstants.ADAP_MENU_CONTEXT_ENABLE);
+                enableMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_ENABLE,
+                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "E" })));
                 enableMenuItem.addSelectionListener(selectionListener);
                 enableMenuItem.setID(TreeTableMenuItemConstants.ENABLE_MENU_ITEM_ID);
-                
+
                 treeTable.getTree().setMenu(menu);
             }
         });
     }
 
+    private String createMenuItemLabel(String text, String keyCombination) {
+        return text + "\t" + keyCombination;
+    }
+
     /**
-     * Add KeyListener to TreeTable. Handle Delete, Ctrl + c, Ctrl + x, Ctrl + v
-     * for test steps
+     * Add KeyListener to TreeTable.
+     * Handle Delete, Ctrl + c, Ctrl + x, Ctrl + v, Ctrl + d, Ctrl + e for test steps
      */
     private void addTreeTableKeyListener() {
         treeTable.getControl().addKeyListener(new KeyListener() {
@@ -413,15 +426,41 @@ public class TestCasePart implements IComposerPart, EventHandler {
 
             @Override
             public void keyPressed(KeyEvent e) {
+
+                // Delete
                 if (e.keyCode == SWT.DEL) {
                     removeTestStep();
-                } else if (((e.stateMask & SWT.CTRL) == SWT.CTRL)) {
+                    return;
+                }
+
+                if (((e.stateMask & SWT.MOD1) == SWT.MOD1)) {
+                    // Copy
                     if (e.keyCode == 'c') {
                         copyTestStep();
-                    } else if (e.keyCode == 'x') {
+                        return;
+                    }
+
+                    // Cut
+                    if (e.keyCode == 'x') {
                         cutTestStep();
-                    } else if (e.keyCode == 'v') {
+                        return;
+                    }
+
+                    // Paste
+                    if (e.keyCode == 'v') {
                         pasteTestStep();
+                        return;
+                    }
+
+                    // Disable
+                    if (e.keyCode == 'd') {
+                        treeTableInput.disable();
+                        return;
+                    }
+
+                    // Enable
+                    if (e.keyCode == 'e') {
+                        treeTableInput.enable();
                     }
                 }
             }
@@ -449,6 +488,7 @@ public class TestCasePart implements IComposerPart, EventHandler {
         dragSource.addDragListener(new DragSourceListener() {
             List<AstTreeTableNode> selectedNodes;
 
+            @Override
             public void dragStart(DragSourceEvent event) {
                 selectedNodes = getKeywordScriptFromTree();
                 if (selectedNodes.size() > 0) {
@@ -458,6 +498,7 @@ public class TestCasePart implements IComposerPart, EventHandler {
                 }
             }
 
+            @Override
             public void dragSetData(DragSourceEvent event) {
                 StringBuilder scriptSnippets = new StringBuilder();
                 for (AstTreeTableNode astTreeTableNode : selectedNodes) {
@@ -474,6 +515,7 @@ public class TestCasePart implements IComposerPart, EventHandler {
                 }
             }
 
+            @Override
             public void dragFinished(DragSourceEvent event) {
                 try {
                     if (event.detail == DND.DROP_MOVE) {
@@ -484,7 +526,7 @@ public class TestCasePart implements IComposerPart, EventHandler {
                 }
                 selectedNodes.clear();
             }
-            
+
             private List<AstTreeTableNode> getKeywordScriptFromTree() {
                 TreeItem[] selection = treeTable.getTree().getSelection();
                 List<AstTreeTableNode> treeEntities = new ArrayList<AstTreeTableNode>();
@@ -690,7 +732,7 @@ public class TestCasePart implements IComposerPart, EventHandler {
     public String getEntityId() {
         return getTestCase().getIdForDisplay();
     }
-    
+
     public void addDefaultImports() {
         treeTableInput.addDefaultImports();
     }
