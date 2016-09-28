@@ -75,7 +75,7 @@ public class TestSuiteCollectionBuilderJob extends Job {
 
             LauncherManager launcherManager = LauncherManager.getInstance();
             TestSuiteCollectionLauncher launcher = new IDETestSuiteCollectionLauncher(executedEntity, launcherManager,
-                    tsLaunchers);
+                    tsLaunchers, testSuiteCollectionEntity.getExecutionMode());
             launcherManager.addLauncher(launcher);
             return Status.OK_STATUS;
         } finally {

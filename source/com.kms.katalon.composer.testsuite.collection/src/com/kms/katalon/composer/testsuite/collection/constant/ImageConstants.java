@@ -3,10 +3,12 @@ package com.kms.katalon.composer.testsuite.collection.constant;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.graphics.Image;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.composer.components.util.ImageUtil;
 
 public class ImageConstants {
+    private static final Bundle currentBundle = FrameworkUtil.getBundle(ImageConstants.class);
     private static final Bundle componentBundle = Platform.getBundle("com.kms.katalon.composer.components.impl");
 
     // OpenTestSuiteCollectionHandler
@@ -27,4 +29,11 @@ public class ImageConstants {
     public static final Image IMG_24_DOWN = ImageUtil.loadImage(componentBundle, "/icons/down_24.png");
 
     public static final Image IMG_24_EXECUTE = ImageUtil.loadImage(componentBundle, "/icons/play_24.png");
+
+    // TestSuiteCollectionPart
+    public static final Image IMG_16_ARROW_DOWN_BLACK = ImageUtil.loadImage(currentBundle,
+            "/icons/arrow_down_black_16.png");
+
+    public static final Image IMG_16_ARROW_UP_BLACK = ImageUtil.loadImage(currentBundle,
+            "/icons/arrow_up_black_16.png");
 }

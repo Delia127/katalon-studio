@@ -9,10 +9,13 @@ import org.eclipse.e4.ui.workbench.UIEvents;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.execution.launcher.IDEObservableLauncher;
+import com.kms.katalon.composer.execution.launcher.IDEObservableParentLauncher;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.core.logging.XmlLogRecord;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
+import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity.ExecutionMode;
 import com.kms.katalon.execution.entity.TestSuiteCollectionExecutedEntity;
+import com.kms.katalon.execution.launcher.ReportableLauncher;
 import com.kms.katalon.execution.launcher.TestSuiteCollectionLauncher;
 import com.kms.katalon.execution.launcher.listener.LauncherEvent;
 import com.kms.katalon.execution.launcher.listener.LauncherListener;
@@ -22,15 +25,15 @@ import com.kms.katalon.execution.launcher.model.LaunchMode;
 import com.kms.katalon.execution.launcher.result.LauncherStatus;
 
 public class IDETestSuiteCollectionLauncher extends TestSuiteCollectionLauncher implements IDEObservableLauncher,
-        LauncherListener {
+        IDEObservableParentLauncher, LauncherListener {
 
     private boolean observed;
 
     private List<XmlLogRecord> logRecords;
 
     public IDETestSuiteCollectionLauncher(TestSuiteCollectionExecutedEntity executedEntity,
-            LauncherManager parentManager, List<SubIDELauncher> subLaunchers) {
-        super(executedEntity, parentManager, subLaunchers);
+            LauncherManager parentManager, List<SubIDELauncher> subLaunchers, ExecutionMode executionMode) {
+        super(executedEntity, parentManager, subLaunchers, executionMode);
         this.observed = false;
 
         logRecords = new ArrayList<>();
@@ -114,5 +117,16 @@ public class IDETestSuiteCollectionLauncher extends TestSuiteCollectionLauncher 
     protected void onUpdateResult(TestStatusValue testStatusValue) {
         super.onUpdateResult(testStatusValue);
         getEventBroker().post(EventConstants.JOB_REFRESH, null);
+    }
+
+    @Override
+    public List<IDEObservableLauncher> getSubLaunchers() {
+        List<IDEObservableLauncher> subIDEObservableLaunchers = new ArrayList<>();
+        for (ReportableLauncher subLauncher : subLaunchers) {
+            if (subLauncher instanceof IDEObservableLauncher) {
+                subIDEObservableLaunchers.add((IDEObservableLauncher) subLauncher);
+            }
+        }
+        return subIDEObservableLaunchers;
     }
 }

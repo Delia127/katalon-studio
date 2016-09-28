@@ -5,6 +5,10 @@ import org.eclipse.osgi.util.NLS;
 public class ComposerTestsuiteCollectionMessageConstants extends NLS {
     private static final String BUNDLE_NAME = "com.kms.katalon.composer.testsuite.collection.constant.composerTestsuiteCollectionMessages";
 
+    public static String BTN_TEST_SUITE_COLLECTION_EXECUTION_MODE_PARALLEL;
+
+    public static String BTN_TEST_SUITE_COLLECTION_EXECUTION_MODE_SEQUENTIAL;
+
     public static String PA_ACTION_EXECUTE_TEST_SUITE_COLLECTION;
 
     public static String PA_TABLE_COLUMN_RUN_WITH;
@@ -14,6 +18,10 @@ public class ComposerTestsuiteCollectionMessageConstants extends NLS {
     public static String DIA_TITLE_TEST_SUITE_BROWSER;
     
     public static String DIA_TITLE_INFORMATION;
+
+    public static String LBL_EXECUTION_INFO;
+
+    public static String LBL_TEST_SUTE_COLLECTION_EXECUTION_MODE;
 
     public static String LS_MSG_UNABLE_TO_ADD_TEST_SUITE;
 
@@ -54,6 +62,8 @@ public class ComposerTestsuiteCollectionMessageConstants extends NLS {
     public static String HAND_JOB_DELETING_ENTITY;
 
     public static String HAND_JOB_DELETING_FOLDER;
+
+    public static String INFO_MESSAGE_SAVE_BEFORE_EXECUTE;
 
     static {
         // initialize resource bundle

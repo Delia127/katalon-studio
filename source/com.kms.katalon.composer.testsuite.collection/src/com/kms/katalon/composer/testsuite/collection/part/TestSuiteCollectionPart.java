@@ -19,6 +19,7 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.TableViewer;
@@ -26,10 +27,15 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
@@ -40,6 +46,7 @@ import org.osgi.service.event.Event;
 
 import com.kms.katalon.composer.components.impl.control.CMenu;
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
+import com.kms.katalon.composer.components.impl.control.ImageButton;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.editors.DefaultTableColumnViewerEditor;
 import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
@@ -48,7 +55,9 @@ import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.execution.handlers.AbstractExecutionHandler;
+import com.kms.katalon.composer.testsuite.collection.constant.ComposerTestsuiteCollectionMessageConstants;
 import com.kms.katalon.composer.testsuite.collection.constant.ImageConstants;
 import com.kms.katalon.composer.testsuite.collection.constant.StringConstants;
 import com.kms.katalon.composer.testsuite.collection.part.job.TestSuiteCollectionBuilderJob;
@@ -64,10 +73,12 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestSuiteCollectionController;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
+import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity.ExecutionMode;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteRunConfiguration;
 
 public class TestSuiteCollectionPart extends EventServiceAdapter implements TableViewerProvider {
+    private static final int MINIMUM_COMPOSITE_SIZE = 300;
 
     private static final String HK_NEW = "M1+N";
 
@@ -99,16 +110,36 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
 
     private ToolItem toolItemExecute;
 
+    private ImageButton btnExpandExecutionInformation;
+
     private ToolbarItemListener selectionListener;
+
+    private Composite toolbarComposite, testSuiteTableComposite, compositeExecution, compositeExecutionHeader,
+            compositeExecutionInformation;
+
+    private boolean isExecutionInfoCompositeExpanded;
+
+    private Button btnSequential, btnParallel;
+
+    private Label lblExecutionInformation;
+
+    private Listener layoutExecutionInformationCompositeListener = new Listener() {
+
+        @Override
+        public void handleEvent(org.eclipse.swt.widgets.Event event) {
+            isExecutionInfoCompositeExpanded = !isExecutionInfoCompositeExpanded;
+            layoutExecutionInfo();
+        }
+    };
 
     @PostConstruct
     public void initialize(Composite parent, MPart mpart) {
         this.mpart = mpart;
+        this.isExecutionInfoCompositeExpanded = true;
         registerEventListeners();
 
         createControls(parent);
         registerControlModifyListeners();
-
         updateTestSuiteCollections((TestSuiteCollectionEntity) mpart.getObject());
     }
 
@@ -140,7 +171,16 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
 
     private void updateInput() {
         tableViewer.setInput(cloneTestSuite.getTestSuiteRunConfigurations());
+        updateExecutionInfoInput();
         updateRunColumn();
+    }
+
+    private void updateExecutionInfoInput() {
+        if (cloneTestSuite.getExecutionMode() == ExecutionMode.PARALLEL) {
+            btnParallel.setSelection(true);
+        } else {
+            btnSequential.setSelection(true);
+        }
     }
 
     private void registerControlModifyListeners() {
@@ -163,18 +203,128 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
             }
         });
 
+        btnExpandExecutionInformation.addListener(SWT.MouseDown, layoutExecutionInformationCompositeListener);
+
+        lblExecutionInformation.addListener(SWT.MouseDown, layoutExecutionInformationCompositeListener);
+
+        SelectionListener selectionListener = new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if (e.getSource() == btnSequential && cloneTestSuite.getExecutionMode() != ExecutionMode.SEQUENTIAL) {
+                    cloneTestSuite.setExecutionMode(ExecutionMode.SEQUENTIAL);
+                    markDirty();
+                    return;
+                }
+                if (e.getSource() == btnParallel && cloneTestSuite.getExecutionMode() != ExecutionMode.PARALLEL) {
+                    cloneTestSuite.setExecutionMode(ExecutionMode.PARALLEL);
+                    markDirty();
+                }
+            }
+        };
+
+        btnSequential.addSelectionListener(selectionListener);
+        btnParallel.addSelectionListener(selectionListener);
     }
 
     private void createControls(Composite parent) {
         parent.setLayout(new GridLayout(1, false));
+
+        createGeneralInformationComposite(parent);
 
         createToolbarComposite(parent);
 
         createTableComposite(parent);
     }
 
+    private void createGeneralInformationComposite(Composite parent) {
+        compositeExecution = new Composite(parent, SWT.NONE);
+        compositeExecution.setBackground(ColorUtil.getCompositeBackgroundColor());
+        compositeExecution.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+        GridLayout glCompositeInformation = new GridLayout(1, false);
+        glCompositeInformation.marginWidth = 0;
+        glCompositeInformation.marginHeight = 0;
+        glCompositeInformation.verticalSpacing = 0;
+        compositeExecution.setLayout(glCompositeInformation);
+
+        compositeExecutionHeader = new Composite(compositeExecution, SWT.NONE);
+        GridLayout glCompositeInformationHeader = new GridLayout(2, false);
+        glCompositeInformationHeader.marginWidth = 0;
+        glCompositeInformationHeader.marginHeight = 0;
+        compositeExecutionHeader.setLayout(glCompositeInformationHeader);
+        compositeExecutionHeader.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        compositeExecutionHeader.setCursor(compositeExecutionHeader.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
+
+        btnExpandExecutionInformation = new ImageButton(compositeExecutionHeader, SWT.NONE);
+        redrawBtnExpandGeneralInfo();
+
+        lblExecutionInformation = new Label(compositeExecutionHeader, SWT.NONE);
+        lblExecutionInformation.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        lblExecutionInformation.setFont(JFaceResources.getFontRegistry().getBold("")); //$NON-NLS-1$
+        lblExecutionInformation.setText(ComposerTestsuiteCollectionMessageConstants.LBL_EXECUTION_INFO);
+
+        compositeExecutionInformation = new Composite(compositeExecution, SWT.NONE);
+        GridLayout glCompositeInformationDetails = new GridLayout(3, true);
+        glCompositeInformationDetails.marginLeft = 45;
+        glCompositeInformationDetails.horizontalSpacing = 40;
+        compositeExecutionInformation.setLayout(glCompositeInformationDetails);
+        compositeExecutionInformation.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
+
+        Composite compositeTestSuiteCollectionExecutionMode = new Composite(compositeExecutionInformation, SWT.NONE);
+        GridData gdCompositeTestSuiteCollectionExecutionMode = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+        gdCompositeTestSuiteCollectionExecutionMode.minimumWidth = MINIMUM_COMPOSITE_SIZE;
+        compositeTestSuiteCollectionExecutionMode.setLayoutData(gdCompositeTestSuiteCollectionExecutionMode);
+        GridLayout glCompositeTestSuiteCollectionExecutionMode = new GridLayout(2, false);
+        glCompositeTestSuiteCollectionExecutionMode.verticalSpacing = 10;
+        compositeTestSuiteCollectionExecutionMode.setLayout(glCompositeTestSuiteCollectionExecutionMode);
+
+        Label lblTestSuiteCollectionExecutionMode = new Label(compositeTestSuiteCollectionExecutionMode, SWT.NONE);
+        GridData gdLblTestSuiteCollectionExecutionMode = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+        gdLblTestSuiteCollectionExecutionMode.widthHint = 100;
+        lblTestSuiteCollectionExecutionMode.setLayoutData(gdLblTestSuiteCollectionExecutionMode);
+        lblTestSuiteCollectionExecutionMode.setText(ComposerTestsuiteCollectionMessageConstants.LBL_TEST_SUTE_COLLECTION_EXECUTION_MODE);
+
+        Composite compositeExecutionRadioGroup = new Composite(compositeTestSuiteCollectionExecutionMode, SWT.NULL);
+        compositeExecutionRadioGroup.setLayout(new RowLayout());
+
+        btnSequential = new Button(compositeExecutionRadioGroup, SWT.RADIO);
+        btnSequential.setText(ComposerTestsuiteCollectionMessageConstants.BTN_TEST_SUITE_COLLECTION_EXECUTION_MODE_SEQUENTIAL);
+
+        btnParallel = new Button(compositeExecutionRadioGroup, SWT.RADIO);
+        btnParallel.setText(ComposerTestsuiteCollectionMessageConstants.BTN_TEST_SUITE_COLLECTION_EXECUTION_MODE_PARALLEL);
+    }
+
+    private void layoutExecutionInfo() {
+        Display.getDefault().timerExec(10, new Runnable() {
+
+            @Override
+            public void run() {
+                compositeExecutionInformation.setVisible(isExecutionInfoCompositeExpanded);
+                if (!isExecutionInfoCompositeExpanded) {
+                    ((GridData) compositeExecutionInformation.getLayoutData()).exclude = true;
+                    compositeExecution.setSize(compositeExecution.getSize().x, compositeExecution.getSize().y
+                            - testSuiteTableComposite.getSize().y - toolbarComposite.getSize().y);
+                } else {
+                    ((GridData) compositeExecutionInformation.getLayoutData()).exclude = false;
+                }
+                compositeExecution.layout(true, true);
+                compositeExecution.getParent().layout();
+                redrawBtnExpandGeneralInfo();
+            }
+        });
+    }
+
+    private void redrawBtnExpandGeneralInfo() {
+        btnExpandExecutionInformation.getParent().setRedraw(false);
+        if (isExecutionInfoCompositeExpanded) {
+            btnExpandExecutionInformation.setImage(ImageConstants.IMG_16_ARROW_UP_BLACK);
+        } else {
+            btnExpandExecutionInformation.setImage(ImageConstants.IMG_16_ARROW_DOWN_BLACK);
+        }
+        btnExpandExecutionInformation.getParent().setRedraw(true);
+    }
+
     private void createToolbarComposite(Composite parent) {
-        Composite toolbarComposite = new Composite(parent, SWT.NONE);
+        toolbarComposite = new Composite(parent, SWT.NONE);
         toolbarComposite.setLayout(new GridLayout(1, false));
         toolbarComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 
@@ -203,7 +353,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
     }
 
     private void createTableComposite(Composite parent) {
-        Composite testSuiteTableComposite = new Composite(parent, SWT.NONE);
+        testSuiteTableComposite = new Composite(parent, SWT.NONE);
         testSuiteTableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
         TableColumnLayout tableLayout = new TableColumnLayout();
@@ -420,8 +570,8 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
     @Override
     public void executeTestRun() {
         if (mpart.isDirty()) {
-            MessageDialog.openInformation(null, StringConstants.DIA_TITLE_INFORMATION,
-                    StringConstants.JOB_MSG_UNSAVED_TEST_SUITE_COLLECTION);
+            MessageDialog.openInformation(null, StringConstants.INFO,
+                    ComposerTestsuiteCollectionMessageConstants.INFO_MESSAGE_SAVE_BEFORE_EXECUTE);
             return;
         }
         if (originalTestSuite.isEmpty()) {

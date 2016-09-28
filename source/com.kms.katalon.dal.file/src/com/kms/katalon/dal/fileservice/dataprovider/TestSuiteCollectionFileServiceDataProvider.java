@@ -14,6 +14,7 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity.ExecutionMode;
 
 public class TestSuiteCollectionFileServiceDataProvider implements TestSuiteCollectionDataProvider {
 
@@ -55,6 +56,7 @@ public class TestSuiteCollectionFileServiceDataProvider implements TestSuiteColl
             checkDuplicate(parentFolder, newName);
 
             TestSuiteCollectionEntity testSuiteCollection = new TestSuiteCollectionEntity();
+            testSuiteCollection.setExecutionMode(ExecutionMode.SEQUENTIAL);
             testSuiteCollection.setParentFolder(parentFolder);
             testSuiteCollection.setProject(parentFolder.getProject());
             testSuiteCollection.setName(newName);
