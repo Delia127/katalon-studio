@@ -143,6 +143,8 @@ public class GenerateCommandDialog extends AbstractDialog {
 
     private String defaultOutputReportLocation;
 
+    private String[] mobileDevices;
+
     private static final String ZERO = "0";
 
     private static final String BROWSER_TYPE_CUSTOM = StringConstants.CUSTOM_RUN_MENU_LABEL;
@@ -417,7 +419,10 @@ public class GenerateCommandDialog extends AbstractDialog {
         comboRemoteWebDriverType.select(0);
 
         comboMobileDevice.setEnabled(false);
-        comboMobileDevice.setItems(getMobileDevices());
+        if (mobileDevices == null) {
+            mobileDevices = new String[0];
+        }
+        comboMobileDevice.setItems(mobileDevices);
 
         comboCustomExecution.setEnabled(false);
         comboCustomExecution.setItems(RunConfigurationCollector.getInstance().getAllCustomRunConfigurationIds());
@@ -950,6 +955,10 @@ public class GenerateCommandDialog extends AbstractDialog {
             }
             return command;
         }
+    }
+
+    public void initListMobileDevices() {
+        mobileDevices = getMobileDevices();
     }
 
 }

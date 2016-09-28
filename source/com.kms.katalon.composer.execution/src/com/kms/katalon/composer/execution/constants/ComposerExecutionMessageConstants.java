@@ -216,6 +216,12 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String PAGE_EXTERNAL_LIB_JOB_TASK_REBUILD_PROJECT;
 
     public static String PAGE_EXTERNAL_LIB_MSG_UNABLE_UPDATE_PROJECT;
+    
+    public static String HAND_CREATING_DIALOG;
+    
+    public static String HAND_OPEN_DIALOG;
+    
+    public static String HAND_OPEN_GENERATE_COMMAND_DIALOG;
 
     static {
         // initialize resource bundle
