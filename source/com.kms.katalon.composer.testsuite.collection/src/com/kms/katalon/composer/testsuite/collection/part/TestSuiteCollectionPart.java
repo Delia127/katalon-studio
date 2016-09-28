@@ -420,19 +420,19 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         CMenu menu = new CMenu(table, selectionListener);
         table.setMenu(menu);
 
-        Callable<Boolean> visibleWhenItemSelected = new Callable<Boolean>() {
+        Callable<Boolean> enableWhenItemSelected = new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
                 return !tableViewer.getSelection().isEmpty();
             }
         };
         menu.createMenuItem(StringConstants.ADD, HK_NEW);
-        menu.createMenuItem(StringConstants.REMOVE, HK_DEL, visibleWhenItemSelected);
+        menu.createMenuItem(StringConstants.REMOVE, HK_DEL, enableWhenItemSelected);
 
         new MenuItem(menu, SWT.SEPARATOR);
 
-        menu.createMenuItem(StringConstants.UP, HK_MOVE_ITEMS_UP, visibleWhenItemSelected);
-        menu.createMenuItem(StringConstants.DOWN, HK_MOVE_ITEMS_DOWN, visibleWhenItemSelected);
+        menu.createMenuItem(StringConstants.UP, HK_MOVE_ITEMS_UP, enableWhenItemSelected);
+        menu.createMenuItem(StringConstants.DOWN, HK_MOVE_ITEMS_DOWN, enableWhenItemSelected);
 
         new MenuItem(menu, SWT.SEPARATOR);
 

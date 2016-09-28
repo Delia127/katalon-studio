@@ -4,6 +4,7 @@ import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import javax.annotation.PreDestroy;
 
@@ -35,15 +36,19 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.eclipse.swt.widgets.Widget;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.composer.components.impl.control.CMenu;
+import com.kms.katalon.composer.components.impl.control.HotkeyActiveListener;
 import com.kms.katalon.composer.components.impl.control.ImageButton;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.dialogs.TreeEntitySelectionDialog;
@@ -77,6 +82,11 @@ import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 
 public class ObjectPropertyView implements EventHandler {
+
+    private static final String HK_ADD = "M1+N";
+
+    private static final String HK_DEL = "Delete";
+
     private static final String[] FILTER_NAMES = { "Image Files (*.gif,*.png,*.jpg)" };
 
     private static final String[] FILTER_EXTS = { "*.gif; *.png; *.jpg" };
@@ -109,6 +119,8 @@ public class ObjectPropertyView implements EventHandler {
 
     private Composite compositeParentObject, compositeSettingsDetails, compositeSettings;
 
+    private ObjectViewToolItemListener toolItemListener;
+
     private Listener layoutParentObjectCompositeListener = new Listener() {
 
         @Override
@@ -117,10 +129,11 @@ public class ObjectPropertyView implements EventHandler {
         }
     };
 
+
     public ObjectPropertyView(IEventBroker eventBroker, MDirtyable dt) {
         this.eventBroker = eventBroker;
         this.dirtyable = dt;
-
+        this.toolItemListener = new ObjectViewToolItemListener();
         eventBroker.subscribe(ObjectEventConstants.OBJECT_UPDATE_DIRTY, this);
         eventBroker.subscribe(ObjectEventConstants.OBJECT_UPDATE_IS_SELECTED_COLUMN_HEADER, this);
         eventBroker.subscribe(EventConstants.TEST_OBJECT_UPDATED, this);
@@ -246,6 +259,42 @@ public class ObjectPropertyView implements EventHandler {
         tableViewer.setContentProvider(ArrayContentProvider.getInstance());
     }
 
+    /**
+     * Create menu like this
+     * <pre>
+     * -----------------------------
+     * Add          Ctrl/Command + N
+     * Delete       Delete
+     * -----------------------------
+     * Clear
+     * -----------------------------
+     * </pre>
+     */
+    private void createTableMenu() {
+        Table table = tableViewer.getTable();
+        CMenu menu = new CMenu(table, toolItemListener);
+        table.setMenu(menu);
+
+        menu.createMenuItem(StringConstants.VIEW_LBL_ADD, HK_ADD);
+        menu.createMenuItem(StringConstants.VIEW_LBL_DELETE, HK_DEL, new Callable<Boolean>() {
+
+            @Override
+            public Boolean call() throws Exception {
+                return toolItemListener.isAbleToDelete();
+            }
+        });
+
+        new MenuItem(menu, SWT.SEPARATOR);
+
+        menu.createMenuItem(StringConstants.VIEW_LBL_CLEAR, null, new Callable<Boolean>() {
+
+            @Override
+            public Boolean call() throws Exception {
+                return toolItemListener.isAbleToClear();
+            }
+        });
+    }
+
     private void createTestObjectDetailsComposite(Composite parent) {
         Composite compositeObjectDetails = new Composite(parent, SWT.NONE);
         compositeObjectDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
@@ -268,6 +317,8 @@ public class ObjectPropertyView implements EventHandler {
         createTableToolbar();
 
         createTableDetails();
+
+        createTableMenu();
     }
 
     private void createSettingsComposite(Composite parent) {
@@ -405,51 +456,11 @@ public class ObjectPropertyView implements EventHandler {
             }
         });
 
-        toolItemClear.addSelectionListener(new SelectionAdapter() {
-            public void widgetSelected(SelectionEvent e) {
-                if (tableViewer.getInput() != null && tableViewer.getInput().size() > 0) {
-                    tableViewer.clear();
-                    dirtyable.setDirty(true);
-                }
-            }
-        });
+        toolItemClear.addSelectionListener(toolItemListener);
 
-        toolItemDelete.addSelectionListener(new SelectionAdapter() {
-            @SuppressWarnings("unchecked")
-            public void widgetSelected(SelectionEvent e) {
-                if (tableViewer.getTable().getSelection().length > 0) {
-                    tableViewer.deleteRows(((IStructuredSelection) tableViewer.getSelection()).toList());
-                    dirtyable.setDirty(true);
-                }
-            }
-        });
+        toolItemDelete.addSelectionListener(toolItemListener);
 
-        toolItemAdd.addSelectionListener(new SelectionAdapter() {
-            public void widgetSelected(SelectionEvent e) {
-                // set dialog's position is under btnAdd
-                Shell shell = new Shell(Display.getCurrent());
-                Point pt = tableViewer.getControl().toDisplay(1, 1);
-                shell.setSize(0, 0);
-                AddPropertyDialog dialog = new AddPropertyDialog(shell);
-                shell.setLocation(pt.x + dialog.getInitialSize().x / 2 - 65, pt.y + dialog.getInitialSize().y / 2 + 20);
-
-                int code = dialog.open();
-                if (code == Window.OK) {
-                    String propName = dialog.getName();
-                    String propVal = dialog.getValue();
-                    String condition = dialog.getCondition();
-
-                    WebElementPropertyEntity prop = new WebElementPropertyEntity();
-                    prop.setName(propName);
-                    prop.setValue(propVal);
-                    prop.setMatchCondition(condition);
-                    prop.setIsSelected(true);
-
-                    tableViewer.addRow(prop);
-                    dirtyable.setDirty(true);
-                }
-            }
-        });
+        toolItemAdd.addSelectionListener(toolItemListener);
 
         trclmnColumnSelected.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -766,6 +777,114 @@ public class ObjectPropertyView implements EventHandler {
             default:
                 break;
         }
+    }
+    
+    private class ObjectViewToolItemListener extends SelectionAdapter implements HotkeyActiveListener {
+        @Override
+        public void executeAction(String actionId) {
+            if (actionId == null) {
+                return;
+            }
+            switch (ActionId.parse(actionId)) {
+                case ADD: {
+                    handleAddItemAction();
+                    break;
+                }
+                case DELETE: {
+                    handleRemoveItemsAction();
+                    break;
+                }
+                case CLEAR: {
+                    handleClearItemAction();
+                    break;
+                }
+            }
+            
+        }
 
+        private void handleAddItemAction() {
+            // set dialog's position is under btnAdd
+            Shell shell = new Shell(Display.getCurrent());
+            Point pt = tableViewer.getControl().toDisplay(1, 1);
+            shell.setSize(0, 0);
+            AddPropertyDialog dialog = new AddPropertyDialog(shell);
+            shell.setLocation(pt.x + dialog.getInitialSize().x / 2 - 65, pt.y + dialog.getInitialSize().y / 2 + 20);
+
+            int code = dialog.open();
+            if (code == Window.OK) {
+                String propName = dialog.getName();
+                String propVal = dialog.getValue();
+                String condition = dialog.getCondition();
+
+                WebElementPropertyEntity prop = new WebElementPropertyEntity();
+                prop.setName(propName);
+                prop.setValue(propVal);
+                prop.setMatchCondition(condition);
+                prop.setIsSelected(true);
+
+                tableViewer.addRow(prop);
+                dirtyable.setDirty(true);
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        private void handleRemoveItemsAction() {
+            if (isAbleToDelete()) {
+                tableViewer.deleteRows(((IStructuredSelection) tableViewer.getSelection()).toList());
+                dirtyable.setDirty(true);
+            }
+        }
+
+        public boolean isAbleToDelete() {
+            return tableViewer.getTable().getSelection().length > 0;
+        }
+
+        private void handleClearItemAction() {
+            if (isAbleToClear()) {
+                tableViewer.clear();
+                dirtyable.setDirty(true);
+            }
+        }
+
+        public boolean isAbleToClear() {
+            return tableViewer.getInput() != null && tableViewer.getInput().size() > 0;
+        }
+
+        @Override
+        public void widgetSelected(SelectionEvent e) {
+            Widget widget = e.widget;
+            if (!(widget instanceof ToolItem)) {
+                return;
+            }
+            executeAction(((ToolItem) widget).getText());
+        }
+    }
+
+    public enum ActionId {
+        ADD(StringConstants.VIEW_LBL_ADD),
+        DELETE(StringConstants.VIEW_LBL_DELETE),
+        CLEAR(StringConstants.VIEW_LBL_CLEAR);
+
+        private final String id;
+
+        private ActionId(final String id) {
+            this.id = id;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public static ActionId parse(String id) {
+            if (id == null) {
+                return null;
+            }
+            for (ActionId actionId : values()) {
+                if (actionId.getId().equals(id)) {
+                    return actionId;
+                }
+            }
+            return null;
+        }
     }
 }
