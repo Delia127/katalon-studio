@@ -30,6 +30,7 @@ import org.eclipse.ui.internal.ide.dialogs.IDEResourceInfoUtils;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.addons.CommandBindingRemover;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.handlers.CloseHandler;
 import com.kms.katalon.composer.handlers.ResetPerspectiveHandler;
@@ -114,6 +115,7 @@ public class LifeCycleManager {
         });
 
         new CommandBindingInitializer().setup();
+        new CommandBindingRemover().setup();
     }
 
     private void setupPreferences() {
