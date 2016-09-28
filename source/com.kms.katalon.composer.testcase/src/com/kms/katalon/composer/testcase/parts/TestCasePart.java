@@ -115,6 +115,8 @@ public class TestCasePart implements IComposerPart, EventHandler {
 
     private TestCaseCompositePart parentTestCaseCompositePart;
 
+    private List<AstTreeTableNode> dragNodes;
+
     @PostConstruct
     public void init(Composite parent, MPart mpart) {
         this.mPart = mpart;
@@ -486,12 +488,10 @@ public class TestCasePart implements IComposerPart, EventHandler {
         dragSource.setTransfer(new Transfer[] { new ScriptTransfer() });
 
         dragSource.addDragListener(new DragSourceListener() {
-            List<AstTreeTableNode> selectedNodes;
-
             @Override
             public void dragStart(DragSourceEvent event) {
-                selectedNodes = getKeywordScriptFromTree();
-                if (selectedNodes.size() > 0) {
+                dragNodes = getKeywordScriptFromTree();
+                if (dragNodes.size() > 0) {
                     event.doit = true;
                 } else {
                     event.doit = false;
@@ -501,7 +501,7 @@ public class TestCasePart implements IComposerPart, EventHandler {
             @Override
             public void dragSetData(DragSourceEvent event) {
                 StringBuilder scriptSnippets = new StringBuilder();
-                for (AstTreeTableNode astTreeTableNode : selectedNodes) {
+                for (AstTreeTableNode astTreeTableNode : dragNodes) {
                     StringBuilder stringBuilder = new StringBuilder();
                     GroovyWrapperParser groovyParser = new GroovyWrapperParser(stringBuilder);
                     groovyParser.parse(astTreeTableNode.getASTObject());
@@ -519,12 +519,12 @@ public class TestCasePart implements IComposerPart, EventHandler {
             public void dragFinished(DragSourceEvent event) {
                 try {
                     if (event.detail == DND.DROP_MOVE) {
-                        treeTableInput.removeRows(selectedNodes);
+                        treeTableInput.removeRows(dragNodes);
                     }
                 } catch (Exception e) {
                     LoggerSingleton.logError(e);
                 }
-                selectedNodes.clear();
+                dragNodes.clear();
             }
 
             private List<AstTreeTableNode> getKeywordScriptFromTree() {
@@ -735,5 +735,13 @@ public class TestCasePart implements IComposerPart, EventHandler {
 
     public void addDefaultImports() {
         treeTableInput.addDefaultImports();
+    }
+
+    public TreeViewer getTestCaseTreeTable() {
+        return treeTable;
+    }
+
+    public List<AstTreeTableNode> getDragNodes() {
+        return dragNodes;
     }
 }
