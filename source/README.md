@@ -1,1 +1,1 @@
-[![Katalon Logo](http://katalon.kms-technology.com/assets/images/katalon_logo.png)](http://katalon.kms-technology.com)
+[![Katalon Logo](https://www.katalon.com/wp-content/themes/katalon/images/logo-katalon.png)](https://www.katalon.com)
