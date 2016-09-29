@@ -7,7 +7,6 @@ import java.util.Map;
 import com.kms.katalon.core.driver.DriverType;
 import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
-import com.kms.katalon.execution.configuration.IDriverConnector;
 
 public class RemoteWebDriverConnector extends WebUiDriverConnector {
     public enum RemoteWebDriverConnectorType {
@@ -23,8 +22,8 @@ public class RemoteWebDriverConnector extends WebUiDriverConnector {
         }
     }
 
-    private String remoteServerUrl;
-    private RemoteWebDriverConnectorType remoteWebDriverConnectorType;
+    protected String remoteServerUrl;
+    protected RemoteWebDriverConnectorType remoteWebDriverConnectorType;
 
     public RemoteWebDriverConnector(String projectDir) throws IOException {
         super(projectDir);
@@ -46,8 +45,8 @@ public class RemoteWebDriverConnector extends WebUiDriverConnector {
     @Override
     public Map<String, Object> getSystemProperties() {
         Map<String, Object> propertyMap = super.getSystemProperties();
-        propertyMap.put(DriverFactory.REMOTE_WEB_DRIVER_URL, remoteServerUrl);
-        propertyMap.put(DriverFactory.REMOTE_WEB_DRIVER_TYPE, remoteWebDriverConnectorType.name());
+        propertyMap.put(DriverFactory.REMOTE_WEB_DRIVER_URL, getRemoteServerUrl());
+        propertyMap.put(DriverFactory.REMOTE_WEB_DRIVER_TYPE, getRemoteWebDriverConnectorType().name());
         return propertyMap;
     }
 
@@ -65,16 +64,16 @@ public class RemoteWebDriverConnector extends WebUiDriverConnector {
 
     @Override
     public void saveUserConfigProperties() throws IOException {
-        driverProperties.put(DriverFactory.REMOTE_WEB_DRIVER_URL, remoteServerUrl);
-        driverProperties.put(DriverFactory.REMOTE_WEB_DRIVER_TYPE, remoteWebDriverConnectorType.name());
+        driverProperties.put(DriverFactory.REMOTE_WEB_DRIVER_URL, getRemoteServerUrl());
+        driverProperties.put(DriverFactory.REMOTE_WEB_DRIVER_TYPE, getRemoteWebDriverConnectorType().name());
         super.saveUserConfigProperties();
     }
 
     @Override
     public String toString() {
         Map<String, Object> tempMap = new HashMap<String, Object>(getUserConfigProperties());
-        tempMap.put(DriverFactory.REMOTE_WEB_DRIVER_URL, remoteServerUrl);
-        tempMap.put(DriverFactory.REMOTE_WEB_DRIVER_TYPE, remoteWebDriverConnectorType.name());
+        tempMap.put(DriverFactory.REMOTE_WEB_DRIVER_URL, getRemoteServerUrl());
+        tempMap.put(DriverFactory.REMOTE_WEB_DRIVER_TYPE, getRemoteWebDriverConnectorType().name());
         return tempMap.toString();
     }
 
@@ -88,7 +87,7 @@ public class RemoteWebDriverConnector extends WebUiDriverConnector {
     
     @SuppressWarnings("unchecked")
     @Override
-    public IDriverConnector clone() {
+    public RemoteWebDriverConnector clone() {
         try {
             RemoteWebDriverConnector remoteDriverConnector = new RemoteWebDriverConnector(getParentFolderPath());
             remoteDriverConnector.setRemoteServerUrl(getRemoteServerUrl());

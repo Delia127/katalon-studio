@@ -1,0 +1,27 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Kobiton Integration Composer
+Bundle-SymbolicName: com.kms.katalon.composer.integration.kobiton;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: KMS
+Require-Bundle: org.eclipse.e4.ui.model.workbench,
+ com.kms.katalon.composer.execution,
+ com.kms.katalon.execution,
+ com.kms.katalon.execution.webui,
+ com.kms.katalon.composer.mobile,
+ com.kms.katalon.composer.webui,
+ com.kms.katalon.integration.kobiton,
+ org.eclipse.jface,
+ com.kms.katalon.preferences,
+ org.apache.httpcomponents.httpclient,
+ com.kms.katalon.composer.components,
+ com.kms.katalon.constant,
+ org.eclipse.equinox.registry,
+ org.eclipse.osgi,
+ org.eclipse.e4.ui.di,
+ org.eclipse.swt,
+ org.eclipse.core.runtime,
+ org.apache.commons.lang3,
+ com.kms.katalon.composer.components.impl
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ActivationPolicy: lazy
