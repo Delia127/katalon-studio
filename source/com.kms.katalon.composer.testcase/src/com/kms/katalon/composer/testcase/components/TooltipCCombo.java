@@ -27,15 +27,17 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.Widget;
+
+import com.kms.katalon.composer.testcase.ast.treetable.AstBuiltInKeywordTreeTableNode;
+import com.kms.katalon.composer.testcase.util.KeywordURLUtil;
 
 /**
  * The CCombo class represents a selectable user interface object
@@ -75,6 +77,8 @@ public class TooltipCCombo extends CCombo {
     private static final String FIELD_POPUP = "popup"; //$NON-NLS-1$
 
     private final java.util.List<String> tooltips = new ArrayList<String>();
+    
+    private String classKeywordName = "";
 
     /**
      * Constructs a new instance of this class given its parent
@@ -104,7 +108,15 @@ public class TooltipCCombo extends CCombo {
      */
     public TooltipCCombo(Composite parent, int style) {
         super(parent, style);
-
+        
+        if (parent instanceof Tree) {
+            Tree tree = (Tree)parent;
+            Object node = tree.getSelection()[0].getData();
+            if (node instanceof AstBuiltInKeywordTreeTableNode) {
+                classKeywordName = ((AstBuiltInKeywordTreeTableNode)node).getBuiltInKWClassSimpleName();
+            }
+        }
+        
         try {
             // get the list from the combo
             Field listField = CCombo.class.getDeclaredField(FIELD_LIST);
@@ -297,7 +309,7 @@ public class TooltipCCombo extends CCombo {
     private class TooltipHandler implements MouseMoveListener, SelectionListener, MouseTrackListener {
         private int previousSelectionIdx = -1;
 
-        private WrapTooltip tooltip = null;
+        private KeywordNodeTooltip tooltip = null;
 
         private List list;
 
@@ -311,9 +323,7 @@ public class TooltipCCombo extends CCombo {
             this.list.addSelectionListener(this);
             this.list.addMouseTrackListener(this);
             this.textLookup = textLookup;
-            this.tooltip = new WrapTooltip(this.list);
-            this.tooltip.setRespectDisplayBounds(true);
-            this.tooltip.setRespectMonitorBounds(true);
+            this.tooltip = new KeywordNodeTooltip(this.list);
             // show tooltip if currently an item is selected
             if (this.list.getSelectionIndex() != -1) {
                 updateTooltip(this.list.getSelectionIndex());
@@ -362,6 +372,8 @@ public class TooltipCCombo extends CCombo {
                 Point size = this.list.getSize();
                 Point loc = this.list.getParent().getLocation();
                 // force tooltip show next right of list items
+                tooltip.setPreferedSize(600, size.y);
+                this.tooltip.setKeywordURL(KeywordURLUtil.getKeywordDescriptionURI(classKeywordName, list.getItem(index)));
                 this.tooltip.show(new Point(loc.x + size.x - 2, loc.y));
                 // set the selection idx
                 this.previousSelectionIdx = index;
@@ -378,7 +390,14 @@ public class TooltipCCombo extends CCombo {
             this.list.removeMouseMoveListener(this);
             this.list.removeSelectionListener(this);
             this.list.removeMouseTrackListener(this);
+            processOpenKeywordDesc();
             this.tooltip.hide();
+        }
+        
+        private void processOpenKeywordDesc() {
+            if (tooltip.isOpenKeywordDescToolItem(Display.getCurrent().getCursorLocation())) {
+                tooltip.openKeywordDesc();
+            }
         }
 
         @Override
@@ -387,8 +406,6 @@ public class TooltipCCombo extends CCombo {
 
         @Override
         public void mouseExit(MouseEvent e) {
-            this.tooltip.hide();
-            this.previousSelectionIdx = -1;
         }
 
         @Override
@@ -399,54 +416,5 @@ public class TooltipCCombo extends CCombo {
         public void mouseHover(MouseEvent e) {
         }
 
-    }
-
-    private class WrapTooltip extends org.eclipse.jface.window.ToolTip {
-        private Label label;
-
-        private String text;
-
-        public WrapTooltip(Control control) {
-            super(control, SWT.NONE, true);
-        }
-
-        @Override
-        protected Composite createToolTipContentArea(Event event, Composite parent) {
-            Composite composite = new Composite(parent, SWT.NONE);
-            FillLayout layout = new FillLayout();
-            layout.marginHeight = layout.marginWidth = 5;
-            composite.setLayout(layout);
-            composite.setForeground(parent.getDisplay().getSystemColor(SWT.COLOR_INFO_FOREGROUND));
-            composite.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
-            this.label = new Label(composite, SWT.WRAP);
-            this.label.setForeground(parent.getDisplay().getSystemColor(SWT.COLOR_INFO_FOREGROUND));
-            this.label.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
-            this.label.setText(this.text);
-            return composite;
-        }
-
-        /**
-         * Sets the tooltip text
-         * 
-         * @param text the tooltip text
-         */
-        public void setText(String text) {
-            this.text = text;
-        }
-
-        /**
-         * returns the tooltip text
-         * 
-         * @return the tooltip text
-         */
-        @SuppressWarnings("unused")
-        public String getText() {
-            return this.text;
-        }
-
-        @Override
-        public Point getLocation(Point tipSize, Event event) {
-            return new Point(event.x, event.y);
-        }
     }
 }

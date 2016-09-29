@@ -63,6 +63,7 @@ import com.kms.katalon.composer.components.viewer.FocusCellOwnerDrawHighlighterF
 import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
 import com.kms.katalon.composer.testcase.ast.treetable.AstMethodTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
+import com.kms.katalon.composer.testcase.components.KeywordTreeViewerToolTipSupport;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants;
@@ -291,7 +292,7 @@ public class TestCasePart implements IComposerPart, EventHandler {
 
         // Enable tool-tip support for treeTable
         treeTable.getTree().setToolTipText("");
-        ColumnViewerToolTipSupport.enableFor(treeTable);
+        KeywordTreeViewerToolTipSupport.enableFor(treeTable);
 
         createContextMenu();
         addTreeTableKeyListener();
