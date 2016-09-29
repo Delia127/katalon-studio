@@ -223,6 +223,10 @@ public class ComposerExecutionMessageConstants extends NLS {
     
     public static String HAND_OPEN_GENERATE_COMMAND_DIALOG;
 
+    public static String DIA_CONFIRM_INSTALL_WEBDRIVER_TITLE;
+    
+    public static String DIA_CONFIRM_INSTALL_WEBDRIVER;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerExecutionMessageConstants.class);

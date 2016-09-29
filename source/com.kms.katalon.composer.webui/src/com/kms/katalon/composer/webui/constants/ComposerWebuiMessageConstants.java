@@ -33,6 +33,10 @@ public class ComposerWebuiMessageConstants extends NLS {
 
     public static String LBL_EDGE_EXECUTION_MENU_ITEM;
 
+    public static String DIA_CONFIRM_INSTALL_WEBDRIVER;
+
+    public static String DIA_CONFIRM_INSTALL_WEBDRIVER_TITLE;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerWebuiMessageConstants.class);

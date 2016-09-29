@@ -9,14 +9,17 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
 
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
+import com.kms.katalon.composer.execution.util.WebDriverInstallationUtil;
 import com.kms.katalon.composer.testsuite.collection.constant.StringConstants;
 import com.kms.katalon.composer.testsuite.collection.part.launcher.IDETestSuiteCollectionLauncher;
 import com.kms.katalon.composer.testsuite.collection.part.launcher.SubIDELauncher;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteRunConfiguration;
@@ -45,7 +48,11 @@ public class TestSuiteCollectionBuilderJob extends Job {
             TestSuiteCollectionExecutedEntity executedEntity = new TestSuiteCollectionExecutedEntity(
                     testSuiteCollectionEntity);
             List<SubIDELauncher> tsLaunchers = new ArrayList<>();
+            boolean cancelInstallWebDriver = false;
             for (TestSuiteRunConfiguration tsRunConfig : testSuiteCollectionEntity.getTestSuiteRunConfigurations()) {
+                if (!cancelInstallWebDriver) {
+                    cancelInstallWebDriver = !checkInstallWebDriver(tsRunConfig);
+                }
                 monitor.subTask(MessageFormat.format(StringConstants.JOB_TASK_BUILDING_LAUNCHER,
                         tsRunConfig.getTestSuiteEntity().getIdForDisplay()));
                 monitor.worked(1);
@@ -82,6 +89,24 @@ public class TestSuiteCollectionBuilderJob extends Job {
             monitor.done();
         }
     }
+    
+    private boolean checkInstallWebDriver(TestSuiteRunConfiguration tsRunConfig) {
+        String runConfigId = tsRunConfig.getConfiguration().getRunConfigurationId();
+        
+        if (WebUIDriverType.SAFARI_DRIVER.toString().equals(runConfigId)) {
+            final boolean[] result = { true };
+            Display.getDefault().syncExec(new Runnable() {
+                
+                @Override
+                public void run() {
+                    result[0] = WebDriverInstallationUtil.installSafariWebDriverAsNeed();
+                    
+                }
+            });
+            return result[0];
+        }
+        return true;
+    }
 
     private void openWarningDialogForEmptyTestSuite(final TestSuiteExecutedEntity tsExecutedEntity) {
         UISynchronizeService.syncExec(new Runnable() {
@@ -114,4 +139,6 @@ public class TestSuiteCollectionBuilderJob extends Job {
             return null;
         }
     }
+    
+    
 }
