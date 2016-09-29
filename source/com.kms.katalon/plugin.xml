@@ -120,5 +120,25 @@
 		    </with>
 		 </activeWhen>
 	  	</handler>
-	  </extension> 
+	  </extension>
+	  
+	<extension
+	     point="org.eclipse.ui.handlers">
+	  	<handler
+	        class="com.kms.katalon.composer.handlers.AboutHandler"
+	        commandId="org.eclipse.ui.help.aboutAction">
+	     <activeWhen>
+		    <with
+		       variable="activeContexts">
+		       <iterate
+		          ifEmpty="false"
+		          operator="or">
+		       <equals
+		           value="katalonContext">
+		       </equals>
+		       </iterate>
+		    </with>
+		 </activeWhen>
+	  	</handler>
+	</extension>	   
 </plugin>

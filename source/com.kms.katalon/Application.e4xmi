@@ -148,7 +148,7 @@
     </bindings>
   </bindingTables>
   <rootContext xmi:id="_mWGB8AQqEeWyKYoESvUc1g" elementId="org.eclipse.ui.contexts.dialogAndWindow " name="Windows and Dialogs"/>
-  <commands xmi:id="_hQQH3BYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.quit" commandName="quitCommand"/>
+  <commands xmi:id="_hQQH3BYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.quit" commandName="quitCommand"></commands>
   <commands xmi:id="_hQQH4xYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.command.save" commandName="saveCommand"/>
   <commands xmi:id="_hQQH5hYMEeSUMbyEN2kbFQ" elementId="org.eclipse.ui.help.aboutAction" commandName="aboutCommand"/>
   <commands xmi:id="_8qJlUEO4EeSlQuaMBzQJOw" elementId="com.kms.katalon.command.saveAll" commandName="saveAllCommand"/>

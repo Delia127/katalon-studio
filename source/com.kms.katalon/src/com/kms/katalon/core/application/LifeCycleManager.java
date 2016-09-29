@@ -4,6 +4,7 @@ import static com.kms.katalon.composer.components.log.LoggerSingleton.logError;
 import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
 
 import java.io.IOException;
+import java.util.concurrent.Executors;
 
 import org.eclipse.core.filesystem.IFileInfo;
 import org.eclipse.core.resources.IProject;
@@ -15,11 +16,14 @@ import org.eclipse.e4.ui.model.application.ui.basic.MTrimmedWindow;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.lifecycle.PostContextCreate;
 import org.eclipse.e4.ui.workbench.modeling.ISaveHandler;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.search.ui.NewSearchUI;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IWorkbenchCommandConstants;
 import org.eclipse.ui.IWorkbenchPartReference;
@@ -40,13 +44,17 @@ import com.kms.katalon.composer.handlers.WorkbenchSaveHandler;
 import com.kms.katalon.composer.initializer.CommandBindingInitializer;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.constants.MessageConstants;
+import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.util.ActivationInfoCollector;
+import com.kms.katalon.util.VersionUtil;
 
 @SuppressWarnings("restriction")
 public class LifeCycleManager {
     private static final String DF_TEXT_FONT = "Courier New";
+
     private static final String PREF_FIST_TIME_SETUP_COMPLETED = "firstTimeSetupCompleted";
 
     private void startUpGUIMode() throws Exception {
@@ -188,6 +196,8 @@ public class LifeCycleManager {
                     if (!(ActivationInfoCollector.checkActivation())) {
                         eventBroker.send(EventConstants.PROJECT_CLOSE, null);
                         PlatformUI.getWorkbench().close();
+                    } else {
+                        alertNewVersion();
                     }
                 } catch (Exception e) {
                     logError(e);
@@ -195,4 +205,38 @@ public class LifeCycleManager {
             }
         });
     }
+
+    private void alertNewVersion() {
+        IPreferenceStore prefStore = PlatformUI.getPreferenceStore();
+        boolean checkNewVersion = prefStore.contains(PreferenceConstants.GENERAL_AUTO_CHECK_NEW_VERSION)
+                ? prefStore.getBoolean(PreferenceConstants.GENERAL_AUTO_CHECK_NEW_VERSION) : true;
+        if (!checkNewVersion) {
+            return;
+        }
+        Executors.newSingleThreadExecutor().submit(new Runnable() {
+
+            @Override
+            public void run() {
+                if (!VersionUtil.hasNewVersion()) {
+                    return;
+                }
+                Display.getDefault().syncExec(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        boolean wantDownload = MessageDialog.openConfirm(null,
+                                MessageConstants.DIA_UPDATE_NEW_VERSION_TITLE,
+                                MessageConstants.DIA_UPDATE_NEW_VERSION_MESSAGE);
+                        if (wantDownload) {
+                            VersionUtil.gotoDownloadPage();
+                        }
+                    }
+
+                });
+
+
+            }
+        });
+    }
+
 }

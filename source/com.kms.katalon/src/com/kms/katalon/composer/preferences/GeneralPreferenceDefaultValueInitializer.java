@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.preferences;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.PlatformUI;
 
 import com.kms.katalon.constants.PreferenceConstants;
@@ -10,8 +11,10 @@ public class GeneralPreferenceDefaultValueInitializer extends AbstractPreference
 
     @Override
     public void initializeDefaultPreferences() {
-        PlatformUI.getPreferenceStore().setDefault(PreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION,
+        IPreferenceStore prefStore = PlatformUI.getPreferenceStore();
+        prefStore.setDefault(PreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION,
                 AUTO_RESTORE_PREVIOUS_SESSION);
+        prefStore.setDefault(PreferenceConstants.GENERAL_AUTO_CHECK_NEW_VERSION, true);
     }
 
 }

@@ -1,12 +1,8 @@
 package com.kms.katalon.util;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.InetAddress;
-import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.Objects;
 import java.util.Random;
 
@@ -38,19 +34,7 @@ public class ActivationInfoCollector {
     private ActivationInfoCollector() {
     }
 
-    private static HttpURLConnection createConnection() throws Exception {
-        URL url = new URL("https://mar.katalon.com/api/segment/identify");
-        HttpURLConnection uc = (HttpURLConnection) url.openConnection();
-
-        uc.setRequestMethod("POST");
-        uc.setRequestProperty("Content-Type", "application/json");
-        uc.setUseCaches(false);
-        uc.setDoOutput(true);
-
-        return uc;
-    }
-
-    private static String collectActivationInfo(String userName, String pass) throws Exception {
+    private static String collectActivationInfo(String userName, String pass) throws UnknownHostException {
         String katVersion = ApplicationInfo.versionNo() + " build " + ApplicationInfo.buildNo();
         String osType = Platform.getOSArch().contains("64") ? "64" : "32";
 
@@ -75,37 +59,12 @@ public class ActivationInfoCollector {
         return activationObject.toString();
     }
 
-    private static String sendActivationInfo(HttpURLConnection uc, String userInfo) throws Exception {
-        StringBuilder response = new StringBuilder();
-        String line;
-        String result = "";
-
-        try (DataOutputStream wr = new DataOutputStream(uc.getOutputStream())) {
-            wr.writeBytes(userInfo);
-        } catch (IOException ex) {
-            LogUtil.logError(ex, StringConstants.SEND_ACTIVATION_INFO_FAILED);
-            throw ex;
-        }
-
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(uc.getInputStream()))) {
-            while ((line = reader.readLine()) != null) {
-                response.append(line);
-                response.append('\r');
-            }
-            result = response.toString().trim();
-        } catch (IOException ex) {
-            LogUtil.logError(ex, StringConstants.SEND_ACTIVATION_INFO_FAILED);
-            throw ex;
-        }
-
-        return result;
-    }
-
-    private static void markActivated() throws Exception {
+    private static void markActivated(String userName) throws Exception {
         String activatedVal = Integer.toString(getHostNameHashValue());
         String curVersion = new StringBuilder(ApplicationInfo.versionNo().replaceAll("\\.", "")).reverse().toString();
         ApplicationInfo.removeAppProperty(StringConstants.REQUEST_CODE_PROP_NAME);
         ApplicationInfo.setAppProperty(StringConstants.ACTIVATED_PROP_NAME, curVersion + "_" + activatedVal, true);
+        ApplicationInfo.setAppProperty(StringConstants.USERNAME_TITLE, userName, true);
     }
 
     public static boolean isActivated() {
@@ -140,33 +99,26 @@ public class ActivationInfoCollector {
     }
 
     public static boolean activate(String userName, String pass, StringBuilder errorMessage) {
-        HttpURLConnection urlConnection = null;
         boolean activatedResult = false;
-
+        
         try {
-            urlConnection = createConnection();
             String userInfo = collectActivationInfo(userName, pass);
-            String result = sendActivationInfo(urlConnection, userInfo);
+            String result = ServerAPICommunicationUtil.post("/segment/identify", userInfo);
             if (result.equals(StringConstants.SEND_SUCCESS_RESPONSE)) {
-                markActivated();
+                markActivated(userName);
                 activatedResult = true;
             } else if (errorMessage != null) {
                 errorMessage.append(StringConstants.ACTIVATE_INFO_INVALID);
             }
-        } catch (Exception ex) {
+            
+        } catch (IOException ex) {
             LogUtil.logError(ex, StringConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
             if (errorMessage != null) {
                 errorMessage.delete(0, errorMessage.length());
-                if (ex instanceof IOException) {
-                    errorMessage.append(StringConstants.NETWORK_ERROR);
-                } else {
-                    errorMessage.append(StringConstants.ACTIVATE_INFO_INVALID);
-                }
+                errorMessage.append(StringConstants.NETWORK_ERROR);
             }
-        } finally {
-            if (urlConnection != null) {
-                urlConnection.disconnect();
-            }
+        } catch (Exception e) {
+            LogUtil.logError(e);
         }
 
         return activatedResult;
@@ -178,7 +130,7 @@ public class ActivationInfoCollector {
             activationCode = new StringBuilder(activationCode.substring(2)).reverse().toString();
             int idx = Integer.parseInt(checkCode.charAt(0) + "");
             if (activationCode.charAt(idx) == checkCode.charAt(1)) {
-                markActivated();
+                markActivated(activationCode);
                 return true;
             } else if (errorMessage != null) {
                 errorMessage.append(StringConstants.ACTIVATION_CODE_INVALID);

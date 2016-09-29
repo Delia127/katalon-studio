@@ -122,6 +122,16 @@ public class MessageConstants extends NLS {
     public static String ACTIVATION_CODE_INVALID;
 
     public static String REQUEST_CODE_PROP_NAME;
+    
+    public static String PAGE_PREF_AUTO_CHECK_NEW_VERSION_TITLE;
+    
+    public static String VERSION_IS_UP_TODATE;
+    
+    public static String NEW_VERSION_AVAIABLE;
+
+    public static String DIA_UPDATE_NEW_VERSION_MESSAGE;
+    
+    public static String DIA_UPDATE_NEW_VERSION_TITLE;
 
     static {
         // initialize resource bundle
