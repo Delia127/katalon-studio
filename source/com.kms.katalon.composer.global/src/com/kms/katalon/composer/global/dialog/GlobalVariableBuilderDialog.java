@@ -57,7 +57,7 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
     private TableViewer tableViewer;
 
     private List<String> globalVariableNames = new ArrayList<String>();
-    
+
     private CellEditor cellEditor;
 
     public GlobalVariableBuilderDialog(Shell parentShell, Point location, List<String> globalVariableNames) {
@@ -110,7 +110,8 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
         ControlDecoration controlDecoration = new ControlDecoration(tableViewer.getTable(), SWT.LEFT | SWT.TOP);
         controlDecoration.setDescriptionText(StringConstants.DIA_CTRL_VAR_INFO);
         controlDecoration.setImage(FieldDecorationRegistry.getDefault()
-                .getFieldDecoration(FieldDecorationRegistry.DEC_INFORMATION).getImage());
+                .getFieldDecoration(FieldDecorationRegistry.DEC_INFORMATION)
+                .getImage());
 
         TableViewerColumn tableViewerColumnName = new TableViewerColumn(tableViewer, SWT.NONE);
         tableViewerColumnName.setEditingSupport(new EditingSupport(tableViewer) {
@@ -166,8 +167,7 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
                 if (!(element instanceof GlobalVariableEntity)) {
                     return "";
                 }
-                InputValueType valueType = AstValueUtil.getTypeValue(GroovyWrapperParser
-                        .parseGroovyScriptAndGetFirstExpression(((GlobalVariableEntity) element).getInitValue()));
+                InputValueType valueType = AstValueUtil.getTypeValue(GroovyWrapperParser.parseGroovyScriptAndGetFirstExpression(((GlobalVariableEntity) element).getInitValue()));
                 if (valueType != null) {
                     return TreeEntityUtil.getReadableKeywordName(valueType.getName());
                 }
@@ -175,9 +175,11 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
             }
         });
 
-        tableViewerColumnDefaultValueType.setEditingSupport(new AstInputBuilderValueTypeColumnSupport(tableViewer,
-                defaultInputValueTypes) {
+        tableViewerColumnDefaultValueType.setEditingSupport(new AstInputBuilderValueTypeColumnSupport(
+                tableViewer, defaultInputValueTypes) {
             private ExpressionWrapper expression;
+
+            private Object oldValueTypeIndex;
 
             @Override
             protected boolean canEdit(Object element) {
@@ -186,8 +188,8 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
 
             @Override
             protected Object getValue(Object element) {
-                return super.getValue(GroovyWrapperParser
-                        .parseGroovyScriptAndGetFirstExpression(((GlobalVariableEntity) element).getInitValue()));
+                oldValueTypeIndex = super.getValue(GroovyWrapperParser.parseGroovyScriptAndGetFirstExpression(((GlobalVariableEntity) element).getInitValue()));
+                return oldValueTypeIndex;
             }
 
             @Override
@@ -196,12 +198,12 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
                     return;
                 }
                 InputValueType newValueType = inputValueTypes[(int) value];
-                InputValueType oldValueType = AstValueUtil.getTypeValue(expression);
-                if (newValueType == oldValueType) {
+                if (newValueType == inputValueTypes[(int) oldValueTypeIndex]) {
                     return;
                 }
-                ASTNodeWrapper newAstNode = (ASTNodeWrapper) newValueType.getNewValue(expression != null ? expression
-                        .getParent() : null);
+                oldValueTypeIndex = value;
+                ASTNodeWrapper newAstNode = (ASTNodeWrapper) newValueType.getNewValue(expression != null
+                        ? expression.getParent() : null);
                 if (newAstNode == null) {
                     return;
                 }
@@ -224,8 +226,7 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
             @Override
             protected CellEditor getCellEditor(Object element) {
                 cellEditor = null;
-                expression = GroovyWrapperParser
-                        .parseGroovyScriptAndGetFirstExpression(((GlobalVariableEntity) element).getInitValue());
+                expression = GroovyWrapperParser.parseGroovyScriptAndGetFirstExpression(((GlobalVariableEntity) element).getInitValue());
                 if (expression == null) {
                     return null;
                 }
@@ -283,8 +284,7 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
                         || ((GlobalVariableEntity) element).getInitValue() == null) {
                     return "";
                 }
-                ExpressionWrapper expression = GroovyWrapperParser
-                        .parseGroovyScriptAndGetFirstExpression(((GlobalVariableEntity) element).getInitValue());
+                ExpressionWrapper expression = GroovyWrapperParser.parseGroovyScriptAndGetFirstExpression(((GlobalVariableEntity) element).getInitValue());
                 if (expression == null) {
                     return "";
                 }
@@ -392,7 +392,7 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
         // Do nothing
 
     }
-    
+
     @Override
     protected void okPressed() {
         if (cellEditor != null) {
