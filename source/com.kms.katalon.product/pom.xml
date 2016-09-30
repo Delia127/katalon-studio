@@ -13,14 +13,27 @@
 
 	<properties>
 		<product.id>com.kms.katalon.product.product</product.id>
-		<product.win32OutputDirectory>${project.build.directory}/products/${product.id}/win32/win32/x86</product.win32OutputDirectory>
-		<product.win64OutputDirectory>${project.build.directory}/products/${product.id}/win32/win32/x86_64</product.win64OutputDirectory>
-		<product.mac64OutputDirectory>${project.build.directory}/products/${product.id}/macosx/cocoa/x86_64</product.mac64OutputDirectory>
+		<product.buildDirectory>${project.build.directory}/products</product.buildDirectory>
+		<product.win32OutputDirectory>${product.buildDirectory}/${product.id}/win32/win32/x86</product.win32OutputDirectory>
+		<product.win64OutputDirectory>${product.buildDirectory}/${product.id}/win32/win32/x86_64</product.win64OutputDirectory>
+		<product.mac64OutputDirectory>${product.buildDirectory}/${product.id}/macosx/cocoa/x86_64</product.mac64OutputDirectory>
 		<product.resourcesDirectory>configuration/resources</product.resourcesDirectory>
 		<product.mac64ResourcesDirectory>configuration/macosx64_resources</product.mac64ResourcesDirectory>
 		<product.win32ResourcesDirectory>configuration/win32_resources</product.win32ResourcesDirectory>
 		<product.win64ResourcesDirectory>configuration/win64_resources</product.win64ResourcesDirectory>
 		<product.apidocDirectory>${product.resourcesDirectory}/apidocs</product.apidocDirectory>
+
+		<product.archiveFileName>katalon-studio</product.archiveFileName>
+		<product.name>Katalon Studio</product.name>
+
+		<product.win32ZipFileSrc>${product.buildDirectory}/${product.id}-win32.win32.x86.zip</product.win32ZipFileSrc>
+		<product.win32ZipFileDest>${product.buildDirectory}/${product.name} Windows 32.zip</product.win32ZipFileDest>
+
+		<product.win64ZipFileSrc>${product.buildDirectory}/${product.id}-win32.win32.x86_64.zip</product.win64ZipFileSrc>
+		<product.win64ZipFileDest>${product.buildDirectory}/${product.name} Windows 64.zip</product.win64ZipFileDest>
+
+		<product.mac64ZipFileSrc>${product.buildDirectory}/${product.id}-macosx.cocoa.x86_64.zip</product.mac64ZipFileSrc>
+		<product.mac64ZipFileDest>${product.buildDirectory}/${product.name} MacOS.zip</product.mac64ZipFileDest>
 	</properties>
 
 	<build>
@@ -114,7 +127,46 @@
 					</execution>
 				</executions>
 			</plugin>
-			
+			<plugin>
+				<groupId>com.coderplus.maven.plugins</groupId>
+				<artifactId>copy-rename-maven-plugin</artifactId>
+				<version>1.0.1</version>
+				<executions>
+					<execution>
+						<id>rename-win32-zip-file</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>rename</goal>
+						</goals>
+						<configuration>
+							<sourceFile>${product.win32ZipFileSrc}</sourceFile>
+							<destinationFile>${product.win32ZipFileDest}</destinationFile>
+						</configuration>
+					 </execution>
+					 <execution>
+						<id>rename-win64-zip-file</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>rename</goal>
+						</goals>
+						<configuration>
+							<sourceFile>${product.win64ZipFileSrc}</sourceFile>
+							<destinationFile>${product.win64ZipFileDest}</destinationFile>
+						</configuration>
+					 </execution>
+					 <execution>
+						<id>rename-macos-zip-file</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>rename</goal>
+						</goals>
+						<configuration>
+							<sourceFile>${product.mac64ZipFileSrc}</sourceFile>
+							<destinationFile>${product.mac64ZipFileDest}</destinationFile>
+						</configuration>
+					 </execution>
+				</executions>
+		  </plugin>
 		</plugins>
 	</build>
 
