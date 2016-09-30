@@ -106,5 +106,13 @@ public class ImageConstants {
     public static final Image IMG_16_CHECKPOINT = ImageUtil.loadImage(currentBundle, "/icons/checkpoint_16.png");
 
     public static final String URL_16_CHECKPOINT = ImageUtil.getImageUrl(currentBundle, "/icons/checkpoint_16.png");
+    
+    //AbstractEntityDialog
+    public static final Image IMG_20_INFO_MSG = ImageUtil.loadImage(currentBundle, "/icons/info_20.png");
+    
+    public static final Image IMG_20_WARNING_MSG = ImageUtil.loadImage(currentBundle, "/icons/warning_20.png");
+
+    public static final Image IMG_20_ERROR_MSG = ImageUtil.loadImage(currentBundle, "/icons/error_20.png");
+    
 
 }
