@@ -48,6 +48,7 @@ import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
+import com.kms.katalon.usagetracking.UsageInfoCollector;
 import com.kms.katalon.util.ActivationInfoCollector;
 import com.kms.katalon.util.VersionUtil;
 
@@ -196,9 +197,11 @@ public class LifeCycleManager {
                     if (!(ActivationInfoCollector.checkActivation())) {
                         eventBroker.send(EventConstants.PROJECT_CLOSE, null);
                         PlatformUI.getWorkbench().close();
-                    } else {
-                        alertNewVersion();
+                        return;
                     }
+                    alertNewVersion();
+                    startCollectUsageInfo();
+                    
                 } catch (Exception e) {
                     logError(e);
                 }
@@ -235,6 +238,15 @@ public class LifeCycleManager {
                 });
 
 
+            }
+        });
+    }
+    
+    private void startCollectUsageInfo() {
+        Executors.newSingleThreadExecutor().submit(new Runnable() {
+            @Override
+            public void run() {
+                UsageInfoCollector.colllect();
             }
         });
     }

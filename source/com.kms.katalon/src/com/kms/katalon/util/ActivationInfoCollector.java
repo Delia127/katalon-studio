@@ -64,7 +64,7 @@ public class ActivationInfoCollector {
         String curVersion = new StringBuilder(ApplicationInfo.versionNo().replaceAll("\\.", "")).reverse().toString();
         ApplicationInfo.removeAppProperty(StringConstants.REQUEST_CODE_PROP_NAME);
         ApplicationInfo.setAppProperty(StringConstants.ACTIVATED_PROP_NAME, curVersion + "_" + activatedVal, true);
-        ApplicationInfo.setAppProperty(StringConstants.USERNAME_TITLE, userName, true);
+        ApplicationInfo.setAppProperty(StringConstants.ARG_EMAIL, userName, true);
     }
 
     public static boolean isActivated() {

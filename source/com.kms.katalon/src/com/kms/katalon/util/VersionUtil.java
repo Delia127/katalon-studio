@@ -18,7 +18,11 @@ public class VersionUtil {
     public static VersionInfo getCurrentVersion() {
         VersionInfo curVersion = new VersionInfo();
         curVersion.version = ApplicationInfo.versionNo();
-        curVersion.buildNumber = Integer.parseInt(ApplicationInfo.buildNo());
+        try {
+            curVersion.buildNumber = Integer.parseInt(ApplicationInfo.buildNo());
+        } catch (NumberFormatException ex) {
+            curVersion.buildNumber = 1;
+        }
         return curVersion;
     }
 
@@ -29,10 +33,14 @@ public class VersionUtil {
             return getCurrentVersion();
         }
         newVersion.version = versionInfo.get("version").getAsString();
-        newVersion.buildNumber = Integer.parseInt(versionInfo.get("build_number")
-                .getAsString()
-                .replaceAll("build", "")
-                .trim());
+        try {
+            newVersion.buildNumber = Integer.parseInt(versionInfo.get("build_number")
+                    .getAsString()
+                    .replaceAll("build", "")
+                    .trim());
+        } catch (NumberFormatException ex) {
+            newVersion.buildNumber = 1;
+        }
         return newVersion;
     }
 
