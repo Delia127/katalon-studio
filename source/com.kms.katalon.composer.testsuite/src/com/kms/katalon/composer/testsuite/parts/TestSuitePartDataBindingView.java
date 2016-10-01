@@ -228,14 +228,6 @@ public class TestSuitePartDataBindingView {
         tltmDownTestData.setText(ToolItemConstants.DOWN);
         tltmDownTestData.setToolTipText(ToolItemConstants.DOWN);
         tltmDownTestData.setImage(ImageConstants.IMG_24_DOWN);
-
-        // ToolItem tltmMapTestData = new ToolItem(testDataToolBar, SWT.NONE);
-        // tltmMapTestData.setText(TestDataToolItemConstants.MAP);
-
-        ToolItem tltmMapAllTestData = new ToolItem(testDataToolBar, SWT.NONE);
-        tltmMapAllTestData.setText(ToolItemConstants.MAPALL);
-        tltmMapAllTestData.setToolTipText(ToolItemConstants.MAPALL);
-        tltmMapAllTestData.setImage(ImageConstants.IMG_24_MAP_ALL);
     }
 
     private void createTestDataTreeTable() {

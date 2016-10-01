@@ -36,7 +36,6 @@ public class ImageConstants {
     public static final Image IMG_24_REMOVE = ImageUtil.loadImage(componentBundle, "/icons/remove_24.png");
     public static final Image IMG_24_UP = ImageUtil.loadImage(componentBundle, "/icons/up_24.png");
     public static final Image IMG_24_DOWN = ImageUtil.loadImage(componentBundle, "/icons/down_24.png");
-    public static final Image IMG_24_MAP_ALL = ImageUtil.loadImage(currentBundle, "/icons/map_all_24.png");
     public static final Image IMG_16_SEARCH = ImageUtil.loadImage(currentBundle, "/icons/search_16.png");
     public static final Image IMG_16_CLOSE_SEARCH = ImageUtil.loadImage(currentBundle, "/icons/close_search_16.png");
     public static final Image IMG_16_ADVANCED_SEARCH = ImageUtil.loadImage(currentBundle,
