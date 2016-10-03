@@ -9,7 +9,7 @@
     <elements xsi:type="commands:Handler" xmi:id="_qCYWQEgKEeakz8HQPb1PaQ" elementId="com.kms.katalon.composer.checkpoint.handler.new.fromtestdata" contributionURI="bundleclass://com.kms.katalon.composer.checkpoint/com.kms.katalon.composer.checkpoint.handlers.NewCheckpointFromTestDataHandler" command="_iun0wEgKEeakz8HQPb1PaQ"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_2rbS0EQXEeaC4rG4s58s9Q" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="after:com.kms.katalon.composer.toolbar.testdata.newtestdata">
-    <elements xsi:type="menu:HandledToolItem" xmi:id="_S5rKEERAEeaBX73UOREtBw" elementId="com.kms.katalon.composer.toolbar.checkpoint.new" iconURI="platform:/plugin/com.kms.katalon.composer.checkpoint/icons/checkpoint_28.png" tooltip="New Checkpoint" command="_YqDUcEQYEeaC4rG4s58s9Q">
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_S5rKEERAEeaBX73UOREtBw" elementId="com.kms.katalon.composer.toolbar.checkpoint.new" iconURI="platform:/plugin/com.kms.katalon.composer.checkpoint/icons/new_checkpoint_24.png" tooltip="New Checkpoint" command="_YqDUcEQYEeaC4rG4s58s9Q">
       <persistedState key="index" value="11"/>
     </elements>
   </fragments>

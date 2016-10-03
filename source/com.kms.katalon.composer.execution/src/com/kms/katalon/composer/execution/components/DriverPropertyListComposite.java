@@ -58,15 +58,15 @@ public class DriverPropertyListComposite extends Composite {
 
         tltmAddProperty = new ToolItem(toolBar, SWT.NONE);
         tltmAddProperty.setText(StringConstants.SETT_TOOLITEM_ADD);
-        tltmAddProperty.setImage(ImageConstants.IMG_24_ADD);
+        tltmAddProperty.setImage(ImageConstants.IMG_16_ADD);
 
         tltmRemoveProperty = new ToolItem(toolBar, SWT.NONE);
         tltmRemoveProperty.setText(StringConstants.SETT_TOOLITEM_REMOVE);
-        tltmRemoveProperty.setImage(ImageConstants.IMG_24_REMOVE);
+        tltmRemoveProperty.setImage(ImageConstants.IMG_16_REMOVE);
 
         tltmClearProperty = new ToolItem(toolBar, SWT.NONE);
         tltmClearProperty.setText(StringConstants.SETT_TOOLITEM_CLEAR);
-        tltmClearProperty.setImage(ImageConstants.IMG_24_CLEAR);
+        tltmClearProperty.setImage(ImageConstants.IMG_16_CLEAR);
         
         Composite tableComposite = new Composite(composite, SWT.NONE);
         tableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));

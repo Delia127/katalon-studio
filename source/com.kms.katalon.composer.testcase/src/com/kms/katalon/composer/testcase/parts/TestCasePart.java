@@ -218,7 +218,7 @@ public class TestCasePart implements IComposerPart, EventHandler {
 
         tltmAddStep = new ToolItem(toolbar, SWT.DROP_DOWN);
         tltmAddStep.setText(StringConstants.PA_BTN_TIP_ADD);
-        tltmAddStep.setImage(ImageConstants.IMG_24_ADD);
+        tltmAddStep.setImage(ImageConstants.IMG_16_ADD);
         tltmAddStep.addSelectionListener(selectionListener);
 
         Menu addMenu = new Menu(tltmAddStep.getParent().getShell());
@@ -227,7 +227,7 @@ public class TestCasePart implements IComposerPart, EventHandler {
 
         tltmInsertStep = new ToolItem(toolbar, SWT.DROP_DOWN);
         tltmInsertStep.setText(StringConstants.PA_BTN_TIP_INSERT);
-        tltmInsertStep.setImage(ImageConstants.IMG_24_INSERT);
+        tltmInsertStep.setImage(ImageConstants.IMG_16_INSERT);
         tltmInsertStep.addSelectionListener(selectionListener);
 
         Menu insertMenu = new Menu(tltmInsertStep.getParent().getShell());
@@ -243,17 +243,17 @@ public class TestCasePart implements IComposerPart, EventHandler {
 
         tltmRemoveStep = new ToolItem(toolbar, SWT.NONE);
         tltmRemoveStep.setText(StringConstants.PA_BTN_TIP_REMOVE);
-        tltmRemoveStep.setImage(ImageConstants.IMG_24_REMOVE);
+        tltmRemoveStep.setImage(ImageConstants.IMG_16_REMOVE);
         tltmRemoveStep.addSelectionListener(selectionListener);
 
         tltmUp = new ToolItem(toolbar, SWT.NONE);
         tltmUp.setText(StringConstants.PA_BTN_TIP_MOVE_UP);
-        tltmUp.setImage(ImageConstants.IMG_24_UP);
+        tltmUp.setImage(ImageConstants.IMG_16_MOVE_UP);
         tltmUp.addSelectionListener(selectionListener);
 
         tltmDown = new ToolItem(toolbar, SWT.NONE);
         tltmDown.setText(StringConstants.PA_BTN_TIP_MOVE_DOWN);
-        tltmDown.setImage(ImageConstants.IMG_24_DOWN);
+        tltmDown.setImage(ImageConstants.IMG_16_MOVE_DOWN);
         tltmDown.addSelectionListener(selectionListener);
 
         Composite compositeTable = new Composite(compositeSteps, SWT.NONE);

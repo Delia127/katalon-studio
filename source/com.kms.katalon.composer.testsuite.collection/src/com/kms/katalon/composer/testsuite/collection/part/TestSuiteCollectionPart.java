@@ -255,6 +255,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         compositeExecutionHeader.setCursor(compositeExecutionHeader.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
 
         btnExpandExecutionInformation = new ImageButton(compositeExecutionHeader, SWT.NONE);
+        btnExpandExecutionInformation.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
         redrawBtnExpandGeneralInfo();
 
         lblExecutionInformation = new Label(compositeExecutionHeader, SWT.NONE);

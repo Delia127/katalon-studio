@@ -16,7 +16,7 @@ import com.kms.katalon.constants.StringConstants;
 
 public class FunctionsIntroductionDialog extends SimpleWizardDialog {
 
-    private static final double RATIO = 0.75d;
+    private static final double RATIO = 1.0d;
 
     private static final Point IMG_SIZE = new Point(1280, 720);
 
@@ -29,6 +29,7 @@ public class FunctionsIntroductionDialog extends SimpleWizardDialog {
     @Override
     protected void initializeBounds() {
         computeSizeHelper = new FunctionsIntroductionDialogSizeCalculator(getShell(), IMG_SIZE, RATIO);
+//        computeSizeHelper = new FunctionsIntroductionDialogSizeCalculator(getShell(), new Point(ImageConstants.IMG_INTRO_SCREEN_1.getBounds().width, ImageConstants.IMG_INTRO_SCREEN_1.getBounds().height), RATIO);
         super.initializeBounds();
     }
 

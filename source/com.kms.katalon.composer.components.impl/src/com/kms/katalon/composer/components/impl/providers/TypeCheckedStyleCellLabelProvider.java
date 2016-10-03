@@ -192,7 +192,7 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
         event.width += textWidthDelta + getRightMargin();
     }
 
-    private boolean isCellNotExisted(ViewerCell cell) {
+    protected boolean isCellNotExisted(ViewerCell cell) {
         return cell == null || cell.getViewerRow() == null;
     }
 

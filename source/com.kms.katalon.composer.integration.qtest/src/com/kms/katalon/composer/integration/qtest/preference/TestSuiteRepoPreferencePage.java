@@ -65,16 +65,16 @@ public class TestSuiteRepoPreferencePage extends AbstractQTestIntegrationPage {
 
         btnAdd = new ToolItem(toolbar, SWT.NONE);
         btnAdd.setText(StringConstants.ADD);
-        btnAdd.setImage(ImageConstants.IMG_24_ADD);
+        btnAdd.setImage(ImageConstants.IMG_16_ADD);
 
         btnEdit = new ToolItem(toolbar, SWT.NONE);
         btnEdit.setText(StringConstants.EDIT);
         btnEdit.setEnabled(false);
-        btnEdit.setImage(ImageConstants.IMG_24_EDIT);
+        btnEdit.setImage(ImageConstants.IMG_16_EDIT);
 
         btnRemove = new ToolItem(toolbar, SWT.NONE);
         btnRemove.setText(StringConstants.REMOVE);
-        btnRemove.setImage(ImageConstants.IMG_24_REMOVE);
+        btnRemove.setImage(ImageConstants.IMG_16_REMOVE);
         btnRemove.setEnabled(false);
 
         Composite compositeTable = new Composite(container, SWT.NONE);

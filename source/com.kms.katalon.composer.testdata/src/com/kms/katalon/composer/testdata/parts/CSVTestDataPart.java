@@ -90,6 +90,7 @@ public class CSVTestDataPart extends TestDataMainPart {
     };
     private Label lblFileInfoStatus;
 
+    @Override
     @PostConstruct
     public void createControls(Composite parent, MPart mpart) {
         enableToReload = true;
@@ -338,9 +339,9 @@ public class CSVTestDataPart extends TestDataMainPart {
     private void redrawBtnExpandFileInfo() {
         btnExpandFileInfoComposite.getParent().setRedraw(false);
         if (isFileInfoExpanded) {
-            btnExpandFileInfoComposite.setImage(ImageConstants.IMG_16_ARROW_UP_BLACK);
+            btnExpandFileInfoComposite.setImage(ImageConstants.IMG_16_ARROW_DOWN);
         } else {
-            btnExpandFileInfoComposite.setImage(ImageConstants.IMG_16_ARROW_DOWN_BLACK);
+            btnExpandFileInfoComposite.setImage(ImageConstants.IMG_16_ARROW);
         }
         btnExpandFileInfoComposite.getParent().setRedraw(true);
 

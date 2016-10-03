@@ -180,17 +180,17 @@ public class ObjectPropertyView implements EventHandler {
         toolItemAdd = new ToolItem(tableToolbar, SWT.NONE);
         toolItemAdd.setText(StringConstants.VIEW_LBL_ADD);
         toolItemAdd.setToolTipText(StringConstants.VIEW_LBL_ADD);
-        toolItemAdd.setImage(ImageConstants.IMG_24_ADD);
+        toolItemAdd.setImage(ImageConstants.IMG_16_ADD);
 
         toolItemDelete = new ToolItem(tableToolbar, SWT.NONE);
         toolItemDelete.setText(StringConstants.VIEW_LBL_DELETE);
         toolItemDelete.setToolTipText(StringConstants.VIEW_LBL_DELETE);
-        toolItemDelete.setImage(ImageConstants.IMG_24_REMOVE);
+        toolItemDelete.setImage(ImageConstants.IMG_16_REMOVE);
 
         toolItemClear = new ToolItem(tableToolbar, SWT.NONE);
         toolItemClear.setText(StringConstants.VIEW_LBL_CLEAR);
         toolItemClear.setToolTipText(StringConstants.VIEW_LBL_CLEAR);
-        toolItemClear.setImage(ImageConstants.IMG_24_CLEAR);
+        toolItemClear.setImage(ImageConstants.IMG_16_CLEAR);
     }
 
     private void createTableDetails() {
@@ -332,7 +332,6 @@ public class ObjectPropertyView implements EventHandler {
 
         Composite compositeSettingsHeader = new Composite(compositeSettings, SWT.NONE);
         GridData gd_compositeParentObjectHeader = new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1);
-        gd_compositeParentObjectHeader.horizontalIndent = -5;
         compositeSettingsHeader.setLayoutData(gd_compositeParentObjectHeader);
         GridLayout glCompositeParentObjectHeader = new GridLayout(2, false);
         glCompositeParentObjectHeader.marginHeight = 0;
@@ -341,6 +340,7 @@ public class ObjectPropertyView implements EventHandler {
         compositeSettingsHeader.setCursor(compositeSettingsHeader.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
 
         btnExpandIframeSetting = new ImageButton(compositeSettingsHeader, SWT.PUSH);
+        btnExpandIframeSetting.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
         redrawBtnExpandParentObject();
 
         lblSettings = new Label(compositeSettingsHeader, SWT.NONE);
@@ -570,9 +570,9 @@ public class ObjectPropertyView implements EventHandler {
     private void redrawBtnExpandParentObject() {
         btnExpandIframeSetting.getParent().setRedraw(false);
         if (isSettingsExpanded) {
-            btnExpandIframeSetting.setImage(ImageConstants.IMG_16_ARROW_UP_BLACK);
+            btnExpandIframeSetting.setImage(ImageConstants.IMG_16_ARROW_DOWN);
         } else {
-            btnExpandIframeSetting.setImage(ImageConstants.IMG_16_ARROW_DOWN_BLACK);
+            btnExpandIframeSetting.setImage(ImageConstants.IMG_16_ARROW);
         }
         btnExpandIframeSetting.getParent().setRedraw(true);
     }

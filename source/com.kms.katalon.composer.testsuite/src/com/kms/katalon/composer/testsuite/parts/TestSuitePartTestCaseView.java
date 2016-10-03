@@ -477,25 +477,25 @@ public class TestSuitePartTestCaseView {
         ToolItem tltmAddTestCases = new ToolItem(testCaseToolbar, SWT.NONE);
         tltmAddTestCases.setText(StringConstants.PA_TOOLITEM_ADD);
         tltmAddTestCases.setToolTipText(StringConstants.PA_TOOLITEM_ADD);
-        tltmAddTestCases.setImage(ImageConstants.IMG_24_ADD);
+        tltmAddTestCases.setImage(ImageConstants.IMG_16_ADD);
         tltmAddTestCases.setData(ToolItemConstants.ADD);
 
         ToolItem tltmRemoveTestCases = new ToolItem(testCaseToolbar, SWT.NONE);
         tltmRemoveTestCases.setText(StringConstants.PA_TOOLITEM_REMOVE);
         tltmRemoveTestCases.setToolTipText(StringConstants.PA_TOOLITEM_REMOVE);
-        tltmRemoveTestCases.setImage(ImageConstants.IMG_24_REMOVE);
+        tltmRemoveTestCases.setImage(ImageConstants.IMG_16_REMOVE);
         tltmRemoveTestCases.setData(ToolItemConstants.REMOVE);
 
         ToolItem tltmUp = new ToolItem(testCaseToolbar, SWT.NONE);
         tltmUp.setText(StringConstants.PA_TOOLITEM_UP);
         tltmUp.setToolTipText(StringConstants.PA_TOOLITEM_UP);
-        tltmUp.setImage(ImageConstants.IMG_24_UP);
+        tltmUp.setImage(ImageConstants.IMG_16_MOVE_UP);
         tltmUp.setData(ToolItemConstants.UP);
 
         ToolItem tltmDown = new ToolItem(testCaseToolbar, SWT.NONE);
         tltmDown.setText(StringConstants.PA_TOOLITEM_DOWN);
         tltmDown.setToolTipText(StringConstants.PA_TOOLITEM_DOWN);
-        tltmDown.setImage(ImageConstants.IMG_24_DOWN);
+        tltmDown.setImage(ImageConstants.IMG_16_MOVE_DOWN);
         tltmDown.setData(ToolItemConstants.DOWN);
     }
 

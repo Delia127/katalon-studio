@@ -4,6 +4,7 @@ import org.eclipse.swt.graphics.Image;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
+import com.kms.katalon.composer.components.impl.control.HiDPISupportedImage;
 import com.kms.katalon.composer.components.util.ImageUtil;
 
 public class ImageConstants {
@@ -29,18 +30,18 @@ public class ImageConstants {
     public static final String URI_IMG_WELCOME = "platform:/plugin/org.eclipse.ui.intro/icons/welcome16.gif";
 
     // FunctionsIntroductionDialog
-    public static final Image IMG_INTRO_SCREEN_1 = ImageUtil.loadImage(CURRENT_BUNDLE, "/icons/intro/screen_1.png");
+    public static final Image IMG_INTRO_SCREEN_1 = HiDPISupportedImage.loadImage(CURRENT_BUNDLE, "/icons/intro/screen1.png");
 
-    public static final Image IMG_INTRO_SCREEN_2 = ImageUtil.loadImage(CURRENT_BUNDLE, "/icons/intro/screen_2.png");
+    public static final Image IMG_INTRO_SCREEN_2 = HiDPISupportedImage.loadImage(CURRENT_BUNDLE, "/icons/intro/screen2.png");
 
-    public static final Image IMG_INTRO_SCREEN_3 = ImageUtil.loadImage(CURRENT_BUNDLE, "/icons/intro/screen_3.png");
+    public static final Image IMG_INTRO_SCREEN_3 = HiDPISupportedImage.loadImage(CURRENT_BUNDLE, "/icons/intro/screen3.png");
 
-    public static final Image IMG_INTRO_SCREEN_4 = ImageUtil.loadImage(CURRENT_BUNDLE, "/icons/intro/screen_4.png");
+    public static final Image IMG_INTRO_SCREEN_4 = HiDPISupportedImage.loadImage(CURRENT_BUNDLE, "/icons/intro/screen4.png");
 
-    public static final Image IMG_INTRO_SCREEN_5 = ImageUtil.loadImage(CURRENT_BUNDLE, "/icons/intro/screen_5.png");
+    public static final Image IMG_INTRO_SCREEN_5 = HiDPISupportedImage.loadImage(CURRENT_BUNDLE, "/icons/intro/screen5.png");
 
-    public static final Image IMG_INTRO_SCREEN_6 = ImageUtil.loadImage(CURRENT_BUNDLE, "/icons/intro/screen_6.png");
+    public static final Image IMG_INTRO_SCREEN_6 = HiDPISupportedImage.loadImage(CURRENT_BUNDLE, "/icons/intro/screen6.png");
     
     //Activation
-    public static final Image KATALON_IMAGE = ImageUtil.loadImage(CURRENT_BUNDLE, "/icons/branding_16.png");
+    public static final Image KATALON_IMAGE = HiDPISupportedImage.loadImage(CURRENT_BUNDLE, "/icons/branding_16.png");
 }

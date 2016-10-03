@@ -20,13 +20,13 @@
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_H4j3EEIPEeSPr8gi-fpUXw" elementId="com.kms.katalon.composer.package.popupmenu.new.dynamicmenucontribution" contributionURI="bundleclass://com.kms.katalon.composer.keyword/com.kms.katalon.composer.keyword.menu.NewPackagePopupMenuContribution"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_--KSoD_DEeSqW-o8jtXO1g" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="after:com.kms.katalon.composer.toolbar.folder.newfolder">
-    <elements xsi:type="menu:HandledToolItem" xmi:id="_3TAaEEIOEeSPr8gi-fpUXw" elementId="com.kms.katalon.composer.toolbar.handledtoolitem.new.package" label="" iconURI="platform:/plugin/com.kms.katalon.composer.keyword/icons/new_package_28.png" tooltip="New Package for Keyword" command="_ojWuwEIOEeSPr8gi-fpUXw">
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_3TAaEEIOEeSPr8gi-fpUXw" elementId="com.kms.katalon.composer.toolbar.handledtoolitem.new.package" label="" iconURI="platform:/plugin/com.kms.katalon.composer.keyword/icons/new_package_24.png" tooltip="New Package for Keyword" command="_ojWuwEIOEeSPr8gi-fpUXw">
       <persistedState key="index" value="4"/>
       <tags>FORCE_TEXT</tags>
     </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_VJRQcBQLEeWFKqx225rIVg" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="after:com.kms.katalon.composer.toolbar.checkpoint.new">
-    <elements xsi:type="menu:HandledToolItem" xmi:id="_--KSoj_DEeSqW-o8jtXO1g" elementId="com.kms.katalon.composer.toolbar.handledtoolitem.new.keyword" label="" iconURI="platform:/plugin/com.kms.katalon.composer.keyword/icons/new_keyword_28.png" tooltip="New Keyword" command="_2KeX0T-1EeSqW-o8jtXO1g">
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_--KSoj_DEeSqW-o8jtXO1g" elementId="com.kms.katalon.composer.toolbar.handledtoolitem.new.keyword" label="" iconURI="platform:/plugin/com.kms.katalon.composer.keyword/icons/new_keyword_24.png" tooltip="New Keyword" command="_2KeX0T-1EeSqW-o8jtXO1g">
       <persistedState key="index" value="12"/>
       <tags>FORCE_TEXT</tags>
     </elements>

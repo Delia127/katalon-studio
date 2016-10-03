@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.explorer.custom;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.graphics.Color;
@@ -45,7 +46,7 @@ public class SearchDropDownBox extends Composite {
 		selectedLabel.setCursor(new Cursor(Display.getCurrent(), SWT.CURSOR_HAND));
 
 		arrowLabel = new CLabel(this, SWT.NONE);
-		arrowLabel.setImage(ImageConstants.IMG_16_ARROW_DOWN_GREEN);
+		arrowLabel.setImage(ImageConstants.IMG_16_ARROW_DOWN);
 		arrowLabel.setCursor(new Cursor(Display.getCurrent(), SWT.CURSOR_HAND));
 
 		listener = new Listener() {
@@ -237,15 +238,17 @@ public class SearchDropDownBox extends Composite {
 			updateTableItems();
 			Point tableSize = table.computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
 			// Remove extra row-column space
-			tableSize.x -= IMG_SEARCH_ALL.getBounds().width;
-			tableSize.y -= IMG_SEARCH_ALL.getBounds().height;
+            if (!Platform.OS_MACOSX.equals(Platform.getOS())) {
+                tableSize.x -= IMG_SEARCH_ALL.getBounds().width;
+            }
+            tableSize.y -= IMG_SEARCH_ALL.getBounds().height;
 			// Set table bounds
-			table.setBounds(1, 1, tableSize.x, tableSize.y);
+			table.setBounds(1, 1, tableSize.x + 2, tableSize.y + 2);
 
 			Point comboSize = getSize();
 			Display display = getDisplay();
 			Rectangle parentRect = display.map(getParent(), null, getBounds());
-			popup.setBounds(parentRect.x - 3, comboSize.y + parentRect.y + 1, tableSize.x + 2, tableSize.y + 2);
+			popup.setBounds(parentRect.x - 3, comboSize.y + parentRect.y + 1, tableSize.x + 4, tableSize.y + 4);
 			popup.setVisible(true);
 
 			table.setFocus();

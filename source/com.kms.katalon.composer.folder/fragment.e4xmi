@@ -16,7 +16,7 @@
     <elements xsi:type="application:Addon" xmi:id="_1TDzwCLOEeSmM8MxICGpiQ" elementId="com.kms.katalon.composer.folder.addon.inject" contributionURI="bundleclass://com.kms.katalon.composer.folder/com.kms.katalon.composer.folder.addons.FolderInjectionManagerAddon"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_7he7kDM6EeSDWvRdX4izrQ" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="index:3">
-    <elements xsi:type="menu:HandledToolItem" xmi:id="_7he7kjM6EeSDWvRdX4izrQ" elementId="com.kms.katalon.composer.toolbar.folder.newfolder" label="" iconURI="platform:/plugin/com.kms.katalon.composer.folder/icons/new_folder_28.png" tooltip="New Folder" command="_7DH0MCEpEeSZXr0THRq18w">
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_7he7kjM6EeSDWvRdX4izrQ" elementId="com.kms.katalon.composer.toolbar.folder.newfolder" label="" iconURI="platform:/plugin/com.kms.katalon.composer.folder/icons/new_folder_24.png" tooltip="New Folder" command="_7DH0MCEpEeSZXr0THRq18w">
       <persistedState key="index" value="3"/>
       <tags>FORCE_TEXT</tags>
     </elements>

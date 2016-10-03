@@ -8,20 +8,16 @@ import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.composer.components.util.ImageUtil;
 
-public class ImageConstants {
+public class ImageConstants extends com.kms.katalon.composer.components.impl.constants.ImageConstants {
     private static final Bundle currentBundle = FrameworkUtil.getBundle(ImageConstants.class);
     private static final Bundle componentBundle = FrameworkUtil
             .getBundle(com.kms.katalon.composer.components.impl.constants.ImageConstants.class);
 
     // OpenTestSuiteHandler
     public static final String IMG_16_TEST_SUITE_PATH = "/icons/test_suite_16.png";
-    public static final String URL_16_TEST_SUITE = ImageUtil.getImageUrl(currentBundle, IMG_16_TEST_SUITE_PATH);
+    public static final String URL_16_TEST_SUITE = ImageUtil.getImageUrl(componentBundle, IMG_16_TEST_SUITE_PATH);
 
     // TestSuitePart
-    public static final Image IMG_16_ARROW_DOWN_BLACK = ImageUtil.loadImage(componentBundle,
-            "/icons/arrow_down_black_16.png");
-    public static final Image IMG_16_ARROW_UP_BLACK = ImageUtil.loadImage(componentBundle,
-            "/icons/arrow_up_black_16.png");
     public static final Image IMG_16_CHECKBOX_CHECKED = ImageUtil.loadImage(componentBundle,
             "/icons/checkbox_checked_16.png");
     public static final Image IMG_16_CHECKBOX_UNCHECKED = ImageUtil.loadImage(componentBundle,
@@ -32,10 +28,6 @@ public class ImageConstants {
     public static final Image IMG_16_DATA_ONE_ONE = ImageUtil.loadImage(currentBundle, "/icons/data_one_one_16.png");
 
     // TestSuitePart
-    public static final Image IMG_24_ADD = ImageUtil.loadImage(componentBundle, "/icons/add_24.png");
-    public static final Image IMG_24_REMOVE = ImageUtil.loadImage(componentBundle, "/icons/remove_24.png");
-    public static final Image IMG_24_UP = ImageUtil.loadImage(componentBundle, "/icons/up_24.png");
-    public static final Image IMG_24_DOWN = ImageUtil.loadImage(componentBundle, "/icons/down_24.png");
     public static final Image IMG_16_SEARCH = ImageUtil.loadImage(currentBundle, "/icons/search_16.png");
     public static final Image IMG_16_CLOSE_SEARCH = ImageUtil.loadImage(currentBundle, "/icons/close_search_16.png");
     public static final Image IMG_16_ADVANCED_SEARCH = ImageUtil.loadImage(currentBundle,

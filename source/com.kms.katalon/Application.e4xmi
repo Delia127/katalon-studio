@@ -3,7 +3,7 @@
   <children xsi:type="basic:TrimmedWindow" xmi:id="_hQQH0RYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.window.main" label="Katalon Studio" iconURI="" bindingContexts="_mWGB8AQqEeWyKYoESvUc1g" x="0" y="0" width="800" height="600">
     <tags>shellMaximized</tags>
     <children xsi:type="advanced:PerspectiveStack" xmi:id="_hQQH8BYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.perspectiveStack" selectedElement="_hQQH8RYMEeSUMbyEN2kbFQ">
-      <children xsi:type="advanced:Perspective" xmi:id="_hQQH8RYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.perspective.keyword" selectedElement="_hQQH8hYMEeSUMbyEN2kbFQ" label="Keyword" iconURI="platform:/plugin/com.kms.katalon/icons/branding_16.png" tooltip="Keyword Perspective">
+      <children xsi:type="advanced:Perspective" xmi:id="_hQQH8RYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.perspective.keyword" selectedElement="_hQQH8hYMEeSUMbyEN2kbFQ" label="Keyword" iconURI="platform:/plugin/com.kms.katalon/icons/keyword_perspective_16.png" tooltip="Keyword Perspective">
         <children xsi:type="basic:PartSashContainer" xmi:id="_hQQH8hYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.partsashcontainer.main" horizontal="true">
           <children xsi:type="basic:PartSashContainer" xmi:id="_QR8UECXxEeWJ99-mW6KHQg" elementId="com.kms.katalon.composer.partsashcontainer.left" containerData="20" selectedElement="_Uxwj0BYtEeSNBMuqFX2a9Q">
             <children xsi:type="basic:PartStack" xmi:id="_Uxwj0BYtEeSNBMuqFX2a9Q" elementId="com.kms.katalon.composer.partstack.explorer" containerData="50">
@@ -107,11 +107,11 @@
     <trimBars xmi:id="_hQQH9RYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.trimbar">
       <children xsi:type="menu:ToolBar" xmi:id="_hQQH9hYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.toolbar">
         <tags>Draggable</tags>
-        <children xsi:type="menu:HandledToolItem" xmi:id="_hQQH-BYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.toolbar.save" iconURI="platform:/plugin/com.kms.katalon/icons/save_28.png" tooltip="Save" command="_hQQH4xYMEeSUMbyEN2kbFQ">
+        <children xsi:type="menu:HandledToolItem" xmi:id="_hQQH-BYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.toolbar.save" iconURI="platform:/plugin/com.kms.katalon/icons/save_24.png" tooltip="Save" command="_hQQH4xYMEeSUMbyEN2kbFQ">
           <persistedState key="index" value="0"/>
           <tags>Opaque</tags>
         </children>
-        <children xsi:type="menu:HandledToolItem" xmi:id="_5oUMAEO4EeSlQuaMBzQJOw" elementId="com.kms.katalon.composer.toolbar.saveAll" iconURI="platform:/plugin/com.kms.katalon/icons/save_all_28.png" tooltip="Save All" command="_8qJlUEO4EeSlQuaMBzQJOw">
+        <children xsi:type="menu:HandledToolItem" xmi:id="_5oUMAEO4EeSlQuaMBzQJOw" elementId="com.kms.katalon.composer.toolbar.saveAll" iconURI="platform:/plugin/com.kms.katalon/icons/save_all_24.png" tooltip="Save All" command="_8qJlUEO4EeSlQuaMBzQJOw">
           <persistedState key="index" value="1"/>
           <tags>Opaque</tags>
         </children>
@@ -148,7 +148,7 @@
     </bindings>
   </bindingTables>
   <rootContext xmi:id="_mWGB8AQqEeWyKYoESvUc1g" elementId="org.eclipse.ui.contexts.dialogAndWindow " name="Windows and Dialogs"/>
-  <commands xmi:id="_hQQH3BYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.quit" commandName="quitCommand"></commands>
+  <commands xmi:id="_hQQH3BYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.quit" commandName="quitCommand"/>
   <commands xmi:id="_hQQH4xYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.command.save" commandName="saveCommand"/>
   <commands xmi:id="_hQQH5hYMEeSUMbyEN2kbFQ" elementId="org.eclipse.ui.help.aboutAction" commandName="aboutCommand"/>
   <commands xmi:id="_8qJlUEO4EeSlQuaMBzQJOw" elementId="com.kms.katalon.command.saveAll" commandName="saveAllCommand"/>

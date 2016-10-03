@@ -9,7 +9,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 public class ResizableBackgroundImageComposite extends FocusableComposite implements Listener {
-
     private Image originalImage;
 
     public ResizableBackgroundImageComposite(Composite parent, int style, Image originalImage) {
@@ -34,11 +33,17 @@ public class ResizableBackgroundImageComposite extends FocusableComposite implem
     }
 
     private Image resize(Image image, int width, int height) {
+        Rectangle imageBounds = image.getBounds();
+        int imageWidth = imageBounds.width;
+        int imageHeight = imageBounds.height;
+        if (width == imageWidth && height ==  imageHeight) {
+            return image;
+        }
         Image scaled = new Image(getDisplay(), width, height);
         GC gc = new GC(scaled);
         gc.setAntialias(SWT.ON);
         gc.setInterpolation(SWT.HIGH);
-        gc.drawImage(image, 0, 0, image.getBounds().width, image.getBounds().height, 0, 0, width, height);
+        gc.drawImage(image, 0, 0, imageWidth, imageHeight, 0, 0, width, height);
         gc.dispose();
         return scaled;
     }
@@ -51,7 +56,7 @@ public class ResizableBackgroundImageComposite extends FocusableComposite implem
 
     private void disposeCurrentImage() {
         Image oldImage = getBackgroundImage();
-        if (oldImage != null) {
+        if (oldImage != null && oldImage != originalImage) {
             oldImage.dispose();
         }
     }

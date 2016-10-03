@@ -103,6 +103,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
 
     private Label lblFileInfo;
 
+    @Override
     @PostConstruct
     public void createControls(Composite parent, MPart mpart) {
         ableToReload = true;
@@ -401,9 +402,9 @@ public class ExcelTestDataPart extends TestDataMainPart {
     private void redrawBtnExpandFileInfo() {
         btnExpandFileInfo.getParent().setRedraw(false);
         if (isFileInfoExpanded) {
-            btnExpandFileInfo.setImage(ImageConstants.IMG_16_ARROW_UP_BLACK);
+            btnExpandFileInfo.setImage(ImageConstants.IMG_16_ARROW_DOWN);
         } else {
-            btnExpandFileInfo.setImage(ImageConstants.IMG_16_ARROW_DOWN_BLACK);
+            btnExpandFileInfo.setImage(ImageConstants.IMG_16_ARROW);
         }
         btnExpandFileInfo.getParent().setRedraw(true);
 

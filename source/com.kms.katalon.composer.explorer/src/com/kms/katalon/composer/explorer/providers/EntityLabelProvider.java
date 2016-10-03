@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Event;
 
 import com.kms.katalon.composer.components.impl.providers.IEntityLabelProvider;
 import com.kms.katalon.composer.components.impl.providers.TypeCheckedStyleTreeCellLabelProvider;
@@ -130,5 +131,23 @@ public class EntityLabelProvider extends TypeCheckedStyleTreeCellLabelProvider<I
             LoggerSingleton.logError(e);
             return StringUtils.EMPTY;
         }
+    }
+
+    @Override
+    protected void measure(Event event, Object element) {
+        super.measure(event, element);
+        if (canNotDrawSafely(element)) {
+            return;
+        }
+        ViewerCell cell = getOwnedViewerCell(event);
+
+        if (isCellNotExisted(cell)) {
+            return;
+        }
+        Image image = cell.getImage();
+        if (image == null) {
+            return;
+        }
+        event.height = Math.max(event.height, image.getBounds().height + 6);
     }
 }

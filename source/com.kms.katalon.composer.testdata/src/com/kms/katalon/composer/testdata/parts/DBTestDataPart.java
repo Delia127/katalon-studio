@@ -91,6 +91,7 @@ public class DBTestDataPart extends TestDataMainPart {
         return partService;
     }
 
+    @Override
     @PostConstruct
     public void createControls(Composite parent, MPart mpart) {
         super.createControls(parent, mpart);
@@ -186,8 +187,8 @@ public class DBTestDataPart extends TestDataMainPart {
 
     private void redrawArrowIndicator() {
         lblArrowIndicator.getParent().setRedraw(false);
-        lblArrowIndicator.setImage(compFileInfoDetails.isVisible() ? ImageConstants.IMG_16_ARROW_UP_BLACK
-                : ImageConstants.IMG_16_ARROW_DOWN_BLACK);
+        lblArrowIndicator.setImage(compFileInfoDetails.isVisible() ? ImageConstants.IMG_16_ARROW_DOWN
+                : ImageConstants.IMG_16_ARROW);
         lblArrowIndicator.getParent().setRedraw(true);
     }
 
