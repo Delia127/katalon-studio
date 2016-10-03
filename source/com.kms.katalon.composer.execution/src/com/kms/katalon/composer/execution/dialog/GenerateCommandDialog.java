@@ -416,6 +416,7 @@ public class GenerateCommandDialog extends AbstractDialog {
         browsers.add(BROWSER_TYPE_CUSTOM);
         browsers.remove(WebUIDriverType.REMOTE_CHROME_DRIVER.toString());
         browsers.remove(WebUIDriverType.REMOTE_FIREFOX_DRIVER.toString());
+        browsers.remove(WebUIDriverType.KOBITON_WEB_DRIVER.toString());
         comboBrowser.setItems(browsers.toArray(new String[0]));
 
         txtRemoteWebDriverURL.setEnabled(false);
