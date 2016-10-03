@@ -575,7 +575,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
             return;
         }
         if (originalTestSuite.isEmpty()) {
-            if (MessageDialog.openQuestion(null, StringConstants.DIA_TITLE_INFORMATION,
+            if (MessageDialog.openConfirm(null, StringConstants.DIA_TITLE_INFORMATION,
                     StringConstants.JOB_MSG_EMPTY_TEST_SUITE_COLLECTION)) {
                 selectionListener.executeAction(ActionId.ADD.getId());
             }
