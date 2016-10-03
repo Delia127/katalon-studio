@@ -14,7 +14,7 @@ import com.google.gson.JsonParser;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 
 public class ServerAPICommunicationUtil {
-    private static final String URL_API = "http://backend-dev.katalon.com/api";
+    private static final String URL_API = "http://update.katalon.com/api";
     private static final String POST = "POST";
     private static final String GET = "GET";
 
