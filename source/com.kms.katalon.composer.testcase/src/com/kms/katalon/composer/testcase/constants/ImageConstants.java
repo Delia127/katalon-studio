@@ -79,6 +79,4 @@ public class ImageConstants extends com.kms.katalon.composer.components.impl.con
     public static final Image IMG_16_WARN_TABLE_ITEM = PlatformUI.getWorkbench()
             .getSharedImages()
             .getImage(ISharedImages.IMG_OBJS_WARN_TSK);
-
-    public static final Image IMG_KEYWORD_WIKI = ImageUtil.loadImage(currentBundle, "/icons/keyword_wiki.png");
 }

@@ -95,7 +95,40 @@ public class TestCaseEntityUtil {
         }
         return lstTestCases;
     }
-    
+
+    // Parse java doc html into plain text
+    public static String parseJavaDocHTML(String javadocHTML) {
+        if (javadocHTML == null) {
+            return "";
+        }
+        // replace and put line break into javadoc html
+        String replace = javadocHTML.replace("<br/>", "<br/>\n")
+                .replace("<BR/>", "<BR/>\n")
+                .replace("</DT>", "</DT> ")
+                .replace("</dt>", "</dt> ")
+                .replace("<code>", "\n<code>")
+                .replace("<CODE>", "\n<CODE>")
+                .replace("</p>", "</p>\n")
+                .replace("</P>", "</P>\n")
+                .replace("<DL>", "<DL>\n")
+                .replace("<dl>", "<dl>\n")
+                .replace("</DD>", "</DD>\n")
+                .replace("</dd>", "</dd>\n")
+                .replace("<b>", "\n<b>")
+                .replace("<B>", "\n<B>")
+                .replaceAll("(?s)<(h|H)4>.*<\\/(h|H)4>", "");
+        // decode any encoded html, preventing &lt;script&gt; to be rendered as
+        // <script>
+        String html = StringEscapeUtils.unescapeHtml(replace);
+        // remove all html tags, but maintain line breaks
+        String clean = Jsoup.clean(html, "", Whitelist.none(), new Document.OutputSettings().prettyPrint(false));
+        // decode html again to convert character entities back into text
+        return StringEscapeUtils.unescapeHtml(clean)
+                .trim()
+                .replaceAll("(?m)(^ *| +(?= |$))", "")
+                .replaceAll("(?m)^$([\r\n]+?)(^$[\r\n]+?^)+", "$1");
+    }
+
     private static Map<String, Map<String, String>> keywordMethodJavaDocMap;
 
     public static Map<String, Map<String, String>> getKeywordMethodJavaDocMap() {
@@ -125,9 +158,8 @@ public class TestCaseEntityUtil {
                 for (KeywordMethod method : builtInKeywordMethods) {
                     IMethod builtInMethod = findBuiltinMethods(builtinKeywordType, method.getName(), javaProject);
                     if (builtInMethod != null) {
-                        String attachedJavaDoc = builtInMethod.getAttachedJavadoc(null);
-                        attachedJavaDoc = attachedJavaDoc == null ? "" : attachedJavaDoc;
-                        allKeywordJavaDocMap.put(method.getName(), attachedJavaDoc);
+                        allKeywordJavaDocMap.put(method.getName(),
+                                parseJavaDocHTML(builtInMethod.getAttachedJavadoc(null)));
                     }
                 }
             } catch (JavaModelException e) {
