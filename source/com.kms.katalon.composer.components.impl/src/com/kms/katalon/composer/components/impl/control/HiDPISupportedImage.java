@@ -5,6 +5,7 @@ import static com.kms.katalon.constants.GlobalStringConstants.ENTITY_ID_SEPARATO
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 
@@ -80,7 +81,9 @@ public class HiDPISupportedImage {
             }
 
             try {
-                tempDirLocation = Paths.get(Platform.getInstallLocation().getURL().toURI()).toString() + "/temp/";
+                tempDirLocation = Paths.get(
+                        new URI(Platform.getInstallLocation().getURL().toString().replace(" ", "%20"))).toString()
+                        + "/temp/";
             } catch (URISyntaxException e) {
                 // this cannot happen
                 LoggerSingleton.logError(e);
@@ -186,7 +189,8 @@ public class HiDPISupportedImage {
             // org.eclipse.swt.graphics.Resource.init()
             invokeMethodOfInstance(image, image.getClass().getSuperclass(), "init", EMPTY_OBJECT_ARR);
 
-            Object nsStringImageURI2x = invokeStaticMethodOfClass(MAC_NS_STRING_CLASS, "stringWith", new Path(absolutePath2x).toOSString());
+            Object nsStringImageURI2x = invokeStaticMethodOfClass(MAC_NS_STRING_CLASS, "stringWith", new Path(
+                    absolutePath2x).toOSString());
             long stringHandleId = nsStringImageURI2x == null ? 0 : nsStringImageURI2x.getClass()
                     .getSuperclass()
                     .getSuperclass()
@@ -205,7 +209,7 @@ public class HiDPISupportedImage {
             invokeMethodOfInstance(pool, pool.getClass().getSuperclass(), "release", EMPTY_OBJECT_ARR);
         }
     }
-    
+
     private Object getHandle() throws Exception {
         return image.getClass().getDeclaredField("handle").get(image);
     }
