@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.Properties;
@@ -65,7 +66,7 @@ public class ApplicationInfo {
 
     public static String installLocation() {
         try {
-            return Paths.get(Platform.getInstallLocation().getURL().toURI()).toString();
+            return Paths.get(new URI(Platform.getInstallLocation().getURL().toString().replace(" ", "%20"))).toString();
         } catch (NullPointerException e) {
             // do nothing
         } catch (URISyntaxException e) {
@@ -159,7 +160,7 @@ public class ApplicationInfo {
     private static void logInfo(String message) {
         LogUtil.println(LogManager.getOutputLogger(), message, LogMode.LOG);
     }
-    
+
     public static void removeAppProperty(String key) {
         Properties appProps = getAppProperties();
 
