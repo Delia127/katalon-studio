@@ -28,6 +28,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<module>com.kms.katalon.composer.integration.qtest</module> 
 		<module>com.kms.katalon.composer.integration.slack</module> 
 		<module>com.kms.katalon.composer.integration.git</module> 
+		<module>com.kms.katalon.composer.integration.kobiton</module> 
 		<module>com.kms.katalon.composer.keyword</module>
 		<module>com.kms.katalon.composer.mobile.objectspy</module>
 		<module>com.kms.katalon.composer.mobile</module>
@@ -62,6 +63,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<module>com.kms.katalon.feature</module>
 		<module>com.kms.katalon.groovy</module>
 		<module>com.kms.katalon.integration.qtest</module>
+		<module>com.kms.katalon.integration.kobiton</module>
 		<module>com.kms.katalon.jasper</module>
 		<module>com.kms.katalon.logging</module>
 		<module>com.kms.katalon.preferences</module>
@@ -79,7 +81,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<eclipse_repo_url>http://download.eclipse.org/eclipse/updates/4.4/R-4.4.2-201502041700/</eclipse_repo_url>
 		<eclipse_orbit_repo_url>http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository/</eclipse_orbit_repo_url>
 		<groovy_repo_url>http://dist.springsource.org/snapshot/GRECLIPSE/e4.4</groovy_repo_url>
-		<egit_repo_url>http://download.eclipse.org/egit/updates</egit_repo_url>
+		<egit_repo_url>http://download.eclipse.org/egit/updates-4.4.1</egit_repo_url>
 		
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		
@@ -160,16 +162,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 						</artifact>
 					</target>
 					<environments>
-						<environment>
-							<os>linux</os>
-							<ws>gtk</ws>
-							<arch>x86</arch>
-						</environment>
-						<environment>
-							<os>linux</os>
-							<ws>gtk</ws>
-							<arch>x86_64</arch>
-						</environment>
 						<environment>
 							<os>win32</os>
 							<ws>win32</ws>

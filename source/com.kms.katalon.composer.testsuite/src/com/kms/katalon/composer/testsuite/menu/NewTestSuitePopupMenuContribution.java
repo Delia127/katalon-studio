@@ -22,7 +22,7 @@ import com.kms.katalon.constants.helper.ConstantsHelper;
 @SuppressWarnings("restriction")
 public class NewTestSuitePopupMenuContribution {
     private static final String NEW_TESTSUITE_POPUP_MENUITEM_LABEL = StringConstants.MENU_CONTEXT_TEST_SUITE;
-    private static final String NEW_TESTSUITE_COMMAND_ID = StringConstants.COMMAND_ID_ADD_TEST_SUITE;
+    private static final String NEW_TESTSUITE_COMMAND_ID = "com.kms.katalon.composer.testsuite.command.add";
 
     @Inject
     private ECommandService commandService;

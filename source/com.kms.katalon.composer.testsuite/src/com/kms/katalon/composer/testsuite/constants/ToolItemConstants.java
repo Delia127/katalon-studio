@@ -8,6 +8,4 @@ public class ToolItemConstants {
 	public static final String REMOVE = StringConstants.CONS_REMOVE;
 	public static final String UP = StringConstants.CONS_UP;
 	public static final String DOWN = StringConstants.CONS_DOWN;
-	public static final String MAP = StringConstants.CONS_MAP;
-	public static final String MAPALL = StringConstants.CONS_MAPALL;
 }

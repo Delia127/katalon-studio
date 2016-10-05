@@ -4,31 +4,39 @@ import static com.kms.katalon.composer.components.log.LoggerSingleton.logError;
 import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
 
 import java.io.IOException;
+import java.util.concurrent.Executors;
 
 import org.eclipse.core.filesystem.IFileInfo;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.ui.basic.MTrimmedWindow;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.lifecycle.PostContextCreate;
 import org.eclipse.e4.ui.workbench.modeling.ISaveHandler;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.search.ui.NewSearchUI;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IWorkbenchCommandConstants;
 import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.internal.ide.dialogs.IDEResourceInfoUtils;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.addons.CommandBindingRemover;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.handlers.CloseHandler;
-import com.kms.katalon.composer.handlers.PreferenceHandler;
 import com.kms.katalon.composer.handlers.ResetPerspectiveHandler;
 import com.kms.katalon.composer.handlers.SaveHandler;
 import com.kms.katalon.composer.handlers.SearchHandler;
@@ -36,14 +44,20 @@ import com.kms.katalon.composer.handlers.WorkbenchSaveHandler;
 import com.kms.katalon.composer.initializer.CommandBindingInitializer;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.constants.StringConstants;
-import com.kms.katalon.core.application.Application.RunningModeParam;
+import com.kms.katalon.constants.MessageConstants;
+import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
+import com.kms.katalon.usagetracking.UsageInfoCollector;
 import com.kms.katalon.util.ActivationInfoCollector;
+import com.kms.katalon.util.VersionUtil;
 
 @SuppressWarnings("restriction")
 public class LifeCycleManager {
+    private static final String DF_TEXT_FONT = "Courier New";
+
+    private static final String PREF_FIST_TIME_SETUP_COMPLETED = "firstTimeSetupCompleted";
+
     private void startUpGUIMode() throws Exception {
         refreshAllProjects();
         setupHandlers();
@@ -59,7 +73,9 @@ public class LifeCycleManager {
         handlerService.activateHandler(IWorkbenchCommandConstants.FILE_CLOSE, new CloseHandler());
         handlerService.activateHandler(IdConstants.SEARCH_COMMAND_ID, new SearchHandler());
         handlerService.activateHandler(IdConstants.RESET_PERSPECTIVE_HANDLER_ID, new ResetPerspectiveHandler());
-        handlerService.activateHandler(IWorkbenchCommandConstants.WINDOW_PREFERENCES, new PreferenceHandler());
+
+        IContextService contextService = (IContextService) PlatformUI.getWorkbench().getService(IContextService.class);
+        contextService.activateContext(IdConstants.KATALON_CONTEXT_ID);
 
         MTrimmedWindow model = (MTrimmedWindow) PlatformUI.getWorkbench()
                 .getActiveWorkbenchWindow()
@@ -106,8 +122,9 @@ public class LifeCycleManager {
             public void partActivated(IWorkbenchPartReference partRef) {
             }
         });
-        
+
         new CommandBindingInitializer().setup();
+        new CommandBindingRemover().setup();
     }
 
     private void setupPreferences() {
@@ -119,15 +136,14 @@ public class LifeCycleManager {
     private void setupWorkbenchPlugin() {
         ScopedPreferenceStore store = PreferenceStoreManager.getPreferenceStore(IdConstants.WORKBENCH_WINDOW_ID);
 
-        if (store.getBoolean(StringConstants.PREF_FIST_TIME_SETUP_COMPLETED)) {
+        if (store.getBoolean(PREF_FIST_TIME_SETUP_COMPLETED)) {
             return;
         }
 
-        FontData defaultFont = JFaceResources.getTextFont().getFontData()[0];
-        defaultFont.setHeight(12);
-
+        int fontSize = (Platform.OS_MACOSX.equals(Platform.getOS())) ? 15 : 11;
+        FontData defaultFont = FontDescriptor.createFrom(DF_TEXT_FONT, fontSize, SWT.NORMAL).getFontData()[0];
         store.setValue(JFaceResources.TEXT_FONT, defaultFont.toString());
-        store.setValue(StringConstants.PREF_FIST_TIME_SETUP_COMPLETED, true);
+        store.setValue(PREF_FIST_TIME_SETUP_COMPLETED, true);
 
         try {
             store.save();
@@ -178,14 +194,61 @@ public class LifeCycleManager {
             public void handleEvent(Event event) {
                 try {
                     startUpGUIMode();
-                    if (!(ActivationInfoCollector.checkActivation(RunningModeParam.GUI))) {
+                    if (!(ActivationInfoCollector.checkActivation())) {
                         eventBroker.send(EventConstants.PROJECT_CLOSE, null);
                         PlatformUI.getWorkbench().close();
+                        return;
                     }
+                    alertNewVersion();
+                    startCollectUsageInfo();
+                    
                 } catch (Exception e) {
                     logError(e);
                 }
             }
         });
     }
+
+    private void alertNewVersion() {
+        IPreferenceStore prefStore = PlatformUI.getPreferenceStore();
+        boolean checkNewVersion = prefStore.contains(PreferenceConstants.GENERAL_AUTO_CHECK_NEW_VERSION)
+                ? prefStore.getBoolean(PreferenceConstants.GENERAL_AUTO_CHECK_NEW_VERSION) : true;
+        if (!checkNewVersion) {
+            return;
+        }
+        Executors.newSingleThreadExecutor().submit(new Runnable() {
+
+            @Override
+            public void run() {
+                if (!VersionUtil.hasNewVersion()) {
+                    return;
+                }
+                Display.getDefault().syncExec(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        boolean wantDownload = MessageDialog.openConfirm(null,
+                                MessageConstants.DIA_UPDATE_NEW_VERSION_TITLE,
+                                MessageConstants.DIA_UPDATE_NEW_VERSION_MESSAGE);
+                        if (wantDownload) {
+                            VersionUtil.gotoDownloadPage();
+                        }
+                    }
+
+                });
+
+
+            }
+        });
+    }
+    
+    private void startCollectUsageInfo() {
+        Executors.newSingleThreadExecutor().submit(new Runnable() {
+            @Override
+            public void run() {
+                UsageInfoCollector.colllect();
+            }
+        });
+    }
+
 }

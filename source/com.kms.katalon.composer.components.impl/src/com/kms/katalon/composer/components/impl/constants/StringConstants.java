@@ -4,39 +4,38 @@ import com.kms.katalon.constants.GlobalStringConstants;
 
 public class StringConstants extends GlobalStringConstants {
     // AddMailRecipientDialog
-    public static final String DIA_LBL_EMAIL = EMAIL + ":";
+    public static final String DIA_LBL_EMAIL = ComposerComponentsImplMessageConstants.DIA_LBL_EMAIL;
 
-    public static final String DIA_DESC_PLS_ENTER_EMAIL_ADDR = "Please enter your email address."
-            + "You can enter many email addresses by using \";\".\n For example: abcd@gmail.com; xyz@kms-technology.com";
+    public static final String DIA_DESC_PLS_ENTER_EMAIL_ADDR = ComposerComponentsImplMessageConstants.DIA_DESC_PLS_ENTER_EMAIL_ADDR;
 
-    public static final String DIA_DESC_INVALID_EMAIL_ADDR = "Email is not valid.";
+    public static final String DIA_DESC_INVALID_EMAIL_ADDR = ComposerComponentsImplMessageConstants.DIA_DESC_INVALID_EMAIL_ADDR;
 
-    public static final String DIA_DESC_DUPLICATED_EMAIL_ADDR = "Email(s) {0} has/have already existed in mail recipients.";
+    public static final String DIA_DESC_DUPLICATED_EMAIL_ADDR = ComposerComponentsImplMessageConstants.DIA_DESC_DUPLICATED_EMAIL_ADDR;
 
-    public static final String DIA_ADD_EMAIL_RECIPIENT = "Add email recipient";
+    public static final String DIA_ADD_EMAIL_RECIPIENT = ComposerComponentsImplMessageConstants.DIA_ADD_EMAIL_RECIPIENT;
 
     // AbstractEntityDialog
     public static final String DIA_LBL_NAME = NAME;
 
-    public static final String DIA_LBL_CREATE_NEW = "Create new";
+    public static final String DIA_LBL_CREATE_NEW = ComposerComponentsImplMessageConstants.DIA_LBL_CREATE_NEW;
 
-    public static final String DIA_WINDOW_TITLE_NEW = "New";
+    public static final String DIA_WINDOW_TITLE_NEW = ComposerComponentsImplMessageConstants.DIA_WINDOW_TITLE_NEW;
 
-    public static final String DIA_NAME_EXISTED = "Name already exists.";
+    public static final String DIA_NAME_EXISTED = ComposerComponentsImplMessageConstants.DIA_NAME_EXISTED;
 
     // TreeEntitySelectionDialog
-    public static final String DIA_SEARCH_TEXT_DEFAULT_VALUE = "Enter text to search...";
+    public static final String DIA_SEARCH_TEXT_DEFAULT_VALUE = ComposerComponentsImplMessageConstants.DIA_SEARCH_TEXT_DEFAULT_VALUE;
 
     public static final String DIA_IMAGE_SEARCH_TOOLTIP = SEARCH;
 
     public static final String DIA_IMAGE_CLOSE_SEARCH_TOOLTIP = CLEAR;
 
-    public static final String DIA_KEYWORD_SEARCH_ALL = "all";
+    public static final String DIA_KEYWORD_SEARCH_ALL = ComposerComponentsImplMessageConstants.DIA_KEYWORD_SEARCH_ALL;
 
     // MultiStatusErrorDialog
-    public static final String DIA_TITLE_DETAILS = "Details";
+    public static final String DIA_TITLE_DETAILS = ComposerComponentsImplMessageConstants.DIA_TITLE_DETAILS;
 
-    public static final String DIA_TITLE_REASON = "Reason:";
+    public static final String DIA_TITLE_REASON = ComposerComponentsImplMessageConstants.DIA_TITLE_REASON;
 
     // FolderTreeEntity
     public static final String TREE_FOLDER_TYPE_NAME = FOLDER;
@@ -66,7 +65,7 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String TREE_TEST_DATA_KW = ENTITY_KW_TEST_DATA;
 
-    public static final String TREE_TEST_DATA_PROP_DATA_TYPE = "Data Type";
+    public static final String TREE_TEST_DATA_PROP_DATA_TYPE = ComposerComponentsImplMessageConstants.TREE_TEST_DATA_PROP_DATA_TYPE;
 
     // TestSuiteTreeEntity
     public static final String TREE_TEST_SUITE_TYPE_NAME = TEST_SUITE;
@@ -79,63 +78,63 @@ public class StringConstants extends GlobalStringConstants {
     public static final String TREE_OBJECT_KW = ENTITY_KW_TEST_OBJECT;
 
     // CheckpointTreeEntity
-    public static final String TREE_CHECK_POINT_PROP_TAKEN_DATE = "Taken Date";
+    public static final String TREE_CHECK_POINT_PROP_TAKEN_DATE = ComposerComponentsImplMessageConstants.TREE_CHECK_POINT_PROP_TAKEN_DATE;
 
     // DatabaseQueryDialog
-    public static final String DIA_TITLE_DB_CONNECTION_QUERY_SETTINGS = "Database Connection and Query Settings";
+    public static final String DIA_TITLE_DB_CONNECTION_QUERY_SETTINGS = ComposerComponentsImplMessageConstants.DIA_TITLE_DB_CONNECTION_QUERY_SETTINGS;
 
-    public static final String DIA_GRP_DATABASE_CONNECTION = "Database Connection";
+    public static final String DIA_GRP_DATABASE_CONNECTION = ComposerComponentsImplMessageConstants.DIA_GRP_DATABASE_CONNECTION;
 
-    public static final String DIA_CHK_USE_GLOBAL_DB_SETTINGS = "Use global database connection settings";
+    public static final String DIA_CHK_USE_GLOBAL_DB_SETTINGS = ComposerComponentsImplMessageConstants.DIA_CHK_USE_GLOBAL_DB_SETTINGS;
 
-    public static final String DIA_CHK_SECURE_USER_PASSWORD = "Secure User and Password";
+    public static final String DIA_CHK_SECURE_USER_PASSWORD = ComposerComponentsImplMessageConstants.DIA_CHK_SECURE_USER_PASSWORD;
 
-    public static final String DIA_LBL_USER = "User";
+    public static final String DIA_LBL_USER = ComposerComponentsImplMessageConstants.DIA_LBL_USER;
 
-    public static final String DIA_LBL_PASSWORD = "Password";
+    public static final String DIA_LBL_PASSWORD = ComposerComponentsImplMessageConstants.DIA_LBL_PASSWORD;
 
-    public static final String DIA_LBL_CONNECTION_URL = "Connection URL";
+    public static final String DIA_LBL_CONNECTION_URL = ComposerComponentsImplMessageConstants.DIA_LBL_CONNECTION_URL;
 
-    public static final String DIA_LBL_SQL_QUERY = "SQL Query";
+    public static final String DIA_LBL_SQL_QUERY = ComposerComponentsImplMessageConstants.DIA_LBL_SQL_QUERY;
 
-    public static final String DIA_BTN_TEST_CONNECTION = "Test Connection";
+    public static final String DIA_BTN_TEST_CONNECTION = ComposerComponentsImplMessageConstants.DIA_BTN_TEST_CONNECTION;
 
-    public static final String DIA_LBL_CONNECTION_URL_SAMPLE = "Connection URL Sample";
+    public static final String DIA_LBL_CONNECTION_URL_SAMPLE = ComposerComponentsImplMessageConstants.DIA_LBL_CONNECTION_URL_SAMPLE;
 
-    public static final String DIA_LNK_MYSQL = "MySQL";
+    public static final String DIA_LNK_MYSQL = ComposerComponentsImplMessageConstants.DIA_LNK_MYSQL;
 
-    public static final String DIA_LNK_SQL_SERVER = "SQL Server";
+    public static final String DIA_LNK_SQL_SERVER = ComposerComponentsImplMessageConstants.DIA_LNK_SQL_SERVER;
 
-    public static final String DIA_LNK_ORACLE_SQL = "Oracle SQL";
+    public static final String DIA_LNK_ORACLE_SQL = ComposerComponentsImplMessageConstants.DIA_LNK_ORACLE_SQL;
 
-    public static final String DIA_LNK_POSTGRESQL = "PostgreSQL";
+    public static final String DIA_LNK_POSTGRESQL = ComposerComponentsImplMessageConstants.DIA_LNK_POSTGRESQL;
 
-    public static final String DIA_LBL_CONNECTION_CLOSED = "Connection is closed.";
+    public static final String DIA_LBL_CONNECTION_CLOSED = ComposerComponentsImplMessageConstants.DIA_LBL_CONNECTION_CLOSED;
 
-    public static final String DIA_MSG_CONNECTION_EMPTY = "Database Connection settings are empty.";
+    public static final String DIA_MSG_CONNECTION_EMPTY = ComposerComponentsImplMessageConstants.DIA_MSG_CONNECTION_EMPTY;
 
-    public static final String DIA_LBL_TEST_STATUS_FAIL = "Connection failed! {0}";
+    public static final String DIA_LBL_TEST_STATUS_FAIL = ComposerComponentsImplMessageConstants.DIA_LBL_TEST_STATUS_FAIL;
 
-    public static final String DIA_LBL_TEST_STATUS_SUCCESS = "Connection successful!";
+    public static final String DIA_LBL_TEST_STATUS_SUCCESS = ComposerComponentsImplMessageConstants.DIA_LBL_TEST_STATUS_SUCCESS;
 
-    public static final String DIA_TITLE_STATUS_DETAILS = "Status Details";
+    public static final String DIA_TITLE_STATUS_DETAILS = ComposerComponentsImplMessageConstants.DIA_TITLE_STATUS_DETAILS;
 
-    public static final String DIA_LINK_MYSQL_DOC = "https://dev.mysql.com/doc/connectors/en/connector-j-reference-configuration-properties.html";
+    public static final String DIA_LINK_MYSQL_DOC = ComposerComponentsImplMessageConstants.DIA_LINK_MYSQL_DOC;
 
-    public static final String DIA_LINK_SQL_SERVER_DOC = "https://msdn.microsoft.com/en-us/library/ms378672(v=sql.110).aspx";
+    public static final String DIA_LINK_SQL_SERVER_DOC = ComposerComponentsImplMessageConstants.DIA_LINK_SQL_SERVER_DOC;
 
-    public static final String DIA_LINK_ORACLE_SQL_DOC = "http://docs.oracle.com/database/121/JJDBC/urls.htm";
+    public static final String DIA_LINK_ORACLE_SQL_DOC = ComposerComponentsImplMessageConstants.DIA_LINK_ORACLE_SQL_DOC;
 
-    public static final String DIA_LINK_POSTGRESQL_DOC = "https://jdbc.postgresql.org/documentation/head/connect.html";
+    public static final String DIA_LINK_POSTGRESQL_DOC = ComposerComponentsImplMessageConstants.DIA_LINK_POSTGRESQL_DOC;
 
-    public static final String DIA_TXT_MYSQL_SAMPLE_LINK = "jdbc:mysql://localhost:3306/DB_NAME";
+    public static final String DIA_TXT_MYSQL_SAMPLE_LINK = ComposerComponentsImplMessageConstants.DIA_TXT_MYSQL_SAMPLE_LINK;
 
-    public static final String DIA_TXT_SQL_SERVER_SAMPLE_LINK = "jdbc:sqlserver://localhost:1433;databaseName=DB_NAME";
+    public static final String DIA_TXT_SQL_SERVER_SAMPLE_LINK = ComposerComponentsImplMessageConstants.DIA_TXT_SQL_SERVER_SAMPLE_LINK;
 
-    public static final String DIA_TXT_ORACLE_SQL_SAMPLE_THIN_LINK = "jdbc:oracle:thin:@//localhost:1521/SERVICE_NAME";
+    public static final String DIA_TXT_ORACLE_SQL_SAMPLE_THIN_LINK = ComposerComponentsImplMessageConstants.DIA_TXT_ORACLE_SQL_SAMPLE_THIN_LINK;
 
-    public static final String DIA_TXT_ORACLE_SQL_SAMPLE_OCI_LINK = "jdbc:oracle:oci:@//localhost:1521:SID";
+    public static final String DIA_TXT_ORACLE_SQL_SAMPLE_OCI_LINK = ComposerComponentsImplMessageConstants.DIA_TXT_ORACLE_SQL_SAMPLE_OCI_LINK;
 
-    public static final String DIA_TXT_POSTGRESQL_SAMPLE_LINK = "jdbc:postgresql://localhost:5432/DB_NAME?currentSchema=SCHEMA";
+    public static final String DIA_TXT_POSTGRESQL_SAMPLE_LINK = ComposerComponentsImplMessageConstants.DIA_TXT_POSTGRESQL_SAMPLE_LINK;
 
 }

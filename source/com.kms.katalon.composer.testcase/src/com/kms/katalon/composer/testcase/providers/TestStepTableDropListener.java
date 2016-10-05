@@ -15,6 +15,7 @@ import org.eclipse.swt.dnd.TreeDropTargetEffect;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
@@ -81,6 +82,7 @@ public class TestStepTableDropListener extends TreeDropTargetEffect {
     public void drop(DropTargetEvent event) {
         try {
             event.detail = DND.DROP_COPY;
+            
             if (event.data instanceof ITreeEntity[]) {
                 handleDropForTreeEntity(event, (ITreeEntity[]) event.data);
             } else if (event.data instanceof IKeywordBrowserTreeEntity[]) {
@@ -96,12 +98,20 @@ public class TestStepTableDropListener extends TreeDropTargetEffect {
                     StringConstants.ERR_CANNOT_DROP_ON_TEST_STEP_TABLE);
         }
     }
+    
 
     private void handleDropForScriptTransferData(DropTargetEvent event, ScriptTransferData[] scriptTransferDatas)
             throws GroovyParsingException {
         if (scriptTransferDatas.length <= 0) {
             return;
         }
+        
+        List<AstTreeTableNode> dragNodes = testCasePart.getDragNodes();
+        if (dragNodes != null && dragNodes.contains(getHoveredTreeTableNode(event))) {
+            event.detail = DND.DROP_NONE;
+            return;
+        }
+        
         ScriptTransferData firstScriptTransferData = scriptTransferDatas[0];
         boolean dropSuccessfully = handleDropForScriptSnippet(event, firstScriptTransferData.getScriptSnippet());
         if (!dropSuccessfully) {

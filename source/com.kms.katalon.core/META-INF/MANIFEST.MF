@@ -37,14 +37,15 @@ Require-Bundle: net.sf.supercsv.super-csv,
  org.apache.commons.io,
  org.apache.commons.lang,
  org.apache.xmlbeans,
- com.kms.katalon.constant,
  com.google.gson,
  org.jsoup,
  com.mysql.jdbc,
  com.microsoft.sqlserver.sqljdbc4,
  org.apache.commons.dbutils,
  com.oracle.jdbc.ojdbc7,
- org.postgresql.jdbc41
+ org.postgresql.jdbc41,
+ org.eclipse.osgi,
+ com.kms.katalon.constant
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Import-Package: com.google.common.io,

@@ -46,6 +46,12 @@ import com.kms.katalon.core.testobject.ObjectRepository;
 import com.kms.katalon.core.util.ExceptionsUtil;
 
 public class TestCaseExecutor {
+    private static final String FIND_TEST_CASE_METHOD_NAME = "findTestCase";
+
+    private static final String FIND_TEST_DATA_METHOD_NAME = "findTestData";
+
+    private static final String FIND_TEST_OBJECT_METHOD_NAME = "findTestObject";
+
     private static KeywordLogger logger = KeywordLogger.getInstance();
 
     private static ErrorCollector errorCollector = ErrorCollector.getCollector();
@@ -65,9 +71,9 @@ public class TestCaseExecutor {
     private Binding variableBinding;
 
     private TestCaseBinding testCaseBinding;
-    
+
     private boolean doCleanUp;
-    
+
     public TestCaseExecutor(String testCaseId, TestCaseBinding testCaseBinding, ScriptEngine engine, boolean doCleanUp) {
         this.testCaseBinding = testCaseBinding;
         this.engine = engine;
@@ -193,7 +199,7 @@ public class TestCaseExecutor {
             // logError(e, ExceptionsUtil.getMessageForThrowable(e));
             errorCollector.addError(e);
         }
-        
+
         if (doCleanUp) {
             cleanUp();
         }
@@ -243,12 +249,15 @@ public class TestCaseExecutor {
         return conf;
     }
 
-    /* package */ static CompilerConfiguration getConfigForCollectingVariable() {
+    /* package */static CompilerConfiguration getConfigForCollectingVariable() {
         CompilerConfiguration configuration = new CompilerConfiguration();
         ImportCustomizer importCustomizer = new ImportCustomizer();
         importCustomizer.addImport(TestDataFactory.class.getSimpleName(), TestDataFactory.class.getName());
         importCustomizer.addImport(ObjectRepository.class.getSimpleName(), ObjectRepository.class.getName());
-
+        importCustomizer.addImport(TestCaseFactory.class.getSimpleName(), TestCaseFactory.class.getName());
+        importCustomizer.addStaticImport(TestDataFactory.class.getName(), FIND_TEST_DATA_METHOD_NAME);
+        importCustomizer.addStaticImport(ObjectRepository.class.getName(), FIND_TEST_OBJECT_METHOD_NAME);
+        importCustomizer.addStaticImport(TestCaseFactory.class.getName(), FIND_TEST_CASE_METHOD_NAME);
         configuration.addCompilationCustomizers(importCustomizer);
         return configuration;
     }
@@ -280,6 +289,9 @@ public class TestCaseExecutor {
                         StringConstants.MAIN_LOG_INFO_VARIABLE_NAME_X_IS_SET_TO_Y_AS_DEFAULT,
                         testCaseVariable.getName(), defaultValueObject));
                 variableBinding.setVariable(testCaseVariable.getName(), defaultValueObject);
+            } catch (ExceptionInInitializerError e) {
+                logger.logWarning(MessageFormat.format(StringConstants.MAIN_LOG_MSG_SET_TEST_VARIABLE_ERROR_BECAUSE_OF,
+                        testCaseVariable.getName(), e.getCause().getMessage()));
             } catch (Exception e) {
                 logger.logWarning(MessageFormat.format(StringConstants.MAIN_LOG_MSG_SET_TEST_VARIABLE_ERROR_BECAUSE_OF,
                         testCaseVariable.getName(), e.getMessage()));

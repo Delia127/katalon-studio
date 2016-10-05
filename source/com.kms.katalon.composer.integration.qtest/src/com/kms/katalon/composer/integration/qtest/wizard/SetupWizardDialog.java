@@ -257,13 +257,6 @@ public class SetupWizardDialog extends SimpleWizardDialog {
     }
 
     @Override
-    public void create() {
-        super.create();
-        setInput();
-        registerControlModifyListeners();
-    }
-
-    @Override
     protected void registerControlModifyListeners() {
         super.registerControlModifyListeners();
         // Disable user click on step table

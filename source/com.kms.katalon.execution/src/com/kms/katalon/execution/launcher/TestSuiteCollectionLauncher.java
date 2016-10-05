@@ -11,6 +11,7 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
+import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity.ExecutionMode;
 import com.kms.katalon.execution.entity.TestSuiteCollectionExecutedEntity;
 import com.kms.katalon.execution.launcher.listener.LauncherEvent;
 import com.kms.katalon.execution.launcher.listener.LauncherListener;
@@ -23,7 +24,7 @@ import com.kms.katalon.logging.LogUtil;
 
 public class TestSuiteCollectionLauncher extends BasicLauncher implements LauncherListener {
 
-    private List<? extends ReportableLauncher> subLaunchers;
+    protected List<? extends ReportableLauncher> subLaunchers;
 
     private LauncherResult result;
 
@@ -36,16 +37,18 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
     private TestSuiteCollectionExecutedEntity executedEntity;
 
     protected final ReportCollectionEntity reportCollectionEntity;
+    
+    private ExecutionMode executionMode;
 
     public TestSuiteCollectionLauncher(TestSuiteCollectionExecutedEntity executedEntity, LauncherManager parentManager,
-            List<? extends ReportableLauncher> subLaunchers) {
+            List<? extends ReportableLauncher> subLaunchers, ExecutionMode executionMode) {
         this.testRunManager = new TestRunLauncherManager();
         this.subLaunchers = subLaunchers;
         this.result = new LauncherResult(executedEntity.getTotalTestCases());
         this.parentManager = parentManager;
         this.executedEntity = executedEntity;
         this.reportCollectionEntity = createReportCollectionEntity();
-
+        this.executionMode = executionMode;
         addListenerForChildren(subLaunchers);
     }
 
@@ -173,6 +176,9 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
 
     private class TestRunLauncherManager extends LauncherManager {
         protected boolean isLauncherReadyToRun(ILauncher launcher) {
+            if (executionMode == ExecutionMode.PARALLEL) {
+                return true;
+            }
             return getRunningLaunchers().isEmpty();
         }
     }

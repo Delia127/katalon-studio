@@ -10,11 +10,16 @@ import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.file.FileEntity;
 
 public class TestSuiteCollectionEntity extends FileEntity {
+    public enum ExecutionMode {
+        SEQUENTIAL, PARALLEL
+    }
     private static final long serialVersionUID = -611439373065144113L;
 
     public static final String FILE_EXTENSION = ".ts";
 
     private List<TestSuiteRunConfiguration> testSuiteRunConfigurations;
+    
+    private ExecutionMode executionMode;
 
     public List<TestSuiteRunConfiguration> getTestSuiteRunConfigurations() {
         if (testSuiteRunConfigurations == null) {
@@ -77,11 +82,21 @@ public class TestSuiteCollectionEntity extends FileEntity {
             runConfigs.add(eachSourceConfig);
         }
         this.setTestSuiteRunConfigurations(runConfigs);
+        this.setExecutionMode(src.getExecutionMode());
     }
 
     @Override
     public Entity clone() {
         return super.clone();
+    }
+
+    public boolean isAnyRunEnabled() {
+        for (TestSuiteRunConfiguration testSuiteRunConfig : getTestSuiteRunConfigurations()) {
+            if (testSuiteRunConfig.isRunEnabled()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean isAllRunEnabled() {
@@ -114,5 +129,20 @@ public class TestSuiteCollectionEntity extends FileEntity {
 
     public boolean hasTestSuiteReferences(TestSuiteEntity testSuite) {
         return !findRunConfigurations(testSuite).isEmpty();
+    }
+
+    public ExecutionMode getExecutionMode() {
+        if (executionMode == null) {
+            return ExecutionMode.SEQUENTIAL;
+        }
+        return executionMode;
+    }
+
+    public void setExecutionMode(ExecutionMode executionMode) {
+        this.executionMode = executionMode;
+    }
+
+    public boolean isEmpty() {
+        return testSuiteRunConfigurations.isEmpty();
     }
 }

@@ -22,7 +22,8 @@ import com.kms.katalon.constants.helper.ConstantsHelper;
 @SuppressWarnings("restriction")
 public class NewTestDataPopupMenuContribution {
 	private static final String NEW_TESTDATA_POPUP_MENUITEM_LABEL = StringConstants.MENU_CONTEXT_TEST_DATA;
-	private static final String NEW_TESTDATA_COMMAND_ID = StringConstants.COMMAND_ID_NEW_TEST_DATA;
+	
+	private static final String NEW_TESTDATA_COMMAND_ID = "com.kms.katalon.composer.testdata.command.add";
 
 	@Inject
 	private ECommandService commandService;

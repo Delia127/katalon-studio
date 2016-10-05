@@ -3,7 +3,7 @@
   <children xsi:type="basic:TrimmedWindow" xmi:id="_hQQH0RYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.window.main" label="Katalon Studio" iconURI="" bindingContexts="_mWGB8AQqEeWyKYoESvUc1g" x="0" y="0" width="800" height="600">
     <tags>shellMaximized</tags>
     <children xsi:type="advanced:PerspectiveStack" xmi:id="_hQQH8BYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.perspectiveStack" selectedElement="_hQQH8RYMEeSUMbyEN2kbFQ">
-      <children xsi:type="advanced:Perspective" xmi:id="_hQQH8RYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.perspective.keyword" selectedElement="_hQQH8hYMEeSUMbyEN2kbFQ" label="Keyword" iconURI="platform:/plugin/com.kms.katalon/icons/branding_16.png" tooltip="Keyword Perspective">
+      <children xsi:type="advanced:Perspective" xmi:id="_hQQH8RYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.perspective.keyword" selectedElement="_hQQH8hYMEeSUMbyEN2kbFQ" label="Keyword" iconURI="platform:/plugin/com.kms.katalon/icons/keyword_perspective_16.png" tooltip="Keyword Perspective">
         <children xsi:type="basic:PartSashContainer" xmi:id="_hQQH8hYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.partsashcontainer.main" horizontal="true">
           <children xsi:type="basic:PartSashContainer" xmi:id="_QR8UECXxEeWJ99-mW6KHQg" elementId="com.kms.katalon.composer.partsashcontainer.left" containerData="20" selectedElement="_Uxwj0BYtEeSNBMuqFX2a9Q">
             <children xsi:type="basic:PartStack" xmi:id="_Uxwj0BYtEeSNBMuqFX2a9Q" elementId="com.kms.katalon.composer.partstack.explorer" containerData="50">
@@ -78,8 +78,8 @@
       </children>
       <children xsi:type="menu:Menu" xmi:id="_hQQH7hYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.help" label="Help">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_hQQH7xYMEeSUMbyEN2kbFQ" label="About" command="_hQQH5hYMEeSUMbyEN2kbFQ"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_dj8ScGgxEeatJ4Re1SnNtw" elementId="com.kms.katalon.handledmenuitem.welcome" label="Welcome" iconURI="platform:/plugin/org.eclipse.ui.intro/icons/welcome16.gif" command="_jm89wGgxEeatJ4Re1SnNtw"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_iImwQGp9EeakEakFblwi9Q" elementId="com.kms.katalon.handledmenuitem.functionsintroduction" label="Functions Introduction" command="_agaP0Gp9EeakEakFblwi9Q"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_dj8ScGgxEeatJ4Re1SnNtw" elementId="com.kms.katalon.handledmenuitem.welcome" label="Katalon Help" iconURI="platform:/plugin/org.eclipse.ui.intro/icons/welcome16.gif" command="_jm89wGgxEeatJ4Re1SnNtw"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_iImwQGp9EeakEakFblwi9Q" elementId="com.kms.katalon.handledmenuitem.functionsintroduction" label="Quick Guide" command="_agaP0Gp9EeakEakFblwi9Q"/>
       </children>
     </mainMenu>
     <sharedElements xsi:type="basic:Part" xmi:id="_yewVQD8LEeSqW-o8jtXO1g" elementId="org.eclipse.ui.console.ConsoleView" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Console" iconURI="platform:/plugin/org.eclipse.ui.console/icons/full/cview16/console_view.png">
@@ -90,7 +90,7 @@
       <children xsi:type="basic:PartStack" xmi:id="_Hi9d8D8DEeSqW-o8jtXO1g" elementId="com.kms.katalon.composer.content" containerData="100">
         <tags>NoAutoCollapse</tags>
         <tags>NoMove</tags>
-        <children xsi:type="basic:Part" xmi:id="_O4SpgGUUEeaFXcvzM5e4Jg" elementId="com.kms.katalon.part.welcome" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.parts.WelcomePart" label="Welcome" iconURI="platform:/plugin/org.eclipse.ui.intro/icons/welcome16.gif" closeable="true"/>
+        <children xsi:type="basic:Part" xmi:id="_O4SpgGUUEeaFXcvzM5e4Jg" elementId="com.kms.katalon.part.welcome" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.parts.WelcomePart" label="Katalon Help" iconURI="platform:/plugin/org.eclipse.ui.intro/icons/welcome16.gif" closeable="true"/>
       </children>
     </sharedElements>
     <sharedElements xsi:type="basic:Part" xmi:id="_PY0KMCUhEeWUFICrCSQG_A" elementId="org.eclipse.debug.ui.DebugView" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Debug" iconURI="platform:/plugin/org.eclipse.debug.ui/icons/full/eview16/debug_view.png"/>
@@ -107,11 +107,11 @@
     <trimBars xmi:id="_hQQH9RYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.trimbar">
       <children xsi:type="menu:ToolBar" xmi:id="_hQQH9hYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.toolbar">
         <tags>Draggable</tags>
-        <children xsi:type="menu:HandledToolItem" xmi:id="_hQQH-BYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.toolbar.save" iconURI="platform:/plugin/com.kms.katalon/icons/save_28.png" tooltip="Save" command="_hQQH4xYMEeSUMbyEN2kbFQ">
+        <children xsi:type="menu:HandledToolItem" xmi:id="_hQQH-BYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.toolbar.save" iconURI="platform:/plugin/com.kms.katalon/icons/save_24.png" tooltip="Save" command="_hQQH4xYMEeSUMbyEN2kbFQ">
           <persistedState key="index" value="0"/>
           <tags>Opaque</tags>
         </children>
-        <children xsi:type="menu:HandledToolItem" xmi:id="_5oUMAEO4EeSlQuaMBzQJOw" elementId="com.kms.katalon.composer.toolbar.saveAll" iconURI="platform:/plugin/com.kms.katalon/icons/save_all_28.png" tooltip="Save All" command="_8qJlUEO4EeSlQuaMBzQJOw">
+        <children xsi:type="menu:HandledToolItem" xmi:id="_5oUMAEO4EeSlQuaMBzQJOw" elementId="com.kms.katalon.composer.toolbar.saveAll" iconURI="platform:/plugin/com.kms.katalon/icons/save_all_24.png" tooltip="Save All" command="_8qJlUEO4EeSlQuaMBzQJOw">
           <persistedState key="index" value="1"/>
           <tags>Opaque</tags>
         </children>

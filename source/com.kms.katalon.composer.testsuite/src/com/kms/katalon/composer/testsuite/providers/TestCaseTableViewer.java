@@ -6,19 +6,31 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.Composite;
 
+import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.viewer.ITableViewerActions;
+import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
+import com.kms.katalon.composer.explorer.providers.EntityProvider;
+import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
+import com.kms.katalon.composer.testsuite.constants.StringConstants;
+import com.kms.katalon.composer.testsuite.dialogs.TestCaseSelectionDialog;
 import com.kms.katalon.composer.testsuite.parts.TestSuitePartTestCaseView;
+import com.kms.katalon.controller.FolderController;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
 import com.kms.katalon.entity.link.VariableLink;
+import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 
-public class TestCaseTableViewer extends TableViewer {
+public class TestCaseTableViewer extends TableViewer implements ITableViewerActions {
 
     private List<String> testCasesPKs;
 
@@ -54,20 +66,25 @@ public class TestCaseTableViewer extends TableViewer {
 
             this.data.add(link);
 
-            if (!link.getIsRun()) isRunAll = false;
+            if (!link.getIsRun()) {
+                isRunAll = false;
+            }
         }
         super.setInput(this.data);
         // update image header of isRun Column
         parentView.updateIsRunColumnHeader();
     }
 
+    @Override
     public List<TestSuiteTestCaseLink> getInput() {
         return data;
     }
 
     public void addTestCase(TestCaseEntity testCase) throws Exception {
         // check testCase is in list or not
-        if (testCasesPKs.contains(testCase.getId())) return;
+        if (testCasesPKs.contains(testCase.getId())) {
+            return;
+        }
 
         TestSuiteTestCaseLink link = createNewTestSuiteTestCaseLink(testCase);
 
@@ -113,7 +130,7 @@ public class TestCaseTableViewer extends TableViewer {
         return link;
     }
 
-    public void upTestCase(List<TestSuiteTestCaseLink> selectedObjects) {
+    private void upTestCase(List<TestSuiteTestCaseLink> selectedObjects) {
         if (selectedObjects != null && selectedObjects.size() >= 1) {
 
             Collections.sort(selectedObjects, new Comparator<TestSuiteTestCaseLink>() {
@@ -129,7 +146,7 @@ public class TestCaseTableViewer extends TableViewer {
 
                 int selectedIndex = data.indexOf(selectedLink) - 1;
                 if (selectedIndex >= 0) {
-                    TestSuiteTestCaseLink linkBefore = (TestSuiteTestCaseLink) data.get(selectedIndex);
+                    TestSuiteTestCaseLink linkBefore = data.get(selectedIndex);
 
                     // Avoid swap 2 objects that are both selected
                     if (selectedObjects.contains(linkBefore)) {
@@ -150,7 +167,7 @@ public class TestCaseTableViewer extends TableViewer {
         }
     }
 
-    public void downTestCase(List<TestSuiteTestCaseLink> selectedObjects) {
+    private void downTestCase(List<TestSuiteTestCaseLink> selectedObjects) {
         if (selectedObjects != null && selectedObjects.size() >= 1) {
             Collections.sort(selectedObjects, new Comparator<TestSuiteTestCaseLink>() {
 
@@ -164,7 +181,7 @@ public class TestCaseTableViewer extends TableViewer {
             for (TestSuiteTestCaseLink selectedLink : selectedObjects) {
                 int selectedIndex = data.indexOf(selectedLink) + 1;
                 if (selectedIndex < data.size()) {
-                    TestSuiteTestCaseLink linkAfter = (TestSuiteTestCaseLink) data.get(selectedIndex);
+                    TestSuiteTestCaseLink linkAfter = data.get(selectedIndex);
 
                     // Avoid swap 2 objects that are both selected
                     if (selectedObjects.contains(linkAfter)) {
@@ -227,7 +244,9 @@ public class TestCaseTableViewer extends TableViewer {
         boolean check = true;
         for (Object object : data) {
             TestSuiteTestCaseLink link = (TestSuiteTestCaseLink) object;
-            if (!link.getIsRun()) check = false;
+            if (!link.getIsRun()) {
+                check = false;
+            }
         }
 
         if (check != isRunAll) {
@@ -239,7 +258,7 @@ public class TestCaseTableViewer extends TableViewer {
     public void updateTestCaseProperties(String oldPk, TestCaseEntity testCase) throws Exception {
         if (testCasesPKs.contains(oldPk)) {
             int index = testCasesPKs.indexOf(oldPk);
-            TestSuiteTestCaseLink testCaseLink = (TestSuiteTestCaseLink) data.get(index);
+            TestSuiteTestCaseLink testCaseLink = data.get(index);
             testCaseLink.setTestCaseId(testCase.getIdForDisplay());
             List<VariableLink> retainedVariableLinks = new ArrayList<VariableLink>();
             for (VariableEntity variable : testCase.getVariables()) {
@@ -308,4 +327,67 @@ public class TestCaseTableViewer extends TableViewer {
     public List<String> getTestCasesPKs() {
         return testCasesPKs;
     }
+
+    @SuppressWarnings("unchecked")
+    public List<TestSuiteTestCaseLink> getSelectedItems() {
+        List<TestSuiteTestCaseLink> selectedItems = ((IStructuredSelection) getSelection()).toList();
+        if (selectedItems == null) {
+            return Collections.emptyList();
+        }
+        return selectedItems;
+    }
+
+    /**
+     * Add Test Case into table. This will open TestCaseSelectionDialog
+     * 
+     * @see TestCaseSelectionDialog
+     */
+    @Override
+    public void addNewItem() {
+        try {
+            ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+            if (currentProject == null) {
+                return;
+            }
+
+            TestCaseSelectionDialog dialog = new TestCaseSelectionDialog(null, new EntityLabelProvider(),
+                    new EntityProvider(), new EntityViewerFilter(new EntityProvider()), this);
+            dialog.setInput(TreeEntityUtil.getChildren(null,
+                    FolderController.getInstance().getTestCaseRoot(currentProject)));
+            dialog.open();
+        } catch (Exception ex) {
+            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
+                    StringConstants.PA_ERROR_MSG_UNABLE_TO_ADD_TEST_CASES);
+            LoggerSingleton.logError(ex);
+        }
+    }
+
+    /**
+     * Remove selected Test Cases
+     */
+    @Override
+    public void removeSelectedItems() {
+        try {
+            removeTestCases(getSelectedItems());
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+    }
+
+    /**
+     * Move selected Test Cases up
+     */
+    @Override
+    public void moveSelectedItemsUp() {
+        upTestCase(getSelectedItems());
+    }
+
+    /**
+     * Move selected Test Cases down
+     */
+    @Override
+    public void moveSelectedItemsDown() {
+        downTestCase(getSelectedItems());
+    }
+
 }

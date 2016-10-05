@@ -15,6 +15,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ToolItem;
 
+import com.kms.katalon.composer.components.impl.control.HotkeyActiveListener;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.dialogs.TreeEntitySelectionDialog;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
@@ -24,6 +25,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
 import com.kms.katalon.composer.explorer.providers.EntityProvider;
 import com.kms.katalon.composer.testsuite.collection.constant.StringConstants;
+import com.kms.katalon.composer.testsuite.collection.dialog.TestSuiteSelectionDialog;
 import com.kms.katalon.composer.testsuite.collection.execution.collector.TestExecutionGroupCollector;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
@@ -31,7 +33,7 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteRunConfiguration;
 
-public class ToolbarItemListener extends SelectionAdapter {
+public class ToolbarItemListener extends SelectionAdapter implements HotkeyActiveListener {
 
     private TableViewerProvider provider;
 
@@ -45,26 +47,31 @@ public class ToolbarItemListener extends SelectionAdapter {
             return;
         }
 
-        String name = StringUtils.defaultString(((ToolItem) source).getText());
-        switch (name) {
-            case StringConstants.ADD: {
+        String actionId = StringUtils.defaultString(((ToolItem) source).getText());
+        executeAction(actionId);
+    }
+
+    @Override
+    public void executeAction(String actionId) {
+        switch (ActionId.parse(actionId)) {
+            case ADD: {
                 addTestSuiteRunConfigs();
                 return;
             }
-            case StringConstants.REMOVE: {
+            case REMOVE: {
                 deleteSelectedTestSuiteRunConfigs();
                 return;
             }
-            case StringConstants.UP: {
+            case UP: {
                 moveUpSelectedTestSuiteRunConfigs();
                 return;
             }
-            case StringConstants.DOWN: {
+            case DOWN: {
                 moveDownSelectedTestSuiteRunConfigs();
                 return;
             }
-            case StringConstants.PA_ACTION_EXECUTE_TEST_SUITE_COLLECTION: {
-                executeTestRun((ToolItem) source);
+            case EXECUTE: {
+                executeTestRun();
                 return;
             }
         }
@@ -78,10 +85,10 @@ public class ToolbarItemListener extends SelectionAdapter {
         return provider.getTableItems();
     }
 
-    private void executeTestRun(ToolItem toolItem) {
-        provider.executeTestRun(toolItem);
+    private void executeTestRun() {
+        provider.executeTestRun();
     }
-    
+
     private void addTestSuiteRunConfigs() {
         try {
             List<TestSuiteEntity> chosenTestSuites = getSelectedTestSuitesOnDialog();
@@ -116,13 +123,9 @@ public class ToolbarItemListener extends SelectionAdapter {
 
     private List<TestSuiteEntity> getSelectedTestSuitesOnDialog() throws Exception {
         EntityProvider entityProvider = new EntityProvider();
-        TreeEntitySelectionDialog dialog = new TreeEntitySelectionDialog(Display.getCurrent().getActiveShell(),
+        TestSuiteSelectionDialog dialog = new TestSuiteSelectionDialog(Display.getCurrent().getActiveShell(),
                 new EntityLabelProvider(), new EntityProvider(), new TestSuiteViewerFilter(entityProvider));
-
-        dialog.setAllowMultiple(true);
-        dialog.setTitle(StringConstants.DIA_TITLE_TEST_SUITE_BROWSER);
         ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-
         dialog.setInput(TreeEntityUtil.getChildren(null, FolderController.getInstance()
                 .getTestSuiteRoot(currentProject)));
         if (dialog.open() != Dialog.OK) {
@@ -272,4 +275,33 @@ public class ToolbarItemListener extends SelectionAdapter {
         }
     }
 
+    public enum ActionId {
+        ADD(StringConstants.ADD),
+        REMOVE(StringConstants.REMOVE),
+        UP(StringConstants.UP),
+        DOWN(StringConstants.DOWN),
+        EXECUTE(StringConstants.PA_ACTION_EXECUTE_TEST_SUITE_COLLECTION);
+
+        private final String id;
+
+        private ActionId(final String id) {
+            this.id = id;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public static ActionId parse(String id) {
+            if (id == null) {
+                return null;
+            }
+            for (ActionId actionId : values()) {
+                if (actionId.getId().equals(id)) {
+                    return actionId;
+                }
+            }
+            return null;
+        }
+    }
 }

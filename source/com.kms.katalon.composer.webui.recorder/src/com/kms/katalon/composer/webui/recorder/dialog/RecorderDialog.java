@@ -134,6 +134,12 @@ public class RecorderDialog extends Dialog {
     private static final String RESOURCES_FOLDER_NAME = "resources";
 
     private static final String IE_ADDON_BHO_KEY = "{FEA8CA38-7979-4F6A-83E4-2949EDEA96EF}";
+    
+    public static final String DIA_INSTANT_BROWSER_CHROME_RECORDER_EXTENSION_PATH = "<Katalon build path>/Resources/extensions/Chrome/Recorder Packed";
+    
+    public static final String RECORDER_CHROME_ADDON_URL = "https://chrome.google.com/webstore/detail/katalon-recorder/bnaalgpdhfjepeanejkicnidgbpbmkhh";
+    
+    public static final String RECORDER_FIREFOX_ADDON_URL = "https://addons.mozilla.org/en-US/firefox/addon/katalon-recorder/";
 
     private static final int ANY_PORT_NUMBER = 0;
 
@@ -1277,10 +1283,10 @@ public class RecorderDialog extends Dialog {
 
             private String getAddonUrl(final WebUIDriverType webUIDriverType) {
                 if (webUIDriverType == WebUIDriverType.CHROME_DRIVER) {
-                    return StringConstants.RECORDER_CHROME_ADDON_URL;
+                    return RECORDER_CHROME_ADDON_URL;
                 }
                 if (webUIDriverType == WebUIDriverType.FIREFOX_DRIVER) {
-                    return StringConstants.RECORDER_FIREFOX_ADDON_URL;
+                    return RECORDER_FIREFOX_ADDON_URL;
                 }
                 return null;
             }

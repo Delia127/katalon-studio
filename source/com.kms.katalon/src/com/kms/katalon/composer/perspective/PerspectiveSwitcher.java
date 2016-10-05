@@ -1,12 +1,8 @@
 package com.kms.katalon.composer.perspective;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.MUIElement;
@@ -21,7 +17,6 @@ import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -34,7 +29,7 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
-import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.impl.control.HiDPISupportedImage;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 
@@ -99,20 +94,8 @@ public class PerspectiveSwitcher {
         ToolItem tltmNewItem = new ToolItem(toolbar, SWT.CHECK);
         tltmNewItem.setToolTipText(perspective.getTooltip());
         tltmNewItem.setText(perspective.getLabel());
-
-        if (StringUtils.isNotBlank(perspective.getIconURI())) {
-            try {
-                ImageDescriptor image = ImageDescriptor.createFromURL(new URL(perspective.getIconURI()));
-                if (image != null) {
-                    tltmNewItem.setImage(image.createImage());
-                }
-            } catch (MalformedURLException e) {
-                LoggerSingleton.logError(e);
-            }
-        }
-
+        tltmNewItem.setImage(HiDPISupportedImage.loadImage(perspective.getIconURI()));
         tltmNewItem.setData(perspective);
-
         tltmNewItem.addSelectionListener(new SelectionAdapter() {
 
             @Override

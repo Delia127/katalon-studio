@@ -212,30 +212,22 @@ public class TestSuitePartDataBindingView {
         ToolItem tltmAddTestData = new ToolItem(testDataToolBar, SWT.DROP_DOWN);
         tltmAddTestData.setText(ToolItemConstants.ADD);
         tltmAddTestData.setToolTipText(ToolItemConstants.ADD);
-        tltmAddTestData.setImage(ImageConstants.IMG_24_ADD);
+        tltmAddTestData.setImage(ImageConstants.IMG_16_ADD);
 
         ToolItem tltmRemoveTestData = new ToolItem(testDataToolBar, SWT.NONE);
         tltmRemoveTestData.setText(ToolItemConstants.REMOVE);
         tltmRemoveTestData.setToolTipText(ToolItemConstants.REMOVE);
-        tltmRemoveTestData.setImage(ImageConstants.IMG_24_REMOVE);
+        tltmRemoveTestData.setImage(ImageConstants.IMG_16_REMOVE);
 
         ToolItem tltmUpTestData = new ToolItem(testDataToolBar, SWT.NONE);
         tltmUpTestData.setText(ToolItemConstants.UP);
         tltmUpTestData.setToolTipText(ToolItemConstants.UP);
-        tltmUpTestData.setImage(ImageConstants.IMG_24_UP);
+        tltmUpTestData.setImage(ImageConstants.IMG_16_MOVE_UP);
 
         ToolItem tltmDownTestData = new ToolItem(testDataToolBar, SWT.NONE);
         tltmDownTestData.setText(ToolItemConstants.DOWN);
         tltmDownTestData.setToolTipText(ToolItemConstants.DOWN);
-        tltmDownTestData.setImage(ImageConstants.IMG_24_DOWN);
-
-        // ToolItem tltmMapTestData = new ToolItem(testDataToolBar, SWT.NONE);
-        // tltmMapTestData.setText(TestDataToolItemConstants.MAP);
-
-        ToolItem tltmMapAllTestData = new ToolItem(testDataToolBar, SWT.NONE);
-        tltmMapAllTestData.setText(ToolItemConstants.MAPALL);
-        tltmMapAllTestData.setToolTipText(ToolItemConstants.MAPALL);
-        tltmMapAllTestData.setImage(ImageConstants.IMG_24_MAP_ALL);
+        tltmDownTestData.setImage(ImageConstants.IMG_16_MOVE_DOWN);
     }
 
     private void createTestDataTreeTable() {
@@ -358,9 +350,9 @@ public class TestSuitePartDataBindingView {
 
     private void redrawBtnExpandCompositeTestData() {
         if (isTestDataCompositeExpanded) {
-            btnExpandCompositeTestData.setImage(ImageConstants.IMG_16_ARROW_UP_BLACK);
+            btnExpandCompositeTestData.setImage(ImageConstants.IMG_16_ARROW_DOWN);
         } else {
-            btnExpandCompositeTestData.setImage(ImageConstants.IMG_16_ARROW_DOWN_BLACK);
+            btnExpandCompositeTestData.setImage(ImageConstants.IMG_16_ARROW);
         }
     }
 

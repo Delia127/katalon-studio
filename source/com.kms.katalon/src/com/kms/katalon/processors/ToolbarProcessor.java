@@ -18,7 +18,7 @@ import org.eclipse.emf.common.util.EList;
 
 public class ToolbarProcessor {
 
-    private static final String KATALON_TOOLBAR_ID = "com.kms.katalon.composer.toolbar";
+    public static final String KATALON_TOOLBAR_ID = "com.kms.katalon.composer.toolbar";
 
     private static final String INDEX_KEY = "index";
 

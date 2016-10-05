@@ -54,7 +54,7 @@ public class ConsoleMain {
     public static final int DEFAULT_SHOW_PROGRESS_DELAY = 15;
 
     public final static String SHOW_STATUS_DELAY_OPTION = "statusDelay";
-    
+
     private ConsoleMain() {
         // hide constructor
     }
@@ -139,7 +139,8 @@ public class ConsoleMain {
         return getProject(projectPath);
     }
 
-    private static List<ConsoleOptionContributor> populateConsoleOptionContributors(TestSuiteExecutedEntity testSuiteExecutedEntity) {
+    private static List<ConsoleOptionContributor> populateConsoleOptionContributors(
+            TestSuiteExecutedEntity testSuiteExecutedEntity) {
         List<ConsoleOptionContributor> consoleOptionContributors = new ArrayList<ConsoleOptionContributor>();
         consoleOptionContributors.add(testSuiteExecutedEntity);
         consoleOptionContributors.add(new ConsoleMainOptionContributor());
@@ -331,6 +332,14 @@ public class ConsoleMain {
     }
 
     private static ProjectEntity getProject(String projectPk) throws Exception {
+        File projectFile = new File(projectPk);
+        if (projectFile.isDirectory()) {
+            for (File file : projectFile.listFiles()) {
+                if (file.isFile() && file.getName().endsWith(ProjectEntity.getProjectFileExtension())) {
+                    projectPk = file.getAbsolutePath();
+                }
+            }
+        }
         ProjectEntity projectEntity = ProjectController.getInstance().openProject(projectPk);
         if (projectEntity == null) {
             throw new InvalidConsoleArgumentException(MessageFormat.format(

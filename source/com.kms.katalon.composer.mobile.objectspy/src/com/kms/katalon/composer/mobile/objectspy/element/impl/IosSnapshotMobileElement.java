@@ -6,7 +6,6 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.core.mobile.keyword.GUIObject;
 import com.kms.katalon.core.mobile.keyword.IOSProperties;
@@ -14,6 +13,7 @@ import com.kms.katalon.core.mobile.keyword.IOSProperties;
 public class IosSnapshotMobileElement extends RenderedTreeSnapshotMobileElement<JSONObject> {
     private static final long serialVersionUID = 1462755224775883146L;
     private static final String CHILDREN_JSON_PROPERTY_NAME = "children";
+    private static final String INTEGER_PATTERN_FORMAT_STRING = "#####";
     
     public IosSnapshotMobileElement() {
         super();
@@ -71,7 +71,7 @@ public class IosSnapshotMobileElement extends RenderedTreeSnapshotMobileElement<
         }
 
         if (jsonObject.has(IOSProperties.IOS_RECT)) {
-            DecimalFormat formatter = new DecimalFormat(StringConstants.INTEGER_PATTERN_FORMAT_STRING);
+            DecimalFormat formatter = new DecimalFormat(INTEGER_PATTERN_FORMAT_STRING);
             JSONObject rect = jsonObject.getJSONObject(IOSProperties.IOS_RECT);
             if (rect.has(IOSProperties.IOS_ORIGIN)) {
                 JSONObject origin = rect.getJSONObject(IOSProperties.IOS_ORIGIN);

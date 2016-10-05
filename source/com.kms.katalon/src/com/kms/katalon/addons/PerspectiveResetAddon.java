@@ -6,7 +6,7 @@ package com.kms.katalon.addons;
  * available at http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors: IBM Corporation - initial API and implementation<br>
- * René Brandstetter - Bug 404231 - resetPerspectiveModel() does not reset the perspective
+ * Renï¿½ Brandstetter - Bug 404231 - resetPerspectiveModel() does not reset the perspective
  ******************************************************************************/
 
 import javax.annotation.PostConstruct;

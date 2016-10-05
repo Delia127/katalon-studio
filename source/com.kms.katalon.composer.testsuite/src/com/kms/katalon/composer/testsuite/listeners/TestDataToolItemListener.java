@@ -1,14 +1,10 @@
 package com.kms.katalon.composer.testsuite.listeners;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -38,18 +34,12 @@ import com.kms.katalon.composer.testsuite.dialogs.TestDataSelectionDialog;
 import com.kms.katalon.composer.testsuite.parts.TestSuitePartDataBindingView;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.controller.TestCaseController;
-import com.kms.katalon.core.testdata.TestData;
-import com.kms.katalon.core.testdata.TestDataFactory;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.link.TestCaseTestDataLink;
-import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
 import com.kms.katalon.entity.link.VariableLink;
 import com.kms.katalon.entity.link.VariableLink.VariableType;
 import com.kms.katalon.entity.project.ProjectEntity;
-import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
-import com.kms.katalon.entity.variable.VariableEntity;
 
 public class TestDataToolItemListener extends SelectionAdapter {
 
@@ -83,48 +73,45 @@ public class TestDataToolItemListener extends SelectionAdapter {
     private void toolItemSelected(SelectionEvent e) {
         ToolItem toolItem = (ToolItem) e.getSource();
 
-        if (toolItem.getText() == null) return;
-
-        switch (toolItem.getToolTipText()) {
-            case ToolItemConstants.ADD:
-                if (e.detail == SWT.ARROW) {
-                    createDropdownMenuAddItem(toolItem);
-                } else {
-                    performAddTestDataLink(ToolItemConstants.ADD_AFTER);
-                }
-                return;
-            case ToolItemConstants.REMOVE:
-                removeTestDataLink();
-                return;
-            case ToolItemConstants.UP:
-                upTestDataLink();
-                return;
-            case ToolItemConstants.DOWN:
-                downTestDataLink();
-                return;
-            case ToolItemConstants.MAP:
-                mapTestDataLink();
-                return;
-            case ToolItemConstants.MAPALL:
-                mapAllTestDataLink();
-                return;
-            default:
-                return;
+        final String text = toolItem.getText();
+        if (text == null) {
+            return;
+        }
+        if (ToolItemConstants.ADD.equals(text)) {
+            if (e.detail == SWT.ARROW) {
+                createDropdownMenuAddItem(toolItem);
+            } else {
+                performAddTestDataLink(ToolItemConstants.ADD_AFTER);
+            }
+            return;
+        }
+        if (ToolItemConstants.REMOVE.equals(text)) {
+            removeTestDataLink();
+            return;
+        }
+        if (ToolItemConstants.UP.equals(text)) {
+            upTestDataLink();
+            return;
+        }
+        if (ToolItemConstants.DOWN.equals(text)) {
+            downTestDataLink();
+            return;
         }
     }
 
     private void menuItemSelected(SelectionEvent e) {
         MenuItem menuItem = (MenuItem) e.getSource();
-        if (menuItem.getText() == null) return;
-        switch (menuItem.getText()) {
-            case ToolItemConstants.ADD_AFTER:
-                performAddTestDataLink(ToolItemConstants.ADD_AFTER);
-                return;
-            case ToolItemConstants.ADD_BEFORE:
-                performAddTestDataLink(ToolItemConstants.ADD_BEFORE);
-                return;
-            default:
-                return;
+        final String text = menuItem.getText();
+        if (text == null) {
+            return;
+        }
+        if (ToolItemConstants.ADD_AFTER.equals(text)) {
+            performAddTestDataLink(ToolItemConstants.ADD_AFTER);
+            return;
+        }
+        if (ToolItemConstants.ADD_BEFORE.equals(text)) {
+            performAddTestDataLink(ToolItemConstants.ADD_BEFORE);
+            return;
         }
     }
 
@@ -200,27 +187,22 @@ public class TestDataToolItemListener extends SelectionAdapter {
             DataFileEntity testData = testDataEntities.get(i);
 
             TestCaseTestDataLink newTestDataLink = createTestDataLink(testData);
-            switch (offset) {
-                case ToolItemConstants.ADD_AFTER: {
-                    if (selectedIndex < 0) {
-                        int itemCount = tableViewer.getTable().getItemCount();
-                        getTableItems().add(itemCount, newTestDataLink);
-                        selectedIndex = itemCount;
-                    } else {
-                        getTableItems().add(selectedIndex + 1, newTestDataLink);
-                        selectedIndex++;
-                    }
-                    break;
+            if (ToolItemConstants.ADD_AFTER.equals(offset)) {
+                if (selectedIndex < 0) {
+                    int itemCount = tableViewer.getTable().getItemCount();
+                    getTableItems().add(itemCount, newTestDataLink);
+                    selectedIndex = itemCount;
+                } else {
+                    getTableItems().add(selectedIndex + 1, newTestDataLink);
+                    selectedIndex++;
                 }
-                case ToolItemConstants.ADD_BEFORE: {
-                    if (selectedIndex <= 0) {
-                        getTableItems().add(0, newTestDataLink);
-                        selectedIndex = 1;
-                    } else {
-                        getTableItems().add(selectedIndex, newTestDataLink);
-                        selectedIndex++;
-                    }
-                    break;
+            } else if (ToolItemConstants.ADD_BEFORE.equals(offset)) {
+                if (selectedIndex <= 0) {
+                    getTableItems().add(0, newTestDataLink);
+                    selectedIndex = 1;
+                } else {
+                    getTableItems().add(selectedIndex, newTestDataLink);
+                    selectedIndex++;
                 }
             }
             addedTestDataLinkTreeNodes.add(newTestDataLink);
@@ -339,80 +321,6 @@ public class TestDataToolItemListener extends SelectionAdapter {
                 return (data.indexOf(arg0) > data.indexOf(arg1)) ? 1 : -1;
             }
         });
-
-    }
-
-    private void mapTestDataLink() {
-
-    }
-
-    private void mapAllTestDataLink() {
-        Map<String, String[]> columnNameHashmap = new LinkedHashMap<String, String[]>();
-        Map<String, TestCaseTestDataLink> dataLinkHashMap = new LinkedHashMap<String, TestCaseTestDataLink>();
-
-        ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
-
-        for (TestCaseTestDataLink dataLink : view.getSelectedTestCaseLink().getTestDataLinks()) {
-            try {
-                TestData testData = TestDataFactory.findTestDataForExternalBundleCaller(dataLink.getTestDataId(),
-                        projectEntity.getFolderLocation());
-                if (testData == null) {
-                    continue;
-                }
-
-                String[] columnNames = testData.getColumnNames();
-                if (columnNames != null) {
-                    columnNameHashmap.put(dataLink.getId(), columnNames);
-                    dataLinkHashMap.put(dataLink.getId(), dataLink);
-                }
-            } catch (Exception e) {
-                // Ignore it because user might not set data source for test
-                // data.
-            }
-        }
-
-        try {
-            TestSuiteTestCaseLink testCaseLink = view.getSelectedTestCaseLink();
-            TestCaseEntity testCaseEntity = TestCaseController.getInstance().getTestCaseByDisplayId(
-                    testCaseLink.getTestCaseId());
-
-            int matches = 0;
-            for (VariableLink variableLink : view.getSelectedTestCaseLink().getVariableLinks()) {
-
-                VariableEntity variable = TestCaseController.getInstance().getVariable(testCaseEntity,
-                        variableLink.getVariableId());
-                if (variable == null) {
-                    continue;
-                }
-
-                for (Entry<String, String[]> entry : columnNameHashmap.entrySet()) {
-                    boolean isFound = false;
-
-                    for (String columnName : entry.getValue()) {
-                        if (variable.getName().equalsIgnoreCase(columnName)) {
-                            TestCaseTestDataLink dataLink = dataLinkHashMap.get(entry.getKey());
-
-                            variableLink.setType(VariableType.DATA_COLUMN);
-                            variableLink.setTestDataLinkId(dataLink.getId());
-                            variableLink.setValue(columnName);
-                            matches++;
-                            isFound = true;
-                        }
-                    }
-
-                    if (isFound) {
-                        break;
-                    }
-                }
-            }
-            view.refreshVariableTable();
-            view.setDirty(true);
-
-            MessageDialog.openInformation(null, StringConstants.INFO,
-                    MessageFormat.format(StringConstants.LIS_INFO_MSG_MAP_DONE, Integer.toString(matches)));
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-        }
     }
 
     private List<DataFileEntity> getTestDatasFromFolderTree(FolderTreeEntity folderTree) {

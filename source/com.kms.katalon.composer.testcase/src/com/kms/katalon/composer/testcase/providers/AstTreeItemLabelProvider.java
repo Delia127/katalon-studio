@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.testcase.providers;
 
 import org.eclipse.jface.viewers.ViewerCell;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 
 import com.kms.katalon.composer.components.impl.providers.CellLayoutInfo;
@@ -77,23 +78,18 @@ public class AstTreeItemLabelProvider extends TypeCheckedStyleTreeCellLabelProvi
         AstTreeTableNode treeNode = (AstTreeTableNode) element;
         cell.setText(getText(treeNode));
         cell.setImage(getImage(treeNode));
-        if (isDisabledStatement(treeNode)) {
-            handleDisableStatement(cell);
-        } else {
-            handleDefaultStatement(cell);
-        }
         super.update(cell);
+    }
+    
+    @Override
+    protected Color getBackground(Color background, AstTreeTableNode element) {
+    	if (isDisabledStatement(element)) {
+            return ColorUtil.getDisabledItemBackgroundColor();
+        }
+    	return super.getBackground(background, element);
     }
     
     private boolean isDisabledStatement(AstTreeTableNode treeNode) {
         return treeNode instanceof AstStatementTreeTableNode && ((AstStatementTreeTableNode) treeNode).isDisabled();
-    }
-
-    private void handleDisableStatement(ViewerCell cell) {
-        cell.setBackground(ColorUtil.getDisabledItemBackgroundColor());
-    }
-
-    private void handleDefaultStatement(ViewerCell cell) {
-        cell.setBackground(null);
     }
 }

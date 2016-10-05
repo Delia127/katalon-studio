@@ -96,30 +96,37 @@ public class AstTreeLabelProvider extends StyledCellLabelProvider {
     @Override
     public String getToolTipText(Object element) {
         if (element == null || !(element instanceof AstTreeTableNode)) {
-            return "";
+            return null;
         }
         AstTreeTableNode treeTableNode = (AstTreeTableNode) element;
         switch (columnIndex) {
             case CLMN_OBJECT_IDX:
                 if (treeTableNode instanceof IAstObjectEditableNode) {
-                    return ((IAstObjectEditableNode) treeTableNode).getTestObjectTooltipText();
+                    return getTooltipReturnValue(((IAstObjectEditableNode) treeTableNode).getTestObjectTooltipText());
                 }
-                return "";
+                return null;
             case CLMN_INPUT_IDX:
                 if (treeTableNode instanceof IAstInputEditableNode) {
-                    return ((IAstInputEditableNode) treeTableNode).getInputTooltipText();
+                    return getTooltipReturnValue(((IAstInputEditableNode) treeTableNode).getInputTooltipText());
                 }
-                return "";
+                return null;
             case CLMN_OUTPUT_IDX:
                 if (treeTableNode instanceof IAstOutputEditableNode) {
-                    return ((IAstOutputEditableNode) treeTableNode).getOutputTooltipText();
+                    return getTooltipReturnValue(((IAstOutputEditableNode) treeTableNode).getOutputTooltipText());
                 }
-                return "";
+                return null;
             case CLMN_DESCRIPTION_IDX:
-                return getDescriptionString(treeTableNode);
+                return getTooltipReturnValue(getDescriptionString(treeTableNode));
             default:
-                return "";
+                return null;
         }
+    }
+
+    private String getTooltipReturnValue(String tooltip) {
+        if (tooltip.isEmpty()) {
+            return null;
+        }
+        return tooltip;
     }
 
 }

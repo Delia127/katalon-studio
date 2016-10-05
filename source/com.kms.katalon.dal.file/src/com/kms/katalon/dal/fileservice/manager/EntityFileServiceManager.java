@@ -100,32 +100,24 @@ public class EntityFileServiceManager {
                 if (!parentFolderLocation.toLowerCase().startsWith(projectFolderLocation.toLowerCase())) return;
 
                 if (projectFolderLocation.equalsIgnoreCase(parentFolderLocation) && entity instanceof FolderEntity) {
-                    switch (localFile.getName()) {
-                        case FileServiceConstant.TEST_CASE_ROOT_FOLDER_NAME:
-                            ((FolderEntity) entity).setFolderType(FolderType.TESTCASE);
-                            break;
-                        case FileServiceConstant.TEST_SUITE_ROOT_FOLDER_NAME:
-                            ((FolderEntity) entity).setFolderType(FolderType.TESTSUITE);
-                            break;
-                        case FileServiceConstant.OBJECT_REPOSITORY_ROOT_FOLDER_NAME:
-                            ((FolderEntity) entity).setFolderType(FolderType.WEBELEMENT);
-                            break;
-                        case FileServiceConstant.DATA_FILE_ROOT_FOLDER_NAME:
-                            ((FolderEntity) entity).setFolderType(FolderType.DATAFILE);
-                            break;
-                        case FileServiceConstant.CHECKPOINT_ROOT_FOLDER_NAME:
-                            ((FolderEntity) entity).setFolderType(FolderType.CHECKPOINT);
-                            break;
-                        case FileServiceConstant.KEYWORD_ROOT_FOLDER_NAME:
-                            ((FolderEntity) entity).setFolderType(FolderType.KEYWORD);
-                            break;
-                        case FileServiceConstant.REPORT_ROOT_FOLDER_NAME:
-                            ((FolderEntity) entity).setFolderType(FolderType.REPORT);
-                            break;
-                        default:
-                            break;
+                    String fileName = localFile.getName();
+                    FolderEntity folderEntity = (FolderEntity) entity;
+                    if (FileServiceConstant.TEST_CASE_ROOT_FOLDER_NAME.equals(fileName)) {
+                        folderEntity.setFolderType(FolderType.TESTCASE);
+                    } else if (FileServiceConstant.TEST_SUITE_ROOT_FOLDER_NAME.equals(fileName)) {
+                        folderEntity.setFolderType(FolderType.TESTSUITE);
+                    } else if (FileServiceConstant.OBJECT_REPOSITORY_ROOT_FOLDER_NAME.equals(fileName)) {
+                        folderEntity.setFolderType(FolderType.WEBELEMENT);
+                    } else if (FileServiceConstant.DATA_FILE_ROOT_FOLDER_NAME.equals(fileName)) {
+                        folderEntity.setFolderType(FolderType.DATAFILE);
+                    } else if (FileServiceConstant.CHECKPOINT_ROOT_FOLDER_NAME.equals(fileName)) {
+                        folderEntity.setFolderType(FolderType.CHECKPOINT);
+                    } else if (FileServiceConstant.KEYWORD_ROOT_FOLDER_NAME.equals(fileName)) {
+                        folderEntity.setFolderType(FolderType.KEYWORD);
+                    } else if (FileServiceConstant.REPORT_ROOT_FOLDER_NAME.equals(fileName)) {
+                        folderEntity.setFolderType(FolderType.REPORT);
                     }
-                    ((FolderEntity) entity).setProject(currentProject);
+                    folderEntity.setProject(currentProject);
                 } else {
                     parentFolder = (FolderEntity) loadFolder(localFile.getParentFile());
                     parentFolder.setProject(currentProject);

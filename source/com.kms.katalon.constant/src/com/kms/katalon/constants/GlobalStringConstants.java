@@ -52,187 +52,180 @@ import java.io.File;
  */
 public class GlobalStringConstants {
     // Studio's name
-    public static final String APP_NAME = "Katalon Studio";
-
+    public static final String APP_NAME = GlobalMessageConstants.APP_NAME;
+    
     // Path
     public static final String ENTITY_ID_SEPARATOR = "/";
-    
+
     // Common character
     public static final String CR_DOT = ".";
+
     public static final String CR_LEFT_PARENTHESIS = "(";
+
     public static final String CR_RIGHT_PARENTHESIS = ")";
+
     public static final String CR_PRIME = "'";
+
     public static final String CR_DOUBLE_PRIMES = "\"";
+
     public static final String CR_SPACE = " ";
 
     // Common action use
-    public static final String ADD = "Add";
+    public static final String ADD = GlobalMessageConstants.ADD;
 
-    public static final String INSERT = "Insert";
+    public static final String INSERT = GlobalMessageConstants.INSERT;
 
-    public static final String DELETE = "Delete";
+    public static final String DELETE = GlobalMessageConstants.DELETE;
 
-    public static final String REMOVE = "Remove";
+    public static final String REMOVE = GlobalMessageConstants.REMOVE;
 
-    public static final String CLEAR = "Clear";
+    public static final String CLEAR = GlobalMessageConstants.CLEAR;
 
-    public static final String EDIT = "Edit";
+    public static final String EDIT = GlobalMessageConstants.EDIT;
 
-    public static final String CUT = "Cut";
+    public static final String CUT = GlobalMessageConstants.CUT;
 
-    public static final String COPY = "Copy";
+    public static final String COPY = GlobalMessageConstants.COPY;
 
-    public static final String PASTE = "Paste";
+    public static final String PASTE = GlobalMessageConstants.PASTE;
 
-    public static final String REFRESH = "Refresh";
+    public static final String REFRESH = GlobalMessageConstants.REFRESH;
 
-    public static final String SEARCH = "Search";
+    public static final String SEARCH = GlobalMessageConstants.SEARCH;
 
-    public static final String BROWSE = "Browse...";
+    public static final String BROWSE = GlobalMessageConstants.BROWSE;
 
-    public static final String FIND = "Find...";
+    public static final String FIND = GlobalMessageConstants.FIND;
 
-    public static final String UP = "Move Up";
+    public static final String UP = GlobalMessageConstants.UP;
 
-    public static final String DOWN = "Move Down";
+    public static final String DOWN = GlobalMessageConstants.DOWN;
 
-    public static final String UPDATE = "Update";
+    public static final String UPDATE = GlobalMessageConstants.UPDATE;
 
-    public static final String EMPTY = "";
+    public static final String EMPTY = GlobalMessageConstants.EMPTY;
 
-    public static final String PROPERTIES = "Properties";
+    public static final String PROPERTIES = GlobalMessageConstants.PROPERTIES;
 
     // Dialog Title
-    public static final String CONFIRMATION = "Confirmation";
+    public static final String CONFIRMATION = GlobalMessageConstants.CONFIRMATION;
 
-    public static final String NOTIFICATION = "Notification";
+    public static final String NOTIFICATION = GlobalMessageConstants.NOTIFICATION;
 
-    public static final String PROJECT_SETTINGS = "Project Settings";
+    public static final String PROJECT_SETTINGS = GlobalMessageConstants.PROJECT_SETTINGS;
 
     // Test Status
-    public static final String ALL = "All";
+    public static final String ALL = GlobalMessageConstants.ALL;
 
-    public static final String PASSED = "Passed";
+    public static final String PASSED = GlobalMessageConstants.PASSED;
 
-    public static final String FAILED = "Failed";
+    public static final String FAILED = GlobalMessageConstants.FAILED;
 
-    public static final String INFO = "Info";
+    public static final String INFO = GlobalMessageConstants.INFO;
 
-    public static final String WARN = "Warning";
+    public static final String WARN = GlobalMessageConstants.WARN;
 
-    public static final String ERROR = "Error";
+    public static final String ERROR = GlobalMessageConstants.ERROR;
 
-    public static final String INCOMPLETE = "Incomplete";
+    public static final String INCOMPLETE = GlobalMessageConstants.INCOMPLETE;
 
-    public static final String NOT_RUN = "Not Run";
+    public static final String NOT_RUN = GlobalMessageConstants.NOT_RUN;
 
-    public static final String COMPLETE = "Complete";
+    public static final String COMPLETE = GlobalMessageConstants.COMPLETE;
 
-    public static final String NOT_STARTED = "Not started yet";
+    public static final String NOT_STARTED = GlobalMessageConstants.NOT_STARTED;
 
     // Tool-bar
-    public static final String FOLDER = "Folder";
+    public static final String FOLDER = GlobalMessageConstants.FOLDER;
 
-    public static final String PACKAGE = "Package";
+    public static final String PACKAGE = GlobalMessageConstants.PACKAGE;
 
-    public static final String DEFAULT_PACKAGE_NAME = "(default package)";
+    public static final String DEFAULT_PACKAGE_NAME = GlobalMessageConstants.DEFAULT_PACKAGE_NAME;
 
-    public static final String TEST_CASE = "Test Case";
+    public static final String TEST_CASE = GlobalMessageConstants.TEST_CASE;
 
-    public static final String TEST_SUITE = "Test Suite";
+    public static final String TEST_SUITE = GlobalMessageConstants.TEST_SUITE;
 
-    public static final String TEST_OBJECT = "Test Object";
+    public static final String TEST_OBJECT = GlobalMessageConstants.TEST_OBJECT;
 
-    public static final String TEST_DATA = "Test Data";
+    public static final String TEST_DATA = GlobalMessageConstants.TEST_DATA;
 
-    public static final String KEYWORD = "Keyword";
+    public static final String KEYWORD = GlobalMessageConstants.KEYWORD;
 
-    public static final String REPORT = "Report";
+    public static final String REPORT = GlobalMessageConstants.REPORT;
 
-    public static final String CHECKPOINT = "Checkpoint";
+    public static final String CHECKPOINT = GlobalMessageConstants.CHECKPOINT;
 
-    public static final String OBJECT_SPY = "Object Spy";
+    public static final String OBJECT_SPY = GlobalMessageConstants.OBJECT_SPY;
 
-    public static final String RUN = "Run";
+    public static final String RUN = GlobalMessageConstants.RUN;
 
-    public static final String STOP = "Stop";
+    public static final String STOP = GlobalMessageConstants.STOP;
 
     // Field name
-    public static final String ID = "ID";
+    public static final String ID = GlobalMessageConstants.ID;
 
-    public static final String NAME = "Name";
+    public static final String NAME = GlobalMessageConstants.NAME;
 
-    public static final String TYPE = "Type";
-    
-    public static final String VALUE = "Value";
+    public static final String TYPE = GlobalMessageConstants.TYPE;
 
-    public static final String IMAGE = "Image";
+    public static final String VALUE = GlobalMessageConstants.VALUE;
 
-    public static final String DESCRIPTION = "Description";
+    public static final String IMAGE = GlobalMessageConstants.IMAGE;
 
-    public static final String INFORMATION = "General Information";
+    public static final String DESCRIPTION = GlobalMessageConstants.DESCRIPTION;
 
-    public static final String COMMENT = "Comment";
+    public static final String INFORMATION = GlobalMessageConstants.INFORMATION;
 
-    public static final String TAG = "Tag";
+    public static final String COMMENT = GlobalMessageConstants.COMMENT;
 
-    public static final String INPUT = "Input";
+    public static final String TAG = GlobalMessageConstants.TAG;
 
-    public static final String OUTPUT = "Output";
+    public static final String INPUT = GlobalMessageConstants.INPUT;
 
-    public static final String OBJECT = "Object";
+    public static final String OUTPUT = GlobalMessageConstants.OUTPUT;
 
-    public static final String EMAIL = "Email";
+    public static final String OBJECT = GlobalMessageConstants.OBJECT;
 
-    public static final String LEVEL = "Level";
+    public static final String EMAIL = GlobalMessageConstants.EMAIL;
 
-    public static final String TIME = "Time";
+    public static final String LEVEL = GlobalMessageConstants.LEVEL;
 
-    public static final String MESSAGE = "Message";
+    public static final String TIME = GlobalMessageConstants.TIME;
 
-    public static final String NOT_FOUND = " not found.";
+    public static final String MESSAGE = GlobalMessageConstants.MESSAGE;
 
-    public static final String DONE = "Done";
+    public static final String NOT_FOUND = GlobalMessageConstants.NOT_FOUND;
 
-    public static final String NO_ = "No.";
+    public static final String DONE = GlobalMessageConstants.DONE;
 
-    public static final String ATTACHMENT = "Attachment";
+    public static final String NO_ = GlobalMessageConstants.NO_;
 
-    public static final String STATUS = "Status";
+    public static final String ATTACHMENT = GlobalMessageConstants.ATTACHMENT;
 
-    public static final String ANDROID = "Android";
+    public static final String STATUS = GlobalMessageConstants.STATUS;
 
-    public static final String IOS = "iOS";
+    public static final String ANDROID = GlobalMessageConstants.ANDROID;
+
+    public static final String IOS = GlobalMessageConstants.IOS;
 
     // Entity name
-    public static final String ROOT_FOLDER_NAME_TEST_CASE = "Test Cases";
+    public static final String ROOT_FOLDER_NAME_TEST_CASE = GlobalMessageConstants.ROOT_FOLDER_NAME_TEST_CASE;
 
-    public static final String ROOT_FOLDER_NAME_TEST_SUITE = "Test Suites";
+    public static final String ROOT_FOLDER_NAME_TEST_SUITE = GlobalMessageConstants.ROOT_FOLDER_NAME_TEST_SUITE;
 
-    public static final String ROOT_FOLDER_NAME_DATA_FILE = "Data Files";
+    public static final String ROOT_FOLDER_NAME_DATA_FILE = GlobalMessageConstants.ROOT_FOLDER_NAME_DATA_FILE;
 
-    public static final String ROOT_FOLDER_NAME_OBJECT_REPOSITORY = "Object Repository";
+    public static final String ROOT_FOLDER_NAME_OBJECT_REPOSITORY = GlobalMessageConstants.ROOT_FOLDER_NAME_OBJECT_REPOSITORY;
 
-    public static final String ROOT_FOLDER_NAME_KEYWORD = "Keywords";
+    public static final String ROOT_FOLDER_NAME_KEYWORD = GlobalMessageConstants.ROOT_FOLDER_NAME_KEYWORD;
 
-    public static final String ROOT_FOLDER_NAME_REPORT = "Reports";
+    public static final String ROOT_FOLDER_NAME_REPORT = GlobalMessageConstants.ROOT_FOLDER_NAME_REPORT;
 
-    public static final String ROOT_FOLDER_NAME_CHECKPOINT = "Checkpoints";
+    public static final String ROOT_FOLDER_NAME_CHECKPOINT = GlobalMessageConstants.ROOT_FOLDER_NAME_CHECKPOINT;
 
-    public static final String ROOT_FOLDER_NAME_SETTINGS = "settings";
-
-    public static final String ROOT_FOLDER_NAME_SETTINGS_INTERNAL = ROOT_FOLDER_NAME_SETTINGS + File.separator
-            + "internal";
-
-    public static final String ROOT_FOLDER_NAME_SETTINGS_EXTERNAL = ROOT_FOLDER_NAME_SETTINGS + File.separator
-            + "external";
-
-    public static final String FILE_NAME_GLOBAL_VARIABLE = "GlobalVariables";
-
-    public static final String GROOVY_FILE_EXENSION = ".groovy";
-
-    public static final String PROPERTY_FILE_EXENSION = ".properties";
-
+    public static final String FILE_NAME_GLOBAL_VARIABLE = GlobalMessageConstants.FILE_NAME_GLOBAL_VARIABLE;
+    
     // Entity keyword
     public static final String ENTITY_KW_TEST_CASE = "tc";
 
@@ -249,38 +242,38 @@ public class GlobalStringConstants {
     public static final String ENTITY_KW_CHECKPOINT = "cp";
 
     // Common value
-    public static final String NULL = "null";
+    public static final String NULL = GlobalMessageConstants.NULL;
 
     public static final String APP_USER_DIR_LOCATION = System.getProperty("user.home") + File.separator + ".katalon";
 
     public static final String APP_INFO_FILE_LOCATION = APP_USER_DIR_LOCATION + File.separator
             + "application.properties";
-
+    
     public static final String APP_BUILD_NUMBER_KEY = "katalon.buildNumber";
 
     public static final String APP_VERSION_NUMBER_KEY = "katalon.versionNumber";
 
-    public static final String APP_VERSION = "katalonVersion";
+    public static final String UNKNOWN = GlobalMessageConstants.UNKNOWN;
 
-    public static final String UNKNOWN = "unkown";
+    public static final String OK = GlobalMessageConstants.OK;
 
-    public static final String OK = "OK";
+    public static final String TEST_CASE_SCRIPT_ROOT_FOLDER_NAME = GlobalMessageConstants.TEST_CASE_SCRIPT_ROOT_FOLDER_NAME;
+
+    public static final String ROOT_FOLDER_NAME_DRIVERS = GlobalMessageConstants.ROOT_FOLDER_NAME_DRIVERS;
+
+    public static final String WZ_SETUP_BTN_BACK = GlobalMessageConstants.WZ_SETUP_BTN_BACK;
+
+    public static final String WZ_SETUP_BTN_NEXT = GlobalMessageConstants.WZ_SETUP_BTN_NEXT;
+
+    public static final String DIA_FINISH = GlobalMessageConstants.DIA_FINISH;
+
+    public static final String DIA_OK = GlobalMessageConstants.DIA_OK;
     
-    public static final String TEST_CASE_SCRIPT_ROOT_FOLDER_NAME = "Scripts";
-    
-    public static final String ROOT_FOLDER_NAME_DRIVERS = "Drivers";
+    public static final String DIA_CANCEL = GlobalMessageConstants.DIA_CANCEL;
 
-    public static final String WZ_SETUP_BTN_BACK = "< Back";
+    public static final String DIA_CLOSE = GlobalMessageConstants.DIA_CLOSE;
 
-    public static final String WZ_SETUP_BTN_NEXT = "Next >";
+    public static final String DIA_YES = GlobalMessageConstants.DIA_YES;
 
-    public static final String DIA_FINISH = "Finish";
-
-    public static final String DIA_CANCEL = "Cancel";
-
-    public static final String DIA_CLOSE = "Close";
-
-    public static final String DIA_YES = "Yes";
-
-    public static final String DIA_NO = "No";
+    public static final String DIA_NO = GlobalMessageConstants.DIA_NO;
 }

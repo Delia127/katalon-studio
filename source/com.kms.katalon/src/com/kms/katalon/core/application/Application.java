@@ -49,7 +49,6 @@ public class Application implements IApplication {
         preRunInit();
         final Map<?, ?> args = context.getArguments();
         final String[] appArgs = (String[]) args.get(IApplicationContext.APPLICATION_ARGS);
-
         RunningModeParam runningModeParam = getRunningModeParamFromParam(parseOption(appArgs));
 
         switch (runningModeParam) {
@@ -92,7 +91,7 @@ public class Application implements IApplication {
         // Set this to allow application to return it's own exit code instead of Eclipse's exit code
         System.setProperty(IApplicationContext.EXIT_DATA_PROPERTY, "");
         try {
-            if (!(ActivationInfoCollector.checkActivation(RunningModeParam.CONSOLE))) {
+            if (!(ActivationInfoCollector.checkConsoleActivation(arguments))) {
                 return LauncherResult.RETURN_CODE_PASSED;
             }
             return ConsoleMain.launch(arguments);

@@ -352,8 +352,8 @@ public abstract class CheckpointAbstractPart implements EventHandler, IComposerP
 
     private void redrawArrowIndicator() {
         lblArrowIndicator.getParent().setRedraw(false);
-        lblArrowIndicator.setImage(compSourceInfoDetails.isVisible() ? ImageConstants.IMG_16_ARROW_UP_BLACK
-                : ImageConstants.IMG_16_ARROW_DOWN_BLACK);
+        lblArrowIndicator.setImage(compSourceInfoDetails.isVisible() ? ImageConstants.IMG_16_ARROW_DOWN
+                : ImageConstants.IMG_16_ARROW);
         lblArrowIndicator.getParent().setRedraw(true);
     }
 

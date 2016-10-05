@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+   <extension
+         point="com.kms.katalon.execution.runConfiguration">
+      <client
+            configuration="com.kms.katalon.integration.kobiton.configuration.KobitonRunConfigurationContributor">
+      </client>
+   </extension>
+   
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="com.kms.katalon.integration.kobiton.preferences.KobitonPreferenceDefaultValueInitializer">
+      </initializer>
+   </extension>
+</plugin>

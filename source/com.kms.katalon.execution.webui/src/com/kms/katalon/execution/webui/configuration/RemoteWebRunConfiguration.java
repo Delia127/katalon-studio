@@ -13,17 +13,22 @@ public class RemoteWebRunConfiguration extends WebUiRunConfiguration {
         super(projectDir, new RemoteWebDriverConnector(projectDir + File.separator
                 + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME));
     }
-    
+
+    public RemoteWebRunConfiguration(String projectDir, RemoteWebDriverConnector remoteWebDriverConnector)
+            throws IOException {
+        super(projectDir, remoteWebDriverConnector);
+    }
+
     @Override
     public IRunConfiguration cloneConfig() throws IOException {
         return new RemoteWebRunConfiguration(projectDir);
     }
-    
+
     @Override
     public String getName() {
         return super.getName() + " - " + ((RemoteWebDriverConnector) webUiDriverConnector).getRemoteServerUrl();
     }
-    
+
     public String getRemoteServerUrl() {
         return ((RemoteWebDriverConnector) webUiDriverConnector).getRemoteServerUrl();
     }
@@ -31,7 +36,7 @@ public class RemoteWebRunConfiguration extends WebUiRunConfiguration {
     public void setRemoteServerUrl(String remoteServerUrl) {
         ((RemoteWebDriverConnector) webUiDriverConnector).setRemoteServerUrl(remoteServerUrl);
     }
-    
+
     public RemoteWebDriverConnectorType getRemoteWebDriverConnectorType() {
         return ((RemoteWebDriverConnector) webUiDriverConnector).getRemoteWebDriverConnectorType();
     }

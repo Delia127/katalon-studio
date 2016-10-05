@@ -178,6 +178,7 @@ public class DriverFactory {
                     webDriver = new ChromeDriver(desireCapibilities);
                     break;
                 case REMOTE_WEB_DRIVER:
+                case KOBITON_WEB_DRIVER:
                     String remoteWebServerUrl = getRemoteWebDriverServerUrl();
                     String remoteWebServerType = getRemoteWebDriverServerType();
                     if (remoteWebServerType == null) {

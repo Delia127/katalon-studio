@@ -63,7 +63,7 @@ public class RunConfiguration {
 
     public static final String EXCUTION_SOURCE_DESCRIPTION = StringConstants.CONF_PROPERTY_EXECUTION_SOURCE_DESCRIPTION;
 
-    public static final String APP_VERSION = GlobalStringConstants.APP_VERSION;
+    public static final String APP_VERSION = StringConstants.APP_VERSION;
 
     public static final String APP_INFO_FILE_LOCATION = StringConstants.APP_INFO_FILE_LOCATION;
 

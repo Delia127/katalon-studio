@@ -3,6 +3,9 @@ package com.kms.katalon.constants;
 public interface IdConstants {
     // Application
     public static final String APPLICATION_ID = "com.kms.katalon";
+    
+    // LifeCycleManager
+    public static final String KATALON_CONTEXT_ID = "katalonContext";
 
     // Main Window
     public static final String MAIN_WINDOW_ID = "com.kms.katalon.composer.window.main";
@@ -182,6 +185,8 @@ public interface IdConstants {
     public static final String LOG_VIEWER_TOOL_ITEM_TREE_ID = "com.kms.katalon.composer.execution.directtoolitem.tree";
 
     public static final String LOG_VIEWER_TOOL_ITEM_PIN_ID = "com.kms.katalon.composer.execution.directtoolitem.pin";
+    
+    public static final String LOG_VIEWER_TOOL_WATCHED_ENTITY_ID = "com.kms.katalon.composer.execution.directtoolitem.logViewer.currentWatched";
 
     public static final String LOG_VIEWER_MENU_TREEVIEW = "com.kms.katalon.composer.execution.menu.treeview";
 

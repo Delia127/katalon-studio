@@ -19,7 +19,7 @@ public class WorkbenchUtilizer {
     }
     
     @SuppressWarnings("unchecked")
-    protected <T> T getService(Class<? extends T> clazz) {
+    public <T> T getService(Class<? extends T> clazz) {
         return (T) getActiveWorkbench().getService(clazz);
     }
 }

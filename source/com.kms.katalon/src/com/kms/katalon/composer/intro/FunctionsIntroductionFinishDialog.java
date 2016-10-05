@@ -45,8 +45,8 @@ public class FunctionsIntroductionFinishDialog extends Dialog {
 
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
-        createButton(parent, IDialogConstants.OK_ID, StringConstants.DIA_YES, true);
-        createButton(parent, IDialogConstants.CANCEL_ID, StringConstants.DIA_NO, false);
+        createButton(parent, IDialogConstants.OK_ID, StringConstants.DIA_OK, true);
+        createButton(parent, IDialogConstants.CANCEL_ID, StringConstants.DIA_CANCEL, false);
     }
 
     @Override

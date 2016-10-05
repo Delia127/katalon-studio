@@ -24,9 +24,8 @@ import com.kms.katalon.entity.repository.WebElementEntity;
 
 @SuppressWarnings("restriction")
 public class NewWebServiceRequestObjectPopupMenuContribution {
-
 	private static final String WEBSERVICE_REQ_POPUP_MENUITEM_LABEL = StringConstants.MENU_CONTEXT_WEBSERVICE_REQ;
-	private static final String NEW_WEBSERVICE_REQ_COMMAND_ID = StringConstants.COMMAND_ID_ADD_WEBSERVICE_REQ;
+	private static final String NEW_WEBSERVICE_REQ_COMMAND_ID = "com.kms.katalon.composer.webservice.command.add";
 	
 	@Inject
 	private ECommandService commandService;

@@ -429,9 +429,9 @@ public class TestSuitePart implements EventHandler {
     private void redrawBtnExpandExecutionInfo() {
         btnExpandExecutionComposite.getParent().setRedraw(false);
         if (isExecutionCompositeExpanded) {
-            btnExpandExecutionComposite.setImage(ImageConstants.IMG_16_ARROW_UP_BLACK);
+            btnExpandExecutionComposite.setImage(ImageConstants.IMG_16_ARROW_DOWN);
         } else {
-            btnExpandExecutionComposite.setImage(ImageConstants.IMG_16_ARROW_DOWN_BLACK);
+            btnExpandExecutionComposite.setImage(ImageConstants.IMG_16_ARROW);
         }
         btnExpandExecutionComposite.getParent().setRedraw(true);
     }

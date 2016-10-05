@@ -87,7 +87,7 @@ public class TestCaseTableLabelProvider extends StyledCellLabelProvider {
 
                 case COLUMN_DESCRIPTION_INDEX:
                     if (testCase == null) {
-                        return "";
+                        return StringUtils.EMPTY;
                     }
                     return testCase.getDescription();
 
@@ -107,7 +107,7 @@ public class TestCaseTableLabelProvider extends StyledCellLabelProvider {
             TestSuiteTestCaseLink testCaseLink = (TestSuiteTestCaseLink) element;
             return MessageFormat.format(StringConstants.LP_WARN_MSG_TEST_CASE_MISSING, testCaseLink.getTestCaseId());
         } else {
-            return getColumnText(element);
+            return StringUtils.defaultIfEmpty(getColumnText(element), null);
         }
     }
 

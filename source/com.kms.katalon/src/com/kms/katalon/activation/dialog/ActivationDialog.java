@@ -3,11 +3,7 @@ package com.kms.katalon.activation.dialog;
 import java.awt.Desktop;
 import java.net.URI;
 
-import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
@@ -29,7 +25,6 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.ImageConstants;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.logging.LogUtil;
@@ -213,6 +208,7 @@ public class ActivationDialog extends Dialog {
         lblError.setText(StringConstants.WAITTING_MESSAGE);
 
         Display.getCurrent().asyncExec(new Runnable() {
+            @Override
             public void run() {
                 StringBuilder errorMessage = new StringBuilder();
                 boolean result = ActivationInfoCollector.activate(txtUserName.getText(), txtPassword.getText(),
@@ -251,7 +247,7 @@ public class ActivationDialog extends Dialog {
     private class ActivateDialogKeyAdapter extends KeyAdapter {
         @Override
         public void keyPressed(KeyEvent e) {
-            if ((((int) e.character) == SWT.CR) || (((int) e.character) == SWT.KEYPAD_CR)) {
+            if (((e.character) == SWT.CR) || ((e.character) == SWT.KEYPAD_CR)) {
                 processActivate();
             }
         }

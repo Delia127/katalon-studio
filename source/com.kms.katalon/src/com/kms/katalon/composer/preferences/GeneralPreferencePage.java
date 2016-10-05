@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.ui.PlatformUI;
 
+import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.constants.StringConstants;
 
@@ -18,6 +19,8 @@ public class GeneralPreferencePage extends PreferencePage {
     private Button radioAutoRestorePrevSession;
 
     private Button radioAutoCleanPrevSession;
+    
+    private Button chkCheckNewVersion;
 
     private Composite parentComposite;
 
@@ -39,7 +42,11 @@ public class GeneralPreferencePage extends PreferencePage {
 
         radioAutoCleanPrevSession = new Button(prevSession, SWT.RADIO);
         radioAutoCleanPrevSession.setText(StringConstants.PAGE_RADIO_AUTO_CLEAN_PREV_SESSION);
-
+        
+        chkCheckNewVersion = new Button(parentComposite, SWT.CHECK);
+        chkCheckNewVersion.setText(MessageConstants.PAGE_PREF_AUTO_CHECK_NEW_VERSION_TITLE);
+        
+        
         initialize();
 
         return parentComposite;
@@ -52,16 +59,24 @@ public class GeneralPreferencePage extends PreferencePage {
     }
 
     private void initialize() {
-        boolean autoRestore = getPreferenceStore()
-                .getBoolean(PreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION);
+        IPreferenceStore prefStore = getPreferenceStore();
+        boolean autoRestore = prefStore.getBoolean(PreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION);
         radioAutoRestorePrevSession.setSelection(autoRestore);
         radioAutoCleanPrevSession.setSelection(!autoRestore);
+
+        boolean setCheckNewVersion = prefStore.contains(PreferenceConstants.GENERAL_AUTO_CHECK_NEW_VERSION);
+        chkCheckNewVersion.setSelection(setCheckNewVersion
+                ? prefStore.getBoolean(PreferenceConstants.GENERAL_AUTO_CHECK_NEW_VERSION) : true);
+        if (!setCheckNewVersion) {
+            prefStore.setDefault(PreferenceConstants.GENERAL_AUTO_CHECK_NEW_VERSION, true);
+        }
     }
 
     @Override
     protected void performDefaults() {
         if (parentComposite == null) return;
         getPreferenceStore().setToDefault(PreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION);
+        getPreferenceStore().setToDefault(PreferenceConstants.GENERAL_AUTO_CHECK_NEW_VERSION);
         initialize();
         super.performDefaults();
     }
@@ -71,6 +86,8 @@ public class GeneralPreferencePage extends PreferencePage {
         if (parentComposite == null) return;
         getPreferenceStore().setValue(PreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION,
                 radioAutoRestorePrevSession.getSelection());
+        getPreferenceStore().setValue(PreferenceConstants.GENERAL_AUTO_CHECK_NEW_VERSION,
+                chkCheckNewVersion.getSelection());
     }
 
     @Override

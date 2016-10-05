@@ -134,6 +134,10 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
     public static final String IE_WINDOWS_32BIT_BHO_REGISTRY_KEY = "SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\explorer\\Browser Helper Objects";
 
     public static final String IE_WINDOWS_BHO_REGISTRY_KEY = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\explorer\\Browser Helper Objects";
+    
+    public static final String OBJECT_SPY_CHROME_ADDON_URL = "https://chrome.google.com/webstore/detail/katalon-object-spy/gblkfilmbkbkjgpcoihaeghdindcanom";
+
+    public static final String OBJECT_SPY_FIREFOX_ADDON_URL = "https://addons.mozilla.org/en-US/firefox/addon/katalon-object-spy";
 
     private List<HTMLPageElement> elements;
 
@@ -406,10 +410,10 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
 
         private String getAddonUrl() {
             if (driverType == WebUIDriverType.CHROME_DRIVER) {
-                return StringConstants.OBJECT_SPY_CHROME_ADDON_URL;
+                return OBJECT_SPY_CHROME_ADDON_URL;
             }
             if (driverType == WebUIDriverType.FIREFOX_DRIVER) {
-                return StringConstants.OBJECT_SPY_FIREFOX_ADDON_URL;
+                return OBJECT_SPY_FIREFOX_ADDON_URL;
             }
             return null;
         }

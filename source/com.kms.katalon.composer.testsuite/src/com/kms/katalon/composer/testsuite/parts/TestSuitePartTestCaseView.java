@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.jface.bindings.keys.IKeyLookup;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -26,6 +27,10 @@ import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.MenuDetectEvent;
+import org.eclipse.swt.events.MenuDetectListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -37,6 +42,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -45,6 +52,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
+import com.kms.katalon.composer.components.impl.util.KeyEventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.explorer.custom.AdvancedSearchDialog;
@@ -77,12 +85,17 @@ public class TestSuitePartTestCaseView {
     private static final String DESCRIPTION_COLUMN_HEADER = StringConstants.PA_COL_DESC;
 
     private Composite compositeTestCase;
+
     private TestSuitePart testSuitePart;
 
     private TestCaseTableViewer testCaseTableViewer;
+
     private Composite compositeTableSearch;
+
     private CLabel lblFilter;
+
     private CLabel lblSearch;
+
     private Text txtSearch;
 
     private boolean isSearching;
@@ -180,8 +193,7 @@ public class TestSuitePartTestCaseView {
         tableViewerColumnOrder.setLabelProvider(new TestCaseTableLabelProvider(
                 TestCaseTableLabelProvider.COLUMN_ORDER_INDEX));
 
-        tableViewerColumnPK
-                .setLabelProvider(new TestCaseTableLabelProvider(TestCaseTableLabelProvider.COLUMN_ID_INDEX));
+        tableViewerColumnPK.setLabelProvider(new TestCaseTableLabelProvider(TestCaseTableLabelProvider.COLUMN_ID_INDEX));
 
         tableViewerColumnDescription.setLabelProvider(new TestCaseTableLabelProvider(
                 TestCaseTableLabelProvider.COLUMN_DESCRIPTION_INDEX));
@@ -193,12 +205,77 @@ public class TestSuitePartTestCaseView {
         tableViewerColumnPK.setEditingSupport(new TestCaseIdColumnEditingSupport(testCaseTableViewer, this));
 
         testCaseTable.addKeyListener(new TestCaseTableKeyListener(testCaseTableViewer));
+        createTestCaseTableContextMenu(testCaseTable);
 
         createCompositeTestDataAndVariable(sashForm);
 
         sashForm.setWeights(new int[] { 5, 5 });
         hookDropTestCaseEvent();
         hookDragTestCaseEvent();
+    }
+
+    private void createTestCaseTableContextMenu(Table table) {
+        Menu tableContextMenu = new Menu(table);
+        table.setMenu(tableContextMenu);
+
+        MenuItem addTestCase = new MenuItem(tableContextMenu, SWT.PUSH);
+        addTestCase.setText(createMenuItemLabel(StringConstants.PA_TOOLITEM_ADD,
+                KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "N" })));
+        addTestCase.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                testCaseTableViewer.addNewItem();
+            }
+        });
+
+        final MenuItem removeTestCase = new MenuItem(tableContextMenu, SWT.PUSH);
+        removeTestCase.setText(createMenuItemLabel(StringConstants.PA_TOOLITEM_REMOVE,
+                KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.DEL_NAME })));
+        removeTestCase.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                testCaseTableViewer.removeSelectedItems();
+            }
+        });
+
+        final MenuItem moveTestCaseUp = new MenuItem(tableContextMenu, SWT.PUSH);
+        moveTestCaseUp.setText(createMenuItemLabel(StringConstants.PA_TOOLITEM_UP,
+                KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, IKeyLookup.ARROW_UP_NAME })));
+        moveTestCaseUp.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                testCaseTableViewer.moveSelectedItemsUp();
+            }
+        });
+
+        final MenuItem moveTestCaseDown = new MenuItem(tableContextMenu, SWT.PUSH);
+        moveTestCaseDown.setText(createMenuItemLabel(StringConstants.PA_TOOLITEM_DOWN,
+                KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, IKeyLookup.ARROW_DOWN_NAME })));
+        moveTestCaseDown.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                testCaseTableViewer.moveSelectedItemsDown();
+            }
+        });
+
+        table.addMenuDetectListener(new MenuDetectListener() {
+
+            @Override
+            public void menuDetected(MenuDetectEvent e) {
+                boolean hasItemSelected = !testCaseTableViewer.getSelectedItems().isEmpty();
+                removeTestCase.setEnabled(hasItemSelected);
+                moveTestCaseUp.setEnabled(hasItemSelected);
+                moveTestCaseDown.setEnabled(hasItemSelected);
+            }
+        });
+    }
+
+    private String createMenuItemLabel(String text, String keyCombination) {
+        return text + "\t" + keyCombination;
     }
 
     private void createCompositeTestDataAndVariable(SashForm sashForm) {
@@ -226,8 +303,12 @@ public class TestSuitePartTestCaseView {
     }
 
     private void processTestSuiteTestCaseLinkSelected() {
-        if (testCaseTableViewer.getSelection() == null) return;
-        if (!(testCaseTableViewer.getSelection() instanceof IStructuredSelection)) return;
+        if (testCaseTableViewer.getSelection() == null) {
+            return;
+        }
+        if (!(testCaseTableViewer.getSelection() instanceof IStructuredSelection)) {
+            return;
+        }
 
         dataAndVariableView.updateSelectedTestCase((IStructuredSelection) testCaseTableViewer.getSelection());
     }
@@ -363,8 +444,8 @@ public class TestSuitePartTestCaseView {
 
             Point pt = compositeTableSearch.toDisplay(1, 1);
             Point location = new Point(pt.x + compositeTableSearch.getBounds().width, pt.y);
-            AdvancedSearchDialog dialog = new AdvancedSearchDialog(shell, searchTags.toArray(new String[searchTags
-                    .size()]), txtSearch.getText(), location);
+            AdvancedSearchDialog dialog = new AdvancedSearchDialog(shell,
+                    searchTags.toArray(new String[searchTags.size()]), txtSearch.getText(), location);
             // set position for dialog
             if (dialog.open() == Dialog.OK) {
                 txtSearch.setText(dialog.getOutput());
@@ -396,25 +477,25 @@ public class TestSuitePartTestCaseView {
         ToolItem tltmAddTestCases = new ToolItem(testCaseToolbar, SWT.NONE);
         tltmAddTestCases.setText(StringConstants.PA_TOOLITEM_ADD);
         tltmAddTestCases.setToolTipText(StringConstants.PA_TOOLITEM_ADD);
-        tltmAddTestCases.setImage(ImageConstants.IMG_24_ADD);
+        tltmAddTestCases.setImage(ImageConstants.IMG_16_ADD);
         tltmAddTestCases.setData(ToolItemConstants.ADD);
 
         ToolItem tltmRemoveTestCases = new ToolItem(testCaseToolbar, SWT.NONE);
         tltmRemoveTestCases.setText(StringConstants.PA_TOOLITEM_REMOVE);
         tltmRemoveTestCases.setToolTipText(StringConstants.PA_TOOLITEM_REMOVE);
-        tltmRemoveTestCases.setImage(ImageConstants.IMG_24_REMOVE);
+        tltmRemoveTestCases.setImage(ImageConstants.IMG_16_REMOVE);
         tltmRemoveTestCases.setData(ToolItemConstants.REMOVE);
 
         ToolItem tltmUp = new ToolItem(testCaseToolbar, SWT.NONE);
         tltmUp.setText(StringConstants.PA_TOOLITEM_UP);
         tltmUp.setToolTipText(StringConstants.PA_TOOLITEM_UP);
-        tltmUp.setImage(ImageConstants.IMG_24_UP);
+        tltmUp.setImage(ImageConstants.IMG_16_MOVE_UP);
         tltmUp.setData(ToolItemConstants.UP);
 
         ToolItem tltmDown = new ToolItem(testCaseToolbar, SWT.NONE);
         tltmDown.setText(StringConstants.PA_TOOLITEM_DOWN);
         tltmDown.setToolTipText(StringConstants.PA_TOOLITEM_DOWN);
-        tltmDown.setImage(ImageConstants.IMG_24_DOWN);
+        tltmDown.setImage(ImageConstants.IMG_16_MOVE_DOWN);
         tltmDown.setData(ToolItemConstants.DOWN);
     }
 
@@ -443,10 +524,14 @@ public class TestSuitePartTestCaseView {
     }
 
     /* package */void afterSaving() {
-        if (testCaseTableViewer == null) return;
+        if (testCaseTableViewer == null) {
+            return;
+        }
 
         Table testCaseTable = testCaseTableViewer.getTable();
-        if (testCaseTable == null || testCaseTable.isDisposed()) return;
+        if (testCaseTable == null || testCaseTable.isDisposed()) {
+            return;
+        }
 
         if (testSuiteTestCaseSelectedIdx >= 0
                 && testSuiteTestCaseSelectedIdx < testCaseTableViewer.getTable().getItemCount()) {
@@ -487,7 +572,7 @@ public class TestSuitePartTestCaseView {
     }
 
     /* package */void openAddTestCaseDialog() {
-        testCaseToolItemListener.addTestCaseLink();
+        testCaseTableViewer.addNewItem();
     }
 
 }

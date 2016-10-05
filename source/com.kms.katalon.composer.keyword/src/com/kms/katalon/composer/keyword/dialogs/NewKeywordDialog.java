@@ -1,5 +1,9 @@
 package com.kms.katalon.composer.keyword.dialogs;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
@@ -8,10 +12,10 @@ import org.eclipse.jdt.ui.JavaElementLabelProvider;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -35,6 +39,12 @@ public class NewKeywordDialog extends CommonAbstractKeywordDialog {
 
     private Button btnBrowse;
 
+    private ValidatorManager validatorManager;
+
+    private Validator packageValidator;
+
+    private Validator nameValidator;
+
     public NewKeywordDialog(Shell parentShell, IPackageFragmentRoot rootPackage, IPackageFragment parentPackage) {
         super(parentShell, null);
         setDialogTitle(StringConstants.DIA_TITLE_KEYWORD);
@@ -44,12 +54,79 @@ public class NewKeywordDialog extends CommonAbstractKeywordDialog {
     }
 
     @Override
+    protected Control createDialogArea(Composite parent) {
+        Control area = super.createDialogArea(parent);
+        addControlModifyListeners();
+        return area;
+    }
+
+    @Override
     public Control createDialogBodyArea(Composite parent) {
         if (container == null) {
             container = new Composite(parent, SWT.NONE);
         }
         createPackageNameControl(container, 3);
         return super.createDialogBodyArea(parent);
+    }
+
+    private void addControlModifyListeners() {
+        prepareValidators();
+
+        btnBrowse.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if (choosePackage()) {
+                    txtPackage.setText(getParentPackage().getElementName());
+                }
+            }
+        });
+        txtPackage.addVerifyListener(new VerifyListener() {
+
+            @Override
+            public void verifyText(VerifyEvent event) {
+                String newName = getTextFromVerifyEvent(event);
+                validatePackageName(newName);
+                updateStatus();
+            }
+        });
+
+        txtName.removeListener(SWT.Modify, txtName.getListeners(SWT.Modify)[0]);
+        txtName.addVerifyListener(new VerifyListener() {
+            @Override
+            public void verifyText(VerifyEvent event) {
+                String newName = getTextFromVerifyEvent(event);
+                if (!newName.equals(txtName)) {
+                    validateKeywordName(newName, parentPackage);
+                    updateStatus();
+                    setName(newName);
+                }
+            }
+        });
+    }
+
+    private void prepareValidators() {
+        validatorManager = new ValidatorManager();
+
+        nameValidator = new Validator(getDialogMsg());
+        nameValidator.setOK(false);
+        validatorManager.addValidator(nameValidator);
+
+        packageValidator = new Validator();
+        packageValidator.setOK(true);
+        validatorManager.addValidator(packageValidator);
+    }
+
+    @Override
+    public void updateStatus() {
+        setMessage(validatorManager.getMessage(), validatorManager.getType());
+        super.getButton(OK).setEnabled(validatorManager.isOK());
+    }
+
+    private String getTextFromVerifyEvent(VerifyEvent event) {
+        Text txt = (Text) event.widget;
+        StringBuilder builder = new StringBuilder(txt.getText());
+        return builder.replace(event.start, event.end, event.text).toString();
     }
 
     private Control createPackageNameControl(Composite parent, int column) {
@@ -62,52 +139,54 @@ public class NewKeywordDialog extends CommonAbstractKeywordDialog {
         txtPackage.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         txtPackage.setText(getParentPackage().getElementName());
         txtPackage.selectAll();
-        txtPackage.addModifyListener(new ModifyListener() {
-
-            @Override
-            public void modifyText(ModifyEvent e) {
-                updateStatus();
-            }
-        });
 
         btnBrowse = new Button(parent, SWT.PUSH);
         btnBrowse.setText(StringConstants.BROWSE);
-        btnBrowse.addSelectionListener(new SelectionListener() {
-            @Override
-            public void widgetDefaultSelected(SelectionEvent e) {
-                parentPackage = choosePackage();
-                txtPackage.setText(getParentPackage().getElementName());
-            }
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                parentPackage = choosePackage();
-                txtPackage.setText(getParentPackage().getElementName());
-            }
-        });
         return parent;
     }
 
     @Override
     public void validateEntityName(String entityName) throws Exception {
-        validatePackageName();
+        validatePackageName(txtPackage.getText());
         validateKeywordName(entityName, parentPackage);
     }
 
-    private void validatePackageName() throws Exception {
-        String packageName = txtPackage.getText();
-        if (packageName.isEmpty()) {
-            setMessage(StringConstants.DIA_WARN_DEFAULT_PACKAGE, IMessageProvider.WARNING);
-            return;
-        }
-        setMessage(getDialogMsg(), getMsgType());
+    private void validatePackageName(String packageName) {
+        try {
+            packageValidator.reset();
+            if (packageName.isEmpty()) {
+                packageValidator.setMessage(StringConstants.DIA_WARN_DEFAULT_PACKAGE, IMessageProvider.WARNING);
+                packageValidator.setOK(false);
+                return;
+            }
 
-        IPackageFragment pkg = rootPackage.getPackageFragment(packageName);
-        validatePackageName(packageName, pkg);
-        parentPackage = pkg;
+            IPackageFragment pkg = rootPackage.getPackageFragment(packageName);
+            validatePackageName(packageName, pkg);
+            parentPackage = pkg;
+            packageValidator.setOK(true);
+        } catch (Exception e) {
+            packageValidator.setMessage(e.getMessage(), IMessageProvider.ERROR);
+            packageValidator.setOK(false);
+        }
     }
 
-    protected IPackageFragment choosePackage() {
+    @Override
+    protected void validateKeywordName(String name, IPackageFragment parentPackage) {
+        try {
+            nameValidator.reset();
+            if (name.isEmpty()) {
+                nameValidator.setOK(false);
+                return;
+            }
+            super.validateKeywordName(name, parentPackage);
+            nameValidator.setOK(true);
+        } catch (Exception e) {
+            nameValidator.setMessage(e.getMessage(), IMessageProvider.ERROR);
+            nameValidator.setOK(false);
+        }
+    }
+
+    protected boolean choosePackage() {
         IJavaElement[] packages = null;
         try {
             if (rootPackage != null && rootPackage.exists()) {
@@ -133,14 +212,118 @@ public class NewKeywordDialog extends CommonAbstractKeywordDialog {
             dialog.setInitialSelections(new Object[] { parentPackage });
         }
 
-        if (dialog.open() == Window.OK) {
-            return (IPackageFragment) dialog.getFirstResult();
+        int dialogStatus = dialog.open();
+        if (isOK(dialogStatus)) {
+            parentPackage = (IPackageFragment) dialog.getFirstResult();
         }
-        return parentPackage;
+
+        return isOK(dialogStatus);
+    }
+
+    private boolean isOK(int dialogStatus) {
+        return dialogStatus == Window.OK;
     }
 
     public IPackageFragment getParentPackage() {
         return parentPackage;
     }
 
+    private class Validator {
+        private String message;
+
+        private String defaultMessage;
+
+        private int serverity;
+
+        private boolean ok;
+
+        public Validator() {
+            this(StringUtils.EMPTY);
+        }
+
+        public Validator(String defaultMessage) {
+            this.defaultMessage = defaultMessage;
+            reset();
+        }
+
+        public void reset() {
+            setMessage(defaultMessage);
+            setOK(false);
+            getServerity(IMessageProvider.INFORMATION);
+        }
+
+        public void setMessage(String message, int serverity) {
+            setMessage(message);
+            getServerity(serverity);
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+
+        public int getServerity() {
+            return serverity;
+        }
+
+        public void getServerity(int serverity) {
+            this.serverity = serverity;
+        }
+
+        public boolean isOK() {
+            return ok;
+        }
+
+        public void setOK(boolean ok) {
+            this.ok = ok;
+        }
+    }
+
+    private class ValidatorManager {
+        private List<Validator> validators;
+
+        public ValidatorManager() {
+            validators = new ArrayList<>();
+        }
+
+        private void addValidator(Validator newValidator) {
+            validators.add(newValidator);
+        }
+
+        public String getMessage() {
+            return getHighestServerityValidator().getMessage();
+        }
+
+        public int getType() {
+            return getHighestServerityValidator().getServerity();
+        }
+
+        public boolean isOK() {
+            if (validators.isEmpty()) {
+                return true;
+            }
+            for (Validator validator : validators) {
+                if (!validator.isOK()) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private Validator getHighestServerityValidator() {
+            if (validators.isEmpty()) {
+                return null;
+            }
+            Validator highest = validators.get(0);
+            for (Validator validator : validators) {
+                if (highest.getServerity() < validator.getServerity()) {
+                    highest = validator;
+                }
+            }
+            return highest;
+        }
+    }
 }

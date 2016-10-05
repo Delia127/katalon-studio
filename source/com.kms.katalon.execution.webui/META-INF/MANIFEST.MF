@@ -6,6 +6,7 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-ClassPath: .
 Bundle-Vendor: KMS
 Export-Package: com.kms.katalon.execution.webui.configuration,
+ com.kms.katalon.execution.webui.configuration.contributor,
  com.kms.katalon.execution.webui.driver,
  com.kms.katalon.execution.webui.setting,
  com.kms.katalon.execution.webui.util
@@ -26,4 +27,5 @@ Require-Bundle: org.eclipse.swt,
  org.eclipse.equinox.preferences,
  org.eclipse.jface,
  org.apache.commons.lang,
- com.kms.katalon.logging
+ com.kms.katalon.logging,
+ org.eclipse.osgi

@@ -17,7 +17,7 @@
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_EVuD4CavEeS9vYgzPyb1ug" elementId="com.kms.katalon.menu.submenu.new.testobject" label="Test Object" iconURI="platform:/plugin/com.kms.katalon.composer.objectrepository/icons/test_object_16.png" tooltip="New Test Object" command="_GJVzECauEeS9vYgzPyb1ug"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_4oSW8CavEeS9vYgzPyb1ug" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="before:com.kms.katalon.composer.webservice.handledtoolitem.newWsRequest">
-    <elements xsi:type="menu:HandledToolItem" xmi:id="_GQ0pMCawEeS9vYgzPyb1ug" elementId="com.kms.katalon.composer.objectrepository.handledtoolitem.newTestObject" label="" iconURI="platform:/plugin/com.kms.katalon.composer.objectrepository/icons/new_test_object_28.png" tooltip="New Test Object" command="_GJVzECauEeS9vYgzPyb1ug">
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_GQ0pMCawEeS9vYgzPyb1ug" elementId="com.kms.katalon.composer.objectrepository.handledtoolitem.newTestObject" label="" iconURI="platform:/plugin/com.kms.katalon.composer.objectrepository/icons/new_test_object_24.png" tooltip="New Test Object" command="_GJVzECauEeS9vYgzPyb1ug">
       <persistedState key="index" value="8"/>
       <tags>FORCE_TEXT</tags>
     </elements>
@@ -31,7 +31,7 @@
     </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_6k2kYEPGEeSL9MJI7TlYNw" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="after:com.kms.katalon.composer.objectrepository.toolbarseparator.1">
-    <elements xsi:type="menu:HandledToolItem" xmi:id="_OkY08EPHEeSL9MJI7TlYNw" elementId="com.kms.katalon.composer.objectrepository.handledtoolitem.objectSpy" label="" iconURI="platform:/plugin/com.kms.katalon.composer.objectrepository/icons/object_spy_28.png" tooltip="Web Object Spy" command="_qx_Y8DcrEeSiAqu25cXbFw">
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_OkY08EPHEeSL9MJI7TlYNw" elementId="com.kms.katalon.composer.objectrepository.handledtoolitem.objectSpy" label="" iconURI="platform:/plugin/com.kms.katalon.composer.objectrepository/icons/web_object_spy_24.png" tooltip="Web Object Spy" command="_qx_Y8DcrEeSiAqu25cXbFw">
       <persistedState key="index" value="14"/>
       <tags>FORCE_TEXT</tags>
     </elements>

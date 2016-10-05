@@ -16,6 +16,7 @@ public class ImageButton extends Composite {
     private String text;
     private int width;
     private int height;
+    private boolean copied;
 
     public ImageButton(Composite parent, int style) {
         super(parent, style);
@@ -26,8 +27,9 @@ public class ImageButton extends Composite {
         addListener(SWT.Dispose, new Listener() {
             @Override
             public void handleEvent(Event arg0) {
-                if (image != null)
+                if (copied && image != null) {
                     image.dispose();
+                }
             }
         });
 
@@ -44,7 +46,7 @@ public class ImageButton extends Composite {
         GC gc = event.gc;
 
         if (image != null) {
-            gc.drawImage(image, 1, 1);
+            gc.drawImage(image, 1, 1 + (getBounds().height - height)/2);
             Point textSize = gc.textExtent(text);
             gc.setForeground(textColor);
             gc.drawText(text, (width - textSize.x) / 2 + 1, (height - textSize.y) / 2 + 1, true);
@@ -52,7 +54,12 @@ public class ImageButton extends Composite {
     }
 
     public void setImage(Image image) {
-        this.image = new Image(Display.getDefault(), image, SWT.IMAGE_COPY);
+        this.image = image;
+        this.copied = false;
+        if (image.isDisposed()) {
+            this.image = new Image(Display.getDefault(), image, SWT.IMAGE_COPY);
+            this.copied = true;
+        }
         width = image.getBounds().width;
         height = image.getBounds().height;
         redraw();

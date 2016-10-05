@@ -21,6 +21,9 @@ class GlobalVariableTemplate {
     private static final String FIND_TEST_OBJECT_METHOD_NAME = "findTestObject";
 
     private static final String tpl = """<% if (!deprecatedFlag) { %>${PACKAGE_STRING}<% } %>
+import ${ObjectRepository.class.getName()} as ${ObjectRepository.class.getSimpleName()}
+import ${TestDataFactory.class.getName()} as ${TestDataFactory.class.getSimpleName()}
+import ${TestCaseFactory.class.getName()} as ${TestCaseFactory.class.getSimpleName()}
 import static ${ObjectRepository.class.getName()}.${FIND_TEST_OBJECT_METHOD_NAME}
 import static ${TestDataFactory.class.getName()}.${FIND_TEST_DATA_METHOD_NAME}
 import static ${TestCaseFactory.class.getName()}.${FIND_TEST_CASE_METHOD_NAME}

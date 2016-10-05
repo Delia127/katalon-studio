@@ -6,293 +6,268 @@ public class StringConstants extends GlobalStringConstants {
 
     /*********************************************** Common ***********************************************************/
     // Common used
-    public static final String CM_QTEST_COMPOSER_BUNDLE_URI = "bundleclass://com.kms.katalon.composer.integration.qtest/";
-    public static final String CM_TYPE = "Type";
-    public static final String CM_MSG_PLEASE_WAIT = "Please wait...";
-    public static final String CM_MSG_SERVER_NOT_FOUND = "Server not found.";
-    public static final String CM_USERNAME = "Username";
-    public static final String CM_PASSWORD = "Password";
-    public static final String CM_SERVER_URL = "Server URL";
-    public static final String CM_UPLOAD = "Upload";
-    public static final String CM_DONWLOAD = "Download";
-    public static final String CM_AUTHENTICATION = "Authentication";
-    public static final String CM_TOKEN = "Token";
-    public static final String CM_DISINTEGRATE = "Disintegrate";
-    public static final String CM_NAVIGATE = "Navigate";
-    public static final String CM_ALIAS = "Alias";
-    public static final String CM_PARENT_ID = "Parent ID";
-    public static final String CM_DEFAULT = "Default";
-    public static final String CM_FINISH = "Finish";
-    public static final String CM_CANCEL = "Cancel";
-    public static final String CM_CONNECTING = "Connecting...";
-    public static final String CM_QUESTION = "Question";
-    public static final String CM_YES = "Yes";
-    public static final String CM_NO = "No";
-    public static final String CM_SETTINGS = "Settings";
-    public static final String CM_NEW = "New";
-    public static final String CM_CREATED = "Created";
-    public static final String CM_NEW_DUPLICATED = "New but Duplicated";
-    public static final String CM_MODULE = "Module";
+    public static final String CM_QTEST_COMPOSER_BUNDLE_URI = "bundleclass://com.kms.katalon.composer.integration.qtest/"; //$NON-NLS-1$
+    public static final String CM_TYPE = ComposerIntegrationQtestMessageConstants.CM_TYPE;
+    public static final String CM_MSG_PLEASE_WAIT = ComposerIntegrationQtestMessageConstants.CM_MSG_PLEASE_WAIT;
+    public static final String CM_MSG_SERVER_NOT_FOUND = ComposerIntegrationQtestMessageConstants.CM_MSG_SERVER_NOT_FOUND;
+    public static final String CM_USERNAME = ComposerIntegrationQtestMessageConstants.CM_USERNAME;
+    public static final String CM_PASSWORD = ComposerIntegrationQtestMessageConstants.CM_PASSWORD;
+    public static final String CM_SERVER_URL = ComposerIntegrationQtestMessageConstants.CM_SERVER_URL;
+    public static final String CM_UPLOAD = ComposerIntegrationQtestMessageConstants.CM_UPLOAD;
+    public static final String CM_DONWLOAD = ComposerIntegrationQtestMessageConstants.CM_DONWLOAD;
+    public static final String CM_AUTHENTICATION = ComposerIntegrationQtestMessageConstants.CM_AUTHENTICATION;
+    public static final String CM_TOKEN = ComposerIntegrationQtestMessageConstants.CM_TOKEN;
+    public static final String CM_DISINTEGRATE = ComposerIntegrationQtestMessageConstants.CM_DISINTEGRATE;
+    public static final String CM_NAVIGATE = ComposerIntegrationQtestMessageConstants.CM_NAVIGATE;
+    public static final String CM_ALIAS = ComposerIntegrationQtestMessageConstants.CM_ALIAS;
+    public static final String CM_PARENT_ID = ComposerIntegrationQtestMessageConstants.CM_PARENT_ID;
+    public static final String CM_DEFAULT = ComposerIntegrationQtestMessageConstants.CM_DEFAULT;
+    public static final String CM_FINISH = ComposerIntegrationQtestMessageConstants.CM_FINISH;
+    public static final String CM_CANCEL = ComposerIntegrationQtestMessageConstants.CM_CANCEL;
+    public static final String CM_CONNECTING = ComposerIntegrationQtestMessageConstants.CM_CONNECTING;
+    public static final String CM_QUESTION = ComposerIntegrationQtestMessageConstants.CM_QUESTION;
+    public static final String CM_YES = ComposerIntegrationQtestMessageConstants.CM_YES;
+    public static final String CM_NO = ComposerIntegrationQtestMessageConstants.CM_NO;
+    public static final String CM_SETTINGS = ComposerIntegrationQtestMessageConstants.CM_SETTINGS;
+    public static final String CM_NEW = ComposerIntegrationQtestMessageConstants.CM_NEW;
+    public static final String CM_CREATED = ComposerIntegrationQtestMessageConstants.CM_CREATED;
+    public static final String CM_NEW_DUPLICATED = ComposerIntegrationQtestMessageConstants.CM_NEW_DUPLICATED;
+    public static final String CM_MODULE = ComposerIntegrationQtestMessageConstants.CM_MODULE;
 
     /******************************************************************************************************************/
 
     /*********************************************** Job **************************************************************/
     // Job
-    public static final String JOB_TITLE_DISINTEGRATE_TEST_CASE = "Disintegrate test case(s)";
-    public static final String JOB_TITLE_UPLOAD_TEST_CASE = "Upload test case(s)";
-    public static final String JOB_TITLE_UPLOAD_TEST_SUITE = "Upload test suite";
-    public static final String JOB_MSG_TEST_SUITE_INVALID_FORMAT = "qTest integrated information of test suite: {0} is invalid.";
-    public static final String JOB_MSG_CONFIRM_CANCEL_UPLOAD = "{0} item(s) uploaded. Do you want to keep them?";
+    public static final String JOB_TITLE_DISINTEGRATE_TEST_CASE = ComposerIntegrationQtestMessageConstants.JOB_TITLE_DISINTEGRATE_TEST_CASE;
+    public static final String JOB_TITLE_UPLOAD_TEST_CASE = ComposerIntegrationQtestMessageConstants.JOB_TITLE_UPLOAD_TEST_CASE;
+    public static final String JOB_TITLE_UPLOAD_TEST_SUITE = ComposerIntegrationQtestMessageConstants.JOB_TITLE_UPLOAD_TEST_SUITE;
+    public static final String JOB_MSG_TEST_SUITE_INVALID_FORMAT = ComposerIntegrationQtestMessageConstants.JOB_MSG_TEST_SUITE_INVALID_FORMAT;
+    public static final String JOB_MSG_CONFIRM_CANCEL_UPLOAD = ComposerIntegrationQtestMessageConstants.JOB_MSG_CONFIRM_CANCEL_UPLOAD;
 
     // UploadTestSuiteJob
-    public static final String JOB_TASK_UPLOADING_TEST_SUITE_ENTITY = "Uploading test suite: {0}...";
-    public static final String JOB_SUB_TASK_UPLOADING_QTEST_SUITE = "Uploading test suite under {0}: {1}";
-    public static final String JOB_SUB_TASK_UPDATING_TEST_SUITE_ENTITY = "Updating integration info...";
+    public static final String JOB_TASK_UPLOADING_TEST_SUITE_ENTITY = ComposerIntegrationQtestMessageConstants.JOB_TASK_UPLOADING_TEST_SUITE_ENTITY;
+    public static final String JOB_SUB_TASK_UPLOADING_QTEST_SUITE = ComposerIntegrationQtestMessageConstants.JOB_SUB_TASK_UPLOADING_QTEST_SUITE;
+    public static final String JOB_SUB_TASK_UPDATING_TEST_SUITE_ENTITY = ComposerIntegrationQtestMessageConstants.JOB_SUB_TASK_UPDATING_TEST_SUITE_ENTITY;
 
     // DisintegrateTestCaseJob
-    public static final String JOB_TASK_DISINTEGRATE_TEST_CASE = "Disintegrating test cases...";
-    public static final String JOB_SUB_TASK_DISINTEGRATE_TEST_CASE = "Disintegrating {0} ...";
+    public static final String JOB_TASK_DISINTEGRATE_TEST_CASE = ComposerIntegrationQtestMessageConstants.JOB_TASK_DISINTEGRATE_TEST_CASE;
+    public static final String JOB_SUB_TASK_DISINTEGRATE_TEST_CASE = ComposerIntegrationQtestMessageConstants.JOB_SUB_TASK_DISINTEGRATE_TEST_CASE;
 
     // DownloadTestCaseJob
-    public static final String JOB_TASK_DOWNLOAD_TEST_CASE = "Download test cases";
-    public static final String JOB_SUB_TASK_DOWNLOAD_TEST_CASE = "Downloading test cases...";
-    public static final String JOB_SUB_TASK_CHECK_SYSTEM = "Checking system...";
-    public static final String JOB_SUB_TASK_FETCH_CHILDREN = "Fetching children of: {0}";
-    public static final String JOB_TASK_CREATE_TEST_CASE = "Creating new test cases...";
-    public static final String JOB_SUB_TASK_CREATE_TEST_CASE = "Creating test case: {0} ...";
-    public static final String JOB_SUB_TASK_CREATE_TEST_CASE_FOLDER = "Creating folder: {0} ...";
+    public static final String JOB_TASK_DOWNLOAD_TEST_CASE = ComposerIntegrationQtestMessageConstants.JOB_TASK_DOWNLOAD_TEST_CASE;
+    public static final String JOB_SUB_TASK_DOWNLOAD_TEST_CASE = ComposerIntegrationQtestMessageConstants.JOB_SUB_TASK_DOWNLOAD_TEST_CASE;
+    public static final String JOB_SUB_TASK_CHECK_SYSTEM = ComposerIntegrationQtestMessageConstants.JOB_SUB_TASK_CHECK_SYSTEM;
+    public static final String JOB_SUB_TASK_FETCH_CHILDREN = ComposerIntegrationQtestMessageConstants.JOB_SUB_TASK_FETCH_CHILDREN;
+    public static final String JOB_TASK_CREATE_TEST_CASE = ComposerIntegrationQtestMessageConstants.JOB_TASK_CREATE_TEST_CASE;
+    public static final String JOB_SUB_TASK_CREATE_TEST_CASE = ComposerIntegrationQtestMessageConstants.JOB_SUB_TASK_CREATE_TEST_CASE;
+    public static final String JOB_SUB_TASK_CREATE_TEST_CASE_FOLDER = ComposerIntegrationQtestMessageConstants.JOB_SUB_TASK_CREATE_TEST_CASE_FOLDER;
 
-    public static final String DIA_TITLE_FOLDER_DUPLICATION = "Folder Duplication Detected";
-    public static final String DIA_TITLE_TEST_CASE_DUPLICATION = "Test Case Duplication Detected";
-    public static final String DIA_MSG_CONFIRM_MERGE_DOWNLOADED_TEST_CASE_FOLDER = "System has detected you want to create a folder"
-            + " with name: {0} but it has already existed on the file system.\nDo you want to merge them?";
-    public static final String DIA_MSG_CONFIRM_MERGE_DOWNLOADED_TEST_CASE = "System has detected you want to create a test case "
-            + "with name: {0} but it has already existed on the file system.\nDo you want to merge them?";
+    public static final String DIA_TITLE_FOLDER_DUPLICATION = ComposerIntegrationQtestMessageConstants.DIA_TITLE_FOLDER_DUPLICATION;
+    public static final String DIA_TITLE_TEST_CASE_DUPLICATION = ComposerIntegrationQtestMessageConstants.DIA_TITLE_TEST_CASE_DUPLICATION;
+    public static final String DIA_MSG_CONFIRM_MERGE_DOWNLOADED_TEST_CASE_FOLDER = ComposerIntegrationQtestMessageConstants.DIA_MSG_CONFIRM_MERGE_DOWNLOADED_TEST_CASE_FOLDER;
+    public static final String DIA_MSG_CONFIRM_MERGE_DOWNLOADED_TEST_CASE = ComposerIntegrationQtestMessageConstants.DIA_MSG_CONFIRM_MERGE_DOWNLOADED_TEST_CASE;
 
     // UploadTestCaseJob
-    public static final String JOB_TASK_UPLOAD_TEST_CASE = "Uploading test cases...";
-    public static final String JOB_SUB_TASK_UPLOAD_TEST_CASE = "Uploading {0} ...";
+    public static final String JOB_TASK_UPLOAD_TEST_CASE = ComposerIntegrationQtestMessageConstants.JOB_TASK_UPLOAD_TEST_CASE;
+    public static final String JOB_SUB_TASK_UPLOAD_TEST_CASE = ComposerIntegrationQtestMessageConstants.JOB_SUB_TASK_UPLOAD_TEST_CASE;
 
-    public static final String DIA_MSG_UNABLE_UPLOAD_TEST_CASE = "Unable to upload test cases.";
-    public static final String DIA_MSG_CONFIRM_MERGE_UPLOADED_TEST_CASE = "System has detected that a test case on qTest"
-            + " with id: {0} has the same name as test case: {1}.\nDo you want to merge them?";
-    public static final String DIA_MSG_CONFIRM_MERGE_UPLOADED_TEST_CASE_FOLDER = "System has detected that a test folder"
-            + " on qTest with id: {0} has the same name as test case folder: {1}.\nDo you want to merge them?";
+    public static final String DIA_MSG_UNABLE_UPLOAD_TEST_CASE = ComposerIntegrationQtestMessageConstants.DIA_MSG_UNABLE_UPLOAD_TEST_CASE;
+    public static final String DIA_MSG_CONFIRM_MERGE_UPLOADED_TEST_CASE = ComposerIntegrationQtestMessageConstants.DIA_MSG_CONFIRM_MERGE_UPLOADED_TEST_CASE;
+    public static final String DIA_MSG_CONFIRM_MERGE_UPLOADED_TEST_CASE_FOLDER = ComposerIntegrationQtestMessageConstants.DIA_MSG_CONFIRM_MERGE_UPLOADED_TEST_CASE_FOLDER;
 
     // UploadTestCaseResultJob
-    public static final String JOB_TITLE_UPLOAD_TEST_RESULT = "Upload Test Case's Result";
-    public static final String JOB_TASK_UPLOAD_TEST_RESULT = "Uploading Test Case's Result...";
-    public static final String JOB_SUB_TASK_UPLOAD_TEST_RESULT = "Uploading result of test case: {0}...";
+    public static final String JOB_TITLE_UPLOAD_TEST_RESULT = ComposerIntegrationQtestMessageConstants.JOB_TITLE_UPLOAD_TEST_RESULT;
+    public static final String JOB_TASK_UPLOAD_TEST_RESULT = ComposerIntegrationQtestMessageConstants.JOB_TASK_UPLOAD_TEST_RESULT;
+    public static final String JOB_SUB_TASK_UPLOAD_TEST_RESULT = ComposerIntegrationQtestMessageConstants.JOB_SUB_TASK_UPLOAD_TEST_RESULT;
 
     // UploadTestSuiteJob
-    public static final String JOB_TASK_UPLOAD_TEST_SUITE = "Uploading test suite(s)...";
-    public static final String DIA_TITLE_TEST_SUITE_DUPLICATION = "Test Suite Duplication Detected";
-    public static final String DIA_MSG_CONFIRM_MERGE_UPLOADED_TEST_SUITE = "System has detected that a test suite on qTest"
-            + " with id: {0} has the same name as test suite: ''{1}'' under {2}: ''{3}''.\nDo you want to merge them?";
+    public static final String JOB_TASK_UPLOAD_TEST_SUITE = ComposerIntegrationQtestMessageConstants.JOB_TASK_UPLOAD_TEST_SUITE;
+    public static final String DIA_TITLE_TEST_SUITE_DUPLICATION = ComposerIntegrationQtestMessageConstants.DIA_TITLE_TEST_SUITE_DUPLICATION;
+    public static final String DIA_MSG_CONFIRM_MERGE_UPLOADED_TEST_SUITE = ComposerIntegrationQtestMessageConstants.DIA_MSG_CONFIRM_MERGE_UPLOADED_TEST_SUITE;
 
     // DisintegrateTestSuiteJob
-    public static final String JOB_TITLE_DISINTEGRATE_TEST_SUITE = "Disintegrate test suites";
-    public static final String JOB_TASK_DISINTEGRATE_TEST_SUITE = "Disintegrating test suites...";
+    public static final String JOB_TITLE_DISINTEGRATE_TEST_SUITE = ComposerIntegrationQtestMessageConstants.JOB_TITLE_DISINTEGRATE_TEST_SUITE;
+    public static final String JOB_TASK_DISINTEGRATE_TEST_SUITE = ComposerIntegrationQtestMessageConstants.JOB_TASK_DISINTEGRATE_TEST_SUITE;
 
     /******************************************************************************************************************/
 
     /*********************************************** Dialog ***********************************************************/
     // CreateNewTestSuiteParentDialog
-    public static final String DIA_TITLE_CREATE_TEST_SUITE_PARENT = "Create Test Suite's parent";
-    public static final String DIA_TITLE_IN_USE = "In use";
-    public static final String DIA_TITLE_CREATION_OPTIONS = "Creation options";
-    public static final String DIA_TITLE_CHOOSE_PARENT_FOR_TEST_SUITE = "Choose parent for test suite.";
-    public static final String DIA_MSG_UNABLE_TO_UPLOAD_TEST_SUITE = "Unable to load test suite's parent from qTest "
-            + "server.";
+    public static final String DIA_TITLE_CREATE_TEST_SUITE_PARENT = ComposerIntegrationQtestMessageConstants.DIA_TITLE_CREATE_TEST_SUITE_PARENT;
+    public static final String DIA_TITLE_IN_USE = ComposerIntegrationQtestMessageConstants.DIA_TITLE_IN_USE;
+    public static final String DIA_TITLE_CREATION_OPTIONS = ComposerIntegrationQtestMessageConstants.DIA_TITLE_CREATION_OPTIONS;
+    public static final String DIA_TITLE_CHOOSE_PARENT_FOR_TEST_SUITE = ComposerIntegrationQtestMessageConstants.DIA_TITLE_CHOOSE_PARENT_FOR_TEST_SUITE;
+    public static final String DIA_MSG_UNABLE_TO_UPLOAD_TEST_SUITE = ComposerIntegrationQtestMessageConstants.DIA_MSG_UNABLE_TO_UPLOAD_TEST_SUITE;
 
     // GenerateNewTokenDialog
-    public static final String DIA_MSG_ENTER_SERVER_URL = "Please enter server url.";
-    public static final String DIA_MSG_ENTER_USERNAME = "Please enter username.";
-    public static final String DIA_MSG_ENTER_PASSWORD = "Please enter password.";
-    public static final String DIA_MSG_UNABLE_TO_GET_TOKEN = "Unable to get token";
-    public static final String DIA_TITLE_GENERATE_TOKEN = "Generate new token";
-    public static final String DIA_TITLE_GENERATE = "Generate";
-    public static final String DIA_JOB_GENERATE_TOKEN = "Generating new token";
+    public static final String DIA_MSG_ENTER_SERVER_URL = ComposerIntegrationQtestMessageConstants.DIA_MSG_ENTER_SERVER_URL;
+    public static final String DIA_MSG_ENTER_USERNAME = ComposerIntegrationQtestMessageConstants.DIA_MSG_ENTER_USERNAME;
+    public static final String DIA_MSG_ENTER_PASSWORD = ComposerIntegrationQtestMessageConstants.DIA_MSG_ENTER_PASSWORD;
+    public static final String DIA_MSG_UNABLE_TO_GET_TOKEN = ComposerIntegrationQtestMessageConstants.DIA_MSG_UNABLE_TO_GET_TOKEN;
+    public static final String DIA_TITLE_GENERATE_TOKEN = ComposerIntegrationQtestMessageConstants.DIA_TITLE_GENERATE_TOKEN;
+    public static final String DIA_TITLE_GENERATE = ComposerIntegrationQtestMessageConstants.DIA_TITLE_GENERATE;
+    public static final String DIA_JOB_GENERATE_TOKEN = ComposerIntegrationQtestMessageConstants.DIA_JOB_GENERATE_TOKEN;
 
     // ListReportUploadingPreviewDialog
-    public static final String DIA_TITLE_TEST_LOG_UPLOADING_PREVIEW = "Test Log Uploading Preview";
+    public static final String DIA_TITLE_TEST_LOG_UPLOADING_PREVIEW = ComposerIntegrationQtestMessageConstants.DIA_TITLE_TEST_LOG_UPLOADING_PREVIEW;
 
     // RepoDialog
-    public static final String DIA_TITLE_QTEST_PROJECT = "qTest Project";
-    public static final String DIA_TITLE_QTEST_MODULE = "qTest Module";
-    public static final String DIA_TITLE_KATALON_FOLDER = "Katalon Folder";
-    public static final String DIA_TITLE_TEST_CASE_FOLDER_BROWSER = "Test Case Folder Browser";
-    public static final String DIA_TITLE_TEST_SUITE_FOLDER_BROWSER = "Test Suite Folder Browser";
-    public static final String DIA_TITLE_CREATE_TEST_CASE_REPO = "Create Test Case Repository";
-    public static final String DIA_TITLE_EDIT_TEST_CASE_REPO = "Edit Test Case Repository";
-    public static final String DIA_TITLE_CREATE_TEST_SUITE_REPO = "Create Test Suite Repository";
-    public static final String DIA_TITLE_EDIT_TEST_SUITE_REPO = "Edit Test Case Repository";
-    public static final String DIA_MSG_UNABLE_TO_UPDATE_PROJECT = "Unable to update qTest projects.";
-    public static final String DIA_MSG_UNABLE_TO_UPDATE_MODULE = "Unable to update qTest modules.";
-    public static final String DIA_MSG_UNABLE_TO_FIND_TEST_CASE_FOLDER = "Unable to find test case folder.";
-    public static final String DIA_MSG_UNABLE_TO_FIND_TEST_SUITE_FOLDER = "Unable to find test suite folder.";
+    public static final String DIA_TITLE_QTEST_PROJECT = ComposerIntegrationQtestMessageConstants.DIA_TITLE_QTEST_PROJECT;
+    public static final String DIA_TITLE_QTEST_MODULE = ComposerIntegrationQtestMessageConstants.DIA_TITLE_QTEST_MODULE;
+    public static final String DIA_TITLE_KATALON_FOLDER = ComposerIntegrationQtestMessageConstants.DIA_TITLE_KATALON_FOLDER;
+    public static final String DIA_TITLE_TEST_CASE_FOLDER_BROWSER = ComposerIntegrationQtestMessageConstants.DIA_TITLE_TEST_CASE_FOLDER_BROWSER;
+    public static final String DIA_TITLE_TEST_SUITE_FOLDER_BROWSER = ComposerIntegrationQtestMessageConstants.DIA_TITLE_TEST_SUITE_FOLDER_BROWSER;
+    public static final String DIA_TITLE_CREATE_TEST_CASE_REPO = ComposerIntegrationQtestMessageConstants.DIA_TITLE_CREATE_TEST_CASE_REPO;
+    public static final String DIA_TITLE_EDIT_TEST_CASE_REPO = ComposerIntegrationQtestMessageConstants.DIA_TITLE_EDIT_TEST_CASE_REPO;
+    public static final String DIA_TITLE_CREATE_TEST_SUITE_REPO = ComposerIntegrationQtestMessageConstants.DIA_TITLE_CREATE_TEST_SUITE_REPO;
+    public static final String DIA_TITLE_EDIT_TEST_SUITE_REPO = ComposerIntegrationQtestMessageConstants.DIA_TITLE_EDIT_TEST_SUITE_REPO;
+    public static final String DIA_MSG_UNABLE_TO_UPDATE_PROJECT = ComposerIntegrationQtestMessageConstants.DIA_MSG_UNABLE_TO_UPDATE_PROJECT;
+    public static final String DIA_MSG_UNABLE_TO_UPDATE_MODULE = ComposerIntegrationQtestMessageConstants.DIA_MSG_UNABLE_TO_UPDATE_MODULE;
+    public static final String DIA_MSG_UNABLE_TO_FIND_TEST_CASE_FOLDER = ComposerIntegrationQtestMessageConstants.DIA_MSG_UNABLE_TO_FIND_TEST_CASE_FOLDER;
+    public static final String DIA_MSG_UNABLE_TO_FIND_TEST_SUITE_FOLDER = ComposerIntegrationQtestMessageConstants.DIA_MSG_UNABLE_TO_FIND_TEST_SUITE_FOLDER;
 
     // TestCaseRootSelectionDialog
-    public static final String DIA_INFO_TEST_CASE_ROOT = "System needs a specific module on qTest for the integration. "
-            + "Please choose one. Only modules and test cases under your selection can be integrated with Katalon.";
-    public static final String DIA_MSG_UNABLE_TO_LOAD_TEST_SUITE_PARENT = "Unable to load test suite's parent from qTest"
-            + " server.";
-    public static final String DIA_TITLE_TEST_CASE_ROOT = "Test case root selection";
-    public static final String DIA_MSG_USER_CHOOSES_TEST_CASE_ROOT = "Please note that you are choosing root module of qTest. "
-            + "The \"Upload\" function will not be applied for its direct test case(s).";
+    public static final String DIA_INFO_TEST_CASE_ROOT = ComposerIntegrationQtestMessageConstants.DIA_INFO_TEST_CASE_ROOT;
+    public static final String DIA_MSG_UNABLE_TO_LOAD_TEST_SUITE_PARENT = ComposerIntegrationQtestMessageConstants.DIA_MSG_UNABLE_TO_LOAD_TEST_SUITE_PARENT;
+    public static final String DIA_TITLE_TEST_CASE_ROOT = ComposerIntegrationQtestMessageConstants.DIA_TITLE_TEST_CASE_ROOT;
+    public static final String DIA_MSG_USER_CHOOSES_TEST_CASE_ROOT = ComposerIntegrationQtestMessageConstants.DIA_MSG_USER_CHOOSES_TEST_CASE_ROOT;
 
     // TestCaseTreeDownloadedPreviewDialog
-    public static final String DIA_INFO_TEST_CASE_DOWNLOADED_PREVIEW = "Please select test cases you want to create.";
-    public static final String DIA_TITLE_TEST_CASE_DOWNLOADED_PREVIEW = "Downloaded test cases preview.";
+    public static final String DIA_INFO_TEST_CASE_DOWNLOADED_PREVIEW = ComposerIntegrationQtestMessageConstants.DIA_INFO_TEST_CASE_DOWNLOADED_PREVIEW;
+    public static final String DIA_TITLE_TEST_CASE_DOWNLOADED_PREVIEW = ComposerIntegrationQtestMessageConstants.DIA_TITLE_TEST_CASE_DOWNLOADED_PREVIEW;
 
     /******************************************************************************************************************/
 
     /*********************************************** Preference *******************************************************/
     // PreferenceID
-    public static final String PREF_QTEST_MAIN_PAGE = "com.kms.katalon.composer.intergration.qtest.setting";
-    public static final String PREF_TEST_CASE_REPO_PAGE = "com.kms.katalon.composer.integration.qtest.testCaseRepoMapping";
-    public static final String PREF_TEST_SUITE_REPO_PAGE = "com.kms.katalon.composer.integration.qtest.testSuiteRepoMapping";
+    public static final String PREF_QTEST_MAIN_PAGE = ComposerIntegrationQtestMessageConstants.PREF_QTEST_MAIN_PAGE;
+    public static final String PREF_TEST_CASE_REPO_PAGE = ComposerIntegrationQtestMessageConstants.PREF_TEST_CASE_REPO_PAGE;
+    public static final String PREF_TEST_SUITE_REPO_PAGE = ComposerIntegrationQtestMessageConstants.PREF_TEST_SUITE_REPO_PAGE;
 
     // QTestIntegrationPage
-    public static final String DIA_MSG_UNABLE_TO_SAVE_SETTING_PAGE = "Unable to save qTest's settings.";
-    public static final String DIA_TITLE_ENABLE_INTEGRATION = "Enable integration";
-    public static final String DIA_TITLE_CHECK_DUPLICATES_TEST_CASE = "Check duplicates before uploading test cases";
-    public static final String DIA_TITLE_AUTO_SUBMIT_TEST_RESULT = "Automatically submit test run result";
-    public static final String DIA_TITLE_SUBMIT_TEST_RESULT_TO_LATEST_VERSION = "Submit test run result to latest approved version";
-    public static final String DIA_TITLE_SEND_RESULT = "Send execution result if";
-    public static final String DIA_TITLE_SEND_ATTACHMENT = "Attachment included if";
-    public static final String DIA_TITLE_REPORT_FORMAT = "Report format";
-    public static final String DIA_TITLE_ASK_USE_SETUP = "For quickly setting, we already provide a setup wizard. Would "
-            + "you like to take a tour with us?";
-    public static final String DIA_INFO_QUICK_SETUP = "<a>Quick Setup...</a>";
-    public static final String DIA_TITLE_VERSION = "qTest Version";
-    public static final String DIA_MSG_GENERATE_TOKEN_SUCESSFULLY = "Generate token sucessfully";
+    public static final String DIA_MSG_UNABLE_TO_SAVE_SETTING_PAGE = ComposerIntegrationQtestMessageConstants.DIA_MSG_UNABLE_TO_SAVE_SETTING_PAGE;
+    public static final String DIA_TITLE_ENABLE_INTEGRATION = ComposerIntegrationQtestMessageConstants.DIA_TITLE_ENABLE_INTEGRATION;
+    public static final String DIA_TITLE_CHECK_DUPLICATES_TEST_CASE = ComposerIntegrationQtestMessageConstants.DIA_TITLE_CHECK_DUPLICATES_TEST_CASE;
+    public static final String DIA_TITLE_AUTO_SUBMIT_TEST_RESULT = ComposerIntegrationQtestMessageConstants.DIA_TITLE_AUTO_SUBMIT_TEST_RESULT;
+    public static final String DIA_TITLE_SUBMIT_TEST_RESULT_TO_LATEST_VERSION = ComposerIntegrationQtestMessageConstants.DIA_TITLE_SUBMIT_TEST_RESULT_TO_LATEST_VERSION;
+    public static final String DIA_TITLE_SEND_RESULT = ComposerIntegrationQtestMessageConstants.DIA_TITLE_SEND_RESULT;
+    public static final String DIA_TITLE_SEND_ATTACHMENT = ComposerIntegrationQtestMessageConstants.DIA_TITLE_SEND_ATTACHMENT;
+    public static final String DIA_TITLE_REPORT_FORMAT = ComposerIntegrationQtestMessageConstants.DIA_TITLE_REPORT_FORMAT;
+    public static final String DIA_TITLE_ASK_USE_SETUP = ComposerIntegrationQtestMessageConstants.DIA_TITLE_ASK_USE_SETUP;
+    public static final String DIA_INFO_QUICK_SETUP = ComposerIntegrationQtestMessageConstants.DIA_INFO_QUICK_SETUP;
+    public static final String DIA_TITLE_VERSION = ComposerIntegrationQtestMessageConstants.DIA_TITLE_VERSION;
+    public static final String DIA_MSG_GENERATE_TOKEN_SUCESSFULLY = ComposerIntegrationQtestMessageConstants.DIA_MSG_GENERATE_TOKEN_SUCESSFULLY;
 
     // TestCaseRepoPreferencePage
-    public static final String DIA_MSG_UNABLE_GET_PROJECT_INFO = "Unable to get qTest projects's information.";
-    public static final String DIA_TITLE_TEST_CASE_FOLDER = "Katalon Test Case's Folder";
-    public static final String DIA_MSG_UNABLE_MOFIDY_TEST_CASE_REPO = "Unable to modify Test Case Repository.";
-    public static final String DIA_MSG_UNABLE_REMOVE_TEST_CASE_REPO = "Unable to remove Test Case Repository.";
-    public static final String DIA_CONFIRM_DISINTEGRATE_TEST_CASE_FOLDER = "Are you sure you want to disintegrate all "
-            + "test cases in this folder with qTest?";
+    public static final String DIA_MSG_UNABLE_GET_PROJECT_INFO = ComposerIntegrationQtestMessageConstants.DIA_MSG_UNABLE_GET_PROJECT_INFO;
+    public static final String DIA_TITLE_TEST_CASE_FOLDER = ComposerIntegrationQtestMessageConstants.DIA_TITLE_TEST_CASE_FOLDER;
+    public static final String DIA_MSG_UNABLE_MOFIDY_TEST_CASE_REPO = ComposerIntegrationQtestMessageConstants.DIA_MSG_UNABLE_MOFIDY_TEST_CASE_REPO;
+    public static final String DIA_MSG_UNABLE_REMOVE_TEST_CASE_REPO = ComposerIntegrationQtestMessageConstants.DIA_MSG_UNABLE_REMOVE_TEST_CASE_REPO;
+    public static final String DIA_CONFIRM_DISINTEGRATE_TEST_CASE_FOLDER = ComposerIntegrationQtestMessageConstants.DIA_CONFIRM_DISINTEGRATE_TEST_CASE_FOLDER;
 
     // TestSuiteRepoPreferencePage
-    public static final String DIA_TITLE_TEST_SUITE_FOLDER = "Katalon Test Suite's Folder";
+    public static final String DIA_TITLE_TEST_SUITE_FOLDER = ComposerIntegrationQtestMessageConstants.DIA_TITLE_TEST_SUITE_FOLDER;
 
     // QTestIntegrationReportTestCaseView
-    public static final String VIEW_TITLE_TEST_LOG_ID = "Test Log ID";
-    public static final String VIEW_TITLE_TEST_RUN_ALIAS = "Test Run Alias";
-    public static final String VIEW_MSG_UNABLE_UPLOAD_TEST_RESULT = "Unable to upload test case's result.";
-    public static final String DIA_CONFIRM_DISINTEGRATE_TEST_LOGS = "Are you sure you want to disintegrate these test "
-            + "logs with qTest?";
+    public static final String VIEW_TITLE_TEST_LOG_ID = ComposerIntegrationQtestMessageConstants.VIEW_TITLE_TEST_LOG_ID;
+    public static final String VIEW_TITLE_TEST_RUN_ALIAS = ComposerIntegrationQtestMessageConstants.VIEW_TITLE_TEST_RUN_ALIAS;
+    public static final String VIEW_MSG_UNABLE_UPLOAD_TEST_RESULT = ComposerIntegrationQtestMessageConstants.VIEW_MSG_UNABLE_UPLOAD_TEST_RESULT;
+    public static final String DIA_CONFIRM_DISINTEGRATE_TEST_LOGS = ComposerIntegrationQtestMessageConstants.DIA_CONFIRM_DISINTEGRATE_TEST_LOGS;
 
     // QTestIntegrationTestCaseView
-    public static final String VIEW_TOOLTIP_UPLOAD_TEST_CASE = "Upload this test case to qTest";
-    public static final String VIEW_TOOLTIP_DISINTEGRATE_TEST_CASE = "Remove all information of this test case on qTest";
-    public static final String VIEW_TOOLTIP_NAVIGATE_TEST_CASE = "Navigate to the integrated test case page on qTest";
-    public static final String VIEW_TITLE_TEST_CASE_ID = "Test Case ID";
-    public static final String VIEW_CONFIRM_DISINTEGRATE_TEST_CASE = "Are you sure you want to disintegrate this test "
-            + "case with qTest?";
-    public static final String VIEW_MSG_UNABLE_DISINTEGRATE_TEST_CASE = "Unable to disintegrate this test case on qTest.";
-    public static final String VIEW_MSG_UNABLE_NAVIGATE_TEST_CASE = "Unable to open qTest navigated test case.";
-    public static final String VIEW_MSG_SAVE_BEFORE_UPLOADING = "Please save your test case before uploading.";
-    public static final String VIEW_MSG_TOKEN_REQUIRED = "QTest's token is required. Please enter a valid token on qTest "
-            + "setting page or\n you can generate a new one by clicking on generate button.";
-    public static final String VIEW_MSG_TEST_CASE_NOT_IN_REPO = "This test case isn't in any Test Case Repository. "
-            + "Please add a valid Test Case Repository in Test Case Repositories page.";
-    public static final String VIEW_MSG_UNABLE_UPLOAD_TEST_CASE = "Unable to upload test case to qTest.";
-    public static final String VIEW_MSG_UNABLE_UPLOAD_TEST_CASE_UNDER_ROOT_MODULE = "This test case cannot be uploaded "
-            + "to qTest's root module.";
+    public static final String VIEW_TOOLTIP_UPLOAD_TEST_CASE = ComposerIntegrationQtestMessageConstants.VIEW_TOOLTIP_UPLOAD_TEST_CASE;
+    public static final String VIEW_TOOLTIP_DISINTEGRATE_TEST_CASE = ComposerIntegrationQtestMessageConstants.VIEW_TOOLTIP_DISINTEGRATE_TEST_CASE;
+    public static final String VIEW_TOOLTIP_NAVIGATE_TEST_CASE = ComposerIntegrationQtestMessageConstants.VIEW_TOOLTIP_NAVIGATE_TEST_CASE;
+    public static final String VIEW_TITLE_TEST_CASE_ID = ComposerIntegrationQtestMessageConstants.VIEW_TITLE_TEST_CASE_ID;
+    public static final String VIEW_CONFIRM_DISINTEGRATE_TEST_CASE = ComposerIntegrationQtestMessageConstants.VIEW_CONFIRM_DISINTEGRATE_TEST_CASE;
+    public static final String VIEW_MSG_UNABLE_DISINTEGRATE_TEST_CASE = ComposerIntegrationQtestMessageConstants.VIEW_MSG_UNABLE_DISINTEGRATE_TEST_CASE;
+    public static final String VIEW_MSG_UNABLE_NAVIGATE_TEST_CASE = ComposerIntegrationQtestMessageConstants.VIEW_MSG_UNABLE_NAVIGATE_TEST_CASE;
+    public static final String VIEW_MSG_SAVE_BEFORE_UPLOADING = ComposerIntegrationQtestMessageConstants.VIEW_MSG_SAVE_BEFORE_UPLOADING;
+    public static final String VIEW_MSG_TOKEN_REQUIRED = ComposerIntegrationQtestMessageConstants.VIEW_MSG_TOKEN_REQUIRED;
+    public static final String VIEW_MSG_TEST_CASE_NOT_IN_REPO = ComposerIntegrationQtestMessageConstants.VIEW_MSG_TEST_CASE_NOT_IN_REPO;
+    public static final String VIEW_MSG_UNABLE_UPLOAD_TEST_CASE = ComposerIntegrationQtestMessageConstants.VIEW_MSG_UNABLE_UPLOAD_TEST_CASE;
+    public static final String VIEW_MSG_UNABLE_UPLOAD_TEST_CASE_UNDER_ROOT_MODULE = ComposerIntegrationQtestMessageConstants.VIEW_MSG_UNABLE_UPLOAD_TEST_CASE_UNDER_ROOT_MODULE;
 
     // QTestIntegrationTestSuiteView
-    public static final String VIEW_TOOLTIP_UPLOAD_TEST_SUITE = "Upload this test suite to qTest";
-    public static final String VIEW_TOOLTIP_DISINTEGRATE_TEST_SUITE = "Remove all information of this test suite on qTest server.";
-    public static final String VIEW_TOOLTIP_NEW_TEST_SUITE_PARENT = "To upload this test suite to qTest, you need to "
-            + "choose a parent (qTest release, cycle,...) for the integration.";
-    public static final String VIEW_TOOLTIP_NAVIGATE_TEST_SUITE = "Navigate to the integrated test suite page on qTest";
-    public static final String VIEW_TOOLTIP_SET_DEFAULT_TEST_SUITE = "Use the integrated test suite in this parent to "
-            + "upload result after the execution completed.";
-    public static final String VIEW_TOOLTIP_REMOVE_TEST_SUITE_PARENT = "Remove selected parent from the list.";
+    public static final String VIEW_TOOLTIP_UPLOAD_TEST_SUITE = ComposerIntegrationQtestMessageConstants.VIEW_TOOLTIP_UPLOAD_TEST_SUITE;
+    public static final String VIEW_TOOLTIP_DISINTEGRATE_TEST_SUITE = ComposerIntegrationQtestMessageConstants.VIEW_TOOLTIP_DISINTEGRATE_TEST_SUITE;
+    public static final String VIEW_TOOLTIP_NEW_TEST_SUITE_PARENT = ComposerIntegrationQtestMessageConstants.VIEW_TOOLTIP_NEW_TEST_SUITE_PARENT;
+    public static final String VIEW_TOOLTIP_NAVIGATE_TEST_SUITE = ComposerIntegrationQtestMessageConstants.VIEW_TOOLTIP_NAVIGATE_TEST_SUITE;
+    public static final String VIEW_TOOLTIP_SET_DEFAULT_TEST_SUITE = ComposerIntegrationQtestMessageConstants.VIEW_TOOLTIP_SET_DEFAULT_TEST_SUITE;
+    public static final String VIEW_TOOLTIP_REMOVE_TEST_SUITE_PARENT = ComposerIntegrationQtestMessageConstants.VIEW_TOOLTIP_REMOVE_TEST_SUITE_PARENT;
 
-    public static final String VIEW_TITLE_NEW_TEST_SUITE_PARENT = "New parent";
-    public static final String VIEW_TITLE_SET_DEFAULT_TEST_SUITE = "Set as default";
-    public static final String VIEW_TITLE_REMOVE_TEST_SUITE_PARENT = "Remove parent";
-    public static final String VIEW_TITLE_TEST_SUITE_ID = "Test Suite ID";
-    public static final String VIEW_TITLE_INTEGRATION_INFORMATION = "Integration Information";
-    public static final String VIEW_TITLE_LIST_TEST_SUITE_PARENT = "List of test suite's parent";
+    public static final String VIEW_TITLE_NEW_TEST_SUITE_PARENT = ComposerIntegrationQtestMessageConstants.VIEW_TITLE_NEW_TEST_SUITE_PARENT;
+    public static final String VIEW_TITLE_SET_DEFAULT_TEST_SUITE = ComposerIntegrationQtestMessageConstants.VIEW_TITLE_SET_DEFAULT_TEST_SUITE;
+    public static final String VIEW_TITLE_REMOVE_TEST_SUITE_PARENT = ComposerIntegrationQtestMessageConstants.VIEW_TITLE_REMOVE_TEST_SUITE_PARENT;
+    public static final String VIEW_TITLE_TEST_SUITE_ID = ComposerIntegrationQtestMessageConstants.VIEW_TITLE_TEST_SUITE_ID;
+    public static final String VIEW_TITLE_INTEGRATION_INFORMATION = ComposerIntegrationQtestMessageConstants.VIEW_TITLE_INTEGRATION_INFORMATION;
+    public static final String VIEW_TITLE_LIST_TEST_SUITE_PARENT = ComposerIntegrationQtestMessageConstants.VIEW_TITLE_LIST_TEST_SUITE_PARENT;
 
-    public static final String VIEW_MSG_TEST_SUITE_NOT_IN_REPO = "This test suite isn't defined in a valid \"Test Suite "
-            + "Repository\". Do you want to add this?";
-    public static final String VIEW_CONFIRM_DISINTEGRATE_TEST_SUITE = "Are you sure you want to disintegrate this/these test "
-            + "suite(s) with qTest?";
-    public static final String VIEW_MSG_UNABLE_DISINTEGRATE_TEST_SUITE = "Unable to disintegrate this test suite on "
-            + "qTest.";
-    public static final String VIEW_MSG_ENABLE_INTEGRATION = "Please enable qTest integration in Project Setting page.";
-    public static final String VIEW_MSG_UNABLE_NAVIGATE_TEST_SUITE = "Unable to open qTest navigated test suite.";
-    public static final String VIEW_MSG_UNABLE_UPLOAD_TEST_SUITE = "Unable to upload test suite.";
-    public static final String VIEW_MSG_INVALID_AUTHENTICATION = "Invalid authentication";
+    public static final String VIEW_MSG_TEST_SUITE_NOT_IN_REPO = ComposerIntegrationQtestMessageConstants.VIEW_MSG_TEST_SUITE_NOT_IN_REPO;
+    public static final String VIEW_CONFIRM_DISINTEGRATE_TEST_SUITE = ComposerIntegrationQtestMessageConstants.VIEW_CONFIRM_DISINTEGRATE_TEST_SUITE;
+    public static final String VIEW_MSG_UNABLE_DISINTEGRATE_TEST_SUITE = ComposerIntegrationQtestMessageConstants.VIEW_MSG_UNABLE_DISINTEGRATE_TEST_SUITE;
+    public static final String VIEW_MSG_ENABLE_INTEGRATION = ComposerIntegrationQtestMessageConstants.VIEW_MSG_ENABLE_INTEGRATION;
+    public static final String VIEW_MSG_UNABLE_NAVIGATE_TEST_SUITE = ComposerIntegrationQtestMessageConstants.VIEW_MSG_UNABLE_NAVIGATE_TEST_SUITE;
+    public static final String VIEW_MSG_UNABLE_UPLOAD_TEST_SUITE = ComposerIntegrationQtestMessageConstants.VIEW_MSG_UNABLE_UPLOAD_TEST_SUITE;
+    public static final String VIEW_MSG_INVALID_AUTHENTICATION = ComposerIntegrationQtestMessageConstants.VIEW_MSG_INVALID_AUTHENTICATION;
 
     // QTestDisintegrateTestCaseHandler
-    public static final String DIA_CONFIRM_DISINTEGRATE_TEST_CASE = "Are you sure you want to disintegrate this test "
-            + "case with qTest?";
+    public static final String DIA_CONFIRM_DISINTEGRATE_TEST_CASE = ComposerIntegrationQtestMessageConstants.DIA_CONFIRM_DISINTEGRATE_TEST_CASE;
     /******************************************************************************************************************/
 
     /*********************************************** Wizard ***********************************************************/
 
     // SetupWizardDialog
-    public static final String WZ_SETUP_TITLE = "qTest Integration Setup Wizard";
-    public static final String WZ_SETUP_STEP_TITLE = "Step {0} of {1}: {2}";
-    public static final String WZ_SETUP_BTN_BACK = "< Back";
-    public static final String WZ_SETUP_BTN_NEXT = "Next >";
+    public static final String WZ_SETUP_TITLE = ComposerIntegrationQtestMessageConstants.WZ_SETUP_TITLE;
+    public static final String WZ_SETUP_STEP_TITLE = ComposerIntegrationQtestMessageConstants.WZ_SETUP_STEP_TITLE;
+    public static final String WZ_SETUP_BTN_BACK = ComposerIntegrationQtestMessageConstants.WZ_SETUP_BTN_BACK;
+    public static final String WZ_SETUP_BTN_NEXT = ComposerIntegrationQtestMessageConstants.WZ_SETUP_BTN_NEXT;
 
     // AuthenticationWizardPage
-    public static final String WZ_P_AUTHENTICATION_TITLE = "Authentication";
-    public static final String WZ_P_AUTHENTICATION_INFO = "Please enter your qTest account and qTest's server URL.";
-    public static final String WZ_P_AUTHENTICATION_SHOW_PASSWORD = "Show password";
-    public static final String WZ_P_AUTHENTICATION_CONNECT_ACCOUNT = "Connect account";
-    public static final String WZ_P_AUTHENTICATION_MGS_CONNECT_SUCCESSFUL = "Successfully connected to your qTest account.";
-    public static final String WZ_P_AUTHENTICATION_MGS_CONNECT_FAILED = "Can't connect to your qTest project. Please "
-            + "check your credentials again.";
+    public static final String WZ_P_AUTHENTICATION_TITLE = ComposerIntegrationQtestMessageConstants.WZ_P_AUTHENTICATION_TITLE;
+    public static final String WZ_P_AUTHENTICATION_INFO = ComposerIntegrationQtestMessageConstants.WZ_P_AUTHENTICATION_INFO;
+    public static final String WZ_P_AUTHENTICATION_SHOW_PASSWORD = ComposerIntegrationQtestMessageConstants.WZ_P_AUTHENTICATION_SHOW_PASSWORD;
+    public static final String WZ_P_AUTHENTICATION_CONNECT_ACCOUNT = ComposerIntegrationQtestMessageConstants.WZ_P_AUTHENTICATION_CONNECT_ACCOUNT;
+    public static final String WZ_P_AUTHENTICATION_MGS_CONNECT_SUCCESSFUL = ComposerIntegrationQtestMessageConstants.WZ_P_AUTHENTICATION_MGS_CONNECT_SUCCESSFUL;
+    public static final String WZ_P_AUTHENTICATION_MGS_CONNECT_FAILED = ComposerIntegrationQtestMessageConstants.WZ_P_AUTHENTICATION_MGS_CONNECT_FAILED; 
 
     // ProjectChoosingWizardPage
-    public static final String WZ_P_PROJECT_TITLE = "Default qTest Project";
-    public static final String WZ_P_PROJECT_INFO = "Please choose your working qTest project.";
-    public static final String WZ_P_PROJECT_LIST = "List of qTest Projects";
-    public static final String WZ_P_PROJECT_MSG_GET_PROJECTS_FAILED = "Unable to get qTest project(s) from your qTest account.";
+    public static final String WZ_P_PROJECT_TITLE = ComposerIntegrationQtestMessageConstants.WZ_P_PROJECT_TITLE;
+    public static final String WZ_P_PROJECT_INFO = ComposerIntegrationQtestMessageConstants.WZ_P_PROJECT_INFO;
+    public static final String WZ_P_PROJECT_LIST = ComposerIntegrationQtestMessageConstants.WZ_P_PROJECT_LIST;
+    public static final String WZ_P_PROJECT_MSG_GET_PROJECTS_FAILED = ComposerIntegrationQtestMessageConstants.WZ_P_PROJECT_MSG_GET_PROJECTS_FAILED;
 
     // QTestModuleSelectionWizardPage
-    public static final String WZ_P_MODULE_TITLE = "qTest's Module Registration";
-    public static final String WZ_P_MODULE_MSG_GET_MODULES_FAILED = "Unable to update qTest Module(s) from project {0}.";
+    public static final String WZ_P_MODULE_TITLE = ComposerIntegrationQtestMessageConstants.WZ_P_MODULE_TITLE;
+    public static final String WZ_P_MODULE_MSG_GET_MODULES_FAILED = ComposerIntegrationQtestMessageConstants.WZ_P_MODULE_MSG_GET_MODULES_FAILED;
 
     // TestCaseFolderSelectionWizardPage
-    public static final String WZ_P_TEST_CASE_TITLE = "Test Case Folder Registration";
-    public static final String WZ_P_TEST_CASE_INFO = "Please choose a test case's folder you want to integrate with module"
-            + " '''{0}'''.";
+    public static final String WZ_P_TEST_CASE_TITLE = ComposerIntegrationQtestMessageConstants.WZ_P_TEST_CASE_TITLE;
+    public static final String WZ_P_TEST_CASE_INFO = ComposerIntegrationQtestMessageConstants.WZ_P_TEST_CASE_INFO; 
 
     // TestCaseFolderSelectionWizardPage
-    public static final String WZ_P_TEST_SUITE_TITLE = "Test Suite Folder Registration";
-    public static final String WZ_P_TEST_SUITE_INFO = "Please choose test suite's folder you want to integrate with qTest. "
-            + "Only folders and test suites under your selection can be integrated with qTest.";
+    public static final String WZ_P_TEST_SUITE_TITLE = ComposerIntegrationQtestMessageConstants.WZ_P_TEST_SUITE_TITLE;
+    public static final String WZ_P_TEST_SUITE_INFO = ComposerIntegrationQtestMessageConstants.WZ_P_TEST_SUITE_INFO; 
 
     // OptionalSettingWizardPage
-    public static final String WZ_P_OPTIONAL_TITLE = "Optional Settings";
-    public static final String WZ_P_OPTIONAL_INFO = "Select your desired settings:";
+    public static final String WZ_P_OPTIONAL_TITLE = ComposerIntegrationQtestMessageConstants.WZ_P_OPTIONAL_TITLE;
+    public static final String WZ_P_OPTIONAL_INFO = ComposerIntegrationQtestMessageConstants.WZ_P_OPTIONAL_INFO;
 
     // FinishPage
-    public static final String WZ_P_FINISH_TITLE = "Finish Up";
-    public static final String WZ_P_FINISH_INFO = "Congratulations! You've finished your integration setup with qTest.";
+    public static final String WZ_P_FINISH_TITLE = ComposerIntegrationQtestMessageConstants.WZ_P_FINISH_TITLE;
+    public static final String WZ_P_FINISH_INFO = ComposerIntegrationQtestMessageConstants.WZ_P_FINISH_INFO;
     /******************************************************************************************************************/
 
     /*********************************************** Handler **********************************************************/
     // ReportHandler
-    public static final String HDL_LABEL_VALIDATING_REPORT = "{0}\tValidating...({1}%)";
+    public static final String HDL_LABEL_VALIDATING_REPORT = ComposerIntegrationQtestMessageConstants.HDL_LABEL_VALIDATING_REPORT;
 
     // QTestSettingsHandler
-    public static final String HDL_TITLE_PROJECT_SETTINGS = "Project Settings";
+    public static final String HDL_TITLE_PROJECT_SETTINGS = ComposerIntegrationQtestMessageConstants.HDL_TITLE_PROJECT_SETTINGS;
     /******************************************************************************************************************/
 
     /************************************************ Report **********************************************************/
     // QTestIntegrationReporter
-    public static final String REPORT_MSG_UPLOAD_SUCCESFULLY = "Test results are uploaded to qTest:{0} - {1} successfully.";
+    public static final String REPORT_MSG_UPLOAD_SUCCESFULLY = ComposerIntegrationQtestMessageConstants.REPORT_MSG_UPLOAD_SUCCESFULLY;
     /******************************************************************************************************************/
 }

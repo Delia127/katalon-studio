@@ -218,4 +218,41 @@ public class ComboFieldEditor extends FieldEditor {
         super.setEnabled(enabled, parent);
         getComboBoxControl(parent).setEnabled(enabled);
     }
+    
+    public void changeNamesAndValues(String[][] namesAndValues) {
+        if (namesAndValues == null) {
+            return;
+        }
+        String selectedValue = null;
+        if (fEntryNamesAndValues.length > 0 && fCombo.getSelectionIndex() > -1) {
+            selectedValue = fEntryNamesAndValues[fCombo.getSelectionIndex()][1];
+        }
+        fEntryNamesAndValues = namesAndValues;
+        fCombo.removeAll();
+        int selectedIndex = namesAndValues.length == 0 ? -1 : 0;
+        for (int i = 0; i < namesAndValues.length; i++) {
+            String value = namesAndValues[i][0];
+            if (value.equals(selectedValue)) {
+                selectedIndex = i;
+            }
+            fCombo.add(value, i);
+        }
+        if (selectedIndex == -1) {
+            fValue = null;
+        } else {
+            fCombo.select(selectedIndex);
+            fValue = namesAndValues[selectedIndex][0];
+        }
+    }
+    
+    public boolean isNamesAndValuesEmpty() {
+        return fEntryNamesAndValues == null || fEntryNamesAndValues.length == 0;
+    }
+    
+    public void setText(String text) {
+        if (fCombo == null) {
+            return;
+        }
+        fCombo.setText(text);
+    }
 }

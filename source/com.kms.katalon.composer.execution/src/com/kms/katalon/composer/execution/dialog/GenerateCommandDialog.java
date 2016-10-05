@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -87,7 +88,9 @@ public class GenerateCommandDialog extends AbstractDialog {
         CONSOLE_COMMAND, PROPERTIES_FILE
     };
 
-    private static final String KATALON_EXECUTABLE = "katalon";
+    private static final String KATALON_EXECUTABLE_WIN32 = "katalon";
+
+    private static final String KATALON_EXECUTABLE_MACOS = "open katalon.app --args";
 
     private static final int GENERATE_PROPERTY_ID = 22;
 
@@ -142,6 +145,8 @@ public class GenerateCommandDialog extends AbstractDialog {
     private ProjectEntity project;
 
     private String defaultOutputReportLocation;
+
+    private String[] mobileDevices;
 
     private static final String ZERO = "0";
 
@@ -409,6 +414,9 @@ public class GenerateCommandDialog extends AbstractDialog {
     protected void setInput() {
         List<String> browsers = new ArrayList<>(Arrays.asList(WebUIDriverType.stringValues()));
         browsers.add(BROWSER_TYPE_CUSTOM);
+        browsers.remove(WebUIDriverType.REMOTE_CHROME_DRIVER.toString());
+        browsers.remove(WebUIDriverType.REMOTE_FIREFOX_DRIVER.toString());
+        browsers.remove(WebUIDriverType.KOBITON_WEB_DRIVER.toString());
         comboBrowser.setItems(browsers.toArray(new String[0]));
 
         txtRemoteWebDriverURL.setEnabled(false);
@@ -417,7 +425,10 @@ public class GenerateCommandDialog extends AbstractDialog {
         comboRemoteWebDriverType.select(0);
 
         comboMobileDevice.setEnabled(false);
-        comboMobileDevice.setItems(getMobileDevices());
+        if (mobileDevices == null) {
+            mobileDevices = new String[0];
+        }
+        comboMobileDevice.setItems(mobileDevices);
 
         comboCustomExecution.setEnabled(false);
         comboCustomExecution.setItems(RunConfigurationCollector.getInstance().getAllCustomRunConfigurationIds());
@@ -751,7 +762,18 @@ public class GenerateCommandDialog extends AbstractDialog {
         validateUserInput();
 
         Map<String, String> consoleAgrsMap = getUserConsoleAgrsMap(GenerateCommandMode.CONSOLE_COMMAND);
-        StringBuilder commandBuilder = new StringBuilder(KATALON_EXECUTABLE);
+        StringBuilder commandBuilder = new StringBuilder();
+
+        switch (Platform.getOS()) {
+            case Platform.OS_MACOSX:
+                commandBuilder.append(KATALON_EXECUTABLE_MACOS);
+                break;
+
+            default:
+                commandBuilder.append(KATALON_EXECUTABLE_WIN32);
+                break;
+        }
+
         for (String key : consoleAgrsMap.keySet()) {
             commandBuilder.append(" ");
             commandBuilder.append(wrapArgName(key));
@@ -950,6 +972,10 @@ public class GenerateCommandDialog extends AbstractDialog {
             }
             return command;
         }
+    }
+
+    public void initListMobileDevices() {
+        mobileDevices = getMobileDevices();
     }
 
 }

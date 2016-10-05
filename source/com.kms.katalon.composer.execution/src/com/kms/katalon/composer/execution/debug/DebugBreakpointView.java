@@ -35,7 +35,6 @@ import org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.eclipse.ui.texteditor.ITextEditor;
 
-import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.trace.LogExceptionNavigator;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
@@ -43,6 +42,14 @@ import com.kms.katalon.execution.logging.LogExceptionFilter;
 
 @SuppressWarnings("restriction")
 public class DebugBreakpointView extends JDIModelPresentation implements IDebugEditorPresentation {
+    private static final String DBG_STRING_TYPE_NAME = "org.eclipse.jdt.debug.core.typeName";
+
+    private static final String DBG_STRING_LINE_NUMBER = "lineNumber";
+
+    public static final String DBG_COMMAND_SUSPEND = "org.eclipse.debug.ui.commands.Suspend";
+
+    public static final String DBG_COMMAND_RESUME = "org.eclipse.debug.ui.commands.Resume";
+
     private IInstructionPointerPresentation presentation = ((IInstructionPointerPresentation) DebugUITools.newDebugModelPresentation());
 
     @Override
@@ -66,11 +73,11 @@ public class DebugBreakpointView extends JDIModelPresentation implements IDebugE
                 IMarker marker = breakpoint.getMarker();
 
                 Map<String, Object> attributes = marker.getAttributes();
-                String className = (String) attributes.get(StringConstants.DBG_STRING_TYPE_NAME);
+                String className = (String) attributes.get(DBG_STRING_TYPE_NAME);
                 if (LogExceptionFilter.isTestCaseScript(className)) {
                     AbstractTextEditor editor = getTestCaseEditorByScriptName(className);
                     if (editor != null) {
-                        goToLine(editor, (int) attributes.get(StringConstants.DBG_STRING_LINE_NUMBER));
+                        goToLine(editor, (int) attributes.get(DBG_STRING_LINE_NUMBER));
                     }
                     // return null because Eclipse always opens default editor.
                     return null;
@@ -121,14 +128,14 @@ public class DebugBreakpointView extends JDIModelPresentation implements IDebugE
         IMarker marker = element.getMarker();
 
         Map<String, Object> attributes = marker.getAttributes();
-        String className = (String) attributes.get(StringConstants.DBG_STRING_TYPE_NAME);
+        String className = (String) attributes.get(DBG_STRING_TYPE_NAME);
         String testCaseId = getTestCaseIdByClassName(className);
         if (!testCaseId.isEmpty()) {
             stringBuilder.append(testCaseId);
         } else {
             stringBuilder.append(className);
         }
-        int lineNumber = (int) attributes.get(StringConstants.DBG_STRING_LINE_NUMBER);
+        int lineNumber = (int) attributes.get(DBG_STRING_LINE_NUMBER);
         stringBuilder.append(" [line:").append(Integer.toString(lineNumber)).append("]");
         return stringBuilder.toString();
     }

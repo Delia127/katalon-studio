@@ -3,10 +3,13 @@ package com.kms.katalon.composer.components.impl.dialogs;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -15,6 +18,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.controller.EntityNameController;
 import com.kms.katalon.dal.exception.InvalidNameException;
@@ -37,13 +41,23 @@ public class AbstractEntityDialog extends TitleAreaDialog {
     /** The valid message types are one of NONE, INFORMATION,WARNING, or ERROR */
     private int msgType = IMessageProvider.INFORMATION;
 
-    private Text txtName;
+    protected Text txtName;
 
     protected Composite container;
 
     protected FolderEntity parentFolder;
 
     private boolean isFileEntity = true;
+
+    private Composite wholeArea;
+
+    private Label messageImageLabel;
+
+    private Text messageLabel;
+
+    private Point imageLocation;
+
+    private Point textLocation;
 
     public AbstractEntityDialog(Shell parentShell, FolderEntity parentFolder) {
         super(parentShell);
@@ -54,6 +68,20 @@ public class AbstractEntityDialog extends TitleAreaDialog {
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
         newShell.setText(getWindowTitle());
+    }
+
+    @Override
+    protected Control createContents(Composite parent) {
+        wholeArea = (Composite) super.createContents(parent);
+        Control[] controls = wholeArea.getChildren();
+        for (int i = 0; i < controls.length; ++i) {
+            if (controls[i] instanceof Text && i != 0 && (controls[i - 1] instanceof Label)) {
+                messageLabel = (Text) controls[i];
+                messageImageLabel = (Label) controls[i - 1];
+                break;
+            }
+        }
+        return wholeArea;
     }
 
     @Override
@@ -150,7 +178,8 @@ public class AbstractEntityDialog extends TitleAreaDialog {
     protected void createButtonsForButtonBar(Composite parent) {
         super.createButtonsForButtonBar(parent);
         updateStatus();
-        setErrorMessage(null); // Should not show any error message on dialog initialization
+        setErrorMessage(null); // Should not show any error message on dialog
+                               // initialization
     }
 
     @Override
@@ -171,10 +200,13 @@ public class AbstractEntityDialog extends TitleAreaDialog {
     }
 
     /**
-     * Creates a spacer control with the given span. The composite is assumed to have <code>GridLayout</code> as layout.
+     * Creates a spacer control with the given span. The composite is assumed to
+     * have <code>GridLayout</code> as layout.
      * 
-     * @param parent The parent composite
-     * @param span the given span
+     * @param parent
+     * The parent composite
+     * @param span
+     * the given span
      * @return the spacer control
      */
     public static Control createEmptySpace(Composite parent, int span) {
@@ -248,6 +280,81 @@ public class AbstractEntityDialog extends TitleAreaDialog {
 
     public void setFileEntity(boolean isFileEntity) {
         this.isFileEntity = isFileEntity;
+    }
+
+    @Override
+    public void setErrorMessage(String newErrorMessage) {
+        super.setErrorMessage(newErrorMessage);
+        if (wholeArea == null) {
+            return;
+        }
+        customMessageImage();
+    }
+
+    @Override
+    public void setMessage(String newMessage, int newType) {
+        super.setMessage(newMessage, newType);
+        if (wholeArea == null) {
+            return;
+        }
+        customMessageImage();
+    }
+
+    private void customMessageImage() {
+        Image newImage = getImage(messageImageLabel);
+        Point pt = messageImageLabel.getLocation();
+        messageImageLabel.setBounds(newImage.getBounds());
+        messageImageLabel.setLocation(pt);
+        messageImageLabel.setImage(newImage);
+        if (!(messageImageLabel.getVisible())) {
+            messageImageLabel.setVisible(true);
+        }
+        setTextCenterVerticalWithImage();
+    }
+
+    private Image getImage(Label messageLabel) {
+        Image oldImage = messageLabel.getImage();
+        if (oldImage == null) {
+            return null;
+        }
+        if (oldImage.equals(JFaceResources.getImage(DLG_IMG_MESSAGE_INFO))) {
+            return ImageConstants.IMG_20_INFO_MSG;
+        }
+        if (oldImage.equals(JFaceResources.getImage(DLG_IMG_MESSAGE_ERROR))) {
+            return ImageConstants.IMG_20_ERROR_MSG;
+        }
+        if (oldImage.equals(JFaceResources.getImage(DLG_IMG_MESSAGE_WARNING))) {
+            return ImageConstants.IMG_20_WARNING_MSG;
+        }
+        return oldImage;
+    }
+
+    private void setTextCenterVerticalWithImage() {
+        if (imageLocation == null) {
+            imageLocation = messageImageLabel.getLocation();
+        }
+        if (textLocation == null) {
+            textLocation = messageLabel.getLocation();
+        }
+        Point messageSize = messageLabel.computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
+        Rectangle imageSize = messageImageLabel.getBounds();
+        boolean isText = true;
+        int heigth = messageLabel.getLineCount() * messageLabel.getLineHeight();
+        if (imageSize.height >= heigth) {
+            isText = false;
+            heigth = imageSize.height;
+        }
+        int gap = heigth / 2;
+        int messageImagePosX = imageLocation.x + 5;
+        int messagePosY = textLocation.y;
+        int messageImagePosY = messagePosY + gap - (imageSize.height / 2);
+        int messagePosX = messageImagePosX + 5 + imageSize.width;
+        if (!isText) {
+            messageImagePosY = imageLocation.y;
+            messagePosY = messageImagePosY + gap - (messageSize.y / 2);
+        }
+        messageImageLabel.setLocation(messageImagePosX, messageImagePosY);
+        messageLabel.setLocation(messagePosX, messagePosY);
     }
 
 }

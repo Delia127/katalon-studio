@@ -22,7 +22,8 @@ import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 
 @SuppressWarnings("restriction")
 public class MobileObjectSpyMenuContribution {
-
+    private static final String MENU_ID_ADD_TO_MOBILE_OBJECT_SPY = "com.kms.katalon.composer.mobile.objectspy.command.mobile.addToMobileObjectSpy";
+    
     @Inject
     private ESelectionService selectionService;
 
@@ -62,7 +63,7 @@ public class MobileObjectSpyMenuContribution {
     private MHandledMenuItem createAddToMobileObjectSpyMenuItem() {
         try {
             return MenuFactory.createPopupMenuItem(
-                    commandService.createCommand(StringConstants.MENU_ID_ADD_TO_MOBILE_OBJECT_SPY, null),
+                    commandService.createCommand(MENU_ID_ADD_TO_MOBILE_OBJECT_SPY, null),
                     StringConstants.MENU_ADD_TO_MOBILE_OBJECT_SPY, ConstantsHelper.getApplicationURI());
         } catch (Exception e) {
             return null;

@@ -36,8 +36,8 @@ public class FunctionsIntroductionDialogSizeCalculator {
             return null;
         }
         Rectangle monitorClientArea = currentMonitor.getClientArea();
-        return new Point(Math.min(expectedSize.x, (int) (monitorClientArea.width * ratio)), 
-                Math.min(expectedSize.y, (int) (monitorClientArea.height * ratio)));
+        return new Point(Math.min(expectedSize.x, (int) (monitorClientArea.width * ratio)), Math.min(expectedSize.y,
+                (int) (monitorClientArea.height * ratio)));
     }
 
     public void computeDialogSize(Composite fixedComposite) {
