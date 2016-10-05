@@ -21,7 +21,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String ERROR_TITLE = ERROR;
 
     public static final String HAND_ERROR_MSG_UNABLE_TO_CREATE_NEW_PROJ = ComposerProjectMessageConstants.HAND_ERROR_MSG_UNABLE_TO_CREATE_NEW_PROJ;
-    
+
     public static final String HAND_ERROR_MSG_NEW_PROJ_LOCATION_INVALID = ComposerProjectMessageConstants.HAND_ERROR_MSG_NEW_PROJ_LOCATION_INVALID;
 
     // OpenProjectHandler
@@ -45,6 +45,14 @@ public class StringConstants extends GlobalStringConstants {
     // SettingHandler
     public static final String HAND_PROJ_SETTING = ComposerProjectMessageConstants.HAND_PROJ_SETTING;
 
+    public static final String PROJECT_EXECUTION_SETTINGS_DEFAULT_MOBILE_IOS_PAGE_ID = "com.kms.katalon.composer.execution.settings.default.2.2";
+
+    public static final String PROJECT_EXECUTION_SETTINGS_DEFAULT_MOBILE_PAGE_ID = "com.kms.katalon.composer.execution.settings.default.2";
+
+    public static final String PROJECT_EXECUTION_SETTINGS_DEFAULT_PAGE_ID = "com.kms.katalon.composer.execution.settings.default";
+
+    public static final String PROJECT_EXECUTION_SETTINGS_PAGE_ID = "com.kms.katalon.composer.execution.settings";
+
     // UpdateProjectHandler
     public static final String HAND_ERROR_MSG_UNABLE_TO_UPDATE_PROJ = ComposerProjectMessageConstants.HAND_ERROR_MSG_UNABLE_TO_UPDATE_PROJ;
 
@@ -64,17 +72,17 @@ public class StringConstants extends GlobalStringConstants {
     public static final String VIEW_BTN_BROWSE = BROWSE;
 
     public static final String VIEW_ERROR_MSG_PROJ_LOC_CANNOT_BE_BLANK = ComposerProjectMessageConstants.VIEW_ERROR_MSG_PROJ_LOC_CANNOT_BE_BLANK;
-    
+
     public static final String VIEW_ERROR_MSG_PROJ_LOC_INVALID = ComposerProjectMessageConstants.VIEW_ERROR_MSG_PROJ_LOC_INVALID;
 
     public static final String VIEW_ERROR_MSG_PROJ_NAME_CANNOT_BE_BLANK = ComposerProjectMessageConstants.VIEW_ERROR_MSG_PROJ_NAME_CANNOT_BE_BLANK;
 
     public static final String VIEW_ERROR_MSG_PROJ_NAME_EXISTED_IN_LOC = ComposerProjectMessageConstants.VIEW_ERROR_MSG_PROJ_NAME_EXISTED_IN_LOC;
-    
+
     public static final String VIEW_ERROR_MSG_PROJ_LOC_NOT_READABLE = ComposerProjectMessageConstants.VIEW_ERROR_MSG_PROJ_LOC_NOT_READABLE;
-    
+
     public static final String VIEW_ERROR_MSG_PROJ_LOC_NOT_WRITEABLE = ComposerProjectMessageConstants.VIEW_ERROR_MSG_PROJ_LOC_NOT_WRITEABLE;
-    
+
     public static final String VIEW_NEW_EMPTY_PROJECT_PAGE_NAME = ComposerProjectMessageConstants.VIEW_NEW_EMPTY_PROJECT_PAGE_NAME;
 
     public static final String VIEW_TESTING_TYPES_PROJECT_PAGE_NAME = ComposerProjectMessageConstants.VIEW_TESTING_TYPES_PROJECT_PAGE_NAME;
@@ -86,6 +94,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String VIEW_LBL_MOBILE_TESTING = ComposerProjectMessageConstants.VIEW_LBL_MOBILE_TESTING;
 
     public static final String VIEW_LBL_API_TESTING = ComposerProjectMessageConstants.VIEW_LBL_API_TESTING;
-    
+
     public static final String VIEW_LBL_NEW_PROJECT_WIZARD_TIP = ComposerProjectMessageConstants.VIEW_LBL_NEW_PROJECT_WIZARD_TIP;
+
 }
