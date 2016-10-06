@@ -190,7 +190,7 @@ public class KatalonAboutDialog extends TrayDialog {
         VersionInfo lastestVersion = VersionUtil.getLatestVersion();
         String versionStatus = MessageConstants.VERSION_IS_UP_TODATE;
         if (!VersionUtil.getCurrentVersion().equals(lastestVersion)) {
-            versionStatus = MessageFormat.format(MessageConstants.NEW_VERSION_AVAIABLE, lastestVersion.version);
+            versionStatus = MessageFormat.format(MessageConstants.NEW_VERSION_AVAIABLE, lastestVersion.getVersion());
         }
         StringBuilder versionUpdateInfo = new StringBuilder(aboutText);
         versionUpdateInfo.delete(start, start + VERSION_UPDATE.length());

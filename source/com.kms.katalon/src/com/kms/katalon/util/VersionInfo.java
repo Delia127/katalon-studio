@@ -2,8 +2,10 @@ package com.kms.katalon.util;
 
 
 public class VersionInfo {
-    public String version;
-    public int buildNumber;
+    private String version;
+    private int buildNumber;
+    
+    public static final String MINIMUM_VERSION = "3.0.5";
     
     @Override
     public boolean equals(Object obj) {
@@ -36,4 +38,22 @@ public class VersionInfo {
         result = prime * result + ((version == null) ? 0 : version.hashCode());
         return result;
     }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public int getBuildNumber() {
+        return buildNumber;
+    }
+
+    public void setBuildNumber(int buildNumber) {
+        this.buildNumber = buildNumber;
+    }
+    
+    
 }

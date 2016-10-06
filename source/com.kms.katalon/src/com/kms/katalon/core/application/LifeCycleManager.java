@@ -50,6 +50,7 @@ import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.usagetracking.UsageInfoCollector;
 import com.kms.katalon.util.ActivationInfoCollector;
+import com.kms.katalon.util.VersionInfo;
 import com.kms.katalon.util.VersionUtil;
 
 @SuppressWarnings("restriction")
@@ -194,6 +195,9 @@ public class LifeCycleManager {
             public void handleEvent(Event event) {
                 try {
                     startUpGUIMode();
+                    if (isInternalBuild()) {
+                        return;
+                    }
                     if (!(ActivationInfoCollector.checkActivation())) {
                         eventBroker.send(EventConstants.PROJECT_CLOSE, null);
                         PlatformUI.getWorkbench().close();
@@ -207,6 +211,11 @@ public class LifeCycleManager {
                 }
             }
         });
+    }
+
+    private boolean isInternalBuild() {
+        VersionInfo version = VersionUtil.getCurrentVersion();
+        return VersionInfo.MINIMUM_VERSION.equals(version.getVersion()) || version.getBuildNumber() == 0;
     }
 
     private void alertNewVersion() {
@@ -236,8 +245,6 @@ public class LifeCycleManager {
                     }
 
                 });
-
-
             }
         });
     }
