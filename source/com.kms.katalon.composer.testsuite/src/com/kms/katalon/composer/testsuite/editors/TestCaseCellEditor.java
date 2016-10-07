@@ -1,13 +1,12 @@
 package com.kms.katalon.composer.testsuite.editors;
 
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.DialogCellEditor;
 import org.eclipse.jface.window.Window;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 
+import com.kms.katalon.composer.components.dialogs.AbstractDialogCellEditor;
 import com.kms.katalon.composer.components.impl.dialogs.TreeEntitySelectionDialog;
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
@@ -23,13 +22,13 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 
-public class TestCaseCellEditor extends DialogCellEditor {
+public class TestCaseCellEditor extends AbstractDialogCellEditor {
     private String defaultContent;
 
     private String selectedTestCaseId;
 
     public TestCaseCellEditor(Composite parent, String defaultContent, String selectedPk) {
-        super(parent, SWT.NONE);
+        super(parent, defaultContent);
         this.defaultContent = defaultContent;
         this.selectedTestCaseId = selectedPk;
     }
@@ -52,7 +51,7 @@ public class TestCaseCellEditor extends DialogCellEditor {
     protected Object openDialogBox(Control cellEditorWindow) {
         try {
             EntityProvider entityProvider = new EntityProvider();
-            TreeEntitySelectionDialog dialog = new TreeEntitySelectionDialog(cellEditorWindow.getShell(),
+            TreeEntitySelectionDialog dialog = new TreeEntitySelectionDialog(Display.getCurrent().getActiveShell(),
                     new EntityLabelProvider(), new EntityProvider(), new EntityViewerFilter(entityProvider));
 
             dialog.setAllowMultiple(false);
@@ -83,4 +82,5 @@ public class TestCaseCellEditor extends DialogCellEditor {
         }
 
     }
+    
 }

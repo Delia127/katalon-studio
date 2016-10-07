@@ -17,4 +17,5 @@ public abstract class CustomDialogCellEditor extends DialogCellEditor {
 
         return defaultLabel;
     }
+    
 }

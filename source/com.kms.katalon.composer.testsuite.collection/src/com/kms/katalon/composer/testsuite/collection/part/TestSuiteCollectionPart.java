@@ -60,6 +60,7 @@ import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.components.util.ColumnViewerUtil;
 import com.kms.katalon.composer.execution.handlers.AbstractExecutionHandler;
 import com.kms.katalon.composer.testsuite.collection.constant.ComposerTestsuiteCollectionMessageConstants;
 import com.kms.katalon.composer.testsuite.collection.constant.ImageConstants;
@@ -406,7 +407,9 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         tableViewer.enableTooltipSupport();
 
         createTableMenu(tableViewer.getTable());
+        
         setTableViewerSelection(tableViewer);
+        ColumnViewerUtil.setTableActivation(tableViewer);
     }
 
     /**
@@ -609,7 +612,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
             }
         });
     }
-
+    
     private void setTableViewerSelection(final CTableViewer tableViewer) {
         tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 

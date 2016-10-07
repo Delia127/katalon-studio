@@ -16,7 +16,7 @@ public class TestSuiteIdEditingSupport extends EditingSupportWithTableProvider {
 
     @Override
     protected CellEditor getCellEditorByElement(TestSuiteRunConfiguration element) {
-        return new TestSuiteSelectionCellEditor((Composite) getViewer().getControl());
+        return new TestSuiteSelectionCellEditor((Composite) getViewer().getControl(), element.getTestSuiteEntity());
     }
 
     @Override
@@ -26,7 +26,10 @@ public class TestSuiteIdEditingSupport extends EditingSupportWithTableProvider {
 
     @Override
     protected Object getElementValue(TestSuiteRunConfiguration element) {
-        return element.getTestSuiteEntity();
+        if (element instanceof TestSuiteRunConfiguration) {
+            return ((TestSuiteRunConfiguration)element).getTestSuiteEntity();
+        }
+        return null;
     }
 
     @Override
