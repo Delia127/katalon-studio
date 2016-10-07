@@ -22,6 +22,9 @@ import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
@@ -37,6 +40,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -122,6 +126,8 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
     private Button btnSequential, btnParallel;
 
     private Label lblExecutionInformation;
+
+    private MenuItem openMenuItem;
 
     private Listener layoutExecutionInformationCompositeListener = new Listener() {
 
@@ -400,6 +406,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         tableViewer.enableTooltipSupport();
 
         createTableMenu(tableViewer.getTable());
+        setTableViewerSelection(tableViewer);
     }
 
     /**
@@ -443,7 +450,9 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
                     public Boolean call() throws Exception {
                         return cloneTestSuite.isAnyRunEnabled();
                     }
-                });
+                }, SWT.PUSH);
+        openMenuItem = menu.createMenuItem(ComposerTestsuiteCollectionMessageConstants.MENU_OPEN, null, enableWhenItemSelected,
+                SWT.CASCADE);
     }
 
     @Override
@@ -600,4 +609,51 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
             }
         });
     }
+
+    private void setTableViewerSelection(final CTableViewer tableViewer) {
+        tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                createDynamicGotoSubMenu();
+            }
+        });
+    }
+
+    private void createDynamicGotoSubMenu() {
+        IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+        Menu subMenu = new Menu(openMenuItem);
+        for (Object object : selection.toList()) {
+            if (!(object instanceof TestSuiteRunConfiguration)) {
+                continue;
+            }
+            TestSuiteEntity testSuiteEntity = ((TestSuiteRunConfiguration) object).getTestSuiteEntity();
+            MenuItem menuItem = new MenuItem(subMenu, SWT.PUSH);
+            menuItem.setText(testSuiteEntity.getIdForDisplay());
+            menuItem.setData(testSuiteEntity);
+            menuItem.addSelectionListener(new SelectionAdapter() {
+
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    Object menu = e.getSource();
+                    if (! (menu instanceof MenuItem)) {
+                        return;
+                    }
+                    TestSuiteEntity testSuiteEntity = getTestSuiteFromMenuItem((MenuItem)menu);
+                    if (testSuiteEntity != null) {
+                        eventBroker.send(EventConstants.TEST_SUITE_OPEN, testSuiteEntity);
+                    }
+                }
+            });
+        }
+        openMenuItem.setMenu(subMenu);
+    }
+
+    private TestSuiteEntity getTestSuiteFromMenuItem(MenuItem selectedMenuItem) {
+        if (selectedMenuItem.getData() instanceof TestSuiteEntity) {
+            return (TestSuiteEntity) selectedMenuItem.getData();
+        }
+        return null;
+    }
+
 }

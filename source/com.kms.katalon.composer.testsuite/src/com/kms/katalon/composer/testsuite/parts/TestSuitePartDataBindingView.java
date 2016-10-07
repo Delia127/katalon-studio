@@ -1,13 +1,16 @@
 package com.kms.katalon.composer.testsuite.parts;
 
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.window.ToolTip;
@@ -18,20 +21,27 @@ import org.eclipse.swt.dnd.DragSource;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
+import com.kms.katalon.composer.components.impl.control.CMenu;
 import com.kms.katalon.composer.components.impl.control.ImageButton;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
+import com.kms.katalon.composer.testsuite.constants.ComposerTestsuiteMessageConstants;
 import com.kms.katalon.composer.testsuite.constants.ImageConstants;
 import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.composer.testsuite.constants.ToolItemConstants;
@@ -48,23 +58,38 @@ import com.kms.katalon.composer.testsuite.support.VariableTypeEditingSupport;
 import com.kms.katalon.composer.testsuite.support.VariableValueEditingSupport;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.TestCaseController;
+import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.entity.link.TestCaseTestDataLink;
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
 import com.kms.katalon.entity.link.VariableLink;
+import com.kms.katalon.entity.testdata.DataFileEntity;
 
 public class TestSuitePartDataBindingView {
     private TestSuitePartTestCaseView parentView;
+
     private SashForm sashFormBindingView;
+
     private Composite compositeTestData;
+
     private ImageButton btnExpandCompositeTestData;
+
     private Label lblTestDataInformation;
+
     private Composite compositeTestDataDetails;
+
     private ToolBar testDataToolBar;
+
     private Composite compositeTestDataTreeTable;
+
     private TableViewer testDataTableViewer;
+
     private boolean isTestDataCompositeExpanded;
+
     private Composite compositeVariable;
+
     private TableViewer testCaseVariableTableViewer;
+
+    private MenuItem openMenuItem;
 
     private Listener layoutTestDataCompositeListener = new Listener() {
 
@@ -96,6 +121,19 @@ public class TestSuitePartDataBindingView {
 
         createCompositeTestData();
         createCompositeVariableBinding();
+        setTestDataTableSelection();
+    }
+
+    private void setTestDataTableSelection() {
+        testDataTableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                createDynamicGotoTestDataMenu();
+
+            }
+        });
+
     }
 
     private void createCompositeVariableBinding() {
@@ -291,27 +329,43 @@ public class TestSuitePartDataBindingView {
                 TestDataTableLabelProvider.COLUMN_ITERATION_INDEX, this));
         testDataTableViewerColumnCombination.setLabelProvider(new TestDataTableLabelProvider(
                 TestDataTableLabelProvider.COLUMN_COMBINATION_INDEX, this));
-        
+
         hookDropTestDataEvent();
         hookDragTestDataEvent();
+        createTestDataTableContextMenu(testDataTableViewer.getTable());
+        setTestDataTableSelection();
+    }
+
+    private void createTestDataTableContextMenu(Table table) {
+        CMenu menu = new CMenu(table, null);
+        table.setMenu(menu);
+
+        Callable<Boolean> enableWhenItemSelected = new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                return !testDataTableViewer.getSelection().isEmpty();
+            }
+        };
+        openMenuItem = menu.createMenuItem(ComposerTestsuiteMessageConstants.MENU_OPEN, null, enableWhenItemSelected,
+                SWT.CASCADE);
     }
 
     private void hookDropTestDataEvent() {
         DropTarget dt = new DropTarget(testDataTableViewer.getTable(), DND.DROP_MOVE | DND.DROP_COPY);
-        //List<Transfer> treeEntityTransfers = new ArrayList<Transfer>();
+        // List<Transfer> treeEntityTransfers = new ArrayList<Transfer>();
         List<Transfer> treeEntityTransfers = TransferTypeCollection.getInstance().getTreeEntityTransfer();
         treeEntityTransfers.add(TextTransfer.getInstance());
         dt.setTransfer(treeEntityTransfers.toArray(new Transfer[treeEntityTransfers.size()]));
         dt.addDropListener(new TestDataTableDropListener(testDataTableViewer, this));
     }
-    
+
     private void hookDragTestDataEvent() {
         int operations = DND.DROP_MOVE | DND.DROP_COPY;
         DragSource dragSource = new DragSource(testDataTableViewer.getTable(), operations);
-        dragSource.setTransfer(new Transfer[] { TextTransfer.getInstance() });        
+        dragSource.setTransfer(new Transfer[] { TextTransfer.getInstance() });
         dragSource.addDragListener(new TestDataTableDragListener(testDataTableViewer));
     }
-    
+
     private void createCompositeTestData() {
         compositeTestData = new Composite(sashFormBindingView, SWT.NONE);
         compositeTestData.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
@@ -428,7 +482,7 @@ public class TestSuitePartDataBindingView {
         if (selection.size() == 1) {
             TestSuiteTestCaseLink testCaseLink = (TestSuiteTestCaseLink) selection.getFirstElement();
             testDataTableViewer.setInput(testCaseLink.getTestDataLinks());
-            
+
             try {
                 if (TestCaseController.getInstance().getTestCaseByDisplayId(testCaseLink.getTestCaseId()) != null) {
                     testCaseVariableTableViewer.setInput(testCaseLink.getVariableLinks());
@@ -438,7 +492,7 @@ public class TestSuitePartDataBindingView {
             } catch (Exception e) {
                 testCaseVariableTableViewer.setInput(null);
             }
-            
+
         } else {
             testDataTableViewer.setInput(null);
             testCaseVariableTableViewer.setInput(null);
@@ -461,4 +515,48 @@ public class TestSuitePartDataBindingView {
     public void refreshVariableLink(VariableLink link) {
         testCaseVariableTableViewer.update(link, null);
     }
+
+    private void createDynamicGotoTestDataMenu() {
+        IStructuredSelection selection = (IStructuredSelection) testDataTableViewer.getSelection();
+        Menu subMenu = new Menu(openMenuItem);
+        SelectionAdapter openSubMenuSelected = new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Object source = e.getSource();
+                if (!(source instanceof MenuItem)) {
+                    return;
+                }
+                DataFileEntity dataFileEntity = getDataFileFromMenuItem((MenuItem) source);
+                if (dataFileEntity != null) {
+                    parentView.openAddedTestData(dataFileEntity);
+                }
+            }
+        };
+        for (Object object : selection.toList()) {
+            if (!(object instanceof TestCaseTestDataLink)) {
+                continue;
+            }
+            try {
+                DataFileEntity dataFileEntity = TestDataController.getInstance().getTestDataByDisplayId(
+                        ((TestCaseTestDataLink) object).getTestDataId());
+                MenuItem menuItem = new MenuItem(subMenu, SWT.PUSH);
+                menuItem.setText(dataFileEntity.getIdForDisplay());
+                menuItem.setData(dataFileEntity);
+                menuItem.addSelectionListener(openSubMenuSelected);
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+            }
+        }
+        openMenuItem.setMenu(subMenu);
+    }
+
+    private DataFileEntity getDataFileFromMenuItem(MenuItem selectedMenuItem) {
+        DataFileEntity selectedTestData = null;
+        if (selectedMenuItem.getData() instanceof DataFileEntity) {
+            selectedTestData = (DataFileEntity) selectedMenuItem.getData();
+        }
+        return selectedTestData;
+    }
+
 }

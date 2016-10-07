@@ -64,6 +64,8 @@ public class ComposerTestsuiteCollectionMessageConstants extends NLS {
     public static String HAND_JOB_DELETING_FOLDER;
 
     public static String INFO_MESSAGE_SAVE_BEFORE_EXECUTE;
+    
+    public static String MENU_OPEN;
 
     static {
         // initialize resource bundle

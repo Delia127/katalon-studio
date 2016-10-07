@@ -63,4 +63,5 @@ public class StringConstants extends GlobalStringConstants {
     public static final String HAND_JOB_DELETING_ENTITY = ComposerTestsuiteCollectionMessageConstants.HAND_JOB_DELETING_ENTITY;
 
     public static final String HAND_JOB_DELETING_FOLDER = ComposerTestsuiteCollectionMessageConstants.HAND_JOB_DELETING_FOLDER;
+    
 }
