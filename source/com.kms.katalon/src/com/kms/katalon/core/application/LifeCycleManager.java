@@ -37,6 +37,7 @@ import org.osgi.service.event.EventHandler;
 import com.kms.katalon.addons.CommandBindingRemover;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.handlers.CloseHandler;
+import com.kms.katalon.composer.handlers.QuitHandler;
 import com.kms.katalon.composer.handlers.ResetPerspectiveHandler;
 import com.kms.katalon.composer.handlers.SaveHandler;
 import com.kms.katalon.composer.handlers.SearchHandler;
@@ -72,6 +73,7 @@ public class LifeCycleManager {
                 .getService(IHandlerService.class);
         handlerService.activateHandler(IWorkbenchCommandConstants.FILE_SAVE, new SaveHandler());
         handlerService.activateHandler(IWorkbenchCommandConstants.FILE_CLOSE, new CloseHandler());
+        handlerService.activateHandler(IWorkbenchCommandConstants.FILE_EXIT, new QuitHandler());
         handlerService.activateHandler(IdConstants.SEARCH_COMMAND_ID, new SearchHandler());
         handlerService.activateHandler(IdConstants.RESET_PERSPECTIVE_HANDLER_ID, new ResetPerspectiveHandler());
 
@@ -130,7 +132,6 @@ public class LifeCycleManager {
 
     private void setupPreferences() {
         setupResourcePlugin();
-
         setupWorkbenchPlugin();
     }
 
@@ -205,7 +206,7 @@ public class LifeCycleManager {
                     }
                     alertNewVersion();
                     startCollectUsageInfo();
-                    
+
                 } catch (Exception e) {
                     logError(e);
                 }
@@ -248,7 +249,7 @@ public class LifeCycleManager {
             }
         });
     }
-    
+
     private void startCollectUsageInfo() {
         Executors.newSingleThreadExecutor().submit(new Runnable() {
             @Override
