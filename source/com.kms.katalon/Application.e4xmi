@@ -78,7 +78,7 @@
       </children>
       <children xsi:type="menu:Menu" xmi:id="_hQQH7hYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.help" label="Help">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_hQQH7xYMEeSUMbyEN2kbFQ" label="About" command="_hQQH5hYMEeSUMbyEN2kbFQ"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_dj8ScGgxEeatJ4Re1SnNtw" elementId="com.kms.katalon.handledmenuitem.welcome" label="Katalon Help" iconURI="platform:/plugin/org.eclipse.ui.intro/icons/welcome16.gif" command="_jm89wGgxEeatJ4Re1SnNtw"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_dj8ScGgxEeatJ4Re1SnNtw" elementId="com.kms.katalon.handledmenuitem.welcome" label="Katalon Help" command="_jm89wGgxEeatJ4Re1SnNtw"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_iImwQGp9EeakEakFblwi9Q" elementId="com.kms.katalon.handledmenuitem.functionsintroduction" label="Quick Guide" command="_agaP0Gp9EeakEakFblwi9Q"/>
       </children>
     </mainMenu>
