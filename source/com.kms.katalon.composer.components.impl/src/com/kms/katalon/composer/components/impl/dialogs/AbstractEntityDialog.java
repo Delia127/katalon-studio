@@ -28,6 +28,10 @@ public class AbstractEntityDialog extends TitleAreaDialog {
 
     private static final int BASE_NUMBER_COLUMN = 2;
 
+    private static final int DIFF_SIZE = 2;
+
+    private static final int H_GAP_IMAGE = 5;
+
     private String name = "";
 
     private String windowTitle = StringConstants.DIA_WINDOW_TITLE_NEW;
@@ -288,7 +292,7 @@ public class AbstractEntityDialog extends TitleAreaDialog {
         if (wholeArea == null) {
             return;
         }
-        customMessageImage();
+        customizeMessageImage();
     }
 
     @Override
@@ -297,19 +301,18 @@ public class AbstractEntityDialog extends TitleAreaDialog {
         if (wholeArea == null) {
             return;
         }
-        customMessageImage();
+        customizeMessageImage();
     }
 
-    private void customMessageImage() {
+    private void customizeMessageImage() {
         Image newImage = getImage(messageImageLabel);
-        Point pt = messageImageLabel.getLocation();
-        messageImageLabel.setBounds(newImage.getBounds());
-        messageImageLabel.setLocation(pt);
         messageImageLabel.setImage(newImage);
+        Rectangle imageBound = newImage.getBounds();
+        messageImageLabel.setSize(imageBound.width, imageBound.height);
         if (!(messageImageLabel.getVisible())) {
             messageImageLabel.setVisible(true);
         }
-        setTextCenterVerticalWithImage();
+        setTextAndImageAlign();
     }
 
     private Image getImage(Label messageLabel) {
@@ -329,32 +332,17 @@ public class AbstractEntityDialog extends TitleAreaDialog {
         return oldImage;
     }
 
-    private void setTextCenterVerticalWithImage() {
+    private void setTextAndImageAlign() {
         if (imageLocation == null) {
             imageLocation = messageImageLabel.getLocation();
         }
         if (textLocation == null) {
             textLocation = messageLabel.getLocation();
         }
-        Point messageSize = messageLabel.computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
-        Rectangle imageSize = messageImageLabel.getBounds();
-        boolean isText = true;
-        int heigth = messageLabel.getLineCount() * messageLabel.getLineHeight();
-        if (imageSize.height >= heigth) {
-            isText = false;
-            heigth = imageSize.height;
-        }
-        int gap = heigth / 2;
-        int messageImagePosX = imageLocation.x + 5;
-        int messagePosY = textLocation.y;
-        int messageImagePosY = messagePosY + gap - (imageSize.height / 2);
-        int messagePosX = messageImagePosX + 5 + imageSize.width;
-        if (!isText) {
-            messageImagePosY = imageLocation.y;
-            messagePosY = messageImagePosY + gap - (messageSize.y / 2);
-        }
-        messageImageLabel.setLocation(messageImagePosX, messageImagePosY);
-        messageLabel.setLocation(messagePosX, messagePosY);
+        int messageImagePosX = imageLocation.x + DIFF_SIZE;
+        int messagePosX = messageImagePosX + messageImageLabel.getBounds().width + H_GAP_IMAGE;
+        messageLabel.setLocation(messagePosX, textLocation.y);
+        messageImageLabel.setLocation(messageImagePosX, imageLocation.y - DIFF_SIZE);
     }
 
 }
