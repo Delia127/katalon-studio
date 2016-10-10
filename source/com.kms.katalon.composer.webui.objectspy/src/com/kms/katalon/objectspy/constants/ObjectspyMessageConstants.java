@@ -79,6 +79,8 @@ public class ObjectspyMessageConstants extends NLS {
 
     public static String DIALOG_RUNNING_INSTANT_IE_MESSAGE;
 
+    public static String ERR_DLG_OBJECT_SPY_PORT_IN_USE;
+
     public static String EXC_OBJ_SPY_FOR_BROWSER_IS_NOT_SUPPORTED;
 
     public static String EXC_EXTENSION_FOR_BROWSER_NOT_FOUND;

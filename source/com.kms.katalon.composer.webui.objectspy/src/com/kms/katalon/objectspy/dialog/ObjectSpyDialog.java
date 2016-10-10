@@ -4,6 +4,7 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.BindException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
@@ -96,6 +97,7 @@ import com.kms.katalon.execution.classpath.ClassPathResolver;
 import com.kms.katalon.objectspy.components.CapturedHTMLElementsComposite;
 import com.kms.katalon.objectspy.constants.ImageConstants;
 import com.kms.katalon.objectspy.constants.ObjectSpyPreferenceConstants;
+import com.kms.katalon.objectspy.constants.ObjectspyMessageConstants;
 import com.kms.katalon.objectspy.constants.StringConstants;
 import com.kms.katalon.objectspy.core.HTMLElementCaptureServer;
 import com.kms.katalon.objectspy.core.InspectSession;
@@ -122,22 +124,22 @@ import com.sun.jna.platform.win32.WinDef.HWND;
 
 @SuppressWarnings("restriction")
 public class ObjectSpyDialog extends Dialog implements EventHandler {
-    private static final String IE_WINDOW_CLASS = "IEFrame";
+    private static final String IE_WINDOW_CLASS = "IEFrame"; //$NON-NLS-1$
     
-    private static final String relativePathToIEAddonSetup = File.separator + "extensions" + File.separator + "IE"
-            + File.separator + "Object Spy" + File.separator + "setup.exe";
+    private static final String relativePathToIEAddonSetup = File.separator + "extensions" + File.separator + "IE" //$NON-NLS-1$ //$NON-NLS-2$
+            + File.separator + "Object Spy" + File.separator + "setup.exe"; //$NON-NLS-1$ //$NON-NLS-2$
 
-    private static final String RESOURCES_FOLDER_NAME = "resources";
+    private static final String RESOURCES_FOLDER_NAME = "resources"; //$NON-NLS-1$
 
-    private static final String IE_ADDON_BHO_KEY = "{8CB0FB3A-8EFA-4F94-B605-F3427688F8C7}";
+    private static final String IE_ADDON_BHO_KEY = "{8CB0FB3A-8EFA-4F94-B605-F3427688F8C7}"; //$NON-NLS-1$
 
-    public static final String IE_WINDOWS_32BIT_BHO_REGISTRY_KEY = "SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\explorer\\Browser Helper Objects";
+    public static final String IE_WINDOWS_32BIT_BHO_REGISTRY_KEY = "SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\explorer\\Browser Helper Objects"; //$NON-NLS-1$
 
-    public static final String IE_WINDOWS_BHO_REGISTRY_KEY = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\explorer\\Browser Helper Objects";
+    public static final String IE_WINDOWS_BHO_REGISTRY_KEY = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\explorer\\Browser Helper Objects"; //$NON-NLS-1$
     
-    public static final String OBJECT_SPY_CHROME_ADDON_URL = "https://chrome.google.com/webstore/detail/katalon-object-spy/gblkfilmbkbkjgpcoihaeghdindcanom";
+    public static final String OBJECT_SPY_CHROME_ADDON_URL = "https://chrome.google.com/webstore/detail/katalon-object-spy/gblkfilmbkbkjgpcoihaeghdindcanom"; //$NON-NLS-1$
 
-    public static final String OBJECT_SPY_FIREFOX_ADDON_URL = "https://addons.mozilla.org/en-US/firefox/addon/katalon-object-spy";
+    public static final String OBJECT_SPY_FIREFOX_ADDON_URL = "https://addons.mozilla.org/en-US/firefox/addon/katalon-object-spy"; //$NON-NLS-1$
 
     private List<HTMLPageElement> elements;
 
@@ -563,7 +565,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
                         element.setStatus(HTMLStatus.Multiple);
                     }
                     if (!isFirst) {
-                        xpathQueryString.append(" | ");
+                        xpathQueryString.append(" | "); //$NON-NLS-1$
                     }
                     xpathQueryString.append(elementXpath);
                     isFirst = false;
@@ -727,7 +729,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
                     Display.getDefault().syncExec(new Runnable() {
                         @Override
                         public void run() {
-                            txtXpathInput.setText("");
+                            txtXpathInput.setText(""); //$NON-NLS-1$
                             domTreeViewerLabelProvider.setFilteredElements(null);
                             refreshTree(domTreeViewer, null);
                             domTreeViewer.collapseAll();
@@ -1146,8 +1148,14 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         if (server != null && server.isRunning()) {
             server.stop();
         }
-        server = new HTMLElementCaptureServer(port, logger, this);
-        server.start();
+        try {
+            server = new HTMLElementCaptureServer(port, logger, this);
+            server.start();
+        } catch (BindException e) {
+            MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE,
+                    MessageFormat.format(ObjectspyMessageConstants.ERR_DLG_OBJECT_SPY_PORT_IN_USE, port));
+            server = null;
+        }
     }
 
     public boolean isCurrentServerPortUsable(int port) {
