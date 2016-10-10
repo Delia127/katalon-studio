@@ -28,6 +28,10 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DragSource;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -63,8 +67,11 @@ import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.components.util.ColumnViewerUtil;
 import com.kms.katalon.composer.execution.handlers.AbstractExecutionHandler;
 import com.kms.katalon.composer.testsuite.collection.constant.ComposerTestsuiteCollectionMessageConstants;
+import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
 import com.kms.katalon.composer.testsuite.collection.constant.ImageConstants;
 import com.kms.katalon.composer.testsuite.collection.constant.StringConstants;
+import com.kms.katalon.composer.testsuite.collection.listeners.TestSuiteTableDragListener;
+import com.kms.katalon.composer.testsuite.collection.listeners.TestSuiteTableDropListener;
 import com.kms.katalon.composer.testsuite.collection.part.job.TestSuiteCollectionBuilderJob;
 import com.kms.katalon.composer.testsuite.collection.part.provider.TableViewerProvider;
 import com.kms.katalon.composer.testsuite.collection.part.provider.TestSuiteRunConfigLabelProvider;
@@ -73,6 +80,7 @@ import com.kms.katalon.composer.testsuite.collection.part.provider.ToolbarItemLi
 import com.kms.katalon.composer.testsuite.collection.part.support.RunConfigurationChooserEditingSupport;
 import com.kms.katalon.composer.testsuite.collection.part.support.RunEnabledEditingSupport;
 import com.kms.katalon.composer.testsuite.collection.part.support.TestSuiteIdEditingSupport;
+import com.kms.katalon.composer.testsuite.collection.transfer.TestSuiteRunConfigurationTransfer;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestSuiteCollectionController;
@@ -410,6 +418,25 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         
         setTableViewerSelection(tableViewer);
         ColumnViewerUtil.setTableActivation(tableViewer);
+        hookDropTestSuiteEvent();
+        hookDragTestSuiteEvent();
+    }
+
+    private void hookDragTestSuiteEvent() {
+        int operations = DND.DROP_MOVE | DND.DROP_COPY;
+
+        DragSource dragSource = new DragSource(tableViewer.getTable(), operations);
+        dragSource.setTransfer(new Transfer[] { new TestSuiteRunConfigurationTransfer() });
+        dragSource.addDragListener(new TestSuiteTableDragListener(this));
+
+    }
+
+    private void hookDropTestSuiteEvent() {
+        DropTarget dt = new DropTarget(tableViewer.getTable(), DND.DROP_MOVE | DND.DROP_COPY);
+        List<Transfer> treeEntityTransfers = TransferTypeCollection.getInstance().getTreeEntityTransfer();
+        treeEntityTransfers.add(new TestSuiteRunConfigurationTransfer());
+        dt.setTransfer(treeEntityTransfers.toArray(new Transfer[treeEntityTransfers.size()]));
+        dt.addDropListener(new TestSuiteTableDropListener(this, getTestSuiteCollection()));
     }
 
     /**
@@ -611,6 +638,10 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
                 });
             }
         });
+    }
+
+    public TestSuiteCollectionEntity getTestSuiteCollection() {
+        return originalTestSuite;
     }
     
     private void setTableViewerSelection(final CTableViewer tableViewer) {

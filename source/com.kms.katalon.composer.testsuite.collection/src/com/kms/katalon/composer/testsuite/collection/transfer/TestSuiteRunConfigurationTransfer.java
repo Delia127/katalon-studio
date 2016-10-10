@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.testsuite.transfer;
+package com.kms.katalon.composer.testsuite.collection.transfer;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -13,10 +13,10 @@ import org.eclipse.swt.dnd.TransferData;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 
-public class TestSuiteTestCaseLinkTransfer extends ByteArrayTransfer {
+public class TestSuiteRunConfigurationTransfer extends ByteArrayTransfer {
 
     protected static final Class<?> getTypeClass() {
-        return TestSuiteTestCaseLinkTransferData.class;
+        return TestSuiteRunConfigurationTransfer.class;
     }
 
     protected static final String getTypeName() {
@@ -28,11 +28,11 @@ public class TestSuiteTestCaseLinkTransfer extends ByteArrayTransfer {
     }
 
     @Override
-    public void javaToNative(Object object, TransferData transferData) {
+    protected void javaToNative(Object object, TransferData transferData) {
         if (!checkType(object) || !isSupportedType(transferData)) {
             DND.error(DND.ERROR_INVALID_DATA);
         }
-        TestSuiteTestCaseLinkTransferData[] treeEntites = (TestSuiteTestCaseLinkTransferData[]) object;
+        TestSuiteRunConfigurationTransferData[] treeEntites = (TestSuiteRunConfigurationTransferData[]) object;
         try {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             DataOutputStream writeOut = new DataOutputStream(out);
@@ -50,12 +50,13 @@ public class TestSuiteTestCaseLinkTransfer extends ByteArrayTransfer {
     }
 
     @Override
-    public Object nativeToJava(TransferData transferData) {
+    protected Object nativeToJava(TransferData transferData) {
         if (isSupportedType(transferData)) {
             byte[] buffer = (byte[]) super.nativeToJava(transferData);
-            if (buffer == null) return null;
+            if (buffer == null)
+                return null;
 
-            TestSuiteTestCaseLinkTransferData[] myData = new TestSuiteTestCaseLinkTransferData[0];
+            TestSuiteRunConfigurationTransferData[] myData = new TestSuiteRunConfigurationTransferData[0];
             try {
                 ByteArrayInputStream in = new ByteArrayInputStream(buffer);
                 DataInputStream readIn = new DataInputStream(in);
@@ -64,9 +65,9 @@ public class TestSuiteTestCaseLinkTransfer extends ByteArrayTransfer {
                     byte[] payload = new byte[size];
                     readIn.read(payload);
                     Object obj = bytesToObject(payload);
-                    TestSuiteTestCaseLinkTransferData datum = (TestSuiteTestCaseLinkTransferData) obj;
+                    TestSuiteRunConfigurationTransferData datum = (TestSuiteRunConfigurationTransferData) obj;
 
-                    TestSuiteTestCaseLinkTransferData[] newMyData = new TestSuiteTestCaseLinkTransferData[myData.length + 1];
+                    TestSuiteRunConfigurationTransferData[] newMyData = new TestSuiteRunConfigurationTransferData[myData.length + 1];
                     System.arraycopy(myData, 0, newMyData, 0, myData.length); 
                     newMyData[myData.length] = datum;
                     myData = newMyData;
@@ -82,21 +83,21 @@ public class TestSuiteTestCaseLinkTransfer extends ByteArrayTransfer {
     }
 
     @Override
-    protected String[] getTypeNames() {
-        return new String[] { getTypeName() };
-    }
-
-    @Override
     protected int[] getTypeIds() {
         return new int[] { getTypeID() };
     }
 
+    @Override
+    protected String[] getTypeNames() {
+        return new String[] { getTypeName() };
+    }
+
     protected boolean checkType(Object object) {
-        if (object == null || !(object instanceof TestSuiteTestCaseLinkTransferData[])
-                || ((TestSuiteTestCaseLinkTransferData[]) object).length == 0) {
+        if (object == null || !(object instanceof TestSuiteRunConfigurationTransferData[])
+                || ((TestSuiteRunConfigurationTransferData[]) object).length == 0) {
             return false;
         }
-        TestSuiteTestCaseLinkTransferData[] elementArray = (TestSuiteTestCaseLinkTransferData[]) object;
+        TestSuiteRunConfigurationTransferData[] elementArray = (TestSuiteRunConfigurationTransferData[]) object;
 
         for (int i = 0; i < elementArray.length; i++) {
             if (elementArray[i] == null) {
@@ -104,11 +105,6 @@ public class TestSuiteTestCaseLinkTransfer extends ByteArrayTransfer {
             }
         }
         return true;
-    }
-
-    @Override
-    protected boolean validate(Object object) {
-        return checkType(object);
     }
 
     protected byte[] objectToBytes(Object theObject) throws Exception {
@@ -124,8 +120,6 @@ public class TestSuiteTestCaseLinkTransfer extends ByteArrayTransfer {
         return null;
     }
 
-    // Sub-classes must override this function to read Object from the correct
-    // plug-in hierarchy.
     protected Object bytesToObject(byte[] bytes) throws Exception {
         ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
         ObjectInputStream is = new ObjectInputStream(bis);

@@ -7,6 +7,10 @@ public class TestSuiteRunConfiguration extends ClonableObject {
 
     private TestSuiteEntity testSuiteEntity;
 
+    private boolean runEnabled;
+
+    private RunConfigurationDescription configuration;
+
     public TestSuiteEntity getTestSuiteEntity() {
         return testSuiteEntity;
     }
@@ -14,10 +18,6 @@ public class TestSuiteRunConfiguration extends ClonableObject {
     public void setTestSuiteEntity(TestSuiteEntity testSuiteEntity) {
         this.testSuiteEntity = testSuiteEntity;
     }
-
-    private boolean runEnabled;
-
-    private RunConfigurationDescription configuration;
 
     public boolean isRunEnabled() {
         return runEnabled;
@@ -43,4 +43,5 @@ public class TestSuiteRunConfiguration extends ClonableObject {
         newInstance.setConfiguration(config);
         return newInstance;
     }
+
 }

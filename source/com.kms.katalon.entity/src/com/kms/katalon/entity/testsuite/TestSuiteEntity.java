@@ -12,115 +12,114 @@ import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
 import com.kms.katalon.entity.util.Util;
 
 public class TestSuiteEntity extends IntegratedFileEntity {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private List<TestSuiteTestCaseLink> testSuiteTestCaseLinks = new ArrayList<TestSuiteTestCaseLink>();
+    private List<TestSuiteTestCaseLink> testSuiteTestCaseLinks = new ArrayList<TestSuiteTestCaseLink>();
 
-	private String testSuiteGuid;
+    private String testSuiteGuid;
 
-	private short pageLoadTimeout;
+    private short pageLoadTimeout;
 
-	private boolean isRerun;
+    private boolean isRerun;
 
-	private int numberOfRerun;
+    private int numberOfRerun;
 
-	private Date lastRun;
+    private Date lastRun;
 
-	private String mailRecipient;
+    private String mailRecipient;
 
-	private boolean isPageLoadTimeoutDefault;
-	
-	private boolean rerunFailedTestCasesOnly;
+    private boolean isPageLoadTimeoutDefault;
 
+    private boolean rerunFailedTestCasesOnly;
 
-	public TestSuiteEntity() {
-		super();
-		setPageLoadTimeoutDefault(true);
-	}
+    public TestSuiteEntity() {
+        super();
+        setPageLoadTimeoutDefault(true);
+    }
 
-	public String getTestSuiteGuid() {
-		return this.testSuiteGuid;
-	}
+    public String getTestSuiteGuid() {
+        return this.testSuiteGuid;
+    }
 
-	public void setTestSuiteGuid(String testSuiteGuid) {
-		this.testSuiteGuid = testSuiteGuid;
-	}
+    public void setTestSuiteGuid(String testSuiteGuid) {
+        this.testSuiteGuid = testSuiteGuid;
+    }
 
-	public List<TestSuiteTestCaseLink> getTestSuiteTestCaseLinks() {
-		return testSuiteTestCaseLinks;
-	}
+    public List<TestSuiteTestCaseLink> getTestSuiteTestCaseLinks() {
+        return testSuiteTestCaseLinks;
+    }
 
-	public void setTestSuiteTestCaseLinks(List<TestSuiteTestCaseLink> testSuiteTestCaseLinks) {
-		this.testSuiteTestCaseLinks = testSuiteTestCaseLinks;
-	}
+    public void setTestSuiteTestCaseLinks(List<TestSuiteTestCaseLink> testSuiteTestCaseLinks) {
+        this.testSuiteTestCaseLinks = testSuiteTestCaseLinks;
+    }
 
-	public boolean getIsRerun() {
-		return this.isRerun;
-	}
+    public boolean getIsRerun() {
+        return this.isRerun;
+    }
 
-	public void setIsRerun(boolean isRerun) {
-		this.isRerun = isRerun;
-	}
+    public void setIsRerun(boolean isRerun) {
+        this.isRerun = isRerun;
+    }
 
-	public int getNumberOfRerun() {
-		return this.numberOfRerun;
-	}
+    public int getNumberOfRerun() {
+        return this.numberOfRerun;
+    }
 
-	public void setNumberOfRerun(int numberOfRerun) {
-		this.numberOfRerun = numberOfRerun;
-	}
+    public void setNumberOfRerun(int numberOfRerun) {
+        this.numberOfRerun = numberOfRerun;
+    }
 
-	public void setLastRun(Date lastRun) {
-		this.lastRun = lastRun;
-	}
+    public void setLastRun(Date lastRun) {
+        this.lastRun = lastRun;
+    }
 
-	public Date getLastRun() {
-		return lastRun;
-	}
+    public Date getLastRun() {
+        return lastRun;
+    }
 
-	public TestSuiteEntity clone() {
-		TestSuiteEntity newTestSuite = (TestSuiteEntity) super.clone();
-		newTestSuite.setTestSuiteGuid(Util.generateGuid());
-		newTestSuite.setLastRun(null);
-		return newTestSuite;
-	}
+    public TestSuiteEntity clone() {
+        TestSuiteEntity newTestSuite = (TestSuiteEntity) super.clone();
+        newTestSuite.setTestSuiteGuid(Util.generateGuid());
+        newTestSuite.setLastRun(null);
+        return newTestSuite;
+    }
 
-	public Short getPageLoadTimeout() {
-		return this.pageLoadTimeout;
-	}
+    public Short getPageLoadTimeout() {
+        return this.pageLoadTimeout;
+    }
 
-	public void setPageLoadTimeout(Short pageLoadTimeout) {
-		this.pageLoadTimeout = pageLoadTimeout;
-	}
+    public void setPageLoadTimeout(Short pageLoadTimeout) {
+        this.pageLoadTimeout = pageLoadTimeout;
+    }
 
-	public static String getTestSuiteFileExtension() {
-		return ".ts";
-	}
+    public static String getTestSuiteFileExtension() {
+        return ".ts";
+    }
 
-	@Override
-	public String getFileExtension() {
-		return getTestSuiteFileExtension();
-	}
+    @Override
+    public String getFileExtension() {
+        return getTestSuiteFileExtension();
+    }
 
-	public String getRelativePathForUI() {
-		return getParentFolder().getRelativePath() + File.separator + getName();
-	}
+    public String getRelativePathForUI() {
+        return getParentFolder().getRelativePath() + File.separator + getName();
+    }
 
-	public String getMailRecipient() {
-		return mailRecipient;
-	}
+    public String getMailRecipient() {
+        return mailRecipient;
+    }
 
-	public void setMailRecipient(String mailRecipient) {
-		this.mailRecipient = mailRecipient;
-	}
+    public void setMailRecipient(String mailRecipient) {
+        this.mailRecipient = mailRecipient;
+    }
 
-	public boolean isPageLoadTimeoutDefault() {
-		return isPageLoadTimeoutDefault;
-	}
+    public boolean isPageLoadTimeoutDefault() {
+        return isPageLoadTimeoutDefault;
+    }
 
-	public void setPageLoadTimeoutDefault(boolean isPageLoadTimeoutDefault) {
-		this.isPageLoadTimeoutDefault = isPageLoadTimeoutDefault;
-	}
+    public void setPageLoadTimeoutDefault(boolean isPageLoadTimeoutDefault) {
+        this.isPageLoadTimeoutDefault = isPageLoadTimeoutDefault;
+    }
 
     public boolean isRerunFailedTestCasesOnly() {
         return rerunFailedTestCasesOnly;
@@ -129,7 +128,7 @@ public class TestSuiteEntity extends IntegratedFileEntity {
     public void setRerunFailedTestCasesOnly(boolean rerunFailedTestCasesOnly) {
         this.rerunFailedTestCasesOnly = rerunFailedTestCasesOnly;
     }
-    
+
     @Override
     public boolean equals(Object that) {
         boolean isEquals = super.equals(that);
@@ -149,4 +148,21 @@ public class TestSuiteEntity extends IntegratedFileEntity {
         }
         return isEquals && equalsBuilder.isEquals();
     }
+
+    @Override
+    public int hashCode() {
+        int prime = 31;
+        int result = 1;
+        result = prime * result + ((testSuiteTestCaseLinks == null) ? 0 : testSuiteTestCaseLinks.hashCode());
+        result = prime * result + ((testSuiteGuid == null) ? 0 : testSuiteGuid.hashCode());
+        result = prime * result + ((mailRecipient == null) ? 0 : mailRecipient.hashCode());
+        result = prime * result + (isRerun ? 1231 : 1237);
+        result = prime * result + (isPageLoadTimeoutDefault ? 1231 : 1237);
+        result = prime * result + (rerunFailedTestCasesOnly ? 1231 : 1237);
+        result = prime * result + ((lastRun == null) ? 0 : lastRun.hashCode());
+        result = prime * result + pageLoadTimeout;
+        result = prime * result + numberOfRerun;
+        return result;
+    }
+
 }

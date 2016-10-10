@@ -70,6 +70,9 @@ public class ReskinTextAreaHandler extends EventServiceAdapter {
         if (editorTabFolder == null || editorTabFolder.isDisposed()) {
             return;
         }
+        if (!(editorTabFolder.getChildren()[0] instanceof CTabFolder)) {
+            return;
+        }
         CTabFolder tabFolder = (CTabFolder) editorTabFolder.getChildren()[0];
         if (tabFolder.getItemCount() > 0) {
             tabFolder.reskin(SWT.ALL);

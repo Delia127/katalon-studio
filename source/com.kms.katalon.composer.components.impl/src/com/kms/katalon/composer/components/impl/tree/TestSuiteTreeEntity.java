@@ -33,7 +33,7 @@ public class TestSuiteTreeEntity extends AbstractTreeEntity {
     }
 
     @Override
-    public Object getObject() throws Exception {
+    public TestSuiteEntity getObject() throws Exception {
         TestSuiteController.getInstance().reloadTestSuite(testSuite, entity);
         loadAllDescentdantEntities();
         return testSuite;
