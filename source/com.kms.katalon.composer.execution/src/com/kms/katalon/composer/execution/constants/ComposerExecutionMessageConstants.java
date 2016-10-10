@@ -36,6 +36,10 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String HAND_JOB_BUILDING_SCRIPTS;
 
     public static String HAND_TITLE_INFORMATION;
+    
+    public static String HAND_ERROR_MSG_ERROR_IN_SCRIPT;
+    
+    public static String HAND_INFO_MSG_NO_TEST_STEP_IN_TEST_CASE;
 
     public static String HAND_CONFIRM_MSG_NO_TEST_CASE_IN_TEST_SUITE;
 

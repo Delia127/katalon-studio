@@ -744,4 +744,14 @@ public class TestCasePart implements IComposerPart, EventHandler {
     public List<AstTreeTableNode> getDragNodes() {
         return dragNodes;
     }
+
+    public boolean isTestCaseEmpty() {
+        TreeItem treeItems[] = treeTable.getTree().getItems();
+        for (TreeItem item : treeItems) {
+            if (item.getText().matches("\\d+.*")) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
