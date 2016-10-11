@@ -20,6 +20,7 @@ import org.apache.commons.io.IOUtils;
 import org.codehaus.groovy.eclipse.core.model.GroovyRuntime;
 import org.codehaus.jdt.groovy.model.GroovyCompilationUnit;
 import org.eclipse.core.internal.resources.ModelObjectWriter;
+import org.eclipse.core.internal.resources.Project;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -478,19 +479,15 @@ public class GroovyUtil {
             // If user has unintentionally deleted .project file
             File descriptionFile = new File(projectEntity.getFolderLocation(),
                     IProjectDescription.DESCRIPTION_FILE_NAME);
-            IProjectDescription projectDescription = null;
             if (!descriptionFile.exists()) {
-                projectDescription = ResourcesPlugin.getWorkspace().newProjectDescription(projectEntity.getName());
+                IProjectDescription projectDescription = ((Project) groovyProject).internalGetDescription();
                 projectDescription.setLocation(new Path(projectEntity.getFolderLocation()));
+                projectDescription.setNatureIds(KAT_PROJECT_NATURES);
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 new ModelObjectWriter().write(projectDescription, out, System.lineSeparator());
                 FileUtils.writeByteArrayToFile(descriptionFile, out.toByteArray(), false);
             }
             groovyProject.open(null);
-            if (projectDescription != null) {
-                projectDescription.setNatureIds(KAT_PROJECT_NATURES);
-                groovyProject.setDescription(projectDescription, monitor);
-            }
         }
 
         IProjectDescription projectDescription = groovyProject.getDescription();
