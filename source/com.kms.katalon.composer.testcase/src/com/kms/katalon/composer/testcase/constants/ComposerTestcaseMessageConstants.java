@@ -316,7 +316,9 @@ public class ComposerTestcaseMessageConstants extends NLS {
     public static String EDI_ERROR_MSG_CANNOT_OPEN_DIA;
 
     public static String EDI_TITLE_TEST_DATA_BROWSER;
-
+    
+    public static String MENU_OPEN;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerTestcaseMessageConstants.class);
