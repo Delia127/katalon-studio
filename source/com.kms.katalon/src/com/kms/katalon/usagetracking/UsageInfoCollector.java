@@ -128,11 +128,6 @@ public class UsageInfoCollector {
         } catch (Exception ex) {
             LogUtil.logError(ex);
         }
-        if (projectPaths.isEmpty()) {
-            ApplicationInfo.removeAppProperty(ORG_TIME_KEY);
-            ApplicationInfo.removeAppProperty(NUM_TEST_CASE_KEY);
-            ApplicationInfo.removeAppProperty(NUM_TEST_RUN_KEY);
-        }
         return projectPaths;
-    } 
+    }  
 }
