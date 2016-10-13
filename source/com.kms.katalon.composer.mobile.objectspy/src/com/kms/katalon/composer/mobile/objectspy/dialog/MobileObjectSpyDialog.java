@@ -232,7 +232,8 @@ public class MobileObjectSpyDialog extends Dialog {
 
         capturedObjectsTableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
-        tbclCapturedObjects.setColumnData(tblclmnCapturedObjectsSelection, new ColumnWeightData(0, 30));
+        tbclCapturedObjects.setColumnData(tblclmnCapturedObjectsSelection, new ColumnWeightData(0, 
+                Platform.OS_MACOSX.equals(Platform.getOS()) ? 21 : 30));
         tbclCapturedObjects.setColumnData(tblclmnCapturedObjects, new ColumnWeightData(60));
 
         capturedObjectsTable.setToolTipText(StringUtils.EMPTY);
