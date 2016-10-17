@@ -10,6 +10,7 @@ public abstract class AbstractCheckpointWizardPage extends WizardPage {
     protected AbstractCheckpointWizardPage(String pageName, String title, String description) {
         super(pageName, title, JFaceResources.getImageRegistry().getDescriptor(TitleAreaDialog.DLG_IMG_TITLE_BANNER));
         setDescription(description);
+        setMessage(description, INFORMATION);
     }
 
     protected abstract boolean isComplete();
