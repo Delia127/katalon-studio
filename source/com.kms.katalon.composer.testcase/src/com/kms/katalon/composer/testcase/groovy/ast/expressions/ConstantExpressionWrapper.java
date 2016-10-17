@@ -47,10 +47,7 @@ public class ConstantExpressionWrapper extends ExpressionWrapper {
 
     public void setValue(Object value) {
         this.value = value;
-        if (value != null) {
-            this.type.setType(value.getClass());
-            setValueType();
-        }
+        setValueType();
     }
 
     private void setValueType() {

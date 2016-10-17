@@ -14,10 +14,11 @@ import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
 
 // Base class for all expression
 public abstract class ExpressionWrapper extends AnnonatedNodeWrapper {
-    protected ClassNodeWrapper type = ClassNodeWrapper.getClassWrapper(ClassHelper.DYNAMIC_TYPE, this);
+    protected ClassNodeWrapper type;
 
     public ExpressionWrapper(ASTNodeWrapper parentNodeWrapper) {
         super(parentNodeWrapper);
+        this.type = ClassNodeWrapper.getClassWrapper(ClassHelper.DYNAMIC_TYPE, this);
     }
 
     public ExpressionWrapper(ExpressionWrapper expressionWrapper, ASTNodeWrapper parentNodeWrapper) {
@@ -57,7 +58,7 @@ public abstract class ExpressionWrapper extends AnnonatedNodeWrapper {
         if (scriptClass != null) {
             getScriptClass().addImport(typeClass);
         }
-        type.setType(typeClass);
+        setType(ClassNodeWrapper.getClassWrapper(ClassHelper.make(typeClass), this));
     }
 
     @Override

@@ -227,10 +227,6 @@ public class ClassNodeWrapper extends ASTNodeWrapper {
         return genericsTypes;
     }
 
-    public void setType(Class<?> newType) {
-        copyProperties(new ClassNode(newType));
-    }
-
     public List<MethodNodeWrapper> getMethods() {
         return Collections.unmodifiableList(methods);
     }
