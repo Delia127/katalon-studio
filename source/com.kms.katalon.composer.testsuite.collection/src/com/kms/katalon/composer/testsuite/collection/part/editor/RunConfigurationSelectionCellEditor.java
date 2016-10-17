@@ -17,7 +17,7 @@ public class RunConfigurationSelectionCellEditor extends CustomDialogCellEditor 
     }
 
     @Override
-    protected RunConfigurationDescription openDialogBox(Control cellEditorWindow) {
+    protected Object openDialogBox(Control cellEditorWindow) {
         RunConfigurationSelectionDialog dialog = new RunConfigurationSelectionDialog(cellEditorWindow.getShell(),
                 configuration);
         

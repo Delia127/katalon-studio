@@ -11,7 +11,6 @@ import com.kms.katalon.composer.components.util.ImageUtil;
 import com.kms.katalon.composer.testsuite.collection.constant.ImageConstants;
 import com.kms.katalon.composer.testsuite.collection.execution.collector.TestExecutionGroupCollector;
 import com.kms.katalon.composer.testsuite.collection.execution.provider.TestExecutionConfigurationProvider;
-import com.kms.katalon.composer.testsuite.collection.util.MapUtil;
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 import com.kms.katalon.entity.testsuite.TestSuiteRunConfiguration;
 
@@ -22,10 +21,8 @@ public class TestSuiteRunConfigLabelProvider extends TypeCheckStyleCellTableLabe
     public static final int ID_COLUMN_IDX = 1;
 
     public static final int RUN_WITH_COLUMN_IDX = 2;
-    
-    public static final int RUN_WITH_DATA_COLUMN_IDX = 3;
 
-    public static final int RUN_COLUMN_IDX = 4;
+    public static final int RUN_COLUMN_IDX = 3;
 
     private TableViewerProvider provider;
 
@@ -74,8 +71,6 @@ public class TestSuiteRunConfigLabelProvider extends TypeCheckStyleCellTableLabe
             case ID_COLUMN_IDX:
                 return element.getTestSuiteEntity() != null ? element.getTestSuiteEntity().getIdForDisplay()
                         : StringUtils.EMPTY;
-            case RUN_WITH_DATA_COLUMN_IDX:
-                return MapUtil.buildStringForMap(element.getConfiguration().getRunConfigurationData());
             case RUN_WITH_COLUMN_IDX:
                 RunConfigurationDescription configuration = element.getConfiguration();
                 return configuration != null ? configuration.getRunConfigurationId() : StringUtils.EMPTY;

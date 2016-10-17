@@ -2,7 +2,6 @@ package com.kms.katalon.execution.configuration.contributor;
 
 import java.io.IOException;
 
-import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.console.entity.ConsoleOptionContributor;
 import com.kms.katalon.execution.exception.ExecutionException;
@@ -23,28 +22,17 @@ public interface IRunConfigurationContributor extends ConsoleOptionContributor {
     public int getPreferredOrder();
 
     /**
-     * Find the correct run configuration
+     * Get the run configuration
      * 
-     * @param projectDir project directory
+     * @param projectDir
+     *            project directory
+     * @param runInput
+     *            map of the input arguments
      * @return the correct run configuration
      * @throws IOException
      * @throws ExecutionException
      * @throws InterruptedException
      */
     public IRunConfiguration getRunConfiguration(String projectDir) throws IOException, ExecutionException,
-            InterruptedException;
-
-    /**
-     * Find the correct run configuration
-     * 
-     * @param projectDir project directory
-     * @param runConfigurationDescription run configuration description
-     * @return the correct run configuration
-     * @throws IOException
-     * @throws ExecutionException
-     * @throws InterruptedException
-     */
-    public IRunConfiguration getRunConfiguration(String projectDir,
-            RunConfigurationDescription runConfigurationDescription) throws IOException, ExecutionException,
             InterruptedException;
 }

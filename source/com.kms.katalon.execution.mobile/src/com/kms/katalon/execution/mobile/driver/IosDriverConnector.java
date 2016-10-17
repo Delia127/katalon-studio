@@ -18,10 +18,6 @@ public class IosDriverConnector extends MobileDriverConnector {
         this(configurationFolderPath, null);
     }
     
-    public IosDriverConnector() throws IOException {
-        this(null, null);
-    }
-    
 	@Override
 	public DriverType getDriverType() {
 		return MobileDriverType.IOS_DRIVER;

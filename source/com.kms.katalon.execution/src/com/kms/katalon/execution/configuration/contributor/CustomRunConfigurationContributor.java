@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 import com.kms.katalon.execution.configuration.CustomRunConfiguration;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.console.entity.ConsoleOption;
@@ -25,13 +24,6 @@ public class CustomRunConfigurationContributor implements IRunConfigurationContr
     @Override
     public IRunConfiguration getRunConfiguration(String projectDir) throws IOException, ExecutionException {
         return new CustomRunConfiguration(projectDir, name);
-    }
-    
-    @Override
-    public IRunConfiguration getRunConfiguration(String projectDir,
-            RunConfigurationDescription runConfigurationDescription) throws IOException, ExecutionException,
-            InterruptedException {
-        return getRunConfiguration(projectDir);
     }
 
     @Override

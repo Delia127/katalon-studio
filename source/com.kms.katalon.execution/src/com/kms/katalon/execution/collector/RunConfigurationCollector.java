@@ -13,7 +13,6 @@ import java.util.Map.Entry;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
 import com.kms.katalon.entity.project.ProjectEntity;
-import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.configuration.contributor.CustomRunConfigurationContributor;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
@@ -24,9 +23,7 @@ import com.kms.katalon.execution.exception.ExecutionException;
 public class RunConfigurationCollector {
     public static final String CUSTOM_EXECUTION_CONFIG_ROOT_FOLDER_RELATIVE_PATH = PropertySettingStoreUtil.EXTERNAL_SETTING_ROOT_FOLDER_NAME
             + File.separator + "execution";
-
     private static RunConfigurationCollector _instance;
-
     private Map<String, IRunConfigurationContributor> runConfigurationContributors;
 
     private RunConfigurationCollector() {
@@ -43,7 +40,7 @@ public class RunConfigurationCollector {
     public void addBuiltinRunConfigurationContributor(IRunConfigurationContributor runConfigurationContributor) {
         runConfigurationContributors.put(runConfigurationContributor.getId(), runConfigurationContributor);
     }
-
+    
     private List<IRunConfigurationContributor> getListRunContributors() {
         List<IRunConfigurationContributor> contributors = new ArrayList<>();
         for (Entry<String, IRunConfigurationContributor> entry : runConfigurationContributors.entrySet()) {
@@ -61,9 +58,10 @@ public class RunConfigurationCollector {
                 return runConfigContributor_1.getPreferredOrder() - runConfigContributor_2.getPreferredOrder();
             }
         });
-        return lstContributors.toArray(new IRunConfigurationContributor[lstContributors.size()]);
+        return lstContributors.toArray(new IRunConfigurationContributor[lstContributors
+                .size()]);
     }
-
+    
     public List<ConsoleOptionContributor> getConsoleOptionContributorList() {
         return new ArrayList<ConsoleOptionContributor>(getListRunContributors());
     }
@@ -94,7 +92,8 @@ public class RunConfigurationCollector {
                 customRunConfigContributorList.add(new CustomRunConfigurationContributor(customProfile.getName()));
             }
         }
-        return customRunConfigContributorList.toArray(new CustomRunConfigurationContributor[customRunConfigContributorList.size()]);
+        return customRunConfigContributorList
+                .toArray(new CustomRunConfigurationContributor[customRunConfigContributorList.size()]);
     }
 
     public IRunConfiguration getRunConfiguration(String id, String projectDir) throws IOException, ExecutionException,
@@ -102,7 +101,7 @@ public class RunConfigurationCollector {
         if (runConfigurationContributors.containsKey(id)) {
             return runConfigurationContributors.get(id).getRunConfiguration(projectDir);
         }
-
+        
         for (IRunConfigurationContributor customRunConfigurationContributor : getAllCustomRunConfigurationContributors()) {
             if (customRunConfigurationContributor.getId().equals(id)) {
                 return customRunConfigurationContributor.getRunConfiguration(projectDir);
@@ -110,26 +109,11 @@ public class RunConfigurationCollector {
         }
         return null;
     }
-
-    public IRunConfiguration getRunConfiguration(String id, String projectDir,
-            RunConfigurationDescription runConfigurationDescription) throws IOException, ExecutionException,
-            InterruptedException {
-        if (runConfigurationContributors.containsKey(id)) {
-            return runConfigurationContributors.get(id).getRunConfiguration(projectDir, runConfigurationDescription);
-        }
-
-        for (IRunConfigurationContributor customRunConfigurationContributor : getAllCustomRunConfigurationContributors()) {
-            if (customRunConfigurationContributor.getId().equals(id)) {
-                return customRunConfigurationContributor.getRunConfiguration(projectDir, runConfigurationDescription);
-            }
-        }
-        return null;
-    }
-
+    
     public IRunConfigurationContributor getRunContributor(String id) {
         return runConfigurationContributors.get(id);
     }
-
+    
     /**
      * @return String[] Custom run configuration IDs (names)
      */

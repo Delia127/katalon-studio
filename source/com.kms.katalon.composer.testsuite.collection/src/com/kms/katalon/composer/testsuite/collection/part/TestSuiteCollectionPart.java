@@ -78,7 +78,6 @@ import com.kms.katalon.composer.testsuite.collection.part.provider.TestSuiteRunC
 import com.kms.katalon.composer.testsuite.collection.part.provider.ToolbarItemListener;
 import com.kms.katalon.composer.testsuite.collection.part.provider.ToolbarItemListener.ActionId;
 import com.kms.katalon.composer.testsuite.collection.part.support.RunConfigurationChooserEditingSupport;
-import com.kms.katalon.composer.testsuite.collection.part.support.RunConfigurationDataEditingSupport;
 import com.kms.katalon.composer.testsuite.collection.part.support.RunEnabledEditingSupport;
 import com.kms.katalon.composer.testsuite.collection.part.support.TestSuiteIdEditingSupport;
 import com.kms.katalon.composer.testsuite.collection.transfer.TestSuiteRunConfigurationTransfer;
@@ -400,15 +399,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         tbvcRunWith.setEditingSupport(new RunConfigurationChooserEditingSupport(this));
         tbvcRunWith.setLabelProvider(new TestSuiteRunConfigLabelProvider(this,
                 TestSuiteRunConfigLabelProvider.RUN_WITH_COLUMN_IDX));
-        tableLayout.setColumnData(tblclmnEnviroment, new ColumnWeightData(20, 70));
-        
-        TableViewerColumn tbvcRunWithData = new TableViewerColumn(tableViewer, SWT.NONE);
-        TableColumn tblclmnRunWithData = tbvcRunWithData.getColumn();
-        tblclmnRunWithData.setText(ComposerTestsuiteCollectionMessageConstants.PA_TABLE_COLUMN_RUN_CONFIGURATION_DATA);
-        tbvcRunWithData.setEditingSupport(new RunConfigurationDataEditingSupport(this));
-        tbvcRunWithData.setLabelProvider(new TestSuiteRunConfigLabelProvider(this,
-                TestSuiteRunConfigLabelProvider.RUN_WITH_DATA_COLUMN_IDX));
-        tableLayout.setColumnData(tblclmnRunWithData, new ColumnWeightData(40, 200));
+        tableLayout.setColumnData(tblclmnEnviroment, new ColumnWeightData(20, 150));
 
         TableViewerColumn tbvcRun = new TableViewerColumn(tableViewer, SWT.NONE);
         tblclmnRun = tbvcRun.getColumn();
