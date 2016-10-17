@@ -11,6 +11,8 @@ public class ComposerTestsuiteCollectionMessageConstants extends NLS {
 
     public static String PA_ACTION_EXECUTE_TEST_SUITE_COLLECTION;
 
+    public static String PA_TABLE_COLUMN_RUN_CONFIGURATION_DATA;
+
     public static String PA_TABLE_COLUMN_RUN_WITH;
 
     public static String PA_MSG_UNABLE_TO_UPDATE_TEST_SUITE_COLLECTION;
@@ -44,6 +46,8 @@ public class ComposerTestsuiteCollectionMessageConstants extends NLS {
     public static String DIA_TITLE_NEW_TEST_SUITE_COLLECTION;
 
     public static String DIA_MSG_NEW_TEST_SUITE_COLLECTION;
+
+    public static String ERR_TOOLTIP_UNABLE_TO_LOCATE_RUN_CONFIG;
 
     public static String JOB_TITLE_TEST_SUITE_COLLECTION_BUILDER;
 

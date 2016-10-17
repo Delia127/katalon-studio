@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
+import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
 import com.kms.katalon.execution.console.entity.ConsoleOption;
@@ -24,6 +25,9 @@ import com.kms.katalon.execution.mobile.driver.IosDriverConnector;
 import com.kms.katalon.execution.mobile.exception.MobileSetupException;
 
 public abstract class MobileRunConfigurationContributor implements IRunConfigurationContributor {
+    public static final String DEVICE_ID_CONFIGURATION_KEY = "deviceId";
+    public static final String DEVICE_NAME_CONFIGURATION_KEY = "deviceName";
+
     private String deviceName;
 
     public static final StringConsoleOption DEVICE_NAME_CONSOLE_OPTION = new StringConsoleOption() {
@@ -31,7 +35,7 @@ public abstract class MobileRunConfigurationContributor implements IRunConfigura
         public String getOption() {
             return com.kms.katalon.core.appium.constants.AppiumStringConstants.CONF_EXECUTED_DEVICE_ID;
         }
-        
+
         @Override
         public boolean isRequired() {
             return false;
@@ -51,9 +55,8 @@ public abstract class MobileRunConfigurationContributor implements IRunConfigura
         if (StringUtils.isBlank(deviceName)) {
             throw new ExecutionException(StringConstants.MOBILE_ERR_NO_DEVICE_NAME_AVAILABLE);
         }
-        MobileRunConfiguration runConfiguration = getMobileRunConfiguration(projectDir);
         MobileDeviceInfo device = null;
-        try {   
+        try {
             device = MobileDeviceProvider.getDevice(getMobileDriverType(), deviceName);
         } catch (MobileSetupException e) {
             throw new ExecutionException(e.getMessage());
@@ -62,8 +65,19 @@ public abstract class MobileRunConfigurationContributor implements IRunConfigura
             throw new ExecutionException(MessageFormat.format(
                     StringConstants.MOBILE_ERR_CANNOT_FIND_DEVICE_WITH_NAME_X, deviceName));
         }
+        MobileRunConfiguration runConfiguration = getMobileRunConfiguration(projectDir);
         runConfiguration.setDevice(device);
         return runConfiguration;
+    }
+
+    @Override
+    public IRunConfiguration getRunConfiguration(String projectDir,
+            RunConfigurationDescription runConfigurationDescription) throws IOException, ExecutionException,
+            InterruptedException {
+        if (runConfigurationDescription != null && runConfigurationDescription.getRunConfigurationData() != null) {
+            deviceName = runConfigurationDescription.getRunConfigurationData().get(DEVICE_ID_CONFIGURATION_KEY);
+        }
+        return getRunConfiguration(projectDir);
     }
 
     protected abstract MobileRunConfiguration getMobileRunConfiguration(String projectDir) throws IOException;
@@ -86,7 +100,7 @@ public abstract class MobileRunConfigurationContributor implements IRunConfigura
     }
 
     protected abstract MobileDriverType getMobileDriverType();
-    
+
     public static String getDefaultDeviceId(String projectDir, MobileDriverType platform) throws IOException {
         String deviceId = null;
         switch (platform) {

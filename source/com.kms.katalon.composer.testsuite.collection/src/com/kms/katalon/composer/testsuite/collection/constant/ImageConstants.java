@@ -2,12 +2,17 @@ package com.kms.katalon.composer.testsuite.collection.constant;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.composer.components.util.ImageUtil;
 
 public class ImageConstants extends com.kms.katalon.composer.components.impl.constants.ImageConstants {
     private static final Bundle componentBundle = Platform.getBundle("com.kms.katalon.composer.components.impl");
+
+    private static final Bundle currentBundle = FrameworkUtil.getBundle(ImageConstants.class);
 
     // OpenTestSuiteCollectionHandler
     public static final String URL_16_TEST_SUITE_COLLECTION = ImageUtil.getImageUrl(componentBundle,
@@ -32,4 +37,6 @@ public class ImageConstants extends com.kms.katalon.composer.components.impl.con
     public static final Image IMG_16_ARROW_DOWN_BLACK = IMG_16_ARROW_DOWN;
 
     public static final Image IMG_16_ARROW_UP_BLACK = IMG_16_ARROW;
+
+    public static final String IMG_URL_16_CUSTOM = ImageUtil.getImageUrl(currentBundle, "/icons/custom_16.png");
 }
