@@ -11,8 +11,6 @@ public class ComposerTestsuiteCollectionMessageConstants extends NLS {
 
     public static String PA_ACTION_EXECUTE_TEST_SUITE_COLLECTION;
 
-    public static String PA_TABLE_COLUMN_RUN_CONFIGURATION_DATA;
-
     public static String PA_TABLE_COLUMN_RUN_WITH;
 
     public static String PA_MSG_UNABLE_TO_UPDATE_TEST_SUITE_COLLECTION;

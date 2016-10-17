@@ -89,18 +89,18 @@ public class TestSuiteCollectionBuilderJob extends Job {
             monitor.done();
         }
     }
-
+    
     private boolean checkInstallWebDriver(TestSuiteRunConfiguration tsRunConfig) {
         String runConfigId = tsRunConfig.getConfiguration().getRunConfigurationId();
-
+        
         if (WebUIDriverType.SAFARI_DRIVER.toString().equals(runConfigId)) {
             final boolean[] result = { true };
             Display.getDefault().syncExec(new Runnable() {
-
+                
                 @Override
                 public void run() {
                     result[0] = WebDriverInstallationUtil.installSafariWebDriverAsNeed();
-
+                    
                 }
             });
             return result[0];
@@ -122,7 +122,7 @@ public class TestSuiteCollectionBuilderJob extends Job {
         String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
         try {
             IRunConfiguration runConfig = RunConfigurationCollector.getInstance().getRunConfiguration(
-                    tsRunConfig.getConfiguration().getRunConfigurationId(), projectDir, tsRunConfig.getConfiguration());
+                    tsRunConfig.getConfiguration().getRunConfigurationId(), projectDir);
             TestSuiteEntity testSuiteEntity = tsRunConfig.getTestSuiteEntity();
             runConfig.build(testSuiteEntity, new TestSuiteExecutedEntity(testSuiteEntity));
             return new SubIDELauncher(runConfig, LaunchMode.RUN);
@@ -139,5 +139,6 @@ public class TestSuiteCollectionBuilderJob extends Job {
             return null;
         }
     }
-
+    
+    
 }
