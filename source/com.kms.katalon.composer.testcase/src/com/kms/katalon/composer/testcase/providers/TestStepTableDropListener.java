@@ -15,18 +15,21 @@ import org.eclipse.swt.dnd.TreeDropTargetEffect;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.swt.widgets.Widget;
 
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
+import com.kms.katalon.composer.testcase.ast.treetable.AstBuiltInKeywordTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.exceptions.GroovyParsingException;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
@@ -37,9 +40,11 @@ import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
 import com.kms.katalon.composer.testcase.parts.TestCasePart;
 import com.kms.katalon.composer.testcase.treetable.transfer.ScriptTransferData;
+import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
 import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
 import com.kms.katalon.composer.testcase.util.TestCaseEntityUtil;
 import com.kms.katalon.controller.KeywordController;
+import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 
 public class TestStepTableDropListener extends TreeDropTargetEffect {
@@ -82,7 +87,7 @@ public class TestStepTableDropListener extends TreeDropTargetEffect {
     public void drop(DropTargetEvent event) {
         try {
             event.detail = DND.DROP_COPY;
-            
+
             if (event.data instanceof ITreeEntity[]) {
                 handleDropForTreeEntity(event, (ITreeEntity[]) event.data);
             } else if (event.data instanceof IKeywordBrowserTreeEntity[]) {
@@ -98,20 +103,19 @@ public class TestStepTableDropListener extends TreeDropTargetEffect {
                     StringConstants.ERR_CANNOT_DROP_ON_TEST_STEP_TABLE);
         }
     }
-    
 
     private void handleDropForScriptTransferData(DropTargetEvent event, ScriptTransferData[] scriptTransferDatas)
             throws GroovyParsingException {
         if (scriptTransferDatas.length <= 0) {
             return;
         }
-        
+
         List<AstTreeTableNode> dragNodes = testCasePart.getDragNodes();
         if (dragNodes != null && dragNodes.contains(getHoveredTreeTableNode(event))) {
             event.detail = DND.DROP_NONE;
             return;
         }
-        
+
         ScriptTransferData firstScriptTransferData = scriptTransferDatas[0];
         boolean dropSuccessfully = handleDropForScriptSnippet(event, firstScriptTransferData.getScriptSnippet());
         if (!dropSuccessfully) {
@@ -178,6 +182,11 @@ public class TestStepTableDropListener extends TreeDropTargetEffect {
     }
 
     private void handleDropForTreeEntity(DropTargetEvent event, ITreeEntity[] treeEntities) throws Exception {
+        Widget item = event.item;
+        if (item != null && (item.getData() instanceof AstBuiltInKeywordTreeTableNode)) {
+            handleDropTestObject(getTestObjectFromSelectionIfAvailable(treeEntities),
+                    (AstBuiltInKeywordTreeTableNode) item.getData());
+        }
         Set<TestCaseEntity> calledTestCases = collectCallTestCasesFromTreeEntities(treeEntities);
         if (calledTestCases.isEmpty()) {
             return;
@@ -186,6 +195,49 @@ public class TestStepTableDropListener extends TreeDropTargetEffect {
         testCaseTableInput.addDefaultImports();
         testCaseTableInput.addCallTestCases(getHoveredTreeTableNode(event), getNodeAddType(event),
                 calledTestCases.toArray(new TestCaseEntity[calledTestCases.size()]));
+    }
+
+    private WebElementTreeEntity getTestObjectFromSelectionIfAvailable(ITreeEntity[] treeEntities) {
+        for (ITreeEntity treeEntity : treeEntities) {
+            if (treeEntity instanceof WebElementTreeEntity) {
+                return (WebElementTreeEntity) treeEntity;
+            }
+        }
+        return null;
+    }
+
+    private void handleDropTestObject(WebElementTreeEntity webElementTreeEntity,
+            AstBuiltInKeywordTreeTableNode tableNode) {
+        if (webElementTreeEntity == null) {
+            return;
+        }
+        ExpressionWrapper findTestObject = convertWebElementToTestObject(webElementTreeEntity, tableNode);
+        if (findTestObject == null) {
+            return;
+        }
+        if (!tableNode.setTestObject(findTestObject)) {
+            return;
+        }
+        testCasePart.getTreeTableInput().setDirty(true);
+        treeViewer.refresh(tableNode);
+    }
+
+    private ExpressionWrapper convertWebElementToTestObject(WebElementTreeEntity webElementTreeEntity,
+            AstBuiltInKeywordTreeTableNode node) {
+        String objectPk = null;
+        try {
+            if (!(webElementTreeEntity.getObject() instanceof WebElementEntity)) {
+                return null;
+            }
+            objectPk = ((WebElementEntity) webElementTreeEntity.getObject()).getIdForDisplay();
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+        if (objectPk == null) {
+            return null;
+        }
+        return AstEntityInputUtil.createNewFindTestObjectMethodCall(objectPk, node.getASTObject());
+
     }
 
     private Set<TestCaseEntity> collectCallTestCasesFromTreeEntities(ITreeEntity[] treeEntities) throws Exception {
@@ -219,8 +271,7 @@ public class TestStepTableDropListener extends TreeDropTargetEffect {
         }
         TestCaseTreeTableInput testCaseTreeTableInput = getTestCaseTreeTableInput();
         testCaseTreeTableInput.addDefaultImports();
-        return testCaseTreeTableInput.addNewAstObject(statement, getHoveredTreeTableNode(event),
-                getNodeAddType(event));
+        return testCaseTreeTableInput.addNewAstObject(statement, getHoveredTreeTableNode(event), getNodeAddType(event));
     }
 
     private NodeAddType getNodeAddType(DropTargetEvent event) {

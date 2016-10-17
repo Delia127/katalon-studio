@@ -495,7 +495,6 @@ public class TestCasePart implements IComposerPart, EventHandler {
 
         DragSource dragSource = new DragSource(treeTable.getTree(), operations);
         dragSource.setTransfer(new Transfer[] { new ScriptTransfer() });
-
         dragSource.addDragListener(new DragSourceListener() {
             @Override
             public void dragStart(DragSourceEvent event) {
