@@ -19,6 +19,7 @@ import com.kms.katalon.core.testcase.TestCaseFactory;
 import com.kms.katalon.core.testdata.TestDataFactory;
 import com.kms.katalon.core.testobject.ObjectRepository;
 import com.kms.katalon.custom.keyword.KeywordClass;
+import com.kms.katalon.groovy.constant.GroovyConstants;
 
 public class MethodCallExpressionWrapper extends ExpressionWrapper {
     public static final String TO_STRING_METHOD_NAME = "toString";
@@ -27,11 +28,13 @@ public class MethodCallExpressionWrapper extends ExpressionWrapper {
 
     public static final String CALL_TEST_CASE_METHOD_NAME = "callTestCase";
 
-    public static final String FIND_TEST_CASE_METHOD_NAME = "findTestCase";
+    public static final String FIND_TEST_CASE_METHOD_NAME = GroovyConstants.FIND_TEST_CASE_METHOD_NAME;
 
-    public static final String FIND_TEST_DATA_METHOD_NAME = "findTestData";
+    public static final String FIND_TEST_DATA_METHOD_NAME = GroovyConstants.FIND_TEST_DATA_METHOD_NAME;
 
-    public static final String FIND_TEST_OBJECT_METHOD_NAME = "findTestObject";
+    public static final String FIND_TEST_OBJECT_METHOD_NAME = GroovyConstants.FIND_TEST_OBJECT_METHOD_NAME;
+
+    public static final String FIND_CHECKPOINT_METHOD_NAME = GroovyConstants.FIND_CHECKPOINT_METHOD_NAME;
 
     public static final String GET_VALUE_METHOD_NAME = "getValue";
 

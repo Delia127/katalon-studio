@@ -2,8 +2,10 @@ package com.kms.katalon.composer.util.groovy;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jdt.groovy.model.GroovyCompilationUnit;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.Flags;
@@ -177,13 +179,12 @@ public class GroovyCompilationHelper {
         ICompilationUnit connectedCU = null;
         try {
             IType createdType;
-            ImportsManager imports;
+            ImportsManager imports = null;
             int indent = 0;
 
             Set<String> existingImports;
 
-            String lineDelimiter = null;
-            lineDelimiter = StubUtility.getLineDelimiterUsed(parentPackage.getJavaProject());
+            String lineDelimiter = StubUtility.getLineDelimiterUsed(parentPackage.getJavaProject());
 
             String cuName = typeName + GroovyConstants.GROOVY_FILE_EXTENSION;
             ICompilationUnit parentCU = parentPackage.createCompilationUnit(cuName, "", false, null); //$NON-NLS-1$
@@ -202,7 +203,6 @@ public class GroovyCompilationHelper {
             CompilationUnit astRoot = createASTForImports(parentCU);
             existingImports = getExistingImports(astRoot);
 
-            imports = null;
             switch (type) {
                 case SCRIPTS_IMPORTS:
                     imports = addImports(parentPackage, typeName, astRoot);
@@ -229,8 +229,7 @@ public class GroovyCompilationHelper {
 
             createdType = parentCU.getType(typeName);
 
-            // add imports for superclass/interfaces, so types can be resolved
-            // correctly
+            // add imports for superclass/interfaces, so types can be resolved correctly
 
             ICompilationUnit cu = createdType.getCompilationUnit();
 
@@ -272,14 +271,21 @@ public class GroovyCompilationHelper {
     }
 
     private static ImportsManager addImports(IPackageFragment parentPackage, String typeName, CompilationUnit astRoot) {
-        ImportsManager imports;
-        imports = new ImportsManager(astRoot);
-        // add an import that will be removed again. Having this import solves
-        // 14661
+        ImportsManager imports = new ImportsManager(astRoot);
+        // add an import that will be removed again. Having this import solves 14661
         imports.addImport(JavaModelUtil.concatenateName(parentPackage.getElementName(), typeName));
         for (String className : GroovyConstants.getStartingClassesName()) {
             imports.addImport(className);
         }
+
+        for (Entry<String, String> entry : GroovyConstants.DEFAULT_STATIC_METHOD_IMPORTS.entrySet()) {
+            imports.addStaticImport(entry.getValue(), entry.getKey(), false);
+        }
+
+        for (Entry<String, String> entry : GroovyConstants.DEFAULT_KEYWORD_CONTRIBUTOR_IMPORTS.entrySet()) {
+            imports.addAliasImport(StringUtils.substringAfterLast(entry.getValue(), "."), entry.getKey());
+        }
+
         return imports;
     }
 
