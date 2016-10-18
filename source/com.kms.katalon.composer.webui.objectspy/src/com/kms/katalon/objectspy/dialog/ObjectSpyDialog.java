@@ -101,6 +101,8 @@ import com.kms.katalon.objectspy.constants.ObjectspyMessageConstants;
 import com.kms.katalon.objectspy.constants.StringConstants;
 import com.kms.katalon.objectspy.core.HTMLElementCaptureServer;
 import com.kms.katalon.objectspy.core.InspectSession;
+import com.kms.katalon.objectspy.core.KatalonRequestHandler;
+import com.kms.katalon.objectspy.core.RequestFailedListener;
 import com.kms.katalon.objectspy.dialog.AddToObjectRepositoryDialog.AddToObjectRepositoryDialogResult;
 import com.kms.katalon.objectspy.element.DomElementXpath;
 import com.kms.katalon.objectspy.element.HTMLElement;
@@ -114,6 +116,7 @@ import com.kms.katalon.objectspy.element.tree.HTMLRawElementTreeContentProvider;
 import com.kms.katalon.objectspy.element.tree.HTMLRawElementTreeViewerFilter;
 import com.kms.katalon.objectspy.exception.DOMException;
 import com.kms.katalon.objectspy.exception.IEAddonNotInstalledException;
+import com.kms.katalon.objectspy.highlight.HighlightRequest;
 import com.kms.katalon.objectspy.util.DOMUtils;
 import com.kms.katalon.objectspy.util.HTMLElementUtil;
 import com.kms.katalon.objectspy.util.InspectSessionUtil;
@@ -162,6 +165,8 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
     private ToolItem removeElementToolItem;
 
     private ToolItem addElmtToObjRepoToolItem;
+    
+    private ToolItem highlightObjectToolItem;
 
     private ToolItem startBrowser;
 
@@ -218,7 +223,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         gridLayout.marginWidth = 0;
         gridLayout.verticalSpacing = 0;
         gridLayout.horizontalSpacing = 0;
-
+        
         Composite toolbarComposite = new Composite(mainContainer, SWT.NONE);
         toolbarComposite.setLayout(new GridLayout(2, false));
         toolbarComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
@@ -255,7 +260,8 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         createRightPanel(htmlDomComposite);
 
         hSashForm.setWeights(new int[] { 3, 8 });
-
+        mainContainer.pack();
+        
         return mainContainer;
     }
 
@@ -489,6 +495,8 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
                     enableToolItem(removeElementToolItem, selectedObject instanceof HTMLElement);
                     enableToolItem(addFrameElementToolItem, selectedObject instanceof HTMLElement);
                     enableToolItem(addElementToolItem, selectedObject instanceof HTMLElement);
+                    enableToolItem(highlightObjectToolItem, selectedObject instanceof HTMLElement
+                            && ((HTMLElement)selectedObject).getParentPageElement() != null);
                 }
             }
         });
@@ -902,6 +910,37 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
                 }
             }
         });
+        
+        new ToolItem(mainToolbar, SWT.SEPARATOR);
+
+        highlightObjectToolItem = new ToolItem(mainToolbar, SWT.NONE);
+        highlightObjectToolItem.setText(StringConstants.DIA_TOOLITEM_HIGHLIGHT);
+        highlightObjectToolItem.setToolTipText(StringConstants.DIA_TOOLITEM_TIP_HIGHLIGHT);
+        highlightObjectToolItem.setImage(ImageConstants.IMG_24_HIGHLIGHT);
+        highlightObjectToolItem.setEnabled(false);
+
+        highlightObjectToolItem.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                try {
+                    if (capturedObjectComposite.getElementTreeViewer().getSelection() instanceof ITreeSelection) {
+                        ITreeSelection selection = (ITreeSelection) capturedObjectComposite.getElementTreeViewer()
+                                .getSelection();
+                        if (selection.getPaths().length != 1) {
+                            return;
+                        }
+                        HTMLElement element = (HTMLElement) selection.getPaths()[0].getLastSegment();
+                        highlighObject(element);
+                    }
+
+                } catch (Exception exception) {
+                    logger.error(exception);
+                    MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE, exception.getMessage());
+                }
+            }
+        });
+
     }
 
     private void addElementToObjectRepository() throws Exception {
@@ -1230,6 +1269,40 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
             return;
         }
         desktop.open(new File(ieAddonSetupPath));
+    }
+    
+    private void highlighObject(HTMLElement element) {
+        HighlightRequest request = new HighlightRequest(element);
+
+        KatalonRequestHandler.getInstance().setRequest(request, new RequestFailedListener() {
+            @Override
+            public void requestFailed(final String errorMessage) {
+                ObjectSpyDialog.this.getShell().getDisplay().syncExec(new Runnable() {
+                    public void run() {
+                        MessageDialog.openError(getParentShell(), StringConstants.ERROR, errorMessage);
+                    }
+                });
+
+            }
+        });
+    }
+
+    @Override
+    public int open() {
+        try {
+            startServerWithPort(getInstantBrowsersPort());
+        } catch (Exception ex) {
+            logger.error(ex);
+        }
+        if (Platform.OS_WIN32.equals(Platform.getOS())) {
+            if (getShell() == null) {
+                create();
+            }
+            Point size = getShell().getSize();
+            getShell().setSize(size.x + 65, size.y);
+            getShell().setMinimumSize(size.x + 65, size.y);
+        }
+        return super.open();
     }
 
 }

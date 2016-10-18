@@ -41,4 +41,6 @@ public class ImageConstants {
     public static final Image IMG_16_DONE = ImageUtil.loadImage(currentBundle, "/icons/done_16.png");
 
     public static final Image IMG_16_BUG = ImageUtil.loadImage(currentBundle, "/icons/bug_16.png");
+
+    public static final Image IMG_24_HIGHLIGHT = ImageUtil.loadImage(currentBundle, "/icons/highlight_24.png");
 }

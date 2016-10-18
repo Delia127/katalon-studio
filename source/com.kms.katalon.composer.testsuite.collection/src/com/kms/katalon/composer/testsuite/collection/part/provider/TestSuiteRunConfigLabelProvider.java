@@ -101,5 +101,4 @@ public class TestSuiteRunConfigLabelProvider extends TypeCheckStyleCellTableLabe
         return executionProvider != null ? StringUtils.defaultIfEmpty(getText(element), null)
                 : ComposerTestsuiteCollectionMessageConstants.ERR_TOOLTIP_UNABLE_TO_LOCATE_RUN_CONFIG;
     }
-
 }
