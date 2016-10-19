@@ -5,7 +5,6 @@ import java.text.MessageFormat;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.widgets.Display;
 
 import com.google.common.io.Files;
 import com.kms.katalon.composer.components.log.LoggerSingleton;

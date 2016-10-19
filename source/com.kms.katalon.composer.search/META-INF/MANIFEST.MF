@@ -17,14 +17,14 @@ Require-Bundle: org.eclipse.e4.ui.model.workbench,
  org.eclipse.e4.core.services,
  com.kms.katalon.composer.components,
  com.kms.katalon.constant,
- com.kms.katalon.composer.testcase,
  org.eclipse.ui.workbench.texteditor,
  com.kms.katalon.composer.components.impl,
  org.eclipse.e4.ui.workbench,
  org.eclipse.e4.ui.di,
  org.eclipse.e4.core.di,
  org.eclipse.e4.core.commands,
- com.kms.katalon;bundle-version="1.0.0"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+ com.kms.katalon;bundle-version="1.0.0",
+ com.kms.katalon.composer.testcase
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: com.kms.katalon.dal.fileservice

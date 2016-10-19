@@ -247,6 +247,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
                         }
                     }
                 });
+                tabFolder.layout();
             }
             childTestCaseVariablesPart.loadVariables();
             childTestCaseIntegrationPart.loadInput();

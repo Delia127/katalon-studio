@@ -34,7 +34,6 @@ public class Application implements IApplication {
     public static final String RUN_MODE_OPTION = "runMode";
 
     public static final String RUN_MODE_OPTION_CONSOLE = "console";
-
     /*
      * (non-Javadoc)
      * @see org.eclipse.equinox.app.IApplication#start(org.eclipse.equinox.app.
@@ -67,7 +66,7 @@ public class Application implements IApplication {
 
     private void preRunInit() {
         ApplicationSession.clean();
-        MacOSAddon.initDefaultJRE();
+        MacOSAddon.initMacOSConfig();
         ApplicationInfo.setAppInfoIntoUserHomeDir();
     }
 

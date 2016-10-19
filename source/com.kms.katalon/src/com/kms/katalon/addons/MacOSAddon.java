@@ -26,6 +26,8 @@ import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 @SuppressWarnings("restriction")
 public class MacOSAddon {
+    private static final String SWT_SMALL_FONT_SYSTEM_PROPERTIES = "org.eclipse.swt.internal.carbon.smallFonts";
+
     private static final String JRE = "jre";
 
     private static final String MAC_OSX_JRE = "MacOSX JRE";
@@ -35,10 +37,22 @@ public class MacOSAddon {
 
     private static final String UPDATED_PREF_VM_XML_KEY = "UPDATED_PREF_VM_XML_LOCATION";
 
-    public static void initDefaultJRE() {
+    public static void initMacOSConfig() {
         if (!Platform.OS_MACOSX.equals(Platform.getOS())) {
             return;
         }
+        initSmallFonts();
+        initDefaultJRE();
+    }
+
+    /**
+     * Handle Eclipse Neon bugs that cannot read JVM argument -Dorg.eclipse.swt.internal.carbon.smallFonts
+     */
+    private static void initSmallFonts() {
+        System.setProperty(SWT_SMALL_FONT_SYSTEM_PROPERTIES, "");
+    }
+
+    private static void initDefaultJRE() {
         ScopedPreferenceStore prefStore = getPreferenceStore(LaunchingPlugin.ID_PLUGIN);
         if (prefStore == null) {
             return;

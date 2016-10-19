@@ -40,5 +40,5 @@ Require-Bundle: com.kms.katalon.composer.preferences,
  org.apache.commons.cli,
  com.kms.katalon.composer.util,
  com.kms.katalon.groovy
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: org.qas.qtest.api.services.project.model

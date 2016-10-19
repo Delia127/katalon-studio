@@ -157,6 +157,7 @@ public class TestSuiteCompositePart implements EventHandler, MultipleTabsComposi
                 testSuiteIntegrationPart.setShowClose(false);
             }
 
+            tabFolder.layout();
             loadTestSuite();
             isInitialized = true;
         }

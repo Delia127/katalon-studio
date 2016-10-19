@@ -23,5 +23,5 @@ Require-Bundle: com.kms.katalon.constant,
  org.eclipse.jdt.core,
  org.apache.commons.lang,
  com.kms.katalon.core
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy

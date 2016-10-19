@@ -6,7 +6,6 @@ import org.eclipse.ui.PlatformUI;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
-import com.kms.katalon.composer.components.impl.control.HiDPISupportedImage;
 import com.kms.katalon.composer.components.util.ImageUtil;
 
 public class ImageConstants extends com.kms.katalon.composer.components.impl.constants.ImageConstants {
@@ -39,7 +38,7 @@ public class ImageConstants extends com.kms.katalon.composer.components.impl.con
     public static final Image IMG_16_FAILED_CONTINUE = ImageUtil.loadImage(currentBundle,
             "/icons/failed_continue_16.png");
 
-    public static final Image IMG_16_FOLDER = HiDPISupportedImage.loadImage(shareBundle, "/icons/folder_16.png");
+    public static final Image IMG_16_FOLDER = ImageUtil.loadImage(shareBundle, "/icons/folder_16.png");
 
     // AstAbstractKeywordTreeTableNode
     public static final Image IMG_16_FAILED_STOP = ImageUtil.loadImage(currentBundle, "/icons/failed_stop_16.png");
@@ -73,7 +72,7 @@ public class ImageConstants extends com.kms.katalon.composer.components.impl.con
     public static final Image IMG_16_LOOP = ImageUtil.loadImage(currentBundle, "/icons/loop_16.png");
 
     // KeywordTreeLabelProvider
-    public static final Image IMG_16_KEYWORD = HiDPISupportedImage.loadImage(shareBundle, "/icons/keyword_16.png");
+    public static final Image IMG_16_KEYWORD = ImageUtil.loadImage(shareBundle, "/icons/keyword_16.png");
 
     // ArgumentInputBuilderDialog
     public static final Image IMG_16_WARN_TABLE_ITEM = PlatformUI.getWorkbench()

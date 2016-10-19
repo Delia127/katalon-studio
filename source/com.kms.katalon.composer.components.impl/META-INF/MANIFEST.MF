@@ -4,7 +4,7 @@ Bundle-Name: Impl
 Bundle-SymbolicName: com.kms.katalon.composer.components.impl;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: KMS
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Require-Bundle: com.kms.katalon.entity;bundle-version="1.0.0",
  com.kms.katalon.controller;bundle-version="1.0.0",

@@ -4,7 +4,7 @@ Bundle-Name: ComposerUtil
 Bundle-SymbolicName: com.kms.katalon.composer.util
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: KMS
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.core.resources,
  org.eclipse.e4.ui.model.workbench,

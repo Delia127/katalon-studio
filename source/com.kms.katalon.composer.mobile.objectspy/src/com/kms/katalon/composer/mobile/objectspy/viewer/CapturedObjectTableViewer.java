@@ -41,7 +41,7 @@ public class CapturedObjectTableViewer extends CTableViewer {
         return (CapturedMobileElement) selection.getFirstElement();
     }
 
-    private IStructuredSelection getStructuredSelection() {
+    public IStructuredSelection getStructuredSelection() {
         IStructuredSelection selection = (IStructuredSelection) getSelection();
         return selection;
     }

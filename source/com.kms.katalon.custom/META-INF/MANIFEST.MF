@@ -26,6 +26,6 @@ Require-Bundle: org.codehaus.groovy,
  org.apache.xerces.impl,
  org.eclipse.core.filesystem,
  org.apache.commons.lang
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: com.kms.katalon.custom.addon.CustomBundleActivator

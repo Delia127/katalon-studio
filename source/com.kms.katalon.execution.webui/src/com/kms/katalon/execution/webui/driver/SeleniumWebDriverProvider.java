@@ -9,6 +9,10 @@ import static org.eclipse.core.runtime.Platform.getOSArch;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.attribute.PosixFilePermission;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
@@ -29,7 +33,18 @@ public class SeleniumWebDriverProvider {
         // run as product
         return new File(ClassPathResolver.getConfigurationFolder() + File.separator + DRIVERS_FOLDER_NAME);
     }
-
+    
+    private static void makeFileExecutable(String filePath) throws IOException {
+        File file = new File(filePath);
+        if (file.exists() && file.isFile()) {
+            Set<PosixFilePermission> perms = new HashSet<>();
+            for (PosixFilePermission permission : PosixFilePermission.values()) {
+                perms.add(permission);
+            }
+            Files.setPosixFilePermissions(file.toPath(), perms);
+        }
+    }
+    
     public static String getChromeDriverPath() {
         try {
             switch (getOS()) {
@@ -62,8 +77,10 @@ public class SeleniumWebDriverProvider {
     }
 
     private static String getChromeDriverPathForMac() throws IOException {
-        return getDriverDirectory().getAbsolutePath() + File.separator + "chromedriver_mac32" + File.separator
+        String chromeDriverPath = getDriverDirectory().getAbsolutePath() + File.separator + "chromedriver_mac32" + File.separator
                 + "chromedriver";
+        makeFileExecutable(chromeDriverPath);
+        return chromeDriverPath;
     }
 
     public static String getIEDriverPath() {
@@ -105,8 +122,10 @@ public class SeleniumWebDriverProvider {
                 return getDriverDirectory().getAbsolutePath() + File.separator + "firefox_linux64" + File.separator
                         + "wires";
             case OS_MACOSX:
-                return getDriverDirectory().getAbsolutePath() + File.separator + "firefox_mac" + File.separator
+                String geckoDriverPath = getDriverDirectory().getAbsolutePath() + File.separator + "firefox_mac" + File.separator
                         + "wires";
+                makeFileExecutable(geckoDriverPath);
+                return geckoDriverPath;
         }
         return "";
     }

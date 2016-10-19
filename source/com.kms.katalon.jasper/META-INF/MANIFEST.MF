@@ -4,7 +4,7 @@ Bundle-Name: Jasper
 Bundle-SymbolicName: com.kms.katalon.jasper;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: KMS
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: com.kms.katalon.core.logging.model,
  com.kms.katalon.core.reporting,
  com.kms.katalon.core.util

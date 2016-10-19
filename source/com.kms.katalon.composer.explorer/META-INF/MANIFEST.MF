@@ -4,7 +4,7 @@ Bundle-Name: com.kms.katalon.composer.explorer
 Bundle-SymbolicName: com.kms.katalon.composer.explorer;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: KMS
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Export-Package: com.kms.katalon.composer.explorer.custom,
  com.kms.katalon.composer.explorer.handlers,

@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.components;
 
+import java.net.MalformedURLException;
+
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.ui.model.application.ui.menu.MItem;
 import org.eclipse.e4.ui.workbench.IPresentationEngine;
@@ -8,7 +10,8 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.ToolItem;
 
-import com.kms.katalon.composer.components.impl.control.HiDPISupportedImage;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.util.ImageUtil;
 
 @SuppressWarnings("restriction")
 public class CHandledContributionItem extends HandledContributionItem {
@@ -23,16 +26,17 @@ public class CHandledContributionItem extends HandledContributionItem {
         updateIcons();
     }
 
-    private void updateIcons() {
+    @Override
+    protected void updateIcons() {
         if (!(getWidget() instanceof Item)) {
             return;
         }
         Item item = (Item) getWidget();
-        String iconURI = getModel().getIconURI() != null ? getModel().getIconURI() : StringUtils.EMPTY; //$NON-NLS-1$
+        String iconURI = getModel().getIconURI() != null ? getModel().getIconURI() : StringUtils.EMPTY; // $NON-NLS-1$
         String disabledURI = getDisabledIconURI(getModel());
         Object disabledData = item.getData(DISABLED_URI);
         if (disabledData == null) {
-            disabledData = StringUtils.EMPTY; //$NON-NLS-1$
+            disabledData = StringUtils.EMPTY; // $NON-NLS-1$
         }
         Image iconImage = getImage(iconURI);
         item.setImage(iconImage);
@@ -47,14 +51,19 @@ public class CHandledContributionItem extends HandledContributionItem {
 
     private String getDisabledIconURI(MItem toolItem) {
         Object obj = toolItem.getTransientData().get(IPresentationEngine.DISABLED_ICON_IMAGE_KEY);
-        return obj instanceof String ? (String) obj : StringUtils.EMPTY; //$NON-NLS-1$
+        return obj instanceof String ? (String) obj : StringUtils.EMPTY; // $NON-NLS-1$
     }
 
     private Image getImage(String iconURI) {
         if (StringUtils.isBlank(iconURI)) {
             return null;
         }
-        return HiDPISupportedImage.loadImage(iconURI);
+        try {
+            return ImageUtil.loadImage(iconURI);
+        } catch (MalformedURLException e) {
+            LoggerSingleton.logError(e);
+            return null;
+        }
     }
 
 }

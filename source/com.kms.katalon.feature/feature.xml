@@ -19,6 +19,7 @@
 
    <requires>
       <import plugin="org.apache.batik.util.gui" version="1.7.0" match="equivalent"/>
+      <import plugin="org.eclipse.emf.ecore" version="2.12.0" match="compatible"/>
       <import plugin="org.eclipse.osgi" version="3.10.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.equinox.common" version="3.2.0" match="compatible"/>
       <import plugin="org.eclipse.core.databinding.observable" version="1.3.0" match="compatible"/>
@@ -28,22 +29,19 @@
       <import plugin="org.eclipse.equinox.common" version="3.5.0" match="compatible"/>
       <import plugin="org.eclipse.core.runtime" version="3.6.0" match="compatible"/>
       <import plugin="org.eclipse.equinox.registry" version="3.3.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.osgi" version="3.6.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.equinox.preferences" version="3.3.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.e4.core.di" version="0.9.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.osgi.services" version="3.2.100" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.e4.core.di" version="1.5.1" match="greaterOrEqual"/>
       <import plugin="org.eclipse.swt" version="3.2.0" match="compatible"/>
       <import plugin="org.eclipse.jface" version="3.2.0" match="compatible"/>
       <import plugin="org.eclipse.core.databinding.property" version="1.3.0" match="compatible"/>
       <import plugin="org.eclipse.core.databinding" version="1.2.0" match="compatible"/>
       <import plugin="org.eclipse.osgi" version="3.7.0" match="compatible"/>
-      <import plugin="org.eclipse.equinox.common" version="3.6.100" match="compatible"/>
+      <import plugin="org.eclipse.equinox.common" version="3.8.0" match="compatible"/>
       <import plugin="org.eclipse.core.jobs" version="3.2.0" match="compatible"/>
       <import plugin="org.eclipse.equinox.registry" version="3.4.0" match="compatible"/>
       <import plugin="org.eclipse.equinox.preferences" version="3.4.0" match="compatible"/>
       <import plugin="org.eclipse.core.contenttype" version="3.3.0" match="compatible"/>
       <import plugin="org.eclipse.equinox.app" version="1.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.equinox.registry" version="3.5.0" match="equivalent"/>
+      <import plugin="org.eclipse.e4.core.di.annotations" version="1.4.0" match="compatible"/>
       <import plugin="org.eclipse.swt" version="3.6.0" match="compatible"/>
       <import plugin="org.eclipse.e4.ui.css.swt" version="0.9.1" match="greaterOrEqual"/>
       <import plugin="org.eclipse.e4.ui.css.core" version="0.9.0" match="greaterOrEqual"/>
@@ -51,11 +49,16 @@
       <import plugin="org.eclipse.equinox.registry" version="3.5.0" match="compatible"/>
       <import plugin="org.eclipse.equinox.preferences" version="3.3.0" match="compatible"/>
       <import plugin="org.eclipse.core.runtime" version="3.8.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.e4.core.di.extensions" version="0.9.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.e4.core.di" version="0.9.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.e4.core.di.extensions" version="0.13.200" match="greaterOrEqual"/>
       <import plugin="org.eclipse.osgi.services" version="3.2.100" match="compatible"/>
+      <import plugin="org.apache.felix.gogo.runtime" version="0.10.0" match="greaterOrEqual"/>
+      <import plugin="org.apache.felix.gogo.shell" version="0.10.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.equinox.p2.core" version="2.0.0" match="compatible"/>
       <import plugin="org.eclipse.equinox.common" version="3.4.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.equinox.preferences" version="3.3.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.core.jobs" version="3.5.0" match="greaterOrEqual"/>
+      <import plugin="org.tukaani.xz" version="1.3.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.core.jobs" version="3.4.0" match="compatible"/>
       <import plugin="org.eclipse.core.variables" version="3.1.0" match="compatible"/>
       <import plugin="org.eclipse.core.runtime" version="3.2.0" match="compatible"/>
@@ -65,18 +68,24 @@
       <import plugin="org.eclipse.equinox.registry" version="3.4.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.core.expressions" version="3.2.0" match="compatible"/>
       <import plugin="org.eclipse.core.filesystem" version="1.3.0" match="compatible"/>
-      <import plugin="org.eclipse.core.runtime" version="3.7.0" match="compatible"/>
+      <import plugin="org.eclipse.core.runtime" version="3.12.0" match="compatible"/>
       <import plugin="org.eclipse.core.databinding.observable" version="1.2.0" match="compatible"/>
       <import plugin="com.kms.katalon.constant" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.e4.ui.workbench" version="0.9.1" match="greaterOrEqual"/>
       <import plugin="org.eclipse.e4.ui.model.workbench" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="com.kms.katalon.composer.components" version="1.0.0" match="greaterOrEqual"/>
+      <import plugin="com.kms.katalon.execution" version="1.0.0" match="greaterOrEqual"/>
+      <import plugin="com.kms.katalon.entity" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="com.kms.katalon.controller" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="com.kms.katalon.composer.components.impl" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="com.kms.katalon.preferences" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="com.kms.katalon.core" version="1.0.0" match="greaterOrEqual"/>
+      <import plugin="com.kms.katalon.composer.project"/>
+      <import plugin="org.eclipse.emf.common" version="2.12.0" match="compatible"/>
       <import plugin="org.w3c.dom.smil" version="1.0.0" match="equivalent"/>
       <import plugin="org.eclipse.swt" version="3.4.1" match="compatible"/>
+      <import plugin="org.eclipse.equinox.common" version="3.7.0" match="compatible"/>
+      <import plugin="org.eclipse.swt" version="3.104.0" match="compatible"/>
       <import plugin="org.eclipse.core.commands" version="3.4.0" match="compatible"/>
       <import plugin="org.eclipse.equinox.common" version="3.3.0" match="compatible"/>
       <import plugin="org.eclipse.equinox.registry" version="3.2.0" match="compatible"/>
@@ -90,11 +99,9 @@
       <import plugin="org.eclipse.osgi" version="3.6.0" match="compatible"/>
       <import plugin="org.eclipse.e4.core.contexts" version="0.9.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.e4.ui.di" version="0.9.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.core.filesystem" version="1.4.100" match="compatible"/>
       <import plugin="org.eclipse.equinox.common" version="3.6.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.equinox.registry" version="3.5.0" match="greaterOrEqual"/>
       <import plugin="org.apache.batik.util" version="1.7.0" match="equivalent"/>
-      <import plugin="com.kms.katalon.entity" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.jdt.core"/>
       <import plugin="org.eclipse.core.runtime" version="3.5.0" match="compatible"/>
       <import plugin="org.eclipse.text" version="3.5.0" match="compatible"/>
@@ -107,25 +114,30 @@
       <import plugin="com.kms.katalon" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="com.kms.katalon.groovy" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="com.kms.katalon.custom" version="1.0.0" match="greaterOrEqual"/>
-      <import plugin="com.kms.katalon.execution" version="1.0.0" match="greaterOrEqual"/>
+      <import plugin="com.kms.katalon.composer.folder"/>
       <import plugin="com.kms.katalon.selenium-standalone" version="1.0.0" match="greaterOrEqual"/>
+      <import plugin="com.kms.katalon.core.mobile"/>
+      <import plugin="com.kms.katalon.core.webservice"/>
+      <import plugin="com.kms.katalon.core.webui"/>
       <import plugin="org.apache.commons.io" version="2.4.0" match="greaterOrEqual"/>
       <import plugin="org.apache.commons.codec" version="1.7.0" match="greaterOrEqual"/>
-      <import plugin="com.kms.katalon.core.webui"/>
+      <import plugin="com.kms.katalon.execution.webui"/>
       <import plugin="com.kms.katalon.dal" version="1.0.0" match="greaterOrEqual"/>
+      <import plugin="com.kms.katalon.composer.testdata" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="com.kms.katalon.composer.testcase" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="org.apache.poi" version="3.9.0" match="greaterOrEqual"/>
       <import plugin="org.apache.poi.ooxml.schemas" version="3.9.0" match="greaterOrEqual"/>
       <import plugin="org.dom4j" version="1.6.1" match="greaterOrEqual"/>
       <import plugin="org.eclipse.e4.ui.model.workbench" version="1.1.0.v20140512-1820" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.jface" version="3.10.0" match="compatible"/>
+      <import plugin="org.eclipse.jface" version="3.10.100" match="compatible"/>
       <import plugin="org.eclipse.ui.workbench" version="3.105.0" match="compatible"/>
       <import plugin="org.eclipse.core.expressions" version="3.4.0" match="compatible"/>
+      <import plugin="org.eclipse.core.runtime" version="3.7.0" match="compatible"/>
       <import plugin="org.eclipse.swt" version="3.101.0" match="compatible"/>
       <import plugin="org.eclipse.ui.ide" version="3.5.0" match="compatible"/>
       <import plugin="org.eclipse.ui" version="3.5.0" match="compatible"/>
       <import plugin="org.eclipse.jface.text" version="3.8.0" match="compatible"/>
-      <import plugin="org.eclipse.ui.workbench.texteditor" version="3.7.0" match="compatible"/>
+      <import plugin="org.eclipse.ui.workbench.texteditor" version="3.10.0" match="compatible"/>
       <import plugin="org.eclipse.core.filebuffers" version="3.5.0" match="compatible"/>
       <import plugin="org.eclipse.core.resources" version="3.5.0" match="compatible"/>
       <import plugin="org.eclipse.core.filesystem" version="1.2.0" match="compatible"/>
@@ -137,12 +149,21 @@
       <import plugin="org.eclipse.equinox.p2.engine" version="2.0.0" match="compatible"/>
       <import plugin="org.eclipse.equinox.p2.metadata" version="2.0.0" match="compatible"/>
       <import plugin="org.eclipse.equinox.bidi" version="0.10.0"/>
+      <import plugin="org.eclipse.e4.core.services" version="2.0.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.e4.core.contexts" version="1.3.100" match="compatible"/>
+      <import plugin="org.eclipse.e4.ui.workbench" version="1.3.0" match="compatible"/>
+      <import plugin="org.eclipse.e4.core.commands" version="0.11.0" match="compatible"/>
+      <import plugin="org.eclipse.e4.ui.model.workbench" version="1.1.0" match="compatible"/>
+      <import plugin="org.eclipse.e4.core.di" version="1.6.0" match="compatible"/>
+      <import plugin="org.eclipse.e4.core.di.extensions" version="0.14.0" match="compatible"/>
+      <import plugin="org.eclipse.osgi.services" version="3.5.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ui.ide" version="3.6.0" match="compatible"/>
       <import plugin="org.eclipse.core.resources" version="3.2.0" match="compatible"/>
       <import plugin="org.eclipse.ui" version="3.6.0" match="compatible"/>
       <import plugin="org.eclipse.ui.navigator.resources" version="3.4.0" match="compatible"/>
       <import plugin="org.eclipse.core.net" version="1.0.0" match="compatible"/>
       <import plugin="org.eclipse.core.filesystem" version="1.3.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.core.runtime" version="3.11.0" match="compatible"/>
       <import plugin="org.eclipse.jface" version="3.9.0" match="compatible"/>
       <import plugin="org.eclipse.jface.databinding" version="1.3.0" match="compatible"/>
       <import plugin="org.eclipse.core.databinding.property" version="1.2.0" match="compatible"/>
@@ -154,10 +175,11 @@
       <import plugin="org.eclipse.e4.ui.workbench3" version="0.12.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.e4.ui.workbench.addons.swt" version="0.10.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.emf.ecore" version="2.7.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.emf.ecore.xmi" version="2.11.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.e4.core.di.extensions" version="0.13.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.compare.core" version="3.5.0" match="compatible"/>
       <import plugin="org.eclipse.core.expressions" version="3.4.100" match="compatible"/>
       <import plugin="org.eclipse.core.resources" version="3.3.0" match="compatible"/>
-      <import plugin="org.eclipse.text" version="3.1.0" match="compatible"/>
       <import plugin="org.eclipse.debug.core" version="3.9.0" match="compatible"/>
       <import plugin="org.eclipse.jdt.debug" version="3.7.100" match="compatible"/>
       <import plugin="org.eclipse.core.variables" version="3.2.0" match="compatible"/>
@@ -192,29 +214,31 @@
       <import plugin="org.eclipse.text" version="3.5.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.help" version="3.4.0" match="compatible"/>
       <import plugin="org.eclipse.core.variables" version="3.2.200" match="compatible"/>
-      <import plugin="org.eclipse.search" version="3.7.0" match="compatible"/>
-      <import plugin="org.eclipse.debug.core" version="3.5.0" match="compatible"/>
-      <import plugin="org.eclipse.debug.ui" version="3.5.0" match="compatible"/>
-      <import plugin="org.eclipse.jdt.launching" version="3.6.100" match="compatible"/>
+      <import plugin="org.eclipse.search" version="3.10.0" match="compatible"/>
+      <import plugin="org.eclipse.debug.core" version="3.10.0" match="compatible"/>
+      <import plugin="org.eclipse.debug.ui" version="3.11.0" match="compatible"/>
+      <import plugin="org.eclipse.jdt.launching" version="3.8.0" match="compatible"/>
       <import plugin="org.eclipse.compare" version="3.5.0" match="compatible"/>
       <import plugin="org.eclipse.team.ui" version="3.4.100" match="compatible"/>
       <import plugin="org.eclipse.team.core" version="3.4.100" match="compatible"/>
+      <import plugin="org.eclipse.jface" version="3.11.0" match="compatible"/>
       <import plugin="org.eclipse.ui.console" version="3.4.0" match="compatible"/>
-      <import plugin="org.eclipse.ui.workbench.texteditor" version="3.8.0" match="compatible"/>
       <import plugin="org.eclipse.ui.views" version="3.3.100" match="compatible"/>
       <import plugin="org.eclipse.ui.editors" version="3.5.0" match="compatible"/>
-      <import plugin="org.eclipse.ltk.core.refactoring" version="3.5.0" match="compatible"/>
-      <import plugin="org.eclipse.ltk.ui.refactoring" version="3.5.0" match="compatible"/>
+      <import plugin="org.eclipse.ltk.core.refactoring" version="3.7.0" match="compatible"/>
+      <import plugin="org.eclipse.ltk.ui.refactoring" version="3.8.0" match="compatible"/>
       <import plugin="org.eclipse.ui.forms" version="3.4.0" match="compatible"/>
       <import plugin="org.eclipse.ui.navigator" version="3.3.200" match="compatible"/>
-      <import plugin="org.eclipse.jdt.core.manipulation" version="1.4.0" match="compatible"/>
+      <import plugin="org.eclipse.jdt.core.manipulation" version="1.7.0" match="compatible"/>
       <import plugin="com.ibm.icu" version="4.4.2" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.update.configurator" version="3.1.100" match="compatible"/>
       <import plugin="org.eclipse.ui.workbench.texteditor" version="3.5.0" match="compatible"/>
       <import plugin="org.eclipse.jface.text" version="3.5.0" match="compatible"/>
+      <import plugin="org.eclipse.ltk.core.refactoring" version="3.5.0" match="compatible"/>
+      <import plugin="org.eclipse.ltk.ui.refactoring" version="3.5.0" match="compatible"/>
       <import plugin="org.hamcrest.core" version="1.3.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.jface" version="3.6.0" match="compatible"/>
-      <import plugin="org.eclipse.ltk.core.refactoring" version="3.6.0" match="compatible"/>
+      <import plugin="org.eclipse.e4.ui.css.core" version="0.10.100" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.e4.ui.css.swt" version="0.11.100" match="greaterOrEqual"/>
       <import plugin="org.eclipse.core.resources" version="3.4.0" match="compatible"/>
       <import plugin="org.eclipse.ui.ide" version="3.3.0" match="compatible"/>
       <import plugin="org.eclipse.ui.views" version="3.2.0" match="compatible"/>
@@ -233,12 +257,16 @@
       <import plugin="org.eclipse.ui.views.properties.tabbed" version="3.5.0" match="compatible"/>
       <import plugin="org.eclipse.ui.workbench.texteditor" version="3.6.0" match="compatible"/>
       <import plugin="org.eclipse.ui" version="3.3.0" match="compatible"/>
+      <import plugin="org.eclipse.ltk.core.refactoring" version="3.6.0" match="compatible"/>
       <import plugin="org.eclipse.debug.ui" version="3.10.0" match="compatible"/>
+      <import plugin="org.eclipse.jdt.debug" version="3.10.0" match="compatible"/>
       <import plugin="org.eclipse.jdt.launching" version="3.7.0" match="compatible"/>
       <import plugin="org.eclipse.jdt.ui" version="3.8.0" match="compatible"/>
       <import plugin="org.eclipse.jdt.core.manipulation" version="1.3.0" match="compatible"/>
       <import plugin="org.eclipse.search" version="3.5.0" match="compatible"/>
-      <import plugin="org.eclipse.jdt.ui" version="3.5.0" match="compatible"/>
+      <import plugin="org.eclipse.debug.core" version="3.5.0" match="compatible"/>
+      <import plugin="org.eclipse.debug.ui" version="3.5.0" match="compatible"/>
+      <import plugin="org.eclipse.jdt.ui" version="3.12.0" match="compatible"/>
       <import plugin="org.eclipse.jdt.launching" version="3.5.0" match="compatible"/>
       <import plugin="org.eclipse.jdt.debug.ui" version="3.3.0" match="compatible"/>
       <import plugin="org.eclipse.jdt.junit.runtime" version="3.4.100" match="compatible"/>
@@ -256,6 +284,7 @@
       <import plugin="org.eclipse.e4.ui.di" version="0.10.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.e4.ui.services" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.emf.ecore.xmi" version="2.7.0" match="greaterOrEqual"/>
+      <import plugin="com.google.guava"/>
       <import plugin="org.eclipse.equinox.app" version="1.3.0" match="compatible"/>
       <import plugin="org.eclipse.e4.ui.workbench" version="0.10.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.e4.ui.services" version="0.1.0" match="greaterOrEqual"/>
@@ -270,32 +299,21 @@
       <import plugin="org.eclipse.e4.ui.workbench.swt" version="0.9.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.e4.ui.model.workbench" version="0.9.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.e4.ui.css.swt" version="0.11.0" match="greaterOrEqual"/>
-      <import plugin="com.kms.katalon.core.mobile"/>
+      <import plugin="org.eclipse.e4.core.di.extensions" version="0.12.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.equinox.preferences" version="3.5.200" match="greaterOrEqual"/>
       <import plugin="com.kms.katalon.composer.testsuite" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="com.kms.katalon.composer.preferences"/>
+      <import plugin="com.kms.katalon.execution.mobile"/>
+      <import plugin="com.kms.katalon.composer.objectrepository" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="com.kms.katalon.composer.execution"/>
       <import plugin="javax.inject" version="1.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.jetty.server"/>
-      <import plugin="org.eclipse.jetty.servlet"/>
-      <import plugin="org.eclipse.jetty.util"/>
-      <import plugin="org.eclipse.jetty.http"/>
-      <import plugin="com.kms.katalon.composer.objectrepository" version="1.0.0" match="greaterOrEqual"/>
+      <import plugin="javax.annotation" version="1.2.0" match="greaterOrEqual"/>
+      <import plugin="com.kms.katalon.composer.mobile"/>
       <import plugin="com.kms.katalon.integration.qtest" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="com.kms.katalon.composer.report"/>
-      <import plugin="org.apache.httpcomponents.httpclient" version="4.3.6" match="greaterOrEqual"/>
-      <import plugin="org.apache.httpcomponents.httpcore" version="4.3.3" match="greaterOrEqual"/>
       <import plugin="com.kms.katalon.dal.file"/>
-      <import plugin="org.eclipse.e4.ui.model.workbench" version="1.1.0" match="greaterOrEqual"/>
-      <import plugin="com.kms.katalon.composer.testdata" version="1.0.0" match="greaterOrEqual"/>
-      <import plugin="com.kms.katalon.composer.project"/>
-      <import plugin="com.kms.katalon.composer.folder"/>
-      <import plugin="com.kms.katalon.execution.webui"/>
-      <import plugin="com.google.guava"/>
-      <import plugin="com.kms.katalon.core.webservice"/>
-      <import plugin="com.kms.katalon.execution.mobile"/>
-      <import plugin="javax.annotation" version="1.2.0" match="greaterOrEqual"/>
       <import plugin="com.kms.katalon.jasper" version="1.0.0" match="greaterOrEqual"/>
-      <import plugin="org.apache.httpcomponents.httpmime"/>
+      <import plugin="org.eclipse.e4.ui.model.workbench" version="1.1.0" match="greaterOrEqual"/>
       <import plugin="org.apache.commons.lang" version="2.0.0" match="compatible"/>
       <import plugin="org.apache.commons.logging" version="1.0.0" match="compatible"/>
       <import plugin="org.eclipse.help" version="3.5.0" match="compatible"/>
@@ -316,8 +334,10 @@
       <import plugin="org.apache.lucene.analysis" version="3.5.0" match="compatible"/>
       <import plugin="org.apache.lucene.core" version="3.5.0" match="compatible"/>
       <import plugin="org.eclipse.core.net" version="1.2.200" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.equinox.jsp.jasper.registry" version="1.0.100" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.equinox.http.registry" version="1.0.200" match="greaterOrEqual"/>
+      <import plugin="com.kms.katalon.composer.webui.objectspy"/>
+      <import plugin="org.eclipse.text" version="3.1.0" match="compatible"/>
+      <import plugin="org.eclipse.jetty.io" version="8.1.16" match="greaterOrEqual"/>
+      <import plugin="com.kms.katalon.composer.webui"/>
    </requires>
 
    <plugin
@@ -423,7 +443,7 @@
          id="javax.servlet"
          download-size="0"
          install-size="0"
-         version="3.0.0.v201112011016"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
@@ -474,13 +494,6 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-
-   <plugin
-         id="org.eclipse.core.runtime.compatibility.registry"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"/>
 
    <plugin
          id="org.eclipse.e4.ui.css.swt.theme"
@@ -784,14 +797,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.core.filesystem.java7"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.equinox.bidi"
          download-size="0"
          install-size="0"
@@ -1075,7 +1080,7 @@
          id="org.eclipse.jdt.core"
          download-size="0"
          install-size="0"
-         version="3.10.0.xx-201509250011-e44"
+         version="3.12.0.xx-201608111517-e46"
          unpack="false"/>
 
    <plugin
@@ -1167,13 +1172,6 @@
 
    <plugin
          id="org.eclipse.jdt.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.core.runtime.compatibility"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -1441,35 +1439,35 @@
          id="org.eclipse.jetty.server"
          download-size="0"
          install-size="0"
-         version="8.1.16.v20140903"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.jetty.servlet"
          download-size="0"
          install-size="0"
-         version="8.1.16.v20140903"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.jetty.util"
          download-size="0"
          install-size="0"
-         version="8.1.16.v20140903"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.jetty.http"
          download-size="0"
          install-size="0"
-         version="8.1.16.v20140903"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.jetty.security"
          download-size="0"
          install-size="0"
-         version="8.1.16.v20140903"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
@@ -1546,7 +1544,7 @@
          id="org.eclipse.jetty.continuation"
          download-size="0"
          install-size="0"
-         version="8.1.16.v20140903"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
@@ -1602,14 +1600,14 @@
          id="org.apache.httpcomponents.httpclient"
          download-size="0"
          install-size="0"
-         version="4.5.1"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.apache.httpcomponents.httpcore"
          download-size="0"
          install-size="0"
-         version="4.4.4"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
@@ -1651,7 +1649,7 @@
          id="org.eclipse.jetty.io"
          download-size="0"
          install-size="0"
-         version="8.1.16.v20140903"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
@@ -1784,7 +1782,7 @@
          id="org.apache.httpcomponents.httpmime"
          download-size="0"
          install-size="0"
-         version="4.5.1"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
@@ -1956,13 +1954,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.jgit.lfs.server"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.jgit.ui"
          download-size="0"
          install-size="0"
@@ -2116,6 +2107,13 @@
 
    <plugin
          id="org.apache.commons.httpclient"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.tukaani.xz"
          download-size="0"
          install-size="0"
          version="0.0.0"

@@ -53,7 +53,7 @@ import com.kms.katalon.util.VersionUtil;
 /**
  * Displays information about the product.
  */
-@SuppressWarnings("restriction")
+@SuppressWarnings({ "restriction" })
 public class KatalonAboutDialog extends TrayDialog {
     private final static int MAX_IMAGE_WIDTH_FOR_TEXT = 250;
 
