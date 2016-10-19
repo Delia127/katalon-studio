@@ -8,7 +8,6 @@ import javax.inject.Inject;
 
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -34,6 +33,7 @@ import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.testcase.components.KeywordTreeViewerToolTipSupport;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants;
 import com.kms.katalon.composer.testcase.keywords.BuiltinKeywordFolderBrowserTreeEntity;
@@ -192,7 +192,7 @@ public class KeywordBrowserPart implements EventHandler {
         treeViewer.setContentProvider(new KeywordTreeContentProvider());
         treeViewer.setLabelProvider(labelProvider = new KeywordTreeLabelProvider());
         treeViewer.addFilter(viewerFilter = new KeywordBrowserEntityViewerFilter());
-        ColumnViewerToolTipSupport.enableFor(treeViewer);
+        KeywordTreeViewerToolTipSupport.enableFor(treeViewer);
 
     }
 

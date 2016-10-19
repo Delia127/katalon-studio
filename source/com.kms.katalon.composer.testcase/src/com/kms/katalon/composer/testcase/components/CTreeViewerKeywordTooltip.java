@@ -40,13 +40,15 @@ public class CTreeViewerKeywordTooltip extends TreeViewerKeywordTooltip {
         AstBuiltInKeywordTreeTableNode node = (AstBuiltInKeywordTreeTableNode) element;
         CellLabelProvider labelProvider = treeViewer.getLabelProvider(viewerCell.getColumnIndex());
         labelProvider.useNativeToolTip(element);
+        String keyword = node.getKeywordName();
         String text = labelProvider.getToolTipText(element);
-        if (tip != null && tip.isVisible() && text != null && text.equals(tip.getText())) {
+        if (tip != null && tip.isVisible() && keyword != null && keyword.equals(getCurrentKeyword())) {
             return;
         }
         if (tip != null) {
             tip.hide();
         }
+        setCurrentKeyword(keyword);
         createTooltip(text, node.getBuiltInKWClassSimpleName(), node.getKeywordName()).show(
                 getTooltipLocation(new Point(x, y)));
     }

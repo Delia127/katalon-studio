@@ -288,4 +288,8 @@ public class TooltipComboBoxCellEditor extends CellEditor {
         }
         return item.toString();
     }
+    
+    public TooltipCCombo getTooltipCCombo() {
+        return comboBox;
+    }
 }

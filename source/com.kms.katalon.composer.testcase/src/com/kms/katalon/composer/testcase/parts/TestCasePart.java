@@ -18,7 +18,6 @@ import org.eclipse.jface.bindings.keys.IKeyLookup;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerEditor;
-import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -68,6 +67,7 @@ import com.kms.katalon.composer.testcase.ast.treetable.AstCallTestCaseKeywordTre
 import com.kms.katalon.composer.testcase.ast.treetable.AstMethodTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
 import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
+import com.kms.katalon.composer.testcase.components.KeywordTreeViewerToolTipSupport;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants;
@@ -300,7 +300,7 @@ public class TestCasePart implements IComposerPart, EventHandler {
 
         // Enable tool-tip support for treeTable
         treeTable.getTree().setToolTipText("");
-        ColumnViewerToolTipSupport.enableFor(treeTable);
+        KeywordTreeViewerToolTipSupport.enableFor(treeTable);
 
         createContextMenu();
         addTreeTableKeyListener();

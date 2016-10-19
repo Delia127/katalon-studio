@@ -7,16 +7,17 @@ import org.eclipse.jface.fieldassist.ContentProposal;
 import org.eclipse.jface.fieldassist.ContentProposalAdapter;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalListener;
-import org.eclipse.jface.fieldassist.IContentProposalListener2;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 import com.kms.katalon.composer.components.adapter.CComboContentAdapter;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
+import com.kms.katalon.composer.testcase.components.IContentProposalListener3;
+import com.kms.katalon.composer.testcase.components.KeywordContentProposalAdapter;
 import com.kms.katalon.composer.testcase.model.ContentProposalCheck;
 import com.kms.katalon.custom.keyword.KeywordMethod;
 
@@ -27,7 +28,7 @@ public class ComboBoxCellEditorWithContentProposal extends TooltipComboBoxCellEd
 
     protected String[] toolTips;
 
-    private ContentProposalAdapter adapter;
+    private KeywordContentProposalAdapter adapter;
 
     public ComboBoxCellEditorWithContentProposal(Composite parent, Object[] items, String[] toolTips) {
         super(parent, items, toolTips);
@@ -59,7 +60,7 @@ public class ComboBoxCellEditorWithContentProposal extends TooltipComboBoxCellEd
         Control control = super.createControl(parent);
         if (control instanceof CCombo) {
             final CCombo combo = (CCombo) control;
-
+            
             IContentProposalProvider proposalProvider = new IContentProposalProvider() {
                 @Override
                 public IContentProposal[] getProposals(String contents, int position) {
@@ -75,18 +76,18 @@ public class ComboBoxCellEditorWithContentProposal extends TooltipComboBoxCellEd
                 }
             };
 
-            adapter = new ContentProposalAdapter(combo, new CComboContentAdapter(), proposalProvider, null, null);
+            adapter = new KeywordContentProposalAdapter(combo, new CComboContentAdapter(), proposalProvider, null, null);
             adapter.setPropagateKeys(true);
             adapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_REPLACE);
-            adapter.addContentProposalListener(new IContentProposalListener2() {
+            adapter.addContentProposalListener(new IContentProposalListener3() {
 
                 @Override
-                public void proposalPopupOpened(ContentProposalAdapter adapter) {
+                public void proposalPopupOpened(KeywordContentProposalAdapter adapter) {
                     contentProposalCheck.setProposing(true);
                 }
 
                 @Override
-                public void proposalPopupClosed(ContentProposalAdapter adapter) {
+                public void proposalPopupClosed(KeywordContentProposalAdapter adapter) {
                     contentProposalCheck.setProposing(false);
                 }
             });
@@ -99,11 +100,8 @@ public class ComboBoxCellEditorWithContentProposal extends TooltipComboBoxCellEd
                 }
             });
 
-            combo.addKeyListener(new KeyListener() {
-                @Override
-                public void keyReleased(KeyEvent e) {
-                }
-
+            combo.addKeyListener(new KeyAdapter() {
+                
                 @Override
                 public void keyPressed(KeyEvent e) {
                     adapter.setEnabled(!combo.getListVisible());
@@ -113,10 +111,10 @@ public class ComboBoxCellEditorWithContentProposal extends TooltipComboBoxCellEd
         return control;
     }
 
-    private String getItemText(Object item){
+    private String getItemText(Object item) {
         if (item instanceof KeywordMethod) {
             return TreeEntityUtil.getReadableKeywordName(((KeywordMethod) item).getName());
-        } 
+        }
         if (item instanceof MethodNode) {
             return TreeEntityUtil.getReadableKeywordName(((MethodNode) item).getName());
         }

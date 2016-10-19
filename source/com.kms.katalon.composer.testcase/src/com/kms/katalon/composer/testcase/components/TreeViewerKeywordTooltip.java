@@ -22,6 +22,8 @@ public class TreeViewerKeywordTooltip {
 
     protected static final int SHIFT_Y = 2;
     
+    private String currentKeyword;
+    
     public TreeViewerKeywordTooltip(TreeViewer treeViewer) {
         this.treeViewer = treeViewer;
         Listener listener = createListener();
@@ -84,6 +86,10 @@ public class TreeViewerKeywordTooltip {
     protected KeywordNodeTooltip getTooltip() {
         return tip;
     }
+    
+    protected void setCurrentKeyword(String keyword) {
+        currentKeyword = keyword;
+    }
 
     protected void showTooltip(int x, int y) {
         Point point = new Point(x, y);
@@ -99,12 +105,13 @@ public class TreeViewerKeywordTooltip {
         if (text == null || text.length() < 1) {
             text = keywordName;
         }
-        if (tip != null && tip.isVisible() && text != null && text.equals(tip.getText())) {
+        if (tip != null && tip.isVisible() && keywordName != null && keywordName.equals(currentKeyword)) {
             return;
         }
         if (tip != null) {
             tip.hide();
         }
+        currentKeyword = keywordName;
         createTooltip(text, classKeyword, keywordName).show(getTooltipLocation(point));
     }
 
@@ -117,6 +124,10 @@ public class TreeViewerKeywordTooltip {
         tip.setKeywordURL(KeywordURLUtil.getKeywordDescriptionURI(classKeyword, keyword));
         return tip;
 
+    }
+    
+    protected String getCurrentKeyword() {
+        return currentKeyword;
     }
 
     protected Point getTooltipLocation(Point controlPoint) {
