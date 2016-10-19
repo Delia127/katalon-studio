@@ -28,6 +28,6 @@ Require-Bundle: org.eclipse.jface,
  com.kms.katalon.constant,
  org.apache.commons.lang,
  com.kms.katalon.controller
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: javax.annotation;version="1.2.0"

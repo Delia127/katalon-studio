@@ -67,7 +67,7 @@ public class TestSuiteTestCaseLinkTransfer extends ByteArrayTransfer {
                     TestSuiteTestCaseLinkTransferData datum = (TestSuiteTestCaseLinkTransferData) obj;
 
                     TestSuiteTestCaseLinkTransferData[] newMyData = new TestSuiteTestCaseLinkTransferData[myData.length + 1];
-                    System.arraycopy(myData, 0, newMyData, 0, myData.length);
+                    System.arraycopy(myData, 0, newMyData, 0, myData.length); 
                     newMyData[myData.length] = datum;
                     myData = newMyData;
                 }

@@ -158,19 +158,31 @@ public abstract class AbstractExecutionHandler {
             // check the selected part is a test case or test suite part
             if (partElementId.startsWith(IdConstants.TEST_CASE_PARENT_COMPOSITE_PART_ID_PREFIX)
                     && selectedPart.getObject() instanceof TestCaseCompositePart) {
-                return ((TestCaseCompositePart) selectedPart.getObject()).getOriginalTestCase();
+                TestCaseCompositePart testCaseCompositePart = (TestCaseCompositePart) selectedPart.getObject();
+                try {
+                    if (testCaseCompositePart.isTestCaseEmpty()) {
+                        MessageDialog.openInformation(Display.getCurrent().getActiveShell(),
+                                StringConstants.HAND_TITLE_INFORMATION,
+                                StringConstants.HAND_INFO_MSG_NO_TEST_STEP_IN_TEST_CASE);
+                        return null;
+                    }
+                    return testCaseCompositePart.getOriginalTestCase();
+                } catch (Exception e) {
+                    MessageDialog.openError(Display.getCurrent().getActiveShell(),
+                            StringConstants.ERROR_TITLE, StringConstants.HAND_ERROR_MSG_ERROR_IN_SCRIPT);
+                    return null;
+                }
             } else if (partElementId.startsWith(IdConstants.TESTSUITE_CONTENT_PART_ID_PREFIX)
                     && selectedPart.getObject() instanceof TestSuiteCompositePart) {
                 TestSuiteCompositePart testSuiteComposite = (TestSuiteCompositePart) selectedPart.getObject();
-
                 if (testSuiteComposite.getOriginalTestSuite().getTestSuiteTestCaseLinks().isEmpty()) {
-                    if (MessageDialog.openQuestion(null, StringConstants.HAND_TITLE_INFORMATION,
+                    if (MessageDialog.openQuestion(Display.getCurrent().getActiveShell(),
+                            StringConstants.HAND_TITLE_INFORMATION,
                             StringConstants.HAND_CONFIRM_MSG_NO_TEST_CASE_IN_TEST_SUITE)) {
                         testSuiteComposite.openAddTestCaseDialog();
                     }
                     return null;
                 }
-
                 return testSuiteComposite.getOriginalTestSuite();
             }
         }

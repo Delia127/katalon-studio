@@ -5,7 +5,7 @@ Bundle-SymbolicName: com.kms.katalon.console;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-ClassPath: .
 Bundle-Vendor: KMS
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.equinox.app,
  org.eclipse.ui.workbench,
  org.eclipse.swt,

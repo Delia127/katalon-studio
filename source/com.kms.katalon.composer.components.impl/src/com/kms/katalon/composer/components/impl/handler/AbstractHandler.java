@@ -50,7 +50,7 @@ public abstract class AbstractHandler extends WorkbenchUtilizer implements IHand
     public abstract void execute();
 
     @Override
-    public final Object execute(ExecutionEvent executionEvent) throws ExecutionException {
+    public Object execute(ExecutionEvent executionEvent) throws ExecutionException {
         setExecutionEvent(executionEvent);
         execute();
         return null;

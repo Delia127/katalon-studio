@@ -1,12 +1,12 @@
 package com.kms.katalon.composer.testsuite.collection.part.editor;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 
+import com.kms.katalon.composer.components.dialogs.AbstractDialogCellEditor;
 import com.kms.katalon.composer.components.impl.dialogs.TreeEntitySelectionDialog;
-import com.kms.katalon.composer.components.impl.editors.CustomDialogCellEditor;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -19,14 +19,18 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
-public class TestSuiteSelectionCellEditor extends CustomDialogCellEditor {
+public class TestSuiteSelectionCellEditor extends AbstractDialogCellEditor {
 
     private ProjectEntity currentProject;
 
     private TestSuiteEntity testSuiteEntity;
 
-    public TestSuiteSelectionCellEditor(Composite parent) {
-        super(parent);
+    private String defaultContent;
+
+    public TestSuiteSelectionCellEditor(Composite parent, TestSuiteEntity testSuiteEntity) {
+        super(parent, testSuiteEntity.getIdForDisplay());
+        this.testSuiteEntity = testSuiteEntity;
+        this.defaultContent = testSuiteEntity.getIdForDisplay();
         currentProject = ProjectController.getInstance().getCurrentProject();
 
     }
@@ -46,7 +50,7 @@ public class TestSuiteSelectionCellEditor extends CustomDialogCellEditor {
     @Override
     protected Object openDialogBox(Control cellEditorWindow) {
         EntityProvider entityProvider = new EntityProvider();
-        TreeEntitySelectionDialog dialog = new TreeEntitySelectionDialog(getControl().getShell(),
+        TreeEntitySelectionDialog dialog = new TreeEntitySelectionDialog(Display.getCurrent().getActiveShell(),
                 new EntityLabelProvider(), entityProvider, new TestSuiteViewerFilter(entityProvider));
 
         dialog.setAllowMultiple(false);
@@ -74,12 +78,13 @@ public class TestSuiteSelectionCellEditor extends CustomDialogCellEditor {
             return null;
         }
     }
-    
+
     protected void updateContents(Object value) {
-       if (value instanceof TestSuiteEntity) {
-           testSuiteEntity = (TestSuiteEntity) value;
-           defaultLabel.setText(testSuiteEntity != null ? testSuiteEntity.getIdForDisplay() : StringUtils.EMPTY);
-       }
+        if (defaultContent != null) {
+            super.updateContents(defaultContent);
+        } else {
+            super.updateContents(value);
+        }
     }
 
 }

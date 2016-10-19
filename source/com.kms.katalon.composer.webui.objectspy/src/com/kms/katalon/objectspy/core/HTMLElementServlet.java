@@ -65,12 +65,15 @@ public class HTMLElementServlet extends HttpServlet {
         }
         String key = HTMLElementUtil.decodeURIComponent(sb.substring(0, sb.indexOf(EQUALS)));
         switch (key) {
-            case ELEMENT_KEY: 
+            case ELEMENT_KEY:
                 addNewElement(response, sb.substring(sb.indexOf(EQUALS) + 1, sb.length()));
                 break;
             case ELEMENT_MAP_KEY:
                 updateHTMLDOM(response, sb);
                 break;
+            default:
+                KatalonRequestHandler.getInstance().processIncomeRequest(new ClientMessage(sb.toString()),
+                        response.getOutputStream());
         }
     }
 

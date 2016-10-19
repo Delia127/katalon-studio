@@ -4,13 +4,17 @@ import java.net.MalformedURLException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
 
 import com.kms.katalon.composer.components.impl.providers.TypeCheckStyleCellTableLabelProvider;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ImageUtil;
+import com.kms.katalon.composer.testsuite.collection.constant.ComposerTestsuiteCollectionMessageConstants;
 import com.kms.katalon.composer.testsuite.collection.constant.ImageConstants;
 import com.kms.katalon.composer.testsuite.collection.execution.collector.TestExecutionGroupCollector;
 import com.kms.katalon.composer.testsuite.collection.execution.provider.TestExecutionConfigurationProvider;
+import com.kms.katalon.composer.testsuite.collection.util.MapUtil;
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 import com.kms.katalon.entity.testsuite.TestSuiteRunConfiguration;
 
@@ -22,7 +26,13 @@ public class TestSuiteRunConfigLabelProvider extends TypeCheckStyleCellTableLabe
 
     public static final int RUN_WITH_COLUMN_IDX = 2;
 
-    public static final int RUN_COLUMN_IDX = 3;
+    public static final int RUN_WITH_DATA_COLUMN_IDX = 3;
+
+    public static final int RUN_COLUMN_IDX = 4;
+
+    private static final Image IMG_16_WARN_TABLE_ITEM = PlatformUI.getWorkbench()
+            .getSharedImages()
+            .getImage(ISharedImages.IMG_OBJS_WARN_TSK);
 
     private TableViewerProvider provider;
 
@@ -48,15 +58,18 @@ public class TestSuiteRunConfigLabelProvider extends TypeCheckStyleCellTableLabe
         }
     }
 
-    private Image getImageForRunConfigurationColumn(TestSuiteRunConfiguration element) {
-        RunConfigurationDescription configuration = element.getConfiguration();
-        if (configuration == null) {
+    private TestExecutionConfigurationProvider getOriginalConfigProvider(TestSuiteRunConfiguration runConfiguration) {
+        if (runConfiguration == null) {
             return null;
         }
-        TestExecutionConfigurationProvider executionProvider = TestExecutionGroupCollector.getInstance().getExecutionProvider(
-                configuration);
+        return TestExecutionGroupCollector.getInstance().getExecutionProvider(runConfiguration.getConfiguration());
+    }
+
+    private Image getImageForRunConfigurationColumn(TestSuiteRunConfiguration element) {
+        TestExecutionConfigurationProvider executionProvider = getOriginalConfigProvider(element);
         try {
-            return executionProvider != null ? ImageUtil.loadImage(executionProvider.getImageUrlAsString()) : null;
+            return executionProvider != null ? ImageUtil.loadImage(executionProvider.getImageUrlAsString())
+                    : IMG_16_WARN_TABLE_ITEM;
         } catch (MalformedURLException e) {
             LoggerSingleton.logError(e);
             return null;
@@ -71,6 +84,8 @@ public class TestSuiteRunConfigLabelProvider extends TypeCheckStyleCellTableLabe
             case ID_COLUMN_IDX:
                 return element.getTestSuiteEntity() != null ? element.getTestSuiteEntity().getIdForDisplay()
                         : StringUtils.EMPTY;
+            case RUN_WITH_DATA_COLUMN_IDX:
+                return MapUtil.buildStringForMap(element.getConfiguration().getRunConfigurationData());
             case RUN_WITH_COLUMN_IDX:
                 RunConfigurationDescription configuration = element.getConfiguration();
                 return configuration != null ? configuration.getRunConfigurationId() : StringUtils.EMPTY;
@@ -79,10 +94,11 @@ public class TestSuiteRunConfigLabelProvider extends TypeCheckStyleCellTableLabe
                 return StringUtils.EMPTY;
         }
     }
-    
+
     @Override
     protected String getElementToolTipText(TestSuiteRunConfiguration element) {
-        return StringUtils.defaultIfEmpty(getText(element), null);
+        TestExecutionConfigurationProvider executionProvider = getOriginalConfigProvider(element);
+        return executionProvider != null ? StringUtils.defaultIfEmpty(getText(element), null)
+                : ComposerTestsuiteCollectionMessageConstants.ERR_TOOLTIP_UNABLE_TO_LOCATE_RUN_CONFIG;
     }
-    
 }

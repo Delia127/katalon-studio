@@ -4,7 +4,6 @@ import org.eclipse.swt.graphics.Image;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
-import com.kms.katalon.composer.components.impl.control.HiDPISupportedImage;
 import com.kms.katalon.composer.components.util.ImageUtil;
 
 public class ImageConstants {
@@ -14,17 +13,17 @@ public class ImageConstants {
             FrameworkUtil.getBundle(com.kms.katalon.composer.components.impl.constants.ImageConstants.class);
 
     // RecorderDialog
-    public static final Image IMG_28_RECORD = HiDPISupportedImage.loadImage(componentBundle, "/icons/record_24.png");
+    public static final Image IMG_28_RECORD = ImageUtil.loadImage(componentBundle, "/icons/record_24.png");
 
-    public static final Image IMG_28_PAUSE = HiDPISupportedImage.loadImage(currentBundle, "/icons/pause_24.png");
+    public static final Image IMG_28_PAUSE = ImageUtil.loadImage(currentBundle, "/icons/pause_24.png");
 
-    public static final Image IMG_28_STOP = HiDPISupportedImage.loadImage(currentBundle, "/icons/stop_24.png");
+    public static final Image IMG_28_STOP = ImageUtil.loadImage(currentBundle, "/icons/stop_24.png");
 
-    public static final Image IMG_28_PLAY = HiDPISupportedImage.loadImage(currentBundle, "/icons/play_24.png");
+    public static final Image IMG_28_PLAY = ImageUtil.loadImage(currentBundle, "/icons/play_24.png");
     
-    public static final Image IMG_24_ADD = HiDPISupportedImage.loadImage(componentBundle, "/icons/add_16.png");
+    public static final Image IMG_24_ADD = ImageUtil.loadImage(componentBundle, "/icons/add_16.png");
 
-    public static final Image IMG_24_DELETE = HiDPISupportedImage.loadImage(componentBundle, "/icons/delete_16.png");
+    public static final Image IMG_24_DELETE = ImageUtil.loadImage(componentBundle, "/icons/delete_16.png");
 
     // RecorderDialog
     public static final Image IMG_16_CHROME = ImageUtil.loadImage(currentBundle, "/icons/chrome_16.png");

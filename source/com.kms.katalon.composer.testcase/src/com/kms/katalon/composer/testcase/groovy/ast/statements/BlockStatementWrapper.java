@@ -231,5 +231,4 @@ public class BlockStatementWrapper extends StatementWrapper {
     public boolean canHaveLabel() {
         return false;
     }
-
 }

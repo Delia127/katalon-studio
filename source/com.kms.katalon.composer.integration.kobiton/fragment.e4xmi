@@ -11,7 +11,7 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_COSBcIFiEeax0rcjhkyhJw" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.run" positionInList="after:com.kms.katalon.composer.mobile.dynamicmenucontribution.ios">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_KSu-EIPpEeaJTZfureYSqg" elementId="com.kms.katalon.composer.integration.kobiton.dynamicmenucontribution.run" label="Run" contributionURI="bundleclass://com.kms.katalon.composer.integration.kobiton/com.kms.katalon.composer.integration.kobiton.menu.KobitonExecutionDynamicContribution"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_96W4sIFiEeax0rcjhkyhJw" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.debug" positionInList="after:after:com.kms.katalon.composer.mobile.dynamicmenucontribution.ios">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_96W4sIFiEeax0rcjhkyhJw" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.debug" positionInList="after:com.kms.katalon.composer.mobile.dynamicmenucontribution.ios">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_SLEMQIPpEeaJTZfureYSqg" elementId="com.kms.katalon.composer.integration.kobiton.dynamicmenucontribution.run" label="Run" contributionURI="bundleclass://com.kms.katalon.composer.integration.kobiton/com.kms.katalon.composer.integration.kobiton.menu.KobitonDebugExecutionDynamicContribution"/>
   </fragments>
 </fragment:ModelFragments>

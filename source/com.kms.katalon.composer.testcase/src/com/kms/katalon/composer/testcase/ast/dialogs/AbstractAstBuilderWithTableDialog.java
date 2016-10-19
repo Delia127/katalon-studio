@@ -28,8 +28,12 @@ public abstract class AbstractAstBuilderWithTableDialog extends AbstractAstBuild
         table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         table.setLinesVisible(true);
         table.setHeaderVisible(true);
-        ColumnViewerUtil.setTableActivation(tableViewer);
+        setTableActivation(tableViewer);
         return tableViewer;
+    }
+    
+    protected void setTableActivation(TableViewer tableViewer) {
+        ColumnViewerUtil.setTableActivation(tableViewer);
     }
 
     /***

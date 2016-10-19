@@ -91,7 +91,7 @@ public class CMenu extends Menu {
      * @param hotkey the hotkey, used to active the created {@link MenuItem}.
      */
     public MenuItem createMenuItem(final String name, String hotkey) {
-        return createMenuItem(name, hotkey, null);
+        return createMenuItem(name, hotkey, null, SWT.PUSH);
     }
 
     /**
@@ -105,11 +105,15 @@ public class CMenu extends Menu {
      * @return an instance of {@link MenuItem}, null if <code>hotkey</code> is invalid.
      */
     public MenuItem createMenuItem(final String name, final String hotkey, final Callable<Boolean> enableWhen) {
+        return createMenuItem(name, hotkey, enableWhen, SWT.PUSH);
+    }
+    
+    public MenuItem createMenuItem(final String name, final String hotkey, final Callable<Boolean> enableWhen, int menuItemType) {
         try {
             if (name == null) {
                 return null;
             }
-            MenuItem menuItem = new MenuItem(this, SWT.PUSH);
+            MenuItem menuItem = new MenuItem(this, menuItemType);
 
             handleItemSelected(name, menuItem);
 

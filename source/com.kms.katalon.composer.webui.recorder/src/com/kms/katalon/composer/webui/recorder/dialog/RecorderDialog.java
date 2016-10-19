@@ -4,6 +4,7 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.BindException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
@@ -98,6 +99,7 @@ import com.kms.katalon.composer.webui.recorder.action.HTMLActionParamValueType;
 import com.kms.katalon.composer.webui.recorder.action.HTMLSynchronizeAction;
 import com.kms.katalon.composer.webui.recorder.action.HTMLValidationAction;
 import com.kms.katalon.composer.webui.recorder.action.IHTMLAction;
+import com.kms.katalon.composer.webui.recorder.constants.ComposerWebuiRecorderMessageConstants;
 import com.kms.katalon.composer.webui.recorder.constants.ImageConstants;
 import com.kms.katalon.composer.webui.recorder.constants.RecorderPreferenceConstants;
 import com.kms.katalon.composer.webui.recorder.constants.StringConstants;
@@ -126,20 +128,20 @@ import com.sun.jna.platform.win32.WinDef.HWND;
 
 @SuppressWarnings("restriction")
 public class RecorderDialog extends Dialog {
-    private static final String IE_WINDOW_CLASS = "IEFrame";
-    
-    private static final String relativePathToIEAddonSetup = File.separator + "extensions" + File.separator + "IE"
-            + File.separator + RecordSession.RECORDER_ADDON_NAME + File.separator + "setup.exe";
+    private static final String IE_WINDOW_CLASS = "IEFrame"; //$NON-NLS-1$
 
-    private static final String RESOURCES_FOLDER_NAME = "resources";
+    private static final String relativePathToIEAddonSetup = File.separator + "extensions" + File.separator + "IE" //$NON-NLS-1$ //$NON-NLS-2$
+            + File.separator + RecordSession.RECORDER_ADDON_NAME + File.separator + "setup.exe"; //$NON-NLS-1$
 
-    private static final String IE_ADDON_BHO_KEY = "{FEA8CA38-7979-4F6A-83E4-2949EDEA96EF}";
-    
-    public static final String DIA_INSTANT_BROWSER_CHROME_RECORDER_EXTENSION_PATH = "<Katalon build path>/Resources/extensions/Chrome/Recorder Packed";
-    
-    public static final String RECORDER_CHROME_ADDON_URL = "https://chrome.google.com/webstore/detail/katalon-recorder/bnaalgpdhfjepeanejkicnidgbpbmkhh";
-    
-    public static final String RECORDER_FIREFOX_ADDON_URL = "https://addons.mozilla.org/en-US/firefox/addon/katalon-recorder/";
+    private static final String RESOURCES_FOLDER_NAME = "resources"; //$NON-NLS-1$
+
+    private static final String IE_ADDON_BHO_KEY = "{FEA8CA38-7979-4F6A-83E4-2949EDEA96EF}"; //$NON-NLS-1$
+
+    public static final String DIA_INSTANT_BROWSER_CHROME_RECORDER_EXTENSION_PATH = "<Katalon build path>/Resources/extensions/Chrome/Recorder Packed"; //$NON-NLS-1$
+
+    public static final String RECORDER_CHROME_ADDON_URL = "https://chrome.google.com/webstore/detail/katalon-recorder/bnaalgpdhfjepeanejkicnidgbpbmkhh"; //$NON-NLS-1$
+
+    public static final String RECORDER_FIREFOX_ADDON_URL = "https://addons.mozilla.org/en-US/firefox/addon/katalon-recorder/"; //$NON-NLS-1$
 
     private static final int ANY_PORT_NUMBER = 0;
 
@@ -235,7 +237,7 @@ public class RecorderDialog extends Dialog {
             MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE, e.getMessage());
         }
     }
-    
+
     protected void runInstantIE() throws Exception {
         session = new RecordSession(server, selectedBrowser, ProjectController.getInstance().getCurrentProject(),
                 logger);
@@ -322,8 +324,14 @@ public class RecorderDialog extends Dialog {
             return;
         }
         stopServer();
-        server = new HTMLElementRecorderServer(port, logger, this);
-        server.start();
+        try {
+            server = new HTMLElementRecorderServer(port, logger, this);
+            server.start();
+        } catch (BindException e) {
+            MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE,
+                    MessageFormat.format(ComposerWebuiRecorderMessageConstants.ERR_DLG_PORT_FOR_RECORD_IN_USE, port));
+            server = null;
+        }
     }
 
     private void stopServer() throws Exception {
@@ -975,17 +983,17 @@ public class RecorderDialog extends Dialog {
                     HTMLActionMapping actionMapping = (HTMLActionMapping) element;
                     if (actionMapping.getAction() != null && actionMapping.getAction().hasInput()
                             && actionMapping.getData() != null) {
-                        StringBuilder displayString = new StringBuilder("[");
+                        StringBuilder displayString = new StringBuilder("["); //$NON-NLS-1$
                         boolean isFirst = true;
                         for (HTMLActionParamValueType dataObject : actionMapping.getData()) {
                             if (!isFirst) {
-                                displayString.append(", ");
+                                displayString.append(", "); //$NON-NLS-1$
                             } else {
                                 isFirst = false;
                             }
                             displayString.append(dataObject.getValueToDisplay());
                         }
-                        displayString.append("]");
+                        displayString.append("]"); //$NON-NLS-1$
                         return displayString.toString();
                     }
                 }
@@ -1012,7 +1020,7 @@ public class RecorderDialog extends Dialog {
                 final HTMLActionMapping actionMapping = (HTMLActionMapping) element;
                 return new AbstractDialogCellEditor(
                         actionTableViewer.getTable(), actionMapping.getData() instanceof Object[]
-                                ? Arrays.toString(actionMapping.getData()) : "") {
+                                ? Arrays.toString(actionMapping.getData()) : "") { //$NON-NLS-1$
                     @Override
                     protected Object openDialogBox(Control cellEditorWindow) {
                         HTMLActionDataBuilderDialog dialog = new HTMLActionDataBuilderDialog(getParentShell(),

@@ -6,6 +6,7 @@ import groovy.lang.GroovyObject;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -545,7 +546,7 @@ public class GroovyParser {
         } else if (expression instanceof UnaryPlusExpression) {
             parse((UnaryPlusExpression) expression);
         } else if (expression instanceof EmptyExpression) {
-            parse((EmptyExpression) expression);
+            parse(expression);
         }
     }
 
@@ -875,7 +876,7 @@ public class GroovyParser {
 
             Iterator<Entry<String, Expression>> it = annotationNode.getMembers().entrySet().iterator();
             while (it.hasNext()) {
-                Map.Entry<String, Expression> pairs = (Map.Entry<String, Expression>) it.next();
+                Map.Entry<String, Expression> pairs = it.next();
                 if (first) {
                     first = false;
                 } else {
@@ -1166,14 +1167,47 @@ public class GroovyParser {
     }
 
     private void parsePackageAndImport(List<? extends ASTNode> astNodes) {
+        Comparator<ImportNode> importNodeComparator = new Comparator<ImportNode>() {
+
+            @Override
+            public int compare(ImportNode n1, ImportNode n2) {
+                if (n1 == n2) {
+                    return 0;
+                }
+
+                if (n1 == null) {
+                    return -1;
+                }
+
+                if (n2 == null) {
+                    return 1;
+                }
+
+                return n1.getClassName().compareTo(n2.getClassName());
+            }
+        };
+
         for (ASTNode astNode : astNodes) {
             if (astNode instanceof ClassNode) {
 
                 ModuleNode moduleNode = ((ClassNode) astNode).getModule();
                 parse(moduleNode.getPackage());
 
-                if (moduleNode.getImports().size() > 0) {
-                    for (ImportNode importNode : moduleNode.getImports()) {
+                // Static import
+                Map<String, ImportNode> staticImports = moduleNode.getStaticImports();
+                if (staticImports.size() > 0) {
+                    List<ImportNode> staticImportNodes = new ArrayList<>(staticImports.values());
+                    Collections.sort(staticImportNodes, importNodeComparator);
+                    for (ImportNode importNode : staticImportNodes) {
+                        parse(importNode);
+                    }
+                }
+
+                // Import
+                List<ImportNode> imports = moduleNode.getImports();
+                if (imports.size() > 0) {
+                    Collections.sort(imports, importNodeComparator);
+                    for (ImportNode importNode : imports) {
                         parse(importNode);
                     }
                     printDoubleLineBreak();

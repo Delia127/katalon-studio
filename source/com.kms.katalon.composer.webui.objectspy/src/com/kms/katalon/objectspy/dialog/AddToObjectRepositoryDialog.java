@@ -101,6 +101,7 @@ public class AddToObjectRepositoryDialog extends TreeEntitySelectionDialog {
                 rootFolderEntity = FolderController.getInstance().getObjectRepositoryRoot(currentProject);
                 rootFolderTreeEntity = new FolderTreeEntity(rootFolderEntity, null);
                 setInput(new Object[] { rootFolderTreeEntity });
+                setInitialSelection(rootFolderTreeEntity);
             } catch (Exception e) {
                 LoggerSingleton.logError(e);
                 MessageDialog.openError(getParentShell(), StringConstants.ERROR, e.getMessage());

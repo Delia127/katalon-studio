@@ -5,6 +5,8 @@ import org.eclipse.osgi.util.NLS;
 public class ComposerTestcaseMessageConstants extends NLS {
     private static final String BUNDLE_NAME = "com.kms.katalon.composer.testcase.constants.composerTestcaseMessages";
 
+    public static String KEYWORD_TOOLITEM_TIP_TEXT;
+
     public static String ADAP_MENU_CONTEXT_INSERT_BEFORE;
 
     public static String ADAP_MENU_CONTEXT_INSERT_AFTER;
@@ -314,7 +316,9 @@ public class ComposerTestcaseMessageConstants extends NLS {
     public static String EDI_ERROR_MSG_CANNOT_OPEN_DIA;
 
     public static String EDI_TITLE_TEST_DATA_BROWSER;
-
+    
+    public static String MENU_OPEN;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerTestcaseMessageConstants.class);

@@ -22,6 +22,8 @@ import org.codehaus.groovy.ast.ModuleNode;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
 import com.kms.katalon.controller.KeywordController;
+import com.kms.katalon.core.checkpoint.Checkpoint;
+import com.kms.katalon.core.checkpoint.CheckpointFactory;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testcase.TestCase;
 import com.kms.katalon.core.testcase.TestCaseFactory;
@@ -225,10 +227,6 @@ public class ClassNodeWrapper extends ASTNodeWrapper {
         return genericsTypes;
     }
 
-    public void setType(Class<?> newType) {
-        copyProperties(new ClassNode(newType));
-    }
-
     public List<MethodNodeWrapper> getMethods() {
         return Collections.unmodifiableList(methods);
     }
@@ -368,10 +366,12 @@ public class ClassNodeWrapper extends ASTNodeWrapper {
         addImportStaticMethod(ObjectRepository.class, MethodCallExpressionWrapper.FIND_TEST_OBJECT_METHOD_NAME);
         addImportStaticMethod(TestDataFactory.class, MethodCallExpressionWrapper.FIND_TEST_DATA_METHOD_NAME);
         addImportStaticMethod(TestCaseFactory.class, MethodCallExpressionWrapper.FIND_TEST_CASE_METHOD_NAME);
+        addImportStaticMethod(CheckpointFactory.class, MethodCallExpressionWrapper.FIND_CHECKPOINT_METHOD_NAME);
         addImport(FailureHandling.class);
         addImport(TestCase.class);
         addImport(TestData.class);
         addImport(TestObject.class);
+        addImport(Checkpoint.class);
         addImport(GlobalVariableParser.INTERNAL_PACKAGE_NAME, GlobalVariableParser.GLOBAL_VARIABLE_CLASS_NAME);
     }
 

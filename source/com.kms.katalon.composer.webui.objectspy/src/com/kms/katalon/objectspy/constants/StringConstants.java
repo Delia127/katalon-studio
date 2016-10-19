@@ -74,6 +74,10 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String HAND_INSTANT_BROWSERS_DIA_TOOGLE_MESSAGE = ObjectspyMessageConstants.HAND_INSTANT_BROWSERS_DIA_TOOGLE_MESSAGE;
 
+    public static final String DIA_TOOLITEM_HIGHLIGHT = ObjectspyMessageConstants.DIA_TOOLITEM_HIGHLIGHT;
+
+    public static final String DIA_TOOLITEM_TIP_HIGHLIGHT = ObjectspyMessageConstants.DIA_TOOLITEM_TIP_HIGHLIGHT;
+
     // CheckboxTreeSelectionHelper
     public static final String TREE_ERROR_MSG_CONTENT_PROVIDER_IS_REQUIRED = ObjectspyMessageConstants.TREE_ERROR_MSG_CONTENT_PROVIDER_IS_REQUIRED;
 
@@ -93,7 +97,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIALOG_CANNOT_START_IE_MESSAGE = ObjectspyMessageConstants.DIALOG_CANNOT_START_IE_MESSAGE;
 
     public static final String DIALOG_RUNNING_INSTANT_IE_MESSAGE = ObjectspyMessageConstants.DIALOG_RUNNING_INSTANT_IE_MESSAGE;
-    
+
     // BrowserNotSupportedException
     public static final String EXC_OBJ_SPY_FOR_BROWSER_IS_NOT_SUPPORTED = ObjectspyMessageConstants.EXC_OBJ_SPY_FOR_BROWSER_IS_NOT_SUPPORTED;
 
@@ -112,7 +116,7 @@ public class StringConstants extends GlobalStringConstants {
 
     // AddToObjectRepositoryDialog
     public static final String TITLE_ADD_TO_OBJECT_DIALOG = ObjectspyMessageConstants.TITLE_ADD_TO_OBJECT_DIALOG;
-    
+
     public static final String DIA_CHCK_BTN_CREATE_FOLDER_AS_PAGE_NAME = ObjectspyMessageConstants.DIA_CHCK_BTN_CREATE_FOLDER_AS_PAGE_NAME;
 
     public static final String DIA_BTN_ADD_NEW_FOLDER = ObjectspyMessageConstants.DIA_BTN_ADD_NEW_FOLDER;

@@ -21,6 +21,7 @@ import org.eclipse.jface.viewers.ColumnViewerEditor;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.EditingSupport;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.TreeViewerEditor;
@@ -35,6 +36,7 @@ import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -61,13 +63,18 @@ import com.kms.katalon.composer.components.part.IComposerPart;
 import com.kms.katalon.composer.components.viewer.CustomEditorActivationStrategy;
 import com.kms.katalon.composer.components.viewer.FocusCellOwnerDrawHighlighterForMultiSelection;
 import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
+import com.kms.katalon.composer.testcase.ast.treetable.AstBuiltInKeywordTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstCallTestCaseKeywordTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstMethodTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
+import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
+import com.kms.katalon.composer.testcase.components.KeywordTreeViewerToolTipSupport;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants;
 import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants.AddAction;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
 import com.kms.katalon.composer.testcase.keywords.KeywordBrowserTreeEntityTransfer;
@@ -85,10 +92,13 @@ import com.kms.katalon.composer.testcase.support.OutputColumnEditingSupport;
 import com.kms.katalon.composer.testcase.support.TestObjectEditingSupport;
 import com.kms.katalon.composer.testcase.treetable.transfer.ScriptTransfer;
 import com.kms.katalon.composer.testcase.treetable.transfer.ScriptTransferData;
+import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
 import com.kms.katalon.composer.testcase.util.TestCaseMenuUtil;
 import com.kms.katalon.composer.testcase.views.FocusCellOwnerDrawForManualTestcase;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.core.model.FailureHandling;
+import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 
@@ -291,7 +301,7 @@ public class TestCasePart implements IComposerPart, EventHandler {
 
         // Enable tool-tip support for treeTable
         treeTable.getTree().setToolTipText("");
-        ColumnViewerToolTipSupport.enableFor(treeTable);
+        KeywordTreeViewerToolTipSupport.enableFor(treeTable);
 
         createContextMenu();
         addTreeTableKeyListener();
@@ -405,7 +415,7 @@ public class TestCasePart implements IComposerPart, EventHandler {
                         KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "E" })));
                 enableMenuItem.addSelectionListener(selectionListener);
                 enableMenuItem.setID(TreeTableMenuItemConstants.ENABLE_MENU_ITEM_ID);
-
+                createDynamicGotoMenu(menu);
                 treeTable.getTree().setMenu(menu);
             }
         });
@@ -486,7 +496,6 @@ public class TestCasePart implements IComposerPart, EventHandler {
 
         DragSource dragSource = new DragSource(treeTable.getTree(), operations);
         dragSource.setTransfer(new Transfer[] { new ScriptTransfer() });
-
         dragSource.addDragListener(new DragSourceListener() {
             @Override
             public void dragStart(DragSourceEvent event) {
@@ -744,4 +753,118 @@ public class TestCasePart implements IComposerPart, EventHandler {
     public List<AstTreeTableNode> getDragNodes() {
         return dragNodes;
     }
+
+    public boolean isTestCaseEmpty() {
+        TreeItem treeItems[] = treeTable.getTree().getItems();
+        for (TreeItem item : treeItems) {
+            if (item.getText().matches("\\d+.*")) {
+                return false;
+            }
+        }
+        return true;
+    }
+    private void createDynamicGotoMenu(Menu menu) {
+        IStructuredSelection selection = (IStructuredSelection) treeTable.getSelection();
+        if (selection.size() == 0) {
+            return;
+        }
+        MenuItem openMenuItem = new MenuItem(menu, SWT.CASCADE);
+        openMenuItem.setText(ComposerTestcaseMessageConstants.MENU_OPEN);
+        Menu subMenu = new Menu(openMenuItem);
+        for (Object object : selection.toList()) {
+            if (object instanceof AstCallTestCaseKeywordTreeTableNode) {
+                createGotoTestCaseMenuItem((AstCallTestCaseKeywordTreeTableNode) object, subMenu);
+            } else if (object instanceof AstBuiltInKeywordTreeTableNode) {
+                createGotoTestObjectMenuItem((AstBuiltInKeywordTreeTableNode) object, subMenu);
+            }
+        }
+        if (subMenu.getItemCount() == 0) {
+            openMenuItem.setEnabled(false);
+            return;
+        }
+        openMenuItem.setMenu(subMenu);
+    }
+
+    private void createGotoTestCaseMenuItem(AstCallTestCaseKeywordTreeTableNode node, Menu subMenu) {
+        Object testObject = node.getTestObject();
+        if (!(testObject instanceof TestCaseEntity)) {
+            return;
+        }
+        TestCaseEntity testCaseEntity = (TestCaseEntity) testObject;
+        MenuItem menuItem = new MenuItem(subMenu, SWT.PUSH);
+        menuItem.setText(testCaseEntity.getIdForDisplay());
+        menuItem.setData(testCaseEntity);
+        menuItem.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Object object = e.getSource();
+                if (!(object instanceof MenuItem)) {
+                    return;
+                }
+                TestCaseEntity testCaseEntity = getTestCaseFromMenuItem((MenuItem) object);
+                if (testCaseEntity != null) {
+                    eventBroker.send(EventConstants.TESTCASE_OPEN, testCaseEntity);
+                }
+            }
+        });
+    }
+
+    private void createGotoTestObjectMenuItem(AstBuiltInKeywordTreeTableNode node, Menu subMenu) {
+        WebElementEntity testObject = getTestObjectFromMethod(node);
+        if (testObject == null) {
+            return;
+        }
+        MenuItem menuItem = new MenuItem(subMenu, SWT.PUSH);
+        menuItem.setText(testObject.getIdForDisplay());
+        menuItem.setData(testObject);
+        menuItem.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Object object = e.getSource();
+                if (!(object instanceof MenuItem)) {
+                    return;
+                }
+                WebElementEntity webElementEntity = getWebElementFromMenuItem((MenuItem) object);
+                if (webElementEntity != null) {
+                    eventBroker.send(EventConstants.TEST_OBJECT_OPEN, webElementEntity);
+                }
+            }
+        });
+    }
+
+    private WebElementEntity getTestObjectFromMethod(AstBuiltInKeywordTreeTableNode node) {
+        Object findTestObjectMethodCall = node.getTestObject();
+        if (!(findTestObjectMethodCall instanceof MethodCallExpressionWrapper)) {
+            return null;
+        }
+        String testObjectId = AstEntityInputUtil.findTestObjectIdFromFindTestObjectMethodCall((MethodCallExpressionWrapper) findTestObjectMethodCall);
+        if (testObjectId == null) {
+            return null;
+        }
+        try {
+            return ObjectRepositoryController.getInstance().getWebElementByDisplayPk(testObjectId);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+        return null;
+    }
+
+    private WebElementEntity getWebElementFromMenuItem(MenuItem menuItem) {
+        WebElementEntity webElementEntity = null;
+        if (menuItem.getData() instanceof WebElementEntity) {
+            webElementEntity = (WebElementEntity) menuItem.getData();
+        }
+        return webElementEntity;
+    }
+
+    private TestCaseEntity getTestCaseFromMenuItem(MenuItem menuItem) {
+        TestCaseEntity testCaseEntity = null;
+        if (menuItem.getData() instanceof TestCaseEntity) {
+            testCaseEntity = (TestCaseEntity) menuItem.getData();
+        }
+        return testCaseEntity;
+    }
+
 }

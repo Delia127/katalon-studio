@@ -7,6 +7,7 @@ import javax.servlet.DispatcherType;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -73,7 +74,7 @@ public class HTMLElementCaptureServer {
 
     public int getServerPort() {
         if (isStarted()) {
-            return server.getConnectors()[0].getLocalPort();
+            return ((ServerConnector) server.getConnectors()[0]).getLocalPort();
         }
         return -1;
     }

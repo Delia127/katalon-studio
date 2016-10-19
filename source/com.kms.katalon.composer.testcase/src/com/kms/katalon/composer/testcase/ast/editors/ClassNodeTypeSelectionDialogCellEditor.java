@@ -24,7 +24,7 @@ public class ClassNodeTypeSelectionDialogCellEditor extends TypeSelectionDialogC
             if (valueClass == null) {
                 return;
             }
-            classNodeWrapper.setType(valueClass);
+            classNodeWrapper = new ClassNodeWrapper(valueClass, classNodeWrapper.getParent());
         } else if (value instanceof ClassNodeWrapper) {
             classNodeWrapper = ((ClassNodeWrapper) value).clone();
         }

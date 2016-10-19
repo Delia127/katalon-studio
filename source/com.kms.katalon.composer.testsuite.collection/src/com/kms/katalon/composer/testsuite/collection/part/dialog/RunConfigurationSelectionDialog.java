@@ -10,6 +10,7 @@ import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
@@ -74,15 +75,22 @@ public class RunConfigurationSelectionDialog extends AbstractDialog {
         treeViewer.setInput(TestExecutionGroupCollector.getInstance().getGroupAsArray());
         treeViewer.expandAll();
         initializeBounds();
-
-        if (testRunConfigurationEntry != null) {
-            TestExecutionGroup group = TestExecutionGroupCollector.getInstance().getGroup(testRunConfigurationEntry.getGroupName());
-            TestExecutionConfigurationProvider executionProvider = TestExecutionGroupCollector.getInstance().getExecutionProvider(
-                    testRunConfigurationEntry);
-
-            TreePath treePath = new TreePath(new Object[] { group, executionProvider });
-            treeViewer.setSelection(new TreeSelection(treePath));
+        if (testRunConfigurationEntry == null) {
+            return;
         }
+        TestExecutionGroup group = TestExecutionGroupCollector.getInstance().getGroup(testRunConfigurationEntry.getGroupName());
+        TestExecutionConfigurationProvider executionProvider = TestExecutionGroupCollector.getInstance().getExecutionProvider(
+                testRunConfigurationEntry);
+        if (group == null || executionProvider == null) {
+            return;
+        }
+        TreePath treePath = new TreePath(new Object[] { group, executionProvider });
+        treeViewer.setSelection(new TreeSelection(treePath));
+    }
+    
+    @Override
+    protected Point getInitialSize() {
+        return new Point(400, 400);
     }
 
     @Override

@@ -6,19 +6,29 @@ import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
+import org.eclipse.jface.viewers.ColumnViewerEditor;
 import org.eclipse.jface.viewers.StyledCellLabelProvider;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.TableViewerEditor;
+import org.eclipse.jface.viewers.TableViewerFocusCellManager;
 import org.eclipse.jface.viewers.ViewerCell;
+import org.eclipse.jface.viewers.ViewerRow;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.components.viewer.CustomEditorActivationStrategy;
+import com.kms.katalon.composer.components.viewer.FocusCellOwnerDrawHighlighterForMultiSelection;
 import com.kms.katalon.composer.testcase.ast.editors.EnumPropertyComboBoxCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.StringConstantCellEditor;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
@@ -226,7 +236,39 @@ public class ArgumentInputBuilderDialog extends AbstractAstBuilderWithTableDialo
         tableViewer.setInput(inputParameters);
         tableViewer.refresh();
     }
+    
+    @Override
+    protected void setTableActivation(TableViewer tableViewer) {
+        if (!Platform.OS_MACOSX.equals(Platform.getOS())) {
+            super.setTableActivation(tableViewer);
+            return;
+        }
+        int activateBitMask = ColumnViewerEditor.TABBING_HORIZONTAL
+                | ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR | ColumnViewerEditor.KEYBOARD_ACTIVATION;
+        FocusCellDialogArgumentBuilderInput focusCellHighlighter = new FocusCellDialogArgumentBuilderInput(tableViewer);
+        TableViewerEditor.create(tableViewer, new TableViewerFocusCellManager(tableViewer, focusCellHighlighter),
+                new CustomEditorActivationStrategy(tableViewer, focusCellHighlighter), activateBitMask);
+    }
+    
+    private class FocusCellDialogArgumentBuilderInput extends FocusCellOwnerDrawHighlighterForMultiSelection {
 
+        public FocusCellDialogArgumentBuilderInput(ColumnViewer viewer) {
+            super(viewer);
+        }
+        
+        @Override
+        protected Color getBackgroundLostFocusCell(ViewerCell cell) {
+            Color disableColor = ColorUtil.getUnEditableTableCellBackgroundColor();
+            Color backgroundColor = cell.getColumnIndex() <= 2 ? disableColor : null;
+            ViewerRow row = cell.getViewerRow();
+            for (int i = 0; i < row.getColumnCount(); ++i) {
+                row.getCell(i).setBackground(i <= 2 ? disableColor : null);
+            }
+            return backgroundColor;
+        }
+    }
+    
+    
     private final class ArgumentInputValueLabelProvider extends AstInputValueLabelProvider {
         @Override
         public String getText(Object element) {

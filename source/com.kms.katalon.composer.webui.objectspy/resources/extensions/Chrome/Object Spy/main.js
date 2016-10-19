@@ -4,5 +4,6 @@ getKatalonOnOffStatus(function(isOn) {
 	}
 	$('document').ready( function(){
 		startInspection();
+		startGetRequestSchedule();
 	});
 });

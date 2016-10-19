@@ -2,9 +2,11 @@ package com.kms.katalon.composer.project.handlers;
 
 import javax.inject.Named;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.jface.preference.IPreferenceNode;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.preference.PreferenceManager;
 import org.eclipse.jface.preference.PreferenceNode;
@@ -16,7 +18,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.providers.TypeCheckedStyleCellLabelProvider;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.project.constants.StringConstants;
+import com.kms.katalon.composer.project.exception.MissingProjectSettingPageException;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.preferences.internal.PreferencesRegistry;
@@ -32,6 +36,9 @@ public class SettingHandler {
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell, PreferencesRegistry preferencesRegistry) {
         PreferenceManager pm = preferencesRegistry.getPreferenceManager(PreferencesRegistry.PREFS_PROJECT_XP);
+
+        hideIOSPageOnNoneMacOS(pm);
+
         PreferenceDialog dialog = new PreferenceDialog(shell, pm) {
             @Override
             protected TreeViewer createTreeViewer(Composite parent) {
@@ -54,6 +61,45 @@ public class SettingHandler {
         dialog.getShell().setText(StringConstants.HAND_PROJ_SETTING);
         dialog.getShell().setMinimumSize(800, 500);
         dialog.open();
+    }
+
+    private void hideIOSPageOnNoneMacOS(PreferenceManager pm) {
+        if (Platform.OS_MACOSX.equals(Platform.getOS())) {
+            return;
+        }
+
+        try {
+            IPreferenceNode executionSettings = null;
+            for (IPreferenceNode node : pm.getRootSubNodes()) {
+                if (StringConstants.PROJECT_EXECUTION_SETTINGS_PAGE_ID.equals(node.getId())) {
+                    executionSettings = node;
+                    break;
+                }
+            }
+            if (executionSettings == null) {
+                throw new MissingProjectSettingPageException(StringConstants.PROJECT_EXECUTION_SETTINGS_PAGE_ID);
+            }
+
+            IPreferenceNode defaultExecutionSettings = executionSettings.findSubNode(StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_PAGE_ID);
+            if (defaultExecutionSettings == null) {
+                throw new MissingProjectSettingPageException(StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_PAGE_ID);
+            }
+
+            IPreferenceNode mobileNode = defaultExecutionSettings.findSubNode(StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_MOBILE_PAGE_ID);
+            if (mobileNode == null) {
+                throw new MissingProjectSettingPageException(
+                        StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_MOBILE_PAGE_ID);
+            }
+
+            IPreferenceNode iOSNode = mobileNode.remove(StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_MOBILE_IOS_PAGE_ID);
+            if (iOSNode == null) {
+                throw new MissingProjectSettingPageException(
+                        StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_MOBILE_IOS_PAGE_ID);
+            }
+        } catch (MissingProjectSettingPageException e) {
+            // In case of someone changes the page ID in e4xmi, this will get DEV attention
+            LoggerSingleton.logError(e);
+        }
     }
 
     private final class PreferenceLabelProvider extends TypeCheckedStyleCellLabelProvider<PreferenceNode> {

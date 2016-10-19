@@ -29,7 +29,6 @@ public class FunctionsIntroductionDialog extends SimpleWizardDialog {
     @Override
     protected void initializeBounds() {
         computeSizeHelper = new FunctionsIntroductionDialogSizeCalculator(getShell(), IMG_SIZE, RATIO);
-//        computeSizeHelper = new FunctionsIntroductionDialogSizeCalculator(getShell(), new Point(ImageConstants.IMG_INTRO_SCREEN_1.getBounds().width, ImageConstants.IMG_INTRO_SCREEN_1.getBounds().height), RATIO);
         super.initializeBounds();
     }
 

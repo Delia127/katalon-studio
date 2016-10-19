@@ -4,7 +4,7 @@ Bundle-Name: Selenium-Standalone
 Bundle-SymbolicName: com.kms.katalon.selenium-standalone;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: KMS
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .,
  resources/lib/selenium-server-standalone-2.53.0.jar
 Export-Package: com.google.common.base,

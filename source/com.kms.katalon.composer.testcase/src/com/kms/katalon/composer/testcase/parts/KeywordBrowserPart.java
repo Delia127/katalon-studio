@@ -34,6 +34,7 @@ import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.testcase.components.KeywordTreeViewerToolTipSupport;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants;
 import com.kms.katalon.composer.testcase.keywords.BuiltinKeywordFolderBrowserTreeEntity;
@@ -192,7 +193,7 @@ public class KeywordBrowserPart implements EventHandler {
         treeViewer.setContentProvider(new KeywordTreeContentProvider());
         treeViewer.setLabelProvider(labelProvider = new KeywordTreeLabelProvider());
         treeViewer.addFilter(viewerFilter = new KeywordBrowserEntityViewerFilter());
-        ColumnViewerToolTipSupport.enableFor(treeViewer);
+        KeywordTreeViewerToolTipSupport.enableFor(treeViewer);
 
     }
 

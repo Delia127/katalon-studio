@@ -5,4 +5,4 @@ Bundle-SymbolicName: com.kms.katalon.product
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: KMS
 Require-Bundle: org.eclipse.core.runtime
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8

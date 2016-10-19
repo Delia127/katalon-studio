@@ -79,6 +79,8 @@ public class ObjectspyMessageConstants extends NLS {
 
     public static String DIALOG_RUNNING_INSTANT_IE_MESSAGE;
 
+    public static String ERR_DLG_OBJECT_SPY_PORT_IN_USE;
+
     public static String EXC_OBJ_SPY_FOR_BROWSER_IS_NOT_SUPPORTED;
 
     public static String EXC_EXTENSION_FOR_BROWSER_NOT_FOUND;
@@ -108,6 +110,10 @@ public class ObjectspyMessageConstants extends NLS {
     public static String PREF_LBL_INSTANT_BROWSER_PORT;
 
     public static String PREF_LBL_INSTANT_BROWSER_PORT_DO_NOT_SHOW_WARNING_DIALOG;
+    
+    public static String DIA_TOOLITEM_HIGHLIGHT;
+
+    public static String DIA_TOOLITEM_TIP_HIGHLIGHT;
 
     static {
         // initialize resource bundle

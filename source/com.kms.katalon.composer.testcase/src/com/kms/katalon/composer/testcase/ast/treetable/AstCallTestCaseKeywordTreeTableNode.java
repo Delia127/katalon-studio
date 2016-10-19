@@ -134,7 +134,7 @@ public class AstCallTestCaseKeywordTreeTableNode extends AstBuiltInKeywordTreeTa
         }
         return "";
     }
-
+    
     @Override
     public CellEditor getCellEditorForTestObject(Composite parent) {
         return new CallTestCaseCellEditor(parent, getTestObjectText(), testCasePk);
@@ -182,4 +182,16 @@ public class AstCallTestCaseKeywordTreeTableNode extends AstBuiltInKeywordTreeTa
     public Image getIcon() {
         return ImageConstants.IMG_16_CALL_TEST_CASE;
     }
+
+    @Override
+    public TestCaseEntity getTestObject() {
+        try {
+            return TestCaseController.getInstance().getTestCaseByDisplayId(testCasePk);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+        return null;
+    }
+    
+    
 }

@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Widget;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.util.ColorUtil;
 
 /**
  * Hack for solving the jface Bug 268135 (https://bugs.eclipse.org/bugs/show_bug.cgi?id=268135) [Viewers] [CellEditors]
@@ -46,7 +47,6 @@ public class FocusCellOwnerDrawHighlighterForMultiSelection extends FocusCellHig
                 : getSelectedCellBackgroundColorNoFocus(cell);
         Color foreground = (cell.getControl().isFocusControl()) ? getSelectedCellForegroundColor(cell)
                 : getSelectedCellForegroundColorNoFocus(cell);
-
         if (foreground != null || background != null || onlyTextHighlighting(cell)) {
             GC gc = event.gc;
 

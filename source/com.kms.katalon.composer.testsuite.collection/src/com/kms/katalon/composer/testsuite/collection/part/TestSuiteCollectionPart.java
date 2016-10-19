@@ -22,9 +22,16 @@ import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DragSource;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -37,6 +44,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -56,18 +64,24 @@ import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.components.util.ColumnViewerUtil;
 import com.kms.katalon.composer.execution.handlers.AbstractExecutionHandler;
 import com.kms.katalon.composer.testsuite.collection.constant.ComposerTestsuiteCollectionMessageConstants;
+import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
 import com.kms.katalon.composer.testsuite.collection.constant.ImageConstants;
 import com.kms.katalon.composer.testsuite.collection.constant.StringConstants;
+import com.kms.katalon.composer.testsuite.collection.listeners.TestSuiteTableDragListener;
+import com.kms.katalon.composer.testsuite.collection.listeners.TestSuiteTableDropListener;
 import com.kms.katalon.composer.testsuite.collection.part.job.TestSuiteCollectionBuilderJob;
 import com.kms.katalon.composer.testsuite.collection.part.provider.TableViewerProvider;
 import com.kms.katalon.composer.testsuite.collection.part.provider.TestSuiteRunConfigLabelProvider;
 import com.kms.katalon.composer.testsuite.collection.part.provider.ToolbarItemListener;
 import com.kms.katalon.composer.testsuite.collection.part.provider.ToolbarItemListener.ActionId;
 import com.kms.katalon.composer.testsuite.collection.part.support.RunConfigurationChooserEditingSupport;
+import com.kms.katalon.composer.testsuite.collection.part.support.RunConfigurationDataEditingSupport;
 import com.kms.katalon.composer.testsuite.collection.part.support.RunEnabledEditingSupport;
 import com.kms.katalon.composer.testsuite.collection.part.support.TestSuiteIdEditingSupport;
+import com.kms.katalon.composer.testsuite.collection.transfer.TestSuiteRunConfigurationTransfer;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestSuiteCollectionController;
@@ -122,6 +136,8 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
     private Button btnSequential, btnParallel;
 
     private Label lblExecutionInformation;
+
+    private MenuItem openMenuItem;
 
     private Listener layoutExecutionInformationCompositeListener = new Listener() {
 
@@ -384,7 +400,15 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         tbvcRunWith.setEditingSupport(new RunConfigurationChooserEditingSupport(this));
         tbvcRunWith.setLabelProvider(new TestSuiteRunConfigLabelProvider(this,
                 TestSuiteRunConfigLabelProvider.RUN_WITH_COLUMN_IDX));
-        tableLayout.setColumnData(tblclmnEnviroment, new ColumnWeightData(20, 150));
+        tableLayout.setColumnData(tblclmnEnviroment, new ColumnWeightData(20, 70));
+        
+        TableViewerColumn tbvcRunWithData = new TableViewerColumn(tableViewer, SWT.NONE);
+        TableColumn tblclmnRunWithData = tbvcRunWithData.getColumn();
+        tblclmnRunWithData.setText(ComposerTestsuiteCollectionMessageConstants.PA_TABLE_COLUMN_RUN_CONFIGURATION_DATA);
+        tbvcRunWithData.setEditingSupport(new RunConfigurationDataEditingSupport(this));
+        tbvcRunWithData.setLabelProvider(new TestSuiteRunConfigLabelProvider(this,
+                TestSuiteRunConfigLabelProvider.RUN_WITH_DATA_COLUMN_IDX));
+        tableLayout.setColumnData(tblclmnRunWithData, new ColumnWeightData(40, 200));
 
         TableViewerColumn tbvcRun = new TableViewerColumn(tableViewer, SWT.NONE);
         tblclmnRun = tbvcRun.getColumn();
@@ -400,6 +424,28 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         tableViewer.enableTooltipSupport();
 
         createTableMenu(tableViewer.getTable());
+        
+        setTableViewerSelection(tableViewer);
+        ColumnViewerUtil.setTableActivation(tableViewer);
+        hookDropTestSuiteEvent();
+        hookDragTestSuiteEvent();
+    }
+
+    private void hookDragTestSuiteEvent() {
+        int operations = DND.DROP_MOVE | DND.DROP_COPY;
+
+        DragSource dragSource = new DragSource(tableViewer.getTable(), operations);
+        dragSource.setTransfer(new Transfer[] { new TestSuiteRunConfigurationTransfer() });
+        dragSource.addDragListener(new TestSuiteTableDragListener(this));
+
+    }
+
+    private void hookDropTestSuiteEvent() {
+        DropTarget dt = new DropTarget(tableViewer.getTable(), DND.DROP_MOVE | DND.DROP_COPY);
+        List<Transfer> treeEntityTransfers = TransferTypeCollection.getInstance().getTreeEntityTransfer();
+        treeEntityTransfers.add(new TestSuiteRunConfigurationTransfer());
+        dt.setTransfer(treeEntityTransfers.toArray(new Transfer[treeEntityTransfers.size()]));
+        dt.addDropListener(new TestSuiteTableDropListener(this, getTestSuiteCollection()));
     }
 
     /**
@@ -443,7 +489,9 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
                     public Boolean call() throws Exception {
                         return cloneTestSuite.isAnyRunEnabled();
                     }
-                });
+                }, SWT.PUSH);
+        openMenuItem = menu.createMenuItem(ComposerTestsuiteCollectionMessageConstants.MENU_OPEN, null, enableWhenItemSelected,
+                SWT.CASCADE);
     }
 
     @Override
@@ -600,4 +648,55 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
             }
         });
     }
+
+    public TestSuiteCollectionEntity getTestSuiteCollection() {
+        return originalTestSuite;
+    }
+    
+    private void setTableViewerSelection(final CTableViewer tableViewer) {
+        tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                createDynamicGotoSubMenu();
+            }
+        });
+    }
+
+    private void createDynamicGotoSubMenu() {
+        IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+        Menu subMenu = new Menu(openMenuItem);
+        for (Object object : selection.toList()) {
+            if (!(object instanceof TestSuiteRunConfiguration)) {
+                continue;
+            }
+            TestSuiteEntity testSuiteEntity = ((TestSuiteRunConfiguration) object).getTestSuiteEntity();
+            MenuItem menuItem = new MenuItem(subMenu, SWT.PUSH);
+            menuItem.setText(testSuiteEntity.getIdForDisplay());
+            menuItem.setData(testSuiteEntity);
+            menuItem.addSelectionListener(new SelectionAdapter() {
+
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    Object menu = e.getSource();
+                    if (! (menu instanceof MenuItem)) {
+                        return;
+                    }
+                    TestSuiteEntity testSuiteEntity = getTestSuiteFromMenuItem((MenuItem)menu);
+                    if (testSuiteEntity != null) {
+                        eventBroker.send(EventConstants.TEST_SUITE_OPEN, testSuiteEntity);
+                    }
+                }
+            });
+        }
+        openMenuItem.setMenu(subMenu);
+    }
+
+    private TestSuiteEntity getTestSuiteFromMenuItem(MenuItem selectedMenuItem) {
+        if (selectedMenuItem.getData() instanceof TestSuiteEntity) {
+            return (TestSuiteEntity) selectedMenuItem.getData();
+        }
+        return null;
+    }
+
 }

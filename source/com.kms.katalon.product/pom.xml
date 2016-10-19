@@ -16,7 +16,7 @@
 		<product.buildDirectory>${project.build.directory}/products</product.buildDirectory>
 		<product.win32OutputDirectory>${product.buildDirectory}/${product.id}/win32/win32/x86</product.win32OutputDirectory>
 		<product.win64OutputDirectory>${product.buildDirectory}/${product.id}/win32/win32/x86_64</product.win64OutputDirectory>
-		<product.mac64OutputDirectory>${product.buildDirectory}/${product.id}/macosx/cocoa/x86_64</product.mac64OutputDirectory>
+		<product.mac64OutputDirectory>${product.buildDirectory}/${product.id}/macosx/cocoa/x86_64/${product.name}.app/Contents/Eclipse</product.mac64OutputDirectory>
 		<product.resourcesDirectory>configuration/resources</product.resourcesDirectory>
 		<product.mac64ResourcesDirectory>configuration/macosx64_resources</product.mac64ResourcesDirectory>
 		<product.win32ResourcesDirectory>configuration/win32_resources</product.win32ResourcesDirectory>
@@ -32,24 +32,54 @@
 		<product.win64ZipFileSrc>${product.buildDirectory}/${product.id}-win32.win32.x86_64.zip</product.win64ZipFileSrc>
 		<product.win64ZipFileDest>${product.buildDirectory}/${product.name} Windows 64.zip</product.win64ZipFileDest>
 
-		<product.mac64ZipFileSrc>${product.buildDirectory}/${product.id}-macosx.cocoa.x86_64.zip</product.mac64ZipFileSrc>
-		<product.mac64ZipFileDest>${product.buildDirectory}/${product.name} MacOS.zip</product.mac64ZipFileDest>
+		<product.mac64ZipFileSrc>${product.buildDirectory}/${product.id}-macosx.cocoa.x86_64.tar.gz</product.mac64ZipFileSrc>
+		<product.mac64ZipFileDest>${product.buildDirectory}/${product.name} MacOS.tar.gz</product.mac64ZipFileDest>
 	</properties>
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-install-plugin</artifactId>
+				<version>2.3.1</version>
+				<executions>
+					<execution>
+						<id>default-install</id>
+						<phase>none</phase>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-p2-repository-plugin</artifactId>
 				<version>${tycho.version}</version>
 				<configuration>
 					<includeAllDependencies>true</includeAllDependencies>
+					<profileProperties>
+						<macosx-bundled>true</macosx-bundled>
+					</profileProperties>
 				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-p2-director-plugin</artifactId>
 				<version>${tycho.version}</version>
+				<configuration>
+					<formats>
+						<win32>zip</win32>
+						<linux>tar.gz</linux>
+						<macosx>tar.gz</macosx>
+					</formats>
+
+					<products>
+						<product>
+							<id>${product.id}</id>
+							<rootFolders>
+								<macosx>${product.name}.app</macosx>
+							</rootFolders>
+						</product>
+					</products>
+				</configuration>
 				<executions>
 					<execution>
 						<id>materialize-products</id>

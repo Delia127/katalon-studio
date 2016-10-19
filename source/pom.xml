@@ -74,14 +74,14 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 	</modules>
 
 	<properties>
-		<tycho.version>0.21.0</tycho.version>
+		<tycho.version>0.24.0</tycho.version>
 		<gmavenplus.version>1.5</gmavenplus.version>
 		<maven-resources-plugin.version>2.6</maven-resources-plugin.version>
 		
-		<eclipse_repo_url>http://download.eclipse.org/eclipse/updates/4.4/R-4.4.2-201502041700/</eclipse_repo_url>
+		<eclipse_repo_url>http://download.eclipse.org/eclipse/updates/4.6/</eclipse_repo_url>
 		<eclipse_orbit_repo_url>http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository/</eclipse_orbit_repo_url>
-		<groovy_repo_url>http://dist.springsource.org/snapshot/GRECLIPSE/e4.4</groovy_repo_url>
-		<egit_repo_url>http://download.eclipse.org/egit/updates-4.4.1</egit_repo_url>
+		<groovy_repo_url>http://dist.springsource.org/snapshot/GRECLIPSE/e4.6/</groovy_repo_url>
+		<egit_repo_url>http://download.eclipse.org/egit/updates-4.4.1/</egit_repo_url>
 		
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		

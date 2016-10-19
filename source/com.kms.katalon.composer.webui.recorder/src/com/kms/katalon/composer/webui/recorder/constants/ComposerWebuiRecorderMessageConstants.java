@@ -79,6 +79,8 @@ public class ComposerWebuiRecorderMessageConstants extends NLS {
 
     public static String DIALOG_RUNNING_INSTANT_IE_MESSAGE;
 
+    public static String ERR_DLG_PORT_FOR_RECORD_IN_USE;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerWebuiRecorderMessageConstants.class);

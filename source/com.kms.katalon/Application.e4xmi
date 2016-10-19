@@ -78,7 +78,7 @@
       </children>
       <children xsi:type="menu:Menu" xmi:id="_hQQH7hYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.help" label="Help">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_hQQH7xYMEeSUMbyEN2kbFQ" label="About" command="_hQQH5hYMEeSUMbyEN2kbFQ"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_dj8ScGgxEeatJ4Re1SnNtw" elementId="com.kms.katalon.handledmenuitem.welcome" label="Katalon Help" iconURI="platform:/plugin/org.eclipse.ui.intro/icons/welcome16.gif" command="_jm89wGgxEeatJ4Re1SnNtw"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_dj8ScGgxEeatJ4Re1SnNtw" elementId="com.kms.katalon.handledmenuitem.welcome" label="Katalon Help" command="_jm89wGgxEeatJ4Re1SnNtw"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_iImwQGp9EeakEakFblwi9Q" elementId="com.kms.katalon.handledmenuitem.functionsintroduction" label="Quick Guide" command="_agaP0Gp9EeakEakFblwi9Q"/>
       </children>
     </mainMenu>
@@ -106,7 +106,6 @@
     </sharedElements>
     <trimBars xmi:id="_hQQH9RYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.trimbar">
       <children xsi:type="menu:ToolBar" xmi:id="_hQQH9hYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.toolbar">
-        <tags>Draggable</tags>
         <children xsi:type="menu:HandledToolItem" xmi:id="_hQQH-BYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.toolbar.save" iconURI="platform:/plugin/com.kms.katalon/icons/save_24.png" tooltip="Save" command="_hQQH4xYMEeSUMbyEN2kbFQ">
           <persistedState key="index" value="0"/>
           <tags>Opaque</tags>
@@ -165,4 +164,5 @@
   <addons xmi:id="_hQQH1xYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.ui.workbench.contexts.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.ContextProcessingAddon"/>
   <addons xmi:id="_hQQH2BYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.ui.workbench.bindings.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.swt/org.eclipse.e4.ui.workbench.swt.util.BindingProcessingAddon"/>
   <addons xmi:id="_efHPkNn6EeWQyuuwTERZYg" elementId="com.kms.katalon.addons.PerspectiveResetAddon" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.addons.PerspectiveResetAddon"/>
+  <addons xmi:id="_s3AskJDxEea1OZrYaBxRZA" elementId="com.kms.katalon.addon.CustomJFaceDialogMessageImages" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.addons.CustomJFaceDialogMessageImages"/>
 </application:Application>

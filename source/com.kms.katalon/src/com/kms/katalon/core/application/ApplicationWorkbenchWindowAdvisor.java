@@ -11,6 +11,7 @@ import org.eclipse.e4.ui.model.application.ui.basic.MBasicFactory;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
@@ -25,6 +26,10 @@ import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.PreferenceConstants;
 
 public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
+    private static final String[] ECLIPSE_DEFAULT_ACTION_SET_IDS = {
+            "org.codehaus.groovy.eclipse.ui.groovyElementCreation", "org.eclipse.search.searchActionSet",
+            "org.eclipse.ui.edit.text.actionSet.annotationNavigation",
+            "org.eclipse.ui.edit.text.actionSet.navigation" };
 
     private IWorkbenchWindowConfigurer fConfigurer;
 
@@ -34,6 +39,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
         super(configurer);
         fConfigurer = configurer;
         application = ApplicationSingleton.getInstance().getApplication();
+        ModelServiceSingleton.getInstance().getModelService();
     }
 
     public ActionBarAdvisor createActionBarAdvisor(IActionBarConfigurer configurer) {
@@ -75,7 +81,8 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
     @Override
     public boolean preWindowShellClose() {
-        IHandlerService handlerService = (IHandlerService) PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+        IHandlerService handlerService = (IHandlerService) PlatformUI.getWorkbench()
+                .getActiveWorkbenchWindow()
                 .getService(IHandlerService.class);
         try {
             boolean confirmed = (boolean) handlerService.executeCommand(IdConstants.QUIT_COMMAND_ID, null);
@@ -92,11 +99,15 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
      */
     @Override
     public void postWindowCreate() {
-        EPartService partService = (EPartService) PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+        hideUnwantedActionSets();
+
+        EPartService partService = (EPartService) PlatformUI.getWorkbench()
+                .getActiveWorkbenchWindow()
                 .getService(EPartService.class);
 
         // active the first tab of the rightPartStack.
-        MPartStack rightPartStack = (MPartStack) ModelServiceSingleton.getInstance().getModelService()
+        MPartStack rightPartStack = (MPartStack) ModelServiceSingleton.getInstance()
+                .getModelService()
                 .find(IdConstants.OUTLINE_PARTSTACK_ID, application);
 
         if (rightPartStack != null && rightPartStack.getChildren() != null && !rightPartStack.getChildren().isEmpty()) {
@@ -105,5 +116,14 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
             partService.activate(globalPart);
         }
 
+    }
+
+    private void hideUnwantedActionSets() {
+        IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+        if (activePage != null) {
+            for (String actionSet : ECLIPSE_DEFAULT_ACTION_SET_IDS) {
+                activePage.hideActionSet(actionSet);
+            }
+        }
     }
 }

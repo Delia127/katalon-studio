@@ -15,8 +15,6 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceColors;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.accessibility.AccessibleAdapter;
-import org.eclipse.swt.accessibility.AccessibleEvent;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.custom.StyledText;
@@ -24,15 +22,12 @@ import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -45,11 +40,9 @@ import org.eclipse.ui.internal.IWorkbenchHelpContextIds;
 import org.eclipse.ui.internal.ProductProperties;
 import org.eclipse.ui.internal.WorkbenchMessages;
 import org.eclipse.ui.internal.about.AboutBundleGroupData;
-import org.eclipse.ui.internal.about.AboutFeaturesButtonManager;
 import org.eclipse.ui.internal.about.AboutItem;
 import org.eclipse.ui.internal.about.AboutTextManager;
 import org.eclipse.ui.internal.about.InstallationDialog;
-import org.eclipse.ui.internal.dialogs.AboutFeaturesDialog;
 import org.eclipse.ui.menus.CommandContributionItem;
 import org.eclipse.ui.menus.CommandContributionItemParameter;
 
@@ -60,7 +53,7 @@ import com.kms.katalon.util.VersionUtil;
 /**
  * Displays information about the product.
  */
-@SuppressWarnings({ "unchecked", "restriction" })
+@SuppressWarnings({ "restriction" })
 public class KatalonAboutDialog extends TrayDialog {
     private final static int MAX_IMAGE_WIDTH_FOR_TEXT = 250;
 
@@ -70,11 +63,7 @@ public class KatalonAboutDialog extends TrayDialog {
 
     private IProduct product;
 
-    private AboutBundleGroupData[] bundleGroupInfos;
-
     private ArrayList<Image> images = new ArrayList<>();
-
-    private AboutFeaturesButtonManager buttonManager = new AboutFeaturesButtonManager();
 
     private StyledText text;
     
@@ -99,7 +88,7 @@ public class KatalonAboutDialog extends TrayDialog {
 
         // create a descriptive object for each BundleGroup
         IBundleGroupProvider[] providers = Platform.getBundleGroupProviders();
-        LinkedList groups = new LinkedList();
+        LinkedList<AboutBundleGroupData> groups = new LinkedList<>();
         if (providers != null) {
             for (int i = 0; i < providers.length; ++i) {
                 IBundleGroup[] bundleGroups = providers[i].getBundleGroups();
@@ -108,8 +97,6 @@ public class KatalonAboutDialog extends TrayDialog {
                 }
             }
         }
-        bundleGroupInfos = (AboutBundleGroupData[]) groups
-                .toArray(new AboutBundleGroupData[0]);
     }
 
     /*
@@ -190,7 +177,7 @@ public class KatalonAboutDialog extends TrayDialog {
         VersionInfo lastestVersion = VersionUtil.getLatestVersion();
         String versionStatus = MessageConstants.VERSION_IS_UP_TODATE;
         if (!VersionUtil.getCurrentVersion().equals(lastestVersion)) {
-            versionStatus = MessageFormat.format(MessageConstants.NEW_VERSION_AVAIABLE, lastestVersion.version);
+            versionStatus = MessageFormat.format(MessageConstants.NEW_VERSION_AVAIABLE, lastestVersion.getVersion());
         }
         StringBuilder versionUpdateInfo = new StringBuilder(aboutText);
         versionUpdateInfo.delete(start, start + VERSION_UPDATE.length());
@@ -434,61 +421,8 @@ public class KatalonAboutDialog extends TrayDialog {
         
     }
 
-    private void createFeatureImageButtonRow(Composite parent) {
-        Composite featureContainer = new Composite(parent, SWT.NONE);
-        RowLayout rowLayout = new RowLayout();
-        rowLayout.wrap = true;
-        featureContainer.setLayout(rowLayout);
-        GridData data = new GridData();
-        data.horizontalAlignment = GridData.FILL;
-        featureContainer.setLayoutData(data);
-
-        for (int i = 0; i < bundleGroupInfos.length; i++) {
-            createFeatureButton(featureContainer, bundleGroupInfos[i]);
-        }
-    }
-
-    private Button createFeatureButton(Composite parent,
-            final AboutBundleGroupData info) {
-        if (!buttonManager.add(info)) {
-            return null;
-        }
-
-        ImageDescriptor desc = info.getFeatureImage();
-        Image featureImage = null;
-
-        Button button = new Button(parent, SWT.FLAT | SWT.PUSH);
-        button.setData(info);
-        featureImage = desc.createImage();
-        images.add(featureImage);
-        button.setImage(featureImage);
-        button.setToolTipText(info.getProviderName());
-        
-        button.getAccessible().addAccessibleListener(new AccessibleAdapter(){
-            /* (non-Javadoc)
-             * @see org.eclipse.swt.accessibility.AccessibleAdapter#getName(org.eclipse.swt.accessibility.AccessibleEvent)
-             */
-            @Override
-            public void getName(AccessibleEvent e) {
-                e.result = info.getProviderName();
-            }
-        });
-        button.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent event) {
-                AboutBundleGroupData[] groupInfos = buttonManager
-                        .getRelatedInfos(info);
-                AboutBundleGroupData selection = (AboutBundleGroupData) event.widget
-                        .getData();
-
-                AboutFeaturesDialog d = new AboutFeaturesDialog(getShell(),
-                        productName, groupInfos, selection);
-                d.open();
-            }
-        });
-
-        return button;
-    }
+    
+    
 
     /*
      * (non-Javadoc)

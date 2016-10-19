@@ -5,10 +5,8 @@ import java.util.List;
 
 import com.kms.katalon.composer.mobile.constants.ImageConstants;
 import com.kms.katalon.composer.testsuite.collection.execution.provider.TestExecutionConfigurationProvider;
-import com.kms.katalon.composer.testsuite.collection.execution.provider.TestExecutionDriverEntry;
 import com.kms.katalon.composer.testsuite.collection.execution.provider.TestExecutionGroup;
 import com.kms.katalon.composer.testsuite.collection.execution.provider.TestExecutionItem;
-import com.kms.katalon.core.mobile.driver.MobileDriverType;
 
 public class MobileTestExecutionGroup implements TestExecutionGroup {
 
@@ -39,10 +37,8 @@ public class MobileTestExecutionGroup implements TestExecutionGroup {
     private List<TestExecutionItem> getProviders() {
         if (providers == null) {
             providers = new ArrayList<>();
-            providers.add(TestExecutionDriverEntry.from(getName(), MobileDriverType.ANDROID_DRIVER,
-                    ImageConstants.IMG_URL_16_ANDROID));
-            providers.add(TestExecutionDriverEntry.from(getName(), MobileDriverType.IOS_DRIVER, 
-                    ImageConstants.IMG_URL_16_APPLE));
+            providers.add(new AndroidTestExecutionDriverEntry(getName()));
+            providers.add(new IosTestExecutionDriverEntry(getName()));
         }
         return providers;
     }

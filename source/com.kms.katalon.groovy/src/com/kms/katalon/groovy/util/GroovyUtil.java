@@ -20,6 +20,7 @@ import org.apache.commons.io.IOUtils;
 import org.codehaus.groovy.eclipse.core.model.GroovyRuntime;
 import org.codehaus.jdt.groovy.model.GroovyCompilationUnit;
 import org.eclipse.core.internal.resources.ModelObjectWriter;
+import org.eclipse.core.internal.resources.Project;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -284,7 +285,7 @@ public class GroovyUtil {
         javaProject.setRawClasspath(entries.toArray(new IClasspathEntry[entries.size()]), monitor);
         GroovyRuntime.addGroovyClasspathContainer(javaProject);
     }
-
+    
     private static void addClassPathOfCoreBundleToJavaProject(List<IClasspathEntry> entries) throws IOException,
             BundleException {
         addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle(IdConstants.KATALON_CORE_BUNDLE_ID));
@@ -340,34 +341,32 @@ public class GroovyUtil {
             }
         }
     }
+    
+    private static File getConfigurationFolder() throws IOException {
+        return new File(FileLocator.resolve(Platform.getConfigurationLocation().getURL()).getFile());
+    }
 
     /**
      * @return Returns resources folder of the current Katalon installed folder.
+     * @throws IOException 
      */
-    private static File getPlatformResourcesDir() {
-        File eclipseDir = Platform.getLocation().toFile().getParentFile();
-
-        if (Platform.getOS().equals(Platform.OS_MACOSX)) {
-            // On MacOS, location of the current platform is <installed
-            // folder>/Katalon.app/Contents/MacOS/config.
-            // Therefore, we must move to <installed folder>.
-            eclipseDir = eclipseDir.getParentFile().getParentFile().getParentFile();
-        }
-
-        return new File(eclipseDir, "configuration" + File.separator + "resources");
+    private static File getPlatformResourcesDir() throws IOException {
+        return new File(getConfigurationFolder(), "resources");
     }
 
     /**
      * @return Returns API document folder of the current Katalon installed folder.
+     * @throws IOException 
      */
-    private static File getPlatformAPIDocDir() {
+    private static File getPlatformAPIDocDir() throws IOException {
         return new File(getPlatformResourcesDir(), "apidocs");
     }
 
     /**
      * @return Returns libraries folder of the current Katalon installed folder.
+     * @throws IOException 
      */
-    private static File getPlatformLibDir() {
+    private static File getPlatformLibDir() throws IOException {
         return new File(getPlatformResourcesDir(), "lib");
     }
 
@@ -478,19 +477,15 @@ public class GroovyUtil {
             // If user has unintentionally deleted .project file
             File descriptionFile = new File(projectEntity.getFolderLocation(),
                     IProjectDescription.DESCRIPTION_FILE_NAME);
-            IProjectDescription projectDescription = null;
             if (!descriptionFile.exists()) {
-                projectDescription = ResourcesPlugin.getWorkspace().newProjectDescription(projectEntity.getName());
+                IProjectDescription projectDescription = ((Project) groovyProject).internalGetDescription();
                 projectDescription.setLocation(new Path(projectEntity.getFolderLocation()));
+                projectDescription.setNatureIds(KAT_PROJECT_NATURES);
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 new ModelObjectWriter().write(projectDescription, out, System.lineSeparator());
                 FileUtils.writeByteArrayToFile(descriptionFile, out.toByteArray(), false);
             }
             groovyProject.open(null);
-            if (projectDescription != null) {
-                projectDescription.setNatureIds(KAT_PROJECT_NATURES);
-                groovyProject.setDescription(projectDescription, monitor);
-            }
         }
 
         IProjectDescription projectDescription = groovyProject.getDescription();

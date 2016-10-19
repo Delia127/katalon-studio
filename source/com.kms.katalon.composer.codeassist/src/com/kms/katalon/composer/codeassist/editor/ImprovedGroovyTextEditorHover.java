@@ -4,7 +4,6 @@ import java.awt.Desktop;
 import java.lang.reflect.Field;
 import java.net.URI;
 
-import org.apache.commons.codec.net.URLCodec;
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.eclipse.codebrowsing.elements.GroovyResolvedBinaryMethod;
 import org.codehaus.groovy.eclipse.codebrowsing.requestor.CodeSelectHelper;
@@ -33,30 +32,11 @@ import org.eclipse.ui.IWorkbenchSite;
 import com.kms.katalon.composer.codeassist.constant.ComposerCodeAssistMessageConstants;
 import com.kms.katalon.composer.codeassist.constant.ImageConstants;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.core.keyword.BuiltinKeywords;
-import com.kms.katalon.core.mobile.keyword.MobileBuiltInKeywords;
-import com.kms.katalon.core.webservice.keyword.WSBuiltInKeywords;
-import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords;
+import com.kms.katalon.composer.testcase.util.KeywordURLUtil;
 
 @SuppressWarnings("restriction")
 public class ImprovedGroovyTextEditorHover extends GroovyExtraInformationHover {
 
-    public static final String WEB_UI_CLASSNAME = WebUiBuiltInKeywords.class.getSimpleName();
-
-    public static final String MOBILE_CLASSNAME = MobileBuiltInKeywords.class.getSimpleName();
-
-    public static final String WEB_SERVICE_CLASSNAME = WSBuiltInKeywords.class.getSimpleName();
-    
-    public static final String BUILTIN_CLASSNAME = BuiltinKeywords.class.getSimpleName();
-
-    public static final String WEB_PLATFORM = "[WebUI] ";
-
-    public static final String MOBILE_PLATFORM = "[Mobile] ";
-
-    public static final String WEB_SERVICE_PLATFORM = "[WS] ";
-    
-    public static final String BUILTIN_PLATFORM = "";
-    
     private KatalonInformationControlCreator katalonInformationControl;
 
     private static String keywordDescURI = null;
@@ -92,8 +72,7 @@ public class ImprovedGroovyTextEditorHover extends GroovyExtraInformationHover {
         if (elementKey == null) {
             return;
         }
-        keywordDescURI = getKeywordDescriptionURI(elementKey);
-
+        keywordDescURI = KeywordURLUtil.getKeywordDescriptionURI(elementKey);
     }
 
     private class CustomCodeSelectHelper extends CodeSelectHelper {
@@ -110,64 +89,6 @@ public class ImprovedGroovyTextEditorHover extends GroovyExtraInformationHover {
             katalonInformationControl = new KatalonInformationControlCreator();
         }
         return katalonInformationControl;
-    }
-
-    private String getKeywordDescriptionURI(String key) {
-        try {
-            String platform = getKeywordPlatform(key);
-            if (platform == null) {
-                return null;
-            }
-
-            return ComposerCodeAssistMessageConstants.KEYWORD_DESC_PATH + new URLCodec().encode(platform + getKeywordName(key));
-        } catch (Exception ex) {
-            LoggerSingleton.logError(ex);
-            return null;
-        }
-    }
-
-    private String getKeywordPlatform(String key) {
-        String[] parts = key.split("\\s*;\\s*");
-        String packageName = parts[0];
-        String className = packageName.substring(packageName.lastIndexOf('/') + 1);
-
-        if (className.equals(WEB_UI_CLASSNAME)) {
-            return WEB_PLATFORM;
-        }
-        if (className.equals(MOBILE_CLASSNAME)) {
-            return MOBILE_PLATFORM;
-        }
-        if (className.equals(WEB_SERVICE_CLASSNAME)) {
-            return WEB_SERVICE_PLATFORM;
-        }
-        if (className.equals(BUILTIN_CLASSNAME)) {
-            return BUILTIN_PLATFORM;
-        }
-
-        return null;
-    }
-
-    private String getKeywordName(String key) {
-        String[] parts = key.split("\\s*;\\s*");
-        String keywordName = parts[1];
-        int i = keywordName.indexOf('(');
-        StringBuilder keyword = new StringBuilder(i > 0 ? keywordName.substring(1, i) : keywordName.substring(1));
-
-        if (keyword.toString().equals("uncheck")) {
-            return "Un-check";
-        }
-        for (i = 0; i < keyword.length(); ++i) {
-            if (Character.isUpperCase(keyword.charAt(i))) {
-                keyword.insert(i++, " ");
-                if (i < keyword.length() - 1 && keyword.substring(i, i + 2).equals("OS")) {
-                    i++;
-                } else if (i < keyword.length() - 2 && keyword.substring(i, i + 3).equals("IOS")) {
-                    i += 2;
-                }
-            }
-        }
-
-        return Character.toUpperCase(keyword.charAt(0)) + keyword.substring(1);
     }
 
     private class KatalonInformationControlCreator implements IInformationControlCreator {

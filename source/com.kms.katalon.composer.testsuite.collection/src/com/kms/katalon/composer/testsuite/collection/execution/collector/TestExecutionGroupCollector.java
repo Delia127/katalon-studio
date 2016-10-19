@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.kms.katalon.composer.testsuite.collection.execution.provider.CustomTestExecutionGroup;
 import com.kms.katalon.composer.testsuite.collection.execution.provider.TestExecutionConfigurationProvider;
 import com.kms.katalon.composer.testsuite.collection.execution.provider.TestExecutionGroup;
 import com.kms.katalon.composer.testsuite.collection.execution.provider.TestExecutionItem;
@@ -25,6 +26,8 @@ public class TestExecutionGroupCollector {
 
     private TestExecutionGroupCollector() {
         testExecutionGroupCollector = new HashMap<>();
+        CustomTestExecutionGroup customExecutionGroup = new CustomTestExecutionGroup();
+        testExecutionGroupCollector.put(customExecutionGroup.getName(), customExecutionGroup);
     }
 
     public static TestExecutionGroupCollector getInstance() {

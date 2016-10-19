@@ -2,6 +2,8 @@ package com.kms.katalon.execution.mobile.driver.contributor;
 
 import java.io.IOException;
 
+import org.eclipse.core.runtime.Platform;
+
 import com.kms.katalon.execution.configuration.IDriverConnector;
 import com.kms.katalon.execution.configuration.contributor.IDriverConnectorContributor;
 import com.kms.katalon.execution.mobile.driver.AndroidDriverConnector;
@@ -11,8 +13,11 @@ public class MobileDriverConnectorContributor implements IDriverConnectorContrib
 
     @Override
     public IDriverConnector[] getDriverConnector(String configFolderPath) throws IOException {
-        return new IDriverConnector[] { new IosDriverConnector(configFolderPath),
-                new AndroidDriverConnector(configFolderPath) };
+        if (Platform.OS_MACOSX.equals(Platform.getOS())) {
+            return new IDriverConnector[] { new IosDriverConnector(configFolderPath),
+                    new AndroidDriverConnector(configFolderPath) };
+        }
+        return new IDriverConnector[] { new AndroidDriverConnector(configFolderPath) };
     }
 
     @Override

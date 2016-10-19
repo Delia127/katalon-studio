@@ -4,7 +4,7 @@ Bundle-Name: Core
 Bundle-SymbolicName: com.kms.katalon.core;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: KMS
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: com.kms.katalon.core.annotation,
  com.kms.katalon.core.ast,
  com.kms.katalon.core.checkpoint,

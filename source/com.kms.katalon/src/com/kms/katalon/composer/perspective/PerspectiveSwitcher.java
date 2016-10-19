@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.perspective;
 
+import java.net.MalformedURLException;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
@@ -29,7 +31,8 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
-import com.kms.katalon.composer.components.impl.control.HiDPISupportedImage;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.util.ImageUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 
@@ -94,7 +97,11 @@ public class PerspectiveSwitcher {
         ToolItem tltmNewItem = new ToolItem(toolbar, SWT.CHECK);
         tltmNewItem.setToolTipText(perspective.getTooltip());
         tltmNewItem.setText(perspective.getLabel());
-        tltmNewItem.setImage(HiDPISupportedImage.loadImage(perspective.getIconURI()));
+        try {
+            tltmNewItem.setImage(ImageUtil.loadImage(perspective.getIconURI()));
+        } catch (MalformedURLException e) {
+            LoggerSingleton.logError(e);
+        }
         tltmNewItem.setData(perspective);
         tltmNewItem.addSelectionListener(new SelectionAdapter() {
 

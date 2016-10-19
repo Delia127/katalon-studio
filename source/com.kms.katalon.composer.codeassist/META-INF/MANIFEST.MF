@@ -4,7 +4,7 @@ Bundle-Name: Codeassist
 Bundle-SymbolicName: com.kms.katalon.composer.codeassist;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: KMS
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jdt.ui,

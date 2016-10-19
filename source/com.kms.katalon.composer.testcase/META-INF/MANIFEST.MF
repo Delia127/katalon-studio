@@ -38,8 +38,12 @@ Require-Bundle: com.kms.katalon.composer.explorer,
  org.jsoup,
  com.kms.katalon.selenium-standalone,
  org.eclipse.ui.editors,
- com.kms.katalon.composer.util
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+ com.kms.katalon.composer.util,
+ com.kms.katalon.core.webui,
+ com.kms.katalon.core.mobile,
+ com.kms.katalon.core.webservice,
+ org.apache.commons.codec
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: com.kms.katalon.composer.testcase.ast.dialogs,
  com.kms.katalon.composer.testcase.ast.editors,
@@ -47,6 +51,7 @@ Export-Package: com.kms.katalon.composer.testcase.ast.dialogs,
  com.kms.katalon.composer.testcase.constants,
  com.kms.katalon.composer.testcase.dialogs,
  com.kms.katalon.composer.testcase.editors,
+ com.kms.katalon.composer.testcase.exceptions,
  com.kms.katalon.composer.testcase.groovy.ast,
  com.kms.katalon.composer.testcase.groovy.ast.expressions,
  com.kms.katalon.composer.testcase.groovy.ast.parser,

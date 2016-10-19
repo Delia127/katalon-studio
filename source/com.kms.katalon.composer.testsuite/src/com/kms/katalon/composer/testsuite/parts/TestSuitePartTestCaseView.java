@@ -57,6 +57,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.explorer.custom.AdvancedSearchDialog;
 import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
+import com.kms.katalon.composer.testsuite.constants.ComposerTestsuiteMessageConstants;
 import com.kms.katalon.composer.testsuite.constants.ImageConstants;
 import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.composer.testsuite.constants.ToolItemConstants;
@@ -71,8 +72,10 @@ import com.kms.katalon.composer.testsuite.support.TestCaseIdColumnEditingSupport
 import com.kms.katalon.composer.testsuite.support.TestCaseIsRunColumnEditingSupport;
 import com.kms.katalon.composer.testsuite.transfer.TestSuiteTestCaseLinkTransfer;
 import com.kms.katalon.constants.GlobalStringConstants;
+import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
+import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 public class TestSuitePartTestCaseView {
@@ -111,6 +114,8 @@ public class TestSuitePartTestCaseView {
     private TestSuitePartDataBindingView dataAndVariableView;
 
     private TestCaseToolItemListener testCaseToolItemListener;
+
+    private MenuItem openMenuItem;
 
     /* package */TestSuitePartTestCaseView(TestSuitePart testSuitePart) {
         this.testSuitePart = testSuitePart;
@@ -212,6 +217,19 @@ public class TestSuitePartTestCaseView {
         sashForm.setWeights(new int[] { 5, 5 });
         hookDropTestCaseEvent();
         hookDragTestCaseEvent();
+        setTestCaseTableViewerSelection();
+    }
+
+    private void setTestCaseTableViewerSelection() {
+        testCaseTableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                createOpenTestCaseMenu();
+
+            }
+        });
+
     }
 
     private void createTestCaseTableContextMenu(Table table) {
@@ -262,6 +280,9 @@ public class TestSuitePartTestCaseView {
             }
         });
 
+        openMenuItem = new MenuItem(tableContextMenu, SWT.CASCADE);
+        openMenuItem.setText(ComposerTestsuiteMessageConstants.MENU_OPEN);
+
         table.addMenuDetectListener(new MenuDetectListener() {
 
             @Override
@@ -270,6 +291,7 @@ public class TestSuitePartTestCaseView {
                 removeTestCase.setEnabled(hasItemSelected);
                 moveTestCaseUp.setEnabled(hasItemSelected);
                 moveTestCaseDown.setEnabled(hasItemSelected);
+                openMenuItem.setEnabled(hasItemSelected);
             }
         });
     }
@@ -575,4 +597,49 @@ public class TestSuitePartTestCaseView {
         testCaseTableViewer.addNewItem();
     }
 
+    private void createOpenTestCaseMenu() {
+        IStructuredSelection selection = (IStructuredSelection) testCaseTableViewer.getSelection();
+        Menu subMenu = new Menu(openMenuItem);
+        SelectionAdapter openSubMenuSelection = new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Object source = e.getSource();
+                if (!(source instanceof MenuItem)) {
+                    return;
+                }
+                TestCaseEntity testCaseEntity = getTestCaseFromMenuItem((MenuItem) source);
+                if (testCaseEntity != null) {
+                    testSuitePart.openAddedTestCase(testCaseEntity);
+                }
+            }
+        };
+        for (Object object : selection.toList()) {
+            if (!(object instanceof TestSuiteTestCaseLink)) {
+                continue;
+            }
+            try {
+                TestCaseEntity testCaseEntity = TestCaseController.getInstance().getTestCaseByDisplayId(
+                        ((TestSuiteTestCaseLink) object).getTestCaseId());
+                MenuItem menuItem = new MenuItem(subMenu, SWT.PUSH);
+                menuItem.setText(testCaseEntity.getIdForDisplay());
+                menuItem.setData(testCaseEntity);
+                menuItem.addSelectionListener(openSubMenuSelection);
+            } catch (Exception e1) {
+                LoggerSingleton.logError(e1);
+            }
+        }
+        openMenuItem.setMenu(subMenu);
+    }
+
+    private TestCaseEntity getTestCaseFromMenuItem(MenuItem selectedMenuItem) {
+        if (selectedMenuItem.getData() instanceof TestCaseEntity) {
+            return (TestCaseEntity) selectedMenuItem.getData();
+        }
+        return null;
+    }
+
+    public void openAddedTestData(DataFileEntity dataFileEntity) {
+        testSuitePart.openAddedTestData(dataFileEntity);
+    }
 }

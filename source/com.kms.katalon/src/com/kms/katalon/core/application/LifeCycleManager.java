@@ -37,6 +37,7 @@ import org.osgi.service.event.EventHandler;
 import com.kms.katalon.addons.CommandBindingRemover;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.handlers.CloseHandler;
+import com.kms.katalon.composer.handlers.QuitHandler;
 import com.kms.katalon.composer.handlers.ResetPerspectiveHandler;
 import com.kms.katalon.composer.handlers.SaveHandler;
 import com.kms.katalon.composer.handlers.SearchHandler;
@@ -50,6 +51,7 @@ import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.usagetracking.UsageInfoCollector;
 import com.kms.katalon.util.ActivationInfoCollector;
+import com.kms.katalon.util.VersionInfo;
 import com.kms.katalon.util.VersionUtil;
 
 @SuppressWarnings("restriction")
@@ -71,6 +73,7 @@ public class LifeCycleManager {
                 .getService(IHandlerService.class);
         handlerService.activateHandler(IWorkbenchCommandConstants.FILE_SAVE, new SaveHandler());
         handlerService.activateHandler(IWorkbenchCommandConstants.FILE_CLOSE, new CloseHandler());
+        handlerService.activateHandler(IWorkbenchCommandConstants.FILE_EXIT, new QuitHandler());
         handlerService.activateHandler(IdConstants.SEARCH_COMMAND_ID, new SearchHandler());
         handlerService.activateHandler(IdConstants.RESET_PERSPECTIVE_HANDLER_ID, new ResetPerspectiveHandler());
 
@@ -129,7 +132,6 @@ public class LifeCycleManager {
 
     private void setupPreferences() {
         setupResourcePlugin();
-
         setupWorkbenchPlugin();
     }
 
@@ -194,6 +196,9 @@ public class LifeCycleManager {
             public void handleEvent(Event event) {
                 try {
                     startUpGUIMode();
+                    if (isInternalBuild()) {
+                        return;
+                    }
                     if (!(ActivationInfoCollector.checkActivation())) {
                         eventBroker.send(EventConstants.PROJECT_CLOSE, null);
                         PlatformUI.getWorkbench().close();
@@ -201,12 +206,17 @@ public class LifeCycleManager {
                     }
                     alertNewVersion();
                     startCollectUsageInfo();
-                    
+
                 } catch (Exception e) {
                     logError(e);
                 }
             }
         });
+    }
+
+    private boolean isInternalBuild() {
+        VersionInfo version = VersionUtil.getCurrentVersion();
+        return VersionInfo.MINIMUM_VERSION.equals(version.getVersion()) || version.getBuildNumber() == 0;
     }
 
     private void alertNewVersion() {
@@ -236,12 +246,10 @@ public class LifeCycleManager {
                     }
 
                 });
-
-
             }
         });
     }
-    
+
     private void startCollectUsageInfo() {
         Executors.newSingleThreadExecutor().submit(new Runnable() {
             @Override

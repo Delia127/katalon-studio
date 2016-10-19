@@ -28,6 +28,6 @@ Require-Bundle: org.eclipse.e4.core.di,
  org.eclipse.e4.ui.di,
  org.apache.httpcomponents.httpclient,
  org.apache.httpcomponents.httpcore
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: com.google.gson.stream,
  org.apache.commons.lang

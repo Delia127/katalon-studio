@@ -8,6 +8,6 @@ Bundle-Vendor: KMS
 Require-Bundle: org.eclipse.core.runtime,
  org.apache.commons.io,
  org.apache.commons.lang
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: com.kms.katalon.logging

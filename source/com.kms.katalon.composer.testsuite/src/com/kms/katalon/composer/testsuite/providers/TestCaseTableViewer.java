@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.util.ColumnViewerUtil;
 import com.kms.katalon.composer.components.viewer.ITableViewerActions;
 import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
 import com.kms.katalon.composer.explorer.providers.EntityProvider;
@@ -48,6 +49,7 @@ public class TestCaseTableViewer extends TableViewer implements ITableViewerActi
         data = new ArrayList<TestSuiteTestCaseLink>();
         this.parentView = parentView;
         searchedString = StringUtils.EMPTY;
+        ColumnViewerUtil.setTableActivation(this);
     }
 
     public void setInput(List<TestSuiteTestCaseLink> data) throws Exception {
@@ -389,5 +391,5 @@ public class TestCaseTableViewer extends TableViewer implements ITableViewerActi
     public void moveSelectedItemsDown() {
         downTestCase(getSelectedItems());
     }
-
+    
 }

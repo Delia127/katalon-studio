@@ -55,7 +55,7 @@
         <children xsi:type="menu:DirectMenuItem" xmi:id="_xOUuEIazEeWaecTtagm34w" elementId="com.kms.katalon.composer.execution.handledmenuitem.wordWrap" label="Word Wrap" type="Check" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.handlers.WrapMessageLogHandler"/>
       </menus>
       <toolbar xmi:id="_C1lCYIaMEeS32ZF8sInjdQ" elementId="com.kms.katalon.composer.execution.log.toolbar">
-        <children xsi:type="menu:DirectToolItem" xmi:id="_GYsR0H5AEeaNZLjOMLYB-g" elementId="com.kms.katalon.composer.execution.directtoolitem.logViewer.currentWatched" label="Current Watched Entity" iconURI="platform:/plugin/com.kms.katalon.composer.execution/icons/watch_16.png" tooltip="Display Selected Exection Entity's Logs">
+        <children xsi:type="menu:DirectToolItem" xmi:id="_GYsR0H5AEeaNZLjOMLYB-g" elementId="com.kms.katalon.composer.execution.directtoolitem.logViewer.currentWatched" label="Current Watched Entity" iconURI="platform:/plugin/com.kms.katalon.composer.execution/icons/watch_16.png" tooltip="Display Selected Execution Entity's Logs" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.menu.CurrentWatchedEntityMenu">
           <menu xmi:id="_Ks7uMH5AEeaNZLjOMLYB-g" elementId="com.kms.katalon.composer.execution.logViewer.currentWatched.menu">
             <children xsi:type="menu:DynamicMenuContribution" xmi:id="_A5Z2QH5OEeaNZLjOMLYB-g" elementId="com.kms.katalon.composer.execution.logViewer.currentWatched.dynamicmenucontribution" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.menu.CurrentWatchedEntityMenuContribution"/>
           </menu>

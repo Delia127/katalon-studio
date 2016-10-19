@@ -4,7 +4,7 @@ Bundle-Name: Kobiton Integration
 Bundle-SymbolicName: com.kms.katalon.integration.kobiton;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: KMS
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: com.kms.katalon.core,
  com.kms.katalon.core.webui,
  com.kms.katalon.core.mobile,

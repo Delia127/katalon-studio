@@ -681,5 +681,12 @@ public class TestSuitePart implements EventHandler {
     public void openAddTestCaseDialog() {
         childrenView.openAddTestCaseDialog();
     }
+    
+    public void openAddedTestCase(TestCaseEntity testCaseEntity) {
+        eventBroker.post(EventConstants.TESTCASE_OPEN, testCaseEntity);
+    }
 
+    public void openAddedTestData(DataFileEntity dataFileEntity) {
+        eventBroker.post(EventConstants.TEST_DATA_OPEN, dataFileEntity);
+    }
 }
