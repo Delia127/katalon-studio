@@ -35,7 +35,7 @@ public class CallTestCaseCellEditor extends AbstractDialogCellEditor {
     protected void updateContents(Object value) {
         if (value instanceof TestCaseEntity) {
             try {
-                getDefaultLabel().setText(((TestCaseEntity) value).getIdForDisplay());
+                super.updateContents(((TestCaseEntity) value).getIdForDisplay());
             } catch (Exception e) {
                 LoggerSingleton.logError(e);
             }

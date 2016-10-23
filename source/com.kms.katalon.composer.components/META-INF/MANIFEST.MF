@@ -10,6 +10,7 @@ Export-Package: com.kms.katalon.composer.components.adapter,
  com.kms.katalon.composer.components.event,
  com.kms.katalon.composer.components.log,
  com.kms.katalon.composer.components.menu,
+ com.kms.katalon.composer.components.operation,
  com.kms.katalon.composer.components.part,
  com.kms.katalon.composer.components.services,
  com.kms.katalon.composer.components.transfer,
@@ -27,7 +28,8 @@ Require-Bundle: org.eclipse.jface,
  org.eclipse.e4.ui.di,
  com.kms.katalon.constant,
  org.apache.commons.lang,
- com.kms.katalon.controller
+ com.kms.katalon.controller,
+ org.eclipse.ui.workbench
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: javax.annotation;version="1.2.0"

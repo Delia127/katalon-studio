@@ -64,7 +64,10 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_VvjpYDayEeWjs_ysgU5nDA" elementId="com.kms.katalon.composer.menu.file.save_all" label="Save All" iconURI="platform:/plugin/com.kms.katalon/icons/save_all_16.png" command="_8qJlUEO4EeSlQuaMBzQJOw"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_hQQH7RYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.file.quit" label="Quit" iconURI="platform:/plugin/com.kms.katalon/icons/quit_16.png" command="_hQQH3BYMEeSUMbyEN2kbFQ"/>
       </children>
-      <children xsi:type="menu:Menu" xmi:id="_wT2ksBYeEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.edit" label="Edit"/>
+      <children xsi:type="menu:Menu" xmi:id="_wT2ksBYeEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.edit" label="Edit">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_GDm1EI7HEeantftUyMtBVg" elementId="com.kms.katalon.handledmenuitem.undo" label="Undo" tooltip="Undo" command="_uIL9wI7GEeantftUyMtBVg"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_Kg3qkI7HEeantftUyMtBVg" elementId="com.kms.katalon.handledmenuitem.redo" label="Redo" tooltip="Redo" command="_2yTOMI7GEeantftUyMtBVg"/>
+      </children>
       <children xsi:type="menu:Menu" xmi:id="_0IJ8wBYeEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.importexport" toBeRendered="false" visible="false" label="Import/Export"/>
       <children xsi:type="menu:Menu" xmi:id="_2end0BYeEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.report" label="Report"/>
       <children xsi:type="menu:Menu" xmi:id="_2zN00BYeEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.settings" label="Settings"/>
@@ -156,6 +159,8 @@
   <commands xmi:id="_oilxkNn4EeWQyuuwTERZYg" elementId="com.kms.katalon.composer.command.window.resetPerspective" commandName="resetPerspectiveCommand"/>
   <commands xmi:id="_jm89wGgxEeatJ4Re1SnNtw" elementId="com.kms.katalon.command.welcome" commandName="openWelcomePageCommand"/>
   <commands xmi:id="_agaP0Gp9EeakEakFblwi9Q" elementId="com.kms.katalon.command.openFunctionsIntroductionCommand" commandName="openFunctionsIntroductionCommand"/>
+  <commands xmi:id="_uIL9wI7GEeantftUyMtBVg" elementId="org.eclipse.ui.edit.undo" commandName="undoCommand"/>
+  <commands xmi:id="_2yTOMI7GEeantftUyMtBVg" elementId="org.eclipse.ui.edit.redo" commandName="redoCommand"/>
   <addons xmi:id="_hQQH0hYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_hQQH0xYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_hQQH1BYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>

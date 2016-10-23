@@ -7,8 +7,9 @@ import org.codehaus.groovy.ast.MethodNode;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.swt.widgets.Composite;
 
-import com.kms.katalon.composer.testcase.editors.ComboBoxCellEditorWithContentProposal;
+import com.kms.katalon.composer.testcase.ast.editors.KeywordComboBoxCellEditorWithContentProposal;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
 import com.kms.katalon.composer.testcase.model.InputParameter;
 import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
@@ -36,45 +37,25 @@ public class AstCustomKeywordTreeTableNode extends AstAbstractKeywordTreeTableNo
     }
 
     @Override
-    public Object getItem() {
-        for (MethodNode keywordMethodNode : getCustomKeywordMethods()) {
-            if (keywordMethodNode.getName().equals(getKeywordName())) {
-                return getCustomKeywordMethods().indexOf(keywordMethodNode);
-            }
-        }
-        return 0;
-    }
-
-    @Override
     public CellEditor getCellEditorForItem(Composite parent) {
         List<MethodNode> keywordMethods = getKeywords();
         String[] tooltips = new String[keywordMethods.size()];
         for (int i = 0; i < keywordMethods.size(); i++) {
             tooltips[i] = keywordMethods.get(i).getName();
         }
-        return new ComboBoxCellEditorWithContentProposal(parent,
-                keywordMethods.toArray(new MethodNode[keywordMethods.size()]), tooltips);
-    }
-
-    @Override
-    public boolean setItem(Object item) {
-        List<MethodNode> customKeywordMethods = getCustomKeywordMethods();
-        if (!(item instanceof Integer) || (int) item < 0 || (int) item >= customKeywordMethods.size()) {
-            return false;
-        }
-
-        String newKeywordName = customKeywordMethods.get((int) item).getName();
-        if (getKeywordName().equals(newKeywordName)) {
-            return false;
-        }
-        if (methodCall.setMethod(newKeywordName)) {
-            AstKeywordsInputUtil.generateCustomKeywordArguments(methodCall);
-            if (!canEditOutput()) {
-                removeOutput();
+        MethodNode[] keywordMethodArray = keywordMethods.toArray(new MethodNode[keywordMethods.size()]);
+        return new KeywordComboBoxCellEditorWithContentProposal(parent, parentStatement, getClassName(),
+                keywordMethodArray, keywordMethodArray, tooltips) {
+            @Override
+            protected void generateArguments(MethodCallExpressionWrapper newMethodCall) {
+                AstKeywordsInputUtil.generateCustomKeywordArguments(newMethodCall);
             }
-            return true;
-        }
-        return false;
+            
+            @Override
+            protected String getKeywordName(MethodCallExpressionWrapper methodCall) {
+                return KeywordController.getInstance().getRawCustomKeywordName(methodCall.getMethodAsString());
+            }
+        };
     }
 
     private MethodNode getMethodNode() {
@@ -174,7 +155,7 @@ public class AstCustomKeywordTreeTableNode extends AstAbstractKeywordTreeTableNo
     private List<MethodNode> getCustomKeywordMethods() {
         return KeywordController.getInstance().getCustomKeywords(ProjectController.getInstance().getCurrentProject());
     }
-    
+
     @Override
     public boolean setFailureHandlingValue(FailureHandling failureHandling) {
         // If this custom keyword has FailureHandling

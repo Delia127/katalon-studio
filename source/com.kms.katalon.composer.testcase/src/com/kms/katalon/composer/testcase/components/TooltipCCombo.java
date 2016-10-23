@@ -369,6 +369,11 @@ public class TooltipCCombo extends CCombo {
          * @param id the item which is currently elected/hovered
          */
         private void updateTooltip(int index) {
+            if (index < 0 || index >= textLookup.size()) {
+                this.tooltip.hide();
+                previousSelectionIdx = -1;
+                return;
+            }
             String text = this.textLookup.get(index);
             if (index >= 0 && index < this.list.getItemCount() && text != null && text.trim().length() > 0) {
                 this.tooltip.setText(text);

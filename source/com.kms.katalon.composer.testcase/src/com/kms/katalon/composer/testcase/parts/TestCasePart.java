@@ -13,12 +13,12 @@ import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.MGenericTile;
 import org.eclipse.e4.ui.model.application.ui.basic.MCompositePart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.bindings.keys.IKeyLookup;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerEditor;
-import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -63,12 +63,13 @@ import com.kms.katalon.composer.components.part.IComposerPart;
 import com.kms.katalon.composer.components.viewer.CustomEditorActivationStrategy;
 import com.kms.katalon.composer.components.viewer.FocusCellOwnerDrawHighlighterForMultiSelection;
 import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
+import com.kms.katalon.composer.parts.CPart;
 import com.kms.katalon.composer.testcase.ast.treetable.AstBuiltInKeywordTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstCallTestCaseKeywordTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstMethodTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
-import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
 import com.kms.katalon.composer.testcase.components.KeywordTreeViewerToolTipSupport;
+import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants;
@@ -102,7 +103,7 @@ import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 
-public class TestCasePart implements IComposerPart, EventHandler {
+public class TestCasePart extends CPart implements IComposerPart, EventHandler {
 
     private Composite compositeManual;
 
@@ -120,6 +121,9 @@ public class TestCasePart implements IComposerPart, EventHandler {
 
     @Inject
     private IEventBroker eventBroker;
+    
+    @Inject
+    private EPartService partService;
 
     private TestCaseSelectionListener selectionListener;
 
@@ -138,6 +142,7 @@ public class TestCasePart implements IComposerPart, EventHandler {
                 parentTestCaseCompositePart = ((TestCaseCompositePart) compositePart.getObject());
             }
         }
+        initialize(mpart, partService);
 
         selectionListener = new TestCaseSelectionListener(this);
 
@@ -526,13 +531,6 @@ public class TestCasePart implements IComposerPart, EventHandler {
 
             @Override
             public void dragFinished(DragSourceEvent event) {
-                try {
-                    if (event.detail == DND.DROP_MOVE) {
-                        treeTableInput.removeRows(dragNodes);
-                    }
-                } catch (Exception e) {
-                    LoggerSingleton.logError(e);
-                }
                 dragNodes.clear();
             }
 
@@ -731,6 +729,10 @@ public class TestCasePart implements IComposerPart, EventHandler {
 
     public void addVariables(VariableEntity[] variables) {
         parentTestCaseCompositePart.addVariables(variables);
+    }
+    
+    public void deleteVariables(List<VariableEntity> variables) {
+        parentTestCaseCompositePart.deleteVariables(variables);
     }
 
     public VariableEntity[] getVariables() {

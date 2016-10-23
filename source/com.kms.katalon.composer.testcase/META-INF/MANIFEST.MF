@@ -42,7 +42,8 @@ Require-Bundle: com.kms.katalon.composer.explorer,
  com.kms.katalon.core.webui,
  com.kms.katalon.core.mobile,
  com.kms.katalon.core.webservice,
- org.apache.commons.codec
+ org.apache.commons.codec,
+ org.eclipse.core.expressions
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: com.kms.katalon.composer.testcase.ast.dialogs,

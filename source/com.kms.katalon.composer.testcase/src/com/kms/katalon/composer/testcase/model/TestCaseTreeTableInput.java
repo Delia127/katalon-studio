@@ -8,7 +8,17 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.operations.AbstractOperation;
+import org.eclipse.core.commands.operations.IOperationHistory;
+import org.eclipse.core.commands.operations.IUndoContext;
+import org.eclipse.core.commands.operations.IUndoableOperation;
+import org.eclipse.core.commands.operations.ObjectUndoContext;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -22,12 +32,14 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.ui.PlatformUI;
 
 import com.kms.katalon.composer.components.impl.dialogs.TreeEntitySelectionDialog;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.operation.AbstractCompositeOperation;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
 import com.kms.katalon.composer.explorer.providers.EntityProvider;
@@ -59,6 +71,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.statements.ContinueStatement
 import com.kms.katalon.composer.testcase.groovy.ast.statements.DefaultStatementWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ElseIfStatementWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ElseStatementWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.EmptyStatementWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.FinallyStatementWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ForStatementWrapper;
@@ -83,8 +96,11 @@ import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.custom.keyword.KeywordClass;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
+import com.kms.katalon.execution.setting.TestCaseSettingStore;
 
 public class TestCaseTreeTableInput {
+    private static final String OPERATION_LABEL_DRAG_AND_DROP_AST_NODES = "dragAndDropAstNodes";
+
     private static final String GROOVY_NEW_LINE_CHARACTER = "\n";
 
     /**
@@ -130,6 +146,10 @@ public class TestCaseTreeTableInput {
 
     private boolean isChanged;
 
+    private IUndoContext undoContext;
+
+    private IOperationHistory operationHistory;
+
     public ScriptNodeWrapper getMainClassNode() {
         return mainClassNodeWrapper;
     }
@@ -138,6 +158,7 @@ public class TestCaseTreeTableInput {
         this.treeTableViewer = treeTableViewer;
         this.mainClassNodeWrapper = scriptNode;
         this.parentPart = parentPart;
+        this.undoContext = new ObjectUndoContext(parentPart);
         setChanged(false);
     }
 
@@ -196,19 +217,12 @@ public class TestCaseTreeTableInput {
      */
     public boolean addNewAstObjects(List<? extends ASTNodeWrapper> astObjects, AstTreeTableNode destinationNode,
             NodeAddType addType) {
-        if (astObjects == null) {
-            return false;
-        }
-        AstTreeTableNode topItem = getTopItem();
-        Object[] expandedElements = saveExpandedState();
-        boolean addSuccessfully = internalAddNewAstObjects(astObjects, destinationNode, addType);
-        reloadExpandedState(expandedElements);
-        setTopItem(topItem);
-        return addSuccessfully;
+        IStatus status = executeOperation(new AddAstObjectsOperation(astObjects, destinationNode, addType));
+        return status == Status.OK_STATUS;
     }
 
     private boolean internalAddNewAstObjects(List<? extends ASTNodeWrapper> astObjects,
-            AstTreeTableNode destinationNode, NodeAddType addType) {
+            AstTreeTableNode destinationNode, NodeAddType addType, boolean setEdit) {
         List<AstNodeAddedEdit> astNodeAddedEdits = new ArrayList<AstNodeAddedEdit>();
         if (destinationNode == null) {
             astNodeAddedEdits.addAll(addAstObjects(astObjects, mainClassTreeNode));
@@ -222,13 +236,13 @@ public class TestCaseTreeTableInput {
             astNodeAddedEdits.addAll(insertASTObjects(astObjects, destinationNode, addType));
         }
         if (!astNodeAddedEdits.isEmpty()) {
-            processAfterEdits(astNodeAddedEdits);
+            processAfterEdits(astNodeAddedEdits, setEdit, true);
             return true;
         }
         return false;
     }
 
-    private void processAfterEdits(List<AstNodeAddedEdit> astNodeAddedEdits) {
+    private void processAfterEdits(List<AstNodeAddedEdit> astNodeAddedEdits, boolean setEdit, boolean multiSelect) {
         List<AstTreeTableNode> needRefreshNodes = new ArrayList<AstTreeTableNode>();
         for (AstNodeAddedEdit astNodeAddedEdit : astNodeAddedEdits) {
             needRefreshNodes.add(astNodeAddedEdit.getParentNode());
@@ -242,8 +256,23 @@ public class TestCaseTreeTableInput {
             refreshObjectWithoutReloading(needRefreshNode);
         }
         AstNodeAddedEdit lastEdit = astNodeAddedEdits.get(astNodeAddedEdits.size() - 1);
-        setSelection(lastEdit.getParentNode(), lastEdit.getNewAstObject());
-        setEdit(lastEdit.getParentNode(), lastEdit.getNewAstObject());
+        ASTNodeWrapper newAstObject = lastEdit.getNewAstObject();
+        if (newAstObject == null) {
+            return;
+        }
+        if (!multiSelect) {
+            setSelection(lastEdit.getParentNode(), newAstObject);
+        } else {
+            List<AstTreeTableNode> selectedTreeTableNodes = new ArrayList<>();
+            for (AstNodeAddedEdit astNodeAddedEdit : astNodeAddedEdits) {
+                selectedTreeTableNodes.add(getTreeTableNodeOfAstObjectFromParentNode(astNodeAddedEdit.getParentNode(),
+                        astNodeAddedEdit.getNewAstObject()));
+            }
+            setSelection(selectedTreeTableNodes);
+        }
+        if (setEdit) {
+            setEdit(lastEdit.getParentNode(), newAstObject);
+        }
     }
 
     private List<AstNodeAddedEdit> insertASTObjects(List<? extends ASTNodeWrapper> astObjects,
@@ -253,6 +282,7 @@ public class TestCaseTreeTableInput {
         }
         List<AstNodeAddedEdit> astNodeAddedEdits = new ArrayList<AstNodeAddedEdit>();
         if (addType == NodeAddType.InserAfter) {
+            astObjects = new ArrayList<>(astObjects);
             Collections.reverse(astObjects);
         }
         for (ASTNodeWrapper astObject : astObjects) {
@@ -294,7 +324,8 @@ public class TestCaseTreeTableInput {
         return null;
     }
 
-    private List<AstNodeAddedEdit> addAstObjects(List<? extends ASTNodeWrapper> astObjects, AstTreeTableNode parentNode) {
+    private List<AstNodeAddedEdit> addAstObjects(List<? extends ASTNodeWrapper> astObjects,
+            AstTreeTableNode parentNode) {
         if (parentNode == null) {
             return null;
         }
@@ -345,6 +376,13 @@ public class TestCaseTreeTableInput {
             return;
         }
         treeTableViewer.setSelection(new StructuredSelection(treeTableNode));
+    }
+
+    private void setSelection(List<AstTreeTableNode> treeTableNodes) {
+        if (treeTableNodes == null || treeTableNodes.isEmpty()) {
+            return;
+        }
+        treeTableViewer.setSelection(new StructuredSelection(treeTableNodes));
     }
 
     private void setEdit(AstTreeTableNode parentNode, ASTNodeWrapper astObject) {
@@ -401,6 +439,13 @@ public class TestCaseTreeTableInput {
             return;
         }
         treeTableViewer.refresh(object);
+        if (!(object instanceof AstTreeTableNode)) {
+            return;
+        }
+        AstTreeTableNode treeTableNode = (AstTreeTableNode) object;
+        if (treeTableNode.canHaveChildren()) {
+            treeTableNode.reloadChildren();
+        }
     }
 
     // refresh treetable root
@@ -437,8 +482,8 @@ public class TestCaseTreeTableInput {
         String testCaseId = parentPart.getTestCase().getIdForDisplay();
         for (VariableEntity variable : parentPart.getVariables()) {
             FieldNodeWrapper field = new FieldNodeWrapper(variable.getName(), Object.class, mainClassNodeWrapper);
-            ExpressionWrapper expression = GroovyWrapperParser.parseGroovyScriptAndGetFirstExpression(
-                    variable.getDefaultValue(), testCaseId);
+            ExpressionWrapper expression = GroovyWrapperParser
+                    .parseGroovyScriptAndGetFirstExpression(variable.getDefaultValue(), testCaseId);
             if (expression != null) {
                 expression.setParent(field);
                 field.setInitialValueExpression(expression);
@@ -452,22 +497,7 @@ public class TestCaseTreeTableInput {
     }
 
     public void removeRows(List<AstTreeTableNode> treeTableNodes) {
-        if (treeTableNodes == null || treeTableNodes.isEmpty()) {
-            return;
-        }
-        AstTreeTableNode topItem = getTopItem();
-        Object[] expandedElements = saveExpandedState();
-        Collections.reverse(treeTableNodes);
-        List<AstTreeTableNode> refreshNodeList = new ArrayList<AstTreeTableNode>();
-        for (int i = treeTableNodes.size() - 1; i >= 0; i--) {
-            AstTreeTableNode needRefreshNode = removeRow(treeTableNodes.get(i));
-            if (needRefreshNode != null) {
-                refreshNodeList.add(needRefreshNode);
-            }
-        }
-        processAfterRemove(refreshNodeList);
-        reloadExpandedState(expandedElements);
-        setTopItem(topItem);
+        executeOperation(new RemoveAstTreeTableNodesOperation(treeTableNodes));
     }
 
     private void processAfterRemove(List<AstTreeTableNode> refreshNodeList) {
@@ -479,21 +509,6 @@ public class TestCaseTreeTableInput {
         for (AstTreeTableNode treeTableNode : refreshNodeList) {
             refreshObjectWithoutReloading(treeTableNode);
         }
-    }
-
-    private AstTreeTableNode removeRow(AstTreeTableNode treeTableNode) {
-        ASTNodeWrapper astObject = treeTableNode.getASTObject();
-        if (treeTableNode == null || astObject == null || astObject.getParent() == null) {
-            return null;
-        }
-        if (removeASTNode(astObject.getParent(), astObject)) {
-            return treeTableNode.getParent();
-        }
-        return null;
-    }
-
-    private boolean removeASTNode(ASTNodeWrapper parentNode, ASTNodeWrapper childNode) {
-        return parentNode.removeChild(childNode);
     }
 
     private void filterRelatedNodeList(List<AstTreeTableNode> treeTableNodes) {
@@ -513,8 +528,8 @@ public class TestCaseTreeTableInput {
                     continue;
                 }
                 AstTreeTableNode otherAstTreeTableNode = treeTableNodes.get(index);
-                if (otherAstTreeTableNode != null
-                        && (astTreeTableNode.equals(otherAstTreeTableNode) || otherAstTreeTableNode.isDescendantNode(astTreeTableNode))) {
+                if (otherAstTreeTableNode != null && (astTreeTableNode.equals(otherAstTreeTableNode)
+                        || otherAstTreeTableNode.isDescendantNode(astTreeTableNode))) {
                     treeTableNodes.remove(count);
                     foundFlag = true;
                     break;
@@ -572,24 +587,7 @@ public class TestCaseTreeTableInput {
     }
 
     private void move(int offset, AstTreeTableNode selectedNode) {
-        if (isUnmoveableAstNode(selectedNode)) {
-            return;
-        }
-        ASTNodeWrapper astNode = selectedNode.getASTObject();
-        ASTNodeWrapper parentASTNode = astNode.getParent();
-        int newIndex = parentASTNode.indexOf(astNode) + offset;
-        if (newIndex < 0) {
-            return;
-        }
-        ASTNodeWrapper cloneNode = astNode.clone();
-        if (!(parentASTNode.addChild(cloneNode, newIndex) || parentASTNode.addChild(cloneNode))) {
-            return;
-        }
-        parentASTNode.removeChild(astNode);
-        setDirty(true);
-        AstTreeTableNode parentNode = selectedNode.getParent();
-        refreshObjectWithoutReloading(parentNode);
-        setSelection(parentNode, cloneNode);
+        executeOperation(new MoveNodeOperation(selectedNode, offset));
     }
 
     private boolean isUnmoveableAstNode(AstTreeTableNode selectedNode) {
@@ -618,24 +616,7 @@ public class TestCaseTreeTableInput {
     }
 
     private void changeFailureHandling(FailureHandling failureHandling, List<AstTreeTableNode> treeTableNodes) {
-        if (failureHandling == null || treeTableNodes == null || treeTableNodes.isEmpty()) {
-            return;
-        }
-        AstTreeTableNode topItem = getTopItem();
-        Object[] expandedElements = saveExpandedState();
-        for (int i = treeTableNodes.size() - 1; i >= 0; i--) {
-            if (!(treeTableNodes.get(i) instanceof AstAbstractKeywordTreeTableNode)) {
-                continue;
-            }
-            AstAbstractKeywordTreeTableNode keywordNode = (AstAbstractKeywordTreeTableNode) treeTableNodes.get(i);
-            if (!failureHandling.equals(keywordNode.getFailureHandlingValue())
-                    && keywordNode.setFailureHandlingValue(failureHandling)) {
-                treeTableViewer.update(keywordNode, null);
-                setDirty(true);
-            }
-        }
-        reloadExpandedState(expandedElements);
-        setTopItem(topItem);
+        executeOperation(new ChangeFailureHandlingOperation(failureHandling, treeTableNodes));
     }
 
     private String parseAstObjectToString(ASTNodeWrapper astObject) {
@@ -668,15 +649,16 @@ public class TestCaseTreeTableInput {
             return rowsToBeRemoved;
         }
         final Clipboard cb = new Clipboard(Display.getCurrent());
-        ScriptTransferData transferData = new ScriptTransferData(scriptSnippets.toString(), parentPart.getTestCase()
-                .getId());
+        ScriptTransferData transferData = new ScriptTransferData(scriptSnippets.toString(),
+                parentPart.getTestCase().getId());
         cb.setContents(new Object[] { new ScriptTransferData[] { transferData } },
                 new Transfer[] { new ScriptTransfer() });
         return rowsToBeRemoved;
     }
 
     public static boolean isNodeMoveable(AstTreeTableNode astTreeTableNode) {
-        return (!(astTreeTableNode.getASTObject() instanceof ComplexLastStatementWrapper) && !(astTreeTableNode.getASTObject() instanceof ComplexChildStatementWrapper));
+        return (!(astTreeTableNode.getASTObject() instanceof ComplexLastStatementWrapper)
+                && !(astTreeTableNode.getASTObject() instanceof ComplexChildStatementWrapper));
     }
 
     public void paste(AstTreeTableNode destinationNode, NodeAddType addType) {
@@ -717,26 +699,7 @@ public class TestCaseTreeTableInput {
     }
 
     private void toogleDisabledMode(List<AstTreeTableNode> treeTableNodes, boolean isDisableMode) {
-        if (treeTableNodes == null || treeTableNodes.isEmpty()) {
-            return;
-        }
-        AstTreeTableNode topItem = getTopItem();
-        Object[] expandedElements = saveExpandedState();
-        for (AstTreeTableNode treeTableNode : treeTableNodes) {
-            if (!(treeTableNode instanceof AstStatementTreeTableNode)
-                    || !((AstStatementTreeTableNode) treeTableNode).canBeDisabled()) {
-                continue;
-            }
-            AstStatementTreeTableNode statementNode = (AstStatementTreeTableNode) treeTableNode;
-            boolean changeFlag = (isDisableMode) ? statementNode.disable() : statementNode.enable();
-            if (changeFlag) {
-                treeTableViewer.update(statementNode, null);
-                setDirty(true);
-            }
-        }
-        reloadExpandedState(expandedElements);
-        setTopItem(topItem);
-        treeTableViewer.setSelection(null);
+        executeOperation(new ToogleDisableStepsOperation(treeTableNodes, isDisableMode));
     }
 
     public boolean isChanged() {
@@ -855,7 +818,8 @@ public class TestCaseTreeTableInput {
         }
     }
 
-    public void addCallTestCases(AstTreeTableNode destinationNode, NodeAddType addType, TestCaseEntity[] testCaseArray) {
+    public void addCallTestCases(AstTreeTableNode destinationNode, NodeAddType addType,
+            TestCaseEntity[] testCaseArray) {
         if (testCaseArray == null || testCaseArray.length <= 0) {
             return;
         }
@@ -866,11 +830,8 @@ public class TestCaseTreeTableInput {
             statementsToAdd.add(AstEntityInputUtil.generateCallTestCaseExpresionStatement(testCase, variablesToAdd,
                     parentNodeWrapper));
         }
-        addNewAstObjects(statementsToAdd, destinationNode, addType);
-        if (variablesToAdd.isEmpty()) {
-            return;
-        }
-        parentPart.addVariables(variablesToAdd.toArray(new VariableEntity[variablesToAdd.size()]));
+
+        executeOperation(new AddCallTestCaseStepsOperation(statementsToAdd, destinationNode, addType, variablesToAdd));
     }
 
     private TestCaseEntity[] collectCalledTestCases() throws Exception {
@@ -895,7 +856,8 @@ public class TestCaseTreeTableInput {
 
             ITreeEntity treeEntity = (ITreeEntity) object;
             if (treeEntity instanceof FolderTreeEntity) {
-                for (TestCaseEntity testCase : TestCaseEntityUtil.getTestCasesFromFolderTree((FolderTreeEntity) treeEntity)) {
+                for (TestCaseEntity testCase : TestCaseEntityUtil
+                        .getTestCasesFromFolderTree((FolderTreeEntity) treeEntity)) {
                     if (validateTestCase(testCase)) {
                         testCaseSet.add(testCase);
                     }
@@ -911,35 +873,14 @@ public class TestCaseTreeTableInput {
     }
 
     public void addNewMethod(AstTreeTableNode destinationNode, NodeAddType addType) {
-        MethodObjectBuilderDialog dialog = new MethodObjectBuilderDialog(Display.getCurrent().getActiveShell(), null,
-                null);
-        if (dialog.open() != Window.OK || dialog.getReturnValue() == null) {
-            return;
-        }
-        MethodNodeWrapper method = dialog.getReturnValue();
-        int selectedMethodIndex = -1;
-        AstTreeTableNode selectedNode = getSelectedNode();
-        if (selectedNode instanceof AstMethodTreeTableNode) {
-            selectedMethodIndex = mainClassNodeWrapper.indexOfMethod(((AstMethodTreeTableNode) selectedNode).getASTObject());
-        }
-        if (selectedMethodIndex == -1) {
-            mainClassNodeWrapper.addMethod(method);
-        } else {
-            if (addType == NodeAddType.Add || addType == NodeAddType.InserAfter) {
-                selectedMethodIndex++;
-            }
-            mainClassNodeWrapper.addMethod(method, selectedMethodIndex);
-        }
-        setDirty(true);
-        refresh();
-        setSelection(mainClassTreeNode, method);
-        setFocus(getTreeTableNodeOfAstObjectFromParentNode(mainClassTreeNode, method));
+        executeOperation(new AddMethodOperation(addType, destinationNode));
     }
 
     public void addNewDefaultBuiltInKeyword(NodeAddType addType) {
         addNewAstObject(
-                TreeTableMenuItemConstants.getMenuItemID(TestCasePreferenceDefaultValueInitializer.getDefaultKeywordType()
-                        .getName()), getSelectedNode(), addType);
+                TreeTableMenuItemConstants.getMenuItemID(
+                        TestCasePreferenceDefaultValueInitializer.getDefaultKeywordType().getAliasName()),
+                getSelectedNode(), addType);
     }
 
     private void addNewBuiltInKeyword(AstTreeTableNode destinationNode, NodeAddType addType, String className) {
@@ -947,35 +888,34 @@ public class TestCaseTreeTableInput {
                 KeywordController.getInstance().getBuiltInKeywordClassByName(className));
     }
 
-    private void addNewBuiltInKeyword(AstTreeTableNode destinationNode, NodeAddType addType, KeywordClass keywordClass) {
+    private void addNewBuiltInKeyword(AstTreeTableNode destinationNode, NodeAddType addType,
+            KeywordClass keywordClass) {
         if (keywordClass == null) {
             return;
         }
-        String defaultSettingKeywordName = TestCasePreferenceDefaultValueInitializer.getDefaultKeywords().get(
-                keywordClass.getName());
+        String defaultSettingKeywordName = TestCasePreferenceDefaultValueInitializer.getDefaultKeywords()
+                .get(keywordClass.getName());
         StatementWrapper newBuiltinKeywordStatement = null;
 
         ASTNodeWrapper parentNodeWrapper = getParentNodeForNewMethodCall(destinationNode);
-        if (!StringUtils.isBlank(defaultSettingKeywordName)
-                && (KeywordController.getInstance().getBuiltInKeywordByName(keywordClass.getName(),
-                        defaultSettingKeywordName, null)) != null) {
+        if (!StringUtils.isBlank(defaultSettingKeywordName) && (KeywordController.getInstance()
+                .getBuiltInKeywordByName(keywordClass.getName(), defaultSettingKeywordName, null)) != null) {
             MethodCallExpressionWrapper keywordMethodCallExpression = new MethodCallExpressionWrapper(
                     keywordClass.getAliasName(), defaultSettingKeywordName, parentNodeWrapper);
 
-            AstKeywordsInputUtil.generateMethodCallArguments(
-                    keywordMethodCallExpression,
-                    KeywordController.getInstance().getBuiltInKeywordByName(keywordClass.getName(),
-                            defaultSettingKeywordName, null));
+            AstKeywordsInputUtil.generateMethodCallArguments(keywordMethodCallExpression, KeywordController
+                    .getInstance().getBuiltInKeywordByName(keywordClass.getName(), defaultSettingKeywordName, null));
 
             newBuiltinKeywordStatement = new ExpressionStatementWrapper(keywordMethodCallExpression, null);
 
         } else {
-            newBuiltinKeywordStatement = AstKeywordsInputUtil.createBuiltInKeywordStatement(
-                    keywordClass.getAliasName(),
-                    KeywordController.getInstance()
-                            .getBuiltInKeywords(keywordClass.getAliasName(), true)
-                            .get(0)
-                            .getName(), parentNodeWrapper);
+            newBuiltinKeywordStatement = AstKeywordsInputUtil
+                    .createBuiltInKeywordStatement(keywordClass.getAliasName(),
+                            KeywordController.getInstance()
+                                    .getBuiltInKeywords(keywordClass.getAliasName(), true)
+                                    .get(0)
+                                    .getName(),
+                            parentNodeWrapper);
         }
         addNewAstObject(newBuiltinKeywordStatement, destinationNode, addType);
     }
@@ -989,7 +929,8 @@ public class TestCaseTreeTableInput {
 
     public void addNewCustomKeyword(AstTreeTableNode destinationNode, NodeAddType addType) {
         ASTNodeWrapper parentNodeWrapper = getParentNodeForNewMethodCall(destinationNode);
-        StatementWrapper customKeywordStatement = AstKeywordsInputUtil.createNewCustomKeywordStatement(parentNodeWrapper);
+        StatementWrapper customKeywordStatement = AstKeywordsInputUtil
+                .createNewCustomKeywordStatement(parentNodeWrapper);
         if (customKeywordStatement == null) {
             MessageDialog.openWarning(null, StringConstants.WARN_TITLE, StringConstants.PA_ERROR_MSG_NO_CUSTOM_KEYWORD);
             return;
@@ -1073,5 +1014,549 @@ public class TestCaseTreeTableInput {
 
     public void addNewFinallyStatement(AstTreeTableNode destinationNode, NodeAddType addType) {
         addNewAstObject(new FinallyStatementWrapper(), destinationNode, addType);
+    }
+
+    public void dragAndDropAstObjects(List<AstTreeTableNode> draggedNodes, List<StatementWrapper> droppedNodes,
+            AstTreeTableNode destinationNode, NodeAddType addType) {
+        AbstractCompositeOperation dragAndDropOperation = new AbstractCompositeOperation(
+                OPERATION_LABEL_DRAG_AND_DROP_AST_NODES);
+        dragAndDropOperation.add(new AddAstObjectsOperation(droppedNodes, destinationNode, addType));
+        dragAndDropOperation.add(new RemoveAstTreeTableNodesOperation(draggedNodes));
+        executeOperation(dragAndDropOperation);
+    }
+
+    private IOperationHistory getOperationHistory() {
+        if (operationHistory == null) {
+            operationHistory = PlatformUI.getWorkbench().getOperationSupport().getOperationHistory();
+        }
+        return operationHistory;
+    }
+
+    public IStatus executeOperation(IUndoableOperation operation, IProgressMonitor progressMonitor,
+            IAdaptable adaptable) {
+        IOperationHistory operationHistory = getOperationHistory();
+        try {
+            operation.addContext(undoContext);
+            return operationHistory.execute(operation, progressMonitor, adaptable);
+        } catch (ExecutionException e) {
+            LoggerSingleton.logError(e);
+        }
+        return Status.CANCEL_STATUS;
+    }
+
+    public IStatus executeOperation(IUndoableOperation operation, IAdaptable adaptable) {
+        return executeOperation(operation, new NullProgressMonitor(), adaptable);
+    }
+
+    public IStatus executeOperation(IUndoableOperation operation) {
+        return executeOperation(operation, null);
+    }
+
+    private class AddAstObjectsOperation extends AbstractOperation {
+        private List<? extends ASTNodeWrapper> astObjects;
+
+        private AstTreeTableNode destinationNode;
+
+        private NodeAddType addType;
+
+        public AddAstObjectsOperation(List<? extends ASTNodeWrapper> astObjects, AstTreeTableNode destinationNode,
+                NodeAddType addType) {
+            super(AddAstObjectsOperation.class.getName());
+            this.astObjects = astObjects;
+            this.destinationNode = destinationNode;
+            this.addType = addType;
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            if (astObjects == null) {
+                return Status.CANCEL_STATUS;
+            }
+            return doAddAstObjects(true);
+        }
+
+        @Override
+        public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            return doAddAstObjects(false);
+        }
+
+        protected IStatus doAddAstObjects(boolean doSetEdit) {
+            AstTreeTableNode topItem = getTopItem();
+            Object[] expandedElements = saveExpandedState();
+            boolean addSuccessfully = internalAddNewAstObjects(astObjects, destinationNode, addType, doSetEdit);
+            reloadExpandedState(expandedElements);
+            setTopItem(topItem);
+            if (addSuccessfully) {
+                return Status.OK_STATUS;
+            }
+            return Status.CANCEL_STATUS;
+        }
+
+        @Override
+        public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            AstTreeTableNode topItem = getTopItem();
+            Object[] expandedElements = saveExpandedState();
+            boolean removeSuccessfully = internalRemoveAstObjects(astObjects, destinationNode, addType);
+            reloadExpandedState(expandedElements);
+            setTopItem(topItem);
+            if (removeSuccessfully) {
+                return Status.OK_STATUS;
+            }
+            return Status.CANCEL_STATUS;
+        }
+
+        private boolean internalRemoveAstObjects(List<? extends ASTNodeWrapper> astObjects,
+                AstTreeTableNode destinationNode, NodeAddType addType) {
+            List<AstTreeTableNode> refreshNodeList = new ArrayList<AstTreeTableNode>();
+            if (destinationNode == null) {
+                refreshNodeList.addAll(removeChildObjectFromParentNode(astObjects, mainClassTreeNode));
+            } else if (addType == NodeAddType.Add) {
+                if (destinationNode.canHaveChildren()) {
+                    refreshNodeList.addAll(removeChildObjectFromParentNode(astObjects, destinationNode));
+                } else {
+                    refreshNodeList.addAll(removeChildObjectFromParentNode(astObjects, destinationNode.getParent()));
+                }
+            } else {
+                refreshNodeList.addAll(removeChildObjectFromParentNode(astObjects, destinationNode.getParent()));
+            }
+            if (!refreshNodeList.isEmpty()) {
+                processAfterRemove(refreshNodeList);
+                return true;
+            }
+            return false;
+        }
+
+        protected List<AstTreeTableNode> removeChildObjectFromParentNode(List<? extends ASTNodeWrapper> astObjects,
+                AstTreeTableNode parentNode) {
+            if (parentNode == null || astObjects == null || astObjects.isEmpty()) {
+                return Collections.emptyList();
+            }
+            List<AstTreeTableNode> refreshNodeList = new ArrayList<AstTreeTableNode>();
+            for (ASTNodeWrapper childObject : astObjects) {
+                parentNode.removeChild(childObject);
+                refreshNodeList.add(parentNode);
+            }
+            return refreshNodeList;
+        }
+    }
+
+    private class AddCallTestCaseStepsOperation extends AddAstObjectsOperation {
+        private List<VariableEntity> variableList;
+
+        public AddCallTestCaseStepsOperation(List<? extends ASTNodeWrapper> astObjects,
+                AstTreeTableNode destinationNode, NodeAddType addType, List<VariableEntity> variableList) {
+            super(astObjects, destinationNode, addType);
+            this.variableList = variableList;
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            IStatus status = super.execute(monitor, info);
+            if (status == Status.CANCEL_STATUS || variableList.isEmpty()) {
+                return status;
+            }
+            doAddVariables();
+            return status;
+        }
+
+        protected void doAddVariables() {
+            parentPart.addVariables(variableList.toArray(new VariableEntity[variableList.size()]));
+        }
+
+        @Override
+        public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            IStatus status = super.redo(monitor, info);
+            doAddVariables();
+            return status;
+        }
+
+        @Override
+        public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            IStatus status = super.undo(monitor, info);
+            parentPart.deleteVariables(variableList);
+            return status;
+        }
+
+    }
+
+    private class RemoveAstTreeTableNodesOperation extends AbstractOperation {
+        public class AstNodeRemovedEdit {
+            private AstTreeTableNode parentNode;
+
+            private ASTNodeWrapper parentAstObject;
+
+            private ASTNodeWrapper astObject;
+
+            private int originalIndex;
+
+            public AstNodeRemovedEdit(AstTreeTableNode parentNode, ASTNodeWrapper parentAstObject,
+                    ASTNodeWrapper astObject, int originalIndex) {
+                this.parentNode = parentNode;
+                this.astObject = astObject;
+                this.originalIndex = originalIndex;
+                this.parentAstObject = parentAstObject;
+            }
+
+            public AstTreeTableNode getParentNode() {
+                return parentNode;
+            }
+
+            public ASTNodeWrapper getAstObject() {
+                return astObject;
+            }
+
+            protected int getOriginalIndex() {
+                return originalIndex;
+            }
+
+            protected ASTNodeWrapper getParentAstObject() {
+                return parentAstObject;
+            }
+        }
+
+        private List<AstTreeTableNode> treeTableNodes;
+
+        private List<AstNodeRemovedEdit> removedAstNodeEdits;
+
+        public RemoveAstTreeTableNodesOperation(List<AstTreeTableNode> treeTableNodes) {
+            super(RemoveAstTreeTableNodesOperation.class.getName());
+            this.treeTableNodes = treeTableNodes;
+            this.removedAstNodeEdits = new ArrayList<AstNodeRemovedEdit>();
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            if (treeTableNodes == null || treeTableNodes.isEmpty()) {
+                return Status.CANCEL_STATUS;
+            }
+            return redo(monitor, info);
+        }
+
+        @Override
+        public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            removedAstNodeEdits.clear();
+            AstTreeTableNode topItem = getTopItem();
+            Object[] expandedElements = saveExpandedState();
+            List<AstTreeTableNode> refreshNodeList = new ArrayList<AstTreeTableNode>();
+            for (int i = 0; i < treeTableNodes.size(); i++) {
+                AstTreeTableNode treeTableNode = treeTableNodes.get(i);
+                ASTNodeWrapper astObject = treeTableNode.getASTObject();
+                if (treeTableNode == null || astObject == null) {
+                    continue;
+                }
+                ASTNodeWrapper parentAstObject = astObject.getParent();
+                if (parentAstObject == null) {
+                    continue;
+                }
+                int childIndex = parentAstObject.indexOf(astObject);
+                if (childIndex < 0) {
+                    continue;
+                }
+                if (parentAstObject.removeChild(astObject) && treeTableNode.getParent() != null) {
+                    refreshNodeList.add(treeTableNode.getParent());
+                    removedAstNodeEdits.add(
+                            new AstNodeRemovedEdit(treeTableNode.getParent(), parentAstObject, astObject, childIndex));
+                }
+            }
+            processAfterRemove(refreshNodeList);
+            reloadExpandedState(expandedElements);
+            setTopItem(topItem);
+            return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            AstTreeTableNode topItem = getTopItem();
+            Object[] expandedElements = saveExpandedState();
+            List<AstNodeAddedEdit> refreshNodeList = new ArrayList<AstNodeAddedEdit>();
+            Collections.reverse(removedAstNodeEdits);
+            for (AstNodeRemovedEdit astNodeRemovedEdit : removedAstNodeEdits) {
+                ASTNodeWrapper astObject = astNodeRemovedEdit.getAstObject();
+                astNodeRemovedEdit.getParentAstObject().addChild(astObject, astNodeRemovedEdit.getOriginalIndex());
+                refreshNodeList.add(new AstNodeAddedEdit(astNodeRemovedEdit.getParentNode(), astObject));
+            }
+            processAfterEdits(refreshNodeList, false, true);
+            reloadExpandedState(expandedElements);
+            setTopItem(topItem);
+            return Status.OK_STATUS;
+        }
+    }
+
+    private class MoveNodeOperation extends AbstractOperation {
+        private AstTreeTableNode selectedNode;
+
+        private ASTNodeWrapper selectedAstObject;
+
+        private AstTreeTableNode parentNode;
+
+        private int offset;
+
+        public MoveNodeOperation(AstTreeTableNode selectedNode, int offset) {
+            super(MoveNodeOperation.class.getName());
+            this.selectedNode = selectedNode;
+            this.offset = offset;
+            this.selectedAstObject = selectedNode.getASTObject();
+            this.parentNode = selectedNode.getParent();
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            if (isUnmoveableAstNode(selectedNode)) {
+                return Status.CANCEL_STATUS;
+            }
+            return doMove(offset);
+        }
+
+        @Override
+        public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            return doMove(offset);
+        }
+
+        protected IStatus doMove(int moveOffset) {
+            ASTNodeWrapper parentASTNode = selectedAstObject.getParent();
+            int currentIndex = parentASTNode.indexOf(selectedAstObject);
+            int newIndex = currentIndex + moveOffset;
+            if (newIndex < 0) {
+                return Status.CANCEL_STATUS;
+            }
+            ASTNodeWrapper tempNode = new EmptyStatementWrapper(parentASTNode);
+            if (selectedAstObject instanceof MethodNodeWrapper) {
+                tempNode = new MethodNodeWrapper(parentASTNode);
+            }
+            if (!(parentASTNode.addChild(tempNode, newIndex) || parentASTNode.addChild(tempNode))) {
+                return Status.CANCEL_STATUS;
+            }
+            parentASTNode.removeChild(selectedAstObject);
+            parentASTNode.addChild(selectedAstObject, parentASTNode.indexOf(tempNode));
+            parentASTNode.removeChild(tempNode);
+            setDirty(true);
+            refreshObjectWithoutReloading(parentNode);
+            setSelection(parentNode, selectedAstObject);
+            return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            return doMove(1 - offset);
+        }
+    }
+
+    private class ToogleDisableStepsOperation extends AbstractOperation {
+        private List<AstTreeTableNode> treeTableNodes;
+
+        private boolean isDisableMode;
+
+        private List<AstStatementTreeTableNode> changedNodes = new ArrayList<>();
+
+        public ToogleDisableStepsOperation(List<AstTreeTableNode> treeTableNodes, boolean isDisableMode) {
+            super(ToogleDisableStepsOperation.class.getName());
+            this.treeTableNodes = treeTableNodes;
+            this.isDisableMode = isDisableMode;
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            if (treeTableNodes == null || treeTableNodes.isEmpty()) {
+                return Status.CANCEL_STATUS;
+            }
+            changedNodes.clear();
+            AstTreeTableNode topItem = getTopItem();
+            Object[] expandedElements = saveExpandedState();
+            for (AstTreeTableNode treeTableNode : treeTableNodes) {
+                if (!(treeTableNode instanceof AstStatementTreeTableNode)
+                        || !((AstStatementTreeTableNode) treeTableNode).canBeDisabled()) {
+                    continue;
+                }
+                AstStatementTreeTableNode statementNode = (AstStatementTreeTableNode) treeTableNode;
+                if (isDisableMode ? statementNode.disable() : statementNode.enable()) {
+                    changedNodes.add(statementNode);
+                    treeTableViewer.update(statementNode, null);
+                    setDirty(true);
+                }
+            }
+            reloadExpandedState(expandedElements);
+            setTopItem(topItem);
+            if (changedNodes.isEmpty()) {
+                return Status.CANCEL_STATUS;
+            }
+            treeTableViewer.setSelection(null);
+            return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            return doToogleEnableDisableMode();
+        }
+
+        @Override
+        public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            return doToogleEnableDisableMode();
+        }
+
+        private IStatus doToogleEnableDisableMode() {
+            AstTreeTableNode topItem = getTopItem();
+            Object[] expandedElements = saveExpandedState();
+            for (AstStatementTreeTableNode statementNode : changedNodes) {
+                statementNode.toogleEnable();
+                treeTableViewer.update(statementNode, null);
+                setDirty(true);
+            }
+            reloadExpandedState(expandedElements);
+            setTopItem(topItem);
+            treeTableViewer.setSelection(null);
+            return Status.OK_STATUS;
+        }
+    }
+
+    private class ChangeFailureHandlingOperation extends AbstractOperation {
+        private class FailureChangeEdit {
+            private AstAbstractKeywordTreeTableNode treeTableNode;
+
+            private FailureHandling oldFailureHandling;
+
+            public FailureChangeEdit(AstAbstractKeywordTreeTableNode treeTableNode,
+                    FailureHandling oldFailureHandling) {
+                super();
+                this.treeTableNode = treeTableNode;
+                this.oldFailureHandling = oldFailureHandling;
+            }
+
+            public AstAbstractKeywordTreeTableNode getTreeTableNode() {
+                return treeTableNode;
+            }
+
+            public FailureHandling getOldFailureHandling() {
+                return oldFailureHandling;
+            }
+        }
+
+        private FailureHandling failureHandling;
+
+        private List<AstTreeTableNode> treeTableNodes;
+
+        private List<FailureChangeEdit> failureChangeEdits = new ArrayList<>();
+
+        public ChangeFailureHandlingOperation(FailureHandling failureHandling, List<AstTreeTableNode> treeTableNodes) {
+            super(ChangeFailureHandlingOperation.class.getName());
+            this.failureHandling = failureHandling;
+            this.treeTableNodes = treeTableNodes;
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            if (failureHandling == null || treeTableNodes == null || treeTableNodes.isEmpty()) {
+                return Status.CANCEL_STATUS;
+            }
+            return redo(monitor, info);
+        }
+
+        @Override
+        public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            failureChangeEdits.clear();
+            AstTreeTableNode topItem = getTopItem();
+            Object[] expandedElements = saveExpandedState();
+            for (int i = treeTableNodes.size() - 1; i >= 0; i--) {
+                if (!(treeTableNodes.get(i) instanceof AstAbstractKeywordTreeTableNode)) {
+                    continue;
+                }
+                AstAbstractKeywordTreeTableNode keywordNode = (AstAbstractKeywordTreeTableNode) treeTableNodes.get(i);
+                FailureHandling failureHandlingValue = keywordNode.getFailureHandlingValue();
+                if (!failureHandling.equals(failureHandlingValue)
+                        && keywordNode.setFailureHandlingValue(failureHandling)) {
+                    failureChangeEdits.add(new FailureChangeEdit(keywordNode, failureHandlingValue));
+                    treeTableViewer.update(keywordNode, null);
+                    setDirty(true);
+                }
+            }
+            reloadExpandedState(expandedElements);
+            setTopItem(topItem);
+            return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            AstTreeTableNode topItem = getTopItem();
+            Object[] expandedElements = saveExpandedState();
+            for (FailureChangeEdit failureChangeEdit : failureChangeEdits) {
+                AstAbstractKeywordTreeTableNode treeTableNode = failureChangeEdit.getTreeTableNode();
+                FailureHandling oldFailureHandling = failureChangeEdit.getOldFailureHandling();
+                if (oldFailureHandling == null) {
+                    oldFailureHandling = getDefaultFailureHandling();
+                }
+                treeTableNode.setFailureHandlingValue(oldFailureHandling);
+                treeTableViewer.update(treeTableNode, null);
+                setDirty(true);
+            }
+            reloadExpandedState(expandedElements);
+            setTopItem(topItem);
+            return Status.OK_STATUS;
+        }
+
+        private FailureHandling getDefaultFailureHandling() {
+            return new TestCaseSettingStore(ProjectController.getInstance().getCurrentProject().getFolderLocation())
+                    .getDefaultFailureHandling();
+        }
+    }
+
+    private class AddMethodOperation extends AbstractOperation {
+        private NodeAddType addType;
+
+        private AstTreeTableNode destinationNode;
+
+        private MethodNodeWrapper method;
+
+        public AddMethodOperation(NodeAddType addType, AstTreeTableNode destinationNode) {
+            super(AddMethodOperation.class.getName());
+            this.addType = addType;
+            this.destinationNode = destinationNode;
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            MethodObjectBuilderDialog dialog = new MethodObjectBuilderDialog(Display.getCurrent().getActiveShell(),
+                    null, null);
+            if (dialog.open() != Window.OK || dialog.getReturnValue() == null) {
+                return Status.CANCEL_STATUS;
+            }
+            method = dialog.getReturnValue();
+            doAddMethod(method);
+            return Status.OK_STATUS;
+
+        }
+
+        public void doAddMethod(MethodNodeWrapper method) {
+            int selectedMethodIndex = -1;
+            if (destinationNode instanceof AstMethodTreeTableNode) {
+                selectedMethodIndex = mainClassNodeWrapper
+                        .indexOfMethod(((AstMethodTreeTableNode) destinationNode).getASTObject());
+            }
+            if (selectedMethodIndex == -1) {
+                mainClassNodeWrapper.addMethod(method);
+            } else {
+                if (addType == NodeAddType.Add || addType == NodeAddType.InserAfter) {
+                    selectedMethodIndex++;
+                }
+                mainClassNodeWrapper.addMethod(method, selectedMethodIndex);
+            }
+            setDirty(true);
+            refresh();
+            setSelection(mainClassTreeNode, method);
+            setFocus(getTreeTableNodeOfAstObjectFromParentNode(mainClassTreeNode, method));
+        }
+
+        @Override
+        public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            doAddMethod(method);
+            return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            mainClassNodeWrapper.removeChild(method);
+            setDirty(true);
+            refresh();
+            return Status.OK_STATUS;
+        }
+
     }
 }

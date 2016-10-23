@@ -6,6 +6,7 @@ import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.swt.widgets.Composite;
 
+import com.kms.katalon.composer.testcase.ast.variable.operations.ChangeVariableDefaultValueOperation;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
@@ -16,6 +17,7 @@ import com.kms.katalon.entity.variable.VariableEntity;
 
 public class VariableDefaultValueEditingSupport extends EditingSupport {
     private TestCaseVariablePart variablesPart;
+
     private ExpressionWrapper expression;
 
     public VariableDefaultValueEditingSupport(ColumnViewer viewer, TestCaseVariablePart variablesPart) {
@@ -25,8 +27,7 @@ public class VariableDefaultValueEditingSupport extends EditingSupport {
 
     @Override
     protected CellEditor getCellEditor(Object element) {
-        expression = GroovyWrapperParser.parseGroovyScriptAndGetFirstExpression(((VariableEntity) element)
-                .getDefaultValue());
+        expression = GroovyWrapperParser.parseGroovyScriptAndGetFirstExpression(((VariableEntity) element).getDefaultValue());
         if (expression == null) {
             return null;
         }
@@ -70,9 +71,8 @@ public class VariableDefaultValueEditingSupport extends EditingSupport {
         GroovyWrapperParser groovyParser = new GroovyWrapperParser(stringBuilder);
         groovyParser.parse(newAstNode);
         if (!StringUtils.equals(variableEntity.getDefaultValue(), stringBuilder.toString())) {
-            variableEntity.setDefaultValue(stringBuilder.toString());
-            variablesPart.setDirty(true);
-            this.getViewer().update(variableEntity, null);
+            variablesPart.executeOperation(new ChangeVariableDefaultValueOperation(variablesPart, variableEntity,
+                    stringBuilder.toString()));
         }
     }
 }

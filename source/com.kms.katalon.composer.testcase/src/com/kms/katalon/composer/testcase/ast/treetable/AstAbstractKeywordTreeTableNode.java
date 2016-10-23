@@ -61,6 +61,28 @@ public abstract class AstAbstractKeywordTreeTableNode extends AstInputEditableSt
     public String getItemText() {
         return TreeEntityUtil.getReadableKeywordName(getKeywordName());
     }
+    
+    @Override
+    public Object getItem() {
+        return methodCall;
+    }
+
+    @Override
+    public boolean setItem(Object item) {
+        if (!(item instanceof MethodCallExpressionWrapper)) {
+            return false;
+        }
+        MethodCallExpressionWrapper newMethodCall = (MethodCallExpressionWrapper) item;
+        if (newMethodCall.isEqualsTo(methodCall)) {
+            return false;
+        }
+        methodCall.setMethod(newMethodCall.getMethodAsString());
+        methodCall.setArguments(newMethodCall.getArguments());
+        if (!canEditOutput()) {
+            removeOutput();
+        }
+        return true;
+    }
 
     @Override
     public String getItemTooltipText() {

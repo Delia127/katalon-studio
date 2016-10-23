@@ -7,7 +7,7 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
-import com.kms.katalon.composer.testcase.editors.ComboBoxCellEditorWithContentProposal;
+import com.kms.katalon.composer.testcase.ast.editors.KeywordComboBoxCellEditorWithContentProposal;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
@@ -38,6 +38,12 @@ public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableN
                 .getSimpleName();
     }
 
+    public String getBuiltInKWClassAliasName() {
+        return KeywordController.getInstance()
+                .getBuiltInKeywordClassByName(methodCall.getObjectExpressionAsString())
+                .getAliasName();
+    }
+
     private List<KeywordMethod> getKeywords() {
         List<KeywordMethod> keywords = new ArrayList<KeywordMethod>();
         for (KeywordMethod keywordMethod : getBuiltInKeywordMethodsWithoutFlowControl()) {
@@ -55,19 +61,9 @@ public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableN
             keywordNames.add(TreeEntityUtil.getReadableKeywordName(keywordMethod.getName()));
             toolTips.add(TestCaseEntityUtil.getKeywordJavaDocText(builtInKWClassSimpleName, keywordMethod.getName()));
         }
-
-        return new ComboBoxCellEditorWithContentProposal(parent, keywordNames.toArray(new String[keywordNames.size()]),
-                toolTips.toArray(new String[toolTips.size()]));
-    }
-
-    @Override
-    public Object getItem() {
-        for (KeywordMethod keywordMethod : builtInKeywordMethods) {
-            if (keywordMethod.getName().equals(getKeywordName())) {
-                return builtInKeywordMethods.indexOf(keywordMethod);
-            }
-        }
-        return 0;
+        return new KeywordComboBoxCellEditorWithContentProposal(parent, parentStatement, getBuiltInKWClassAliasName(),
+                builtInKeywordMethods.toArray(new KeywordMethod[builtInKeywordMethods.size()]),
+                keywordNames.toArray(new String[keywordNames.size()]), toolTips.toArray(new String[toolTips.size()]));
     }
 
     @Override
@@ -81,25 +77,6 @@ public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableN
     }
 
     @Override
-    public boolean setItem(Object item) {
-        if (!(item instanceof Integer) || (int) item < 0 || (int) item >= builtInKeywordMethods.size()) {
-            return false;
-        }
-        String newMethodName = builtInKeywordMethods.get((int) item).getName();
-        if (getKeywordName().equals(newMethodName)) {
-            return false;
-        }
-        if (methodCall.setMethod(newMethodName)) {
-            AstKeywordsInputUtil.generateBuiltInKeywordArguments(methodCall);
-            if (!canEditOutput()) {
-                removeOutput();
-            }
-            return true;
-        }
-        return false;
-    }
-
-    @Override
     public boolean canEditInput() {
         KeywordMethod keywordMethod = findKeywordMethod();
 
@@ -108,7 +85,8 @@ public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableN
         }
         boolean hasTestObjectParam = false;
         for (int i = 0; i < keywordMethod.getParameters().length; i++) {
-            boolean isTestObjectParam = AstEntityInputUtil.isTestObjectClass(keywordMethod.getParameters()[i].getType());
+            boolean isTestObjectParam = AstEntityInputUtil
+                    .isTestObjectClass(keywordMethod.getParameters()[i].getType());
             if (!isTestObjectParam || hasTestObjectParam) {
                 return true;
             }
@@ -228,6 +206,7 @@ public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableN
 
     /**
      * Find the keyword method that most suitable for the given method call
+     * 
      * @return most suitable eywordMethod
      */
     protected KeywordMethod findKeywordMethod() {

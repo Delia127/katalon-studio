@@ -90,7 +90,7 @@ public class TreeTableMenuItemConstants {
 	    keywordClassOffsets.clear();
 	    int offset = 0;
 	    for (KeywordClass keywordClass : keywordClasses) {
-	        keywordClassOffsets.put(keywordClass.getName(), offset);
+	        keywordClassOffsets.put(keywordClass.getAliasName(), offset);
 	        offset++;
 	    }
 	}

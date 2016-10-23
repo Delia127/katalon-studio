@@ -5,6 +5,7 @@ Bundle-SymbolicName: com.kms.katalon;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-ClassPath: .
 Bundle-Vendor: KMS
+Bundle-Localization: plugin
 Export-Package: com.kms.katalon.composer.handlers,
  com.kms.katalon.composer.parts,
  com.kms.katalon.core.application
@@ -41,10 +42,10 @@ Require-Bundle: org.eclipse.e4.core.di,
  com.kms.katalon.composer.project,
  org.eclipse.ui.intro,
  org.eclipse.equinox.app,
- com.google.gson
+ com.google.gson,
+ org.eclipse.core.expressions
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: javax.annotation,
  org.eclipse.e4.core.services.log,
  org.eclipse.emf.common.util
-Bundle-Localization: plugin
 Bundle-ActivationPolicy: lazy
