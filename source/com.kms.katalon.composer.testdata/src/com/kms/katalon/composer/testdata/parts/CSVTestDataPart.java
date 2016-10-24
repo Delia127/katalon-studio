@@ -8,6 +8,12 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.operations.AbstractOperation;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -31,6 +37,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
@@ -247,25 +254,8 @@ public class CSVTestDataPart extends TestDataMainPart {
                 dialog.setFilterNames(FILTER_NAMES);
                 dialog.setFilterExtensions(FILTER_EXTS);
                 dialog.setFilterPath(getProjectFolderLocation());
-                String path = dialog.open();
 
-                // Don't need to reload if user selects the current path again.
-                if (path == null || path.equals(fCurrentFilePath)) {
-                    return;
-                }
-
-                lblFileInfoStatus.setText("");
-
-                fCurrentFilePath = path;
-
-                if (chckIsRelativePath.getSelection()) {
-                    txtFileName.setText(PathUtil.absoluteToRelativePath(path, getProjectFolderLocation()));
-                } else {
-                    txtFileName.setText(fCurrentFilePath);
-                }
-
-                loadCSVDataToTable();
-                dirtyable.setDirty(true);
+                executeOperation(new ChangeCSVFileOperation(dialog.open()));
             }
         });
 
@@ -273,15 +263,7 @@ public class CSVTestDataPart extends TestDataMainPart {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                // Don't need to reload if user selects the current index again.
-                if (fSelectedSeperator.equals(cbSeperator.getText())) {
-                    return;
-                }
-                lblFileInfoStatus.setText("");
-                fSelectedSeperator = cbSeperator.getText();
-
-                loadCSVDataToTable();
-                dirtyable.setDirty(true);
+                executeOperation(new ChangeSeparatorOperation(cbSeperator.getText()));
             }
         });
 
@@ -289,8 +271,7 @@ public class CSVTestDataPart extends TestDataMainPart {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-            	loadCSVDataToTable();
-                dirtyable.setDirty(true);
+            	executeOperation(new ChangeUseFirstRowAsHeaderOperation(chckEnableHeader.getSelection()));
             }
         });
 
@@ -298,19 +279,7 @@ public class CSVTestDataPart extends TestDataMainPart {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                try {
-                    if (txtFileName.getText() != null) {
-                        String sourceUrl = txtFileName.getText();
-                        if (chckIsRelativePath.getSelection()) {
-                            txtFileName.setText(PathUtil.absoluteToRelativePath(sourceUrl, getProjectFolderLocation()));
-                        } else {
-                            txtFileName.setText(PathUtil.relativeToAbsolutePath(sourceUrl, getProjectFolderLocation()));
-                        }
-                    }
-                    dirtyable.setDirty(true);
-                } catch (Exception ex) {
-                    LoggerSingleton.logError(ex);
-                }
+                executeOperation(new ChangeUseRelativePathOperation(chckIsRelativePath.getSelection()));
             }
         });
     }
@@ -382,9 +351,13 @@ public class CSVTestDataPart extends TestDataMainPart {
     }
 
     private void clearTable() {
-        while (tableViewer.getTable().getColumnCount() > 1) {
-            tableViewer.getTable().getColumns()[1].dispose();
+        Table table = tableViewer.getTable();
+        while (table.getColumnCount() > 1) {
+            table.getColumns()[1].dispose();
         }
+        table.clearAll();
+        tableViewer.setItemCount(0);
+        table.setHeaderVisible(false);
     }
 
     private String getSourceUrlAbsolutePath() throws Exception {
@@ -525,5 +498,167 @@ public class CSVTestDataPart extends TestDataMainPart {
     @Override
     protected void preDestroy() {
 
+    }
+    
+    private class ChangeCSVFileOperation extends AbstractOperation {
+        private String oldCSVFilePath;
+
+        private String newCSVFilePath;
+
+        public ChangeCSVFileOperation(String newCSVFilePath) {
+            super(ChangeCSVFileOperation.class.getName());
+            this.newCSVFilePath = newCSVFilePath;
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            if (newCSVFilePath == null || newCSVFilePath.equals(fCurrentFilePath)) {
+                return Status.CANCEL_STATUS;
+            }
+            oldCSVFilePath = fCurrentFilePath;
+            return redo(monitor, info);
+        }
+
+        @Override
+        public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            doLoadExcelFile(newCSVFilePath);
+            return Status.OK_STATUS;
+        }
+
+        private void doLoadExcelFile(String csvFileAbsolutePath) {
+
+            lblFileInfoStatus.setText("");
+
+            fCurrentFilePath = csvFileAbsolutePath;
+
+            if (chckIsRelativePath.getSelection()) {
+                txtFileName.setText(PathUtil.absoluteToRelativePath(csvFileAbsolutePath, getProjectFolderLocation()));
+            } else {
+                txtFileName.setText(fCurrentFilePath);
+            }
+
+            loadCSVDataToTable();
+            dirtyable.setDirty(true);
+        }
+
+        @Override
+        public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            doLoadExcelFile(oldCSVFilePath);
+            return Status.OK_STATUS;
+        }
+    }
+    
+    private class ChangeSeparatorOperation extends AbstractOperation {
+        private String oldSeparator;
+        private String newSeparator;
+        
+        public ChangeSeparatorOperation(String newSeparator) {
+            super(ChangeSeparatorOperation.class.getName());
+            this.newSeparator = newSeparator;
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            if (newSeparator.equals(fSelectedSeperator)) {
+                return Status.CANCEL_STATUS;
+            }
+            oldSeparator = fSelectedSeperator;
+            doSetSeparator(newSeparator);
+            return Status.OK_STATUS;
+        }
+
+        private void doSetSeparator(String separator) {
+            fSelectedSeperator = separator;
+            cbSeperator.setText(fSelectedSeperator);
+            lblFileInfoStatus.setText("");
+
+            loadCSVDataToTable();
+            dirtyable.setDirty(true);
+        }
+
+        @Override
+        public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            doSetSeparator(newSeparator);
+            return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            doSetSeparator(oldSeparator);
+            return Status.OK_STATUS;
+        }
+        
+    }
+    
+    private class ChangeUseFirstRowAsHeaderOperation extends AbstractOperation {
+        boolean oldCheckedValue;
+        
+        public ChangeUseFirstRowAsHeaderOperation(boolean oldCheckedValue) {
+            super(ChangeUseFirstRowAsHeaderOperation.class.getName());
+            this.oldCheckedValue = oldCheckedValue;
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            return redo(monitor, info);
+        }
+
+        @Override
+        public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            doChangeCheckValue(oldCheckedValue);
+            return Status.OK_STATUS;
+        }
+
+        private void doChangeCheckValue(boolean isSelected) {
+            chckEnableHeader.setSelection(isSelected);
+            loadCSVDataToTable();
+            dirtyable.setDirty(true);
+        }
+
+        @Override
+        public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            doChangeCheckValue(!oldCheckedValue);
+            return Status.OK_STATUS;
+        }
+    }
+    
+    private class ChangeUseRelativePathOperation extends AbstractOperation {
+        boolean oldCheckedValue;
+        
+        public ChangeUseRelativePathOperation(boolean oldCheckedValue) {
+            super(ChangeUseRelativePathOperation.class.getName());
+            this.oldCheckedValue = oldCheckedValue;
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            return redo(monitor, info);
+        }
+
+        @Override
+        public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            doChangeCheckValue(oldCheckedValue);
+            return Status.OK_STATUS;
+        }
+
+        private void doChangeCheckValue(boolean isSelected) {
+            chckIsRelativePath.setSelection(isSelected);
+            dirtyable.setDirty(true);
+            if (txtFileName.getText() == null) {
+                return;
+            }
+            String sourceUrl = txtFileName.getText();
+            if (isSelected) {
+                txtFileName.setText(PathUtil.absoluteToRelativePath(sourceUrl, getProjectFolderLocation()));
+            } else {
+                txtFileName.setText(PathUtil.relativeToAbsolutePath(sourceUrl, getProjectFolderLocation()));
+            }
+        }
+
+        @Override
+        public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            doChangeCheckValue(!oldCheckedValue);
+            return Status.OK_STATUS;
+        }
     }
 }
