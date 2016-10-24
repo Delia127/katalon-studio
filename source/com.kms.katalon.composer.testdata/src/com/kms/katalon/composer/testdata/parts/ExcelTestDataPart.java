@@ -7,6 +7,11 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.operations.AbstractOperation;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.IJobChangeListener;
@@ -35,6 +40,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
@@ -68,30 +74,46 @@ public class ExcelTestDataPart extends TestDataMainPart {
     private UISynchronize sync;
 
     private Text txtFileName;
+
     private Combo cbbSheets;
+
     private TableViewer tableViewer;
+
     private Label lblSheetName;
+
     private Button ckcbEnableHeader;
+
     private Button ckcbUseRelativePath;
+
     private Button btnBrowse;
+
     private ImageButton btnExpandFileInfo;
+
     private Composite compositeFileInfoDetails;
+
     private Composite compositeFileInfoHeader;
+
     private Composite compositeTable;
+
     private Composite compositeFileInfo;
 
     // Control status
     private boolean isFileInfoExpanded;
+
     private boolean ableToReload;
 
     // Field
     private String fCurrentPath;
+
     private String fCurrentSheetName;
+
     private String[][] fData;
 
     private LoadExcelFileJob loadFileJob;
 
     private ExcelData excelData;
+
+    private Label lblFileInfoStatus;
 
     private Listener layoutFileInfoCompositeListener = new Listener() {
 
@@ -119,8 +141,8 @@ public class ExcelTestDataPart extends TestDataMainPart {
                 compositeFileInfoDetails.setVisible(isFileInfoExpanded);
                 if (!isFileInfoExpanded) {
                     ((GridData) compositeFileInfoDetails.getLayoutData()).exclude = true;
-                    compositeFileInfo.setSize(compositeFileInfo.getSize().x, compositeFileInfo.getSize().y
-                            - compositeTable.getSize().y);
+                    compositeFileInfo.setSize(compositeFileInfo.getSize().x,
+                            compositeFileInfo.getSize().y - compositeTable.getSize().y);
                 } else {
                     ((GridData) compositeFileInfoDetails.getLayoutData()).exclude = false;
                 }
@@ -311,6 +333,8 @@ public class ExcelTestDataPart extends TestDataMainPart {
                     if (event.getResult() == Status.OK_STATUS) {
                         excelData = loadFileJob.getExcelData();
                         if (excelData == null) {
+                            cbbSheets.setItems(new String[] {});
+                            clearTable();
                             return;
                         }
                         loadSheetNames(excelData.getSheetNames());
@@ -320,7 +344,6 @@ public class ExcelTestDataPart extends TestDataMainPart {
             });
         }
     };
-    private Label lblFileInfoStatus;
 
     private void addControlListeners() {
         btnBrowse.addSelectionListener(new SelectionAdapter() {
@@ -331,66 +354,37 @@ public class ExcelTestDataPart extends TestDataMainPart {
                 dialog.setFilterExtensions(FILTER_EXTS);
                 dialog.setFilterPath(getProjectFolderLocation());
 
-                String absolutePath = dialog.open();
-                if (absolutePath == null || absolutePath.equals(fCurrentPath)) {
+                changeExcelFile(dialog.open());
+            }
+
+            private void changeExcelFile(String absoluteFilePath) {
+                if (absoluteFilePath == null || absoluteFilePath.equals(fCurrentPath)) {
                     return;
                 }
 
-                lblFileInfoStatus.setText("");
-
-                fCurrentPath = absolutePath;
-                fCurrentSheetName = "";
-
-                if (ckcbUseRelativePath.getSelection()) {
-                    txtFileName.setText(PathUtil.absoluteToRelativePath(fCurrentPath, getProjectFolderLocation()));
-                } else {
-                    txtFileName.setText(fCurrentPath);
-                }
-
-                readExcelFile();
-
-                dirtyable.setDirty(true);
+                executeOperation(new ChangeExcelFileOperation(absoluteFilePath));
             }
         });
 
         cbbSheets.addSelectionListener(new SelectionAdapter() {
-
             @Override
             public void widgetSelected(SelectionEvent e) {
-                String selectedSheetName = cbbSheets.getText();
-
-                if (fCurrentSheetName.equals(selectedSheetName)) {
-                    return;
-                }
-                lblFileInfoStatus.setText("");
-
-                fCurrentSheetName = selectedSheetName;
-                loadExcelDataToTable();
-                dirtyable.setDirty(true);
+                executeOperation(new ChangeSheetOperation(cbbSheets.getText()));
             }
         });
 
         ckcbEnableHeader.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                loadExcelDataToTable();
-                dirtyable.setDirty(true);
+                executeOperation(new ChangeUseFirstRowAsHeaderOperation(ckcbEnableHeader.getSelection()));
             }
         });
 
         ckcbUseRelativePath.addSelectionListener(new SelectionAdapter() {
-
             @Override
             public void widgetSelected(SelectionEvent e) {
-                if (txtFileName.getText() != null) {
-                    String sourceUrl = txtFileName.getText();
-                    if (ckcbUseRelativePath.getSelection()) {
-                        txtFileName.setText(PathUtil.absoluteToRelativePath(sourceUrl, getProjectFolderLocation()));
-                    } else {
-                        txtFileName.setText(PathUtil.relativeToAbsolutePath(sourceUrl, getProjectFolderLocation()));
-                    }
-                }
-                dirtyable.setDirty(true);
+                executeOperation(new ChangeUseRelativePathOperation(ckcbUseRelativePath.getSelection()));
+                
             }
         });
 
@@ -445,10 +439,13 @@ public class ExcelTestDataPart extends TestDataMainPart {
     }
 
     private void clearTable() {
-        while (tableViewer.getTable().getColumnCount() > 1) {
-            tableViewer.getTable().getColumns()[1].dispose();
+        Table table = tableViewer.getTable();
+        while (table.getColumnCount() > 1) {
+            table.getColumns()[1].dispose();
         }
-        tableViewer.getTable().clearAll();
+        table.clearAll();
+        tableViewer.setItemCount(0);
+        table.setHeaderVisible(false);
     }
 
     private void loadExcelDataToTable() {
@@ -496,7 +493,8 @@ public class ExcelTestDataPart extends TestDataMainPart {
                 columnViewer.setLabelProvider(new ColumnLabelProvider() {
                     private String getCellText(ExcelData excelData, int columnIndex, int rowIndex) {
                         try {
-                            return excelData.getValue(columnIndex + TestData.BASE_INDEX, rowIndex + TestData.BASE_INDEX);
+                            return excelData.getValue(columnIndex + TestData.BASE_INDEX,
+                                    rowIndex + TestData.BASE_INDEX);
                         } catch (IOException e) {
                             return "";
                         }
@@ -602,5 +600,168 @@ public class ExcelTestDataPart extends TestDataMainPart {
         fCurrentPath = "";
         fCurrentSheetName = "";
         fData = null;
+    }
+
+    private class ChangeExcelFileOperation extends AbstractOperation {
+        private String oldExcelFilePath;
+
+        private String newExcelFilePath;
+
+        public ChangeExcelFileOperation(String newExcelFilePath) {
+            super(ChangeExcelFileOperation.class.getName());
+            this.newExcelFilePath = newExcelFilePath;
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            if (newExcelFilePath == null) {
+                return Status.CANCEL_STATUS;
+            }
+            oldExcelFilePath = fCurrentPath;
+            return redo(monitor, info);
+        }
+
+        @Override
+        public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            doLoadExcelFile(newExcelFilePath);
+            return Status.OK_STATUS;
+        }
+
+        private void doLoadExcelFile(String excelFileAbsolutePath) {
+            lblFileInfoStatus.setText("");
+
+            fCurrentPath = excelFileAbsolutePath;
+            fCurrentSheetName = "";
+
+            if (ckcbUseRelativePath.getSelection()) {
+                txtFileName.setText(PathUtil.absoluteToRelativePath(fCurrentPath, getProjectFolderLocation()));
+            } else {
+                txtFileName.setText(fCurrentPath);
+            }
+
+            readExcelFile();
+
+            dirtyable.setDirty(true);
+        }
+
+        @Override
+        public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            doLoadExcelFile(oldExcelFilePath);
+            return Status.OK_STATUS;
+        }
+    }
+    
+    private class ChangeSheetOperation extends AbstractOperation {
+        private String oldSheetName;
+        private String newSheetName;
+        
+        public ChangeSheetOperation(String newSheetName) {
+            super(ChangeSheetOperation.class.getName());
+            this.newSheetName = newSheetName;
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            if (newSheetName.equals(fCurrentSheetName)) {
+                return Status.CANCEL_STATUS;
+            }
+            oldSheetName = fCurrentSheetName;
+            doSetSheetName(newSheetName);
+            return Status.OK_STATUS;
+        }
+
+        private void doSetSheetName(String selectedSheetName) {
+            lblFileInfoStatus.setText("");
+
+            fCurrentSheetName = selectedSheetName;
+            cbbSheets.setText(fCurrentSheetName);
+            loadExcelDataToTable();
+            dirtyable.setDirty(true);
+        }
+
+        @Override
+        public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            doSetSheetName(newSheetName);
+            return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            doSetSheetName(oldSheetName);
+            return Status.OK_STATUS;
+        }
+        
+    }
+    
+    private class ChangeUseFirstRowAsHeaderOperation extends AbstractOperation {
+        boolean oldCheckedValue;
+        
+        public ChangeUseFirstRowAsHeaderOperation(boolean oldCheckedValue) {
+            super(ChangeUseFirstRowAsHeaderOperation.class.getName());
+            this.oldCheckedValue = oldCheckedValue;
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            return redo(monitor, info);
+        }
+
+        @Override
+        public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            doChangeCheckValue(oldCheckedValue);
+            return Status.OK_STATUS;
+        }
+
+        private void doChangeCheckValue(boolean isSelected) {
+            ckcbEnableHeader.setSelection(isSelected);
+            loadExcelDataToTable();
+            dirtyable.setDirty(true);
+        }
+
+        @Override
+        public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            doChangeCheckValue(!oldCheckedValue);
+            return Status.OK_STATUS;
+        }
+    }
+    
+    private class ChangeUseRelativePathOperation extends AbstractOperation {
+        boolean oldCheckedValue;
+        
+        public ChangeUseRelativePathOperation(boolean oldCheckedValue) {
+            super(ChangeUseRelativePathOperation.class.getName());
+            this.oldCheckedValue = oldCheckedValue;
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            return redo(monitor, info);
+        }
+
+        @Override
+        public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            doChangeCheckValue(oldCheckedValue);
+            return Status.OK_STATUS;
+        }
+
+        private void doChangeCheckValue(boolean isSelected) {
+            ckcbUseRelativePath.setSelection(isSelected);
+            dirtyable.setDirty(true);
+            if (txtFileName.getText() == null) {
+                return;
+            }
+            String sourceUrl = txtFileName.getText();
+            if (isSelected) {
+                txtFileName.setText(PathUtil.absoluteToRelativePath(sourceUrl, getProjectFolderLocation()));
+            } else {
+                txtFileName.setText(PathUtil.relativeToAbsolutePath(sourceUrl, getProjectFolderLocation()));
+            }
+        }
+
+        @Override
+        public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            doChangeCheckValue(!oldCheckedValue);
+            return Status.OK_STATUS;
+        }
     }
 }

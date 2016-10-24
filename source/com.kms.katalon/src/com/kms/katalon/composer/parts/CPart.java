@@ -33,7 +33,8 @@ import com.kms.katalon.composer.components.operation.OperationExecutor;
 
 /**
  * Custom class for a Part to utilise the global undo/redo action handler of Eclipse. Sub-classes of this class must
- * call {@link #initialize(MPart, EPartService) initialize} method in their @PostConstruct method
+ * call {@link #initialize(MPart, EPartService) initialize} method in their @PostConstruct method and {@link #dispose()
+ * dispose} in their @PreDestroy method
  *
  */
 @SuppressWarnings("restriction")
@@ -169,7 +170,8 @@ public abstract class CPart extends WorkbenchPart {
         }
     }
 
-    public IStatus executeOperation(IUndoableOperation operation, IProgressMonitor progressMonitor, IAdaptable adaptable) {
+    public IStatus executeOperation(IUndoableOperation operation, IProgressMonitor progressMonitor,
+            IAdaptable adaptable) {
         return operationExecutor.executeOperation(operation, progressMonitor, adaptable);
     }
 
