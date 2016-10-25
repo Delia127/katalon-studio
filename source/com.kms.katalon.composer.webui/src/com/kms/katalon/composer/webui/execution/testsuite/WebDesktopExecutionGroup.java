@@ -47,8 +47,7 @@ public class WebDesktopExecutionGroup implements TestExecutionGroup {
                     ImageConstants.IMG_URL_16_IE));
             providers.add(TestExecutionDriverEntry.from(getName(), WebUIDriverType.SAFARI_DRIVER,
                     ImageConstants.IMG_URL_16_SAFARI));
-            providers.add(TestExecutionDriverEntry.from(getName(), WebUIDriverType.REMOTE_WEB_DRIVER,
-                    ImageConstants.IMG_URL_16_REMOTE_WEB));
+            providers.add(new RemoteExecutionDriverEntry(getName()));
         }
         return providers;
     }
