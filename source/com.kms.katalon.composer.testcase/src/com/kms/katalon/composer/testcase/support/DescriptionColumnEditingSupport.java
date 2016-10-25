@@ -15,14 +15,15 @@ import com.kms.katalon.composer.components.operation.OperationExecutor;
 import com.kms.katalon.composer.testcase.ast.editors.TestStepDescriptionBuilderCellEditor;
 import com.kms.katalon.composer.testcase.ast.treetable.AstStatementTreeTableNode;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput;
-import com.kms.katalon.composer.testcase.parts.TestCasePart;
+import com.kms.katalon.composer.testcase.parts.ITestCasePart;
 
 public class DescriptionColumnEditingSupport extends EditingSupport {
+
     private TreeViewer treeViewer;
 
-    private TestCasePart parentTestCasePart;
+    private ITestCasePart parentTestCasePart;
 
-    public DescriptionColumnEditingSupport(TreeViewer viewer, TestCasePart parentTestCasePart) {
+    public DescriptionColumnEditingSupport(TreeViewer viewer, ITestCasePart parentTestCasePart) {
         super(viewer);
         this.treeViewer = viewer;
         this.parentTestCasePart = parentTestCasePart;

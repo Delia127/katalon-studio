@@ -1,32 +1,29 @@
 package com.kms.katalon.composer.testcase.providers;
 
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.ToolItem;
 
-import com.kms.katalon.composer.testcase.parts.TestCasePart;
+import com.kms.katalon.composer.testcase.parts.TestStepManualComposite;
 
-public class TestCaseSelectionListener implements SelectionListener {
-    private TestCasePart parentTestCasePart;
+public class TestCaseSelectionListener extends SelectionAdapter {
 
-    public TestCaseSelectionListener(TestCasePart parentTestCasePart) {
-        this.parentTestCasePart = parentTestCasePart;
+    TestStepManualComposite testStepManualComposite;
+
+    public TestCaseSelectionListener(TestStepManualComposite testStepManualComposite) {
+        this.testStepManualComposite = testStepManualComposite;
     }
-    
+
     @Override
     public void widgetSelected(SelectionEvent e) {
-        if (e.getSource() instanceof ToolItem) {
-        	parentTestCasePart.performToolItemSelected((ToolItem) e.getSource(), e);
-        } else if (e.getSource() instanceof MenuItem) {
-        	parentTestCasePart.performMenuItemSelected((MenuItem) e.getSource());
+        Object item = e.getSource();
+        if (item instanceof ToolItem) {
+            testStepManualComposite.performToolItemSelected((ToolItem) e.getSource(), e);
+            return;
+        }
+        if (item instanceof MenuItem) {
+            testStepManualComposite.performMenuItemSelected((MenuItem) e.getSource());
         }
     }
-    
-    @Override
-    public void widgetDefaultSelected(SelectionEvent e) {
-        // TODO Auto-generated method stub
-        
-    }
-
 }

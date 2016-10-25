@@ -226,9 +226,9 @@ public class BlockStatementWrapper extends StatementWrapper {
         }
         return statements;
     }
-
-    @Override
-    public boolean canHaveLabel() {
-        return false;
+    
+    @Override 
+    public boolean canHaveLabel() { 
+        return false; 
     }
 }

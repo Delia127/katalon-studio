@@ -63,4 +63,12 @@ public class ScriptNodeWrapper extends ClassNodeWrapper implements ASTHasBlock {
     public String getTestCaseId() {
         return testCaseId;
     }
+    
+    public void setMainBlock(BlockStatementWrapper mainBlock) {
+        this.mainBlock = mainBlock;
+    }
+    
+    public void setTestCaseId(String testCaseId) {
+        this.testCaseId = testCaseId;
+    }
 }

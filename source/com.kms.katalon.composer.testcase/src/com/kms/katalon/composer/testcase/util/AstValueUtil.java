@@ -11,6 +11,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.ast.editors.BinaryCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.BooleanCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.BooleanConstantComboBoxCellEditor;
+import com.kms.katalon.composer.testcase.ast.editors.ClosureInputCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.ClosureListInputCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.EnumPropertyComboBoxCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.GlobalVariablePropertyComboBoxCellEditor;
@@ -37,6 +38,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpr
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.BinaryExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.BooleanExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ClassExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ClosureExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ClosureListExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstructorCallExpressionWrapper;
@@ -208,11 +210,15 @@ public class AstValueUtil {
         }
         return null;
     }
+    
+    public static CellEditor getCellEditorForClosureExpression(Composite parent, ClosureExpressionWrapper closureExpressionWrapper) {
+        return new ClosureInputCellEditor(parent, closureExpressionWrapper.getText(), closureExpressionWrapper.getParent());
+    }
 
     public static void applyEditingValue(CellEditor editor) {
         if (editor instanceof ApplyingEditingValue) {
-            ((ApplyingEditingValue)editor).applyEditingValue();
+            ((ApplyingEditingValue) editor).applyEditingValue();
         }
-        
+
     }
 }

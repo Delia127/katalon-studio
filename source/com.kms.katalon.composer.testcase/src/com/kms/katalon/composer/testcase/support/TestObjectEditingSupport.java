@@ -17,14 +17,16 @@ import com.kms.katalon.composer.components.operation.OperationExecutor;
 import com.kms.katalon.composer.testcase.ast.treetable.AstCallTestCaseKeywordTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.IAstObjectEditableNode;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
-import com.kms.katalon.composer.testcase.parts.TestCasePart;
+import com.kms.katalon.composer.testcase.parts.ITestCasePart;
 import com.kms.katalon.entity.variable.VariableEntity;
 
 public class TestObjectEditingSupport extends EditingSupport {
-    private TreeViewer treeViewer;
-    private TestCasePart parentTestCasePart;
 
-    public TestObjectEditingSupport(TreeViewer treeViewer, TestCasePart parentTestCasePart) {
+    private TreeViewer treeViewer;
+
+    private ITestCasePart parentTestCasePart;
+
+    public TestObjectEditingSupport(TreeViewer treeViewer, ITestCasePart parentTestCasePart) {
         super(treeViewer);
         this.treeViewer = treeViewer;
         this.parentTestCasePart = parentTestCasePart;

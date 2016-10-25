@@ -38,7 +38,7 @@ import com.kms.katalon.composer.testcase.keywords.KeywordBrowserControlTreeEntit
 import com.kms.katalon.composer.testcase.keywords.KeywordBrowserTreeEntity;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
-import com.kms.katalon.composer.testcase.parts.TestCasePart;
+import com.kms.katalon.composer.testcase.parts.ITestCasePart;
 import com.kms.katalon.composer.testcase.treetable.transfer.ScriptTransferData;
 import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
 import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
@@ -51,12 +51,12 @@ public class TestStepTableDropListener extends TreeDropTargetEffect {
 
     private TreeViewer treeViewer;
 
-    private TestCasePart testCasePart;
+    private ITestCasePart testCasePart;
 
-    public TestStepTableDropListener(TreeViewer viewer, TestCasePart testCasePart) {
+    public TestStepTableDropListener(TreeViewer viewer, ITestCasePart parentPart) {
         super(viewer.getTree());
         this.treeViewer = viewer;
-        this.testCasePart = testCasePart;
+        this.testCasePart = parentPart;
     }
 
     @Override

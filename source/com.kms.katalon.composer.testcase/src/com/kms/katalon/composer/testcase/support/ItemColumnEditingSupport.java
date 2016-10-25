@@ -14,14 +14,14 @@ import org.eclipse.jface.viewers.TreeViewer;
 import com.kms.katalon.composer.components.operation.OperationExecutor;
 import com.kms.katalon.composer.testcase.ast.treetable.IAstItemEditableNode;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
-import com.kms.katalon.composer.testcase.parts.TestCasePart;
+import com.kms.katalon.composer.testcase.parts.ITestCasePart;
 
 public class ItemColumnEditingSupport extends EditingSupport {
     private TreeViewer treeViewer;
 
-    private TestCasePart parentTestCasePart;
+    private ITestCasePart parentTestCasePart;
 
-    public ItemColumnEditingSupport(TreeViewer viewer, TestCasePart parentTestCasePart) {
+    public ItemColumnEditingSupport(TreeViewer viewer, ITestCasePart parentTestCasePart) {
         super(viewer);
         this.treeViewer = viewer;
         this.parentTestCasePart = parentTestCasePart;

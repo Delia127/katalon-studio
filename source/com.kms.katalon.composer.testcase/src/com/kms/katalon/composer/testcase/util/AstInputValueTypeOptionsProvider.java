@@ -39,8 +39,7 @@ public class AstInputValueTypeOptionsProvider {
 
     private static final InputValueType[] globalVariableOptions = { InputValueType.String, InputValueType.Number,
             InputValueType.Boolean, InputValueType.Null, InputValueType.TestDataValue, InputValueType.TestObject,
-            InputValueType.TestData, InputValueType.Range, InputValueType.List,
-            InputValueType.Map };
+            InputValueType.TestData, InputValueType.Range, InputValueType.List, InputValueType.Map };
 
     private static final InputValueType[] caseOptions = { InputValueType.Variable, InputValueType.GlobalVariable,
             InputValueType.TestDataValue, InputValueType.MethodCall, InputValueType.Condition, InputValueType.Binary,
@@ -87,7 +86,8 @@ public class AstInputValueTypeOptionsProvider {
 
     private static final InputValueType[] binaryOptions = { InputValueType.String, InputValueType.Number,
             InputValueType.Boolean, InputValueType.Null, InputValueType.Variable, InputValueType.MethodCall,
-            InputValueType.Binary, InputValueType.GlobalVariable, InputValueType.TestDataValue, InputValueType.Property };
+            InputValueType.Binary, InputValueType.GlobalVariable, InputValueType.TestDataValue,
+            InputValueType.Property, InputValueType.Closure };
 
     private static final InputValueType[] booleanOptions = { InputValueType.Boolean, InputValueType.Variable,
             InputValueType.GlobalVariable, InputValueType.TestDataValue, InputValueType.MethodCall,

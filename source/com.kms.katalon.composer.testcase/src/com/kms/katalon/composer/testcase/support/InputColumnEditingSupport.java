@@ -23,18 +23,18 @@ import com.kms.katalon.composer.testcase.ast.treetable.IAstInputEditableNode;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput;
-import com.kms.katalon.composer.testcase.parts.TestCasePart;
+import com.kms.katalon.composer.testcase.parts.ITestCasePart;
 import com.kms.katalon.composer.testcase.util.WrapperToAstTreeConverter;
 
 public class InputColumnEditingSupport extends TypeCheckedEditingSupport<IAstInputEditableNode> {
 
-    private TestCasePart parentTestCasePart;
+    private ITestCasePart parentTestCasePart;
 
-    public InputColumnEditingSupport(TreeViewer viewer, TestCasePart parentTestCasePart) {
+    public InputColumnEditingSupport(TreeViewer viewer, ITestCasePart parentTestCasePart) {
         super(viewer);
         this.parentTestCasePart = parentTestCasePart;
     }
-
+    
     @Override
     protected Class<IAstInputEditableNode> getElementType() {
         return IAstInputEditableNode.class;

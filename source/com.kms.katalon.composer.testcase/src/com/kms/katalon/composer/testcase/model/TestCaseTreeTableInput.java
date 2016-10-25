@@ -50,6 +50,7 @@ import com.kms.katalon.composer.testcase.ast.treetable.AstMethodTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstScriptTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstStatementTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
+import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants;
 import com.kms.katalon.composer.testcase.exceptions.GroovyParsingException;
@@ -82,6 +83,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.statements.SwitchStatementWr
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ThrowStatementWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.TryCatchStatementWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.WhileStatementWrapper;
+import com.kms.katalon.composer.testcase.parts.ITestCasePart;
 import com.kms.katalon.composer.testcase.parts.TestCasePart;
 import com.kms.katalon.composer.testcase.preferences.TestCasePreferenceDefaultValueInitializer;
 import com.kms.katalon.composer.testcase.treetable.transfer.ScriptTransfer;
@@ -142,7 +144,7 @@ public class TestCaseTreeTableInput {
 
     private AstScriptTreeTableNode mainClassTreeNode;
 
-    private TestCasePart parentPart;
+    private ITestCasePart parentPart;
 
     private boolean isChanged;
 
@@ -154,7 +156,7 @@ public class TestCaseTreeTableInput {
         return mainClassNodeWrapper;
     }
 
-    public TestCaseTreeTableInput(ScriptNodeWrapper scriptNode, TreeViewer treeTableViewer, TestCasePart parentPart) {
+    public TestCaseTreeTableInput(ScriptNodeWrapper scriptNode, TreeViewer treeTableViewer, ITestCasePart parentPart) {
         this.treeTableViewer = treeTableViewer;
         this.mainClassNodeWrapper = scriptNode;
         this.parentPart = parentPart;
@@ -479,7 +481,11 @@ public class TestCaseTreeTableInput {
 
     public void reloadTestCaseVariables() {
         mainClassNodeWrapper.clearFields();
-        String testCaseId = parentPart.getTestCase().getIdForDisplay();
+        TestCaseEntity testCase = parentPart.getTestCase();
+        if (testCase == null) {
+            return;
+        }
+        String testCaseId = testCase.getIdForDisplay();
         for (VariableEntity variable : parentPart.getVariables()) {
             FieldNodeWrapper field = new FieldNodeWrapper(variable.getName(), Object.class, mainClassNodeWrapper);
             ExpressionWrapper expression = GroovyWrapperParser
@@ -656,6 +662,14 @@ public class TestCaseTreeTableInput {
         return rowsToBeRemoved;
     }
 
+    private String getTestCaseId() {
+        TestCaseEntity testCase = parentPart.getTestCase();
+        if (testCase != null) {
+            return testCase.getId();
+        }
+        return mainClassNodeWrapper.getTestCaseId();
+    }
+
     public static boolean isNodeMoveable(AstTreeTableNode astTreeTableNode) {
         return (!(astTreeTableNode.getASTObject() instanceof ComplexLastStatementWrapper)
                 && !(astTreeTableNode.getASTObject() instanceof ComplexChildStatementWrapper));
@@ -778,7 +792,12 @@ public class TestCaseTreeTableInput {
                 addNewThrowStatement(destinationNode, addType);
                 break;
             case TreeTableMenuItemConstants.METHOD_MENU_ITEM_ID:
-                addNewMethod(destinationNode, addType);
+                if (parentPart instanceof TestCasePart) {
+                    addNewMethod(destinationNode, addType);
+                } else {
+                    MessageDialog.openWarning(null, StringConstants.WARN_TITLE,
+                            ComposerTestcaseMessageConstants.DIA_WARNING_METHOD_IN_CLOSURE);
+                }
                 break;
             case TreeTableMenuItemConstants.CALL_TEST_CASE_MENU_ITEM_ID:
                 addCallTestCases(destinationNode, addType);
@@ -796,7 +815,8 @@ public class TestCaseTreeTableInput {
         if (calledTestCase == null)
             return false;
 
-        if (StringUtils.equals(parentPart.getTestCase().getId(), calledTestCase.getId())) {
+        if (StringUtils.equals(getTestCaseId(), calledTestCase.getId())
+                || StringUtils.equals(getTestCaseId(), calledTestCase.getRelativePathForUI())) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
                     StringConstants.PA_ERROR_MSG_TEST_CASE_CANNOT_CALL_ITSELF);
             return false;
@@ -898,7 +918,7 @@ public class TestCaseTreeTableInput {
         StatementWrapper newBuiltinKeywordStatement = null;
 
         ASTNodeWrapper parentNodeWrapper = getParentNodeForNewMethodCall(destinationNode);
-        if (!StringUtils.isBlank(defaultSettingKeywordName) && (KeywordController.getInstance()
+        if (StringUtils.isNotBlank(defaultSettingKeywordName) && (KeywordController.getInstance()
                 .getBuiltInKeywordByName(keywordClass.getName(), defaultSettingKeywordName, null)) != null) {
             MethodCallExpressionWrapper keywordMethodCallExpression = new MethodCallExpressionWrapper(
                     keywordClass.getAliasName(), defaultSettingKeywordName, parentNodeWrapper);
@@ -1557,6 +1577,5 @@ public class TestCaseTreeTableInput {
             refresh();
             return Status.OK_STATUS;
         }
-
     }
 }
