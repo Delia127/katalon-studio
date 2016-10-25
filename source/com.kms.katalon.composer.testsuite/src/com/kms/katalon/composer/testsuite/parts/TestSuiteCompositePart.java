@@ -9,15 +9,18 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MCompositePart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.model.application.ui.basic.MStackElement;
+import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -31,9 +34,10 @@ import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
+import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.components.part.IComposerPart;
+import com.kms.katalon.composer.components.part.IComposerPartEvent;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.parts.MultipleTabsCompositePart;
 import com.kms.katalon.composer.testsuite.constants.ImageConstants;
@@ -47,7 +51,7 @@ import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
-public class TestSuiteCompositePart implements EventHandler, MultipleTabsCompositePart, IComposerPart {
+public class TestSuiteCompositePart implements EventHandler, MultipleTabsCompositePart, IComposerPartEvent {
     // compositePart has only one child is subPartStack.
     // Children of subPartStack: childTestSuiteGeneralPart &
     // childTestSuiteIntegrationPart
@@ -363,8 +367,10 @@ public class TestSuiteCompositePart implements EventHandler, MultipleTabsComposi
         }
     }
 
+    @Override
     @PreDestroy
-    public void preDestroy() {
+    public void onClose() {
+        EventUtil.post(EventConstants.PROPERTIES_ENTITY, null);
         compositePart.getChildren().clear();
         eventBroker.unsubscribe(this);
         interuptUIThreads();
@@ -420,4 +426,36 @@ public class TestSuiteCompositePart implements EventHandler, MultipleTabsComposi
     public String getEntityId() {
         return getOriginalTestSuite().getIdForDisplay();
     }
+
+    @Override
+    @Inject
+    @Optional
+    public void onSelect(@UIEventTopic(UIEvents.UILifeCycle.BRINGTOTOP) Event event) {
+        MPart part = EventUtil.getPart(event);
+        if (part == null
+                || !StringUtils.startsWith(part.getElementId(),
+                        EntityPartUtil.getTestSuiteCompositePartId(originalTestSuite.getId()))) {
+            return;
+        }
+
+        EventUtil.post(EventConstants.PROPERTIES_ENTITY, originalTestSuite);
+    }
+
+    @Override
+    @Inject
+    @Optional
+    public void onChangeEntityProperties(@UIEventTopic(EventConstants.PROPERTIES_ENTITY_UPDATED) Event event) {
+        Object eventData = EventUtil.getData(event);
+        if (!(eventData instanceof TestSuiteEntity)) {
+            return;
+        }
+
+        TestSuiteEntity updatedEntity = (TestSuiteEntity) eventData;
+        if (!StringUtils.equals(updatedEntity.getIdForDisplay(), getEntityId())) {
+            return;
+        }
+        originalTestSuite.setTag(updatedEntity.getTag());
+        originalTestSuite.setDescription(updatedEntity.getDescription());
+    }
+
 }

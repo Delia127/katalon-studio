@@ -11,14 +11,18 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.SerializationUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileInfo;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -63,9 +67,11 @@ import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteCollectionTreeEntity;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
+import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.impl.util.MenuUtils;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.part.IComposerPartEvent;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.components.util.ColumnViewerUtil;
@@ -96,7 +102,7 @@ import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity.ExecutionMode;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteRunConfiguration;
 
-public class TestSuiteCollectionPart extends EventServiceAdapter implements TableViewerProvider {
+public class TestSuiteCollectionPart extends EventServiceAdapter implements TableViewerProvider, IComposerPartEvent {
     private static final int MINIMUM_COMPOSITE_SIZE = 300;
 
     private static final String HK_NEW = "M1+N";
@@ -729,6 +735,45 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
             }
         }
         return map;
+    }
+
+    @Override
+    public String getEntityId() {
+        return originalTestSuite.getIdForDisplay();
+    }
+
+    @Override
+    @Inject
+    @Optional
+    public void onSelect(@UIEventTopic(UIEvents.UILifeCycle.BRINGTOTOP) Event event) {
+        MPart part = EventUtil.getPart(event);
+        if (part == null || !StringUtils.equals(part.getElementId(), mpart.getElementId())) {
+            return;
+        }
+        EventUtil.post(EventConstants.PROPERTIES_ENTITY, originalTestSuite);
+    }
+
+    @Override
+    @Inject
+    @Optional
+    public void onChangeEntityProperties(@UIEventTopic(EventConstants.PROPERTIES_ENTITY_UPDATED) Event event) {
+        Object eventData = EventUtil.getData(event);
+        if (!(eventData instanceof TestSuiteCollectionEntity)) {
+            return;
+        }
+
+        TestSuiteCollectionEntity updatedEntity = (TestSuiteCollectionEntity) eventData;
+        if (!StringUtils.equals(updatedEntity.getIdForDisplay(), getEntityId())) {
+            return;
+        }
+        originalTestSuite.setTag(updatedEntity.getTag());
+        originalTestSuite.setDescription(updatedEntity.getDescription());
+    }
+
+    @Override
+    @PreDestroy
+    public void onClose() {
+        EventUtil.post(EventConstants.PROPERTIES_ENTITY, null);
     }
 
 }

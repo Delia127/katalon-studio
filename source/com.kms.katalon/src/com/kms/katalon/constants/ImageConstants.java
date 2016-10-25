@@ -40,7 +40,15 @@ public class ImageConstants {
     public static final Image IMG_INTRO_SCREEN_5 = ImageUtil.loadImage(CURRENT_BUNDLE, "/icons/intro/screen5.png");
 
     public static final Image IMG_INTRO_SCREEN_6 = ImageUtil.loadImage(CURRENT_BUNDLE, "/icons/intro/screen6.png");
-    
+
     //Activation
     public static final Image KATALON_IMAGE = ImageUtil.loadImage(CURRENT_BUNDLE, "/icons/branding_16.png");
+
+    // CToolBarManagerRenderer
+    public static final Image IMG_MINIMIZE = ImageUtil.loadImage(CURRENT_BUNDLE, "/icons/minimize_16.png");
+
+    public static final Image IMG_MAXIMIZE = ImageUtil.loadImage(CURRENT_BUNDLE, "/icons/maximize_16.png");
+
+    public static final Image IMG_RESTORE = ImageUtil.loadImage(CURRENT_BUNDLE, "/icons/restore_16.png");
+
 }

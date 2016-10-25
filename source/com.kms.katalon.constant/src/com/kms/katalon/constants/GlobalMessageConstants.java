@@ -183,6 +183,10 @@ public class GlobalMessageConstants extends NLS {
 
     public static String DIA_NO;
 
+    public static String CREATED_DATE;
+
+    public static String MODIFIED_DATE;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, GlobalMessageConstants.class);

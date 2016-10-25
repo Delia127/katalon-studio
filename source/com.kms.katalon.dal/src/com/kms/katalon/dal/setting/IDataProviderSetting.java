@@ -2,6 +2,7 @@ package com.kms.katalon.dal.setting;
 
 import com.kms.katalon.dal.ICheckpointProvider;
 import com.kms.katalon.dal.IDataFileDataProvider;
+import com.kms.katalon.dal.IEntityDataProvider;
 import com.kms.katalon.dal.IEntityNameProvider;
 import com.kms.katalon.dal.IExportDataProvider;
 import com.kms.katalon.dal.IFolderDataProvider;
@@ -52,5 +53,7 @@ public interface IDataProviderSetting {
     public IEntityNameProvider getEntityNameProvider();
 
     public ICheckpointProvider getCheckpointDataProvider();
+
+    public IEntityDataProvider getEntityDataProvider();
 
 }

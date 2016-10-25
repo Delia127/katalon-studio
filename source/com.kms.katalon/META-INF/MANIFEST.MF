@@ -44,7 +44,8 @@ Require-Bundle: org.eclipse.e4.core.di,
  org.eclipse.equinox.app,
  com.google.gson,
  org.eclipse.core.expressions,
- com.kms.katalon.support.testing.katserver;bundle-version="1.0.0"
+ com.kms.katalon.support.testing.katserver;bundle-version="1.0.0",
+ org.eclipse.e4.ui.css.swt
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: javax.annotation,
  org.eclipse.e4.core.services.log,

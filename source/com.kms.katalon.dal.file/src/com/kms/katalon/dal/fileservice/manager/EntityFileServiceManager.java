@@ -386,4 +386,18 @@ public class EntityFileServiceManager {
             EntityService.getInstance().saveEntity(entity);
         }
     }
+
+    public static boolean update(FileEntity entity) throws Exception {
+        if (entity == null) {
+            return false;
+        }
+
+        File file = new File(entity.getLocation());
+        if (!file.exists()) {
+            return false;
+        }
+
+        return EntityService.getInstance().saveEntity(entity);
+    }
+
 }

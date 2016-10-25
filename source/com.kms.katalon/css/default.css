@@ -31,6 +31,7 @@
 .MPartSashContainer #bottom,
 .MPartSashContainer #org-eclipse-ui-console-ConsoleView {
 	background-color: #E8E8E8;
+	swt-background-mode: default;
 }
 
 /* Fix Round corner, right under testcase tabs */
@@ -40,7 +41,8 @@
 
 /* For all tabs */
 CTabFolder {
-	swt-tab-renderer: url('bundleclass://org.eclipse.e4.ui.workbench.renderers.swt/org.eclipse.e4.ui.workbench.renderers.swt.CTabRendering');
+	/* swt-tab-renderer: url('bundleclass://org.eclipse.e4.ui.workbench.renderers.swt/org.eclipse.e4.ui.workbench.renderers.swt.CTabRendering'); */
+	swt-tab-renderer: url('bundleclass://com.kms.katalon/com.kms.katalon.composer.components.CCTabRendering');
 	swt-tab-height: 24px;
     swt-tab-outline: #E8E8E8;
     swt-unselected-tabs-color: #E8E8E8;
@@ -63,3 +65,13 @@ CTabFolder CTabFolder {
 #PerspectiveSwitcher  {
 	eclipse-perspective-keyline-color: rgb(170, 176, 191) rgb(170, 176, 191);
 }
+
+.Composite {
+	background-color: #F6F6F6;
+}
+
+/* Hide close button in CTabFolder */
+#com-kms-katalon-partstack-console CTabItem {
+	swt-show-close: false;
+}
+
