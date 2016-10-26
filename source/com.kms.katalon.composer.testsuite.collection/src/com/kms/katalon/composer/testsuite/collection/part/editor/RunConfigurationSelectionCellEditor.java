@@ -1,36 +1,40 @@
 package com.kms.katalon.composer.testsuite.collection.part.editor;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 
-import com.kms.katalon.composer.components.impl.editors.CustomDialogCellEditor;
+import com.kms.katalon.composer.components.dialogs.AbstractDialogCellEditor;
 import com.kms.katalon.composer.testsuite.collection.part.dialog.RunConfigurationSelectionDialog;
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 
-public class RunConfigurationSelectionCellEditor extends CustomDialogCellEditor {
+public class RunConfigurationSelectionCellEditor extends AbstractDialogCellEditor {
     private RunConfigurationDescription configuration;
-    
-    public RunConfigurationSelectionCellEditor(Composite parent) {
-        super(parent);
+
+    private String defaultContent;
+
+    public RunConfigurationSelectionCellEditor(Composite parent, String defaultContent) {
+        super(parent, defaultContent);
+        this.defaultContent = defaultContent;
     }
 
     @Override
     protected RunConfigurationDescription openDialogBox(Control cellEditorWindow) {
-        RunConfigurationSelectionDialog dialog = new RunConfigurationSelectionDialog(cellEditorWindow.getShell(),
-                configuration);
-        
+        RunConfigurationSelectionDialog dialog = new RunConfigurationSelectionDialog(
+                Display.getCurrent().getActiveShell(), configuration);
+
         if (dialog.open() != Dialog.OK) {
             return null;
         }
         return dialog.getSelectedConfiguration();
     }
-    
+
     protected void updateContents(Object value) {
-       if (value instanceof RunConfigurationDescription) {
-           configuration = (RunConfigurationDescription) value;
-           defaultLabel.setText(configuration != null ? configuration.getRunConfigurationId() : StringUtils.EMPTY);
-       }
+        if (defaultContent != null) {
+            super.updateContents(defaultContent);
+        } else {
+            super.updateContents(value);
+        }
     }
 }
