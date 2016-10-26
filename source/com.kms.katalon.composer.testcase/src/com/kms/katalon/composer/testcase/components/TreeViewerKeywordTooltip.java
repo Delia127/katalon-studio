@@ -4,6 +4,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TreeItem;
@@ -21,9 +22,9 @@ public class TreeViewerKeywordTooltip {
     protected static final int SHIFT_X = -10;
 
     protected static final int SHIFT_Y = 2;
-    
+
     private String currentKeyword;
-    
+
     public TreeViewerKeywordTooltip(TreeViewer treeViewer) {
         this.treeViewer = treeViewer;
         Listener listener = createListener();
@@ -51,11 +52,14 @@ public class TreeViewerKeywordTooltip {
                     case SWT.MouseHover:
                         showTooltip(event.x, event.y);
                         break;
+                    case SWT.FocusOut:
+                    case SWT.MouseDown:
                     case SWT.MouseExit:
                         if (!isMousePosInTooltip(event.x, event.y)) {
                             hideTooltip();
                         }
                         break;
+
                     default:
                         hideTooltip();
                         break;
@@ -70,9 +74,14 @@ public class TreeViewerKeywordTooltip {
         if (tip == null || !tip.isVisible()) {
             return false;
         }
+
+        Point p = treeViewer.getTree().toDisplay(new Point(x, y));
+        if (x == 0 && y == 0) {
+            p = Display.getCurrent().getCursorLocation();
+        }
         int shift = tip.isShowBelowPoint() ? 2 : -2;
         Rectangle rect = tip.getBounds();
-        return rect.contains(treeViewer.getTree().toDisplay(new Point(x, y + shift)));
+        return rect.contains(p.x, p.y + shift);
     }
 
     protected void hideTooltip() {
@@ -86,7 +95,7 @@ public class TreeViewerKeywordTooltip {
     protected KeywordNodeTooltip getTooltip() {
         return tip;
     }
-    
+
     protected void setCurrentKeyword(String keyword) {
         currentKeyword = keyword;
     }
@@ -98,7 +107,7 @@ public class TreeViewerKeywordTooltip {
             hideTooltip();
             return;
         }
-        KeywordBrowserTreeEntity keywordBrowserEntity = (KeywordBrowserTreeEntity)item.getData();
+        KeywordBrowserTreeEntity keywordBrowserEntity = (KeywordBrowserTreeEntity) item.getData();
         String classKeyword = keywordBrowserEntity.getClassName();
         String keywordName = keywordBrowserEntity.getName();
         String text = TestCaseEntityUtil.getKeywordJavaDocText(classKeyword, keywordName);
@@ -125,7 +134,7 @@ public class TreeViewerKeywordTooltip {
         return tip;
 
     }
-    
+
     protected String getCurrentKeyword() {
         return currentKeyword;
     }
@@ -137,11 +146,11 @@ public class TreeViewerKeywordTooltip {
 
         return screenPoint;
     }
-    
+
     protected TreeViewer getViewer() {
         return treeViewer;
     }
-    
+
     public boolean isProcessShowTooltip(Event ev) {
         Point point = new Point(ev.x, ev.y);
         TreeItem item = treeViewer.getTree().getItem(point);

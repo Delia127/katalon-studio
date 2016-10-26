@@ -26,13 +26,17 @@ public class KeywordComboBoxCellEditorWithContentProposal extends ComboBoxCellEd
 
     @Override
     protected Object doGetValue() {
-        int selectedIndex = (int) super.doGetValue();
-        Object selectedItem = items[selectedIndex];
-        String newMethodName = getMethodName(selectedItem);
-        MethodCallExpressionWrapper newMethodCall = new MethodCallExpressionWrapper(keywordClassAliasName,
-                newMethodName, parentStatement);
-        generateArguments(newMethodCall);
-        return newMethodCall;
+        try {
+            int selectedIndex = (int) super.doGetValue();
+            Object selectedItem = items[selectedIndex];
+            String newMethodName = getMethodName(selectedItem);
+            MethodCallExpressionWrapper newMethodCall = new MethodCallExpressionWrapper(keywordClassAliasName,
+                    newMethodName, parentStatement);
+            generateArguments(newMethodCall);
+            return newMethodCall;
+        } catch (Exception ex) {
+            return null;
+        }
     }
 
     protected void generateArguments(MethodCallExpressionWrapper newMethodCall) {
