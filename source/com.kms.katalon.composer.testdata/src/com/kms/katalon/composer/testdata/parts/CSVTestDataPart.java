@@ -64,22 +64,35 @@ public class CSVTestDataPart extends TestDataMainPart {
     private static final String[] FILTER_EXTS = { "*.csv", "*.*" };
 
     private TableViewer tableViewer;
+
     private Text txtFileName;
+
     private Button chckIsRelativePath, chckEnableHeader;
+
     private Button btnBrowse;
+
     private Label lblSeperator;
+
     private Combo cbSeperator;
+
     private Composite compositeFileInfo;
+
     private Composite compositeFileInfoDetails;
+
     private Composite compositeFileInfoHeader;
+
     private Composite compositeTable;
+
     private ImageButton btnExpandFileInfoComposite;
+
     private Label lblFileInfo;
 
     private boolean isFileInfoExpanded;
+
     private boolean enableToReload;
 
     private String fCurrentFilePath;
+
     private String fSelectedSeperator;
 
     @Inject
@@ -95,6 +108,7 @@ public class CSVTestDataPart extends TestDataMainPart {
             layoutFileInfoComposite();
         }
     };
+
     private Label lblFileInfoStatus;
 
     @Override
@@ -271,7 +285,7 @@ public class CSVTestDataPart extends TestDataMainPart {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-            	executeOperation(new ChangeUseFirstRowAsHeaderOperation(chckEnableHeader.getSelection()));
+                executeOperation(new ChangeUseFirstRowAsHeaderOperation(chckEnableHeader.getSelection()));
             }
         });
 
@@ -293,8 +307,8 @@ public class CSVTestDataPart extends TestDataMainPart {
                 compositeFileInfoDetails.setVisible(isFileInfoExpanded);
                 if (!isFileInfoExpanded) {
                     ((GridData) compositeFileInfoDetails.getLayoutData()).exclude = true;
-                    compositeFileInfo.setSize(compositeFileInfo.getSize().x, compositeFileInfo.getSize().y
-                            - compositeTable.getSize().y);
+                    compositeFileInfo.setSize(compositeFileInfo.getSize().x,
+                            compositeFileInfo.getSize().y - compositeTable.getSize().y);
                 } else {
                     ((GridData) compositeFileInfoDetails.getLayoutData()).exclude = false;
                 }
@@ -330,7 +344,7 @@ public class CSVTestDataPart extends TestDataMainPart {
         }
 
         chckEnableHeader.setSelection(dataFile.isContainsHeaders());
-        
+
         chckIsRelativePath.setSelection(dataFile.getIsInternalPath());
 
         if (cbSeperator.getText() != null && !cbSeperator.getText().isEmpty()) {
@@ -414,8 +428,9 @@ public class CSVTestDataPart extends TestDataMainPart {
                 }
 
                 int numEmptyHeader = 0;
-                //The first column is No. column
-                for (int tableColumnIdx = 1; tableColumnIdx < tableViewer.getTable().getColumnCount(); tableColumnIdx++) {
+                // The first column is No. column
+                for (int tableColumnIdx = 1; tableColumnIdx < tableViewer.getTable()
+                        .getColumnCount(); tableColumnIdx++) {
                     TableColumn column = tableViewer.getTable().getColumns()[tableColumnIdx];
                     String header = csvData.getColumnNames()[tableColumnIdx - 1];
                     if (StringUtils.isBlank(header)) {
@@ -463,8 +478,8 @@ public class CSVTestDataPart extends TestDataMainPart {
     }
 
     public DataFileEntity updateDataFileProperty(String pk, String name, String description,
-            DataFileDriverType dataFileDriver, String dataSourceURL, boolean hasHeaders, String csvSeperator, boolean isInternalPath)
-            throws Exception {
+            DataFileDriverType dataFileDriver, String dataSourceURL, boolean hasHeaders, String csvSeperator,
+            boolean isInternalPath) throws Exception {
 
         DataFilePropertyInputEntity dataFileInputPro = new DataFilePropertyInputEntity();
 
@@ -499,7 +514,7 @@ public class CSVTestDataPart extends TestDataMainPart {
     protected void preDestroy() {
 
     }
-    
+
     private class ChangeCSVFileOperation extends AbstractOperation {
         private String oldCSVFilePath;
 
@@ -547,11 +562,12 @@ public class CSVTestDataPart extends TestDataMainPart {
             return Status.OK_STATUS;
         }
     }
-    
+
     private class ChangeSeparatorOperation extends AbstractOperation {
         private String oldSeparator;
+
         private String newSeparator;
-        
+
         public ChangeSeparatorOperation(String newSeparator) {
             super(ChangeSeparatorOperation.class.getName());
             this.newSeparator = newSeparator;
@@ -562,7 +578,8 @@ public class CSVTestDataPart extends TestDataMainPart {
             if (newSeparator.equals(fSelectedSeperator)) {
                 return Status.CANCEL_STATUS;
             }
-            oldSeparator = fSelectedSeperator;
+            oldSeparator = fSelectedSeperator.isEmpty() ? CSVSeparator.COMMA.toString().toUpperCase()
+                    : fSelectedSeperator;
             doSetSeparator(newSeparator);
             return Status.OK_STATUS;
         }
@@ -587,12 +604,12 @@ public class CSVTestDataPart extends TestDataMainPart {
             doSetSeparator(oldSeparator);
             return Status.OK_STATUS;
         }
-        
+
     }
-    
+
     private class ChangeUseFirstRowAsHeaderOperation extends AbstractOperation {
         boolean oldCheckedValue;
-        
+
         public ChangeUseFirstRowAsHeaderOperation(boolean oldCheckedValue) {
             super(ChangeUseFirstRowAsHeaderOperation.class.getName());
             this.oldCheckedValue = oldCheckedValue;
@@ -621,10 +638,10 @@ public class CSVTestDataPart extends TestDataMainPart {
             return Status.OK_STATUS;
         }
     }
-    
+
     private class ChangeUseRelativePathOperation extends AbstractOperation {
         boolean oldCheckedValue;
-        
+
         public ChangeUseRelativePathOperation(boolean oldCheckedValue) {
             super(ChangeUseRelativePathOperation.class.getName());
             this.oldCheckedValue = oldCheckedValue;
