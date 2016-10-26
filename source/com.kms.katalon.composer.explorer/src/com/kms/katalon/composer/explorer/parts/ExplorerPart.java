@@ -550,8 +550,8 @@ public class ExplorerPart {
             EntityProvider dataProvider = (EntityProvider) treeViewer.getContentProvider();
             if (treeEntities != null && !treeEntities.isEmpty()) {
                 getViewer().setSelection(new TreeSelection(dataProvider.getTreePath(treeEntities.get(0))), true);
+                getViewer().collapseAll();
             }
-
             // --- IMPORTANT for saving and restore session ---
             part.getTransientData().put(CTreeViewer.class.getSimpleName(), treeViewer);
             // --- END ---
