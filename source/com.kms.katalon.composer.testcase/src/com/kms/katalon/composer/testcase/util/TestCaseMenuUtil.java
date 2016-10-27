@@ -33,6 +33,8 @@ public class TestCaseMenuUtil {
 
         addNewMenuItem(addAction, selectionListener, actionMenu, TreeTableMenuItemConstants.CALL_TEST_CASE_MENU_ITEM_LABEL,
                 TreeTableMenuItemConstants.CALL_TEST_CASE_MENU_ITEM_ID, SWT.PUSH);
+        
+        new MenuItem(actionMenu, SWT.SEPARATOR);
 
         MenuItem decisionMakingStatementWrappersMenuItem = addNewMenuItem(addAction, selectionListener, actionMenu,
                 TreeTableMenuItemConstants.DECISION_MAKING_STATEMENT_MENU_ITEM_LABEL,
@@ -102,6 +104,8 @@ public class TestCaseMenuUtil {
         MenuItem exceptionHandlingStatementWrappersMenuItem = addNewMenuItem(addAction, selectionListener, actionMenu,
                 TreeTableMenuItemConstants.EXCEPTION_HANDLING_STATEMENT_MENU_ITEM_LABEL,
                 TreeTableMenuItemConstants.EXCEPTION_HANDLING_STATEMENT_MENU_ITEM_ID, SWT.CASCADE);
+        
+        new MenuItem(actionMenu, SWT.SEPARATOR);
 
         Menu exceptionHandlingStatementWrappersMenu = new Menu(actionMenu);
         exceptionHandlingStatementWrappersMenuItem.setMenu(exceptionHandlingStatementWrappersMenu);
@@ -131,6 +135,8 @@ public class TestCaseMenuUtil {
         addNewMenuItem(addAction, selectionListener, actionMenu,
                 TreeTableMenuItemConstants.CALL_METHOD_STATEMENT_MENU_ITEM_LABEL,
                 TreeTableMenuItemConstants.CALL_METHOD_STATEMENT_MENU_ITEM_ID, SWT.PUSH);
+        
+        new MenuItem(actionMenu, SWT.SEPARATOR);
 
         addNewMenuItem(addAction, selectionListener, actionMenu, TreeTableMenuItemConstants.METHOD_MENU_ITEM_LABEL,
                 TreeTableMenuItemConstants.METHOD_MENU_ITEM_ID, SWT.PUSH);
