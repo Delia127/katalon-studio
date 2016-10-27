@@ -90,7 +90,7 @@ public class GenerateCommandDialog extends AbstractDialog {
 
     private static final String KATALON_EXECUTABLE_WIN32 = "katalon";
 
-    private static final String KATALON_EXECUTABLE_MACOS = "open katalon.app --args";
+    private static final String KATALON_EXECUTABLE_MACOS = "./Katalon\\ Studio.app/Contents/MacOS/katalon --args";
 
     private static final int GENERATE_PROPERTY_ID = 22;
 
