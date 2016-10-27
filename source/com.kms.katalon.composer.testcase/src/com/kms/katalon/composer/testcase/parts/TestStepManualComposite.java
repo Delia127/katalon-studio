@@ -89,7 +89,7 @@ public class TestStepManualComposite {
 
     private Tree childTableTree;
 
-    private ToolItem tltmAddStep, tltmInsertStep, tltmRemoveStep, tltmUp, tltmDown;
+    private ToolItem tltmAddStep, tltmRemoveStep, tltmUp, tltmDown;
 
     private TestCaseSelectionListener selectionListener;
 
@@ -181,22 +181,6 @@ public class TestStepManualComposite {
         Menu addMenu = new Menu(tltmAddStep.getParent().getShell());
         tltmAddStep.setData(addMenu);
         TestCaseMenuUtil.fillActionMenu(TreeTableMenuItemConstants.AddAction.Add, selectionListener, addMenu);
-
-        tltmInsertStep = new ToolItem(toolbar, SWT.DROP_DOWN);
-        tltmInsertStep.setText(StringConstants.PA_BTN_TIP_INSERT);
-        tltmInsertStep.setImage(ImageConstants.IMG_16_INSERT);
-        tltmInsertStep.addSelectionListener(selectionListener);
-
-        Menu insertMenu = new Menu(tltmInsertStep.getParent().getShell());
-        tltmInsertStep.setData(insertMenu);
-
-        // Add step before
-        TestCaseMenuUtil.addActionSubMenu(insertMenu, TreeTableMenuItemConstants.AddAction.InsertBefore,
-                StringConstants.PA_MENU_SUB_BEFORE, selectionListener);
-
-        // Add step after
-        TestCaseMenuUtil.addActionSubMenu(insertMenu, TreeTableMenuItemConstants.AddAction.InsertAfter,
-                StringConstants.PA_MENU_SUB_AFTER, selectionListener);
 
         tltmRemoveStep = new ToolItem(toolbar, SWT.NONE);
         tltmRemoveStep.setText(StringConstants.PA_BTN_TIP_REMOVE);
@@ -559,7 +543,7 @@ public class TestStepManualComposite {
     }
 
     public void performToolItemSelected(ToolItem toolItem, SelectionEvent selectionEvent) {
-        if (toolItem.equals(tltmAddStep) || toolItem.equals(tltmInsertStep)) {
+        if (toolItem.equals(tltmAddStep)) {
             openToolItemMenu(toolItem, selectionEvent);
             return;
         }
