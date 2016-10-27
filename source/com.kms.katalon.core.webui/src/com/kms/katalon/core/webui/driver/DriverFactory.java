@@ -46,6 +46,7 @@ import com.kms.katalon.core.webui.driver.ie.InternetExploreDriverServiceBuilder;
 import com.kms.katalon.core.webui.exception.BrowserNotOpenedException;
 import com.kms.katalon.core.webui.util.FirefoxExecutable;
 import com.kms.katalon.core.webui.util.WebDriverPropertyUtil;
+import com.kms.katalon.selenium.FirefoxDriver47;
 
 public class DriverFactory {
     private static final String IE_DRIVER_SERVER_LOG_FILE_NAME = "IEDriverServer.log";
@@ -156,7 +157,8 @@ public class DriverFactory {
             switch (driver) {
                 case FIREFOX_DRIVER:
                     if (FirefoxExecutable.isUsingFirefox47AndAbove(desireCapibilities)) {
-                        webDriver = FirefoxExecutable.startGeckoDriver(desireCapibilities);
+                        //webDriver = FirefoxExecutable.startGeckoDriver(desireCapibilities);
+                        webDriver = new FirefoxDriver47(desireCapibilities);
                     } else {
                         webDriver = new FirefoxDriver(desireCapibilities);
                     }
@@ -299,7 +301,8 @@ public class DriverFactory {
                         DesiredCapabilities desiredCapabilities = DesiredCapabilities.firefox();
                         desiredCapabilities.setCapability(FirefoxDriver.PROFILE, (FirefoxProfile) options);
                         if (FirefoxExecutable.isUsingFirefox47AndAbove(desiredCapabilities)) {
-                            webDriver = FirefoxExecutable.startGeckoDriver(desiredCapabilities);
+                            //webDriver = FirefoxExecutable.startGeckoDriver(desiredCapabilities);
+                            webDriver = new FirefoxDriver47(desiredCapabilities);
                         } else {
                             webDriver = new FirefoxDriver(desiredCapabilities);
                         }
