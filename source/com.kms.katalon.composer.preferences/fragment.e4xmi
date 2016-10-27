@@ -3,8 +3,9 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_4V6IoB4LEeSmhJle-cYKmg" featurename="commands" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Command" xmi:id="_6TGRQB4PEeSmhJle-cYKmg" elementId="org.eclipse.ui.window.preferences" commandName="Open Preferences"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_DihqsB4PEeSmhJle-cYKmg" featurename="children" parentElementId="com.kms.katalon.composer.menu.settings">
-    <elements xsi:type="menu:HandledMenuItem" xmi:id="_vdUlEB4QEeSmhJle-cYKmg" elementId="com.kms.katalon.composer.preferences.handledmenuitem.open" label="Preferences" command="_6TGRQB4PEeSmhJle-cYKmg"/>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_DihqsB4PEeSmhJle-cYKmg" featurename="children" parentElementId="com.kms.katalon.composer.menu.window">
+    <elements xsi:type="menu:MenuSeparator" xmi:id="_YlV28JwlEea7ztL7hqCRdQ" elementId="com.kms.katalon.composer.preferences.menuseparator.0"/>
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_vdUlEB4QEeSmhJle-cYKmg" elementId="com.kms.katalon.composer.preferences.handledmenuitem.open" label="Katalon Studio Preferences" command="_6TGRQB4PEeSmhJle-cYKmg"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_hNRqUA8oEeW1X5UIL5jJZA" featurename="bindings" parentElementId="com.kms.katalon.bindingtable.window">
     <elements xsi:type="commands:KeyBinding" xmi:id="_l2lXwA8oEeW1X5UIL5jJZA" elementId="com.kms.katalon.composer.preferences.keybinding.open" keySequence="M1+M2+P" command="_6TGRQB4PEeSmhJle-cYKmg"/>

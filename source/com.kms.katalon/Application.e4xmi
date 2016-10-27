@@ -70,7 +70,6 @@
       </children>
       <children xsi:type="menu:Menu" xmi:id="_0IJ8wBYeEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.importexport" toBeRendered="false" visible="false" label="Import/Export"/>
       <children xsi:type="menu:Menu" xmi:id="_2end0BYeEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.report" label="Report"/>
-      <children xsi:type="menu:Menu" xmi:id="_2zN00BYeEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.settings" label="Settings"/>
       <children xsi:type="menu:Menu" xmi:id="_ljWeAAOIEeWmYfckKw0_5w" elementId="com.kms.katalon.menu.search" label="Search">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_oiLmoAOIEeWmYfckKw0_5w" elementId="com.kms.katalon.handledmenuitem.searchFile" label="Search..." command="_N5ChkARIEeWyKYoESvUc1g"/>
       </children>
