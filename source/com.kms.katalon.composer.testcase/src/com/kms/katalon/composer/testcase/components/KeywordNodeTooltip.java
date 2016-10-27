@@ -302,10 +302,10 @@ public class KeywordNodeTooltip {
     public void openKeywordDesc() {
         try {
             Desktop.getDesktop().browse(new URI(keywordDescURI));
-            openedDesc = true;
         } catch (Exception ex) {
             LoggerSingleton.logError(ex);
         } finally {
+            openedDesc = true;
             if (isVisible()) {
                 tip.dispose();
             }

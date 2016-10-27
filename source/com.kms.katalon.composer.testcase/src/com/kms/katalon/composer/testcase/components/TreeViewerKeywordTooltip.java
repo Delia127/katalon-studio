@@ -22,6 +22,8 @@ public class TreeViewerKeywordTooltip {
     protected static final int SHIFT_X = -10;
 
     protected static final int SHIFT_Y = 2;
+    
+    private static final String CUSTOM_KEYWORD_CLASS = "CustomKeywords";
 
     private String currentKeyword;
 
@@ -109,6 +111,9 @@ public class TreeViewerKeywordTooltip {
         }
         KeywordBrowserTreeEntity keywordBrowserEntity = (KeywordBrowserTreeEntity) item.getData();
         String classKeyword = keywordBrowserEntity.getClassName();
+        if (CUSTOM_KEYWORD_CLASS.equals(classKeyword)) {
+            return;
+        }
         String keywordName = keywordBrowserEntity.getName();
         String text = TestCaseEntityUtil.getKeywordJavaDocText(classKeyword, keywordName);
         if (text == null || text.length() < 1) {
@@ -154,9 +159,14 @@ public class TreeViewerKeywordTooltip {
     public boolean isProcessShowTooltip(Event ev) {
         Point point = new Point(ev.x, ev.y);
         TreeItem item = treeViewer.getTree().getItem(point);
-        if (item == null) {
+        if (item == null || !(item.getData() instanceof KeywordBrowserTreeEntity)) {
             return false;
         }
-        return item.getData() instanceof KeywordBrowserTreeEntity;
+        KeywordBrowserTreeEntity keywordBrowserEntity = (KeywordBrowserTreeEntity) item.getData();
+        String classKeyword = keywordBrowserEntity.getClassName();
+        if (CUSTOM_KEYWORD_CLASS.equals(classKeyword)) {
+            return false;
+        }
+        return true;
     }
 }
