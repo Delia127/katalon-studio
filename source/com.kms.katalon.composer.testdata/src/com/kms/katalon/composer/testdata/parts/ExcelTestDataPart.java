@@ -604,7 +604,8 @@ public class ExcelTestDataPart extends TestDataMainPart {
 
     private class ChangeExcelFileOperation extends AbstractOperation {
         private String oldExcelFilePath;
-
+        private String oldSheetName;
+        
         private String newExcelFilePath;
 
         public ChangeExcelFileOperation(String newExcelFilePath) {
@@ -618,20 +619,21 @@ public class ExcelTestDataPart extends TestDataMainPart {
                 return Status.CANCEL_STATUS;
             }
             oldExcelFilePath = fCurrentPath;
+            oldSheetName = fCurrentSheetName;
             return redo(monitor, info);
         }
 
         @Override
         public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-            doLoadExcelFile(newExcelFilePath);
+            doLoadExcelFile(newExcelFilePath, "");
             return Status.OK_STATUS;
         }
 
-        private void doLoadExcelFile(String excelFileAbsolutePath) {
+        private void doLoadExcelFile(String excelFileAbsolutePath, String sheetName) {
             lblFileInfoStatus.setText("");
 
             fCurrentPath = excelFileAbsolutePath;
-            fCurrentSheetName = "";
+            fCurrentSheetName = sheetName;
 
             if (ckcbUseRelativePath.getSelection()) {
                 txtFileName.setText(PathUtil.absoluteToRelativePath(fCurrentPath, getProjectFolderLocation()));
@@ -646,7 +648,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
 
         @Override
         public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-            doLoadExcelFile(oldExcelFilePath);
+            doLoadExcelFile(oldExcelFilePath, oldSheetName);
             return Status.OK_STATUS;
         }
     }
