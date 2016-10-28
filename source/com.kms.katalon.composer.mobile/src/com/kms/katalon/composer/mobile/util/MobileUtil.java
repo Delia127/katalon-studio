@@ -1,13 +1,9 @@
 package com.kms.katalon.composer.mobile.util;
 
-import java.awt.Desktop;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.Platform;
@@ -15,15 +11,14 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyleRange;
-import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.mobile.constants.StringConstants;
@@ -117,33 +112,15 @@ public class MobileUtil {
             imageLabel.setImage(null);
             justify(imageLabel);
 
-            final StyledText styledText = new StyledText(composite, getMessageLabelStyle());
-            styledText.setText(StringConstants.LINK);
-            styledText.setBackground(imageLabel.getBackground());
+            Link link = new Link(composite, SWT.NONE);
+            link.setText("<a href=\"" + StringConstants.LINK + "\">" + StringConstants.LINK + "</a>");
+            link.addSelectionListener(new SelectionAdapter() {
 
-            StyleRange style = new StyleRange();
-            style.underline = true;
-            style.underlineStyle = SWT.UNDERLINE_LINK;
-
-            int[] ranges = { 0, StringConstants.LINK.length() };
-            StyleRange[] styles = { style };
-            styledText.setStyleRanges(ranges, styles);
-
-            styledText.addListener(SWT.MouseDown, new Listener() {
                 @Override
-                public void handleEvent(Event event) {
-                    try {
-                        int offset = styledText.getOffsetAtLocation(new Point(event.x, event.y));
-                        StyleRange styleRange = styledText.getStyleRangeAtOffset(offset);
-                        if (styleRange != null && styleRange.underline
-                                && styleRange.underlineStyle == SWT.UNDERLINE_LINK) {
-                            openUri(new URL(StringConstants.LINK).toURI());
-                        }
-                    } catch (URISyntaxException | IOException e) {}
+                public void widgetSelected(SelectionEvent e) {
+                    Program.launch(StringConstants.LINK);
                 }
             });
-
-            justify(styledText, true, false);
 
             return composite;
         }
@@ -158,22 +135,6 @@ public class MobileUtil {
 
         private void justify(Control control) {
             GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.BEGINNING).applyTo(control);
-        }
-
-        private static void openUri(URI uri) throws IOException {
-            if (Desktop.isDesktopSupported()) {
-                Desktop.getDesktop().browse(uri);
-                return;
-            }
-
-            if (Platform.OS_WIN32.equals(Platform.getOS())) {
-                openDefaultBrowserOnWindows(uri);
-            }
-        }
-
-        private static void openDefaultBrowserOnWindows(URI uri) throws IOException {
-            ProcessBuilder builder = new ProcessBuilder("cmd", "/c", "start", "\"\"", "\"" + uri.toString() + "\"");
-            builder.start();
         }
 
         public static void showWarning(Shell parentShell, String dialogMessage) {
