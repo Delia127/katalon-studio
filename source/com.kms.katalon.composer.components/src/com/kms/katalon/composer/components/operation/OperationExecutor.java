@@ -88,5 +88,8 @@ public class OperationExecutor {
     public IStatus redoOperation() {
         return redoOperation(null);
     }
-
+    
+    public void dispose() {
+        getOperationHistory().dispose(undoContext, true, true, true);
+    }
 }

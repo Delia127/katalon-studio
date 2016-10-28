@@ -64,7 +64,7 @@ public abstract class CPart extends WorkbenchPart {
         }
     }
 
-    private OperationExecutor operationExecutor;
+    protected OperationExecutor operationExecutor;
 
     private Map<String, String> actionIdByCommandId = new HashMap<>();
 
