@@ -113,11 +113,6 @@ public class TestSuiteFileServiceManager {
         return EntityService.getInstance().getAvailableName(parentFolder.getLocation(), name, true);
     }
 
-    public static FolderEntity copyTestSuiteFolder(FolderEntity folder, FolderEntity destinationFolder)
-            throws Exception {
-        return EntityFileServiceManager.copyFolder(folder, destinationFolder);
-    }
-
     public static TestSuiteEntity copyTestSuite(TestSuiteEntity testSuite, FolderEntity destinationFolder)
             throws Exception {
         return EntityFileServiceManager.copy(testSuite, destinationFolder);

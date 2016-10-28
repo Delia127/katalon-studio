@@ -355,12 +355,6 @@ public class WebElementFileServiceManager {
         return EntityFileServiceManager.copy(webElement, destinationFolder);
     }
 
-    public static FolderEntity copyWebElementFolder(FolderEntity folder, FolderEntity destinationFolder)
-            throws Exception {
-        return EntityFileServiceManager.copyFolder(folder, destinationFolder);
-
-    }
-
     public static WebElementEntity moveWebElement(WebElementEntity webElement, FolderEntity destinationFolder)
             throws Exception {
         String oldWebElementLocation = webElement.getLocation();

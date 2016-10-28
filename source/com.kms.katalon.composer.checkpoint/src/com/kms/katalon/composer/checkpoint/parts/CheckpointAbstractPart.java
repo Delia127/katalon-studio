@@ -366,15 +366,9 @@ public abstract class CheckpointAbstractPart implements EventHandler, IComposerP
                 compSourceInfoDetails.setVisible(!compSourceInfoDetails.isVisible());
                 // elasticate data table
                 GridData fileInfoGridData = (GridData) compSourceInfoDetails.getLayoutData();
-                boolean isFileInfoNotVisible = !compSourceInfoDetails.isVisible();
-                if (isFileInfoNotVisible) {
-                    fileInfoGridData.exclude = true;
-                }
+                fileInfoGridData.exclude = !compSourceInfoDetails.isVisible();
                 compTable.layout(true, true);
                 compTable.getParent().layout();
-                if (isFileInfoNotVisible) {
-                    fileInfoGridData.exclude = false;
-                }
                 redrawArrowIndicator();
             }
         });

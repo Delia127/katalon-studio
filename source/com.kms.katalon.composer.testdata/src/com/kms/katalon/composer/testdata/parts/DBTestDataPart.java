@@ -208,16 +208,9 @@ public class DBTestDataPart extends TestDataMainPart {
 
                 // elasticate data table
                 GridData fileInfoGridData = (GridData) compFileInfoDetails.getLayoutData();
-                boolean isFileInfoNotVisible = !compFileInfoDetails.isVisible();
-                if (isFileInfoNotVisible) {
-                    fileInfoGridData.exclude = true;
-                }
+                fileInfoGridData.exclude = !compFileInfoDetails.isVisible();
                 compTable.layout(true, true);
                 compTable.getParent().layout();
-                if (isFileInfoNotVisible) {
-                    fileInfoGridData.exclude = false;
-                }
-
                 redrawArrowIndicator();
             }
         });
