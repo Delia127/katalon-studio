@@ -14,6 +14,12 @@ import javax.inject.Inject;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.operations.AbstractOperation;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -187,8 +193,8 @@ public class DBTestDataPart extends TestDataMainPart {
 
     private void redrawArrowIndicator() {
         lblArrowIndicator.getParent().setRedraw(false);
-        lblArrowIndicator.setImage(compFileInfoDetails.isVisible() ? ImageConstants.IMG_16_ARROW_DOWN
-                : ImageConstants.IMG_16_ARROW);
+        lblArrowIndicator.setImage(
+                compFileInfoDetails.isVisible() ? ImageConstants.IMG_16_ARROW_DOWN : ImageConstants.IMG_16_ARROW);
         lblArrowIndicator.getParent().setRedraw(true);
     }
 
@@ -241,16 +247,7 @@ public class DBTestDataPart extends TestDataMainPart {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                EditTestDataQueryDialog dialog = new EditTestDataQueryDialog(Display.getCurrent().getActiveShell(),
-                        getDataFile());
-
-                if (dialog.open() != Window.OK || !dialog.isChanged()) {
-                    return;
-                }
-                dirtyable.setDirty(true);
-                originalDataFile = dialog.getTestData();
-                save();
-                updateChildInfo(originalDataFile);
+                executeOperation(new ChangeQueryOperation());
             }
         });
     }
@@ -280,7 +277,8 @@ public class DBTestDataPart extends TestDataMainPart {
                             dbData.getRetrievedDate().toString()), ColorUtil.getTextSuccessfulColor());
                 } catch (Exception e) {
                     setStatusLabel(StringConstants.DIA_MSG_CANNOT_FETCH_DATA, ColorUtil.getTextErrorColor());
-                    MultiStatusErrorDialog.showErrorDialog(e, StringConstants.DIA_MSG_CANNOT_FETCH_DATA, e.getMessage());
+                    MultiStatusErrorDialog.showErrorDialog(e, StringConstants.DIA_MSG_CANNOT_FETCH_DATA,
+                            e.getMessage());
                 }
             }
         });
@@ -422,4 +420,45 @@ public class DBTestDataPart extends TestDataMainPart {
         // do nothing
     }
 
+    private class ChangeQueryOperation extends AbstractOperation {
+        private DataFileEntity oldDataFile;
+
+        private DataFileEntity newDataFile;
+
+        public ChangeQueryOperation() {
+            super(ChangeQueryOperation.class.getName());
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            oldDataFile = originalDataFile.clone();
+            newDataFile = originalDataFile.clone();
+            EditTestDataQueryDialog dialog = new EditTestDataQueryDialog(Display.getCurrent().getActiveShell(),
+                    newDataFile);
+
+            if (dialog.open() != Window.OK || !dialog.isChanged()) {
+                return Status.CANCEL_STATUS;
+            }
+            return redo(monitor, info);
+        }
+
+        private void doChangeDataFile(DataFileEntity dataFile) {
+            dirtyable.setDirty(true);
+            originalDataFile = dataFile;
+            updateChildInfo(originalDataFile);
+        }
+
+        @Override
+        public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            doChangeDataFile(newDataFile);
+            return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            doChangeDataFile(oldDataFile);
+            return Status.OK_STATUS;
+        }
+
+    }
 }
