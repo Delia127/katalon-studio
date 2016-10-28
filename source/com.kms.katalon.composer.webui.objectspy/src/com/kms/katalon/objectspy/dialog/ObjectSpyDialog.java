@@ -128,7 +128,7 @@ import com.sun.jna.platform.win32.WinDef.HWND;
 @SuppressWarnings("restriction")
 public class ObjectSpyDialog extends Dialog implements EventHandler {
     private static final String IE_WINDOW_CLASS = "IEFrame"; //$NON-NLS-1$
-    
+
     private static final String relativePathToIEAddonSetup = File.separator + "extensions" + File.separator + "IE" //$NON-NLS-1$ //$NON-NLS-2$
             + File.separator + "Object Spy" + File.separator + "setup.exe"; //$NON-NLS-1$ //$NON-NLS-2$
 
@@ -139,7 +139,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
     public static final String IE_WINDOWS_32BIT_BHO_REGISTRY_KEY = "SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\explorer\\Browser Helper Objects"; //$NON-NLS-1$
 
     public static final String IE_WINDOWS_BHO_REGISTRY_KEY = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\explorer\\Browser Helper Objects"; //$NON-NLS-1$
-    
+
     public static final String OBJECT_SPY_CHROME_ADDON_URL = "https://chrome.google.com/webstore/detail/katalon-object-spy/gblkfilmbkbkjgpcoihaeghdindcanom"; //$NON-NLS-1$
 
     public static final String OBJECT_SPY_FIREFOX_ADDON_URL = "https://addons.mozilla.org/en-US/firefox/addon/katalon-object-spy"; //$NON-NLS-1$
@@ -165,7 +165,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
     private ToolItem removeElementToolItem;
 
     private ToolItem addElmtToObjRepoToolItem;
-    
+
     private ToolItem highlightObjectToolItem;
 
     private ToolItem startBrowser;
@@ -223,7 +223,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         gridLayout.marginWidth = 0;
         gridLayout.verticalSpacing = 0;
         gridLayout.horizontalSpacing = 0;
-        
+
         Composite toolbarComposite = new Composite(mainContainer, SWT.NONE);
         toolbarComposite.setLayout(new GridLayout(2, false));
         toolbarComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
@@ -261,7 +261,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
 
         hSashForm.setWeights(new int[] { 3, 8 });
         mainContainer.pack();
-        
+
         return mainContainer;
     }
 
@@ -362,8 +362,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         public void widgetSelected(SelectionEvent event) {
             try {
                 endInspectSession();
-                if (!InspectSessionUtil.isNotShowingInstantBrowserDialog()
-                        && !showInstantBrowserDialog()) {
+                if (!InspectSessionUtil.isNotShowingInstantBrowserDialog() && !showInstantBrowserDialog()) {
                     return;
                 }
                 defaultBrowser = driverType;
@@ -386,18 +385,18 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
                 }
             });
         }
-        
+
         private boolean showInstantBrowserDialog() throws IOException, URISyntaxException {
             if (driverType == WebUIDriverType.IE_DRIVER) {
                 showMessageForStartingInstantIE();
                 return true;
             }
-            MessageDialogWithToggle messageDialogWithToggle = MessageDialogWithToggle.openYesNoCancelQuestion(
-                    getParentShell(), StringConstants.HAND_INSTANT_BROWSERS_DIA_TITLE,
+            MessageDialogWithToggle messageDialogWithToggle = new GoToAddonStoreMessageDialog(getParentShell(),
+                    StringConstants.HAND_INSTANT_BROWSERS_DIA_TITLE,
                     MessageFormat.format(StringConstants.HAND_INSTANT_BROWSERS_DIA_MESSAGE, driverType.toString()),
-                    StringConstants.HAND_INSTANT_BROWSERS_DIA_TOOGLE_MESSAGE, false, null, null);
+                    StringConstants.HAND_INSTANT_BROWSERS_DIA_TOOGLE_MESSAGE);
+            int returnCode = messageDialogWithToggle.open();
             InspectSessionUtil.setNotShowingInstantBrowserDialog(messageDialogWithToggle.getToggleState());
-            int returnCode = messageDialogWithToggle.getReturnCode();
             if (returnCode == IDialogConstants.NO_ID) {
                 return true;
             }
@@ -496,7 +495,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
                     enableToolItem(addFrameElementToolItem, selectedObject instanceof HTMLElement);
                     enableToolItem(addElementToolItem, selectedObject instanceof HTMLElement);
                     enableToolItem(highlightObjectToolItem, selectedObject instanceof HTMLElement
-                            && ((HTMLElement)selectedObject).getParentPageElement() != null);
+                            && ((HTMLElement) selectedObject).getParentPageElement() != null);
                 }
             }
         });
@@ -590,7 +589,8 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
     private NodeList evaluateXpath(final String xpath) throws XPathExpressionException {
         if (currentHTMLDocument != null) {
             XPathExpression xPathExpression = XPathFactory.newInstance().newXPath().compile(xpath);
-            return (NodeList) xPathExpression.evaluate(currentHTMLDocument.getDocumentElement(), XPathConstants.NODESET);
+            return (NodeList) xPathExpression.evaluate(currentHTMLDocument.getDocumentElement(),
+                    XPathConstants.NODESET);
         }
         return null;
     }
@@ -636,8 +636,8 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
                             Display.getDefault().syncExec(new Runnable() {
                                 @Override
                                 public void run() {
-                                    domTreeViewer.expandToLevel(
-                                            new TreePath(selectedDOMElementXpath.getXpathTreePath()), 1);
+                                    domTreeViewer
+                                            .expandToLevel(new TreePath(selectedDOMElementXpath.getXpathTreePath()), 1);
                                     monitor.worked(1);
                                 }
                             });
@@ -655,9 +655,9 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
                             @Override
                             public void run() {
                                 MultiStatusErrorDialog.showErrorDialog(exception,
-                                        StringConstants.DIA_ERROR_MSG_CANNOT_PARSE_XPATH, MessageFormat.format(
-                                                StringConstants.DIA_ERROR_REASON_INVALID_XPATH, exception.getCause()
-                                                        .getMessage()));
+                                        StringConstants.DIA_ERROR_MSG_CANNOT_PARSE_XPATH,
+                                        MessageFormat.format(StringConstants.DIA_ERROR_REASON_INVALID_XPATH,
+                                                exception.getCause().getMessage()));
                             }
                         });
                         return Status.CANCEL_STATUS;
@@ -771,10 +771,10 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
     }
 
     private void setSelectedTreeItem(Object object) {
-        HTMLElementTreeContentProvider dataProvider = (HTMLElementTreeContentProvider) capturedObjectComposite.getElementTreeViewer()
-                .getContentProvider();
-        capturedObjectComposite.getElementTreeViewer().setSelection(
-                new TreeSelection(dataProvider.getTreePath(object)), true);
+        HTMLElementTreeContentProvider dataProvider = (HTMLElementTreeContentProvider) capturedObjectComposite
+                .getElementTreeViewer().getContentProvider();
+        capturedObjectComposite.getElementTreeViewer().setSelection(new TreeSelection(dataProvider.getTreePath(object)),
+                true);
         capturedObjectComposite.getElementTreeViewer().setExpandedState(object, true);
     }
 
@@ -910,7 +910,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
                 }
             }
         });
-        
+
         new ToolItem(mainToolbar, SWT.SEPARATOR);
 
         highlightObjectToolItem = new ToolItem(mainToolbar, SWT.NONE);
@@ -960,7 +960,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
             }
         }
 
-        //Refresh tree explorer
+        // Refresh tree explorer
         eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, folderSelectionResult.getSelectedParentFolder());
         eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEMS, newSelectionOnExplorer.toArray());
     }
@@ -1068,8 +1068,8 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         }
         HTMLPageElement parentPageElement = newElement.getParentPageElement();
         if (elements.contains(parentPageElement)) {
-            addNewElement(elements.get(elements.indexOf(parentPageElement)), parentPageElement.getChildElements()
-                    .get(0), parentPageElement);
+            addNewElement(elements.get(elements.indexOf(parentPageElement)),
+                    parentPageElement.getChildElements().get(0), parentPageElement);
         } else {
             elements.add(parentPageElement);
         }
@@ -1085,8 +1085,8 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         if (parentElement.getChildElements().contains(newElement)) {
             if (newElement instanceof HTMLFrameElement) {
                 HTMLFrameElement frameElement = (HTMLFrameElement) newElement;
-                HTMLFrameElement existingFrameElement = (HTMLFrameElement) (parentElement.getChildElements().get(parentElement.getChildElements()
-                        .indexOf(newElement)));
+                HTMLFrameElement existingFrameElement = (HTMLFrameElement) (parentElement.getChildElements()
+                        .get(parentElement.getChildElements().indexOf(newElement)));
                 addNewElement(existingFrameElement, frameElement.getChildElements().get(0), pageElement);
             }
         } else {
@@ -1146,10 +1146,10 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
             MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE, ex.getMessage());
         }
     }
-    
+
     protected void runInstantIE() throws Exception {
-        session = new InspectSession(server, WebUIDriverType.IE_DRIVER, ProjectController.getInstance().getCurrentProject(),
-                logger);
+        session = new InspectSession(server, WebUIDriverType.IE_DRIVER,
+                ProjectController.getInstance().getCurrentProject(), logger);
         session.setupIE();
         HWND hwnd = User32.INSTANCE.FindWindow(IE_WINDOW_CLASS, null);
         if (hwnd == null) {
@@ -1167,8 +1167,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         if (session != null) {
             session.stop();
         }
-        session = new InspectSession(server, browser, ProjectController.getInstance().getCurrentProject(),
-                logger);
+        session = new InspectSession(server, browser, ProjectController.getInstance().getCurrentProject(), logger);
         new Thread(session).start();
     }
 
@@ -1270,7 +1269,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         }
         desktop.open(new File(ieAddonSetupPath));
     }
-    
+
     private void highlighObject(HTMLElement element) {
         HighlightRequest request = new HighlightRequest(element);
 

@@ -113,6 +113,7 @@ import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
 import com.kms.katalon.objectspy.components.CapturedHTMLElementsComposite;
 import com.kms.katalon.objectspy.dialog.AddToObjectRepositoryDialog;
+import com.kms.katalon.objectspy.dialog.GoToAddonStoreMessageDialog;
 import com.kms.katalon.objectspy.dialog.AddToObjectRepositoryDialog.AddToObjectRepositoryDialogResult;
 import com.kms.katalon.objectspy.dialog.ObjectSpyDialog;
 import com.kms.katalon.objectspy.element.HTMLElement;
@@ -315,8 +316,8 @@ public class RecorderDialog extends Dialog {
     }
 
     private int getInstantBrowsersPort() {
-        return PreferenceStoreManager.getPreferenceStore(RecorderPreferenceConstants.WEBUI_RECORDER_QUALIFIER).getInt(
-                RecorderPreferenceConstants.WEBUI_RECORDER_INSTANT_BROWSER_PORT);
+        return PreferenceStoreManager.getPreferenceStore(RecorderPreferenceConstants.WEBUI_RECORDER_QUALIFIER)
+                .getInt(RecorderPreferenceConstants.WEBUI_RECORDER_INSTANT_BROWSER_PORT);
     }
 
     private void startServer(int port) throws Exception {
@@ -591,8 +592,9 @@ public class RecorderDialog extends Dialog {
             @Override
             public void handleEvent(Event event) {
                 HTMLActionMapping firstSelectedHTMLAction = getFirstSelectedHTMLAction();
-                addSynchonizationPoint(firstSelectedHTMLAction != null ? firstSelectedHTMLAction.getTargetElement()
-                        : null, firstSelectedHTMLAction);
+                addSynchonizationPoint(
+                        firstSelectedHTMLAction != null ? firstSelectedHTMLAction.getTargetElement() : null,
+                        firstSelectedHTMLAction);
             }
         });
     }
@@ -749,7 +751,8 @@ public class RecorderDialog extends Dialog {
     }
 
     private void addValidationPoint(HTMLElement element) {
-        addValidationPoint(element, recordedActions.size() > 0 ? recordedActions.get(recordedActions.size() - 1) : null);
+        addValidationPoint(element,
+                recordedActions.size() > 0 ? recordedActions.get(recordedActions.size() - 1) : null);
     }
 
     private void addSynchonizationPoint(HTMLElement element, HTMLActionMapping selectedHTMLActionMapping) {
@@ -760,25 +763,25 @@ public class RecorderDialog extends Dialog {
     }
 
     private void addSynchonizationPoint(HTMLElement element) {
-        addSynchonizationPoint(element, recordedActions.size() > 0 ? recordedActions.get(recordedActions.size() - 1)
-                : null);
+        addSynchonizationPoint(element,
+                recordedActions.size() > 0 ? recordedActions.get(recordedActions.size() - 1) : null);
     }
 
     private void addDefaultAction(HTMLActionMapping selectedHTMLActionMapping) {
         IHTMLAction defaultHTMLAction = HTMLActionUtil.getAllHTMLActions().get(0);
-        addAction(
-                defaultHTMLAction,
+        addAction(defaultHTMLAction,
                 selectedHTMLActionMapping != null ? selectedHTMLActionMapping.getTargetElement() : null,
                 selectedHTMLActionMapping != null ? selectedHTMLActionMapping.getWindowId() : null,
-                selectedHTMLActionMapping != null ? recordedActions.indexOf(selectedHTMLActionMapping) + 1 : Math.max(
-                        0, recordedActions.size() - 1));
+                selectedHTMLActionMapping != null ? recordedActions.indexOf(selectedHTMLActionMapping) + 1
+                        : Math.max(0, recordedActions.size() - 1));
     }
 
     private void addAction(IHTMLAction newAction, HTMLElement element, String windowId, int selectedActionIndex) {
         if (newAction == null) {
             return;
         }
-        HTMLActionMapping newActionMapping = new HTMLActionMapping(newAction, (newAction.hasElement()) ? element : null);
+        HTMLActionMapping newActionMapping = new HTMLActionMapping(newAction,
+                (newAction.hasElement()) ? element : null);
         newActionMapping.setWindowId(windowId);
         if (selectedActionIndex >= 0 && selectedActionIndex < recordedActions.size()) {
             recordedActions.add(selectedActionIndex, newActionMapping);
@@ -792,8 +795,8 @@ public class RecorderDialog extends Dialog {
 
     private void removeDeletedElementsFromAction(HTMLElement element) {
         for (HTMLActionMapping actionMapping : recordedActions) {
-            if (element.equals(actionMapping.getTargetElement())
-                    || (element instanceof HTMLFrameElement && ((HTMLFrameElement) element).contains(actionMapping.getTargetElement()))) {
+            if (element.equals(actionMapping.getTargetElement()) || (element instanceof HTMLFrameElement
+                    && ((HTMLFrameElement) element).contains(actionMapping.getTargetElement()))) {
                 actionMapping.setTargetElement(null);
             }
         }
@@ -1018,9 +1021,8 @@ public class RecorderDialog extends Dialog {
             @Override
             protected CellEditor getCellEditor(Object element) {
                 final HTMLActionMapping actionMapping = (HTMLActionMapping) element;
-                return new AbstractDialogCellEditor(
-                        actionTableViewer.getTable(), actionMapping.getData() instanceof Object[]
-                                ? Arrays.toString(actionMapping.getData()) : "") { //$NON-NLS-1$
+                return new AbstractDialogCellEditor(actionTableViewer.getTable(),
+                        actionMapping.getData() instanceof Object[] ? Arrays.toString(actionMapping.getData()) : "") { //$NON-NLS-1$
                     @Override
                     protected Object openDialogBox(Control cellEditorWindow) {
                         HTMLActionDataBuilderDialog dialog = new HTMLActionDataBuilderDialog(getParentShell(),
@@ -1082,8 +1084,8 @@ public class RecorderDialog extends Dialog {
             @Override
             protected CellEditor getCellEditor(Object element) {
                 HTMLElement htmlElement = ((HTMLActionMapping) element).getTargetElement();
-                return new AbstractDialogCellEditor(actionTableViewer.getTable(), htmlElement != null
-                        ? htmlElement.getName() : StringConstants.NULL) {
+                return new AbstractDialogCellEditor(actionTableViewer.getTable(),
+                        htmlElement != null ? htmlElement.getName() : StringConstants.NULL) {
                     @Override
                     protected Object openDialogBox(Control cellEditorWindow) {
                         ElementTreeSelectionDialog treeDialog = new ElementTreeSelectionDialog(getParentShell(),
@@ -1263,14 +1265,17 @@ public class RecorderDialog extends Dialog {
                     showMessageForStartingInstantIE();
                     return true;
                 }
-                MessageDialogWithToggle messageDialogWithToggle = MessageDialogWithToggle.openYesNoCancelQuestion(
-                        getParentShell(),
-                        StringConstants.HAND_INSTANT_BROWSERS_DIA_TITLE,
-                        MessageFormat.format(StringConstants.HAND_INSTANT_BROWSERS_DIA_MESSAGE,
-                                webUIDriverType.toString()), StringConstants.HAND_INSTANT_BROWSERS_DIA_TOOGLE_MESSAGE,
-                        false, null, null);
+                MessageDialogWithToggle messageDialogWithToggle = new GoToAddonStoreMessageDialog(getParentShell(),
+                        StringConstants.HAND_INSTANT_BROWSERS_DIA_TITLE, MessageFormat
+                                .format(StringConstants.HAND_INSTANT_BROWSERS_DIA_MESSAGE, webUIDriverType.toString()),
+                        StringConstants.HAND_INSTANT_BROWSERS_DIA_TOOGLE_MESSAGE) {
+                    @Override
+                    protected String getNoButtonLabel() {
+                        return ComposerWebuiRecorderMessageConstants.LBL_DLG_CONTINUE_WITH_RECORDING;
+                    }
+                };
+                int returnCode = messageDialogWithToggle.open();
                 RecordSessionUtil.setNotShowingInstantBrowserDialog(messageDialogWithToggle.getToggleState());
-                int returnCode = messageDialogWithToggle.getReturnCode();
                 if (returnCode == IDialogConstants.NO_ID) {
                     return true;
                 }
@@ -1423,8 +1428,8 @@ public class RecorderDialog extends Dialog {
         HTMLPageElement parentPageElement = newElement.getParentPageElement();
         if (parentPageElement != null) {
             if (elements.contains(parentPageElement)) {
-                addNewElement(elements.get(elements.indexOf(parentPageElement)), parentPageElement.getChildElements()
-                        .get(0), parentPageElement, newAction);
+                addNewElement(elements.get(elements.indexOf(parentPageElement)),
+                        parentPageElement.getChildElements().get(0), parentPageElement, newAction);
             } else {
                 elements.add(parentPageElement);
             }
@@ -1436,8 +1441,8 @@ public class RecorderDialog extends Dialog {
         if (parentElement.getChildElements().contains(newElement)) {
             if (newElement instanceof HTMLFrameElement) {
                 HTMLFrameElement frameElement = (HTMLFrameElement) newElement;
-                HTMLFrameElement existingFrameElement = (HTMLFrameElement) (parentElement.getChildElements().get(parentElement.getChildElements()
-                        .indexOf(newElement)));
+                HTMLFrameElement existingFrameElement = (HTMLFrameElement) (parentElement.getChildElements()
+                        .get(parentElement.getChildElements().indexOf(newElement)));
                 addNewElement(existingFrameElement, frameElement.getChildElements().get(0), pageElement, newAction);
             } else {
                 for (HTMLElement element : parentElement.getChildElements()) {
