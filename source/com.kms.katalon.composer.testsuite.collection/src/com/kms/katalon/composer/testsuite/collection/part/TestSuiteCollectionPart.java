@@ -445,7 +445,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         List<Transfer> treeEntityTransfers = TransferTypeCollection.getInstance().getTreeEntityTransfer();
         treeEntityTransfers.add(new TestSuiteRunConfigurationTransfer());
         dt.setTransfer(treeEntityTransfers.toArray(new Transfer[treeEntityTransfers.size()]));
-        dt.addDropListener(new TestSuiteTableDropListener(this, getTestSuiteCollection()));
+        dt.addDropListener(new TestSuiteTableDropListener(this));
     }
 
     /**
