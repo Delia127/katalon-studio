@@ -282,6 +282,10 @@ public abstract class TestDataMainPart extends CPart implements EventHandler, IP
         }
         threadIterator = null;
     }
+    
+    public void setDirty(boolean dirty) {
+        dirtyable.setDirty(dirty);
+    }
 
     protected abstract void preDestroy();
 

@@ -2,13 +2,22 @@ package com.kms.katalon.composer.testdata.parts;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.operations.AbstractOperation;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -156,8 +165,8 @@ public class InternalTestDataPart extends TestDataMainPart {
         return tableColumnViewer;
     }
 
-    private void addInfoForTableColumn(TableViewerColumn tableViewerColumn, String name, boolean resizable, int width,
-            CellLabelProvider labelProvider, EditingSupport editingSupport) {
+    private static void addInfoForTableColumn(TableViewerColumn tableViewerColumn, String name, boolean resizable,
+            int width, CellLabelProvider labelProvider, EditingSupport editingSupport) {
         TableColumn tableColumn = tableViewerColumn.getColumn();
         tableColumn.setWidth(width);
         tableColumn.setText(name);
@@ -171,7 +180,7 @@ public class InternalTestDataPart extends TestDataMainPart {
     private void createColumns(DataFileEntity dataFile) {
         for (InternalDataColumnEntity dataCol : dataFile.getInternalDataColumns()) {
             createColumnViewer(dataCol.getName(), SWT.NONE, true, DF_REMOVEVABLE_COLUMN_WIDTH,
-                    new InternalDataLabelProvider(), new InternalDataEditingSupport(tableViewer, dirtyable));
+                    new InternalDataLabelProvider(), new InternalDataEditingSupport(this, tableViewer));
         }
 
         // create Add column
@@ -233,20 +242,13 @@ public class InternalTestDataPart extends TestDataMainPart {
 
         InternalDataRow element = (InternalDataRow) selectedObject;
         if (element.isLastRow()) {
-            insertNewRow(lastCollectionIndex(input));
-            table.showItem(table.getItem(lastCollectionIndex(input)));
+            int lastCollectionIndex = lastCollectionIndex(input);
+            insertNewRow(lastCollectionIndex);
         }
     }
 
     private void insertNewRow(int indexToInsert) {
-        InternalDataRow newRow = new InternalDataRow();
-        for (int i = 0; i < getEditableColumnsSize(); i++) {
-            newRow.getCells().add(i, InternalDataCell.newEmptyCell());
-        }
-        input.add(indexToInsert, newRow);
-        tableViewer.refresh();
-        tableViewer.setSelection(new StructuredSelection(newRow));
-        dirtyable.setDirty(true);
+        executeOperation(new InsertNewRowOperation(indexToInsert));
     }
 
     private MenuItem createMenuItem(Menu parent, String text, int style, SelectionListener listener) {
@@ -296,8 +298,9 @@ public class InternalTestDataPart extends TestDataMainPart {
                     new SelectionAdapter() {
                         @Override
                         public void widgetSelected(SelectionEvent e) {
-                            int newColumnIndex = selectedColIndex >= 0 ? Math.min(selectedColIndex + BASE_COLUMN_INDEX,
-                                    lastColumnIndex()) : lastColumnIndex();
+                            int newColumnIndex = selectedColIndex >= 0
+                                    ? Math.min(selectedColIndex + BASE_COLUMN_INDEX, lastColumnIndex())
+                                    : lastColumnIndex();
                             openAddColumnDialog(newColumnIndex);
                         }
                     });
@@ -316,12 +319,7 @@ public class InternalTestDataPart extends TestDataMainPart {
                     }
 
                     String columnName = dialog.getName();
-                    if (!selectedCol.getText().equals(columnName)) {
-                        table.setRedraw(false);
-                        selectedCol.setText(columnName);
-                        table.setRedraw(true);
-                        dirtyable.setDirty(true);
-                    }
+                    renameColumn(selectedCol, columnName);
                 }
             });
         }
@@ -344,29 +342,21 @@ public class InternalTestDataPart extends TestDataMainPart {
             createMenuItem(menuDelete, StringConstants.PA_MENU_CONTEXT_DEL_ROWS, SWT.PUSH, new SelectionAdapter() {
                 @Override
                 public void widgetSelected(SelectionEvent e) {
-                    StructuredSelection selection = (StructuredSelection) tableViewer.getSelection();
-                    if (selection != null && selection.isEmpty()) {
-                        return;
-                    }
-
-                    boolean changed = false;
-                    for (Object selected : selection.toArray()) {
-                        InternalDataRow dataRow = (InternalDataRow) selected;
-                        if (!dataRow.isLastRow()) {
-                            input.remove(dataRow);
-                            changed = true;
-                        }
-                    }
-                    if (changed) {
-                        tableViewer.refresh();
-                        dirtyable.setDirty(true);
-                    }
+                    deleteSelectedRows();
                 }
             });
         }
         table.setMenu(menu);
 
         return menu;
+    }
+
+    private void renameColumn(TableColumn selectedCol, String columnName) {
+        executeOperation(new RenameColumnOperation(selectedCol, columnName));
+    }
+
+    private void deleteSelectedRows() {
+        executeOperation(new DeleteRowsOperation());
     }
 
     private int getRowIndexOnMouse(SelectionEvent event) {
@@ -387,18 +377,33 @@ public class InternalTestDataPart extends TestDataMainPart {
     }
 
     private void insertNewColumn(int index, String title) {
+        executeOperation(new InsertColumnOperation(index, title));
+    }
+
+    private void internalInsertNewColumn(int index, String title) {
         TableViewerColumn tableViewColumn = new TableViewerColumn(tableViewer, SWT.NONE, index);
         addInfoForTableColumn(tableViewColumn, title, true, DF_REMOVEVABLE_COLUMN_WIDTH,
-                new InternalDataLabelProvider(), new InternalDataEditingSupport(tableViewer, dirtyable));
+                new InternalDataLabelProvider(), new InternalDataEditingSupport(this, tableViewer));
         for (InternalDataRow dataRow : input) {
-            dataRow.getCells().add(Math.min(lastCollectionIndex(dataRow.getCells()), index - BASE_COLUMN_INDEX),
-                    InternalDataCell.newEmptyCell());
+            dataRow.getCells().add(getUpperBoundColumnIndex(dataRow, index), InternalDataCell.newEmptyCell());
         }
+        refresh();
+    }
+
+    private void refresh() {
         tableViewer.refresh();
+        tableViewer.getTable().setFocus();
     }
 
     private void deleteColumn(int index) {
+        executeOperation(new DeleteColumnOperation(index));
+    }
+
+    private void internalDeleteColumn(int index) {
         for (InternalDataRow dataRow : input) {
+            if (dataRow.isLastRow()) {
+                continue;
+            }
             dataRow.getCells().remove(index - BASE_COLUMN_INDEX);
         }
 
@@ -408,7 +413,7 @@ public class InternalTestDataPart extends TestDataMainPart {
             table.redraw();
         }
 
-        tableViewer.refresh();
+        refresh();
     }
 
     @Persist
@@ -554,5 +559,228 @@ public class InternalTestDataPart extends TestDataMainPart {
             data.add(rowData);
         }
         return data;
+    }
+
+    private int getUpperBoundColumnIndex(int index) {
+        return index >= 0 ? Math.min(index, lastColumnIndex()) : lastColumnIndex();
+    }
+
+    private int getUpperBoundColumnIndex(InternalDataRow dataRow, int index) {
+        return Math.min(lastCollectionIndex(dataRow.getCells()), index - BASE_COLUMN_INDEX);
+    }
+
+    private class InsertNewRowOperation extends AbstractOperation {
+        private int insertIndex;
+
+        public InsertNewRowOperation(int insertIndex) {
+            super(InsertNewRowOperation.class.getName());
+            this.insertIndex = insertIndex;
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            return redo(monitor, info);
+        }
+
+        private void doInsert(int indexToInsert) {
+            InternalDataRow newRow = new InternalDataRow();
+            int editableColumnsSize = getEditableColumnsSize();
+            for (int i = 0; i < editableColumnsSize; i++) {
+                newRow.getCells().add(i, InternalDataCell.newEmptyCell());
+            }
+            input.add(indexToInsert, newRow);
+            tableViewer.refresh();
+            tableViewer.setSelection(new StructuredSelection(newRow));
+            table.showItem(table.getItem(indexToInsert));
+            dirtyable.setDirty(true);
+        }
+
+        @Override
+        public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            doInsert(insertIndex);
+            return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            input.remove(insertIndex);
+            refresh();
+            dirtyable.setDirty(true);
+            return Status.OK_STATUS;
+        }
+    }
+
+    private class InsertColumnOperation extends AbstractOperation {
+        private int index;
+
+        private String title;
+
+        public InsertColumnOperation(int index, String title) {
+            super(InsertColumnOperation.class.getName());
+            this.index = index;
+            this.title = title;
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            return redo(monitor, info);
+        }
+
+        @Override
+        public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            internalInsertNewColumn(index, title);
+            return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            internalDeleteColumn(getUpperBoundColumnIndex(index));
+            return Status.OK_STATUS;
+        }
+    }
+
+    private class DeleteColumnOperation extends AbstractOperation {
+        private int index;
+
+        private List<InternalDataCell> deleteDatas = new ArrayList<>();
+
+        private String oldColumnTitle;
+
+        public DeleteColumnOperation(int index) {
+            super(DeleteColumnOperation.class.getName());
+            this.index = index;
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            collectDeletedData();
+            return redo(monitor, info);
+        }
+
+        private void collectDeletedData() {
+            for (InternalDataRow dataRow : input) {
+                if (dataRow.isLastRow()) {
+                    continue;
+                }
+                deleteDatas.add(dataRow.getCells().get(index - BASE_COLUMN_INDEX));
+            }
+
+            TableColumn tblColumn = table.getColumn(index);
+            if (tblColumn != null) {
+                oldColumnTitle = tblColumn.getText();
+            }
+        }
+
+        @Override
+        public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            internalDeleteColumn(index);
+            return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            internalInsertNewColumn(index, oldColumnTitle);
+            int deleteDataIndex = 0;
+            for (InternalDataRow dataRow : input) {
+                if (dataRow.isLastRow()) {
+                    continue;
+                }
+                dataRow.getCells().set(getUpperBoundColumnIndex(dataRow, index), deleteDatas.get(deleteDataIndex));
+                deleteDataIndex++;
+            }
+            refresh();
+            return Status.OK_STATUS;
+        }
+    }
+    
+    private class DeleteRowsOperation extends AbstractOperation {
+        private Map<InternalDataRow, Integer> deletedDataRows = new HashMap<>();
+        
+        public DeleteRowsOperation() {
+            super(DeleteRowsOperation.class.getName());
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            StructuredSelection selection = (StructuredSelection) tableViewer.getSelection();
+            if (selection != null && selection.isEmpty()) {
+                return Status.CANCEL_STATUS;
+            }
+
+            boolean changed = false;
+            for (Object selected : selection.toArray()) {
+                InternalDataRow dataRow = (InternalDataRow) selected;
+                if (!dataRow.isLastRow()) {
+                    deletedDataRows.put(dataRow, input.indexOf(dataRow));
+                    input.remove(dataRow);
+                    changed = true;
+                }
+            }
+            if (!changed) {
+                return Status.CANCEL_STATUS;
+            }
+            refresh();
+            dirtyable.setDirty(true);
+            return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            for (Entry<InternalDataRow, Integer> deletedRowEntry : deletedDataRows.entrySet()) {
+                input.remove(deletedRowEntry.getKey());
+            }
+            refresh();
+            dirtyable.setDirty(true);
+            return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            for (Entry<InternalDataRow, Integer> deletedRowEntry : deletedDataRows.entrySet()) {
+                input.add(deletedRowEntry.getValue(), deletedRowEntry.getKey());
+            }
+            refresh();
+            dirtyable.setDirty(true);
+            tableViewer.setSelection(new StructuredSelection(deletedDataRows.keySet().toArray()));
+            return Status.OK_STATUS;
+        }
+    }
+    
+    private class RenameColumnOperation extends AbstractOperation {
+        private TableColumn selectedColumn;
+        private String newName;
+        private String oldName;
+        
+        public RenameColumnOperation(TableColumn selectedColumn, String newName) {
+            super(RenameColumnOperation.class.getName());
+            this.selectedColumn = selectedColumn;
+            this.newName = newName;
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            oldName = selectedColumn.getText();
+            return redo(monitor, info);
+        }
+
+        private void doRename(String columnName) {
+            table.setRedraw(false);
+            selectedColumn.setText(columnName);
+            table.setRedraw(true);
+            dirtyable.setDirty(true);
+        }
+
+        @Override
+        public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            doRename(newName);
+            return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            doRename(oldName);
+            return Status.OK_STATUS;
+        }
+        
     }
 }
