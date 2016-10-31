@@ -267,6 +267,7 @@ public class GenerateCommandDialog extends AbstractDialog {
         txtRemoteWebDriverURL.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 
         comboRemoteWebDriverType = new Combo(grpPlatform, SWT.READ_ONLY);
+        comboRemoteWebDriverType.setLayoutData(new GridData(100, SWT.DEFAULT));
 
         Label lblMobileDevice = new Label(grpPlatform, SWT.NONE);
         lblMobileDevice.setText(StringConstants.DIA_RADIO_MOBILE_DEVICE);
