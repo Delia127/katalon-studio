@@ -25,8 +25,8 @@ public class CheckpointCsvPart extends CheckpointExcelPart {
                 }
                 CsvCheckpointSourceInfo sourceInfo = dialog.getSourceInfo();
                 currentCheckpoint.setSourceInfo(sourceInfo);
-                save();
                 loadCheckpointSourceInfo(sourceInfo);
+                setDirty(true);
             }
         });
     }

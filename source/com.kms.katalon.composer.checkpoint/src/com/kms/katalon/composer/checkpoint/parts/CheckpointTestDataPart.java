@@ -118,7 +118,7 @@ public class CheckpointTestDataPart extends CheckpointAbstractPart {
                     DataFileEntity testData = (DataFileEntity) ((TestDataTreeEntity) selectedItems[0]).getObject();
                     currentCheckpointSourceInfo.setSourceUrl(testData.getIdForDisplay());
                     loadCheckpointSourceInfo(currentCheckpointSourceInfo);
-                    save();
+                    setDirty(true);
                 } catch (Exception ex) {
                     LoggerSingleton.logError(ex);
                     MessageDialog.openWarning(Display.getCurrent().getActiveShell(), StringConstants.WARN,

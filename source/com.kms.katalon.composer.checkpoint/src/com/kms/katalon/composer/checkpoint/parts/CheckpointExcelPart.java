@@ -58,8 +58,8 @@ public class CheckpointExcelPart extends CheckpointAbstractPart {
                 }
                 ExcelCheckpointSourceInfo sourceInfo = dialog.getSourceInfo();
                 currentCheckpoint.setSourceInfo(sourceInfo);
-                save();
                 loadCheckpointSourceInfo(sourceInfo);
+                setDirty(true);
             }
         });
     }

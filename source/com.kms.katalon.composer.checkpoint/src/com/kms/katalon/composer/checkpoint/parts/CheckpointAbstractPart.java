@@ -398,8 +398,9 @@ public abstract class CheckpointAbstractPart implements EventHandler, IComposerP
                                     StringConstants.PART_MSG_CLEAR_CHECKPOINT_DATA)) {
                         return;
                     }
-                    loadCheckpoint(CheckpointController.getInstance().takeSnapshot(currentCheckpoint));
-                    setDirty(false);
+                    CheckpointController.getInstance().takeSnapshot(currentCheckpoint);
+                    refreshPart(currentCheckpoint);
+                    setDirty(true);
                 } catch (Exception ex) {
                     LoggerSingleton.logError(ex);
                     MultiStatusErrorDialog.showErrorDialog(ex, StringConstants.PART_MSG_CANNOT_TAKE_SNAPSHOT,
@@ -481,6 +482,10 @@ public abstract class CheckpointAbstractPart implements EventHandler, IComposerP
 
     private void verifySourceChanged() {
         try {
+            if (isDirty()) {
+                return;
+            }
+            
             CheckpointEntity currentCheckpoint = getCheckpoint();
             if (currentCheckpoint == null) {
                 return;
@@ -515,10 +520,14 @@ public abstract class CheckpointAbstractPart implements EventHandler, IComposerP
     protected void loadCheckpoint(CheckpointEntity checkpoint) {
         this.checkpoint = checkpoint;
         this.tempCheckpoint = (CheckpointEntity) checkpoint.clone();
+        refreshPart(tempCheckpoint);
+    }
+
+    protected void refreshPart(CheckpointEntity checkpoint) {
         getPart().setLabel(checkpoint.getName());
         getPart().setElementId(EntityPartUtil.getCheckpointPartId(checkpoint.getId()));
         loadCheckpointSourceInfo(checkpoint.getSourceInfo());
-        loadCheckpointData(tempCheckpoint);
+        loadCheckpointData(checkpoint);
         updateStatus();
     }
 

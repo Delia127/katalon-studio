@@ -62,7 +62,7 @@ public class CheckpointDatabasePart extends CheckpointAbstractPart {
                 DatabaseCheckpointSourceInfo sourceInfo = dialog.getSourceInfo();
                 currentCheckpoint.setSourceInfo(sourceInfo);
                 loadCheckpointSourceInfo(sourceInfo);
-                save();
+                setDirty(true);
             }
         });
     }
