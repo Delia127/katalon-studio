@@ -391,13 +391,14 @@ public abstract class CheckpointAbstractPart implements EventHandler, IComposerP
             @Override
             public void widgetSelected(SelectionEvent e) {
                 try {
-                    if (getCheckpoint().getCheckpointData() != null
+                    CheckpointEntity currentCheckpoint = getCheckpoint();
+                    if (currentCheckpoint.getCheckpointData() != null
                             && !MessageDialog.openConfirm(Display.getCurrent().getActiveShell(),
                                     StringConstants.PART_TITLE_TAKE_CHECKPOINT_SNAPSHOT,
                                     StringConstants.PART_MSG_CLEAR_CHECKPOINT_DATA)) {
                         return;
                     }
-                    loadCheckpoint(CheckpointController.getInstance().takeSnapshot(getCheckpoint()));
+                    loadCheckpoint(CheckpointController.getInstance().takeSnapshot(currentCheckpoint));
                     setDirty(false);
                 } catch (Exception ex) {
                     LoggerSingleton.logError(ex);
@@ -480,15 +481,16 @@ public abstract class CheckpointAbstractPart implements EventHandler, IComposerP
 
     private void verifySourceChanged() {
         try {
-            if (getCheckpoint() == null) {
+            CheckpointEntity currentCheckpoint = getCheckpoint();
+            if (currentCheckpoint == null) {
                 return;
             }
 
-            CheckpointEntity reloadedCheckpoint = CheckpointController.getInstance().getById(getCheckpoint().getId());
+            CheckpointEntity reloadedCheckpoint = CheckpointController.getInstance().getById(currentCheckpoint.getId());
             if (reloadedCheckpoint == null) {
                 FolderTreeEntity parentFolderTreeEntity = TreeEntityUtil.createSelectedTreeEntityHierachy(
-                        getCheckpoint().getParentFolder(),
-                        FolderController.getInstance().getCheckpointRoot(getCheckpoint().getProject()));
+                        currentCheckpoint.getParentFolder(),
+                        FolderController.getInstance().getCheckpointRoot(currentCheckpoint.getProject()));
                 if (parentFolderTreeEntity != null) {
                     eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentFolderTreeEntity);
                 }
@@ -496,7 +498,7 @@ public abstract class CheckpointAbstractPart implements EventHandler, IComposerP
                 return;
             }
 
-            if (getCheckpoint().equals(reloadedCheckpoint)) {
+            if (currentCheckpoint.equals(reloadedCheckpoint)) {
                 return;
             }
 
@@ -583,7 +585,7 @@ public abstract class CheckpointAbstractPart implements EventHandler, IComposerP
     @Persist
     public void save() {
         try {
-            checkpoint.setCheckpointData(tempCheckpoint.getCheckpointData());
+            checkpoint.copyPropertiesFrom(tempCheckpoint);
             CheckpointController.getInstance().update(checkpoint);
             setDirty(false);
             eventBroker.post(EventConstants.CHECKPOINT_UPDATED,
@@ -623,7 +625,7 @@ public abstract class CheckpointAbstractPart implements EventHandler, IComposerP
     }
 
     public CheckpointEntity getCheckpoint() {
-        return checkpoint;
+        return tempCheckpoint;
     }
 
     @Override

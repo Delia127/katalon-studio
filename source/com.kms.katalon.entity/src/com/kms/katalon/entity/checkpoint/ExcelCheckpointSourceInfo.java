@@ -64,4 +64,8 @@ public class ExcelCheckpointSourceInfo extends CheckpointSourceInfo {
         this.usingFirstRowAsHeader = usingFirstRowAsHeader;
     }
 
+    @Override
+    public ExcelCheckpointSourceInfo clone() {
+        return (ExcelCheckpointSourceInfo) super.clone();
+    }
 }

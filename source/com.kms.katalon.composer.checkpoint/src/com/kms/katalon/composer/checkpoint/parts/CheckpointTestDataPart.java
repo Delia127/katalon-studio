@@ -29,6 +29,7 @@ import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestDataController;
+import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.checkpoint.CheckpointSourceInfo;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -81,10 +82,12 @@ public class CheckpointTestDataPart extends CheckpointAbstractPart {
                     dialog.setAllowMultiple(false);
                     dialog.setTitle(StringConstants.PART_TITLE_TEST_DATA_BROWSER);
                     dialog.setInput(TreeEntityUtil.getChildren(null, rootFolder));
-                    String testDataId = getCheckpoint().getSourceInfo().getSourceUrl();
+                    CheckpointEntity currentCheckpoint = getCheckpoint();
+                    CheckpointSourceInfo currentCheckpointSourceInfo = currentCheckpoint.getSourceInfo();
+                    String testDataId = currentCheckpointSourceInfo.getSourceUrl();
                     if (StringUtils.isNotBlank(testDataId)) {
-                        DataFileEntity testDataEntity = TestDataController.getInstance().getTestDataByDisplayId(
-                                testDataId);
+                        DataFileEntity testDataEntity = TestDataController.getInstance()
+                                .getTestDataByDisplayId(testDataId);
                         TestDataTreeEntity testDataTreeEntity = TreeEntityUtil.getTestDataTreeEntity(testDataEntity,
                                 currentProject);
                         dialog.setInitialSelection(testDataTreeEntity);
@@ -113,9 +116,8 @@ public class CheckpointTestDataPart extends CheckpointAbstractPart {
                     }
 
                     DataFileEntity testData = (DataFileEntity) ((TestDataTreeEntity) selectedItems[0]).getObject();
-                    CheckpointSourceInfo sourceInfo = getCheckpoint().getSourceInfo();
-                    sourceInfo.setSourceUrl(testData.getIdForDisplay());
-                    loadCheckpointSourceInfo(sourceInfo);
+                    currentCheckpointSourceInfo.setSourceUrl(testData.getIdForDisplay());
+                    loadCheckpointSourceInfo(currentCheckpointSourceInfo);
                     save();
                 } catch (Exception ex) {
                     LoggerSingleton.logError(ex);

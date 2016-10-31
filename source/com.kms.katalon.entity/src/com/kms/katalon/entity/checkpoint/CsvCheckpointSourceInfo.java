@@ -29,4 +29,8 @@ public class CsvCheckpointSourceInfo extends ExcelCheckpointSourceInfo {
         setSourceType(DataFileDriverType.CSV);
     }
 
+    @Override
+    public CsvCheckpointSourceInfo clone() {
+        return (CsvCheckpointSourceInfo) super.clone();
+    }
 }

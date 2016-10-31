@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.checkpoint.constants.StringConstants;
 import com.kms.katalon.composer.checkpoint.dialogs.EditCheckpointDatabaseDialog;
+import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.checkpoint.CheckpointSourceInfo;
 import com.kms.katalon.entity.checkpoint.DatabaseCheckpointSourceInfo;
 
@@ -52,13 +53,14 @@ public class CheckpointDatabasePart extends CheckpointAbstractPart {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
+                CheckpointEntity currentCheckpoint = getCheckpoint();
                 EditCheckpointDatabaseDialog dialog = new EditCheckpointDatabaseDialog(Display.getCurrent()
-                        .getActiveShell(), (DatabaseCheckpointSourceInfo) getCheckpoint().getSourceInfo());
+                        .getActiveShell(), (DatabaseCheckpointSourceInfo) currentCheckpoint.getSourceInfo());
                 if (dialog.open() != Window.OK || !dialog.isChanged()) {
                     return;
                 }
                 DatabaseCheckpointSourceInfo sourceInfo = dialog.getSourceInfo();
-                getCheckpoint().setSourceInfo(sourceInfo);
+                currentCheckpoint.setSourceInfo(sourceInfo);
                 loadCheckpointSourceInfo(sourceInfo);
                 save();
             }

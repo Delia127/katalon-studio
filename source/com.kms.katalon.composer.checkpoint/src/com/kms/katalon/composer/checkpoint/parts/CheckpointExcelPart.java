@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.checkpoint.constants.StringConstants;
 import com.kms.katalon.composer.checkpoint.dialogs.EditCheckpointExcelSourceDialog;
+import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.checkpoint.CheckpointSourceInfo;
 import com.kms.katalon.entity.checkpoint.ExcelCheckpointSourceInfo;
 
@@ -49,13 +50,14 @@ public class CheckpointExcelPart extends CheckpointAbstractPart {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
+                CheckpointEntity currentCheckpoint = getCheckpoint();
                 EditCheckpointExcelSourceDialog dialog = new EditCheckpointExcelSourceDialog(Display.getCurrent()
-                        .getActiveShell(), (ExcelCheckpointSourceInfo) getCheckpoint().getSourceInfo());
+                        .getActiveShell(), (ExcelCheckpointSourceInfo) currentCheckpoint.getSourceInfo());
                 if (dialog.open() != Dialog.OK || !dialog.isChanged()) {
                     return;
                 }
                 ExcelCheckpointSourceInfo sourceInfo = dialog.getSourceInfo();
-                getCheckpoint().setSourceInfo(sourceInfo);
+                currentCheckpoint.setSourceInfo(sourceInfo);
                 save();
                 loadCheckpointSourceInfo(sourceInfo);
             }

@@ -6,6 +6,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Display;
 
 import com.kms.katalon.composer.checkpoint.dialogs.EditCheckpointCsvSourceDialog;
+import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.checkpoint.CsvCheckpointSourceInfo;
 
 public class CheckpointCsvPart extends CheckpointExcelPart {
@@ -16,13 +17,14 @@ public class CheckpointCsvPart extends CheckpointExcelPart {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
+                CheckpointEntity currentCheckpoint = getCheckpoint();
                 EditCheckpointCsvSourceDialog dialog = new EditCheckpointCsvSourceDialog(Display.getCurrent()
-                        .getActiveShell(), (CsvCheckpointSourceInfo) getCheckpoint().getSourceInfo());
+                        .getActiveShell(), (CsvCheckpointSourceInfo) currentCheckpoint.getSourceInfo());
                 if (dialog.open() != Dialog.OK || !dialog.isChanged()) {
                     return;
                 }
                 CsvCheckpointSourceInfo sourceInfo = dialog.getSourceInfo();
-                getCheckpoint().setSourceInfo(sourceInfo);
+                currentCheckpoint.setSourceInfo(sourceInfo);
                 save();
                 loadCheckpointSourceInfo(sourceInfo);
             }
