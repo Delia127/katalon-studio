@@ -8,6 +8,7 @@ import com.kms.katalon.execution.configuration.contributor.IDriverConnectorContr
 import com.kms.katalon.execution.webui.driver.ChromeDriverConnector;
 import com.kms.katalon.execution.webui.driver.EdgeDriverConnector;
 import com.kms.katalon.execution.webui.driver.FirefoxDriverConnector;
+import com.kms.katalon.execution.webui.driver.HeadlessDriverConnector;
 import com.kms.katalon.execution.webui.driver.IEDriverConnector;
 import com.kms.katalon.execution.webui.driver.RemoteWebDriverConnector;
 import com.kms.katalon.execution.webui.driver.SafariDriverConnector;
@@ -19,7 +20,7 @@ public class WebUIDriverConnectorContributor implements IDriverConnectorContribu
         return new IDriverConnector[] { new ChromeDriverConnector(configFolderPath),
                 new EdgeDriverConnector(configFolderPath), new FirefoxDriverConnector(configFolderPath),
                 new IEDriverConnector(configFolderPath), new RemoteWebDriverConnector(configFolderPath),
-                new SafariDriverConnector(configFolderPath) };
+                new SafariDriverConnector(configFolderPath), new HeadlessDriverConnector(configFolderPath) };
     }
 
     @Override

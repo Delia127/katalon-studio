@@ -87,6 +87,12 @@
             id="com.kms.katalon.composer.execution.settings.default.3.2"
             name="Chrome">
        </page>
+       <page
+             category="com.kms.katalon.composer.execution.settings.default.1"
+             class="com.kms.katalon.composer.webui.setting.HeadlessPreferencePage"
+             id="com.kms.katalon.composer.execution.settings.default.1.7"
+             name="Headless">
+       </page>
    </extension>
 	<extension
 	       point="com.kms.katalon.composer.execution.driverConnectorEditor">
@@ -124,6 +130,12 @@
 		        driver.connector.editor="com.kms.katalon.composer.webui.component.contributor.EdgeDriverEditorContributor">
 		  </client>
 	 </extension>
+  <extension
+        point="com.kms.katalon.composer.execution.driverConnectorEditor">
+     <client
+           driver.connector.editor="com.kms.katalon.composer.webui.component.contributor.HeadlessDriverEditorContributor">
+     </client>
+  </extension>
   <extension
         point="com.kms.katalon.composer.testsuite.collection.testSuiteExecutionItem">
      <client

@@ -20,6 +20,9 @@ public class ImageConstants {
     public static final String IMG_URL_16_REMOTE_WEB = ImageUtil.getImageUrl(currentBundle,
             "/icons/remote_web_driver_16.png");
 
+    public static final String IMG_URL_16_HEADLESS= ImageUtil.getImageUrl(currentBundle,
+            "/icons/headless_16.png");
+
     public static final String IMG_URL_16_WEB_DESKTOP = ImageUtil.getImageUrl(currentBundle,
             "/icons/web_desktop_16.png");
 }
