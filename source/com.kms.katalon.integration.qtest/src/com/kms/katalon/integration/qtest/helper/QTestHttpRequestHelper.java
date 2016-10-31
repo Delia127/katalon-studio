@@ -11,7 +11,6 @@ import java.util.Map.Entry;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
@@ -25,18 +24,13 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+import org.qas.api.internal.util.json.JsonException;
+import org.qas.api.internal.util.json.JsonObject;
 
 import com.kms.katalon.integration.qtest.credential.IQTestCredential;
-import com.kms.katalon.integration.qtest.credential.IQTestToken;
-import com.kms.katalon.integration.qtest.credential.QTestTokenManager;
 import com.kms.katalon.integration.qtest.exception.QTestAPIConnectionException;
 import com.kms.katalon.integration.qtest.exception.QTestException;
 import com.kms.katalon.integration.qtest.exception.QTestIOException;
-import com.kms.katalon.integration.qtest.setting.QTestVersion;
 
 public class QTestHttpRequestHelper {
 
@@ -46,19 +40,17 @@ public class QTestHttpRequestHelper {
     
     public static String getV7Token(IQTestCredential credential, String url) throws QTestException {
         HttpResponseResult reponseResult = internallyGetV7Token(credential, url);
-        int statusCode =  reponseResult.getStatusLine().getStatusCode() ;
+        int statusCode = reponseResult.getStatusLine().getStatusCode();
         if (statusCode == HttpStatus.SC_OK) {
             return reponseResult.getResult();
-        } else if (statusCode == HttpStatus.SC_UNAUTHORIZED){
-            CloseableHttpClient client = null;
+        } else if (statusCode == HttpStatus.SC_UNAUTHORIZED) {
+            // return internallyGetV7Token(credential, url).getResult();
+            // Try to parse and get qTest error message
             try {
-                client = HttpClientBuilder.create().build();
-                Map<String, String> cookies = new HashMap<String, String>();
-                doTerminateAllSession(credential, client, cookies);
-            } finally {
-                IOUtils.closeQuietly(client);
-            }
-            return internallyGetV7Token(credential, url).getResult();
+                JsonObject jo = new JsonObject(reponseResult.getResult());
+                throw new QTestAPIConnectionException(jo.getString("error_description"));
+            } catch (JsonException e) {}
+            throw new QTestAPIConnectionException(reponseResult.getResult());
         } else {
             throw new QTestAPIConnectionException(reponseResult.getResult());
         }
@@ -177,11 +169,7 @@ public class QTestHttpRequestHelper {
         return builder.toString();
     }
 
-    private static void doTerminateAllSession(IQTestCredential credential, CloseableHttpClient client,
-            Map<String, String> cookies) throws QTestException {
-        doLogin(credential, client, cookies);
-        doLogout(credential, client, cookies);
-    }
+    
 
     public static void doLogin(IQTestCredential credential, CloseableHttpClient client, Map<String, String> cookies)
             throws QTestException {
@@ -190,63 +178,11 @@ public class QTestHttpRequestHelper {
         postParams.add(new BasicNameValuePair("j_username", credential.getUsername()));
         postParams.add(new BasicNameValuePair("j_password", credential.getPassword()));
 
-        HttpResponseResult responseResult = doPost(client, credential.getServerUrl(),
+        doPost(client, credential.getServerUrl(),
                 "/login?redirect=%2Fportal%2Fproject", postParams, cookies);
-
-        // In qTestV7, when returned cookies doesn't contain UserContextToken as well that means the login sessions has
-        // reached to limit.
-        // We need to terminate all sessions except the whole of the current credential to successfully login.
-        String contextToken = cookies.get("UserContextToken");
-        if ((StringUtils.isBlank(contextToken) || "\"\"".equals(contextToken))
-                && credential.getVersion() == QTestVersion.V7) {
-
-            // Get path of the url to terminate sessions
-            String url = responseResult.getHeader("Location").getValue().replaceFirst(credential.getServerUrl(), "");
-
-            List<String> activeTokens = getActiveTokens(client, credential.getServerUrl(), url, cookies);
-
-            // Revoke all sessions that is different with current credential's token.
-            for (String activeToken : activeTokens) {
-                IQTestToken token = credential.getToken();
-                if (token != null && token.getAccessToken().equalsIgnoreCase(activeToken)) {
-                    continue;
-                }
-
-                QTestAPIRequestHelper.sendPostRequestViaAPI(credential.getServerUrl() + "/oauth/revoke",
-                        QTestTokenManager.getTokenByAccessToken(credential.getVersion(), activeToken), "");
-            }
-
-            // Re-login to get new UserContextToken
-            doPost(client, credential.getServerUrl(), "/login?redirect=%2Fportal%2Fproject", postParams, cookies);
-
-        }
 
         // Access portal project
         doGet(client, credential.getServerUrl(), "/portal/project", cookies);
-    }
-
-    private static List<String> getActiveTokens(CloseableHttpClient client, String serverUrl, String url,
-            Map<String, String> cookies) throws QTestIOException {
-        List<String> activeTokens = new ArrayList<String>();
-        String htmlResult = doGet(client, serverUrl, url, cookies).getResult();
-        Document doc = Jsoup.parse(htmlResult);
-        Element table = doc.select("table#activeSessionTable").get(0);
-        Elements tableHeaderRows = doc.select("table#activeSessionTable thead tr").get(0).children();
-        int activeTokenClmnIdx = 0;
-        while (activeTokenClmnIdx < tableHeaderRows.size()) {
-            if ("id".equalsIgnoreCase(tableHeaderRows.get(activeTokenClmnIdx).attributes().get("data-field"))) {
-                break;
-            }
-            activeTokenClmnIdx++;
-        }
-
-        if (activeTokenClmnIdx < tableHeaderRows.size()) {
-            Elements activeTokenCells = table.select("tbody tr td:eq(" + Integer.toString(activeTokenClmnIdx) + ")");
-            for (Element cell : activeTokenCells) {
-                activeTokens.add(cell.text());
-            }
-        }
-        return activeTokens;
     }
 
     public static void doLogout(IQTestCredential credential, CloseableHttpClient client, Map<String, String> cookies)
