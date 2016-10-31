@@ -1,5 +1,10 @@
 package com.kms.katalon.composer.checkpoint.parts;
 
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -50,16 +55,7 @@ public class CheckpointExcelPart extends CheckpointAbstractPart {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                CheckpointEntity currentCheckpoint = getCheckpoint();
-                EditCheckpointExcelSourceDialog dialog = new EditCheckpointExcelSourceDialog(Display.getCurrent()
-                        .getActiveShell(), (ExcelCheckpointSourceInfo) currentCheckpoint.getSourceInfo());
-                if (dialog.open() != Dialog.OK || !dialog.isChanged()) {
-                    return;
-                }
-                ExcelCheckpointSourceInfo sourceInfo = dialog.getSourceInfo();
-                currentCheckpoint.setSourceInfo(sourceInfo);
-                loadCheckpointSourceInfo(sourceInfo);
-                setDirty(true);
+                executeOperation(new ChangeExcelSourceInfoOperation());
             }
         });
     }
@@ -69,4 +65,26 @@ public class CheckpointExcelPart extends CheckpointAbstractPart {
         txtSourceUrl.setText(sourceInfo.getSourceUrl());
     }
 
+    private class ChangeExcelSourceInfoOperation extends ChangeCheckpointSourceInfoOperation {
+        public ChangeExcelSourceInfoOperation() {
+            super(ChangeExcelSourceInfoOperation.class.getName());
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            CheckpointEntity checkpoint = getCheckpoint();
+            oldCheckpointSourceInfo = checkpoint.getSourceInfo().clone();
+            EditCheckpointExcelSourceDialog dialog = new EditCheckpointExcelSourceDialog(
+                    Display.getCurrent().getActiveShell(), (ExcelCheckpointSourceInfo) checkpoint.getSourceInfo());
+            if (dialog.open() != Dialog.OK || !dialog.isChanged()) {
+                return Status.CANCEL_STATUS;
+            }
+            ExcelCheckpointSourceInfo sourceInfo = dialog.getSourceInfo();
+            newCheckpointSourceInfo = sourceInfo.clone();
+            checkpoint.setSourceInfo(sourceInfo);
+            loadCheckpointSourceInfo(sourceInfo);
+            setDirty(true);
+            return Status.OK_STATUS;
+        }
+    }
 }

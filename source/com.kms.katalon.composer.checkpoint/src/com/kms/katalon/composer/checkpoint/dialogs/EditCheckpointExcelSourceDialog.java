@@ -52,7 +52,7 @@ public class EditCheckpointExcelSourceDialog extends AbstractDialog {
 
     public EditCheckpointExcelSourceDialog(Shell parentShell, ExcelCheckpointSourceInfo sourceInfo) {
         super(parentShell);
-        this.sourceInfo = sourceInfo;
+        this.sourceInfo = sourceInfo.clone();
         setDialogTitle(StringConstants.DIA_TITLE_CHECKPOINT_SOURCE_INFO);
     }
 
