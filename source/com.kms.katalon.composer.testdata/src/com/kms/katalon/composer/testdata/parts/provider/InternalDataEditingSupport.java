@@ -2,6 +2,7 @@ package com.kms.katalon.composer.testdata.parts.provider;
 
 import static com.kms.katalon.composer.testdata.parts.InternalTestDataPart.BASE_COLUMN_INDEX;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.core.commands.ExecutionException;
@@ -62,20 +63,25 @@ public class InternalDataEditingSupport extends TypeCheckedEditingSupport<Intern
     }
 
     private class EditCellOperation extends AbstractOperation {
-        private InternalDataRow rowElement;
-        private InternalDataCell internalDataCell;
+        private int rowIndex;
+
         private String newValue;
+
         private String oldValue;
-        
+
         public EditCellOperation(InternalDataRow rowElement, String newValue) {
             super(EditCellOperation.class.getName());
-            this.rowElement = rowElement;
-            this.internalDataCell = getCellData(rowElement);
+            this.rowIndex = testDataPart.getInput().indexOf(rowElement);
             this.newValue = newValue;
         }
 
         @Override
         public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            List<InternalDataRow> input = testDataPart.getInput();
+            if (rowIndex < 0 || rowIndex > input.size()) {
+                return Status.CANCEL_STATUS;
+            }
+            InternalDataCell internalDataCell = getCellData(input.get(rowIndex));
             if (newValue.equals(internalDataCell.getValue())) {
                 return Status.CANCEL_STATUS;
             }
@@ -85,11 +91,14 @@ public class InternalDataEditingSupport extends TypeCheckedEditingSupport<Intern
 
         @Override
         public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-            doSetValue(internalDataCell, newValue);
+            doSetValue(newValue);
             return Status.OK_STATUS;
         }
-        
-        private void doSetValue(InternalDataCell internalDataCell, String value) {
+
+        private void doSetValue(String value) {
+            List<InternalDataRow> input = testDataPart.getInput();
+            InternalDataRow rowElement = input.get(rowIndex);
+            InternalDataCell internalDataCell = getCellData(rowElement);
             internalDataCell.setValue(Objects.toString(value));
             getViewer().refresh(rowElement);
             getViewer().setSelection(new StructuredSelection(rowElement));
@@ -98,9 +107,9 @@ public class InternalDataEditingSupport extends TypeCheckedEditingSupport<Intern
 
         @Override
         public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-            doSetValue(internalDataCell, oldValue);
+            doSetValue(oldValue);
             return Status.OK_STATUS;
         }
-        
+
     }
 }
