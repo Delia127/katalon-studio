@@ -9,7 +9,7 @@ public class KobitonStringConstants {
     
     public static final String KOBITON_SCHEME_HTTP = "http";
     
-    public static final String KOBITON_HOST = "api-test.kobiton.com";
+    public static final String KOBITON_HOST = "api.kobiton.com";
     
     public static final String KOBITON_SERVER_URL_AUTHENTICATE_SEPARATOR = ":";
     
