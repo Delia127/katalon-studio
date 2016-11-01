@@ -1443,5 +1443,26 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
+         
+         <plugin
+         id="org.zeroturnaround.zt-exec"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.zeroturnaround.zt-process"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.kms.katalon.jbrowser"
+         download-size="0"
+         install-size="0"
+         version="1.0.0.qualifier"
+         unpack="false"/>
 
 </feature>
