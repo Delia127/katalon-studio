@@ -2,9 +2,9 @@ package com.kms.katalon.composer.testdata.parts;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 
@@ -377,17 +377,7 @@ public class InternalTestDataPart extends TestDataMainPart {
     }
 
     private void insertNewColumn(int index, String title) {
-        executeOperation(new InsertColumnOperation(index, title));
-    }
-
-    private void internalInsertNewColumn(int index, String title) {
-        TableViewerColumn tableViewColumn = new TableViewerColumn(tableViewer, SWT.NONE, index);
-        addInfoForTableColumn(tableViewColumn, title, true, DF_REMOVEVABLE_COLUMN_WIDTH,
-                new InternalDataLabelProvider(), new InternalDataEditingSupport(this, tableViewer));
-        for (InternalDataRow dataRow : input) {
-            dataRow.getCells().add(getUpperBoundColumnIndex(dataRow, index), InternalDataCell.newEmptyCell());
-        }
-        refresh();
+        executeOperation(new InsertColumnOperation(this, index, title));
     }
 
     private void refresh() {
@@ -396,24 +386,7 @@ public class InternalTestDataPart extends TestDataMainPart {
     }
 
     private void deleteColumn(int index) {
-        executeOperation(new DeleteColumnOperation(index));
-    }
-
-    private void internalDeleteColumn(int index) {
-        for (InternalDataRow dataRow : input) {
-            if (dataRow.isLastRow()) {
-                continue;
-            }
-            dataRow.getCells().remove(index - BASE_COLUMN_INDEX);
-        }
-
-        TableColumn tblColumn = table.getColumn(index);
-        if (tblColumn != null) {
-            tblColumn.dispose();
-            table.redraw();
-        }
-
-        refresh();
+        executeOperation(new DeleteColumnOperation(this, index));
     }
 
     @Persist
@@ -544,6 +517,14 @@ public class InternalTestDataPart extends TestDataMainPart {
         return dataRows;
     }
 
+    public CTableViewer getTableViewer() {
+        return tableViewer;
+    }
+
+    public List<InternalDataRow> getInput() {
+        return input;
+    }
+
     private List<List<Object>> tableInputToData() {
         List<List<Object>> data = new ArrayList<>();
         for (InternalDataRow tableRow : input) {
@@ -560,17 +541,44 @@ public class InternalTestDataPart extends TestDataMainPart {
         }
         return data;
     }
-
-    private int getUpperBoundColumnIndex(int index) {
-        return index >= 0 ? Math.min(index, lastColumnIndex()) : lastColumnIndex();
-    }
-
+    
     private int getUpperBoundColumnIndex(InternalDataRow dataRow, int index) {
         return Math.min(lastCollectionIndex(dataRow.getCells()), index - BASE_COLUMN_INDEX);
     }
 
+    private TableViewerColumn createTableColumn(InternalTestDataPart testDataPart, int index,
+            String tableColumnHeader) {
+        CTableViewer tableViewer = testDataPart.getTableViewer();
+        TableViewerColumn tableColumn = new TableViewerColumn(tableViewer, SWT.NONE, index);
+        addInfoForTableColumn(tableColumn, tableColumnHeader, true, DF_REMOVEVABLE_COLUMN_WIDTH,
+                new InternalDataLabelProvider(), new InternalDataEditingSupport(testDataPart, tableViewer));
+        return tableColumn;
+    }
+
+    private class OperationData {
+        private int columnIndex;
+
+        private InternalDataCell cellData;
+
+        public OperationData(int columnIndex, InternalDataCell cellData) {
+            super();
+            this.columnIndex = columnIndex;
+            this.cellData = cellData;
+        }
+
+        public int getColumnIndex() {
+            return columnIndex;
+        }
+        
+        public InternalDataCell getCellData() {
+            return cellData;
+        }
+    }
+
     private class InsertNewRowOperation extends AbstractOperation {
         private int insertIndex;
+
+        private InternalDataRow newRow;
 
         public InsertNewRowOperation(int insertIndex) {
             super(InsertNewRowOperation.class.getName());
@@ -579,15 +587,16 @@ public class InternalTestDataPart extends TestDataMainPart {
 
         @Override
         public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-            return redo(monitor, info);
-        }
-
-        private void doInsert(int indexToInsert) {
-            InternalDataRow newRow = new InternalDataRow();
+            newRow = new InternalDataRow();
             int editableColumnsSize = getEditableColumnsSize();
             for (int i = 0; i < editableColumnsSize; i++) {
                 newRow.getCells().add(i, InternalDataCell.newEmptyCell());
             }
+            doInsert(newRow, insertIndex);
+            return Status.OK_STATUS;
+        }
+
+        private void doInsert(InternalDataRow newRow, int indexToInsert) {
             input.add(indexToInsert, newRow);
             tableViewer.refresh();
             tableViewer.setSelection(new StructuredSelection(newRow));
@@ -597,13 +606,13 @@ public class InternalTestDataPart extends TestDataMainPart {
 
         @Override
         public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-            doInsert(insertIndex);
+            doInsert(newRow, insertIndex);
             return Status.OK_STATUS;
         }
 
         @Override
         public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-            input.remove(insertIndex);
+            input.remove(newRow);
             refresh();
             dirtyable.setDirty(true);
             return Status.OK_STATUS;
@@ -611,91 +620,143 @@ public class InternalTestDataPart extends TestDataMainPart {
     }
 
     private class InsertColumnOperation extends AbstractOperation {
+        private InternalTestDataPart testDataPart;
+
         private int index;
 
         private String title;
 
-        public InsertColumnOperation(int index, String title) {
+        private List<OperationData> addedDatas = new ArrayList<>();
+
+        public InsertColumnOperation(InternalTestDataPart testDataPart, int index, String title) {
             super(InsertColumnOperation.class.getName());
+            this.testDataPart = testDataPart;
             this.index = index;
             this.title = title;
         }
 
         @Override
         public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-            return redo(monitor, info);
+            createTableColumn(testDataPart, index, title);
+            for (InternalDataRow dataRow : input) {
+                if (dataRow.isLastRow()) {
+                    continue;
+                }
+                InternalDataCell newEmptyCell = InternalDataCell.newEmptyCell();
+                int columnIndex = getUpperBoundColumnIndex(dataRow, index);
+                dataRow.getCells().add(columnIndex, newEmptyCell);
+                addedDatas.add(new OperationData(columnIndex, newEmptyCell));
+            }
+            refresh();
+            return Status.OK_STATUS;
         }
 
         @Override
         public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-            internalInsertNewColumn(index, title);
+            createTableColumn(testDataPart, index, title);
+            for (int rowIndex = 0; rowIndex < input.size(); rowIndex++) {
+                InternalDataRow dataRow = input.get(rowIndex);
+                if (dataRow.isLastRow()) {
+                    continue;
+                }
+                OperationData insertData = addedDatas.get(rowIndex);
+                dataRow.getCells().add(insertData.getColumnIndex(), insertData.getCellData());
+            }
+            refresh();
             return Status.OK_STATUS;
         }
 
         @Override
         public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-            internalDeleteColumn(getUpperBoundColumnIndex(index));
-            return Status.OK_STATUS;
-        }
-    }
-
-    private class DeleteColumnOperation extends AbstractOperation {
-        private int index;
-
-        private List<InternalDataCell> deleteDatas = new ArrayList<>();
-
-        private String oldColumnTitle;
-
-        public DeleteColumnOperation(int index) {
-            super(DeleteColumnOperation.class.getName());
-            this.index = index;
-        }
-
-        @Override
-        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-            collectDeletedData();
-            return redo(monitor, info);
-        }
-
-        private void collectDeletedData() {
-            for (InternalDataRow dataRow : input) {
+            testDataPart.getTableViewer().getTable().getColumn(index).dispose();
+            for (int rowIndex = 0; rowIndex < input.size(); rowIndex++) {
+                InternalDataRow dataRow = input.get(rowIndex);
                 if (dataRow.isLastRow()) {
                     continue;
                 }
-                deleteDatas.add(dataRow.getCells().get(index - BASE_COLUMN_INDEX));
-            }
-
-            TableColumn tblColumn = table.getColumn(index);
-            if (tblColumn != null) {
-                oldColumnTitle = tblColumn.getText();
-            }
-        }
-
-        @Override
-        public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-            internalDeleteColumn(index);
-            return Status.OK_STATUS;
-        }
-
-        @Override
-        public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-            internalInsertNewColumn(index, oldColumnTitle);
-            int deleteDataIndex = 0;
-            for (InternalDataRow dataRow : input) {
-                if (dataRow.isLastRow()) {
-                    continue;
-                }
-                dataRow.getCells().set(getUpperBoundColumnIndex(dataRow, index), deleteDatas.get(deleteDataIndex));
-                deleteDataIndex++;
+                OperationData insertData = addedDatas.get(rowIndex);
+                dataRow.getCells().remove(insertData.getColumnIndex());
             }
             refresh();
             return Status.OK_STATUS;
         }
     }
-    
-    private class DeleteRowsOperation extends AbstractOperation {
-        private Map<InternalDataRow, Integer> deletedDataRows = new HashMap<>();
+
+    private class DeleteColumnOperation extends AbstractOperation {
+        private InternalTestDataPart testDataPart;
+
+        private int index;
+
+        private List<OperationData> deletedDatas = new ArrayList<>();
+
+        private String oldColumnTitle;
         
+        private Table table;
+
+        public DeleteColumnOperation(InternalTestDataPart testDataPart, int index) {
+            super(DeleteColumnOperation.class.getName());
+            this.testDataPart = testDataPart;
+            this.table = testDataPart.getTableViewer().getTable();
+            this.index = index;
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            for (InternalDataRow dataRow : input) {
+                if (dataRow.isLastRow()) {
+                    continue;
+                }
+                int columnIndex = index - BASE_COLUMN_INDEX;
+                InternalDataCell dataCell = dataRow.getCells().get(columnIndex);
+                deletedDatas.add(new OperationData(columnIndex, dataCell));
+                dataRow.getCells().remove(dataCell);
+            }
+            TableColumn deletedTableColumn = table.getColumn(index);
+            oldColumnTitle = deletedTableColumn.getText();
+            deletedTableColumn.dispose();
+            table.redraw();
+            refresh();
+            return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            for (int rowIndex = 0; rowIndex < input.size(); rowIndex++) {
+                InternalDataRow dataRow = input.get(rowIndex);
+                if (dataRow.isLastRow()) {
+                    continue;
+                }
+                OperationData deletedData = deletedDatas.get(rowIndex);
+                dataRow.getCells().remove(deletedData.getColumnIndex());
+            }
+            TableColumn deletedTableColumn = table.getColumn(index);
+            deletedTableColumn.dispose();
+            table.redraw();
+            refresh();
+            return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            createTableColumn(testDataPart, index, oldColumnTitle);
+            for (int rowIndex = 0; rowIndex < input.size(); rowIndex++) {
+                InternalDataRow dataRow = input.get(rowIndex);
+                if (dataRow.isLastRow()) {
+                    continue;
+                }
+                OperationData deletedData = deletedDatas.get(rowIndex);
+                dataRow.getCells().add(deletedData.getColumnIndex(), deletedData.getCellData());
+            }
+            refresh();
+            return Status.OK_STATUS;
+        }
+    }
+
+    private class DeleteRowsOperation extends AbstractOperation {
+        private LinkedHashMap<InternalDataRow, Integer> deletedDataRows = new LinkedHashMap<>();
+
+        private List<Entry<InternalDataRow, Integer>> reversedDeletedDatas = new ArrayList<>();
+
         public DeleteRowsOperation() {
             super(DeleteRowsOperation.class.getName());
         }
@@ -708,7 +769,8 @@ public class InternalTestDataPart extends TestDataMainPart {
             }
 
             boolean changed = false;
-            for (Object selected : selection.toArray()) {
+            Object[] dataArray = selection.toArray();
+            for (Object selected : dataArray) {
                 InternalDataRow dataRow = (InternalDataRow) selected;
                 if (!dataRow.isLastRow()) {
                     deletedDataRows.put(dataRow, input.indexOf(dataRow));
@@ -719,6 +781,8 @@ public class InternalTestDataPart extends TestDataMainPart {
             if (!changed) {
                 return Status.CANCEL_STATUS;
             }
+            reversedDeletedDatas = new ArrayList<>(deletedDataRows.entrySet());
+            Collections.reverse(reversedDeletedDatas);
             refresh();
             dirtyable.setDirty(true);
             return Status.OK_STATUS;
@@ -736,7 +800,7 @@ public class InternalTestDataPart extends TestDataMainPart {
 
         @Override
         public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-            for (Entry<InternalDataRow, Integer> deletedRowEntry : deletedDataRows.entrySet()) {
+            for (Entry<InternalDataRow, Integer> deletedRowEntry : reversedDeletedDatas) {
                 input.add(deletedRowEntry.getValue(), deletedRowEntry.getKey());
             }
             refresh();
@@ -745,12 +809,14 @@ public class InternalTestDataPart extends TestDataMainPart {
             return Status.OK_STATUS;
         }
     }
-    
+
     private class RenameColumnOperation extends AbstractOperation {
         private TableColumn selectedColumn;
+
         private String newName;
+
         private String oldName;
-        
+
         public RenameColumnOperation(TableColumn selectedColumn, String newName) {
             super(RenameColumnOperation.class.getName());
             this.selectedColumn = selectedColumn;
@@ -781,6 +847,6 @@ public class InternalTestDataPart extends TestDataMainPart {
             doRename(oldName);
             return Status.OK_STATUS;
         }
-        
+
     }
 }
