@@ -17,6 +17,7 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.commands.ActionHandler;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchCommandConstants;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
@@ -51,10 +52,15 @@ public abstract class CPart extends WorkbenchPart {
 
         @Override
         public EvaluationResult evaluate(IEvaluationContext context) throws CoreException {
-            if (partService.getActivePart().equals(mPart)) {
+            if (partService.getActivePart().equals(mPart) && !isModalDialogPresent()) {
                 return EvaluationResult.TRUE;
             }
             return EvaluationResult.FALSE;
+        }
+        
+        private boolean isModalDialogPresent() {
+            IWorkbench workbench = PlatformUI.getWorkbench();
+            return workbench.getDisplay().getActiveShell() != workbench.getActiveWorkbenchWindow().getShell();
         }
     }
 
