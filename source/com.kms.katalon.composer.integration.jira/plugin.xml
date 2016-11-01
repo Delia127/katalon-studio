@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="com.kms.katalon.preferences.ProjectSettingPages">
+      <page
+            category="com.kms.katalon.composer.preferences.integration"
+            class="com.kms.katalon.composer.integration.jira.preference.JiraSettingPage"
+            id="com.kms.katalon.composer.integration.jira.page"
+            name="JIRA">
+      </page>
+   </extension>
+
+</plugin>

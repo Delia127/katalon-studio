@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry exported="true" kind="lib" path="resources/lib/guava-10.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="resources/lib/joda-time-1.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="resources/lib/jira-rest-java-client-api-4.0.0.jar" sourcepath="C:/Users/duyluong/Desktop/atlassian-jira-rest-java-client-1651e7bd3182.zip"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Jira
+Bundle-SymbolicName: com.kms.katalon.composer.integration.jira;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: KMS
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: com.kms.katalon.preferences,
+ org.eclipse.jface,
+ com.kms.katalon.integration.jira,
+ com.kms.katalon.controller,
+ com.kms.katalon.entity,
+ com.kms.katalon.composer.components.impl,
+ com.kms.katalon.composer.components,
+ com.kms.katalon.constant,
+ org.apache.commons.lang3,
+ org.eclipse.core.runtime
