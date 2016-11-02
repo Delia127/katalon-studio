@@ -38,6 +38,7 @@ import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.integration.qtest.QTestIntegrationAuthenticationManager;
 import com.kms.katalon.integration.qtest.credential.IQTestToken;
 import com.kms.katalon.integration.qtest.credential.impl.QTestCredentialImpl;
+import com.kms.katalon.integration.qtest.exception.QTestAPIConnectionException;
 import com.kms.katalon.integration.qtest.exception.QTestException;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 import com.kms.katalon.integration.qtest.setting.QTestVersion;
@@ -282,6 +283,9 @@ public class AuthenticationWizardPage extends AbstractWizardPage {
                                 }
                             });
 
+                            return Status.OK_STATUS;
+                        } catch (QTestAPIConnectionException ex) {
+                            setConnectedStatus(ex.getMessage(), false);
                             return Status.OK_STATUS;
                         } catch (QTestException ex) {
                             setConnectedStatus(StringConstants.WZ_P_AUTHENTICATION_MGS_CONNECT_FAILED, false);

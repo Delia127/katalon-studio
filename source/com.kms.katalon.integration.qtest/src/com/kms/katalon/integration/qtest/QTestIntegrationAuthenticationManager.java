@@ -64,20 +64,6 @@ public class QTestIntegrationAuthenticationManager {
         return QTestTokenManager.getToken(requestResult);
     }
     
-    public static boolean terminateToken(IQTestCredential credential, IQTestToken token) throws QTestException {
-        switch (credential.getVersion()) {
-        case V6: {
-            return true;
-        }
-        case V7: {
-            QTestAPIRequestHelper.sendPostRequestViaAPI("/oauth/revoke", token, "");
-            return true;
-        }
-        default:
-            return false;
-        }
-    }
-
     private static String getTokenViaQTestV6(String serverURL, String username, String password) throws QTestException {
         String url = serverURL + LOGIN_URL + USERNAME_PARAM + UrlEncoder.encode(username) + "&" + PASSWORD_PARAM
                 + UrlEncoder.encode(password);

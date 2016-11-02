@@ -274,7 +274,7 @@ public class KeywordNodeTooltip {
     }
 
     public boolean isVisible() {
-        return !tip.isDisposed() && tip.isVisible();
+        return tip != null && !tip.isDisposed() && tip.isVisible();
     }
 
     public void setKeywordURL(String keywordDescURI) {
