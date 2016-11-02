@@ -24,51 +24,55 @@
     <elements xsi:type="commands:Handler" xmi:id="_UauoQArIEea7RfDmXOohVw" elementId="com.kms.katalon.composer.execution.handler.removeAllBreakpoints" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.debug.handler.RemoveAllBreakpointHandler" command="_tecPcAh6EeaOHID5tXhDTg"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_2siakEO8EeS6w-5VfP-05A" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="last">
-    <elements xsi:type="menu:HandledToolItem" xmi:id="_hGFVQGZHEeSy97efZ7yHrA" elementId="com.kms.katalon.composer.execution.handledtoolitem.run" label="" iconURI="platform:/plugin/com.kms.katalon.composer.execution/icons/play_24.png" tooltip="Run" command="_1Vr3wEvpEeWSR5dl8TkM5g">
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_hGFVQGZHEeSy97efZ7yHrA" elementId="com.kms.katalon.composer.execution.handledtoolitem.run" label="" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/play_24.png" tooltip="Run" command="_1Vr3wEvpEeWSR5dl8TkM5g">
       <persistedState key="index" value="18"/>
+      <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/play_disabled_24.png"/>
       <tags>FORCE_TEXT</tags>
       <tags>Opaque</tags>
       <menu xmi:id="_h1k4gGZHEeSy97efZ7yHrA" elementId="com.kms.katalon.composer.execution.menu.run" label="Run "/>
     </elements>
-    <elements xsi:type="menu:HandledToolItem" xmi:id="_h09mMOJWEeSyVPtKyNklew" elementId="com.kms.katalon.composer.execution.handledtoolitem.debug" label="" iconURI="platform:/plugin/com.kms.katalon.composer.execution/icons/bug_24.png" tooltip="Debug" command="_Z3Hl4OJWEeSyVPtKyNklew">
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_h09mMOJWEeSyVPtKyNklew" elementId="com.kms.katalon.composer.execution.handledtoolitem.debug" label="" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/bug_24.png" tooltip="Debug" command="_Z3Hl4OJWEeSyVPtKyNklew">
       <persistedState key="index" value="19"/>
+      <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/bug_disabled_24.png"/>
       <tags>FORCE_TEXT</tags>
       <tags>Opaque</tags>
       <menu xmi:id="_lev64OJXEeSyVPtKyNklew" elementId="com.kms.katalon.composer.execution.menu.debug" label="Debug"/>
     </elements>
-    <elements xsi:type="menu:HandledToolItem" xmi:id="_yvXSEG74EeSqyYL0pZQV2Q" elementId="com.kms.katalon.composer.execution.handledtoolitem.stop" label="" iconURI="platform:/plugin/com.kms.katalon.composer.execution/icons/stop_24.png" tooltip="Stop All" command="_4raZwG74EeSqyYL0pZQV2Q">
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_yvXSEG74EeSqyYL0pZQV2Q" elementId="com.kms.katalon.composer.execution.handledtoolitem.stop" label="" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/stop_24.png" tooltip="Stop All" command="_4raZwG74EeSqyYL0pZQV2Q">
       <persistedState key="index" value="20"/>
+      <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/stop_disabled_24.png"/>
       <tags>FORCE_TEXT</tags>
       <tags>Opaque</tags>
     </elements>
     <elements xsi:type="menu:ToolBarSeparator" xmi:id="_L2CzcOdzEeWhlq_ETXxxuQ" elementId="com.kms.katalon.composer.execution.toolbarseparator.0">
       <persistedState key="index" value="21"/>
     </elements>
-    <elements xsi:type="menu:HandledToolItem" xmi:id="_PgTesOdzEeWhlq_ETXxxuQ" elementId="com.kms.katalon.composer.execution.handledtoolitem.generatecommand" iconURI="platform:/plugin/com.kms.katalon.composer.execution/icons/terminal_24.png" tooltip="Generate Command for Console Mode" command="_V2XzcOd0EeWhlq_ETXxxuQ">
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_PgTesOdzEeWhlq_ETXxxuQ" elementId="com.kms.katalon.composer.execution.handledtoolitem.generatecommand" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/terminal_24.png" tooltip="Generate Command for Console Mode" command="_V2XzcOd0EeWhlq_ETXxxuQ">
       <persistedState key="index" value="22"/>
+      <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/terminal_disabled_24.png"/>
     </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_6fOqMHCMEeSG_-6adg2jcw" featurename="children" parentElementId="com.kms.katalon.partstack.console">
-    <elements xsi:type="basic:Part" xmi:id="_BxJYoHCNEeSG_-6adg2jcw" elementId="com.kms.katalon.partstack.console.log" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.part.LogViewerPart" label="Log Viewer" iconURI="platform:/plugin/com.kms.katalon.composer.execution/icons/log_16.png">
+    <elements xsi:type="basic:Part" xmi:id="_BxJYoHCNEeSG_-6adg2jcw" elementId="com.kms.katalon.partstack.console.log" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.part.LogViewerPart" label="Log Viewer" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/log/log_16.png">
       <menus xmi:id="_X9J4sIabEeWaecTtagm34w" elementId="com.kms.katalon.composer.execution.menu.treeview" label="">
         <tags>ViewMenu</tags>
         <children xsi:type="menu:DirectMenuItem" xmi:id="_xOUuEIazEeWaecTtagm34w" elementId="com.kms.katalon.composer.execution.handledmenuitem.wordWrap" label="Word Wrap" type="Check" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.handlers.WrapMessageLogHandler"/>
       </menus>
       <toolbar xmi:id="_C1lCYIaMEeS32ZF8sInjdQ" elementId="com.kms.katalon.composer.execution.log.toolbar">
-        <children xsi:type="menu:DirectToolItem" xmi:id="_GYsR0H5AEeaNZLjOMLYB-g" elementId="com.kms.katalon.composer.execution.directtoolitem.logViewer.currentWatched" label="Current Watched Entity" iconURI="platform:/plugin/com.kms.katalon.composer.execution/icons/watch_16.png" tooltip="Display Selected Execution Entity's Logs" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.menu.CurrentWatchedEntityMenu">
+        <children xsi:type="menu:DirectToolItem" xmi:id="_GYsR0H5AEeaNZLjOMLYB-g" elementId="com.kms.katalon.composer.execution.directtoolitem.logViewer.currentWatched" label="Current Watched Entity" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/watch_16.png" tooltip="Display Selected Execution Entity's Logs" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.menu.CurrentWatchedEntityMenu">
           <menu xmi:id="_Ks7uMH5AEeaNZLjOMLYB-g" elementId="com.kms.katalon.composer.execution.logViewer.currentWatched.menu">
             <children xsi:type="menu:DynamicMenuContribution" xmi:id="_A5Z2QH5OEeaNZLjOMLYB-g" elementId="com.kms.katalon.composer.execution.logViewer.currentWatched.dynamicmenucontribution" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.menu.CurrentWatchedEntityMenuContribution"/>
           </menu>
         </children>
-        <children xsi:type="menu:DirectToolItem" xmi:id="_FZmZ0P-XEeSaTs31EuBZQQ" elementId="com.kms.katalon.composer.execution.directtoolitem.tree" label="" iconURI="platform:/plugin/com.kms.katalon.composer.execution/icons/tree_16.png" tooltip="Tree View" type="Check" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.handlers.ChangeLogStructureHandler"/>
-        <children xsi:type="menu:DirectToolItem" xmi:id="__-bmYApyEeWMYutPg3HXPw" elementId="com.kms.katalon.composer.execution.directtoolitem.pin" label="" iconURI="platform:/plugin/com.kms.katalon.composer.execution/icons/lock_16.png" tooltip="Scroll Lock" type="Check" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.handlers.PinLogViewHander"/>
+        <children xsi:type="menu:DirectToolItem" xmi:id="_FZmZ0P-XEeSaTs31EuBZQQ" elementId="com.kms.katalon.composer.execution.directtoolitem.tree" label="" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/tree_16.png" tooltip="Tree View" type="Check" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.handlers.ChangeLogStructureHandler"/>
+        <children xsi:type="menu:DirectToolItem" xmi:id="__-bmYApyEeWMYutPg3HXPw" elementId="com.kms.katalon.composer.execution.directtoolitem.pin" label="" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/lock_16.png" tooltip="Scroll Lock" type="Check" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.handlers.PinLogViewHander"/>
       </toolbar>
     </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_3nN-wN0KEeSl-d63gHk7zg" featurename="children" parentElementId="com.kms.katalon.partstack.outline">
-    <elements xsi:type="basic:Part" xmi:id="_-hQYsN0KEeSl-d63gHk7zg" elementId="com.kms.katalon.composer.execution.part.job" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.part.JobViewerPart" label="Job Progress" iconURI="platform:/plugin/com.kms.katalon.composer.execution/icons/progress_16.png">
+    <elements xsi:type="basic:Part" xmi:id="_-hQYsN0KEeSl-d63gHk7zg" elementId="com.kms.katalon.composer.execution.part.job" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.part.JobViewerPart" label="Job Progress" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/progress_16.png">
       <toolbar xmi:id="_oMKcYN3CEeSP-ax1WxE4pw" elementId="com.kms.katalon.composer.execution.toolbar.0">
-        <children xsi:type="menu:DirectToolItem" xmi:id="_pQPvkN3CEeSP-ax1WxE4pw" elementId="com.kms.katalon.composer.execution.directtoolitem.removeAllTerminated" label="" iconURI="platform:/plugin/com.kms.katalon.composer.execution/icons/clear_16.png" tooltip="Delete All Terminated Launches" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.handlers.CleanAllTerminatedHandler"/>
+        <children xsi:type="menu:DirectToolItem" xmi:id="_pQPvkN3CEeSP-ax1WxE4pw" elementId="com.kms.katalon.composer.execution.directtoolitem.removeAllTerminated" label="" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/clear_16.png" tooltip="Delete All Terminated Launches" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.handlers.CleanAllTerminatedHandler"/>
       </toolbar>
     </elements>
   </fragments>

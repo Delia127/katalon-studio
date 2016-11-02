@@ -1,20 +1,15 @@
 package com.kms.katalon.composer.mobile.constants;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
-
-import com.kms.katalon.composer.components.util.ImageUtil;
+import com.kms.katalon.composer.resources.constants.IImageKeys;
+import com.kms.katalon.composer.resources.image.ImageManager;
 
 public class ImageConstants {
 
-    private static final Bundle currentBundle = FrameworkUtil.getBundle(ImageConstants.class);
-
     // RunningMenuContribution
-    public static final String IMG_URL_16_ANDROID = ImageUtil.getImageUrl(currentBundle, "/icons/android_16.png");
+    public static final String IMG_URL_16_ANDROID = ImageManager.getImageURLString(IImageKeys.ANDROID_16);
 
-    public static final String IMG_URL_16_APPLE = ImageUtil.getImageUrl(currentBundle, "/icons/apple_16.png");
+    public static final String IMG_URL_16_APPLE = ImageManager.getImageURLString(IImageKeys.APPLE_16);
 
-    public static final String IMG_URL_16_MIXED_MODE = ImageUtil.getImageUrl(currentBundle, "/icons/mixed_mode.png");
+    public static final String IMG_URL_16_MOBILE = ImageManager.getImageURLString(IImageKeys.MOBILE_16);
 
-    public static final String IMG_URL_16_MOBILE = ImageUtil.getImageUrl(currentBundle, "/icons/mobile_16.png");
 }

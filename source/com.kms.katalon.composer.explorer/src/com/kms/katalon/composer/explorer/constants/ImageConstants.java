@@ -1,24 +1,21 @@
 package com.kms.katalon.composer.explorer.constants;
 
 import org.eclipse.swt.graphics.Image;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
 
-import com.kms.katalon.composer.components.util.ImageUtil;
+import com.kms.katalon.composer.resources.constants.IImageKeys;
+import com.kms.katalon.composer.resources.image.ImageManager;
 
 public class ImageConstants {
-	private static final Bundle currentBundle = FrameworkUtil.getBundle(ImageConstants.class);
-	
-	// AdvancedSearchDialog
-	public static final Image IMG_16_ADVANCED_SEARCH = ImageUtil.loadImage(currentBundle, "/icons/advanced_search_16.png");
-	
-	// SearchDropDownBox
-	public static final Image IMG_16_ARROW_DOWN = ImageUtil.loadImage(currentBundle, "/icons/arrow_down_6x6.png");
-	public static final Image IMG_16_SEARCH_ALL = ImageUtil.loadImage(currentBundle, "/icons/all_19x16.png");
-	
-	// ExplorerPart
-	public static final Image IMG_16_SEARCH = ImageUtil.loadImage(currentBundle, "/icons/search_16.png");
-	public static final Image IMG_16_CLOSE_SEARCH = ImageUtil.loadImage(currentBundle, "/icons/close_search_16.png");
-	
-	// Other icon is using in fragment.e4xmi: project_16.png
+    // AdvancedSearchDialog
+    public static final Image IMG_16_ADVANCED_SEARCH = ImageManager.getImage(IImageKeys.ADVANCE_SEARCH_16);
+
+    // SearchDropDownBox
+    public static final Image IMG_16_ARROW_DOWN = ImageManager.getImage(IImageKeys.CHEVRON_DOWN_16);
+
+    public static final Image IMG_16_SEARCH_ALL = ImageManager.getImage(IImageKeys.ALL_16);
+
+    // ExplorerPart
+    public static final Image IMG_16_SEARCH = ImageManager.getImage(IImageKeys.SEARCH_16);
+
+    public static final Image IMG_16_CLOSE_SEARCH = ImageManager.getImage(IImageKeys.CLEAR_FIELD_16);
 }

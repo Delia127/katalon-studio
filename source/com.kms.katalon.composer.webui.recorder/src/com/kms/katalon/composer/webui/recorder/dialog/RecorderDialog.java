@@ -382,14 +382,14 @@ public class RecorderDialog extends Dialog {
     private void pause() {
         isPausing = true;
         tltmPause.setText(RESUME_TOOL_ITEM_LABEL);
-        tltmPause.setImage(ImageConstants.IMG_28_PLAY);
+        tltmPause.setImage(ImageConstants.IMG_24_PLAY);
         toolBar.getParent().layout();
     }
 
     private void resume() {
         isPausing = false;
         tltmPause.setText(PAUSE_TOOL_ITEM_LABEL);
-        tltmPause.setImage(ImageConstants.IMG_28_PAUSE);
+        tltmPause.setImage(ImageConstants.IMG_24_PAUSE);
         toolBar.getParent().layout();
     }
 
@@ -813,7 +813,7 @@ public class RecorderDialog extends Dialog {
         actionToolBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
         ToolItem tltmAdd = new ToolItem(actionToolBar, SWT.DROP_DOWN);
-        tltmAdd.setImage(ImageConstants.IMG_24_ADD);
+        tltmAdd.setImage(ImageConstants.IMG_16_ADD);
         tltmAdd.setText(StringConstants.ADD);
         tltmAdd.addSelectionListener(new DropdownToolItemSelectionListener() {
             @Override
@@ -833,7 +833,7 @@ public class RecorderDialog extends Dialog {
         });
 
         tltmDelete = new ToolItem(actionToolBar, SWT.PUSH);
-        tltmDelete.setImage(ImageConstants.IMG_24_DELETE);
+        tltmDelete.setImage(ImageConstants.IMG_16_DELETE);
         tltmDelete.setEnabled(false);
         createDeleteItem(tltmDelete);
     }
@@ -1150,7 +1150,7 @@ public class RecorderDialog extends Dialog {
 
         toolItemBrowserDropdown = new ToolItem(toolBar, SWT.DROP_DOWN);
         toolItemBrowserDropdown.setText(START_TOOL_ITEM_LABEL);
-        toolItemBrowserDropdown.setImage(ImageConstants.IMG_28_RECORD);
+        toolItemBrowserDropdown.setImage(ImageConstants.IMG_24_RECORD);
 
         Menu browserMenu = new Menu(toolBar.getShell());
 
@@ -1166,7 +1166,7 @@ public class RecorderDialog extends Dialog {
 
         tltmPause = new ToolItem(toolBar, SWT.PUSH);
         tltmPause.setText(PAUSE_TOOL_ITEM_LABEL);
-        tltmPause.setImage(ImageConstants.IMG_28_PAUSE);
+        tltmPause.setImage(ImageConstants.IMG_24_PAUSE);
         tltmPause.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -1182,7 +1182,7 @@ public class RecorderDialog extends Dialog {
 
         tltmStop = new ToolItem(toolBar, SWT.PUSH);
         tltmStop.setText(STOP_TOOL_ITEM_LABEL);
-        tltmStop.setImage(ImageConstants.IMG_28_STOP);
+        tltmStop.setImage(ImageConstants.IMG_24_STOP);
         tltmStop.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent event) {

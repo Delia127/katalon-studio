@@ -7,13 +7,13 @@ import org.eclipse.e4.ui.di.AboutToShow;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuElement;
 
 import com.kms.katalon.composer.execution.menu.AbstractExecutionMenuContribution;
+import com.kms.katalon.composer.mobile.constants.ImageConstants;
 import com.kms.katalon.composer.mobile.constants.StringConstants;
 
 public class IosExecutionDynamicContribution extends AbstractExecutionMenuContribution {
-    private static final String IOS_ICON_URI = "platform:/plugin/com.kms.katalon.composer.mobile/icons/apple_16.png";
 
     private static final String IOS_EXECUTION_COMMAND_ID = "com.kms.katalon.composer.mobile.execution.command.ios";
-    
+
     @Override
     @AboutToShow
     public void aboutToShow(List<MMenuElement> items) {
@@ -25,9 +25,9 @@ public class IosExecutionDynamicContribution extends AbstractExecutionMenuContri
 
     @Override
     protected String getIconUri() {
-        return IOS_ICON_URI;
+        return ImageConstants.IMG_URL_16_APPLE;
     }
-    
+
     @Override
     protected String getMenuLabel() {
         return StringConstants.LBL_IOS_EXECUTION_MENU_ITEM;

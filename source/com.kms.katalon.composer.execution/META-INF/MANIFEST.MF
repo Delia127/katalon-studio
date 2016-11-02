@@ -76,7 +76,8 @@ Require-Bundle: org.eclipse.e4.core.di,
  org.codehaus.groovy,
  org.eclipse.e4.ui.bindings,
  com.kms.katalon.core.appium,
- org.eclipse.e4.ui.workbench.renderers.swt
+ org.eclipse.e4.ui.workbench.renderers.swt,
+ com.kms.katalon.composer.resources
 Import-Package: com.google.common.base,
  com.google.common.collect,
  javax.inject,

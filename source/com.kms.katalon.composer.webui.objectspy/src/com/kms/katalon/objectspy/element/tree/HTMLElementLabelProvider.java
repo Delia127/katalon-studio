@@ -4,9 +4,9 @@ import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
 
+import com.kms.katalon.composer.resources.constants.IImageKeys;
+import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.objectspy.constants.ImageConstants;
 import com.kms.katalon.objectspy.constants.StringConstants;
 import com.kms.katalon.objectspy.element.HTMLElement;
@@ -14,12 +14,9 @@ import com.kms.katalon.objectspy.element.HTMLFrameElement;
 import com.kms.katalon.objectspy.element.HTMLPageElement;
 
 public class HTMLElementLabelProvider extends StyledCellLabelProvider {
-	private static Image WEB_ELEMENT_MISSING_ICON = PlatformUI.getWorkbench().getSharedImages()
-			.getImage(ISharedImages.IMG_OBJS_ERROR_TSK);
-	private static Image WEB_ELEMENT_MULTIPLE_ICON = PlatformUI.getWorkbench().getSharedImages()
-			.getImage(ISharedImages.IMG_OBJS_INFO_TSK);
-	private static Image WEB_ELEMENT_CHANGED_ICON = PlatformUI.getWorkbench().getSharedImages()
-			.getImage(ISharedImages.IMG_OBJS_WARN_TSK);
+	private static Image WEB_ELEMENT_MISSING_ICON = ImageManager.getImage(IImageKeys.ERROR_16);
+	private static Image WEB_ELEMENT_MULTIPLE_ICON = ImageManager.getImage(IImageKeys.INFO_16);
+	private static Image WEB_ELEMENT_CHANGED_ICON = ImageManager.getImage(IImageKeys.WARNING_16);
 
 	public Image getImage(Object element) {
 		if (element instanceof HTMLElement) {
@@ -28,7 +25,7 @@ public class HTMLElementLabelProvider extends StyledCellLabelProvider {
 			case Changed:
 				return WEB_ELEMENT_CHANGED_ICON;
 			case Exists:
-				return ImageConstants.IMG_16_DONE;
+				return ImageConstants.IMG_16_OK;
 			case Missing:
 				return WEB_ELEMENT_MISSING_ICON;
 			case Multiple:

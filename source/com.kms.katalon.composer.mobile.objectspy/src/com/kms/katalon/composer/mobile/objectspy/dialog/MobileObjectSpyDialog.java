@@ -1,7 +1,8 @@
 package com.kms.katalon.composer.mobile.objectspy.dialog;
 
-import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static com.kms.katalon.composer.mobile.objectspy.dialog.MobileDeviceDialog.safeRoundDouble;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -618,7 +619,8 @@ public class MobileObjectSpyDialog extends Dialog {
         elementTreeToolbar.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 
         btnAdd = new ToolItem(elementTreeToolbar, SWT.NONE);
-        btnAdd.setImage(ImageConstants.IMG_24_NEW_TEST_OBJECT);
+        btnAdd.setImage(ImageConstants.IMG_24_ADD_TO_OBJECT_REPOSITORY);
+        btnAdd.setDisabledImage(ImageConstants.IMG_24_ADD_TO_OBJECT_REPOSITORY_DISABLED);
         btnAdd.setText(StringConstants.DIA_TIP_ADD);
         btnAdd.setToolTipText(StringConstants.DIA_TIP_ADD);
         btnAdd.setEnabled(false);
@@ -671,6 +673,7 @@ public class MobileObjectSpyDialog extends Dialog {
 
         btnCapture = new ToolItem(contentToolbar, SWT.NONE);
         btnCapture.setImage(ImageConstants.IMG_24_CAPTURE);
+        btnCapture.setDisabledImage(ImageConstants.IMG_24_CAPTURE_DISABLED);
         btnCapture.setText(StringConstants.DIA_TIP_CAPTURE_OBJ);
         btnCapture.setToolTipText(StringConstants.DIA_TIP_CAPTURE_OBJ);
         btnCapture.setEnabled(false);
@@ -683,6 +686,7 @@ public class MobileObjectSpyDialog extends Dialog {
 
         btnStart = new ToolItem(contentToolbar, SWT.NONE);
         btnStart.setImage(ImageConstants.IMG_24_START_DEVICE);
+        btnStart.setDisabledImage(ImageConstants.IMG_24_START_DEVICE_DISABLED);
         btnStart.setText(StringConstants.DIA_TIP_START_APP);
         btnStart.setToolTipText(StringConstants.DIA_TIP_START_APP);
         btnStart.setEnabled(false);
@@ -698,6 +702,7 @@ public class MobileObjectSpyDialog extends Dialog {
 
         btnStop = new ToolItem(contentToolbar, SWT.NONE);
         btnStop.setImage(ImageConstants.IMG_24_STOP_DEVICE);
+        btnStop.setDisabledImage(ImageConstants.IMG_24_STOP_DEVICE_DISABLED);
         btnStop.setText(StringConstants.DIA_TIP_STOP);
         btnStop.setToolTipText(StringConstants.DIA_TIP_STOP);
         btnStop.setEnabled(false);

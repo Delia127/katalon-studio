@@ -265,6 +265,7 @@ public class ObjectSpyDialog extends Dialog {
 
         startBrowser = new ToolItem(startBrowserToolbar, SWT.DROP_DOWN);
         startBrowser.setImage(ImageConstants.IMG_24_OBJECT_SPY);
+        startBrowser.setDisabledImage(ImageConstants.IMG_24_OBJECT_SPY_DISABLED);
 
         SelectionAdapter browserSelectionListener = new SelectionAdapter() {
             @Override
@@ -788,6 +789,7 @@ public class ObjectSpyDialog extends Dialog {
 
         addPageElementToolItem = new ToolItem(mainToolbar, SWT.NONE);
         addPageElementToolItem.setImage(ImageConstants.IMG_24_NEW_PAGE_ELEMENT);
+        addPageElementToolItem.setDisabledImage(ImageConstants.IMG_24_NEW_PAGE_ELEMENT_DISABLED);
         addPageElementToolItem.setText(StringConstants.DIA_TOOLITEM_NEW_PAGE);
         addPageElementToolItem.setToolTipText(StringConstants.DIA_TOOLITEM_TIP_NEW_PAGE_ELEMENT);
         addPageElementToolItem.addSelectionListener(new SelectionAdapter() {
@@ -805,6 +807,7 @@ public class ObjectSpyDialog extends Dialog {
 
         addFrameElementToolItem = new ToolItem(mainToolbar, SWT.NONE);
         addFrameElementToolItem.setImage(ImageConstants.IMG_24_NEW_FRAME_ELEMENT);
+        addFrameElementToolItem.setDisabledImage(ImageConstants.IMG_24_NEW_FRAME_ELEMENT_DISABLED);
         addFrameElementToolItem.setText(StringConstants.DIA_TOOLITE_NEW_FRAME);
         addFrameElementToolItem.setToolTipText(StringConstants.DIA_TOOLITEM_TIP_NEW_FRAME_ELEMENT);
         addFrameElementToolItem.addSelectionListener(new SelectionAdapter() {
@@ -828,6 +831,7 @@ public class ObjectSpyDialog extends Dialog {
 
         addElementToolItem = new ToolItem(mainToolbar, SWT.NONE);
         addElementToolItem.setImage(ImageConstants.IMG_24_NEW_ELEMENT);
+        addElementToolItem.setDisabledImage(ImageConstants.IMG_24_NEW_ELEMENT_DISABLED);
         addElementToolItem.setText(StringConstants.DIA_TOOLITEM_NEW_OBJECT);
         addElementToolItem.setToolTipText(StringConstants.DIA_TOOLITEM_TIP_NEW_ELEMENT);
         addElementToolItem.addSelectionListener(new SelectionAdapter() {
@@ -853,7 +857,8 @@ public class ObjectSpyDialog extends Dialog {
         new ToolItem(mainToolbar, SWT.SEPARATOR);
 
         removeElementToolItem = new ToolItem(mainToolbar, SWT.NONE);
-        removeElementToolItem.setImage(ImageConstants.IMG_16_DELETE);
+        removeElementToolItem.setImage(ImageConstants.IMG_24_DELETE);
+        removeElementToolItem.setDisabledImage(ImageConstants.IMG_24_DELETE_DISABLED);
         removeElementToolItem.setText(StringConstants.DIA_TOOLITEM_DELETE);
         removeElementToolItem.setToolTipText(StringConstants.DIA_TOOLITEM_TIP_REMOVE_ELEMENT);
         removeElementToolItem.setEnabled(false);
@@ -889,6 +894,7 @@ public class ObjectSpyDialog extends Dialog {
 
         addElmtToObjRepoToolItem = new ToolItem(mainToolbar, SWT.NONE);
         addElmtToObjRepoToolItem.setImage(ImageConstants.IMG_24_ADD_TO_OBJECT_REPOSITORY);
+        addElmtToObjRepoToolItem.setDisabledImage(ImageConstants.IMG_24_ADD_TO_OBJECT_REPOSITORY_DISABLED);
         addElmtToObjRepoToolItem.setText(StringConstants.DIA_TOOLITEM_TIP_ADD_ELEMENT_TO_OBJECT_REPO);
         addElmtToObjRepoToolItem.setToolTipText(StringConstants.DIA_TOOLITEM_TIP_ADD_ELEMENT_TO_OBJECT_REPO);
         addElmtToObjRepoToolItem.addSelectionListener(new SelectionAdapter() {
@@ -910,6 +916,7 @@ public class ObjectSpyDialog extends Dialog {
         highlightObjectToolItem.setText(StringConstants.DIA_TOOLITEM_HIGHLIGHT);
         highlightObjectToolItem.setToolTipText(StringConstants.DIA_TOOLITEM_TIP_HIGHLIGHT);
         highlightObjectToolItem.setImage(ImageConstants.IMG_24_HIGHLIGHT);
+        highlightObjectToolItem.setDisabledImage(ImageConstants.IMG_24_HIGHLIGHT_DISABLED);
         highlightObjectToolItem.setEnabled(false);
 
         highlightObjectToolItem.addSelectionListener(new SelectionAdapter() {

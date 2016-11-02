@@ -4,8 +4,9 @@
     <elements xsi:type="menu:ToolBarSeparator" xmi:id="_q37qgA38EeaA_8AACvXEuw" elementId="com.kms.katalon.composer.webui.recorder.toolbarseparator.0">
       <persistedState key="index" value="16"/>
     </elements>
-    <elements xsi:type="menu:HandledToolItem" xmi:id="_OUZe0s1IEeSTLup_fpV0TA" elementId="com.kms.katalon.composer.webui.recorder.handledtoolitem.record" label="" iconURI="platform:/plugin/com.kms.katalon.composer.webui.recorder/icons/record_24.png" tooltip="Record" command="_Yx0f8c1IEeSTLup_fpV0TA">
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_OUZe0s1IEeSTLup_fpV0TA" elementId="com.kms.katalon.composer.webui.recorder.handledtoolitem.record" label="" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/record_24.png" tooltip="Record" command="_Yx0f8c1IEeSTLup_fpV0TA">
       <persistedState key="index" value="17"/>
+      <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/record_disabled_24.png"/>
       <tags>FORCE_TEXT</tags>
     </elements>
   </fragments>

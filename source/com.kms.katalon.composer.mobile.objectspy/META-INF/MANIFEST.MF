@@ -40,7 +40,8 @@ Require-Bundle: com.kms.katalon.entity;bundle-version="1.0.0",
  org.eclipse.ui,
  com.kms.katalon.composer.folder,
  com.kms.katalon.preferences,
- com.kms.katalon.composer.mobile
+ com.kms.katalon.composer.mobile,
+ com.kms.katalon.composer.resources
 Bundle-ClassPath: .
 Export-Package: com.kms.katalon.composer.mobile.objectspy.dialog
 Import-Package: com.kms.katalon.composer.mobile.util
