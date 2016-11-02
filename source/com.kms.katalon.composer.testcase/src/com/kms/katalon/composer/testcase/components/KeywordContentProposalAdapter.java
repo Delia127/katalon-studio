@@ -2,6 +2,7 @@ package com.kms.katalon.composer.testcase.components;
 
 import java.util.ArrayList;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.jface.bindings.keys.KeyStroke;
@@ -1915,6 +1916,9 @@ public class KeywordContentProposalAdapter {
             String keywordName = proposals[selectionIndex].getContent();
             String keywordClassName = ((TooltipCCombo) KeywordContentProposalAdapter.this.control)
                     .getKeywordClassName();
+            if (StringUtils.isEmpty(keywordClassName)) {
+            	return;
+            }
             tooltip.setText(keywordDesc);
             tooltip.setKeywordURL(KeywordURLUtil.getKeywordDescriptionURI(keywordClassName, keywordName));
             Point loc = popup.getShell().getLocation();
