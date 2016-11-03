@@ -11,6 +11,7 @@ import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerEditor;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.EditingSupport;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.TreeViewerEditor;
@@ -121,7 +122,8 @@ public class TestStepManualComposite {
 
         createTestCaseManualTableControls(compositeDetails);
     }
-
+    
+    
     public void setFocus() {
         compositeManual.setFocus();
     }
@@ -335,7 +337,6 @@ public class TestStepManualComposite {
                         KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "E" })));
                 enableMenuItem.addSelectionListener(selectionListener);
                 enableMenuItem.setID(TreeTableMenuItemConstants.ENABLE_MENU_ITEM_ID);
-
                 parentPart.createDynamicGotoMenu(menu);
                 childTableTree.setMenu(menu);
             }
@@ -623,4 +624,9 @@ public class TestStepManualComposite {
     private void changeKeywordFailureHandling(FailureHandling failureHandling) {
         treeTableInput.changeFailureHandling(failureHandling);
     }
+    
+    public IStructuredSelection getTreeTableSelection() {
+    	return (IStructuredSelection) treeTable.getSelection();
+    }
+    
 }

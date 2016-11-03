@@ -2,6 +2,7 @@ package com.kms.katalon.composer.testsuite.parts;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.jface.bindings.keys.IKeyLookup;
@@ -27,8 +28,6 @@ import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
-import org.eclipse.swt.events.MenuDetectEvent;
-import org.eclipse.swt.events.MenuDetectListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Cursor;
@@ -52,12 +51,13 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.KeyEventUtil;
+import com.kms.katalon.composer.components.impl.util.MenuUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.explorer.custom.AdvancedSearchDialog;
 import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
-import com.kms.katalon.composer.testsuite.constants.ComposerTestsuiteMessageConstants;
 import com.kms.katalon.composer.testsuite.constants.ImageConstants;
 import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.composer.testsuite.constants.ToolItemConstants;
@@ -73,6 +73,7 @@ import com.kms.katalon.composer.testsuite.support.TestCaseIsRunColumnEditingSupp
 import com.kms.katalon.composer.testsuite.transfer.TestSuiteTestCaseLinkTransfer;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.TestCaseController;
+import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
@@ -115,7 +116,7 @@ public class TestSuitePartTestCaseView {
 
     private TestCaseToolItemListener testCaseToolItemListener;
 
-    private MenuItem openMenuItem;
+    private Menu tableContextMenu;
 
     /* package */TestSuitePartTestCaseView(TestSuitePart testSuitePart) {
         this.testSuitePart = testSuitePart;
@@ -233,7 +234,7 @@ public class TestSuitePartTestCaseView {
     }
 
     private void createTestCaseTableContextMenu(Table table) {
-        Menu tableContextMenu = new Menu(table);
+        tableContextMenu = new Menu(table);
         table.setMenu(tableContextMenu);
 
         MenuItem addTestCase = new MenuItem(tableContextMenu, SWT.PUSH);
@@ -277,21 +278,6 @@ public class TestSuitePartTestCaseView {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 testCaseTableViewer.moveSelectedItemsDown();
-            }
-        });
-
-        openMenuItem = new MenuItem(tableContextMenu, SWT.CASCADE);
-        openMenuItem.setText(ComposerTestsuiteMessageConstants.MENU_OPEN);
-
-        table.addMenuDetectListener(new MenuDetectListener() {
-
-            @Override
-            public void menuDetected(MenuDetectEvent e) {
-                boolean hasItemSelected = !testCaseTableViewer.getSelectedItems().isEmpty();
-                removeTestCase.setEnabled(hasItemSelected);
-                moveTestCaseUp.setEnabled(hasItemSelected);
-                moveTestCaseDown.setEnabled(hasItemSelected);
-                openMenuItem.setEnabled(hasItemSelected);
             }
         });
     }
@@ -598,8 +584,9 @@ public class TestSuitePartTestCaseView {
     }
 
     private void createOpenTestCaseMenu() {
+        ControlUtils.removeOldOpenMenuItem(tableContextMenu);
         IStructuredSelection selection = (IStructuredSelection) testCaseTableViewer.getSelection();
-        Menu subMenu = new Menu(openMenuItem);
+        List<TestCaseEntity> testCaseEntities = getListTestCaseFromSelection(selection);
         SelectionAdapter openSubMenuSelection = new SelectionAdapter() {
 
             @Override
@@ -614,22 +601,11 @@ public class TestSuitePartTestCaseView {
                 }
             }
         };
-        for (Object object : selection.toList()) {
-            if (!(object instanceof TestSuiteTestCaseLink)) {
-                continue;
-            }
-            try {
-                TestCaseEntity testCaseEntity = TestCaseController.getInstance().getTestCaseByDisplayId(
-                        ((TestSuiteTestCaseLink) object).getTestCaseId());
-                MenuItem menuItem = new MenuItem(subMenu, SWT.PUSH);
-                menuItem.setText(testCaseEntity.getIdForDisplay());
-                menuItem.setData(testCaseEntity);
-                menuItem.addSelectionListener(openSubMenuSelection);
-            } catch (Exception e1) {
-                LoggerSingleton.logError(e1);
-            }
+        if (testCaseEntities.size() == 1) {
+            ControlUtils.createOpenMenuWhenSelectOnlyOne(tableContextMenu, testCaseEntities.get(0), testCaseTableViewer, openSubMenuSelection);
+            return;
         }
-        openMenuItem.setMenu(subMenu);
+        MenuUtils.createOpenTestArtifactsMenu(getMapFileEntityToSelectionAdapter(testCaseEntities, openSubMenuSelection), tableContextMenu);
     }
 
     private TestCaseEntity getTestCaseFromMenuItem(MenuItem selectedMenuItem) {
@@ -642,4 +618,32 @@ public class TestSuitePartTestCaseView {
     public void openAddedTestData(DataFileEntity dataFileEntity) {
         testSuitePart.openAddedTestData(dataFileEntity);
     }
+
+    private List<TestCaseEntity> getListTestCaseFromSelection(IStructuredSelection selection) {
+        List<TestCaseEntity> testCaseEntities = new ArrayList<TestCaseEntity>();
+        TestCaseController controller = TestCaseController.getInstance();
+        for (Object object : selection.toList()) {
+            if (!(object instanceof TestSuiteTestCaseLink)) {
+                continue;
+            }
+            try {
+                testCaseEntities.add(controller.getTestCaseByDisplayId(
+                        ((TestSuiteTestCaseLink) object).getTestCaseId()));
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+            }
+        }
+        return testCaseEntities;
+    }
+    
+    private HashMap<FileEntity, SelectionAdapter> getMapFileEntityToSelectionAdapter(List<? extends FileEntity> fileEntities, SelectionAdapter openTestCase) {
+        HashMap<FileEntity, SelectionAdapter> map = new HashMap<>();
+        for (FileEntity fileEntity : fileEntities) {
+            if (fileEntity instanceof TestCaseEntity) {
+                map.put(fileEntity, openTestCase);
+            }
+        }
+        return map;
+    }
+    
 }

@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.testcase.parts;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -26,6 +28,8 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
+import com.kms.katalon.composer.components.impl.util.MenuUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPart;
 import com.kms.katalon.composer.parts.CPart;
@@ -41,6 +45,7 @@ import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddTyp
 import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ObjectRepositoryController;
+import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
@@ -57,7 +62,7 @@ public class TestCasePart extends CPart implements IComposerPart, EventHandler, 
 
     @Inject
     private IEventBroker eventBroker;
-    
+
     @Inject
     private EPartService partService;
 
@@ -149,8 +154,7 @@ public class TestCasePart extends CPart implements IComposerPart, EventHandler, 
     }
 
     public void addStatements(List<StatementWrapper> statements, NodeAddType addType) {
-        getTreeTableInput().addNewAstObjects(statements,
-                getTreeTableInput().getSelectedNode(), addType);
+        getTreeTableInput().addNewAstObjects(statements, getTreeTableInput().getSelectedNode(), addType);
     }
 
     public TestCaseEntity getTestCase() {
@@ -164,7 +168,7 @@ public class TestCasePart extends CPart implements IComposerPart, EventHandler, 
     public void addVariables(VariableEntity[] variables) {
         parentTestCaseCompositePart.addVariables(variables);
     }
-    
+
     public void deleteVariables(List<VariableEntity> variables) {
         parentTestCaseCompositePart.deleteVariables(variables);
     }
@@ -193,7 +197,7 @@ public class TestCasePart extends CPart implements IComposerPart, EventHandler, 
     public void loadASTNodesToTreeTable(ScriptNodeWrapper scriptNode) throws Exception {
         testStepManualComposite.loadASTNodesToTreeTable(scriptNode);
     }
-    
+
     public boolean isTestCaseEmpty() {
         for (TreeItem item : getTestCaseTreeTable().getTree().getItems()) {
             if (item.getText().matches("\\d+.*")) {
@@ -202,39 +206,21 @@ public class TestCasePart extends CPart implements IComposerPart, EventHandler, 
         }
         return true;
     }
-    
+
     public void createDynamicGotoMenu(Menu menu) {
-        IStructuredSelection selection = (IStructuredSelection) getTestCaseTreeTable().getSelection();
+        if (menu == null) {
+            return;
+        }
+        ControlUtils.removeOldOpenMenuItem(menu);
+        IStructuredSelection selection = testStepManualComposite.getTreeTableSelection();
         if (selection.size() == 0) {
             return;
         }
-        MenuItem openMenuItem = new MenuItem(menu, SWT.CASCADE);
-        openMenuItem.setText(ComposerTestcaseMessageConstants.MENU_OPEN);
-        Menu subMenu = new Menu(openMenuItem);
-        for (Object object : selection.toList()) {
-            if (object instanceof AstCallTestCaseKeywordTreeTableNode) {
-                createGotoTestCaseMenuItem((AstCallTestCaseKeywordTreeTableNode) object, subMenu);
-            } else if (object instanceof AstBuiltInKeywordTreeTableNode) {
-                createGotoTestObjectMenuItem((AstBuiltInKeywordTreeTableNode) object, subMenu);
-            }
-        }
-        if (subMenu.getItemCount() == 0) {
-            openMenuItem.setEnabled(false);
+        List<FileEntity> testObjects = getListTestObjectFromSelection(selection);
+        if (testObjects.size() == 0) {
             return;
         }
-        openMenuItem.setMenu(subMenu);
-    }
-
-    private void createGotoTestCaseMenuItem(AstCallTestCaseKeywordTreeTableNode node, Menu subMenu) {
-        Object testObject = node.getTestObject();
-        if (!(testObject instanceof TestCaseEntity)) {
-            return;
-        }
-        TestCaseEntity testCaseEntity = (TestCaseEntity) testObject;
-        MenuItem menuItem = new MenuItem(subMenu, SWT.PUSH);
-        menuItem.setText(testCaseEntity.getIdForDisplay());
-        menuItem.setData(testCaseEntity);
-        menuItem.addSelectionListener(new SelectionAdapter() {
+        SelectionAdapter openTestCase = new SelectionAdapter() {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -247,18 +233,8 @@ public class TestCasePart extends CPart implements IComposerPart, EventHandler, 
                     eventBroker.send(EventConstants.TESTCASE_OPEN, testCaseEntity);
                 }
             }
-        });
-    }
-
-    private void createGotoTestObjectMenuItem(AstBuiltInKeywordTreeTableNode node, Menu subMenu) {
-        WebElementEntity testObject = getTestObjectFromMethod(node);
-        if (testObject == null) {
-            return;
-        }
-        MenuItem menuItem = new MenuItem(subMenu, SWT.PUSH);
-        menuItem.setText(testObject.getIdForDisplay());
-        menuItem.setData(testObject);
-        menuItem.addSelectionListener(new SelectionAdapter() {
+        };
+        SelectionAdapter openTestObject = new SelectionAdapter() {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -271,7 +247,22 @@ public class TestCasePart extends CPart implements IComposerPart, EventHandler, 
                     eventBroker.send(EventConstants.TEST_OBJECT_OPEN, webElementEntity);
                 }
             }
-        });
+        };
+        if (testObjects.size() == 1) {
+            handleWhenSelectOnlyOne(menu, testObjects.get(0), openTestCase, openTestObject);
+            return;
+        }
+        MenuUtils.createOpenTestArtifactsMenu(getMapFileEntityToSelectionAdapter(testObjects, openTestCase, openTestObject), menu);
+    }
+
+    private void handleWhenSelectOnlyOne(Menu menu, FileEntity entity, SelectionAdapter openTestCaseAdapter,
+            SelectionAdapter openTestObjectAdapter) {
+        String name = ComposerTestcaseMessageConstants.MENU_OPEN + " " + entity.getName();
+        if (entity instanceof TestCaseEntity) {
+            ControlUtils.createSubMenuOpen(menu, entity, openTestCaseAdapter, name);
+        } else if (entity instanceof WebElementEntity) {
+            ControlUtils.createSubMenuOpen(menu, entity, openTestObjectAdapter, name);
+        }
     }
 
     private WebElementEntity getTestObjectFromMethod(AstBuiltInKeywordTreeTableNode node) {
@@ -279,7 +270,8 @@ public class TestCasePart extends CPart implements IComposerPart, EventHandler, 
         if (!(findTestObjectMethodCall instanceof MethodCallExpressionWrapper)) {
             return null;
         }
-        String testObjectId = AstEntityInputUtil.findTestObjectIdFromFindTestObjectMethodCall((MethodCallExpressionWrapper) findTestObjectMethodCall);
+        String testObjectId = AstEntityInputUtil
+                .findTestObjectIdFromFindTestObjectMethodCall((MethodCallExpressionWrapper) findTestObjectMethodCall);
         if (testObjectId == null) {
             return null;
         }
@@ -305,5 +297,36 @@ public class TestCasePart extends CPart implements IComposerPart, EventHandler, 
             testCaseEntity = (TestCaseEntity) menuItem.getData();
         }
         return testCaseEntity;
+    }
+
+    private List<FileEntity> getListTestObjectFromSelection(IStructuredSelection selection) {
+        List<FileEntity> testObjects = new ArrayList<FileEntity>();
+        for (Object object : selection.toList()) {
+            if (object instanceof AstCallTestCaseKeywordTreeTableNode) {
+                TestCaseEntity testObject = ((AstCallTestCaseKeywordTreeTableNode) object).getTestObject();
+                if (testObject != null && !testObjects.contains(testObject)) {
+                    testObjects.add(testObject);
+                }
+
+            } else if (object instanceof AstBuiltInKeywordTreeTableNode) {
+                WebElementEntity testObject = getTestObjectFromMethod((AstBuiltInKeywordTreeTableNode) object);
+                if (testObject != null && !testObjects.contains(testObject)) {
+                    testObjects.add(testObject);
+                }
+            }
+        }
+        return testObjects;
+    }
+
+    private HashMap<FileEntity, SelectionAdapter> getMapFileEntityToSelectionAdapter(List<? extends FileEntity> fileEntities, SelectionAdapter openTestCase, SelectionAdapter openTestObject) {
+        HashMap<FileEntity, SelectionAdapter> map = new HashMap<>();
+        for (FileEntity fileEntity : fileEntities) {
+            if (fileEntity instanceof TestCaseEntity) {
+                map.put(fileEntity, openTestCase);
+            } else if (fileEntity instanceof WebElementEntity) {
+                map.put(fileEntity, openTestObject);
+            }
+        }
+        return map;
     }
 }

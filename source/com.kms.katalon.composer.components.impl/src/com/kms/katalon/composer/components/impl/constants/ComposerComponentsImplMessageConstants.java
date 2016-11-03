@@ -88,6 +88,8 @@ public class ComposerComponentsImplMessageConstants extends NLS {
     public static String DIA_TXT_POSTGRESQL_SAMPLE_LINK;
 
     public static String DIA_TXT_SQL_SERVER_SAMPLE_LINK;
+    
+    public static String MENU_OPEN;
 
     static {
         // initialize resource bundle

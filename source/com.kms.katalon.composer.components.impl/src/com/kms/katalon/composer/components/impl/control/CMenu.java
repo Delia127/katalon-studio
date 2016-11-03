@@ -129,6 +129,26 @@ public class CMenu extends Menu {
             return null;
         }
     }
+    
+    public MenuItem createMenuItemWithoutSelectionListener(final String name, final String hotkey, final Callable<Boolean> enableWhen, int menuItemType) {
+        try {
+            if (name == null) {
+                return null;
+            }
+            MenuItem menuItem = new MenuItem(this, menuItemType);
+
+            handleItemEnable(enableWhen, menuItem);
+
+            String formattedHotkey = StringUtils.isNotEmpty(hotkey) ? KeyStroke.getInstance(hotkey).format()
+                    : StringUtils.EMPTY;
+            menuItem.setText(createMenuItemText(name, formattedHotkey));
+            registerHotkey(name, menuItem, formattedHotkey);
+            return menuItem;
+        } catch (ParseException e) {
+            LoggerSingleton.logError(e);
+            return null;
+        }
+    }
 
     private void handleItemSelected(final String name, final MenuItem menuItem) {
         menuItem.addSelectionListener(new SelectionAdapter() {
@@ -145,6 +165,9 @@ public class CMenu extends Menu {
                 @Override
                 public void menuShown(MenuEvent e) {
                     try {
+                        if (menuItem.isDisposed()) {
+                            return;
+                        }
                         menuItem.setEnabled(visibleWhen.call());
                     } catch (Exception ex) {
                         LoggerSingleton.logError(ex);

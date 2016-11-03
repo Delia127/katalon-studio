@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.testsuite.collection.part;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -44,7 +46,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -59,7 +60,9 @@ import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.editors.DefaultTableColumnViewerEditor;
 import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteCollectionTreeEntity;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
+import com.kms.katalon.composer.components.impl.util.MenuUtils;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
@@ -86,6 +89,7 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestSuiteCollectionController;
 import com.kms.katalon.dal.exception.DALException;
+import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity.ExecutionMode;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
@@ -137,7 +141,9 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
 
     private Label lblExecutionInformation;
 
-    private MenuItem openMenuItem;
+    private CMenu menu;
+
+    private Callable<Boolean> enableWhenItemSelected;
 
     private Listener layoutExecutionInformationCompositeListener = new Listener() {
 
@@ -298,16 +304,19 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         GridData gdLblTestSuiteCollectionExecutionMode = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         gdLblTestSuiteCollectionExecutionMode.widthHint = 100;
         lblTestSuiteCollectionExecutionMode.setLayoutData(gdLblTestSuiteCollectionExecutionMode);
-        lblTestSuiteCollectionExecutionMode.setText(ComposerTestsuiteCollectionMessageConstants.LBL_TEST_SUTE_COLLECTION_EXECUTION_MODE);
+        lblTestSuiteCollectionExecutionMode
+                .setText(ComposerTestsuiteCollectionMessageConstants.LBL_TEST_SUTE_COLLECTION_EXECUTION_MODE);
 
         Composite compositeExecutionRadioGroup = new Composite(compositeTestSuiteCollectionExecutionMode, SWT.NULL);
         compositeExecutionRadioGroup.setLayout(new RowLayout());
 
         btnSequential = new Button(compositeExecutionRadioGroup, SWT.RADIO);
-        btnSequential.setText(ComposerTestsuiteCollectionMessageConstants.BTN_TEST_SUITE_COLLECTION_EXECUTION_MODE_SEQUENTIAL);
+        btnSequential.setText(
+                ComposerTestsuiteCollectionMessageConstants.BTN_TEST_SUITE_COLLECTION_EXECUTION_MODE_SEQUENTIAL);
 
         btnParallel = new Button(compositeExecutionRadioGroup, SWT.RADIO);
-        btnParallel.setText(ComposerTestsuiteCollectionMessageConstants.BTN_TEST_SUITE_COLLECTION_EXECUTION_MODE_PARALLEL);
+        btnParallel
+                .setText(ComposerTestsuiteCollectionMessageConstants.BTN_TEST_SUITE_COLLECTION_EXECUTION_MODE_PARALLEL);
     }
 
     private void layoutExecutionInfo() {
@@ -384,38 +393,40 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         TableViewerColumn tbvcNo = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnNo = tbvcNo.getColumn();
         tblclmnNo.setText(StringConstants.NO_);
-        tbvcNo.setLabelProvider(new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.NO_COLUMN_IDX));
+        tbvcNo.setLabelProvider(
+                new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.NO_COLUMN_IDX));
         tableLayout.setColumnData(tblclmnNo, new ColumnWeightData(1, 60));
 
         TableViewerColumn tbvcId = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnId = tbvcId.getColumn();
         tblclmnId.setText(StringConstants.ID);
         tbvcId.setEditingSupport(new TestSuiteIdEditingSupport(this));
-        tbvcId.setLabelProvider(new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.ID_COLUMN_IDX));
+        tbvcId.setLabelProvider(
+                new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.ID_COLUMN_IDX));
         tableLayout.setColumnData(tblclmnId, new ColumnWeightData(50, 300));
 
         TableViewerColumn tbvcRunWith = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnEnviroment = tbvcRunWith.getColumn();
         tblclmnEnviroment.setText(StringConstants.PA_TABLE_COLUMN_RUN_WITH);
         tbvcRunWith.setEditingSupport(new RunConfigurationChooserEditingSupport(this));
-        tbvcRunWith.setLabelProvider(new TestSuiteRunConfigLabelProvider(this,
-                TestSuiteRunConfigLabelProvider.RUN_WITH_COLUMN_IDX));
+        tbvcRunWith.setLabelProvider(
+                new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.RUN_WITH_COLUMN_IDX));
         tableLayout.setColumnData(tblclmnEnviroment, new ColumnWeightData(20, 70));
-        
+
         TableViewerColumn tbvcRunWithData = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnRunWithData = tbvcRunWithData.getColumn();
         tblclmnRunWithData.setText(ComposerTestsuiteCollectionMessageConstants.PA_TABLE_COLUMN_RUN_CONFIGURATION_DATA);
         tbvcRunWithData.setEditingSupport(new RunConfigurationDataEditingSupport(this));
-        tbvcRunWithData.setLabelProvider(new TestSuiteRunConfigLabelProvider(this,
-                TestSuiteRunConfigLabelProvider.RUN_WITH_DATA_COLUMN_IDX));
+        tbvcRunWithData.setLabelProvider(
+                new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.RUN_WITH_DATA_COLUMN_IDX));
         tableLayout.setColumnData(tblclmnRunWithData, new ColumnWeightData(40, 200));
 
         TableViewerColumn tbvcRun = new TableViewerColumn(tableViewer, SWT.NONE);
         tblclmnRun = tbvcRun.getColumn();
         tblclmnRun.setText(StringConstants.RUN);
         tbvcRun.setEditingSupport(new RunEnabledEditingSupport(this));
-        tbvcRun.setLabelProvider(new TestSuiteRunConfigLabelProvider(this,
-                TestSuiteRunConfigLabelProvider.RUN_COLUMN_IDX));
+        tbvcRun.setLabelProvider(
+                new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.RUN_COLUMN_IDX));
         tableLayout.setColumnData(tblclmnRun, new ColumnWeightData(10, 70));
 
         tableViewer.setContentProvider(new ArrayContentProvider());
@@ -424,7 +435,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         tableViewer.enableTooltipSupport();
 
         createTableMenu(tableViewer.getTable());
-        
+
         setTableViewerSelection(tableViewer);
         ColumnViewerUtil.setTableActivation(tableViewer);
         hookDropTestSuiteEvent();
@@ -464,10 +475,10 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
      * </pre>
      */
     private void createTableMenu(Table table) {
-        CMenu menu = new CMenu(table, selectionListener);
+        menu = new CMenu(table, selectionListener);
         table.setMenu(menu);
 
-        Callable<Boolean> enableWhenItemSelected = new Callable<Boolean>() {
+        enableWhenItemSelected = new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
                 return !tableViewer.getSelection().isEmpty();
@@ -490,8 +501,6 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
                         return cloneTestSuite.isAnyRunEnabled();
                     }
                 }, SWT.PUSH);
-        openMenuItem = menu.createMenuItem(ComposerTestsuiteCollectionMessageConstants.MENU_OPEN, null, enableWhenItemSelected,
-                SWT.CASCADE);
     }
 
     @Override
@@ -652,7 +661,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
     public TestSuiteCollectionEntity getTestSuiteCollection() {
         return originalTestSuite;
     }
-    
+
     private void setTableViewerSelection(final CTableViewer tableViewer) {
         tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
@@ -662,34 +671,31 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
             }
         });
     }
-
+    
     private void createDynamicGotoSubMenu() {
+        ControlUtils.removeOldOpenMenuItem(menu);
         IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
-        Menu subMenu = new Menu(openMenuItem);
-        for (Object object : selection.toList()) {
-            if (!(object instanceof TestSuiteRunConfiguration)) {
-                continue;
-            }
-            TestSuiteEntity testSuiteEntity = ((TestSuiteRunConfiguration) object).getTestSuiteEntity();
-            MenuItem menuItem = new MenuItem(subMenu, SWT.PUSH);
-            menuItem.setText(testSuiteEntity.getIdForDisplay());
-            menuItem.setData(testSuiteEntity);
-            menuItem.addSelectionListener(new SelectionAdapter() {
+        List<TestSuiteEntity> testSuiteEntities = getListTestSuiteFromSelection(selection);
+        SelectionAdapter openSubMenuSelection = new SelectionAdapter() {
 
-                @Override
-                public void widgetSelected(SelectionEvent e) {
-                    Object menu = e.getSource();
-                    if (! (menu instanceof MenuItem)) {
-                        return;
-                    }
-                    TestSuiteEntity testSuiteEntity = getTestSuiteFromMenuItem((MenuItem)menu);
-                    if (testSuiteEntity != null) {
-                        eventBroker.send(EventConstants.TEST_SUITE_OPEN, testSuiteEntity);
-                    }
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Object menu = e.getSource();
+                if (!(menu instanceof MenuItem)) {
+                    return;
                 }
-            });
+                TestSuiteEntity testSuiteEntity = getTestSuiteFromMenuItem((MenuItem) menu);
+                if (testSuiteEntity != null) {
+                    eventBroker.send(EventConstants.TEST_SUITE_OPEN, testSuiteEntity);
+                }
+            }
+        };
+        if (testSuiteEntities.size() == 1) {
+            ControlUtils.createOpenMenuWhenSelectOnlyOne(menu, testSuiteEntities.get(0), enableWhenItemSelected,
+                    openSubMenuSelection);
+            return;
         }
-        openMenuItem.setMenu(subMenu);
+        MenuUtils.createOpenTestArtifactsMenu(getMapFileEntityToSelectionAdapter(testSuiteEntities, openSubMenuSelection), menu);
     }
 
     private TestSuiteEntity getTestSuiteFromMenuItem(MenuItem selectedMenuItem) {
@@ -697,6 +703,31 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
             return (TestSuiteEntity) selectedMenuItem.getData();
         }
         return null;
+    }
+
+    private List<TestSuiteEntity> getListTestSuiteFromSelection(IStructuredSelection selection) {
+        List<TestSuiteEntity> testSuiteEntities = new ArrayList<TestSuiteEntity>();
+        for (Object object : selection.toList()) {
+            if (!(object instanceof TestSuiteRunConfiguration)) {
+                continue;
+            }
+            TestSuiteEntity testSuiteEntity = ((TestSuiteRunConfiguration) object).getTestSuiteEntity();
+            if (testSuiteEntities.contains(testSuiteEntity)) {
+                continue;
+            }
+            testSuiteEntities.add(testSuiteEntity);
+        }
+        return testSuiteEntities;
+    }
+
+    private HashMap<FileEntity, SelectionAdapter> getMapFileEntityToSelectionAdapter(List<? extends FileEntity> fileEntities, SelectionAdapter openTestSuite) {
+        HashMap<FileEntity, SelectionAdapter> map = new HashMap<>();
+        for (FileEntity fileEntity : fileEntities) {
+            if (fileEntity instanceof TestSuiteEntity) {
+                map.put(fileEntity, openTestSuite);
+            }
+        }
+        return map;
     }
 
 }
