@@ -27,6 +27,12 @@ public abstract class DefaultIssueHTMLLinkProvider implements IssueHTMLLinkProvi
         this.issueMetaData = new IssueMetaDataProvider(logRecord);
     }
 
+    protected DefaultIssueHTMLLinkProvider(TestCaseLogRecord logRecord, int endStepIndex,
+            JiraIntegrationSettingStore settingStore) {
+        this.settingStore = settingStore;
+        this.issueMetaData = new IssueMetaDataProvider(logRecord, endStepIndex);
+    }
+
     @Override
     public final String getHTMLLink() throws IOException, URISyntaxException {
         return new URIBuilder(getIssueUrl()).addParameters(getIssueParameters()).build().toString();

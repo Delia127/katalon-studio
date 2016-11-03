@@ -4,8 +4,9 @@ import java.io.IOException;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.report.parts.integration.ReportTestCaseIntegrationViewBuilder;
-import com.kms.katalon.composer.report.parts.integration.TestCaseLogColumnIntegrationView;
+import com.kms.katalon.composer.report.parts.integration.TestCaseIntegrationColumn;
 import com.kms.katalon.composer.report.parts.integration.TestCaseLogDetailsIntegrationView;
+import com.kms.katalon.composer.report.parts.integration.TestLogIntegrationColumn;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportEntity;
@@ -20,8 +21,8 @@ public class JiraReportIntegrationBuilder implements ReportTestCaseIntegrationVi
     }
 
     @Override
-    public TestCaseLogColumnIntegrationView getIntegrationColumn(ReportEntity report) {
-        return new JiraReportTestCaseColumnView(report);
+    public TestCaseIntegrationColumn getTestCaseIntegrationColumn(ReportEntity report) {
+        return new JiraReportTestCaseColumn(report);
     }
 
     @Override
@@ -37,6 +38,11 @@ public class JiraReportIntegrationBuilder implements ReportTestCaseIntegrationVi
             LoggerSingleton.logError(e);
             return false;
         }
+    }
+
+    @Override
+    public TestLogIntegrationColumn getTestLogIntegrationColumn(ReportEntity report) {
+        return new JiraReportTestLogColumn(report);
     }
 
 }

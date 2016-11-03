@@ -22,6 +22,12 @@ public class NewSubtaskHTMLLinkProvider extends DefaultIssueHTMLLinkProvider {
         this.parentIssue = parentIssue;
     }
 
+    public NewSubtaskHTMLLinkProvider(TestCaseLogRecord logRecord, int endStepIndex,
+            JiraIntegrationSettingStore settingStore, JiraIssue parentIssue) {
+        super(logRecord, endStepIndex, settingStore);
+        this.parentIssue = parentIssue;
+    }
+    
     public String getIssueUrl() throws IOException {
         return settingStore.getServerUrl() + StringConstants.HREF_CREATE_SUB_TASK_ISSUE;
     }

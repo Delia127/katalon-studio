@@ -1,9 +1,10 @@
 package com.kms.katalon.composer.report.provider;
 
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Composite;
 
-public class ReportTestStepTreeViewer extends TreeViewer {
+import com.kms.katalon.composer.components.impl.control.CTreeViewer;
+
+public class ReportTestStepTreeViewer extends CTreeViewer {
 
     private String searchedString;
 

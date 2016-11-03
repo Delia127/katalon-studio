@@ -1,11 +1,8 @@
 package com.kms.katalon.composer.integration.jira.report;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
@@ -36,27 +33,15 @@ import org.eclipse.swt.widgets.ToolItem;
 import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.impl.control.DropdownToolItemSelectionListener;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
-import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
-import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.jira.JiraUIComponent;
 import com.kms.katalon.composer.integration.jira.constant.ComposerJiraIntegrationMessageConstant;
 import com.kms.katalon.composer.integration.jira.constant.StringConstants;
-import com.kms.katalon.composer.integration.jira.report.dialog.CreateAsSubTaskBrowserDialog;
-import com.kms.katalon.composer.integration.jira.report.dialog.JiraIssueBrowserDialog;
-import com.kms.katalon.composer.integration.jira.report.dialog.LinkJiraIssueDialog;
 import com.kms.katalon.composer.integration.jira.report.dialog.progress.JiraIssueProgressResult;
-import com.kms.katalon.composer.integration.jira.report.dialog.progress.LinkJiraIssueProgressDialog;
-import com.kms.katalon.composer.integration.jira.report.dialog.progress.NewIssueProgressDialog;
-import com.kms.katalon.composer.integration.jira.report.dialog.progress.UpdateJiraIssueProgressDialog;
 import com.kms.katalon.composer.integration.jira.report.provider.JiraIssueIDLabelProvider;
 import com.kms.katalon.composer.integration.jira.report.provider.JiraIssueLabelProvider;
 import com.kms.katalon.core.logging.model.TestCaseLogRecord;
-import com.kms.katalon.integration.jira.JiraIntegrationException;
 import com.kms.katalon.integration.jira.entity.JiraIssue;
 import com.kms.katalon.integration.jira.entity.JiraIssueCollection;
-import com.kms.katalon.integration.jira.issue.EditIssueHTMLLinkProvider;
-import com.kms.katalon.integration.jira.issue.NewIssueHTMLLinkProvider;
-import com.kms.katalon.integration.jira.issue.NewSubtaskHTMLLinkProvider;
 
 public class JiraLinkedIssuesDialog extends AbstractDialog implements JiraUIComponent {
 
@@ -75,6 +60,8 @@ public class JiraLinkedIssuesDialog extends AbstractDialog implements JiraUIComp
     private TestCaseLogRecord logRecord;
 
     private boolean changed;
+
+    private JiraCreateIssueHandler createIssueHandler;
 
     public JiraLinkedIssuesDialog(Shell parentShell, JiraIssueCollection jiraIssueCollection,
             TestCaseLogRecord logRecord) {
@@ -115,6 +102,7 @@ public class JiraLinkedIssuesDialog extends AbstractDialog implements JiraUIComp
     @Override
     protected void setInput() {
         tableViewer.setInput(jiraIssueCollection.getIssues());
+        createIssueHandler = new JiraCreateIssueHandler(getShell(), logRecord);
     }
 
     @Override
@@ -180,12 +168,7 @@ public class JiraLinkedIssuesDialog extends AbstractDialog implements JiraUIComp
                 newIssueItem.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent e) {
-                        try {
-                            openNewIssueDialog(new JiraIssueBrowserDialog(getShell(), logRecord,
-                                    new NewIssueHTMLLinkProvider(logRecord, getSettingStore())));
-                        } catch (URISyntaxException | IOException ex) {
-                            LoggerSingleton.logError(ex);
-                        }
+                        openNewIssueDialog();
                     }
                 });
 
@@ -221,79 +204,33 @@ public class JiraLinkedIssuesDialog extends AbstractDialog implements JiraUIComp
         tltmRemove.setEnabled(false);
     }
 
+    private int getNumSteps() {
+        return logRecord.getChildRecords().length;
+    }
+
     private void openEditIssueDialog() {
-        try {
-            Shell shell = getShell();
-            JiraIssue oldIssue = (JiraIssue) tableViewer.getStructuredSelection().getFirstElement();
-            JiraIssueBrowserDialog browserDialog = new JiraIssueBrowserDialog(shell, logRecord,
-                    new EditIssueHTMLLinkProvider(logRecord, getSettingStore(), oldIssue));
-
-            if (browserDialog.open() != Dialog.OK) {
-                return;
-            }
-            JiraIssueProgressResult result = new UpdateJiraIssueProgressDialog(shell, browserDialog.getIssueKey(),
-                    logRecord).run();
-            if (checkResult(result)) {
-                Collections.replaceAll(jiraIssueCollection.getIssues(), oldIssue, result.getJiraIssue());
-                tableViewer.refresh();
-            }
-        } catch (ClassCastException | URISyntaxException | IOException e) {
-            LoggerSingleton.logError(e);
+        JiraIssue oldIssue = (JiraIssue) tableViewer.getStructuredSelection().getFirstElement();
+        JiraIssueProgressResult handlerResult = createIssueHandler.openEditIssueDialog(oldIssue);
+        if (createIssueHandler.checkResult(handlerResult)) {
+            Collections.replaceAll(jiraIssueCollection.getIssues(), oldIssue, handlerResult.getJiraIssue());
+            tableViewer.refresh();
         }
     }
 
-    private void openCreateAsSubTaskDialog() {
-        Shell shell = getShell();
-        LinkJiraIssueDialog linkDialog = new LinkJiraIssueDialog(shell,
-                ComposerJiraIntegrationMessageConstant.DIA_TITLE_CREATE_NEW_AS_SUB_TASK,
-                ComposerJiraIntegrationMessageConstant.DIA_MESSAGE_CREATE_NEW_AS_SUB_TASK,
-                ComposerJiraIntegrationMessageConstant.DIA_LBL_CREATE_NEW_AS_SUB_TASK);
-        if (linkDialog.open() != Dialog.OK) {
-            return;
-        }
-        JiraIssueProgressResult result = new UpdateJiraIssueProgressDialog(shell, linkDialog.getIssueKey(), logRecord)
-                .run();
-        if (!checkResult(result)) {
-            return;
-        }
-
-        try {
-            JiraIssue parentIssue = result.getJiraIssue();
-            CreateAsSubTaskBrowserDialog browserDialog = new CreateAsSubTaskBrowserDialog(getShell(), logRecord,
-                    new NewSubtaskHTMLLinkProvider(logRecord, getSettingStore(), parentIssue));
-            if (browserDialog.open() != Dialog.OK) {
-                return;
-            }
-            String issueKey = browserDialog.getIssueKey();
-            if (parentIssue.getKey().equals(issueKey)) {
-                return;
-            }
-            checkResultAndUpdateTable(new NewIssueProgressDialog(getShell(), issueKey, logRecord).run());
-            
-        } catch (URISyntaxException | IOException e) {
-            LoggerSingleton.logError(e);
-        }
+    public void openCreateAsSubTaskDialog() {
+        JiraIssueProgressResult handlerResult = createIssueHandler.openCreateAsSubTaskDialog(getNumSteps());
+        checkResultAndUpdateTable(handlerResult);
     }
 
-    private void openLinkIssueDialog() {
-        Shell shell = getShell();
-        LinkJiraIssueDialog linkDialog = new LinkJiraIssueDialog(shell,
-                ComposerJiraIntegrationMessageConstant.DIA_TITLE_LINK_TO_EXISTING_ISSUE,
-                ComposerJiraIntegrationMessageConstant.DIA_MESSAGE_LINK_TO_EXISTING_ISSUE,
-                ComposerJiraIntegrationMessageConstant.DIA_LBL_LINK_TO_EXISTING_ISSUE);
-        if (linkDialog.open() != Dialog.OK) {
+    public void openLinkIssueDialog() {
+        JiraIssueProgressResult handlerResult = createIssueHandler.openLinkIssueDialog();
+        if (!createIssueHandler.checkResult(handlerResult)) {
             return;
         }
-        JiraIssueProgressResult result = new LinkJiraIssueProgressDialog(shell, linkDialog.getIssueKey(), logRecord)
-                .run();
-        if (!checkResult(result)) {
-            return;
-        }
-        JiraIssue newIssue = result.getJiraIssue();
-        addIssueToCollection(newIssue);
-        refreshAndSetSelection(newIssue);
+        JiraIssue newJiraIssue = handlerResult.getJiraIssue();
+        addIssueToCollection(newJiraIssue);
+        refreshAndSetSelection(newJiraIssue);
     }
-
     private JiraIssue addIssueToCollection(JiraIssue newIssue) {
         int index = indexInCollection(newIssue, jiraIssueCollection);
         List<JiraIssue> issues = jiraIssueCollection.getIssues();
@@ -316,17 +253,13 @@ public class JiraLinkedIssuesDialog extends AbstractDialog implements JiraUIComp
         return -1;
     }
 
-    private void openNewIssueDialog(JiraIssueBrowserDialog browserDialog) {
-        if (browserDialog.open() != Dialog.OK) {
-            return;
-        }
-        String issueKey = browserDialog.getIssueKey();
-        JiraIssueProgressResult result = new NewIssueProgressDialog(getShell(), issueKey, logRecord).run();
-        checkResultAndUpdateTable(result);
+    public void openNewIssueDialog() {
+        JiraIssueProgressResult handlerResult = createIssueHandler.openNewIssueDialog(getNumSteps());
+        checkResultAndUpdateTable(handlerResult);
     }
 
     private void checkResultAndUpdateTable(JiraIssueProgressResult result) {
-        if (checkResult(result)) {
+        if (createIssueHandler.checkResult(result)) {
             JiraIssue newJiraIssue = result.getJiraIssue();
             jiraIssueCollection.getIssues().add(newJiraIssue);
             refreshAndSetSelection(newJiraIssue);
@@ -337,16 +270,6 @@ public class JiraLinkedIssuesDialog extends AbstractDialog implements JiraUIComp
         tableViewer.refresh();
         tableViewer.setSelection(new StructuredSelection(newJiraIssue));
         changed = true;
-    }
-
-    private boolean checkResult(JiraIssueProgressResult result) {
-        if (result.hasError()) {
-            JiraIntegrationException error = result.getError();
-            MultiStatusErrorDialog.showErrorDialog(error, error.getMessage(), error.getMessage());
-            LoggerSingleton.logError(error);
-            return false;
-        }
-        return result.isComplete();
     }
 
     @Override

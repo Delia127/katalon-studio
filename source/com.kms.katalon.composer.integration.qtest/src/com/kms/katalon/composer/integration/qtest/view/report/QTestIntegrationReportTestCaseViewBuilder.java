@@ -1,8 +1,9 @@
 package com.kms.katalon.composer.integration.qtest.view.report;
 
 import com.kms.katalon.composer.report.parts.integration.ReportTestCaseIntegrationViewBuilder;
-import com.kms.katalon.composer.report.parts.integration.TestCaseLogColumnIntegrationView;
+import com.kms.katalon.composer.report.parts.integration.TestCaseIntegrationColumn;
 import com.kms.katalon.composer.report.parts.integration.TestCaseLogDetailsIntegrationView;
+import com.kms.katalon.composer.report.parts.integration.TestLogIntegrationColumn;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportEntity;
@@ -17,7 +18,7 @@ public class QTestIntegrationReportTestCaseViewBuilder implements ReportTestCase
     }
 
     @Override
-    public TestCaseLogColumnIntegrationView getIntegrationColumn(ReportEntity reportEntity) {
+    public TestCaseIntegrationColumn getTestCaseIntegrationColumn(ReportEntity reportEntity) {
         return new QTestIntegrationReportTestCaseColumnView(reportEntity);
     }
 
@@ -29,5 +30,10 @@ public class QTestIntegrationReportTestCaseViewBuilder implements ReportTestCase
     @Override
     public boolean isIntegrationEnabled(ProjectEntity project) {
         return QTestSettingStore.isIntegrationActive(project.getFolderLocation());
+    }
+
+    @Override
+    public TestLogIntegrationColumn getTestLogIntegrationColumn(ReportEntity report) {
+        return null;
     }
 }

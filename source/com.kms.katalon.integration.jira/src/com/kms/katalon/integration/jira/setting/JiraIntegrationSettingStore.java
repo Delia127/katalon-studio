@@ -2,6 +2,7 @@ package com.kms.katalon.integration.jira.setting;
 
 import static com.kms.katalon.integration.jira.constant.StringConstants.PREF_AUTH_PASSWORD;
 import static com.kms.katalon.integration.jira.constant.StringConstants.PREF_AUTH_SERVER_URL;
+import static com.kms.katalon.integration.jira.constant.StringConstants.PREF_AUTH_USER;
 import static com.kms.katalon.integration.jira.constant.StringConstants.PREF_AUTH_USERNAME;
 import static com.kms.katalon.integration.jira.constant.StringConstants.PREF_INTEGRATION_ENABLED;
 import static com.kms.katalon.integration.jira.constant.StringConstants.PREF_SUBMIT_ATTACH_LOG;
@@ -9,7 +10,6 @@ import static com.kms.katalon.integration.jira.constant.StringConstants.PREF_SUB
 import static com.kms.katalon.integration.jira.constant.StringConstants.PREF_SUBMIT_JIRA_ISSUE_TYPE;
 import static com.kms.katalon.integration.jira.constant.StringConstants.PREF_SUBMIT_JIRA_PROJECT;
 import static com.kms.katalon.integration.jira.constant.StringConstants.PREF_SUBMIT_USE_TEST_CASE_NAME_AS_SUMMARY;
-import static com.kms.katalon.integration.jira.constant.StringConstants.PREF_AUTH_USER;
 
 import java.io.IOException;
 import java.lang.reflect.Type;

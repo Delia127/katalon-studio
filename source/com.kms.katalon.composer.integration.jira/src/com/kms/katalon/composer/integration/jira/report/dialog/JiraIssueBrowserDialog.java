@@ -80,9 +80,10 @@ public class JiraIssueBrowserDialog extends Dialog implements JiraUIComponent {
         browser.addLocationListener(new LocationListener() {
             private boolean ready;
 
-            private boolean isDashBoardSet;
-            
-            private boolean login;
+            private boolean dashBoardSet;
+
+            private boolean loggedIn;
+
             @Override
             public void changing(LocationEvent event) {
                 txtBrowserUrl.setText(event.location);
@@ -93,22 +94,21 @@ public class JiraIssueBrowserDialog extends Dialog implements JiraUIComponent {
                 try {
                     String location = browser.getUrl();
                     if (!ready) {
-                        if (!login && isLoginPage()) {
-                        	login = true;
+                        if (!loggedIn && isLoginPage()) {
+                            loggedIn = true;
                             login();
-                            System.out.println(true);
                             return;
                         }
-                        
+
                         if (location.startsWith(htmlLinkProvider.getIssueUrlPrefix())) {
                             ready = true;
                             trigger();
                             return;
                         }
-                        if (!isDashBoardSet && !event.location.equals(htmlLinkProvider.getDashboardHTMLLink())) {
+                        if (!dashBoardSet && !event.location.equals(htmlLinkProvider.getDashboardHTMLLink())) {
                             browser.setUrl(htmlLinkProvider.getDashboardHTMLLink());
                             browser.setUrl(htmlLinkProvider.getHTMLLink());
-                            isDashBoardSet = true;
+                            dashBoardSet = true;
                             return;
                         }
                         return;
@@ -175,7 +175,7 @@ public class JiraIssueBrowserDialog extends Dialog implements JiraUIComponent {
             LoggerSingleton.logError(e);
         }
     }
-    
+
     protected String waitAndExec(String element, String js) {
         return "function waitUntilExist() {" + "if (document.getElementById(\"" + element + "\") === null) {"
                 + "setTimeout(waitUntilExist, 1000);" + "} else {" + js + "}" + "};" + "waitUntilExist();";

@@ -8,7 +8,9 @@ public interface ReportTestCaseIntegrationViewBuilder {
     TestCaseLogDetailsIntegrationView getIntegrationDetails(ReportEntity report,
             TestSuiteLogRecord testSuiteLogRecord);
 
-    TestCaseLogColumnIntegrationView getIntegrationColumn(ReportEntity report);
+    TestCaseIntegrationColumn getTestCaseIntegrationColumn(ReportEntity report);
+    
+    TestLogIntegrationColumn getTestLogIntegrationColumn(ReportEntity report);
 
     int getPreferredOrder();
     

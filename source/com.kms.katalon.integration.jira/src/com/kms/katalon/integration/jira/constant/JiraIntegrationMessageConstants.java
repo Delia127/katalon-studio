@@ -17,4 +17,5 @@ public class JiraIntegrationMessageConstants extends NLS {
     public static String MSG_INVALID_REQUEST;
     public static String MSG_INVALID_SERVER_URL;
     public static String MSG_ERROR_LOG;
+    public static String MSG_TEST_STEPS;
 }

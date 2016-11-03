@@ -15,12 +15,15 @@ import com.kms.katalon.integration.jira.setting.JiraIntegrationSettingStore;
 
 public class NewIssueHTMLLinkProvider extends DefaultIssueHTMLLinkProvider {
 
-
     public NewIssueHTMLLinkProvider(TestCaseLogRecord logRecord, JiraIntegrationSettingStore settingStore) {
         super(logRecord, settingStore);
     }
 
-    @Override
+    public NewIssueHTMLLinkProvider(TestCaseLogRecord logRecord, int endStepIndex,
+            JiraIntegrationSettingStore settingStore) {
+        super(logRecord, endStepIndex, settingStore);
+    }
+
     public String getIssueUrl() throws IOException {
         return settingStore.getServerUrl() + StringConstants.HREF_CREATE_ISSUE;
     }
@@ -30,7 +33,6 @@ public class NewIssueHTMLLinkProvider extends DefaultIssueHTMLLinkProvider {
         return settingStore.getServerUrl() + StringConstants.HREF_CREATE_ISSUE_PREFIX;
     }
 
-    @Override
     public List<NameValuePair> getIssueParameters() throws IOException {
         List<NameValuePair> pairs = new ArrayList<>();
         pairs.add(new BasicNameValuePair(JiraIssue.FIELD_PROJECT_ID,

@@ -16,8 +16,15 @@ public class IssueMetaDataProvider {
 
     protected TestCaseLogRecord logRecord;
 
+    private int endStepIndex;
+
     public IssueMetaDataProvider(TestCaseLogRecord logRecord) {
+        this(logRecord, logRecord.getChildRecords().length);
+    }
+
+    public IssueMetaDataProvider(TestCaseLogRecord logRecord, int endStepIndex) {
         this.logRecord = logRecord;
+        this.endStepIndex = endStepIndex;
     }
 
     public String getDescription() {
@@ -28,20 +35,22 @@ public class IssueMetaDataProvider {
      * @return description of steps on JIRA looks like this:
      * 
      * <pre>
+     * Test Steps:
      * 1. openBrowser
      * 2. navigateToURL
      * </pre>
      */
     private String getStepDescription() {
         StringBuilder builder = new StringBuilder();
-        ILogRecord[] childRecords = logRecord.getChildRecords();
-        if (childRecords.length > 0) {
-            builder.append("Test Steps:\n");
-            for (int i = 0; i < childRecords.length; i++) {
-                ILogRecord logRecord = childRecords[i];
-                builder.append(Integer.toString(i + 1)).append(". ").append(
-                        StringUtils.defaultString(logRecord.getName()))
-                .append("\n");
+        if (endStepIndex > 0) {
+            builder.append(JiraIntegrationMessageConstants.MSG_TEST_STEPS + "\n");
+            ILogRecord[] childRecords = logRecord.getChildRecords();
+            for (int i = 0; i < endStepIndex; i++) {
+                ILogRecord stepRecord = childRecords[i];
+                builder.append(Integer.toString(i + 1))
+                        .append(". ")
+                        .append(StringUtils.defaultString(stepRecord.getName()))
+                        .append("\n");
             }
             builder.append("\n");
         }

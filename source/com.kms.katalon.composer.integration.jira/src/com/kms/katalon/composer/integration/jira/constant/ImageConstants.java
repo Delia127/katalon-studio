@@ -9,7 +9,7 @@ import com.kms.katalon.composer.components.util.ImageUtil;
 public class ImageConstants extends com.kms.katalon.composer.components.impl.constants.ImageConstants {
     public static Bundle currentBundle = FrameworkUtil.getBundle(ImageConstants.class);
 
-    public static final Image IMG_JIRA = ImageUtil.loadImage(currentBundle, "resources/icons/jira_active_16.png");
+    public static final Image IMG_16_JIRA = ImageUtil.loadImage(currentBundle, "resources/icons/jira_active_16.png");
 
     public static final Image IMG_ISSUE_HOVER_IN = ImageUtil.loadImage(currentBundle, "resources/icons/bug_16.png");
 

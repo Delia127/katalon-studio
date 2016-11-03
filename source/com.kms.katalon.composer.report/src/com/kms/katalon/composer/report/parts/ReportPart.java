@@ -67,8 +67,8 @@ import com.kms.katalon.composer.report.constants.ImageConstants;
 import com.kms.katalon.composer.report.constants.StringConstants;
 import com.kms.katalon.composer.report.integration.ReportComposerIntegrationFactory;
 import com.kms.katalon.composer.report.lookup.LogRecordLookup;
-import com.kms.katalon.composer.report.parts.integration.TestCaseLogDetailsIntegrationView;
 import com.kms.katalon.composer.report.parts.integration.ReportTestCaseIntegrationViewBuilder;
+import com.kms.katalon.composer.report.parts.integration.TestCaseLogDetailsIntegrationView;
 import com.kms.katalon.composer.report.provider.ReportPartTestCaseLabelProvider;
 import com.kms.katalon.composer.report.provider.ReportTestCaseTableViewer;
 import com.kms.katalon.composer.report.provider.ReportTestCaseTableViewerFilter;
@@ -587,7 +587,7 @@ public class ReportPart implements EventHandler, IComposerPart {
             if (!builder.isIntegrationEnabled(ProjectController.getInstance().getCurrentProject())) {
                 continue;
             }
-            TableViewerColumn viewerColumn = builder.getIntegrationColumn(report).createTableIntegrationColumn(
+            TableViewerColumn viewerColumn = (TableViewerColumn) builder.getTestCaseIntegrationColumn(report).createIntegrationColumn(
                     testCaseTableViewer,
                     testCaseTableViewer.getTable().getColumnCount());
             tableLayout.setColumnData(viewerColumn.getColumn(), new ColumnWeightData(0, 32));

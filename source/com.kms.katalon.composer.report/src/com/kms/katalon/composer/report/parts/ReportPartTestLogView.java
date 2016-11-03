@@ -1,6 +1,8 @@
 package com.kms.katalon.composer.report.parts;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
@@ -61,13 +63,18 @@ import com.kms.katalon.composer.components.util.ImageUtil;
 import com.kms.katalon.composer.report.constants.ImageConstants;
 import com.kms.katalon.composer.report.constants.StringConstants;
 import com.kms.katalon.composer.report.dialog.AdvancedSearchTestLogDialog;
+import com.kms.katalon.composer.report.integration.ReportComposerIntegrationFactory;
+import com.kms.katalon.composer.report.parts.integration.ReportTestCaseIntegrationViewBuilder;
+import com.kms.katalon.composer.report.parts.integration.TestCaseChangedEventListener;
 import com.kms.katalon.composer.report.parts.integration.TestCaseLogDetailsIntegrationView;
+import com.kms.katalon.composer.report.parts.integration.TestLogIntegrationColumn;
 import com.kms.katalon.composer.report.provider.ReportPartTestStepLabelProvider;
 import com.kms.katalon.composer.report.provider.ReportTestStepTableViewerFilter;
 import com.kms.katalon.composer.report.provider.ReportTestStepTreeViewer;
 import com.kms.katalon.composer.report.provider.ReportTreeTableContentProvider;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.core.logging.model.ILogRecord;
 import com.kms.katalon.core.logging.model.MessageLogRecord;
@@ -80,35 +87,57 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 public class ReportPartTestLogView {
     private Button btnFilterTestStepInfo, btnFilterTestStepPassed, btnFilterTestStepFailed, btnFilterTestStepError,
             btnFilterTestStepIncomplete, btnFilterTestStepWarning, btnFilterTestStepNotRun;
+
     private Text txtTestLogSearch;
+
     private CLabel lblTestLogSearch, lblTestLogAdvancedSearch;
+
     private ReportTestStepTreeViewer treeViewerTestSteps;
+
     private StyledText txtSTestCaseId, txtSTestCaseStartTime, txtSTestCaseEndTime, txtSTestCaseElapsedTime,
             txtSTestCaseDescription, txtSTestCaseMessage;
+
     private Composite compositeTestCaseLogIntegration;
+
     private ToolBar testCaseLogIntegrationToolbar;
+
     private Composite compositeSTLInformation;
+
     private StyledText txtSTLStartTime, txtSTLEndTime, txtSTLElapsedTime, txtSTLDescription, txtSTLMessage, txtSTLName;
+
     private ScrolledComposite compositeSTLSImageView;
+
     private Canvas selectedTestLogCanvas;
 
     private Image selectedTestLogImage;
+
     @SuppressWarnings("unused")
     private StyledText txtSTLStackTrace;
 
     private ReportPart parentPart;
+
     private TestCaseLogDetailsIntegrationView selectedReportTestCaseIntegrationView;
+
     private ToolItem tltmCollapseAllLogs, tltmExpandAllLogs;
+
     private ReportTestStepTableViewerFilter testStepFilter;
+
     private boolean isSearching;
+
     private ToolBar testLogToolbar;
+
     private CTabFolder tabFolder;
+
     private CTabItem tbtmTestLog;
+
     private Composite compositeTestCaseInformation;
+    
+    private List<TestCaseChangedEventListener> testCaseChangedEventListeners;
 
     public ReportPartTestLogView(ReportPart parentPart) {
         this.parentPart = parentPart;
         this.isSearching = false;
+        testCaseChangedEventListeners = new ArrayList<>();
     }
 
     public void registerControlModifyListener() {
@@ -151,7 +180,7 @@ public class ReportPartTestLogView {
                 updateSelectedTestStep(getSelectedTestStep());
             }
         });
-        
+
         treeViewerTestSteps.addDoubleClickListener(new IDoubleClickListener() {
             @Override
             public void doubleClick(DoubleClickEvent event) {
@@ -239,7 +268,7 @@ public class ReportPartTestLogView {
                 updateSelectedTestStep(getSelectedTestStep());
             }
         });
-        
+
         btnFilterTestStepNotRun.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -358,8 +387,8 @@ public class ReportPartTestLogView {
 
         tabFolder = new CTabFolder(compositeTestCaseLogTreeDetails, SWT.NONE);
         tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        tabFolder.setSelectionBackground(Display.getCurrent().getSystemColor(
-                SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
+        tabFolder.setSelectionBackground(
+                Display.getCurrent().getSystemColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
 
         createTestLogTabItem(tabFolder);
         createTestCaseInformationTabItem(tabFolder);
@@ -454,13 +483,13 @@ public class ReportPartTestLogView {
 
         tltmCollapseAllLogs = new ToolItem(testLogToolbar, SWT.NONE);
         tltmCollapseAllLogs.setToolTipText("Collapse All Logs");
-        tltmCollapseAllLogs.setImage(PlatformUI.getWorkbench().getSharedImages()
-                .getImage(ISharedImages.IMG_ELCL_COLLAPSEALL));
+        tltmCollapseAllLogs
+                .setImage(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_ELCL_COLLAPSEALL));
 
         tltmExpandAllLogs = new ToolItem(testLogToolbar, SWT.NONE);
         tltmExpandAllLogs.setToolTipText("Expand All Logs");
-        tltmExpandAllLogs.setImage(ImageUtil.loadImage(Platform.getBundle("org.eclipse.ui"),
-                "icons/full/elcl16/expandall.png"));
+        tltmExpandAllLogs
+                .setImage(ImageUtil.loadImage(Platform.getBundle("org.eclipse.ui"), "icons/full/elcl16/expandall.png"));
     }
 
     private void createTestLogTable(Composite parent) {
@@ -478,9 +507,9 @@ public class ReportPartTestLogView {
         TreeViewerColumn treeViewerColumnLogItem = new TreeViewerColumn(treeViewerTestSteps, SWT.NONE);
         TreeColumn trclmnTestLogItem = treeViewerColumnLogItem.getColumn();
         trclmnTestLogItem.setText("Item");
-        tclCompositeTestLogTable.setColumnData(trclmnTestLogItem, new ColumnWeightData(45, 300));
-        treeViewerColumnLogItem.setLabelProvider(new ReportPartTestStepLabelProvider(
-                ReportPartTestStepLabelProvider.CLMN_TEST_LOG_ITEM_IDX, this));
+        tclCompositeTestLogTable.setColumnData(trclmnTestLogItem, new ColumnWeightData(45, 200));
+        treeViewerColumnLogItem.setLabelProvider(
+                new ReportPartTestStepLabelProvider(ReportPartTestStepLabelProvider.CLMN_TEST_LOG_ITEM_IDX, this));
 
         TreeViewerColumn treeViewerColumnLogDescription = new TreeViewerColumn(treeViewerTestSteps, SWT.NONE);
         TreeColumn trclmnTestLogDescription = treeViewerColumnLogDescription.getColumn();
@@ -493,8 +522,8 @@ public class ReportPartTestLogView {
         TreeColumn trclmnTestLogElapsedTime = treeViewerColumnElapsedTime.getColumn();
         trclmnTestLogElapsedTime.setText("Elapsed");
         tclCompositeTestLogTable.setColumnData(trclmnTestLogElapsedTime, new ColumnWeightData(0, 80));
-        treeViewerColumnElapsedTime.setLabelProvider(new ReportPartTestStepLabelProvider(
-                ReportPartTestStepLabelProvider.CLMN_TEST_LOG_ELAPSED_IDX, this));
+        treeViewerColumnElapsedTime.setLabelProvider(
+                new ReportPartTestStepLabelProvider(ReportPartTestStepLabelProvider.CLMN_TEST_LOG_ELAPSED_IDX, this));
 
         TreeViewerColumn treeViewerColumnAttachment = new TreeViewerColumn(treeViewerTestSteps, SWT.NONE);
         TreeColumn trclmnTestLogAttachment = treeViewerColumnAttachment.getColumn();
@@ -503,7 +532,7 @@ public class ReportPartTestLogView {
         tclCompositeTestLogTable.setColumnData(trclmnTestLogAttachment, new ColumnWeightData(0, 40));
         treeViewerColumnAttachment.setLabelProvider(new ReportPartTestStepLabelProvider(
                 ReportPartTestStepLabelProvider.CLMN_TEST_LOG_ATTACHMENT_IDX, this));
-
+        createTestLogIntegrationColumns(tclCompositeTestLogTable);
         treeViewerTestSteps.setContentProvider(new ReportTreeTableContentProvider());
 
         // enable tooltip helper for treeViewerTestCaseLog
@@ -521,6 +550,24 @@ public class ReportPartTestLogView {
         testStepFilter.showIncomplete(btnFilterTestStepIncomplete.getSelection());
         testStepFilter.showWarning(btnFilterTestStepWarning.getSelection());
         testStepFilter.showNotRun(btnFilterTestStepNotRun.getSelection());
+    }
+
+    private void createTestLogIntegrationColumns(TreeColumnLayout tableLayout) {
+        ReportEntity report = getReport();
+        for (ReportTestCaseIntegrationViewBuilder builder : ReportComposerIntegrationFactory.getInstance()
+                .getSortedBuilder()) {
+            if (!builder.isIntegrationEnabled(ProjectController.getInstance().getCurrentProject())) {
+                continue;
+            }
+            TestLogIntegrationColumn testLogIntegrationColumn = builder.getTestLogIntegrationColumn(report);
+            if (testLogIntegrationColumn == null) {
+                continue;
+            }
+            TreeViewerColumn viewerColumn = (TreeViewerColumn) testLogIntegrationColumn
+                    .createIntegrationColumn(treeViewerTestSteps, treeViewerTestSteps.getTree().getColumnCount());
+            tableLayout.setColumnData(viewerColumn.getColumn(), new ColumnWeightData(0, 32));
+            testCaseChangedEventListeners.add(testLogIntegrationColumn);
+        }
     }
 
     private void createTestLogTabItem(CTabFolder tabFolder) {
@@ -741,8 +788,8 @@ public class ReportPartTestLogView {
     public void loadTestCaseIntegrationToolbar(ReportEntity report, TestSuiteLogRecord testSuiteLogRecord) {
         clearTestCaseIntegrationToolbar();
 
-        for (Entry<String, TestCaseLogDetailsIntegrationView> builderEntry : parentPart
-                .getIntegratingCompositeMap().entrySet()) {
+        for (Entry<String, TestCaseLogDetailsIntegrationView> builderEntry : parentPart.getIntegratingCompositeMap()
+                .entrySet()) {
             if (builderEntry.getValue() != null) {
                 ToolItem item = new ToolItem(testCaseLogIntegrationToolbar, SWT.CHECK);
                 item.setText(builderEntry.getKey());
@@ -781,8 +828,8 @@ public class ReportPartTestLogView {
         selectedReportTestCaseIntegrationView.createContainer(compositeTestCaseLogIntegration);
 
         compositeTestCaseLogIntegration.layout(true, true);
-        selectedReportTestCaseIntegrationView.changeTestCase((TestCaseLogRecord) parentPart
-                .getSelectedTestCaseLogRecord());
+        selectedReportTestCaseIntegrationView
+                .changeTestCase((TestCaseLogRecord) parentPart.getSelectedTestCaseLogRecord());
     }
 
     private void clearTestCaseIntegrationContainer() {
@@ -819,8 +866,8 @@ public class ReportPartTestLogView {
         }
 
         if (selectedLogRecord != null && selectedLogRecord.getStartTime() > 0 && selectedLogRecord.getEndTime() > 0) {
-            txtSTestCaseElapsedTime.setText(DateUtil.getElapsedTime(selectedLogRecord.getStartTime(),
-                    selectedLogRecord.getEndTime()));
+            txtSTestCaseElapsedTime
+                    .setText(DateUtil.getElapsedTime(selectedLogRecord.getStartTime(), selectedLogRecord.getEndTime()));
             StyledString txtSTLElapsedStyleString = new StyledString(txtSTestCaseElapsedTime.getText(),
                     StyledString.COUNTER_STYLER);
             txtSTestCaseElapsedTime.setStyleRanges(txtSTLElapsedStyleString.getStyleRanges());
@@ -847,6 +894,9 @@ public class ReportPartTestLogView {
 
         compositeTestCaseInformation.layout();
 
+        for (TestCaseChangedEventListener listener : testCaseChangedEventListeners) {
+            listener.changeTestCase((TestCaseLogRecord) selectedLogRecord);
+        }
         if (selectedLogRecord != null) {
             treeViewerTestSteps.setInput(selectedLogRecord.getChildRecords());
         } else {
@@ -877,11 +927,11 @@ public class ReportPartTestLogView {
                     int offset = styleText.getOffsetAtLocation(new Point(event.x, event.y));
                     StyleRange style = styleText.getStyleRangeAtOffset(offset);
                     if (style != null && style.underline && style.underlineStyle == SWT.UNDERLINE_LINK) {
-                        TestCaseEntity testCaseEntity = TestCaseController.getInstance().getTestCaseByDisplayId(
-                                (String) style.data);
+                        TestCaseEntity testCaseEntity = TestCaseController.getInstance()
+                                .getTestCaseByDisplayId((String) style.data);
                         if (testCaseEntity != null) {
-                            EventBrokerSingleton.getInstance().getEventBroker()
-                                    .post(EventConstants.TESTCASE_OPEN, testCaseEntity);
+                            EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.TESTCASE_OPEN,
+                                    testCaseEntity);
                         } else {
                             MessageDialog.openWarning(null, StringConstants.WARN, "Test case not found.");
                         }
@@ -920,8 +970,8 @@ public class ReportPartTestLogView {
         }
 
         if (selectedLogRecord != null && selectedLogRecord.getStartTime() > 0 && selectedLogRecord.getEndTime() > 0) {
-            txtSTLElapsedTime.setText(DateUtil.getElapsedTime(selectedLogRecord.getStartTime(),
-                    selectedLogRecord.getEndTime()));
+            txtSTLElapsedTime
+                    .setText(DateUtil.getElapsedTime(selectedLogRecord.getStartTime(), selectedLogRecord.getEndTime()));
             StyledString txtSTLElapsedStyleString = new StyledString(txtSTLElapsedTime.getText(),
                     StyledString.COUNTER_STYLER);
             txtSTLElapsedTime.setStyleRanges(txtSTLElapsedStyleString.getStyleRanges());
@@ -955,10 +1005,10 @@ public class ReportPartTestLogView {
             MessageLogRecord messageLog = (MessageLogRecord) selectedLogRecord;
             if (messageLog.getAttachment() != null) {
 
-                selectedTestLogImage = new Image(selectedTestLogCanvas.getDisplay(), getReport().getLocation()
-                        + File.separator + messageLog.getAttachment());
-                compositeSTLSImageView.setMinSize(new Point(selectedTestLogImage.getBounds().width,
-                        selectedTestLogImage.getBounds().height));
+                selectedTestLogImage = new Image(selectedTestLogCanvas.getDisplay(),
+                        getReport().getLocation() + File.separator + messageLog.getAttachment());
+                compositeSTLSImageView.setMinSize(
+                        new Point(selectedTestLogImage.getBounds().width, selectedTestLogImage.getBounds().height));
 
             }
         } else {

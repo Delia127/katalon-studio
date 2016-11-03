@@ -15,7 +15,6 @@ import com.kms.katalon.integration.jira.issue.NewSubtaskHTMLLinkProvider;
 public class CreateAsSubTaskBrowserDialog extends JiraIssueBrowserDialog {
 
     private IssueMetaDataProvider issueMetaData;
-
     public CreateAsSubTaskBrowserDialog(Shell parentShell, TestCaseLogRecord logRecord,
             NewSubtaskHTMLLinkProvider htmlLinkProvider) throws URISyntaxException, IOException {
         super(parentShell, logRecord, htmlLinkProvider);

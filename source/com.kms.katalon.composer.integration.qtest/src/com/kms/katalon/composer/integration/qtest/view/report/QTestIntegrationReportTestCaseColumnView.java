@@ -1,7 +1,9 @@
 package com.kms.katalon.composer.integration.qtest.view.report;
 
+import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.ViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.TableColumn;
@@ -9,8 +11,8 @@ import org.eclipse.swt.widgets.TableColumn;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.ImageConstants;
 import com.kms.katalon.composer.report.lookup.LogRecordLookup;
-import com.kms.katalon.composer.report.parts.integration.TestCaseLogColumnIntegrationView;
 import com.kms.katalon.composer.report.parts.integration.IntegrationTestCaseColumnLabelProvider;
+import com.kms.katalon.composer.report.parts.integration.TestCaseIntegrationColumn;
 import com.kms.katalon.core.logging.model.TestCaseLogRecord;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.integration.qtest.QTestIntegrationReportManager;
@@ -20,15 +22,15 @@ import com.kms.katalon.integration.qtest.entity.QTestRun;
 import com.kms.katalon.integration.qtest.entity.QTestSuite;
 import com.kms.katalon.integration.qtest.entity.QTestTestCase;
 
-public class QTestIntegrationReportTestCaseColumnView extends TestCaseLogColumnIntegrationView {
+public class QTestIntegrationReportTestCaseColumnView extends TestCaseIntegrationColumn {
 
     public QTestIntegrationReportTestCaseColumnView(ReportEntity reportEntity) {
         super(reportEntity);
     }
 
     @Override
-    public TableViewerColumn createTableIntegrationColumn(TableViewer tableViewer, int columnIndex) {
-        TableViewerColumn tableViewerColumnIntegration = new TableViewerColumn(tableViewer, SWT.NONE);
+    public ViewerColumn createIntegrationColumn(ColumnViewer tableViewer, int columnIndex) {
+        TableViewerColumn tableViewerColumnIntegration = new TableViewerColumn((TableViewer) tableViewer, SWT.NONE);
         TableColumn tblclmnTCIntegration = tableViewerColumnIntegration.getColumn();
         tableViewerColumnIntegration.setLabelProvider(new IntegrationTestCaseColumnLabelProvider(columnIndex) {
 

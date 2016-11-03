@@ -42,10 +42,4 @@ public class StringConstants {
     public static final String HREF_CREATE_SUB_TASK_ISSUE_PREFIX = "/secure/CreateSubTaskIssue";
     
     public static final String HREF_CREATE_SUB_TASK_ISSUE = HREF_CREATE_SUB_TASK_ISSUE_PREFIX + "!default.jspa";
-
-    public static final String COLOR_ORANGE = "orange";
-
-    public static final String COLOR_RED = "red";
-
-    public static final String BLANK = " ";
 }

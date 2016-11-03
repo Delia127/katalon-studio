@@ -79,4 +79,6 @@ public class ComposerJiraIntegrationMessageConstant extends NLS {
     public static String JOB_TASK_VALIDATE_JIRA_ISSUE;
 
     public static String JOB_MSG_INVALID_JIRA_ISSUE_KEY;
+
+    public static String CLMN_TOOLTIP_CLICK_TO_QUICK_CREATE_ISSUE;
 }
