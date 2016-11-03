@@ -221,7 +221,7 @@ public class JiraSettingPage extends PreferencePage {
                 JiraConnectionJob job = new JiraConnectionJob(shell, getCredential());
                 JiraConnectionResult result = job.run();
                 if (result.getError() != null) {
-                    MessageDialog.openError(shell, StringConstants.ERROR, result.getError().getCause().getMessage());
+                    MessageDialog.openError(shell, StringConstants.ERROR, result.getError().getMessage());
                     return;
                 }
 
