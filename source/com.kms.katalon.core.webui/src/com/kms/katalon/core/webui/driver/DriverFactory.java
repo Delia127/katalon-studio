@@ -68,7 +68,7 @@ public class DriverFactory {
 
     private static final String REMOTE_WEB_DRIVER_TYPE_SELENIUM = "Selenium";
 
-    private static final String CHROME_DRIVER_PATH_PROPERTY_KEY = "webdriver.chrome.driver";
+    public static final String CHROME_DRIVER_PATH_PROPERTY_KEY = "webdriver.chrome.driver";
 
     private static final String IE_DRIVER_PATH_PROPERTY_KEY = "webdriver.ie.driver";
 
@@ -571,7 +571,7 @@ public class DriverFactory {
         return RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, EDGE_DRIVER_PATH_PROPERTY);
     }
 
-    private static String getChromeDriverPath() {
+    public static String getChromeDriverPath() {
         return RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, CHROME_DRIVER_PATH_PROPERTY);
     }
 

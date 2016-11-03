@@ -1,10 +1,13 @@
 package com.kms.katalon.core.logging.model;
 
-
 public class TestStatus {
 	
 	public enum TestStatusValue {
 		PASSED, FAILED, INCOMPLETE, ERROR, INFO, WARNING, NOT_RUN;	//Suite & Test status
+	    
+        public boolean isError() {
+            return this == ERROR || this == FAILED || this == INCOMPLETE;
+        }
 	}
 	// Error Java stack Trace
 	protected String stackTrace = ""; 	
