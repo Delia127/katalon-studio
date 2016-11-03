@@ -42,7 +42,7 @@ public class DisplayedComboboxObject<T extends NamedEntity & AddressableEntity> 
     }
 
     public int getDefaultObjectIndex() {
-        T defaultJiraProject = storedObject.getDefaultJiraProject();
+        T defaultJiraProject = storedObject.getDefaultJiraObject();
         if (defaultJiraProject != null) {
             return Arrays.asList(storedObject.getJiraObjects()).indexOf(defaultJiraProject);
         }
@@ -59,7 +59,7 @@ public class DisplayedComboboxObject<T extends NamedEntity & AddressableEntity> 
     }
 
     private void setDefaultObjectURI(URI uri) {
-        storedObject.setDefaultProjectURI(uri);
+        storedObject.setDefaultURI(uri);
     }
 
     public DisplayedComboboxObject<T> updateDefaultURIFrom(DisplayedComboboxObject<T> that) {

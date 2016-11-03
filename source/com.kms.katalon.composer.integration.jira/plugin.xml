@@ -10,5 +10,12 @@
             name="JIRA">
       </page>
    </extension>
+   <extension
+         point="com.kms.katalon.composer.report.testCaseIntegration">
+      <client
+            product="com.kms.katalon.integration.jira.JiraIntegrationContribution"
+            view="com.kms.katalon.composer.integration.jira.report.JiraReportIntegrationBuilder">
+      </client>
+   </extension>
 
 </plugin>

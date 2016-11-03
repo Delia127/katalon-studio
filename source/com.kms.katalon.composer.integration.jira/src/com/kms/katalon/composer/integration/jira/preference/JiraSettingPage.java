@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.atlassian.jira.rest.client.api.domain.User;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -56,6 +57,8 @@ public class JiraSettingPage extends PreferencePage {
     private DisplayedComboboxObject<JiraProject> displayedJiraProject;
 
     private DisplayedComboboxObject<JiraIssueType> displayedJiraIssueType;
+    
+    private User user;
 
     public JiraSettingPage() {
         settingStore = new JiraIntegrationSettingStore(
@@ -187,6 +190,8 @@ public class JiraSettingPage extends PreferencePage {
 
             displayedJiraIssueType = new DisplayedIssueTypeComboboxObject(settingStore.getStoredJiraIssueType());
             updateCombobox(cbbIssueTypes, displayedJiraIssueType);
+            
+            user = settingStore.getJiraUser();
         } catch (IOException e) {
             LoggerSingleton.logError(e);
             MultiStatusErrorDialog.showErrorDialog(e, StringConstants.ERROR, e.getMessage());
@@ -223,6 +228,7 @@ public class JiraSettingPage extends PreferencePage {
                 if (!result.isComplete()) {
                     return;
                 }
+                user = result.getUser();
                 displayedJiraProject = result.getJiraProjects().updateDefaultURIFrom(displayedJiraProject);
                 updateCombobox(cbbProjects, displayedJiraProject);
 
@@ -230,7 +236,7 @@ public class JiraSettingPage extends PreferencePage {
                 updateCombobox(cbbIssueTypes, displayedJiraIssueType);
                 MessageDialog.openInformation(shell, StringConstants.INFO,
                         MessageFormat.format(ComposerJiraIntegrationMessageConstant.PREF_MSG_ACCOUNT_CONNECTED,
-                                result.getUser().getEmailAddress()));
+                                result.getUser().getDisplayName()));
             }
         });
     }
@@ -254,6 +260,7 @@ public class JiraSettingPage extends PreferencePage {
             settingStore.saveServerUrl(getTrimedValue(txtServerUrl));
             settingStore.saveUsername(getTrimedValue(txtUsername));
             settingStore.savePassword(txtPassword.getText());
+            settingStore.saveJiraUser(user);
 
             settingStore.enableUseTestCaseNameAsSummary(chckUseTestCaseNameAsSumarry.getSelection());
             settingStore.enableAttachScreenshot(chckAttachScreenshot.getSelection());

@@ -1,6 +1,8 @@
 package com.kms.katalon.integration.jira.constant;
 
 public class StringConstants {
+    public static final String JIRA_NAME = "JIRA";
+
     public static final String JIRA_BUNDLE_ID = "com.kms.katalon.integration.jira";
 
     public static final String PREF_SUBMIT_JIRA_ISSUE_TYPE = "submit.jiraIssueType";
@@ -19,5 +21,31 @@ public class StringConstants {
 
     public static final String PREF_AUTH_USERNAME = "auth.username";
 
+    public static final String PREF_AUTH_USER = "auth.user";
+
     public static final String PREF_INTEGRATION_ENABLED = "integration.enabled";
+
+    public static final String INTEGRATED_VALUE_NAME = "integratedValue";
+    
+    public static final String HREF_DASHBOARD = "/secure/Dashboard.jspa";
+
+    public static final String HREF_LOGIN = "/login.jsp";
+    
+    public static final String HREF_EDIT_ISSUE_PREFIX = "/secure/EditIssue";
+
+    public static final String HREF_EDIT_ISSUE = HREF_EDIT_ISSUE_PREFIX + "!default.jspa";
+
+    public static final String HREF_CREATE_ISSUE_PREFIX = "/secure/CreateIssueDetails";
+    
+    public static final String HREF_CREATE_ISSUE = HREF_CREATE_ISSUE_PREFIX + "!init.jspa";
+    
+    public static final String HREF_CREATE_SUB_TASK_ISSUE_PREFIX = "/secure/CreateSubTaskIssue";
+    
+    public static final String HREF_CREATE_SUB_TASK_ISSUE = HREF_CREATE_SUB_TASK_ISSUE_PREFIX + "!default.jspa";
+
+    public static final String COLOR_ORANGE = "orange";
+
+    public static final String COLOR_RED = "red";
+
+    public static final String BLANK = " ";
 }

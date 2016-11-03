@@ -45,4 +45,38 @@ public class ComposerJiraIntegrationMessageConstant extends NLS {
     public static String JOB_SUB_TASK_FETCHING_PROJECTS;
 
     public static String JOB_SUB_TASK_FETCHING_ISSUE_TYPES;
+
+    public static String TOOLTIP_CLICK_TO_MANAGE_JIRA_ISSUES;
+
+    public static String DIA_TITLE_LINKED_JIRA_ISSUES;
+
+    public static String DIA_ITEM_CREATE_NEW_JIRA_ISSUE;
+
+    public static String DIA_ITEM_LINK_TO_JIRA_ISSUE;
+
+    public static String DIA_ITEM_CREATE_AS_SUB_TASK;
+
+    public static String DIA_LBL_SUMMARY;
+
+    public static String DIA_ISSUE_BROWSE_NOTIFICATION;
+
+    public static String DIA_TITLE_CREATE_NEW_AS_SUB_TASK;
+
+    public static String DIA_MESSAGE_CREATE_NEW_AS_SUB_TASK;
+
+    public static String DIA_LBL_CREATE_NEW_AS_SUB_TASK;
+
+    public static String DIA_TITLE_LINK_TO_EXISTING_ISSUE;
+
+    public static String DIA_MESSAGE_LINK_TO_EXISTING_ISSUE;
+
+    public static String DIA_LBL_LINK_TO_EXISTING_ISSUE;
+
+    public static String JOB_TASK_LINK_TO_JIRA_ISSUE;
+
+    public static String JOB_TASK_UPDATE_JIRA_ISSUE;
+
+    public static String JOB_TASK_VALIDATE_JIRA_ISSUE;
+
+    public static String JOB_MSG_INVALID_JIRA_ISSUE_KEY;
 }

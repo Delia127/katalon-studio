@@ -18,9 +18,14 @@ Require-Bundle: com.kms.katalon.core,
  org.apache.httpcomponents.httpclient,
  org.apache.commons.io,
  com.google.gson,
- org.eclipse.osgi
+ org.eclipse.osgi,
+ com.kms.katalon.custom,
+ com.kms.katalon.entity,
+ org.apache.httpcomponents.httpmime,
+ com.kms.katalon.controller
 Export-Package: com.atlassian.jira.rest.client.api,
  com.atlassian.jira.rest.client.api.domain,
  com.kms.katalon.integration.jira,
  com.kms.katalon.integration.jira.entity,
+ com.kms.katalon.integration.jira.issue,
  com.kms.katalon.integration.jira.setting

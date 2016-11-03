@@ -1,0 +1,61 @@
+package com.kms.katalon.composer.integration.jira.report.provider;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import org.eclipse.jface.viewers.ViewerCell;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.graphics.Image;
+
+import com.kms.katalon.composer.components.impl.providers.HyperLinkColumnLabelProvider;
+import com.kms.katalon.composer.components.impl.util.DesktopUtils;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.integration.jira.JiraUIComponent;
+import com.kms.katalon.integration.jira.entity.JiraIssue;
+
+public class JiraIssueIDLabelProvider extends HyperLinkColumnLabelProvider<JiraIssue> implements JiraUIComponent {
+
+    public JiraIssueIDLabelProvider(int columnIndex) {
+        super(columnIndex);
+    }
+
+    @Override
+    protected void handleMouseDown(MouseEvent e, ViewerCell cell) {
+        JiraIssue jiraIssue = (JiraIssue) cell.getElement();
+        try {
+            DesktopUtils.openUri(getHTMLLink(jiraIssue));
+        } catch (IOException | URISyntaxException ex) {
+            LoggerSingleton.logError(ex);
+        }
+    }
+
+    private URI getHTMLLink(JiraIssue jiraIssue) throws URISyntaxException, IOException {
+        return new URI(getHTMLIssueURLPrefix() + "/" + jiraIssue.getKey());
+    }
+
+    @Override
+    protected Class<JiraIssue> getElementType() {
+        return JiraIssue.class;
+    }
+
+    @Override
+    protected Image getImage(JiraIssue element) {
+        return null;
+    }
+
+    @Override
+    protected String getText(JiraIssue element) {
+        return element.getKey();
+    }
+
+    @Override
+    protected String getElementToolTipText(JiraIssue element) {
+        try {
+            return getHTMLLink(element).toString();
+        } catch (URISyntaxException | IOException e) {
+            LoggerSingleton.logError(e);
+            return null;
+        }
+    }
+}

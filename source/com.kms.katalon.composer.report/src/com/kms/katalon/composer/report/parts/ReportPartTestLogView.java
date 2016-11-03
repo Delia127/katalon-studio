@@ -61,7 +61,7 @@ import com.kms.katalon.composer.components.util.ImageUtil;
 import com.kms.katalon.composer.report.constants.ImageConstants;
 import com.kms.katalon.composer.report.constants.StringConstants;
 import com.kms.katalon.composer.report.dialog.AdvancedSearchTestLogDialog;
-import com.kms.katalon.composer.report.parts.integration.AbstractReportTestCaseIntegrationView;
+import com.kms.katalon.composer.report.parts.integration.TestCaseLogDetailsIntegrationView;
 import com.kms.katalon.composer.report.provider.ReportPartTestStepLabelProvider;
 import com.kms.katalon.composer.report.provider.ReportTestStepTableViewerFilter;
 import com.kms.katalon.composer.report.provider.ReportTestStepTreeViewer;
@@ -97,7 +97,7 @@ public class ReportPartTestLogView {
     private StyledText txtSTLStackTrace;
 
     private ReportPart parentPart;
-    private AbstractReportTestCaseIntegrationView selectedReportTestCaseIntegrationView;
+    private TestCaseLogDetailsIntegrationView selectedReportTestCaseIntegrationView;
     private ToolItem tltmCollapseAllLogs, tltmExpandAllLogs;
     private ReportTestStepTableViewerFilter testStepFilter;
     private boolean isSearching;
@@ -741,10 +741,12 @@ public class ReportPartTestLogView {
     public void loadTestCaseIntegrationToolbar(ReportEntity report, TestSuiteLogRecord testSuiteLogRecord) {
         clearTestCaseIntegrationToolbar();
 
-        for (Entry<String, AbstractReportTestCaseIntegrationView> builderEntry : parentPart
+        for (Entry<String, TestCaseLogDetailsIntegrationView> builderEntry : parentPart
                 .getIntegratingCompositeMap().entrySet()) {
-            ToolItem item = new ToolItem(testCaseLogIntegrationToolbar, SWT.CHECK);
-            item.setText(builderEntry.getKey());
+            if (builderEntry.getValue() != null) {
+                ToolItem item = new ToolItem(testCaseLogIntegrationToolbar, SWT.CHECK);
+                item.setText(builderEntry.getKey());
+            }
         }
 
         for (ToolItem item : testCaseLogIntegrationToolbar.getItems()) {
@@ -773,7 +775,9 @@ public class ReportPartTestLogView {
         clearTestCaseIntegrationContainer();
 
         selectedReportTestCaseIntegrationView = parentPart.getIntegratingCompositeMap().get(productName);
-
+        if (selectedReportTestCaseIntegrationView == null) {
+            return;
+        }
         selectedReportTestCaseIntegrationView.createContainer(compositeTestCaseLogIntegration);
 
         compositeTestCaseLogIntegration.layout(true, true);
@@ -848,8 +852,10 @@ public class ReportPartTestLogView {
         } else {
             treeViewerTestSteps.setInput(null);
         }
-        selectedReportTestCaseIntegrationView.changeTestCase((TestCaseLogRecord) parentPart
-                .getSelectedTestCaseLogRecord());
+        if (selectedReportTestCaseIntegrationView != null) {
+            selectedReportTestCaseIntegrationView
+                    .changeTestCase((TestCaseLogRecord) parentPart.getSelectedTestCaseLogRecord());
+        }
         updateSelectedTestStep(null);
     }
 

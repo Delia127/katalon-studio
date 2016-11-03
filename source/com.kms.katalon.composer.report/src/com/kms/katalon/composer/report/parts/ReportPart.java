@@ -1,10 +1,8 @@
 package com.kms.katalon.composer.report.parts;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -50,7 +48,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -70,7 +67,7 @@ import com.kms.katalon.composer.report.constants.ImageConstants;
 import com.kms.katalon.composer.report.constants.StringConstants;
 import com.kms.katalon.composer.report.integration.ReportComposerIntegrationFactory;
 import com.kms.katalon.composer.report.lookup.LogRecordLookup;
-import com.kms.katalon.composer.report.parts.integration.AbstractReportTestCaseIntegrationView;
+import com.kms.katalon.composer.report.parts.integration.TestCaseLogDetailsIntegrationView;
 import com.kms.katalon.composer.report.parts.integration.ReportTestCaseIntegrationViewBuilder;
 import com.kms.katalon.composer.report.provider.ReportPartTestCaseLabelProvider;
 import com.kms.katalon.composer.report.provider.ReportTestCaseTableViewer;
@@ -94,25 +91,35 @@ public class ReportPart implements EventHandler, IComposerPart {
     private IEventBroker eventBroker;
 
     // Controls
-    private StyledText txtTestSuiteId, txtHostName, txtOS, txtPlatform, txtStartTime, txtEndTime, txtRunTime, txtKatalonVersion;
+    private StyledText txtTestSuiteId, txtHostName, txtOS, txtPlatform, txtStartTime, txtEndTime, txtRunTime,
+            txtKatalonVersion;
+
     private StyledText txtTotalTestCase, txtTCPasses, txtTCFailures, txtTCIncompleted, txtTCErrors;
+
     private TestSuiteLogRecord testSuiteLogRecord;
+
     private ReportTestCaseTableViewer testCaseTableViewer;
+
     private Text txtTestCaseSearch;
+
     private CLabel lblTestCaseSearch;
+
     private ReportTestCaseTableViewerFilter testCaseTableFilter;
 
     private Button btnFilterTestCasePassed, btnFilterTestCaseFailed, btnFilterTestCaseError,
             btnFilterTestCaseIncomplete;
 
     private TableViewer runDataTable, executionSettingTable;
+
     private ReportPartTestLogView testLogView;
-    private Combo comboTestCaseIntegration;
 
     // Fields
-    private Map<String, AbstractReportTestCaseIntegrationView> integratingCompositeMap;
+    private Map<String, TestCaseLogDetailsIntegrationView> integratingCompositeMap;
+
     private int selectedTestCaseRecordIndex;
+
     private boolean isSearching;
+
     private ReportEntity report;
 
     private final class MapDataKeyLabelProvider extends ColumnLabelProvider {
@@ -195,6 +202,7 @@ public class ReportPart implements EventHandler, IComposerPart {
 
     @PostConstruct
     public void init(Composite parent, ReportEntity report) {
+        this.report = report;
         testLogView = new ReportPartTestLogView(this);
         isSearching = false;
         registerListeners();
@@ -280,14 +288,6 @@ public class ReportPart implements EventHandler, IComposerPart {
             }
         });
 
-        comboTestCaseIntegration.addSelectionListener(new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                testCaseTableViewer.refresh();
-            }
-        });
-
         testCaseTableViewer.getTable().addListener(SWT.MouseDown, new Listener() {
 
             @Override
@@ -310,8 +310,10 @@ public class ReportPart implements EventHandler, IComposerPart {
 
         Menu contextMenu = new Menu(testCaseTable);
         testCaseTable.setMenu(contextMenu);
-        for (AbstractReportTestCaseIntegrationView integrationView : integratingCompositeMap.values()) {
-            integrationView.createTableContextMenu(contextMenu, testCaseTableViewer.getSelection());
+        for (TestCaseLogDetailsIntegrationView integrationView : integratingCompositeMap.values()) {
+            if (integrationView != null) {
+                integrationView.createTableContextMenu(contextMenu, testCaseTableViewer.getSelection());
+            }
         }
     }
 
@@ -342,8 +344,8 @@ public class ReportPart implements EventHandler, IComposerPart {
                         TestSuiteEntity testSuite = TestSuiteController.getInstance().getTestSuiteByDisplayId(
                                 (String) style.data, ProjectController.getInstance().getCurrentProject());
                         if (testSuite != null) {
-                            EventBrokerSingleton.getInstance().getEventBroker()
-                                    .post(EventConstants.TEST_SUITE_OPEN, testSuite);
+                            EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.TEST_SUITE_OPEN,
+                                    testSuite);
                         }
                     }
 
@@ -414,25 +416,25 @@ public class ReportPart implements EventHandler, IComposerPart {
             txtStartTime.setText(DateUtil.getDateTimeFormatted(testSuiteLogRecord.getStartTime()));
             txtEndTime.setText(DateUtil.getDateTimeFormatted(testSuiteLogRecord.getEndTime()));
 
-            StyledString styleStringElapsed = new StyledString(DateUtil.getElapsedTime(
-                    testSuiteLogRecord.getStartTime(), testSuiteLogRecord.getEndTime()), StyledString.COUNTER_STYLER);
+            StyledString styleStringElapsed = new StyledString(
+                    DateUtil.getElapsedTime(testSuiteLogRecord.getStartTime(), testSuiteLogRecord.getEndTime()),
+                    StyledString.COUNTER_STYLER);
             txtRunTime.setText(styleStringElapsed.getString());
             txtRunTime.setStyleRanges(styleStringElapsed.getStyleRanges());
 
-            integratingCompositeMap = new LinkedHashMap<String, AbstractReportTestCaseIntegrationView>();
+            integratingCompositeMap = new LinkedHashMap<String, TestCaseLogDetailsIntegrationView>();
 
-            List<String> comboTestCaseIntegrationInput = new ArrayList<String>();
             for (Entry<String, ReportTestCaseIntegrationViewBuilder> builderEntry : ReportComposerIntegrationFactory
                     .getInstance().getIntegrationViewMap().entrySet()) {
-                integratingCompositeMap.put(builderEntry.getKey(),
-                        builderEntry.getValue().getIntegrationView(report, testSuiteLogRecord));
-                comboTestCaseIntegrationInput.add(builderEntry.getKey());
-            }
-
-            comboTestCaseIntegration.setItems(comboTestCaseIntegrationInput
-                    .toArray(new String[comboTestCaseIntegrationInput.size()]));
-            if (comboTestCaseIntegration.getItemCount() > 0) {
-                comboTestCaseIntegration.select(0);
+                ReportTestCaseIntegrationViewBuilder builder = builderEntry.getValue();
+                if (!builder.isIntegrationEnabled(ProjectController.getInstance().getCurrentProject())) {
+                    continue;
+                }
+                TestCaseLogDetailsIntegrationView integrationDetails = builder.getIntegrationDetails(report,
+                        testSuiteLogRecord);
+                if (integrationDetails != null) {
+                    integratingCompositeMap.put(builderEntry.getKey(), integrationDetails);
+                }
             }
 
             createTestCaseTableContextMenuByIntegrationViews();
@@ -440,12 +442,12 @@ public class ReportPart implements EventHandler, IComposerPart {
             testCaseTableViewer.setInput(testSuiteLogRecord.getChildRecords());
 
             testLogView.loadTestCaseIntegrationToolbar(report, testSuiteLogRecord);
-            runDataTable.setInput(testSuiteLogRecord.getRunData() != null ? testSuiteLogRecord.getRunData().entrySet()
-                    : null);
+            runDataTable.setInput(
+                    testSuiteLogRecord.getRunData() != null ? testSuiteLogRecord.getRunData().entrySet() : null);
             runDataTable.refresh();
             File executionSettingFile = ReportController.getInstance().getExecutionSettingFile(report.getLocation());
-            executionSettingTable.setInput(ExecutionUtil.readRunConfigSettingFromFile(
-                    executionSettingFile.getAbsolutePath()).entrySet());
+            executionSettingTable.setInput(
+                    ExecutionUtil.readRunConfigSettingFromFile(executionSettingFile.getAbsolutePath()).entrySet());
             executionSettingTable.refresh();
         } catch (Exception e) {
             LoggerSingleton.logError(e);
@@ -542,11 +544,11 @@ public class ReportPart implements EventHandler, IComposerPart {
         Composite compositeTestCaseTableDetails = new Composite(compositeTestCaseTable, SWT.NONE);
         compositeTestCaseTableDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-        TableColumnLayout tcl_compositeTestCaseTableDetails = new TableColumnLayout();
-        compositeTestCaseTableDetails.setLayout(tcl_compositeTestCaseTableDetails);
+        TableColumnLayout tclCompositeTestCaseTableDetails = new TableColumnLayout();
+        compositeTestCaseTableDetails.setLayout(tclCompositeTestCaseTableDetails);
 
-        testCaseTableViewer = new ReportTestCaseTableViewer(compositeTestCaseTableDetails, SWT.FULL_SELECTION
-                | SWT.MULTI);
+        testCaseTableViewer = new ReportTestCaseTableViewer(compositeTestCaseTableDetails,
+                SWT.FULL_SELECTION | SWT.MULTI);
         Table table = testCaseTableViewer.getTable();
         table.setLinesVisible(true);
         table.setHeaderVisible(true);
@@ -555,20 +557,16 @@ public class ReportPart implements EventHandler, IComposerPart {
         TableViewerColumn tableViewerColumnOrder = new TableViewerColumn(testCaseTableViewer, SWT.NONE);
         TableColumn tblclmnTCOrder = tableViewerColumnOrder.getColumn();
         tblclmnTCOrder.setText("No.");
-        tableViewerColumnOrder.setLabelProvider(new ReportPartTestCaseLabelProvider(this));
-        tcl_compositeTestCaseTableDetails.setColumnData(tblclmnTCOrder, new ColumnWeightData(0, 40));
+        tableViewerColumnOrder.setLabelProvider(new ReportPartTestCaseLabelProvider());
+        tclCompositeTestCaseTableDetails.setColumnData(tblclmnTCOrder, new ColumnWeightData(0, 40));
 
         TableViewerColumn tableViewerColumnName = new TableViewerColumn(testCaseTableViewer, SWT.NONE);
         TableColumn tblclmnTCName = tableViewerColumnName.getColumn();
         tblclmnTCName.setText("Name");
-        tableViewerColumnName.setLabelProvider(new ReportPartTestCaseLabelProvider(this));
-        tcl_compositeTestCaseTableDetails.setColumnData(tblclmnTCName, new ColumnWeightData(80, 0));
+        tableViewerColumnName.setLabelProvider(new ReportPartTestCaseLabelProvider());
+        tclCompositeTestCaseTableDetails.setColumnData(tblclmnTCName, new ColumnWeightData(80, 0));
 
-        TableViewerColumn tableViewerColumnIntegration = new TableViewerColumn(testCaseTableViewer, SWT.NONE);
-        TableColumn tblclmnTCIntegration = tableViewerColumnIntegration.getColumn();
-        tcl_compositeTestCaseTableDetails.setColumnData(tblclmnTCIntegration, new ColumnWeightData(0, 40));
-        tableViewerColumnIntegration.setLabelProvider(new ReportPartTestCaseLabelProvider(this));
-        tblclmnTCIntegration.setImage(ImageConstants.IMG_16_INTEGRATION);
+        createIntegrationColumns(tclCompositeTestCaseTableDetails);
 
         testCaseTableViewer.setContentProvider(ArrayContentProvider.getInstance());
         testCaseTableViewer.getTable().setToolTipText("");
@@ -583,6 +581,19 @@ public class ReportPart implements EventHandler, IComposerPart {
         testCaseTableViewer.addFilter(testCaseTableFilter);
     }
 
+    private void createIntegrationColumns(TableColumnLayout tableLayout) {
+        for (ReportTestCaseIntegrationViewBuilder builder : ReportComposerIntegrationFactory.getInstance()
+                .getSortedBuilder()) {
+            if (!builder.isIntegrationEnabled(ProjectController.getInstance().getCurrentProject())) {
+                continue;
+            }
+            TableViewerColumn viewerColumn = builder.getIntegrationColumn(report).createTableIntegrationColumn(
+                    testCaseTableViewer,
+                    testCaseTableViewer.getTable().getColumnCount());
+            tableLayout.setColumnData(viewerColumn.getColumn(), new ColumnWeightData(0, 32));
+        }
+    }
+
     private void createCompositeTestCaseTable(Composite sashFormSummary) {
         Composite compositeTestCaseTable = new Composite(sashFormSummary, SWT.BORDER);
         compositeTestCaseTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
@@ -592,28 +603,14 @@ public class ReportPart implements EventHandler, IComposerPart {
         compositeTestCaseTable.setLayout(glCompositeTestCaseTable);
 
         Composite compositeTestCaseTableHeader = new Composite(compositeTestCaseTable, SWT.NONE);
-        GridLayout gl_compositeTestCaseTableHeader = new GridLayout(2, false);
+        GridLayout gl_compositeTestCaseTableHeader = new GridLayout(1, false);
         compositeTestCaseTableHeader.setLayout(gl_compositeTestCaseTableHeader);
         compositeTestCaseTableHeader.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 
         Label lblTestCaseTable = new Label(compositeTestCaseTableHeader, SWT.NONE);
+        lblTestCaseTable.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         lblTestCaseTable.setText("Test Cases Table");
         setLabelToBeBold(lblTestCaseTable);
-
-        Composite compositeTestCaseIntegrationSelection = new Composite(compositeTestCaseTableHeader, SWT.NONE);
-        GridLayout gl_compositeTestCaseIntegrationSelection = new GridLayout(2, false);
-        gl_compositeTestCaseIntegrationSelection.marginWidth = 0;
-        gl_compositeTestCaseIntegrationSelection.marginHeight = 0;
-        compositeTestCaseIntegrationSelection.setLayout(gl_compositeTestCaseIntegrationSelection);
-        compositeTestCaseIntegrationSelection.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
-
-        Label lblTestCaseIntegration = new Label(compositeTestCaseIntegrationSelection, SWT.NONE);
-        lblTestCaseIntegration.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-        lblTestCaseIntegration.setText("Integration");
-        setLabelToBeBold(lblTestCaseIntegration);
-
-        comboTestCaseIntegration = new Combo(compositeTestCaseIntegrationSelection, SWT.READ_ONLY);
-        comboTestCaseIntegration.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
         createCompositeTestCaseFilter(compositeTestCaseTable);
         createCompositeTestCaseTableDetails(compositeTestCaseTable);
     }
@@ -621,8 +618,8 @@ public class ReportPart implements EventHandler, IComposerPart {
     private void createCompositeSummary(Composite sashFormSummary) {
         final CTabFolder tabFolder = new CTabFolder(sashFormSummary, SWT.NONE);
         tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, true, false, 1, 1));
-        tabFolder.setSelectionBackground(Display.getCurrent().getSystemColor(
-                SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
+        tabFolder.setSelectionBackground(
+                Display.getCurrent().getSystemColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
 
         createSummaryTabControl(tabFolder);
         createExecutionSettingTabControls(tabFolder);
@@ -635,8 +632,8 @@ public class ReportPart implements EventHandler, IComposerPart {
         final CTabItem tbtmSummary = new CTabItem(tabFolder, SWT.NONE);
         tbtmSummary.setText(StringConstants.TITLE_SUMMARY);
 
-        final ScrolledComposite scrolledComposite = new ScrolledComposite(tabFolder, SWT.H_SCROLL | SWT.V_SCROLL
-                | SWT.BORDER);
+        final ScrolledComposite scrolledComposite = new ScrolledComposite(tabFolder,
+                SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
         scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, true, false, 1, 1));
         scrolledComposite.setExpandHorizontal(true);
         scrolledComposite.setExpandVertical(true);
@@ -817,16 +814,16 @@ public class ReportPart implements EventHandler, IComposerPart {
         tableColumnRunDataKey.setLabelProvider(new MapDataKeyLabelProvider());
         tableColumnRunDataKey.setEditingSupport(new MapDataKeyEditingSupport(executionSettingTable));
 
-        tableColumnLayout.setColumnData(tableColumnRunDataKey.getColumn(), new ColumnWeightData(50,
-                tableColumnRunDataKey.getColumn().getWidth()));
+        tableColumnLayout.setColumnData(tableColumnRunDataKey.getColumn(),
+                new ColumnWeightData(50, tableColumnRunDataKey.getColumn().getWidth()));
 
         TableViewerColumn tableColumnRunDataValue = new TableViewerColumn(executionSettingTable, SWT.NONE);
         tableColumnRunDataValue.getColumn().setText(StringConstants.COLUMN_LBL_RUN_DATA_VALUE);
         tableColumnRunDataValue.setLabelProvider(new MapDataLabelValueProvider());
         tableColumnRunDataValue.setEditingSupport(new MapDataValueEditingSupport(executionSettingTable));
 
-        tableColumnLayout.setColumnData(tableColumnRunDataValue.getColumn(), new ColumnWeightData(50,
-                tableColumnRunDataValue.getColumn().getWidth()));
+        tableColumnLayout.setColumnData(tableColumnRunDataValue.getColumn(),
+                new ColumnWeightData(50, tableColumnRunDataValue.getColumn().getWidth()));
     }
 
     private void createRunDataTabControls(final CTabFolder tabFolder) {
@@ -851,16 +848,16 @@ public class ReportPart implements EventHandler, IComposerPart {
         tableColumnRunDataKey.setLabelProvider(new MapDataKeyLabelProvider());
         tableColumnRunDataKey.setEditingSupport(new MapDataKeyEditingSupport(runDataTable));
 
-        tableColumnLayout.setColumnData(tableColumnRunDataKey.getColumn(), new ColumnWeightData(50,
-                tableColumnRunDataKey.getColumn().getWidth()));
+        tableColumnLayout.setColumnData(tableColumnRunDataKey.getColumn(),
+                new ColumnWeightData(50, tableColumnRunDataKey.getColumn().getWidth()));
 
         TableViewerColumn tableColumnRunDataValue = new TableViewerColumn(runDataTable, SWT.NONE);
         tableColumnRunDataValue.getColumn().setText(StringConstants.COLUMN_LBL_RUN_DATA_VALUE);
         tableColumnRunDataValue.setLabelProvider(new MapDataLabelValueProvider());
         tableColumnRunDataValue.setEditingSupport(new MapDataValueEditingSupport(runDataTable));
 
-        tableColumnLayout.setColumnData(tableColumnRunDataValue.getColumn(), new ColumnWeightData(50,
-                tableColumnRunDataValue.getColumn().getWidth()));
+        tableColumnLayout.setColumnData(tableColumnRunDataValue.getColumn(),
+                new ColumnWeightData(50, tableColumnRunDataValue.getColumn().getWidth()));
     }
 
     private void createControls(Composite parent) {
@@ -912,11 +909,7 @@ public class ReportPart implements EventHandler, IComposerPart {
         getMPart().setDirty(true);
     }
 
-    public String getIntegratedProductName() {
-        return comboTestCaseIntegration.getText();
-    }
-
-    public Map<String, AbstractReportTestCaseIntegrationView> getIntegratingCompositeMap() {
+    public Map<String, TestCaseLogDetailsIntegrationView> getIntegratingCompositeMap() {
         return integratingCompositeMap;
     }
 

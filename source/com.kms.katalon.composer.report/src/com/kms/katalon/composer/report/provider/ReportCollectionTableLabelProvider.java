@@ -12,18 +12,15 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.components.util.ImageUtil;
 import com.kms.katalon.composer.report.constants.StringConstants;
-import com.kms.katalon.composer.report.lookup.LogRecordLookup;
 import com.kms.katalon.composer.testsuite.collection.execution.collector.TestExecutionGroupCollector;
 import com.kms.katalon.composer.testsuite.collection.execution.provider.TestExecutionConfigurationProvider;
-import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
-import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.report.ReportItemDescription;
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
-public class ReportCollectionTableLabelProvider extends TypeCheckedStyleCellLabelProvider<ReportItemDescription> {
+public class ReportCollectionTableLabelProvider extends TypeCheckedStyleCellLabelProvider<ReportItemDescription>
+        implements ReportItemDescriptionLabelProvider {
 
     public static final int CLM_NO_IDX = 0;
 
@@ -49,8 +46,8 @@ public class ReportCollectionTableLabelProvider extends TypeCheckedStyleCellLabe
     @Override
     protected Image getImage(ReportItemDescription element) {
         switch (columnIndex) {
-        case CLM_EVN_IDX:
-            return getImageForRunConfigurationColumn(element.getRunConfigDescription());
+            case CLM_EVN_IDX:
+                return getImageForRunConfigurationColumn(element.getRunConfigDescription());
         }
         return null;
     }
@@ -90,34 +87,6 @@ public class ReportCollectionTableLabelProvider extends TypeCheckedStyleCellLabe
             }
         }
         return StringUtils.EMPTY;
-    }
-
-    protected TestSuiteLogRecord getTestSuiteLogRecord(String reportId) {
-        ReportEntity report = getReport(reportId);
-        if (report == null) {
-            return null;
-        }
-        return LogRecordLookup.getInstance().getTestSuiteLogRecord(report);
-    }
-
-    private TestSuiteEntity getTestSuite(ReportItemDescription element) {
-        try {
-            return ReportController.getInstance().getTestSuiteByReport(getReport(element.getReportLocation()));
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    protected ReportEntity getReport(String reportId) {
-        if (StringUtils.isEmpty(reportId)) {
-            return null;
-        }
-        try {
-            return ReportController.getInstance().getReportEntityByDisplayId(reportId,
-                    ProjectController.getInstance().getCurrentProject());
-        } catch (Exception ex) {
-            return null;
-        }
     }
 
     private Image getImageForRunConfigurationColumn(RunConfigurationDescription configuration) {

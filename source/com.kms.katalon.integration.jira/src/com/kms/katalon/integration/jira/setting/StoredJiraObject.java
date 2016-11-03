@@ -23,7 +23,7 @@ public class StoredJiraObject<T extends AddressableEntity> {
         return defaultURI;
     }
 
-    public void setDefaultProjectURI(URI defaultProjectURI) {
+    public void setDefaultURI(URI defaultProjectURI) {
         this.defaultURI = defaultProjectURI;
     }
 
@@ -31,7 +31,7 @@ public class StoredJiraObject<T extends AddressableEntity> {
         this.jiraObjects = jiraObjects;
     }
 
-    public T getDefaultJiraProject() {
+    public T getDefaultJiraObject() {
         if (jiraObjects == null || defaultURI == null) {
             return null;
         }

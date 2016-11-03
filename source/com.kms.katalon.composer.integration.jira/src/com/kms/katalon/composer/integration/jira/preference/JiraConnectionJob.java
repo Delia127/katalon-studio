@@ -3,11 +3,12 @@ package com.kms.katalon.composer.integration.jira.preference;
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 
 import com.atlassian.jira.rest.client.api.domain.User;
+import com.kms.katalon.composer.integration.jira.JiraProgressDialog;
+import com.kms.katalon.composer.integration.jira.JiraProgressResult;
 import com.kms.katalon.composer.integration.jira.constant.ComposerJiraIntegrationMessageConstant;
 import com.kms.katalon.integration.jira.JiraCredential;
 import com.kms.katalon.integration.jira.JiraIntegrationAuthenticationHandler;
@@ -16,17 +17,21 @@ import com.kms.katalon.integration.jira.entity.JiraIssueType;
 import com.kms.katalon.integration.jira.entity.JiraProject;
 import com.kms.katalon.integration.jira.setting.StoredJiraObject;
 
-public class JiraConnectionJob extends ProgressMonitorDialog {
+public class JiraConnectionJob extends JiraProgressDialog {
 
     private JiraCredential credential;
 
     private JiraConnectionResult result;
+    
+    private JiraIntegrationAuthenticationHandler handler;
 
     public JiraConnectionJob(Shell parent, JiraCredential credential) {
         super(parent);
         this.credential = credential;
+        handler = new JiraIntegrationAuthenticationHandler();
     }
 
+    @Override
     public JiraConnectionResult run() {
         result = new JiraConnectionResult();
         try {
@@ -55,39 +60,29 @@ public class JiraConnectionJob extends ProgressMonitorDialog {
                         monitor.done();
                     }
                 }
-
-                private void checkCanceled(IProgressMonitor monitor) throws InterruptedException {
-                    if (monitor.isCanceled()) {
-                        throw new InterruptedException();
-                    }
-                }
             });
         } catch (InvocationTargetException | InterruptedException ignored) {}
         return result;
     }
 
     private void validateJiraAccount() throws JiraIntegrationException {
-        result.setUser(new JiraIntegrationAuthenticationHandler().authenticate(credential));
+        result.setUser(handler.authenticate(credential));
     }
 
     private void getJiraProjects() throws JiraIntegrationException {
-        result.setJiraProjects(new JiraIntegrationAuthenticationHandler().getJiraProjects(credential));
+        result.setJiraProjects(handler.getJiraProjects(credential));
     }
 
     private void getJiraIssueTypes() throws JiraIntegrationException {
-        result.setJiraIssueTypes(new JiraIntegrationAuthenticationHandler().getJiraIssuesTypes(credential));
+        result.setJiraIssueTypes(handler.getJiraIssuesTypes(credential));
     }
 
-    public class JiraConnectionResult {
+    public class JiraConnectionResult extends JiraProgressResult {
         private User user;
 
         private DisplayedComboboxObject<JiraProject> jiraProjects;
 
         private DisplayedComboboxObject<JiraIssueType> jiraIssueTypes;
-
-        private JiraIntegrationException error;
-        
-        private boolean complete;
 
         public JiraConnectionResult() {
             setComplete(false);
@@ -114,24 +109,8 @@ public class JiraConnectionJob extends ProgressMonitorDialog {
                     new StoredJiraObject<JiraIssueType>(null, jiraIssueTypes));
         }
 
-        public JiraIntegrationException getError() {
-            return error;
-        }
-
-        public void setError(JiraIntegrationException error) {
-            this.error = error;
-        }
-
         public DisplayedComboboxObject<JiraProject> getJiraProjects() {
             return jiraProjects;
-        }
-
-        public boolean isComplete() {
-            return complete;
-        }
-
-        public void setComplete(boolean complete) {
-            this.complete = complete;
         }
     }
 }

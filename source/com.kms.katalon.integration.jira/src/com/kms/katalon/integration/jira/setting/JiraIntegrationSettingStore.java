@@ -9,15 +9,19 @@ import static com.kms.katalon.integration.jira.constant.StringConstants.PREF_SUB
 import static com.kms.katalon.integration.jira.constant.StringConstants.PREF_SUBMIT_JIRA_ISSUE_TYPE;
 import static com.kms.katalon.integration.jira.constant.StringConstants.PREF_SUBMIT_JIRA_PROJECT;
 import static com.kms.katalon.integration.jira.constant.StringConstants.PREF_SUBMIT_USE_TEST_CASE_NAME_AS_SUMMARY;
+import static com.kms.katalon.integration.jira.constant.StringConstants.PREF_AUTH_USER;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.atlassian.jira.rest.client.api.domain.User;
 import com.google.gson.reflect.TypeToken;
 import com.kms.katalon.core.setting.BundleSettingStore;
 import com.kms.katalon.core.util.JsonUtil;
+import com.kms.katalon.integration.jira.JiraAPIURL;
+import com.kms.katalon.integration.jira.JiraCredential;
 import com.kms.katalon.integration.jira.constant.StringConstants;
 import com.kms.katalon.integration.jira.entity.JiraIssueType;
 import com.kms.katalon.integration.jira.entity.JiraProject;
@@ -53,7 +57,7 @@ public class JiraIntegrationSettingStore extends BundleSettingStore {
     }
 
     public String getServerUrl() throws IOException {
-        return getString(PREF_AUTH_SERVER_URL, StringUtils.EMPTY);
+        return JiraAPIURL.removeLastSplash(getString(PREF_AUTH_SERVER_URL, StringUtils.EMPTY));
     }
 
     public void saveServerUrl(String serverUrl) throws IOException {
@@ -88,7 +92,7 @@ public class JiraIntegrationSettingStore extends BundleSettingStore {
         StoredJiraObject<JiraProject> instance = new StoredJiraObject<>(null, null);
         String objectAsString = getString(PREF_SUBMIT_JIRA_PROJECT, StringUtils.EMPTY);
         try {
-            Type collectionType = new TypeToken<StoredJiraObject<JiraIssueType>>() {}.getType();
+            Type collectionType = new TypeToken<StoredJiraObject<JiraProject>>() {}.getType();
             StoredJiraObject<JiraProject> storedObject = JsonUtil.fromJson(objectAsString, collectionType);
             return storedObject != null ? storedObject : instance;
         } catch (IllegalArgumentException e) {
@@ -114,5 +118,21 @@ public class JiraIntegrationSettingStore extends BundleSettingStore {
 
     public void saveStoredJiraIssueType(StoredJiraObject<JiraIssueType> storedJiraIssueType) throws IOException {
         setProperty(PREF_SUBMIT_JIRA_ISSUE_TYPE, JsonUtil.toJson(storedJiraIssueType, false));
+    }
+
+    public User getJiraUser() throws IOException {
+        return JsonUtil.fromJson(getString(PREF_AUTH_USER, StringUtils.EMPTY), User.class);
+    }
+    
+    public void saveJiraUser(User user) throws IOException {
+        setProperty(PREF_AUTH_USER, JsonUtil.toJson(user, false));
+    }
+
+    public JiraCredential getJiraCredential() throws IOException {
+        JiraCredential credential = new JiraCredential();
+        credential.setServerUrl(getServerUrl());
+        credential.setUsername(getUsername());
+        credential.setPassword(getPassword());
+        return credential;
     }
 }

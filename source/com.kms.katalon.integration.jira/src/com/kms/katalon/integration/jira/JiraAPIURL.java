@@ -12,6 +12,8 @@ public class JiraAPIURL {
     public static final String REST_API_URL_ISSUE = "issue";
 
     public static final String REST_API_URL_ISSUE_TYPE = "issuetype";
+    
+    public static final String REST_API_URL_ATTACHMENTS = "attachments";
 
     public static String removeLastSplash(String s) {
         if (StringUtils.isEmpty(s)) {
@@ -42,5 +44,9 @@ public class JiraAPIURL {
 
     public static String getIssueTypeAPIUrl(JiraCredential credential) {
         return getJiraAPIPrexfix(credential) + REST_API_URL_ISSUE_TYPE;
+    }
+    
+    public static String getIssueaAttachmentsAPIUrl(JiraCredential credential, String issueKey) {
+        return getIssueAPIUrl(credential) + "/" + issueKey + "/" + REST_API_URL_ATTACHMENTS;
     }
 }

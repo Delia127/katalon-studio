@@ -132,14 +132,7 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
     }
 
     protected void drawCellTextAndImage(Event event, ViewerCell cell, GC gc) {
-        Rectangle eventBounds = event.getBounds();
-        Image image = cell.getImage();
-        int startX = getLeftMargin();
-        if (image != null) {
-            int y = eventBounds.y + Math.max(0, (eventBounds.height - image.getBounds().height) / 2);
-            gc.drawImage(image, eventBounds.x + startX, y);
-            startX = getSpace();
-        }
+        int startX = drawImage(event, cell, gc, cell.getImage());
 
         Rectangle textBounds = getTextBounds(cell.getTextBounds());
         if (textBounds != null) {
@@ -153,6 +146,17 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
             textLayout.draw(gc, textBounds.x + startX, y);
             gc.setClipping(saveClipping);
         }
+    }
+
+    protected int drawImage(Event event, ViewerCell cell, GC gc, Image image) {
+        Rectangle eventBounds = event.getBounds();
+        int startX = getLeftMargin();
+        if (image != null) {
+            int y = eventBounds.y + Math.max(0, (eventBounds.height - image.getBounds().height) / 2);
+            gc.drawImage(image, eventBounds.x + startX, y);
+            startX = getSpace();
+        }
+        return startX;
     }
 
     protected Rectangle getTextBounds(Rectangle originalBounds) {
@@ -266,7 +270,7 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
     }
 
     protected String getElementToolTipText(T element) {
-        return "";
+        return null;
     }
 
     protected Color getBackground(Color background, T element) {

@@ -11,7 +11,6 @@ import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -24,12 +23,11 @@ import org.eclipse.swt.widgets.MenuItem;
 import com.kms.katalon.composer.components.impl.util.DesktopUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
-import com.kms.katalon.composer.integration.qtest.constant.ImageConstants;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.handler.QTestDisintegrateReportHandler;
 import com.kms.katalon.composer.integration.qtest.handler.QTestUploadReportHandler;
 import com.kms.katalon.composer.integration.qtest.model.ReportTestCaseLogPair;
-import com.kms.katalon.composer.report.parts.integration.AbstractReportTestCaseIntegrationView;
+import com.kms.katalon.composer.report.parts.integration.TestCaseLogDetailsIntegrationView;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.logging.model.TestCaseLogRecord;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
@@ -45,7 +43,7 @@ import com.kms.katalon.integration.qtest.entity.QTestRun;
 import com.kms.katalon.integration.qtest.entity.QTestSuite;
 import com.kms.katalon.integration.qtest.entity.QTestTestCase;
 
-public class QTestIntegrationReportTestCaseView extends AbstractReportTestCaseIntegrationView {
+public class QTestIntegrationReportTestCaseView extends TestCaseLogDetailsIntegrationView {
     private StyledText txtTestLogId;
     private StyledText txtTestCaseRunAlias;
     private StyledText txtAttachment;
@@ -216,38 +214,6 @@ public class QTestIntegrationReportTestCaseView extends AbstractReportTestCaseIn
         reloadView();
     }
 
-    @Override
-    public Image getImage(TestCaseLogRecord testCaseLogRecord) {
-        try {
-            QTestTestCase qTestCase = QTestIntegrationUtil.getQTestCase(testCaseLogRecord);
-            if (qTestCase == null) {
-                return null;
-            }
-
-            QTestSuite qTestSuite = QTestIntegrationUtil.getSelectedQTestSuite(testSuiteLogRecord);
-            if (qTestSuite == null) {
-                return null;
-            }
-
-            QTestRun qTestRun = QTestIntegrationTestSuiteManager.getTestRunByTestSuiteAndTestCaseId(qTestSuite,
-                    qTestCase.getId());
-            if (qTestRun != null) {
-                QTestReport qTestReport = QTestIntegrationReportManager
-                        .getQTestReportByIntegratedEntity(QTestIntegrationUtil.getIntegratedEntity(reportEntity));
-
-                if (qTestReport != null) {
-                    int index = QTestIntegrationUtil.getTestCaseLogIndex(testCaseLogRecord, reportEntity);
-                    if (qTestReport.getTestLogMap().get(index) != null) {
-                        return ImageConstants.IMG_16_UPLOADED;
-                    }
-                }
-            }
-        } catch (Exception e) {
-            return null;
-        }
-        return ImageConstants.IMG_16_UPLOADING;
-    }
-
     public void createTableContextMenu(Menu parentMenu, ISelection selection) {
         if (selection == null) {
             return;
@@ -333,4 +299,5 @@ public class QTestIntegrationReportTestCaseView extends AbstractReportTestCaseIn
         QTestUploadReportHandler.performUploadTestCaseLogs(testCaseLogPairs, menuItem.getDisplay().getActiveShell());
     }
 
+    
 }
