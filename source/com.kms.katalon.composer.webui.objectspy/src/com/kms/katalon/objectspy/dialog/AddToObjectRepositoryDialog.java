@@ -211,13 +211,7 @@ public class AddToObjectRepositoryDialog extends TreeEntitySelectionDialog {
 
         ColumnViewerToolTipSupport.enableFor(htmlElementTreeViewer, ToolTip.NO_RECREATE);
         htmlElementTreeViewer.setInput(htmlElements);
-        if (expandedHTMLElements != null && expandedHTMLElements.length > 0) {
-            htmlElementTreeViewer.getControl().setRedraw(false);
-            for (Object expandedHTMLElement : expandedHTMLElements) {
-                htmlElementTreeViewer.setExpandedState(expandedHTMLElement, true);
-            }
-            htmlElementTreeViewer.getControl().setRedraw(true);
-        }
+        htmlElementTreeViewer.expandAll();
         if (checkboxSelectionHelper != null) {
             checkboxSelectionHelper.checkAllItemInTree(htmlElements);
         }
