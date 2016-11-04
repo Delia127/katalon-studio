@@ -30,6 +30,11 @@ var toggleButton = require('sdk/ui/button/toggle').ToggleButton({
 });
 
 var tabs = require('sdk/tabs');
+var windows = require("sdk/windows").browserWindows;
+var { modelFor } = require("sdk/model/core");
+var { viewFor } = require("sdk/view/core");
+var tab_utils = require("sdk/tabs/utils");
+
 
 function handleChange(state) {
 	if (!state.checked) {
@@ -118,7 +123,11 @@ pageMod.PageMod({
 		});
 		worker.port.on("activateTab", function(url) {
 			for (let tab of tabs){
-				if(tab != undefined && (url.urlString == tab.url || url.urlString == (tab.url + "/"))){
+				if(tab != undefined && (url.urlString == tab.url || url.urlString == (tab.url + "/"))){					
+					var lowLevelTab = viewFor(tab);
+					var browser = tab_utils.getBrowserForTab(lowLevelTab);
+					var highLevelWindow = modelFor(browser.ownerGlobal);
+					highLevelWindow.activate();
 					tab.activate();
 					break;
 				}
