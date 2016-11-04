@@ -216,18 +216,6 @@ public class DataFileFileServiceManager {
         return EntityFileServiceManager.copy(dataFile, destinationFolder);
     }
 
-    /**
-     * copy a folder of data files to another folder
-     * 
-     * @param sourceFolder
-     * @param destinationFolder
-     * @return
-     * @throws Exception
-     */
-    public static FolderEntity copyDataFileFolder(FolderEntity folder, FolderEntity destinationFolder) throws Exception {
-        return EntityFileServiceManager.copyFolder(folder, destinationFolder);
-    }
-
     public static DataFileEntity moveDataFile(DataFileEntity dataFile, FolderEntity destinationFolder) throws Exception {
         return EntityFileServiceManager.move(dataFile, destinationFolder);
     }

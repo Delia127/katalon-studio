@@ -17,7 +17,9 @@ import com.kms.katalon.composer.testcase.groovy.ast.statements.BlockStatementWra
 
 public class ClosureExpressionWrapper extends ExpressionWrapper implements ASTHasBlock {
     private static final String UNKNOWN = "<unknown>";
+
     private ParameterWrapper[] parameters;
+
     private BlockStatementWrapper code;
 
     public ClosureExpressionWrapper(ParameterWrapper[] parameters, ASTNodeWrapper parentNodeWrapper) {
@@ -35,7 +37,7 @@ public class ClosureExpressionWrapper extends ExpressionWrapper implements ASTHa
         }
         initCodeBlock(closureExpression);
     }
-    
+
     private void initCodeBlock(ClosureExpression closureExpression) {
         Statement statementCode = closureExpression.getCode();
         if (statementCode instanceof BlockStatement) {
@@ -54,7 +56,7 @@ public class ClosureExpressionWrapper extends ExpressionWrapper implements ASTHa
         }
         this.code = new BlockStatementWrapper(closureExpressionWrapper.getBlock(), this);
     }
-    
+
     @Override
     public String getText() {
         String paramText = getParametersText(parameters);
@@ -99,8 +101,7 @@ public class ClosureExpressionWrapper extends ExpressionWrapper implements ASTHa
             return UNKNOWN;
 
         String name = node.getName() == null ? UNKNOWN : node.getName();
-        String type = node.getType() == null || node.getType().getName() == null ? UNKNOWN : node.getType()
-                .getName();
+        String type = node.getType() == null || node.getType().getName() == null ? UNKNOWN : node.getType().getName();
         if (node.getInitialExpression() != null) {
             return type + " " + name + " = " + node.getInitialExpression().getText();
         }
@@ -121,5 +122,24 @@ public class ClosureExpressionWrapper extends ExpressionWrapper implements ASTHa
             }
         }
         return result.toString();
+    }
+
+    public void setParameters(ParameterWrapper[] array) {
+        this.parameters = array;
+    }
+
+    public void setBlock(BlockStatementWrapper blockStatementWrapper) {
+        this.code = blockStatementWrapper;
+    }
+
+    @Override
+    public boolean updateInputFrom(ASTNodeWrapper input) {
+        if (!(input instanceof ClosureExpressionWrapper)) {
+            return false;
+        }
+        ClosureExpressionWrapper closureExpressionWrapper = (ClosureExpressionWrapper) input;
+        setParameters(closureExpressionWrapper.getParameters());
+        setBlock(closureExpressionWrapper.getBlock());
+        return true;
     }
 }

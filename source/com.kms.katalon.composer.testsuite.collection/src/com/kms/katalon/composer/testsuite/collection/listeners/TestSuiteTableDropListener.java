@@ -19,7 +19,6 @@ import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.testsuite.collection.execution.collector.TestExecutionGroupCollector;
 import com.kms.katalon.composer.testsuite.collection.part.provider.TableViewerProvider;
 import com.kms.katalon.composer.testsuite.collection.transfer.TestSuiteRunConfigurationTransferData;
-import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteRunConfiguration;
 
@@ -27,13 +26,10 @@ public class TestSuiteTableDropListener extends TableDropTargetEffect {
 
     private TableViewerProvider tableViewerProvider;
 
-    private TestSuiteCollectionEntity testSuiteCollection;
 
-    public TestSuiteTableDropListener(TableViewerProvider testSuiteCollectionPart,
-            TestSuiteCollectionEntity testSuiteCollection) {
+    public TestSuiteTableDropListener(TableViewerProvider testSuiteCollectionPart) {
         super(testSuiteCollectionPart.getTableViewer().getTable());
         this.tableViewerProvider = testSuiteCollectionPart;
-        this.testSuiteCollection = testSuiteCollection;
     }
 
     @Override
@@ -48,7 +44,7 @@ public class TestSuiteTableDropListener extends TableDropTargetEffect {
         }
         if (data instanceof TestSuiteRunConfigurationTransferData[]) {
             TestSuiteRunConfigurationTransferData[] configurationTransferDatas = (TestSuiteRunConfigurationTransferData[]) data;
-            if (!configurationTransferDatas[0].getTestSuiteCollection().equals(testSuiteCollection)) {
+            if (!configurationTransferDatas[0].getTestSuiteCollectionID().equals(tableViewerProvider.getTestSuiteCollection().getId())) {
                 event.detail = DND.DROP_COPY;
                 dropFromTableToTable(configurationTransferDatas, selectedItem);
             } else {

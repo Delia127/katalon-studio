@@ -1,5 +1,10 @@
 package com.kms.katalon.composer.checkpoint.parts;
 
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -14,6 +19,7 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.checkpoint.constants.StringConstants;
 import com.kms.katalon.composer.checkpoint.dialogs.EditCheckpointDatabaseDialog;
+import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.checkpoint.CheckpointSourceInfo;
 import com.kms.katalon.entity.checkpoint.DatabaseCheckpointSourceInfo;
 
@@ -52,15 +58,7 @@ public class CheckpointDatabasePart extends CheckpointAbstractPart {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                EditCheckpointDatabaseDialog dialog = new EditCheckpointDatabaseDialog(Display.getCurrent()
-                        .getActiveShell(), (DatabaseCheckpointSourceInfo) getCheckpoint().getSourceInfo());
-                if (dialog.open() != Window.OK || !dialog.isChanged()) {
-                    return;
-                }
-                DatabaseCheckpointSourceInfo sourceInfo = dialog.getSourceInfo();
-                getCheckpoint().setSourceInfo(sourceInfo);
-                loadCheckpointSourceInfo(sourceInfo);
-                save();
+                executeOperation(new ChangeDatabaseSourceInfoOperation());
             }
         });
     }
@@ -70,4 +68,27 @@ public class CheckpointDatabasePart extends CheckpointAbstractPart {
         txtQuery.setText(((DatabaseCheckpointSourceInfo) sourceInfo).getQuery());
     }
 
+    private class ChangeDatabaseSourceInfoOperation extends ChangeCheckpointSourceInfoOperation {
+        public ChangeDatabaseSourceInfoOperation() {
+            super(ChangeDatabaseSourceInfoOperation.class.getName());
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            CheckpointEntity currentCheckpoint = getCheckpoint();
+            oldCheckpointSourceInfo = currentCheckpoint.getSourceInfo().clone();
+            EditCheckpointDatabaseDialog dialog = new EditCheckpointDatabaseDialog(
+                    Display.getCurrent().getActiveShell(),
+                    (DatabaseCheckpointSourceInfo) currentCheckpoint.getSourceInfo());
+            if (dialog.open() != Window.OK || !dialog.isChanged()) {
+                return Status.CANCEL_STATUS;
+            }
+            DatabaseCheckpointSourceInfo sourceInfo = dialog.getSourceInfo();
+            newCheckpointSourceInfo = sourceInfo.clone();
+            currentCheckpoint.setSourceInfo(sourceInfo);
+            loadCheckpointSourceInfo(sourceInfo);
+            setDirty(true);
+            return Status.OK_STATUS;
+        }
+    }
 }

@@ -128,4 +128,8 @@ public class TestCaseEntity extends IntegratedFileEntity {
     public void setVariables(List<VariableEntity> variables) {
         this.variables = variables;
     }
+
+    public void addVariables(List<VariableEntity> variablesToAdd) {
+        variables.addAll(variablesToAdd);
+    }
 }

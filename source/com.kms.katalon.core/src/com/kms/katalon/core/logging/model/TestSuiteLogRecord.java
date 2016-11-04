@@ -1,15 +1,24 @@
 package com.kms.katalon.core.logging.model;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.io.FilenameUtils;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 
 public class TestSuiteLogRecord extends AbstractLogRecord {
     private String deviceName;
+
     private String devicePlatform;
+
     private String logFolder;
+
     private Map<String, String> runData;
 
     public TestSuiteLogRecord(String name, String logFolder) {
@@ -81,11 +90,13 @@ public class TestSuiteLogRecord extends AbstractLogRecord {
     }
 
     public String getHostName() {
-        return (getRunData().containsKey(RunConfiguration.HOST_NAME)) ? getRunData().get(RunConfiguration.HOST_NAME) : "";
+        return (getRunData().containsKey(RunConfiguration.HOST_NAME)) ? getRunData().get(RunConfiguration.HOST_NAME)
+                : "";
     }
 
     public String getAppVersion() {
-        return (getRunData().containsKey(RunConfiguration.APP_VERSION)) ? getRunData().get(RunConfiguration.APP_VERSION) : "";
+        return (getRunData().containsKey(RunConfiguration.APP_VERSION)) ? getRunData().get(RunConfiguration.APP_VERSION)
+                : "";
     }
 
     public Map<String, String> getRunData() {
@@ -94,5 +105,20 @@ public class TestSuiteLogRecord extends AbstractLogRecord {
 
     public void addRunData(Map<String, String> runData) {
         this.runData.putAll(runData);
+    }
+
+    public <T extends ILogRecord> int getChildIndex(T child) {
+        return Arrays.asList(getChildRecords()).indexOf(child);
+    }
+
+    public List<String> getLogFiles() {
+        List<String> logFiles = new ArrayList<>();
+        for (String childFile : new File(getLogFolder()).list()) {
+            if (!FilenameUtils.getExtension(childFile).equals("log")) {
+                continue;
+            }
+            logFiles.add(childFile);
+        }
+        return logFiles;
     }
 }

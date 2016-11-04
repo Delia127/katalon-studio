@@ -97,4 +97,8 @@ public class DatabaseCheckpointSourceInfo extends CheckpointSourceInfo {
         this.query = query;
     }
 
+    @Override
+    public DatabaseCheckpointSourceInfo clone() {
+        return (DatabaseCheckpointSourceInfo) super.clone();
+    }
 }

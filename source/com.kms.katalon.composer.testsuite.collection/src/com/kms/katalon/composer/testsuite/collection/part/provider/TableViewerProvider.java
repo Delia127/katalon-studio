@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.eclipse.jface.viewers.TableViewer;
 
+import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteRunConfiguration;
 
@@ -19,4 +20,6 @@ public interface TableViewerProvider {
     void updateRunColumn();
     
     void executeTestRun();
+    
+    TestSuiteCollectionEntity getTestSuiteCollection();
 }

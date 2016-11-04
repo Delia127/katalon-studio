@@ -119,7 +119,7 @@ public class CheckpointController extends EntityController {
         checkpointEntity.setColumnNames(columnNames);
         checkpointEntity.setCheckpointData(checkpointDataWrapper(data));
         checkpointEntity.setTakenDate(new Date());
-        return update(checkpointEntity);
+        return checkpointEntity;
     }
 
     private List<List<Object>> getCheckpointSourceData(CheckpointSourceInfo sourceInfo, List<String> columnNames)

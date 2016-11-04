@@ -7,6 +7,7 @@ import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.widgets.Composite;
 
+import com.kms.katalon.composer.testcase.ast.variable.operations.ChangeVariableDescriptionOperation;
 import com.kms.katalon.composer.testcase.parts.TestCaseVariablePart;
 import com.kms.katalon.entity.variable.VariableEntity;
 
@@ -43,9 +44,7 @@ public class VariableDescriptionEditingSupport extends EditingSupport {
             VariableEntity param = (VariableEntity) element;
             String newParamDesc = (String) value;
             if (!newParamDesc.equals(param.getDescription())) {
-                param.setDescription(newParamDesc);
-                variablesPart.setDirty(true);
-                getViewer().update(element, null);
+                variablesPart.executeOperation(new ChangeVariableDescriptionOperation(variablesPart, param, newParamDesc));
             }
         }
     }

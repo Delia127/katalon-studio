@@ -3,7 +3,10 @@ package com.kms.katalon.composer.checkpoint.parts;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -11,6 +14,12 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.operations.AbstractOperation;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
@@ -20,6 +29,7 @@ import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellLabelProvider;
@@ -64,6 +74,7 @@ import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPart;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.parts.CPart;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.CheckpointController;
@@ -73,12 +84,15 @@ import com.kms.katalon.entity.checkpoint.CheckpointCell;
 import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.checkpoint.CheckpointSourceInfo;
 
-public abstract class CheckpointAbstractPart implements EventHandler, IComposerPart {
+public abstract class CheckpointAbstractPart extends CPart implements EventHandler, IComposerPart {
 
     private static final int DEFAULT_COLUMN_WIDTH = 200;
 
     @Inject
     protected EModelService modelService;
+
+    @Inject
+    protected EPartService partService;
 
     @Inject
     protected MApplication application;
@@ -121,6 +135,7 @@ public abstract class CheckpointAbstractPart implements EventHandler, IComposerP
 
     @PostConstruct
     public void postConstruct(Composite parent) {
+        initialize(part, partService);
         createControls(parent);
         addControlListeners();
         redrawArrowIndicator();
@@ -283,27 +298,7 @@ public abstract class CheckpointAbstractPart implements EventHandler, IComposerP
     }
 
     private void checkUncheckTableColumn(boolean isChecked) {
-        if (selectedColumnIndex == -1) {
-            return;
-        }
-
-        TableItem[] rows = tableViewer.getTable().getItems();
-        if (rows == null || rows.length == 0) {
-            return;
-        }
-
-        for (TableItem row : rows) {
-            Object rowData = row.getData();
-            if (rowData == null || !(rowData instanceof List<?>) || ((List<?>) rowData).isEmpty()
-                    || selectedColumnIndex > ((List<?>) rowData).size()) {
-                continue;
-            }
-
-            ((CheckpointCell) ((List<?>) rowData).get(selectedColumnIndex - 1)).setChecked(isChecked);
-        }
-
-        tableViewer.refresh();
-        dirtyable.setDirty(true);
+        executeOperation(new CheckUncheckColumnOperation(selectedColumnIndex, isChecked));
     }
 
     protected void checkUncheckTableRow(boolean isChecked) {
@@ -314,46 +309,17 @@ public abstract class CheckpointAbstractPart implements EventHandler, IComposerP
             return;
         }
 
-        Object rowData = table.getItem(index).getData();
-        if (rowData == null || !(rowData instanceof List<?>) || ((List<?>) rowData).isEmpty()) {
-            return;
-        }
-        for (Object cellData : (List<?>) rowData) {
-            if (!(cellData instanceof CheckpointCell)) {
-                continue;
-            }
-            ((CheckpointCell) cellData).setChecked(isChecked);
-        }
-        tableViewer.refresh(rowData);
-        dirtyable.setDirty(true);
+        executeOperation(new CheckUncheckRowOperation(index, isChecked));
     }
 
     protected void checkUncheckAll(boolean isChecked) {
-        TableItem[] rows = tableViewer.getTable().getItems();
-        if (rows == null || rows.length == 0) {
-            return;
-        }
-        for (TableItem row : rows) {
-            Object rowData = row.getData();
-            if (rowData == null || !(rowData instanceof List<?>) || ((List<?>) rowData).isEmpty()) {
-                continue;
-            }
-
-            for (Object cellData : (List<?>) rowData) {
-                if (!(cellData instanceof CheckpointCell)) {
-                    continue;
-                }
-                ((CheckpointCell) cellData).setChecked(isChecked);
-            }
-        }
-        tableViewer.refresh();
-        dirtyable.setDirty(true);
+        executeOperation(new CheckUncheckAllOperation(isChecked));
     }
 
     private void redrawArrowIndicator() {
         lblArrowIndicator.getParent().setRedraw(false);
-        lblArrowIndicator.setImage(compSourceInfoDetails.isVisible() ? ImageConstants.IMG_16_ARROW_DOWN
-                : ImageConstants.IMG_16_ARROW);
+        lblArrowIndicator.setImage(
+                compSourceInfoDetails.isVisible() ? ImageConstants.IMG_16_ARROW_DOWN : ImageConstants.IMG_16_ARROW);
         lblArrowIndicator.getParent().setRedraw(true);
     }
 
@@ -366,18 +332,16 @@ public abstract class CheckpointAbstractPart implements EventHandler, IComposerP
                 compSourceInfoDetails.setVisible(!compSourceInfoDetails.isVisible());
                 // elasticate data table
                 GridData fileInfoGridData = (GridData) compSourceInfoDetails.getLayoutData();
-                boolean isFileInfoNotVisible = !compSourceInfoDetails.isVisible();
-                if (isFileInfoNotVisible) {
-                    fileInfoGridData.exclude = true;
-                }
+                fileInfoGridData.exclude = !compSourceInfoDetails.isVisible();
                 compTable.layout(true, true);
                 compTable.getParent().layout();
-                if (isFileInfoNotVisible) {
-                    fileInfoGridData.exclude = false;
-                }
                 redrawArrowIndicator();
             }
         });
+    }
+
+    private void takeSnapshot() {
+        executeOperation(new TakeSnapshotOperation());
     }
 
     private void addControlListeners() {
@@ -396,20 +360,7 @@ public abstract class CheckpointAbstractPart implements EventHandler, IComposerP
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                try {
-                    if (getCheckpoint().getCheckpointData() != null
-                            && !MessageDialog.openConfirm(Display.getCurrent().getActiveShell(),
-                                    StringConstants.PART_TITLE_TAKE_CHECKPOINT_SNAPSHOT,
-                                    StringConstants.PART_MSG_CLEAR_CHECKPOINT_DATA)) {
-                        return;
-                    }
-                    loadCheckpoint(CheckpointController.getInstance().takeSnapshot(getCheckpoint()));
-                    setDirty(false);
-                } catch (Exception ex) {
-                    LoggerSingleton.logError(ex);
-                    MultiStatusErrorDialog.showErrorDialog(ex, StringConstants.PART_MSG_CANNOT_TAKE_SNAPSHOT,
-                            ex.getMessage());
-                }
+                takeSnapshot();
             }
         });
 
@@ -486,15 +437,20 @@ public abstract class CheckpointAbstractPart implements EventHandler, IComposerP
 
     private void verifySourceChanged() {
         try {
-            if (getCheckpoint() == null) {
+            if (isDirty()) {
                 return;
             }
 
-            CheckpointEntity reloadedCheckpoint = CheckpointController.getInstance().getById(getCheckpoint().getId());
+            CheckpointEntity currentCheckpoint = getCheckpoint();
+            if (currentCheckpoint == null) {
+                return;
+            }
+
+            CheckpointEntity reloadedCheckpoint = CheckpointController.getInstance().getById(currentCheckpoint.getId());
             if (reloadedCheckpoint == null) {
                 FolderTreeEntity parentFolderTreeEntity = TreeEntityUtil.createSelectedTreeEntityHierachy(
-                        getCheckpoint().getParentFolder(),
-                        FolderController.getInstance().getCheckpointRoot(getCheckpoint().getProject()));
+                        currentCheckpoint.getParentFolder(),
+                        FolderController.getInstance().getCheckpointRoot(currentCheckpoint.getProject()));
                 if (parentFolderTreeEntity != null) {
                     eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentFolderTreeEntity);
                 }
@@ -502,7 +458,7 @@ public abstract class CheckpointAbstractPart implements EventHandler, IComposerP
                 return;
             }
 
-            if (getCheckpoint().equals(reloadedCheckpoint)) {
+            if (currentCheckpoint.equals(reloadedCheckpoint)) {
                 return;
             }
 
@@ -518,11 +474,19 @@ public abstract class CheckpointAbstractPart implements EventHandler, IComposerP
 
     protected void loadCheckpoint(CheckpointEntity checkpoint) {
         this.checkpoint = checkpoint;
-        this.tempCheckpoint = (CheckpointEntity) checkpoint.clone();
+        setCheckpoint((CheckpointEntity) checkpoint.clone());
+    }
+
+    private void setCheckpoint(CheckpointEntity checkpoint) {
+        this.tempCheckpoint = checkpoint;
+        refreshPart(tempCheckpoint);
+    }
+
+    protected void refreshPart(CheckpointEntity checkpoint) {
         getPart().setLabel(checkpoint.getName());
         getPart().setElementId(EntityPartUtil.getCheckpointPartId(checkpoint.getId()));
         loadCheckpointSourceInfo(checkpoint.getSourceInfo());
-        loadCheckpointData(tempCheckpoint);
+        loadCheckpointData(checkpoint);
         updateStatus();
     }
 
@@ -550,7 +514,7 @@ public abstract class CheckpointAbstractPart implements EventHandler, IComposerP
         for (int i = 0; i < checkpointData.get(0).size(); i++) {
             final TableViewerColumn columnViewer = new TableViewerColumn(tableViewer, SWT.NONE);
             columnViewer.setLabelProvider(new CheckpointCellLabelProvider(i));
-            columnViewer.setEditingSupport(new CheckpointCellEditingSupport(columnViewer.getViewer(), i, dirtyable));
+            columnViewer.setEditingSupport(new CheckpointCellEditingSupport(columnViewer.getViewer(), i, this));
             TableColumn column = columnViewer.getColumn();
             column.setWidth(DEFAULT_COLUMN_WIDTH);
             column.setText(StringUtils.defaultString(columnNames.get(i)));
@@ -589,7 +553,7 @@ public abstract class CheckpointAbstractPart implements EventHandler, IComposerP
     @Persist
     public void save() {
         try {
-            checkpoint.setCheckpointData(tempCheckpoint.getCheckpointData());
+            checkpoint.copyPropertiesFrom(tempCheckpoint);
             CheckpointController.getInstance().update(checkpoint);
             setDirty(false);
             eventBroker.post(EventConstants.CHECKPOINT_UPDATED,
@@ -614,9 +578,10 @@ public abstract class CheckpointAbstractPart implements EventHandler, IComposerP
         eventBroker.unsubscribe(this);
         MPartStack mStackPart = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
         mStackPart.getChildren().remove(getPart());
+        super.dispose();
     }
 
-    protected void setDirty(boolean isDirty) {
+    public void setDirty(boolean isDirty) {
         dirtyable.setDirty(isDirty);
     }
 
@@ -629,7 +594,7 @@ public abstract class CheckpointAbstractPart implements EventHandler, IComposerP
     }
 
     public CheckpointEntity getCheckpoint() {
-        return checkpoint;
+        return tempCheckpoint;
     }
 
     @Override
@@ -637,4 +602,206 @@ public abstract class CheckpointAbstractPart implements EventHandler, IComposerP
         return getCheckpoint().getIdForDisplay();
     }
 
+    private abstract class AbstractCheckUncheckOperation extends AbstractOperation {
+        protected Map<CheckpointCell, Boolean> oldCheckedDatas = new LinkedHashMap<>();
+
+        protected boolean isChecked;
+
+        public AbstractCheckUncheckOperation(String label, boolean isChecked) {
+            super(label);
+            this.isChecked = isChecked;
+        }
+
+        @Override
+        public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            for (Entry<CheckpointCell, Boolean> oldCheckedData : oldCheckedDatas.entrySet()) {
+                oldCheckedData.getKey().setChecked(isChecked);
+            }
+            tableViewer.refresh();
+            dirtyable.setDirty(true);
+            return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            for (Entry<CheckpointCell, Boolean> oldCheckedData : oldCheckedDatas.entrySet()) {
+                oldCheckedData.getKey().setChecked(oldCheckedData.getValue());
+            }
+            tableViewer.refresh();
+            dirtyable.setDirty(true);
+            return Status.OK_STATUS;
+        }
+    }
+
+    private class CheckUncheckColumnOperation extends AbstractCheckUncheckOperation {
+        private int selectedColumnIndex;
+
+        public CheckUncheckColumnOperation(int selectedColumnIndex, boolean isChecked) {
+            super(CheckUncheckColumnOperation.class.getName(), isChecked);
+            this.selectedColumnIndex = selectedColumnIndex;
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            if (selectedColumnIndex == -1) {
+                return Status.CANCEL_STATUS;
+            }
+
+            TableItem[] rows = tableViewer.getTable().getItems();
+            if (rows == null || rows.length == 0) {
+                return Status.CANCEL_STATUS;
+            }
+
+            for (TableItem row : rows) {
+                Object rowData = row.getData();
+                if (rowData == null || !(rowData instanceof List<?>)) {
+                    continue;
+                }
+                List<?> dataList = (List<?>) rowData;
+                if (dataList.isEmpty() || selectedColumnIndex > dataList.size()
+                        || !(dataList.get(selectedColumnIndex - 1) instanceof CheckpointCell)) {
+                    continue;
+                }
+
+                CheckpointCell checkpointCell = (CheckpointCell) dataList.get(selectedColumnIndex - 1);
+                oldCheckedDatas.put(checkpointCell, checkpointCell.isChecked());
+                checkpointCell.setChecked(isChecked);
+            }
+
+            tableViewer.refresh();
+            dirtyable.setDirty(true);
+            return Status.OK_STATUS;
+        }
+    }
+
+    private class CheckUncheckRowOperation extends AbstractCheckUncheckOperation {
+        private int selectedRowIndex;
+
+        public CheckUncheckRowOperation(int selectedRowIndex, boolean isChecked) {
+            super(CheckUncheckRowOperation.class.getName(), isChecked);
+            this.selectedRowIndex = selectedRowIndex;
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            if (selectedRowIndex == -1) {
+                return Status.CANCEL_STATUS;
+            }
+            Object rowData = tableViewer.getTable().getItem(selectedRowIndex).getData();
+            if (rowData == null || !(rowData instanceof List<?>) || ((List<?>) rowData).isEmpty()) {
+                return Status.CANCEL_STATUS;
+            }
+            for (Object cellData : (List<?>) rowData) {
+                if (!(cellData instanceof CheckpointCell)) {
+                    continue;
+                }
+                CheckpointCell checkpointCell = (CheckpointCell) cellData;
+                oldCheckedDatas.put(checkpointCell, checkpointCell.isChecked());
+                checkpointCell.setChecked(isChecked);
+            }
+            tableViewer.refresh(rowData);
+            dirtyable.setDirty(true);
+            return Status.OK_STATUS;
+        }
+    }
+
+    private class CheckUncheckAllOperation extends AbstractCheckUncheckOperation {
+        public CheckUncheckAllOperation(boolean isChecked) {
+            super(CheckUncheckAllOperation.class.getName(), isChecked);
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            TableItem[] rows = tableViewer.getTable().getItems();
+            if (rows == null || rows.length == 0) {
+                return Status.CANCEL_STATUS;
+            }
+            for (TableItem row : rows) {
+                Object rowData = row.getData();
+                if (rowData == null || !(rowData instanceof List<?>) || ((List<?>) rowData).isEmpty()) {
+                    continue;
+                }
+
+                for (Object cellData : (List<?>) rowData) {
+                    if (!(cellData instanceof CheckpointCell)) {
+                        continue;
+                    }
+                    CheckpointCell checkpointCell = (CheckpointCell) cellData;
+                    oldCheckedDatas.put(checkpointCell, checkpointCell.isChecked());
+                    checkpointCell.setChecked(isChecked);
+                }
+            }
+            tableViewer.refresh();
+            dirtyable.setDirty(true);
+            return Status.OK_STATUS;
+        }
+    }
+
+    private class TakeSnapshotOperation extends AbstractOperation {
+        private CheckpointEntity oldCheckpoint;
+
+        private CheckpointEntity newCheckpoint;
+
+        public TakeSnapshotOperation() {
+            super(TakeSnapshotOperation.class.getName());
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            try {
+                CheckpointEntity currentCheckpoint = getCheckpoint();
+                oldCheckpoint = currentCheckpoint.clone();
+                CheckpointController.getInstance().takeSnapshot(currentCheckpoint);
+                newCheckpoint = currentCheckpoint.clone();
+                refreshPart(currentCheckpoint);
+                setDirty(true);
+                return Status.OK_STATUS;
+            } catch (Exception ex) {
+                LoggerSingleton.logError(ex);
+                MultiStatusErrorDialog.showErrorDialog(ex, StringConstants.PART_MSG_CANNOT_TAKE_SNAPSHOT,
+                        ex.getMessage());
+                return Status.CANCEL_STATUS;
+            }
+        }
+
+        @Override
+        public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            setCheckpoint(newCheckpoint);
+            setDirty(true);
+            return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            setCheckpoint(oldCheckpoint);
+            setDirty(true);
+            return Status.OK_STATUS;
+        }
+    }
+    
+    protected abstract class ChangeCheckpointSourceInfoOperation extends AbstractOperation {
+        protected CheckpointSourceInfo oldCheckpointSourceInfo;
+
+        protected CheckpointSourceInfo newCheckpointSourceInfo;
+
+        public ChangeCheckpointSourceInfoOperation(String label) {
+            super(label);
+        }
+
+        @Override
+        public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            getCheckpoint().setSourceInfo(newCheckpointSourceInfo);
+            loadCheckpointSourceInfo(newCheckpointSourceInfo);
+            setDirty(true);
+            return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            getCheckpoint().setSourceInfo(oldCheckpointSourceInfo);
+            loadCheckpointSourceInfo(oldCheckpointSourceInfo);
+            setDirty(true);
+            return Status.OK_STATUS;
+        }
+    }
 }

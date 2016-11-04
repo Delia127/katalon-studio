@@ -2,6 +2,7 @@ package com.kms.katalon.composer.testcase.components;
 
 import java.util.ArrayList;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.jface.bindings.keys.KeyStroke;
@@ -31,6 +32,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
@@ -245,7 +247,7 @@ public class KeywordContentProposalAdapter {
         this.control = control;
         this.controlContentAdapter = controlContentAdapter;
         tooltip = new KeywordNodeTooltip(control);
-
+        
         // The rest of these may be null
         this.proposalProvider = proposalProvider;
         this.triggerKeyStroke = keyStroke;
@@ -669,11 +671,13 @@ public class KeywordContentProposalAdapter {
                         if (triggerKeyStroke != null) {
                             // Either there are no modifiers for the trigger and we
                             // check the character field...
-                            if ((triggerKeyStroke.getModifierKeys() == KeyStroke.NO_KEY && triggerKeyStroke.getNaturalKey() == e.character)
-                                    ||
-                                    // ...or there are modifiers, in which case the
-                                    // keycode and state must match
-                                    (triggerKeyStroke.getNaturalKey() == e.keyCode && ((triggerKeyStroke.getModifierKeys() & e.stateMask) == triggerKeyStroke.getModifierKeys()))) {
+                            if ((triggerKeyStroke.getModifierKeys() == KeyStroke.NO_KEY
+                                    && triggerKeyStroke.getNaturalKey() == e.character) ||
+                            // ...or there are modifiers, in which case the
+                            // keycode and state must match
+                            (triggerKeyStroke.getNaturalKey() == e.keyCode
+                                    && ((triggerKeyStroke.getModifierKeys() & e.stateMask) == triggerKeyStroke
+                                            .getModifierKeys()))) {
                                 // We never propagate the keystroke for an explicit
                                 // keystroke invocation of the popup
                                 e.doit = false;
@@ -1433,14 +1437,15 @@ public class KeywordContentProposalAdapter {
                 Rectangle parentBounds = getParentShell().getBounds();
                 Rectangle proposedBounds;
                 // Try placing the info popup to the right
-                Rectangle rightProposedBounds = new Rectangle(parentBounds.x + parentBounds.width
-                        + PopupDialog.POPUP_HORIZONTALSPACING, parentBounds.y + PopupDialog.POPUP_VERTICALSPACING,
-                        parentBounds.width, parentBounds.height);
+                Rectangle rightProposedBounds = new Rectangle(
+                        parentBounds.x + parentBounds.width + PopupDialog.POPUP_HORIZONTALSPACING,
+                        parentBounds.y + PopupDialog.POPUP_VERTICALSPACING, parentBounds.width, parentBounds.height);
                 rightProposedBounds = getConstrainedShellBounds(rightProposedBounds);
                 // If it won't fit on the right, try the left
                 if (rightProposedBounds.intersects(parentBounds)) {
-                    Rectangle leftProposedBounds = new Rectangle(parentBounds.x - parentBounds.width
-                            - POPUP_HORIZONTALSPACING - 1, parentBounds.y, parentBounds.width, parentBounds.height);
+                    Rectangle leftProposedBounds = new Rectangle(
+                            parentBounds.x - parentBounds.width - POPUP_HORIZONTALSPACING - 1, parentBounds.y,
+                            parentBounds.width, parentBounds.height);
                     leftProposedBounds = getConstrainedShellBounds(leftProposedBounds);
                     // If it won't fit on the left, choose the proposed bounds
                     // that fits the best
@@ -1650,8 +1655,8 @@ public class KeywordContentProposalAdapter {
             }
 
             // Constrain to the display
-            Rectangle constrainedBounds = getConstrainedShellBounds(new Rectangle(initialX, initialY, popupSize.x,
-                    popupSize.y));
+            Rectangle constrainedBounds = getConstrainedShellBounds(
+                    new Rectangle(initialX, initialY, popupSize.x, popupSize.y));
 
             // If there has been an adjustment causing the popup to overlap
             // with the control, then put the popup above the control.
@@ -1852,6 +1857,11 @@ public class KeywordContentProposalAdapter {
          */
         @Override
         public boolean close() {
+            Point p = Display.getCurrent().getCursorLocation();
+            if (tooltip.isVisible() && tooltip.getBounds().contains(p.x, p.y) && !tooltip.isCursorOnOpenKeywordDescButton(p)) {
+                return false;
+            }
+
             popupCloser.removeListeners();
             tooltip.hide();
             if (infoPopup != null) {
@@ -1904,13 +1914,24 @@ public class KeywordContentProposalAdapter {
             }
             String keywordDesc = proposals[selectionIndex].getDescription();
             String keywordName = proposals[selectionIndex].getContent();
-            String keywordClassName = ((TooltipCCombo) KeywordContentProposalAdapter.this.control).getKeywordClassName();
+            String keywordClassName = ((TooltipCCombo) KeywordContentProposalAdapter.this.control)
+                    .getKeywordClassName();
+            if (StringUtils.isEmpty(keywordClassName)) {
+            	return;
+            }
             tooltip.setText(keywordDesc);
             tooltip.setKeywordURL(KeywordURLUtil.getKeywordDescriptionURI(keywordClassName, keywordName));
             Point loc = popup.getShell().getLocation();
             tooltip.setPreferedSize(0, popupSize.y);
             tooltip.show(new Point(loc.x + popupSize.x - 2, loc.y));
-
+            tooltip.getShell().addListener(SWT.Dispose, evt -> {
+                if (tooltip.isOpenedKeywordDesc()) {
+                    try {
+                        infoPopup.close();
+                    } catch (Exception ex) {}
+                }
+            });
+            
         }
 
         /*

@@ -10,7 +10,6 @@ import org.eclipse.swt.dnd.DragSourceListener;
 
 import com.kms.katalon.composer.testsuite.collection.part.TestSuiteCollectionPart;
 import com.kms.katalon.composer.testsuite.collection.transfer.TestSuiteRunConfigurationTransferData;
-import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteRunConfiguration;
 
 public class TestSuiteTableDragListener implements DragSourceListener {
@@ -33,12 +32,11 @@ public class TestSuiteTableDragListener implements DragSourceListener {
         previousSelection = new ArrayList<TestSuiteRunConfiguration>();
         List<TestSuiteRunConfigurationTransferData> testSuiteRunConfigurationTransferDatas = new ArrayList<TestSuiteRunConfigurationTransferData>();
         StructuredSelection selection = (StructuredSelection) testsuiteCollectionPart.getTableViewer().getSelection();
-        TestSuiteCollectionEntity testSuiteCollection = testsuiteCollectionPart.getTestSuiteCollection();
+        String testSuiteCollectionID = testsuiteCollectionPart.getTestSuiteCollection().getId();
         for (Object item : selection.toList()) {
             if (item instanceof TestSuiteRunConfiguration) {
                 TestSuiteRunConfiguration testSuiteRunConfiguration = (TestSuiteRunConfiguration) item;
-                testSuiteRunConfigurationTransferDatas.add(new TestSuiteRunConfigurationTransferData(
-                        testSuiteCollection, testSuiteRunConfiguration));
+                testSuiteRunConfigurationTransferDatas.add(new TestSuiteRunConfigurationTransferData(testSuiteRunConfiguration, testSuiteCollectionID));
                 previousSelection.add(testSuiteRunConfiguration);
             }
         }

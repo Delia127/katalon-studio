@@ -32,7 +32,7 @@
         </java-type>
 
         <java-type name="ExcelCheckpointSourceInfo">
-            <xml-root-element name="source-info" />
+            <xml-root-element name="excel-source-info" />
             <xml-type prop-order="sheetNameOrSeparator usingRelativePath usingFirstRowAsHeader" />
             <java-attributes>
                 <!-- for excel and csv -->
@@ -43,7 +43,7 @@
         </java-type>
 
         <java-type name="CsvCheckpointSourceInfo">
-            <xml-root-element name="source-info" />
+            <xml-root-element name="csv-source-info" />
         </java-type>
 
         <java-type name="DatabaseCheckpointSourceInfo">

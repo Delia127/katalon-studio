@@ -16,6 +16,7 @@ import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.BinaryExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ClosureExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
@@ -91,8 +92,10 @@ public class WrapperToAstTreeConverter {
                     && (((ConstantExpressionWrapper) expression).getValue() instanceof String)) {
                 return new AstInputEditableStatementTreeTableNode(statementWrapper, parentNode,
                         ImageConstants.IMG_16_COMMENT, StringConstants.TREE_COMMENT);
+            } else if (expression instanceof ClosureExpressionWrapper) {
+                return new AstInputEditableStatementTreeTableNode(statementWrapper, parentNode,
+                        ImageConstants.IMG_16_BINARY, StringConstants.TREE_CLOSURE);
             }
-
             return new AstInputEditableStatementTreeTableNode(statementWrapper, parentNode);
         }
 

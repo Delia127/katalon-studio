@@ -73,6 +73,10 @@ public class AstStatementTreeTableNode extends AstAbstractTreeTableNode {
     public boolean enable() {
         return statement.enable();
     }
+    
+    public void toogleEnable() {
+        statement.toogleEnable();
+    }
 
     public boolean isDisabled() {
         return statement.isDisabled();

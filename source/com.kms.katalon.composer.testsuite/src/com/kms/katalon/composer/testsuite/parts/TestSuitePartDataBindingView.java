@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.testsuite.parts;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -29,7 +31,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -38,10 +39,11 @@ import org.eclipse.swt.widgets.ToolItem;
 
 import com.kms.katalon.composer.components.impl.control.CMenu;
 import com.kms.katalon.composer.components.impl.control.ImageButton;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
+import com.kms.katalon.composer.components.impl.util.MenuUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
-import com.kms.katalon.composer.testsuite.constants.ComposerTestsuiteMessageConstants;
 import com.kms.katalon.composer.testsuite.constants.ImageConstants;
 import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.composer.testsuite.constants.ToolItemConstants;
@@ -59,6 +61,7 @@ import com.kms.katalon.composer.testsuite.support.VariableValueEditingSupport;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.controller.TestDataController;
+import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.link.TestCaseTestDataLink;
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
 import com.kms.katalon.entity.link.VariableLink;
@@ -89,8 +92,10 @@ public class TestSuitePartDataBindingView {
 
     private TableViewer testCaseVariableTableViewer;
 
-    private MenuItem openMenuItem;
+    private Callable<Boolean> enableWhenItemSelected;
 
+    private CMenu menu;
+    
     private Listener layoutTestDataCompositeListener = new Listener() {
 
         @Override
@@ -337,17 +342,16 @@ public class TestSuitePartDataBindingView {
     }
 
     private void createTestDataTableContextMenu(Table table) {
-        CMenu menu = new CMenu(table, null);
+        menu = new CMenu(table, null);
         table.setMenu(menu);
 
-        Callable<Boolean> enableWhenItemSelected = new Callable<Boolean>() {
+        enableWhenItemSelected = new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
                 return !testDataTableViewer.getSelection().isEmpty();
             }
         };
-        openMenuItem = menu.createMenuItem(ComposerTestsuiteMessageConstants.MENU_OPEN, null, enableWhenItemSelected,
-                SWT.CASCADE);
+
     }
 
     private void hookDropTestDataEvent() {
@@ -515,10 +519,11 @@ public class TestSuitePartDataBindingView {
     public void refreshVariableLink(VariableLink link) {
         testCaseVariableTableViewer.update(link, null);
     }
-
+    
     private void createDynamicGotoTestDataMenu() {
+        ControlUtils.removeOldOpenMenuItem(menu);
         IStructuredSelection selection = (IStructuredSelection) testDataTableViewer.getSelection();
-        Menu subMenu = new Menu(openMenuItem);
+        List<DataFileEntity> dataFileEntities = getListDataFileFromSelection(selection);
         SelectionAdapter openSubMenuSelected = new SelectionAdapter() {
 
             @Override
@@ -533,22 +538,11 @@ public class TestSuitePartDataBindingView {
                 }
             }
         };
-        for (Object object : selection.toList()) {
-            if (!(object instanceof TestCaseTestDataLink)) {
-                continue;
-            }
-            try {
-                DataFileEntity dataFileEntity = TestDataController.getInstance().getTestDataByDisplayId(
-                        ((TestCaseTestDataLink) object).getTestDataId());
-                MenuItem menuItem = new MenuItem(subMenu, SWT.PUSH);
-                menuItem.setText(dataFileEntity.getIdForDisplay());
-                menuItem.setData(dataFileEntity);
-                menuItem.addSelectionListener(openSubMenuSelected);
-            } catch (Exception e) {
-                LoggerSingleton.logError(e);
-            }
+        if (dataFileEntities.size() == 1) {
+            ControlUtils.createOpenMenuWhenSelectOnlyOne(menu, dataFileEntities.get(0), enableWhenItemSelected, openSubMenuSelected);
+            return;
         }
-        openMenuItem.setMenu(subMenu);
+        MenuUtils.createOpenTestArtifactsMenu(getMapFileEntityToSelectionAdapter(dataFileEntities, openSubMenuSelected), menu);
     }
 
     private DataFileEntity getDataFileFromMenuItem(MenuItem selectedMenuItem) {
@@ -557,6 +551,33 @@ public class TestSuitePartDataBindingView {
             selectedTestData = (DataFileEntity) selectedMenuItem.getData();
         }
         return selectedTestData;
+    }
+
+    private List<DataFileEntity> getListDataFileFromSelection(IStructuredSelection selection) {
+        List<DataFileEntity> fileEntities = new ArrayList<DataFileEntity>();
+        TestDataController controller = TestDataController.getInstance();
+        for (Object object : selection.toList()) {
+            if (!(object instanceof TestCaseTestDataLink)) {
+                continue;
+            }
+            try {
+                fileEntities.add(controller.getTestDataByDisplayId(
+                        ((TestCaseTestDataLink) object).getTestDataId()));
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+            }
+        }
+        return fileEntities;
+    }
+
+    private HashMap<FileEntity, SelectionAdapter> getMapFileEntityToSelectionAdapter(List<? extends FileEntity> fileEntities, SelectionAdapter openTestData) {
+        HashMap<FileEntity, SelectionAdapter> map = new HashMap<>();
+        for (FileEntity fileEntity : fileEntities) {
+            if (fileEntity instanceof DataFileEntity) {
+                map.put(fileEntity, openTestData);
+            }
+        }
+        return map;
     }
 
 }

@@ -26,6 +26,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<module>com.kms.katalon.composer.global</module>
 		<module>com.kms.katalon.composer.import</module>
 		<module>com.kms.katalon.composer.integration.qtest</module> 
+		<module>com.kms.katalon.composer.integration.jira</module> 
 		<module>com.kms.katalon.composer.integration.slack</module> 
 		<module>com.kms.katalon.composer.integration.git</module> 
 		<module>com.kms.katalon.composer.integration.kobiton</module> 
@@ -64,11 +65,13 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<module>com.kms.katalon.groovy</module>
 		<module>com.kms.katalon.integration.qtest</module>
 		<module>com.kms.katalon.integration.kobiton</module>
+		<module>com.kms.katalon.integration.jira</module>
 		<module>com.kms.katalon.jasper</module>
 		<module>com.kms.katalon.logging</module>
 		<module>com.kms.katalon.preferences</module>
 		<module>com.kms.katalon.product</module>
 		<module>com.kms.katalon.selenium-standalone</module>
+		<module>com.kms.katalon.jbrowser</module>
 		<module>com.kms.katalon.target</module>
 		<module>com.kms.katalon</module>
 	</modules>

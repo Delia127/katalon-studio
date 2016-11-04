@@ -38,7 +38,7 @@ import com.kms.katalon.composer.testcase.keywords.KeywordBrowserControlTreeEntit
 import com.kms.katalon.composer.testcase.keywords.KeywordBrowserTreeEntity;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
-import com.kms.katalon.composer.testcase.parts.TestCasePart;
+import com.kms.katalon.composer.testcase.parts.ITestCasePart;
 import com.kms.katalon.composer.testcase.treetable.transfer.ScriptTransferData;
 import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
 import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
@@ -51,12 +51,12 @@ public class TestStepTableDropListener extends TreeDropTargetEffect {
 
     private TreeViewer treeViewer;
 
-    private TestCasePart testCasePart;
+    private ITestCasePart testCasePart;
 
-    public TestStepTableDropListener(TreeViewer viewer, TestCasePart testCasePart) {
+    public TestStepTableDropListener(TreeViewer viewer, ITestCasePart parentPart) {
         super(viewer.getTree());
         this.treeViewer = viewer;
-        this.testCasePart = testCasePart;
+        this.testCasePart = parentPart;
     }
 
     @Override
@@ -111,36 +111,48 @@ public class TestStepTableDropListener extends TreeDropTargetEffect {
         }
 
         List<AstTreeTableNode> dragNodes = testCasePart.getDragNodes();
-        if (dragNodes != null && dragNodes.contains(getHoveredTreeTableNode(event))) {
+        AstTreeTableNode hoveredTreeTableNode = getHoveredTreeTableNode(event);
+        if (dragNodes != null && dragNodes.contains(hoveredTreeTableNode)) {
             event.detail = DND.DROP_NONE;
             return;
         }
 
         ScriptTransferData firstScriptTransferData = scriptTransferDatas[0];
-        boolean dropSuccessfully = handleDropForScriptSnippet(event, firstScriptTransferData.getScriptSnippet());
-        if (!dropSuccessfully) {
+        String testCaseId = firstScriptTransferData.getTestCaseId();
+        NodeAddType addType = getNodeAddType(event);
+        List<StatementWrapper> dropStatements = getStatementsFromScriptSnippet(
+                firstScriptTransferData.getScriptSnippet());
+        if (StringUtils.equals(testCaseId, testCasePart.getTestCase().getId())) {
+            getTestCaseTreeTableInput().dragAndDropAstObjects(new ArrayList<>(dragNodes), dropStatements, hoveredTreeTableNode, addType);
             return;
         }
-        String testCaseId = firstScriptTransferData.getTestCaseId();
-        if (StringUtils.equals(testCaseId, testCasePart.getTestCase().getId())) {
-            event.detail = DND.DROP_MOVE;
-        }
+        handleDropForScriptSnippet(dropStatements, hoveredTreeTableNode, addType);
     }
 
     private boolean handleDropForScriptSnippet(DropTargetEvent event, String snippet) throws GroovyParsingException {
-        ScriptNodeWrapper scriptNode = GroovyWrapperParser.parseGroovyScriptIntoNodeWrapper(snippet);
-        if (scriptNode == null) {
-            return false;
-        }
-        ArrayList<StatementWrapper> dropStatements = new ArrayList<StatementWrapper>(scriptNode.getBlock()
-                .getStatements());
-        return getTestCaseTreeTableInput().addNewAstObjects(dropStatements, getHoveredTreeTableNode(event),
-                getNodeAddType(event));
-
+        List<StatementWrapper> dropStatements = getStatementsFromScriptSnippet(snippet);
+        AstTreeTableNode hoveredTreeTableNode = getHoveredTreeTableNode(event);
+        NodeAddType nodeAddType = getNodeAddType(event);
+        return handleDropForScriptSnippet(dropStatements, hoveredTreeTableNode, nodeAddType);
     }
 
-    private void handleDropForKeywordBrowserTreeEntities(DropTargetEvent event, IKeywordBrowserTreeEntity[] treeEntities)
-            throws Exception {
+    private boolean handleDropForScriptSnippet(List<StatementWrapper> dropStatements,
+            AstTreeTableNode hoveredTreeTableNode, NodeAddType nodeAddType) {
+        return getTestCaseTreeTableInput().addNewAstObjects(dropStatements, hoveredTreeTableNode, nodeAddType);
+    }
+
+    private List<StatementWrapper> getStatementsFromScriptSnippet(String snippet) throws GroovyParsingException {
+        ScriptNodeWrapper scriptNode = GroovyWrapperParser.parseGroovyScriptIntoNodeWrapper(snippet);
+        if (scriptNode == null) {
+            return Collections.emptyList();
+        }
+        ArrayList<StatementWrapper> dropStatements = new ArrayList<StatementWrapper>(
+                scriptNode.getBlock().getStatements());
+        return dropStatements;
+    }
+
+    private void handleDropForKeywordBrowserTreeEntities(DropTargetEvent event,
+            IKeywordBrowserTreeEntity[] treeEntities) throws Exception {
         if (treeEntities == null || treeEntities.length <= 0) {
             return;
         }
@@ -176,9 +188,11 @@ public class TestStepTableDropListener extends TreeDropTargetEffect {
             return AstKeywordsInputUtil.createNewCustomKeywordStatement(keywordBrowserTreeEntity.getClassName(),
                     keywordBrowserTreeEntity.getName(), parentWrapper);
         }
-        return AstKeywordsInputUtil.createBuiltInKeywordStatement(KeywordController.getInstance()
-                .getBuiltInKeywordClassByName(keywordBrowserTreeEntity.getClassName())
-                .getAliasName(), keywordBrowserTreeEntity.getName(), parentWrapper);
+        return AstKeywordsInputUtil.createBuiltInKeywordStatement(
+                KeywordController.getInstance()
+                        .getBuiltInKeywordClassByName(keywordBrowserTreeEntity.getClassName())
+                        .getAliasName(),
+                keywordBrowserTreeEntity.getName(), parentWrapper);
     }
 
     private void handleDropForTreeEntity(DropTargetEvent event, ITreeEntity[] treeEntities) throws Exception {
@@ -254,7 +268,8 @@ public class TestStepTableDropListener extends TreeDropTargetEffect {
                 }
 
             } else if (treeEntities[i] instanceof FolderTreeEntity) {
-                List<TestCaseEntity> testCases = TestCaseEntityUtil.getTestCasesFromFolderTree((FolderTreeEntity) treeEntities[i]);
+                List<TestCaseEntity> testCases = TestCaseEntityUtil
+                        .getTestCasesFromFolderTree((FolderTreeEntity) treeEntities[i]);
                 for (TestCaseEntity testCase : testCases) {
                     if (treeTableInput.validateTestCase(testCase)) {
                         callTestCases.add(testCase);

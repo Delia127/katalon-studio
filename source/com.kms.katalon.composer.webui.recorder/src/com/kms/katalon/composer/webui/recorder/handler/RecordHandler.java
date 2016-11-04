@@ -101,8 +101,8 @@ public class RecordHandler {
             if (!isVerified) {
                 return;
             }
-            final RecorderDialog recordDialog = new RecorderDialog(activeShell, LoggerSingleton.getInstance()
-                    .getLogger(), eventBroker);
+            final RecorderDialog recordDialog = new RecorderDialog(activeShell,
+                    LoggerSingleton.getInstance().getLogger(), eventBroker);
             int responseCode = recordDialog.open();
             if (responseCode != Window.OK) {
                 return;
@@ -112,9 +112,10 @@ public class RecordHandler {
                 @Override
                 protected IStatus run(IProgressMonitor monitor) {
                     try {
-                        monitor.beginTask(StringConstants.JOB_GENERATE_SCRIPT_MESSAGE, recordDialog.getActions().size()
-                                + recordDialog.getElements().size());
-                        AddToObjectRepositoryDialogResult folderSelectionResult = recordDialog.getTargetFolderTreeEntity();
+                        monitor.beginTask(StringConstants.JOB_GENERATE_SCRIPT_MESSAGE,
+                                recordDialog.getActions().size() + recordDialog.getElements().size());
+                        AddToObjectRepositoryDialogResult folderSelectionResult = recordDialog
+                                .getTargetFolderTreeEntity();
                         final List<StatementWrapper> generatedStatementWrappers = generateStatementWrappersFromRecordedActions(
                                 recordDialog.getActions(), recordDialog.getElements(), testCasePart,
                                 folderSelectionResult, monitor);
@@ -167,9 +168,11 @@ public class RecordHandler {
 
     private boolean verifyTestCase(Shell activeShell, TestCaseCompositePart testCaseCompositePart) throws Exception {
         if (testCaseCompositePart.getDirty().isDirty()) {
-            MessageDialog.openWarning(activeShell, StringConstants.WARN,
-                    StringConstants.HAND_ERROR_MSG_PLS_SAVE_TEST_CASE);
-            return false;
+            if (!MessageDialog.openConfirm(activeShell, StringConstants.WARN,
+                    StringConstants.HAND_ERROR_MSG_PLS_SAVE_TEST_CASE)) {
+                return false;
+            }
+            testCaseCompositePart.save();
         }
         try {
             testCaseCompositePart.getAstNodesFromScript();
@@ -206,8 +209,8 @@ public class RecordHandler {
         }
     }
 
-    private List<StatementWrapper> generateStatementWrappersFromRecordedActions(
-            List<HTMLActionMapping> recordedActions, List<HTMLPageElement> recordedElements, TestCasePart testCasePart,
+    private List<StatementWrapper> generateStatementWrappersFromRecordedActions(List<HTMLActionMapping> recordedActions,
+            List<HTMLPageElement> recordedElements, TestCasePart testCasePart,
             AddToObjectRepositoryDialogResult folderSelectionResult, IProgressMonitor monitor) throws Exception {
         monitor.subTask(StringConstants.JOB_ADDING_OBJECT);
         addRecordedElements(recordedElements, folderSelectionResult, monitor);
@@ -234,8 +237,8 @@ public class RecordHandler {
                     && entitySavedMap.get(action.getTargetElement()) instanceof WebElementEntity) {
                 createdTestObject = (WebElementEntity) entitySavedMap.get(action.getTargetElement());
             }
-            StatementWrapper generatedStatementWrapper = HTMLActionUtil.generateWebUiTestStep(action,
-                    createdTestObject, mainClassNode);
+            StatementWrapper generatedStatementWrapper = HTMLActionUtil.generateWebUiTestStep(action, createdTestObject,
+                    mainClassNode);
             if (generatedStatementWrapper != null) {
                 resultStatementWrappers.add(generatedStatementWrapper);
             }
@@ -259,7 +262,8 @@ public class RecordHandler {
                 if (currentWindowId == null) {
                     currentWindowId = newId;
                 } else if (!newId.equals(currentWindowId)) {
-                    HTMLActionMapping switchToWindowAction = HTMLActionUtil.createNewSwitchToWindowAction(HTMLActionUtil.getPageTitleForAction(action));
+                    HTMLActionMapping switchToWindowAction = HTMLActionUtil
+                            .createNewSwitchToWindowAction(HTMLActionUtil.getPageTitleForAction(action));
                     newActions.add(switchToWindowAction);
                     currentWindowId = newId;
                 }

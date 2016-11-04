@@ -446,6 +446,10 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
     public void addVariables(VariableEntity[] variables) {
         childTestCaseVariablesPart.addVariable(variables);
     }
+    
+    public void deleteVariables(List<VariableEntity> variables) {
+        childTestCaseVariablesPart.deleteVariables(variables);
+    }
 
     public VariableEntity[] getVariables() {
         return childTestCaseVariablesPart.getVariables();
@@ -465,7 +469,10 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
     public boolean saveTestCase() throws Exception {
         if (validateInput()) {
             // preSave
-
+            List<VariableEntity> variableList = testCase.getVariables();
+            variableList.clear();
+            variableList.addAll(childTestCaseVariablesPart.getVariablesList());
+            
             // back-up
             String oldPk = originalTestCase.getId();
             String oldIdForDisplay = originalTestCase.getIdForDisplay();

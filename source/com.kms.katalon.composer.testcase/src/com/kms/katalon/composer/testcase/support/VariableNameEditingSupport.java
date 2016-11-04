@@ -7,6 +7,7 @@ import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.widgets.Composite;
 
+import com.kms.katalon.composer.testcase.ast.variable.operations.ChangeVariableNameOperation;
 import com.kms.katalon.composer.testcase.parts.TestCaseVariablePart;
 import com.kms.katalon.entity.variable.VariableEntity;
 
@@ -43,9 +44,7 @@ public class VariableNameEditingSupport extends EditingSupport {
             VariableEntity param = (VariableEntity) element;
             String newParamName = (String) value;
             if (!newParamName.equals(param.getName())) {
-                param.setName(newParamName);
-                variablesPart.setDirty(true);
-                getViewer().update(element, null);
+                variablesPart.executeOperation(new ChangeVariableNameOperation(variablesPart, param, newParamName));
             }
         }
     }

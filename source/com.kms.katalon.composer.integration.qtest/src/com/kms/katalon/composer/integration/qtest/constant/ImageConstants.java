@@ -20,4 +20,6 @@ public class ImageConstants {
     public static final Image IMG_16_UPLOADING = ImageUtil.loadImage(
             FrameworkUtil.getBundle(QTestSuiteParentTreeLabelProvider.class), "icons/uploading.png");
     public static final URL URL_16_LOADING = com.kms.katalon.composer.components.impl.constants.ImageConstants.URL_16_LOADING;
+    public static final Image IMG_16_QTEST = ImageUtil.loadImage(
+            FrameworkUtil.getBundle(QTestSuiteParentTreeLabelProvider.class), "icons/qTest_active_16.png");
 }

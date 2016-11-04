@@ -42,4 +42,10 @@
             driver.connector="com.kms.katalon.execution.webui.driver.contributor.WebUIDriverConnectorContributor">
       </client>
    </extension>
+   <extension
+         point="com.kms.katalon.execution.runConfiguration">
+      <client
+            configuration="com.kms.katalon.execution.webui.configuration.contributor.HeadlessRunConfigurationContributor">
+      </client>
+   </extension>
 </plugin>

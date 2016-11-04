@@ -19,7 +19,7 @@ public class KobitonUser {
 
     private Date deletedAt;
 
-    private String organization;
+    private KobitonOrganization organization;
 
     public String getId() {
         return id;
@@ -85,11 +85,11 @@ public class KobitonUser {
         this.deletedAt = deletedAt;
     }
 
-    public String getOrganization() {
+    public KobitonOrganization getOrganization() {
         return organization;
     }
 
-    public void setOrganization(String organization) {
+    public void setOrganization(KobitonOrganization organization) {
         this.organization = organization;
     }
 

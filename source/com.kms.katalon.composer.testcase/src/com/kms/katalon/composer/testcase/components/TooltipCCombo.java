@@ -14,6 +14,7 @@ package com.kms.katalon.composer.testcase.components;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.SWT;
@@ -369,8 +370,13 @@ public class TooltipCCombo extends CCombo {
          * @param id the item which is currently elected/hovered
          */
         private void updateTooltip(int index) {
+            if (index < 0 || index >= textLookup.size()) {
+                this.tooltip.hide();
+                previousSelectionIdx = -1;
+                return;
+            }
             String text = this.textLookup.get(index);
-            if (index >= 0 && index < this.list.getItemCount() && text != null && text.trim().length() > 0) {
+            if (index >= 0 && index < this.list.getItemCount() && StringUtils.isNotEmpty(classKeywordName) && StringUtils.isNotEmpty(text)) {
                 this.tooltip.setText(text);
                 // calculate the location
                 Point size = this.list.getSize();

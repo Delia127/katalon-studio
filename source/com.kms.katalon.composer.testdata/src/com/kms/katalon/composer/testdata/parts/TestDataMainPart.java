@@ -34,6 +34,7 @@ import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPart;
+import com.kms.katalon.composer.parts.CPart;
 import com.kms.katalon.composer.testdata.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
@@ -43,7 +44,7 @@ import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 
-public abstract class TestDataMainPart implements EventHandler, IPartListener, IComposerPart {
+public abstract class TestDataMainPart extends CPart implements EventHandler, IPartListener, IComposerPart {
     public static final int MAX_LABEL_WIDTH = 70;
 
     protected static final int MAX_COLUMN_COUNT = 100;
@@ -58,6 +59,9 @@ public abstract class TestDataMainPart implements EventHandler, IPartListener, I
 
     @Inject
     protected EModelService modelService;
+    
+    @Inject 
+    protected EPartService partService;
 
     @Inject
     protected MApplication application;
@@ -76,6 +80,8 @@ public abstract class TestDataMainPart implements EventHandler, IPartListener, I
 
     public void createControls(Composite parent, MPart mpart) {
         this.mpart = mpart;
+        initialize(mpart, partService);
+        
         currentThreads = new HashSet<Thread>();
 
         isConfirmDialogShowed = false;
@@ -171,7 +177,10 @@ public abstract class TestDataMainPart implements EventHandler, IPartListener, I
         }
     }
 
-    private void dispose() {
+    @PreDestroy
+    @Override
+    public void dispose() {
+        super.dispose();
         eventBroker.unsubscribe(this);
         MPartStack mStackPart = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
         mStackPart.getChildren().remove(mpart);
@@ -272,6 +281,10 @@ public abstract class TestDataMainPart implements EventHandler, IPartListener, I
             }
         }
         threadIterator = null;
+    }
+    
+    public void setDirty(boolean dirty) {
+        dirtyable.setDirty(dirty);
     }
 
     protected abstract void preDestroy();

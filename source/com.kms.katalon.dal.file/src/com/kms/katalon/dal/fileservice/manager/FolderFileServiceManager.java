@@ -13,10 +13,12 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 
 import com.kms.katalon.dal.IReportDataProvider;
+import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.dal.fileservice.EntityService;
 import com.kms.katalon.dal.fileservice.FileServiceConstant;
 import com.kms.katalon.dal.fileservice.constants.StringConstants;
 import com.kms.katalon.dal.fileservice.dataprovider.setting.FileServiceDataProviderSetting;
+import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.dal.exception.DuplicatedFolderException;
 import com.kms.katalon.entity.dal.exception.FilePathTooLongException;
 import com.kms.katalon.entity.file.FileEntity;
@@ -201,6 +203,14 @@ public class FolderFileServiceManager {
 
     public static List<WebElementEntity> getChildWebElementsOfFolder(FolderEntity folder) throws Exception {
         return EntityFileServiceManager.getChildren(folder, WebElementEntity.class);
+    }
+
+    public static List<CheckpointEntity> getChildCheckpointsOfFolder(FolderEntity folder) throws DALException {
+        try {
+            return EntityFileServiceManager.getChildren(folder, CheckpointEntity.class);
+        } catch (Exception e) {
+            throw new DALException(e);
+        }
     }
 
     public static List<FileEntity> getChildReportsOfFolder(FolderEntity parentFolderEntity) throws Exception {
@@ -515,14 +525,13 @@ public class FolderFileServiceManager {
 
     public static FolderEntity copyFolder(FolderEntity folder, FolderEntity destinationFolder) throws Exception {
         switch (folder.getFolderType()) {
-            case DATAFILE:
-                return DataFileFileServiceManager.copyDataFileFolder(folder, destinationFolder);
             case TESTCASE:
                 return TestCaseFileServiceManager.copyTestCaseFolder(folder, destinationFolder);
-            case TESTSUITE:
-                return TestSuiteFileServiceManager.copyTestSuiteFolder(folder, destinationFolder);
             case WEBELEMENT:
-                return WebElementFileServiceManager.copyWebElementFolder(folder, destinationFolder);
+            case TESTSUITE:
+            case DATAFILE:
+            case CHECKPOINT:
+                return EntityFileServiceManager.copyFolder(folder, destinationFolder);
             default:
                 break;
         }

@@ -18,7 +18,11 @@ Require-Bundle: org.eclipse.e4.ui.model.workbench,
  org.eclipse.core.runtime,
  com.kms.katalon.composer.components.impl,
  com.kms.katalon.core,
- com.kms.katalon.composer.testcase
+ com.kms.katalon.composer.testcase,
+ com.kms.katalon,
+ org.eclipse.ui.workbench,
+ org.eclipse.e4.ui.workbench,
+ com.kms.katalon.custom
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: javax.annotation;version="1.2.0",
  javax.inject;version="1.0.0"

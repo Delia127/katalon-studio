@@ -115,6 +115,10 @@ public class ObjectspyMessageConstants extends NLS {
 
     public static String DIA_TOOLITEM_TIP_HIGHLIGHT;
 
+    public static String LBL_DLG_CONTINUE_WITH_OBJECT_SPY;
+
+    public static String LBL_DLG_GO_TO_STORE;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ObjectspyMessageConstants.class);

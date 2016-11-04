@@ -12,6 +12,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.BinaryExpression
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.BooleanExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.CastExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ClassExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ClosureExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ClosureListExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstructorCallExpressionWrapper;
@@ -103,6 +104,13 @@ public class AstInputValueTypeProvider {
         }
     };
 
+    private static final InputValueTypeProvider<ClosureExpressionWrapper> closureValueTypeProvider = new InputValueTypeProvider<ClosureExpressionWrapper>() {
+        @Override
+        public InputValueType getInputValueType(ClosureExpressionWrapper closureExpression) {
+            return InputValueType.Closure;
+        }
+    };
+    
     private static final InputValueTypeProvider<ClosureListExpressionWrapper> closureListValueTypeProvider = new InputValueTypeProvider<ClosureListExpressionWrapper>() {
         @Override
         public InputValueType getInputValueType(ClosureListExpressionWrapper closureListExpression) {
@@ -187,6 +195,7 @@ public class AstInputValueTypeProvider {
         inputClasses.put(BinaryExpressionWrapper.class.getSimpleName(), binaryValueTypeProvider);
         inputClasses.put(MethodCallExpressionWrapper.class.getSimpleName(), methodValueTypeProvider);
         inputClasses.put(BooleanExpressionWrapper.class.getSimpleName(), booleanValueTypeProvider);
+        inputClasses.put(ClosureExpressionWrapper.class.getSimpleName(), closureValueTypeProvider);
         inputClasses.put(ClosureListExpressionWrapper.class.getSimpleName(), closureListValueTypeProvider);
         inputClasses.put(ListExpressionWrapper.class.getSimpleName(), listExpressionWrapper);
         inputClasses.put(MapExpressionWrapper.class.getSimpleName(), mapValueTypeProvider);

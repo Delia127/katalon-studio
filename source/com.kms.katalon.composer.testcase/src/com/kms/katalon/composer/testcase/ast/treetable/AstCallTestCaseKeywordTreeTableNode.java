@@ -123,12 +123,7 @@ public class AstCallTestCaseKeywordTreeTableNode extends AstBuiltInKeywordTreeTa
 
     @Override
     public String getTestObjectText() {
-        TestCaseEntity testCase = null;
-        try {
-            testCase = TestCaseController.getInstance().getTestCaseByDisplayId(testCasePk);
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-        }
+        TestCaseEntity testCase = getTestObject();
         if (testCase != null) {
             return testCase.getName();
         }
@@ -136,20 +131,34 @@ public class AstCallTestCaseKeywordTreeTableNode extends AstBuiltInKeywordTreeTa
     }
     
     @Override
+    public TestCaseEntity getTestObject() {
+        try {
+            return TestCaseController.getInstance().getTestCaseByDisplayId(testCasePk);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+        return null;
+    }
+
+    @Override
     public CellEditor getCellEditorForTestObject(Composite parent) {
         return new CallTestCaseCellEditor(parent, getTestObjectText(), testCasePk);
     }
 
     @Override
     public boolean setTestObject(Object object) {
-        if (!(object instanceof TestCaseTreeEntity)) {
-            return false;
+        TestCaseEntity newTestCase = null;
+        if (object instanceof TestCaseTreeEntity) {
+            try {
+                newTestCase = ((TestCaseTreeEntity) object).getObject();
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+                return false;
+            }
+        } else if (object instanceof TestCaseEntity) {
+            newTestCase = (TestCaseEntity) object;
         }
-        TestCaseEntity newTestCase;
-        try {
-            newTestCase = ((TestCaseTreeEntity) object).getObject();
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
+        if (newTestCase == null) {
             return false;
         }
         if (!verifyCallTestCase(newTestCase)) {
@@ -182,16 +191,4 @@ public class AstCallTestCaseKeywordTreeTableNode extends AstBuiltInKeywordTreeTa
     public Image getIcon() {
         return ImageConstants.IMG_16_CALL_TEST_CASE;
     }
-
-    @Override
-    public TestCaseEntity getTestObject() {
-        try {
-            return TestCaseController.getInstance().getTestCaseByDisplayId(testCasePk);
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-        }
-        return null;
-    }
-    
-    
 }

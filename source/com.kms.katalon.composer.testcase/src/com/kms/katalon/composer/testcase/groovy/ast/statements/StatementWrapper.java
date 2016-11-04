@@ -104,6 +104,14 @@ public abstract class StatementWrapper extends ASTNodeWrapper {
         }
         return false;
     }
+    
+    public void toogleEnable() {
+        if (isDisabled()) {
+            enable();
+            return;
+        }
+        disable();
+    }
 
     public boolean isDisabled() {
         return StringUtils.equals(label, NOT_RUN_LABEL);

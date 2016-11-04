@@ -1,7 +1,5 @@
 package com.kms.katalon.core.webui.driver;
 
-import io.appium.java_client.ios.IOSDriver;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -46,8 +44,12 @@ import com.kms.katalon.core.webui.driver.ie.InternetExploreDriverServiceBuilder;
 import com.kms.katalon.core.webui.exception.BrowserNotOpenedException;
 import com.kms.katalon.core.webui.util.FirefoxExecutable;
 import com.kms.katalon.core.webui.util.WebDriverPropertyUtil;
+import com.kms.katalon.selenium.FirefoxDriver47;
+import com.machinepublishers.jbrowserdriver.JBrowserDriver;
+import io.appium.java_client.ios.IOSDriver;
 
 public class DriverFactory {
+
     private static final String IE_DRIVER_SERVER_LOG_FILE_NAME = "IEDriverServer.log";
 
     public static final String WEB_UI_DRIVER_PROPERTY = StringConstants.CONF_PROPERTY_WEBUI_DRIVER;
@@ -66,7 +68,7 @@ public class DriverFactory {
 
     private static final String REMOTE_WEB_DRIVER_TYPE_SELENIUM = "Selenium";
 
-    private static final String CHROME_DRIVER_PATH_PROPERTY_KEY = "webdriver.chrome.driver";
+    public static final String CHROME_DRIVER_PATH_PROPERTY_KEY = "webdriver.chrome.driver";
 
     private static final String IE_DRIVER_PATH_PROPERTY_KEY = "webdriver.ie.driver";
 
@@ -105,6 +107,8 @@ public class DriverFactory {
     public static final String DEFAULT_DEBUG_HOST = "localhost";
 
     private static final int REMOTE_BROWSER_CONNECT_TIMEOUT = 60000;
+
+    private static final String HEADLESS_BROWSER_NAME = "JBrowser (headless)";
 
     private static final ThreadLocal<WebDriver> localWebServerStorage = new ThreadLocal<WebDriver>() {
         @Override
@@ -156,7 +160,8 @@ public class DriverFactory {
             switch (driver) {
                 case FIREFOX_DRIVER:
                     if (FirefoxExecutable.isUsingFirefox47AndAbove(desireCapibilities)) {
-                        webDriver = FirefoxExecutable.startGeckoDriver(desireCapibilities);
+                        //webDriver = FirefoxExecutable.startGeckoDriver(desireCapibilities);
+                        webDriver = new FirefoxDriver47(desireCapibilities);
                     } else {
                         webDriver = new FirefoxDriver(desireCapibilities);
                     }
@@ -255,6 +260,9 @@ public class DriverFactory {
                     waitForRemoteBrowserReady(chromeDriverUrl);
                     webDriver = new RemoteWebDriver(chromeDriverUrl, desireCapibilities);
                     break;
+                case HEADLESS_DRIVER:
+                    webDriver = new JBrowserDriver(desireCapibilities);
+                    break;
                 default:
                     throw new StepFailedException(MessageFormat.format(
                             StringConstants.DRI_ERROR_DRIVER_X_NOT_IMPLEMENTED, driver.getName()));
@@ -277,12 +285,19 @@ public class DriverFactory {
 
         KeywordLogger logger = KeywordLogger.getInstance();
         logger.logRunData("sessionId", ((RemoteWebDriver) webDriver).getSessionId().toString());
-        logger.logRunData("browser", WebUiCommonHelper.getBrowserAndVersion(webDriver));
+        logger.logRunData("browser", getBrowserVersion(webDriver));
         logger.logRunData("platform",
                 webDriver.getClass() == RemoteWebDriver.class ? ((RemoteWebDriver) webDriver).getCapabilities()
                         .getPlatform()
                         .toString() : System.getProperty("os.name"));
         logger.logRunData(StringConstants.XML_LOG_SELENIUM_VERSION, new BuildInfo().getReleaseLabel());
+    }
+
+    private static String getBrowserVersion(WebDriver webDriver) {
+        if (webDriver instanceof JBrowserDriver) {
+            return HEADLESS_BROWSER_NAME;
+        }
+        return WebUiCommonHelper.getBrowserAndVersion(webDriver);
     }
 
     public static WebDriver openWebDriver(DriverType driver, String projectDir, Object options) throws Exception {
@@ -299,7 +314,8 @@ public class DriverFactory {
                         DesiredCapabilities desiredCapabilities = DesiredCapabilities.firefox();
                         desiredCapabilities.setCapability(FirefoxDriver.PROFILE, (FirefoxProfile) options);
                         if (FirefoxExecutable.isUsingFirefox47AndAbove(desiredCapabilities)) {
-                            webDriver = FirefoxExecutable.startGeckoDriver(desiredCapabilities);
+                            //webDriver = FirefoxExecutable.startGeckoDriver(desiredCapabilities);
+                            webDriver = new FirefoxDriver47(desiredCapabilities);
                         } else {
                             webDriver = new FirefoxDriver(desiredCapabilities);
                         }
@@ -555,7 +571,7 @@ public class DriverFactory {
         return RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, EDGE_DRIVER_PATH_PROPERTY);
     }
 
-    private static String getChromeDriverPath() {
+    public static String getChromeDriverPath() {
         return RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, CHROME_DRIVER_PATH_PROPERTY);
     }
 

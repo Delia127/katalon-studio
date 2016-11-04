@@ -1,9 +1,10 @@
 package com.kms.katalon.composer.report.provider;
 
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.Composite;
 
-public class ReportTestCaseTableViewer extends TableViewer {
+import com.kms.katalon.composer.components.impl.control.CTableViewer;
+
+public class ReportTestCaseTableViewer extends CTableViewer {
 
     private String searchedString;
 

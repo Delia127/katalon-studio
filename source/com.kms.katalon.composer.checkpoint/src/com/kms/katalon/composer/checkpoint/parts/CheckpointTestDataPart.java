@@ -1,6 +1,9 @@
 package com.kms.katalon.composer.checkpoint.parts;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.Dialog;
@@ -29,6 +32,7 @@ import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestDataController;
+import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.checkpoint.CheckpointSourceInfo;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -68,60 +72,7 @@ public class CheckpointTestDataPart extends CheckpointAbstractPart {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                try {
-                    ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
-                    if (currentProject == null) {
-                        return;
-                    }
-
-                    FolderEntity rootFolder = FolderController.getInstance().getTestDataRoot(currentProject);
-                    EntityProvider entityProvider = new EntityProvider();
-                    TreeEntitySelectionDialog dialog = new TreeEntitySelectionDialog(tableViewer.getTable().getShell(),
-                            new EntityLabelProvider(), entityProvider, new EntityViewerFilter(entityProvider));
-                    dialog.setAllowMultiple(false);
-                    dialog.setTitle(StringConstants.PART_TITLE_TEST_DATA_BROWSER);
-                    dialog.setInput(TreeEntityUtil.getChildren(null, rootFolder));
-                    String testDataId = getCheckpoint().getSourceInfo().getSourceUrl();
-                    if (StringUtils.isNotBlank(testDataId)) {
-                        DataFileEntity testDataEntity = TestDataController.getInstance().getTestDataByDisplayId(
-                                testDataId);
-                        TestDataTreeEntity testDataTreeEntity = TreeEntityUtil.getTestDataTreeEntity(testDataEntity,
-                                currentProject);
-                        dialog.setInitialSelection(testDataTreeEntity);
-                    }
-                    dialog.setValidator(new ISelectionStatusValidator() {
-
-                        @Override
-                        public IStatus validate(Object[] selection) {
-                            if (selection == null || selection.length == 0
-                                    || !(selection[0] instanceof TestDataTreeEntity)) {
-                                return new Status(IStatus.ERROR, pluginId, IStatus.ERROR,
-                                        StringConstants.PART_MSG_PLEASE_SELECT_A_TEST_DATA, null);
-                            }
-                            return new Status(IStatus.OK, pluginId, IStatus.OK, StringConstants.EMPTY, null);
-                        }
-                    });
-
-                    if (dialog.open() != Dialog.OK) {
-                        return;
-                    }
-
-                    Object[] selectedItems = dialog.getResult();
-                    if (selectedItems == null || selectedItems.length == 0
-                            || !(selectedItems[0] instanceof TestDataTreeEntity)) {
-                        return;
-                    }
-
-                    DataFileEntity testData = (DataFileEntity) ((TestDataTreeEntity) selectedItems[0]).getObject();
-                    CheckpointSourceInfo sourceInfo = getCheckpoint().getSourceInfo();
-                    sourceInfo.setSourceUrl(testData.getIdForDisplay());
-                    loadCheckpointSourceInfo(sourceInfo);
-                    save();
-                } catch (Exception ex) {
-                    LoggerSingleton.logError(ex);
-                    MessageDialog.openWarning(Display.getCurrent().getActiveShell(), StringConstants.WARN,
-                            StringConstants.PART_MSG_UNABLE_TO_SELECT_TEST_DATA);
-                }
+                executeOperation(new ChangeTestDataOperation());
             }
         });
     }
@@ -129,6 +80,82 @@ public class CheckpointTestDataPart extends CheckpointAbstractPart {
     @Override
     protected void loadCheckpointSourceInfo(CheckpointSourceInfo sourceInfo) {
         txtSourceUrl.setText(sourceInfo.getSourceUrl());
+    }
+
+    private class ChangeTestDataOperation extends ChangeCheckpointSourceInfoOperation {
+        public ChangeTestDataOperation() {
+            super(ChangeTestDataOperation.class.getName());
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            try {
+                CheckpointEntity checkpoint = getCheckpoint();
+                CheckpointSourceInfo currentCheckpointSourceInfo = checkpoint.getSourceInfo();
+                oldCheckpointSourceInfo = currentCheckpointSourceInfo.clone();
+                DataFileEntity testData = openDialogForSelectingTestData(currentCheckpointSourceInfo);
+                if (testData == null) {
+                    return Status.CANCEL_STATUS;
+                }
+                currentCheckpointSourceInfo.setSourceUrl(testData.getIdForDisplay());
+                newCheckpointSourceInfo = currentCheckpointSourceInfo.clone();
+                loadCheckpointSourceInfo(currentCheckpointSourceInfo);
+                setDirty(true);
+                return Status.OK_STATUS;
+            } catch (Exception ex) {
+                LoggerSingleton.logError(ex);
+                MessageDialog.openWarning(Display.getCurrent().getActiveShell(), StringConstants.WARN,
+                        StringConstants.PART_MSG_UNABLE_TO_SELECT_TEST_DATA);
+                return Status.CANCEL_STATUS;
+            }
+        }
+
+        private DataFileEntity openDialogForSelectingTestData(CheckpointSourceInfo currentCheckpointSourceInfo)
+                throws Exception {
+            ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+            if (currentProject == null) {
+                return null;
+            }
+
+            FolderEntity rootFolder = FolderController.getInstance().getTestDataRoot(currentProject);
+            EntityProvider entityProvider = new EntityProvider();
+            TreeEntitySelectionDialog dialog = new TreeEntitySelectionDialog(tableViewer.getTable().getShell(),
+                    new EntityLabelProvider(), entityProvider, new EntityViewerFilter(entityProvider));
+            dialog.setAllowMultiple(false);
+            dialog.setTitle(StringConstants.PART_TITLE_TEST_DATA_BROWSER);
+            dialog.setInput(TreeEntityUtil.getChildren(null, rootFolder));
+
+            String testDataId = currentCheckpointSourceInfo.getSourceUrl();
+            if (StringUtils.isNotBlank(testDataId)) {
+                DataFileEntity testDataEntity = TestDataController.getInstance().getTestDataByDisplayId(testDataId);
+                TestDataTreeEntity testDataTreeEntity = TreeEntityUtil.getTestDataTreeEntity(testDataEntity,
+                        currentProject);
+                dialog.setInitialSelection(testDataTreeEntity);
+            }
+            dialog.setValidator(new ISelectionStatusValidator() {
+
+                @Override
+                public IStatus validate(Object[] selection) {
+                    if (selection == null || selection.length == 0 || !(selection[0] instanceof TestDataTreeEntity)) {
+                        return new Status(IStatus.ERROR, pluginId, IStatus.ERROR,
+                                StringConstants.PART_MSG_PLEASE_SELECT_A_TEST_DATA, null);
+                    }
+                    return new Status(IStatus.OK, pluginId, IStatus.OK, StringConstants.EMPTY, null);
+                }
+            });
+
+            if (dialog.open() != Dialog.OK) {
+                return null;
+            }
+
+            Object[] selectedItems = dialog.getResult();
+            if (selectedItems == null || selectedItems.length == 0 || !(selectedItems[0] instanceof TestDataTreeEntity)) {
+                return null;
+            }
+
+            DataFileEntity testData = (DataFileEntity) ((TestDataTreeEntity) selectedItems[0]).getObject();
+            return testData;
+        }
     }
 
 }

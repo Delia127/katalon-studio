@@ -15,9 +15,7 @@ import org.eclipse.swt.graphics.Image;
 
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.report.constants.ImageConstants;
-import com.kms.katalon.composer.report.parts.ReportPart;
 import com.kms.katalon.core.logging.model.ILogRecord;
-import com.kms.katalon.core.logging.model.TestCaseLogRecord;
 import com.kms.katalon.core.util.DateUtil;
 
 public class ReportPartTestCaseLabelProvider extends StyledCellLabelProvider {
@@ -26,13 +24,7 @@ public class ReportPartTestCaseLabelProvider extends StyledCellLabelProvider {
 
     private static final int CLMN_TEST_CASE_NAME = 1;
 
-    private static final int CLMN_TEST_CASE_INTEGRATION = 2;
-
-    private ReportPart reportPart;
-
-    public ReportPartTestCaseLabelProvider(ReportPart reportExpertPart) {
-        reportPart = reportExpertPart;
-    }
+    public static final int CLMN_TEST_CASE_INTEGRATION = 2;
 
     public Image getImage(Object element, int columnIndex) {
         if (element == null || !(element instanceof ILogRecord)) return null;
@@ -52,13 +44,6 @@ public class ReportPartTestCaseLabelProvider extends StyledCellLabelProvider {
                         break;
                 }
                 break;
-            case CLMN_TEST_CASE_INTEGRATION:
-                String integratedProduct = reportPart.getIntegratedProductName();
-                if (integratedProduct == null || integratedProduct.isEmpty()) {
-                    return null;
-                }
-                return reportPart.getIntegratingCompositeMap().get(integratedProduct)
-                        .getImage((TestCaseLogRecord) element);
         }
         return null;
     }

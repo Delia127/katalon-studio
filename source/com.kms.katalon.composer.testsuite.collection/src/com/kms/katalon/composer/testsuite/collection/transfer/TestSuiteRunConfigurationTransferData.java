@@ -2,7 +2,6 @@ package com.kms.katalon.composer.testsuite.collection.transfer;
 
 import java.io.Serializable;
 
-import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteRunConfiguration;
 
 public class TestSuiteRunConfigurationTransferData implements Serializable {
@@ -11,12 +10,11 @@ public class TestSuiteRunConfigurationTransferData implements Serializable {
 
     private TestSuiteRunConfiguration testSuiteRunConfiguration;
 
-    private TestSuiteCollectionEntity testSuiteCollection;
+    private String testSuiteCollectionID;
 
-    public TestSuiteRunConfigurationTransferData(TestSuiteCollectionEntity testSuiteCollection,
-            TestSuiteRunConfiguration testSuiteRunConfiguration) {
+    public TestSuiteRunConfigurationTransferData(TestSuiteRunConfiguration testSuiteRunConfiguration, String id) {
         this.testSuiteRunConfiguration = testSuiteRunConfiguration;
-        this.testSuiteCollection = testSuiteCollection;
+        this.testSuiteCollectionID = id;
     }
 
     public TestSuiteRunConfiguration getTestSuiteRunConfiguration() {
@@ -27,12 +25,12 @@ public class TestSuiteRunConfigurationTransferData implements Serializable {
         this.testSuiteRunConfiguration = testSuiteRunConfiguration;
     }
 
-    public TestSuiteCollectionEntity getTestSuiteCollection() {
-        return testSuiteCollection;
+    public String getTestSuiteCollectionID() {
+        return testSuiteCollectionID;
     }
 
-    public void setTestSuiteCollection(TestSuiteCollectionEntity testSuiteCollection) {
-        this.testSuiteCollection = testSuiteCollection;
+    public void setTestSuiteCollectionID(String testSuiteCollectionID) {
+        this.testSuiteCollectionID = testSuiteCollectionID;
     }
 
 }

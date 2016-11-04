@@ -2,6 +2,7 @@ package com.kms.katalon.composer.testcase.support;
 
 import org.eclipse.jface.viewers.ColumnViewer;
 
+import com.kms.katalon.composer.testcase.ast.variable.operations.ChangeVariableDefaultValueOperation;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
@@ -12,6 +13,7 @@ import com.kms.katalon.entity.variable.VariableEntity;
 
 public class VariableDefaultValueTypeEditingSupport extends AstInputBuilderValueTypeColumnSupport {
     private TestCaseVariablePart variablesPart;
+
     private ExpressionWrapper expression;
 
     public VariableDefaultValueTypeEditingSupport(ColumnViewer viewer, TestCaseVariablePart variablesPart,
@@ -27,13 +29,11 @@ public class VariableDefaultValueTypeEditingSupport extends AstInputBuilderValue
 
     @Override
     protected Object getValue(Object element) {
-        expression = GroovyWrapperParser.parseGroovyScriptAndGetFirstExpression(((VariableEntity) element)
-                .getDefaultValue());
+        expression = GroovyWrapperParser.parseGroovyScriptAndGetFirstExpression(((VariableEntity) element).getDefaultValue());
         if (expression == null) {
             return 0;
         }
-        return super.getValue(GroovyWrapperParser.parseGroovyScriptAndGetFirstExpression(((VariableEntity) element)
-                .getDefaultValue()));
+        return super.getValue(GroovyWrapperParser.parseGroovyScriptAndGetFirstExpression(((VariableEntity) element).getDefaultValue()));
     }
 
     @Override
@@ -46,17 +46,16 @@ public class VariableDefaultValueTypeEditingSupport extends AstInputBuilderValue
         if (newValueType == oldValueType) {
             return;
         }
-        ASTNodeWrapper newAstNode = (ASTNodeWrapper) newValueType.getNewValue(expression != null ? expression
-                .getParent() : null);
+        ASTNodeWrapper newAstNode = (ASTNodeWrapper) newValueType.getNewValue(expression != null
+                ? expression.getParent() : null);
         if (newAstNode == null) {
             return;
         }
         StringBuilder stringBuilder = new StringBuilder();
         GroovyWrapperParser groovyParser = new GroovyWrapperParser(stringBuilder);
         groovyParser.parse(newAstNode);
-        ((VariableEntity) element).setDefaultValue(stringBuilder.toString());
-        variablesPart.setDirty(true);
-        getViewer().update(element, null);
+        variablesPart.executeOperation(new ChangeVariableDefaultValueOperation(variablesPart, (VariableEntity) element,
+                stringBuilder.toString()));
     }
 
 }

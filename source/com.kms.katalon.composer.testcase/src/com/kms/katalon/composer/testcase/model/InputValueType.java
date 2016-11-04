@@ -14,9 +14,11 @@ import com.kms.katalon.composer.testcase.ast.editors.PropertyTypeSelectionDialog
 import com.kms.katalon.composer.testcase.ast.editors.VariableTypeSelectionDialogCellEditor;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ClassNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.ParameterWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.BinaryExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.BooleanExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ClassExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ClosureExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ClosureListExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstructorCallExpressionWrapper;
@@ -40,6 +42,7 @@ public enum InputValueType implements InputValueEditorProvider {
     MethodCall,
     List,
     Map,
+    Closure,
     ClosureList,
     Condition,
     Binary,
@@ -77,6 +80,8 @@ public enum InputValueType implements InputValueEditorProvider {
                 return AstValueUtil.getCellEditorForBooleanConstantExpression(parent);
             case Class:
                 return getCellEditorForClass(parent, astObject);
+            case Closure:
+                return AstValueUtil.getCellEditorForClosureExpression(parent, (ClosureExpressionWrapper) astObject);
             case ClosureList:
                 return AstValueUtil.getCellEditorForClosureListExpression(parent,
                         (ClosureListExpressionWrapper) astObject);
@@ -188,6 +193,8 @@ public enum InputValueType implements InputValueEditorProvider {
             case Keys:
                 parent.getScriptClass().addImport(Keys.class);
                 return new MethodCallExpressionWrapper(Keys.class, "chord", parent);
+            case Closure:
+                return new ClosureExpressionWrapper(new ParameterWrapper[0], parent);
             default:
                 return new ConstantExpressionWrapper(parent);
         }

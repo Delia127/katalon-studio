@@ -20,6 +20,16 @@ public class RemoteWebDriverConnector extends WebUiDriverConnector {
             }
             return stringValues;
         }
+        
+        public static int indexOf(RemoteWebDriverConnectorType remoteType) {
+            RemoteWebDriverConnectorType[] values = values();
+            for (int index = 0; index < values.length; index++) {
+                if (values[index] == remoteType) {
+                    return index;
+                }
+            }
+            return -1;
+        }
     }
 
     protected String remoteServerUrl;

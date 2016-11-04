@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.eclipse.swt.widgets.Tree;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
@@ -67,13 +68,18 @@ public class KeywordNodeTooltip {
     private boolean showBelow = true;
 
     private Shell openKeywordDescTooltip;
+
+    private boolean openedDesc;
     
     private static KeywordNodeTooltip currentTooltip = null;
 
     public KeywordNodeTooltip(Control control) {
         this.control = control;
     }
-
+    
+    public Shell getShell() {
+        return tip;
+    }
     private void initComponents(Composite parent) {
         Composite composite = new Composite(parent, SWT.NONE);
         GridLayout layout = new GridLayout();
@@ -151,8 +157,10 @@ public class KeywordNodeTooltip {
                 
             }
         };
-        javaDocContent.addListener(SWT.MouseExit, listener);
-        toolBar.addListener(SWT.MouseExit, listener);
+        if (control instanceof Tree) {
+            javaDocContent.addListener(SWT.MouseExit, listener);
+            toolBar.addListener(SWT.MouseExit, listener);
+        }
         toolBar.addListener(SWT.MouseHover, listener);
         toolBar.addListener(SWT.MouseMove, listener);
         openKeywordDescToolItem.addListener(SWT.Selection, listener);
@@ -229,6 +237,7 @@ public class KeywordNodeTooltip {
             currentTooltip.hide();
         }
         currentTooltip = this;
+        openedDesc = false;
         tip.setVisible(true);
     }
     
@@ -265,7 +274,7 @@ public class KeywordNodeTooltip {
     }
 
     public boolean isVisible() {
-        return !tip.isDisposed() && tip.isVisible();
+        return tip != null && !tip.isDisposed() && tip.isVisible();
     }
 
     public void setKeywordURL(String keywordDescURI) {
@@ -283,7 +292,7 @@ public class KeywordNodeTooltip {
         }
     }
     
-    private boolean isCursorOnOpenKeywordDescButton(Point cursorPoint) {
+    public boolean isCursorOnOpenKeywordDescButton(Point cursorPoint) {
         Rectangle bounds = openKeywordDescToolItem.getBounds();
         Point screenLocation = toolBar.toDisplay(bounds.x, bounds.y);
 
@@ -296,6 +305,7 @@ public class KeywordNodeTooltip {
         } catch (Exception ex) {
             LoggerSingleton.logError(ex);
         } finally {
+            openedDesc = true;
             if (isVisible()) {
                 tip.dispose();
             }
@@ -412,6 +422,10 @@ public class KeywordNodeTooltip {
             return true;
         }
         return false;
+    }
+
+    public boolean isOpenedKeywordDesc() {
+        return openedDesc;
     }
 
 }

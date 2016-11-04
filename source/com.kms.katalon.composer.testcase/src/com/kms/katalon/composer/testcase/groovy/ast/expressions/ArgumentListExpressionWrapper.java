@@ -49,7 +49,7 @@ public class ArgumentListExpressionWrapper extends TupleExpressionWrapper {
         String[] paramTypes = new String[this.getExpressions().size()];
         for (int i = 0; i < this.getExpressions().size(); i++) {
             ExpressionWrapper exWrapper = this.getExpression(i);
-            paramTypes[i] = exWrapper.getType().getTypeClass().getName();
+            paramTypes[i] = exWrapper.getType().getName();
         }
         return paramTypes;
     }

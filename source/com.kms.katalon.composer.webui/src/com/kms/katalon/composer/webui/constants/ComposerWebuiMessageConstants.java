@@ -23,6 +23,10 @@ public class ComposerWebuiMessageConstants extends NLS {
 
     public static String LBL_DESIRED_CAP;
 
+    public static String LBL_DLG_REMOTE_DRIVER_TYPE;
+
+    public static String LBL_DLG_REMOTE_SERVER_URL;
+
     public static String PREF_LBL_DEFAULT_PAGE_LOAD_TIMEOUT;
 
     public static String PREF_LBL_ENABLE_DEFAULT_PAGE_LOAD_TIMEOUT;

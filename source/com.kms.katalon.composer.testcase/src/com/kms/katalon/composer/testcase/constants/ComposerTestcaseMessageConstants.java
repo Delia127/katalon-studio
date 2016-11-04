@@ -256,6 +256,8 @@ public class ComposerTestcaseMessageConstants extends NLS {
     public static String TREE_COMMENT;
 
     public static String TREE_CONTINUE_STATEMENT;
+    
+    public static String TREE_CLOSURE;
 
     public static String TREE_ELSE_IF_STATEMENT;
 
@@ -319,6 +321,10 @@ public class ComposerTestcaseMessageConstants extends NLS {
     
     public static String MENU_OPEN;
     
+    public static String LABEL_PARAMETER_LIST;
+    
+    public static String DIA_WARNING_METHOD_IN_CLOSURE;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerTestcaseMessageConstants.class);

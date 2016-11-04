@@ -60,7 +60,7 @@ public class ImageConstants {
     // ExternalLibratiesSettingPage
     public static final Image IMG_16_EXTERNAL_LIBRARY = ImageUtil.loadImage(Platform.getBundle("org.eclipse.jdt.ui"),
             "icons/full/obj16/jar_obj.gif");
-    public static final Image IMG_24_ADD = ImageUtil.loadImage(componentBundle, "/icons/add_24.png");
+    public static final Image IMG_24_ADD = ImageUtil.loadImage(componentBundle, "/icons/add_16.png");
 
-    public static final Image IMG_24_REMOVE = ImageUtil.loadImage(componentBundle, "/icons/remove_24.png");
+    public static final Image IMG_24_REMOVE = ImageUtil.loadImage(componentBundle, "/icons/remove_16.png");
 }

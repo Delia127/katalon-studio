@@ -40,6 +40,12 @@ public class CheckpointFactory {
     private static final String NODE_IS_FROM_TEST_DATA = "is-from-test-data";
 
     private static final String NODE_SOURCE_INFO = "source-info";
+    
+    private static final String NODE_DB_SOURCE_INFO = "db-source-info";
+    
+    private static final String NODE_EXCEL_SOURCE_INFO = "excel-source-info";
+    
+    private static final String NODE_CSV_SOURCE_INFO = "csv-source-info";
 
     private static final String NODE_DATA = "checkpoint-data";
 
@@ -87,10 +93,24 @@ public class CheckpointFactory {
             Document document = reader.read(checkpointFile);
             Element checkpointElement = document.getRootElement();
 
-            validateElementName(checkpointElement, NODE_SOURCE_INFO);
+            Element sourceInfoElement = null;
+            if (checkpointElement.element(NODE_SOURCE_INFO) != null) {
+                sourceInfoElement = checkpointElement.element(NODE_SOURCE_INFO);
+            } else if (checkpointElement.element(NODE_DB_SOURCE_INFO) != null) {
+                sourceInfoElement = checkpointElement.element(NODE_DB_SOURCE_INFO);
+            } else if (checkpointElement.element(NODE_EXCEL_SOURCE_INFO) != null) {
+                sourceInfoElement = checkpointElement.element(NODE_EXCEL_SOURCE_INFO);
+            } else if (checkpointElement.element(NODE_CSV_SOURCE_INFO) != null) {
+                sourceInfoElement = checkpointElement.element(NODE_CSV_SOURCE_INFO);
+            } else {
+                throw new IllegalArgumentException(
+                        MessageFormat.format(StringConstants.EXC_MSG_CHECKPOINT_IS_MISSING_ELEMENT,
+                                StringUtils.join(new String[] { NODE_SOURCE_INFO, NODE_DB_SOURCE_INFO,
+                                        NODE_EXCEL_SOURCE_INFO, NODE_CSV_SOURCE_INFO }, " or ")));
+            }
+
             validateElementName(checkpointElement, NODE_DATA);
             validateElementName(checkpointElement, NODE_TAKEN_DATE);
-            Element sourceInfoElement = checkpointElement.element(NODE_SOURCE_INFO);
             validateElementName(sourceInfoElement, NODE_IS_FROM_TEST_DATA);
             validateElementName(sourceInfoElement, NODE_SOURCE_URL);
 
@@ -128,7 +148,7 @@ public class CheckpointFactory {
 
             // source data is from Database
             if (testDataSourceType == TestDataType.DB_DATA) {
-                return updateSourceData(checkpoint, getDBData(sourceInfoElement, sourceUrl));
+                return updateSourceData(checkpoint, getDBData(sourceInfoElement));
             }
 
             validateElementName(sourceInfoElement, NODE_USING_FIRST_ROW_AS_HEADER);
@@ -184,8 +204,12 @@ public class CheckpointFactory {
         return testData.getAllData();
     }
 
-    private static List<List<Object>> getDBData(Element sourceInfoElement, String query) throws Exception {
+    private static List<List<Object>> getDBData(Element sourceInfoElement) throws Exception {
         validateElementName(sourceInfoElement, NODE_DB_QUERY);
+        String query = sourceInfoElement.element(NODE_DB_QUERY).getText();
+        if (StringUtils.isBlank(query)) {
+            throw new IllegalArgumentException(StringConstants.XML_ERROR_TEST_DATA_SQL_QUERY_IS_BLANK);
+        }
         DatabaseConnection dbConnection = getDatabaseConnection(sourceInfoElement);
         if (dbConnection == null) {
             throw new IllegalArgumentException(StringConstants.EXC_MSG_DB_CONNECTION_SETTIGNS_ARE_EMPTY);

@@ -53,4 +53,9 @@ public class CheckpointSourceInfo extends ClonableObject {
     public void setSourceType(DataFileDriverType sourceType) {
         this.sourceType = sourceType;
     }
+    
+    @Override
+    public CheckpointSourceInfo clone() {
+        return (CheckpointSourceInfo) super.clone();
+    }
 }

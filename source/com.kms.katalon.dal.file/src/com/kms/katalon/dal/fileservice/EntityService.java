@@ -128,6 +128,10 @@ public final class EntityService {
                 com.kms.katalon.dal.fileservice.adapter.TestSuiteReferenceXmlAdapter.class,
                 com.kms.katalon.entity.report.ReportCollectionEntity.class,
                 com.kms.katalon.entity.checkpoint.CheckpointEntity.class,
+                com.kms.katalon.entity.checkpoint.ExcelCheckpointSourceInfo.class,
+                com.kms.katalon.entity.checkpoint.CsvCheckpointSourceInfo.class,
+                com.kms.katalon.entity.checkpoint.DatabaseCheckpointSourceInfo.class,
+                com.kms.katalon.entity.checkpoint.CheckpointSourceInfo.class,
                 com.kms.katalon.dal.fileservice.adapter.CheckpointDataXmlAdapter.class };
     }
 
