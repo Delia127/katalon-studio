@@ -73,8 +73,6 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.osgi.framework.Bundle;
-import org.osgi.service.event.Event;
-import org.osgi.service.event.EventHandler;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -126,7 +124,7 @@ import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef.HWND;
 
 @SuppressWarnings("restriction")
-public class ObjectSpyDialog extends Dialog implements EventHandler {
+public class ObjectSpyDialog extends Dialog {
     private static final String IE_WINDOW_CLASS = "IEFrame"; //$NON-NLS-1$
 
     private static final String relativePathToIEAddonSetup = File.separator + "extensions" + File.separator + "IE" //$NON-NLS-1$ //$NON-NLS-2$
@@ -201,13 +199,8 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         setShellStyle(SWT.SHELL_TRIM | SWT.NONE);
         this.logger = logger;
         this.eventBroker = eventBroker;
-        registerEventHandler();
         isDisposed = false;
         elements = new ArrayList<HTMLPageElement>();
-    }
-
-    protected void registerEventHandler() {
-        eventBroker.subscribe(EventConstants.OBJECT_SPY_TEST_OBJECT_ADDED, this);
     }
 
     /**
@@ -996,7 +989,6 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
             }
         }
         endInspectSession();
-        eventBroker.unsubscribe(this);
         isDisposed = true;
     }
 
@@ -1021,15 +1013,6 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         shell.setText(StringConstants.DIA_TITLE_OBJ_SPY);
     }
 
-    @Override
-    public void handleEvent(Event event) {
-        if (event.getTopic().equals(EventConstants.OBJECT_SPY_TEST_OBJECT_ADDED)
-                && event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME) instanceof Object[]) {
-            Object[] selectedObjects = (Object[]) event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-            addObjectsFromObjectRepository(selectedObjects);
-        }
-    }
-
     public void setHTMLDOMDocument(final HTMLRawElement bodyElement, Document document) {
         currentHTMLDocument = document;
         UISynchronizeService.syncExec(new Runnable() {
@@ -1041,7 +1024,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         });
     }
 
-    private void addObjectsFromObjectRepository(Object[] selectedObjects) {
+    public void addObjectsFromObjectRepository(Object[] selectedObjects) {
         HTMLPageElement generatingPageElement = null;
         Map<String, HTMLElement> generatingElementMap = new HashMap<String, HTMLElement>();
         for (Object selectedObject : selectedObjects) {
@@ -1059,7 +1042,9 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
                         generatingElementMap));
             }
         }
-        refreshTree(capturedObjectComposite.getElementTreeViewer(), null);
+        TreeViewer elementTreeViewer = capturedObjectComposite.getElementTreeViewer();
+        refreshTree(elementTreeViewer, null);
+        elementTreeViewer.setSelection(new StructuredSelection(generatingElementMap.values().toArray()));
     }
 
     public void addNewElement(HTMLElement newElement) {

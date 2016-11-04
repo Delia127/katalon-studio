@@ -6,7 +6,7 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_A4lrICauEeS9vYgzPyb1ug" featurename="commands" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Command" xmi:id="_GJVzECauEeS9vYgzPyb1ug" elementId="com.kms.katalon.composer.objectrepository.command.add" commandName="" description="New Test Object"/>
     <elements xsi:type="commands:Command" xmi:id="_qx_Y8DcrEeSiAqu25cXbFw" elementId="com.kms.katalon.composer.objectrepository.command.spy" commandName="" description="Spy Object"/>
-    <elements xsi:type="commands:Command" xmi:id="_VVuxcBDREeW0R_pMAWEPbg" elementId="com.kms.katalon.composer.objectrepository.command.addToObjectSpy" commandName="Add To Object Spy"/>
+    <elements xsi:type="commands:Command" xmi:id="_VVuxcBDREeW0R_pMAWEPbg" elementId="com.kms.katalon.composer.objectrepository.command.addToObjectSpy" commandName="Add To Web Object Spy"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_S2W4QCauEeS9vYgzPyb1ug" featurename="handlers" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Handler" xmi:id="_XX5JwCauEeS9vYgzPyb1ug" elementId="com.kms.katalon.composer.objectrepository.handler.add" contributionURI="bundleclass://com.kms.katalon.composer.objectrepository/com.kms.katalon.composer.objectrepository.handler.NewTestObjectHandler" command="_GJVzECauEeS9vYgzPyb1ug"/>

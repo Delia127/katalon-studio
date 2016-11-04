@@ -40,7 +40,7 @@ public class AddToObjectSpyHandler {
 					if (selectedObject instanceof ITreeEntity) {
 						ITreeEntity newTreeEntity = (ITreeEntity) selectedObject;
 						boolean isExist = false;
-						for (int i = 0; i < treeEntitiesList.size(); i++) {
+						for (int i = 0; i < treeEntitiesList.size(); i++) {   
 							if (isParent(treeEntitiesList.get(i), newTreeEntity)) {
 								isExist = true;
 								break;
