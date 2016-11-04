@@ -443,4 +443,14 @@ public class StringConstants {
     public static final String METHOD_FIND_TEST_OBJECT = "findTestObject";
 
     public static final String METHOD_FIND_TEST_DATA = "findTestData";
+    
+    // KeywordExecutor
+    public static final String KEYWORD_X_DOES_NOT_EXIST_ON_PLATFORM_Y = CoreMessageConstants.KEYWORD_X_DOES_NOT_EXIST_ON_PLATFORM_Y;
+
+    public static final String KEYWORD_X_DOES_NOT_EXIST = CoreMessageConstants.KEYWORD_X_DOES_NOT_EXIST;
+
+    public static final String KEYWORD_EXECUTOR_ERROR_MSG = CoreMessageConstants.KEYWORD_EXECUTOR_ERROR_MSG;
+
+    // KeywordLoader
+    public static final String KW_MSG_LIST_KEYWORD_CLASS_FAILED_X = CoreMessageConstants.KW_MSG_LIST_KEYWORD_CLASS_FAILED_X;
 }
