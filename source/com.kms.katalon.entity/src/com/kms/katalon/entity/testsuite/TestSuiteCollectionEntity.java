@@ -79,7 +79,7 @@ public class TestSuiteCollectionEntity extends FileEntity {
     public void reuseWrappers(TestSuiteCollectionEntity src) {
         List<TestSuiteRunConfiguration> runConfigs = new ArrayList<>();
         for (TestSuiteRunConfiguration eachSourceConfig : src.getTestSuiteRunConfigurations()) {
-            runConfigs.add(eachSourceConfig);
+            runConfigs.add(TestSuiteRunConfiguration.cloneFrom(eachSourceConfig));
         }
         this.setTestSuiteRunConfigurations(runConfigs);
         this.setExecutionMode(src.getExecutionMode());

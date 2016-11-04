@@ -10,6 +10,7 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.SerializationUtils;
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileInfo;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
@@ -69,8 +70,8 @@ import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.components.util.ColumnViewerUtil;
 import com.kms.katalon.composer.execution.handlers.AbstractExecutionHandler;
-import com.kms.katalon.composer.testsuite.collection.constant.ComposerTestsuiteCollectionMessageConstants;
 import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
+import com.kms.katalon.composer.testsuite.collection.constant.ComposerTestsuiteCollectionMessageConstants;
 import com.kms.katalon.composer.testsuite.collection.constant.ImageConstants;
 import com.kms.katalon.composer.testsuite.collection.constant.StringConstants;
 import com.kms.katalon.composer.testsuite.collection.listeners.TestSuiteTableDragListener;
@@ -181,7 +182,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
             close();
         }
         originalTestSuite = testSuiteCollection;
-        cloneTestSuite = (TestSuiteCollectionEntity) originalTestSuite.clone();
+        cloneTestSuite = (TestSuiteCollectionEntity) SerializationUtils.clone(originalTestSuite);
         cloneTestSuite.reuseWrappers(originalTestSuite);
 
         mpart.setElementId(EntityPartUtil.getTestSuiteCollectionPartId(cloneTestSuite.getId()));
@@ -599,7 +600,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
 
     @Persist
     public void save() {
-        TestSuiteCollectionEntity backup = (TestSuiteCollectionEntity) originalTestSuite.clone();
+        TestSuiteCollectionEntity backup = (TestSuiteCollectionEntity) SerializationUtils.clone(originalTestSuite);
         backup.reuseWrappers(originalTestSuite);
         originalTestSuite.reuseWrappers(cloneTestSuite);
         try {
