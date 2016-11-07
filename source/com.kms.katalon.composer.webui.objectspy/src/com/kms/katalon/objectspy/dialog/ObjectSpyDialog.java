@@ -1218,6 +1218,9 @@ public class ObjectSpyDialog extends Dialog {
 
     private boolean checkRegistryKey(String parentKey) throws IllegalAccessException, InvocationTargetException {
         List<String> bhos = WinRegistry.readStringSubKeys(WinRegistry.HKEY_LOCAL_MACHINE, parentKey);
+        if (bhos == null || bhos.isEmpty()) {
+            return false;
+        }
         for (String bho : bhos) {
             if (bho.toLowerCase().equals(IE_ADDON_BHO_KEY.toLowerCase())) {
                 return true;
