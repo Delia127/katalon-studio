@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.objectrepository.handler;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -8,11 +9,15 @@ import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.osgi.service.event.Event;
 
+import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.objectrepository.constant.StringConstants;
+import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
@@ -25,16 +30,33 @@ public class SpyObjectHandler {
     private IEventBroker eventBroker;
 
     private ObjectSpyDialog objectSpyDialog;
+    
+    @PostConstruct
+    public void registerAddToObjectSpyEvent() {
+        eventBroker.subscribe(EventConstants.OBJECT_SPY_TEST_OBJECT_ADDED, new EventServiceAdapter() {
+            
+            @Override
+            public void handleEvent(Event event) {
+                openDialogAndAddObject(Display.getCurrent().getActiveShell(), getObjects(event)); 
+            }
+        });
+    }
 
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell activeShell) {
+        openDialogAndAddObject(activeShell, null);
+    }
+
+    private void openDialogAndAddObject(Shell activeShell, Object[] selectedObjects) {
         try {
-            if (objectSpyDialog != null) {
-                objectSpyDialog.stop();
-                objectSpyDialog.close();
+            if (objectSpyDialog == null || objectSpyDialog.isDisposed()) {
+                objectSpyDialog = new ObjectSpyDialog(activeShell, LoggerSingleton.getInstance().getLogger(), eventBroker);
+                objectSpyDialog.setBlockOnOpen(false);
             }
-            objectSpyDialog = new ObjectSpyDialog(activeShell, LoggerSingleton.getInstance().getLogger(), eventBroker);
             objectSpyDialog.open();
+            if (selectedObjects != null) {
+                objectSpyDialog.addObjectsFromObjectRepository(selectedObjects);
+            }
         } catch (Exception e) {
             if (objectSpyDialog != null) {
                 objectSpyDialog.stop();
@@ -45,41 +67,6 @@ public class SpyObjectHandler {
         }
     }
 
-    // Temporary Comment out for old object spy for ie
-    // String os = System.getProperty("os.name").toLowerCase();
-    // // If windows
-    // if ((os.contains("win"))) {
-    // try {
-    // String exePath = Util.getPhysicalLocation("tools/spytool/" +
-    // Util.SPY_EXEC_FILE_NAME);
-    // if (Util.isFileExist(exePath) &&
-    // !Util.isProcessRunning(Util.SPY_EXEC_FILE_NAME)) {
-    // String elementFile = exePath.replace(Util.SPY_EXEC_FILE_NAME,
-    // "elements.csv");
-    // String propertyFile = exePath.replace(Util.SPY_EXEC_FILE_NAME,
-    // "properties.csv");
-    //
-    // Files.deleteIfExists(Paths.get(elementFile));
-    // Files.deleteIfExists(Paths.get(propertyFile));
-    // String[] cmdarray = { exePath };
-    // Process process = Runtime.getRuntime().exec(cmdarray, null, null);
-    // process.waitFor();
-    // // Read captured objects if any
-    // if (Util.isFileExist(elementFile) && Util.isFileExist(propertyFile))
-    // {
-    // Util.importElements(project, parentFolder, elementFile, propertyFile,
-    // ObjectRepositoryController.getInstance());
-    // // Refresh tree
-    // if (eventBroker != null) {
-    // eventBroker.post(EventConstants.EXPLORER_REFRESH, null);
-    // }
-    // }
-    // }
-    // } catch (Exception e1) {
-    // MessageDialog.openError(Display.getCurrent().getActiveShell(),
-    // "Error", e1.getMessage());
-    // }
-    // }
     @CanExecute
     private boolean canExecute() throws Exception {
         if (ProjectController.getInstance().getCurrentProject() != null) {
