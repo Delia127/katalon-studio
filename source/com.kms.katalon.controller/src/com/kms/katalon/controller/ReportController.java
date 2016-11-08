@@ -185,4 +185,9 @@ public class ReportController extends EntityController {
     public void deleteReportCollection(ReportCollectionEntity reportCollection) throws DALException {
         getDataProviderSetting().getReportDataProvider().deleteReportCollection(reportCollection);
     }
+
+    public ReportCollectionEntity getReportCollection(String id) throws DALException {
+        return getDataProviderSetting().getReportDataProvider().getReportCollectionEntity(id);
+    }
+
 }

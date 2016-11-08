@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.components.impl.util;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -130,6 +131,13 @@ public class TreeEntityUtil {
         FolderEntity testCaseRootFolder = FolderController.getInstance().getReportRoot(projectEntity);
         return new ReportTreeEntity(reportEntity, createSelectedTreeEntityHierachy(reportEntity.getParentFolder(),
                 testCaseRootFolder));
+    }
+
+    public static ReportCollectionTreeEntity getReportCollectionTreeEntity(
+            ReportCollectionEntity reportCollectionEntity, ProjectEntity projectEntity) throws Exception {
+        FolderEntity reportRootFolder = FolderController.getInstance().getReportRoot(projectEntity);
+        return new ReportCollectionTreeEntity(reportCollectionEntity,
+                createSelectedTreeEntityHierachy(reportCollectionEntity.getParentFolder(), reportRootFolder));
     }
 
     public static CheckpointTreeEntity getCheckpointTreeEntity(CheckpointEntity checkpointEntity) throws Exception {
@@ -344,6 +352,18 @@ public class TreeEntityUtil {
             }
 
             if (StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_REPORT)) {
+                String reportCollectionPath = project.getFolderLocation() + File.separator + id
+                        + ReportCollectionEntity.FILE_EXTENSION;
+                // Report Collection
+                if (new File(reportCollectionPath).exists()) {
+                    ReportCollectionEntity reportCollectionEntity = ReportController.getInstance()
+                            .getReportCollection(reportCollectionPath);
+                    if (reportCollectionEntity != null) {
+                        treeEntities.add(TreeEntityUtil.getReportCollectionTreeEntity(reportCollectionEntity, project));
+                    }
+                    continue;
+                }
+
                 // Report
                 ReportEntity rp = ReportController.getInstance().getReportEntityByDisplayId(id, project);
                 if (rp != null) {
