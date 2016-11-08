@@ -22,7 +22,6 @@ public class NewProjectWizard extends Wizard {
 
     public NewProjectWizard() {
         super();
-        setNeedsProgressMonitor(true);
     }
 
     @Override

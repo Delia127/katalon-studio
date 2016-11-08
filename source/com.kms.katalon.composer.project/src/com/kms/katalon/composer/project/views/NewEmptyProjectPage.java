@@ -7,7 +7,6 @@ import java.nio.file.Paths;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.FocusAdapter;
@@ -20,6 +19,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -33,7 +33,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 
 // TODO: Consider to reuse NewProjectDialog GUI
-public class NewEmptyProjectPage extends WizardPage {
+public class NewEmptyProjectPage extends ResizableProjectPage {
 
     private static final String DEFAULT_PROJECT_LOCATION = System.getProperty("user.home") + File.separator
             + StringConstants.APP_NAME;
@@ -80,6 +80,7 @@ public class NewEmptyProjectPage extends WizardPage {
 
         label = new Label(mainContent, SWT.NONE);
         label.setText(StringConstants.VIEW_LBL_DESCRIPTION);
+        label.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
 
         txtProjectDescription = new StyledText(mainContent, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
         // increase projectDescription's height on MAC OS so that it is able to show 4 text line
@@ -97,8 +98,7 @@ public class NewEmptyProjectPage extends WizardPage {
             txtProjectDescription.setLayoutData(new GridData(GridData.FILL_BOTH));
         }
 
-        label = new Label(mainContent, SWT.NONE);
-        label.setText("");
+        new Label(mainContent, SWT.NONE);
         label = new Label(mainContent, SWT.NONE);
         label.setText(StringConstants.VIEW_LBL_NEW_PROJECT_WIZARD_TIP);
         label.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -129,7 +129,7 @@ public class NewEmptyProjectPage extends WizardPage {
         txtProjectLocation.setText(DEFAULT_PROJECT_LOCATION);
 
         if (project == null) {
-            btnFolderChooser = new Button(container, SWT.PUSH);
+            btnFolderChooser = new Button(container, SWT.FLAT);
             btnFolderChooser.setText(StringConstants.VIEW_BTN_BROWSE);
         }
 
@@ -268,5 +268,10 @@ public class NewEmptyProjectPage extends WizardPage {
 
     public String getProjectDescription() {
         return txtProjectDescription.getText();
+    }
+
+    @Override
+    public Point getPageSize() {
+        return new Point(550, 350);
     }
 }
