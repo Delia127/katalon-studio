@@ -1,7 +1,8 @@
 package com.kms.katalon.composer.mobile.objectspy.dialog;
 
-import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static com.kms.katalon.composer.mobile.objectspy.dialog.MobileDeviceDialog.safeRoundDouble;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -35,7 +36,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
@@ -44,6 +44,8 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
@@ -62,6 +64,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
@@ -240,13 +243,24 @@ public class MobileObjectSpyDialog extends Dialog {
         ColumnViewerToolTipSupport.enableFor(capturedObjectsTableViewer);
 
         capturedObjectsTableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
                 IStructuredSelection selection = (IStructuredSelection) event.getSelection();
                 CapturedMobileElement firstElement = (CapturedMobileElement) selection.getFirstElement();
                 propertiesComposite.setEditingElement(firstElement);
-                highlightObject(firstElement);
+            }
+        });
+        
+        capturedObjectsTableViewer.getTable().addMouseListener(new MouseAdapter() {
+            public void mouseDown(MouseEvent e) {
+                if (e.button != 1) {
+                    return;
+                }
+                Point pt = new Point(e.x, e.y);
+                TableItem item = capturedObjectsTableViewer.getTable().getItem(pt);
+                if (item != null) {
+                    highlightObject((CapturedMobileElement) item.getData());
+                }
             }
         });
 
@@ -389,12 +403,15 @@ public class MobileObjectSpyDialog extends Dialog {
         allElementTreeViewer.getTree().setToolTipText(StringUtils.EMPTY);
         ColumnViewerToolTipSupport.enableFor(allElementTreeViewer, ToolTip.NO_RECREATE);
 
-        allElementTreeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-            @Override
-            public void selectionChanged(SelectionChangedEvent event) {
-                TreeSelection treeSelection = (TreeSelection) event.getSelection();
-                if (treeSelection.getFirstElement() instanceof MobileElement) {
-                    highlightObject((MobileElement) treeSelection.getFirstElement());
+        allElementTreeViewer.getTree().addMouseListener(new MouseAdapter() {
+            public void mouseDown(MouseEvent e) {
+                if (e.button != 1) {
+                    return;
+                }
+                Point pt = new Point(e.x, e.y);
+                TreeItem item = allElementTreeViewer.getTree().getItem(pt);
+                if (item != null) {
+                    highlightObject((MobileElement) item.getData());
                 }
             }
         });
