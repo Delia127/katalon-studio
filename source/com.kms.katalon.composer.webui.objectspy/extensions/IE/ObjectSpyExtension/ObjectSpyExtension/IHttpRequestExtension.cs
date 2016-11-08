@@ -12,5 +12,7 @@ namespace ObjectSpyExtension
     public interface IHttpRequestExtension {
         [DispId(1)]
         String postRequest(String data, String url);
+        [DispId(2)]
+        String sendRequestToKatalon(String data, String url);
     }
 }

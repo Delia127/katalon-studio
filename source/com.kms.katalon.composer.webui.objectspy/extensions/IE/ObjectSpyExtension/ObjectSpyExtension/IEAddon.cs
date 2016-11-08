@@ -25,6 +25,7 @@ namespace ObjectSpyExtension
         private IWebBrowser browser;
         private string serverUrl;
         private static String addonDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "KMS", "qAutomate", "ObjectSpy");
+        private const string REQUEST_SEPARATOR = "_|_";
 
         #region Handle Document Events
         private void OnDocumentComplete(object pDisp, ref object URL)
@@ -121,6 +122,8 @@ namespace ObjectSpyExtension
             window.execScript(Properties.Resources.jquery_1_11_2_min);
             window.execScript(Properties.Resources.jquery_color);
             window.execScript(Properties.Resources.json3_min);
+            window.execScript(Properties.Resources.wgxpath_install);
+            window.execScript(Properties.Resources.process_element);
             window.execScript("qAutomate_server_url = '" + serverUrl + "';");
             window.execScript(Properties.Resources.constants);
             window.execScript(Properties.Resources.common);
@@ -160,6 +163,7 @@ namespace ObjectSpyExtension
 
         int IObjectWithSite.SetSite(object site)
         {
+
             if (site == null)
             {
                 Dispose();
@@ -328,5 +332,32 @@ namespace ObjectSpyExtension
             }
         }
         #endregion
+        
+        public String sendRequestToKatalon(string data, string url)
+        {
+            int statusCode = 200;
+            String message = "";
+            using (WebClient client = new WebClient())
+            {
+                try
+                {
+                    message = client.UploadString(url, data);
+                }
+                catch (WebException webException)
+                {
+                    HttpWebResponse response = (HttpWebResponse)webException.Response;
+                    statusCode = (int)(response.StatusCode);
+                    message = "Failed to connect to Katalon Server.";
+                }
+                catch (Exception ex)
+                {
+                    logError(ex);
+                    statusCode = 500;
+                    message = "Internal Server Error";
+                }
+                message = statusCode + REQUEST_SEPARATOR + message;
+            }
+            return message;
+        }
     }
 }

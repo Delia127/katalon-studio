@@ -202,5 +202,17 @@ namespace ObjectSpyExtension.Properties {
                 return ResourceManager.GetString("main", resourceCulture);
             }
         }
+        
+        internal static string process_element {
+            get {
+                return ResourceManager.GetString("process_element", resourceCulture);
+            }
+        }
+        
+        internal static string wgxpath_install {
+            get {
+                return ResourceManager.GetString("wgxpath_install", resourceCulture);
+            }
+        }
     }
 }
