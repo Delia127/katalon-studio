@@ -10,6 +10,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.commands.common.CommandException;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
@@ -24,6 +25,8 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseTrackListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
@@ -483,8 +486,18 @@ public class WelcomePart {
         private StyleRange hyperLinkStyleRange;
 
         public HyperLinkStyledText(Composite parent, int style) {
-            super(parent, style);
+            super(parent, style | SWT.READ_ONLY);
+
             addMouseTrackListener(this);
+
+            addSelectionListener(new SelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    e.doit = false;
+                    setSelection(StringUtils.defaultString(getText()).length());
+                }
+            });
+
             setCaret(null);
         }
 
