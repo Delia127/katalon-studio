@@ -1080,7 +1080,7 @@
          id="org.eclipse.jdt.core"
          download-size="0"
          install-size="0"
-         version="3.12.0.xx-201608111517-e46"
+         version="3.12.0.xx-201611090643-e46"
          unpack="false"/>
 
    <plugin
@@ -2139,7 +2139,7 @@
          install-size="0"
          version="1.0.0.qualifier"
          unpack="false"/>
-         
+
    <plugin
          id="com.kms.katalon.composer.integration.jira"
          download-size="0"

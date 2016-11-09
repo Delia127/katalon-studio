@@ -8,6 +8,7 @@ import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.eclipse.codebrowsing.elements.GroovyResolvedBinaryMethod;
 import org.codehaus.groovy.eclipse.codebrowsing.requestor.CodeSelectHelper;
 import org.codehaus.groovy.eclipse.codebrowsing.requestor.CodeSelectRequestor;
+import org.codehaus.groovy.eclipse.codebrowsing.requestor.Region;
 import org.codehaus.groovy.eclipse.editor.GroovyExtraInformationHover;
 import org.codehaus.jdt.groovy.model.GroovyCompilationUnit;
 import org.eclipse.jdt.core.ICodeAssist;
@@ -78,8 +79,9 @@ public class ImprovedGroovyTextEditorHover extends GroovyExtraInformationHover {
     private class CustomCodeSelectHelper extends CodeSelectHelper {
 
         @Override
-        protected CodeSelectRequestor createRequestor(GroovyCompilationUnit unit, ASTNode nodeToLookFor) {
-            return new CustomCodeSelectRequestor(nodeToLookFor, unit);
+        protected CodeSelectRequestor createRequestor(ASTNode node, Region nodeRegion, Region selectRegion,
+                GroovyCompilationUnit unit) {
+            return new CustomCodeSelectRequestor(node, unit);
         }
     }
 
