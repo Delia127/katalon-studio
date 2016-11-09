@@ -1,7 +1,7 @@
 package com.kms.katalon.composer.util.groovy;
 
-import greclipse.org.eclipse.jdt.core.dom.rewrite.ImportRewrite;
-import greclipse.org.eclipse.jdt.ui.CodeStyleConfiguration;
+import org.eclipse.jdt.core.dom.rewrite.ImportRewrite;
+import org.eclipse.jdt.ui.CodeStyleConfiguration;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -38,7 +38,7 @@ public class ImportsManager {
     }
 
     public void addAliasImport(String qualifiedTypeName, String aliasName) {
-        fImportsRewrite.addAlias("n" + qualifiedTypeName, aliasName, true);
+        //fImportsRewrite.addAlias("n" + qualifiedTypeName, aliasName, true);
     }
 
     public String addImport(ITypeBinding typeBinding) {
