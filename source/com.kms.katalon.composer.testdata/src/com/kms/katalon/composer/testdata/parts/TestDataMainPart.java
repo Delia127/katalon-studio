@@ -10,6 +10,7 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.xml.bind.UnmarshalException;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.model.application.MApplication;
@@ -131,8 +132,8 @@ public abstract class TestDataMainPart extends CPart implements EventHandler, IP
             Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
             if (object != null && object instanceof Object[]) {
                 String elementId = EntityPartUtil.getTestDataPartId((String) ((Object[]) object)[0]);
-
-                if (elementId.equalsIgnoreCase(mpart.getElementId())) {
+                String publisher = StringUtils.defaultString((String) ((Object[]) object)[2]);
+                if (!mpart.getElementId().equals(publisher) && elementId.equalsIgnoreCase(mpart.getElementId())) {
                     DataFileEntity dataFile = (DataFileEntity) ((Object[]) object)[1];
                     boolean oldDirty = dirtyable.isDirty();
                     updateDataFile(dataFile);
@@ -196,7 +197,7 @@ public abstract class TestDataMainPart extends CPart implements EventHandler, IP
     }
 
     protected void sendTestDataUpdatedEvent(String oldPk) {
-        eventBroker.post(EventConstants.TEST_DATA_UPDATED, new Object[] { oldPk, originalDataFile });
+        eventBroker.post(EventConstants.TEST_DATA_UPDATED, new Object[] { oldPk, originalDataFile, mpart.getElementId() });
     }
 
     private void verifySourceChanged() {
