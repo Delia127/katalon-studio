@@ -1061,7 +1061,9 @@ public class ObjectSpyDialog extends Dialog {
         UISynchronizeService.syncExec(new Runnable() {
             @Override
             public void run() {
-                refreshTree(capturedObjectComposite.getElementTreeViewer(), null);
+                TreeViewer capturedElementTreeViewer = capturedObjectComposite.getElementTreeViewer();
+                refreshTree(capturedElementTreeViewer, null);
+                capturedElementTreeViewer.setExpandedState(parentPageElement, true);
             }
         });
     }

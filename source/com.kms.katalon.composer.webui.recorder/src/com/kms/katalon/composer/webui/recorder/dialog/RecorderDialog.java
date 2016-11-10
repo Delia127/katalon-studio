@@ -442,7 +442,9 @@ public class RecorderDialog extends Dialog {
     private void createLeftPanel(Composite parent) {
         capturedObjectComposite = new CapturedHTMLElementsComposite(parent, SWT.NONE);
 
-        capturedObjectComposite.getElementTreeViewer().setInput(elements);
+        TreeViewer elementTreeViewer = capturedObjectComposite.getElementTreeViewer();
+        elementTreeViewer.setInput(elements);
+        elementTreeViewer.expandAll();
 
         addContextMenuForElementTree();
 
@@ -1423,6 +1425,7 @@ public class RecorderDialog extends Dialog {
                 actionTableViewer.refresh();
                 actionTableViewer.reveal(newAction);
                 capturedObjectComposite.refreshElementTree(null);
+                capturedObjectComposite.getElementTreeViewer().reveal(newAction.getTargetElement());
             }
         });
     }
