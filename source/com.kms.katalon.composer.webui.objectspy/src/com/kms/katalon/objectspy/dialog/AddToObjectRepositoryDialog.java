@@ -67,9 +67,6 @@ public class AddToObjectRepositoryDialog extends TreeEntitySelectionDialog {
     private FolderTreeEntity rootFolderTreeEntity;
 
     private List<HTMLPageElement> htmlElements;
-
-    private Object[] expandedHTMLElements;
-
     private Button btnPageAsFolder;
 
     private ScopedPreferenceStore store;
@@ -86,7 +83,6 @@ public class AddToObjectRepositoryDialog extends TreeEntitySelectionDialog {
                 new EntityViewerFilter(new FolderProvider()));
         this.isCheckable = isCheckable;
         this.htmlElements = htmlElements;
-        this.expandedHTMLElements = expandedHTMLElements;
         this.store = PreferenceStoreManager.getPreferenceStore(this.getClass());
         setShellStyle(SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.RESIZE);
         setTitle(StringConstants.TITLE_ADD_TO_OBJECT_DIALOG);
