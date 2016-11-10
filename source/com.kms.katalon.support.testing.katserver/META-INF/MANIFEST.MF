@@ -1,15 +1,15 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: com.kms.katalon
-Bundle-SymbolicName: com.kms.katalon;singleton:=true
+Bundle-Name: Katserver
+Bundle-SymbolicName: com.kms.katalon.support.testing.katserver
 Bundle-Version: 1.0.0.qualifier
-Bundle-ClassPath: .
 Bundle-Vendor: KMS
-Bundle-Localization: plugin
-Export-Package: com.kms.katalon.composer.handlers,
- com.kms.katalon.composer.parts,
- com.kms.katalon.core.application
-Require-Bundle: org.eclipse.e4.core.di,
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ClassPath: resources/lib/kat-server.jar,
+ .
+Export-Package: com.kms.katalon.support.selftest.server,
+ com.kms.katalon.support.testing.katserver
+Require-Bundle: 
  com.kms.katalon.constant,
  org.eclipse.e4.ui.workbench,
  org.eclipse.e4.ui.model.workbench,
@@ -43,10 +43,4 @@ Require-Bundle: org.eclipse.e4.core.di,
  org.eclipse.ui.intro,
  org.eclipse.equinox.app,
  com.google.gson,
- org.eclipse.core.expressions,
- com.kms.katalon.support.testing.katserver;bundle-version="1.0.0"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Import-Package: javax.annotation,
- org.eclipse.e4.core.services.log,
- org.eclipse.emf.common.util
-Bundle-ActivationPolicy: lazy
+ org.eclipse.core.expressions

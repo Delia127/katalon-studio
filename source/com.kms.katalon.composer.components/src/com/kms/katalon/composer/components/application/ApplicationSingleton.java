@@ -6,6 +6,8 @@ public class ApplicationSingleton {
 	private static ApplicationSingleton _instance;
 
 	private MApplication application;
+	
+	private boolean isServerMode = false;
 
 	public static ApplicationSingleton getInstance() {
 		if (_instance == null) {
@@ -20,5 +22,13 @@ public class ApplicationSingleton {
 
 	public void setApplication(MApplication application) {
 		this.application = application;
+	}
+	
+	public boolean isServerMode() {
+	    return isServerMode;
+	}
+	
+	public void enableServerMode() {
+	    isServerMode = true;
 	}
 }

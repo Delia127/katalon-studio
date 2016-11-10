@@ -338,6 +338,7 @@
       <import plugin="org.eclipse.text" version="3.1.0" match="compatible"/>
       <import plugin="org.eclipse.jetty.io" version="8.1.16" match="greaterOrEqual"/>
       <import plugin="com.kms.katalon.composer.webui"/>
+      <import plugin="com.kms.katalon.support.testing.katserver"/>
    </requires>
 
    <plugin
@@ -2149,6 +2150,13 @@
 
    <plugin
          id="com.kms.katalon.integration.jira"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.kms.katalon.support.testing.katserver"
          download-size="0"
          install-size="0"
          version="0.0.0"

@@ -74,6 +74,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<module>com.kms.katalon.jbrowser</module>
 		<module>com.kms.katalon.target</module>
 		<module>com.kms.katalon</module>
+		<module>com.kms.katalon.support.testing.katserver</module>
 	</modules>
 
 	<properties>
