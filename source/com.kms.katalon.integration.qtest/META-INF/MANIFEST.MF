@@ -20,7 +20,8 @@ Require-Bundle: com.kms.katalon.entity;bundle-version="1.0.0",
  org.apache.commons.lang,
  com.kms.katalon.jasper;bundle-version="1.0.0",
  org.apache.httpcomponents.httpmime,
- org.eclipse.osgi
+ org.eclipse.osgi,
+ com.kms.katalon.logging
 Export-Package: com.kms.katalon.integration.qtest,
  com.kms.katalon.integration.qtest.constants,
  com.kms.katalon.integration.qtest.credential,
