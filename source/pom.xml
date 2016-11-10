@@ -79,6 +79,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 	<properties>
 		<tycho.version>0.24.0</tycho.version>
 		<gmavenplus.version>1.5</gmavenplus.version>
+    <maven-compiler.version>3.1</maven-compiler.version>
 		<maven-resources-plugin.version>2.6</maven-resources-plugin.version>
 		
 		<eclipse_repo_url>http://download.eclipse.org/eclipse/updates/4.6/</eclipse_repo_url>
@@ -128,7 +129,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 			<plugin>
 			  <groupId>org.codehaus.gmavenplus</groupId>
 			  <artifactId>gmavenplus-plugin</artifactId>
-			  <version>1.5</version>
+			  <version>${gmavenplus.version}</version>
 			</plugin>
 		  </plugins>
 		</pluginManagement>
@@ -186,7 +187,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 			
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
+				<version>${maven-compiler.version}</version>
 				<configuration>
 				  <compilerId>groovy-eclipse-compiler</compilerId>
 				</configuration>
@@ -215,7 +216,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
+				<version>${maven-compiler.version}</version>
 					<configuration>
 						<fork>true</fork>
 						<meminitial>128m</meminitial>
