@@ -52,7 +52,12 @@ public class SettingHandler {
             @Override
             public int compare(Viewer viewer, Object e1, Object e2) {
                 if (e1 instanceof PreferenceNode && e2 instanceof PreferenceNode) {
-                    return ((PreferenceNode) e1).getId().compareToIgnoreCase(((PreferenceNode) e2).getId());
+                    String pageId1 = ((PreferenceNode) e1).getId();
+                    String pageId2 = ((PreferenceNode) e2).getId();
+                    if (StringConstants.PROJECT_INFORMATION_SETTINGS_PAGE_ID.equals(pageId1)) {
+                        return -1;
+                    }
+                    return pageId1.compareToIgnoreCase(pageId2);
                 }
                 return super.compare(viewer, e1, e2);
             }

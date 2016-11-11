@@ -7,4 +7,12 @@
             uri="fragment.e4xmi">
       </fragment>
    </extension>
+   <extension
+         point="com.kms.katalon.preferences.ProjectSettingPages">
+      <page
+            class="com.kms.katalon.composer.project.preference.ProjectPropertiesPreferencePage"
+            id="com.kms.katalon.composer.project.information"
+            name="Project Information">
+      </page>
+   </extension>
 </plugin>
