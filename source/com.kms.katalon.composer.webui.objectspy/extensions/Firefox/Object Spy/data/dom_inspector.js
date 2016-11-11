@@ -352,6 +352,9 @@ function startInspection() {
 					|| message.kind == "postDomMapSuccess") {
 				alert(message.text);
 			}
+			else if(message.kind == "sendRequestToKatalonSuccess"){
+			    onKatalonRequestSuccess(message);
+			}
 		});
 	}
 
@@ -360,4 +363,4 @@ function startInspection() {
 	} else {
 		window.attachEvent("onmessage", receiveMessage);
 	}
-};
+}

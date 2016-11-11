@@ -29,6 +29,8 @@ var toggleButton = require('sdk/ui/button/toggle').ToggleButton({
 	onChange : handleChange
 });
 
+var tabs = require('sdk/tabs');
+
 function handleChange(state) {
 	if (!state.checked) {
 		return;
@@ -61,7 +63,7 @@ pageMod.PageMod({
 	contentScriptFile : [ data.url("jquery-2.2.4.min.js"),
 			data.url("jquery.color-2.1.2.min.js"), data.url("constants.js"),
 			data.url("common.js"), data.url("dom_inspector.js"),
-			data.url("dom_collector.js"), data.url("main.js") ],
+			data.url("dom_collector.js"), data.url("main.js"), data.url("process_element.js") ],
 	onAttach : function(worker) {
 		worker.port.on("getKatalonServerData", function() {
 			worker.postMessage({
@@ -99,8 +101,32 @@ pageMod.PageMod({
 				}
 			})
 		});
+		worker.port.on("sendRequestToKatalon", function(message) {
+		    postData(message.url, message.data, function(response) {
+		        if (response.status == 200) {
+		            worker.postMessage({
+		                kind : "sendRequestToKatalonSuccess",
+		                text : response.text
+		            });
+		        } else {
+		            worker.postMessage({
+		                kind : "sendRequestToKatalonFail",
+		                text : CONNECTING_ERROR_MESSAGE
+		            });
+		        }
+		    })
+		});
+		worker.port.on("activateTab", function(url) {
+			for (let tab of tabs){
+				if(tab != undefined && (url.urlString == tab.url || url.urlString == (tab.url + "/"))){
+					tab.activate();
+					break;
+				}
+			}
+		});
 	}
 });
+
 
 function postData(url, data, onPostComplete) {
 	Request({
