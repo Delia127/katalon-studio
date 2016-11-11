@@ -60,6 +60,7 @@ import org.eclipse.ui.PlatformUI;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.components.util.ImageUtil;
+import com.kms.katalon.composer.report.constants.ComposerReportMessageConstants;
 import com.kms.katalon.composer.report.constants.ImageConstants;
 import com.kms.katalon.composer.report.constants.StringConstants;
 import com.kms.katalon.composer.report.dialog.AdvancedSearchTestLogDialog;
@@ -586,7 +587,7 @@ public class ReportPartTestLogView {
 
     private void createTestCaseInformationTabItem(CTabFolder tabFolder) {
         CTabItem tbtmGeneralInformation = new CTabItem(tabFolder, SWT.NONE);
-        tbtmGeneralInformation.setText("Information");
+        tbtmGeneralInformation.setText(ComposerReportMessageConstants.LBL_INFORMATION);
 
         compositeTestCaseInformation = new Composite(tabFolder, SWT.NONE);
         tbtmGeneralInformation.setControl(compositeTestCaseInformation);
@@ -684,7 +685,7 @@ public class ReportPartTestLogView {
 
     private void createSelectedTestStepInformationTabItem(CTabFolder tabFolder) {
         CTabItem tbtmSTLInformation = new CTabItem(tabFolder, SWT.NONE);
-        tbtmSTLInformation.setText("Infomation");
+        tbtmSTLInformation.setText(ComposerReportMessageConstants.LBL_INFORMATION);
 
         compositeSTLInformation = new Composite(tabFolder, SWT.NONE);
         tbtmSTLInformation.setControl(compositeSTLInformation);

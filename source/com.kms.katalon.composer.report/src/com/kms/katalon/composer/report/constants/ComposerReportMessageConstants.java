@@ -29,6 +29,8 @@ public class ComposerReportMessageConstants extends NLS {
 
     public static String LBL_STATUS;
 
+    public static String LBL_INFORMATION;
+
     public static String HAND_ERROR_MSG_UNABLE_TO_OPEN_REPORT;
 
     public static String HAND_ERROR_MSG_TEST_CASE_NOT_FOUND;
