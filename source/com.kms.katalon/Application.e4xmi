@@ -70,10 +70,9 @@
       </children>
       <children xsi:type="menu:Menu" xmi:id="_0IJ8wBYeEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.importexport" toBeRendered="false" visible="false" label="Import/Export"/>
       <children xsi:type="menu:Menu" xmi:id="_2end0BYeEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.report" label="Report"/>
-      <children xsi:type="menu:Menu" xmi:id="_ljWeAAOIEeWmYfckKw0_5w" elementId="com.kms.katalon.menu.search" label="Search">
+      <children xsi:type="menu:Menu" xmi:id="_0yMVUAmfEeWmsZWUQ_5cNA" elementId="com.kms.katalon.composer.menu.project" label="Project">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_oiLmoAOIEeWmYfckKw0_5w" elementId="com.kms.katalon.handledmenuitem.searchFile" label="Search..." command="_N5ChkARIEeWyKYoESvUc1g"/>
       </children>
-      <children xsi:type="menu:Menu" xmi:id="_0yMVUAmfEeWmsZWUQ_5cNA" elementId="com.kms.katalon.composer.menu.project" label="Project"/>
       <children xsi:type="menu:Menu" xmi:id="__bFJIGRZEeaO3oYZQbbJmA" elementId="com.kms.katalon.menu.integration" label="Integration"/>
       <children xsi:type="menu:Menu" xmi:id="_IjUoUNnnEeWQyuuwTERZYg" elementId="com.kms.katalon.composer.menu.window" label="Window">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_xoCTINn4EeWQyuuwTERZYg" elementId="com.kms.katalon.composer.menu.window.resetPerspective" label="Reset Perspective..." command="_oilxkNn4EeWQyuuwTERZYg"/>
