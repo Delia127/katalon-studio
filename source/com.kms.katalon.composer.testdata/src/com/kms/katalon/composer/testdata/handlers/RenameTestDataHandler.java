@@ -83,7 +83,7 @@ public class RenameTestDataHandler {
                     }
 
                     eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, testDataTreeEntity.getParent());
-                    eventBroker.post(EventConstants.TEST_DATA_UPDATED, new Object[] { pk, testData });
+                    eventBroker.post(EventConstants.TEST_DATA_UPDATED, new Object[] { pk, testData, null });
                     eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, testDataTreeEntity);
                 }
             }
