@@ -10,6 +10,7 @@ import org.eclipse.e4.ui.model.application.ui.advanced.MArea;
 import org.eclipse.e4.ui.model.application.ui.basic.MBasicFactory;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
+import org.eclipse.e4.ui.model.application.ui.basic.MStackElement;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
@@ -42,6 +43,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
         ModelServiceSingleton.getInstance().getModelService();
     }
 
+    @Override
     public ActionBarAdvisor createActionBarAdvisor(IActionBarConfigurer configurer) {
         return new ApplicationActionBarAdvisor(configurer);
     }
@@ -106,16 +108,28 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
                 .getService(EPartService.class);
 
         // active the first tab of the rightPartStack.
-        MPartStack rightPartStack = (MPartStack) ModelServiceSingleton.getInstance()
-                .getModelService()
-                .find(IdConstants.OUTLINE_PARTSTACK_ID, application);
+        selectAndActivateChildPart(partService, IdConstants.OUTLINE_PARTSTACK_ID, 0);
 
-        if (rightPartStack != null && rightPartStack.getChildren() != null && !rightPartStack.getChildren().isEmpty()) {
-            MPart globalPart = (MPart) rightPartStack.getChildren().get(0);
-            rightPartStack.setSelectedElement(globalPart);
-            partService.activate(globalPart);
+        // active the first tab of the leftOutlinePartStack
+        selectAndActivateChildPart(partService, IdConstants.COMPOSER_PARTSTACK_LEFT_OUTLINE_ID, 1);
+    }
+
+    private void selectAndActivateChildPart(EPartService partService, String partStackId, int selectIndex) {
+        MPartStack partStack = (MPartStack) ModelServiceSingleton.getInstance().getModelService().find(partStackId,
+                application);
+        if (partStack == null) {
+            return;
         }
 
+        // This is a non-null list
+        List<MStackElement> leftOutlineChildren = partStack.getChildren();
+        if (leftOutlineChildren.isEmpty()) {
+            return;
+        }
+
+        MStackElement part = leftOutlineChildren.get(selectIndex);
+        partStack.setSelectedElement(part);
+        partService.activate((MPart) part);
     }
 
     private void hideUnwantedActionSets() {

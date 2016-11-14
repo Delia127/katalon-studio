@@ -1060,6 +1060,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                         resetProgressBar();
                         createLogViewerControl(parentComposite);
                         updateProgressBar();
+                        parentComposite.layout();
                     }
                 });
             }

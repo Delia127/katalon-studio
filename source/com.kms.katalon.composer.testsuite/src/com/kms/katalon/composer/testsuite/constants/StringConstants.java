@@ -126,9 +126,9 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String PA_COL_DESC = DESCRIPTION;
 
-    public static final String PA_LBL_LAST_UPDATED = ComposerTestsuiteMessageConstants.PA_LBL_LAST_UPDATED;
+    public static final String PA_LBL_LAST_UPDATED = MODIFIED_DATE;
 
-    public static final String PA_LBL_CREATED_DATE = ComposerTestsuiteMessageConstants.PA_LBL_CREATED_DATE;
+    public static final String PA_LBL_CREATED_DATE = CREATED_DATE;
 
     public static final String PA_LBL_DESC = DESCRIPTION;
 

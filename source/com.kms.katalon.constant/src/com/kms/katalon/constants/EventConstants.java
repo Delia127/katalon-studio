@@ -182,4 +182,9 @@ public class EventConstants {
 
     public static final String CHECKPOINT_UPDATED = "CHECKPOINT/UPDATED";
 
+    // Properties Events
+    public static final String PROPERTIES_ENTITY = "PROPERTIES/ENTITY";
+
+    public static final String PROPERTIES_ENTITY_UPDATED = "PROPERTIES/ENTITY_UPDATED";
+
 }

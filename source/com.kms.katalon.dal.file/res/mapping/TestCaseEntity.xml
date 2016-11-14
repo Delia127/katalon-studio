@@ -5,7 +5,6 @@
 		<xml-root-element name="TestCaseEntity" />
 			<java-attributes>
 				<xml-element java-attribute="comment" />
-				<xml-element java-attribute="tag" />
 				<xml-transient java-attribute="dataFiles" />
 				<xml-element java-attribute="dataFileLocations" />
                 <xml-transient java-attribute="scriptContents" />

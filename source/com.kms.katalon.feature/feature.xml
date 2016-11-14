@@ -2121,6 +2121,13 @@
          unpack="false"/>
 
    <plugin
+         id="com.kms.katalon.composer.properties"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
          id="org.zeroturnaround.zt-exec"
          download-size="0"
          install-size="0"

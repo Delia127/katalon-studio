@@ -31,7 +31,6 @@ import org.osgi.service.event.EventHandler;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.MenuUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.components.part.IComposerPart;
 import com.kms.katalon.composer.parts.CPart;
 import com.kms.katalon.composer.testcase.ast.treetable.AstBuiltInKeywordTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstCallTestCaseKeywordTreeTableNode;
@@ -50,7 +49,7 @@ import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 
-public class TestCasePart extends CPart implements IComposerPart, EventHandler, ITestCasePart {
+public class TestCasePart extends CPart implements EventHandler, ITestCasePart {
 
     private TestStepManualComposite testStepManualComposite;
 
@@ -175,11 +174,6 @@ public class TestCasePart extends CPart implements IComposerPart, EventHandler, 
 
     public VariableEntity[] getVariables() {
         return parentTestCaseCompositePart.getVariables();
-    }
-
-    @Override
-    public String getEntityId() {
-        return getTestCase().getIdForDisplay();
     }
 
     public void addDefaultImports() {

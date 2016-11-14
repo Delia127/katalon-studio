@@ -10,93 +10,114 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 
 public abstract class Entity extends ClonableObject implements IEntity {
-	protected static final long serialVersionUID = 1L;
-	protected String id;
-	protected Date dateCreated;
-	protected Date dateModified;
-	protected String name;
-	protected String description;
-	protected FolderEntity parentFolder;
-	protected ProjectEntity project;
+    protected static final long serialVersionUID = 1L;
 
-	protected Entity() {
-		description = "";
-		id = "";
-	}
+    protected String id;
 
-	@Override
-	public void setId(String id) {
-		this.id = id;
-	}
+    protected Date dateCreated;
 
-	@Override
-	public String getId() {
-		return id;
-	}
+    protected Date dateModified;
 
-	@Override
-	public Date getDateCreated() {
-		return this.dateCreated;
-	}
+    protected String name;
 
-	@Override
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
-	}
+    protected String tag;
 
-	@Override
-	public Date getDateModified() {
-		return this.dateModified;
-	}
+    protected String description;
 
-	@Override
-	public void setDateModified(Date dateModified) {
-		this.dateModified = dateModified;
-	}
+    protected FolderEntity parentFolder;
 
-	@Override
-	public String getName() {
-		return name;
-	}
+    protected ProjectEntity project;
 
-	@Override
-	public void setName(String name) {
-		this.name = name;
-	}
+    protected Entity() {
+        description = "";
+        tag = "";
+        id = "";
+    }
 
-	@Override
-	public String getDescription() {
-		return description;
-	}
+    @Override
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	@Override
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    @Override
+    public String getId() {
+        return id;
+    }
 
-	@Override
-	public FolderEntity getParentFolder() {
-		return parentFolder;
-	}
+    @Override
+    public Date getDateCreated() {
+        return this.dateCreated;
+    }
 
-	@Override
-	public void setParentFolder(FolderEntity parentFolder) {
-		this.parentFolder = parentFolder;
-	}
+    @Override
+    public void setDateCreated(Date dateCreated) {
+        this.dateCreated = dateCreated;
+    }
 
-	@Override
-	public ProjectEntity getProject() {
-		return project;
-	}
+    @Override
+    public Date getDateModified() {
+        return this.dateModified;
+    }
 
-	public void setProject(ProjectEntity project) {
-		this.project = project;
-	};
+    @Override
+    public void setDateModified(Date dateModified) {
+        this.dateModified = dateModified;
+    }
 
-	@Override
-	public String toString() {
-		return name;
-	}
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String getTag() {
+        return tag;
+    }
+
+    @Override
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
+
+    @Override
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    @Override
+    public FolderEntity getParentFolder() {
+        return parentFolder;
+    }
+
+    @Override
+    public void setParentFolder(FolderEntity parentFolder) {
+        this.parentFolder = parentFolder;
+    }
+
+    @Override
+    public ProjectEntity getProject() {
+        return project;
+    }
+
+    @Override
+    public void setProject(ProjectEntity project) {
+        this.project = project;
+    };
+
+    @Override
+    public String toString() {
+        return name;
+    }
 
     @Override
     public Entity clone() {
@@ -112,8 +133,8 @@ public abstract class Entity extends ClonableObject implements IEntity {
         return new EqualsBuilder().append(this.getId(), that.getId()).isEquals();
     }
 
-	@Override
-	public int hashCode() {
-		return new HashCodeBuilder(7, 31).append(this.getId()).toHashCode();
-	}
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(7, 31).append(this.getId()).toHashCode();
+    }
 }

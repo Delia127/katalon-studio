@@ -408,11 +408,6 @@ public class DBTestDataPart extends TestDataMainPart {
         }
     }
 
-    @Override
-    protected void preDestroy() {
-        // do nothing
-    }
-
     private class ChangeQueryOperation extends AbstractOperation {
         private DataFileEntity oldDataFile;
 

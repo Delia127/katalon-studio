@@ -3,13 +3,18 @@ package com.kms.katalon.composer.webservice.parts;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
+import org.apache.commons.lang.StringUtils;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
+import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -40,8 +45,9 @@ import org.osgi.service.event.EventHandler;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
+import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.components.part.IComposerPart;
+import com.kms.katalon.composer.components.part.IComposerPartEvent;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
@@ -57,7 +63,7 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 
-public abstract class RequestObjectPart implements EventHandler, IComposerPart {
+public abstract class RequestObjectPart implements EventHandler, IComposerPartEvent {
 
     @Inject
     protected MApplication application;
@@ -103,6 +109,7 @@ public abstract class RequestObjectPart implements EventHandler, IComposerPart {
         sComposite.setBackground(ColorUtil.getCompositeBackgroundColor());
         sComposite.setBackgroundMode(SWT.INHERIT_DEFAULT);
         sComposite.addControlListener(new ControlAdapter() {
+            @Override
             public void controlResized(ControlEvent e) {
                 sComposite.setMinSize(mainComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
             }
@@ -325,12 +332,12 @@ public abstract class RequestObjectPart implements EventHandler, IComposerPart {
             updateEntityBeforeSaved();
             ObjectRepositoryController.getInstance().updateTestObject(originalWsObject);
 
-            eventBroker.post(EventConstants.TEST_OBJECT_UPDATED, new Object[] { originalWsObject.getId(), originalWsObject });
+            eventBroker.post(EventConstants.TEST_OBJECT_UPDATED, new Object[] { originalWsObject.getId(),
+                    originalWsObject });
             eventBroker.post(EventConstants.EXPLORER_REFRESH, null);
             dirtyable.setDirty(false);
         } catch (Exception e1) {
-            MessageDialog
-                    .openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, e1.getMessage());
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, e1.getMessage());
         }
     }
 
@@ -342,4 +349,40 @@ public abstract class RequestObjectPart implements EventHandler, IComposerPart {
     public String getEntityId() {
         return getWSRequestObject().getIdForDisplay();
     }
+
+    @Override
+    @Inject
+    @Optional
+    public void onSelect(@UIEventTopic(UIEvents.UILifeCycle.BRINGTOTOP) Event event) {
+        MPart part = EventUtil.getPart(event);
+        if (part == null || !StringUtils.equals(part.getElementId(), mPart.getElementId())) {
+            return;
+        }
+
+        EventUtil.post(EventConstants.PROPERTIES_ENTITY, originalWsObject);
+    }
+
+    @Override
+    @Inject
+    @Optional
+    public void onChangeEntityProperties(@UIEventTopic(EventConstants.PROPERTIES_ENTITY_UPDATED) Event event) {
+        Object eventData = EventUtil.getData(event);
+        if (!(eventData instanceof WebServiceRequestEntity)) {
+            return;
+        }
+
+        WebServiceRequestEntity updatedEntity = (WebServiceRequestEntity) eventData;
+        if (!StringUtils.equals(updatedEntity.getIdForDisplay(), getEntityId())) {
+            return;
+        }
+        originalWsObject.setTag(updatedEntity.getTag());
+        originalWsObject.setDescription(updatedEntity.getDescription());
+    }
+
+    @Override
+    @PreDestroy
+    public void onClose() {
+        EventUtil.post(EventConstants.PROPERTIES_ENTITY, null);
+    }
+
 }

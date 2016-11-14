@@ -276,4 +276,8 @@ public class GlobalStringConstants {
     public static final String DIA_YES = GlobalMessageConstants.DIA_YES;
 
     public static final String DIA_NO = GlobalMessageConstants.DIA_NO;
+
+    public static final String CREATED_DATE = GlobalMessageConstants.CREATED_DATE;
+
+    public static final String MODIFIED_DATE = GlobalMessageConstants.MODIFIED_DATE;
 }

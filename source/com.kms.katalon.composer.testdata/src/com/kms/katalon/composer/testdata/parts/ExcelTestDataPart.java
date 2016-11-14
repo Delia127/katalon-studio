@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.apache.commons.lang.StringUtils;
@@ -596,10 +597,12 @@ public class ExcelTestDataPart extends TestDataMainPart {
     }
 
     @Override
-    protected void preDestroy() {
+    @PreDestroy
+    public void onClose() {
         fCurrentPath = "";
         fCurrentSheetName = "";
         fData = null;
+        super.onClose();
     }
 
     private class ChangeExcelFileOperation extends AbstractOperation {

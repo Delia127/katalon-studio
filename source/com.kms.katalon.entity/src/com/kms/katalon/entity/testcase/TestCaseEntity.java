@@ -15,8 +15,6 @@ public class TestCaseEntity extends IntegratedFileEntity {
 
     private String comment = "";
 
-    private String tag = "";
-
     private List<DataFileEntity> dataFiles;
 
     private List<String> dataFileLocations;
@@ -39,14 +37,6 @@ public class TestCaseEntity extends IntegratedFileEntity {
 
     public void setComment(String comment) {
         this.comment = comment;
-    }
-
-    public String getTag() {
-        return tag;
-    }
-
-    public void setTag(String tag) {
-        this.tag = tag;
     }
 
     public String getTestCaseGuid() {

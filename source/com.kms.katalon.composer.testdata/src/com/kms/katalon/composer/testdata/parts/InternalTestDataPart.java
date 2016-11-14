@@ -95,10 +95,6 @@ public class InternalTestDataPart extends TestDataMainPart {
         return partService;
     }
 
-    @Override
-    protected void preDestroy() {
-    }
-
     @Focus
     public void setFocus() {
         table.setFocus();
@@ -110,6 +106,7 @@ public class InternalTestDataPart extends TestDataMainPart {
         return null;
     }
 
+    @Override
     @PostConstruct
     public void createControls(Composite parent, MPart mpart) {
         super.createControls(parent, mpart);
@@ -201,6 +198,7 @@ public class InternalTestDataPart extends TestDataMainPart {
 
     private void addMouseEventListenersForTable(final Table table) {
         table.addListener(SWT.MenuDetect, new Listener() {
+            @Override
             public void handleEvent(Event event) {
                 Point cursorPt = table.getDisplay().map(null, table, new Point(event.x, event.y));
                 Point plusedHorizontalPt = new Point(cursorPt.x + table.getHorizontalBar().getSelection(), cursorPt.y);
@@ -221,6 +219,7 @@ public class InternalTestDataPart extends TestDataMainPart {
         });
 
         table.addMouseListener(new MouseAdapter() {
+            @Override
             public void mouseDown(MouseEvent event) {
                 if (event.button == LEFT_CLICK) {
                     handleLeftClick(new Point(event.x, event.y));

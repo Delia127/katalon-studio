@@ -510,11 +510,6 @@ public class CSVTestDataPart extends TestDataMainPart {
         return partService;
     }
 
-    @Override
-    protected void preDestroy() {
-
-    }
-
     private class ChangeCSVFileOperation extends AbstractOperation {
         private String oldCSVFilePath;
 

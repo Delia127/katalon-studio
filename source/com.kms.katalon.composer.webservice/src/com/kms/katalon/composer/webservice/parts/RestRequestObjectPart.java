@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -33,6 +32,7 @@ public class RestRequestObjectPart extends RequestObjectPart {
 
     private List<WebElementPropertyEntity> listRestParams = new ArrayList<WebElementPropertyEntity>();
 
+    @Override
     @PostConstruct
     public void createComposite(Composite parent, MPart part) {
         super.createComposite(parent, part);
@@ -106,12 +106,10 @@ public class RestRequestObjectPart extends RequestObjectPart {
         dirtyable.setDirty(false);
     }
 
+    @Override
     @Persist
     public void save() {
         super.save();
     }
 
-    @PreDestroy
-    public void destroy() {
-    }
 }
