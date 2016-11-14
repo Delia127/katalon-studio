@@ -1063,9 +1063,22 @@ public class ObjectSpyDialog extends Dialog {
             public void run() {
                 TreeViewer capturedElementTreeViewer = capturedObjectComposite.getElementTreeViewer();
                 refreshTree(capturedElementTreeViewer, null);
-                capturedElementTreeViewer.setExpandedState(parentPageElement, true);
+                setExpandForParentElement(parentPageElement, capturedElementTreeViewer);
             }
         });
+    }
+
+    private void setExpandForParentElement(HTMLFrameElement pageElement, TreeViewer capturedElementTreeViewer) {
+        List<HTMLElement> childElements = pageElement.getChildElements();
+        if (childElements.isEmpty()) {
+            return;
+        }
+        capturedElementTreeViewer.setExpandedState(pageElement, true);
+        for (HTMLElement element : childElements) {
+            if (element instanceof HTMLFrameElement) {
+                setExpandForParentElement((HTMLFrameElement) element, capturedElementTreeViewer);
+            }
+        }
     }
 
     private void addNewElement(HTMLFrameElement parentElement, HTMLElement newElement, HTMLPageElement pageElement) {
