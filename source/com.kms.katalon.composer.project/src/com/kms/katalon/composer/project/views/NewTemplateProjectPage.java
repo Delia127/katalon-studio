@@ -3,9 +3,9 @@ package com.kms.katalon.composer.project.views;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.TableItem;
 import com.kms.katalon.composer.project.constants.ImageConstants;
 import com.kms.katalon.composer.project.constants.StringConstants;
 
-public class NewTemplateProjectPage extends WizardPage {
+public class NewTemplateProjectPage extends ResizableProjectPage {
 
     private Composite container;
 
@@ -76,5 +76,10 @@ public class NewTemplateProjectPage extends WizardPage {
             }
         }
         return selectedOptions;
+    }
+
+    @Override
+    public Point getPageSize() {
+        return new Point(550, 250);
     }
 }
