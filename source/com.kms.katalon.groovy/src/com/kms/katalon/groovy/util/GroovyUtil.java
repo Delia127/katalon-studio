@@ -1,7 +1,5 @@
 package com.kms.katalon.groovy.util;
 
-import groovy.lang.GroovyClassLoader;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -21,6 +19,8 @@ import org.codehaus.groovy.eclipse.core.model.GroovyRuntime;
 import org.codehaus.jdt.groovy.model.GroovyCompilationUnit;
 import org.eclipse.core.internal.resources.ModelObjectWriter;
 import org.eclipse.core.internal.resources.Project;
+import org.eclipse.core.internal.resources.ProjectDescription;
+import org.eclipse.core.resources.FileInfoMatcherDescription;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -62,6 +62,8 @@ import com.kms.katalon.groovy.constant.GroovyConstants;
 import com.kms.katalon.jbrowser.JBrowserTempClass;
 import com.kms.katalon.selenium.TempClass;
 
+import groovy.lang.GroovyClassLoader;
+
 @SuppressWarnings("restriction")
 public class GroovyUtil {
     private static final String BUNDLE_LOCATION_INITIAL_PREFIX = "initial@";
@@ -97,6 +99,18 @@ public class GroovyUtil {
     private static final String JDT_LAUNCHING = "org.eclipse.jdt.launching.JRE_CONTAINER";
 
     private static final String[] KAT_PROJECT_NATURES = new String[] { GROOVY_NATURE, JavaCore.NATURE_ID };
+    
+    private static final String RESOURCE_MULTI_FILTER = "org.eclipse.ui.ide.multiFilter";
+    
+    private static final String RESOURCE_NAME_FILTER_EXP = "1.0-name-matches-false-false-";
+
+    private static final String[] RESOURCE_FILE_NAME_REGEX = new String[] { "*.png", "*.log", "*.xlsx", "*.xls", "*.csv", "*.txt" };
+    
+    private static final String[] RESOURCE_FILE_AND_FOLDER_NAME_REGEX = new String[] { "*.svn", "*.svn-base" };
+    
+    private static final int RESOURCE_FILE_AND_FOLDER_TYPE = 30;
+    
+    private static final int RESOURCE_FILE_TYPE = 22;
     
     public static IProject getGroovyProject(ProjectEntity projectEntity) {
         return ResourcesPlugin.getWorkspace()
@@ -468,11 +482,14 @@ public class GroovyUtil {
             return;
         }
         if (!groovyProject.exists()) {
-            IProjectDescription projectDescription = ResourcesPlugin.getWorkspace().newProjectDescription(
-                    projectEntity.getName());
+            IProjectDescription projectDescription = ResourcesPlugin.getWorkspace()
+                    .newProjectDescription(projectEntity.getName());
             projectDescription.setLocation(new Path(projectEntity.getFolderLocation()));
 
             groovyProject.create(projectDescription, null);
+
+            createFilters(groovyProject);
+
             groovyProject.open(null);
 
         } else if (!groovyProject.isOpen()) {
@@ -483,6 +500,9 @@ public class GroovyUtil {
                 IProjectDescription projectDescription = ((Project) groovyProject).internalGetDescription();
                 projectDescription.setLocation(new Path(projectEntity.getFolderLocation()));
                 projectDescription.setNatureIds(KAT_PROJECT_NATURES);
+                if (((ProjectDescription) projectDescription).getFilters() == null) {
+                    createFilters(groovyProject);
+                }
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 new ModelObjectWriter().write(projectDescription, out, System.lineSeparator());
                 FileUtils.writeByteArrayToFile(descriptionFile, out.toByteArray(), false);
@@ -864,5 +884,21 @@ public class GroovyUtil {
     public static List<IFile> getAllCustomKeywordsScripts(ProjectEntity projectEntity) throws CoreException {
         IFolder customKeywordRootFolder = GroovyUtil.getCustomKeywordSourceFolder(projectEntity);
         return getAllScriptFiles(customKeywordRootFolder);
+    }
+    
+    private static void createFilters(IProject groovyProject) throws CoreException {
+        // Exclude user created files/SVN meta files when loading project
+        for (String regex : RESOURCE_FILE_AND_FOLDER_NAME_REGEX) {
+            FileInfoMatcherDescription matcherDescription = new FileInfoMatcherDescription(RESOURCE_MULTI_FILTER,
+                    RESOURCE_NAME_FILTER_EXP + regex);
+            groovyProject.createFilter(RESOURCE_FILE_AND_FOLDER_TYPE, matcherDescription, IResource.NONE,
+                    new NullProgressMonitor());
+        }
+        for (String regex : RESOURCE_FILE_NAME_REGEX) {
+            FileInfoMatcherDescription matcherDescription = new FileInfoMatcherDescription(RESOURCE_MULTI_FILTER,
+                    RESOURCE_NAME_FILTER_EXP + regex);
+            groovyProject.createFilter(RESOURCE_FILE_TYPE, matcherDescription, IResource.NONE,
+                    new NullProgressMonitor());
+        }
     }
 }
