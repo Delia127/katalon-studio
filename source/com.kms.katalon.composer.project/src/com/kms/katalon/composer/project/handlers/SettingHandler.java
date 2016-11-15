@@ -47,6 +47,7 @@ public class SettingHandler {
                 return treeViewer;
             }
         };
+        dialog.setSelectedNode(StringConstants.PROJECT_INFORMATION_SETTINGS_PAGE_ID);
         dialog.create();
         dialog.getTreeViewer().setComparator(new ViewerComparator() {
             @Override

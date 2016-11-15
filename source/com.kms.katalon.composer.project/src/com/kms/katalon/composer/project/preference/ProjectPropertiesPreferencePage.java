@@ -134,11 +134,14 @@ public class ProjectPropertiesPreferencePage extends PreferencePage {
 
     @Override
     public boolean okToLeave() {
-        return isValidInput();
+        return isNotOpenedYet() || isValidInput();
     }
 
     @Override
     public boolean performOk() {
+        if (isNotOpenedYet()) {
+            return true;
+        }
         boolean valid = isValidInput();
         if (valid) {
             updateProject();
@@ -158,7 +161,7 @@ public class ProjectPropertiesPreferencePage extends PreferencePage {
     }
 
     private boolean isValidInput() {
-        return isNotOpenedYet() || lblErrorMessage.getText().isEmpty();
+        return lblErrorMessage.getText().isEmpty();
     }
 
     private boolean isNotOpenedYet() {
