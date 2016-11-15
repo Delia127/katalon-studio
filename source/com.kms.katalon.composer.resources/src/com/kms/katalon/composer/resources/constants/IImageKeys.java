@@ -473,7 +473,7 @@ public interface IImageKeys {
 
     public static final String CLEAR_FIELD_16 = "clear_field_16.png"; //$NON-NLS-1$
 
-    public static final String LOADING_16 = "loading_16.png"; //$NON-NLS-1$
+    public static final String LOADING_16 = "loading_16.gif"; //$NON-NLS-1$
 
     public static final String INFO_16 = "info_16.png"; //$NON-NLS-1$
 

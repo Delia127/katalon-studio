@@ -111,7 +111,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
         selectAndActivateChildPart(partService, IdConstants.OUTLINE_PARTSTACK_ID, 0);
 
         // active the first tab of the leftOutlinePartStack
-        selectAndActivateChildPart(partService, IdConstants.COMPOSER_PARTSTACK_LEFT_OUTLINE_ID, 1);
+        selectAndActivateChildPart(partService, IdConstants.COMPOSER_PARTSTACK_LEFT_OUTLINE_ID, 0);
     }
 
     private void selectAndActivateChildPart(EPartService partService, String partStackId, int selectIndex) {

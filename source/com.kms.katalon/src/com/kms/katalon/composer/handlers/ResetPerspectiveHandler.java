@@ -146,7 +146,7 @@ public class ResetPerspectiveHandler extends AbstractHandler {
         selectAndActivateChildPart(perspective, ps, IdConstants.COMPOSER_PARTSTACK_LEFT_OUTLINE_ID, 0);
 
         // Properties Part
-        selectAndActivateChildPart(perspective, ps, IdConstants.OUTLINE_PARTSTACK_ID, 1);
+        selectAndActivateChildPart(perspective, ps, IdConstants.OUTLINE_PARTSTACK_ID, 0);
 
         // Explorer Part
         selectAndActivateChildPart(perspective, ps, IdConstants.COMPOSER_PARTSTACK_EXPLORER_ID, 0);
