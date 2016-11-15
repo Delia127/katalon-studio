@@ -231,6 +231,8 @@ public class ComposerExecutionMessageConstants extends NLS {
     
     public static String DIA_CONFIRM_INSTALL_WEBDRIVER;
 
+    public static String LBL_EXECUTION_NEW_SESSION;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerExecutionMessageConstants.class);

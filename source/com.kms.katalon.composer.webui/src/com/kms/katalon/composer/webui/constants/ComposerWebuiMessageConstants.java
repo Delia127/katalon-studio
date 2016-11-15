@@ -13,6 +13,8 @@ public class ComposerWebuiMessageConstants extends NLS {
 
     public static String PREF_LBL_DEFAULT_WAIT_FOR_IE_HANGING_TIMEOUT;
 
+    public static String LBL_REMOTE_EXECUTION_MENU_ITEM;
+
     public static String LBL_REMOTE_SERVER_URL;
 
     public static String LBL_REMOTE_SERVER_TYPE;
@@ -36,6 +38,14 @@ public class ComposerWebuiMessageConstants extends NLS {
     public static String LBL_IE_EXECUTION_MENU_ITEM;
 
     public static String LBL_EDGE_EXECUTION_MENU_ITEM;
+
+    public static String LBL_CHROME_EXECUTION_MENU_ITEM;
+
+    public static String LBL_FIREFOX_EXECUTION_MENU_ITEM0;
+
+    public static String LBL_HEADLESS_EXECUTION_MENU_ITEM;
+
+    public static String LBL_SAFARI_EXECUTION_MENU_ITEM;
 
     public static String DIA_CONFIRM_INSTALL_WEBDRIVER;
 

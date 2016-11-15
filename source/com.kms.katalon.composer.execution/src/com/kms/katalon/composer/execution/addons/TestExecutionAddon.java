@@ -37,6 +37,7 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.execution.collector.ConsoleOptionCollector;
+import com.kms.katalon.execution.session.ExecutionSessionSocketServer;
 
 @SuppressWarnings("restriction")
 public class TestExecutionAddon implements EventHandler {
@@ -65,6 +66,7 @@ public class TestExecutionAddon implements EventHandler {
         eventBroker.subscribe(EventConstants.PROJECT_OPENED, this);
         initCustomRunConfigurationSubMenu(IdConstants.RUN_TOOL_ITEM_ID, StringConstants.CUSTOM_RUN_MENU_ID);
         initCustomRunConfigurationSubMenu(IdConstants.DEBUG_TOOL_ITEM_ID, StringConstants.CUSTOM_DEBUG_MENU_ID);
+        startSessionServer();
     }
 
     private void initCustomRunConfigurationSubMenu(String parentToolItemId, String elementId) {
@@ -140,5 +142,9 @@ public class TestExecutionAddon implements EventHandler {
         menu.getChildren().addAll(menuItems);
 
         ComposerExecutionUtil.updateDefaultLabelForRunDropDownItem();
+    }
+    
+    private void startSessionServer() {
+        new Thread(ExecutionSessionSocketServer.getInstance()).start();
     }
 }

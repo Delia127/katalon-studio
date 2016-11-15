@@ -14,9 +14,11 @@ Require-Bundle: org.codehaus.groovy,
  org.apache.commons.lang,
  org.apache.commons.lang3,
  org.eclipse.osgi,
- com.kms.katalon.jbrowser
+ com.kms.katalon.jbrowser,
+ com.google.gson
 Export-Package: com.kms.katalon.core.webui.constants,
  com.kms.katalon.core.webui.driver,
+ com.kms.katalon.core.webui.driver.existings,
  com.kms.katalon.core.webui.keyword,
  com.kms.katalon.core.webui.util
 Bundle-ClassPath: .,

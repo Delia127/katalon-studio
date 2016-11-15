@@ -14,5 +14,4 @@ public class MobileDriverCleaner implements IDriverCleaner{
     public void cleanDriverAfterRunningTestSuite() {
         MobileDriverFactory.closeDriver();
     }
-
 }

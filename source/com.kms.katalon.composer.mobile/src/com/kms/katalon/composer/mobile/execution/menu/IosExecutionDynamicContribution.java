@@ -9,6 +9,7 @@ import org.eclipse.e4.ui.model.application.ui.menu.MMenuElement;
 import com.kms.katalon.composer.execution.menu.AbstractExecutionMenuContribution;
 import com.kms.katalon.composer.mobile.constants.ImageConstants;
 import com.kms.katalon.composer.mobile.constants.StringConstants;
+import com.kms.katalon.core.mobile.driver.MobileDriverType;
 
 public class IosExecutionDynamicContribution extends AbstractExecutionMenuContribution {
 
@@ -36,6 +37,11 @@ public class IosExecutionDynamicContribution extends AbstractExecutionMenuContri
     @Override
     protected String getCommandId() {
         return IOS_EXECUTION_COMMAND_ID;
+    }
+
+    @Override
+    protected String getDriverTypeName() {
+        return MobileDriverType.IOS_DRIVER.toString();
     }
 
 }
