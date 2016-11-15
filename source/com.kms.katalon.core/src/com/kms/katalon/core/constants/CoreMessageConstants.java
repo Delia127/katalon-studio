@@ -270,6 +270,14 @@ public class CoreMessageConstants extends NLS {
     public static String TEST_CASE_FACTORY_MSG_TC_NOT_EXISTED;
 
     public static String TEST_CASE_FACTORY_MSG_TC_NOT_EXISTED_WITH_REASON;
+    
+    public static String KEYWORD_X_DOES_NOT_EXIST_ON_PLATFORM_Y;
+
+    public static String KEYWORD_X_DOES_NOT_EXIST;
+
+    public static String KEYWORD_EXECUTOR_ERROR_MSG;
+
+    public static String KW_MSG_LIST_KEYWORD_CLASS_FAILED_X;
 
     static {
         // initialize resource bundle
