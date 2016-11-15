@@ -12,6 +12,7 @@ import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.MUIElement;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBar;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBarElement;
+import org.eclipse.e4.ui.workbench.IPresentationEngine;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
@@ -50,6 +51,15 @@ public class ToolbarProcessor {
                 }
                 return index1 - index2;
             }
+        });
+
+        // Initial disabled icon
+        toolItems.forEach(item -> {
+            String disabledIconURI = item.getPersistedState().get(IPresentationEngine.DISABLED_ICON_IMAGE_KEY);
+            if (disabledIconURI == null) {
+                return;
+            }
+            item.getTransientData().put(IPresentationEngine.DISABLED_ICON_IMAGE_KEY, disabledIconURI);
         });
     }
 

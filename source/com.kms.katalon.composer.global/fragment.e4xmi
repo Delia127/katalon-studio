@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ASCII"?>
 <fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmi:id="_B4jVANLhEeSctqH8QULjSg">
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="__hDcsNLhEeSzh84VLg7gLQ" featurename="children" parentElementId="com.kms.katalon.partstack.outline">
-    <elements xsi:type="basic:Part" xmi:id="_mDJpgNLiEeSzh84VLg7gLQ" elementId="com.kms.katalon.composer.global.part.GlobalVariableView" contributionURI="bundleclass://com.kms.katalon.composer.global/com.kms.katalon.composer.global.part.GlobalVariablePart" label="Global Variable" iconURI="platform:/plugin/com.kms.katalon.composer.global/icons/global_16.png">
+    <elements xsi:type="basic:Part" xmi:id="_mDJpgNLiEeSzh84VLg7gLQ" elementId="com.kms.katalon.composer.global.part.GlobalVariableView" contributionURI="bundleclass://com.kms.katalon.composer.global/com.kms.katalon.composer.global.part.GlobalVariablePart" label="Global Variable" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/global_variable_16.png">
       <tags>View</tags>
     </elements>
   </fragments>

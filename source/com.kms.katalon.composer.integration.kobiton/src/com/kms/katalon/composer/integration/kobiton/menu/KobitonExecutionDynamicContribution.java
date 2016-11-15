@@ -7,10 +7,12 @@ import org.eclipse.e4.ui.model.application.ui.menu.MMenuElement;
 
 import com.kms.katalon.composer.execution.menu.AbstractExecutionMenuContribution;
 import com.kms.katalon.composer.integration.kobiton.constants.ComposerIntegrationKobitonMessageConstants;
+import com.kms.katalon.composer.resources.constants.IImageKeys;
+import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.integration.kobiton.preferences.KobitonPreferencesProvider;
 
 public class KobitonExecutionDynamicContribution extends AbstractExecutionMenuContribution {
-    private static final String KOBITON_ICON_URI = "platform:/plugin/com.kms.katalon.composer.integration.kobiton/icons/kobiton_16.png"; //$NON-NLS-1$
+    private static final String KOBITON_ICON_URI = ImageManager.getImageURLString(IImageKeys.KOBITON_16);
 
     private static final String KOBITON_EXECUTION_COMMAND_ID = "com.kms.katalon.composer.integration.kobiton.execution.command.kobiton"; //$NON-NLS-1$
     

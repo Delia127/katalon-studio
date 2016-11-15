@@ -7,11 +7,12 @@
     <elements xsi:type="commands:Handler" xmi:id="_1bHPgSH9EeSY6sHPoV18tA" elementId="com.kms.katalon.composer.testsuite.handler.add" contributionURI="bundleclass://com.kms.katalon.composer.testsuite/com.kms.katalon.composer.testsuite.handlers.NewTestSuiteHandler" command="_xoJUMSH9EeSY6sHPoV18tA"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_nZDtMCIBEeSY6sHPoV18tA" featurename="children" parentElementId="com.kms.katalon.menu.submenu.new" positionInList="index:3">
-    <elements xsi:type="menu:HandledMenuItem" xmi:id="_nZDtMSIBEeSY6sHPoV18tA" elementId="com.kms.katalon.menu.submenu.new.testsuite" label="Test Suite" iconURI="platform:/plugin/com.kms.katalon.composer.testsuite/icons/test_suite_16.png" tooltip="New Test Suite" command="_xoJUMSH9EeSY6sHPoV18tA"/>
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_nZDtMSIBEeSY6sHPoV18tA" elementId="com.kms.katalon.menu.submenu.new.testsuite" label="Test Suite" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/test_suite_16.png" tooltip="New Test Suite" command="_xoJUMSH9EeSY6sHPoV18tA"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_v5rDYCIBEeSY6sHPoV18tA" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="index:6">
-    <elements xsi:type="menu:HandledToolItem" xmi:id="_v5rDYiIBEeSY6sHPoV18tA" elementId="com.kms.katalon.composer.toolbar.testsuite.newtestsuite" label="" iconURI="platform:/plugin/com.kms.katalon.composer.testsuite/icons/new_test_suite_24.png" tooltip="New Test Suite" command="_xoJUMSH9EeSY6sHPoV18tA">
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_v5rDYiIBEeSY6sHPoV18tA" elementId="com.kms.katalon.composer.toolbar.testsuite.newtestsuite" label="" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/new_test_suite_24.png" tooltip="New Test Suite" command="_xoJUMSH9EeSY6sHPoV18tA">
       <persistedState key="index" value="6"/>
+      <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/new_test_suite_disabled_24.png"/>
       <tags>FORCE_TEXT</tags>
     </elements>
   </fragments>

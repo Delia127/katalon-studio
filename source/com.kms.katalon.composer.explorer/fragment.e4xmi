@@ -12,7 +12,7 @@
     <elements xsi:type="commands:KeyBinding" xmi:id="_092goD0aEeaKLM8U5-yGQQ" elementId="com.kms.katalon.composer.explorer.keybinding.paste" keySequence="M1+V" command="_8CRNICPTEeStgKkqz5sGOw"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_u8dKgBb7EeSOVencM6x_7w" featurename="children" parentElementId="com.kms.katalon.composer.partstack.explorer" positionInList="">
-    <elements xsi:type="basic:Part" xmi:id="_1oZzMBb9EeSOVencM6x_7w" elementId="com.kms.katalon.composer.part.explorer" contributionURI="bundleclass://com.kms.katalon.composer.explorer/com.kms.katalon.composer.explorer.parts.ExplorerPart" label="Tests Explorer" iconURI="platform:/plugin/com.kms.katalon.composer.explorer/icons/project_16.png">
+    <elements xsi:type="basic:Part" xmi:id="_1oZzMBb9EeSOVencM6x_7w" elementId="com.kms.katalon.composer.part.explorer" contributionURI="bundleclass://com.kms.katalon.composer.explorer/com.kms.katalon.composer.explorer.parts.ExplorerPart" label="Tests Explorer" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/project_16.png">
       <tags>NoMove</tags>
       <tags>NoClose</tags>
       <menus xsi:type="menu:PopupMenu" xmi:id="_xkKI0B3bEeS9B51WlLqF9g" elementId="com.kms.katalon.composer.explorer.popupmenu">
@@ -26,8 +26,8 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_v2hIgKCDEeS_c-2UCFgVmQ" elementId="com.kms.katalon.composer.explorer.popupmenu.refresh" label="Refresh" command="_zBE1cKCCEeS_c-2UCFgVmQ"/>
       </menus>
       <toolbar xmi:id="_aZAhMIRYEeW5IumwiTbixg" elementId="com.kms.katalon.composer.explorer.toolbar.0">
-        <children xsi:type="menu:HandledToolItem" xmi:id="_a0KMIIRYEeW5IumwiTbixg" elementId="com.kms.katalon.composer.explorer.handledtoolitem.collapseAll" iconURI="platform:/plugin/org.eclipse.ui/icons/full/elcl16/collapseall.png" tooltip="Collapse All" command="_Cl0jYIRZEeW5IumwiTbixg"/>
-        <children xsi:type="menu:HandledToolItem" xmi:id="_T4SpYIRcEeW5IumwiTbixg" elementId="com.kms.katalon.composer.explorer.handledtoolitem.linkPart" iconURI="platform:/plugin/org.eclipse.ui/icons/full/elcl16/synced.png" tooltip="Link with Selected Part" type="Check" command="_bc4cMIRcEeW5IumwiTbixg"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_a0KMIIRYEeW5IumwiTbixg" elementId="com.kms.katalon.composer.explorer.handledtoolitem.collapseAll" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/collapse_16.png" tooltip="Collapse All" command="_Cl0jYIRZEeW5IumwiTbixg"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_T4SpYIRcEeW5IumwiTbixg" elementId="com.kms.katalon.composer.explorer.handledtoolitem.linkPart" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/focus_16.png" tooltip="Link with Selected Part" type="Check" command="_bc4cMIRcEeW5IumwiTbixg"/>
       </toolbar>
     </elements>
   </fragments>

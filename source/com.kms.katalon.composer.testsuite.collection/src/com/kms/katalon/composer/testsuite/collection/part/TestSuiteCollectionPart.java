@@ -349,9 +349,9 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
     private void redrawBtnExpandGeneralInfo() {
         btnExpandExecutionInformation.getParent().setRedraw(false);
         if (isExecutionInfoCompositeExpanded) {
-            btnExpandExecutionInformation.setImage(ImageConstants.IMG_16_ARROW_UP_BLACK);
+            btnExpandExecutionInformation.setImage(ImageConstants.IMG_16_ARROW_RIGHT);
         } else {
-            btnExpandExecutionInformation.setImage(ImageConstants.IMG_16_ARROW_DOWN_BLACK);
+            btnExpandExecutionInformation.setImage(ImageConstants.IMG_16_ARROW_DOWN);
         }
         btnExpandExecutionInformation.getParent().setRedraw(true);
     }
@@ -365,14 +365,14 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         toolBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
         selectionListener = new ToolbarItemListener(this);
-        createToolItemWithSelectionListener(toolBar, StringConstants.ADD, ImageConstants.IMG_24_ADD, selectionListener);
-        createToolItemWithSelectionListener(toolBar, StringConstants.REMOVE, ImageConstants.IMG_24_REMOVE,
+        createToolItemWithSelectionListener(toolBar, StringConstants.ADD, ImageConstants.IMG_16_ADD, selectionListener);
+        createToolItemWithSelectionListener(toolBar, StringConstants.REMOVE, ImageConstants.IMG_16_REMOVE,
                 selectionListener);
-        createToolItemWithSelectionListener(toolBar, StringConstants.UP, ImageConstants.IMG_24_UP, selectionListener);
-        createToolItemWithSelectionListener(toolBar, StringConstants.DOWN, ImageConstants.IMG_24_DOWN,
+        createToolItemWithSelectionListener(toolBar, StringConstants.UP, ImageConstants.IMG_16_UP, selectionListener);
+        createToolItemWithSelectionListener(toolBar, StringConstants.DOWN, ImageConstants.IMG_16_DOWN,
                 selectionListener);
         toolItemExecute = createToolItemWithSelectionListener(toolBar,
-                StringConstants.PA_ACTION_EXECUTE_TEST_SUITE_COLLECTION, ImageConstants.IMG_24_EXECUTE,
+                StringConstants.PA_ACTION_EXECUTE_TEST_SUITE_COLLECTION, ImageConstants.IMG_16_EXECUTE,
                 selectionListener);
     }
 

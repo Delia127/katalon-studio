@@ -4,12 +4,12 @@ import java.net.MalformedURLException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
 
 import com.kms.katalon.composer.components.impl.providers.TypeCheckStyleCellTableLabelProvider;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ImageUtil;
+import com.kms.katalon.composer.resources.constants.IImageKeys;
+import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.testsuite.collection.constant.ComposerTestsuiteCollectionMessageConstants;
 import com.kms.katalon.composer.testsuite.collection.constant.ImageConstants;
 import com.kms.katalon.composer.testsuite.collection.execution.collector.TestExecutionGroupCollector;
@@ -30,9 +30,7 @@ public class TestSuiteRunConfigLabelProvider extends TypeCheckStyleCellTableLabe
 
     public static final int RUN_COLUMN_IDX = 4;
 
-    private static final Image IMG_16_WARN_TABLE_ITEM = PlatformUI.getWorkbench()
-            .getSharedImages()
-            .getImage(ISharedImages.IMG_OBJS_WARN_TSK);
+    private static final Image IMG_16_WARN_TABLE_ITEM = ImageManager.getImage(IImageKeys.WARNING_16);
 
     private TableViewerProvider provider;
 

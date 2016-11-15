@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ASCII"?>
 <fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_LiCaABsREeSXreVpxhllQw">
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_lKTGQBsUEeSXreVpxhllQw" featurename="children" parentElementId="com.kms.katalon.menu.submenu.new" positionInList="first">
-    <elements xsi:type="menu:HandledMenuItem" xmi:id="_qAVoIBsUEeSXreVpxhllQw" elementId="com.kms.katalon.menu.submenu.new.project" label="Project" iconURI="platform:/plugin/com.kms.katalon.composer.project/icons/project_new_16.png" tooltip="Create new Project" command="_kly1kBsVEeSXreVpxhllQw"/>
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_qAVoIBsUEeSXreVpxhllQw" elementId="com.kms.katalon.menu.submenu.new.project" label="Project" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/new_project_16.png" tooltip="Create new Project" command="_kly1kBsVEeSXreVpxhllQw"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_gHT4EBsVEeSXreVpxhllQw" featurename="commands" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Command" xmi:id="_kly1kBsVEeSXreVpxhllQw" elementId="com.kms.katalon.composer.project.command.add" commandName="New Project"/>
@@ -22,8 +22,8 @@
     <elements xsi:type="commands:Handler" xmi:id="_lwIO8A2-EeWNbI7oMCmN4Q" elementId="com.kms.katalon.composer.project.handler.setting" contributionURI="bundleclass://com.kms.katalon.composer.project/com.kms.katalon.composer.project.handlers.SettingHandler" command="_gXvN8A2-EeWNbI7oMCmN4Q"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_cyjp0Bx1EeShZZ1PXPrY1w" featurename="children" parentElementId="com.kms.katalon.composer.menu.file" positionInList="index:3">
-    <elements xsi:type="menu:HandledMenuItem" xmi:id="_cyjp0hx1EeShZZ1PXPrY1w" elementId="com.kms.katalon.menu.submenu.project.open" label="Open Project" iconURI="platform:/plugin/com.kms.katalon.composer.project/icons/project_open_16.png" tooltip="Open project" command="_hWtc0Bv5EeSWv6Y47Htaiw"/>
-    <elements xsi:type="menu:HandledMenuItem" xmi:id="_8pdzkAmfEeWmsZWUQ_5cNA" elementId="com.kms.katalon.menu.submenu.project.clean" label="Clean..." iconURI="platform:/plugin/com.kms.katalon.composer.project/icons/project_clean_16.png" tooltip="Clean all temporary files" command="_NI-S8AmgEeWmsZWUQ_5cNA"/>
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_cyjp0hx1EeShZZ1PXPrY1w" elementId="com.kms.katalon.menu.submenu.project.open" label="Open Project" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/open_project_16.png" tooltip="Open project" command="_hWtc0Bv5EeSWv6Y47Htaiw"/>
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_8pdzkAmfEeWmsZWUQ_5cNA" elementId="com.kms.katalon.menu.submenu.project.clean" label="Clean..." iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/clean_project_16.png" tooltip="Clean all temporary files" command="_NI-S8AmgEeWmsZWUQ_5cNA"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_4J8jACaMEeSEdPS-LRT4TQ" featurename="children" parentElementId="com.kms.katalon.composer.menu.file" positionInList="before:com.kms.katalon.composer.menu.file.quit">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_oVkgwCaLEeSEdPS-LRT4TQ" elementId="com.kms.katalon.composer.project.dynamicmenucontribution.recentprojects" label="Recent Projects" contributionURI="bundleclass://com.kms.katalon.composer.project/com.kms.katalon.composer.project.menu.RecentProjectsMenuContribution"/>

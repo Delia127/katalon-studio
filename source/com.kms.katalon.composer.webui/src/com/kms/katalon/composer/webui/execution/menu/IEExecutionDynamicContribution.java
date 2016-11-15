@@ -7,10 +7,10 @@ import org.eclipse.e4.ui.di.AboutToShow;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuElement;
 
 import com.kms.katalon.composer.execution.menu.AbstractExecutionMenuContribution;
+import com.kms.katalon.composer.webui.constants.ImageConstants;
 import com.kms.katalon.composer.webui.constants.StringConstants;
 
 public class IEExecutionDynamicContribution extends AbstractExecutionMenuContribution {
-    private static final String IE_ICON_URI = "platform:/plugin/com.kms.katalon.composer.webui/icons/ie_16.png";
 
     private static final String IE_EXECUTION_COMMAND_ID = "com.kms.katalon.composer.webui.execution.command.ie";
     
@@ -25,7 +25,7 @@ public class IEExecutionDynamicContribution extends AbstractExecutionMenuContrib
 
     @Override
     protected String getIconUri() {
-        return IE_ICON_URI;
+        return ImageConstants.IMG_URL_16_IE;
     }
     
     @Override

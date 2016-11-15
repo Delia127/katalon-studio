@@ -36,4 +36,5 @@ Require-Bundle: org.eclipse.core.runtime,
  com.kms.katalon.core.mobile,
  com.kms.katalon.core.webservice,
  org.apache.commons.codec,
- org.codehaus.groovy.eclipse.core
+ org.codehaus.groovy.eclipse.core,
+ com.kms.katalon.composer.resources

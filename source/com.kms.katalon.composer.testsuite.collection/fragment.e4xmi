@@ -10,8 +10,9 @@
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_XJ5qABJ4EeaBC_8l6YNNlg" elementId="com.kms.katalon.composer.testsuite.collection.dynamicmenucontribution.new" contributionURI="bundleclass://com.kms.katalon.composer.testsuite.collection/com.kms.katalon.composer.testsuite.collection.menu.NewTestSuiteCollectionPopupMenuContribution"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_jNdGABJ5EeaBC_8l6YNNlg" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="before:com.kms.katalon.composer.objectrepository.handledtoolitem.newTestObject">
-    <elements xsi:type="menu:HandledToolItem" xmi:id="_jNdGARJ5EeaBC_8l6YNNlg" elementId="com.kms.katalon.composer.toolbar.testsuite.collection.new" label="" iconURI="platform:/plugin/com.kms.katalon.composer.testsuite.collection/icons/new_test_suite_collection_24.png" tooltip="New Test Suite Collection" command="_Ov8x8BJ3EeaBC_8l6YNNlg">
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_jNdGARJ5EeaBC_8l6YNNlg" elementId="com.kms.katalon.composer.toolbar.testsuite.collection.new" label="" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/new_test_suite_collection_24.png" tooltip="New Test Suite Collection" command="_Ov8x8BJ3EeaBC_8l6YNNlg">
       <persistedState key="index" value="7"/>
+      <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/new_test_suite_collection_disabled_24.png"/>
       <tags>FORCE_TEXT</tags>
     </elements>
   </fragments>
@@ -19,7 +20,7 @@
     <elements xsi:type="application:Addon" xmi:id="_yHXdkBKaEeaBC_8l6YNNlg" elementId="com.kms.katalon.composer.testrun.addon.rootCatcher" contributionURI="bundleclass://com.kms.katalon.composer.testsuite.collection/com.kms.katalon.composer.testsuite.collection.addon.TestSuiteCollectionDependencyInjectionAddon"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_1qDbMCPzEeatKfnEt6puiw" featurename="children" parentElementId="com.kms.katalon.menu.submenu.new" positionInList="before:com.kms.katalon.menu.submenu.new.testobject">
-    <elements xsi:type="menu:HandledMenuItem" xmi:id="_4x4u0CPzEeatKfnEt6puiw" elementId="com.kms.katalon.composer.testsuite.collection.handledmenuitem.new" label="New Test Suite Collection" iconURI="platform:/plugin/com.kms.katalon.composer.components.impl/icons/test_suite_collection_16.png" command="_Ov8x8BJ3EeaBC_8l6YNNlg"/>
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_4x4u0CPzEeatKfnEt6puiw" elementId="com.kms.katalon.composer.testsuite.collection.handledmenuitem.new" label="New Test Suite Collection" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/test_suite_collection_16.png" command="_Ov8x8BJ3EeaBC_8l6YNNlg"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_sUdXcC38EeakXcZ2TC1TFg" featurename="children" parentElementId="com.kms.katalon.composer.explorer.popupmenu" positionInList="last">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_vIDgcC38EeakXcZ2TC1TFg" elementId="com.kms.katalon.composer.testsuite.collection.dynamicmenucontribution.properties" label="Properties" contributionURI="bundleclass://com.kms.katalon.composer.testsuite.collection/com.kms.katalon.composer.testsuite.collection.menu.TestSuiteCollectionPropertiesPopupMenuContribution"/>

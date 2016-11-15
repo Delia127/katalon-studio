@@ -17,5 +17,6 @@ Require-Bundle: javax.inject,
  org.apache.commons.lang,
  com.kms.katalon.composer.components.impl,
  com.kms.katalon.controller,
- com.kms.katalon.dal
+ com.kms.katalon.dal,
+ com.kms.katalon.composer.resources
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

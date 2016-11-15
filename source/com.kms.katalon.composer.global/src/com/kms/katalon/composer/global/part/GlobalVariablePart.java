@@ -130,10 +130,12 @@ public class GlobalVariablePart extends CPart implements EventHandler {
         tltmEdit = new ToolItem(toolBar, SWT.NONE);
         tltmEdit.setText(StringConstants.PA_BTN_TIP_EDIT);
         tltmEdit.setImage(ImageConstants.IMG_16_EDIT);
+        tltmEdit.setDisabledImage(ImageConstants.IMG_16_EDIT_DISABLED);
 
         tltmRemove = new ToolItem(toolBar, SWT.NONE);
         tltmRemove.setText(StringConstants.PA_BTN_TIP_REMOVE);
         tltmRemove.setImage(ImageConstants.IMG_16_REMOVE);
+        tltmRemove.setDisabledImage(ImageConstants.IMG_16_REMOVE_DISABLED);
 
         tltmClear = new ToolItem(toolBar, SWT.NONE);
         tltmClear.setText(StringConstants.PA_BTN_TIP_CLEAR);
