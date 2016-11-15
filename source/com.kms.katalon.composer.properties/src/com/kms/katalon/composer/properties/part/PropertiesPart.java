@@ -262,7 +262,6 @@ public class PropertiesPart {
                 isDiscarding = true;
                 setModified(false);
                 setInput(entity);
-                isDiscarding = false;
             }
         });
     }
@@ -321,6 +320,7 @@ public class PropertiesPart {
             if (isYes) {
                 saveProperties();
             }
+            isDiscarding = !isYes;
             setModified(false);
         }
 
@@ -334,6 +334,7 @@ public class PropertiesPart {
             return;
         }
 
+        isDiscarding = false;
         clearInputFields();
 
         this.entity = entity;

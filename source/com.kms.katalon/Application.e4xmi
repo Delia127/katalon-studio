@@ -6,10 +6,12 @@
       <children xsi:type="advanced:Perspective" xmi:id="_hQQH8RYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.perspective.keyword" selectedElement="_hQQH8hYMEeSUMbyEN2kbFQ" label="Keyword" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/keyword_perspective_16.png" tooltip="Keyword Perspective">
         <children xsi:type="basic:PartSashContainer" xmi:id="_hQQH8hYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.partsashcontainer.main" horizontal="true">
           <children xsi:type="basic:PartSashContainer" xmi:id="_QR8UECXxEeWJ99-mW6KHQg" elementId="com.kms.katalon.composer.partsashcontainer.left" containerData="20" selectedElement="_Uxwj0BYtEeSNBMuqFX2a9Q">
-            <children xsi:type="basic:PartStack" xmi:id="_Uxwj0BYtEeSNBMuqFX2a9Q" elementId="com.kms.katalon.composer.partstack.explorer" containerData="50">
+            <children xsi:type="basic:PartStack" xmi:id="_Uxwj0BYtEeSNBMuqFX2a9Q" elementId="com.kms.katalon.composer.partstack.explorer" containerData="60">
               <tags>NoMove</tags>
             </children>
-            <children xsi:type="basic:PartStack" xmi:id="_HI0W8CXyEeWJ99-mW6KHQg" elementId="com.kms.katalon.partstack.left.outline" containerData="50">
+            <children xsi:type="basic:PartStack" xmi:id="_HI0W8CXyEeWJ99-mW6KHQg" elementId="com.kms.katalon.partstack.left.outline" visible="false" containerData="40">
+              <tags>newtablook</tags>
+              <tags>Minimized</tags>
               <tags>NoMove</tags>
             </children>
           </children>
@@ -149,7 +151,7 @@
       </children>
     </trimBars>
     <trimBars xmi:id="_jKbr8CYQEeWJ99-mW6KHQg" elementId="com.kms.katalon.trimbar.left" side="Left">
-      <children xsi:type="menu:ToolControl" xmi:id="_k7k5cCYQEeWJ99-mW6KHQg" elementId="com.kms.katalon.partstack.left.outline(com.kms.katalon.composer.perspective.keyword)" visible="false" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.addons.swt/org.eclipse.e4.ui.workbench.addons.minmax.TrimStack">
+      <children xsi:type="menu:ToolControl" xmi:id="_k7k5cCYQEeWJ99-mW6KHQg" elementId="com.kms.katalon.partstack.left.outline(com.kms.katalon.composer.perspective.keyword)" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.addons.swt/org.eclipse.e4.ui.workbench.addons.minmax.TrimStack">
         <tags>NoMove</tags>
       </children>
     </trimBars>
