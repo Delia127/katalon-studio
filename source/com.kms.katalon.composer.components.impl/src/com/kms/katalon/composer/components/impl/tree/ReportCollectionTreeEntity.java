@@ -10,6 +10,7 @@ import org.eclipse.swt.graphics.Image;
 import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.tree.TooltipPropertyDescription;
+import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.report.ReportCollectionEntity;
 
 public class ReportCollectionTreeEntity extends AbstractTreeEntity {
@@ -45,7 +46,7 @@ public class ReportCollectionTreeEntity extends AbstractTreeEntity {
     @Override
     public String getCopyTag() throws Exception {
         //Copy is not allowed for Report
-        return null;
+        return FolderType.REPORT.toString();
     }
 
     @Override

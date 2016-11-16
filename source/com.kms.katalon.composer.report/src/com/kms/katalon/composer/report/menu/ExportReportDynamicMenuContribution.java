@@ -77,7 +77,9 @@ public class ExportReportDynamicMenuContribution {
 	}
 
 	public static boolean canExecute(Object[] selectedObjects) {
-		if (selectedObjects == null) return false;
+        if (selectedObjects == null || selectedObjects.length == 0) {
+            return false;
+        }
 		
 		boolean isHandled = true;
 		for (Object selectedObject : selectedObjects) {

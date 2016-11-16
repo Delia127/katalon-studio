@@ -33,9 +33,12 @@ public class PasteHandler extends CommonExplorerHandler {
         Clipboard clipboard = new Clipboard(Display.getCurrent());
 
         try {
+            // Disable Paste function in Report region
             // Handle Keyword entity from paste
-            if (StringUtils.equals(entity.getCopyTag(), FolderType.KEYWORD.toString())
-                    && clipboard.getContents(FileTransfer.getInstance()) == null) {
+            String copyTag = entity.getCopyTag();
+            if (StringUtils.equals(copyTag, FolderType.REPORT.toString())
+                    || (StringUtils.equals(copyTag, FolderType.KEYWORD.toString())
+                            && clipboard.getContents(FileTransfer.getInstance()) == null)) {
                 return false;
             }
 
