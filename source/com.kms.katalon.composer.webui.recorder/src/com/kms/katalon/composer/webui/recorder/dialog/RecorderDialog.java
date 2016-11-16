@@ -912,9 +912,9 @@ public class RecorderDialog extends Dialog {
             @Override
             public String getToolTipText(Object element) {
                 if (element instanceof HTMLActionMapping && ((HTMLActionMapping) element).getAction() != null) {
-                    return ((HTMLActionMapping) element).getAction().getDescription();
+                    return StringUtils.defaultIfEmpty(((HTMLActionMapping) element).getAction().getDescription(), null);
                 }
-                return super.getToolTipText(element);
+                return StringUtils.defaultIfEmpty(super.getToolTipText(element), null);
             }
 
         });
