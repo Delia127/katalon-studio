@@ -259,6 +259,10 @@ public class ReportUtil {
                     }
                 }
             }
+            // Keep XmlLogRecord instance for uploading purpose
+            if (testSuiteLogRecord != null) {
+                testSuiteLogRecord.addXmlLogRecords(xmlLogRecords);
+            }
         }
         // If execution process crashed before completed
         if (stack.size() > 0) {
