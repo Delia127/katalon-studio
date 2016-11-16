@@ -166,8 +166,7 @@ public class TestSuiteRepoDialog extends Dialog {
             updateProjectComboboxItems();
         } catch (Exception e) {
             LoggerSingleton.logError(e);
-            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.DIA_MSG_UNABLE_TO_UPDATE_PROJECT, e.getClass()
-                    .getSimpleName());
+            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.DIA_MSG_UNABLE_TO_UPDATE_PROJECT, e.getMessage());
         }
     }
 
@@ -254,8 +253,8 @@ public class TestSuiteRepoDialog extends Dialog {
             }
         } catch (Exception e) {
             LoggerSingleton.logError(e);
-            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.DIA_MSG_UNABLE_TO_FIND_TEST_SUITE_FOLDER, e
-                    .getClass().getSimpleName());
+            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.DIA_MSG_UNABLE_TO_FIND_TEST_SUITE_FOLDER,
+                    e.getMessage());
         }
     }
 

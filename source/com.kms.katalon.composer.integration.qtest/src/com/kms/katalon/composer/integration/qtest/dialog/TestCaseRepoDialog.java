@@ -261,8 +261,7 @@ public class TestCaseRepoDialog extends Dialog {
             updateProjectComboboxItems();
         } catch (Exception e) {
             LoggerSingleton.logError(e);
-            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.DIA_MSG_UNABLE_TO_UPDATE_PROJECT, e.getClass()
-                    .getSimpleName());
+            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.DIA_MSG_UNABLE_TO_UPDATE_PROJECT, e.getMessage());
         }
     }
 
@@ -297,8 +296,7 @@ public class TestCaseRepoDialog extends Dialog {
             }
         } catch (Exception e) {
             LoggerSingleton.logError(e);
-            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.DIA_MSG_UNABLE_TO_UPDATE_MODULE, e.getClass()
-                    .getSimpleName());
+            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.DIA_MSG_UNABLE_TO_UPDATE_MODULE, e.getMessage());
         }
     }
 

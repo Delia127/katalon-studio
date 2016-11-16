@@ -21,6 +21,7 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.integration.qtest.constants.QTestMessageConstants;
 import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
 import com.kms.katalon.integration.qtest.credential.IQTestCredential;
+import com.kms.katalon.integration.qtest.credential.IQTestToken;
 import com.kms.katalon.integration.qtest.entity.QTestEntity;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
 import com.kms.katalon.integration.qtest.exception.QTestException;
@@ -121,8 +122,13 @@ public class QTestIntegrationProjectManager {
      * @see {@link #getAll(String, String)}
      */
     public static List<QTestProject> getAllProject(IQTestCredential credential) throws QTestException {
-        String accessToken = credential.getToken().getAccessTokenHeader();
-        if (!QTestIntegrationAuthenticationManager.validateToken(accessToken)) {
+        IQTestToken token = credential.getToken();
+        if (token == null) {
+            throw new QTestUnauthorizedException(QTestMessageConstants.QTEST_EXC_INVALID_TOKEN);
+        }
+
+        String accessToken = token.getAccessTokenHeader();
+        if (!QTestIntegrationAuthenticationManager.validateToken(token.getAccessTokenHeader())) {
             throw new QTestUnauthorizedException(QTestMessageConstants.QTEST_EXC_INVALID_TOKEN);
         }
 
@@ -138,7 +144,7 @@ public class QTestIntegrationProjectManager {
             }
         } else {
             String result = QTestAPIRequestHelper.sendGetRequestViaAPI(credential.getServerUrl() + "/api/v3/projects",
-                    credential.getToken());
+                    token);
             if (result != null) {
                 try {
                     JsonArray projectArrs = new JsonArray(result);
