@@ -10,12 +10,16 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.xml.bind.UnmarshalException;
 
+import org.apache.commons.lang.StringUtils;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
+import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.IPartListener;
@@ -31,9 +35,10 @@ import org.xml.sax.SAXParseException;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
+import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.components.part.IComposerPart;
+import com.kms.katalon.composer.components.part.IComposerPartEvent;
 import com.kms.katalon.composer.parts.CPart;
 import com.kms.katalon.composer.testdata.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
@@ -44,7 +49,7 @@ import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 
-public abstract class TestDataMainPart extends CPart implements EventHandler, IPartListener, IComposerPart {
+public abstract class TestDataMainPart extends CPart implements EventHandler, IPartListener, IComposerPartEvent {
     public static final int MAX_LABEL_WIDTH = 70;
 
     protected static final int MAX_COLUMN_COUNT = 100;
@@ -131,8 +136,8 @@ public abstract class TestDataMainPart extends CPart implements EventHandler, IP
             Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
             if (object != null && object instanceof Object[]) {
                 String elementId = EntityPartUtil.getTestDataPartId((String) ((Object[]) object)[0]);
-
-                if (elementId.equalsIgnoreCase(mpart.getElementId())) {
+                String publisher = StringUtils.defaultString((String) ((Object[]) object)[2]);
+                if (!mpart.getElementId().equals(publisher) && elementId.equalsIgnoreCase(mpart.getElementId())) {
                     DataFileEntity dataFile = (DataFileEntity) ((Object[]) object)[1];
                     boolean oldDirty = dirtyable.isDirty();
                     updateDataFile(dataFile);
@@ -196,7 +201,7 @@ public abstract class TestDataMainPart extends CPart implements EventHandler, IP
     }
 
     protected void sendTestDataUpdatedEvent(String oldPk) {
-        eventBroker.post(EventConstants.TEST_DATA_UPDATED, new Object[] { oldPk, originalDataFile });
+        eventBroker.post(EventConstants.TEST_DATA_UPDATED, new Object[] { oldPk, originalDataFile, mpart.getElementId() });
     }
 
     private void verifySourceChanged() {
@@ -269,9 +274,10 @@ public abstract class TestDataMainPart extends CPart implements EventHandler, IP
         return new FolderTreeEntity(folderEntity, getParentFolderTreeEntity(folderEntity.getParentFolder(), rootFolder));
     }
 
+    @Override
     @PreDestroy
-    private void destroy() {
-        preDestroy();
+    public void onClose() {
+        EventUtil.post(EventConstants.PROPERTIES_ENTITY, null);
         eventBroker.unsubscribe(this);
         Iterator<Thread> threadIterator = currentThreads.iterator();
         while (threadIterator.hasNext()) {
@@ -287,28 +293,31 @@ public abstract class TestDataMainPart extends CPart implements EventHandler, IP
         dirtyable.setDirty(dirty);
     }
 
-    protected abstract void preDestroy();
-
+    @Override
     public void partActivated(MPart part) {
 
     }
 
+    @Override
     public void partBroughtToTop(MPart part) {
 
     }
 
+    @Override
     public void partDeactivated(MPart part) {
         if (part == mpart) {
             removePart();
         }
     }
 
+    @Override
     public void partHidden(MPart part) {
         if (part == mpart) {
             removePart();
         }
     }
 
+    @Override
     public void partVisible(MPart part) {
 
     }
@@ -328,15 +337,45 @@ public abstract class TestDataMainPart extends CPart implements EventHandler, IP
     public String getEntityId() {
         return getDataFile().getIdForDisplay();
     }
-    
+
     protected void refreshTreeEntity() {
         try {
-            TestDataTreeEntity testDataTreeEntity = TreeEntityUtil.getTestDataTreeEntity(
-                    originalDataFile, ProjectController.getInstance().getCurrentProject());
+            TestDataTreeEntity testDataTreeEntity = TreeEntityUtil.getTestDataTreeEntity(originalDataFile,
+                    ProjectController.getInstance().getCurrentProject());
             eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, testDataTreeEntity);
             eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, testDataTreeEntity);
         } catch (Exception e) {
-           LoggerSingleton.logError(e);
+            LoggerSingleton.logError(e);
         }
     }
+
+    @Override
+    @Inject
+    @Optional
+    public void onSelect(@UIEventTopic(UIEvents.UILifeCycle.BRINGTOTOP) Event event) {
+        MPart part = EventUtil.getPart(event);
+        if (part == null || !StringUtils.equals(part.getElementId(), mpart.getElementId())) {
+            return;
+        }
+
+        EventUtil.post(EventConstants.PROPERTIES_ENTITY, originalDataFile);
+    }
+
+    @Override
+    @Inject
+    @Optional
+    public void onChangeEntityProperties(@UIEventTopic(EventConstants.PROPERTIES_ENTITY_UPDATED) Event event) {
+        Object eventData = EventUtil.getData(event);
+        if (!(eventData instanceof DataFileEntity)) {
+            return;
+        }
+
+        DataFileEntity updatedEntity = (DataFileEntity) eventData;
+        if (!StringUtils.equals(updatedEntity.getIdForDisplay(), getEntityId())) {
+            return;
+        }
+        originalDataFile.setTag(updatedEntity.getTag());
+        originalDataFile.setDescription(updatedEntity.getDescription());
+    }
+
 }

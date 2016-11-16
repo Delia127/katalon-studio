@@ -2,6 +2,7 @@ package com.kms.katalon.dal.fileservice.dataprovider.setting;
 
 import com.kms.katalon.dal.ICheckpointProvider;
 import com.kms.katalon.dal.IDataFileDataProvider;
+import com.kms.katalon.dal.IEntityDataProvider;
 import com.kms.katalon.dal.IEntityNameProvider;
 import com.kms.katalon.dal.IExportDataProvider;
 import com.kms.katalon.dal.IFolderDataProvider;
@@ -15,6 +16,7 @@ import com.kms.katalon.dal.IWebElementDataProvider;
 import com.kms.katalon.dal.TestSuiteCollectionDataProvider;
 import com.kms.katalon.dal.fileservice.dataprovider.CheckpointFileServiceDataProvider;
 import com.kms.katalon.dal.fileservice.dataprovider.DataFileFileServiceDataProvider;
+import com.kms.katalon.dal.fileservice.dataprovider.EntityFileServiceDataProvider;
 import com.kms.katalon.dal.fileservice.dataprovider.EntityNameFileServiceDataProvider;
 import com.kms.katalon.dal.fileservice.dataprovider.ExportFileServiceDataProvider;
 import com.kms.katalon.dal.fileservice.dataprovider.FolderFileServiceDataProvider;
@@ -117,6 +119,11 @@ public class FileServiceDataProviderSetting implements IDataProviderSetting {
     @Override
     public ICheckpointProvider getCheckpointDataProvider() {
         return new CheckpointFileServiceDataProvider();
+    }
+
+    @Override
+    public IEntityDataProvider getEntityDataProvider() {
+        return new EntityFileServiceDataProvider();
     }
 
 }

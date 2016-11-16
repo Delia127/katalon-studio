@@ -1,22 +1,84 @@
 package com.kms.katalon.composer.components.util;
 
+import org.eclipse.e4.ui.css.swt.helpers.CSSSWTColorHelper;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 
+@SuppressWarnings("restriction")
 public class ColorUtil {
 
-    // background
+    private static final String EVEN_TABLE_ITEM_BACKGROUND_COLOR = "#87cefa";
+
+    private static final String ODD_TABLE_ITEM_BACKGROUND_COLOR = "#f3f3f3";
+
+    private static final String PASSED_LOG_BACKGROUND_COLOR = "#5bb135";
+
+    private static final String FAILED_LOG_BACKGROUND_COLOR = "#ce2c2c";
+
+    private static final String ERROR_LOG_BACKGROUND_COLOR = "#ec5c51";
+
+    private static final String WARNING_LOG_BACKGROUND_COLOR = "#fecc22";
+
+    private static final String INCOMPLETE_LOG_COLOR = "#997515";
+
+    private static final String FAILED_STATUS_BACKGROUND_COLOR = "#f19696";
+
+    private static final String INCOMPLETE_STATUS_BACKGROUND_COLOR = "#f2bc70";
+
+    private static final String EXTRA_LIGHT_GRAY_COLOR = "#f6f6f6";
+
+    private static final String TEXT_PLACEHOLDER_COLOR = "#dadada";
+
+    private static final String TOOLTIP_TEXT_COLOR = "#645454";
+
+    private static final String DEFAULT_COMPOSITE_BACKGROUND_COLOR = "#f0f0f0";
+
+    private static final String ERROR_BACKGROUND_COLOR = "#f8cbcb";
+
+    private static final String ERROR_TEXT_COLOR = "#bd2c00";
+
+    private static final String WARNING_TEXT_COLOR = "#ff8000";
+
+    private static final String TOOLBAR_BACKGROUND_COLOR = "#e8e8e8";
+
+    private static final String COMPOSITE_HEADER_BACKGROUND_COLOR = "#43515a";
+
+    private static Display display = Display.getCurrent();
+
+    /**
+     * Get SWT Color from RGB color
+     * 
+     * @param red
+     * @param green
+     * @param blue
+     * @return Color
+     */
+    public static Color getColor(int red, int green, int blue) {
+        return new Color(display, new RGB(red, green, blue));
+    }
+
+    /**
+     * Get SWT Color from HEX color
+     * 
+     * @param hexColor HEX color. E.g {@code #ffffff}
+     * @return Color
+     */
+    public static Color getColor(String hexColor) {
+        return new Color(display, CSSSWTColorHelper.getRGBA(hexColor));
+    }
+
     public static Color getSelectedTableItemBackgroundColor() {
-        return Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION);
+        return display.getSystemColor(SWT.COLOR_LIST_SELECTION);
     }
 
     public static Color getEvenTableItemBackgroundColor() {
-        return new Color(Display.getCurrent(), 135, 206, 250);
+        return getColor(EVEN_TABLE_ITEM_BACKGROUND_COLOR);
     }
 
     public static Color getOddTableItemBackgroundColor() {
-        return new Color(Display.getCurrent(), 243, 243, 243);
+        return getColor(ODD_TABLE_ITEM_BACKGROUND_COLOR);
     }
 
     public static Color getCompositeBackgroundColor() {
@@ -24,121 +86,117 @@ public class ColorUtil {
     }
 
     public static Color getCompositeHeaderBackgroundColor() {
-        return new Color(Display.getCurrent(), 67, 81, 90);
+        return getColor(COMPOSITE_HEADER_BACKGROUND_COLOR);
     }
 
     public static Color getHighlightBackgroundColor() {
-        return Display.getCurrent().getSystemColor(SWT.COLOR_YELLOW);
+        return display.getSystemColor(SWT.COLOR_YELLOW);
     }
 
     public static Color getWhiteBackgroundColor() {
-        return new Color(Display.getCurrent(), 255, 255, 255);
+        return display.getSystemColor(SWT.COLOR_WHITE);
     }
 
     public static Color getBlackBackgroundColor() {
-        return new Color(Display.getCurrent(), 0, 0, 0);
+        return display.getSystemColor(SWT.COLOR_BLACK);
     }
 
-    // #E8E8E8
     public static Color getButtonMouseOverBackgroundColor() {
-        return new Color(Display.getCurrent(), 232, 232, 232);
+        return getColor(TOOLBAR_BACKGROUND_COLOR);
     }
 
     public static Color getButtonMouseDownBackgroundColor() {
-        return new Color(Display.getCurrent(), 218, 218, 218);
+        return getColor(TEXT_PLACEHOLDER_COLOR);
     }
 
+    // #5bb135 (light green)
     public static Color getPassedLogBackgroundColor() {
-        return new Color(Display.getCurrent(), 91, 177, 53);
+        return getColor(PASSED_LOG_BACKGROUND_COLOR);
     }
 
-    // #ce2c2c
     public static Color getFailedLogBackgroundColor() {
-        return new Color(Display.getCurrent(), 206, 44, 44);
+        return getColor(FAILED_LOG_BACKGROUND_COLOR);
     }
 
     // #ec5c51
     public static Color getErrorLogBackgroundColor() {
-        return new Color(Display.getCurrent(), 236, 92, 81);
+        return getColor(ERROR_LOG_BACKGROUND_COLOR);
     }
 
-    // #fecc22
     public static Color getWarningLogBackgroundColor() {
-        return new Color(Display.getCurrent(), 254, 204, 34);
+        return getColor(WARNING_LOG_BACKGROUND_COLOR);
     }
 
     public static Color getIncompleteLogColor() {
-        return new Color(Display.getCurrent(), 153, 117, 21);
+        return getColor(INCOMPLETE_LOG_COLOR);
     }
 
-    // #f19696
     public static Color getFailedStatusBackgroundColor() {
-        return new Color(Display.getCurrent(), 241, 150, 150);
+        return getColor(FAILED_STATUS_BACKGROUND_COLOR);
     }
 
-    // #f2bc70
     public static Color getIncompleteStatusBackgroundColor() {
-        return new Color(Display.getCurrent(), 242, 188, 112);
+        return getColor(INCOMPLETE_STATUS_BACKGROUND_COLOR);
     }
 
-    // #F6F6F6
     public static Color getExtraLightGrayBackgroundColor() {
-        return new Color(Display.getCurrent(), 246, 246, 246);
+        return getColor(EXTRA_LIGHT_GRAY_COLOR);
     }
 
-    // foreground
     public static Color getTextPlaceholderColor() {
-        return new Color(Display.getCurrent(), 218, 218, 218);
+        return getColor(TEXT_PLACEHOLDER_COLOR);
     }
 
     public static Color getDefaultTextColor() {
-        return new Color(Display.getCurrent(), 0, 0, 0);
+        return display.getSystemColor(SWT.COLOR_BLACK);
     }
 
     public static Color getTextWhiteColor() {
-        return new Color(Display.getCurrent(), 255, 255, 255);
+        return display.getSystemColor(SWT.COLOR_WHITE);
     }
 
     public static Color getTextErrorColor() {
-        return Display.getCurrent().getSystemColor(SWT.COLOR_RED);
+        return display.getSystemColor(SWT.COLOR_RED);
     }
 
     public static Color getTextSuccessfulColor() {
-        return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
+        return display.getSystemColor(SWT.COLOR_DARK_GREEN);
     }
 
     public static Color getTooltipPlaceHolderForegroundColor() {
-        return new Color(Display.getCurrent(), 100, 84, 84);
+        return getColor(TOOLTIP_TEXT_COLOR);
     }
 
-    // #F0F0F0
     public static Color getDefaultBackgroundColor() {
-        return new Color(Display.getCurrent(), 240, 240, 240);
+        return getColor(DEFAULT_COMPOSITE_BACKGROUND_COLOR);
     }
 
-    // #F8CBCB
     public static Color getErrorTableItemBackgroundColor() {
-        return new Color(Display.getCurrent(), 248, 203, 203);
+        return getColor(ERROR_BACKGROUND_COLOR);
     }
 
-    // #BD2C00
     public static Color getErrorTableItemForegroundColor() {
-        return new Color(Display.getCurrent(), 189, 44, 0);
+        return getColor(ERROR_TEXT_COLOR);
     }
 
     public static Color getWarningForegroudColor() {
-        return new Color(Display.getCurrent(), 255, 128, 0);
+        return getColor(WARNING_TEXT_COLOR);
     }
-    
+
     public static Color getDisabledItemBackgroundColor() {
-        return Display.getCurrent().getSystemColor(SWT.COLOR_GRAY);
+        return display.getSystemColor(SWT.COLOR_GRAY);
     }
-    
+
     public static Color getUnEditableTableCellBackgroundColor() {
-        return Display.getCurrent().getSystemColor(SWT.COLOR_GRAY);
+        return display.getSystemColor(SWT.COLOR_GRAY);
     }
 
     public static Color getHighlightForegroundColor() {
-        return Display.getCurrent().getSystemColor(SWT.COLOR_LINK_FOREGROUND);
+        return display.getSystemColor(SWT.COLOR_LINK_FOREGROUND);
     }
+
+    public static Color getToolBarBackgroundColor() {
+        return getColor(TOOLBAR_BACKGROUND_COLOR);
+    }
+
 }

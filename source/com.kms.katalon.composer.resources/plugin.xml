@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+
+   <extension
+         id="com.kms.katalon.composer.resources.fragment"
+         point="org.eclipse.e4.workbench.model">
+      <fragment
+            uri="fragment.e4xmi">
+      </fragment>
+      <processor
+            apply="always"
+            beforefragment="true"
+            class="com.kms.katalon.composer.resources.processor.ImageProcessor">
+      </processor>
+   </extension>
+
+</plugin>

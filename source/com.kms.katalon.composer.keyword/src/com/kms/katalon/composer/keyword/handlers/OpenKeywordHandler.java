@@ -13,6 +13,7 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.keyword.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
@@ -52,6 +53,7 @@ public class OpenKeywordHandler {
                 
                  IEditorDescriptor desc = PlatformUI.getWorkbench().getEditorRegistry()
                  .getDefaultEditor(iFile.getName());
+                 desc.getImageDescriptor().createFromImage(ImageConstants.IMG_16_KEYWORD);
                  PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
                  .openEditor(new FileEditorInput(iFile), desc.getId());
 

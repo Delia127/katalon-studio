@@ -146,8 +146,7 @@ public class TestCaseRepoPreferencePage extends AbstractQTestIntegrationPage {
             }
         } catch (Exception ex) {
             LoggerSingleton.logError(ex);
-            MultiStatusErrorDialog.showErrorDialog(ex, StringConstants.DIA_MSG_UNABLE_GET_PROJECT_INFO, ex.getClass()
-                    .getSimpleName());
+            MultiStatusErrorDialog.showErrorDialog(ex, StringConstants.DIA_MSG_UNABLE_GET_PROJECT_INFO, ex.getMessage());
         }
 
         testCaseRepositories = QTestIntegrationUtil.getTestCaseRepositories(projectEntity, qTestProjects);

@@ -195,7 +195,7 @@ public class JobViewerPart implements EventHandler {
 
         if (launcher.getStatus() == LauncherStatus.RUNNING || launcher.getStatus() == LauncherStatus.SENDING_REPORT) {
             final GifCLabel lblLauncherStatus = new GifCLabel(compositeLauncher, SWT.NONE);
-            lblLauncherStatus.setGifImage(this.getClass().getResourceAsStream(ImageConstants.PATH_16_LOADING));
+            lblLauncherStatus.setGifImage(ImageConstants.URL_16_LOADING.openStream());
 
             GridData gd_lblLauncherStatus = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
             gd_lblLauncherStatus.widthHint = 30;

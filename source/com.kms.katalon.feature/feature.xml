@@ -338,6 +338,7 @@
       <import plugin="org.eclipse.text" version="3.1.0" match="compatible"/>
       <import plugin="org.eclipse.jetty.io" version="8.1.16" match="greaterOrEqual"/>
       <import plugin="com.kms.katalon.composer.webui"/>
+      <import plugin="com.kms.katalon.support.testing.katserver"/>
    </requires>
 
    <plugin
@@ -1080,7 +1081,7 @@
          id="org.eclipse.jdt.core"
          download-size="0"
          install-size="0"
-         version="3.12.0.xx-201608111517-e46"
+         version="3.12.0.xx-201611160028-e46"
          unpack="false"/>
 
    <plugin
@@ -2120,6 +2121,13 @@
          unpack="false"/>
 
    <plugin
+         id="com.kms.katalon.composer.properties"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
          id="org.zeroturnaround.zt-exec"
          download-size="0"
          install-size="0"
@@ -2139,7 +2147,7 @@
          install-size="0"
          version="1.0.0.qualifier"
          unpack="false"/>
-         
+
    <plugin
          id="com.kms.katalon.composer.integration.jira"
          download-size="0"
@@ -2149,6 +2157,20 @@
 
    <plugin
          id="com.kms.katalon.integration.jira"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.kms.katalon.support.testing.katserver"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.kms.katalon.composer.resources"
          download-size="0"
          install-size="0"
          version="0.0.0"

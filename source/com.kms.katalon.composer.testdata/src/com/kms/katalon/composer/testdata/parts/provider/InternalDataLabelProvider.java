@@ -55,6 +55,6 @@ public class InternalDataLabelProvider extends TypeCheckedStyleCellLabelProvider
         if (element.isLastRow()) {
             return StringConstants.PA_TOOL_TIP_ADD_ROW;
         }
-        return getText(element);
+        return StringUtils.defaultIfEmpty(getText(element), null);
     }
 }

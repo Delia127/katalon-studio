@@ -24,12 +24,14 @@ Require-Bundle: org.eclipse.jface,
  org.eclipse.core.resources,
  org.eclipse.e4.ui.workbench,
  org.eclipse.core.runtime,
- org.eclipse.e4.ui.services,
  org.eclipse.e4.ui.di,
  com.kms.katalon.constant,
  org.apache.commons.lang,
  com.kms.katalon.controller,
- org.eclipse.ui.workbench
+ org.eclipse.ui.workbench,
+ org.eclipse.e4.ui.css.swt,
+ org.eclipse.osgi.services,
+ org.eclipse.e4.core.di
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: javax.annotation;version="1.2.0"

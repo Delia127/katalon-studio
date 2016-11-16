@@ -85,10 +85,6 @@ public class ComposerTestsuiteMessageConstants extends NLS {
 
     public static String PA_CONFIRM_MSG_RELOAD_FILE;
 
-    public static String PA_LBL_LAST_UPDATED;
-
-    public static String PA_LBL_CREATED_DATE;
-
     public static String PA_LBL_LAST_RUN;
 
     public static String PA_LBL_RETRY;

@@ -44,4 +44,10 @@ public class TestSuiteRunConfiguration extends ClonableObject {
         return newInstance;
     }
 
+    public static TestSuiteRunConfiguration cloneFrom(TestSuiteRunConfiguration that) {
+        TestSuiteRunConfiguration clone = (TestSuiteRunConfiguration) that.clone();
+        clone.setTestSuiteEntity(that.getTestSuiteEntity());
+        return clone;
+    }
+
 }

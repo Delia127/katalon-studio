@@ -10,11 +10,12 @@
     <elements xsi:type="commands:Handler" xmi:id="_Xll8oCkhEeSovtUyBOitzw" elementId="com.kms.katalon.composer.testdata.handler.add" contributionURI="bundleclass://com.kms.katalon.composer.testdata/com.kms.katalon.composer.testdata.handlers.NewTestDataHandler" command="_KAfY4CkhEeSovtUyBOitzw"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_hyP94CkhEeSovtUyBOitzw" featurename="children" parentElementId="com.kms.katalon.menu.submenu.new" positionInList="before:com.kms.katalon.menu.submenu.new.package">
-    <elements xsi:type="menu:HandledMenuItem" xmi:id="_q9XCkCkhEeSovtUyBOitzw" elementId="com.kms.katalon.menu.submenu.new.testdata" label="Test Data" iconURI="platform:/plugin/com.kms.katalon.composer.testdata/icons/test_data_16.png" tooltip="New Test Data" command="_KAfY4CkhEeSovtUyBOitzw"/>
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_q9XCkCkhEeSovtUyBOitzw" elementId="com.kms.katalon.menu.submenu.new.testdata" label="Test Data" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/test_data_16.png" tooltip="New Test Data" command="_KAfY4CkhEeSovtUyBOitzw"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_4fH-cCkhEeSovtUyBOitzw" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="before:com.kms.katalon.composer.toolbar.handledtoolitem.new.keyword">
-    <elements xsi:type="menu:HandledToolItem" xmi:id="_8oQXACkhEeSovtUyBOitzw" elementId="com.kms.katalon.composer.toolbar.testdata.newtestdata" label="" iconURI="platform:/plugin/com.kms.katalon.composer.testdata/icons/new_test_data_24.png" tooltip="New Test Data" command="_KAfY4CkhEeSovtUyBOitzw">
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_8oQXACkhEeSovtUyBOitzw" elementId="com.kms.katalon.composer.toolbar.testdata.newtestdata" label="" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/new_test_data_24.png" tooltip="New Test Data" command="_KAfY4CkhEeSovtUyBOitzw">
       <persistedState key="index" value="10"/>
+      <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/new_test_data_disabled_24.png"/>
       <tags>FORCE_TEXT</tags>
     </elements>
   </fragments>

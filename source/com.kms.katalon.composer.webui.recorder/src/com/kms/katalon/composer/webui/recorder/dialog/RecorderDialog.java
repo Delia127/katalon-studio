@@ -265,6 +265,9 @@ public class RecorderDialog extends Dialog {
 
     private boolean checkRegistryKey(String parentKey) throws IllegalAccessException, InvocationTargetException {
         List<String> bhos = WinRegistry.readStringSubKeys(WinRegistry.HKEY_LOCAL_MACHINE, parentKey);
+        if (bhos == null || bhos.isEmpty()) {
+            return false;
+        }
         for (String bho : bhos) {
             if (bho.toLowerCase().equals(IE_ADDON_BHO_KEY.toLowerCase())) {
                 return true;
@@ -379,14 +382,14 @@ public class RecorderDialog extends Dialog {
     private void pause() {
         isPausing = true;
         tltmPause.setText(RESUME_TOOL_ITEM_LABEL);
-        tltmPause.setImage(ImageConstants.IMG_28_PLAY);
+        tltmPause.setImage(ImageConstants.IMG_24_PLAY);
         toolBar.getParent().layout();
     }
 
     private void resume() {
         isPausing = false;
         tltmPause.setText(PAUSE_TOOL_ITEM_LABEL);
-        tltmPause.setImage(ImageConstants.IMG_28_PAUSE);
+        tltmPause.setImage(ImageConstants.IMG_24_PAUSE);
         toolBar.getParent().layout();
     }
 
@@ -439,7 +442,9 @@ public class RecorderDialog extends Dialog {
     private void createLeftPanel(Composite parent) {
         capturedObjectComposite = new CapturedHTMLElementsComposite(parent, SWT.NONE);
 
-        capturedObjectComposite.getElementTreeViewer().setInput(elements);
+        TreeViewer elementTreeViewer = capturedObjectComposite.getElementTreeViewer();
+        elementTreeViewer.setInput(elements);
+        elementTreeViewer.expandAll();
 
         addContextMenuForElementTree();
 
@@ -808,7 +813,7 @@ public class RecorderDialog extends Dialog {
         actionToolBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
         ToolItem tltmAdd = new ToolItem(actionToolBar, SWT.DROP_DOWN);
-        tltmAdd.setImage(ImageConstants.IMG_24_ADD);
+        tltmAdd.setImage(ImageConstants.IMG_16_ADD);
         tltmAdd.setText(StringConstants.ADD);
         tltmAdd.addSelectionListener(new DropdownToolItemSelectionListener() {
             @Override
@@ -828,7 +833,7 @@ public class RecorderDialog extends Dialog {
         });
 
         tltmDelete = new ToolItem(actionToolBar, SWT.PUSH);
-        tltmDelete.setImage(ImageConstants.IMG_24_DELETE);
+        tltmDelete.setImage(ImageConstants.IMG_16_DELETE);
         tltmDelete.setEnabled(false);
         createDeleteItem(tltmDelete);
     }
@@ -907,9 +912,9 @@ public class RecorderDialog extends Dialog {
             @Override
             public String getToolTipText(Object element) {
                 if (element instanceof HTMLActionMapping && ((HTMLActionMapping) element).getAction() != null) {
-                    return ((HTMLActionMapping) element).getAction().getDescription();
+                    return StringUtils.defaultIfEmpty(((HTMLActionMapping) element).getAction().getDescription(), null);
                 }
-                return super.getToolTipText(element);
+                return StringUtils.defaultIfEmpty(super.getToolTipText(element), null);
             }
 
         });
@@ -1145,7 +1150,7 @@ public class RecorderDialog extends Dialog {
 
         toolItemBrowserDropdown = new ToolItem(toolBar, SWT.DROP_DOWN);
         toolItemBrowserDropdown.setText(START_TOOL_ITEM_LABEL);
-        toolItemBrowserDropdown.setImage(ImageConstants.IMG_28_RECORD);
+        toolItemBrowserDropdown.setImage(ImageConstants.IMG_24_RECORD);
 
         Menu browserMenu = new Menu(toolBar.getShell());
 
@@ -1161,7 +1166,7 @@ public class RecorderDialog extends Dialog {
 
         tltmPause = new ToolItem(toolBar, SWT.PUSH);
         tltmPause.setText(PAUSE_TOOL_ITEM_LABEL);
-        tltmPause.setImage(ImageConstants.IMG_28_PAUSE);
+        tltmPause.setImage(ImageConstants.IMG_24_PAUSE);
         tltmPause.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -1177,7 +1182,7 @@ public class RecorderDialog extends Dialog {
 
         tltmStop = new ToolItem(toolBar, SWT.PUSH);
         tltmStop.setText(STOP_TOOL_ITEM_LABEL);
-        tltmStop.setImage(ImageConstants.IMG_28_STOP);
+        tltmStop.setImage(ImageConstants.IMG_24_STOP);
         tltmStop.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent event) {
@@ -1420,6 +1425,7 @@ public class RecorderDialog extends Dialog {
                 actionTableViewer.refresh();
                 actionTableViewer.reveal(newAction);
                 capturedObjectComposite.refreshElementTree(null);
+                capturedObjectComposite.getElementTreeViewer().reveal(newAction.getTargetElement());
             }
         });
     }

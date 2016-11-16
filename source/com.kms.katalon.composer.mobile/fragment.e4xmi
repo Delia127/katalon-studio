@@ -2,7 +2,7 @@
 <fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_lZUq4EurEeWj7OhDHfltSQ">
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_uad7QEurEeWj7OhDHfltSQ" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.run" positionInList="index:7">
     <elements xsi:type="menu:MenuSeparator" xmi:id="_tChpYHfIEeWiVci6VZKWGw" elementId="com.kms.katalon.composer.mobile.menuseparator.0"/>
-    <elements xsi:type="menu:HandledMenuItem" xmi:id="_zU58sFqYEeWwu6VuxUpakQ" elementId="com.kms.katalon.composer.mobile.execution.handledmenuitem.android" label="Android" iconURI="platform:/plugin/com.kms.katalon.composer.mobile/icons/android_16.png" command="_xoxN0EusEeWj7OhDHfltSQ">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_zU58sFqYEeWwu6VuxUpakQ" elementId="com.kms.katalon.composer.mobile.execution.handledmenuitem.android" label="Android" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/android_16.png" command="_xoxN0EusEeWj7OhDHfltSQ">
       <parameters xmi:id="_HSB1MAhuEeaOHID5tXhDTg" elementId="com.kms.katalon.composer.webui.parameter.android.runParam" name="com.kms.katalon.composer.execution.runMode" value="run"/>
     </elements>
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_gfKvEG8kEeaKGfb3bKlFGw" elementId="com.kms.katalon.composer.mobile.dynamicmenucontribution.ios" label="iOS" contributionURI="bundleclass://com.kms.katalon.composer.mobile/com.kms.katalon.composer.mobile.execution.menu.IosExecutionDynamicContribution"/>
@@ -21,7 +21,7 @@
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_-Z4IwAhtEeaOHID5tXhDTg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.debug" positionInList="index:7">
     <elements xsi:type="menu:MenuSeparator" xmi:id="_-Z4IwQhtEeaOHID5tXhDTg" elementId="com.kms.katalon.composer.mobile.menuseparator.0"/>
-    <elements xsi:type="menu:HandledMenuItem" xmi:id="_-Z4IwghtEeaOHID5tXhDTg" elementId="com.kms.katalon.composer.mobile.execution.handledmenuitem.android" label="Android" iconURI="platform:/plugin/com.kms.katalon.composer.mobile/icons/android_16.png" command="_xoxN0EusEeWj7OhDHfltSQ">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_-Z4IwghtEeaOHID5tXhDTg" elementId="com.kms.katalon.composer.mobile.execution.handledmenuitem.android" label="Android" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/android_16.png" command="_xoxN0EusEeWj7OhDHfltSQ">
       <parameters xmi:id="_IGZ4cAhuEeaOHID5tXhDTg" elementId="com.kms.katalon.composer.webui.parameter.android.runParam" name="com.kms.katalon.composer.execution.runMode" value="debug"/>
     </elements>
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_oeQFgG8kEeaKGfb3bKlFGw" elementId="com.kms.katalon.composer.mobile.dynamicmenucontribution.ios.debug" contributionURI="bundleclass://com.kms.katalon.composer.mobile/com.kms.katalon.composer.mobile.execution.menu.IosDebugExecutionDynamicContribution"/>

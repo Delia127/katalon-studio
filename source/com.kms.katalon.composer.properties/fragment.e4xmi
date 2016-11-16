@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmi:id="_SFiQUJEAEeaJeJCQT7u_Dw">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_5O2NUJEwEeaR17rvfWUb1w" featurename="children" parentElementId="com.kms.katalon.partstack.left.outline" positionInList="last">
+    <elements xsi:type="basic:Part" xmi:id="_6W6zMJExEeaR17rvfWUb1w" elementId="com.kms.katalon.composer.properties.part" contributionURI="bundleclass://com.kms.katalon.composer.properties/com.kms.katalon.composer.properties.part.PropertiesPart" label="Properties" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/properties_16.png">
+      <tags>NoClose</tags>
+      <tags>NoMove</tags>
+    </elements>
+  </fragments>
+</fragment:ModelFragments>

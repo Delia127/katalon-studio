@@ -194,6 +194,9 @@ public class QTestIntegrationFolderManager {
      */
     public static QTestModule getModuleRoot(IQTestCredential credential, long projectId) throws QTestException,
             IOException {
+        if (credential.getToken() == null) {
+            throw new QTestUnauthorizedException(QTestMessageConstants.QTEST_EXC_INVALID_TOKEN);
+        }
         String url = "/p/" + Long.toString(projectId) + "/portal/project/testdesign/rootmodulelazy/get";
 
         String response = QTestHttpRequestHelper.sendGetRequest(credential, url);

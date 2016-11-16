@@ -73,8 +73,6 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.osgi.framework.Bundle;
-import org.osgi.service.event.Event;
-import org.osgi.service.event.EventHandler;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -126,7 +124,7 @@ import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef.HWND;
 
 @SuppressWarnings("restriction")
-public class ObjectSpyDialog extends Dialog implements EventHandler {
+public class ObjectSpyDialog extends Dialog {
     private static final String IE_WINDOW_CLASS = "IEFrame"; //$NON-NLS-1$
 
     private static final String relativePathToIEAddonSetup = File.separator + "extensions" + File.separator + "IE" //$NON-NLS-1$ //$NON-NLS-2$
@@ -201,13 +199,8 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         setShellStyle(SWT.SHELL_TRIM | SWT.NONE);
         this.logger = logger;
         this.eventBroker = eventBroker;
-        registerEventHandler();
         isDisposed = false;
         elements = new ArrayList<HTMLPageElement>();
-    }
-
-    protected void registerEventHandler() {
-        eventBroker.subscribe(EventConstants.OBJECT_SPY_TEST_OBJECT_ADDED, this);
     }
 
     /**
@@ -272,6 +265,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
 
         startBrowser = new ToolItem(startBrowserToolbar, SWT.DROP_DOWN);
         startBrowser.setImage(ImageConstants.IMG_24_OBJECT_SPY);
+        startBrowser.setDisabledImage(ImageConstants.IMG_24_OBJECT_SPY_DISABLED);
 
         SelectionAdapter browserSelectionListener = new SelectionAdapter() {
             @Override
@@ -795,6 +789,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
 
         addPageElementToolItem = new ToolItem(mainToolbar, SWT.NONE);
         addPageElementToolItem.setImage(ImageConstants.IMG_24_NEW_PAGE_ELEMENT);
+        addPageElementToolItem.setDisabledImage(ImageConstants.IMG_24_NEW_PAGE_ELEMENT_DISABLED);
         addPageElementToolItem.setText(StringConstants.DIA_TOOLITEM_NEW_PAGE);
         addPageElementToolItem.setToolTipText(StringConstants.DIA_TOOLITEM_TIP_NEW_PAGE_ELEMENT);
         addPageElementToolItem.addSelectionListener(new SelectionAdapter() {
@@ -812,6 +807,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
 
         addFrameElementToolItem = new ToolItem(mainToolbar, SWT.NONE);
         addFrameElementToolItem.setImage(ImageConstants.IMG_24_NEW_FRAME_ELEMENT);
+        addFrameElementToolItem.setDisabledImage(ImageConstants.IMG_24_NEW_FRAME_ELEMENT_DISABLED);
         addFrameElementToolItem.setText(StringConstants.DIA_TOOLITE_NEW_FRAME);
         addFrameElementToolItem.setToolTipText(StringConstants.DIA_TOOLITEM_TIP_NEW_FRAME_ELEMENT);
         addFrameElementToolItem.addSelectionListener(new SelectionAdapter() {
@@ -835,6 +831,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
 
         addElementToolItem = new ToolItem(mainToolbar, SWT.NONE);
         addElementToolItem.setImage(ImageConstants.IMG_24_NEW_ELEMENT);
+        addElementToolItem.setDisabledImage(ImageConstants.IMG_24_NEW_ELEMENT_DISABLED);
         addElementToolItem.setText(StringConstants.DIA_TOOLITEM_NEW_OBJECT);
         addElementToolItem.setToolTipText(StringConstants.DIA_TOOLITEM_TIP_NEW_ELEMENT);
         addElementToolItem.addSelectionListener(new SelectionAdapter() {
@@ -860,7 +857,8 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         new ToolItem(mainToolbar, SWT.SEPARATOR);
 
         removeElementToolItem = new ToolItem(mainToolbar, SWT.NONE);
-        removeElementToolItem.setImage(ImageConstants.IMG_16_DELETE);
+        removeElementToolItem.setImage(ImageConstants.IMG_24_DELETE);
+        removeElementToolItem.setDisabledImage(ImageConstants.IMG_24_DELETE_DISABLED);
         removeElementToolItem.setText(StringConstants.DIA_TOOLITEM_DELETE);
         removeElementToolItem.setToolTipText(StringConstants.DIA_TOOLITEM_TIP_REMOVE_ELEMENT);
         removeElementToolItem.setEnabled(false);
@@ -896,6 +894,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
 
         addElmtToObjRepoToolItem = new ToolItem(mainToolbar, SWT.NONE);
         addElmtToObjRepoToolItem.setImage(ImageConstants.IMG_24_ADD_TO_OBJECT_REPOSITORY);
+        addElmtToObjRepoToolItem.setDisabledImage(ImageConstants.IMG_24_ADD_TO_OBJECT_REPOSITORY_DISABLED);
         addElmtToObjRepoToolItem.setText(StringConstants.DIA_TOOLITEM_TIP_ADD_ELEMENT_TO_OBJECT_REPO);
         addElmtToObjRepoToolItem.setToolTipText(StringConstants.DIA_TOOLITEM_TIP_ADD_ELEMENT_TO_OBJECT_REPO);
         addElmtToObjRepoToolItem.addSelectionListener(new SelectionAdapter() {
@@ -917,6 +916,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         highlightObjectToolItem.setText(StringConstants.DIA_TOOLITEM_HIGHLIGHT);
         highlightObjectToolItem.setToolTipText(StringConstants.DIA_TOOLITEM_TIP_HIGHLIGHT);
         highlightObjectToolItem.setImage(ImageConstants.IMG_24_HIGHLIGHT);
+        highlightObjectToolItem.setDisabledImage(ImageConstants.IMG_24_HIGHLIGHT_DISABLED);
         highlightObjectToolItem.setEnabled(false);
 
         highlightObjectToolItem.addSelectionListener(new SelectionAdapter() {
@@ -996,7 +996,6 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
             }
         }
         endInspectSession();
-        eventBroker.unsubscribe(this);
         isDisposed = true;
     }
 
@@ -1021,15 +1020,6 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         shell.setText(StringConstants.DIA_TITLE_OBJ_SPY);
     }
 
-    @Override
-    public void handleEvent(Event event) {
-        if (event.getTopic().equals(EventConstants.OBJECT_SPY_TEST_OBJECT_ADDED)
-                && event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME) instanceof Object[]) {
-            Object[] selectedObjects = (Object[]) event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-            addObjectsFromObjectRepository(selectedObjects);
-        }
-    }
-
     public void setHTMLDOMDocument(final HTMLRawElement bodyElement, Document document) {
         currentHTMLDocument = document;
         UISynchronizeService.syncExec(new Runnable() {
@@ -1041,7 +1031,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         });
     }
 
-    private void addObjectsFromObjectRepository(Object[] selectedObjects) {
+    public void addObjectsFromObjectRepository(Object[] selectedObjects) {
         HTMLPageElement generatingPageElement = null;
         Map<String, HTMLElement> generatingElementMap = new HashMap<String, HTMLElement>();
         for (Object selectedObject : selectedObjects) {
@@ -1059,7 +1049,9 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
                         generatingElementMap));
             }
         }
-        refreshTree(capturedObjectComposite.getElementTreeViewer(), null);
+        TreeViewer elementTreeViewer = capturedObjectComposite.getElementTreeViewer();
+        refreshTree(elementTreeViewer, null);
+        elementTreeViewer.setSelection(new StructuredSelection(generatingElementMap.values().toArray()));
     }
 
     public void addNewElement(HTMLElement newElement) {
@@ -1076,9 +1068,24 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         UISynchronizeService.syncExec(new Runnable() {
             @Override
             public void run() {
-                refreshTree(capturedObjectComposite.getElementTreeViewer(), null);
+                TreeViewer capturedElementTreeViewer = capturedObjectComposite.getElementTreeViewer();
+                refreshTree(capturedElementTreeViewer, null);
+                setExpandForParentElement(parentPageElement, capturedElementTreeViewer);
             }
         });
+    }
+
+    private void setExpandForParentElement(HTMLFrameElement pageElement, TreeViewer capturedElementTreeViewer) {
+        List<HTMLElement> childElements = pageElement.getChildElements();
+        if (childElements.isEmpty()) {
+            return;
+        }
+        capturedElementTreeViewer.setExpandedState(pageElement, true);
+        for (HTMLElement element : childElements) {
+            if (element instanceof HTMLFrameElement) {
+                setExpandForParentElement((HTMLFrameElement) element, capturedElementTreeViewer);
+            }
+        }
     }
 
     private void addNewElement(HTMLFrameElement parentElement, HTMLElement newElement, HTMLPageElement pageElement) {
@@ -1233,6 +1240,9 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
 
     private boolean checkRegistryKey(String parentKey) throws IllegalAccessException, InvocationTargetException {
         List<String> bhos = WinRegistry.readStringSubKeys(WinRegistry.HKEY_LOCAL_MACHINE, parentKey);
+        if (bhos == null || bhos.isEmpty()) {
+            return false;
+        }
         for (String bho : bhos) {
             if (bho.toLowerCase().equals(IE_ADDON_BHO_KEY.toLowerCase())) {
                 return true;

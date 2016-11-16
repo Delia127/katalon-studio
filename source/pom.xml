@@ -36,7 +36,9 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<module>com.kms.katalon.composer.objectrepository</module>
 		<module>com.kms.katalon.composer.preferences</module>
 		<module>com.kms.katalon.composer.project</module>
+		<module>com.kms.katalon.composer.properties</module>
 		<module>com.kms.katalon.composer.report</module>
+		<module>com.kms.katalon.composer.resources</module>
 		<module>com.kms.katalon.composer.search</module>        
 		<module>com.kms.katalon.composer.testcase</module>
 		<module>com.kms.katalon.composer.testdata</module>
@@ -74,11 +76,13 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<module>com.kms.katalon.jbrowser</module>
 		<module>com.kms.katalon.target</module>
 		<module>com.kms.katalon</module>
+		<module>com.kms.katalon.support.testing.katserver</module>
 	</modules>
 
 	<properties>
 		<tycho.version>0.24.0</tycho.version>
 		<gmavenplus.version>1.5</gmavenplus.version>
+    <maven-compiler.version>3.1</maven-compiler.version>
 		<maven-resources-plugin.version>2.6</maven-resources-plugin.version>
 		
 		<eclipse_repo_url>http://download.eclipse.org/eclipse/updates/4.6/</eclipse_repo_url>
@@ -128,7 +132,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 			<plugin>
 			  <groupId>org.codehaus.gmavenplus</groupId>
 			  <artifactId>gmavenplus-plugin</artifactId>
-			  <version>1.5</version>
+			  <version>${gmavenplus.version}</version>
 			</plugin>
 		  </plugins>
 		</pluginManagement>
@@ -186,7 +190,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 			
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
+				<version>${maven-compiler.version}</version>
 				<configuration>
 				  <compilerId>groovy-eclipse-compiler</compilerId>
 				</configuration>
@@ -215,7 +219,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
+				<version>${maven-compiler.version}</version>
 					<configuration>
 						<fork>true</fork>
 						<meminitial>128m</meminitial>
@@ -233,7 +237,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<dependency>
 			<groupId>org.codehaus.groovy</groupId>
 			<artifactId>groovy-all</artifactId>
-			<version>2.4.3</version>
+			<version>2.4.7</version>
 		</dependency>
 		<dependency>
 			<groupId>org.fusesource.jansi</groupId>

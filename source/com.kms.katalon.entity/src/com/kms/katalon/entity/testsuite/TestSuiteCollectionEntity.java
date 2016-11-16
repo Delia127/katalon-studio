@@ -32,22 +32,9 @@ public class TestSuiteCollectionEntity extends FileEntity {
         this.testSuiteRunConfigurations = testSuiteRunConfigurations;
     }
 
-    private String tag;
-
     @Override
     public String getFileExtension() {
         return FILE_EXTENSION;
-    }
-
-    public String getTag() {
-        if (tag == null) {
-            tag = "";
-        }
-        return tag;
-    }
-
-    public void setTag(String tag) {
-        this.tag = tag;
     }
 
     @Override
@@ -79,7 +66,7 @@ public class TestSuiteCollectionEntity extends FileEntity {
     public void reuseWrappers(TestSuiteCollectionEntity src) {
         List<TestSuiteRunConfiguration> runConfigs = new ArrayList<>();
         for (TestSuiteRunConfiguration eachSourceConfig : src.getTestSuiteRunConfigurations()) {
-            runConfigs.add(eachSourceConfig);
+            runConfigs.add(TestSuiteRunConfiguration.cloneFrom(eachSourceConfig));
         }
         this.setTestSuiteRunConfigurations(runConfigs);
         this.setExecutionMode(src.getExecutionMode());

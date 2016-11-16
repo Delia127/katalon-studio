@@ -20,14 +20,17 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
+import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -70,9 +73,10 @@ import com.kms.katalon.composer.components.impl.tree.CheckpointTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
+import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.components.part.IComposerPart;
+import com.kms.katalon.composer.components.part.IComposerPartEvent;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.parts.CPart;
 import com.kms.katalon.constants.EventConstants;
@@ -84,7 +88,7 @@ import com.kms.katalon.entity.checkpoint.CheckpointCell;
 import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.checkpoint.CheckpointSourceInfo;
 
-public abstract class CheckpointAbstractPart extends CPart implements EventHandler, IComposerPart {
+public abstract class CheckpointAbstractPart extends CPart implements EventHandler, IComposerPartEvent {
 
     private static final int DEFAULT_COLUMN_WIDTH = 200;
 
@@ -405,7 +409,7 @@ public abstract class CheckpointAbstractPart extends CPart implements EventHandl
             }
 
             if (CheckpointController.getInstance().getById(checkpointEntity.getId()) == null) {
-                preDestroy();
+                onClose();
                 return;
             }
 
@@ -454,7 +458,7 @@ public abstract class CheckpointAbstractPart extends CPart implements EventHandl
                 if (parentFolderTreeEntity != null) {
                     eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentFolderTreeEntity);
                 }
-                preDestroy();
+                onClose();
                 return;
             }
 
@@ -573,8 +577,10 @@ public abstract class CheckpointAbstractPart extends CPart implements EventHandl
         verifySourceChanged();
     }
 
+    @Override
     @PreDestroy
-    public void preDestroy() {
+    public void onClose() {
+        EventUtil.post(EventConstants.PROPERTIES_ENTITY, null);
         eventBroker.unsubscribe(this);
         MPartStack mStackPart = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
         mStackPart.getChildren().remove(getPart());
@@ -804,4 +810,34 @@ public abstract class CheckpointAbstractPart extends CPart implements EventHandl
             return Status.OK_STATUS;
         }
     }
+
+    @Override
+    @Inject
+    @Optional
+    public void onSelect(@UIEventTopic(UIEvents.UILifeCycle.BRINGTOTOP) Event event) {
+        MPart part = EventUtil.getPart(event);
+        if (part == null || !StringUtils.equals(part.getElementId(), getPart().getElementId())) {
+            return;
+        }
+
+        EventUtil.post(EventConstants.PROPERTIES_ENTITY, checkpoint);
+    }
+
+    @Override
+    @Inject
+    @Optional
+    public void onChangeEntityProperties(@UIEventTopic(EventConstants.PROPERTIES_ENTITY_UPDATED) Event event) {
+        Object eventData = EventUtil.getData(event);
+        if (!(eventData instanceof CheckpointEntity)) {
+            return;
+        }
+
+        CheckpointEntity updatedEntity = (CheckpointEntity) eventData;
+        if (!StringUtils.equals(updatedEntity.getIdForDisplay(), getEntityId())) {
+            return;
+        }
+        checkpoint.setTag(updatedEntity.getTag());
+        checkpoint.setDescription(updatedEntity.getDescription());
+    }
+
 }

@@ -15,11 +15,13 @@ import org.eclipse.ui.PlatformUI;
 import org.osgi.framework.BundleException;
 
 import com.kms.katalon.addons.MacOSAddon;
+import com.kms.katalon.composer.components.application.ApplicationSingleton;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.execution.console.ConsoleMain;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
 import com.kms.katalon.logging.LogUtil;
+import com.kms.katalon.support.testing.katserver.KatServer;
 import com.kms.katalon.util.ActivationInfoCollector;
 import com.kms.katalon.util.ApplicationInfo;
 import com.kms.katalon.util.ApplicationSession;
@@ -34,6 +36,8 @@ public class Application implements IApplication {
     public static final String RUN_MODE_OPTION = "runMode";
 
     public static final String RUN_MODE_OPTION_CONSOLE = "console";
+
+    private static final Object RUN_MODE_OPTION_SELFTEST = "selfTest";
     /*
      * (non-Javadoc)
      * @see org.eclipse.equinox.app.IApplication#start(org.eclipse.equinox.app.
@@ -55,6 +59,8 @@ public class Application implements IApplication {
                 // hide splash screen
                 context.applicationRunning();
                 return runConsole(appArgs);
+            case SELFTEST:
+                return runSelfTest();    
             case GUI:
                 return runGUI();
             default:
@@ -77,7 +83,13 @@ public class Application implements IApplication {
         OptionSet options = parser.parse(appArgs);
         return options;
     }
-
+    
+    private int runSelfTest() {
+        ApplicationSingleton.getInstance().enableServerMode();
+        new KatServer().start();
+        return runGUI();
+    }
+    
     private int runGUI() {
         int returnCode = internalRunGUI();
         if (returnCode == PlatformUI.RETURN_RESTART) {
@@ -115,7 +127,7 @@ public class Application implements IApplication {
     }
 
     public enum RunningModeParam {
-        GUI, CONSOLE, INVALID
+        GUI, CONSOLE, INVALID, SELFTEST
     }
 
     private RunningModeParam getRunningModeParamFromParam(OptionSet options) {
@@ -124,6 +136,9 @@ public class Application implements IApplication {
         }
         if (RUN_MODE_OPTION_CONSOLE.equals(options.valueOf(RUN_MODE_OPTION))) {
             return RunningModeParam.CONSOLE;
+        }
+        if (RUN_MODE_OPTION_SELFTEST.equals(options.valueOf(RUN_MODE_OPTION))) {
+            return RunningModeParam.SELFTEST;
         }
         return RunningModeParam.INVALID;
     }

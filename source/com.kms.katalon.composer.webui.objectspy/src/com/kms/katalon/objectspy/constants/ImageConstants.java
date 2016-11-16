@@ -1,46 +1,60 @@
 package com.kms.katalon.objectspy.constants;
 
 import org.eclipse.swt.graphics.Image;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
 
-import com.kms.katalon.composer.components.util.ImageUtil;
+import com.kms.katalon.composer.resources.constants.IImageKeys;
+import com.kms.katalon.composer.resources.image.ImageManager;
 
 public class ImageConstants {
-    private static final Bundle currentBundle = FrameworkUtil.getBundle(ImageConstants.class);
 
     // ObjectSpyDialog
-    public static final Image IMG_24_NEW_PAGE_ELEMENT = ImageUtil.loadImage(currentBundle,
-            "/icons/new_page_element_24.png");
+    public static final Image IMG_24_NEW_PAGE_ELEMENT = ImageManager.getImage(IImageKeys.NEW_PAGE_ELEMENT_24);
 
-    public static final Image IMG_24_NEW_FRAME_ELEMENT = ImageUtil.loadImage(currentBundle,
-            "/icons/new_frame_element_24.png");
+    public static final Image IMG_24_NEW_FRAME_ELEMENT = ImageManager.getImage(IImageKeys.NEW_FRAME_ELEMENT_24);
 
-    public static final Image IMG_24_NEW_ELEMENT = ImageUtil.loadImage(currentBundle, "/icons/new_element_24.png");
+    public static final Image IMG_24_NEW_ELEMENT = ImageManager.getImage(IImageKeys.NEW_ELEMENT_24);
 
-    public static final Image IMG_16_DELETE = ImageUtil.loadImage(currentBundle, "/icons/delete_16.png");
+    public static final Image IMG_24_DELETE = ImageManager.getImage(IImageKeys.DELETE_24);
 
-    public static final Image IMG_24_ADD_TO_OBJECT_REPOSITORY = ImageUtil.loadImage(currentBundle,
-            "/icons/add_to_object_repository_24.png");
+    public static final Image IMG_24_ADD_TO_OBJECT_REPOSITORY = ImageManager
+            .getImage(IImageKeys.ADD_TO_OBJECT_REPOSITORY_24);
 
-    public static final Image IMG_24_OBJECT_SPY = ImageUtil.loadImage(currentBundle, "/icons/object_spy_24.png");
+    public static final Image IMG_24_NEW_PAGE_ELEMENT_DISABLED = ImageManager
+            .getImage(IImageKeys.NEW_PAGE_ELEMENT_DISABLED_24);
 
-    public static final Image IMG_16_BROWSER_CHROME = ImageUtil.loadImage(currentBundle, "/icons/chrome_16.png");
+    public static final Image IMG_24_NEW_FRAME_ELEMENT_DISABLED = ImageManager
+            .getImage(IImageKeys.NEW_FRAME_ELEMENT_DISABLED_24);
 
-    public static final Image IMG_16_BROWSER_FIREFOX = ImageUtil.loadImage(currentBundle, "/icons/firefox_16.png");
+    public static final Image IMG_24_NEW_ELEMENT_DISABLED = ImageManager.getImage(IImageKeys.NEW_ELEMENT_DISABLED_24);
 
-    public static final Image IMG_16_BROWSER_IE = ImageUtil.loadImage(currentBundle, "/icons/ie_16.png");
+    public static final Image IMG_24_DELETE_DISABLED = ImageManager.getImage(IImageKeys.DELETE_DISABLED_24);
+
+    public static final Image IMG_24_ADD_TO_OBJECT_REPOSITORY_DISABLED = ImageManager
+            .getImage(IImageKeys.ADD_TO_OBJECT_REPOSITORY_DISABLED_24);
+
+    public static final Image IMG_24_OBJECT_SPY = ImageManager.getImage(IImageKeys.WEB_OBJECT_SPY_24);
+
+    public static final Image IMG_24_OBJECT_SPY_DISABLED = ImageManager.getImage(IImageKeys.WEB_OBJECT_SPY_DISABLED_24);
+
+    public static final Image IMG_16_BROWSER_CHROME = ImageManager.getImage(IImageKeys.CHROME_16);
+
+    public static final Image IMG_16_BROWSER_FIREFOX = ImageManager.getImage(IImageKeys.FIREFOX_16);
+
+    public static final Image IMG_16_BROWSER_IE = ImageManager.getImage(IImageKeys.IE_16);
 
     // HTMLElementLabelProvider
-    public static final Image IMG_16_PAGE_OBJECT = ImageUtil.loadImage(currentBundle, "/icons/page_element_16.png");
+    public static final Image IMG_16_PAGE_OBJECT = ImageManager.getImage(IImageKeys.WEB_PAGE_ELEMENT_16);
 
-    public static final Image IMG_16_FRAME_OBJECT = ImageUtil.loadImage(currentBundle, "/icons/frame_element_16.png");
+    public static final Image IMG_16_FRAME_OBJECT = ImageManager.getImage(IImageKeys.WEB_FRAME_ELEMENT_16);
 
-    public static final Image IMG_16_TEST_OBJECT = ImageUtil.loadImage(currentBundle, "/icons/test_object_16.png");
+    public static final Image IMG_16_TEST_OBJECT = ImageManager.getImage(IImageKeys.TEST_OBJECT_16);
 
-    public static final Image IMG_16_DONE = ImageUtil.loadImage(currentBundle, "/icons/done_16.png");
+    public static final Image IMG_16_OK = ImageManager.getImage(IImageKeys.OK_16);
 
-    public static final Image IMG_16_BUG = ImageUtil.loadImage(currentBundle, "/icons/bug_16.png");
+    public static final Image IMG_16_BUG = ImageManager.getImage(IImageKeys.BUG_16);
 
-    public static final Image IMG_24_HIGHLIGHT = ImageUtil.loadImage(currentBundle, "/icons/highlight_24.png");
+    public static final Image IMG_24_HIGHLIGHT = ImageManager.getImage(IImageKeys.HIGHLIGHT_24);
+
+    public static final Image IMG_24_HIGHLIGHT_DISABLED = ImageManager.getImage(IImageKeys.HIGHLIGHT_DISABLED_24);
+
 }

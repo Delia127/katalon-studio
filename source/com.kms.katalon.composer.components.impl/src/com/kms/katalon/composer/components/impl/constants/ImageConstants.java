@@ -1,127 +1,109 @@
 package com.kms.katalon.composer.components.impl.constants;
 
-import java.net.URL;
-
 import org.eclipse.swt.graphics.Image;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
 
-import com.kms.katalon.composer.components.util.ImageUtil;
+import com.kms.katalon.composer.resources.constants.IImageKeys;
+import com.kms.katalon.composer.resources.image.ImageManager;
 
 public class ImageConstants {
-    private static final Bundle currentBundle = FrameworkUtil.getBundle(ImageConstants.class);
 
     // TreeEntitySelectionDialog
-    public static final Image IMG_16_SEARCH = ImageUtil.loadImage(currentBundle, "/icons/search_16.png");
+    public static final Image IMG_16_SEARCH = ImageManager.getImage(IImageKeys.SEARCH_16);
 
-    public static final Image IMG_16_ADVANCED_SEARCH = ImageUtil.loadImage(currentBundle,
-            "/icons/advanced_search_16.png");
+    public static final Image IMG_16_ADVANCED_SEARCH = ImageManager.getImage(IImageKeys.ADVANCE_SEARCH_16);
 
-    public static final Image IMG_16_CLOSE_SEARCH = ImageUtil.loadImage(currentBundle, "/icons/close_search_16.png");
+    public static final Image IMG_16_CLOSE_SEARCH = ImageManager.getImage(IImageKeys.CLEAR_FIELD_16);
 
     // FolderTreeEntity
-    public static final Image IMG_16_FOLDER = ImageUtil.loadImage(currentBundle, "/icons/folder_16.png");
+    public static final Image IMG_16_FOLDER = ImageManager.getImage(IImageKeys.FOLDER_16);
 
-    public static final Image IMG_16_FOLDER_TEST_CASE = ImageUtil.loadImage(currentBundle,
-            "/icons/folder_test_case_16.png");
+    public static final Image IMG_16_FOLDER_TEST_CASE = ImageManager.getImage(IImageKeys.FOLDER_TEST_CASE_16);
 
-    public static final Image IMG_16_FOLDER_TEST_SUITE = ImageUtil.loadImage(currentBundle,
-            "/icons/folder_test_suite_16.png");
+    public static final Image IMG_16_FOLDER_TEST_SUITE = ImageManager.getImage(IImageKeys.FOLDER_TEST_SUITE_16);
 
-    public static final Image IMG_16_FOLDER_KEYWORD = ImageUtil.loadImage(currentBundle,
-            "/icons/folder_keyword_16.png");
+    public static final Image IMG_16_FOLDER_KEYWORD = ImageManager.getImage(IImageKeys.FOLDER_KEYWORD_16);
 
-    public static final Image IMG_16_FOLDER_DATA = ImageUtil.loadImage(currentBundle,
-            "/icons/folder_data_16.png");
+    public static final Image IMG_16_FOLDER_DATA = ImageManager.getImage(IImageKeys.FOLDER_TEST_DATA_16);
 
-    public static final Image IMG_16_FOLDER_OBJECT = ImageUtil.loadImage(currentBundle,
-            "/icons/folder_object_16.png");
+    public static final Image IMG_16_FOLDER_OBJECT = ImageManager.getImage(IImageKeys.FOLDER_TEST_OBJECT_16);
 
-    public static final Image IMG_16_FOLDER_REPORT = ImageUtil.loadImage(currentBundle,
-            "/icons/folder_report_16.png");
+    public static final Image IMG_16_FOLDER_REPORT = ImageManager.getImage(IImageKeys.FOLDER_REPORT_16);
 
-    public static final Image IMG_16_FOLDER_CHECKPOINT = ImageUtil.loadImage(currentBundle,
-            "/icons/folder_checkpoint_16.png");
+    public static final Image IMG_16_FOLDER_CHECKPOINT = ImageManager.getImage(IImageKeys.FOLDER_CHECKPOINT_16);
 
     // KeywordTreeEntity
-    public static final Image IMG_16_KEYWORD = ImageUtil.loadImage(currentBundle, "/icons/keyword_16.png");
+    public static final Image IMG_16_KEYWORD = ImageManager.getImage(IImageKeys.KEYWORD_16);
 
     // PackageTreeEntity
-    public static final Image IMG_16_PACKAGE = ImageUtil.loadImage(currentBundle, "/icons/package_16.png");
+    public static final Image IMG_16_PACKAGE = ImageManager.getImage(IImageKeys.PACKAGE_16);
 
     // ReportTreeEntity
-    public static final Image IMG_16_REPORT = ImageUtil.loadImage(currentBundle, "/icons/report_16.png");
+    public static final Image IMG_16_REPORT = ImageManager.getImage(IImageKeys.REPORT_16);
 
     // ReportCollectionTreeEntity
-    public static final Image IMG_16_REPORT_COLLECTION = ImageUtil.loadImage(currentBundle,
-            "/icons/report_list_16.png");
+    public static final Image IMG_16_REPORT_COLLECTION = ImageManager.getImage(IImageKeys.REPORT_COLLECTION_16);
 
     // TestCaseTreeEntity
-    public static final Image IMG_16_TEST_CASE = ImageUtil.loadImage(currentBundle, "/icons/test_case_16.png");
+    public static final Image IMG_16_TEST_CASE = ImageManager.getImage(IImageKeys.TEST_CASE_16);
 
     // TestDataTreeEntity
-    public static final Image IMG_16_TEST_DATA = ImageUtil.loadImage(currentBundle, "/icons/test_data_16.png");
+    public static final Image IMG_16_TEST_DATA = ImageManager.getImage(IImageKeys.TEST_DATA_16);
 
     // TestSuiteTreeEntity
-    public static final Image IMG_16_TEST_SUITE = ImageUtil.loadImage(currentBundle,
-            "/icons/test_suite_16.png");
+    public static final Image IMG_16_TEST_SUITE = ImageManager.getImage(IImageKeys.TEST_SUITE_16);
 
     // TestSuiteCollectionTreeEntity
-    public static final Image IMG_16_TEST_SUITE_COLLECTION = ImageUtil.loadImage(currentBundle,
-            "/icons/test_suite_collection_16.png");
+    public static final Image IMG_16_TEST_SUITE_COLLECTION = ImageManager.getImage(IImageKeys.TEST_SUITE_COLLECTION_16);
 
     // WebElementTreeEntity
-    public static final Image IMG_16_TEST_OBJECT = ImageUtil.loadImage(currentBundle,
-            "/icons/test_object_16.png");
+    public static final Image IMG_16_TEST_OBJECT = ImageManager.getImage(IImageKeys.TEST_OBJECT_16);
 
-    public static final Image IMG_16_WS_TEST_OBJECT = ImageUtil.loadImage(currentBundle,
-            "/icons/ws_test_object_16.png");
+    public static final Image IMG_16_WS_TEST_OBJECT = ImageManager.getImage(IImageKeys.WS_TEST_OBJECT_16);
 
     // Some common images
-    public static final Image IMG_16_CHECKED = ImageUtil.loadImage(currentBundle, "/icons/checkbox_checked_16.png");
+    public static final Image IMG_16_CHECKED = ImageManager.getImage(IImageKeys.CHECKBOX_CHECKED_16);
 
-    public static final Image IMG_16_UNCHECKED = ImageUtil.loadImage(currentBundle, "/icons/checkbox_unchecked_16.png");
+    public static final Image IMG_16_UNCHECKED = ImageManager.getImage(IImageKeys.CHECKBOX_UNCHECKED_16);
 
-    public static final Image IMG_16_NOTIFICATION_HEADER = ImageUtil.loadImage(currentBundle,
-            "/icons/notification_16.gif");
+    public static final Image IMG_16_NOTIFICATION_HEADER = ImageManager.getImage(IImageKeys.ALERT_16);
 
-    public static final URL URL_16_LOADING = currentBundle.getEntry("/icons/loading_16.gif");
+    public static final Image IMG_16_REMOVE = ImageManager.getImage(IImageKeys.DELETE_16);
 
-    public static final Image IMG_16_REMOVE = ImageUtil.loadImage(currentBundle, "/icons/remove_16.png");
+    public static final Image IMG_16_REMOVE_DISABLED = ImageManager.getImage(IImageKeys.DELETE_DISABLED_16);
 
-    public static final Image IMG_16_CLEAR = ImageUtil.loadImage(currentBundle, "/icons/clear_16.png");
+    public static final Image IMG_16_CLEAR = ImageManager.getImage(IImageKeys.CLEAR_16);
 
-    public static final Image IMG_16_EDIT = ImageUtil.loadImage(currentBundle, "/icons/edit_16.png");
+    public static final Image IMG_16_EDIT = ImageManager.getImage(IImageKeys.EDIT_16);
 
-    public static final Image IMG_16_REFRESH = ImageUtil.loadImage(currentBundle, "/icons/refresh_16.png");
+    public static final Image IMG_16_EDIT_DISABLED = ImageManager.getImage(IImageKeys.EDIT_DISABLED_16);
 
-    public static final Image IMG_16_ADD = ImageUtil.loadImage(currentBundle, "/icons/add_16.png");
+    public static final Image IMG_16_REFRESH = ImageManager.getImage(IImageKeys.REFRESH_16);
 
-    public static final Image IMG_16_INSERT = ImageUtil.loadImage(currentBundle, "/icons/insert_16.png");
+    public static final Image IMG_16_ADD = ImageManager.getImage(IImageKeys.ADD_16);
 
-    public static final Image IMG_16_MOVE_DOWN = ImageUtil.loadImage(currentBundle,
-            "/icons/move_down_15x15.png");
+    public static final Image IMG_16_INSERT = ImageManager.getImage(IImageKeys.INSERT_16);
 
-    public static final Image IMG_16_MOVE_UP = ImageUtil.loadImage(currentBundle, "/icons/move_up_15x15.png");
+    public static final Image IMG_16_MOVE_DOWN = ImageManager.getImage(IImageKeys.MOVE_DOWN_16);
+
+    public static final Image IMG_16_MOVE_UP = ImageManager.getImage(IImageKeys.MOVE_UP_16);
 
     // CheckpointTreeEntity
-    public static final Image IMG_16_CHECKPOINT = ImageUtil.loadImage(currentBundle,
-            "/icons/checkpoint_16.png");
+    public static final Image IMG_16_CHECKPOINT = ImageManager.getImage(IImageKeys.CHECKPOINT_16);
 
-    public static final String URL_16_CHECKPOINT = ImageUtil.getImageUrl(currentBundle, "/icons/checkpoint_16.png");
+    public static final String URL_16_CHECKPOINT = ImageManager.getImageURLString(IImageKeys.CHECKPOINT_16);
 
     // AbstractEntityDialog
-    public static final Image IMG_20_INFO_MSG = ImageUtil.loadImage(currentBundle, "/icons/info_20.png");
+    public static final Image IMG_20_INFO_MSG = ImageManager.getImage(IImageKeys.INFO_20);
 
-    public static final Image IMG_20_WARNING_MSG = ImageUtil.loadImage(currentBundle, "/icons/warning_20.png");
+    public static final Image IMG_20_WARNING_MSG = ImageManager.getImage(IImageKeys.WARNING_20);
 
-    public static final Image IMG_20_ERROR_MSG = ImageUtil.loadImage(currentBundle, "/icons/error_20.png");
+    public static final Image IMG_20_ERROR_MSG = ImageManager.getImage(IImageKeys.ERROR_20);
 
-    public static final Image IMG_16_ARROW = ImageUtil.loadImage(currentBundle, "/icons/arrow_6x6.png");
+    public static final Image IMG_16_ARROW = ImageManager.getImage(IImageKeys.CHEVRON_RIGHT_16);
 
-    public static final Image IMG_16_ARROW_DOWN = ImageUtil.loadImage(currentBundle, "/icons/arrow_down_6x6.png");
+    public static final Image IMG_16_ARROW_DOWN = ImageManager.getImage(IImageKeys.CHEVRON_DOWN_16);
 
-    public static final Image IMG_16_EXECUTE = ImageUtil.loadImage(currentBundle, "/icons/play_16.png");
+    public static final Image IMG_16_EXECUTE = ImageManager.getImage(IImageKeys.PLAY_16);
 
-    public static final Image IMG_24_EXECUTE = ImageUtil.loadImage(currentBundle, "/icons/play_24.png");
+    public static final Image IMG_24_EXECUTE = ImageManager.getImage(IImageKeys.PLAY_24);
 }

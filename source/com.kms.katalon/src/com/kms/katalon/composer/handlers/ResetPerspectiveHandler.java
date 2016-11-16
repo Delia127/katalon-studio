@@ -142,28 +142,14 @@ public class ResetPerspectiveHandler extends AbstractHandler {
     }
 
     private void reselectParts(MPerspective perspective, EPartService ps) {
-        // Explorer Part
-        MPartStack explorerPartStack = switcher.find(IdConstants.COMPOSER_PARTSTACK_EXPLORER_ID, perspective);
-        if (explorerPartStack != null && explorerPartStack.getChildren() != null
-                && !explorerPartStack.getChildren().isEmpty()) {
-            MPart explorerPart = (MPart) explorerPartStack.getChildren().get(0);
-            explorerPartStack.setSelectedElement(explorerPart);
-            ps.activate(explorerPart);
-        }
-
         // Keyword Browser Part
-        MPartStack leftOutlinePartStack = switcher.find(IdConstants.COMPOSER_PARTSTACK_LEFT_OUTLINE_ID, perspective);
-        if (leftOutlinePartStack != null && leftOutlinePartStack.getChildren() != null
-                && !leftOutlinePartStack.getChildren().isEmpty()) {
-            leftOutlinePartStack.setSelectedElement(leftOutlinePartStack.getChildren().get(0));
-        }
+        selectAndActivateChildPart(perspective, ps, IdConstants.COMPOSER_PARTSTACK_LEFT_OUTLINE_ID, 0);
 
-        // Global Variable Part
-        MPartStack rightOutlinePartStack = switcher.find(IdConstants.OUTLINE_PARTSTACK_ID, perspective);
-        if (rightOutlinePartStack != null && rightOutlinePartStack.getChildren() != null
-                && !rightOutlinePartStack.getChildren().isEmpty()) {
-            rightOutlinePartStack.setSelectedElement(rightOutlinePartStack.getChildren().get(0));
-        }
+        // Properties Part
+        selectAndActivateChildPart(perspective, ps, IdConstants.OUTLINE_PARTSTACK_ID, 0);
+
+        // Explorer Part
+        selectAndActivateChildPart(perspective, ps, IdConstants.COMPOSER_PARTSTACK_EXPLORER_ID, 0);
     }
 
     private void relocatePartsBackIntoPosition(MPerspective perspective) {
@@ -201,6 +187,24 @@ public class ResetPerspectiveHandler extends AbstractHandler {
             return;
         }
         children.add(childIndex, childPlaceholder);
+    }
+
+    private void selectAndActivateChildPart(MPerspective perspective, EPartService partService, String partStackId,
+            int selectIndex) {
+        MPartStack partStack = switcher.find(partStackId, perspective);
+        if (partStack == null) {
+            return;
+        }
+
+        // This is a non-null list
+        List<MStackElement> leftOutlineChildren = partStack.getChildren();
+        if (leftOutlineChildren.isEmpty()) {
+            return;
+        }
+
+        MStackElement part = leftOutlineChildren.get(selectIndex);
+        partStack.setSelectedElement(part);
+        partService.activate((MPart) part);
     }
 
 }

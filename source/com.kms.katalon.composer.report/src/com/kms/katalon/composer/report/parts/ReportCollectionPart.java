@@ -16,12 +16,13 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
+import com.kms.katalon.composer.components.part.IComposerPart;
 import com.kms.katalon.composer.report.constants.StringConstants;
 import com.kms.katalon.composer.report.provider.ReportActionColumnLabelProvider;
 import com.kms.katalon.composer.report.provider.ReportCollectionTableLabelProvider;
 import com.kms.katalon.entity.report.ReportCollectionEntity;
 
-public class ReportCollectionPart {
+public class ReportCollectionPart implements IComposerPart {
 
     private ReportCollectionEntity reportCollectionEntity;
 
@@ -96,5 +97,10 @@ public class ReportCollectionPart {
 
         tableViewer.setContentProvider(ArrayContentProvider.getInstance());
         ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
+    }
+
+    @Override
+    public String getEntityId() {
+        return reportCollectionEntity.getIdForDisplay();
     }
 }

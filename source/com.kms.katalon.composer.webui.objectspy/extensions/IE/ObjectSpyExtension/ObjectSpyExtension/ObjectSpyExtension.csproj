@@ -94,6 +94,8 @@
     <Content Include="Resources\constants.js" />
     <Content Include="Resources\dom_collector.js" />
     <Content Include="Resources\main.js" />
+    <Content Include="Resources\process_element.js" />
+    <Content Include="Resources\wgxpath.install.js" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">

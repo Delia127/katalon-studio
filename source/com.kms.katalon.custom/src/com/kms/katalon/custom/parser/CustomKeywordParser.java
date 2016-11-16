@@ -28,12 +28,15 @@ import com.kms.katalon.core.annotation.Keyword;
 import com.kms.katalon.custom.factory.CustomMethodNodeFactory;
 
 public class CustomKeywordParser {
+    
     private static final String CUSTOM_KEYWORDS_FILE_NAME = "CustomKeywords.groovy";
     private final static String TEMPLATE_CLASS_NAME = IdConstants.KATALON_CUSTOM_BUNDLE_ID
             + ".generation.CustomKeywordTemplate";
     private final static String GENERATED_KEYWORD_METHOD_NAME = "generateCustomKeywordFile";
     private static CustomKeywordParser _instance;
-
+    
+    private static List<MethodNode> methodNodes = new ArrayList<MethodNode>();
+    
     private CustomKeywordParser() {
     }
 
@@ -51,7 +54,7 @@ public class CustomKeywordParser {
             parseCustomKeywordFile(file, libFolder, false);
         }
 
-        generateCustomKeywordLibFile(libFolder);
+        generateCustomKeywordLibFile(libFolder);        
     }
 
     public List<Method> parseAllCustomKeywordsIntoAst(URLClassLoader classLoader, IFolder srcfolder) throws Exception {
@@ -112,8 +115,9 @@ public class CustomKeywordParser {
         } catch (Exception e) {
             // do nothing
         }
-        if (generateLibFile)
+        if (generateLibFile) {
             generateCustomKeywordLibFile(libFolder);
+        }
     }
 
     public void parseCustomKeywordFile(ICompilationUnit file, IFolder libFolder, boolean generateLibFile)
@@ -128,8 +132,9 @@ public class CustomKeywordParser {
         } catch (Exception e) {
             // do nothing
         }
-        if (generateLibFile)
+        if (generateLibFile) {
             generateCustomKeywordLibFile(libFolder);
+        }
     }
 
     public void parseCustomKeywordInPackage(List<ICompilationUnit> keywordFiles, IFolder libFolder) throws Exception {
@@ -187,25 +192,41 @@ public class CustomKeywordParser {
         object.invokeMethod(GENERATED_KEYWORD_METHOD_NAME, new Object[] { file });
 
         iFile.refreshLocal(IResource.DEPTH_ZERO, null);
+        
+        // After generated CustomKeywords.groovy proxy class, parse and list out all its methods for later reuse
+        loadAllCustomKeywordProxyMethods(libFolder);
     }
 
+    /**
+     * Should not reload Custom Keywords so frequently,
+     * if user modified Custom Keywords, open project at the first time,
+     * should reload it that that & reuse
+     **/
     public List<MethodNode> getAllMethodNodes(IFolder libFolder) {
+        if (methodNodes == null || methodNodes.isEmpty()) {
+            loadAllCustomKeywordProxyMethods(libFolder);
+        }
+        return methodNodes;
+    }
+
+    /**
+     * To load all methods in proxy class CustomKeywords,
+     * for best performance, this job should do after loading project for the first time
+     * or when user updated/refresh custom keywords node
+     **/
+    private void loadAllCustomKeywordProxyMethods(IFolder libFolder) {
         IFile iFile = libFolder.getFile(CUSTOM_KEYWORDS_FILE_NAME);
         GroovyCompilationUnit unit = (GroovyCompilationUnit) JavaCore.createCompilationUnitFrom(iFile);
         ClassNode classNode = unit.getModuleNode().getClasses().get(0);
         if (classNode != null && classNode.getModule() != null && classNode.getModule().getMethods() != null) {
-            List<MethodNode> methodNodes = classNode.getModule().getMethods();
-
+            methodNodes = classNode.getModule().getMethods();
             // Sort by ascending method name
             Collections.sort(methodNodes, new Comparator<MethodNode>() {
-
                 @Override
                 public int compare(MethodNode methodA, MethodNode methodB) {
                     return (methodA.getName().compareToIgnoreCase(methodB.getName()));
                 }
             });
-            return methodNodes;
         }
-        return Collections.emptyList();
     }
 }

@@ -60,6 +60,11 @@ public abstract class AbstractDialogCellEditor extends DialogCellEditor implemen
     }
 
     @Override
+    protected int getDoubleClickTimeout() {
+        return 0;
+    }
+
+    @Override
     public void deactivate() {
         super.deactivate();
         isEditorClosed = true;

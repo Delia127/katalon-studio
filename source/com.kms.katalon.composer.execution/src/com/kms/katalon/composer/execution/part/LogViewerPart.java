@@ -64,7 +64,6 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.ISelectionListener;
-import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.console.IConsoleConstants;
@@ -260,9 +259,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
 
         ToolItem tltmCollapseAll = new ToolItem(toolBar, SWT.NONE);
         tltmCollapseAll.setToolTipText(StringConstants.PA_COLLAPSE_ALL);
-        tltmCollapseAll.setImage(PlatformUI.getWorkbench()
-                .getSharedImages()
-                .getImage(ISharedImages.IMG_ELCL_COLLAPSEALL));
+        tltmCollapseAll.setImage(ImageConstants.IMG_16_COLLAPSE_ALL);
         tltmCollapseAll.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -1060,6 +1057,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                         resetProgressBar();
                         createLogViewerControl(parentComposite);
                         updateProgressBar();
+                        parentComposite.layout();
                     }
                 });
             }

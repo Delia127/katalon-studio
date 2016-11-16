@@ -6,13 +6,17 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
+import org.apache.commons.lang.StringUtils;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
+import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.layout.FillLayout;
@@ -24,8 +28,9 @@ import org.osgi.service.event.EventHandler;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
+import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.components.part.IComposerPart;
+import com.kms.katalon.composer.components.part.IComposerPartEvent;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.objectrepository.constant.StringConstants;
 import com.kms.katalon.composer.objectrepository.view.ObjectPropertyView;
@@ -36,7 +41,7 @@ import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 
-public class TestObjectPart implements EventHandler, IComposerPart {
+public class TestObjectPart implements EventHandler, IComposerPartEvent {
     private static boolean isConfirmationDialogShowed = false;
 
     @Inject
@@ -196,5 +201,40 @@ public class TestObjectPart implements EventHandler, IComposerPart {
     @Override
     public String getEntityId() {
         return getTestObject().getIdForDisplay();
+    }
+
+    @Override
+    @Inject
+    @Optional
+    public void onSelect(@UIEventTopic(UIEvents.UILifeCycle.BRINGTOTOP) Event event) {
+        MPart part = EventUtil.getPart(event);
+        if (part == null || !StringUtils.equals(mPart.getElementId(), part.getElementId())) {
+            return;
+        }
+
+        EventUtil.post(EventConstants.PROPERTIES_ENTITY, originalTestObject);
+    }
+
+    @Override
+    @Inject
+    @Optional
+    public void onChangeEntityProperties(@UIEventTopic(EventConstants.PROPERTIES_ENTITY_UPDATED) Event event) {
+        Object eventData = EventUtil.getData(event);
+        if (!(eventData instanceof WebElementEntity)) {
+            return;
+        }
+
+        WebElementEntity updatedEntity = (WebElementEntity) eventData;
+        if (!StringUtils.equals(updatedEntity.getIdForDisplay(), getEntityId())) {
+            return;
+        }
+        originalTestObject.setTag(updatedEntity.getTag());
+        originalTestObject.setDescription(updatedEntity.getDescription());
+    }
+
+    @Override
+    @PreDestroy
+    public void onClose() {
+        EventUtil.post(EventConstants.PROPERTIES_ENTITY, null);
     }
 }
