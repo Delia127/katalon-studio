@@ -66,9 +66,6 @@ public class StringConstants extends GlobalStringConstants {
     // FunctionsIntroductionDialog
     public static final String DIA_TITLE_QUICK_GUIDE = MessageConstants.DIA_TITLE_QUICK_GUIDE;
 
-    // Application
-    public static final String ERR_CONSOLE_MODE = MessageConstants.ERR_CONSOLE_MODE;
-
     // Activation
     public static final String FORGOT_PASS_LINK = MessageConstants.FORGOT_PASS_LINK;
 
@@ -110,25 +107,7 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String PROMT_ENTER_ACTIVATE_CODE = MessageConstants.PROMT_ENTER_ACTIVATE_CODE;
 
-    public static final String ACTIVATION_COLLECT_FAIL_MESSAGE = MessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE;
-
-    public static final String SEND_SUCCESS_RESPONSE = MessageConstants.SEND_SUCCESS_RESPONSE;
-
-    public static final String ACTIVATED_PROP_NAME = MessageConstants.ACTIVATED_PROP_NAME;
-
     public static final String SEND_ACTIVATION_INFO_FAILED = MessageConstants.SEND_ACTIVATION_INFO_FAILED;
 
     public static final String NETWORK_ERROR = MessageConstants.NETWORK_ERROR;
-
-    public static final String ACTIVATE_INFO_INVALID = MessageConstants.ACTIVATE_INFO_INVALID;
-
-    public static final String KATALON_NOT_ACTIVATED = MessageConstants.KATALON_NOT_ACTIVATED;
-
-    public static final String ACTIVATION_CODE_INVALID = MessageConstants.ACTIVATION_CODE_INVALID;
-
-    public static final String REQUEST_CODE_PROP_NAME = MessageConstants.REQUEST_CODE_PROP_NAME;
-
-    public static final String ARG_EMAIL = "email";
-
-    public static final String ARG_PASSWORD = "password";
 }

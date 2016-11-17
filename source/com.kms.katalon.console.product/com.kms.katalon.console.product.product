@@ -7,13 +7,14 @@
    </configIni>
 
    <launcherArgs>
-      <programArgs>-clearPersistedState
+      <programArgs>-consoleLog
+-clearPersistedState
 -data config
       </programArgs>
+      <programArgsMac>-vm ../../Contents/Eclipse/jre/Contents/Home/jre/lib/jli/libjli.dylib
+      </programArgsMac>
       <vmArgs>-Xms256m
 -Xmx512m
--XX:PermSize=128M
--XX:MaxPermSize=512M
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>
@@ -22,8 +23,11 @@
    <windowImages/>
 
    <launcher name="katalon">
+      <linux icon="../com.kms.katalon/icons/icon.xpm"/>
+      <macosx icon="../com.kms.katalon/icons/icon.icns"/>
       <solaris/>
-      <win useIco="false">
+      <win useIco="true">
+         <ico path="../com.kms.katalon/icons/icon.ico"/>
          <bmp/>
       </win>
    </launcher>
@@ -104,8 +108,17 @@
 
    <configurations>
       <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="3" />
       <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="3" />
+      <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
    </configurations>
+
+   <preferencesInfo>
+      <targetfile overwrite="false"/>
+   </preferencesInfo>
+
+   <cssInfo>
+   </cssInfo>
 
 </product>

@@ -1,10 +1,10 @@
-package com.kms.katalon.util;
+package com.kms.katalon.console.utils;
 
 import java.awt.Desktop;
 import java.net.URI;
 
 import com.google.gson.JsonObject;
-import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.logging.LogUtil;
 
 public class VersionUtil {
 
@@ -48,7 +48,7 @@ public class VersionUtil {
         try {
             Desktop.getDesktop().browse(new URI(URL_NEW_VERSION));
         } catch (Exception ex) {
-            LoggerSingleton.logError(ex);
+            LogUtil.logError(ex);
         }
     }
 }

@@ -4,7 +4,8 @@ Bundle-Name: Custom
 Bundle-SymbolicName: com.kms.katalon.custom;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: KMS
-Export-Package: com.kms.katalon.custom.contribution,
+Export-Package: com.kms.katalon.custom.addon,
+ com.kms.katalon.custom.contribution,
  com.kms.katalon.custom.factory,
  com.kms.katalon.custom.keyword,
  com.kms.katalon.custom.parser;uses:="org.eclipse.jdt.core,org.eclipse.core.resources,com.kms.katalon.entity.project"
@@ -28,5 +29,5 @@ Require-Bundle: org.codehaus.groovy,
  org.apache.commons.lang,
  org.dom4j
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ActivationPolicy: lazy
 Bundle-Activator: com.kms.katalon.custom.addon.CustomBundleActivator
+Bundle-ActivationPolicy: lazy

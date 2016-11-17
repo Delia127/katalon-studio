@@ -1,4 +1,4 @@
-package com.kms.katalon.selenium;
+package com.kms.katalon.core.webui.driver.firefox;
 
 import java.io.File;
 
@@ -33,7 +33,7 @@ public class NewProfileExtensionConnection47 extends NewProfileExtensionConnecti
             File xpi = new File(xpiProperty);
             profile.addExtension(WEB_DRIVER_PROP, new FileExtension(xpi));
         } else {
-            profile.addExtension(WEB_DRIVER_PROP, new SignedWebDriverExtension(TempClass.class, EXTENSION_FILE_NAME));
+            profile.addExtension(WEB_DRIVER_PROP, new SignedWebDriverExtension(NewProfileExtensionConnection47.class, EXTENSION_FILE_NAME));
         }
     }
 }

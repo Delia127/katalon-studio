@@ -1,4 +1,4 @@
-package com.kms.katalon.util;
+package com.kms.katalon.console.utils;
 
 
 public class VersionInfo {

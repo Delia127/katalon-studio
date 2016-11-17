@@ -1,4 +1,4 @@
-package com.kms.katalon.addons;
+package com.kms.katalon.console.addons;
 
 import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
 

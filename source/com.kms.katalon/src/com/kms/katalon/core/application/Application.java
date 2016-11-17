@@ -2,10 +2,6 @@ package com.kms.katalon.core.application;
 
 import java.util.Map;
 
-import joptsimple.OptionParser;
-import joptsimple.OptionSet;
-
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
@@ -14,17 +10,16 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.osgi.framework.BundleException;
 
-import com.kms.katalon.addons.MacOSAddon;
+import com.kms.katalon.console.addons.MacOSAddon;
 import com.kms.katalon.composer.components.application.ApplicationSingleton;
+import com.kms.katalon.console.utils.ApplicationInfo;
 import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.constants.StringConstants;
-import com.kms.katalon.execution.console.ConsoleMain;
-import com.kms.katalon.execution.launcher.result.LauncherResult;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.support.testing.katserver.KatServer;
-import com.kms.katalon.util.ActivationInfoCollector;
-import com.kms.katalon.util.ApplicationInfo;
 import com.kms.katalon.util.ApplicationSession;
+
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
 
 /**
  * This class controls all aspects of the application's execution
@@ -58,7 +53,7 @@ public class Application implements IApplication {
             case CONSOLE:
                 // hide splash screen
                 context.applicationRunning();
-                return runConsole(appArgs);
+                return com.kms.katalon.console.application.Application.runConsole(appArgs);
             case SELFTEST:
                 return runSelfTest();    
             case GUI:
@@ -96,21 +91,6 @@ public class Application implements IApplication {
             return IApplication.EXIT_RESTART;
         }
         return IApplication.EXIT_OK;
-    }
-
-    private int runConsole(String[] arguments) {
-        // Set this to allow application to return it's own exit code instead of Eclipse's exit code
-        System.setProperty(IApplicationContext.EXIT_DATA_PROPERTY, "");
-        try {
-            if (!(ActivationInfoCollector.checkConsoleActivation(arguments))) {
-                return LauncherResult.RETURN_CODE_PASSED;
-            }
-            return ConsoleMain.launch(arguments);
-        } catch (Exception e) {
-            LogUtil.logError(e);
-            System.out.println(StringConstants.ERR_CONSOLE_MODE + ": " + ExceptionUtils.getStackTrace(e));
-            return LauncherResult.RETURN_CODE_ERROR;
-        }
     }
 
     private int internalRunGUI() {

@@ -40,11 +40,11 @@ import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.webui.common.WebUiCommonHelper;
 import com.kms.katalon.core.webui.constants.StringConstants;
+import com.kms.katalon.core.webui.driver.firefox.FirefoxDriver47;
 import com.kms.katalon.core.webui.driver.ie.InternetExploreDriverServiceBuilder;
 import com.kms.katalon.core.webui.exception.BrowserNotOpenedException;
 import com.kms.katalon.core.webui.util.FirefoxExecutable;
 import com.kms.katalon.core.webui.util.WebDriverPropertyUtil;
-import com.kms.katalon.selenium.FirefoxDriver47;
 import com.machinepublishers.jbrowserdriver.JBrowserDriver;
 import io.appium.java_client.ios.IOSDriver;
 

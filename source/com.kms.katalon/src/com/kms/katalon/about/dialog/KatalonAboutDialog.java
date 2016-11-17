@@ -46,9 +46,9 @@ import org.eclipse.ui.internal.about.InstallationDialog;
 import org.eclipse.ui.menus.CommandContributionItem;
 import org.eclipse.ui.menus.CommandContributionItemParameter;
 
+import com.kms.katalon.console.utils.VersionInfo;
+import com.kms.katalon.console.utils.VersionUtil;
 import com.kms.katalon.constants.MessageConstants;
-import com.kms.katalon.util.VersionInfo;
-import com.kms.katalon.util.VersionUtil;
 
 /**
  * Displays information about the product.

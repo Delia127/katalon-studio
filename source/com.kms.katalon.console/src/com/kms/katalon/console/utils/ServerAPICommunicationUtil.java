@@ -1,4 +1,4 @@
-package com.kms.katalon.util;
+package com.kms.katalon.console.utils;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -11,7 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.logging.LogUtil;
 
 public class ServerAPICommunicationUtil {
     private static final String URL_API = "https://update.katalon.com/api";
@@ -28,7 +28,7 @@ public class ServerAPICommunicationUtil {
             connection = createConnection(method, URL_API + function);
             return sendAndReceiveData(connection, jsonData);
         } catch (IOException ex) {
-            LoggerSingleton.logError(ex);
+            LogUtil.logError(ex);
             throw ex;
         } finally {
             if (connection != null) {

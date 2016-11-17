@@ -8,12 +8,11 @@
 
    <launcherArgs>
       <programArgs>-consoleLog
+-clearPersistedState
 -data config
       </programArgs>
       <vmArgs>-Xms256m
 -Xmx512m
--XX:PermSize=128M
--XX:MaxPermSize=512M
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>
@@ -22,15 +21,16 @@
    <windowImages/>
 
    <launcher name="katalon">
+      <linux icon="../com.kms.katalon/icons/icon.xpm"/>
+      <macosx icon="../com.kms.katalon/icons/icon.icns"/>
       <solaris/>
-      <win useIco="false">
-         <ico path="/com.kms.katalon/icons/icon.ico"/>
+      <win useIco="true">
+         <ico path="../com.kms.katalon/icons/icon.ico"/>
          <bmp/>
       </win>
    </launcher>
 
    <vm>
-      <windows include="true">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7</windows>
    </vm>
 
    <plugins>
@@ -159,5 +159,12 @@
       <plugin id="org.eclipse.equinox.p2.reconciler.dropins" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="2" />
    </configurations>
+
+   <preferencesInfo>
+      <targetfile overwrite="false"/>
+   </preferencesInfo>
+
+   <cssInfo>
+   </cssInfo>
 
 </product>
