@@ -625,7 +625,6 @@ public class ExplorerPart {
         // set new selection
         getViewer().setSelection(new StructuredSelection(object));
         getViewer().setExpandedState(object, true);
-        setFocus();
     }
     
     @Inject
@@ -646,7 +645,6 @@ public class ExplorerPart {
 
         // set new selection
         getViewer().setSelection(new StructuredSelection(objects));
-        setFocus();
     }
 
     @Inject
