@@ -703,7 +703,8 @@ public class DriverFactory {
     }
 
     public static void closeWebDriver() {
-        WebUIDriverType driverType = (WebUIDriverType) getExecutedBrowser();
+        startExistingBrowserIfPossible();
+        DriverType driverType = getExecutedBrowser();
         if (driverType == WebUIDriverType.IE_DRIVER) {
             quitIE();
             return;
@@ -712,20 +713,22 @@ public class DriverFactory {
         if (null != webDriver && null != ((RemoteWebDriver) webDriver).getSessionId()) {
             try {
                 webDriver.quit();
-                switch (driverType) {
-                    case ANDROID_DRIVER:
-                    case IOS_DRIVER:
-                        WebMobileDriverFactory.closeDriver();
-                        break;
-                    case EDGE_DRIVER:
-                        EdgeDriverService edgeDriverService = localEdgeDriverServiceStorage.get();
-                        if (edgeDriverService.isRunning()) {
-                            edgeDriverService.stop();
-                        }
-                        break;
-                    default:
-                        break;
+                if (driverType instanceof WebUIDriverType) {
+                    switch ((WebUIDriverType) driverType) {
+                        case ANDROID_DRIVER:
+                        case IOS_DRIVER:
+                            WebMobileDriverFactory.closeDriver();
+                            break;
+                        case EDGE_DRIVER:
+                            EdgeDriverService edgeDriverService = localEdgeDriverServiceStorage.get();
+                            if (edgeDriverService.isRunning()) {
+                                edgeDriverService.stop();
+                            }
+                            break;
+                        default:
+                            break;
 
+                    }
                 }
             } catch (UnreachableBrowserException e) {
                 KeywordLogger.getInstance().logWarning(StringConstants.DRI_LOG_WARNING_BROWSER_NOT_REACHABLE);
