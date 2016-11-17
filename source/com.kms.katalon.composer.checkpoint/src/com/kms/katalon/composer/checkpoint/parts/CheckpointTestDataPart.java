@@ -17,8 +17,10 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ISelectionStatusValidator;
+import org.eclipse.ui.forms.events.HyperlinkAdapter;
+import org.eclipse.ui.forms.events.HyperlinkEvent;
+import org.eclipse.ui.forms.widgets.FormText;
 import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.composer.checkpoint.constants.StringConstants;
@@ -29,6 +31,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
 import com.kms.katalon.composer.explorer.providers.EntityProvider;
 import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
+import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestDataController;
@@ -41,6 +44,8 @@ import com.kms.katalon.entity.testdata.DataFileEntity;
 public class CheckpointTestDataPart extends CheckpointAbstractPart {
 
     private Button btnBrowse;
+
+    private FormText txtTestDataLink;
 
     private String pluginId = FrameworkUtil.getBundle(getClass()).getSymbolicName();
 
@@ -56,8 +61,8 @@ public class CheckpointTestDataPart extends CheckpointAbstractPart {
         Label lblSourceUrl = new Label(compSourceInfoDetails, SWT.NONE);
         lblSourceUrl.setText(StringConstants.TEST_DATA);
 
-        txtSourceUrl = new Text(compSourceInfoDetails, SWT.BORDER | SWT.READ_ONLY);
-        txtSourceUrl.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        txtTestDataLink = new FormText(compSourceInfoDetails, SWT.BORDER);
+        txtTestDataLink.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
         btnBrowse = new Button(compSourceInfoDetails, SWT.PUSH | SWT.FLAT);
         btnBrowse.setText(StringConstants.BROWSE);
@@ -75,11 +80,23 @@ public class CheckpointTestDataPart extends CheckpointAbstractPart {
                 executeOperation(new ChangeTestDataOperation());
             }
         });
+        
+        txtTestDataLink.addHyperlinkListener(new HyperlinkAdapter() { 
+            @Override 
+            public void linkActivated(HyperlinkEvent e) { 
+                try {
+                    DataFileEntity testData = TestDataController.getInstance().getTestDataByDisplayId(e.getLabel());
+                    eventBroker.post(EventConstants.TEST_DATA_OPEN, testData);
+                } catch (Exception ex) {
+                    LoggerSingleton.logError(ex);
+                }
+            } 
+        });
     }
 
     @Override
     protected void loadCheckpointSourceInfo(CheckpointSourceInfo sourceInfo) {
-        txtSourceUrl.setText(sourceInfo.getSourceUrl());
+        setTestDataLinkText(sourceInfo.getSourceUrl());
     }
 
     private class ChangeTestDataOperation extends ChangeCheckpointSourceInfoOperation {
@@ -149,7 +166,8 @@ public class CheckpointTestDataPart extends CheckpointAbstractPart {
             }
 
             Object[] selectedItems = dialog.getResult();
-            if (selectedItems == null || selectedItems.length == 0 || !(selectedItems[0] instanceof TestDataTreeEntity)) {
+            if (selectedItems == null || selectedItems.length == 0
+                    || !(selectedItems[0] instanceof TestDataTreeEntity)) {
                 return null;
             }
 
@@ -158,4 +176,10 @@ public class CheckpointTestDataPart extends CheckpointAbstractPart {
         }
     }
 
+    private void setTestDataLinkText(String testDataLink) {
+        if (testDataLink == null) {
+            return;
+        }
+        txtTestDataLink.setText("<form><p><a>" + testDataLink + "</a></p></form>", true, false);
+    }
 }

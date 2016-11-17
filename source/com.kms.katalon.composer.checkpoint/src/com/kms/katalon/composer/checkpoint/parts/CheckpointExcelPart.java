@@ -27,6 +27,8 @@ public class CheckpointExcelPart extends CheckpointAbstractPart {
 
     protected Button btnEdit;
 
+    private Text txtSourceUrl;
+
     @Override
     protected Composite createSourceInfoPartDetails(Composite parent) {
         compSourceInfoDetails = new Composite(parent, SWT.NONE);

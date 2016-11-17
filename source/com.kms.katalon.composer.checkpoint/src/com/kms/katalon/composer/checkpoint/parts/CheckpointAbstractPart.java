@@ -60,7 +60,6 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.widgets.Text;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
@@ -126,8 +125,6 @@ public abstract class CheckpointAbstractPart extends CPart implements EventHandl
     private Label lblSourceInfo;
 
     private Label lblStatus;
-
-    protected Text txtSourceUrl;
 
     protected Button btnTakeSnapshot;
 
