@@ -18,7 +18,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.execution.constants.StringConstants;
-import com.kms.katalon.composer.execution.util.ComposerExecutionUtil;
 import com.kms.katalon.execution.collector.RunConfigurationCollector;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
 import com.kms.katalon.execution.constants.ExecutionPreferenceConstants;
@@ -220,7 +219,6 @@ public class ExecutionPreferencePage extends PreferencePage {
             selectedExecutionConfiguration = executionOptionCombo.getText();
             getPreferenceStore().setValue(ExecutionPreferenceConstants.EXECUTION_DEFAULT_CONFIGURATION,
                     selectedExecutionConfiguration);
-            ComposerExecutionUtil.updateDefaultLabelForRunDropDownItem(executionOptionCombo.getText());
         }
     }
 

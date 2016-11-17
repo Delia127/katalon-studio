@@ -2,6 +2,7 @@ package com.kms.katalon.composer.execution.addons;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -32,7 +33,6 @@ import com.kms.katalon.composer.execution.debug.handler.ToggleBreakpointHandler;
 import com.kms.katalon.composer.execution.handlers.EvaluateDriverConnectorEditorContributionsHandler;
 import com.kms.katalon.composer.execution.menu.CustomExecutionMenuContribution;
 import com.kms.katalon.composer.execution.menu.ExecutionHandledMenuItem;
-import com.kms.katalon.composer.execution.util.ComposerExecutionUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
@@ -99,8 +99,8 @@ public class TestExecutionAddon implements EventHandler {
 
     private void writeDefaultConsolePropertyFile() {
         try {
-            ConsoleOptionCollector.getInstance().writeDefaultPropertyFile(
-                    ProjectController.getInstance().getCurrentProject());
+            ConsoleOptionCollector.getInstance()
+                    .writeDefaultPropertyFile(ProjectController.getInstance().getCurrentProject());
         } catch (IOException e) {
             LoggerSingleton.logError(e);
         }
@@ -120,30 +120,44 @@ public class TestExecutionAddon implements EventHandler {
         handlerService.activateHandler(STEP_RETURN_COMMAND, new StepReturnCommandHandler());
         handlerService.activateHandler(TOGGLE_BREAKPOINT_COMMAND, new ToggleBreakpointHandler());
     }
-
+    
     private void wrapExecutionMenuItemsProcessor(String menuItemId) {
         MToolItem runToolItem = (MToolItem) modelService.find(menuItemId, application);
         if (runToolItem == null)
             return;
 
         MMenu menu = runToolItem.getMenu();
-        if (menu == null || menu.getChildren() == null || menu.getChildren().isEmpty())
+        if (menu == null) {
             return;
+        }
 
+        convertChildrenToExecutionHandledElements(menu.getChildren());
+    }
+
+    private void convertChildrenToExecutionHandledElements(List<MMenuElement> originalElements) {
+        List<MMenuElement> menuItems = newElements(originalElements);
+        originalElements.clear();
+        originalElements.addAll(menuItems);
+    }
+
+    private List<MMenuElement> newElements(List<MMenuElement> originalElements) {
+        if (originalElements == null) {
+            return Collections.emptyList();
+        }
         List<MMenuElement> menuItems = new ArrayList<MMenuElement>();
-        for (MMenuElement item : menu.getChildren()) {
+        for (MMenuElement item : originalElements) {
             MMenuElement wrappedItem = item;
             if (item instanceof MHandledMenuItem) {
                 wrappedItem = new ExecutionHandledMenuItem((MHandledMenuItem) item);
             }
+            if (item instanceof MMenu) {
+                convertChildrenToExecutionHandledElements(((MMenu) item).getChildren());
+            }
             menuItems.add(wrappedItem);
         }
-        menu.getChildren().clear();
-        menu.getChildren().addAll(menuItems);
-
-        ComposerExecutionUtil.updateDefaultLabelForRunDropDownItem();
+        return menuItems;
     }
-    
+
     private void startSessionServer() {
         new Thread(ExecutionSessionSocketServer.getInstance()).start();
     }

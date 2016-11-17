@@ -54,7 +54,7 @@ public abstract class AbstractExecutionMenuContribution {
         defaultMenuItem.setLabel(ComposerExecutionMessageConstants.LBL_EXECUTION_NEW_SESSION);
         
         List<MMenuElement> executionMenuItems = executionMenu.getChildren();
-        executionMenuItems.add(defaultMenuItem);
+        executionMenuItems.add(new ExecutionHandledMenuItem(defaultMenuItem));
         executionMenuItems.add(MMenuFactory.INSTANCE.createMenuSeparator());
 
         for (ExecutionSession executionSession : exisingDrivers) {
@@ -67,7 +67,7 @@ public abstract class AbstractExecutionMenuContribution {
                     ConstantsHelper.getApplicationURI());
             executionMenuItem.setIconURI(getIconUri());
             executionMenuItem.setTooltip(null);
-            executionMenuItems.add(executionMenuItem);
+            executionMenuItems.add(new ExecutionHandledMenuItem(executionMenuItem));
         }
         menuItems.add(executionMenu);
     }
@@ -103,7 +103,7 @@ public abstract class AbstractExecutionMenuContribution {
                 ConstantsHelper.getApplicationURI());
         executionMenuItem.setTooltip(null);
         executionMenuItem.setIconURI(getIconUri());
-        return executionMenuItem;
+        return new ExecutionHandledMenuItem(executionMenuItem);
     }
 
     protected Map<String, Object> getParametersForCommand() {

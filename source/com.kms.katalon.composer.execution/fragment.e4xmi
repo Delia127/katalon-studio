@@ -5,8 +5,12 @@
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_Kg0kwEO6EeS6w-5VfP-05A" featurename="commands" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Command" xmi:id="_4raZwG74EeSqyYL0pZQV2Q" elementId="com.kms.katalon.composer.execution.command.stopAllExecute" commandName="" description="Stop All Executing Script"/>
-    <elements xsi:type="commands:Command" xmi:id="_Z3Hl4OJWEeSyVPtKyNklew" elementId="com.kms.katalon.composer.execution.command.debug" commandName="" description="Debug"/>
-    <elements xsi:type="commands:Command" xmi:id="_1Vr3wEvpEeWSR5dl8TkM5g" elementId="com.kms.katalon.composer.execution.command.execute" commandName="" description="Execute"/>
+    <elements xsi:type="commands:Command" xmi:id="_Z3Hl4OJWEeSyVPtKyNklew" elementId="com.kms.katalon.composer.execution.command.debug" commandName="" description="Debug">
+      <parameters xmi:id="_nDTSkKy-Eea0DeEFhXaQmQ" elementId="com.kms.katalon.composer.execution.runMode" name="Run Mode"/>
+    </elements>
+    <elements xsi:type="commands:Command" xmi:id="_1Vr3wEvpEeWSR5dl8TkM5g" elementId="com.kms.katalon.composer.execution.command.execute" commandName="" description="Execute">
+      <parameters xmi:id="_mhDhIKy-Eea0DeEFhXaQmQ" elementId="com.kms.katalon.composer.execution.runMode" name="Run Mode"/>
+    </elements>
     <elements xsi:type="commands:Command" xmi:id="_V2XzcOd0EeWhlq_ETXxxuQ" elementId="com.kms.katalon.composer.execution.command.generateCommand" commandName="Generate Command"/>
     <elements xsi:type="commands:Command" xmi:id="_kI3nMAh6EeaOHID5tXhDTg" elementId="org.eclipse.debug.ui.commands.StepInto" commandName="Step Into"/>
     <elements xsi:type="commands:Command" xmi:id="_nW_wEAh6EeaOHID5tXhDTg" elementId="org.eclipse.debug.ui.commands.StepOver" commandName="Step Over"/>
@@ -37,6 +41,7 @@
       <tags>FORCE_TEXT</tags>
       <tags>Opaque</tags>
       <menu xmi:id="_h1k4gGZHEeSy97efZ7yHrA" elementId="com.kms.katalon.composer.execution.menu.run" label="Run "/>
+      <parameters xmi:id="_Fzs6IKy-Eea0DeEFhXaQmQ" elementId="com.kms.katalon.composer.webui.parameter.safari.runParam" name="com.kms.katalon.composer.execution.runMode" value="run"/>
     </elements>
     <elements xsi:type="menu:HandledToolItem" xmi:id="_h09mMOJWEeSyVPtKyNklew" elementId="com.kms.katalon.composer.execution.handledtoolitem.debug" label="" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/bug_24.png" tooltip="Debug" command="_Z3Hl4OJWEeSyVPtKyNklew">
       <persistedState key="index" value="19"/>
@@ -44,6 +49,7 @@
       <tags>FORCE_TEXT</tags>
       <tags>Opaque</tags>
       <menu xmi:id="_lev64OJXEeSyVPtKyNklew" elementId="com.kms.katalon.composer.execution.menu.debug" label="Debug"/>
+      <parameters xmi:id="_IL-ZEKy-Eea0DeEFhXaQmQ" elementId="com.kms.katalon.composer.webui.parameter.safari.runParam" name="com.kms.katalon.composer.execution.runMode" value="debug"/>
     </elements>
     <elements xsi:type="menu:HandledToolItem" xmi:id="_yvXSEG74EeSqyYL0pZQV2Q" elementId="com.kms.katalon.composer.execution.handledtoolitem.stop" label="" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/stop_24.png" tooltip="Stop All" command="_4raZwG74EeSqyYL0pZQV2Q">
       <persistedState key="index" value="20"/>
