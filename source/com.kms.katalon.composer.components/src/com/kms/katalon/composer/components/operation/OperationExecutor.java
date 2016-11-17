@@ -19,8 +19,11 @@ public class OperationExecutor {
 
     private IOperationHistory operationHistory;
 
+    private Object parentPart;
+    
     public OperationExecutor(Object parentPart) {
         this.undoContext = new ObjectUndoContext(parentPart);
+        this.parentPart = parentPart;
     }
 
     private IOperationHistory getOperationHistory() {
@@ -91,5 +94,10 @@ public class OperationExecutor {
     
     public void dispose() {
         getOperationHistory().dispose(undoContext, true, true, true);
+    }
+    
+    public void refresh() {
+        dispose();
+        undoContext = new ObjectUndoContext(parentPart);
     }
 }

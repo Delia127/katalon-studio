@@ -376,7 +376,7 @@ public class TestCaseVariablePart extends CPart {
     public void setDirty(boolean isDirty) {
         mpart.setDirty(isDirty);
         parentTestCaseCompositePart.getChildTestCasePart().getTreeTableInput().reloadTestCaseVariables();
-        parentTestCaseCompositePart.checkDirty();
+        parentTestCaseCompositePart.updateDirty();
     }
 
     public void loadVariables() {
