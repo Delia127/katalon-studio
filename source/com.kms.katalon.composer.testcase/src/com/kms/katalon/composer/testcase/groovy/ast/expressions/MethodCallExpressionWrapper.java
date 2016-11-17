@@ -14,6 +14,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.ImportNodeCollection;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
 import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
 import com.kms.katalon.controller.KeywordController;
+import com.kms.katalon.core.checkpoint.CheckpointFactory;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.testcase.TestCaseFactory;
 import com.kms.katalon.core.testdata.TestDataFactory;
@@ -322,6 +323,10 @@ public class MethodCallExpressionWrapper extends ExpressionWrapper {
 
     public boolean isFindTestObjectMethodCall() {
         return isFindTestArtifactMethodCall(ObjectRepository.class, FIND_TEST_OBJECT_METHOD_NAME);
+    }
+    
+    public boolean isFindCheckpointMethodCall() {
+        return isFindTestArtifactMethodCall(CheckpointFactory.class, FIND_CHECKPOINT_METHOD_NAME);
     }
 
     private boolean isFindTestArtifactMethodCall(Class<?> clazzToFind, String methodName) {

@@ -324,6 +324,8 @@ public class ComposerTestcaseMessageConstants extends NLS {
     public static String LABEL_PARAMETER_LIST;
     
     public static String DIA_WARNING_METHOD_IN_CLOSURE;
+    
+    public static String DIA_TITLE_CHECKPOINT_BROWSER;
 
     static {
         // initialize resource bundle

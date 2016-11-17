@@ -22,6 +22,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpres
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.VariableExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
 import com.kms.katalon.composer.testcase.preferences.TestCasePreferenceDefaultValueInitializer;
+import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testcase.TestCase;
@@ -40,11 +41,10 @@ import com.kms.katalon.entity.variable.VariableEntity;
 public class AstEntityInputUtil {
     public static MethodCallExpressionWrapper createNewFindTestCaseMethodCall(TestCaseEntity testCase,
             ASTNodeWrapper parentNode) {
-        MethodCallExpressionWrapper objectMethodCall = MethodCallExpressionWrapper.newLocalMethod(
-                MethodCallExpressionWrapper.FIND_TEST_CASE_METHOD_NAME, parentNode);
-        objectMethodCall.getArguments().addExpression(
-                new ConstantExpressionWrapper(testCase != null
-                        ? TestCaseFactory.getTestCaseRelativeId(testCase.getIdForDisplay()) : null));
+        MethodCallExpressionWrapper objectMethodCall = MethodCallExpressionWrapper
+                .newLocalMethod(MethodCallExpressionWrapper.FIND_TEST_CASE_METHOD_NAME, parentNode);
+        objectMethodCall.getArguments().addExpression(new ConstantExpressionWrapper(
+                testCase != null ? TestCaseFactory.getTestCaseRelativeId(testCase.getIdForDisplay()) : null));
         return objectMethodCall;
     }
 
@@ -74,6 +74,14 @@ public class AstEntityInputUtil {
         return findTestCaseIdArgumentFromFindTestCaseMethodCall((MethodCallExpressionWrapper) firstArgumentEprs);
     }
 
+    public static String findCheckpointIdArgumentFromFindCheckpointMethodCall(
+            MethodCallExpressionWrapper methodCallExpression) {
+        if (!methodCallExpression.isFindCheckpointMethodCall()) {
+            return null;
+        }
+        return getEntityRelativeIdFromMethodCall(methodCallExpression);
+    }
+
     public static ExpressionStatementWrapper generateCallTestCaseExpresionStatement(TestCaseEntity testCase,
             List<VariableEntity> variablesToAdd, ASTNodeWrapper parentNode) {
         KeywordClass defaultBuiltinKeywordContributor = null;
@@ -88,7 +96,8 @@ public class AstEntityInputUtil {
         MethodCallExpressionWrapper keywordMethodCallExpressionWrapper = new MethodCallExpressionWrapper(
                 defaultBuiltinKeywordContributor.getAliasName(), BuiltInMethodNodeFactory.CALL_TEST_CASE_METHOD_NAME,
                 null);
-        ArgumentListExpressionWrapper argumentList = (ArgumentListExpressionWrapper) keywordMethodCallExpressionWrapper.getArguments();
+        ArgumentListExpressionWrapper argumentList = (ArgumentListExpressionWrapper) keywordMethodCallExpressionWrapper
+                .getArguments();
         argumentList.addExpression(createNewFindTestCaseMethodCall(testCase, argumentList));
         argumentList.addExpression(generateTestCaseVariableBindingMapExpression(testCase, argumentList));
         argumentList.addExpression(AstKeywordsInputUtil.getNewFailureHandlingPropertyExpression(argumentList));
@@ -109,11 +118,14 @@ public class AstEntityInputUtil {
         ArgumentListExpressionWrapper argumentListExpressionWrapper = callTestCaseMethodCall.getArguments();
         if (!(argumentListExpressionWrapper.getExpression(0) instanceof MethodCallExpressionWrapper)
                 || !(argumentListExpressionWrapper.getExpression(1) instanceof MapExpressionWrapper)
-                || !((MethodCallExpressionWrapper) argumentListExpressionWrapper.getExpression(0)).isFindTestCaseMethodCall()) {
+                || !((MethodCallExpressionWrapper) argumentListExpressionWrapper.getExpression(0))
+                        .isFindTestCaseMethodCall()) {
             return Collections.emptyList();
         }
-        String calledTestCaseId = AstEntityInputUtil.findTestCaseIdArgumentFromFindTestCaseMethodCall((MethodCallExpressionWrapper) argumentListExpressionWrapper.getExpression(0));
-        MapExpressionWrapper mapExpressionWrapper = (MapExpressionWrapper) argumentListExpressionWrapper.getExpression(1);
+        String calledTestCaseId = AstEntityInputUtil.findTestCaseIdArgumentFromFindTestCaseMethodCall(
+                (MethodCallExpressionWrapper) argumentListExpressionWrapper.getExpression(0));
+        MapExpressionWrapper mapExpressionWrapper = (MapExpressionWrapper) argumentListExpressionWrapper
+                .getExpression(1);
         List<VariableEntity> variableEntities = new ArrayList<VariableEntity>();
         for (MapEntryExpressionWrapper entryExpressionWrapper : mapExpressionWrapper.getMapEntryExpressions()) {
             String variableName = (entryExpressionWrapper.getKeyExpression() instanceof ConstantExpressionWrapper)
@@ -156,13 +168,14 @@ public class AstEntityInputUtil {
     }
 
     public static boolean isTestCaseClass(ClassNodeWrapper classNode) {
-        return (classNode.getName().equals(TestCase.class.getName()) || classNode.getName().equals(
-                TestCase.class.getSimpleName()));
+        return (classNode.getName().equals(TestCase.class.getName())
+                || classNode.getName().equals(TestCase.class.getSimpleName()));
     }
 
     public static boolean isTestCaseClass(Class<?> clazz) {
         return (TestCase.class.getName().equals(clazz.getName())
-                || TestCase.class.getSimpleName().equals(clazz.getSimpleName()) || TestCase.class.isAssignableFrom(clazz));
+                || TestCase.class.getSimpleName().equals(clazz.getSimpleName())
+                || TestCase.class.isAssignableFrom(clazz));
     }
 
     public static String findTestDataIdFromFindTestDataMethodCall(MethodCallExpressionWrapper methodCallExpression) {
@@ -194,26 +207,29 @@ public class AstEntityInputUtil {
         return true;
     }
 
-    public static MethodCallExpressionWrapper createNewFindTestDataExpression(String testDataId, ASTNodeWrapper parent) {
-        MethodCallExpressionWrapper newMethodCall = MethodCallExpressionWrapper.newLocalMethod(
-                MethodCallExpressionWrapper.FIND_TEST_DATA_METHOD_NAME, parent);
-        newMethodCall.getArguments().addExpression(
-                new ConstantExpressionWrapper(TestDataFactory.getTestDataRelativeId(testDataId)));
+    public static MethodCallExpressionWrapper createNewFindTestDataExpression(String testDataId,
+            ASTNodeWrapper parent) {
+        MethodCallExpressionWrapper newMethodCall = MethodCallExpressionWrapper
+                .newLocalMethod(MethodCallExpressionWrapper.FIND_TEST_DATA_METHOD_NAME, parent);
+        newMethodCall.getArguments()
+                .addExpression(new ConstantExpressionWrapper(TestDataFactory.getTestDataRelativeId(testDataId)));
         return newMethodCall;
     }
 
-    public static MethodCallExpressionWrapper createNewGetTestDataValueExpression(String testDataId,
-            Object columnValue, Object rowValue, ASTNodeWrapper parent) {
+    public static MethodCallExpressionWrapper createNewGetTestDataValueExpression(String testDataId, Object columnValue,
+            Object rowValue, ASTNodeWrapper parent) {
         MethodCallExpressionWrapper newMethodCall = new MethodCallExpressionWrapper(parent);
         newMethodCall.setObjectExpression(createNewFindTestDataExpression(testDataId, newMethodCall));
         newMethodCall.setMethod(new ConstantExpressionWrapper(GET_VALUE_METHOD_NAME, newMethodCall));
-        ArgumentListExpressionWrapper argumentExpressionWrapper = (ArgumentListExpressionWrapper) newMethodCall.getArguments();
+        ArgumentListExpressionWrapper argumentExpressionWrapper = (ArgumentListExpressionWrapper) newMethodCall
+                .getArguments();
         argumentExpressionWrapper.addExpression(new ConstantExpressionWrapper(columnValue, argumentExpressionWrapper));
         argumentExpressionWrapper.addExpression(new ConstantExpressionWrapper(rowValue, argumentExpressionWrapper));
         return newMethodCall;
     }
 
-    public static String findTestObjectIdFromFindTestObjectMethodCall(MethodCallExpressionWrapper methodCallExpression) {
+    public static String findTestObjectIdFromFindTestObjectMethodCall(
+            MethodCallExpressionWrapper methodCallExpression) {
         if (!methodCallExpression.isFindTestObjectMethodCall()) {
             return null;
         }
@@ -226,28 +242,53 @@ public class AstEntityInputUtil {
 
     public static MethodCallExpressionWrapper createNewFindTestObjectMethodCall(String testObjectId,
             ASTNodeWrapper parentNode) {
-        MethodCallExpressionWrapper objectMethodCall = MethodCallExpressionWrapper.newLocalMethod(
-                MethodCallExpressionWrapper.FIND_TEST_OBJECT_METHOD_NAME, parentNode);
+        MethodCallExpressionWrapper objectMethodCall = MethodCallExpressionWrapper
+                .newLocalMethod(MethodCallExpressionWrapper.FIND_TEST_OBJECT_METHOD_NAME, parentNode);
         ArgumentListExpressionWrapper argument = new ArgumentListExpressionWrapper(objectMethodCall);
-        argument.addExpression(new ConstantExpressionWrapper(ObjectRepository.getTestObjectRelativeId(testObjectId),
-                argument));
+        argument.addExpression(
+                new ConstantExpressionWrapper(ObjectRepository.getTestObjectRelativeId(testObjectId), argument));
         objectMethodCall.setArguments(argument);
         return objectMethodCall;
     }
 
+    public static MethodCallExpressionWrapper createNewFindCheckpointMethodCall(ASTNodeWrapper parentNode) {
+        return createNewFindCheckpointMethodCall(null, parentNode);
+    }
+
+    public static MethodCallExpressionWrapper createNewFindCheckpointMethodCall(String checkpointId,
+            ASTNodeWrapper parentNode) {
+        MethodCallExpressionWrapper objectMethodCall = MethodCallExpressionWrapper
+                .newLocalMethod(MethodCallExpressionWrapper.FIND_CHECKPOINT_METHOD_NAME, parentNode);
+        ArgumentListExpressionWrapper argument = new ArgumentListExpressionWrapper(objectMethodCall);
+        argument.addExpression(new ConstantExpressionWrapper(checkpointId, argument));
+        objectMethodCall.setArguments(argument);
+        return objectMethodCall;
+    }
+
+    public static boolean setCheckpointIdIntoFindCheckpointMethodCall(MethodCallExpressionWrapper methodCallExpression,
+            String checkpointValue) {
+        if (!methodCallExpression.isFindCheckpointMethodCall()) {
+            return false;
+        }
+        return setEntityIdToMethodCall(methodCallExpression, checkpointValue);
+    }
+
     public static boolean isTestObjectClass(ClassNodeWrapper classNode) {
         return (TestObject.class.getName().equals(classNode.getTypeClass().getName())
-                || TestObject.class.getSimpleName().equals(classNode.getTypeClass().getSimpleName()) || TestObject.class.isAssignableFrom(classNode.getTypeClass()));
+                || TestObject.class.getSimpleName().equals(classNode.getTypeClass().getSimpleName())
+                || TestObject.class.isAssignableFrom(classNode.getTypeClass()));
     }
 
     public static boolean isTestObjectClass(ClassNode classNode) {
         return (TestObject.class.getName().equals(classNode.getTypeClass().getName())
-                || TestObject.class.getSimpleName().equals(classNode.getTypeClass().getSimpleName()) || TestObject.class.isAssignableFrom(classNode.getTypeClass()));
+                || TestObject.class.getSimpleName().equals(classNode.getTypeClass().getSimpleName())
+                || TestObject.class.isAssignableFrom(classNode.getTypeClass()));
     }
 
     public static boolean isTestObjectClass(Class<?> clazz) {
         return (TestObject.class.getName().equals(clazz.getName())
-                || TestObject.class.getSimpleName().equals(clazz.getSimpleName()) || TestObject.class.isAssignableFrom(clazz));
+                || TestObject.class.getSimpleName().equals(clazz.getSimpleName())
+                || TestObject.class.isAssignableFrom(clazz));
     }
 
     public static boolean isClassChildOf(String parentClassName, String childClassName) {
@@ -260,7 +301,8 @@ public class AstEntityInputUtil {
 
     public static boolean isFailureHandlingClass(Class<?> clazz) {
         return (FailureHandling.class.getName().equals(clazz.getName())
-                || FailureHandling.class.getSimpleName().equals(clazz.getSimpleName()) || FailureHandling.class.isAssignableFrom(clazz));
+                || FailureHandling.class.getSimpleName().equals(clazz.getSimpleName())
+                || FailureHandling.class.isAssignableFrom(clazz));
     }
 
     private static String getEntityRelativeIdFromMethodCall(MethodCallExpressionWrapper methodCallExpression) {
@@ -298,9 +340,15 @@ public class AstEntityInputUtil {
     public static String getTextValueForTestDataValueArgument(MethodCallExpressionWrapper methodCall) {
         StringBuilder result = new StringBuilder();
         if (methodCall.getObjectExpression() instanceof MethodCallExpressionWrapper) {
-            result.append(getTextValueForTestDataArgument(((MethodCallExpressionWrapper) methodCall.getObjectExpression())));
+            result.append(
+                    getTextValueForTestDataArgument(((MethodCallExpressionWrapper) methodCall.getObjectExpression())));
         }
         result.append(methodCall.getArguments().getText());
         return result.toString();
+    }
+
+    public static String getTextValueForFindCheckpoint(MethodCallExpressionWrapper methodCall) {
+        return getEntityRelativeIdFromMethodCall(methodCall).replaceFirst(
+                GlobalStringConstants.ROOT_FOLDER_NAME_CHECKPOINT + ENTITY_ID_SEPARATOR, StringUtils.EMPTY);
     }
 }
