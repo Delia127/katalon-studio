@@ -304,11 +304,6 @@ public class RunConfiguration {
         return RunConfiguration.getDriverSystemProperty(StringConstants.CONF_PROPERTY_EXISTING_DRIVER,
                 StringConstants.CONF_PROPERTY_EXISTING_SESSION_SERVER_URL);
     }
-    
-    public static String getExisingSessionPort() {
-        return RunConfiguration.getDriverSystemProperty(StringConstants.CONF_PROPERTY_EXISTING_DRIVER,
-                StringConstants.CONF_PROPERTY_EXISTING_SESSION_PORT);
-    }
 
     public static String getHostName() {
         return getStringProperty(HOST_NAME, getHostProperties());

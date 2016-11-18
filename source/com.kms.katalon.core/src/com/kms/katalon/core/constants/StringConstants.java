@@ -387,8 +387,6 @@ public class StringConstants {
     public static final String CONF_PROPERTY_EXISTING_SESSION_SESSION_ID = "existingSession.sessionId";
     
     public static final String CONF_PROPERTY_EXISTING_SESSION_SERVER_URL = "existingSession.serverUrl";
-    
-    public static final String CONF_PROPERTY_EXISTING_SESSION_PORT = "existingSession.port";
 
     // TestCaseExecutor
     public static final String TEST_STEP_TRANSFORMATION_CLASS = "com.kms.katalon.core.ast.RequireAstTestStepTransformation";

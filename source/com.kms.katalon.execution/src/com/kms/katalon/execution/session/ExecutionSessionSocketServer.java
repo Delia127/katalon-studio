@@ -6,9 +6,13 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.Platform;
+
 import com.kms.katalon.logging.LogUtil;
 
 public class ExecutionSessionSocketServer implements Runnable {
+    private static final String LOCAL_HOST_MAC = "localhost";
+
     private static ExecutionSessionSocketServer instance;
 
     private ServerSocket serverSocket;
@@ -34,6 +38,9 @@ public class ExecutionSessionSocketServer implements Runnable {
         serverSocket = new ServerSocket(0);
         localPort = serverSocket.getLocalPort();
         hostAddress = serverSocket.getInetAddress().getHostAddress();
+        if (Platform.getOS().equals(Platform.OS_MACOSX)) {
+            hostAddress = LOCAL_HOST_MAC;
+        }
         executionSessions = new ArrayList<>();
     }
 

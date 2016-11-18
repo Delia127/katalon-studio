@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
-import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.logging.LogUtil;
 
 public class ExecutionSessionServiceRunnable implements Runnable {
@@ -28,13 +27,7 @@ public class ExecutionSessionServiceRunnable implements Runnable {
             String driverTypeName = input.readLine();
             String logFolderPath = input.readLine();
             ExecutionSession executionSession = null;
-            if (driverTypeName.equals(WebUIDriverType.SAFARI_DRIVER.toString())) {
-                String port = input.readLine();
-                executionSession = new SafariExecutionSession(port, sessionId, remoteUrl, driverTypeName,
-                        logFolderPath);
-            } else {
-                executionSession = new ExecutionSession(sessionId, remoteUrl, driverTypeName, logFolderPath);
-            }
+            executionSession = new ExecutionSession(sessionId, remoteUrl, driverTypeName, logFolderPath);
             sessionServer.addExecutionSession(executionSession);
             executionSession.startWatcher();
         } catch (Exception e) {

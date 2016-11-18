@@ -22,7 +22,6 @@ import com.kms.katalon.constants.helper.ConstantsHelper;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
 import com.kms.katalon.execution.session.ExecutionSession;
 import com.kms.katalon.execution.session.ExecutionSessionSocketServer;
-import com.kms.katalon.execution.session.SafariExecutionSession;
 
 @SuppressWarnings("restriction")
 public abstract class AbstractExecutionMenuContribution {
@@ -90,9 +89,6 @@ public abstract class AbstractExecutionMenuContribution {
         parameters.put(IdConstants.EXISTING_SESSION_SERVER_URL_ID, executionSession.getRemoteUrl());
         parameters.put(IdConstants.EXISTING_SESSION_DRIVER_NAME_ID, executionSession.getDriverTypeName());
         parameters.put(IdConstants.RUN_MODE_PARAMETER_ID, getLaunchMode().toString());
-        if (executionSession instanceof SafariExecutionSession) {
-            parameters.put(IdConstants.EXISTING_SESSION_DRIVER_PORT_ID, ((SafariExecutionSession) executionSession).getPort());
-        }
         return parameters;
     }
     

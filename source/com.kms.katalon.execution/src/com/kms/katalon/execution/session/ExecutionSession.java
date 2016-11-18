@@ -1,5 +1,6 @@
 package com.kms.katalon.execution.session;
 
+import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -54,6 +55,9 @@ public class ExecutionSession {
     }
 
     public String getTitle() {
+        if (title == null) {
+            return driverTypeName;
+        }
         return title;
     }
 
@@ -102,7 +106,7 @@ public class ExecutionSession {
 
         protected RemoteWebDriver existingDriver;
 
-        protected RemoteWebDriver getExistingDriver() throws MalformedURLException {
+        protected RemoteWebDriver getExistingDriver() throws MalformedURLException, ConnectException {
             if (existingDriver == null) {
                 existingDriver = new ExistingRemoteWebDriver(new URL(remoteUrl), sessionId);
             }
@@ -113,10 +117,10 @@ public class ExecutionSession {
         public void run() {
             while (isAlive) {
                 try {
+                    Thread.sleep(DEFAULT_LOOP_INTERVAL);
                     if (isAvailable) {
                         title = getExistingDriver().getTitle();
                     }
-                    Thread.sleep(DEFAULT_LOOP_INTERVAL);
                 } catch (InterruptedException e) {
                     // Ignore this
                 } catch (Exception e) {

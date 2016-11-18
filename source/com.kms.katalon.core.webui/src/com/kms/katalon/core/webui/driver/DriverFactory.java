@@ -3,6 +3,7 @@ package com.kms.katalon.core.webui.driver;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.Socket;
@@ -13,7 +14,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.NoSuchWindowException;
@@ -51,9 +51,6 @@ import com.kms.katalon.core.webui.constants.StringConstants;
 import com.kms.katalon.core.webui.driver.firefox.FirefoxDriver47;
 import com.kms.katalon.core.webui.driver.existings.ExistingRemoteWebDriver;
 import com.kms.katalon.core.webui.driver.ie.InternetExploreDriverServiceBuilder;
-import com.kms.katalon.core.webui.driver.safari.CSafariDriver;
-import com.kms.katalon.core.webui.driver.safari.CSafariDriverCommandExecutor;
-import com.kms.katalon.core.webui.driver.safari.CSafariOptions;
 import com.kms.katalon.core.webui.exception.BrowserNotOpenedException;
 import com.kms.katalon.core.webui.util.FirefoxExecutable;
 import com.kms.katalon.core.webui.util.WebDriverPropertyUtil;
@@ -207,7 +204,7 @@ public class DriverFactory {
                 webDriver = createNewIEDriver(desireCapibilities);
                 break;
             case SAFARI_DRIVER:
-                webDriver = new CSafariDriver(desireCapibilities);
+                webDriver = new SafariDriver(desireCapibilities);
                 break;
             case CHROME_DRIVER:
                 System.setProperty(CHROME_DRIVER_PATH_PROPERTY_KEY, getChromeDriverPath());
@@ -344,10 +341,6 @@ public class DriverFactory {
             String remoteDriverType = DriverFactory.getExecutedBrowser().toString();
             output.println(remoteDriverType);
             output.println(RunConfiguration.getLogFolderPath());
-            if (remoteDriverType.equals(WebUIDriverType.SAFARI_DRIVER.toString())) {
-                output.println(((CSafariDriverCommandExecutor) ((CSafariDriver) webDriver).getCommandExecutor())
-                        .getServer().getServerPort());
-            }
             output.flush();
         } catch (Exception e) {
             // Ignore for this exception
@@ -355,22 +348,13 @@ public class DriverFactory {
     }
 
     private static String getWebDriverServerUrl(RemoteWebDriver remoteWebDriver) {
-        if (remoteWebDriver instanceof CSafariDriver) {
-            return ((CSafariDriverCommandExecutor) remoteWebDriver.getCommandExecutor()).getServer().getUri();
-        }
         if (remoteWebDriver instanceof FirefoxDriver) {
             return ((LazyCommandExecutor) remoteWebDriver.getCommandExecutor()).getAddressOfRemoteServer().toString();
         }
         return ((HttpCommandExecutor) remoteWebDriver.getCommandExecutor()).getAddressOfRemoteServer().toString();
     }
 
-    protected static WebDriver startExistingBrowser() throws MalformedURLException {
-        String port = RunConfiguration.getExisingSessionPort();
-        if (StringUtils.isNotEmpty(port)) {
-            CSafariOptions options = new CSafariOptions();
-            options.setPort(Integer.parseInt(port));
-            return new CSafariDriver(options);
-        }
+    protected static WebDriver startExistingBrowser() throws MalformedURLException, ConnectException {
         return new ExistingRemoteWebDriver(new URL(RunConfiguration.getExisingSessionServerUrl()),
                 RunConfiguration.getExisingSessionSessionId());
     }
@@ -633,7 +617,7 @@ public class DriverFactory {
             try {
                 WebDriver webDriver = startExistingBrowser();
                 changeWebDriver(webDriver);
-            } catch (MalformedURLException malformedUrlException) {
+            } catch (MalformedURLException | ConnectException malformedUrlException) {
                 // Ignore this
             }
         }
