@@ -49,7 +49,7 @@ public abstract class MouseCursorColumnLabelProvider <T> extends TypeCheckedStyl
         private static final int LEFT_CLICK = 1;
 
         @Override
-        public void mouseDown(MouseEvent e) {
+        public void mouseUp(MouseEvent e) {
             if (e.button != LEFT_CLICK) {
                 return;
             }
