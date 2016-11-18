@@ -12,7 +12,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_TOOLITEM_RESUME = ComposerWebuiRecorderMessageConstants.DIA_TOOLITEM_RESUME;
     public static final String DIA_TOOLITEM_STOP = ComposerWebuiRecorderMessageConstants.DIA_TOOLITEM_STOP;
     public static final String DIA_TOOLITEM_PAUSE = ComposerWebuiRecorderMessageConstants.DIA_TOOLITEM_PAUSE;
-    public static final String DIA_TOOLITEM_START = ComposerWebuiRecorderMessageConstants.DIA_TOOLITEM_START;
+    public static final String DIA_TOOLITEM_RECORD = ComposerWebuiRecorderMessageConstants.DIA_TOOLITEM_RECORD;
 	public static final String ERROR_TITLE = ERROR;
     public static final String DIA_LBL_CAPTURED_OBJECTS = ComposerWebuiRecorderMessageConstants.DIA_LBL_CAPTURED_OBJECTS;
     public static final String DIA_LBL_OBJECT_PROPERTIES = ComposerWebuiRecorderMessageConstants.DIA_LBL_OBJECT_PROPERTIES;
@@ -30,11 +30,12 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_MENU_ADD_BASIC_ACTION = ComposerWebuiRecorderMessageConstants.DIA_MENU_ADD_BASIC_ACTION;
     public static final String DIA_MENU_ADD_VALIDATION_POINT = ComposerWebuiRecorderMessageConstants.DIA_MENU_ADD_VALIDATION_POINT;
     public static final String DIA_MENU_ADD_SYNCHRONIZE_POINT = ComposerWebuiRecorderMessageConstants.DIA_MENU_ADD_SYNCHRONIZE_POINT;
-    public static final String INSTANT_BROWSER_PREFIX = ComposerWebuiRecorderMessageConstants.INSTANT_BROWSER_PREFIX;
-    public static final String MENU_ITEM_INSTANT_BROWSERS = ComposerWebuiRecorderMessageConstants.MENU_ITEM_INSTANT_BROWSERS;
-    public static final String HAND_INSTANT_BROWSERS_DIA_TITLE = ComposerWebuiRecorderMessageConstants.HAND_INSTANT_BROWSERS_DIA_TITLE;
-    public static final String HAND_INSTANT_BROWSERS_DIA_MESSAGE = ComposerWebuiRecorderMessageConstants.HAND_INSTANT_BROWSERS_DIA_MESSAGE;
-    public static final String HAND_INSTANT_BROWSERS_DIA_TOOGLE_MESSAGE = ComposerWebuiRecorderMessageConstants.HAND_INSTANT_BROWSERS_DIA_TOOGLE_MESSAGE;
+    public static final String ACTIVE_BROWSER_PREFIX = ComposerWebuiRecorderMessageConstants.ACTIVE_BROWSER_PREFIX;
+    public static final String MENU_ITEM_ACTIVE_BROWSERS = ComposerWebuiRecorderMessageConstants.MENU_ITEM_ACTIVE_BROWSERS;
+    public static final String MENU_ITEM_NEW_BROWSERS = ComposerWebuiRecorderMessageConstants.MENU_ITEM_NEW_BROWSERS;
+    public static final String HAND_ACTIVE_BROWSERS_DIA_TITLE = ComposerWebuiRecorderMessageConstants.HAND_ACTIVE_BROWSERS_DIA_TITLE;
+    public static final String HAND_ACTIVE_BROWSERS_DIA_MESSAGE = ComposerWebuiRecorderMessageConstants.HAND_ACTIVE_BROWSERS_DIA_MESSAGE;
+    public static final String HAND_ACTIVE_BROWSERS_DIA_TOOGLE_MESSAGE = ComposerWebuiRecorderMessageConstants.HAND_ACTIVE_BROWSERS_DIA_TOOGLE_MESSAGE;
 
 	// RecordHandler
     public static final String HAND_ERROR_MSG_CANNOT_GEN_TEST_STEPS = ComposerWebuiRecorderMessageConstants.HAND_ERROR_MSG_CANNOT_GEN_TEST_STEPS;
@@ -49,8 +50,9 @@ public class StringConstants extends GlobalStringConstants {
     public static final String COLUMN_DATA_VALUE = ComposerWebuiRecorderMessageConstants.COLUMN_DATA_VALUE;
 	
 	// RecorderPreferencePage
-    public static final String PREF_LBL_INSTANT_BROWSER_PORT = ComposerWebuiRecorderMessageConstants.PREF_LBL_INSTANT_BROWSER_PORT;
-    public static final String PREF_LBL_INSTANT_BROWSER_DO_NOT_SHOW_WARNING_DIALOG = ComposerWebuiRecorderMessageConstants.PREF_LBL_INSTANT_BROWSER_DO_NOT_SHOW_WARNING_DIALOG;
+    public static final String PREF_LBL_DEFAULT_BROWSER = ComposerWebuiRecorderMessageConstants.PREF_LBL_DEFAULT_BROWSER;
+    public static final String PREF_LBL_ACTIVE_BROWSER_PORT = ComposerWebuiRecorderMessageConstants.PREF_LBL_ACTIVE_BROWSER_PORT;
+    public static final String PREF_LBL_ACTIVE_BROWSER_DO_NOT_SHOW_WARNING_DIALOG = ComposerWebuiRecorderMessageConstants.PREF_LBL_ACTIVE_BROWSER_DO_NOT_SHOW_WARNING_DIALOG;
 	
 	// Record Session
     public static final String DIALOG_CANNOT_START_IE_MESSAGE = ComposerWebuiRecorderMessageConstants.DIALOG_CANNOT_START_IE_MESSAGE;
