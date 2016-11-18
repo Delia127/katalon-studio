@@ -251,7 +251,7 @@ public class TestDataToolItemListener extends SelectionAdapter {
 
         List<TestCaseTestDataLink> selectedLinks = selection.toList();
 
-        sortListOfTestCaseTestDataLinks(getTableItems(), selectedLinks);
+        sortListByAscending(getTableItems(), selectedLinks);
 
         boolean needToRefresh = false;
         for (TestCaseTestDataLink selectedLink : selectedLinks) {
@@ -286,7 +286,7 @@ public class TestDataToolItemListener extends SelectionAdapter {
 
         List<TestCaseTestDataLink> selectedLinks = selection.toList();
 
-        sortListOfTestCaseTestDataLinks(getTableItems(), selectedLinks);
+        sortListByDescending(getTableItems(), selectedLinks);
 
         boolean needToRefresh = false;
         for (TestCaseTestDataLink selectedLink : selectedLinks) {
@@ -312,13 +312,24 @@ public class TestDataToolItemListener extends SelectionAdapter {
         }
     }
 
-    private void sortListOfTestCaseTestDataLinks(final List<TestCaseTestDataLink> data,
+    private void sortListByAscending(final List<TestCaseTestDataLink> data,
             List<TestCaseTestDataLink> testDataLinks) {
         Collections.sort(testDataLinks, new Comparator<TestCaseTestDataLink>() {
 
             @Override
             public int compare(TestCaseTestDataLink arg0, TestCaseTestDataLink arg1) {
-                return (data.indexOf(arg0) > data.indexOf(arg1)) ? 1 : -1;
+                return data.indexOf(arg0) - data.indexOf(arg1);
+            }
+        });
+    }
+    
+    private void sortListByDescending(final List<TestCaseTestDataLink> data,
+            List<TestCaseTestDataLink> testDataLinks) {
+        Collections.sort(testDataLinks, new Comparator<TestCaseTestDataLink>() {
+
+            @Override
+            public int compare(TestCaseTestDataLink arg0, TestCaseTestDataLink arg1) {
+                return data.indexOf(arg1) - data.indexOf(arg0);
             }
         });
     }
