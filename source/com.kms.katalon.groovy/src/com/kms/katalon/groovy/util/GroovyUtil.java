@@ -26,6 +26,7 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceFilterDescription;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
@@ -100,17 +101,11 @@ public class GroovyUtil {
 
     private static final String[] KAT_PROJECT_NATURES = new String[] { GROOVY_NATURE, JavaCore.NATURE_ID };
     
-    private static final String RESOURCE_MULTI_FILTER = "org.eclipse.ui.ide.multiFilter";
-    
-    private static final String RESOURCE_NAME_FILTER_EXP = "1.0-name-matches-false-false-";
+    private static final String RESOURCE_REGEX_FILTER = "org.eclipse.core.resources.regexFilterMatcher";
 
-    private static final String[] RESOURCE_FILE_NAME_REGEX = new String[] { "*.png", "*.log", "*.xlsx", "*.xls", "*.csv", "*.txt" };
+    private static final String RESOURCE_FILE_NAME_REGEX = "(.*\\.svn-base$)|(.*\\.png$)|(.*\\.log$)|(.*\\.xlsx$)|(.*\\.xls$)|(.*\\.csv$)|(.*\\.txt$)";
     
-    private static final String[] RESOURCE_FILE_AND_FOLDER_NAME_REGEX = new String[] { "*.svn", "*.svn-base" };
-    
-    private static final int RESOURCE_FILE_AND_FOLDER_TYPE = 30;
-    
-    private static final int RESOURCE_FILE_TYPE = 22;
+    private static final String RESOURCE_FOLDER_NAME_REGEX = ".*\\.svn$";
     
     public static IProject getGroovyProject(ProjectEntity projectEntity) {
         return ResourcesPlugin.getWorkspace()
@@ -888,17 +883,13 @@ public class GroovyUtil {
     
     private static void createFilters(IProject groovyProject) throws CoreException {
         // Exclude user created files/SVN meta files when loading project
-        for (String regex : RESOURCE_FILE_AND_FOLDER_NAME_REGEX) {
-            FileInfoMatcherDescription matcherDescription = new FileInfoMatcherDescription(RESOURCE_MULTI_FILTER,
-                    RESOURCE_NAME_FILTER_EXP + regex);
-            groovyProject.createFilter(RESOURCE_FILE_AND_FOLDER_TYPE, matcherDescription, IResource.NONE,
-                    new NullProgressMonitor());
-        }
-        for (String regex : RESOURCE_FILE_NAME_REGEX) {
-            FileInfoMatcherDescription matcherDescription = new FileInfoMatcherDescription(RESOURCE_MULTI_FILTER,
-                    RESOURCE_NAME_FILTER_EXP + regex);
-            groovyProject.createFilter(RESOURCE_FILE_TYPE, matcherDescription, IResource.NONE,
-                    new NullProgressMonitor());
-        }
+        groovyProject.createFilter(IResourceFilterDescription.EXCLUDE_ALL | IResourceFilterDescription.FOLDERS,
+                new FileInfoMatcherDescription(RESOURCE_REGEX_FILTER,
+                        RESOURCE_FOLDER_NAME_REGEX),
+                IResource.NONE, new NullProgressMonitor());
+        groovyProject.createFilter(IResourceFilterDescription.EXCLUDE_ALL | IResourceFilterDescription.FILES,
+                new FileInfoMatcherDescription(RESOURCE_REGEX_FILTER,
+                        RESOURCE_FILE_NAME_REGEX),
+                IResource.NONE, new NullProgressMonitor());
     }
 }
