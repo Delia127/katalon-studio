@@ -490,6 +490,10 @@ public interface IImageKeys {
     public static final String PROPERTIES_16 = "properties_16.png"; //$NON-NLS-1$
 
     public static final String FOCUS_16 = "focus_16.png"; //$NON-NLS-1$
+
+    public static final String UNDO_16 = "undo_16.png"; //$NON-NLS-1$
+
+    public static final String REDO_16 = "redo_16.png"; //$NON-NLS-1$
     // End Common
 
 }

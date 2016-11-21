@@ -82,8 +82,8 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_hQQH7RYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.file.quit" label="Quit" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/quit_16.png" command="_hQQH3BYMEeSUMbyEN2kbFQ"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_wT2ksBYeEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.edit" label="Edit">
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_GDm1EI7HEeantftUyMtBVg" elementId="com.kms.katalon.handledmenuitem.undo" label="Undo" tooltip="Undo" command="_uIL9wI7GEeantftUyMtBVg"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_Kg3qkI7HEeantftUyMtBVg" elementId="com.kms.katalon.handledmenuitem.redo" label="Redo" tooltip="Redo" command="_2yTOMI7GEeantftUyMtBVg"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_GDm1EI7HEeantftUyMtBVg" elementId="com.kms.katalon.handledmenuitem.undo" label="Undo" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/undo_16.png" tooltip="Undo" command="_uIL9wI7GEeantftUyMtBVg"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_Kg3qkI7HEeantftUyMtBVg" elementId="com.kms.katalon.handledmenuitem.redo" label="Redo" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/redo_16.png" tooltip="Redo" command="_2yTOMI7GEeantftUyMtBVg"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_0IJ8wBYeEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.importexport" toBeRendered="false" visible="false" label="Import/Export"/>
       <children xsi:type="menu:Menu" xmi:id="_2end0BYeEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.report" label="Report"/>
