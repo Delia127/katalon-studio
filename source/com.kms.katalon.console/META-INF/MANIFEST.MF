@@ -7,10 +7,22 @@ Bundle-ClassPath: .
 Bundle-Vendor: KMS
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.equinox.app,
- org.eclipse.ui.workbench,
  org.eclipse.swt,
- org.eclipse.ui.ide,
  org.eclipse.core.filesystem,
  org.eclipse.core.resources,
  org.eclipse.core.runtime,
- com.kms.katalon.execution
+ com.kms.katalon.execution,
+ com.kms.katalon.logging,
+ com.google.gson,
+ org.apache.commons.lang3,
+ net.sf.jopt-simple.jopt-simple,
+ com.kms.katalon.constant,
+ com.kms.katalon.preferences,
+ com.kms.katalon.controller,
+ org.eclipse.jdt.launching,
+ com.kms.katalon.custom
+Export-Package: com.kms.katalon.console.addons,
+ com.kms.katalon.console.application,
+ com.kms.katalon.console.constants,
+ com.kms.katalon.console.utils
+Bundle-ActivationPolicy: lazy

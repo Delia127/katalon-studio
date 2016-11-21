@@ -49,7 +49,10 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<module>com.kms.katalon.composer.webui.objectspy</module>
 		<module>com.kms.katalon.composer.webui.recorder</module>
 		<module>com.kms.katalon.composer.webui</module>
-		<module>com.kms.katalon.constant</module>       
+		<module>com.kms.katalon.console.feature</module>
+		<module>com.kms.katalon.console</module>
+		<module>com.kms.katalon.console.product</module>
+		<module>com.kms.katalon.constant</module>
 		<module>com.kms.katalon.controller</module>
 		<module>com.kms.katalon.core.appium</module>
 		<module>com.kms.katalon.core.mobile</module>

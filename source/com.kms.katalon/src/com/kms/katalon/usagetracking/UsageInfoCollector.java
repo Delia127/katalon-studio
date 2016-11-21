@@ -9,11 +9,11 @@ import java.util.List;
 
 import com.google.gson.JsonObject;
 import com.kms.katalon.composer.components.util.FileUtil;
+import com.kms.katalon.console.utils.ApplicationInfo;
+import com.kms.katalon.console.utils.ServerAPICommunicationUtil;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.logging.LogUtil;
-import com.kms.katalon.util.ApplicationInfo;
-import com.kms.katalon.util.ServerAPICommunicationUtil;
 
 public class UsageInfoCollector {
     private static final String TEST_CASE_FOLDER = "Test Cases";

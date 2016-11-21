@@ -1,4 +1,4 @@
-package com.kms.katalon.selenium;
+package com.kms.katalon.core.webui.driver.firefox;
 
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.firefox.ExtensionConnection;

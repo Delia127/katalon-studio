@@ -43,6 +43,8 @@ import com.kms.katalon.composer.handlers.SaveHandler;
 import com.kms.katalon.composer.handlers.SearchHandler;
 import com.kms.katalon.composer.handlers.WorkbenchSaveHandler;
 import com.kms.katalon.composer.initializer.CommandBindingInitializer;
+import com.kms.katalon.console.utils.VersionInfo;
+import com.kms.katalon.console.utils.VersionUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.MessageConstants;
@@ -50,9 +52,7 @@ import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.usagetracking.UsageInfoCollector;
-import com.kms.katalon.util.ActivationInfoCollector;
-import com.kms.katalon.util.VersionInfo;
-import com.kms.katalon.util.VersionUtil;
+import com.kms.katalon.util.ComposerActivationInfoCollector;
 
 @SuppressWarnings("restriction")
 public class LifeCycleManager {
@@ -199,7 +199,7 @@ public class LifeCycleManager {
                     if (isInternalBuild()) {
                         return;
                     }
-                    if (!(ActivationInfoCollector.checkActivation())) {
+                    if (!(ComposerActivationInfoCollector.checkActivation())) {
                         eventBroker.send(EventConstants.PROJECT_CLOSE, null);
                         PlatformUI.getWorkbench().close();
                         return;

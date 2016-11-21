@@ -22,9 +22,10 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.console.utils.ActivationInfoCollector;
 import com.kms.katalon.constants.ImageConstants;
 import com.kms.katalon.constants.StringConstants;
-import com.kms.katalon.util.ActivationInfoCollector;
+import com.kms.katalon.util.ComposerActivationInfoCollector;
 
 public class ActivationOfflineDialog extends Dialog {
 
@@ -82,7 +83,7 @@ public class ActivationOfflineDialog extends Dialog {
         gdTxtActivationRequest.heightHint = 35;
         txtActivationRequest.setLayoutData(gdTxtActivationRequest);
         txtActivationRequest.setText(StringConstants.ACTIVATION_REQUEST_CODE + ": "
-                + ActivationInfoCollector.genRequestActivationInfo());
+                + ComposerActivationInfoCollector.genRequestActivationInfo());
         txtActivationRequest.setEditable(false);
         txtActivationRequest.setBackground(ColorUtil.getDisabledItemBackgroundColor());
         new Label(compositeActivationCode, SWT.NONE);

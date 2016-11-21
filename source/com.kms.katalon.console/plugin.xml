@@ -5,11 +5,11 @@
          id="product"
          point="org.eclipse.core.runtime.products">
       <product
-            name="com.kms.katalon.console"
+            name="com.kms.katalon.console.product"
             application="com.kms.katalon.console.application">
          <property
                name="appName"
-               value="com.kms.katalon.console">
+               value="com.kms.katalon.console.product">
          </property>
          
          <property 
@@ -19,10 +19,13 @@
       </product>
    </extension>
 
-	<extension
-         id="application"
-         point="org.eclipse.core.runtime.applications">
-      <application>
+   <extension
+       id="application"
+       name="Katalon Application"
+       point="org.eclipse.core.runtime.applications">
+      <application
+            cardinality="singleton-global"
+            visible="true">
          <run class="com.kms.katalon.console.application.Application">
          </run>
       </application>

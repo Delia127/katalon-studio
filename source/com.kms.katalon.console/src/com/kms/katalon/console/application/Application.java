@@ -2,57 +2,85 @@ package com.kms.katalon.console.application;
 
 import java.util.Map;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.PlatformUI;
+import org.osgi.framework.BundleException;
 
-import com.kms.katalon.console.application.ApplicationRunningMode.RunningMode;
+import com.kms.katalon.console.addons.MacOSAddon;
+import com.kms.katalon.console.constants.ConsoleMessageConstants;
+import com.kms.katalon.console.utils.ActivationInfoCollector;
+import com.kms.katalon.console.utils.ApplicationInfo;
+import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.custom.addon.CustomBundleActivator;
+import com.kms.katalon.execution.console.ConsoleMain;
+import com.kms.katalon.execution.launcher.result.LauncherResult;
+import com.kms.katalon.logging.LogUtil;
 
 /**
- * This class controls all aspects of the application's execution
+ * This class controls all aspects of the console application's execution
  */
 public class Application implements IApplication {
-	private static final String CONSOLE_RUNNING_MODE_ARGUMENT = "-runMode=console";
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.equinox.app.IApplication#start(org.eclipse.equinox.app.
-	 * IApplicationContext)
-	 */
-	public Object start(IApplicationContext context) {
-		final Map<?, ?> args = context.getArguments();
-		final String[] appArgs = (String[]) args.get("application.args");
-		for (final String arg : appArgs) {
-			if (arg.toLowerCase().equals(CONSOLE_RUNNING_MODE_ARGUMENT.toLowerCase())) {
-				ApplicationRunningMode runningMode = ApplicationRunningMode.getInstance();
-				runningMode.setRunnningMode(RunningMode.Console);
-				runningMode.setRunArguments(appArgs);
-				break;
-			}
-		}
+    /*
+     * (non-Javadoc)
+     * @see org.eclipse.equinox.app.IApplication#start(org.eclipse.equinox.app.
+     * IApplicationContext)
+     */
+    @Override
+    public Object start(IApplicationContext context) {
+        if (!activeLoggingBundle()) {
+            return IApplication.EXIT_OK;
+        }
 
-		Display display = PlatformUI.createDisplay();
-		try {
-			int returnCode = PlatformUI.createAndRunWorkbench(display, new ApplicationWorkbenchAdvisor());
-			if (returnCode == PlatformUI.RETURN_RESTART)
-				return IApplication.EXIT_RESTART;
-			else
-				return IApplication.EXIT_OK;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return IApplication.EXIT_OK;
-		} finally {
-			display.dispose();
-		}
+        preRunInit();
+        final Map<?, ?> args = context.getArguments();
+        final String[] appArgs = (String[]) args.get(IApplicationContext.APPLICATION_ARGS);
+        return runConsole(appArgs);
 
-	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.equinox.app.IApplication#stop()
-	 */
-	public void stop() {
-	}
+    private void preRunInit() {
+        MacOSAddon.initMacOSConfig();
+        ApplicationInfo.setAppInfoIntoUserHomeDir();
+        initEnvironment();
+    }
+
+    protected void initEnvironment() {
+        // Call this to initialize com.kms.katalon.custom project in order to populate KeywordContributorCollection list
+        CustomBundleActivator.class.getName();
+    }
+
+    public static int runConsole(String[] arguments) {
+        // Set this to allow application to return it's own exit code instead of Eclipse's exit code
+        System.setProperty(IApplicationContext.EXIT_DATA_PROPERTY, "");
+        try {
+            if (!(ActivationInfoCollector.checkConsoleActivation(arguments))) {
+                return LauncherResult.RETURN_CODE_PASSED;
+            }
+            return ConsoleMain.launch(arguments);
+        } catch (Exception e) {
+            LogUtil.logError(e);
+            System.out.println(ConsoleMessageConstants.ERR_CONSOLE_MODE + ": " + ExceptionUtils.getStackTrace(e));
+            return LauncherResult.RETURN_CODE_ERROR;
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.eclipse.equinox.app.IApplication#stop()
+     */
+    @Override
+    public void stop() {
+        // Do nothing for this
+    }
+
+    private boolean activeLoggingBundle() {
+        try {
+            Platform.getBundle(IdConstants.KATALON_LOGGING_BUNDLE_ID).start();
+            return true;
+        } catch (BundleException ex) {
+            return false;
+        }
+    }
 }

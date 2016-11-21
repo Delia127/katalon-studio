@@ -63,8 +63,6 @@ public class MessageConstants extends NLS {
 
     public static String DIA_TITLE_QUICK_GUIDE;
 
-    public static String ERR_CONSOLE_MODE;
-
     public static String FORGOT_PASS_LINK;
 
     public static String LINK_LABEL_FORGOT_PASS_TEXT;
@@ -104,24 +102,14 @@ public class MessageConstants extends NLS {
     public static String BTN_COPY_TITLE;
 
     public static String PROMT_ENTER_ACTIVATE_CODE;
-
-    public static String ACTIVATION_COLLECT_FAIL_MESSAGE;
-
+    
     public static String SEND_SUCCESS_RESPONSE;
-
-    public static String ACTIVATED_PROP_NAME;
-
+    
     public static String SEND_ACTIVATION_INFO_FAILED;
 
     public static String NETWORK_ERROR;
 
-    public static String ACTIVATE_INFO_INVALID;
-
     public static String KATALON_NOT_ACTIVATED;
-
-    public static String ACTIVATION_CODE_INVALID;
-
-    public static String REQUEST_CODE_PROP_NAME;
     
     public static String PAGE_PREF_AUTO_CHECK_NEW_VERSION_TITLE;
     

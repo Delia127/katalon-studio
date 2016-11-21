@@ -1,4 +1,4 @@
-package com.kms.katalon.selenium;
+package com.kms.katalon.core.webui.driver.firefox;
 
 import java.io.File;
 import java.io.IOException;
