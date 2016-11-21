@@ -44,6 +44,9 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Widget;
+import org.eclipse.ui.forms.events.HyperlinkAdapter;
+import org.eclipse.ui.forms.events.HyperlinkEvent;
+import org.eclipse.ui.forms.widgets.FormText;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
@@ -60,6 +63,7 @@ import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
 import com.kms.katalon.composer.explorer.providers.EntityProvider;
+import com.kms.katalon.composer.objectrepository.constant.ComposerObjectRepositoryMessageConstants;
 import com.kms.katalon.composer.objectrepository.constant.ImageConstants;
 import com.kms.katalon.composer.objectrepository.constant.ObjectEventConstants;
 import com.kms.katalon.composer.objectrepository.constant.StringConstants;
@@ -99,7 +103,9 @@ public class ObjectPropertyView implements EventHandler {
 
     private TableColumn trclmnColumnSelected;
 
-    private Text txtImage, txtParentObject;
+    private Text txtImage;
+
+    private FormText txtParentObject;
 
     private Button btnBrowseImage, chkUseRelative;
 
@@ -120,6 +126,8 @@ public class ObjectPropertyView implements EventHandler {
     private Composite compositeParentObject, compositeSettingsDetails, compositeSettings;
 
     private ObjectViewToolItemListener toolItemListener;
+    
+    private String parentObjectId;
 
     private Listener layoutParentObjectCompositeListener = new Listener() {
 
@@ -128,7 +136,6 @@ public class ObjectPropertyView implements EventHandler {
             layoutParentObjectComposite();
         }
     };
-
 
     public ObjectPropertyView(IEventBroker eventBroker, MDirtyable dt) {
         this.eventBroker = eventBroker;
@@ -149,8 +156,8 @@ public class ObjectPropertyView implements EventHandler {
                 compositeSettingsDetails.setVisible(isSettingsExpanded);
                 if (!isSettingsExpanded) {
                     ((GridData) compositeSettingsDetails.getLayoutData()).exclude = true;
-                    compositeSettings.setSize(compositeSettings.getSize().x, compositeSettings.getSize().y
-                            - compositeSettingsDetails.getSize().y);
+                    compositeSettings.setSize(compositeSettings.getSize().x,
+                            compositeSettings.getSize().y - compositeSettingsDetails.getSize().y);
                 } else {
                     ((GridData) compositeSettingsDetails.getLayoutData()).exclude = false;
                 }
@@ -201,8 +208,8 @@ public class ObjectPropertyView implements EventHandler {
         glCompositeTableDetails.marginHeight = 0;
         compositeTableDetails.setLayout(glCompositeTableDetails);
 
-        tableViewer = new ObjectPropetiesTableViewer(compositeTableDetails,
-                SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, eventBroker);
+        tableViewer = new ObjectPropetiesTableViewer(compositeTableDetails, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI,
+                eventBroker);
 
         Table table = tableViewer.getTable();
         table.setHeaderVisible(true);
@@ -261,6 +268,7 @@ public class ObjectPropertyView implements EventHandler {
 
     /**
      * Create menu like this
+     * 
      * <pre>
      * -----------------------------
      * Add          Ctrl/Command + N
@@ -377,9 +385,8 @@ public class ObjectPropertyView implements EventHandler {
         lblParentObjectID.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, false, false, 1, 1));
         lblParentObjectID.setText(StringConstants.DIA_FIELD_TEST_OBJECT_ID);
 
-        txtParentObject = new Text(compositeParentObject, SWT.BORDER | SWT.READ_ONLY);
-        GridData gdTxtParentObject = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
-        gdTxtParentObject.heightHint = ControlUtils.DF_CONTROL_HEIGHT;
+        txtParentObject = new FormText(compositeParentObject, SWT.BORDER);
+        GridData gdTxtParentObject = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
         txtParentObject.setLayoutData(gdTxtParentObject);
 
         btnBrowseParentObj = new Button(compositeParentObject, SWT.FLAT);
@@ -507,9 +514,21 @@ public class ObjectPropertyView implements EventHandler {
                 dirtyable.setDirty(true);
             }
         });
+
+        txtParentObject.addHyperlinkListener(new HyperlinkAdapter() {
+            @Override
+            public void linkActivated(HyperlinkEvent e) {
+                openParentTestObject(e.getLabel());
+            }
+        });
     }
 
     private void enableParentObjectComposite(boolean enable) {
+        if (enable) {
+            setParentObjectLinkText(parentObjectId);
+        } else {
+            txtParentObject.setText(parentObjectId, false, false);
+        }
         ControlUtils.recursiveSetEnabled(compositeParentObject, enable);
     }
 
@@ -529,7 +548,7 @@ public class ObjectPropertyView implements EventHandler {
             dialog.setTitle(StringConstants.VIEW_TEST_OBJECT_BROWSE);
             dialog.setInput(TreeEntityUtil.getChildren(null, objectRepoRootFolder));
 
-            String currentParentObjectId = txtParentObject.getText();
+            String currentParentObjectId = getParentObjectLinkText();
             if (!StringUtils.isBlank(currentParentObjectId)) {
                 WebElementEntity currentParentWebElement = ObjectRepositoryController.getInstance()
                         .getWebElementByDisplayPk(currentParentObjectId);
@@ -546,7 +565,7 @@ public class ObjectPropertyView implements EventHandler {
                 if (treeEntity.getObject() instanceof WebElementEntity) {
                     WebElementEntity parentObject = (WebElementEntity) treeEntity.getObject();
                     String parentObjectId = parentObject.getIdForDisplay();
-                    txtParentObject.setText(parentObjectId);
+                    setParentObjectLinkText(parentObjectId);
                     dirtyable.setDirty(true);
                 }
             }
@@ -620,10 +639,10 @@ public class ObjectPropertyView implements EventHandler {
 
             if (parentObjectProperty != null) {
                 chkUseParentObject.setSelection(parentObjectProperty.getIsSelected());
-                txtParentObject.setText(parentObjectProperty.getValue());
+                setParentObjectLinkText(parentObjectProperty.getValue());
             } else {
                 chkUseParentObject.setSelection(false);
-                txtParentObject.setText("");
+                setParentObjectLinkText(StringUtils.EMPTY);
             }
             enableParentObjectComposite(chkUseParentObject.getSelection());
 
@@ -647,11 +666,8 @@ public class ObjectPropertyView implements EventHandler {
                 }
                 if (tableViewer.getInput().get(i).equals(tableViewer.getInput().get(j))) {
                     WebElementPropertyEntity webElementProperty = tableViewer.getInput().get(i);
-                    MessageDialog.openError(
-                            null,
-                            StringConstants.WARN_TITLE,
-                            MessageFormat.format(StringConstants.VIEW_ERROR_REASON_OBJ_PROP_EXISTED,
-                                    webElementProperty.getName()));
+                    MessageDialog.openError(null, StringConstants.WARN_TITLE, MessageFormat
+                            .format(StringConstants.VIEW_ERROR_REASON_OBJ_PROP_EXISTED, webElementProperty.getName()));
                     return false;
                 }
             }
@@ -673,10 +689,10 @@ public class ObjectPropertyView implements EventHandler {
         cloneTestObject.getWebElementProperties().clear();
         cloneTestObject.getWebElementProperties().addAll(tableViewer.getInput());
 
-        if (chkUseParentObject.getSelection() || !StringUtils.isBlank(txtParentObject.getText())) {
+        if (chkUseParentObject.getSelection() || !StringUtils.isBlank(getParentObjectLinkText())) {
             WebElementPropertyEntity parentObjectProperty = new WebElementPropertyEntity();
             parentObjectProperty.setName(WebElementEntity.ref_element);
-            parentObjectProperty.setValue(txtParentObject.getText());
+            parentObjectProperty.setValue(getParentObjectLinkText());
             parentObjectProperty.setIsSelected(chkUseParentObject.getSelection());
             cloneTestObject.getWebElementProperties().add(parentObjectProperty);
         }
@@ -693,13 +709,13 @@ public class ObjectPropertyView implements EventHandler {
             changeOriginalTestObject(originalTestObject);
 
             if (!StringUtils.equalsIgnoreCase(temp.getName(), originalTestObject.getName())) {
-                eventBroker.post(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, new Object[] { oldIdForDisplay,
-                        originalTestObject.getIdForDisplay() });
+                eventBroker.post(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM,
+                        new Object[] { oldIdForDisplay, originalTestObject.getIdForDisplay() });
             }
 
             eventBroker.post(EventConstants.TEST_OBJECT_UPDATED, new Object[] { pk, originalTestObject });
-            WebElementTreeEntity testObjectTreeEntity = TreeEntityUtil.getWebElementTreeEntity(
-                    originalTestObject, ProjectController.getInstance().getCurrentProject());
+            WebElementTreeEntity testObjectTreeEntity = TreeEntityUtil.getWebElementTreeEntity(originalTestObject,
+                    ProjectController.getInstance().getCurrentProject());
             eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, testObjectTreeEntity);
             eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, testObjectTreeEntity);
             dirtyable.setDirty(false);
@@ -768,7 +784,7 @@ public class ObjectPropertyView implements EventHandler {
                     String oldTestObjectRelativeId = testObjectId.replace(projectFolderId + File.separator, "")
                             .replace(WebElementEntity.getWebElementFileExtension(), "")
                             .replace(File.separator, StringConstants.ENTITY_ID_SEPARATOR);
-                    if (oldTestObjectRelativeId.equals(txtParentObject.getText())) {
+                    if (oldTestObjectRelativeId.equals(getParentObjectLinkText())) {
                         loadTestObject();
                         dirtyable.setDirty(false);
                     }
@@ -778,7 +794,7 @@ public class ObjectPropertyView implements EventHandler {
                 break;
         }
     }
-    
+
     private class ObjectViewToolItemListener extends SelectionAdapter implements HotkeyActiveListener {
         @Override
         public void executeAction(String actionId) {
@@ -799,7 +815,7 @@ public class ObjectPropertyView implements EventHandler {
                     break;
                 }
             }
-            
+
         }
 
         private void handleAddItemAction() {
@@ -886,5 +902,38 @@ public class ObjectPropertyView implements EventHandler {
             }
             return null;
         }
+    }
+
+    private void openParentTestObject(String currentParentObjectId) {
+        WebElementEntity currentParentWebElement = getTestObjectPk(currentParentObjectId);
+        if (currentParentWebElement == null) {
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR,
+                    ComposerObjectRepositoryMessageConstants.HAND_ERROR_MSG_TEST_OBJECT_NOT_EXIST);
+            return;
+        }
+        eventBroker.send(EventConstants.TEST_OBJECT_OPEN, currentParentWebElement);
+    }
+
+    private WebElementEntity getTestObjectPk(String currentParentObjectId) {
+        try {
+            if (StringUtils.isNotBlank(currentParentObjectId)) {
+                return ObjectRepositoryController.getInstance().getWebElementByDisplayPk(currentParentObjectId);
+            }
+        } catch (Exception ex) {
+            LoggerSingleton.logError(ex);
+        }
+        return null;
+    }
+
+    private void setParentObjectLinkText(String parentObjectId) {
+        if (parentObjectId == null) {
+            return;
+        }
+        txtParentObject.setText("<form><p><a>" + parentObjectId + "</a></p></form>", true, false);
+        this.parentObjectId = parentObjectId;
+    }
+    
+    private String getParentObjectLinkText() {
+        return parentObjectId;
     }
 }
