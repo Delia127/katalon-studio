@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.execution.menu;
 
+import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +21,7 @@ import com.kms.katalon.composer.components.menu.MenuFactory;
 import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.helper.ConstantsHelper;
+import com.kms.katalon.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
 import com.kms.katalon.execution.session.ExecutionSession;
 import com.kms.katalon.execution.session.ExecutionSessionSocketServer;
@@ -45,9 +48,7 @@ public abstract class AbstractExecutionMenuContribution {
     }
 
     private void aboutToShowWithExisting(List<MMenuElement> menuItems, List<ExecutionSession> exisingDrivers) {
-        MMenu executionMenu = MenuFactory.createPopupMenu(getMenuLabel(), ConstantsHelper.getApplicationURI());
-        executionMenu.setIconURI(getIconUri());
-        executionMenu.setTooltip(null);
+        MMenu executionMenu = createExecutionMenu();
 
         MHandledMenuItem defaultMenuItem = createDefaultMenuItem();
         defaultMenuItem.setLabel(ComposerExecutionMessageConstants.LBL_EXECUTION_NEW_SESSION);
@@ -56,22 +57,48 @@ public abstract class AbstractExecutionMenuContribution {
         executionMenuItems.add(new ExecutionHandledMenuItem(defaultMenuItem));
         executionMenuItems.add(MMenuFactory.INSTANCE.createMenuSeparator());
 
+        Map<String, Integer> labelMap = new HashMap<>();
+
         for (ExecutionSession executionSession : exisingDrivers) {
             Map<String, Object> parameters = createParametersForExistingSession(executionSession);
             ParameterizedCommand executionCommand = commandService.createCommand(getExistingExecutionCommandId(),
                     parameters);
-            String executionTitle = executionSession.getTitle();
-            if (executionTitle.isEmpty()) {
-                executionTitle = ComposerExecutionMessageConstants.LBL_EXECUTION_EXISTING_SESSION_BLANK_TITLE;
+            String abbreviatedLabel = getLabelForExecutionSession(executionSession);
+            if (labelMap.containsKey(abbreviatedLabel)) {
+                Integer numberOfInstances = labelMap.get(abbreviatedLabel) + 1;
+                labelMap.put(abbreviatedLabel, numberOfInstances);
+                abbreviatedLabel += " (" + numberOfInstances + ")";
+            } else {
+                labelMap.put(abbreviatedLabel, 1);
             }
-            MHandledMenuItem executionMenuItem = MenuFactory.createPopupMenuItem(executionCommand,
-                    StringUtils.abbreviate(executionTitle, DEFAULT_MAX_TITLE_WIDTH),
+            MHandledMenuItem executionMenuItem = MenuFactory.createPopupMenuItem(executionCommand, abbreviatedLabel,
                     ConstantsHelper.getApplicationURI());
             executionMenuItem.setIconURI(getIconUri());
             executionMenuItem.setTooltip(null);
-            executionMenuItems.add(new ExecutionHandledMenuItem(executionMenuItem));
+            executionMenuItems.add(new ExistingExecutionHandledMenuItem(executionMenuItem));
         }
         menuItems.add(executionMenu);
+    }
+
+    protected MMenu createExecutionMenu() {
+        String menuLabel = getMenuLabel();
+        String defaultItemLabel = getPreferenceStore(ExecutionPreferenceConstants.EXECUTION_QUALIFIER)
+                .getString(ExecutionPreferenceConstants.EXECUTION_DEFAULT_CONFIGURATION);
+        if (defaultItemLabel.equals(menuLabel)) {
+            menuLabel += ExecutionHandledMenuItem.DEFAULT_LABEL;
+        }
+        MMenu executionMenu = MenuFactory.createPopupMenu(menuLabel, ConstantsHelper.getApplicationURI());
+        executionMenu.setIconURI(getIconUri());
+        executionMenu.setTooltip(null);
+        return executionMenu;
+    }
+
+    protected String getLabelForExecutionSession(ExecutionSession executionSession) {
+        String executionTitle = executionSession.getTitle();
+        if (executionTitle.isEmpty()) {
+            executionTitle = ComposerExecutionMessageConstants.LBL_EXECUTION_EXISTING_SESSION_BLANK_TITLE;
+        }
+        return StringUtils.abbreviate(executionTitle, DEFAULT_MAX_TITLE_WIDTH);
     }
 
     protected String getExistingExecutionCommandId() {

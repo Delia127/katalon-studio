@@ -329,7 +329,8 @@ public class DriverFactory {
     }
 
     private static void saveWebDriverSessionData(WebDriver webDriver) {
-        if (!(webDriver instanceof RemoteWebDriver) || webDriver instanceof ExistingRemoteWebDriver) {
+        if (!(webDriver instanceof RemoteWebDriver) || webDriver instanceof ExistingRemoteWebDriver
+                || webDriver instanceof SafariDriver) {
             return;
         }
         RemoteWebDriver remoteWebDriver = (RemoteWebDriver) webDriver;

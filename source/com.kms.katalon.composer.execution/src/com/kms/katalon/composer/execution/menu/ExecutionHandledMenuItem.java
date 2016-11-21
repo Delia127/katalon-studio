@@ -41,7 +41,7 @@ public class ExecutionHandledMenuItem extends HandledMenuItemImpl {
         return label == null ? "" : label;
     }
 
-    private boolean isDefault() {
+    protected boolean isDefault() {
         String defaultItemLabel = getPreferenceStore(ExecutionPreferenceConstants.EXECUTION_QUALIFIER)
                 .getString(ExecutionPreferenceConstants.EXECUTION_DEFAULT_CONFIGURATION);
         return getDefaultLabel().equals(defaultItemLabel);
