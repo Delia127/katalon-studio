@@ -48,10 +48,10 @@ public abstract class AbstractExecutionMenuContribution {
         MMenu executionMenu = MenuFactory.createPopupMenu(getMenuLabel(), ConstantsHelper.getApplicationURI());
         executionMenu.setIconURI(getIconUri());
         executionMenu.setTooltip(null);
-        
+
         MHandledMenuItem defaultMenuItem = createDefaultMenuItem();
         defaultMenuItem.setLabel(ComposerExecutionMessageConstants.LBL_EXECUTION_NEW_SESSION);
-        
+
         List<MMenuElement> executionMenuItems = executionMenu.getChildren();
         executionMenuItems.add(new ExecutionHandledMenuItem(defaultMenuItem));
         executionMenuItems.add(MMenuFactory.INSTANCE.createMenuSeparator());
@@ -61,6 +61,9 @@ public abstract class AbstractExecutionMenuContribution {
             ParameterizedCommand executionCommand = commandService.createCommand(getExistingExecutionCommandId(),
                     parameters);
             String executionTitle = executionSession.getTitle();
+            if (executionTitle.isEmpty()) {
+                executionTitle = ComposerExecutionMessageConstants.LBL_EXECUTION_EXISTING_SESSION_BLANK_TITLE;
+            }
             MHandledMenuItem executionMenuItem = MenuFactory.createPopupMenuItem(executionCommand,
                     StringUtils.abbreviate(executionTitle, DEFAULT_MAX_TITLE_WIDTH),
                     ConstantsHelper.getApplicationURI());
@@ -91,7 +94,7 @@ public abstract class AbstractExecutionMenuContribution {
         parameters.put(IdConstants.RUN_MODE_PARAMETER_ID, getLaunchMode().toString());
         return parameters;
     }
-    
+
     private MHandledMenuItem createDefaultMenuItem() {
         Map<String, Object> parameters = getParametersForCommand();
         ParameterizedCommand executionCommand = commandService.createCommand(getCommandId(), parameters);
