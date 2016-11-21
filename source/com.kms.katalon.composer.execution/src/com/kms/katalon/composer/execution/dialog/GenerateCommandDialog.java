@@ -805,14 +805,11 @@ public class GenerateCommandDialog extends AbstractDialog {
 
         args.put(ARG_PROJECT_PATH, getArgumentValueToSave(project.getLocation(), generateCommandMode));
 
-        if (useCustomReportFolder()) {
-            args.put(ARG_REPORT_FOLDER, getArgumentValueToSave(txtOutputLocation.getText(), generateCommandMode));
+        args.put(ARG_REPORT_FOLDER, getArgumentValueToSave(txtOutputLocation.getText(), generateCommandMode));
 
-            // -reportFileName only affects when using with -reportFolder option
-            if (!StringUtils.equals(txtReportName.getText(), StringConstants.DIA_TXT_DEFAULT_REPORT_NAME)) {
-                args.put(ARG_REPORT_FILE_NAME, getArgumentValueToSave(txtReportName.getText(), generateCommandMode));
-            }
-        }
+        String reportFileName = StringUtils.defaultIfBlank(txtReportName.getText(),
+                StringConstants.DIA_TXT_DEFAULT_REPORT_NAME);
+        args.put(ARG_REPORT_FILE_NAME, getArgumentValueToSave(reportFileName, generateCommandMode));
 
         if (chkSendEmail.getSelection() && listMailRecipient.getItemCount() > 0) {
             args.put(
@@ -871,10 +868,6 @@ public class GenerateCommandDialog extends AbstractDialog {
 
     private String wrapArgumentValue(String value) {
         return "\"" + value + "\"";
-    }
-
-    private boolean useCustomReportFolder() {
-        return !StringUtils.equals(getReportOutputAbsolutePath(), defaultOutputReportLocation);
     }
 
     private void validateUserInput() throws Exception {
