@@ -140,4 +140,9 @@ public class ReportCollectionTableLabelProvider extends TypeCheckedStyleCellLabe
 
         return background;
     }
+    
+    @Override
+    protected String getElementToolTipText(ReportItemDescription element) {
+        return StringUtils.defaultIfEmpty(getText(element), null);
+    }
 }
