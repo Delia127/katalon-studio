@@ -19,7 +19,7 @@ public class ComposerWebuiRecorderMessageConstants extends NLS {
 
     public static String DIA_TOOLITEM_PAUSE;
 
-    public static String DIA_TOOLITEM_START;
+    public static String DIA_TOOLITEM_RECORD;
 
     public static String DIA_LBL_CAPTURED_OBJECTS;
 
@@ -45,15 +45,17 @@ public class ComposerWebuiRecorderMessageConstants extends NLS {
 
     public static String DIA_MENU_ADD_SYNCHRONIZE_POINT;
 
-    public static String INSTANT_BROWSER_PREFIX;
+    public static String ACTIVE_BROWSER_PREFIX;
 
-    public static String MENU_ITEM_INSTANT_BROWSERS;
+    public static String MENU_ITEM_ACTIVE_BROWSERS;
 
-    public static String HAND_INSTANT_BROWSERS_DIA_TITLE;
+    public static String MENU_ITEM_NEW_BROWSERS;
 
-    public static String HAND_INSTANT_BROWSERS_DIA_MESSAGE;
+    public static String HAND_ACTIVE_BROWSERS_DIA_TITLE;
 
-    public static String HAND_INSTANT_BROWSERS_DIA_TOOGLE_MESSAGE;
+    public static String HAND_ACTIVE_BROWSERS_DIA_MESSAGE;
+
+    public static String HAND_ACTIVE_BROWSERS_DIA_TOOGLE_MESSAGE;
 
     public static String HAND_ERROR_MSG_CANNOT_GEN_TEST_STEPS;
 
@@ -71,9 +73,11 @@ public class ComposerWebuiRecorderMessageConstants extends NLS {
 
     public static String COLUMN_DATA_VALUE;
 
-    public static String PREF_LBL_INSTANT_BROWSER_PORT;
+    public static String PREF_LBL_DEFAULT_BROWSER;
 
-    public static String PREF_LBL_INSTANT_BROWSER_DO_NOT_SHOW_WARNING_DIALOG;
+    public static String PREF_LBL_ACTIVE_BROWSER_PORT;
+
+    public static String PREF_LBL_ACTIVE_BROWSER_DO_NOT_SHOW_WARNING_DIALOG;
 
     public static String DIALOG_CANNOT_START_IE_MESSAGE;
 
