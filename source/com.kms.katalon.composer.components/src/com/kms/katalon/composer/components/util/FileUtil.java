@@ -59,8 +59,12 @@ public class FileUtil {
             return false;
         }
 
+        return isFileCreateAfter(file, origin);
+    }
+    
+    public static boolean isFileCreateAfter(File file, Date time) {
         try {
-            return origin.getTime() < Files.readAttributes(file.toPath(), BasicFileAttributes.class)
+            return time.getTime() < Files.readAttributes(file.toPath(), BasicFileAttributes.class)
                     .creationTime()
                     .toMillis();
         } catch (IOException e) {
@@ -77,7 +81,6 @@ public class FileUtil {
             @Override
             public void process(File f) {
                 count[0]++;
-                ;
             }
         });
 
