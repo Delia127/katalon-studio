@@ -3290,8 +3290,8 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
-    public static String getCssValue(TestObject to, String css) {
-        return (String) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "getCssValue", to, css)
+    public static String getCSSValue(TestObject to, String css) {
+        return (String) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "getCSSValue", to, css)
     }
     
     /**
@@ -3304,7 +3304,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
-    public static String getCssValue(TestObject to, String css, FailureHandling flowControl) {
-        return (String) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "getCssValue", to, css, flowControl)
+    public static String getCSSValue(TestObject to, String css, FailureHandling flowControl) {
+        return (String) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "getCSSValue", to, css, flowControl)
     }
 }

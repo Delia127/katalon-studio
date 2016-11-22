@@ -51,8 +51,8 @@ import com.kms.katalon.core.webui.keyword.WebUIAbstractKeyword
 import com.kms.katalon.core.keyword.SupportLevel
 import com.kms.katalon.core.keyword.KeywordExecutor
 
-@Action(value = "getCssValue")
-public class GetCSSValueKeyword extends WebUIAbstractKeyword {
+@Action(value = "getCSSValue")
+public class getCSSValueKeyword extends WebUIAbstractKeyword {
 
     @CompileStatic
     @Override
@@ -65,11 +65,11 @@ public class GetCSSValueKeyword extends WebUIAbstractKeyword {
     public Object execute(Object ...params) {
         TestObject to = getTestObject(params[0])
         FailureHandling flowControl = (FailureHandling)(params.length > 2 && params[1] instanceof FailureHandling ? params[2] : RunConfiguration.getDefaultFailureHandling())
-        return getCssValue(to, params[1].toString(), flowControl)
+        return getCSSValue(to, params[1].toString(), flowControl)
     }
 
     @CompileStatic
-    private String getCssValue(TestObject to, String cssProp, FailureHandling flowControl) throws StepFailedException {
+    private String getCSSValue(TestObject to, String cssProp, FailureHandling flowControl) throws StepFailedException {
         WebUIKeywordMain.runKeyword({
             WebUiCommonHelper.checkTestObjectParameter(to)
             WebElement webElement = WebUIAbstractKeyword.findWebElement(to)
