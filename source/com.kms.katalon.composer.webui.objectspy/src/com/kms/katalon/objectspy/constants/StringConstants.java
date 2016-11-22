@@ -64,13 +64,15 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String WARNING_NO_PAGE_LOADED = ObjectspyMessageConstants.WARNING_NO_PAGE_LOADED;
 
-    public static final String MENU_ITEM_INSTANT_BROWSERS = ObjectspyMessageConstants.MENU_ITEM_INSTANT_BROWSERS;
+    public static final String MENU_ITEM_NEW_BROWSERS = ObjectspyMessageConstants.MENU_ITEM_NEW_BROWSERS;
 
-    public static final String HAND_INSTANT_BROWSERS_DIA_TITLE = ObjectspyMessageConstants.HAND_INSTANT_BROWSERS_DIA_TITLE;
+    public static final String MENU_ITEM_ACTIVE_BROWSERS = ObjectspyMessageConstants.MENU_ITEM_ACTIVE_BROWSERS;
 
-    public static final String HAND_INSTANT_BROWSERS_DIA_MESSAGE = ObjectspyMessageConstants.HAND_INSTANT_BROWSERS_DIA_MESSAGE;
+    public static final String HAND_ACTIVE_BROWSERS_DIA_TITLE = ObjectspyMessageConstants.HAND_ACTIVE_BROWSERS_DIA_TITLE;
 
-    public static final String INSTANT_BROWSER_PREFIX = ObjectspyMessageConstants.INSTANT_BROWSER_PREFIX;
+    public static final String HAND_ACTIVE_BROWSERS_DIA_MESSAGE = ObjectspyMessageConstants.HAND_ACTIVE_BROWSERS_DIA_MESSAGE;
+
+    public static final String ACTIVE_BROWSER_PREFIX = ObjectspyMessageConstants.ACTIVE_BROWSER_PREFIX;
 
     public static final String HAND_INSTANT_BROWSERS_DIA_TOOGLE_MESSAGE = ObjectspyMessageConstants.HAND_INSTANT_BROWSERS_DIA_TOOGLE_MESSAGE;
 
@@ -129,7 +131,10 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String DIA_LBL_SELECT_A_DESTINATION_FOLDER = ObjectspyMessageConstants.DIA_LBL_SELECT_A_DESTINATION_FOLDER;
 
-    public static final String PREF_LBL_INSTANT_BROWSER_PORT = ObjectspyMessageConstants.PREF_LBL_INSTANT_BROWSER_PORT;
+    public static final String PREF_LBL_DEFAULT_BROWSER = ObjectspyMessageConstants.PREF_LBL_DEFAULT_BROWSER;
 
-    public static final String PREF_LBL_INSTANT_BROWSER_PORT_DO_NOT_SHOW_WARNING_DIALOG = ObjectspyMessageConstants.PREF_LBL_INSTANT_BROWSER_PORT_DO_NOT_SHOW_WARNING_DIALOG;
+    public static final String PREF_LBL_ACTIVE_BROWSER_PORT = ObjectspyMessageConstants.PREF_LBL_ACTIVE_BROWSER_PORT;
+
+    public static final String PREF_LBL_ACTIVE_BROWSER_PORT_DO_NOT_SHOW_WARNING_DIALOG = ObjectspyMessageConstants.PREF_LBL_ACTIVE_BROWSER_PORT_DO_NOT_SHOW_WARNING_DIALOG;
+
 }
