@@ -44,6 +44,8 @@ public class CoreWebserviceMessageConstants extends NLS {
     public static String KW_LOG_FAILED_RESPONSE_OBJECT_IS_NULL;
 
     public static String KW_LOG_FAILED_RESPONSE_OBJECT_CONTENT_IS_NULL;
+    
+    public static String MSG_NO_SERVICE_OPERATION;
 
     static {
         // initialize resource bundle

@@ -9,7 +9,7 @@ public class WebServiceRequestEntity extends WebElementEntity {
 
     public static final String[] SERVICE_TYPES = new String[] { "SOAP", "RESTful" };
 
-    public static final String[] SOAP_REQUEST_METHODS = new String[] { "SOAP", "POST", "GET" };
+    public static final String[] SOAP_REQUEST_METHODS = new String[] { "POST", "GET" };
 
     public static final String[] REST_REQUEST_METHODS = new String[] { "GET", "POST", "PUT", "DELETE" };
 

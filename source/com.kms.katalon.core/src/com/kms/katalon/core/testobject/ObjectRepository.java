@@ -167,20 +167,17 @@ public class ObjectRepository {
         String serviceType = reqElement.elementText("serviceType");
         requestObject.setServiceType(serviceType);
 
-        requestObject.setHttpHeaderProperties(parseProperties(reqElement.elements("httpHeaderProperties")));
-        requestObject.setHttpBody(reqElement.elementText("httpBody"));
-
         if ("SOAP".equals(serviceType)) {
             requestObject.setWsdlAddress(reqElement.elementText("wsdlAddress"));
             requestObject.setSoapRequestMethod(reqElement.elementText("soapRequestMethod"));
             requestObject.setSoapServiceFunction(reqElement.elementText("soapServiceFunction"));
-            requestObject.setSoapParameters(parseProperties(reqElement.elements("soapParameters")));
-            requestObject.setSoapHeader(reqElement.elementText("soapHeader"));
             requestObject.setSoapBody(reqElement.elementText("soapBody"));
         } else if ("RESTful".equals(serviceType)) {
             requestObject.setRestUrl(reqElement.elementText("restUrl"));
             requestObject.setRestRequestMethod(reqElement.elementText("restRequestMethod"));
             requestObject.setRestParameters(parseProperties(reqElement.elements("restParameters")));
+            requestObject.setHttpHeaderProperties(parseProperties(reqElement.elements("httpHeaderProperties")));
+            requestObject.setHttpBody(reqElement.elementText("httpBody"));
         }
 
         return requestObject;
