@@ -59,6 +59,9 @@
       <initializer
             class="com.kms.katalon.composer.execution.preferences.ComposerExecutionPreferenceDefaultValueInitializer">
       </initializer>
+      <initializer
+            class="com.kms.katalon.composer.execution.preferences.ComposerGenerateCommandPreferenceDefaultValueInitializer">
+      </initializer>
    </extension>
    
    <extension
