@@ -247,6 +247,7 @@ public class DBTestDataPart extends TestDataMainPart {
 
     @Override
     protected void updateChildInfo(final DataFileEntity dataFile) {
+        btnFetchData.setEnabled(false);
         txtQuery.setText(dataFile.getQuery());
         clearTable();
         if (!canFetchData(dataFile)) {
@@ -272,6 +273,8 @@ public class DBTestDataPart extends TestDataMainPart {
                     setStatusLabel(StringConstants.DIA_MSG_CANNOT_FETCH_DATA, ColorUtil.getTextErrorColor());
                     MultiStatusErrorDialog.showErrorDialog(e, StringConstants.DIA_MSG_CANNOT_FETCH_DATA,
                             e.getMessage());
+                } finally {
+                    btnFetchData.setEnabled(true);
                 }
             }
         });
