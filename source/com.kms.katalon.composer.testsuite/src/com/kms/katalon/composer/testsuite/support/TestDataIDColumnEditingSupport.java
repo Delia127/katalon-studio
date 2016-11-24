@@ -4,7 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.EditingSupport;
-import org.eclipse.swt.widgets.Composite;
+import org.eclipse.jface.viewers.TableViewer;
 
 import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -28,7 +28,7 @@ public class TestDataIDColumnEditingSupport extends EditingSupport {
     protected CellEditor getCellEditor(Object element) {
         if (element != null && element instanceof TestCaseTestDataLink) {
             TestCaseTestDataLink link = (TestCaseTestDataLink) element;
-            return new TestDataCellEditor((Composite) getViewer().getControl(), link.getTestDataId(),
+            return new TestDataCellEditor(((TableViewer) getViewer()).getTable(), link.getTestDataId(),
                     link.getTestDataId());
         }
         return null;

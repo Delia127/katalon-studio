@@ -43,6 +43,7 @@ import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.MenuUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.components.util.ColumnViewerUtil;
 import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
 import com.kms.katalon.composer.testsuite.constants.ImageConstants;
 import com.kms.katalon.composer.testsuite.constants.StringConstants;
@@ -281,7 +282,8 @@ public class TestSuitePartDataBindingView {
         Table testDataTable = testDataTableViewer.getTable();
         testDataTable.setLinesVisible(true);
         testDataTable.setHeaderVisible(true);
-
+        ColumnViewerUtil.setTableActivation(testDataTableViewer);
+        
         TableViewerColumn treeViewerColumnNotification = new TableViewerColumn(testDataTableViewer, SWT.NONE);
         TableColumn trclmnNotification = treeViewerColumnNotification.getColumn();
         trclmnNotification.setImage(ImageConstants.IMG_16_NOTIFICATION_HEADER);
