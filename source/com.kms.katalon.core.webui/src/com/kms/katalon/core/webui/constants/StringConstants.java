@@ -497,7 +497,8 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String KW_MSG_CANNOT_GET_VIEWPORT_LEFT_POSITION = CoreWebuiMessageConstants.KW_MSG_CANNOT_GET_VIEWPORT_LEFT_POSITION;
     public static final String KW_LOG_PASSED_GET_VIEWPORT_TOP_POSITION_X = CoreWebuiMessageConstants.KW_LOG_PASSED_GET_VIEWPORT_TOP_POSITION_X;
     public static final String KW_MSG_CANNOT_GET_VIEWPORT_TOP_POSITION = CoreWebuiMessageConstants.KW_MSG_CANNOT_GET_VIEWPORT_TOP_POSITION;
-
+    
+    
     public static final String KW_CATEGORIZE_ALERT = "Alert";
     public static final String KW_CATEGORIZE_ATTRIBUTE = "Attribute";
     public static final String KW_CATEGORIZE_BROWSER = "Browser";
