@@ -23,6 +23,7 @@ import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.generator.TestCaseScriptGenerator;
 import com.kms.katalon.execution.generator.TestSuiteScriptGenerator;
+import com.kms.katalon.execution.session.ExecutionSessionSocketServer;
 import com.kms.katalon.execution.util.ExecutionUtil;
 
 public abstract class AbstractRunConfiguration implements IRunConfiguration {
@@ -134,6 +135,10 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
         propertyMap.put(RunConfiguration.EXCUTION_SOURCE_NAME, executedEntity.getSourceName());
         propertyMap.put(RunConfiguration.EXCUTION_SOURCE_DESCRIPTION, executedEntity.getSourceDescription());
         propertyMap.put(RunConfiguration.EXCUTION_SOURCE, executedEntity.getSourcePath());
+        
+        ExecutionSessionSocketServer sessionServer = ExecutionSessionSocketServer.getInstance();
+        propertyMap.put(RunConfiguration.SESSION_SERVER_HOST, sessionServer.getServerHost());
+        propertyMap.put(RunConfiguration.SESSION_SERVER_PORT, sessionServer.getServerPort());
         return propertyMap;
     }
 

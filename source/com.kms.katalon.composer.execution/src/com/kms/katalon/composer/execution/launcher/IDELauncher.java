@@ -29,6 +29,7 @@ import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.execution.configuration.ExistingRunConfiguration;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.execution.exception.ExecutionException;
@@ -37,6 +38,8 @@ import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
 import com.kms.katalon.execution.launcher.process.ILaunchProcess;
 import com.kms.katalon.execution.launcher.result.LauncherStatus;
+import com.kms.katalon.execution.session.ExecutionSession;
+import com.kms.katalon.execution.session.ExecutionSessionSocketServer;
 import com.kms.katalon.groovy.util.GroovyUtil;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
@@ -77,8 +80,9 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener, 
             SafeRunner.run(new ISafeRunnable() {
                 @Override
                 public void run() throws Exception {
-                    IFile scriptFile = GroovyUtil.getTempScriptIFile(getRunConfig().getExecutionSetting()
-                            .getScriptFile(), ProjectController.getInstance().getCurrentProject());
+                    IFile scriptFile = GroovyUtil.getTempScriptIFile(
+                            getRunConfig().getExecutionSetting().getScriptFile(),
+                            ProjectController.getInstance().getCurrentProject());
 
                     if (scriptFile == null) {
                         return;
@@ -107,6 +111,17 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener, 
     @Override
     protected void onStartExecutionComplete() {
         sendUpdateLogViewerEvent(getId());
+        if (runConfig instanceof ExistingRunConfiguration) {
+            pauseExecutionSession((ExistingRunConfiguration) runConfig);
+        }
+    }
+
+    private void pauseExecutionSession(ExistingRunConfiguration runConfig) {
+        ExecutionSession executionSession = ExecutionSessionSocketServer.getInstance()
+                .getExecutionSessionBySessionAndRemoteURL(runConfig.getSessionId(), runConfig.getRemoteUrl());
+        if (executionSession != null) {
+            executionSession.pause();
+        }
     }
 
     @Override
@@ -137,6 +152,28 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener, 
         eventBroker.post(UIEvents.REQUEST_ENABLEMENT_UPDATE_TOPIC, UIEvents.ALL_ELEMENT_ID);
 
         updateReport();
+
+        if (runConfig instanceof ExistingRunConfiguration) {
+            resumeExecutionSession((ExistingRunConfiguration) runConfig);
+        } else {
+            resumeExecutionSession(runConfig);
+        }
+    }
+
+    private void resumeExecutionSession(IRunConfiguration runConfig) {
+        ExecutionSession executionSession = ExecutionSessionSocketServer.getInstance()
+                .getExecutionSessionByLogFolderPath(runConfig.getExecutionSetting().getFolderPath());
+        if (executionSession != null) {
+            executionSession.resume();
+        }
+    }
+
+    private void resumeExecutionSession(ExistingRunConfiguration runConfig) {
+        ExecutionSession executionSession = ExecutionSessionSocketServer.getInstance()
+                .getExecutionSessionBySessionAndRemoteURL(runConfig.getSessionId(), runConfig.getRemoteUrl());
+        if (executionSession != null) {
+            executionSession.resume();
+        }
     }
 
     protected void updateReport() {
@@ -216,7 +253,8 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener, 
     }
 
     /**
-     * Handles the case that user cancels the launch progress. </br> Called in
+     * Handles the case that user cancels the launch progress. </br>
+     * Called in
      * the phase that our launch is not returned at {@link #launch()}.
      */
     @Override

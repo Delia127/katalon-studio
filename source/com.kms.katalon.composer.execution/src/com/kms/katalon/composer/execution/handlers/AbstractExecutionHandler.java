@@ -125,7 +125,7 @@ public abstract class AbstractExecutionHandler {
         return false;
     }
 
-    private LaunchMode getLaunchMode(ParameterizedCommand command) {
+    protected LaunchMode getLaunchMode(ParameterizedCommand command) {
         String launchModeAsString = ObjectUtils.toString(command.getParameterMap().get(
                 IdConstants.RUN_MODE_PARAMETER_ID));
         return LaunchMode.fromText(launchModeAsString);
@@ -195,17 +195,20 @@ public abstract class AbstractExecutionHandler {
     public void execute(LaunchMode launchMode) throws Exception {
         String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
 
-        Entity targetEntity = getExecutionTarget();
-
-        if (targetEntity == null) {
-            return;
-        }
-
         IRunConfiguration runConfiguration = getRunConfigurationForExecution(projectDir);
         if (runConfiguration == null) {
             return;
         }
 
+        execute(launchMode, runConfiguration);
+    }
+
+    protected void execute(LaunchMode launchMode, IRunConfiguration runConfiguration) throws Exception {
+        Entity targetEntity = getExecutionTarget();
+
+        if (targetEntity == null) {
+            return;
+        }
         if (targetEntity instanceof TestCaseEntity) {
             TestCaseEntity testCase = (TestCaseEntity) targetEntity;
 

@@ -14,8 +14,8 @@ public class FirefoxDriver47 extends FirefoxDriver {
         super();
     }
 
-    public FirefoxDriver47(DesiredCapabilities caps) {
-        super(caps);
+    public FirefoxDriver47(DesiredCapabilities desiredCapabilities) {
+        super(desiredCapabilities);
     }
 
     @Override

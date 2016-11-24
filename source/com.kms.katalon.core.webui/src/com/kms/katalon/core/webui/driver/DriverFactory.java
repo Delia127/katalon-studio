@@ -2,7 +2,10 @@ package com.kms.katalon.core.webui.driver;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.net.ConnectException;
 import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.URL;
 import java.text.MessageFormat;
@@ -22,6 +25,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeDriverService;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxDriver.LazyCommandExecutor;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.ie.InternetExplorerDriverLogLevel;
@@ -29,23 +33,29 @@ import org.openqa.selenium.ie.InternetExplorerDriverService;
 import org.openqa.selenium.internal.BuildInfo;
 import org.openqa.selenium.net.NetworkUtils;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.HttpCommandExecutor;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.UnreachableBrowserException;
 import org.openqa.selenium.safari.SafariDriver;
 
+import com.kms.katalon.core.appium.exception.AppiumStartException;
+import com.kms.katalon.core.appium.exception.MobileDriverInitializeException;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.driver.DriverType;
+import com.kms.katalon.core.driver.ExistingDriverType;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.webui.common.WebUiCommonHelper;
 import com.kms.katalon.core.webui.constants.StringConstants;
 import com.kms.katalon.core.webui.driver.firefox.FirefoxDriver47;
+import com.kms.katalon.core.webui.driver.existings.ExistingRemoteWebDriver;
 import com.kms.katalon.core.webui.driver.ie.InternetExploreDriverServiceBuilder;
 import com.kms.katalon.core.webui.exception.BrowserNotOpenedException;
 import com.kms.katalon.core.webui.util.FirefoxExecutable;
 import com.kms.katalon.core.webui.util.WebDriverPropertyUtil;
 import com.machinepublishers.jbrowserdriver.JBrowserDriver;
+
 import io.appium.java_client.ios.IOSDriver;
 
 public class DriverFactory {
@@ -55,6 +65,8 @@ public class DriverFactory {
     public static final String WEB_UI_DRIVER_PROPERTY = StringConstants.CONF_PROPERTY_WEBUI_DRIVER;
 
     public static final String MOBILE_DRIVER_PROPERTY = StringConstants.CONF_PROPERTY_MOBILE_DRIVER;
+
+    public static final String EXISTING_DRIVER_PROPERTY = StringConstants.CONF_PROPERTY_EXISTING_DRIVER;
 
     public static final String APPIUM_LOG_PROPERTY = StringConstants.CONF_APPIUM_LOG_FILE;
 
@@ -83,11 +95,11 @@ public class DriverFactory {
     public static final String CHROME_DRIVER_PATH_PROPERTY = StringConstants.CONF_PROPERTY_CHROME_DRIVER_PATH;
 
     public static final String WAIT_FOR_IE_HANGING_PROPERTY = StringConstants.CONF_PROPERTY_WAIT_FOR_IE_HANGING;
-    
+
     public static final String ENABLE_PAGE_LOAD_TIMEOUT = StringConstants.CONF_PROPERTY_ENABLE_PAGE_LOAD_TIMEOUT;
-    
+
     public static final String DEFAULT_PAGE_LOAD_TIMEOUT = StringConstants.CONF_PROPERTY_DEFAULT_PAGE_LOAD_TIMEOUT;
-    
+
     public static final String IGNORE_PAGE_LOAD_TIMEOUT_EXCEPTION = StringConstants.CONF_PROPERTY_IGNORE_PAGE_LOAD_TIMEOUT_EXCEPTION;
 
     public static final String EXECUTED_BROWSER_PROPERTY = StringConstants.CONF_PROPERTY_EXECUTED_BROWSER;
@@ -134,148 +146,218 @@ public class DriverFactory {
      * @return the created WebDriver
      * @throws Exception
      */
-    @SuppressWarnings("rawtypes")
     public static WebDriver openWebDriver() throws Exception {
         try {
-            if (null != localWebServerStorage.get()
-                    && null != ((RemoteWebDriver) localWebServerStorage.get()).getSessionId()) {
-                KeywordLogger.getInstance().logWarning(StringConstants.DRI_LOG_WARNING_BROWSER_ALREADY_OPENED);
-                closeWebDriver();
-            }
-
-            WebUIDriverType driver = (WebUIDriverType) getExecutedBrowser();
-            if (driver == null) {
-                throw new StepFailedException(StringConstants.DRI_ERROR_MSG_NO_BROWSER_SET);
-            }
-
-            KeywordLogger.getInstance().logInfo(
-                    MessageFormat.format(StringConstants.XML_LOG_STARTING_DRIVER_X, driver.toString()));
-
-            Map<String, Object> driverPreferenceProps = RunConfiguration.getDriverPreferencesProperties(WEB_UI_DRIVER_PROPERTY);
-            DesiredCapabilities desireCapibilities = null;
-            if (driverPreferenceProps != null) {
-                desireCapibilities = WebDriverPropertyUtil.toDesireCapabilities(driverPreferenceProps, driver);
-            }
             WebDriver webDriver = null;
-            switch (driver) {
-                case FIREFOX_DRIVER:
-                    if (FirefoxExecutable.isUsingFirefox47AndAbove(desireCapibilities)) {
-                        //webDriver = FirefoxExecutable.startGeckoDriver(desireCapibilities);
-                        webDriver = new FirefoxDriver47(desireCapibilities);
-                    } else {
-                        webDriver = new FirefoxDriver(desireCapibilities);
-                    }
-                    break;
-                case IE_DRIVER:
-                    ieDriverService = new InternetExploreDriverServiceBuilder().withLogLevel(
-                            InternetExplorerDriverLogLevel.TRACE)
-                            .usingDriverExecutable(new File(getIEDriverPath()))
-                            .withLogFile(
-                                    new File(RunConfiguration.getLogFolderPath() + File.separator + IE_DRIVER_SERVER_LOG_FILE_NAME))
-                            .build();
-                    webDriver = new InternetExplorerDriver(ieDriverService, desireCapibilities);
-                    break;
-                case SAFARI_DRIVER:
-                    webDriver = new SafariDriver(desireCapibilities);
-                    break;
-                case CHROME_DRIVER:
-                    System.setProperty(CHROME_DRIVER_PATH_PROPERTY_KEY, getChromeDriverPath());
-                    webDriver = new ChromeDriver(desireCapibilities);
-                    break;
-                case REMOTE_WEB_DRIVER:
-                case KOBITON_WEB_DRIVER:
-                    String remoteWebServerUrl = getRemoteWebDriverServerUrl();
-                    String remoteWebServerType = getRemoteWebDriverServerType();
-                    if (remoteWebServerType == null) {
-                        remoteWebServerType = REMOTE_WEB_DRIVER_TYPE_SELENIUM;
-                    }
-                    KeywordLogger.getInstance().logInfo(
-                            MessageFormat.format(StringConstants.XML_LOG_CONNECTING_TO_REMOTE_WEB_SERVER_X_WITH_TYPE_Y,
-                                    remoteWebServerUrl, remoteWebServerType));
-                    if (remoteWebServerType.equals(REMOTE_WEB_DRIVER_TYPE_APPIUM)) {
-                        Object platformName = desireCapibilities.getCapability(APPIUM_CAPABILITY_PLATFORM_NAME);
-                        if (platformName == null) {
-                            throw new StepFailedException(MessageFormat.format(
-                                    StringConstants.DRI_MISSING_PROPERTY_X_FOR_APPIUM_REMOTE_WEB_DRIVER,
-                                    APPIUM_CAPABILITY_PLATFORM_NAME));
-                        }
-                        if (platformName instanceof String) {
-                            if (APPIUM_CAPABILITY_PLATFORM_NAME_ADROID.equalsIgnoreCase((String) platformName)) {
-                                webDriver = new SwipeableAndroidDriver(new URL(remoteWebServerUrl),
-                                        WebDriverPropertyUtil.toDesireCapabilities(driverPreferenceProps,
-                                                DesiredCapabilities.android(), false));
-                            } else if (APPIUM_CAPABILITY_PLATFORM_NAME_IOS.equalsIgnoreCase((String) platformName)) {
-                                webDriver = new IOSDriver(new URL(remoteWebServerUrl),
-                                        WebDriverPropertyUtil.toDesireCapabilities(driverPreferenceProps,
-                                                DesiredCapabilities.iphone(), false));
-                            } else {
-                                throw new StepFailedException(
-                                        MessageFormat.format(
-                                                StringConstants.DRI_PLATFORM_NAME_X_IS_NOT_SUPPORTED_FOR_APPIUM_REMOTE_WEB_DRIVER,
-                                                platformName));
-                            }
-                        }
-                        break;
-                    }
-                    webDriver = new RemoteWebDriver(new URL(remoteWebServerUrl), desireCapibilities);
-                    break;
-                case ANDROID_DRIVER:
-                case IOS_DRIVER:
-                    webDriver = WebMobileDriverFactory.createMobileDriver(driver);
-                    break;
-                case EDGE_DRIVER:
-                    EdgeDriverService edgeService = localEdgeDriverServiceStorage.get();
-                    if (!edgeService.isRunning()) {
-                        edgeService.start();
-                    }
-                    webDriver = new EdgeDriver(edgeService, WebDriverPropertyUtil.toDesireCapabilities(
-                            driverPreferenceProps, DesiredCapabilities.edge(), false));
-                    break;
-                case REMOTE_FIREFOX_DRIVER:
-                    String debugHost = RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, DEBUG_HOST,
-                            DriverFactory.DEFAULT_DEBUG_HOST);
-                    String debugPort = RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, DEBUG_PORT,
-                            DriverFactory.DEFAULT_FIREFOX_DEBUG_PORT);
-                    desireCapibilities.merge(DesiredCapabilities.firefox());
-                    URL firefoxDriverUrl = new URL("http", debugHost, Integer.parseInt(debugPort), "/hub");
-                    webDriver = new RemoteWebDriver(firefoxDriverUrl, desireCapibilities);
-                    waitForRemoteBrowserReady(firefoxDriverUrl);
-                    break;
-                case REMOTE_CHROME_DRIVER:
-                    debugHost = RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, DEBUG_HOST,
-                            DriverFactory.DEFAULT_DEBUG_HOST);
-                    debugPort = RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, DEBUG_PORT,
-                            DriverFactory.DEFAULT_CHROME_DEBUG_PORT);
-                    System.setProperty(CHROME_DRIVER_PATH_PROPERTY_KEY, getChromeDriverPath());
-                    desireCapibilities.merge(DesiredCapabilities.chrome());
-                    Map<String, Object> chromeOptions = new HashMap<String, Object>();
-                    chromeOptions.put("debuggerAddress", debugHost + ":" + debugPort);
-                    desireCapibilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
-                    // Start Chrome-driver in background
-                    int chromeDriverPort = determineNextFreePort(9515);
-                    URL chromeDriverUrl = new URL("http", debugHost, chromeDriverPort, "/");
-                    Runtime.getRuntime().exec(
-                            new String[] { System.getProperty(CHROME_DRIVER_PATH_PROPERTY_KEY),
-                                    "--port=" + chromeDriverPort });
-                    waitForRemoteBrowserReady(chromeDriverUrl);
-                    webDriver = new RemoteWebDriver(chromeDriverUrl, desireCapibilities);
-                    break;
-                case HEADLESS_DRIVER:
-                    webDriver = new JBrowserDriver(desireCapibilities);
-                    break;
-                default:
-                    throw new StepFailedException(MessageFormat.format(
-                            StringConstants.DRI_ERROR_DRIVER_X_NOT_IMPLEMENTED, driver.getName()));
+            if (isUsingExistingDriver()) {
+                webDriver = startExistingBrowser();
+            } else {
+                webDriver = startNewBrowser(getExecutedBrowser());
             }
-            localWebServerStorage.set(webDriver);
-            RunConfiguration.storeDriver(webDriver);
-            setTimeout();
-            logBrowserRunData(webDriver);
+            changeWebDriver(webDriver);
             return webDriver;
         } catch (Error e) {
             KeywordLogger.getInstance().logMessage(LogLevel.WARNING, e.getMessage());
             throw new StepFailedException(e);
         }
+    }
+
+    private static void changeWebDriver(WebDriver webDriver) {
+        localWebServerStorage.set(webDriver);
+        RunConfiguration.storeDriver(webDriver);
+        setTimeout();
+        logBrowserRunData(webDriver);
+    }
+
+    private static boolean isUsingExistingDriver() {
+        return getExecutedBrowser() instanceof ExistingDriverType;
+    }
+
+    private static WebDriver startNewBrowser(DriverType executedBrowser) throws MalformedURLException,
+            MobileDriverInitializeException, IOException, InterruptedException, AppiumStartException, Exception {
+        WebUIDriverType driver = (WebUIDriverType) executedBrowser;
+        if (driver == null) {
+            throw new StepFailedException(StringConstants.DRI_ERROR_MSG_NO_BROWSER_SET);
+        }
+
+        if (null != localWebServerStorage.get()
+                && null != ((RemoteWebDriver) localWebServerStorage.get()).getSessionId()) {
+            KeywordLogger.getInstance().logWarning(StringConstants.DRI_LOG_WARNING_BROWSER_ALREADY_OPENED);
+            closeWebDriver();
+        }
+
+        KeywordLogger.getInstance()
+                .logInfo(MessageFormat.format(StringConstants.XML_LOG_STARTING_DRIVER_X, driver.toString()));
+
+        Map<String, Object> driverPreferenceProps = RunConfiguration
+                .getDriverPreferencesProperties(WEB_UI_DRIVER_PROPERTY);
+        DesiredCapabilities desireCapibilities = null;
+        if (driverPreferenceProps != null) {
+            desireCapibilities = WebDriverPropertyUtil.toDesireCapabilities(driverPreferenceProps, driver);
+        }
+        WebDriver webDriver = null;
+        switch (driver) {
+            case FIREFOX_DRIVER:
+                webDriver = createNewFirefoxDriver(desireCapibilities);
+                break;
+            case IE_DRIVER:
+                webDriver = createNewIEDriver(desireCapibilities);
+                break;
+            case SAFARI_DRIVER:
+                webDriver = new SafariDriver(desireCapibilities);
+                break;
+            case CHROME_DRIVER:
+                System.setProperty(CHROME_DRIVER_PATH_PROPERTY_KEY, getChromeDriverPath());
+                webDriver = new ChromeDriver(desireCapibilities);
+                break;
+            case REMOTE_WEB_DRIVER:
+            case KOBITON_WEB_DRIVER:
+                webDriver = createNewRemoteWebDriver(driverPreferenceProps, desireCapibilities);
+                break;
+            case ANDROID_DRIVER:
+            case IOS_DRIVER:
+                webDriver = WebMobileDriverFactory.createMobileDriver(driver);
+                break;
+            case EDGE_DRIVER:
+                webDriver = createNewEdgeDriver(driverPreferenceProps);
+                break;
+            case REMOTE_FIREFOX_DRIVER:
+                webDriver = createNewRemoteFirefoxDriver(desireCapibilities);
+                break;
+            case REMOTE_CHROME_DRIVER:
+                webDriver = createNewRemoteChromeDriver(desireCapibilities);
+                break;
+            case HEADLESS_DRIVER:
+                webDriver = new JBrowserDriver(desireCapibilities);
+                break;
+            default:
+                throw new StepFailedException(
+                        MessageFormat.format(StringConstants.DRI_ERROR_DRIVER_X_NOT_IMPLEMENTED, driver.getName()));
+        }
+        saveWebDriverSessionData(webDriver);
+        return webDriver;
+    }
+
+    @SuppressWarnings("rawtypes")
+    private static WebDriver createNewRemoteWebDriver(Map<String, Object> driverPreferenceProps,
+            DesiredCapabilities desireCapibilities) throws MalformedURLException {
+        String remoteWebServerUrl = getRemoteWebDriverServerUrl();
+        String remoteWebServerType = getRemoteWebDriverServerType();
+        if (remoteWebServerType == null) {
+            remoteWebServerType = REMOTE_WEB_DRIVER_TYPE_SELENIUM;
+        }
+        KeywordLogger.getInstance()
+                .logInfo(MessageFormat.format(StringConstants.XML_LOG_CONNECTING_TO_REMOTE_WEB_SERVER_X_WITH_TYPE_Y,
+                        remoteWebServerUrl, remoteWebServerType));
+        if (!remoteWebServerType.equals(REMOTE_WEB_DRIVER_TYPE_APPIUM)) {
+            return new RemoteWebDriver(new URL(remoteWebServerUrl), desireCapibilities);
+        }
+        Object platformName = desireCapibilities.getCapability(APPIUM_CAPABILITY_PLATFORM_NAME);
+        if (platformName == null || !(platformName instanceof String)) {
+            throw new StepFailedException(
+                    MessageFormat.format(StringConstants.DRI_MISSING_PROPERTY_X_FOR_APPIUM_REMOTE_WEB_DRIVER,
+                            APPIUM_CAPABILITY_PLATFORM_NAME));
+        }
+        if (APPIUM_CAPABILITY_PLATFORM_NAME_ADROID.equalsIgnoreCase((String) platformName)) {
+            return new SwipeableAndroidDriver(new URL(remoteWebServerUrl), WebDriverPropertyUtil
+                    .toDesireCapabilities(driverPreferenceProps, DesiredCapabilities.android(), false));
+        } else if (APPIUM_CAPABILITY_PLATFORM_NAME_IOS.equalsIgnoreCase((String) platformName)) {
+            return new IOSDriver(new URL(remoteWebServerUrl), WebDriverPropertyUtil
+                    .toDesireCapabilities(driverPreferenceProps, DesiredCapabilities.iphone(), false));
+        }
+        throw new StepFailedException(MessageFormat.format(
+                StringConstants.DRI_PLATFORM_NAME_X_IS_NOT_SUPPORTED_FOR_APPIUM_REMOTE_WEB_DRIVER, platformName));
+    }
+
+    private static WebDriver createNewRemoteChromeDriver(DesiredCapabilities desireCapibilities)
+            throws MalformedURLException, IOException, Exception {
+        String chromeDebugHost = RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, DEBUG_HOST,
+                DriverFactory.DEFAULT_DEBUG_HOST);
+        String chromeDebugPort = RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, DEBUG_PORT,
+                DriverFactory.DEFAULT_CHROME_DEBUG_PORT);
+        System.setProperty(CHROME_DRIVER_PATH_PROPERTY_KEY, getChromeDriverPath());
+        desireCapibilities.merge(DesiredCapabilities.chrome());
+        Map<String, Object> chromeOptions = new HashMap<String, Object>();
+        chromeOptions.put("debuggerAddress", chromeDebugHost + ":" + chromeDebugPort);
+        desireCapibilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
+        // Start Chrome-driver in background
+        int chromeDriverPort = determineNextFreePort(9515);
+        URL chromeDriverUrl = new URL("http", chromeDebugHost, chromeDriverPort, "/");
+        Runtime.getRuntime().exec(
+                new String[] { System.getProperty(CHROME_DRIVER_PATH_PROPERTY_KEY), "--port=" + chromeDriverPort });
+        waitForRemoteBrowserReady(chromeDriverUrl);
+        return new RemoteWebDriver(chromeDriverUrl, desireCapibilities);
+    }
+
+    private static WebDriver createNewRemoteFirefoxDriver(DesiredCapabilities desireCapibilities)
+            throws MalformedURLException, Exception {
+        String fireFoxDebugHost = RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, DEBUG_HOST,
+                DriverFactory.DEFAULT_DEBUG_HOST);
+        String firefoxDebugPort = RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, DEBUG_PORT,
+                DriverFactory.DEFAULT_FIREFOX_DEBUG_PORT);
+        desireCapibilities.merge(DesiredCapabilities.firefox());
+        URL firefoxDriverUrl = new URL("http", fireFoxDebugHost, Integer.parseInt(firefoxDebugPort), "/hub");
+        RemoteWebDriver webDriver = new RemoteWebDriver(firefoxDriverUrl, desireCapibilities);
+        waitForRemoteBrowserReady(firefoxDriverUrl);
+        return webDriver;
+    }
+
+    private static WebDriver createNewEdgeDriver(Map<String, Object> driverPreferenceProps) throws IOException {
+        EdgeDriverService edgeService = localEdgeDriverServiceStorage.get();
+        if (!edgeService.isRunning()) {
+            edgeService.start();
+        }
+        return new EdgeDriver(edgeService,
+                WebDriverPropertyUtil.toDesireCapabilities(driverPreferenceProps, DesiredCapabilities.edge(), false));
+    }
+
+    private static WebDriver createNewIEDriver(DesiredCapabilities desireCapibilities) {
+        ieDriverService = new InternetExploreDriverServiceBuilder().withLogLevel(InternetExplorerDriverLogLevel.TRACE)
+                .usingDriverExecutable(new File(getIEDriverPath()))
+                .withLogFile(
+                        new File(RunConfiguration.getLogFolderPath() + File.separator + IE_DRIVER_SERVER_LOG_FILE_NAME))
+                .build();
+        return new InternetExplorerDriver(ieDriverService, desireCapibilities);
+    }
+
+    private static WebDriver createNewFirefoxDriver(DesiredCapabilities desireCapibilities) {
+        if (FirefoxExecutable.isUsingFirefox47AndAbove(desireCapibilities)) {
+            // webDriver = FirefoxExecutable.startGeckoDriver(desireCapibilities);
+            return new FirefoxDriver47(desireCapibilities);
+        }
+        return new FirefoxDriver(desireCapibilities);
+    }
+
+    private static void saveWebDriverSessionData(WebDriver webDriver) {
+        if (!(webDriver instanceof RemoteWebDriver) || webDriver instanceof ExistingRemoteWebDriver
+                || webDriver instanceof SafariDriver) {
+            return;
+        }
+        RemoteWebDriver remoteWebDriver = (RemoteWebDriver) webDriver;
+        try (Socket myClient = new Socket(RunConfiguration.getSessionServerHost(),
+                RunConfiguration.getSessionServerPort());
+                PrintStream output = new PrintStream(myClient.getOutputStream())) {
+            output.println(remoteWebDriver.getSessionId());
+            output.println(getWebDriverServerUrl(remoteWebDriver));
+            String remoteDriverType = DriverFactory.getExecutedBrowser().toString();
+            output.println(remoteDriverType);
+            output.println(RunConfiguration.getLogFolderPath());
+            output.flush();
+        } catch (Exception e) {
+            // Ignore for this exception
+        }
+    }
+
+    private static String getWebDriverServerUrl(RemoteWebDriver remoteWebDriver) {
+        if (remoteWebDriver instanceof FirefoxDriver) {
+            return ((LazyCommandExecutor) remoteWebDriver.getCommandExecutor()).getAddressOfRemoteServer().toString();
+        }
+        return ((HttpCommandExecutor) remoteWebDriver.getCommandExecutor()).getAddressOfRemoteServer().toString();
+    }
+
+    protected static WebDriver startExistingBrowser() throws MalformedURLException, ConnectException {
+        return new ExistingRemoteWebDriver(new URL(RunConfiguration.getExisingSessionServerUrl()),
+                RunConfiguration.getExisingSessionSessionId());
     }
 
     private static void logBrowserRunData(WebDriver webDriver) {
@@ -287,9 +369,9 @@ public class DriverFactory {
         logger.logRunData("sessionId", ((RemoteWebDriver) webDriver).getSessionId().toString());
         logger.logRunData("browser", getBrowserVersion(webDriver));
         logger.logRunData("platform",
-                webDriver.getClass() == RemoteWebDriver.class ? ((RemoteWebDriver) webDriver).getCapabilities()
-                        .getPlatform()
-                        .toString() : System.getProperty("os.name"));
+                webDriver.getClass() == RemoteWebDriver.class
+                        ? ((RemoteWebDriver) webDriver).getCapabilities().getPlatform().toString()
+                        : System.getProperty("os.name"));
         logger.logRunData(StringConstants.XML_LOG_SELENIUM_VERSION, new BuildInfo().getReleaseLabel());
     }
 
@@ -297,7 +379,13 @@ public class DriverFactory {
         if (webDriver instanceof JBrowserDriver) {
             return HEADLESS_BROWSER_NAME;
         }
-        return WebUiCommonHelper.getBrowserAndVersion(webDriver);
+        try {
+
+            return WebUiCommonHelper.getBrowserAndVersion(webDriver);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 
     public static WebDriver openWebDriver(DriverType driver, String projectDir, Object options) throws Exception {
@@ -313,12 +401,7 @@ public class DriverFactory {
                     if (options instanceof FirefoxProfile) {
                         DesiredCapabilities desiredCapabilities = DesiredCapabilities.firefox();
                         desiredCapabilities.setCapability(FirefoxDriver.PROFILE, (FirefoxProfile) options);
-                        if (FirefoxExecutable.isUsingFirefox47AndAbove(desiredCapabilities)) {
-                            //webDriver = FirefoxExecutable.startGeckoDriver(desiredCapabilities);
-                            webDriver = new FirefoxDriver47(desiredCapabilities);
-                        } else {
-                            webDriver = new FirefoxDriver(desiredCapabilities);
-                        }
+                        webDriver = createNewFirefoxDriver(desiredCapabilities);
                     } else {
                         webDriver = new FirefoxDriver();
                     }
@@ -342,8 +425,8 @@ public class DriverFactory {
                     }
                     break;
                 default:
-                    throw new StepFailedException(MessageFormat.format(
-                            StringConstants.DRI_ERROR_DRIVER_X_NOT_IMPLEMENTED, driver.getName()));
+                    throw new StepFailedException(
+                            MessageFormat.format(StringConstants.DRI_ERROR_DRIVER_X_NOT_IMPLEMENTED, driver.getName()));
             }
             localWebServerStorage.set(webDriver);
             setTimeout();
@@ -388,12 +471,11 @@ public class DriverFactory {
     }
 
     private static void verifyWebDriver() throws StepFailedException, WebDriverException {
+        startExistingBrowserIfPossible();
         verifyWebDriverIsOpen();
         try {
             if (null == ((RemoteWebDriver) localWebServerStorage.get()).getSessionId()) {
                 switchToAvailableWindow();
-            } else {
-                checkIfWebDriverIsBlock();
             }
         } catch (WebDriverException e) {
             if (!(e instanceof NoSuchWindowException) && e.getMessage() != null
@@ -409,43 +491,8 @@ public class DriverFactory {
         }
     }
 
-    // Only check for IE
-    private static void checkIfWebDriverIsBlock() throws StepFailedException {
-        if (getExecutedBrowser() == WebUIDriverType.IE_DRIVER) {
-            // return if there is an alert blocking
-            // if (isAlertPresent()) {
-            // return;
-            // }
-            final WebDriver ieDriver = localWebServerStorage.get();
-            Thread ieSafeThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        ieDriver.getWindowHandle();
-                    } catch (WebDriverException e) {
-                        // Ignore since we only check for hanging thread
-                    }
-                }
-            });
-            ieSafeThread.start();
-            float count = 0;
-            while (ieSafeThread.isAlive()) {
-                if (count > getWaitForIEHanging()) {
-                    ieSafeThread.interrupt();
-                    throw new StepFailedException(MessageFormat.format(
-                            StringConstants.DRI_MSG_UNABLE_REACH_WEB_DRI_TIMEOUT, RunConfiguration.getTimeOut()));
-                }
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    // Thread is interrupted, do nothing
-                }
-                count += 0.1;
-            }
-        }
-    }
-
     public static Alert getAlert() throws WebDriverException {
+        startExistingBrowserIfPossible();
         verifyWebDriverIsOpen();
         Alert alert = null;
         if (getExecutedBrowser() == WebUIDriverType.IE_DRIVER) {
@@ -503,6 +550,7 @@ public class DriverFactory {
     }
 
     public static boolean waitForAlert(int timeOut) {
+        startExistingBrowserIfPossible();
         verifyWebDriverIsOpen();
         float count = 0;
         long miliseconds = System.currentTimeMillis();
@@ -524,6 +572,7 @@ public class DriverFactory {
     }
 
     public static void switchToAvailableWindow() {
+        startExistingBrowserIfPossible();
         verifyWebDriverIsOpen();
         try {
             localWebServerStorage.get().switchTo().window("");
@@ -550,6 +599,7 @@ public class DriverFactory {
     }
 
     public static int getCurrentWindowIndex() {
+        startExistingBrowserIfPossible();
         verifyWebDriverIsOpen();
         String currentWindowHandle = localWebServerStorage.get().getWindowHandle();
         Set<String> availableWindowHandles = localWebServerStorage.get().getWindowHandles();
@@ -561,6 +611,17 @@ public class DriverFactory {
             count++;
         }
         throw new StepFailedException(StringConstants.XML_LOG_ERROR_CANNOT_FOUND_WINDOW_HANDLE);
+    }
+
+    private static void startExistingBrowserIfPossible() {
+        if (isUsingExistingDriver() && localWebServerStorage.get() == null) {
+            try {
+                WebDriver webDriver = startExistingBrowser();
+                changeWebDriver(webDriver);
+            } catch (MalformedURLException | ConnectException malformedUrlException) {
+                // Ignore this
+            }
+        }
     }
 
     private static String getIEDriverPath() {
@@ -579,33 +640,39 @@ public class DriverFactory {
         if (getExecutedBrowser() != WebUIDriverType.IE_DRIVER) {
             throw new IllegalArgumentException(StringConstants.XML_LOG_ERROR_BROWSER_NOT_IE);
         }
-        return Integer.parseInt(RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY,
-                WAIT_FOR_IE_HANGING_PROPERTY));
+        return Integer.parseInt(
+                RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, WAIT_FOR_IE_HANGING_PROPERTY));
     }
-    
+
     public static boolean isEnablePageLoadTimeout() {
-        return RunConfiguration.getBooleanProperty(ENABLE_PAGE_LOAD_TIMEOUT, RunConfiguration.getExecutionGeneralProperties());
+        return RunConfiguration.getBooleanProperty(ENABLE_PAGE_LOAD_TIMEOUT,
+                RunConfiguration.getExecutionGeneralProperties());
     }
-    
+
     public static int getDefaultPageLoadTimeout() {
-        return RunConfiguration.getIntProperty(DEFAULT_PAGE_LOAD_TIMEOUT, RunConfiguration.getExecutionGeneralProperties());
+        return RunConfiguration.getIntProperty(DEFAULT_PAGE_LOAD_TIMEOUT,
+                RunConfiguration.getExecutionGeneralProperties());
     }
-    
+
     public static boolean isIgnorePageLoadTimeoutException() {
-        return RunConfiguration.getBooleanProperty(IGNORE_PAGE_LOAD_TIMEOUT_EXCEPTION, RunConfiguration.getExecutionGeneralProperties());
+        return RunConfiguration.getBooleanProperty(IGNORE_PAGE_LOAD_TIMEOUT_EXCEPTION,
+                RunConfiguration.getExecutionGeneralProperties());
     }
 
     public static DriverType getExecutedBrowser() {
         DriverType webDriverType = null;
+        if (RunConfiguration.getDriverSystemProperties(EXISTING_DRIVER_PROPERTY) != null) {
+            return new ExistingDriverType(null);
+        }
+
         String driverTypeString = RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY,
                 EXECUTED_BROWSER_PROPERTY);
         if (driverTypeString != null) {
             webDriverType = WebUIDriverType.valueOf(driverTypeString);
         }
 
-        if (webDriverType == null
-                && RunConfiguration.getDriverSystemProperty(MOBILE_DRIVER_PROPERTY,
-                        WebMobileDriverFactory.EXECUTED_MOBILE_PLATFORM) != null) {
+        if (webDriverType == null && RunConfiguration.getDriverSystemProperty(MOBILE_DRIVER_PROPERTY,
+                WebMobileDriverFactory.EXECUTED_MOBILE_PLATFORM) != null) {
             webDriverType = WebUIDriverType.valueOf(RunConfiguration.getDriverSystemProperty(MOBILE_DRIVER_PROPERTY,
                     WebMobileDriverFactory.EXECUTED_MOBILE_PLATFORM));
         }
@@ -621,7 +688,8 @@ public class DriverFactory {
     }
 
     public static void closeWebDriver() {
-        WebUIDriverType driverType = (WebUIDriverType) getExecutedBrowser();
+        startExistingBrowserIfPossible();
+        DriverType driverType = getExecutedBrowser();
         if (driverType == WebUIDriverType.IE_DRIVER) {
             quitIE();
             return;
@@ -630,20 +698,22 @@ public class DriverFactory {
         if (null != webDriver && null != ((RemoteWebDriver) webDriver).getSessionId()) {
             try {
                 webDriver.quit();
-                switch (driverType) {
-                    case ANDROID_DRIVER:
-                    case IOS_DRIVER:
-                        WebMobileDriverFactory.closeDriver();
-                        break;
-                    case EDGE_DRIVER:
-                        EdgeDriverService edgeDriverService = localEdgeDriverServiceStorage.get();
-                        if (edgeDriverService.isRunning()) {
-                            edgeDriverService.stop();
-                        }
-                        break;
-                    default:
-                        break;
+                if (driverType instanceof WebUIDriverType) {
+                    switch ((WebUIDriverType) driverType) {
+                        case ANDROID_DRIVER:
+                        case IOS_DRIVER:
+                            WebMobileDriverFactory.closeDriver();
+                            break;
+                        case EDGE_DRIVER:
+                            EdgeDriverService edgeDriverService = localEdgeDriverServiceStorage.get();
+                            if (edgeDriverService.isRunning()) {
+                                edgeDriverService.stop();
+                            }
+                            break;
+                        default:
+                            break;
 
+                    }
                 }
             } catch (UnreachableBrowserException e) {
                 KeywordLogger.getInstance().logWarning(StringConstants.DRI_LOG_WARNING_BROWSER_NOT_REACHABLE);
@@ -684,9 +754,9 @@ public class DriverFactory {
             }
 
             if (waitUntil < System.currentTimeMillis()) {
-                throw new Exception(String.format(
-                        "Unable to connect to browser on host %s and port %s after %s seconds.", url.getHost(),
-                        url.getPort(), REMOTE_BROWSER_CONNECT_TIMEOUT));
+                throw new Exception(
+                        String.format("Unable to connect to browser on host %s and port %s after %s seconds.",
+                                url.getHost(), url.getPort(), REMOTE_BROWSER_CONNECT_TIMEOUT));
             }
 
             try {

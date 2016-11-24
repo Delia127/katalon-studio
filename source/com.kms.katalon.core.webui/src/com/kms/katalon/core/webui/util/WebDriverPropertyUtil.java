@@ -16,6 +16,7 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.webui.constants.StringConstants;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
+import com.kms.katalon.selenium.firefox.CFirefoxProfile;
 
 public class WebDriverPropertyUtil {
     public static final String DISABLE_EXTENSIONS = "--disable-extensions";
@@ -122,7 +123,7 @@ public class WebDriverPropertyUtil {
     }
 
     public static FirefoxProfile createDefaultFirefoxProfile() {
-        FirefoxProfile firefoxProfile = new FirefoxProfile();
+        FirefoxProfile firefoxProfile = new CFirefoxProfile();
         firefoxProfile.setPreference(BROWSER_STARTUP_HOMEPAGE_PREFERENCE, FIREFOX_BLANK_PAGE);
         firefoxProfile.setPreference(STARTUP_HOMEPAGE_WELCOME_URL_PREFERENCE, FIREFOX_BLANK_PAGE);
         firefoxProfile.setPreference(STARTUP_HOMEPAGE_WELCOME_URL_ADDITIONAL_PREFERENCE, FIREFOX_BLANK_PAGE);

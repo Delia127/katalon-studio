@@ -327,6 +327,8 @@ public class StringConstants {
     public static final String CONF_PROPERTY_WEBUI_DRIVER = "WebUI";
 
     public static final String CONF_PROPERTY_MOBILE_DRIVER = "Mobile";
+    
+    public static final String CONF_PROPERTY_EXISTING_DRIVER = "Existing";
 
     public static final String CONF_PROPERTY_LOG_FILE_PATH = "logFilePath";
 
@@ -377,6 +379,14 @@ public class StringConstants {
     public static final String CONF_PROPERTY_TEST_DATA_INFO = "testDataInfo";
 
     public static final String APP_VERSION = "katalonVersion";
+    
+    public static final String CONF_SESSION_SERVER_HOST = "sessionServer.host";
+    
+    public static final String CONF_SESSION_SERVER_PORT = "sessionServer.port";
+    
+    public static final String CONF_PROPERTY_EXISTING_SESSION_SESSION_ID = "existingSession.sessionId";
+    
+    public static final String CONF_PROPERTY_EXISTING_SESSION_SERVER_URL = "existingSession.serverUrl";
 
     // TestCaseExecutor
     public static final String TEST_STEP_TRANSFORMATION_CLASS = "com.kms.katalon.core.ast.RequireAstTestStepTransformation";

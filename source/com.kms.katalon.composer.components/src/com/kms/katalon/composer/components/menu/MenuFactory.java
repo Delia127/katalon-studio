@@ -22,8 +22,7 @@ public class MenuFactory {
 		return null;
 	}
 	
-	public static MMenu createPopupMenu(String label, String contributorURI) 
-			throws Exception {
+	public static MMenu createPopupMenu(String label, String contributorURI) {
 		MMenu popUpMenu = MMenuFactory.INSTANCE.createMenu();
 		popUpMenu.setLabel(label);
 		popUpMenu.setContributorURI(contributorURI);

@@ -66,6 +66,10 @@ public class RunConfiguration {
     public static final String APP_VERSION = StringConstants.APP_VERSION;
 
     public static final String APP_INFO_FILE_LOCATION = StringConstants.APP_INFO_FILE_LOCATION;
+    
+    public static final String SESSION_SERVER_HOST = StringConstants.CONF_SESSION_SERVER_HOST;
+    
+    public static final String SESSION_SERVER_PORT = StringConstants.CONF_SESSION_SERVER_PORT;
 
     public static final String EXCUTION_DEFAULT_FAILURE_HANDLING = StringConstants.CONF_PROPERTY_DEFAULT_FAILURE_HANDLING;
     
@@ -230,7 +234,8 @@ public class RunConfiguration {
     }
 
     public static int getIntProperty(String propertyKey) {
-        return (int) getProperty(propertyKey);
+        Number doubleValue = (Number) getProperty(propertyKey);
+        return doubleValue.intValue();
     }
 
     public static String getSettingFilePath() {
@@ -280,6 +285,24 @@ public class RunConfiguration {
 
     public static String getExecutionSourceDescription() {
         return getStringProperty(EXCUTION_SOURCE_DESCRIPTION);
+    }
+    
+    public static int getSessionServerPort() {
+        return getIntProperty(SESSION_SERVER_PORT);
+    }
+    
+    public static String getSessionServerHost() {
+        return getStringProperty(SESSION_SERVER_HOST);
+    }
+    
+    public static String getExisingSessionSessionId() {
+        return RunConfiguration.getDriverSystemProperty(StringConstants.CONF_PROPERTY_EXISTING_DRIVER,
+                StringConstants.CONF_PROPERTY_EXISTING_SESSION_SESSION_ID);
+    }
+    
+    public static String getExisingSessionServerUrl() {
+        return RunConfiguration.getDriverSystemProperty(StringConstants.CONF_PROPERTY_EXISTING_DRIVER,
+                StringConstants.CONF_PROPERTY_EXISTING_SESSION_SERVER_URL);
     }
 
     public static String getHostName() {
