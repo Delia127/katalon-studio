@@ -356,6 +356,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
                 dialog.setFilterPath(getProjectFolderLocation());
 
                 changeExcelFile(dialog.open());
+                enableRelativePath();
             }
 
             private void changeExcelFile(String absoluteFilePath) {
@@ -589,6 +590,11 @@ public class ExcelTestDataPart extends TestDataMainPart {
     @Override
     protected void updateChildInfo(DataFileEntity dataFile) {
         loadInput(dataFile);
+        enableRelativePath();
+    }
+
+    private void enableRelativePath() {
+        ckcbUseRelativePath.setEnabled(StringUtils.isNotBlank(txtFileName.getText()));
     }
 
     @Override

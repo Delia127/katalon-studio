@@ -13,7 +13,7 @@ public class DataFileEntity extends FileEntity {
 
     private static final long serialVersionUID = 1L;
 
-    public static final String DEFAULT_DATA_SOURCE_URL = "SourceURL";
+    public static final String DEFAULT_DATA_SOURCE_URL = "";
 
     private static final String ID_PREFIX = "DF";
 
