@@ -122,9 +122,8 @@ public abstract class AbstractExecutionMenuContribution {
         return parameters;
     }
 
-    private MHandledMenuItem createDefaultMenuItem() {
-        Map<String, Object> parameters = getParametersForCommand();
-        ParameterizedCommand executionCommand = commandService.createCommand(getCommandId(), parameters);
+    public ExecutionHandledMenuItem createDefaultMenuItem() {
+        ParameterizedCommand executionCommand = commandService.createCommand(getCommandId(), getParametersForCommand());
         MHandledMenuItem executionMenuItem = MenuFactory.createPopupMenuItem(executionCommand, getMenuLabel(),
                 ConstantsHelper.getApplicationURI());
         executionMenuItem.setTooltip(null);

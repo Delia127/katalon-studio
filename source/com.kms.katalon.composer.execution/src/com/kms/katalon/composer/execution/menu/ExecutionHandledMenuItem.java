@@ -41,7 +41,7 @@ public class ExecutionHandledMenuItem extends HandledMenuItemImpl {
         return label == null ? "" : label;
     }
 
-    protected boolean isDefault() {
+    public boolean isDefault() {
         String defaultItemLabel = getPreferenceStore(ExecutionPreferenceConstants.EXECUTION_QUALIFIER)
                 .getString(ExecutionPreferenceConstants.EXECUTION_DEFAULT_CONFIGURATION);
         return getDefaultLabel().equals(defaultItemLabel);
@@ -53,6 +53,10 @@ public class ExecutionHandledMenuItem extends HandledMenuItemImpl {
     }
 
     public ParameterizedCommand getParameterizedCommandFromMenuItem(ECommandService commandService) {
+        ParameterizedCommand parameterizedCommand = getWbCommand();
+        if (parameterizedCommand != null) {
+            return parameterizedCommand;
+        }
         Map<String, Object> parameters = new HashMap<>();
         for (MParameter param : getParameters()) {
             parameters.put(param.getName(), param.getValue());

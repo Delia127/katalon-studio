@@ -67,7 +67,7 @@ public class ExecutionSessionSocketServer implements Runnable {
     public List<ExecutionSession> getAllAvailableExecutionSessionByDriverTypeName(String driverTypeName) {
         List<ExecutionSession> executionSessions = new ArrayList<>();
         for (ExecutionSession executionSession : getAllExecutionSession()) {
-            if (executionSession.getDriverTypeName().equals(driverTypeName) && executionSession.isAvailable()) {
+            if (driverTypeName.equals(executionSession.getDriverTypeName()) && executionSession.isAvailable()) {
                 executionSessions.add(executionSession);
             }
         }
@@ -86,7 +86,7 @@ public class ExecutionSessionSocketServer implements Runnable {
 
     public ExecutionSession getExecutionSessionByLogFolderPath(String logFolderPath) {
         for (ExecutionSession executionSession : getAllExecutionSession()) {
-            if (executionSession.getLogFolderPath().equals(logFolderPath)) {
+            if (logFolderPath.equals(executionSession.getLogFolderPath())) {
                 return executionSession;
             }
         }
