@@ -574,6 +574,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
                 break;
             }
             case EventConstants.TEST_SUITE_UPDATED:
+                tableViewer.refresh();
             case EventConstants.TEST_SUITE_COLLECTION_UPDATED: {
                 Object[] objects = getObjects(event);
                 if (objects == null || objects.length != 2) {

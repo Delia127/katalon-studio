@@ -19,13 +19,13 @@ import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.testsuite.collection.execution.collector.TestExecutionGroupCollector;
 import com.kms.katalon.composer.testsuite.collection.part.provider.TableViewerProvider;
 import com.kms.katalon.composer.testsuite.collection.transfer.TestSuiteRunConfigurationTransferData;
+import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteRunConfiguration;
 
 public class TestSuiteTableDropListener extends TableDropTargetEffect {
 
     private TableViewerProvider tableViewerProvider;
-
 
     public TestSuiteTableDropListener(TableViewerProvider testSuiteCollectionPart) {
         super(testSuiteCollectionPart.getTableViewer().getTable());
@@ -44,7 +44,8 @@ public class TestSuiteTableDropListener extends TableDropTargetEffect {
         }
         if (data instanceof TestSuiteRunConfigurationTransferData[]) {
             TestSuiteRunConfigurationTransferData[] configurationTransferDatas = (TestSuiteRunConfigurationTransferData[]) data;
-            if (!configurationTransferDatas[0].getTestSuiteCollectionID().equals(tableViewerProvider.getTestSuiteCollection().getId())) {
+            if (!configurationTransferDatas[0].getTestSuiteCollectionID()
+                    .equals(tableViewerProvider.getTestSuiteCollection().getId())) {
                 event.detail = DND.DROP_COPY;
                 dropFromTableToTable(configurationTransferDatas, selectedItem);
             } else {
@@ -58,18 +59,27 @@ public class TestSuiteTableDropListener extends TableDropTargetEffect {
         TableViewer testSuiteCollectionTable = tableViewerProvider.getTableViewer();
         Point pt = Display.getCurrent().map(null, testSuiteCollectionTable.getTable(), event.x, event.y);
         TableItem tableItem = testSuiteCollectionTable.getTable().getItem(pt);
-        TestSuiteRunConfiguration selectedItem = (tableItem != null && tableItem.getData() instanceof TestSuiteRunConfiguration)
-                ? (TestSuiteRunConfiguration) tableItem.getData() : null;
+        TestSuiteRunConfiguration selectedItem = (tableItem != null
+                && tableItem.getData() instanceof TestSuiteRunConfiguration)
+                        ? (TestSuiteRunConfiguration) tableItem.getData() : null;
         return selectedItem;
     }
 
     private void dropFromTableToTable(TestSuiteRunConfigurationTransferData[] configurationTransferDatas,
             TestSuiteRunConfiguration selectedItem) {
         List<TestSuiteRunConfiguration> addedTestSuiteRunConfiguration = new ArrayList<TestSuiteRunConfiguration>();
+        TestSuiteController testSuiteController = TestSuiteController.getInstance();
         for (int i = 0; i < configurationTransferDatas.length; ++i) {
-            TestSuiteRunConfiguration testSuiteRunConfiguration = configurationTransferDatas[i].getTestSuiteRunConfiguration();
-            tableViewerProvider.getTableItems().add(testSuiteRunConfiguration);
-            addedTestSuiteRunConfiguration.add(testSuiteRunConfiguration);
+            TestSuiteRunConfiguration testSuiteRunConfiguration = configurationTransferDatas[i]
+                    .getTestSuiteRunConfiguration();
+            try {
+                testSuiteRunConfiguration.setTestSuiteEntity(
+                        testSuiteController.getTestSuite(testSuiteRunConfiguration.getTestSuiteEntity().getId()));
+                tableViewerProvider.getTableItems().add(testSuiteRunConfiguration);
+                addedTestSuiteRunConfiguration.add(testSuiteRunConfiguration);
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+            }
         }
         refreshTestSuiteTable(addedTestSuiteRunConfiguration);
     }
@@ -87,11 +97,17 @@ public class TestSuiteTableDropListener extends TableDropTargetEffect {
         int cloneSelectedIndex = selectedIndex;
 
         List<TestSuiteRunConfiguration> addedTestSuiteRunConfiguration = new ArrayList<TestSuiteRunConfiguration>();
+        TestSuiteController controller = TestSuiteController.getInstance();
         for (int i = 0; i < testSuiteRunConfigurationTransferDatas.length; ++i) {
             TestSuiteRunConfiguration data = testSuiteRunConfigurationTransferDatas[i].getTestSuiteRunConfiguration();
-            insertTestSuiteRunConfiguration(data, cloneSelectedIndex);
-            addedTestSuiteRunConfiguration.add(data);
-            ++cloneSelectedIndex;
+            try {
+                data.setTestSuiteEntity(controller.getTestSuite(data.getTestSuiteEntity().getId()));
+                insertTestSuiteRunConfiguration(data, cloneSelectedIndex);
+                addedTestSuiteRunConfiguration.add(data);
+                ++cloneSelectedIndex;
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+            }
         }
         refreshTestSuiteTable(addedTestSuiteRunConfiguration);
     }
@@ -109,8 +125,8 @@ public class TestSuiteTableDropListener extends TableDropTargetEffect {
             List<TestSuiteRunConfiguration> addedTestSuiteRunConfiguration = new ArrayList<TestSuiteRunConfiguration>();
             for (int i = treeEntities.length - 1; i >= 0; --i) {
                 if (treeEntities[i] instanceof TestSuiteTreeEntity) {
-                    insertTestSuite(addedTestSuiteRunConfiguration,
-                            ((TestSuiteTreeEntity) treeEntities[i]).getObject(), selectedIndex);
+                    insertTestSuite(addedTestSuiteRunConfiguration, ((TestSuiteTreeEntity) treeEntities[i]).getObject(),
+                            selectedIndex);
                 } else if (treeEntities[i] instanceof FolderTreeEntity) {
                     for (TestSuiteEntity testSuite : getTestSuiteFromFolderTree((FolderTreeEntity) treeEntities[i])) {
                         insertTestSuite(addedTestSuiteRunConfiguration, testSuite, selectedIndex);
@@ -128,10 +144,15 @@ public class TestSuiteTableDropListener extends TableDropTargetEffect {
         if (isAlreadyAddedToTestSuiteCollection(addedTestSuiteRunConfiguration, testSuite)) {
             return;
         }
-        TestSuiteRunConfiguration newTestSuiteRunConfig = TestSuiteRunConfiguration.newInstance(testSuite,
-                TestExecutionGroupCollector.getInstance().getDefaultConfiguration());
-        insertTestSuiteRunConfiguration(newTestSuiteRunConfig, index);
-        addedTestSuiteRunConfiguration.add(newTestSuiteRunConfig);
+        try {
+            TestSuiteEntity testSuiteEntity = TestSuiteController.getInstance().getTestSuite(testSuite.getId());
+            TestSuiteRunConfiguration newTestSuiteRunConfig = TestSuiteRunConfiguration.newInstance(testSuiteEntity,
+                    TestExecutionGroupCollector.getInstance().getDefaultConfiguration());
+            insertTestSuiteRunConfiguration(newTestSuiteRunConfig, index);
+            addedTestSuiteRunConfiguration.add(newTestSuiteRunConfig);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
     }
 
     private void insertTestSuiteRunConfiguration(TestSuiteRunConfiguration configuration, int index) {
