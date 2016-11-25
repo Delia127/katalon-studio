@@ -15,6 +15,8 @@ public class ComposerTestcaseMessageConstants extends NLS {
 
     public static String ADAP_MENU_CONTEXT_ENABLE;
 
+    public static String ADAP_MENU_CONTEXT_EXECUTE_FROM_TEST_STEP;
+
     public static String ADAP_MENU_CONTEXT_CHANGE_TO_STATEMENTS;
 
     public static String ADAP_MENU_CONTEXT_CHANGE_TO_COMMENTS;
@@ -306,6 +308,8 @@ public class ComposerTestcaseMessageConstants extends NLS {
     public static String KEYS_BUILDER_TABLE_COLUMN_TYPE_LABEL;
 
     public static String ERR_CANNOT_DROP_ON_TEST_STEP_TABLE;
+
+    public static String ERR_MSG_UNABLE_TO_EXECUTE_FROM_TEST_STEP_STEP_INSIDE_BLOCK;
 
     public static String DIA_TITLE_TEST_CASE_PROPERTIES;
 

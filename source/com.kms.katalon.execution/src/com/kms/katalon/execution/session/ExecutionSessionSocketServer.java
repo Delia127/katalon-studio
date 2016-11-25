@@ -93,6 +93,16 @@ public class ExecutionSessionSocketServer implements Runnable {
         return null;
     }
 
+    public List<ExecutionSession> getAllAvailableExecutionSessions() {
+        List<ExecutionSession> executionSessions = new ArrayList<>();
+        for (ExecutionSession executionSession : getAllExecutionSession()) {
+            if (executionSession.isAvailable()) {
+                executionSessions.add(executionSession);
+            }
+        }
+        return executionSessions;
+    }
+
     public List<ExecutionSession> getAllExecutionSession() {
         synchronized (executionSessions) {
             return new ArrayList<>(executionSessions);

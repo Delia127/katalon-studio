@@ -56,7 +56,7 @@ public class TestCaseExecutor {
 
     private static ErrorCollector errorCollector = ErrorCollector.getCollector();
 
-    private TestResult testCaseResult;
+    protected TestResult testCaseResult;
 
     private TestCase testCase;
 
@@ -66,15 +66,16 @@ public class TestCaseExecutor {
 
     private List<Throwable> parentErrors;
 
-    private ScriptEngine engine;
+    protected ScriptEngine engine;
 
-    private Binding variableBinding;
+    protected Binding variableBinding;
 
     private TestCaseBinding testCaseBinding;
 
     private boolean doCleanUp;
 
-    public TestCaseExecutor(String testCaseId, TestCaseBinding testCaseBinding, ScriptEngine engine, boolean doCleanUp) {
+    public TestCaseExecutor(String testCaseId, TestCaseBinding testCaseBinding, ScriptEngine engine,
+            boolean doCleanUp) {
         this.testCaseBinding = testCaseBinding;
         this.engine = engine;
         this.testCase = TestCaseFactory.findTestCase(testCaseId);
@@ -144,7 +145,7 @@ public class TestCaseExecutor {
         return !setupFailed;
     }
 
-    private File getScriptFile() throws IOException {
+    protected File getScriptFile() throws IOException {
         return new File(testCase.getGroovyScriptPath());
     }
 
@@ -191,7 +192,7 @@ public class TestCaseExecutor {
             // Prepare configuration before execution
             engine.setConfig(getConfigForExecutingScript(engine.getGroovyClassLoader()));
             setupContextClassLoader();
-            testCaseResult.setScriptResult(runScript(getScriptFile()));
+            doExecute();
         } catch (ExceptionInInitializerError e) {
             // errors happened in static initilalizer like for Global Variable
             errorCollector.addError(e.getCause());
@@ -211,17 +212,21 @@ public class TestCaseExecutor {
         }
     }
 
+    protected void doExecute() throws ResourceException, ScriptException, IOException, ClassNotFoundException {
+        testCaseResult.setScriptResult(runScript(getScriptFile()));
+    }
+
     private void cleanUp() {
         DriverCleanerCollector.getInstance().cleanDriversAfterRunningTestCase();
     }
 
-    private Object runScript(File scriptFile) throws ResourceException, ScriptException, IOException,
-            ClassNotFoundException {
+    private Object runScript(File scriptFile)
+            throws ResourceException, ScriptException, IOException, ClassNotFoundException {
         return engine.runScriptAsRawText(FileUtils.readFileToString(scriptFile), scriptFile.getName(), variableBinding);
     }
 
-    private void runMethod(File scriptFile, String methodName) throws ResourceException, ScriptException,
-            ClassNotFoundException, IOException {
+    protected void runMethod(File scriptFile, String methodName)
+            throws ResourceException, ScriptException, ClassNotFoundException, IOException {
         engine.setConfig(getConfigForExecutingScript(engine.getGroovyClassLoader()));
         engine.runScriptMethodAsRawText(FileUtils.readFileToString(scriptFile), scriptFile.getName(), methodName,
                 variableBinding);
@@ -234,7 +239,8 @@ public class TestCaseExecutor {
         testProperties.put(StringConstants.XML_LOG_DESCRIPTION_PROPERTY, testCase.getDescription());
         testProperties.put(StringConstants.XML_LOG_ID_PROPERTY, testCase.getTestCaseId());
         testProperties.put(StringConstants.XML_LOG_SOURCE_PROPERTY, testCase.getMetaFilePath());
-        testProperties.put(StringConstants.XML_LOG_IS_OPTIONAL, String.valueOf(flowControl == FailureHandling.OPTIONAL));
+        testProperties.put(StringConstants.XML_LOG_IS_OPTIONAL,
+                String.valueOf(flowControl == FailureHandling.OPTIONAL));
         return testProperties;
     }
 
@@ -244,8 +250,8 @@ public class TestCaseExecutor {
         CompilerConfiguration conf = new CompilerConfiguration(System.getProperties());
         Class<?> astTransformationClass = classLoader.loadClass(StringConstants.TEST_STEP_TRANSFORMATION_CLASS);
 
-        conf.addCompilationCustomizers(new ASTTransformationCustomizer(
-                (Class<? extends Annotation>) astTransformationClass));
+        conf.addCompilationCustomizers(
+                new ASTTransformationCustomizer((Class<? extends Annotation>) astTransformationClass));
         return conf;
     }
 
@@ -285,9 +291,9 @@ public class TestCaseExecutor {
                 String defaultValue = StringUtils.defaultIfEmpty(testCaseVariable.getDefaultValue(),
                         StringConstants.NULL_AS_STRING);
                 Object defaultValueObject = engine.runScriptWithoutLogging(defaultValue, null);
-                logger.logInfo(MessageFormat.format(
-                        StringConstants.MAIN_LOG_INFO_VARIABLE_NAME_X_IS_SET_TO_Y_AS_DEFAULT,
-                        testCaseVariable.getName(), defaultValueObject));
+                logger.logInfo(
+                        MessageFormat.format(StringConstants.MAIN_LOG_INFO_VARIABLE_NAME_X_IS_SET_TO_Y_AS_DEFAULT,
+                                testCaseVariable.getName(), defaultValueObject));
                 variableBinding.setVariable(testCaseVariable.getName(), defaultValueObject);
             } catch (ExceptionInInitializerError e) {
                 logger.logWarning(MessageFormat.format(StringConstants.MAIN_LOG_MSG_SET_TEST_VARIABLE_ERROR_BECAUSE_OF,
@@ -358,7 +364,8 @@ public class TestCaseExecutor {
 
     private void runTearDownMethodByError(Throwable t) {
         LogLevel errorLevel = ErrorCollector.fromError(t);
-        TestCaseMethodNodeWrapper failedMethodWrapper = methodNodeCollector.getMethodNodeWrapper(TearDownIfFailed.class);
+        TestCaseMethodNodeWrapper failedMethodWrapper = methodNodeCollector
+                .getMethodNodeWrapper(TearDownIfFailed.class);
         if (errorLevel == LogLevel.ERROR) {
             failedMethodWrapper = methodNodeCollector.getMethodNodeWrapper(TearDownIfError.class);
         }

@@ -246,7 +246,8 @@ public class TestCasePart extends CPart implements EventHandler, ITestCasePart {
             handleWhenSelectOnlyOne(menu, testObjects.get(0), openTestCase, openTestObject);
             return;
         }
-        MenuUtils.createOpenTestArtifactsMenu(getMapFileEntityToSelectionAdapter(testObjects, openTestCase, openTestObject), menu);
+        MenuUtils.createOpenTestArtifactsMenu(
+                getMapFileEntityToSelectionAdapter(testObjects, openTestCase, openTestObject), menu);
     }
 
     private void handleWhenSelectOnlyOne(Menu menu, FileEntity entity, SelectionAdapter openTestCaseAdapter,
@@ -312,7 +313,8 @@ public class TestCasePart extends CPart implements EventHandler, ITestCasePart {
         return testObjects;
     }
 
-    private HashMap<FileEntity, SelectionAdapter> getMapFileEntityToSelectionAdapter(List<? extends FileEntity> fileEntities, SelectionAdapter openTestCase, SelectionAdapter openTestObject) {
+    private HashMap<FileEntity, SelectionAdapter> getMapFileEntityToSelectionAdapter(
+            List<? extends FileEntity> fileEntities, SelectionAdapter openTestCase, SelectionAdapter openTestObject) {
         HashMap<FileEntity, SelectionAdapter> map = new HashMap<>();
         for (FileEntity fileEntity : fileEntities) {
             if (fileEntity instanceof TestCaseEntity) {

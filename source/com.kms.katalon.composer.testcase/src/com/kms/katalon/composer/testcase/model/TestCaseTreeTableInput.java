@@ -55,6 +55,7 @@ import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants;
 import com.kms.katalon.composer.testcase.exceptions.GroovyParsingException;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.AnnotationNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.FieldNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.MethodNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
@@ -94,6 +95,11 @@ import com.kms.katalon.composer.testcase.util.TestCaseEntityUtil;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.annotation.SetUp;
+import com.kms.katalon.core.annotation.TearDown;
+import com.kms.katalon.core.annotation.TearDownIfError;
+import com.kms.katalon.core.annotation.TearDownIfFailed;
+import com.kms.katalon.core.annotation.TearDownIfPassed;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.custom.keyword.KeywordClass;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
@@ -1043,6 +1049,109 @@ public class TestCaseTreeTableInput {
         dragAndDropOperation.add(new AddAstObjectsOperation(droppedNodes, destinationNode, addType));
         dragAndDropOperation.add(new RemoveAstTreeTableNodesOperation(draggedNodes));
         executeOperation(dragAndDropOperation);
+    }
+
+    /**
+     * @return raw script that disabled all the steps before the currently selected step
+     */
+    public String generateRawScriptFromSelectedStep() {
+        AstTreeTableNode selectedNode = getSelectedNode();
+        if (selectedNode == null) {
+            return null;
+        }
+        // only allow top nodes for now
+        if (selectedNode.getParent() != mainClassTreeNode
+                && !(selectedNode.getParent() instanceof AstMethodTreeTableNode)) {
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
+                    ComposerTestcaseMessageConstants.ERR_MSG_UNABLE_TO_EXECUTE_FROM_TEST_STEP_STEP_INSIDE_BLOCK);
+            return null;
+        }
+        ScriptNodeWrapper clonedScript = mainClassNodeWrapper.clone();
+        if (selectedNode.getParent() == mainClassTreeNode) {
+            handleMainBlockStep(selectedNode, clonedScript);
+        } else if (selectedNode.getParent() instanceof AstMethodTreeTableNode) {
+            handleMethodBlockStep(selectedNode, clonedScript);
+        }
+        StringBuilder scriptBuilder = new StringBuilder();
+        GroovyWrapperParser parser = new GroovyWrapperParser(scriptBuilder);
+        parser.parseGroovyAstIntoScript(clonedScript);
+        return scriptBuilder.toString();
+    }
+
+    private void handleMethodBlockStep(AstTreeTableNode selectedNode, ScriptNodeWrapper clonedScript) {
+        MethodNodeWrapper methodNode = ((AstMethodTreeTableNode) selectedNode.getParent()).getASTObject();
+        int methodIndex = mainClassNodeWrapper.getMethods().indexOf(methodNode);
+        int statementIndex = methodNode.getBlock().getStatements().indexOf(selectedNode.getASTObject());
+
+        boolean reachSelectedStatement = false;
+        List<MethodNodeWrapper> allMethods = clonedScript.getMethods();
+        List<MethodNodeWrapper> setupMethods = collectMethod(SetUp.class, clonedScript);
+        List<MethodNodeWrapper> tearDownIfPassedMethods = collectMethod(TearDownIfPassed.class, clonedScript);
+        List<MethodNodeWrapper> tearDownIfFailedMethods = collectMethod(TearDownIfFailed.class, clonedScript);
+        List<MethodNodeWrapper> tearDownIfErrorMethods = collectMethod(TearDownIfError.class, clonedScript);
+        List<MethodNodeWrapper> tearDownMethods = collectMethod(TearDown.class, clonedScript);
+        reachSelectedStatement = iterateThroughMethods(methodIndex, statementIndex, setupMethods, allMethods);
+        if (!reachSelectedStatement) {
+            for (StatementWrapper statement : clonedScript.getBlock().getStatements()) {
+                statement.disable();
+            }
+        }
+        if (!reachSelectedStatement) {
+            reachSelectedStatement = iterateThroughMethods(methodIndex, statementIndex, tearDownIfPassedMethods,
+                    allMethods);
+        }
+        if (!reachSelectedStatement) {
+            reachSelectedStatement = iterateThroughMethods(methodIndex, statementIndex, tearDownIfFailedMethods,
+                    allMethods);
+        }
+        if (!reachSelectedStatement) {
+            reachSelectedStatement = iterateThroughMethods(methodIndex, statementIndex, tearDownIfErrorMethods,
+                    allMethods);
+        }
+        if (!reachSelectedStatement) {
+            reachSelectedStatement = iterateThroughMethods(methodIndex, statementIndex, tearDownMethods, allMethods);
+        }
+    }
+
+    protected boolean iterateThroughMethods(int methodIndex, int statementIndex, List<MethodNodeWrapper> methods,
+            List<MethodNodeWrapper> allMethods) {
+        boolean reachSelectedStatement = false;
+        for (MethodNodeWrapper method : methods) {
+            if (reachSelectedStatement) {
+                break;
+            }
+            List<StatementWrapper> statements = method.getBlock().getStatements();
+            for (int childStatementIndex = 0; childStatementIndex < statements.size(); childStatementIndex++) {
+                if (allMethods.indexOf(method) == methodIndex && childStatementIndex == statementIndex) {
+                    reachSelectedStatement = true;
+                    break;
+                }
+                statements.get(childStatementIndex).disable();
+            }
+        }
+        return reachSelectedStatement;
+    }
+
+    private List<MethodNodeWrapper> collectMethod(Class<?> annotationClass, ScriptNodeWrapper clonedScript) {
+        List<MethodNodeWrapper> methods = new ArrayList<>();
+        for (MethodNodeWrapper method : clonedScript.getMethods()) {
+            for (AnnotationNodeWrapper annotationNode : method.getAnnotations()) {
+                String annotationNodeName = annotationNode.getClassNode().getName();
+                if (annotationNodeName.equals(annotationClass.getName())
+                        || annotationNodeName.equals(annotationClass.getSimpleName())) {
+                    methods.add(method);
+                }
+            }
+        }
+        return methods;
+    }
+
+    private void handleMainBlockStep(AstTreeTableNode selectedNode, ScriptNodeWrapper clonedScript) {
+        int statmentIndex = mainClassNodeWrapper.getBlock().indexOf(selectedNode.getASTObject());
+        List<StatementWrapper> statements = clonedScript.getBlock().getStatements();
+        for (int index = 0; index < statmentIndex; index++) {
+            statements.get(index).disable();
+        }
     }
 
     private IOperationHistory getOperationHistory() {

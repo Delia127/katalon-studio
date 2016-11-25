@@ -19,6 +19,7 @@ import com.kms.katalon.groovy.util.GroovyUtil;
 
 @CompileStatic
 class TestCaseScriptTemplate {
+    private final static String executeRawTpl = "'''<%= rawScript %>'''";
     private final static String tpl =
     '''<% importNames.each { %>import <%= it %>
 <% } %>
@@ -30,14 +31,17 @@ RunConfiguration.setExecutionSettingFile('<%= executionConfigFilePath %>')
 
 TestCaseMain.beforeStart()
 try {
-	TestCaseMain.runTestCase('<%= testCaseId %>', 
-								<%= testCaseBinding %>, FailureHandling.STOP_ON_FAILURE
-    <%= isQuitDriversAfterRun ? ", true" : "" %>)
+    <% if (rawScript == null) { %>
+	    TestCaseMain.runTestCase('<%= testCaseId %>', <%= testCaseBinding %>, FailureHandling.STOP_ON_FAILURE <%= isQuitDriversAfterRun ? ", true" : "" %>)
+    <% } else { %>
+        TestCaseMain.runTestCaseRawScript(
+''' + executeRawTpl + ''', '<%= testCaseId %>', <%= testCaseBinding %>, FailureHandling.STOP_ON_FAILURE <%= isQuitDriversAfterRun ? ", true" : "" %>)
+    <% } %>
 } catch (Exception e) {
     TestCaseMain.logError(e, '<%= testCaseId %>')
 }
 '''
-    
+
     @CompileStatic
     def static generateTestCaseScriptFile(File file, TestCaseEntity testCase, String testCaseBinding, IRunConfiguration config) {
         def importNames = [
@@ -68,7 +72,8 @@ try {
             "testCaseBinding" : testCaseBinding,
             "executionConfigFilePath" : GroovyStringUtil.escapeGroovy(config.getExecutionSetting().getSettingFilePath()),
             "isQuitDriversAfterRun" : ExecutionUtil.isQuitDriversAfterExecuting(),
-            "driverCleaners" : driverCleaners
+            "driverCleaners" : driverCleaners,
+            "rawScript" : config.getExecutionSetting().getRawScript()
         ]
 
         def engine = new GStringTemplateEngine()

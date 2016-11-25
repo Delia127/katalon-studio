@@ -40,6 +40,12 @@ public class ScriptNodeWrapper extends ClassNodeWrapper implements ASTHasBlock {
         setInsideComments(commentWrappers);
     }
 
+    public ScriptNodeWrapper(ScriptNodeWrapper scriptNodeWrapper) {
+        super(scriptNodeWrapper, null);
+        mainBlock = new BlockStatementWrapper(scriptNodeWrapper.mainBlock, this);
+        this.testCaseId = scriptNodeWrapper.testCaseId;
+    }
+
     @Override
     public String getText() {
         return "";
@@ -70,5 +76,10 @@ public class ScriptNodeWrapper extends ClassNodeWrapper implements ASTHasBlock {
     
     public void setTestCaseId(String testCaseId) {
         this.testCaseId = testCaseId;
+    }
+    
+    @Override
+    public ScriptNodeWrapper clone() {
+        return new ScriptNodeWrapper(this);
     }
 }
