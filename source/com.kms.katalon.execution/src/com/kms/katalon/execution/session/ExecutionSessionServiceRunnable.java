@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
+import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.logging.LogUtil;
 
 public class ExecutionSessionServiceRunnable implements Runnable {
@@ -27,7 +28,15 @@ public class ExecutionSessionServiceRunnable implements Runnable {
             String driverTypeName = input.readLine();
             String logFolderPath = input.readLine();
             ExecutionSession executionSession = null;
-            executionSession = new ExecutionSession(sessionId, remoteUrl, driverTypeName, logFolderPath);
+
+            if (MobileDriverType.IOS_DRIVER.toString().equals(driverTypeName)
+                    || MobileDriverType.ANDROID_DRIVER.toString().equals(driverTypeName)) {
+                String title = input.readLine();
+                executionSession = new MobileExecutionSession(title, sessionId, remoteUrl, driverTypeName, 
+                    logFolderPath);
+            } else {
+                executionSession = new ExecutionSession(sessionId, remoteUrl, driverTypeName, logFolderPath);
+            }
             sessionServer.addExecutionSession(executionSession);
             executionSession.startWatcher();
         } catch (Exception e) {

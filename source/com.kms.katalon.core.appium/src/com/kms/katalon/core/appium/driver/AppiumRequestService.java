@@ -1,7 +1,5 @@
 package com.kms.katalon.core.appium.driver;
 
-import io.appium.java_client.service.local.AppiumDriverLocalService;
-
 import java.io.IOException;
 import java.text.MessageFormat;
 
@@ -21,10 +19,10 @@ public class AppiumRequestService {
 
     private static KeywordLogger logger = KeywordLogger.getInstance();
 
-    private AppiumDriverLocalService appiumService;
+    private String appiumServerUrl;
 
-    public AppiumRequestService(AppiumDriverLocalService appiumService) {
-        this.appiumService = appiumService;
+    public AppiumRequestService(String appiumServerUrl) {
+        this.appiumServerUrl = appiumServerUrl;
     }
 
     private String sendGetRequest(String url) throws UnsupportedOperationException, IOException {
@@ -36,7 +34,7 @@ public class AppiumRequestService {
 
     public void logAppiumInfo() {
         try {
-            String appiumJsonResponseStatus = sendGetRequest(appiumService.getUrl().toString() + APPIUM_URL_STATUS_PATH);
+            String appiumJsonResponseStatus = sendGetRequest(appiumServerUrl + APPIUM_URL_STATUS_PATH);
 
             JsonObject parser = new JsonParser().parse(appiumJsonResponseStatus).getAsJsonObject();
             String appiumVersion = parser.getAsJsonObject("value")

@@ -49,6 +49,7 @@ public class ExistingDriverConnector extends AbstractDriverConnector {
         Map<String, Object> propertyMap = super.getSystemProperties();
         propertyMap.put(StringConstants.CONF_PROPERTY_EXISTING_SESSION_SERVER_URL, serverUrl);
         propertyMap.put(StringConstants.CONF_PROPERTY_EXISTING_SESSION_SESSION_ID, sessionId);
+        propertyMap.put(StringConstants.CONF_PROPERTY_EXISTING_SESSION_DRIVER_TYPE, driverName);
         return propertyMap;
     }
 

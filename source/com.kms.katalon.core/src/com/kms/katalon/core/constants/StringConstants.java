@@ -388,6 +388,8 @@ public class StringConstants {
     
     public static final String CONF_PROPERTY_EXISTING_SESSION_SERVER_URL = "existingSession.serverUrl";
 
+    public static final String CONF_PROPERTY_EXISTING_SESSION_DRIVER_TYPE = "existingSession.driverType";
+
     // TestCaseExecutor
     public static final String TEST_STEP_TRANSFORMATION_CLASS = "com.kms.katalon.core.ast.RequireAstTestStepTransformation";
 
