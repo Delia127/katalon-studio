@@ -71,7 +71,7 @@ public class TestCaseIntegrationPart {
 	
 	public void setDirty(boolean dirty) {
 		mpart.setDirty(true);
-		parentTestCaseCompositePart.checkDirty();
+		parentTestCaseCompositePart.updateDirty();
 	}
 
 	public void loadInput() {

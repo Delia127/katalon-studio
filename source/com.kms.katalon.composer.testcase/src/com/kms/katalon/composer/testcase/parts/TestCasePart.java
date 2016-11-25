@@ -108,7 +108,7 @@ public class TestCasePart extends CPart implements EventHandler, ITestCasePart {
         if (mPart != null) {
             mPart.setDirty(isDirty);
         }
-        parentTestCaseCompositePart.checkDirty();
+        parentTestCaseCompositePart.updateDirty();
     }
 
     public boolean isManualScriptChanged() {

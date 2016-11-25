@@ -98,7 +98,7 @@ public class FolderTreeEntity extends AbstractTreeEntity {
     }
 
     @Override
-    public Object getObject() throws Exception {
+    public FolderEntity getObject() throws Exception {
         return folder;
     }
 
