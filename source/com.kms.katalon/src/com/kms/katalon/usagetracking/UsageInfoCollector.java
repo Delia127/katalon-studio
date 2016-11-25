@@ -17,17 +17,17 @@ import com.kms.katalon.logging.LogUtil;
 
 public class UsageInfoCollector {
     private static final String TEST_CASE_FOLDER = "Test Cases";
-    
+
     private static final String REPORT_FOLDER = "Reports";
-    
+
     private static final String ORG_TIME_KEY = "orgTime";
-    
+
     private static final String NUM_TEST_CASE_KEY = "ntc";
-    
+
     private static final String NUM_TEST_RUN_KEY = "ntr";
-    
+
     private static final String EMAIL_KEY = "email";
-    
+
     public static void colllect() {
         UsageInformation usageInfo = getUsageInfo();
         JsonObject jsObject = new JsonObject();
@@ -35,27 +35,30 @@ public class UsageInfoCollector {
         jsTraits.addProperty("kat_version", usageInfo.getVersion());
         jsTraits.addProperty("project", usageInfo.getProjectCount());
         jsTraits.addProperty("test_case", usageInfo.getTestCaseCount());
-        jsTraits.addProperty("test_run", usageInfo.getTestCaseRun());
-        
+        jsTraits.addProperty("test_run", usageInfo.getTestCaseRunCount());
+        jsTraits.addProperty("new_project", usageInfo.getNewProjectCount());
+        jsTraits.addProperty("new_test_case", usageInfo.getNewTestCaseCount());
+        jsTraits.addProperty("new_test_run", usageInfo.getNewTestRunCount());
+
         jsObject.add("traits", jsTraits);
         jsObject.addProperty("userId", usageInfo.getEmail());
-        if (usageInfo.getTestCaseCount() > 0 && usageInfo.getTestCaseRun() > 0) {
+        if (usageInfo.getTestCaseCount() > 0 && usageInfo.getTestCaseRunCount() > 0) {
             sendUsageInfo(jsObject, usageInfo);
         }
     }
-    
+
     private static void sendUsageInfo(JsonObject jsObject, UsageInformation usageInfo) {
         try {
             ServerAPICommunicationUtil.post("/product/usage", jsObject.toString());
             LogUtil.logErrorMessage(jsObject.toString());
             ApplicationInfo.setAppProperty(NUM_TEST_CASE_KEY, usageInfo.getTestCaseCount() + "", true);
-            ApplicationInfo.setAppProperty(NUM_TEST_RUN_KEY, usageInfo.getTestCaseRun() + "", true);
+            ApplicationInfo.setAppProperty(NUM_TEST_RUN_KEY, usageInfo.getTestCaseRunCount() + "", true);
             ApplicationInfo.setAppProperty(ORG_TIME_KEY, new Date().getTime() + "", true);
         } catch (Exception ex) {
             LogUtil.logError(ex);
         }
     }
-    
+
     private static Date restorePreviousUsageInfo(UsageInformation usageInfo) {
         try {
             String sTime = ApplicationInfo.getAppProperty(ORG_TIME_KEY);
@@ -63,16 +66,16 @@ public class UsageInfoCollector {
                 return new Date(0);
             }
             usageInfo.setTestCaseCount(Integer.parseInt(ApplicationInfo.getAppProperty(NUM_TEST_CASE_KEY)));
-            usageInfo.setTestCaseRun(Integer.parseInt(ApplicationInfo.getAppProperty(NUM_TEST_RUN_KEY)));
+            usageInfo.setTestCaseRunCount(Integer.parseInt(ApplicationInfo.getAppProperty(NUM_TEST_RUN_KEY)));
             return new Date(Long.parseLong(sTime));
         } catch (Exception ex) {
             LogUtil.logError(ex);
             usageInfo.setTestCaseCount(0);
-            usageInfo.setTestCaseRun(0);
+            usageInfo.setTestCaseRunCount(0);
             return new Date(0);
         }
     }
-    
+
     public static UsageInformation getUsageInfo() {
         UsageInformation usageInfo = new UsageInformation();
         Date orgTime = restorePreviousUsageInfo(usageInfo);
@@ -93,15 +96,20 @@ public class UsageInfoCollector {
         File reportFolder = new File(prjPath + File.separator + REPORT_FOLDER);
         File testcaseFolder = new File(prjPath + File.separator + TEST_CASE_FOLDER);
         File[] csvFiles = FileUtil.getFiles(reportFolder, ".csv", orgTime);
-        
-        usageInfo.setProjectCount(usageInfo.getProjectCount() + 1);
-        usageInfo.setTestCaseCount(usageInfo.getTestCaseCount() + FileUtil.countAllFiles(testcaseFolder, ".tc", orgTime));
-        int nTestCaseRun = usageInfo.getTestCaseRun();
-        for (File csvfile : csvFiles) {
-            nTestCaseRun += getNumberTestRun(csvfile);
+        int newTestRunCount = 0, newTestcaseCount = 0;
+
+        if (FileUtil.isFileCreateAfter(new File(prjPath), orgTime)) {
+            usageInfo.setNewProjectCount(usageInfo.getNewProjectCount() + 1);
         }
-        usageInfo.setTestCaseRun(nTestCaseRun);
-        
+        usageInfo.setProjectCount(usageInfo.getProjectCount() + 1);
+        newTestcaseCount = FileUtil.countAllFiles(testcaseFolder, ".tc", orgTime);
+        usageInfo.setNewTestCaseCount(usageInfo.getNewTestCaseCount() + newTestcaseCount);
+        usageInfo.setTestCaseCount(usageInfo.getTestCaseCount() + newTestcaseCount);
+        for (File csvfile : csvFiles) {
+            newTestRunCount += getNumberTestRun(csvfile);
+        }
+        usageInfo.setNewTestRunCount(usageInfo.getNewTestRunCount() + newTestRunCount);
+        usageInfo.setTestCaseRunCount(usageInfo.getTestCaseRunCount() + newTestRunCount);
     }
 
     private static int getNumberTestRun(File csvFile) {
@@ -129,5 +137,5 @@ public class UsageInfoCollector {
             LogUtil.logError(ex);
         }
         return projectPaths;
-    }  
+    }
 }
