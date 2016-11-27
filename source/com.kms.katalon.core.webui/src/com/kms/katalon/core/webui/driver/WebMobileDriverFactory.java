@@ -4,6 +4,7 @@ import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.remote.MobileCapabilityType;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.text.MessageFormat;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -16,6 +17,7 @@ import com.kms.katalon.core.appium.driver.AppiumDriverManager;
 import com.kms.katalon.core.appium.exception.AppiumStartException;
 import com.kms.katalon.core.appium.exception.MobileDriverInitializeException;
 import com.kms.katalon.core.configuration.RunConfiguration;
+import com.kms.katalon.core.driver.DriverType;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.webui.constants.StringConstants;
@@ -77,6 +79,11 @@ public class WebMobileDriverFactory {
         }
         capabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, 1800);
         return capabilities;
+    }
+    
+    public static AppiumDriver<?> startExisitingMobileDriver(DriverType driverType, String sessionId,
+            String remoteServerUrl) throws MalformedURLException, MobileDriverInitializeException {
+        return AppiumDriverManager.startExisitingMobileDriver(driverType, sessionId, remoteServerUrl);
     }
 
     public static AppiumDriver<?> createMobileDriver(WebUIDriverType osType)

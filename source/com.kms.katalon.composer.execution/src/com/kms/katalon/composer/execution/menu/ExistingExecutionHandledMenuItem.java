@@ -9,7 +9,7 @@ public class ExistingExecutionHandledMenuItem extends ExecutionHandledMenuItem {
     }
 
     @Override
-    protected boolean isDefault() {
+    public boolean isDefault() {
         return false;
     }
 }

@@ -12,6 +12,8 @@ import org.openqa.selenium.remote.DriverCommand;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.Response;
 
+import com.kms.katalon.selenium.driver.IExistingRemoteWebDriver;
+
 public class ExistingRemoteWebDriver extends RemoteWebDriver implements IExistingRemoteWebDriver {
 
     private static final int REMOTE_BROWSER_CONNECT_TIMEOUT = 60000;

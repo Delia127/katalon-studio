@@ -38,6 +38,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.UnreachableBrowserException;
 import org.openqa.selenium.safari.SafariDriver;
 
+import com.kms.katalon.core.appium.driver.SwipeableAndroidDriver;
 import com.kms.katalon.core.appium.exception.AppiumStartException;
 import com.kms.katalon.core.appium.exception.MobileDriverInitializeException;
 import com.kms.katalon.core.configuration.RunConfiguration;
@@ -339,9 +340,16 @@ public class DriverFactory {
                 PrintStream output = new PrintStream(myClient.getOutputStream())) {
             output.println(remoteWebDriver.getSessionId());
             output.println(getWebDriverServerUrl(remoteWebDriver));
-            String remoteDriverType = DriverFactory.getExecutedBrowser().toString();
+            DriverType remoteDriverType = DriverFactory.getExecutedBrowser();
             output.println(remoteDriverType);
             output.println(RunConfiguration.getLogFolderPath());
+            if (remoteDriverType == WebUIDriverType.ANDROID_DRIVER) {
+                output.println(WebMobileDriverFactory.getDeviceManufacturer() + " "
+                        + WebMobileDriverFactory.getDeviceModel() + " " + WebMobileDriverFactory.getDeviceOSVersion());
+            } else if (remoteDriverType == WebUIDriverType.IOS_DRIVER) {
+                output.println(
+                        WebMobileDriverFactory.getDeviceName() + " " + WebMobileDriverFactory.getDeviceOSVersion());
+            }
             output.flush();
         } catch (Exception e) {
             // Ignore for this exception
@@ -355,9 +363,17 @@ public class DriverFactory {
         return ((HttpCommandExecutor) remoteWebDriver.getCommandExecutor()).getAddressOfRemoteServer().toString();
     }
 
-    protected static WebDriver startExistingBrowser() throws MalformedURLException, ConnectException {
-        return new ExistingRemoteWebDriver(new URL(RunConfiguration.getExisingSessionServerUrl()),
-                RunConfiguration.getExisingSessionSessionId());
+    protected static WebDriver startExistingBrowser()
+            throws MalformedURLException, MobileDriverInitializeException, ConnectException {
+        String remoteDriverType = RunConfiguration.getExisingSessionDriverType();
+        String sessionId = RunConfiguration.getExisingSessionSessionId();
+        String remoteServerUrl = RunConfiguration.getExisingSessionServerUrl();
+        if (WebUIDriverType.ANDROID_DRIVER.toString().equals(remoteDriverType)
+                || WebUIDriverType.IOS_DRIVER.toString().equals(remoteDriverType)) {
+            return WebMobileDriverFactory.startExisitingMobileDriver(WebUIDriverType.fromStringValue(remoteDriverType),
+                    sessionId, remoteServerUrl);
+        }
+        return new ExistingRemoteWebDriver(new URL(remoteServerUrl), sessionId);
     }
 
     private static void logBrowserRunData(WebDriver webDriver) {
@@ -618,7 +634,7 @@ public class DriverFactory {
             try {
                 WebDriver webDriver = startExistingBrowser();
                 changeWebDriver(webDriver);
-            } catch (MalformedURLException | ConnectException malformedUrlException) {
+            } catch (MalformedURLException | ConnectException | MobileDriverInitializeException exception) {
                 // Ignore this
             }
         }

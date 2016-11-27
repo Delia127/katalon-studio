@@ -305,6 +305,11 @@ public class RunConfiguration {
                 StringConstants.CONF_PROPERTY_EXISTING_SESSION_SERVER_URL);
     }
 
+    public static String getExisingSessionDriverType() {
+        return RunConfiguration.getDriverSystemProperty(StringConstants.CONF_PROPERTY_EXISTING_DRIVER,
+                StringConstants.CONF_PROPERTY_EXISTING_SESSION_DRIVER_TYPE);
+    }
+
     public static String getHostName() {
         return getStringProperty(HOST_NAME, getHostProperties());
     }

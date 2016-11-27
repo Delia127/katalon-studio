@@ -6,6 +6,7 @@ import java.net.URL;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import com.kms.katalon.core.webui.driver.existings.ExistingRemoteWebDriver;
@@ -13,17 +14,17 @@ import com.kms.katalon.core.webui.driver.existings.ExistingRemoteWebDriver;
 public class ExecutionSession {
     protected String sessionId;
 
-    private String remoteUrl;
+    protected String remoteUrl;
 
-    private String driverTypeName;
+    protected String driverTypeName;
 
-    private String logFolderPath;
+    protected String logFolderPath;
 
-    private String title;
+    protected String title;
 
-    private boolean isAlive;
+    protected boolean isAlive;
 
-    private boolean isAvailable;
+    protected boolean isAvailable;
 
     public ExecutionSession(String sessionId, String remoteUrl, String driverTypeName, String logFolderPath) {
         this.sessionId = sessionId;
@@ -119,7 +120,7 @@ public class ExecutionSession {
                 try {
                     Thread.sleep(DEFAULT_LOOP_INTERVAL);
                     if (isAvailable) {
-                        title = getExistingDriver().getTitle();
+                        checkStatusAndUpdateTitle();
                     }
                 } catch (InterruptedException e) {
                     // Ignore this
@@ -128,6 +129,10 @@ public class ExecutionSession {
                 }
             }
             ExecutionSessionSocketServer.getInstance().removeExecutionSession(geExecutionSession());
+        }
+
+        protected void checkStatusAndUpdateTitle() throws MalformedURLException, WebDriverException, ConnectException {
+            title = getExistingDriver().getTitle();
         }
     }
 }
