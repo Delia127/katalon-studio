@@ -270,6 +270,7 @@ public class CSVTestDataPart extends TestDataMainPart {
                 dialog.setFilterPath(getProjectFolderLocation());
 
                 executeOperation(new ChangeCSVFileOperation(dialog.open()));
+                enableRelativePath();
             }
         });
 
@@ -503,6 +504,11 @@ public class CSVTestDataPart extends TestDataMainPart {
     @Override
     protected void updateChildInfo(DataFileEntity dataFile) {
         loadTestData(dataFile);
+        enableRelativePath();
+    }
+
+    private void enableRelativePath() {
+        chckIsRelativePath.setEnabled(StringUtils.isNotBlank(txtFileName.getText()));
     }
 
     @Override
