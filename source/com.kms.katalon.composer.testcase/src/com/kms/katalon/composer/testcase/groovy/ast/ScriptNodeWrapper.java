@@ -35,7 +35,7 @@ public class ScriptNodeWrapper extends ClassNodeWrapper implements ASTHasBlock {
 
     public ScriptNodeWrapper(ScriptNodeWrapper scriptNodeWrapper) {
         super(scriptNodeWrapper, null);
-        mainBlock = scriptNodeWrapper.getRunMethod().getBlock();
+        mainBlock = getRunMethod().getBlock();
         this.testCaseId = scriptNodeWrapper.testCaseId;
     }
 
