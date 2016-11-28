@@ -19,6 +19,7 @@ import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 import org.eclipse.ui.handlers.IHandlerService;
+import org.eclipse.ui.internal.ide.EditorAreaDropAdapter;
 
 import com.kms.katalon.composer.components.application.ApplicationSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -51,6 +52,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
     @Override
     public void preWindowOpen() {
         fConfigurer.setShowProgressIndicator(true);
+        fConfigurer.configureEditorAreaDropListener(new EditorAreaDropAdapter(fConfigurer.getWindow()));
     }
 
     @SuppressWarnings("unchecked")

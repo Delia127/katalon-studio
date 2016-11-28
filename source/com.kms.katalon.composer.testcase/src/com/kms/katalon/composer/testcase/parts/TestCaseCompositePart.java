@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.testcase.parts;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -42,9 +43,14 @@ import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IPropertyListener;
@@ -60,6 +66,7 @@ import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
+import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
 import com.kms.katalon.composer.parts.MultipleTabsCompositePart;
 import com.kms.katalon.composer.testcase.actions.KatalonFormatAction;
 import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
@@ -70,6 +77,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput;
 import com.kms.katalon.composer.testcase.preferences.TestCasePreferenceDefaultValueInitializer;
+import com.kms.katalon.composer.testcase.providers.TestObjectScriptDropListener;
 import com.kms.katalon.composer.testcase.util.TestCaseEntityUtil;
 import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
 import com.kms.katalon.composer.util.groovy.GroovyGuiUtil;
@@ -296,6 +304,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
                 // TODO Auto-generated method stub
             }
         });
+        addTestObjectDropListener();
     }
 
     private void addFormatAction() {
@@ -778,6 +787,27 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
             scriptNode = new ScriptNodeWrapper(testCase.getRelativePathForUI());
         }
         return (childTestCasePart.isTestCaseEmpty());
+    }
+    
+    private void addTestObjectDropListener() {
+        Control control = (Control) groovyEditor.getAdapter(Control.class);
+        if (!(control instanceof StyledText)) {
+            return;
+        }
+        DropTarget dropTarget = null;
+        Object existingDropTarget = control.getData(DND.DROP_TARGET_KEY);
+        if (existingDropTarget != null) {
+            dropTarget = (DropTarget) existingDropTarget;
+        } else {
+            dropTarget = new DropTarget(control, DND.DROP_COPY);
+        }
+        Transfer[] transfers = dropTarget.getTransfer();
+        List<Transfer> treeEntityTransfers = TransferTypeCollection.getInstance().getTreeEntityTransfer();
+        if (transfers.length != 0) {
+            treeEntityTransfers.addAll(Arrays.asList(transfers));
+        }
+        dropTarget.setTransfer(treeEntityTransfers.toArray(new Transfer[treeEntityTransfers.size()]));
+        dropTarget.addDropListener(new TestObjectScriptDropListener(groovyEditor.getViewer().getTextWidget()));
     }
 
     public MCompositePart getCompositePart() {
