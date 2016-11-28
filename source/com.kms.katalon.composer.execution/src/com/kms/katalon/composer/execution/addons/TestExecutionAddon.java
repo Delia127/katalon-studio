@@ -24,6 +24,7 @@ import org.eclipse.e4.ui.model.application.ui.menu.MMenuElement;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuFactory;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolItem;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.osgi.service.event.Event;
@@ -69,6 +70,9 @@ public class TestExecutionAddon implements EventHandler {
 
     @Inject
     private UISynchronize sync;
+    
+    @Inject
+    private EPartService partService;
 
     @PostConstruct
     public void initHandlers(IEventBroker eventBroker) {
@@ -85,7 +89,9 @@ public class TestExecutionAddon implements EventHandler {
                 if (!(object instanceof ExecuteFromTestStepEntity)) {
                     return;
                 }
-                executeTestCaseFromTestStep((ExecuteFromTestStepEntity) object);
+                if (partService.saveAll(true) && partService.getDirtyParts().isEmpty()) {
+                    executeTestCaseFromTestStep((ExecuteFromTestStepEntity) object);
+                }
             }
         });
     }
