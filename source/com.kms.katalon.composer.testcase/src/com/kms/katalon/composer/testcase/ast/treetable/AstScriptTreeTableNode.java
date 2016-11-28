@@ -8,6 +8,7 @@ import com.kms.katalon.composer.testcase.util.WrapperToAstTreeConverter;
 import org.eclipse.swt.graphics.Image;
 
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.ClassNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.MethodNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
 
@@ -41,6 +42,9 @@ public class AstScriptTreeTableNode extends AstAbstractTreeTableNode {
         childNodes.clear();
         childNodes.addAll(WrapperToAstTreeConverter.getInstance().convert(scriptNode.getBlock().getStatements(), this));
         for (MethodNodeWrapper method : scriptNode.getMethods()) {
+            if (ClassNodeWrapper.RUN_METHOD_NAME.equals(method.getName())) {
+                continue;
+            }
             childNodes.add(new AstMethodTreeTableNode(method, this));
         }
     }

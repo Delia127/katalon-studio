@@ -1067,62 +1067,68 @@ public class TestCaseTreeTableInput {
             return null;
         }
         ScriptNodeWrapper clonedScript = mainClassNodeWrapper.clone();
-        if (selectedNode.getParent() == mainClassTreeNode) {
-            handleMainBlockStep(selectedNode, clonedScript);
-        } else if (selectedNode.getParent() instanceof AstMethodTreeTableNode) {
-            handleMethodBlockStep(selectedNode, clonedScript);
-        }
+        processClonedScript(selectedNode, clonedScript);
         StringBuilder scriptBuilder = new StringBuilder();
         GroovyWrapperParser parser = new GroovyWrapperParser(scriptBuilder);
         parser.parseGroovyAstIntoScript(clonedScript);
         return scriptBuilder.toString();
     }
 
-    private void handleMethodBlockStep(AstTreeTableNode selectedNode, ScriptNodeWrapper clonedScript) {
-        MethodNodeWrapper methodNode = ((AstMethodTreeTableNode) selectedNode.getParent()).getASTObject();
+    private void processClonedScript(AstTreeTableNode selectedNode, ScriptNodeWrapper clonedScript) {
+        MethodNodeWrapper methodNode = null;
+        if (selectedNode.getParent() == mainClassTreeNode) {
+            methodNode = mainClassNodeWrapper.getRunMethod();
+        } else if (selectedNode.getParent() instanceof AstMethodTreeTableNode) {
+            methodNode = ((AstMethodTreeTableNode) selectedNode.getParent()).getASTObject();
+        }
+        if (methodNode == null) {
+            return;
+        }
         int methodIndex = mainClassNodeWrapper.getMethods().indexOf(methodNode);
         int statementIndex = methodNode.getBlock().getStatements().indexOf(selectedNode.getASTObject());
 
-        boolean reachSelectedStatement = false;
         List<MethodNodeWrapper> allMethods = clonedScript.getMethods();
         List<MethodNodeWrapper> setupMethods = collectMethod(SetUp.class, clonedScript);
+        List<MethodNodeWrapper> mainMethods = new ArrayList<>();
+        mainMethods.add(clonedScript.getRunMethod());
         List<MethodNodeWrapper> tearDownIfPassedMethods = collectMethod(TearDownIfPassed.class, clonedScript);
         List<MethodNodeWrapper> tearDownIfFailedMethods = collectMethod(TearDownIfFailed.class, clonedScript);
         List<MethodNodeWrapper> tearDownIfErrorMethods = collectMethod(TearDownIfError.class, clonedScript);
         List<MethodNodeWrapper> tearDownMethods = collectMethod(TearDown.class, clonedScript);
-        reachSelectedStatement = iterateThroughMethods(methodIndex, statementIndex, setupMethods, allMethods);
-        if (!reachSelectedStatement) {
-            for (StatementWrapper statement : clonedScript.getBlock().getStatements()) {
-                statement.disable();
+
+        List<List<MethodNodeWrapper>> methodsCollections = new ArrayList<>();
+        methodsCollections.add(setupMethods);
+        methodsCollections.add(mainMethods);
+        methodsCollections.add(tearDownIfPassedMethods);
+        methodsCollections.add(tearDownIfFailedMethods);
+        methodsCollections.add(tearDownIfErrorMethods);
+        methodsCollections.add(tearDownMethods);
+        iterateThroughMethodsCollections(methodIndex, statementIndex, methodsCollections, allMethods);
+    }
+
+    private static void iterateThroughMethodsCollections(int seletedMethodIndex, int selectedStatementIndex,
+            List<List<MethodNodeWrapper>> methodsColletions, List<MethodNodeWrapper> allMethods) {
+        boolean reachSelectedStatement = false;
+        for (List<MethodNodeWrapper> methods : methodsColletions) {
+            if (reachSelectedStatement) {
+                break;
             }
-        }
-        if (!reachSelectedStatement) {
-            reachSelectedStatement = iterateThroughMethods(methodIndex, statementIndex, tearDownIfPassedMethods,
+            reachSelectedStatement = iterateThroughMethods(seletedMethodIndex, selectedStatementIndex, methods,
                     allMethods);
-        }
-        if (!reachSelectedStatement) {
-            reachSelectedStatement = iterateThroughMethods(methodIndex, statementIndex, tearDownIfFailedMethods,
-                    allMethods);
-        }
-        if (!reachSelectedStatement) {
-            reachSelectedStatement = iterateThroughMethods(methodIndex, statementIndex, tearDownIfErrorMethods,
-                    allMethods);
-        }
-        if (!reachSelectedStatement) {
-            reachSelectedStatement = iterateThroughMethods(methodIndex, statementIndex, tearDownMethods, allMethods);
         }
     }
 
-    protected boolean iterateThroughMethods(int methodIndex, int statementIndex, List<MethodNodeWrapper> methods,
-            List<MethodNodeWrapper> allMethods) {
+    private static boolean iterateThroughMethods(int seletedMethodIndex, int selectedStatementIndex,
+            List<MethodNodeWrapper> methods, List<MethodNodeWrapper> allMethods) {
         boolean reachSelectedStatement = false;
         for (MethodNodeWrapper method : methods) {
             if (reachSelectedStatement) {
                 break;
             }
+            int methodIndex = allMethods.indexOf(method);
             List<StatementWrapper> statements = method.getBlock().getStatements();
             for (int childStatementIndex = 0; childStatementIndex < statements.size(); childStatementIndex++) {
-                if (allMethods.indexOf(method) == methodIndex && childStatementIndex == statementIndex) {
+                if (methodIndex == seletedMethodIndex && childStatementIndex == selectedStatementIndex) {
                     reachSelectedStatement = true;
                     break;
                 }
@@ -1144,14 +1150,6 @@ public class TestCaseTreeTableInput {
             }
         }
         return methods;
-    }
-
-    private void handleMainBlockStep(AstTreeTableNode selectedNode, ScriptNodeWrapper clonedScript) {
-        int statmentIndex = mainClassNodeWrapper.getBlock().indexOf(selectedNode.getASTObject());
-        List<StatementWrapper> statements = clonedScript.getBlock().getStatements();
-        for (int index = 0; index < statmentIndex; index++) {
-            statements.get(index).disable();
-        }
     }
 
     private IOperationHistory getOperationHistory() {
