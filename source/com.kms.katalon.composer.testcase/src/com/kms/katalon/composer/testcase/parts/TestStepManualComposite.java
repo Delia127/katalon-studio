@@ -1,7 +1,9 @@
 package com.kms.katalon.composer.testcase.parts;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.action.ToolBarManager;
@@ -91,6 +93,8 @@ import com.kms.katalon.execution.session.ExecutionSession;
 import com.kms.katalon.execution.session.ExecutionSessionSocketServer;
 
 public class TestStepManualComposite {
+
+    private static final int DEFAULT_MAX_EXISTING_SESSION_TITLE = 20;
 
     private ITestCasePart parentPart;
 
@@ -368,16 +372,33 @@ public class TestStepManualComposite {
             executeFromTestStepMenuItem.setEnabled(false);
             return;
         }
+        Map<String, Integer> labelMap = new HashMap<>();
         Menu executeSessionMenu = new Menu(executeFromTestStepMenuItem);
         for (ExecutionSession executionSession : allAvailableExecutionSessions) {
             MenuItem executionSessionMenuItem = new MenuItem(executeSessionMenu, SWT.PUSH);
-            executionSessionMenuItem.setText(executionSession.getTitle());
+            String menuLabel = getLabelForExecutionSession(executionSession);
+            if (labelMap.containsKey(menuLabel)) {
+                Integer numberOfInstances = labelMap.get(menuLabel) + 1;
+                labelMap.put(menuLabel, numberOfInstances);
+                menuLabel += " (" + numberOfInstances + ")";
+            } else {
+                labelMap.put(menuLabel, 1);
+            }
+            executionSessionMenuItem.setText(menuLabel);
             executionSessionMenuItem.addSelectionListener(selectionListener);
             executionSessionMenuItem.setID(TreeTableMenuItemConstants.EXECUTE_FROM_TEST_STEP_MENU_ITEM_ID);
             executionSessionMenuItem.setData(executionSession);
             executionSessionMenuItem.setImage(getImageForDriverType(executionSession.getDriverTypeName()));
         }
         executeFromTestStepMenuItem.setMenu(executeSessionMenu);
+    }
+
+    protected String getLabelForExecutionSession(ExecutionSession executionSession) {
+        String executionTitle = executionSession.getTitle();
+        if (executionTitle.isEmpty()) {
+            executionTitle = ComposerTestcaseMessageConstants.LBL_EXECUTION_EXISTING_SESSION_BLANK_TITLE;
+        }
+        return StringUtils.abbreviate(executionTitle, DEFAULT_MAX_EXISTING_SESSION_TITLE);
     }
 
     private Image getImageForDriverType(String driverTypeName) {
