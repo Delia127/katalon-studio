@@ -313,6 +313,8 @@ public class ComposerTestcaseMessageConstants extends NLS {
 
     public static String ERR_MSG_UNABLE_TO_EXECUTE_FROM_TEST_STEP_STEP_INSIDE_BLOCK;
 
+    public static String ERR_MSG_UNABLE_TO_EXECUTE_FROM_TEST_STEP_STEP_NOT_SELECTED;
+
     public static String DIA_TITLE_TEST_CASE_PROPERTIES;
 
     public static String DEFAULT_FAILURE_HANDLING;
