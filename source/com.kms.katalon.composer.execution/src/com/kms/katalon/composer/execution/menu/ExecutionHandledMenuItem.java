@@ -49,7 +49,7 @@ public class ExecutionHandledMenuItem extends HandledMenuItemImpl {
 
     @Override
     public String getTooltip() {
-        return getLabel();
+        return "";
     }
 
     public ParameterizedCommand getParameterizedCommandFromMenuItem(ECommandService commandService) {
