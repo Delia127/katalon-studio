@@ -365,6 +365,7 @@ public class TestStepManualComposite {
         executeFromTestStepMenuItem.setText(ComposerTestcaseMessageConstants.ADAP_MENU_CONTEXT_EXECUTE_FROM_TEST_STEP);
         executeFromTestStepMenuItem.addSelectionListener(selectionListener);
         if (isExecutionSessionsEmpty) {
+            executeFromTestStepMenuItem.setEnabled(false);
             return;
         }
         Menu executeSessionMenu = new Menu(executeFromTestStepMenuItem);
