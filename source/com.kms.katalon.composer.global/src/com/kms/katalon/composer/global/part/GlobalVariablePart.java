@@ -22,7 +22,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Persist;
-import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.Dialog;
@@ -339,10 +338,7 @@ public class GlobalVariablePart extends CPart implements EventHandler {
 
     @SuppressWarnings("restriction")
     @Persist
-    public void save(MDirtyable dirty) {
-        if (!dirty.isDirty()) {
-            return;
-        }
+    public void save() {
         List<GlobalVariableEntity> variables = new ArrayList<GlobalVariableEntity>();
         List<String> names = new ArrayList<String>();
         for (TableItem item : tableViewer.getTable().getItems()) {
