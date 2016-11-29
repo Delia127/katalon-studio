@@ -167,6 +167,7 @@ public class TestSuitePartDataBindingView {
         Table testCaseVariableTable = testCaseVariableTableViewer.getTable();
         testCaseVariableTable.setHeaderVisible(true);
         testCaseVariableTable.setLinesVisible(true);
+        ColumnViewerUtil.setTableActivation(testCaseVariableTableViewer);
 
         TableViewerColumn variableNotificationColumnViewer = new TableViewerColumn(testCaseVariableTableViewer,
                 SWT.NONE);
