@@ -17,7 +17,7 @@ public class ExistingExecutionHandler extends AbstractExecutionHandler {
     private String sessionId;
 
     private String remoteServerUrl;
-    
+
     private String driverTypeName;
 
     @Override
@@ -45,7 +45,7 @@ public class ExistingExecutionHandler extends AbstractExecutionHandler {
     protected String getServerUrl(ParameterizedCommand command) {
         return getParameter(command, IdConstants.EXISTING_SESSION_SERVER_URL_ID);
     }
-    
+
     protected String getDriverTypeName(ParameterizedCommand command) {
         return getParameter(command, IdConstants.EXISTING_SESSION_DRIVER_NAME_ID);
     }

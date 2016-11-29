@@ -26,6 +26,8 @@ public class DefaultExecutionSetting implements IExecutionSetting {
     private int timeout;
 
     private File scriptFile;
+    
+    private String rawScript;
 
     private Map<String, Object> generalProperties;
 
@@ -114,6 +116,15 @@ public class DefaultExecutionSetting implements IExecutionSetting {
 
     public void setScriptFile(File scriptFile) {
         this.scriptFile = scriptFile;
+    }
+    
+    @Override
+    public String getRawScript() {
+        return rawScript;
+    }
+
+    public void setRawScript(String rawScript) {
+        this.rawScript = rawScript;
     }
 
     @Override

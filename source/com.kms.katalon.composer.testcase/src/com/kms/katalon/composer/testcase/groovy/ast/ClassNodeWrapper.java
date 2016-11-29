@@ -35,6 +35,8 @@ import com.kms.katalon.custom.keyword.KeywordClass;
 import com.kms.katalon.custom.parser.GlobalVariableParser;
 
 public class ClassNodeWrapper extends ASTNodeWrapper {
+    public static final String RUN_METHOD_NAME = "run";
+
     protected Class<?> typeClass;
 
     protected GenericsTypeWrapper[] genericsTypes;
@@ -66,7 +68,7 @@ public class ClassNodeWrapper extends ASTNodeWrapper {
     public ClassNodeWrapper(Class<?> clazz, ASTNodeWrapper parentNodeWrapper) {
         this(ClassHelper.makeCached(clazz), parentNodeWrapper);
     }
-    
+
     protected ClassNodeWrapper(ClassNode classNode, ASTNodeWrapper parentNodeWrapper) {
         super(classNode, parentNodeWrapper);
         copyProperties(classNode);
@@ -80,7 +82,7 @@ public class ClassNodeWrapper extends ASTNodeWrapper {
         super(classNodeWrapper, parentNodeWrapper);
         copyClassProperties(classNodeWrapper);
     }
-    
+
     public static ClassNodeWrapper getClassWrapper(ClassNode classNode, ASTNodeWrapper parentNodeWrapper) {
         ClassNodeWrapper cachedClass = classCache.get(classNode);
         if (cachedClass != null) {
@@ -130,7 +132,7 @@ public class ClassNodeWrapper extends ASTNodeWrapper {
     private void copyMethods(ClassNode classNode) {
         methods.clear();
         for (MethodNode method : classNode.getMethods()) {
-            if (method.getLineNumber() < 0 || ("run".equals(method.getName()))) {
+            if (method.getLineNumber() < 0 && !(RUN_METHOD_NAME.equals(method.getName()))) {
                 continue;
             }
             methods.add(new MethodNodeWrapper(method, this));
@@ -346,7 +348,8 @@ public class ClassNodeWrapper extends ASTNodeWrapper {
     }
 
     public void addImport(Class<?> classNeedImport) {
-        importNodeCollection.addImportNode(new ImportNodeWrapper(classNeedImport, this, classNeedImport.getSimpleName()));
+        importNodeCollection
+                .addImportNode(new ImportNodeWrapper(classNeedImport, this, classNeedImport.getSimpleName()));
     }
 
     public void addImportKeywordClass(KeywordClass keywordClass) {

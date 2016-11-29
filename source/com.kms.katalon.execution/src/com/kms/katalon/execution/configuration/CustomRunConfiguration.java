@@ -16,6 +16,7 @@ public class CustomRunConfiguration extends AbstractRunConfiguration {
     private Map<String, IDriverConnector> driverConnectors;
     private File configFolder;
     protected String projectDir;
+    
     public CustomRunConfiguration(String projectDir, String name) throws IOException, ExecutionException {        
         this.name = name;
         this.projectDir = projectDir;

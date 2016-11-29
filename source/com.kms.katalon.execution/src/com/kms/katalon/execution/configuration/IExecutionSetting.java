@@ -30,4 +30,10 @@ public interface IExecutionSetting {
     public Map<String, Object> getGeneralProperties();
     
     public IExecutedEntity getExecutedEntity();
+
+    /**
+     * If not null then use this script to run the test instead of test case script
+     * @return the raw script to execute, or null if running test case script
+     */
+    public String getRawScript();
 }
