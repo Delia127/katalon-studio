@@ -252,7 +252,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
                             return;
                         }
                         if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_MANUAL_PART_INDEX
-                                && (isScriptChanged || !isInitialized)) {
+                                && (isScriptChanged || scriptNode == null)) {
                             setScriptContentToManual();
                         } else if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_EDITOR_PART_INDEX
                                 && childTestCasePart.isManualScriptChanged()) {
@@ -743,7 +743,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
     public void setSelectedPart(MPart partToSelect) {
         if (subPartStack.getChildren().contains(partToSelect)) {
             subPartStack.setSelectedElement(partToSelect);
-            if (partToSelect == getChildManualPart() && (isScriptChanged || !isInitialized)) {
+            if (partToSelect == getChildManualPart() && (isScriptChanged || scriptNode == null)) {
                 setScriptContentToManual();
             } else if (partToSelect == getChildCompatibilityPart() && childTestCasePart.isManualScriptChanged()) {
                 setChildEditorContents(scriptNode);
