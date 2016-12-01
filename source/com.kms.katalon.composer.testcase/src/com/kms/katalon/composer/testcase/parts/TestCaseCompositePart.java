@@ -431,6 +431,10 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
     public MPart getChildCompatibilityPart() {
         return childTestCaseEditorPart.getModel();
     }
+    
+    public GroovyEditor getChildGroovyEditor() {
+        return (GroovyEditor) childTestCaseEditorPart.getEditor();
+    }
 
     public MPart getChildVariablesPart() {
         return childTestCaseVariablesPart.getMPart();

@@ -52,4 +52,14 @@
             name="Test Case">
       </page>
    </extension>
+   
+   <extension point="org.eclipse.ui.menus">
+	  <menuContribution locationURI="popup:#GroovyCompilationUnitEditorContext?before=undo">
+ 		<dynamic
+          class="com.kms.katalon.composer.testcase.menu.ExecuteFromTestStepContributionItem"
+          id="com.kms.katalon.composer.testcase.menu.ExecuteFromTestStepContributionItem">
+	    </dynamic>
+	  </menuContribution>
+	</extension>
+   
 </plugin>

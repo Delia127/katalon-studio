@@ -1,9 +1,7 @@
 package com.kms.katalon.composer.testcase.parts;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.action.ToolBarManager;
@@ -29,7 +27,6 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
@@ -55,13 +52,10 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.viewer.CustomEditorActivationStrategy;
 import com.kms.katalon.composer.components.viewer.FocusCellOwnerDrawHighlighterForMultiSelection;
 import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
-import com.kms.katalon.composer.resources.constants.IImageKeys;
-import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.testcase.ast.dialogs.ClosureBuilderDialog;
 import com.kms.katalon.composer.testcase.ast.treetable.AstMethodTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
 import com.kms.katalon.composer.testcase.components.KeywordTreeViewerToolTipSupport;
-import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants;
@@ -88,14 +82,9 @@ import com.kms.katalon.composer.testcase.util.TestCaseMenuUtil;
 import com.kms.katalon.composer.testcase.views.FocusCellOwnerDrawForManualTestcase;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.core.model.FailureHandling;
-import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.execution.session.ExecutionSession;
-import com.kms.katalon.execution.session.ExecutionSessionSocketServer;
 
 public class TestStepManualComposite {
-
-    private static final int DEFAULT_MAX_EXISTING_SESSION_TITLE = 20;
-
     private ITestCasePart parentPart;
 
     private Composite compositeManual;
@@ -297,7 +286,7 @@ public class TestStepManualComposite {
                 menu = new Menu(childTableTree);
 
                 if (childTableTree.getSelectionCount() == 1) {
-                    addExecuteFromTestStepSubMenu(menu);
+                    TestCaseMenuUtil.generateExecuteFromTestStepSubMenu(menu, selectionListener);
 
                     // Add step add
                     TestCaseMenuUtil.addActionSubMenu(menu, TreeTableMenuItemConstants.AddAction.Add,
@@ -359,77 +348,6 @@ public class TestStepManualComposite {
                 childTableTree.setMenu(menu);
             }
         });
-    }
-
-    private void addExecuteFromTestStepSubMenu(Menu menu) {
-        List<ExecutionSession> allAvailableExecutionSessions = ExecutionSessionSocketServer.getInstance()
-                .getAllAvailableExecutionSessions();
-        boolean isExecutionSessionsEmpty = allAvailableExecutionSessions.isEmpty();
-        MenuItem executeFromTestStepMenuItem = new MenuItem(menu, isExecutionSessionsEmpty ? SWT.PUSH : SWT.CASCADE);
-        executeFromTestStepMenuItem.setText(ComposerTestcaseMessageConstants.ADAP_MENU_CONTEXT_EXECUTE_FROM_TEST_STEP);
-        executeFromTestStepMenuItem.addSelectionListener(selectionListener);
-        if (isExecutionSessionsEmpty) {
-            executeFromTestStepMenuItem.setEnabled(false);
-            return;
-        }
-        Map<String, Integer> labelMap = new HashMap<>();
-        Menu executeSessionMenu = new Menu(executeFromTestStepMenuItem);
-        for (ExecutionSession executionSession : allAvailableExecutionSessions) {
-            MenuItem executionSessionMenuItem = new MenuItem(executeSessionMenu, SWT.PUSH);
-            String menuLabel = getLabelForExecutionSession(executionSession);
-            if (labelMap.containsKey(menuLabel)) {
-                Integer numberOfInstances = labelMap.get(menuLabel) + 1;
-                labelMap.put(menuLabel, numberOfInstances);
-                menuLabel += " (" + numberOfInstances + ")";
-            } else {
-                labelMap.put(menuLabel, 1);
-            }
-            executionSessionMenuItem.setText(menuLabel);
-            executionSessionMenuItem.addSelectionListener(selectionListener);
-            executionSessionMenuItem.setID(TreeTableMenuItemConstants.EXECUTE_FROM_TEST_STEP_MENU_ITEM_ID);
-            executionSessionMenuItem.setData(executionSession);
-            executionSessionMenuItem.setImage(getImageForDriverType(executionSession.getDriverTypeName()));
-        }
-        executeFromTestStepMenuItem.setMenu(executeSessionMenu);
-    }
-
-    protected String getLabelForExecutionSession(ExecutionSession executionSession) {
-        String executionTitle = executionSession.getTitle();
-        if (executionTitle.isEmpty()) {
-            executionTitle = ComposerTestcaseMessageConstants.LBL_EXECUTION_EXISTING_SESSION_BLANK_TITLE;
-        }
-        return StringUtils.abbreviate(executionTitle, DEFAULT_MAX_EXISTING_SESSION_TITLE);
-    }
-
-    private Image getImageForDriverType(String driverTypeName) {
-        if (WebUIDriverType.ANDROID_DRIVER.toString().equals(driverTypeName)) {
-            return ImageManager.getImage(IImageKeys.ANDROID_16);
-        }
-        if (WebUIDriverType.CHROME_DRIVER.toString().equals(driverTypeName)) {
-            return ImageManager.getImage(IImageKeys.CHROME_16);
-        }
-        if (WebUIDriverType.EDGE_DRIVER.toString().equals(driverTypeName)) {
-            return ImageManager.getImage(IImageKeys.EDGE_16);
-        }
-        if (WebUIDriverType.FIREFOX_DRIVER.toString().equals(driverTypeName)) {
-            return ImageManager.getImage(IImageKeys.FIREFOX_16);
-        }
-        if (WebUIDriverType.HEADLESS_DRIVER.toString().equals(driverTypeName)) {
-            return ImageManager.getImage(IImageKeys.TERMINAL_16);
-        }
-        if (WebUIDriverType.IE_DRIVER.toString().equals(driverTypeName)) {
-            return ImageManager.getImage(IImageKeys.IE_16);
-        }
-        if (WebUIDriverType.IOS_DRIVER.toString().equals(driverTypeName)) {
-            return ImageManager.getImage(IImageKeys.APPLE_16);
-        }
-        if (WebUIDriverType.KOBITON_WEB_DRIVER.toString().equals(driverTypeName)) {
-            return ImageManager.getImage(IImageKeys.KOBITON_16);
-        }
-        if (WebUIDriverType.SAFARI_DRIVER.toString().equals(driverTypeName)) {
-            return ImageManager.getImage(IImageKeys.SAFARI_16);
-        }
-        return null;
     }
 
     private String createMenuItemLabel(String text, String keyCombination) {
