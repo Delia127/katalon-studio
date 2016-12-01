@@ -2,6 +2,7 @@ package com.kms.katalon.composer.testcase.util;
 
 import org.apache.commons.codec.net.URLCodec;
 
+import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.core.keyword.BuiltinKeywords;
 import com.kms.katalon.core.mobile.keyword.MobileBuiltInKeywords;
@@ -14,9 +15,9 @@ public class KeywordURLUtil {
     private static final String MOBILE_PLATFORM = "[Mobile] ";
 
     private static final String WEB_SERVICE_PLATFORM = "[WS] ";
-    
+
     private static final String BUILTIN_PLATFORM = "";
-    
+
     private static final String KEYWORD_DESC_PATH = "http://docs.katalon.com/display/KD/";
 
     private static final String WEB_UI_CLASSNAME = WebUiBuiltInKeywords.class.getSimpleName();
@@ -26,7 +27,7 @@ public class KeywordURLUtil {
     private static final String WEB_SERVICE_CLASSNAME = WSBuiltInKeywords.class.getSimpleName();
 
     private static final String BUILTIN_CLASSNAME = BuiltinKeywords.class.getSimpleName();
-    
+
     private static final String VERIFY_CHECKPOINT_KEYWORD = "verifyCheckPoint";
 
     public static String getKeywordDescriptionURI(String key) {
@@ -42,7 +43,7 @@ public class KeywordURLUtil {
             return null;
         }
     }
-    
+
     public static String getKeywordDescriptionURI(String keywordClass, String keyword) {
         try {
             String platform = getKeywordPlatform(keywordClass);
@@ -59,7 +60,7 @@ public class KeywordURLUtil {
     private static String getKeywordPlatform(String key) {
         String[] parts = key.split("\\s*;\\s*");
         String className = key;
-        
+
         if (parts.length > 1) {
             className = parts[0].substring(parts[0].lastIndexOf('/') + 1);
         }
@@ -97,17 +98,6 @@ public class KeywordURLUtil {
         if (keyword.toString().equals("uncheck")) {
             return "Un-check";
         }
-        for (i = 0; i < keyword.length(); ++i) {
-            if (Character.isUpperCase(keyword.charAt(i))) {
-                keyword.insert(i++, " ");
-                if (i < keyword.length() - 1 && keyword.substring(i, i + 2).equals("OS")) {
-                    i++;
-                } else if (i < keyword.length() - 2 && keyword.substring(i, i + 3).equals("IOS")) {
-                    i += 2;
-                }
-            }
-        }
-
-        return Character.toUpperCase(keyword.charAt(0)) + keyword.substring(1);
+        return TreeEntityUtil.getReadableKeywordName(keyword.toString());
     }
 }
