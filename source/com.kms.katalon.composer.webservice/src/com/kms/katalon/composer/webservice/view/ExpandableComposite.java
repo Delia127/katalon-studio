@@ -2,21 +2,20 @@ package com.kms.katalon.composer.webservice.view;
 
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.custom.CLabel;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
 
 import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.util.ColorUtil;
 
 public class ExpandableComposite {
 
-    Button btnExpandInformation;
+    CLabel btnExpandInformation;
 
     Composite container, compositeInfoDetails, compositeInfo;
 
@@ -51,16 +50,12 @@ public class ExpandableComposite {
         gl_compositeInfoHeader.marginHeight = 0;
         compositeInfoHeader.setLayout(gl_compositeInfoHeader);
 
-        btnExpandInformation = new Button(compositeInfoHeader, SWT.NONE);
+        btnExpandInformation = new CLabel(compositeInfoHeader, SWT.NONE);
         redrawBtnExpandInfo();
         GridData gd_btnExpandInfo = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gd_btnExpandInfo.widthHint = 18;
-        gd_btnExpandInfo.heightHint = 18;
         btnExpandInformation.setLayoutData(gd_btnExpandInfo);
-
-        Label lblNewLabel = new Label(compositeInfoHeader, SWT.NONE);
-        lblNewLabel.setText(title);
-        lblNewLabel.setFont(JFaceResources.getFontRegistry().getBold(""));
+        btnExpandInformation.setText(title);
+        btnExpandInformation.setFont(JFaceResources.getFontRegistry().getBold(""));
 
         compositeInfoDetails = new Composite(compositeInfo, SWT.NONE);
         GridLayout gl_compositeInfoDetails = new GridLayout(detailColumns, true);
@@ -90,11 +85,10 @@ public class ExpandableComposite {
     }
 
     private void hookControlSelectListerners() {
-        btnExpandInformation.addSelectionListener(new SelectionAdapter() {
+        btnExpandInformation.addMouseListener(new MouseAdapter() {
             @Override
-            public void widgetSelected(SelectionEvent e) {
+            public void mouseUp(MouseEvent e) {
                 Display.getDefault().timerExec(10, new Runnable() {
-
                     @Override
                     public void run() {
                         isInfoCompositeExpanded = !isInfoCompositeExpanded;
@@ -112,5 +106,6 @@ public class ExpandableComposite {
                 });
             }
         });
+
     }
 }

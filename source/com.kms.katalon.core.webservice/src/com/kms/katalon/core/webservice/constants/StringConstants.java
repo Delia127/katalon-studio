@@ -32,4 +32,6 @@ public class StringConstants {
     public static final String KW_LOG_INFO_CHECKING_RESPONSE_OBJECT_CONTENT = CoreWebserviceMessageConstants.KW_LOG_INFO_CHECKING_RESPONSE_OBJECT_CONTENT;
     public static final String KW_LOG_FAILED_RESPONSE_OBJECT_IS_NULL = CoreWebserviceMessageConstants.KW_LOG_FAILED_RESPONSE_OBJECT_IS_NULL;
     public static final String KW_LOG_FAILED_RESPONSE_OBJECT_CONTENT_IS_NULL = CoreWebserviceMessageConstants.KW_LOG_FAILED_RESPONSE_OBJECT_CONTENT_IS_NULL;
+    
+    public static final String MSG_NO_SERVICE_OPERATION = CoreWebserviceMessageConstants.MSG_NO_SERVICE_OPERATION;
 }
