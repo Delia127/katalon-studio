@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -21,10 +23,14 @@ import org.qas.api.internal.util.json.JsonArray;
 import org.qas.api.internal.util.json.JsonException;
 import org.qas.api.internal.util.json.JsonObject;
 
+import com.kms.katalon.core.constants.StringConstants;
+import com.kms.katalon.core.logging.CustomXmlFormatter;
+import com.kms.katalon.core.logging.LogLevel;
+import com.kms.katalon.core.logging.XmlLogRecord;
 import com.kms.katalon.core.logging.model.ILogRecord;
 import com.kms.katalon.core.logging.model.TestCaseLogRecord;
-import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
+import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.core.reporting.ReportUtil;
 import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.integration.IntegratedType;
@@ -55,6 +61,7 @@ import com.kms.katalon.integration.qtest.util.DateUtil;
 import com.kms.katalon.integration.qtest.util.ZipUtil;
 import com.kms.katalon.jasper.pdf.TestCasePdfGenerator;
 import com.kms.katalon.jasper.pdf.exception.JasperReportException;
+import com.kms.katalon.logging.LogUtil;
 
 /**
  * Provides a set of utility methods that relate with {@link QTestReport}
@@ -217,7 +224,10 @@ public class QTestIntegrationReportManager {
                         QTestReportFormatType format = QTestReportFormatType.getTypeByExtension(FilenameUtils
                                 .getExtension(reportEntry.getAbsolutePath()));
                         if (format == QTestReportFormatType.LOG) {
-                            moveReportFile(reportEntry, new File(logTempFolder, reportEntry.getName()));
+                            //Extract log for this test case
+                            if(!extractTestCaseLog(testSuiteLogRecord, testCaseLogRecord, logTempFolder)){
+                                moveReportFile(reportEntry, new File(logTempFolder, reportEntry.getName()));
+                            }
                         }
                     }
                 } else {
@@ -540,6 +550,61 @@ public class QTestIntegrationReportManager {
             return stepLogs;
         } catch (JsonException ex) {
             throw QTestInvalidFormatException.createInvalidJsonFormatException(resText);
+        }
+    }
+    
+    private static boolean extractTestCaseLog(TestSuiteLogRecord testSuiteLogRecord,
+            TestCaseLogRecord testCaseLogRecord, File toFolder) {
+        Logger logger = Logger.getLogger("");
+        FileHandler fileHandler;
+        try {
+            fileHandler = new FileHandler(toFolder.getAbsolutePath() + File.separator + "execution.log");
+            fileHandler.setFormatter(new CustomXmlFormatter());
+            logger.addHandler(fileHandler);
+            List<XmlLogRecord> logRecs = new ArrayList<>();
+            boolean foundTest = false;
+            for (XmlLogRecord rc : testSuiteLogRecord.getXmlLogRecords()) {
+                String level = rc.getLevel().getName();
+                String methodName = rc.getSourceMethodName();
+                if (level.equals(LogLevel.START.toString()) && StringConstants.LOG_START_SUITE_METHOD.equals(methodName)
+                        || level.equals(LogLevel.END.toString())
+                                && StringConstants.LOG_END_SUITE_METHOD.equals(methodName)) {
+                    logRecs.add(rc);
+                    continue;
+                }
+                if (level.equals(LogLevel.START.toString()) && StringConstants.LOG_START_TEST_METHOD.equals(methodName)
+                        && testCaseLogRecord.getId()
+                                .equals(rc.getProperties().get(StringConstants.XML_LOG_ID_PROPERTY))) {
+                    foundTest = true;
+                    logRecs.add(rc);
+                    continue;
+                }
+                // If found the right test case, extracts the logs between start test and end test
+                if (foundTest) {
+                    // If this test was not ended gracefully, stop when reach begin another test
+                    if (level.equals(LogLevel.START.toString())
+                            && StringConstants.LOG_START_TEST_METHOD.equals(methodName)) {
+                        foundTest = false;
+                        continue;
+                    }
+                    logRecs.add(rc);
+                    // If reach end test, stop collecting
+                    if (level.equals(LogLevel.END.toString())
+                            && StringConstants.LOG_END_TEST_METHOD.equals(methodName)) {
+                        foundTest = false;
+                        continue;
+                    }
+                }
+            }
+            for (XmlLogRecord rc : logRecs) {
+                logger.log(rc);
+            }
+            fileHandler.flush();
+            fileHandler.close();
+            return true;
+        } catch (SecurityException | IOException e) {
+            LogUtil.logError(e);
+            return false;
         }
     }
 }

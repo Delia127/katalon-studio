@@ -3279,4 +3279,32 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     public static int getViewportTopPosition() {
         return (int) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "getViewportTopPosition")
     }
+    
+    /**
+     * Get CSS value of a web element
+     * @param to
+     *      represent the web element
+     * @param css
+     *      represent the css property name of the element
+     * @return the current, computed value of the property
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static String getCSSValue(TestObject to, String css) {
+        return (String) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "getCSSValue", to, css)
+    }
+    
+    /**
+     * Get CSS value of a web element
+     * @param to
+     *      represent the web element
+     * @param css
+     *      represent the css property name of the element
+     * @return the current, computed value of the property
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static String getCSSValue(TestObject to, String css, FailureHandling flowControl) {
+        return (String) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "getCSSValue", to, css, flowControl)
+    }
 }

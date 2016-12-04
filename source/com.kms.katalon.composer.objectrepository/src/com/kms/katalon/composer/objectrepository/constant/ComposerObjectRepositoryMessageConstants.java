@@ -26,6 +26,8 @@ public class ComposerObjectRepositoryMessageConstants extends NLS {
     public static String HAND_ERROR_MSG_UNABLE_TO_RENAME_TEST_OBJECT;
 
     public static String HAND_ERROR_MSG_UNABLE_TO_SAVE_TEST_OBJ;
+    
+    public static String HAND_ERROR_MSG_TEST_OBJECT_NOT_EXIST;
 
     public static String MENU_CONTEXT_ADD_TO_OBJECTSPY;
 

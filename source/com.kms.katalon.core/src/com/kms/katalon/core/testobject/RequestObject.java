@@ -5,12 +5,6 @@ import java.util.List;
 
 public class RequestObject extends TestObject {
 
-    // public static final String[] SERVICE_TYPES = new String[]{"SOAP", "RESTful"};
-
-    // public static final String[] SOAP_REQUEST_METHODS = new String[] { "SOAP", "POST", "GET" };
-
-    // public static final String[] REST_REQUEST_METHODS = new String[] { "GET", "POST", "PUT", "DELETE" };
-
     private String name;
 
     private String serviceType;
@@ -21,19 +15,15 @@ public class RequestObject extends TestObject {
 
     private String wsdlAddress = "";
 
-    private String soapHeader = "";
-
     private String soapBody = "";
 
     private String soapRequestMethod = "";
 
-    private String soapServiceFunction = "";
-
-    private List<TestObjectProperty> soapParameters;
-
     private String restUrl = "";
 
     private String restRequestMethod = "";
+    
+    private String soapServiceFunction = "";
 
     private List<TestObjectProperty> restParameters;
 
@@ -94,14 +84,6 @@ public class RequestObject extends TestObject {
         this.wsdlAddress = wsdlAddress;
     }
 
-    public String getSoapHeader() {
-        return soapHeader;
-    }
-
-    public void setSoapHeader(String soapHeader) {
-        this.soapHeader = soapHeader;
-    }
-
     public String getSoapBody() {
         return soapBody;
     }
@@ -116,25 +98,6 @@ public class RequestObject extends TestObject {
 
     public void setSoapRequestMethod(String soapRequestMethod) {
         this.soapRequestMethod = soapRequestMethod;
-    }
-
-    public String getSoapServiceFunction() {
-        return soapServiceFunction;
-    }
-
-    public void setSoapServiceFunction(String soapServiceFunction) {
-        this.soapServiceFunction = soapServiceFunction;
-    }
-
-    public List<TestObjectProperty> getSoapParameters() {
-        if (soapParameters == null) {
-            soapParameters = new ArrayList<TestObjectProperty>();
-        }
-        return soapParameters;
-    }
-
-    public void setSoapParameters(List<TestObjectProperty> soapParameters) {
-        this.soapParameters = soapParameters;
     }
 
     public String getRestUrl() {
@@ -162,5 +125,13 @@ public class RequestObject extends TestObject {
 
     public void setRestParameters(List<TestObjectProperty> restParameters) {
         this.restParameters = restParameters;
+    }
+    
+    public String getSoapServiceFunction() {
+        return soapServiceFunction;
+    }
+
+    public void setSoapServiceFunction(String soapServiceFunction) {
+        this.soapServiceFunction = soapServiceFunction;
     }
 }

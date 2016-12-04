@@ -23,6 +23,8 @@ public class ComposerMobileMessageConstants extends NLS {
 
     public static String PREF_LBL_APPIUM_LOG_LEVEL;
 
+    public static String LBL_ANDROID_EXECUTION_MENU_ITEM;
+
     public static String LBL_IOS_EXECUTION_MENU_ITEM;
 
     public static String WARNING_TITLE;

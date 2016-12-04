@@ -101,10 +101,22 @@ public class TestCaseMain {
         Thread.sleep(DELAY_TIME);
         return new TestCaseExecutor(testCaseId, testCaseBinding, engine).execute(flowControl)
     }
-    
+
     @CompileStatic
     public static TestResult runTestCase(String testCaseId, TestCaseBinding testCaseBinding, FailureHandling flowControl, boolean doCleanUp) {
         Thread.sleep(DELAY_TIME);
         return new TestCaseExecutor(testCaseId, testCaseBinding, engine, doCleanUp).execute(flowControl)
+    }
+    
+    @CompileStatic
+    public static TestResult runTestCaseRawScript(String testScript, String testCaseId, TestCaseBinding testCaseBinding, FailureHandling flowControl) {
+        Thread.sleep(DELAY_TIME);
+        return new RawTestScriptExecutor(testScript, testCaseId, testCaseBinding, engine).execute(flowControl)
+    }
+
+    @CompileStatic
+    public static TestResult runTestCaseRawScript(String testScript, String testCaseId, TestCaseBinding testCaseBinding, FailureHandling flowControl, boolean doCleanUp) {
+        Thread.sleep(DELAY_TIME);
+        return new RawTestScriptExecutor(testScript, testCaseId, testCaseBinding, engine, doCleanUp).execute(flowControl)
     }
 }

@@ -23,16 +23,22 @@ import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.generator.TestCaseScriptGenerator;
 import com.kms.katalon.execution.generator.TestSuiteScriptGenerator;
+import com.kms.katalon.execution.session.ExecutionSessionSocketServer;
 import com.kms.katalon.execution.util.ExecutionUtil;
 
 public abstract class AbstractRunConfiguration implements IRunConfiguration {
 
     protected IHostConfiguration hostConfiguration;
+
     protected DefaultExecutionSetting executionSetting;
 
+    public AbstractRunConfiguration() {
+        initExecutionSetting();
+    }
+
     @Override
-    public final IExecutionSetting build(FileEntity fileEntity, IExecutedEntity executedEntity) throws IOException,
-            ExecutionException {
+    public final IExecutionSetting build(FileEntity fileEntity, IExecutedEntity executedEntity)
+            throws IOException, ExecutionException {
         init(fileEntity);
 
         executionSetting.setExecutedEntity(executedEntity);
@@ -53,8 +59,8 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     protected File generateTempScriptFile(FileEntity fileEntity) throws ExecutionException {
         try {
             if (fileEntity instanceof TestSuiteEntity) {
-                return new TestSuiteScriptGenerator((TestSuiteEntity) fileEntity, this, (TestSuiteExecutedEntity) this
-                        .getExecutionSetting().getExecutedEntity()).generateScriptFile();
+                return new TestSuiteScriptGenerator((TestSuiteEntity) fileEntity, this,
+                        (TestSuiteExecutedEntity) this.getExecutionSetting().getExecutedEntity()).generateScriptFile();
             } else {
                 return new TestCaseScriptGenerator((TestCaseEntity) fileEntity, this).generateScriptFile();
             }
@@ -68,11 +74,10 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
             return;
         }
 
-        int timeOut = (fileEntity instanceof TestSuiteEntity && !((TestSuiteEntity) fileEntity)
-                .isPageLoadTimeoutDefault()) ? ((TestSuiteEntity) fileEntity).getPageLoadTimeout() : ExecutionUtil
-                .getDefaultImplicitTimeout();
-
-        initExecutionSetting();
+        int timeOut = (fileEntity instanceof TestSuiteEntity
+                && !((TestSuiteEntity) fileEntity).isPageLoadTimeoutDefault())
+                        ? ((TestSuiteEntity) fileEntity).getPageLoadTimeout()
+                        : ExecutionUtil.getDefaultImplicitTimeout();
         executionSetting.setTimeout(timeOut);
     }
 
@@ -121,8 +126,8 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
         propertyMap.put(RunConfiguration.PROJECT_DIR_PROPERTY, getProjectFolderLocation());
 
         propertyMap.put(RunConfiguration.HOST, hostConfiguration.getProperties());
-        
-        if (executionSetting == null) {            
+
+        if (executionSetting == null) {
             return propertyMap;
         }
         propertyMap.putAll(ExecutionUtil.getExecutionProperties(executionSetting, getDriverConnectors()));
@@ -134,6 +139,10 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
         propertyMap.put(RunConfiguration.EXCUTION_SOURCE_NAME, executedEntity.getSourceName());
         propertyMap.put(RunConfiguration.EXCUTION_SOURCE_DESCRIPTION, executedEntity.getSourceDescription());
         propertyMap.put(RunConfiguration.EXCUTION_SOURCE, executedEntity.getSourcePath());
+
+        ExecutionSessionSocketServer sessionServer = ExecutionSessionSocketServer.getInstance();
+        propertyMap.put(RunConfiguration.SESSION_SERVER_HOST, sessionServer.getServerHost());
+        propertyMap.put(RunConfiguration.SESSION_SERVER_PORT, sessionServer.getServerPort());
         return propertyMap;
     }
 
@@ -167,7 +176,7 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
         String strJson = gsonObj.toJson(getProperties());
         FileUtils.writeStringToFile(settingFile, strJson);
     }
-    
+
     @Override
     public Map<String, String> getAdditionalEnvironmentVariables() throws IOException {
         return new HashMap<>();

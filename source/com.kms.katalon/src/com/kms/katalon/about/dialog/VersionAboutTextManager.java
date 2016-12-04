@@ -10,8 +10,8 @@ import org.eclipse.swt.custom.StyledText;
 import org.eclipse.ui.internal.about.AboutItem;
 import org.eclipse.ui.internal.about.AboutTextManager;
 
+import com.kms.katalon.console.utils.VersionUtil;
 import com.kms.katalon.constants.MessageConstants;
-import com.kms.katalon.util.VersionUtil;
 
 @SuppressWarnings({ "restriction" })
 public class VersionAboutTextManager extends AboutTextManager {

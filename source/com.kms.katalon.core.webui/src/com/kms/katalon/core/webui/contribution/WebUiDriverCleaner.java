@@ -14,5 +14,4 @@ public class WebUiDriverCleaner implements IDriverCleaner {
     public void cleanDriverAfterRunningTestSuite() {
         DriverFactory.closeWebDriver();
     }
-
 }

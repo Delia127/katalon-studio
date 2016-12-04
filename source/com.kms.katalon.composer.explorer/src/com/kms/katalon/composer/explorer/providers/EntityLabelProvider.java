@@ -7,6 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.graphics.Image;
@@ -136,6 +137,9 @@ public class EntityLabelProvider extends TypeCheckedStyleTreeCellLabelProvider<I
     @Override
     protected void measure(Event event, Object element) {
         super.measure(event, element);
+        if (Platform.OS_WIN32.equals(Platform.getOS())) {
+            event.width += 1;
+        }
         if (canNotDrawSafely(element)) {
             return;
         }

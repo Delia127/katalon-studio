@@ -8,6 +8,7 @@ import org.eclipse.e4.ui.model.application.ui.menu.MMenuElement;
 import com.kms.katalon.composer.execution.menu.AbstractExecutionMenuContribution;
 import com.kms.katalon.composer.integration.kobiton.constants.ComposerIntegrationKobitonMessageConstants;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
+import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.integration.kobiton.preferences.KobitonPreferencesProvider;
 
@@ -38,6 +39,11 @@ public class KobitonExecutionDynamicContribution extends AbstractExecutionMenuCo
     @Override
     protected String getCommandId() {
         return KOBITON_EXECUTION_COMMAND_ID;
+    }
+
+    @Override
+    protected String getDriverTypeName() {
+        return WebUIDriverType.KOBITON_WEB_DRIVER.toString();
     }
 
 }

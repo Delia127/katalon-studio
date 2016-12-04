@@ -15,6 +15,8 @@ public class ComposerTestcaseMessageConstants extends NLS {
 
     public static String ADAP_MENU_CONTEXT_ENABLE;
 
+    public static String ADAP_MENU_CONTEXT_EXECUTE_FROM_TEST_STEP;
+
     public static String ADAP_MENU_CONTEXT_CHANGE_TO_STATEMENTS;
 
     public static String ADAP_MENU_CONTEXT_CHANGE_TO_COMMENTS;
@@ -241,6 +243,8 @@ public class ComposerTestcaseMessageConstants extends NLS {
 
     public static String PREF_MANUAL_MSG_UNABLE_TO_UPDATE;
 
+    public static String TITLE_DLD_WARN_REFRESH_TEST_CASE_HAVE_UNSAVED_CHANGES;
+
     public static String TREE_ASSERT_STATEMENT;
 
     public static String TREE_BINARY_STATEMENT;
@@ -307,6 +311,10 @@ public class ComposerTestcaseMessageConstants extends NLS {
 
     public static String ERR_CANNOT_DROP_ON_TEST_STEP_TABLE;
 
+    public static String ERR_MSG_UNABLE_TO_EXECUTE_FROM_TEST_STEP_STEP_INSIDE_BLOCK;
+
+    public static String ERR_MSG_UNABLE_TO_EXECUTE_FROM_TEST_STEP_STEP_NOT_SELECTED;
+
     public static String DIA_TITLE_TEST_CASE_PROPERTIES;
 
     public static String DEFAULT_FAILURE_HANDLING;
@@ -320,10 +328,16 @@ public class ComposerTestcaseMessageConstants extends NLS {
     public static String EDI_TITLE_TEST_DATA_BROWSER;
     
     public static String MENU_OPEN;
+
+    public static String MSG_DLD_WARN_REFRESH_TEST_CASE_HAVE_UNSAVED_CHANGES;
     
     public static String LABEL_PARAMETER_LIST;
+
+    public static String LBL_EXECUTION_EXISTING_SESSION_BLANK_TITLE;
     
     public static String DIA_WARNING_METHOD_IN_CLOSURE;
+    
+    public static String DIA_TITLE_CHECKPOINT_BROWSER;
 
     static {
         // initialize resource bundle

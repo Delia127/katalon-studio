@@ -11,6 +11,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.ast.editors.BinaryCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.BooleanCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.BooleanConstantComboBoxCellEditor;
+import com.kms.katalon.composer.testcase.ast.editors.CheckpointSelectionMethodCallBuilderDialog;
 import com.kms.katalon.composer.testcase.ast.editors.ClosureInputCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.ClosureListInputCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.EnumPropertyComboBoxCellEditor;
@@ -113,6 +114,9 @@ public class AstValueUtil {
 
     public static CellEditor getCellEditorForMethodCallExpression(Composite parent,
             MethodCallExpressionWrapper methodCallExpressionWrapper) {
+        if (methodCallExpressionWrapper.isFindCheckpointMethodCall()) {
+            return getCellEditorForFindCheckpoint(parent, methodCallExpressionWrapper);
+        }
         return new MethodCallInputCellEditor(parent, methodCallExpressionWrapper.getText());
     }
 
@@ -123,7 +127,8 @@ public class AstValueUtil {
 
     public static CellEditor getCellEditorForTestData(Composite parent,
             MethodCallExpressionWrapper methodCallExpressionWrapper) {
-        ArgumentListExpressionWrapper argumentListExpressionWrapper = (ArgumentListExpressionWrapper) methodCallExpressionWrapper.getArguments();
+        ArgumentListExpressionWrapper argumentListExpressionWrapper = (ArgumentListExpressionWrapper) methodCallExpressionWrapper
+                .getArguments();
         if (argumentListExpressionWrapper.getExpressions().isEmpty()) {
             return null;
         }
@@ -187,14 +192,23 @@ public class AstValueUtil {
         return new ListInputCellEditor(parent, listExpressionWrapper.getText());
     }
 
-    public static CellEditor getCellEditorForMapExpression(Composite parent, MapExpressionWrapper mapExpressionWrapper) {
+    public static CellEditor getCellEditorForMapExpression(Composite parent,
+            MapExpressionWrapper mapExpressionWrapper) {
         return new MapInputCellEditor(parent, mapExpressionWrapper.getText());
     }
 
     public static CellEditor getCellEditorForCallTestCase(Composite parent,
             MethodCallExpressionWrapper methodCallExpressionWrapper) {
-        String testCasePk = AstEntityInputUtil.findTestCaseIdArgumentFromFindTestCaseMethodCall(methodCallExpressionWrapper);
+        String testCasePk = AstEntityInputUtil
+                .findTestCaseIdArgumentFromFindTestCaseMethodCall(methodCallExpressionWrapper);
         return new TestCaseSelectionMethodCallBuilderDialogCellEditor(parent, testCasePk);
+    }
+
+    public static CellEditor getCellEditorForFindCheckpoint(Composite parent,
+            MethodCallExpressionWrapper methodCallExpressionWrapper) {
+        String checkpointPk = AstEntityInputUtil
+                .findCheckpointIdArgumentFromFindCheckpointMethodCall(methodCallExpressionWrapper);
+        return new CheckpointSelectionMethodCallBuilderDialog(parent, checkpointPk);
     }
 
     public static CellEditor getCellEditorForTestObject(Composite parent,
@@ -210,9 +224,11 @@ public class AstValueUtil {
         }
         return null;
     }
-    
-    public static CellEditor getCellEditorForClosureExpression(Composite parent, ClosureExpressionWrapper closureExpressionWrapper) {
-        return new ClosureInputCellEditor(parent, closureExpressionWrapper.getText(), closureExpressionWrapper.getParent());
+
+    public static CellEditor getCellEditorForClosureExpression(Composite parent,
+            ClosureExpressionWrapper closureExpressionWrapper) {
+        return new ClosureInputCellEditor(parent, closureExpressionWrapper.getText(),
+                closureExpressionWrapper.getParent());
     }
 
     public static void applyEditingValue(CellEditor editor) {

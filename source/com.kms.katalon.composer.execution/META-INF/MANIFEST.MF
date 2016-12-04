@@ -6,19 +6,17 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-ClassPath: .
 Bundle-Activator: com.kms.katalon.composer.execution.ExecutionComposerPlugin
 Bundle-Vendor: KMS
-Export-Package: com.kms.katalon.composer.execution.components, 
- com.kms.katalon.composer.execution.components.contributor, 
- com.kms.katalon.composer.execution.constants, 
- com.kms.katalon.composer.execution.dialog, 
- com.kms.katalon.composer.execution.handlers, 
- com.kms.katalon.composer.execution.launcher, 
- com.kms.katalon.composer.execution.menu, 
- com.kms.katalon.composer.execution.preferences, 
- com.kms.katalon.composer.execution.provider, 
- com.kms.katalon.composer.execution.settings, 
+Export-Package: com.kms.katalon.composer.execution.components,
+ com.kms.katalon.composer.execution.components.contributor,
+ com.kms.katalon.composer.execution.constants,
+ com.kms.katalon.composer.execution.dialog,
+ com.kms.katalon.composer.execution.handlers,
+ com.kms.katalon.composer.execution.launcher,
+ com.kms.katalon.composer.execution.menu,
+ com.kms.katalon.composer.execution.preferences,
+ com.kms.katalon.composer.execution.provider,
+ com.kms.katalon.composer.execution.settings,
  com.kms.katalon.composer.execution.util
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.e4.core.di,
  org.eclipse.jdt.ui,
  com.kms.katalon.entity,
@@ -78,7 +76,9 @@ Require-Bundle: org.eclipse.e4.core.di,
  com.kms.katalon.core.appium,
  org.eclipse.e4.ui.workbench.renderers.swt,
  com.kms.katalon.composer.resources
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
 Import-Package: com.google.common.base,
  com.google.common.collect,
- javax.inject,
- com.google.common.io
+ com.google.common.io,
+ javax.inject

@@ -11,5 +11,4 @@
 
 	<artifactId>com.kms.katalon.console</artifactId>
 	<packaging>eclipse-plugin</packaging>
-	<version>1.0.0.qualifier</version>
 </project>

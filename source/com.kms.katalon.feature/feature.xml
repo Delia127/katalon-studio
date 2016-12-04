@@ -284,7 +284,6 @@
       <import plugin="org.eclipse.e4.ui.di" version="0.10.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.e4.ui.services" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.emf.ecore.xmi" version="2.7.0" match="greaterOrEqual"/>
-      <import plugin="com.google.guava"/>
       <import plugin="org.eclipse.equinox.app" version="1.3.0" match="compatible"/>
       <import plugin="org.eclipse.e4.ui.workbench" version="0.10.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.e4.ui.services" version="0.1.0" match="greaterOrEqual"/>
@@ -1081,7 +1080,7 @@
          id="org.eclipse.jdt.core"
          download-size="0"
          install-size="0"
-         version="3.12.0.xx-201611160028-e46"
+         version="3.12.0.xx-201611170128-e46"
          unpack="false"/>
 
    <plugin
@@ -2164,6 +2163,13 @@
 
    <plugin
          id="com.kms.katalon.support.testing.katserver"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+         
+   <plugin
+         id="com.kms.katalon.console"
          download-size="0"
          install-size="0"
          version="0.0.0"

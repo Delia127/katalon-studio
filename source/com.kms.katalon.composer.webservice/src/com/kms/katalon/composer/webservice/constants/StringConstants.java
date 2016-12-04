@@ -30,6 +30,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_LBL_PARAMS = ComposerWebserviceMessageConstants.PA_LBL_PARAMS;
     public static final String PA_LBL_SOAP_HEADER_OPT = ComposerWebserviceMessageConstants.PA_LBL_SOAP_HEADER_OPT;
     public static final String PA_LBL_SOAP_BODY = ComposerWebserviceMessageConstants.PA_LBL_SOAP_BODY;
+    public static final String PA_LBL_XML_REQ_MSG = ComposerWebserviceMessageConstants.PA_LBL_XML_REQ_MSG;
 
 	// NewRequestDialog
     public static final String WIEW_TITLE_NEW = ComposerWebserviceMessageConstants.WIEW_TITLE_NEW;
@@ -43,4 +44,9 @@ public class StringConstants extends GlobalStringConstants {
 	public static final String VIEW_COL_VALUE = VALUE;
     public static final String VIEW_MENU_CONTEXT_INSERT_PROP = ComposerWebserviceMessageConstants.VIEW_MENU_CONTEXT_INSERT_PROP;
     public static final String VIEW_MENU_CONTEXT_DEL_PROPS = ComposerWebserviceMessageConstants.VIEW_MENU_CONTEXT_DEL_PROPS;
+    
+    public static final String MSG_CANNOT_LOAD_WS = ComposerWebserviceMessageConstants.MSG_CANNOT_LOAD_WS;
+    public static final String LBL_LOAD_FROM_WSDL = ComposerWebserviceMessageConstants.LBL_LOAD_FROM_WSDL;
+    public static final String MSG_CANNOT_PARSE_WSDL = ComposerWebserviceMessageConstants.MSG_CANNOT_PARSE_WSDL;
+    public static final String MSG_FETCHING_FROM_WSDL = ComposerWebserviceMessageConstants.MSG_FETCHING_FROM_WSDL;     
 }

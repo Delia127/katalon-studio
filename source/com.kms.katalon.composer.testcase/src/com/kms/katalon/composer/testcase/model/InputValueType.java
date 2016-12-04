@@ -53,6 +53,7 @@ public enum InputValueType implements InputValueEditorProvider {
     TestCase,
     TestObject,
     TestData,
+    Checkpoint,
     Class,
     This,
     Throwable,
@@ -94,8 +95,7 @@ public enum InputValueType implements InputValueEditorProvider {
             case Map:
                 return AstValueUtil.getCellEditorForMapExpression(parent, (MapExpressionWrapper) astObject);
             case MethodCall:
-                return AstValueUtil.getCellEditorForMethodCallExpression(parent,
-                        (MethodCallExpressionWrapper) astObject);
+                return AstValueUtil.getCellEditorForMethodCallExpression(parent, (MethodCallExpressionWrapper) astObject);
             case Number:
                 return AstValueUtil.getCellEditorForNumberConstantExpression(parent);
             case Property:
@@ -112,6 +112,8 @@ public enum InputValueType implements InputValueEditorProvider {
                 return AstValueUtil.getCellEditorForTestDataValue(parent, (MethodCallExpressionWrapper) astObject);
             case TestObject:
                 return AstValueUtil.getCellEditorForTestObject(parent, (MethodCallExpressionWrapper) astObject);
+            case Checkpoint:
+                return AstValueUtil.getCellEditorForFindCheckpoint(parent, (MethodCallExpressionWrapper) astObject);
             case Throwable:
                 return AstValueUtil.getCellEditorForThrowable(parent, (ConstructorCallExpressionWrapper) astObject);
             case Variable:
@@ -183,6 +185,8 @@ public enum InputValueType implements InputValueEditorProvider {
                 return AstEntityInputUtil.createNewFindTestDataExpression(null, parent);
             case TestCase:
                 return AstEntityInputUtil.createNewFindTestCaseMethodCall(null, parent);
+            case Checkpoint:
+                return AstEntityInputUtil.createNewFindCheckpointMethodCall(null, parent);
             case This:
                 return new VariableExpressionWrapper(THIS_VARIABLE, parent);
             case Throwable:
@@ -235,6 +239,9 @@ public enum InputValueType implements InputValueEditorProvider {
         if (methodCall.isGetTestDataValueMethodCall()) {
             return AstEntityInputUtil.getTextValueForTestDataValueArgument(methodCall);
         }
+        if (methodCall.isFindCheckpointMethodCall()) {
+            return AstEntityInputUtil.getTextValueForFindCheckpoint(methodCall);
+        }
         return methodCall.getText();
     }
 
@@ -279,6 +286,8 @@ public enum InputValueType implements InputValueEditorProvider {
                 return isClassAssignable(com.kms.katalon.core.testdata.TestData.class, paramType);
             case TestObject:
                 return isClassAssignable(com.kms.katalon.core.testobject.TestObject.class, paramType);
+            case Checkpoint:
+                return isClassAssignable(com.kms.katalon.core.checkpoint.Checkpoint.class, paramType);
             case Binary:
             case GlobalVariable:
             case MethodCall:

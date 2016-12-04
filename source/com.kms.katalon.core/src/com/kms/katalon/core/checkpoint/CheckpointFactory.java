@@ -33,6 +33,7 @@ import com.kms.katalon.core.util.JsonUtil;
 import com.kms.katalon.core.util.PathUtil;
 
 public class CheckpointFactory {
+
     private static final String TAKEN_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 
     private static final String CHECKPOINT_FILE_EXTENSION = ".cpt";
@@ -40,11 +41,11 @@ public class CheckpointFactory {
     private static final String NODE_IS_FROM_TEST_DATA = "is-from-test-data";
 
     private static final String NODE_SOURCE_INFO = "source-info";
-    
+
     private static final String NODE_DB_SOURCE_INFO = "db-source-info";
-    
+
     private static final String NODE_EXCEL_SOURCE_INFO = "excel-source-info";
-    
+
     private static final String NODE_CSV_SOURCE_INFO = "csv-source-info";
 
     private static final String NODE_DATA = "checkpoint-data";
@@ -78,6 +79,20 @@ public class CheckpointFactory {
     private static final String[] SUPPORTED_TEST_DATA_TYPES = new String[] { TestDataType.EXCEL_FILE.toString(),
             TestDataType.CSV_FILE.toString(), TestDataType.DB_DATA.toString() };
 
+    /**
+     * Finds {@link Checkpoint} by its id
+     * 
+     * @param checkpointId
+     * Must be checkpoint full id
+     * </p>
+     * Eg: Using "Checkpoints/Sample Checkpoint" (full id)
+     * <code>checkpointRelativeId</code> "Sample Checkpoint" is not accepted
+     * @return an instance of {@link Checkpoint}
+     * @throws IllegalArgumentException 
+     *  <code>checkpointId</code> is null, 
+     *  checkpoint doesn't exist or 
+     *  checkpoint is missing element(s)
+     */
     public static Checkpoint findCheckpoint(String checkpointId) throws IllegalArgumentException {
         if (checkpointId == null) {
             throw new IllegalArgumentException(StringConstants.EXC_MSG_CHECKPOINT_ID_IS_NULL);
@@ -116,15 +131,16 @@ public class CheckpointFactory {
 
             boolean isFromTestData = Boolean.parseBoolean(sourceInfoElement.element(NODE_IS_FROM_TEST_DATA).getText());
             String sourceUrl = sourceInfoElement.element(NODE_SOURCE_URL).getText();
-            Date takenDate = new SimpleDateFormat(TAKEN_DATE_FORMAT).parse(checkpointElement.element(NODE_TAKEN_DATE)
-                    .getText());
+            Date takenDate = new SimpleDateFormat(TAKEN_DATE_FORMAT)
+                    .parse(checkpointElement.element(NODE_TAKEN_DATE).getText());
 
             Checkpoint checkpoint = new Checkpoint(checkpointId);
             checkpoint.setTakenDate(takenDate);
 
             String jsonData = checkpointElement.element(NODE_DATA).getText();
             if (StringUtils.isNotBlank(jsonData)) {
-                List<List<CheckpointCell>> checkpointData = JsonUtil.fromJson(jsonData, Checkpoint.CHECKPOINT_DATA_TYPE);
+                List<List<CheckpointCell>> checkpointData = JsonUtil.fromJson(jsonData,
+                        Checkpoint.CHECKPOINT_DATA_TYPE);
                 checkpoint.setCheckpointData(checkpointData);
             }
 
@@ -138,8 +154,8 @@ public class CheckpointFactory {
             validateElementName(sourceInfoElement, NODE_SOURCE_TYPE);
             String sourceType = sourceInfoElement.element(NODE_SOURCE_TYPE).getText();
             if (!ArrayUtils.contains(SUPPORTED_TEST_DATA_TYPES, sourceType)) {
-                throw new IllegalArgumentException(MessageFormat.format(
-                        StringConstants.EXC_MSG_CHECKPOINT_INVALID_SOURCE_TYPE, sourceType));
+                throw new IllegalArgumentException(
+                        MessageFormat.format(StringConstants.EXC_MSG_CHECKPOINT_INVALID_SOURCE_TYPE, sourceType));
             }
 
             TestDataType testDataSourceType = TestDataType.fromValue(sourceType);
@@ -155,11 +171,11 @@ public class CheckpointFactory {
             validateElementName(sourceInfoElement, NODE_SHEETNAME_SEPARATOR);
             validateElementName(sourceInfoElement, NODE_USING_RELAITVE_PATH);
 
-            boolean isUsingFirstRowAsHeader = Boolean.parseBoolean(sourceInfoElement.element(
-                    NODE_USING_FIRST_ROW_AS_HEADER).getText());
+            boolean isUsingFirstRowAsHeader = Boolean
+                    .parseBoolean(sourceInfoElement.element(NODE_USING_FIRST_ROW_AS_HEADER).getText());
             String sheetNameOrSeparator = sourceInfoElement.element(NODE_SHEETNAME_SEPARATOR).getText();
-            boolean isUsingRelativePath = Boolean.parseBoolean(sourceInfoElement.element(NODE_USING_RELAITVE_PATH)
-                    .getText());
+            boolean isUsingRelativePath = Boolean
+                    .parseBoolean(sourceInfoElement.element(NODE_USING_RELAITVE_PATH).getText());
             sourceUrl = getSourcePath(sourceUrl, isUsingRelativePath);
 
             // source data is from Excel
@@ -177,9 +193,9 @@ public class CheckpointFactory {
             // This won't happen
             return null;
         } catch (Exception e) {
-            throw new StepFailedException(MessageFormat.format(
-                    StringConstants.EXC_MSG_CANNOT_FIND_CHECKPOINT_WITH_ID_ROOT_CAUSE, checkpointId,
-                    ExceptionsUtil.getMessageForThrowable(e)));
+            throw new StepFailedException(
+                    MessageFormat.format(StringConstants.EXC_MSG_CANNOT_FIND_CHECKPOINT_WITH_ID_ROOT_CAUSE,
+                            checkpointId, ExceptionsUtil.getMessageForThrowable(e)));
         }
     }
 
@@ -198,8 +214,8 @@ public class CheckpointFactory {
     private static List<List<Object>> getTestData(String testDataId) throws Exception {
         TestData testData = TestDataFactory.findTestData(testDataId);
         if (testData == null) {
-            throw new IllegalArgumentException(MessageFormat.format(
-                    StringConstants.EXC_MSG_NOT_FOUND_TEST_DATA_WITH_ID, testDataId));
+            throw new IllegalArgumentException(
+                    MessageFormat.format(StringConstants.EXC_MSG_NOT_FOUND_TEST_DATA_WITH_ID, testDataId));
         }
         return testData.getAllData();
     }
@@ -243,23 +259,23 @@ public class CheckpointFactory {
 
     private static void validateElementName(Element element, String elementName) {
         if (element.element(elementName) == null) {
-            throw new IllegalArgumentException(MessageFormat.format(
-                    StringConstants.EXC_MSG_CHECKPOINT_IS_MISSING_ELEMENT, elementName));
+            throw new IllegalArgumentException(
+                    MessageFormat.format(StringConstants.EXC_MSG_CHECKPOINT_IS_MISSING_ELEMENT, elementName));
         }
     }
 
     private static DatabaseConnection getDatabaseConnection(Element sourceInfoElement) throws Exception {
         validateElementName(sourceInfoElement, NODE_USING_GLOBAL_DB_SETTING);
-        boolean isUsingGlobalDBSetting = Boolean.parseBoolean(sourceInfoElement.element(NODE_USING_GLOBAL_DB_SETTING)
-                .getText());
+        boolean isUsingGlobalDBSetting = Boolean
+                .parseBoolean(sourceInfoElement.element(NODE_USING_GLOBAL_DB_SETTING).getText());
 
         if (isUsingGlobalDBSetting) {
             return new DatabaseSettings(getProjectDir()).getDatabaseConnection();
         }
 
         validateElementName(sourceInfoElement, NODE_SECURE_USER_ACCOUNT);
-        boolean isSecureUserAccount = Boolean.parseBoolean(sourceInfoElement.element(NODE_SECURE_USER_ACCOUNT)
-                .getText());
+        boolean isSecureUserAccount = Boolean
+                .parseBoolean(sourceInfoElement.element(NODE_SECURE_USER_ACCOUNT).getText());
 
         String user = null;
         String password = null;

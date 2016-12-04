@@ -41,6 +41,7 @@ import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.exceptions.JobCancelException;
+import com.kms.katalon.composer.execution.jobs.ExecuteTestCaseJob;
 import com.kms.katalon.composer.execution.launcher.IDELaunchShorcut;
 import com.kms.katalon.composer.execution.launcher.IDELauncher;
 import com.kms.katalon.composer.testcase.parts.TestCaseCompositePart;
@@ -52,7 +53,6 @@ import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
-import com.kms.katalon.execution.entity.TestCaseExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.launcher.ILauncher;
@@ -125,9 +125,9 @@ public abstract class AbstractExecutionHandler {
         return false;
     }
 
-    private LaunchMode getLaunchMode(ParameterizedCommand command) {
-        String launchModeAsString = ObjectUtils.toString(command.getParameterMap().get(
-                IdConstants.RUN_MODE_PARAMETER_ID));
+    protected LaunchMode getLaunchMode(ParameterizedCommand command) {
+        String launchModeAsString = ObjectUtils
+                .toString(command.getParameterMap().get(IdConstants.RUN_MODE_PARAMETER_ID));
         return LaunchMode.fromText(launchModeAsString);
     }
 
@@ -140,11 +140,8 @@ public abstract class AbstractExecutionHandler {
         } catch (SWTException e) {
             // Ignore it
         } catch (Exception e) {
-            MessageDialog.openError(
-                    Display.getCurrent().getActiveShell(),
-                    StringConstants.ERROR,
-                    MessageFormat.format(StringConstants.HAND_ERROR_MSG_UNABLE_TO_EXECUTE_TEST_SCRIPT_ROOT_CAUSE,
-                            e.getMessage()));
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR, MessageFormat
+                    .format(StringConstants.HAND_ERROR_MSG_UNABLE_TO_EXECUTE_TEST_SCRIPT_ROOT_CAUSE, e.getMessage()));
             LoggerSingleton.logError(e);
         }
     }
@@ -168,8 +165,8 @@ public abstract class AbstractExecutionHandler {
                     }
                     return testCaseCompositePart.getOriginalTestCase();
                 } catch (Exception e) {
-                    MessageDialog.openError(Display.getCurrent().getActiveShell(),
-                            StringConstants.ERROR_TITLE, StringConstants.HAND_ERROR_MSG_ERROR_IN_SCRIPT);
+                    MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
+                            StringConstants.HAND_ERROR_MSG_ERROR_IN_SCRIPT);
                     return null;
                 }
             } else if (partElementId.startsWith(IdConstants.TESTSUITE_CONTENT_PART_ID_PREFIX)
@@ -189,26 +186,27 @@ public abstract class AbstractExecutionHandler {
         return null;
     }
 
-    protected abstract IRunConfiguration getRunConfigurationForExecution(String projectDir) throws IOException,
-            ExecutionException, InterruptedException;
+    protected abstract IRunConfiguration getRunConfigurationForExecution(String projectDir)
+            throws IOException, ExecutionException, InterruptedException;
 
     public void execute(LaunchMode launchMode) throws Exception {
         String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
-
-        Entity targetEntity = getExecutionTarget();
-
-        if (targetEntity == null) {
-            return;
-        }
 
         IRunConfiguration runConfiguration = getRunConfigurationForExecution(projectDir);
         if (runConfiguration == null) {
             return;
         }
+        execute(launchMode, runConfiguration);
+    }
 
+    protected void execute(LaunchMode launchMode, IRunConfiguration runConfiguration) throws Exception {
+        Entity targetEntity = getExecutionTarget();
+
+        if (targetEntity == null) {
+            return;
+        }
         if (targetEntity instanceof TestCaseEntity) {
             TestCaseEntity testCase = (TestCaseEntity) targetEntity;
-
             executeTestCase(testCase, launchMode, runConfiguration);
         } else if (targetEntity instanceof TestSuiteEntity) {
             TestSuiteEntity testSuite = (TestSuiteEntity) targetEntity;
@@ -218,49 +216,13 @@ public abstract class AbstractExecutionHandler {
 
     public void executeTestCase(final TestCaseEntity testCase, final LaunchMode launchMode,
             final IRunConfiguration runConfig) throws Exception {
-        if (testCase != null) {
-            Job job = new Job(StringConstants.HAND_JOB_LAUNCHING_TEST_CASE) {
-                @Override
-                protected IStatus run(final IProgressMonitor monitor) {
-                    try {
-                        monitor.beginTask(StringConstants.HAND_JOB_LAUNCHING_TEST_CASE, 3);
-
-                        monitor.subTask(StringConstants.HAND_JOB_ACTIVATING_VIEWERS);
-                        openConsoleLog();
-                        validateJobProgressMonitor(monitor);
-                        monitor.worked(1);
-
-                        monitor.subTask(StringConstants.HAND_JOB_BUILDING_SCRIPTS);
-
-                        runConfig.build(testCase, new TestCaseExecutedEntity(testCase));
-                        validateJobProgressMonitor(monitor);
-
-                        LauncherManager launcherManager = LauncherManager.getInstance();
-                        ILauncher launcher = new IDELauncher(launcherManager, runConfig, launchMode);
-                        launcherManager.addLauncher(launcher);
-
-                        monitor.worked(1);
-
-                        monitor.done();
-                        return Status.OK_STATUS;
-                    } catch (JobCancelException e) {
-                        return Status.CANCEL_STATUS;
-                    } catch (final Exception e) {
-                        sync.syncExec(new Runnable() {
-                            @Override
-                            public void run() {
-                                MultiStatusErrorDialog.showErrorDialog(e,
-                                        StringConstants.HAND_ERROR_MSG_UNABLE_TO_EXECUTE_SELECTED_TEST_CASE,
-                                        StringConstants.HAND_ERROR_MSG_REASON_WRONG_SYNTAX);
-                            }
-                        });
-                        return Status.CANCEL_STATUS;
-                    }
-                }
-            };
-            job.setUser(true);
-            job.schedule();
+        if (testCase == null) {
+            return;
         }
+        Job job = new ExecuteTestCaseJob(StringConstants.HAND_JOB_LAUNCHING_TEST_CASE, runConfig, testCase, launchMode,
+                sync);
+        job.setUser(true);
+        job.schedule();
     }
 
     // protected void executeTestSuite(final TestSuiteEntity testSuite, final
@@ -308,7 +270,8 @@ public abstract class AbstractExecutionHandler {
                             @Override
                             public void run() {
                                 MessageDialog.openWarning(Display.getCurrent().getActiveShell(),
-                                        StringConstants.WARN_TITLE, StringConstants.HAND_WARN_MSG_NO_TEST_CASE_SELECTED);
+                                        StringConstants.WARN_TITLE,
+                                        StringConstants.HAND_WARN_MSG_NO_TEST_CASE_SELECTED);
                             }
                         });
                         return Status.CANCEL_STATUS;
@@ -390,7 +353,11 @@ public abstract class AbstractExecutionHandler {
         });
     }
 
-    private void validateJobProgressMonitor(IProgressMonitor monitor) throws JobCancelException {
+    public UISynchronize getSync() {
+        return sync;
+    }
+
+    void validateJobProgressMonitor(IProgressMonitor monitor) throws JobCancelException {
         if (monitor.isCanceled()) {
             throw new JobCancelException();
         }

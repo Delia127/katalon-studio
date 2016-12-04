@@ -44,6 +44,8 @@ public class TreeTableMenuItemConstants {
 	public static final int CUSTOM_KEYWORD_MENU_ITEM_ID = 32;
 	public static final int BUILTIN_KEYWORD_MENU_ITEM_ID = 33;
 	
+	public static final int EXECUTE_FROM_TEST_STEP_MENU_ITEM_ID = 50;
+	
 	public static final int COPY_MENU_ITEM_ID = 64;
 	public static final int CUT_MENU_ITEM_ID = 65;
 	public static final int PASTE_MENU_ITEM_ID = 66;

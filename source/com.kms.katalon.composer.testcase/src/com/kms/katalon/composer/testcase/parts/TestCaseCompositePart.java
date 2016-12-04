@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.testcase.parts;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -42,9 +43,14 @@ import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IPropertyListener;
@@ -60,9 +66,10 @@ import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
-import com.kms.katalon.composer.components.tree.ITreeEntity;
+import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
 import com.kms.katalon.composer.parts.MultipleTabsCompositePart;
 import com.kms.katalon.composer.testcase.actions.KatalonFormatAction;
+import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.exceptions.GroovyParsingException;
@@ -70,6 +77,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput;
 import com.kms.katalon.composer.testcase.preferences.TestCasePreferenceDefaultValueInitializer;
+import com.kms.katalon.composer.testcase.providers.TestObjectScriptDropListener;
 import com.kms.katalon.composer.testcase.util.TestCaseEntityUtil;
 import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
 import com.kms.katalon.composer.util.groovy.GroovyGuiUtil;
@@ -244,7 +252,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
                             return;
                         }
                         if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_MANUAL_PART_INDEX
-                                && (isScriptChanged || !isInitialized)) {
+                                && (isScriptChanged || scriptNode == null)) {
                             setScriptContentToManual();
                         } else if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_EDITOR_PART_INDEX
                                 && childTestCasePart.isManualScriptChanged()) {
@@ -284,7 +292,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
 
                         GroovyEditorUtil.showProblems(groovyEditor);
                     }
-                    checkDirty();
+                    updateDirty();
                 } catch (Exception e) {
                     LoggerSingleton.logError(e);
                 }
@@ -296,6 +304,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
                 // TODO Auto-generated method stub
             }
         });
+        addTestObjectDropListener();
     }
 
     private void addFormatAction() {
@@ -387,7 +396,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
                 groovyEditor.getViewer().getDocument().set(stringBuilder.toString());
                 childTestCasePart.setManualScriptChanged(false);
                 childTestCaseEditorPart.getModel().setDirty(true);
-                checkDirty();
+                updateDirty();
                 return true;
             } catch (Exception e) {
                 LoggerSingleton.logError(e);
@@ -422,6 +431,10 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
     public MPart getChildCompatibilityPart() {
         return childTestCaseEditorPart.getModel();
     }
+    
+    public GroovyEditor getChildGroovyEditor() {
+        return (GroovyEditor) childTestCaseEditorPart.getEditor();
+    }
 
     public MPart getChildVariablesPart() {
         return childTestCaseVariablesPart.getMPart();
@@ -451,7 +464,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
     public void addVariables(VariableEntity[] variables) {
         childTestCaseVariablesPart.addVariable(variables);
     }
-    
+
     public void deleteVariables(List<VariableEntity> variables) {
         childTestCaseVariablesPart.deleteVariables(variables);
     }
@@ -477,7 +490,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
             List<VariableEntity> variableList = testCase.getVariables();
             variableList.clear();
             variableList.addAll(childTestCaseVariablesPart.getVariablesList());
-            
+
             // back-up
             String oldPk = originalTestCase.getId();
             String oldIdForDisplay = originalTestCase.getIdForDisplay();
@@ -494,8 +507,8 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
                 TestCaseController.getInstance().updateTestCase(originalTestCase);
                 // Send event if Test Case name has changed
                 if (nameChanged) {
-                    eventBroker.post(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, new Object[] { oldIdForDisplay,
-                            originalTestCase.getIdForDisplay() });
+                    eventBroker.post(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM,
+                            new Object[] { oldIdForDisplay, originalTestCase.getIdForDisplay() });
 
                 }
 
@@ -541,8 +554,12 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
         dirty.setDirty(isDirty);
     }
 
-    public void checkDirty() {
-        dirty.setDirty(isAnyChildDirty());
+    public void updateDirty() {
+        updateDirty(isAnyChildDirty());
+    }
+
+    private void updateDirty(boolean isDirty) {
+        dirty.setDirty(isDirty);
         childTestCasePart.getMPart().setDirty(false);
         childTestCaseVariablesPart.getMPart().setDirty(false);
         childTestCaseEditorPart.getModel().setDirty(false);
@@ -559,7 +576,8 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
         try {
             save();
         } catch (Exception e) {
-            MessageDialog.openError(null, StringConstants.ERROR_TITLE, StringConstants.PA_ERROR_MSG_UNABLE_TO_SAVE_PART);
+            MessageDialog.openError(null, StringConstants.ERROR_TITLE,
+                    StringConstants.PA_ERROR_MSG_UNABLE_TO_SAVE_PART);
             LoggerSingleton.logError(e);
         }
     }
@@ -603,40 +621,61 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
         } else if (event.getTopic().equals(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM)) {
             try {
                 Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-                if (object != null && object instanceof ITreeEntity) {
-                    if (object instanceof TestCaseTreeEntity) {
-                        TestCaseTreeEntity testCaseTreeEntity = (TestCaseTreeEntity) object;
-                        TestCaseEntity testCase = (TestCaseEntity) (testCaseTreeEntity).getObject();
-                        if (testCase != null && testCase.getId().equals(getTestCase().getId())) {
-                            if (TestCaseController.getInstance().getTestCase(testCase.getId()) != null) {
-                                boolean isDirty = dirty.isDirty();
-                                changeOriginalTestCase(testCase);
-                                childTestCaseVariablesPart.loadVariables();
-                                TestCaseTreeTableInput treeTableInput = childTestCasePart.getTreeTableInput();
-                                if (treeTableInput != null) {
-                                    treeTableInput.reloadTestCaseVariables();
-                                }
-                                updatePart(testCase);
-                                childTestCaseIntegrationPart.loadInput();
-                                checkDirty();
-                                dirty.setDirty(isDirty);
-                            } else {
-                                dispose();
-                            }
-                        }
-                    } else if (object instanceof FolderTreeEntity) {
-                        FolderEntity folder = (FolderEntity) ((ITreeEntity) object).getObject();
-                        if (folder != null
-                                && FolderController.getInstance().isFolderAncestorOfEntity(folder, getTestCase())) {
-                            if (TestCaseController.getInstance().getTestCase(getTestCase().getId()) == null) {
-                                dispose();
-                            }
-                        }
-                    }
+                if (object instanceof TestCaseTreeEntity) {
+                    handleTestCaseRefreshed(((TestCaseTreeEntity) object).getObject());
+                } else if (object instanceof FolderTreeEntity) {
+                    handleFolderRefreshed(((FolderTreeEntity) object).getObject());
                 }
             } catch (Exception e) {
                 LoggerSingleton.logError(e);
             }
+        }
+    }
+
+    private void handleTestCaseRefreshed(TestCaseEntity testCase) throws Exception {
+        TestCaseEntity currentTestCase = getTestCase();
+        if (testCase == null || !testCase.getId().equals(currentTestCase.getId())) {
+            return;
+        }
+        if (isTestCaseDisposed(testCase)) {
+            dispose();
+            return;
+        }
+        refresh(testCase);
+    }
+
+    private void refresh(TestCaseEntity testCase) throws Exception {
+        if (dirty.isDirty() && !MessageDialog.openConfirm(parentShell,
+                ComposerTestcaseMessageConstants.TITLE_DLD_WARN_REFRESH_TEST_CASE_HAVE_UNSAVED_CHANGES,
+                ComposerTestcaseMessageConstants.MSG_DLD_WARN_REFRESH_TEST_CASE_HAVE_UNSAVED_CHANGES)) {
+            return;
+        }
+        changeOriginalTestCase(testCase);
+        childTestCaseVariablesPart.loadVariables();
+        TestCaseTreeTableInput treeTableInput = childTestCasePart.getTreeTableInput();
+        if (treeTableInput != null) {
+            treeTableInput.reloadTestCaseVariables();
+        }
+        updatePart(testCase);
+        childTestCaseIntegrationPart.loadInput();
+        updateDirty(false);
+        clearChildsUndoRedoHistory();
+    }
+
+    private void clearChildsUndoRedoHistory() {
+        childTestCasePart.clearHistory();
+        childTestCaseVariablesPart.clearHistory();
+    }
+
+    private boolean isTestCaseDisposed(TestCaseEntity testCase) throws Exception {
+        return TestCaseController.getInstance().getTestCase(testCase.getId()) == null;
+    }
+
+    private void handleFolderRefreshed(FolderEntity folder) throws Exception {
+        TestCaseEntity currentTestCase = getTestCase();
+        if (folder != null && FolderController.getInstance().isFolderAncestorOfEntity(folder, currentTestCase)
+                && isTestCaseDisposed(currentTestCase)) {
+            dispose();
         }
     }
 
@@ -671,23 +710,24 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
                 MPartStack partStack = (MPartStack) compositePart.getChildren().get(0);
                 partStack.setElementId(newCompositePartId + IdConstants.TEST_CASE_SUB_PART_STACK_ID_SUFFIX);
 
-                childTestCasePart.getMPart().setElementId(
-                        newCompositePartId + IdConstants.TEST_CASE_GENERAL_PART_ID_SUFFIX);
-                childTestCaseVariablesPart.getMPart().setElementId(
-                        newCompositePartId + IdConstants.TEST_CASE_VARIABLES_PART_ID_SUFFIX);
+                childTestCasePart.getMPart()
+                        .setElementId(newCompositePartId + IdConstants.TEST_CASE_GENERAL_PART_ID_SUFFIX);
+                childTestCaseVariablesPart.getMPart()
+                        .setElementId(newCompositePartId + IdConstants.TEST_CASE_VARIABLES_PART_ID_SUFFIX);
 
                 partService.hidePart(getChildCompatibilityPart(), true);
                 String testCaseEditorId = newCompositePartId + IdConstants.TEST_CASE_EDITOR_PART_ID_SUFFIX;
-                MPart editorPart = GroovyEditorUtil.createTestCaseEditorPart(ResourcesPlugin.getWorkspace()
-                        .getRoot()
-                        .getFile(GroovyGuiUtil.getGroovyScriptForTestCase(testCase).getPath()), partStack,
-                        testCaseEditorId, partService, CHILD_TEST_CASE_EDITOR_PART_INDEX);
+                MPart editorPart = GroovyEditorUtil.createTestCaseEditorPart(
+                        ResourcesPlugin.getWorkspace()
+                                .getRoot()
+                                .getFile(GroovyGuiUtil.getGroovyScriptForTestCase(testCase).getPath()),
+                        partStack, testCaseEditorId, partService, CHILD_TEST_CASE_EDITOR_PART_INDEX);
                 partService.activate(editorPart);
                 initComponent();
                 partStack.setSelectedElement(getChildManualPart());
                 setScriptContentToManual();
                 childTestCaseEditorPart.getEditor().addPropertyListener(getChildPropertyListner());
-                checkDirty();
+                updateDirty();
             }
         }
         boolean isAnyChildDirty = isAnyChildDirty();
@@ -700,14 +740,14 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
         childTestCasePart.getTreeTableInput().reloadTestCaseVariables();
         childTestCaseIntegrationPart.loadInput();
 
-        checkDirty();
+        updateDirty();
         setDirty(isAnyChildDirty);
     }
 
     public void setSelectedPart(MPart partToSelect) {
         if (subPartStack.getChildren().contains(partToSelect)) {
             subPartStack.setSelectedElement(partToSelect);
-            if (partToSelect == getChildManualPart() && (isScriptChanged || !isInitialized)) {
+            if (partToSelect == getChildManualPart() && (isScriptChanged || scriptNode == null)) {
                 setScriptContentToManual();
             } else if (partToSelect == getChildCompatibilityPart() && childTestCasePart.isManualScriptChanged()) {
                 setChildEditorContents(scriptNode);
@@ -738,7 +778,8 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
 
     public boolean isTestCaseEmpty() throws Exception {
         try {
-            scriptNode = GroovyWrapperParser.parseGroovyScriptIntoNodeWrapper(groovyEditor.getViewer().getDocument().get());
+            scriptNode = GroovyWrapperParser
+                    .parseGroovyScriptIntoNodeWrapper(groovyEditor.getViewer().getDocument().get());
             childTestCasePart.loadASTNodesToTreeTable(scriptNode);
             isScriptChanged = false;
         } catch (Exception e) {
@@ -750,6 +791,27 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
             scriptNode = new ScriptNodeWrapper(testCase.getRelativePathForUI());
         }
         return (childTestCasePart.isTestCaseEmpty());
+    }
+    
+    private void addTestObjectDropListener() {
+        Control control = (Control) groovyEditor.getAdapter(Control.class);
+        if (!(control instanceof StyledText)) {
+            return;
+        }
+        DropTarget dropTarget = null;
+        Object existingDropTarget = control.getData(DND.DROP_TARGET_KEY);
+        if (existingDropTarget != null) {
+            dropTarget = (DropTarget) existingDropTarget;
+        } else {
+            dropTarget = new DropTarget(control, DND.DROP_COPY);
+        }
+        Transfer[] transfers = dropTarget.getTransfer();
+        List<Transfer> treeEntityTransfers = TransferTypeCollection.getInstance().getTreeEntityTransfer();
+        if (transfers.length != 0) {
+            treeEntityTransfers.addAll(Arrays.asList(transfers));
+        }
+        dropTarget.setTransfer(treeEntityTransfers.toArray(new Transfer[treeEntityTransfers.size()]));
+        dropTarget.addDropListener(new TestObjectScriptDropListener(groovyEditor.getViewer().getTextWidget()));
     }
 
     public MCompositePart getCompositePart() {
@@ -766,9 +828,8 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
     @Optional
     public void onSelect(@UIEventTopic(UIEvents.UILifeCycle.BRINGTOTOP) Event event) {
         MPart part = EventUtil.getPart(event);
-        if (part == null
-                || !StringUtils.startsWith(part.getElementId(),
-                        EntityPartUtil.getTestCaseCompositePartId(originalTestCase.getId()))) {
+        if (part == null || !StringUtils.startsWith(part.getElementId(),
+                EntityPartUtil.getTestCaseCompositePartId(originalTestCase.getId()))) {
             return;
         }
 

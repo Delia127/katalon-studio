@@ -55,6 +55,8 @@ import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.impl.dialogs.AddMailRecipientDialog;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.execution.constants.GenerateCommandPreferenceConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.util.MobileDeviceUIProvider;
 import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
@@ -80,6 +82,7 @@ import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
 import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.execution.util.MailUtil;
 import com.kms.katalon.execution.webui.driver.RemoteWebDriverConnector.RemoteWebDriverConnectorType;
+import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class GenerateCommandDialog extends AbstractDialog {
@@ -389,7 +392,8 @@ public class GenerateCommandDialog extends AbstractDialog {
         chkRetryFailedTestCase = new Button(compRetry, SWT.CHECK);
         chkRetryFailedTestCase.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         chkRetryFailedTestCase.setText(StringConstants.DIA_CHK_FOR_FAILED_TEST_CASES);
-        chkRetryFailedTestCase.setToolTipText(com.kms.katalon.composer.testsuite.constants.StringConstants.PA_LBL_TOOLTIP_TEST_CASE_ONLY);
+        chkRetryFailedTestCase.setToolTipText(
+                com.kms.katalon.composer.testsuite.constants.StringConstants.PA_LBL_TOOLTIP_TEST_CASE_ONLY);
 
         Label lblUpdateStatusTiming = new Label(grpOptionsContainer, SWT.NONE);
         lblUpdateStatusTiming.setText(StringConstants.DIA_LBL_UPDATE_EXECUTION_STATUS);
@@ -422,7 +426,8 @@ public class GenerateCommandDialog extends AbstractDialog {
 
         txtRemoteWebDriverURL.setEnabled(false);
         comboRemoteWebDriverType.setEnabled(false);
-        comboRemoteWebDriverType.setItems(RemoteWebDriverConnectorType.stringValues());
+        String[] webDriverTypes = RemoteWebDriverConnectorType.stringValues();
+        comboRemoteWebDriverType.setItems(webDriverTypes);
         comboRemoteWebDriverType.select(0);
 
         comboMobileDevice.setEnabled(false);
@@ -432,7 +437,8 @@ public class GenerateCommandDialog extends AbstractDialog {
         comboMobileDevice.setItems(mobileDevices);
 
         comboCustomExecution.setEnabled(false);
-        comboCustomExecution.setItems(RunConfigurationCollector.getInstance().getAllCustomRunConfigurationIds());
+        String[] customRunConfigurationIds = RunConfigurationCollector.getInstance().getAllCustomRunConfigurationIds();
+        comboCustomExecution.setItems(customRunConfigurationIds);
 
         txtOutputLocation.setText(absoluteToRelativePath(defaultOutputReportLocation, projectLocation()));
         chkUseRelativePath.setSelection(true);
@@ -444,6 +450,120 @@ public class GenerateCommandDialog extends AbstractDialog {
         chkRetryFailedTestCase.setSelection(DefaultRerunSetting.DEFAULT_RERUN_FAILED_TEST_CASE_ONLY);
         txtStatusDelay.setText(defaultStatusDelay);
         enableRetryFailedTestCase();
+
+        // load previous working values
+        loadLastWorkingData(browsers, Arrays.asList(webDriverTypes), Arrays.asList(customRunConfigurationIds));
+    }
+
+    private void loadLastWorkingData(List<String> browsers, List<String> webDriverTypes,
+            List<String> customRunConfigurationIds) {
+        try {
+            ScopedPreferenceStore prefs = getPreference();
+
+            int prefBrowserSelectionIndex = browsers
+                    .indexOf(prefs.getString(GenerateCommandPreferenceConstants.GEN_COMMAND_BROWSER));
+            if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_BROWSER)
+                    && prefBrowserSelectionIndex != -1) {
+                comboBrowser.select(prefBrowserSelectionIndex);
+                onBrowserChanged();
+            }
+
+            if (txtRemoteWebDriverURL.isEnabled()) {
+                if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_REMOTE_WEB_DRIVER_URL)) {
+                    txtRemoteWebDriverURL.setText(
+                            prefs.getString(GenerateCommandPreferenceConstants.GEN_COMMAND_REMOTE_WEB_DRIVER_URL));
+                }
+                int prefWebDriverTypeIndex = webDriverTypes.indexOf(
+                        prefs.getString(GenerateCommandPreferenceConstants.GEN_COMMAND_REMOTE_WEB_DRIVER_TYPE));
+                if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_REMOTE_WEB_DRIVER_TYPE)
+                        && prefWebDriverTypeIndex != -1) {
+                    comboRemoteWebDriverType.select(prefWebDriverTypeIndex);
+                }
+            }
+
+            if (comboMobileDevice.isEnabled()) {
+                int prefMobileDeviceIndex = Arrays.asList(mobileDevices)
+                        .indexOf(prefs.getString(GenerateCommandPreferenceConstants.GEN_COMMAND_MOBILE_DEVICE));
+                if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_MOBILE_DEVICE)
+                        && prefMobileDeviceIndex != -1) {
+                    comboMobileDevice.select(prefMobileDeviceIndex);
+                }
+            }
+
+            if (comboCustomExecution.isEnabled()) {
+                int prefCustomExecutionIndex = customRunConfigurationIds
+                        .indexOf(prefs.getString(GenerateCommandPreferenceConstants.GEN_COMMAND_CUSTOM_EXECUTION));
+                if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_CUSTOM_EXECUTION)
+                        && prefCustomExecutionIndex != -1) {
+                    comboCustomExecution.select(prefCustomExecutionIndex);
+                }
+            }
+
+            if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_REPORT_OUTPUT_LOCATION)) {
+                txtOutputLocation.setText(
+                        prefs.getString(GenerateCommandPreferenceConstants.GEN_COMMAND_REPORT_OUTPUT_LOCATION));
+            }
+
+            if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_REPORT_USE_RELATIVE_PATH)) {
+                chkUseRelativePath.setSelection(
+                        prefs.getBoolean(GenerateCommandPreferenceConstants.GEN_COMMAND_REPORT_USE_RELATIVE_PATH));
+            }
+
+            if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_REPORT_OUTPUT_NAME)) {
+                txtReportName
+                        .setText(prefs.getString(GenerateCommandPreferenceConstants.GEN_COMMAND_REPORT_OUTPUT_NAME));
+            }
+
+            if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_DISPLAY_CONSOLE_LOG)) {
+                chkDisplayConsoleLog.setSelection(
+                        prefs.getBoolean(GenerateCommandPreferenceConstants.GEN_COMMAND_DISPLAY_CONSOLE_LOG));
+            }
+
+            if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_NO_CLOSE_CONSOLE_LOG)) {
+                chkKeepConsoleLog.setSelection(
+                        prefs.getBoolean(GenerateCommandPreferenceConstants.GEN_COMMAND_NO_CLOSE_CONSOLE_LOG));
+            }
+
+            if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_UPDATE_STATUS_TIME_INTERVAL)) {
+                txtStatusDelay.setText(String.valueOf(
+                        prefs.getInt(GenerateCommandPreferenceConstants.GEN_COMMAND_UPDATE_STATUS_TIME_INTERVAL)));
+            }
+
+            if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_SUITE_ID)) {
+                String prefSuiteId = prefs.getString(GenerateCommandPreferenceConstants.GEN_COMMAND_SUITE_ID);
+                TestSuiteEntity testSuite = TestSuiteController.getInstance().getTestSuiteByDisplayId(prefSuiteId,
+                        project);
+                if (testSuite == null) {
+                    return;
+                }
+                changeSuiteArtifact(testSuite);
+            }
+
+            if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_POST_EXECUTION_SEND_REPORT)) {
+                boolean prefSendReport = prefs
+                        .getBoolean(GenerateCommandPreferenceConstants.GEN_COMMAND_POST_EXECUTION_SEND_REPORT);
+                chkSendEmail.setSelection(prefSendReport);
+                listMailRecipient.setEnabled(prefSendReport);
+                enableMailRecipientButtons(prefSendReport);
+            }
+
+            if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_POST_EXECUTION_RECIPIENTS)) {
+                listMailRecipientViewer.setInput(getDistinctRecipients(
+                        prefs.getString(GenerateCommandPreferenceConstants.GEN_COMMAND_POST_EXECUTION_RECIPIENTS)));
+            }
+
+            if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY)) {
+                txtRetry.setText(String.valueOf(prefs.getInt(GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY)));
+                enableRetryFailedTestCase();
+            }
+
+            if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY_FOR_FAILED_TEST_CASES)) {
+                chkRetryFailedTestCase.setSelection(
+                        prefs.getBoolean(GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY_FOR_FAILED_TEST_CASES));
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
     }
 
     private void enableRetryFailedTestCase() {
@@ -453,8 +573,8 @@ public class GenerateCommandDialog extends AbstractDialog {
 
     private void updateRecipientList() {
         try {
-            TestSuiteEntity testsuite = TestSuiteController.getInstance().getTestSuiteByDisplayId(
-                    txtTestSuite.getText(), project);
+            TestSuiteEntity testsuite = TestSuiteController.getInstance()
+                    .getTestSuiteByDisplayId(txtTestSuite.getText(), project);
             String testsuiteRecipients = null;
             if (testsuite != null) {
                 testsuiteRecipients = testsuite.getMailRecipient();
@@ -475,10 +595,10 @@ public class GenerateCommandDialog extends AbstractDialog {
                 try {
                     // Open test suite browser
                     TestSuiteSelectionDialog dialog = new TestSuiteSelectionDialog(getShell(),
-                            new EntityLabelProvider(), new EntityProvider(), new EntityViewerFilter(
-                                    new EntityProvider()));
-                    dialog.setInput(TreeEntityUtil.getChildren(null,
-                            FolderController.getInstance().getTestSuiteRoot(project)));
+                            new EntityLabelProvider(), new EntityProvider(),
+                            new EntityViewerFilter(new EntityProvider()));
+                    dialog.setInput(
+                            TreeEntityUtil.getChildren(null, FolderController.getInstance().getTestSuiteRoot(project)));
 
                     if (dialog.open() != Window.OK) {
                         return;
@@ -491,11 +611,7 @@ public class GenerateCommandDialog extends AbstractDialog {
 
                     TestSuiteTreeEntity tsTreeEntity = (TestSuiteTreeEntity) result;
                     TestSuiteEntity testSuiteEntity = (TestSuiteEntity) tsTreeEntity.getObject();
-                    txtTestSuite.setText(testSuiteEntity.getIdForDisplay());
-
-                    updateRecipientList();
-                    txtRetry.setText(Integer.toString(testSuiteEntity.getNumberOfRerun()));
-                    chkRetryFailedTestCase.setSelection(testSuiteEntity.isRerunFailedTestCasesOnly());
+                    changeSuiteArtifact(testSuiteEntity);
                 } catch (Exception e) {
                     logError(e);
                 }
@@ -506,12 +622,7 @@ public class GenerateCommandDialog extends AbstractDialog {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                boolean isRemoteWebDriverSelected = browserTypeIs(WebUIDriverType.REMOTE_WEB_DRIVER.toString());
-                txtRemoteWebDriverURL.setEnabled(isRemoteWebDriverSelected);
-                comboRemoteWebDriverType.setEnabled(isRemoteWebDriverSelected);
-                comboMobileDevice.setEnabled(browserTypeIs(WebUIDriverType.ANDROID_DRIVER.toString())
-                        || browserTypeIs(WebUIDriverType.IOS_DRIVER.toString()));
-                comboCustomExecution.setEnabled(browserTypeIs(BROWSER_TYPE_CUSTOM));
+                onBrowserChanged();
             }
         });
 
@@ -805,20 +916,15 @@ public class GenerateCommandDialog extends AbstractDialog {
 
         args.put(ARG_PROJECT_PATH, getArgumentValueToSave(project.getLocation(), generateCommandMode));
 
-        if (useCustomReportFolder()) {
-            args.put(ARG_REPORT_FOLDER, getArgumentValueToSave(txtOutputLocation.getText(), generateCommandMode));
+        args.put(ARG_REPORT_FOLDER, getArgumentValueToSave(txtOutputLocation.getText(), generateCommandMode));
 
-            // -reportFileName only affects when using with -reportFolder option
-            if (!StringUtils.equals(txtReportName.getText(), StringConstants.DIA_TXT_DEFAULT_REPORT_NAME)) {
-                args.put(ARG_REPORT_FILE_NAME, getArgumentValueToSave(txtReportName.getText(), generateCommandMode));
-            }
-        }
+        String reportFileName = StringUtils.defaultIfBlank(txtReportName.getText(),
+                StringConstants.DIA_TXT_DEFAULT_REPORT_NAME);
+        args.put(ARG_REPORT_FILE_NAME, getArgumentValueToSave(reportFileName, generateCommandMode));
 
         if (chkSendEmail.getSelection() && listMailRecipient.getItemCount() > 0) {
-            args.put(
-                    ARG_SEND_MAIL,
-                    getArgumentValueToSave(join(listMailRecipient.getItems(), MailUtil.EMAIL_SEPARATOR),
-                            generateCommandMode));
+            args.put(ARG_SEND_MAIL, getArgumentValueToSave(join(listMailRecipient.getItems(), MailUtil.EMAIL_SEPARATOR),
+                    generateCommandMode));
         }
 
         if (!StringUtils.equals(txtStatusDelay.getText(), defaultStatusDelay)) {
@@ -845,10 +951,8 @@ public class GenerateCommandDialog extends AbstractDialog {
 
         if (browserTypeIs(WebUIDriverType.ANDROID_DRIVER.toString())
                 || browserTypeIs(WebUIDriverType.IOS_DRIVER.toString())) {
-            args.put(
-                    ARG_MOBILE_DEVICE_ID,
-                    getArgumentValueToSave(deviceInfos.get(comboMobileDevice.getSelectionIndex()).getDeviceId(),
-                            generateCommandMode));
+            args.put(ARG_MOBILE_DEVICE_ID, getArgumentValueToSave(
+                    deviceInfos.get(comboMobileDevice.getSelectionIndex()).getDeviceId(), generateCommandMode));
         }
 
         return args;
@@ -873,10 +977,6 @@ public class GenerateCommandDialog extends AbstractDialog {
         return "\"" + value + "\"";
     }
 
-    private boolean useCustomReportFolder() {
-        return !StringUtils.equals(getReportOutputAbsolutePath(), defaultOutputReportLocation);
-    }
-
     private void validateUserInput() throws Exception {
         List<String> messages = new ArrayList<String>();
 
@@ -885,7 +985,8 @@ public class GenerateCommandDialog extends AbstractDialog {
         }
 
         if (isBlank(comboBrowser.getText())) {
-            messages.add(MessageFormat.format(StringConstants.DIA_MSG_PLS_SPECIFY_X, StringConstants.DIA_RADIO_BROWSER));
+            messages.add(
+                    MessageFormat.format(StringConstants.DIA_MSG_PLS_SPECIFY_X, StringConstants.DIA_RADIO_BROWSER));
         }
 
         if (txtRemoteWebDriverURL.isEnabled() && isBlank(txtRemoteWebDriverURL.getText())) {
@@ -977,6 +1078,67 @@ public class GenerateCommandDialog extends AbstractDialog {
 
     public void initListMobileDevices() {
         mobileDevices = getMobileDevices();
+    }
+
+    private void onBrowserChanged() {
+        boolean isRemoteWebDriverSelected = browserTypeIs(WebUIDriverType.REMOTE_WEB_DRIVER.toString());
+        txtRemoteWebDriverURL.setEnabled(isRemoteWebDriverSelected);
+        comboRemoteWebDriverType.setEnabled(isRemoteWebDriverSelected);
+        comboMobileDevice.setEnabled(browserTypeIs(WebUIDriverType.ANDROID_DRIVER.toString())
+                || browserTypeIs(WebUIDriverType.IOS_DRIVER.toString()));
+        comboCustomExecution.setEnabled(browserTypeIs(BROWSER_TYPE_CUSTOM));
+    }
+
+    private void changeSuiteArtifact(TestSuiteEntity testSuiteEntity) {
+        txtTestSuite.setText(testSuiteEntity.getIdForDisplay());
+        updateRecipientList();
+        txtRetry.setText(Integer.toString(testSuiteEntity.getNumberOfRerun()));
+        chkRetryFailedTestCase.setSelection(testSuiteEntity.isRerunFailedTestCasesOnly());
+    }
+
+    private static ScopedPreferenceStore getPreference() {
+        return PreferenceStoreManager.getPreferenceStore(GenerateCommandDialog.class);
+    }
+
+    private void saveUserInput() {
+        ScopedPreferenceStore prefs = getPreference();
+        prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_SUITE_ID, txtTestSuite.getText());
+        prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_BROWSER, comboBrowser.getText());
+        prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_REMOTE_WEB_DRIVER_TYPE,
+                comboRemoteWebDriverType.getText());
+        prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_REMOTE_WEB_DRIVER_URL,
+                txtRemoteWebDriverURL.getText());
+        prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_MOBILE_DEVICE, comboMobileDevice.getText());
+        prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_CUSTOM_EXECUTION, comboCustomExecution.getText());
+        prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_REPORT_OUTPUT_LOCATION,
+                txtOutputLocation.getText());
+        prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_REPORT_USE_RELATIVE_PATH,
+                chkUseRelativePath.getSelection());
+        prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_REPORT_OUTPUT_NAME, txtReportName.getText());
+        prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_POST_EXECUTION_SEND_REPORT,
+                chkSendEmail.getSelection());
+        prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_POST_EXECUTION_RECIPIENTS,
+                join(listMailRecipient.getItems(), MailUtil.EMAIL_SEPARATOR));
+        prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_DISPLAY_CONSOLE_LOG,
+                chkDisplayConsoleLog.getSelection());
+        prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_NO_CLOSE_CONSOLE_LOG,
+                chkKeepConsoleLog.getSelection());
+        prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY, txtRetry.getText());
+        prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY_FOR_FAILED_TEST_CASES,
+                chkRetryFailedTestCase.getSelection());
+        prefs.setValue(GenerateCommandPreferenceConstants.GEN_COMMAND_UPDATE_STATUS_TIME_INTERVAL,
+                txtStatusDelay.getText());
+        try {
+            prefs.save();
+        } catch (IOException e) {
+            LoggerSingleton.logError(e);
+        }
+    }
+
+    @Override
+    public boolean close() {
+        saveUserInput();
+        return super.close();
     }
 
 }

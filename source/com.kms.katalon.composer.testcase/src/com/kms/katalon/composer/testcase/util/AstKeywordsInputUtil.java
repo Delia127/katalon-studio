@@ -37,6 +37,7 @@ import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.ast.GroovyParser;
+import com.kms.katalon.core.checkpoint.Checkpoint;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.custom.keyword.KeywordClass;
@@ -280,6 +281,10 @@ public class AstKeywordsInputUtil {
         if (isClassAssignable(paramClassFullName, List.class) || isArrayParam) {
             return generateArgumentForListParam(existingParam, parentNode);
         }
+        
+        if (isClassAssignable(paramClassFullName, Checkpoint.class)) {
+            return generateArgumentForCheckPointParam(existingParam, parentNode);
+        }
 
         ExpressionWrapper newExpression = generateArgumentForConstantParam(existingParam, parentNode,
                 paramClassFullName);
@@ -385,10 +390,23 @@ public class AstKeywordsInputUtil {
         }
         return AstEntityInputUtil.createNewFindTestObjectMethodCall(null, parentNode);
     }
+    
+    private static ExpressionWrapper generateArgumentForCheckPointParam(ExpressionWrapper existingParam,
+            ASTNodeWrapper parentNode) {
+        if (isFindCheckpointMethodCall(existingParam) || (isUnknowTypeParam(existingParam))) {
+            return existingParam;
+        }
+        return AstEntityInputUtil.createNewFindCheckpointMethodCall(null, parentNode);
+    }
 
     private static boolean isFindTestObjectMethodCall(ExpressionWrapper existingParam) {
         return existingParam instanceof MethodCallExpressionWrapper
                 && ((MethodCallExpressionWrapper) existingParam).isFindTestObjectMethodCall();
+    }
+    
+    private static boolean isFindCheckpointMethodCall(ExpressionWrapper existingParam) {
+        return existingParam instanceof MethodCallExpressionWrapper
+                && ((MethodCallExpressionWrapper) existingParam).isFindCheckpointMethodCall();
     }
 
     private static boolean isUnknowTypeParam(ExpressionWrapper existingParam) {

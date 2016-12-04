@@ -7,12 +7,12 @@ import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 public class InspectSessionUtil {
     public static boolean isNotShowingInstantBrowserDialog() {
         return getObjectSpyPreferenceStore().getBoolean(
-                ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_INSTANT_BROWSER_DO_NOT_SHOW_AGAIN);
+                ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_ACTIVE_BROWSER_DO_NOT_SHOW_AGAIN);
     }
 
     public static void setNotShowingInstantBrowserDialog(boolean toogleState) {
         getObjectSpyPreferenceStore().setValue(
-                ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_INSTANT_BROWSER_DO_NOT_SHOW_AGAIN, toogleState);
+                ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_ACTIVE_BROWSER_DO_NOT_SHOW_AGAIN, toogleState);
     }
 
     public static ScopedPreferenceStore getObjectSpyPreferenceStore() {

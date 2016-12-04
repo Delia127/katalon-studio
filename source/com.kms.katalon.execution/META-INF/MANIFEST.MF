@@ -25,6 +25,7 @@ Export-Package: com.kms.katalon.execution.classpath,
  com.kms.katalon.execution.launcher.result,
  com.kms.katalon.execution.logging,
  com.kms.katalon.execution.preferences,
+ com.kms.katalon.execution.session,
  com.kms.katalon.execution.setting,
  com.kms.katalon.execution.util
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
@@ -40,7 +41,6 @@ Require-Bundle: org.eclipse.e4.core.contexts,
  org.eclipse.core.resources,
  org.eclipse.core.runtime,
  com.kms.katalon.groovy,
- org.codehaus.groovy.eclipse.ui,
  org.eclipse.debug.core,
  org.eclipse.core.runtime,
  org.eclipse.jdt.core,
@@ -64,5 +64,9 @@ Require-Bundle: org.eclipse.e4.core.contexts,
  com.kms.katalon.logging,
  com.kms.katalon.core.appium,
  org.eclipse.core.commands,
- org.eclipse.jface
+ org.eclipse.jface,
+ com.kms.katalon.core.webui,
+ com.kms.katalon.selenium-standalone,
+ io.appium.java-client,
+ com.kms.katalon.core.mobile
 Bundle-Activator: com.kms.katalon.execution.addon.ExecutionBundleActivator

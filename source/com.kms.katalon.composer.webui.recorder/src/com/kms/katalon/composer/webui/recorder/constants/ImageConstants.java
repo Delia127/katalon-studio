@@ -27,4 +27,10 @@ public class ImageConstants {
 
     public static final Image IMG_16_IE = ImageManager.getImage(IImageKeys.IE_16);
 
+    public static final Image IMG_24_CHROME = ImageManager.getImage(IImageKeys.CHROME_24);
+
+    public static final Image IMG_24_FIREFOX = ImageManager.getImage(IImageKeys.FIREFOX_24);
+
+    public static final Image IMG_24_IE = ImageManager.getImage(IImageKeys.IE_24);
+
 }

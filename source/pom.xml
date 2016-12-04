@@ -49,7 +49,10 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<module>com.kms.katalon.composer.webui.objectspy</module>
 		<module>com.kms.katalon.composer.webui.recorder</module>
 		<module>com.kms.katalon.composer.webui</module>
-		<module>com.kms.katalon.constant</module>       
+		<module>com.kms.katalon.console.feature</module>
+		<module>com.kms.katalon.console</module>
+		<module>com.kms.katalon.console.product</module>
+		<module>com.kms.katalon.constant</module>
 		<module>com.kms.katalon.controller</module>
 		<module>com.kms.katalon.core.appium</module>
 		<module>com.kms.katalon.core.mobile</module>
@@ -87,7 +90,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		
 		<eclipse_repo_url>http://download.eclipse.org/eclipse/updates/4.6/</eclipse_repo_url>
 		<eclipse_orbit_repo_url>http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository/</eclipse_orbit_repo_url>
-		<groovy_repo_url>http://dist.springsource.org/snapshot/GRECLIPSE/e4.6/</groovy_repo_url>
 		<egit_repo_url>http://download.eclipse.org/egit/updates-4.4.1/</egit_repo_url>
 		
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -110,12 +112,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<repository>
 			<id>eclipse_orbit_repo</id>
 			<url>${eclipse_orbit_repo_url}</url>
-			<layout>p2</layout>
-		</repository>
-		
-		<repository>
-			<id>groovy_repo</id>
-			<url>${groovy_repo_url}</url>
 			<layout>p2</layout>
 		</repository>
 

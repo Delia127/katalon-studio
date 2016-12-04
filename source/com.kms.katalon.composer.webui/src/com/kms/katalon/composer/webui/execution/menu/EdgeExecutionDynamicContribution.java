@@ -9,6 +9,7 @@ import org.eclipse.e4.ui.model.application.ui.menu.MMenuElement;
 import com.kms.katalon.composer.execution.menu.AbstractExecutionMenuContribution;
 import com.kms.katalon.composer.webui.constants.ImageConstants;
 import com.kms.katalon.composer.webui.constants.StringConstants;
+import com.kms.katalon.core.webui.driver.WebUIDriverType;
 
 public class EdgeExecutionDynamicContribution extends AbstractExecutionMenuContribution {
 
@@ -36,5 +37,10 @@ public class EdgeExecutionDynamicContribution extends AbstractExecutionMenuContr
     @Override
     protected String getCommandId() {
         return EDGE_EXECUTION_COMMAND_ID;
+    }
+
+    @Override
+    protected String getDriverTypeName() {
+        return WebUIDriverType.EDGE_DRIVER.toString();
     }
 }

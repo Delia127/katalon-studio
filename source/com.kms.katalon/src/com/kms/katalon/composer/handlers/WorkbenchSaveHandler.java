@@ -18,33 +18,51 @@ import org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.dialogs.YesNoCancel;
+import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.controller.FolderController;
+import com.kms.katalon.controller.ProjectController;
 
 @SuppressWarnings("restriction")
 public class WorkbenchSaveHandler extends PartServiceSaveHandler {
-    
+
     @Override
     public boolean save(MPart dirtyPart, boolean confirm) {
         if (dirtyPart.getObject() instanceof CompatibilityEditor) {
             if (confirm) {
                 switch (promptToSave(dirtyPart)) {
-                case NO:
-                    return true;
-                case CANCEL:
-                    return false;
-                case YES:
-                    break;
+                    case NO:
+                        refreshKeywordRootTreeEntity();
+                        return true;
+                    case CANCEL:
+                        return false;
+                    case YES:
+                        break;
                 }
             }
-            
+
             GroovyEditorUtil.saveEditor(dirtyPart);
-            
-            EventBrokerSingleton.getInstance().getEventBroker()
-                    .post(EventConstants.ECLIPSE_EDITOR_SAVED, dirtyPart);
+
+            EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.ECLIPSE_EDITOR_SAVED, dirtyPart);
             return true;
         } else {
             return super.save(dirtyPart, confirm);
+        }
+    }
+
+    private void refreshKeywordRootTreeEntity() {
+        FolderTreeEntity keywordRootFolder = null;
+        try {
+            keywordRootFolder = new FolderTreeEntity(
+                    FolderController.getInstance().getKeywordRoot(ProjectController.getInstance().getCurrentProject()),
+                    null);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        } finally {
+            EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY,
+                    keywordRootFolder);
         }
     }
 

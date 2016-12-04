@@ -51,13 +51,15 @@ public class ObjectspyMessageConstants extends NLS {
 
     public static String WARNING_NO_PAGE_LOADED;
 
-    public static String MENU_ITEM_INSTANT_BROWSERS;
+    public static String MENU_ITEM_NEW_BROWSERS;
 
-    public static String HAND_INSTANT_BROWSERS_DIA_TITLE;
+    public static String MENU_ITEM_ACTIVE_BROWSERS;
 
-    public static String HAND_INSTANT_BROWSERS_DIA_MESSAGE;
+    public static String HAND_ACTIVE_BROWSERS_DIA_TITLE;
 
-    public static String INSTANT_BROWSER_PREFIX;
+    public static String HAND_ACTIVE_BROWSERS_DIA_MESSAGE;
+
+    public static String ACTIVE_BROWSER_PREFIX;
 
     public static String HAND_INSTANT_BROWSERS_DIA_TOOGLE_MESSAGE;
 
@@ -107,10 +109,12 @@ public class ObjectspyMessageConstants extends NLS {
 
     public static String DIA_LBL_SELECT_A_DESTINATION_FOLDER;
 
-    public static String PREF_LBL_INSTANT_BROWSER_PORT;
+    public static String PREF_LBL_DEFAULT_BROWSER;
 
-    public static String PREF_LBL_INSTANT_BROWSER_PORT_DO_NOT_SHOW_WARNING_DIALOG;
-    
+    public static String PREF_LBL_ACTIVE_BROWSER_PORT;
+
+    public static String PREF_LBL_ACTIVE_BROWSER_PORT_DO_NOT_SHOW_WARNING_DIALOG;
+
     public static String DIA_TOOLITEM_HIGHLIGHT;
 
     public static String DIA_TOOLITEM_TIP_HIGHLIGHT;

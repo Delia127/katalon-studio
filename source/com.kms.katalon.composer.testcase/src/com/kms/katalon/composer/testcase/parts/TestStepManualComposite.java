@@ -45,6 +45,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.control.CTreeViewer;
 import com.kms.katalon.composer.components.impl.util.KeyEventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -62,6 +63,7 @@ import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants.Ad
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
 import com.kms.katalon.composer.testcase.keywords.KeywordBrowserTreeEntityTransfer;
+import com.kms.katalon.composer.testcase.model.ExecuteFromTestStepEntity;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
 import com.kms.katalon.composer.testcase.providers.AstTreeItemLabelProvider;
@@ -78,10 +80,11 @@ import com.kms.katalon.composer.testcase.treetable.transfer.ScriptTransfer;
 import com.kms.katalon.composer.testcase.treetable.transfer.ScriptTransferData;
 import com.kms.katalon.composer.testcase.util.TestCaseMenuUtil;
 import com.kms.katalon.composer.testcase.views.FocusCellOwnerDrawForManualTestcase;
+import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.core.model.FailureHandling;
+import com.kms.katalon.execution.session.ExecutionSession;
 
 public class TestStepManualComposite {
-
     private ITestCasePart parentPart;
 
     private Composite compositeManual;
@@ -122,8 +125,7 @@ public class TestStepManualComposite {
 
         createTestCaseManualTableControls(compositeDetails);
     }
-    
-    
+
     public void setFocus() {
         compositeManual.setFocus();
     }
@@ -211,10 +213,12 @@ public class TestStepManualComposite {
         TreeColumnLayout treeColumnLayout = new TreeColumnLayout();
         compositeTable.setLayout(treeColumnLayout);
 
-        addTreeTableColumn(treeTable, treeColumnLayout, StringConstants.PA_COL_ITEM, parentPart instanceof TestCasePart
-                ? 200 : 210, 0, new AstTreeItemLabelProvider(), new ItemColumnEditingSupport(treeTable, parentPart));
-        addTreeTableColumn(treeTable, treeColumnLayout, StringConstants.PA_COL_OBJ, parentPart instanceof TestCasePart
-                ? 200 : 140, 0, new AstTreeLabelProvider(), new TestObjectEditingSupport(treeTable, parentPart));
+        addTreeTableColumn(treeTable, treeColumnLayout, StringConstants.PA_COL_ITEM,
+                parentPart instanceof TestCasePart ? 200 : 210, 0, new AstTreeItemLabelProvider(),
+                new ItemColumnEditingSupport(treeTable, parentPart));
+        addTreeTableColumn(treeTable, treeColumnLayout, StringConstants.PA_COL_OBJ,
+                parentPart instanceof TestCasePart ? 200 : 140, 0, new AstTreeLabelProvider(),
+                new TestObjectEditingSupport(treeTable, parentPart));
         addTreeTableColumn(treeTable, treeColumnLayout, StringConstants.PA_COL_INPUT,
                 parentPart instanceof TestCasePart ? 200 : 140, 0, new AstTreeLabelProvider(),
                 new InputColumnEditingSupport(treeTable, parentPart));
@@ -257,7 +261,8 @@ public class TestStepManualComposite {
         treeColumn.setText(headerText);
         treeTableColumn.setLabelProvider(labelProvider);
         treeTableColumn.setEditingSupport(editingSupport);
-        treeColumnLayout.setColumnData(treeTableColumn.getColumn(), new ColumnWeightData(weight, treeColumn.getWidth()));
+        treeColumnLayout.setColumnData(treeTableColumn.getColumn(),
+                new ColumnWeightData(weight, treeColumn.getWidth()));
     }
 
     private void setTreeTableActivation() {
@@ -281,6 +286,8 @@ public class TestStepManualComposite {
                 menu = new Menu(childTableTree);
 
                 if (childTableTree.getSelectionCount() == 1) {
+                    TestCaseMenuUtil.generateExecuteFromTestStepSubMenu(menu, selectionListener);
+
                     // Add step add
                     TestCaseMenuUtil.addActionSubMenu(menu, TreeTableMenuItemConstants.AddAction.Add,
                             StringConstants.ADAP_MENU_CONTEXT_ADD, selectionListener);
@@ -308,19 +315,19 @@ public class TestStepManualComposite {
 
                 MenuItem copyMenuItem = new MenuItem(menu, SWT.PUSH);
                 copyMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_COPY,
-                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "C" })));
+                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "C" }))); //$NON-NLS-1$
                 copyMenuItem.addSelectionListener(selectionListener);
                 copyMenuItem.setID(TreeTableMenuItemConstants.COPY_MENU_ITEM_ID);
 
                 MenuItem cutMenuItem = new MenuItem(menu, SWT.PUSH);
                 cutMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_CUT,
-                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "X" })));
+                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "X" }))); //$NON-NLS-1$
                 cutMenuItem.addSelectionListener(selectionListener);
                 cutMenuItem.setID(TreeTableMenuItemConstants.CUT_MENU_ITEM_ID);
 
                 MenuItem pasteMenuItem = new MenuItem(menu, SWT.PUSH);
                 pasteMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_PASTE,
-                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "V" })));
+                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "V" }))); //$NON-NLS-1$
                 pasteMenuItem.addSelectionListener(selectionListener);
                 pasteMenuItem.setID(TreeTableMenuItemConstants.PASTE_MENU_ITEM_ID);
 
@@ -328,13 +335,13 @@ public class TestStepManualComposite {
 
                 MenuItem disableMenuItem = new MenuItem(menu, SWT.PUSH);
                 disableMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_DISABLE,
-                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "D" })));
+                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "D" }))); //$NON-NLS-1$
                 disableMenuItem.addSelectionListener(selectionListener);
                 disableMenuItem.setID(TreeTableMenuItemConstants.DISABLE_MENU_ITEM_ID);
 
                 MenuItem enableMenuItem = new MenuItem(menu, SWT.PUSH);
                 enableMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_ENABLE,
-                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "E" })));
+                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "E" }))); //$NON-NLS-1$
                 enableMenuItem.addSelectionListener(selectionListener);
                 enableMenuItem.setID(TreeTableMenuItemConstants.ENABLE_MENU_ITEM_ID);
                 parentPart.createDynamicGotoMenu(menu);
@@ -344,7 +351,7 @@ public class TestStepManualComposite {
     }
 
     private String createMenuItemLabel(String text, String keyCombination) {
-        return text + "\t" + keyCombination;
+        return text + "\t" + keyCombination; //$NON-NLS-1$
     }
 
     public void addFailureHandlingSubMenu(Menu menu) {
@@ -484,7 +491,7 @@ public class TestStepManualComposite {
                     GroovyWrapperParser groovyParser = new GroovyWrapperParser(stringBuilder);
                     groovyParser.parse(astTreeTableNode.getASTObject());
                     scriptSnippets.append(stringBuilder.toString());
-                    scriptSnippets.append("\n");
+                    scriptSnippets.append("\n"); //$NON-NLS-1$
                 }
                 if (scriptSnippets.length() > 0) {
                     ScriptTransferData transferData = new ScriptTransferData(scriptSnippets.toString(),
@@ -585,6 +592,9 @@ public class TestStepManualComposite {
                     changeKeywordFailureHandling((FailureHandling) failureHandlingValue);
                 }
                 break;
+            case TreeTableMenuItemConstants.EXECUTE_FROM_TEST_STEP_MENU_ITEM_ID:
+                executeFromTestStep((ExecutionSession) menuItem.getData());
+                break;
             case TreeTableMenuItemConstants.COPY_MENU_ITEM_ID:
                 copyTestStep();
                 break;
@@ -609,6 +619,21 @@ public class TestStepManualComposite {
         }
     }
 
+    private void executeFromTestStep(ExecutionSession executionSession) {
+        String rawScript = getTreeTableInput().generateRawScriptFromSelectedStep();
+        if (rawScript == null) {
+            return;
+        }
+        ExecuteFromTestStepEntity executeFromTestStepEntity = new ExecuteFromTestStepEntity();
+        executeFromTestStepEntity.setDriverTypeName(executionSession.getDriverTypeName());
+        executeFromTestStepEntity.setRawScript(rawScript);
+        executeFromTestStepEntity.setRemoteServerUrl(executionSession.getRemoteUrl());
+        executeFromTestStepEntity.setTestCase(parentPart.getTestCase());
+        executeFromTestStepEntity.setSessionId(executionSession.getSessionId());
+        EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXECUTE_FROM_TEST_STEP,
+                executeFromTestStepEntity);
+    }
+
     private void openToolItemMenu(ToolItem toolItem, SelectionEvent selectionEvent) {
         if (selectionEvent.detail == SWT.ARROW && toolItem.getData() instanceof Menu) {
             Rectangle rect = toolItem.getBounds();
@@ -624,9 +649,9 @@ public class TestStepManualComposite {
     private void changeKeywordFailureHandling(FailureHandling failureHandling) {
         treeTableInput.changeFailureHandling(failureHandling);
     }
-    
+
     public IStructuredSelection getTreeTableSelection() {
-    	return (IStructuredSelection) treeTable.getSelection();
+        return (IStructuredSelection) treeTable.getSelection();
     }
-    
+
 }

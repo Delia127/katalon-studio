@@ -9,6 +9,7 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.ui.PlatformUI;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
@@ -49,7 +50,7 @@ public class CloseProjectHandler {
         final ProjectEntity project = ProjectController.getInstance().getCurrentProject();
         if (project != null) {
             if (partService.saveAll(true)) {
-
+                PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().saveAllEditors(false);
                 // Find and close all opened editor parts which is managed by PartService
                 for (MPart p : partService.getParts()) {
                     if (p.getElementId().startsWith("com.kms.katalon.composer.content.")

@@ -135,6 +135,14 @@ public interface IdConstants {
 
     // Parameter ID
     public static final String RUN_MODE_PARAMETER_ID = "com.kms.katalon.composer.execution.runMode";
+    
+    public static final String EXISTING_SESSION_SESSION_ID_ID = "com.kms.katalon.composer.execution.existingSession.sessionId";
+    
+    public static final String EXISTING_SESSION_SERVER_URL_ID = "com.kms.katalon.composer.execution.existingSession.serverUrl";
+    
+    public static final String EXISTING_SESSION_DRIVER_NAME_ID = "com.kms.katalon.composer.execution.existingSession.driverName";
+    
+    public static final String EXISTING_SESSION_DRIVER_PORT_ID = "com.kms.katalon.composer.execution.existingSession.port";
 
     // Open Recent Project Command id
     public static final String OPEN_RECENT_PROJECT_COMMAND_ID = "com.kms.katalon.composer.project.command.openrecentproject";

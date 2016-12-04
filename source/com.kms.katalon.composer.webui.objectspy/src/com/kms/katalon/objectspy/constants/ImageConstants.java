@@ -16,6 +16,12 @@ public class ImageConstants {
 
     public static final Image IMG_24_DELETE = ImageManager.getImage(IImageKeys.DELETE_24);
 
+    public static final Image IMG_24_CHROME = ImageManager.getImage(IImageKeys.CHROME_24);
+
+    public static final Image IMG_24_FIREFOX = ImageManager.getImage(IImageKeys.FIREFOX_24);
+
+    public static final Image IMG_24_IE = ImageManager.getImage(IImageKeys.IE_24);
+
     public static final Image IMG_24_ADD_TO_OBJECT_REPOSITORY = ImageManager
             .getImage(IImageKeys.ADD_TO_OBJECT_REPOSITORY_24);
 
@@ -41,6 +47,10 @@ public class ImageConstants {
     public static final Image IMG_16_BROWSER_FIREFOX = ImageManager.getImage(IImageKeys.FIREFOX_16);
 
     public static final Image IMG_16_BROWSER_IE = ImageManager.getImage(IImageKeys.IE_16);
+
+    public static final Image IMG_16_NEW_BROWSER = ImageManager.getImage(IImageKeys.NEW_BROWSER_16);
+
+    public static final Image IMG_16_ACTIVE_BROWSER = ImageManager.getImage(IImageKeys.ACTIVE_BROWSER_16);
 
     // HTMLElementLabelProvider
     public static final Image IMG_16_PAGE_OBJECT = ImageManager.getImage(IImageKeys.WEB_PAGE_ELEMENT_16);

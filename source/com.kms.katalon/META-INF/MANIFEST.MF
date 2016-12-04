@@ -45,6 +45,7 @@ Require-Bundle: org.eclipse.e4.core.di,
  com.google.gson,
  org.eclipse.core.expressions,
  com.kms.katalon.support.testing.katserver;bundle-version="1.0.0",
+ com.kms.katalon.console,
  org.eclipse.e4.ui.css.swt,
  com.kms.katalon.composer.resources
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

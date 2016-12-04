@@ -51,6 +51,16 @@ public class ComposerWebserviceMessageConstants extends NLS {
 
     public static String VIEW_MENU_CONTEXT_DEL_PROPS;
 
+    public static String PA_LBL_XML_REQ_MSG;
+
+    public static String MSG_CANNOT_LOAD_WS;
+
+    public static String MSG_CANNOT_PARSE_WSDL;
+
+    public static String LBL_LOAD_FROM_WSDL;
+
+    public static String MSG_FETCHING_FROM_WSDL;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerWebserviceMessageConstants.class);

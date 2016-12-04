@@ -29,6 +29,8 @@ public class CoreAppiumMessageConstants extends NLS {
 
     public static String CONF_EXECUTED_DEVICE_OS_VERSON;
 
+    public static String ERR_MSG_CANNOT_START_APPIUM_SERVER_AFTER_X_SECONDS;
+
     public static String XML_LOG_APPIUM_VERSION;
 
     public static String MSG_UNABLE_TO_GET_APPIUM_STATUS;

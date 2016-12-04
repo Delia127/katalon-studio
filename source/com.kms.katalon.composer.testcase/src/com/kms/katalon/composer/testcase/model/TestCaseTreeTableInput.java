@@ -86,6 +86,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.statements.WhileStatementWra
 import com.kms.katalon.composer.testcase.parts.ITestCasePart;
 import com.kms.katalon.composer.testcase.parts.TestCasePart;
 import com.kms.katalon.composer.testcase.preferences.TestCasePreferenceDefaultValueInitializer;
+import com.kms.katalon.composer.testcase.providers.AstTestScriptGeneratorProvider;
 import com.kms.katalon.composer.testcase.treetable.transfer.ScriptTransfer;
 import com.kms.katalon.composer.testcase.treetable.transfer.ScriptTransferData;
 import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
@@ -1043,6 +1044,18 @@ public class TestCaseTreeTableInput {
         dragAndDropOperation.add(new AddAstObjectsOperation(droppedNodes, destinationNode, addType));
         dragAndDropOperation.add(new RemoveAstTreeTableNodesOperation(draggedNodes));
         executeOperation(dragAndDropOperation);
+    }
+
+    /**
+     * @return raw script that disabled all the steps before the currently selected step
+     */
+    public String generateRawScriptFromSelectedStep() {
+        AstTreeTableNode selectedNode = getSelectedNode();
+        if (selectedNode == null || !(selectedNode.getASTObject() instanceof StatementWrapper)) {
+            return null;
+        }
+        return AstTestScriptGeneratorProvider.generateScriptForExecuteFromTestStep(mainClassNodeWrapper,
+                (StatementWrapper) selectedNode.getASTObject());
     }
 
     private IOperationHistory getOperationHistory() {

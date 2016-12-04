@@ -36,7 +36,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 import org.osgi.service.event.Event;
@@ -53,7 +52,6 @@ import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.support.PropertyNameEditingSupport;
 import com.kms.katalon.composer.webservice.support.PropertyValueEditingSupport;
-import com.kms.katalon.composer.webservice.view.ExpandableComposite;
 import com.kms.katalon.composer.webservice.view.ParameterTable;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
@@ -72,7 +70,7 @@ public abstract class RequestObjectPart implements EventHandler, IComposerPartEv
     protected EModelService modelService;
 
     @Inject
-    private IEventBroker eventBroker;
+    protected IEventBroker eventBroker;
 
     protected MPart mPart;
 
@@ -94,8 +92,6 @@ public abstract class RequestObjectPart implements EventHandler, IComposerPartEv
 
     @Inject
     protected MDirtyable dirtyable;
-
-    protected GridData labelGridData = new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1);
 
     public void createComposite(Composite parent, MPart part) {
         this.mPart = part;
@@ -122,12 +118,10 @@ public abstract class RequestObjectPart implements EventHandler, IComposerPartEv
 
         createModifyListener();
 
-        // Label width
-        labelGridData.widthHint = 100;
-
         // Init UI
-        createHttpComposite(mainComposite);
         createServiceInfoComposite(mainComposite);
+
+        createHttpComposite(mainComposite);
 
         showEntityFieldsToUi();
 
@@ -171,7 +165,8 @@ public abstract class RequestObjectPart implements EventHandler, IComposerPartEv
                                 dispose();
                             }
                         } else {
-                            if (ObjectRepositoryController.getInstance().getWebElement(originalWsObject.getId()) == null) {
+                            if (ObjectRepositoryController.getInstance()
+                                    .getWebElement(originalWsObject.getId()) == null) {
                                 dispose();
                             }
                         }
@@ -179,7 +174,8 @@ public abstract class RequestObjectPart implements EventHandler, IComposerPartEv
                         FolderEntity folder = (FolderEntity) ((ITreeEntity) object).getObject();
                         if (folder != null
                                 && FolderController.getInstance().isFolderAncestorOfEntity(folder, originalWsObject)) {
-                            if (ObjectRepositoryController.getInstance().getWebElement(originalWsObject.getId()) == null) {
+                            if (ObjectRepositoryController.getInstance()
+                                    .getWebElement(originalWsObject.getId()) == null) {
                                 dispose();
                             }
                         }
@@ -197,34 +193,7 @@ public abstract class RequestObjectPart implements EventHandler, IComposerPartEv
         mStackPart.getChildren().remove(mPart);
     }
 
-    private void createHttpComposite(Composite mainComposite) {
-        ExpandableComposite soapComposite = new ExpandableComposite(mainComposite, StringConstants.PA_TITLE_HTTP, 1,
-                true);
-        Composite compositeDetails = soapComposite.createControl();
-
-        Composite httpContainerComposite = new Composite(compositeDetails, SWT.NONE);
-        httpContainerComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        httpContainerComposite.setLayout(new GridLayout(2, false));
-
-        // HTTP Header
-        Label lblHttpHeader = new Label(httpContainerComposite, SWT.LEFT | SWT.WRAP);
-        lblHttpHeader.setText(StringConstants.PA_LBL_HTTP_HEADER);
-        lblHttpHeader.setLayoutData(labelGridData);
-
-        tblHttpHeader = createParamsTable(httpContainerComposite, true);
-        tblHttpHeader.setInput(listHttpHeaderProps);
-
-        // HTTP Body
-        Label lblSoapBody = new Label(httpContainerComposite, SWT.LEFT | SWT.WRAP);
-        lblSoapBody.setText(StringConstants.PA_LBL_HTTP_BODY);
-        lblSoapBody.setLayoutData(labelGridData);
-
-        txtHttpBody = new Text(httpContainerComposite, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL | SWT.MULTI);
-        GridData gdData = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
-        gdData.heightHint = 45;
-        txtHttpBody.setLayoutData(gdData);
-        txtHttpBody.addModifyListener(modifyListener);
-    }
+    protected abstract void createHttpComposite(Composite mainComposite);
 
     protected abstract void createServiceInfoComposite(Composite mainComposite);
 
@@ -237,8 +206,8 @@ public abstract class RequestObjectPart implements EventHandler, IComposerPartEv
         compositeTableDetails.setLayoutData(gdData);
         compositeTableDetails.setLayout(tableColumnLayout);
 
-        final ParameterTable tblProperties = new ParameterTable(compositeTableDetails, SWT.BORDER | SWT.FULL_SELECTION
-                | SWT.NO_SCROLL | SWT.V_SCROLL, dirtyable);
+        final ParameterTable tblProperties = new ParameterTable(compositeTableDetails,
+                SWT.BORDER | SWT.FULL_SELECTION | SWT.NO_SCROLL | SWT.V_SCROLL, dirtyable);
         tblProperties.createTableEditor();
 
         tblProperties.getTable().setHeaderVisible(true);
@@ -306,25 +275,12 @@ public abstract class RequestObjectPart implements EventHandler, IComposerPartEv
         };
     }
 
-    /**
-     * Update entity fields before saved, Child class should override this method and do some more updates for it own
-     * properties
-     */
     protected void updateEntityBeforeSaved() {
-        // Update object properties
-        originalWsObject.setHttpBody(txtHttpBody.getText());
 
-        tblHttpHeader.removeEmptyProperty();
-        originalWsObject.setHttpHeaderProperties(tblHttpHeader.getInput());
     }
 
     protected void showEntityFieldsToUi() {
-        txtHttpBody.setText(originalWsObject.getHttpBody());
 
-        tempPropList = new ArrayList<WebElementPropertyEntity>(originalWsObject.getHttpHeaderProperties());
-        listHttpHeaderProps.clear();
-        listHttpHeaderProps.addAll(tempPropList);
-        tblHttpHeader.refresh();
     }
 
     protected void save() {
@@ -332,12 +288,13 @@ public abstract class RequestObjectPart implements EventHandler, IComposerPartEv
             updateEntityBeforeSaved();
             ObjectRepositoryController.getInstance().updateTestObject(originalWsObject);
 
-            eventBroker.post(EventConstants.TEST_OBJECT_UPDATED, new Object[] { originalWsObject.getId(),
-                    originalWsObject });
+            eventBroker.post(EventConstants.TEST_OBJECT_UPDATED,
+                    new Object[] { originalWsObject.getId(), originalWsObject });
             eventBroker.post(EventConstants.EXPLORER_REFRESH, null);
             dirtyable.setDirty(false);
         } catch (Exception e1) {
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, e1.getMessage());
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
+                    e1.getMessage());
         }
     }
 

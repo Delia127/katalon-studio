@@ -2,17 +2,20 @@ package com.kms.katalon.composer.execution.addons;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.debug.internal.ui.commands.actions.StepIntoCommandHandler;
 import org.eclipse.debug.internal.ui.commands.actions.StepOverCommandHandler;
 import org.eclipse.debug.internal.ui.commands.actions.StepReturnCommandHandler;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.menu.MDynamicMenuContribution;
 import org.eclipse.e4.ui.model.application.ui.menu.MHandledMenuItem;
@@ -21,6 +24,7 @@ import org.eclipse.e4.ui.model.application.ui.menu.MMenuElement;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuFactory;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolItem;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.osgi.service.event.Event;
@@ -30,13 +34,19 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.debug.handler.ToggleBreakpointHandler;
 import com.kms.katalon.composer.execution.handlers.EvaluateDriverConnectorEditorContributionsHandler;
+import com.kms.katalon.composer.execution.jobs.ExecuteTestCaseJob;
 import com.kms.katalon.composer.execution.menu.CustomExecutionMenuContribution;
 import com.kms.katalon.composer.execution.menu.ExecutionHandledMenuItem;
-import com.kms.katalon.composer.execution.util.ComposerExecutionUtil;
+import com.kms.katalon.composer.testcase.model.ExecuteFromTestStepEntity;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.execution.collector.ConsoleOptionCollector;
+import com.kms.katalon.execution.configuration.ExistingRunConfiguration;
+import com.kms.katalon.execution.configuration.IRunConfiguration;
+import com.kms.katalon.execution.configuration.impl.DefaultExecutionSetting;
+import com.kms.katalon.execution.launcher.model.LaunchMode;
+import com.kms.katalon.execution.session.ExecutionSessionSocketServer;
 
 @SuppressWarnings("restriction")
 public class TestExecutionAddon implements EventHandler {
@@ -58,6 +68,12 @@ public class TestExecutionAddon implements EventHandler {
     @Inject
     private EModelService modelService;
 
+    @Inject
+    private UISynchronize sync;
+    
+    @Inject
+    private EPartService partService;
+
     @PostConstruct
     public void initHandlers(IEventBroker eventBroker) {
         ContextInjectionFactory.make(EvaluateDriverConnectorEditorContributionsHandler.class, context);
@@ -65,6 +81,19 @@ public class TestExecutionAddon implements EventHandler {
         eventBroker.subscribe(EventConstants.PROJECT_OPENED, this);
         initCustomRunConfigurationSubMenu(IdConstants.RUN_TOOL_ITEM_ID, StringConstants.CUSTOM_RUN_MENU_ID);
         initCustomRunConfigurationSubMenu(IdConstants.DEBUG_TOOL_ITEM_ID, StringConstants.CUSTOM_DEBUG_MENU_ID);
+        startSessionServer();
+        eventBroker.subscribe(EventConstants.EXECUTE_FROM_TEST_STEP, new EventHandler() {
+            @Override
+            public void handleEvent(Event event) {
+                Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
+                if (!(object instanceof ExecuteFromTestStepEntity)) {
+                    return;
+                }
+                if (partService.saveAll(true) && partService.getDirtyParts().isEmpty()) {
+                    executeTestCaseFromTestStep((ExecuteFromTestStepEntity) object);
+                }
+            }
+        });
     }
 
     private void initCustomRunConfigurationSubMenu(String parentToolItemId, String elementId) {
@@ -97,8 +126,8 @@ public class TestExecutionAddon implements EventHandler {
 
     private void writeDefaultConsolePropertyFile() {
         try {
-            ConsoleOptionCollector.getInstance().writeDefaultPropertyFile(
-                    ProjectController.getInstance().getCurrentProject());
+            ConsoleOptionCollector.getInstance()
+                    .writeDefaultPropertyFile(ProjectController.getInstance().getCurrentProject());
         } catch (IOException e) {
             LoggerSingleton.logError(e);
         }
@@ -125,20 +154,60 @@ public class TestExecutionAddon implements EventHandler {
             return;
 
         MMenu menu = runToolItem.getMenu();
-        if (menu == null || menu.getChildren() == null || menu.getChildren().isEmpty())
+        if (menu == null) {
             return;
+        }
 
+        convertChildrenToExecutionHandledElements(menu.getChildren());
+    }
+
+    private void convertChildrenToExecutionHandledElements(List<MMenuElement> originalElements) {
+        List<MMenuElement> menuItems = newElements(originalElements);
+        originalElements.clear();
+        originalElements.addAll(menuItems);
+    }
+
+    private List<MMenuElement> newElements(List<MMenuElement> originalElements) {
+        if (originalElements == null) {
+            return Collections.emptyList();
+        }
         List<MMenuElement> menuItems = new ArrayList<MMenuElement>();
-        for (MMenuElement item : menu.getChildren()) {
+        for (MMenuElement item : originalElements) {
             MMenuElement wrappedItem = item;
             if (item instanceof MHandledMenuItem) {
                 wrappedItem = new ExecutionHandledMenuItem((MHandledMenuItem) item);
             }
+            if (item instanceof MMenu) {
+                convertChildrenToExecutionHandledElements(((MMenu) item).getChildren());
+            }
             menuItems.add(wrappedItem);
         }
-        menu.getChildren().clear();
-        menu.getChildren().addAll(menuItems);
+        return menuItems;
+    }
 
-        ComposerExecutionUtil.updateDefaultLabelForRunDropDownItem();
+    private void startSessionServer() {
+        new Thread(ExecutionSessionSocketServer.getInstance()).start();
+    }
+
+    private void executeTestCaseFromTestStep(ExecuteFromTestStepEntity executeFromTestStepEntity) {
+        if (executeFromTestStepEntity == null || executeFromTestStepEntity.getTestCase() == null) {
+            return;
+        }
+        try {
+            IRunConfiguration runConfiguration = new ExistingRunConfiguration(
+                    ProjectController.getInstance().getCurrentProject().getFolderLocation());
+            ExistingRunConfiguration existingRunConfiguration = (ExistingRunConfiguration) runConfiguration;
+            existingRunConfiguration.setSessionId(executeFromTestStepEntity.getSessionId());
+            existingRunConfiguration.setRemoteUrl(executeFromTestStepEntity.getRemoteServerUrl());
+            existingRunConfiguration.setDriverName(executeFromTestStepEntity.getDriverTypeName());
+            ((DefaultExecutionSetting) existingRunConfiguration.getExecutionSetting())
+                    .setRawScript(executeFromTestStepEntity.getRawScript());
+            Job job = new ExecuteTestCaseJob(StringConstants.HAND_JOB_LAUNCHING_TEST_CASE, existingRunConfiguration,
+                    executeFromTestStepEntity.getTestCase(), LaunchMode.RUN, sync);
+            job.setUser(true);
+            job.schedule();
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
     }
 }

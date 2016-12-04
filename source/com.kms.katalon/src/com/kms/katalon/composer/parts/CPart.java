@@ -212,4 +212,9 @@ public abstract class CPart extends WorkbenchPart {
     public IStatus redoOperation() {
         return redoOperation(null);
     }
+    
+    public void clearHistory() {
+        operationExecutor.refresh();
+        createUndoRedoActions();
+    }
 }

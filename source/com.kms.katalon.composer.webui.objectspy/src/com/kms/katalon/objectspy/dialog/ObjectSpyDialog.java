@@ -55,8 +55,8 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -77,6 +77,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import com.kms.katalon.composer.components.impl.control.Dropdown;
+import com.kms.katalon.composer.components.impl.control.DropdownGroup;
+import com.kms.katalon.composer.components.impl.control.DropdownItemSelectionListener;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
@@ -120,6 +123,7 @@ import com.kms.katalon.objectspy.util.HTMLElementUtil;
 import com.kms.katalon.objectspy.util.InspectSessionUtil;
 import com.kms.katalon.objectspy.util.WinRegistry;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
+import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef.HWND;
 
@@ -182,7 +186,7 @@ public class ObjectSpyDialog extends Dialog {
 
     private Text txtXpathInput;
 
-    private WebUIDriverType defaultBrowser = WebUIDriverType.FIREFOX_DRIVER;
+    private WebUIDriverType defaultBrowser;
 
     private boolean isInstant = false;
 
@@ -201,6 +205,8 @@ public class ObjectSpyDialog extends Dialog {
         this.eventBroker = eventBroker;
         isDisposed = false;
         elements = new ArrayList<HTMLPageElement>();
+        // set default browser
+        defaultBrowser = getWebUIDriver();
     }
 
     /**
@@ -264,160 +270,140 @@ public class ObjectSpyDialog extends Dialog {
         GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).grab(true, false).applyTo(startBrowserToolbar);
 
         startBrowser = new ToolItem(startBrowserToolbar, SWT.DROP_DOWN);
-        startBrowser.setImage(ImageConstants.IMG_24_OBJECT_SPY);
-        startBrowser.setDisabledImage(ImageConstants.IMG_24_OBJECT_SPY_DISABLED);
-
-        SelectionAdapter browserSelectionListener = new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                isInstant = false;
-                defaultBrowser = WebUIDriverType.fromStringValue(((MenuItem) e.getSource()).getText());
-                startBrowser();
-            }
-
-        };
-
-        final Menu menu = new Menu(getShell(), SWT.POP_UP);
-
-        final MenuItem startFirefox = new MenuItem(menu, SWT.PUSH);
-        startFirefox.setImage(ImageConstants.IMG_16_BROWSER_FIREFOX);
-        startFirefox.setText(WebUIDriverType.FIREFOX_DRIVER.toString());
-        startFirefox.addSelectionListener(browserSelectionListener);
-
-        final MenuItem startChrome = new MenuItem(menu, SWT.PUSH);
-        startChrome.setImage(ImageConstants.IMG_16_BROWSER_CHROME);
-        startChrome.setText(WebUIDriverType.CHROME_DRIVER.toString());
-        startChrome.addSelectionListener(browserSelectionListener);
-
-        if (Platform.getOS().equals(Platform.OS_WIN32)) {
-            MenuItem startIE = new MenuItem(menu, SWT.PUSH);
-            startIE.setImage(ImageConstants.IMG_16_BROWSER_IE);
-            startIE.setText(WebUIDriverType.IE_DRIVER.toString());
-            startIE.addSelectionListener(browserSelectionListener);
-        }
-
         startBrowser.setText(StringConstants.DIA_BTN_START_BROWSER);
-        startBrowser.addSelectionListener(new SelectionAdapter() {
+        startBrowser.setImage(getWebUIDriverToolItemImage(getWebUIDriver()));
+        Dropdown dropdown = new Dropdown(getShell());
+        createDropdownContent(dropdown);
+
+        startBrowser.addSelectionListener(new DropdownItemSelectionListener(dropdown) {
+
             @Override
-            public void widgetSelected(SelectionEvent e) {
-                ToolItem item = (ToolItem) e.widget;
-                if (e.detail == SWT.ARROW) {
-                    Rectangle bounds = item.getBounds();
-                    Point point = item.getParent().toDisplay(bounds.x, bounds.y + bounds.height);
-                    menu.setLocation(point);
-                    menu.setVisible(true);
-                } else {
-                    startObjectSpy(defaultBrowser, isInstant);
-                }
+            public void itemSelected(SelectionEvent event) {
+                startObjectSpy(defaultBrowser, isInstant);
             }
         });
+    }
 
-        addInstantBrowsersMenu(menu);
+    private void createDropdownContent(Dropdown dropdown) {
+        DropdownGroup newBrowser = dropdown.addDropdownGroupItem(StringConstants.MENU_ITEM_NEW_BROWSERS,
+                ImageConstants.IMG_16_NEW_BROWSER);
+        addNewBrowserItem(newBrowser, WebUIDriverType.FIREFOX_DRIVER);
+        addNewBrowserItem(newBrowser, WebUIDriverType.CHROME_DRIVER);
+
+        DropdownGroup activeBrowser = dropdown.addDropdownGroupItem(StringConstants.MENU_ITEM_ACTIVE_BROWSERS,
+                ImageConstants.IMG_16_ACTIVE_BROWSER);
+        addActiveBrowserItem(activeBrowser, WebUIDriverType.CHROME_DRIVER);
+        addActiveBrowserItem(activeBrowser, WebUIDriverType.FIREFOX_DRIVER);
+
+        if (Platform.OS_WIN32.equals(Platform.getOS())) {
+            addNewBrowserItem(newBrowser, WebUIDriverType.IE_DRIVER);
+            addActiveBrowserItem(activeBrowser, WebUIDriverType.IE_DRIVER);
+        }
+    }
+
+    private void addNewBrowserItem(DropdownGroup newBrowserGroup, WebUIDriverType webUIDriverType) {
+        newBrowserGroup.addItem(webUIDriverType.toString(), getWebUIDriverDropdownImage(webUIDriverType),
+                new SelectionAdapter() {
+
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        isInstant = false;
+                        defaultBrowser = webUIDriverType;
+                        startBrowser.setImage(getWebUIDriverToolItemImage(webUIDriverType));
+                        startBrowser();
+                    }
+                });
+    }
+
+    private void addActiveBrowserItem(DropdownGroup activeBrowserGroup, WebUIDriverType webUIDriverType) {
+        activeBrowserGroup.addItem(webUIDriverType.toString(), getWebUIDriverDropdownImage(webUIDriverType),
+                new SelectionAdapter() {
+
+                    @Override
+                    public void widgetSelected(SelectionEvent event) {
+                        try {
+                            endInspectSession();
+                            if (!InspectSessionUtil.isNotShowingInstantBrowserDialog() && !showInstantBrowserDialog()) {
+                                return;
+                            }
+                            defaultBrowser = webUIDriverType;
+                            startBrowser.setImage(getWebUIDriverToolItemImage(webUIDriverType));
+                            isInstant = true;
+                            startInstantBrowser();
+                        } catch (Exception exception) {
+                            LoggerSingleton.logError(exception);
+                        }
+                    }
+
+                    protected void showMessageForStartingInstantIE() {
+                        UISynchronizeService.syncExec(new Runnable() {
+                            @Override
+                            public void run() {
+                                MessageDialogWithToggle messageDialogWithToggle = MessageDialogWithToggle
+                                        .openInformation(Display.getCurrent().getActiveShell(),
+                                                StringConstants.HAND_ACTIVE_BROWSERS_DIA_TITLE,
+                                                StringConstants.DIALOG_RUNNING_INSTANT_IE_MESSAGE,
+                                                StringConstants.HAND_INSTANT_BROWSERS_DIA_TOOGLE_MESSAGE, false, null,
+                                                null);
+                                InspectSessionUtil
+                                        .setNotShowingInstantBrowserDialog(messageDialogWithToggle.getToggleState());
+                            }
+                        });
+                    }
+
+                    private boolean showInstantBrowserDialog() throws IOException, URISyntaxException {
+                        if (webUIDriverType == WebUIDriverType.IE_DRIVER) {
+                            showMessageForStartingInstantIE();
+                            return true;
+                        }
+                        MessageDialogWithToggle messageDialogWithToggle = new GoToAddonStoreMessageDialog(
+                                getParentShell(), StringConstants.HAND_ACTIVE_BROWSERS_DIA_TITLE,
+                                MessageFormat.format(StringConstants.HAND_ACTIVE_BROWSERS_DIA_MESSAGE,
+                                        webUIDriverType.toString()),
+                                StringConstants.HAND_INSTANT_BROWSERS_DIA_TOOGLE_MESSAGE);
+                        int returnCode = messageDialogWithToggle.open();
+                        InspectSessionUtil.setNotShowingInstantBrowserDialog(messageDialogWithToggle.getToggleState());
+                        if (returnCode == IDialogConstants.NO_ID) {
+                            return true;
+                        }
+                        if (returnCode != IDialogConstants.YES_ID) {
+                            return false;
+                        }
+                        openBrowserToAddonUrl();
+                        return true;
+                    }
+
+                    private void openBrowserToAddonUrl() throws IOException, URISyntaxException {
+                        String url = getAddonUrl();
+                        if (url == null || !Desktop.isDesktopSupported()) {
+                            return;
+                        }
+                        Desktop.getDesktop().browse(new URI(url));
+                    }
+
+                    private String getAddonUrl() {
+                        if (webUIDriverType == WebUIDriverType.CHROME_DRIVER) {
+                            return OBJECT_SPY_CHROME_ADDON_URL;
+                        }
+                        if (webUIDriverType == WebUIDriverType.FIREFOX_DRIVER) {
+                            return OBJECT_SPY_FIREFOX_ADDON_URL;
+                        }
+                        return null;
+                    }
+                });
     }
 
     private int getInstantBrowsersPort() {
-        return PreferenceStoreManager.getPreferenceStore(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_QUALIFIER)
-                .getInt(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_INSTANT_BROWSER_PORT);
+        return getPreferenceStore().getInt(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_ACTIVE_BROWSER_PORT);
     }
 
-    private void addInstantBrowsersMenu(Menu menu) {
-        final MenuItem instantBrowserMenuItem = new MenuItem(menu, SWT.CASCADE);
-        instantBrowserMenuItem.setText(StringConstants.MENU_ITEM_INSTANT_BROWSERS);
-
-        final Menu instantBrowserMenu = new Menu(menu);
-        instantBrowserMenuItem.setMenu(instantBrowserMenu);
-
-        final MenuItem startChrome = new MenuItem(instantBrowserMenu, SWT.PUSH);
-        startChrome.setImage(ImageConstants.IMG_16_BROWSER_CHROME);
-        startChrome.setText(WebUIDriverType.CHROME_DRIVER.toString());
-        startChrome.addSelectionListener(new InstantBrowserSelectionAdapter(WebUIDriverType.CHROME_DRIVER));
-
-        final MenuItem startFirefox = new MenuItem(instantBrowserMenu, SWT.PUSH);
-        startFirefox.setImage(ImageConstants.IMG_16_BROWSER_FIREFOX);
-        startFirefox.setText(WebUIDriverType.FIREFOX_DRIVER.toString());
-        startFirefox.addSelectionListener(new InstantBrowserSelectionAdapter(WebUIDriverType.FIREFOX_DRIVER));
-
-        if (Platform.getOS().equals(Platform.OS_WIN32)) {
-            final MenuItem startIE = new MenuItem(instantBrowserMenu, SWT.PUSH);
-            startIE.setImage(ImageConstants.IMG_16_BROWSER_IE);
-            startIE.setText(WebUIDriverType.IE_DRIVER.toString());
-            startIE.addSelectionListener(new InstantBrowserSelectionAdapter(WebUIDriverType.IE_DRIVER));
-        }
+    private WebUIDriverType getWebUIDriver() {
+        return WebUIDriverType.fromStringValue(
+                getPreferenceStore().getString(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_DEFAULT_BROWSER));
     }
 
-    private final class InstantBrowserSelectionAdapter extends SelectionAdapter {
-        private WebUIDriverType driverType;
-
-        public InstantBrowserSelectionAdapter(WebUIDriverType driverType) {
-            this.driverType = driverType;
-        }
-
-        @Override
-        public void widgetSelected(SelectionEvent event) {
-            try {
-                endInspectSession();
-                if (!InspectSessionUtil.isNotShowingInstantBrowserDialog() && !showInstantBrowserDialog()) {
-                    return;
-                }
-                defaultBrowser = driverType;
-                isInstant = true;
-                startInstantBrowser();
-            } catch (Exception exception) {
-                LoggerSingleton.logError(exception);
-            }
-        }
-
-        protected void showMessageForStartingInstantIE() {
-            UISynchronizeService.syncExec(new Runnable() {
-                @Override
-                public void run() {
-                    MessageDialogWithToggle messageDialogWithToggle = MessageDialogWithToggle.openInformation(
-                            Display.getCurrent().getActiveShell(), StringConstants.HAND_INSTANT_BROWSERS_DIA_TITLE,
-                            StringConstants.DIALOG_RUNNING_INSTANT_IE_MESSAGE,
-                            StringConstants.HAND_INSTANT_BROWSERS_DIA_TOOGLE_MESSAGE, false, null, null);
-                    InspectSessionUtil.setNotShowingInstantBrowserDialog(messageDialogWithToggle.getToggleState());
-                }
-            });
-        }
-
-        private boolean showInstantBrowserDialog() throws IOException, URISyntaxException {
-            if (driverType == WebUIDriverType.IE_DRIVER) {
-                showMessageForStartingInstantIE();
-                return true;
-            }
-            MessageDialogWithToggle messageDialogWithToggle = new GoToAddonStoreMessageDialog(getParentShell(),
-                    StringConstants.HAND_INSTANT_BROWSERS_DIA_TITLE,
-                    MessageFormat.format(StringConstants.HAND_INSTANT_BROWSERS_DIA_MESSAGE, driverType.toString()),
-                    StringConstants.HAND_INSTANT_BROWSERS_DIA_TOOGLE_MESSAGE);
-            int returnCode = messageDialogWithToggle.open();
-            InspectSessionUtil.setNotShowingInstantBrowserDialog(messageDialogWithToggle.getToggleState());
-            if (returnCode == IDialogConstants.NO_ID) {
-                return true;
-            }
-            if (returnCode != IDialogConstants.YES_ID) {
-                return false;
-            }
-            openBrowserToAddonUrl();
-            return true;
-        }
-
-        private void openBrowserToAddonUrl() throws IOException, URISyntaxException {
-            String url = getAddonUrl();
-            if (url == null || !Desktop.isDesktopSupported()) {
-                return;
-            }
-            Desktop.getDesktop().browse(new URI(url));
-        }
-
-        private String getAddonUrl() {
-            if (driverType == WebUIDriverType.CHROME_DRIVER) {
-                return OBJECT_SPY_CHROME_ADDON_URL;
-            }
-            if (driverType == WebUIDriverType.FIREFOX_DRIVER) {
-                return OBJECT_SPY_FIREFOX_ADDON_URL;
-            }
-            return null;
-        }
+    private ScopedPreferenceStore getPreferenceStore() {
+        return PreferenceStoreManager.getPreferenceStore(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_QUALIFIER);
     }
 
     private void createRightPanel(Composite htmlDomComposite) {
@@ -1010,7 +996,7 @@ public class ObjectSpyDialog extends Dialog {
      */
     @Override
     protected Point getInitialSize() {
-        return new Point(800, 600);
+        return new Point(900, 600);
     }
 
     @Override
@@ -1125,6 +1111,38 @@ public class ObjectSpyDialog extends Dialog {
         return boldDescriptor.createFont(label.getDisplay());
     }
 
+    private Image getWebUIDriverDropdownImage(WebUIDriverType webUIDriverType) {
+        switch (webUIDriverType) {
+            case FIREFOX_DRIVER:
+                return ImageConstants.IMG_16_BROWSER_FIREFOX;
+
+            case CHROME_DRIVER:
+                return ImageConstants.IMG_16_BROWSER_CHROME;
+
+            case IE_DRIVER:
+                return ImageConstants.IMG_16_BROWSER_IE;
+
+            default:
+                return null;
+        }
+    }
+
+    private Image getWebUIDriverToolItemImage(WebUIDriverType webUIDriverType) {
+        switch (webUIDriverType) {
+            case FIREFOX_DRIVER:
+                return ImageConstants.IMG_24_FIREFOX;
+
+            case CHROME_DRIVER:
+                return ImageConstants.IMG_24_CHROME;
+
+            case IE_DRIVER:
+                return ImageConstants.IMG_24_IE;
+
+            default:
+                return null;
+        }
+    }
+
     private void startObjectSpy(WebUIDriverType browser, boolean isInstant) {
         try {
             if (browser == WebUIDriverType.IE_DRIVER) {
@@ -1208,9 +1226,9 @@ public class ObjectSpyDialog extends Dialog {
     }
 
     private void changeBrowserToolItemName() {
-        String string = defaultBrowser.toString();
+        String string = StringConstants.DIA_BTN_START_BROWSER;
         if (isInstant) {
-            string = StringConstants.INSTANT_BROWSER_PREFIX;
+            string = StringConstants.ACTIVE_BROWSER_PREFIX;
         }
         changeBrowserName(string);
     }

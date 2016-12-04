@@ -147,7 +147,7 @@ public class TestDataLinkFinderDialog extends Dialog {
 
     @Override
     protected void setShellStyle(int arg) {
-        super.setShellStyle(SWT.CLOSE | SWT.TITLE | SWT.RESIZE);
+        super.setShellStyle(SWT.CLOSE | SWT.TITLE | SWT.RESIZE | SWT.APPLICATION_MODAL);
     }
 
     public TestCaseTestDataLink getSelectedTestDataLink() {

@@ -30,4 +30,5 @@ Require-Bundle: com.kms.katalon.composer.explorer,
  com.kms.katalon.composer.objectrepository,
  org.eclipse.e4.core.di,
  org.apache.commons.lang,
- com.kms.katalon.composer.resources
+ com.kms.katalon.composer.resources,
+ org.eclipse.equinox.registry
