@@ -42,7 +42,12 @@ import io.appium.java_client.service.local.flags.GeneralServerFlag;
 import io.appium.java_client.service.local.flags.IOSServerFlag;
 
 public class AppiumDriverManager {
+    public static final String WDA_LOCAL_PORT = "wdaLocalPort";
 
+    public static final String REAL_DEVICE_LOGGER = "realDeviceLogger";
+
+    public static final String XCUI_TEST = "XCUITest";
+    
 	private static final String XCODE = "Xcode";
 
 	public static final String NODE_PATH = "NODE_BINARY_PATH";
@@ -85,12 +90,9 @@ public class AppiumDriverManager {
 
 	private static final String IOS_WEBKIT_DEBUG_PROXY_EXECUTABLE = "ios_webkit_debug_proxy";
 
-	private static final int DEFAULT_WEB_PROXY_PORT = 27753;
-
 	private static final String IOS_WEBKIT_LOG_FILE_NAME = "appium-proxy-server.log";
 
-	private static final String MSG_START_IOS_WEBKIT_SUCCESS = "ios_webkit_debug_proxy server started on port "
-			+ DEFAULT_WEB_PROXY_PORT;
+    private static final String MSG_START_IOS_WEBKIT_SUCCESS = "ios_webkit_debug_proxy server started on port ";
 
 	private static final String LOCALHOST_PREFIX = "http://localhost:";
 
@@ -114,6 +116,13 @@ public class AppiumDriverManager {
 			return 0;
 		}
 	};
+    
+    private static final ThreadLocal<Integer> localStorageWebProxyPort = new ThreadLocal<Integer>() {
+        @Override
+        protected Integer initialValue() {
+            return 0;
+        }
+    };
 
 	private static final ThreadLocal<AppiumDriver<?>> localStorageAppiumDriver = new ThreadLocal<AppiumDriver<?>>() {
 		@Override
@@ -137,8 +146,9 @@ public class AppiumDriverManager {
 	 */
 	private static void startWebProxyServer(String deviceId)
 			throws IOException, InterruptedException, IOSWebkitStartException {
+        int freePort = getFreePort();
 		String[] webProxyServerCmd = { IOS_WEBKIT_DEBUG_PROXY_EXECUTABLE, C_FLAG,
-				deviceId + ":" + DEFAULT_WEB_PROXY_PORT };
+                deviceId + ":" + freePort };
 		ProcessBuilder webProxyServerProcessBuilder = new ProcessBuilder(webProxyServerCmd);
 		webProxyServerProcessBuilder
 				.redirectOutput(new File(new File(RunConfiguration.getAppiumLogFilePath()).getParent() + File.separator
@@ -147,11 +157,12 @@ public class AppiumDriverManager {
 		Process webProxyProcess = webProxyServerProcessBuilder.start();
 
 		// Check again if proxy server started
-		if (!isServerStarted(10, new URL(LOCALHOST_PREFIX + DEFAULT_WEB_PROXY_PORT))) {
+        if (!isServerStarted(10, new URL(LOCALHOST_PREFIX + freePort))) {
 			throw new IOSWebkitStartException();
 		}
 		localStorageWebProxyProcess.set(webProxyProcess);
-		KeywordLogger.getInstance().logInfo(MSG_START_IOS_WEBKIT_SUCCESS);
+        localStorageWebProxyPort.set(freePort);
+        KeywordLogger.getInstance().logInfo(MSG_START_IOS_WEBKIT_SUCCESS + freePort);
 	}
 
 	private static boolean isAppiumServerStarted(int timeToWait) {
@@ -184,7 +195,7 @@ public class AppiumDriverManager {
 			// Process is running
 		}
 		try {
-			return isServerStarted(timeOut, new URL(LOCALHOST_PREFIX + DEFAULT_WEB_PROXY_PORT));
+            return isServerStarted(timeOut, new URL(LOCALHOST_PREFIX + localStorageWebProxyPort.get()));
 		} catch (MalformedURLException e) {
 			return false;
 		}
@@ -258,7 +269,7 @@ public class AppiumDriverManager {
 		cmdList.add(getAppiumLogLevel());
 		if (!Platform.getCurrent().is(Platform.WINDOWS)) {
 			cmdList.add(IOSServerFlag.WEBKIT_DEBUG_PROXY_PORT.getArgument());
-			cmdList.add(String.valueOf(DEFAULT_WEB_PROXY_PORT));
+			cmdList.add(String.valueOf(String.valueOf(localStorageWebProxyPort.get())));
 		}
 		ProcessBuilder pb = new ProcessBuilder(cmdList.toArray(new String[cmdList.size()]));
 		pb.environment().putAll(environmentVariables);
@@ -347,7 +358,7 @@ public class AppiumDriverManager {
 		startAppiumServerJS(timeout, new HashMap<String, String>());
 	}
 
-	private static synchronized int getFreePort() {
+    public static synchronized int getFreePort() {
 		try (ServerSocket s = new ServerSocket(0)) {
 			return s.getLocalPort();
 		} catch (IOException e) {

@@ -24,9 +24,6 @@ import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.webui.constants.StringConstants;
 
 public class WebMobileDriverFactory {
-    private static final String REAL_DEVICE_LOGGER = "realDeviceLogger";
-
-    private static final String XCUI_TEST = "XCUITest";
 
     private static final String CHROME = "Chrome";
 
@@ -54,9 +51,8 @@ public class WebMobileDriverFactory {
             WebUIDriverType WebUIDriverType) {
         DesiredCapabilities desireCapabilities = new DesiredCapabilities();
         for (Entry<String, Object> property : propertyMap.entrySet()) {
-            KeywordLogger.getInstance().logInfo(
-                    MessageFormat.format(StringConstants.KW_LOG_WEB_UI_PROPERTY_SETTING, property.getKey(),
-                            property.getValue()));
+            KeywordLogger.getInstance().logInfo(MessageFormat.format(StringConstants.KW_LOG_WEB_UI_PROPERTY_SETTING,
+                    property.getKey(), property.getValue()));
             desireCapabilities.setCapability(property.getKey(), property.getValue());
         }
         return desireCapabilities;
@@ -75,8 +71,10 @@ public class WebMobileDriverFactory {
             }
             try {
                 if (AppiumDriverManager.getXCodeVersion() >= 8) {
-                    capabilities.setCapability(MobileCapabilityType.AUTOMATION_NAME, XCUI_TEST);
-                    capabilities.setCapability(REAL_DEVICE_LOGGER, RunConfiguration.getDeviceConsoleExecutable());
+                    capabilities.setCapability(MobileCapabilityType.AUTOMATION_NAME, AppiumDriverManager.XCUI_TEST);
+                    capabilities.setCapability(AppiumDriverManager.REAL_DEVICE_LOGGER,
+                            RunConfiguration.getDeviceConsoleExecutable());
+                    capabilities.setCapability(AppiumDriverManager.WDA_LOCAL_PORT, AppiumDriverManager.getFreePort());
                 }
             } catch (ExecutionException e) {
                 // XCode version not found, ignore this
@@ -93,7 +91,7 @@ public class WebMobileDriverFactory {
         capabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, 1800);
         return capabilities;
     }
-    
+
     public static AppiumDriver<?> startExisitingMobileDriver(DriverType driverType, String sessionId,
             String remoteServerUrl) throws MalformedURLException, MobileDriverInitializeException {
         return AppiumDriverManager.startExisitingMobileDriver(driverType, sessionId, remoteServerUrl);
