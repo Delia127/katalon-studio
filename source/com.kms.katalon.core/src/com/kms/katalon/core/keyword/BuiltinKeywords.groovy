@@ -28,7 +28,7 @@ import com.kms.katalon.core.testdata.TestData
 
 @CompileStatic
 public class BuiltinKeywords {
-    
+
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
     public static void comment(String message) {
