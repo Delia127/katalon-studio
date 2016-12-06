@@ -29,12 +29,6 @@ import com.kms.katalon.core.testdata.TestData
 @CompileStatic
 public class BuiltinKeywords {
 
-    @CompileStatic
-    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
-    public static void comment(String message) {
-        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_BUILT_IN, "comment")
-    }
-
     /**
      * Verify if two strings match each other, the second string can be a
      * regular expression.
