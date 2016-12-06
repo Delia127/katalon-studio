@@ -1,10 +1,5 @@
 package com.kms.katalon.core.main;
 
-import groovy.lang.DelegatingMetaClass;
-import groovy.lang.GroovyClassLoader;
-import groovy.lang.GroovyObject;
-import groovy.lang.MetaClass;
-
 import java.util.List;
 
 import org.codehaus.groovy.runtime.InvokerHelper;
@@ -16,6 +11,11 @@ import com.kms.katalon.core.logging.ErrorCollector;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.util.ExceptionsUtil;
+
+import groovy.lang.DelegatingMetaClass;
+import groovy.lang.GroovyClassLoader;
+import groovy.lang.GroovyObject;
+import groovy.lang.MetaClass;
 
 public class CustomKeywordDelegatingMetaClass extends DelegatingMetaClass {
     private GroovyClassLoader groovyClassLoader;
@@ -31,15 +31,18 @@ public class CustomKeywordDelegatingMetaClass extends DelegatingMetaClass {
     @Override
     public Object invokeStaticMethod(Object object, String methodName, Object[] arguments) {
         List<Throwable> oldErrors = errorCollector.getCoppiedErrors();
+        boolean oldIsKeywordPassed = errorCollector.isKeywordPassed();
         try {
             errorCollector.clearErrors();
-            
+            errorCollector.setKeywordPassed(false);
+
             int classAndMethodSeparatorIndex = methodName.lastIndexOf(".");
             String customKeywordClassName = methodName.substring(0, classAndMethodSeparatorIndex);
             Class<?> customKeywordClass = getCustomKeywordClassAndSetMetaClass(customKeywordClassName);
             GroovyObject obj = (GroovyObject) customKeywordClass.newInstance();
 
-            String customKeywordMethodName = methodName.substring(classAndMethodSeparatorIndex + 1, methodName.length());
+            String customKeywordMethodName = methodName.substring(classAndMethodSeparatorIndex + 1,
+                    methodName.length());
             Object result = obj.invokeMethod(customKeywordMethodName, arguments);
 
             if (errorCollector.containsErrors()) {
@@ -47,7 +50,7 @@ public class CustomKeywordDelegatingMetaClass extends DelegatingMetaClass {
 
                 KeywordLogger.getInstance().logMessage(ErrorCollector.fromError(throwable),
                         ExceptionsUtil.getMessageForThrowable(throwable));
-            } else {
+            } else if (!errorCollector.isKeywordPassed()) {
                 KeywordLogger.getInstance().logMessage(LogLevel.PASSED, methodName + " is PASSED");
             }
 
@@ -63,6 +66,7 @@ public class CustomKeywordDelegatingMetaClass extends DelegatingMetaClass {
         } finally {
             // return previous errors to error collector
             errorCollector.getErrors().addAll(0, oldErrors);
+            errorCollector.setKeywordPassed(oldIsKeywordPassed);
         }
     }
 
@@ -82,6 +86,9 @@ public class CustomKeywordDelegatingMetaClass extends DelegatingMetaClass {
             throw new StepFailedException(error);
         }
         keywordLogger.logError(error.getMessage());
+        if (error instanceof StepErrorException) {
+            throw (StepErrorException) error;
+        }
         throw new StepErrorException(error);
     }
 
@@ -90,8 +97,8 @@ public class CustomKeywordDelegatingMetaClass extends DelegatingMetaClass {
 
         MetaClass keywordMetaClass = InvokerHelper.metaRegistry.getMetaClass(customKeywordClass);
         if (!(keywordMetaClass instanceof KeywordClassDelegatingMetaClass)) {
-            InvokerHelper.metaRegistry.setMetaClass(customKeywordClass, new KeywordClassDelegatingMetaClass(
-                    customKeywordClass, groovyClassLoader));
+            InvokerHelper.metaRegistry.setMetaClass(customKeywordClass,
+                    new KeywordClassDelegatingMetaClass(customKeywordClass, groovyClassLoader));
         }
         return customKeywordClass;
     }
