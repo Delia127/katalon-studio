@@ -7,8 +7,12 @@ import org.codehaus.groovy.runtime.InvokerInvocationException;
 
 import com.kms.katalon.core.exception.StepFailedException;
 
+// TODO: Rename this class to something more appropriate, like KeywordTracker or something
 public class ErrorCollector {
     private List<Throwable> errors;
+    
+    // Indicate if user have mark a keyword to be passed
+    private boolean isKeywordPassed;
 
     private static ErrorCollector _instance;
 
@@ -88,5 +92,13 @@ public class ErrorCollector {
         Class<?> throwableClass = t.getClass();
         return (StepFailedException.class == throwableClass || AssertionError.class.isAssignableFrom(throwableClass))
                 ? LogLevel.FAILED : LogLevel.ERROR;
+    }
+
+    public boolean isKeywordPassed() {
+        return isKeywordPassed;
+    }
+
+    public void setKeywordPassed(boolean isKeywordPassed) {
+        this.isKeywordPassed = isKeywordPassed;
     }
 }

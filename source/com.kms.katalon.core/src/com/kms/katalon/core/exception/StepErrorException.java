@@ -1,5 +1,9 @@
 package com.kms.katalon.core.exception;
 
+/**
+ * Exception to stop execution and mark keyword or test case as ERROR
+ *
+ */
 public class StepErrorException extends RuntimeException {
     /**
      * 
