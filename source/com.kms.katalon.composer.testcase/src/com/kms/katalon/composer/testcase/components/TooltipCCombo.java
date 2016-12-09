@@ -376,7 +376,7 @@ public class TooltipCCombo extends CCombo {
                 return;
             }
             String text = this.textLookup.get(index);
-            if (index >= 0 && index < this.list.getItemCount() && StringUtils.isNotEmpty(classKeywordName) && StringUtils.isNotEmpty(text)) {
+            if (list.isVisible() && index >= 0 && index < this.list.getItemCount() && StringUtils.isNotEmpty(classKeywordName) && StringUtils.isNotEmpty(text)) {
                 this.tooltip.setText(text);
                 // calculate the location
                 Point size = this.list.getSize();

@@ -266,7 +266,6 @@ public class KeywordNodeTooltip {
             if (isOpenKeywordDescToolItem(cursorLoc)) {
                 openKeywordDesc();
             } else {
-                tip.setVisible(false);
                 tip.dispose();
             }
             currentTooltip = null;
