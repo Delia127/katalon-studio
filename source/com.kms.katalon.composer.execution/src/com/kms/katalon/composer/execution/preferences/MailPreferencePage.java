@@ -29,6 +29,7 @@ import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.preferences.editor.MultiLineStringFieldEditor;
 import com.kms.katalon.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.execution.entity.EmailConfig;
+import com.kms.katalon.execution.preferences.MailPreferenceDefaultValueInitializer;
 import com.kms.katalon.execution.util.MailUtil;
 import com.kms.katalon.execution.util.MailUtil.MailSecurityProtocolType;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
@@ -56,10 +57,17 @@ public class MailPreferencePage extends FieldEditorPreferencePage {
 
         hostFieldEditor = addStringFieldEditor(group, ExecutionPreferenceConstants.MAIL_CONFIG_HOST,
                 StringConstants.PREF_LBL_HOST, 1, false);
+        ((ExposedStringFieldEditor) hostFieldEditor)
+                .setHintText(MailPreferenceDefaultValueInitializer.MAIL_CONFIG_HOST_DEFAULT_VALUE);
         portFieldEditor = addStringFieldEditor(group, ExecutionPreferenceConstants.MAIL_CONFIG_PORT,
                 StringConstants.PREF_LBL_PORT, 1, false);
+        ((ExposedStringFieldEditor) portFieldEditor)
+                .setHintText(MailPreferenceDefaultValueInitializer.MAIL_CONFIG_PORT_DEFAULT_VALUE);
         userNameFieldEditor = addStringFieldEditor(group, ExecutionPreferenceConstants.MAIL_CONFIG_USERNAME,
                 StringConstants.PREF_LBL_USERNAME, 1, false);
+        ((ExposedStringFieldEditor) userNameFieldEditor)
+                .setHintText(MailPreferenceDefaultValueInitializer.MAIL_CONFIG_USERNAME_DEFAULT_VALUE);
+        
         passwordFieldEditor = addStringFieldEditor(group, ExecutionPreferenceConstants.MAIL_CONFIG_PASSWORD,
                 StringConstants.PREF_LBL_PASSWORD, 1, false);
 
@@ -139,7 +147,7 @@ public class MailPreferencePage extends FieldEditorPreferencePage {
             fieldEditor = new MultiLineStringFieldEditor(preferenceName, preferenceLabelText,
                     MultiLineStringFieldEditor.UNLIMITED, 60, spacer);
         } else {
-            fieldEditor = new StringFieldEditor(preferenceName, preferenceLabelText, spacer);
+            fieldEditor = new ExposedStringFieldEditor(preferenceName, preferenceLabelText, spacer);
         }
         fieldEditor.fillIntoGrid(spacer, fieldEditor.getNumberOfControls());
         addField(fieldEditor);
@@ -199,5 +207,15 @@ public class MailPreferencePage extends FieldEditorPreferencePage {
 
     private static String[] getRecipients(String reportRecipients) {
         return StringUtils.split(reportRecipients.trim(), ";");
+    }
+    
+    private class ExposedStringFieldEditor extends StringFieldEditor {
+        public ExposedStringFieldEditor(String name, String labelText, Composite parent) {
+            super(name, labelText, parent);
+        }
+
+        public void setHintText(String hint) {
+            getTextControl().setMessage(hint);
+        }
     }
 }

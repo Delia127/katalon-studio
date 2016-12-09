@@ -10,13 +10,11 @@ import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class MailPreferenceDefaultValueInitializer extends AbstractPreferenceInitializer {
 
-    private static final String MAIL_CONFIG_PASSWORD_DEFAULT_VALUE = "testemail123";
+    public static final String MAIL_CONFIG_USERNAME_DEFAULT_VALUE = "E.g: testemailkms@gmail.com";
 
-    private static final String MAIL_CONFIG_USERNAME_DEFAULT_VALUE = "testemailkms@gmail.com";
+    public static final String MAIL_CONFIG_PORT_DEFAULT_VALUE = "E.g: 465";
 
-    private static final String MAIL_CONFIG_PORT_DEFAULT_VALUE = "465";
-
-    private static final String MAIL_CONFIG_HOST_DEFAULT_VALUE = "smtp.gmail.com";
+    public static final String MAIL_CONFIG_HOST_DEFAULT_VALUE = "E.g: smtp.gmail.com";
 
     private static final String MAIL_CONFIG_SECURITY_PROTOCOL_DEFAULT_VALUE = MailUtil.MailSecurityProtocolType.SSL
             .toString();
@@ -26,12 +24,8 @@ public class MailPreferenceDefaultValueInitializer extends AbstractPreferenceIni
     @Override
     public void initializeDefaultPreferences() {
         ScopedPreferenceStore store = getPreferenceStore(ExecutionPreferenceConstants.EXECUTION_QUALIFIER);
-        store.setDefault(ExecutionPreferenceConstants.MAIL_CONFIG_HOST, MAIL_CONFIG_HOST_DEFAULT_VALUE);
         store.setDefault(ExecutionPreferenceConstants.MAIL_CONFIG_SECURITY_PROTOCOL,
                 MAIL_CONFIG_SECURITY_PROTOCOL_DEFAULT_VALUE);
-        store.setDefault(ExecutionPreferenceConstants.MAIL_CONFIG_PORT, MAIL_CONFIG_PORT_DEFAULT_VALUE);
-        store.setDefault(ExecutionPreferenceConstants.MAIL_CONFIG_USERNAME, MAIL_CONFIG_USERNAME_DEFAULT_VALUE);
-        store.setDefault(ExecutionPreferenceConstants.MAIL_CONFIG_PASSWORD, MAIL_CONFIG_PASSWORD_DEFAULT_VALUE);
         store.setDefault(ExecutionPreferenceConstants.MAIL_CONFIG_ATTACHMENT, MAIL_CONFIG_ATTACHMENT_DEFAULT_VALUE);
     }
 
