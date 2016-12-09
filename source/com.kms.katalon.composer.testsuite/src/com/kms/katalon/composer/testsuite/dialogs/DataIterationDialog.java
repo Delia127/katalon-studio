@@ -262,7 +262,7 @@ public class DataIterationDialog extends Dialog {
 
     @Override
     protected void setShellStyle(int arg) {
-        super.setShellStyle(SWT.CLOSE | SWT.TITLE | SWT.RESIZE);
+        super.setShellStyle(SWT.CLOSE | SWT.TITLE | SWT.RESIZE | SWT.APPLICATION_MODAL);
     }
 
     private void validateRangeIteration() {
@@ -281,8 +281,8 @@ public class DataIterationDialog extends Dialog {
     }
 
     private void validateSpecificInteration() {
-        String textSpecific = textSpecificRow.getText().replace(" ", "");
-        String positiveNumber = "[1-9][0-9]*";
+        String textSpecific = textSpecificRow.getText().trim();
+        String positiveNumber = "\\s*[1-9][0-9]*\\s*";
         String positiveNumberCorePattern = "(" + positiveNumber + "\\-" + positiveNumber + "|" + positiveNumber + ")";
         if (Pattern.matches(positiveNumberCorePattern + "(," +positiveNumberCorePattern + ")*,?",
                 textSpecific)) {
