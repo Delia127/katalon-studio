@@ -127,6 +127,7 @@ import com.kms.katalon.objectspy.element.HTMLPageElement;
 import com.kms.katalon.objectspy.element.tree.HTMLElementLabelProvider;
 import com.kms.katalon.objectspy.element.tree.HTMLElementTreeContentProvider;
 import com.kms.katalon.objectspy.exception.IEAddonNotInstalledException;
+import com.kms.katalon.objectspy.util.BrowserUtil;
 import com.kms.katalon.objectspy.util.WinRegistry;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
@@ -213,6 +214,11 @@ public class RecorderDialog extends Dialog {
     }
 
     private void startBrowser(boolean isInstant) {
+        if (!BrowserUtil.isBrowserInstalled(selectedBrowser)) {
+            MessageDialog.openError(getShell(), StringConstants.ERROR_TITLE,
+                    ComposerWebuiRecorderMessageConstants.DIA_MSG_CANNOT_START_BROWSER);
+            return;
+        }
         try {
             if (selectedBrowser == WebUIDriverType.IE_DRIVER) {
                 checkIEAddon();

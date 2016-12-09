@@ -118,6 +118,7 @@ import com.kms.katalon.objectspy.element.tree.HTMLRawElementTreeViewerFilter;
 import com.kms.katalon.objectspy.exception.DOMException;
 import com.kms.katalon.objectspy.exception.IEAddonNotInstalledException;
 import com.kms.katalon.objectspy.highlight.HighlightRequest;
+import com.kms.katalon.objectspy.util.BrowserUtil;
 import com.kms.katalon.objectspy.util.DOMUtils;
 import com.kms.katalon.objectspy.util.HTMLElementUtil;
 import com.kms.katalon.objectspy.util.InspectSessionUtil;
@@ -1144,6 +1145,11 @@ public class ObjectSpyDialog extends Dialog {
     }
 
     private void startObjectSpy(WebUIDriverType browser, boolean isInstant) {
+        if (!BrowserUtil.isBrowserInstalled(browser)) {
+            MessageDialog.openError(getShell(), StringConstants.ERROR_TITLE,
+                    ObjectspyMessageConstants.DIA_MSG_CANNOT_START_BROWSER);
+            return;
+        }
         try {
             if (browser == WebUIDriverType.IE_DRIVER) {
                 checkIEAddon();
