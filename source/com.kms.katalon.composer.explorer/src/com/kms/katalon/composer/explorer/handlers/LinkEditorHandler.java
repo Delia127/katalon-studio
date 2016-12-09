@@ -37,7 +37,9 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.IEntity;
+import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
@@ -118,10 +120,14 @@ public class LinkEditorHandler implements EventHandler {
                     treeEntity = TreeEntityUtil.getTestSuiteTreeEntity((TestSuiteEntity) entity, projectEntity);
                 } else if (entity instanceof DataFileEntity) {
                     treeEntity = TreeEntityUtil.getTestDataTreeEntity((DataFileEntity) entity, projectEntity);
+                } else if (entity instanceof ReportCollectionEntity) {
+                    treeEntity = TreeEntityUtil.getReportCollectionTreeEntity((ReportCollectionEntity) entity, projectEntity);
                 } else if (entity instanceof ReportEntity) {
                     treeEntity = TreeEntityUtil.getReportTreeEntity((ReportEntity) entity, projectEntity);
                 } else if (entity instanceof TestSuiteCollectionEntity) {
                     treeEntity = TreeEntityUtil.getTestSuiteCollectionTreeEntity((TestSuiteCollectionEntity) entity, projectEntity);
+                } else if (entity instanceof CheckpointEntity) {
+                    treeEntity = TreeEntityUtil.getCheckpointTreeEntity((CheckpointEntity) entity);
                 }
             } else {
                 treeEntity = getKeywordTreeEntity(mpart);
