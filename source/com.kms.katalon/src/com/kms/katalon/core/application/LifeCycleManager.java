@@ -196,7 +196,7 @@ public class LifeCycleManager {
             public void handleEvent(Event event) {
                 try {
                     startUpGUIMode();
-                    if (isInternalBuild()) {
+                    if (VersionUtil.isInternalBuild()) {
                         return;
                     }
                     if (!(ComposerActivationInfoCollector.checkActivation())) {
@@ -212,11 +212,6 @@ public class LifeCycleManager {
                 }
             }
         });
-    }
-
-    private boolean isInternalBuild() {
-        VersionInfo version = VersionUtil.getCurrentVersion();
-        return VersionInfo.MINIMUM_VERSION.equals(version.getVersion()) || version.getBuildNumber() == 0;
     }
 
     private void alertNewVersion() {

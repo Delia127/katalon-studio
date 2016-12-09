@@ -12,6 +12,7 @@ import com.kms.katalon.console.addons.MacOSAddon;
 import com.kms.katalon.console.constants.ConsoleMessageConstants;
 import com.kms.katalon.console.utils.ActivationInfoCollector;
 import com.kms.katalon.console.utils.ApplicationInfo;
+import com.kms.katalon.console.utils.VersionUtil;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.custom.addon.CustomBundleActivator;
 import com.kms.katalon.execution.console.ConsoleMain;
@@ -55,7 +56,7 @@ public class Application implements IApplication {
         // Set this to allow application to return it's own exit code instead of Eclipse's exit code
         System.setProperty(IApplicationContext.EXIT_DATA_PROPERTY, "");
         try {
-            if (!(ActivationInfoCollector.checkConsoleActivation(arguments))) {
+            if (!VersionUtil.isInternalBuild() && !ActivationInfoCollector.checkConsoleActivation(arguments)) {
                 return LauncherResult.RETURN_CODE_PASSED;
             }
             return ConsoleMain.launch(arguments);
