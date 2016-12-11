@@ -51,4 +51,9 @@ public class VersionUtil {
             LogUtil.logError(ex);
         }
     }
+    
+    public static boolean isInternalBuild() {
+        VersionInfo version = VersionUtil.getCurrentVersion();
+        return VersionInfo.MINIMUM_VERSION.equals(version.getVersion()) || version.getBuildNumber() == 0;
+    }
 }
