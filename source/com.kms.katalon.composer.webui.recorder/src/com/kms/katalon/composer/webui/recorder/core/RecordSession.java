@@ -32,7 +32,12 @@ public class RecordSession extends InspectSession {
 		super(server, webUiDriverType, currentProject, logger);
 	}
 	
-	protected String getChromeExtensionPath() {
+	public RecordSession(HTMLElementRecorderServer server, WebUIDriverType webUiDriverType,
+            ProjectEntity currentProject, Logger logger, String startUrl) {
+	    super(server, webUiDriverType, currentProject, logger, startUrl);
+    }
+
+    protected String getChromeExtensionPath() {
 		return CHROME_EXTENSION_RELATIVE_PATH;
 	}
 

@@ -125,6 +125,8 @@ public class ObjectspyMessageConstants extends NLS {
 
     public static String DIA_MSG_CANNOT_START_BROWSER;
 
+    public static String LBL_DLG_START_URL;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ObjectspyMessageConstants.class);

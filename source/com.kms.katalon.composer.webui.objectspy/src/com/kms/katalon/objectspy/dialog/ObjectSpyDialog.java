@@ -47,6 +47,7 @@ import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseAdapter;
@@ -191,6 +192,8 @@ public class ObjectSpyDialog extends Dialog {
 
     private boolean isInstant = false;
 
+    private Text txtStartUrl;
+
     /**
      * Create the dialog.
      * 
@@ -262,14 +265,34 @@ public class ObjectSpyDialog extends Dialog {
         hSashForm.setWeights(new int[] { 3, 8 });
         mainContainer.pack();
 
+        txtStartUrl.setFocus();
         return mainContainer;
     }
 
     public void addStartBrowserToolbar(Composite toolbarComposite) {
-        final ToolBar startBrowserToolbar = new ToolBar(toolbarComposite, SWT.FLAT | SWT.RIGHT);
-        startBrowserToolbar.setLayout(new FillLayout(SWT.HORIZONTAL));
-        GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).grab(true, false).applyTo(startBrowserToolbar);
+        Composite toolbarRightSideComposite = new Composite(toolbarComposite, SWT.NONE);
+        toolbarRightSideComposite.setLayout(new GridLayout(3, false));
+        toolbarRightSideComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
+        Label lblStartUrl = new Label(toolbarRightSideComposite, SWT.NONE);
+        lblStartUrl.setText(ObjectspyMessageConstants.LBL_DLG_START_URL);
+        txtStartUrl = new Text(toolbarRightSideComposite, SWT.BORDER);
+        GridData gdTxtStartUrl = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+        gdTxtStartUrl.heightHint = 20;
+        gdTxtStartUrl.minimumWidth = 300;
+        txtStartUrl.setLayoutData(gdTxtStartUrl);
+        txtStartUrl.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.character == SWT.CR) {
+                    startObjectSpy(defaultBrowser, isInstant);
+                }
+            }
+        });
+
+        final ToolBar startBrowserToolbar = new ToolBar(toolbarRightSideComposite, SWT.FLAT | SWT.RIGHT);
+        startBrowserToolbar.setLayout(new FillLayout(SWT.HORIZONTAL));
+        GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).grab(false, false).applyTo(startBrowserToolbar);
         startBrowser = new ToolItem(startBrowserToolbar, SWT.DROP_DOWN);
         startBrowser.setText(StringConstants.DIA_BTN_START_BROWSER);
         startBrowser.setImage(getWebUIDriverToolItemImage(getWebUIDriver()));
@@ -772,7 +795,7 @@ public class ObjectSpyDialog extends Dialog {
 
     private void addElementTreeToolbar(Composite explorerComposite) {
         mainToolbar = new ToolBar(explorerComposite, SWT.FLAT | SWT.RIGHT);
-        mainToolbar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
+        mainToolbar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, true, 1, 1));
 
         addPageElementToolItem = new ToolItem(mainToolbar, SWT.NONE);
         addPageElementToolItem.setImage(ImageConstants.IMG_24_NEW_PAGE_ELEMENT);
@@ -997,7 +1020,7 @@ public class ObjectSpyDialog extends Dialog {
      */
     @Override
     protected Point getInitialSize() {
-        return new Point(900, 600);
+        return new Point(1280, 720);
     }
 
     @Override
@@ -1198,7 +1221,8 @@ public class ObjectSpyDialog extends Dialog {
         if (session != null) {
             session.stop();
         }
-        session = new InspectSession(server, browser, ProjectController.getInstance().getCurrentProject(), logger);
+        session = new InspectSession(server, browser, ProjectController.getInstance().getCurrentProject(), logger,
+                txtStartUrl.getText());
         new Thread(session).start();
     }
 
