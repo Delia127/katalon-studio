@@ -1,6 +1,6 @@
 package com.kms.katalon.core.exception;
 
-import com.kms.katalon.core.util.ExceptionsUtil;
+import com.kms.katalon.core.util.internal.ExceptionsUtil;
 
 /**
  * Exception to stop execution and mark keyword or test case as FAILED

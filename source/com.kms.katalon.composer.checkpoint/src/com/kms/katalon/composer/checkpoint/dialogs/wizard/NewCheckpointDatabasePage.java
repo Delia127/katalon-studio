@@ -30,7 +30,7 @@ import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.controller.DatabaseController;
 import com.kms.katalon.core.db.DatabaseConnection;
-import com.kms.katalon.core.util.Base64;
+import com.kms.katalon.core.util.internal.Base64;
 import com.kms.katalon.entity.checkpoint.CheckpointSourceInfo;
 import com.kms.katalon.entity.checkpoint.DatabaseCheckpointSourceInfo;
 

@@ -80,7 +80,7 @@ import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.core.logging.model.ILogRecord;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.core.reporting.ReportUtil;
-import com.kms.katalon.core.util.DateUtil;
+import com.kms.katalon.core.util.internal.DateUtil;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.util.ExecutionUtil;

@@ -94,9 +94,9 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		
-        <sonar.language>java</sonar.language>
-        <sonar.login>qautomate</sonar.login>
-        <sonar.password>qautomate@2014</sonar.password>
+    <sonar.language>java</sonar.language>
+    <sonar.login>qautomate</sonar.login>
+    <sonar.password>qautomate@2014</sonar.password>
 		
 		<resourcesDiretory>resources</resourcesDiretory>
 		<apidocDirectory>${resourcesDiretory}/apidocs</apidocDirectory>

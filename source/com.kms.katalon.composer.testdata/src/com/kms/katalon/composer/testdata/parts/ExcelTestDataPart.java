@@ -58,7 +58,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.core.testdata.ExcelData;
 import com.kms.katalon.core.testdata.TestData;
-import com.kms.katalon.core.util.PathUtil;
+import com.kms.katalon.core.util.internal.PathUtil;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity.DataFileDriverType;
 import com.kms.katalon.entity.testdata.DataFilePropertyInputEntity;

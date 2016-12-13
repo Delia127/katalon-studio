@@ -85,9 +85,14 @@ public class DBData extends AbstractTestData {
     }
 
     private List<List<Object>> fetchData() throws SQLException {
-        try (SqlRunner sqlRunner = new SqlRunner(databaseConnection, query)) {
+    	SqlRunner sqlRunner = null;
+        try {
+        	sqlRunner = new SqlRunner(databaseConnection, query);
             return sqlRunner.query(rsHandler);
         } finally {
+            if (sqlRunner != null) {
+            	sqlRunner.close();
+            }
             retrievedDate = new Date();
         }
     }

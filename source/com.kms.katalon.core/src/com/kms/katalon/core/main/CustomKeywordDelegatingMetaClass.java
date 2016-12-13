@@ -10,7 +10,7 @@ import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.ErrorCollector;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.logging.LogLevel;
-import com.kms.katalon.core.util.ExceptionsUtil;
+import com.kms.katalon.core.util.internal.ExceptionsUtil;
 
 import groovy.lang.DelegatingMetaClass;
 import groovy.lang.GroovyClassLoader;

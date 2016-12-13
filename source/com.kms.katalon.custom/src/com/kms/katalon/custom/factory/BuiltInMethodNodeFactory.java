@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.kms.katalon.core.keyword.IKeywordContributor;
-import com.kms.katalon.core.keyword.KeywordContributorCollection;
+import com.kms.katalon.core.keyword.internal.IKeywordContributor;
+import com.kms.katalon.core.keyword.internal.KeywordContributorCollection;
 import com.kms.katalon.custom.keyword.KeywordClass;
 import com.kms.katalon.custom.keyword.KeywordMethod;
 import com.kms.katalon.custom.keyword.KeywordParameter;

@@ -3,7 +3,7 @@ package com.kms.katalon.integration.jira;
 import java.util.Optional;
 
 import com.kms.katalon.controller.ReportController;
-import com.kms.katalon.core.util.JsonUtil;
+import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.entity.file.IntegratedFileEntity;
 import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.integration.IntegratedType;

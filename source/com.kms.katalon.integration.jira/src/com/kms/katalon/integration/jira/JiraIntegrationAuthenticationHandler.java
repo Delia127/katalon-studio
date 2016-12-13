@@ -2,7 +2,7 @@ package com.kms.katalon.integration.jira;
 
 import com.atlassian.jira.rest.client.api.domain.User;
 import com.kms.katalon.core.logging.model.TestCaseLogRecord;
-import com.kms.katalon.core.util.JsonUtil;
+import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.integration.jira.entity.JiraIssue;
 import com.kms.katalon.integration.jira.entity.JiraIssueType;
 import com.kms.katalon.integration.jira.entity.JiraProject;

@@ -22,9 +22,9 @@ import com.kms.katalon.core.db.DatabaseSettings;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.testdata.reader.CSVSeparator;
 import com.kms.katalon.core.testdata.reader.ExcelFactory;
-import com.kms.katalon.core.util.Base64;
-import com.kms.katalon.core.util.ExceptionsUtil;
-import com.kms.katalon.core.util.PathUtil;
+import com.kms.katalon.core.util.internal.Base64;
+import com.kms.katalon.core.util.internal.ExceptionsUtil;
+import com.kms.katalon.core.util.internal.PathUtil;
 
 public class TestDataFactory {
 

@@ -10,7 +10,7 @@ import java.text.MessageFormat;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.mobile.constants.StringConstants;
-import com.kms.katalon.core.mobile.keyword.MobileDriverFactory;
+import com.kms.katalon.core.mobile.keyword.internal.MobileDriverFactory;
 
 public class MobileGestureCommonHelper {
     private static final int IOS_PINCH_OFFSET = 5;

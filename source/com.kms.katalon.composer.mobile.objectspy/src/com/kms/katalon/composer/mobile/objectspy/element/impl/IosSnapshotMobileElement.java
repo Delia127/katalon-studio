@@ -7,8 +7,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
-import com.kms.katalon.core.mobile.keyword.GUIObject;
-import com.kms.katalon.core.mobile.keyword.IOSProperties;
+import com.kms.katalon.core.mobile.keyword.internal.GUIObject;
+import com.kms.katalon.core.mobile.keyword.internal.IOSProperties;
 
 public class IosSnapshotMobileElement extends RenderedTreeSnapshotMobileElement<JSONObject> {
     private static final long serialVersionUID = 1462755224775883146L;

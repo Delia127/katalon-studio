@@ -218,10 +218,16 @@ public class PropertySettingStoreUtil {
         if (!settingFile.exists()) {
             settingFile.createNewFile();
         }
-        try (FileInputStream fis = new FileInputStream(settingFile)) {
+        FileInputStream fis = null;
+        try {
+        	fis = new FileInputStream(settingFile);
             Properties settings = new Properties();
             settings.load(fis);
             return settings;
+        } finally {
+        	if (fis != null) {
+            	fis.close();
+        	}
         }
     }
 
@@ -230,8 +236,14 @@ public class PropertySettingStoreUtil {
         if (!settingFile.exists()) {
             settingFile.createNewFile();
         }
-        try (FileOutputStream fos = new FileOutputStream(settingFile)) {
+        FileOutputStream fos = null;
+        try {
+        	fos = new FileOutputStream(settingFile);
             settings.store(fos, comment);
+        } finally {
+        	if (fos != null) {
+        		fos.close();
+        	}
         }
     }
 }

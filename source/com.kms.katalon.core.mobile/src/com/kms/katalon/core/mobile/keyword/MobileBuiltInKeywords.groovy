@@ -32,14 +32,14 @@ import com.kms.katalon.core.configuration.RunConfiguration
 import com.kms.katalon.core.exception.StepFailedException
 import com.kms.katalon.core.helper.KeywordHelper
 import com.kms.katalon.core.keyword.BuiltinKeywords
-import com.kms.katalon.core.keyword.KeywordMain
+import com.kms.katalon.core.keyword.internal.KeywordExecutor
+import com.kms.katalon.core.keyword.internal.KeywordMain
 import com.kms.katalon.core.logging.KeywordLogger
 import com.kms.katalon.core.mobile.constants.StringConstants
 import com.kms.katalon.core.mobile.helper.MobileCommonHelper
 import com.kms.katalon.core.mobile.helper.MobileElementCommonHelper
 import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
-import com.kms.katalon.core.keyword.KeywordExecutor
 
 @CompileStatic
 public class MobileBuiltInKeywords extends BuiltinKeywords {

@@ -97,7 +97,7 @@ import com.kms.katalon.composer.mobile.objectspy.preferences.MobileObjectSpyPref
 import com.kms.katalon.composer.mobile.objectspy.viewer.CapturedObjectTableViewer;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ObjectRepositoryController;
-import com.kms.katalon.core.mobile.keyword.GUIObject;
+import com.kms.katalon.core.mobile.keyword.internal.GUIObject;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;

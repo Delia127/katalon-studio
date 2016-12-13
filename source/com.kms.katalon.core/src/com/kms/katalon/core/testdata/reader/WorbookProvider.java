@@ -18,10 +18,16 @@ public class WorbookProvider implements ExcelProvider {
             throw new FileNotFoundException(excelFile.toString());
         }
         
-        try (FileInputStream fis = new FileInputStream(excelFile)) {
+        FileInputStream fis = null;
+        try {
+        	fis = new FileInputStream(excelFile);
             return new SheetPOI(sourceUrl, hasHeaders, WorkbookFactory.create(fis));
         } catch (InvalidFormatException e) {
             return null;
+        } finally {
+        	if (fis != null) {
+        		fis.close();
+        	}
         }
     }
 }

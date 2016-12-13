@@ -50,7 +50,6 @@ import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.webui.common.WebUiCommonHelper;
 import com.kms.katalon.core.webui.constants.StringConstants;
 import com.kms.katalon.core.webui.driver.firefox.FirefoxDriver47;
-import com.kms.katalon.core.webui.driver.existings.ExistingRemoteWebDriver;
 import com.kms.katalon.core.webui.driver.ie.InternetExploreDriverServiceBuilder;
 import com.kms.katalon.core.webui.exception.BrowserNotOpenedException;
 import com.kms.katalon.core.webui.util.FirefoxExecutable;
@@ -335,9 +334,12 @@ public class DriverFactory {
             return;
         }
         RemoteWebDriver remoteWebDriver = (RemoteWebDriver) webDriver;
-        try (Socket myClient = new Socket(RunConfiguration.getSessionServerHost(),
-                RunConfiguration.getSessionServerPort());
-                PrintStream output = new PrintStream(myClient.getOutputStream())) {
+        Socket myClient = null;
+        PrintStream output = null;
+        try {
+        	myClient = new Socket(RunConfiguration.getSessionServerHost(),
+                    RunConfiguration.getSessionServerPort());
+        	output = new PrintStream(myClient.getOutputStream());
             output.println(remoteWebDriver.getSessionId());
             output.println(getWebDriverServerUrl(remoteWebDriver));
             DriverType remoteDriverType = DriverFactory.getExecutedBrowser();
@@ -353,6 +355,17 @@ public class DriverFactory {
             output.flush();
         } catch (Exception e) {
             // Ignore for this exception
+        } finally {
+        	if (myClient != null) {
+        		try {
+					myClient.close();
+				} catch (IOException e) {
+					// Ignore for this exception
+				}
+        	}
+        	if (output != null) {
+        		output.close();
+        	}
         }
     }
 
@@ -634,8 +647,12 @@ public class DriverFactory {
             try {
                 WebDriver webDriver = startExistingBrowser();
                 changeWebDriver(webDriver);
-            } catch (MalformedURLException | ConnectException | MobileDriverInitializeException exception) {
+            } catch (MalformedURLException exception) {
                 // Ignore this
+            } catch (ConnectException exception) {
+            	// Ignore this
+            } catch (MobileDriverInitializeException exception) {
+            	// Ignore this
             }
         }
     }
@@ -786,11 +803,21 @@ public class DriverFactory {
         NetworkUtils networkUtils = new NetworkUtils();
         for (newport = port; newport < port + 2000; newport++) {
             InetSocketAddress address = new InetSocketAddress(networkUtils.obtainLoopbackIp4Address(), newport);
-            try (Socket socket = new Socket()) {
+            Socket socket = null;
+            try {
+            	socket = new Socket();
                 socket.bind(address);
                 return newport;
             } catch (IOException e) {
                 // Port is already bound. Skip it and continue
+            } finally {
+            	if (socket != null) {
+            		try {
+						socket.close();
+					} catch (IOException e) {
+						// Ignore this error
+					}
+            	}
             }
         }
         throw new WebDriverException(String.format("Cannot find free port in the range %d to %d ", port, newport));

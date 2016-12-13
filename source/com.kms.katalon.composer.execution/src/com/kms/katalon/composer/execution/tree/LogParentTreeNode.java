@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 
 import com.kms.katalon.core.logging.XmlLogRecord;
-import com.kms.katalon.core.util.DateUtil;
+import com.kms.katalon.core.util.internal.DateUtil;
 
 public class LogParentTreeNode extends LogChildTreeNode implements ILogParentTreeNode {
 

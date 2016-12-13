@@ -13,9 +13,9 @@ import org.openqa.selenium.WebElement;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.mobile.constants.StringConstants;
-import com.kms.katalon.core.mobile.keyword.AndroidProperties;
-import com.kms.katalon.core.mobile.keyword.GUIObject;
-import com.kms.katalon.core.mobile.keyword.MobileDriverFactory;
+import com.kms.katalon.core.mobile.keyword.internal.AndroidProperties;
+import com.kms.katalon.core.mobile.keyword.internal.GUIObject;
+import com.kms.katalon.core.mobile.keyword.internal.MobileDriverFactory;
 
 public class MobileCommonHelper {
     

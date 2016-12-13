@@ -2,6 +2,7 @@ package com.kms.katalon.core.logging;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -14,6 +15,7 @@ import java.util.logging.SocketHandler;
 import org.apache.commons.lang.StringUtils;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
+import com.kms.katalon.core.constants.CoreMessageConstants;
 import com.kms.katalon.core.constants.StringConstants;
 
 public class KeywordLogger {    
@@ -100,9 +102,13 @@ public class KeywordLogger {
                 SocketHandler socketHandler = new SystemSocketHandler(StringConstants.DF_LOCAL_HOST_ADDRESS, getPort());
                 socketHandler.setFormatter(new CustomSocketLogFomatter());
                 logger.addHandler(socketHandler);
-            } catch (SecurityException | IOException e) {
-                System.err.println("Unable to create logger. Root cause (" + e.getMessage() + ").");
-            }
+			} catch (SecurityException e) {
+				System.err.println(
+						MessageFormat.format(CoreMessageConstants.MSG_ERR_UNABLE_TO_CREATE_LOGGER, e.getMessage()));
+			} catch (IOException e) {
+				System.err.println(
+						MessageFormat.format(CoreMessageConstants.MSG_ERR_UNABLE_TO_CREATE_LOGGER, e.getMessage()));
+			}
         }
         return logger;
     }

@@ -6,7 +6,7 @@ import java.util.Properties;
 import org.apache.commons.lang.StringUtils;
 
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
-import com.kms.katalon.core.util.Base64;
+import com.kms.katalon.core.util.internal.Base64;
 
 public class DatabaseSettings {
     public static final String URL = "URL";

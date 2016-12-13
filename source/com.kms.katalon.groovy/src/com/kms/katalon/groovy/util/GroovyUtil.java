@@ -54,8 +54,8 @@ import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.core.appium.driver.AppiumDriverManager;
-import com.kms.katalon.core.keyword.IKeywordContributor;
-import com.kms.katalon.core.keyword.KeywordContributorCollection;
+import com.kms.katalon.core.keyword.internal.IKeywordContributor;
+import com.kms.katalon.core.keyword.internal.KeywordContributorCollection;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;

@@ -24,7 +24,7 @@ import com.kms.katalon.core.reporting.ReportUtil;
 import com.kms.katalon.core.testdata.reader.CSVReader;
 import com.kms.katalon.core.testdata.reader.CSVSeparator;
 import com.kms.katalon.core.testdata.reader.CsvWriter;
-import com.kms.katalon.core.util.PathUtil;
+import com.kms.katalon.core.util.internal.PathUtil;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.report.ReportItemDescription;
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;

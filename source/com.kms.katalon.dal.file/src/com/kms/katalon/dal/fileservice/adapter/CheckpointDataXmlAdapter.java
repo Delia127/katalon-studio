@@ -5,7 +5,7 @@ import java.util.List;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 import com.google.gson.reflect.TypeToken;
-import com.kms.katalon.core.util.JsonUtil;
+import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.entity.checkpoint.CheckpointCell;
 
 /**

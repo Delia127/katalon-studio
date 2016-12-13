@@ -21,5 +21,6 @@ Require-Bundle: org.codehaus.groovy,
 Export-Package: com.kms.katalon.core.mobile.constants,
  com.kms.katalon.core.mobile.contribution,
  com.kms.katalon.core.mobile.driver,
- com.kms.katalon.core.mobile.keyword
+ com.kms.katalon.core.mobile.keyword,
+ com.kms.katalon.core.mobile.keyword.internal
 Bundle-ClassPath: .

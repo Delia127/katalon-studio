@@ -2,9 +2,9 @@ package com.kms.katalon.core.keyword.builtin
 
 import groovy.transform.CompileStatic
 
-import com.kms.katalon.core.annotation.Action
-import com.kms.katalon.core.keyword.AbstractKeyword
-import com.kms.katalon.core.keyword.SupportLevel
+import com.kms.katalon.core.annotation.internal.Action
+import com.kms.katalon.core.keyword.internal.AbstractKeyword
+import com.kms.katalon.core.keyword.internal.SupportLevel
 import com.kms.katalon.core.logging.KeywordLogger
 
 @Action(value = "comment")

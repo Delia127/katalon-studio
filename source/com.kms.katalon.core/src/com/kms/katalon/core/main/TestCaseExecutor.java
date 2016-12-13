@@ -30,7 +30,7 @@ import com.kms.katalon.core.annotation.TearDownIfError;
 import com.kms.katalon.core.annotation.TearDownIfFailed;
 import com.kms.katalon.core.annotation.TearDownIfPassed;
 import com.kms.katalon.core.constants.StringConstants;
-import com.kms.katalon.core.driver.DriverCleanerCollector;
+import com.kms.katalon.core.driver.internal.DriverCleanerCollector;
 import com.kms.katalon.core.logging.ErrorCollector;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.logging.KeywordLogger.KeywordStackElement;
@@ -43,7 +43,7 @@ import com.kms.katalon.core.testcase.TestCaseFactory;
 import com.kms.katalon.core.testcase.Variable;
 import com.kms.katalon.core.testdata.TestDataFactory;
 import com.kms.katalon.core.testobject.ObjectRepository;
-import com.kms.katalon.core.util.ExceptionsUtil;
+import com.kms.katalon.core.util.internal.ExceptionsUtil;
 
 public class TestCaseExecutor {
     private static final String FIND_TEST_CASE_METHOD_NAME = "findTestCase";
