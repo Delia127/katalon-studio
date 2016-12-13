@@ -4,30 +4,41 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.Authenticator;
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.PasswordAuthentication;
+import java.net.Proxy;
+import java.net.ProxySelector;
+import java.net.URI;
 import java.net.URL;
+import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.kms.katalon.console.constants.ConsoleMessageConstants;
 import com.kms.katalon.logging.LogUtil;
 
 public class ServerAPICommunicationUtil {
-    private static final String URL_API = "https://update.katalon.com/api";
+    public static final String URL_API = "https://backend-dev.katalon.com/api";
+
     private static final String POST = "POST";
+
     private static final String GET = "GET";
 
     public static String post(String function, String jsonData) throws IOException {
         return invoke(POST, function, jsonData);
     }
-    
+
     public static String invoke(String method, String function, String jsonData) throws IOException {
         HttpURLConnection connection = null;
         try {
             connection = createConnection(method, URL_API + function);
             return sendAndReceiveData(connection, jsonData);
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             LogUtil.logError(ex);
             throw ex;
         } finally {
@@ -87,7 +98,7 @@ public class ServerAPICommunicationUtil {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(uc.getInputStream()))) {
             String line;
             StringBuilder response = new StringBuilder();
-            
+
             while ((line = reader.readLine()) != null) {
                 response.append(line);
                 response.append('\r');
@@ -98,10 +109,11 @@ public class ServerAPICommunicationUtil {
         return result;
     }
 
-    private static HttpURLConnection createConnection(String method, String sUrl) throws IOException  {
+    private static HttpURLConnection createConnection(String method, String sUrl) throws IOException {
         URL url = new URL(sUrl);
-        HttpURLConnection uc = (HttpURLConnection) url.openConnection();
-
+        HttpURLConnection uc = null;
+        
+        uc = (HttpURLConnection) url.openConnection(ProxyUtil.getProxy());
         uc.setRequestMethod(method);
         uc.setRequestProperty("Content-Type", "application/json");
         uc.setUseCaches(false);
@@ -109,5 +121,7 @@ public class ServerAPICommunicationUtil {
 
         return uc;
     }
+
+    
 
 }

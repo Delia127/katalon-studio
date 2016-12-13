@@ -40,7 +40,7 @@ public class MessageConstants extends NLS {
     public static String PA_LBL_FAQ_DESCRIPTION;
 
     public static String PA_URL_FAQ;
-    
+
     public static String PA_LBL_GETTING_STARTED_DESCRIPTION;
 
     public static String PA_LBL_GETTING_STARTED;
@@ -102,24 +102,46 @@ public class MessageConstants extends NLS {
     public static String BTN_COPY_TITLE;
 
     public static String PROMT_ENTER_ACTIVATE_CODE;
-    
+
     public static String SEND_SUCCESS_RESPONSE;
-    
+
     public static String SEND_ACTIVATION_INFO_FAILED;
 
     public static String NETWORK_ERROR;
 
     public static String KATALON_NOT_ACTIVATED;
-    
+
     public static String PAGE_PREF_AUTO_CHECK_NEW_VERSION_TITLE;
-    
+
     public static String VERSION_IS_UP_TODATE;
-    
+
     public static String NEW_VERSION_AVAIABLE;
 
     public static String DIA_UPDATE_NEW_VERSION_MESSAGE;
-    
+
     public static String DIA_UPDATE_NEW_VERSION_TITLE;
+
+    public static String CONFIG_PROXY;
+
+    public static String TITLE_DLG_PROXY_SETTING;
+
+    public static String TITLE_WINDOW_DLG_PROXY_SETTING;
+
+    public static String MSG_DLG_PROXY_SETTING;
+
+    public static String LBL_PROXY_OPTION;
+
+    public static String LBL_PROXY_SERVER_TYPE;
+
+    public static String LBL_ADDRESS;
+
+    public static String LBL_PORT;
+
+    public static String CHK_TEXT_PROXY_SERVER_TYPE_REQUIRE_AUTHENTICATION;
+
+    public static String LBL_USERNAME;
+
+    public static String LBL_PASSWORD;
 
     static {
         // initialize resource bundle

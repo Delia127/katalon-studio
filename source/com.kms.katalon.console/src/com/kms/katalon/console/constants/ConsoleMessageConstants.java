@@ -18,6 +18,15 @@ public class ConsoleMessageConstants extends NLS {
     public static String NETWORK_ERROR;
 
     public static String SEND_SUCCESS_RESPONSE;
+
+    public static String NO_PROXY;
+
+    public static String MANUAL_CONFIG_PROXY;
+
+    public static String USE_SYSTEM_PROXY;
+    
+    public static String PROXY_SERVER_TYPE_NOT_VALID_MESSAGE;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ConsoleMessageConstants.class);
