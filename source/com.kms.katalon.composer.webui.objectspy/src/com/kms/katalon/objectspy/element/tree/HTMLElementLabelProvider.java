@@ -25,7 +25,7 @@ public class HTMLElementLabelProvider extends StyledCellLabelProvider {
     public Image getImage(Object element) {
         if (element instanceof HTMLElement) {
             HTMLElement htmlElement = (HTMLElement) element;
-            switch (htmlElement.getStatus()) {
+            switch (htmlElement.getMatchedStatus().getStatus()) {
                 case Changed:
                     return WEB_ELEMENT_CHANGED_ICON;
                 case Exists:
@@ -57,7 +57,7 @@ public class HTMLElementLabelProvider extends StyledCellLabelProvider {
     public String getToolTipText(Object element) {
         if (element instanceof HTMLElement) {
             HTMLElement htmlElement = (HTMLElement) element;
-            switch (htmlElement.getStatus()) {
+            switch (htmlElement.getMatchedStatus().getStatus()) {
                 case Changed:
                     return StringConstants.TREE_ELEMENT_TIP_ATTRIBUTES_CHANGED;
                 case Exists:

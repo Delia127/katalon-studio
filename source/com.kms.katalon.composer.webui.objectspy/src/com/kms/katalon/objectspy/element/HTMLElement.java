@@ -1,40 +1,81 @@
 package com.kms.katalon.objectspy.element;
 
-import java.util.HashMap;
+import java.text.MessageFormat;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.w3c.dom.Element;
 
 public class HTMLElement {
-	public enum HTMLStatus {
+    private static final String AND_OPERATOR = " and ";
+    private static final String TEXT_METHOD = "text";
+    private static final String CSS_SELECTOR = "css";
+    private static final String XPATH_SELECTOR = "xpath";
+    private static final String XPATH_FIND_BY_ATTRIBUTE = "@{0}=''{1}''";
+    private static final String XPATH_FIND_BY_TEXT = TEXT_METHOD + "()=''{0}''";
+    private static final String XPATH_EXPRESSION = "//{0}[{1}]";
+
+    public enum HTMLStatus {
 		NotVerified, Exists, Missing, Changed, Multiple, Invalid
 	}
+	
+    public class MatchedStatus {
+        private HTMLStatus status;
+
+        private Element matchedElement;
+        
+        public MatchedStatus() {
+            reset();
+        }
+        
+        public void reset() {
+            status = HTMLStatus.NotVerified;
+            matchedElement = null;
+        }
+
+        public HTMLStatus getStatus() {
+            return status;
+        }
+
+        public void setStatus(HTMLStatus status) {
+            this.status = status;
+        }
+
+        public Element getMatchedElement() {
+            return matchedElement;
+        }
+
+        public void setMatchedElement(Element matchedElement) {
+            this.matchedElement = matchedElement;
+        }
+    }
 
 	protected String name;
 	protected String type;
 	protected String xpath;
 	protected Map<String, String> attributes;
 	protected HTMLFrameElement parentElement;
-	protected HTMLStatus status;
+	private MatchedStatus matchedStatus;
 
-	protected HTMLElement() {
-		name = "";
-		attributes = new HashMap<>();
-		setStatus(HTMLStatus.NotVerified);
-	}
+    protected HTMLElement() {
+        this(StringUtils.EMPTY, StringUtils.EMPTY, Collections.emptyMap(), null);
+    }
 
-	public HTMLElement(String name, String type, Map<String, String> attributes, HTMLFrameElement parentElement) {
-		this.name = name;
-		this.type = type;
-		this.attributes = attributes;
-		this.parentElement = parentElement;
-		if (parentElement != null) {
-			parentElement.getChildElements().add(this);
-		}
-		setStatus(HTMLStatus.NotVerified);
-	}
+    public HTMLElement(String name, String type, Map<String, String> attributes, HTMLFrameElement parentElement) {
+        this.name = name;
+        this.type = type;
+        this.parentElement = parentElement;
+        if (parentElement != null) {
+            parentElement.getChildElements().add(this);
+        }
+        this.attributes = new LinkedHashMap<>(attributes);
+        this.matchedStatus = new MatchedStatus();
+    }
 
 	public String getName() {
 		return name;
@@ -73,9 +114,34 @@ public class HTMLElement {
 		this.parentElement = parentElement;
 	}
 
-	public String getXpath() {
-		return attributes.get("xpath");
-	}
+    public String getXpath() {
+        StringBuilder xpathBuilder = new StringBuilder();
+        for (Entry<String, String> attr : attributes.entrySet()) {
+            String attributeKey = attr.getKey();
+            String attributeValue = attr.getValue();
+            switch (attributeKey) {
+                case XPATH_SELECTOR:
+                    return attributeValue;
+                case CSS_SELECTOR:
+                    continue;
+                case TEXT_METHOD:
+                    appendAndOperator(xpathBuilder);
+                    xpathBuilder.append(MessageFormat.format(XPATH_FIND_BY_TEXT, attributeValue));
+                    break;
+                default:
+                    appendAndOperator(xpathBuilder);
+                    xpathBuilder.append(MessageFormat.format(XPATH_FIND_BY_ATTRIBUTE, attributeKey, attributeValue));
+            }
+        }
+        return MessageFormat.format(XPATH_EXPRESSION, StringUtils.defaultIfEmpty(getType(), "*"),
+                xpathBuilder.toString());
+    }
+
+    private void appendAndOperator(StringBuilder xpathBuilder) {
+        if (StringUtils.isNotEmpty(xpathBuilder.toString())) {
+            xpathBuilder.append(AND_OPERATOR);
+        }
+    }
 
     @Override
     public boolean equals(Object object) {
@@ -110,12 +176,8 @@ public class HTMLElement {
 		return StringUtils.EMPTY;
 	}
 
-	public HTMLStatus getStatus() {
-		return status;
-	}
-
-	public void setStatus(HTMLStatus status) {
-		this.status = status;
-	}
+    public MatchedStatus getMatchedStatus() {
+        return matchedStatus;
+    }
 
 }

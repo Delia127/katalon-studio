@@ -412,7 +412,6 @@ public class HTMLElementUtil {
             }
             Map<String, String> attributes = new HashMap<String, String>();
             HTMLFrameElement parentFrameElement = null;
-            String xpath = null;
             for (WebElementPropertyEntity property : webElement.getWebElementProperties()) {
                 if (property.getMatchCondition().equals(MATCH_CONDITION.EQUAL.toString())) {
                     if (property.getName().equals(WebElementEntity.ref_element)) {
@@ -425,15 +424,9 @@ public class HTMLElementUtil {
                             LoggerSingleton.logError(e);
                         }
                     } else {
-                        if (property.getName().equals(XPATH_KEY)) {
-                            xpath = property.getValue();
-                        }
                         attributes.put(property.getName(), property.getValue());
                     }
                 }
-            }
-            if (xpath == null) {
-                attributes.put(XPATH_KEY, XPATH_KEY + System.currentTimeMillis());
             }
             HTMLElement element = null;
             if (isFrame) {

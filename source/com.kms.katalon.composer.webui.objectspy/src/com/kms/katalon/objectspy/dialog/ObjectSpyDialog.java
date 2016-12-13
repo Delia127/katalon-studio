@@ -109,6 +109,7 @@ import com.kms.katalon.objectspy.dialog.AddToObjectRepositoryDialog.AddToObjectR
 import com.kms.katalon.objectspy.element.DomElementXpath;
 import com.kms.katalon.objectspy.element.HTMLElement;
 import com.kms.katalon.objectspy.element.HTMLElement.HTMLStatus;
+import com.kms.katalon.objectspy.element.HTMLElement.MatchedStatus;
 import com.kms.katalon.objectspy.element.HTMLFrameElement;
 import com.kms.katalon.objectspy.element.HTMLPageElement;
 import com.kms.katalon.objectspy.element.HTMLRawElement;
@@ -556,24 +557,28 @@ public class ObjectSpyDialog extends Dialog {
         for (Object object : elements) {
             if (object instanceof HTMLElement) {
                 HTMLElement element = (HTMLElement) object;
+                MatchedStatus matchedStatus = element.getMatchedStatus();
+                matchedStatus.reset();
                 String elementXpath = HTMLElementUtil.buildXpathForHTMLElement(element);
                 try {
                     NodeList nodeList = evaluateXpath(elementXpath);
                     if (nodeList == null) {
-                        element.setStatus(HTMLStatus.Invalid);
+                        matchedStatus.setStatus(HTMLStatus.Invalid);
                         continue;
                     }
                     if (nodeList.getLength() <= 0) {
-                        element.setStatus(HTMLStatus.Missing);
+                        matchedStatus.setStatus(HTMLStatus.Missing);
                     } else if (nodeList.getLength() == 1) {
+                        Element matchedItem = (Element) nodeList.item(0);
                         try {
-                            DOMUtils.compareNodeAttributes(element, (Element) nodeList.item(0));
-                            element.setStatus(HTMLStatus.Exists);
+                            DOMUtils.compareNodeAttributes(element, matchedItem);
+                            matchedStatus.setStatus(HTMLStatus.Exists);
                         } catch (DOMException exception) {
-                            element.setStatus(HTMLStatus.Changed);
+                            matchedStatus.setStatus(HTMLStatus.Changed);
                         }
+                        matchedStatus.setMatchedElement(matchedItem);
                     } else {
-                        element.setStatus(HTMLStatus.Multiple);
+                        matchedStatus.setStatus(HTMLStatus.Multiple);
                     }
                     if (!isFirst) {
                         xpathQueryString.append(" | "); //$NON-NLS-1$
@@ -581,13 +586,14 @@ public class ObjectSpyDialog extends Dialog {
                     xpathQueryString.append(elementXpath);
                     isFirst = false;
                 } catch (XPathExpressionException e) {
-                    element.setStatus(HTMLStatus.Invalid);
+                    matchedStatus.setStatus(HTMLStatus.Invalid);
                 }
             }
         }
         txtXpathInput.setText(xpathQueryString.toString());
         setDomTreeXpath(xpathQueryString.toString());
         refreshTree(capturedObjectComposite.getElementTreeViewer(), null);
+        capturedObjectComposite.refreshAttributesTable();
     }
 
     private NodeList evaluateXpath(final String xpath) throws XPathExpressionException {
@@ -615,14 +621,7 @@ public class ObjectSpyDialog extends Dialog {
                             selectedDOMElementXpaths.add(DOMUtils.getDOMElementXpathForNode(nodeList.item(i)));
                         }
                         if (selectedDOMElementXpaths.isEmpty()) {
-                            Display.getDefault().syncExec(new Runnable() {
-                                @Override
-                                public void run() {
-                                    MessageDialog.openWarning(Display.getCurrent().getActiveShell(),
-                                            StringConstants.WARN, StringConstants.WARNING_NO_ELEMENT_FOUND_FOR_XPATH);
-                                }
-                            });
-                            return Status.OK_STATUS;
+                            return Status.CANCEL_STATUS;
                         }
                         Display.getDefault().syncExec(new Runnable() {
                             @Override
