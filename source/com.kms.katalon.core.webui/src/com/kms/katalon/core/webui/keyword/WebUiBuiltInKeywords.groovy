@@ -2375,7 +2375,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      * @param propertyName
      *          name of the property, for example, xpath, id, name,...
      * @param flowControl
-     * @return
+     * @return the new TestObject after its property is removed
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
@@ -2394,7 +2394,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      *          represent a web element
      * @param propertyName
      *          name of the property, for example, xpath, id, name,...
-     * @return
+     * @return the new TestObject after its property is removed
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
