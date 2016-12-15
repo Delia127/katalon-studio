@@ -97,16 +97,19 @@ public class RunConfigurationCollector {
         return customRunConfigContributorList.toArray(new CustomRunConfigurationContributor[customRunConfigContributorList.size()]);
     }
 
-    public IRunConfiguration getRunConfiguration(String id, String projectDir) throws IOException, ExecutionException,
-            InterruptedException {
-        if (runConfigurationContributors.containsKey(id)) {
-            return runConfigurationContributors.get(id).getRunConfiguration(projectDir);
-        }
-
-        for (IRunConfigurationContributor customRunConfigurationContributor : getAllCustomRunConfigurationContributors()) {
-            if (customRunConfigurationContributor.getId().equals(id)) {
-                return customRunConfigurationContributor.getRunConfiguration(projectDir);
+    public IRunConfiguration getRunConfiguration(String id, String projectDir) throws ExecutionException {
+        try {
+            if (runConfigurationContributors.containsKey(id)) {
+                return runConfigurationContributors.get(id).getRunConfiguration(projectDir);
             }
+
+            for (IRunConfigurationContributor customRunConfigurationContributor : getAllCustomRunConfigurationContributors()) {
+                if (customRunConfigurationContributor.getId().equals(id)) {
+                    return customRunConfigurationContributor.getRunConfiguration(projectDir);
+                }
+            }
+        } catch (IOException | InterruptedException e) {
+            throw new ExecutionException(e);
         }
         return null;
     }

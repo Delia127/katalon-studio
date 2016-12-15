@@ -13,7 +13,6 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.console.entity.ConsoleMainOptionContributor;
 import com.kms.katalon.execution.console.entity.ConsoleOption;
 import com.kms.katalon.execution.console.entity.ConsoleOptionContributor;
-import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.integration.ReportIntegrationFactory;
 import com.kms.katalon.execution.util.ExecutionUtil;
 
@@ -23,17 +22,23 @@ public class ConsoleOptionCollector {
     private static ConsoleOptionCollector _instance;
 
     private List<ConsoleOption<?>> consoleOptionList = new ArrayList<ConsoleOption<?>>();
+    
+    private List<ConsoleOptionContributor> optionContributors = new ArrayList<>();
+
+    public List<ConsoleOptionContributor> getOptionContributors() {
+        return Collections.unmodifiableList(optionContributors);
+    }
 
     private ConsoleOptionCollector() {
-        addConsoleOptionContributor(new ConsoleMainOptionContributor());
-        addConsoleOptionContributor(new TestSuiteExecutedEntity());
         for (ConsoleOptionContributor consoleOptionContributor : RunConfigurationCollector.getInstance()
                 .getConsoleOptionContributorList()) {
             addConsoleOptionContributor(consoleOptionContributor);
+            optionContributors.add(consoleOptionContributor);
         }
         for (ConsoleOptionContributor consoleOptionContributor : ReportIntegrationFactory.getInstance()
                 .getConsoleOptionContributorList()) {
             addConsoleOptionContributor(consoleOptionContributor);
+            optionContributors.add(consoleOptionContributor);
         }
     }
 

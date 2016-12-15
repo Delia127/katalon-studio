@@ -35,7 +35,7 @@ import com.kms.katalon.execution.entity.EmailConfig;
 import com.kms.katalon.execution.entity.IExecutedEntity;
 import com.kms.katalon.execution.entity.ReportLocationSetting;
 import com.kms.katalon.execution.entity.Reportable;
-import com.kms.katalon.execution.entity.Rerunnable;
+import com.kms.katalon.execution.entity.Rerunable;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.integration.ReportIntegrationContribution;
 import com.kms.katalon.execution.integration.ReportIntegrationFactory;
@@ -81,7 +81,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         }
 
         if (needToRerun()) {
-            Rerunnable rerun = (Rerunnable) getExecutedEntity();
+            Rerunable rerun = (Rerunable) getExecutedEntity();
 
             TestSuiteEntity testSuite = getTestSuite();
 
@@ -104,8 +104,8 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     }
 
     private boolean needToRerun() {
-        if (getResult().getNumErrors() + getResult().getNumFailures() > 0 && getExecutedEntity() instanceof Rerunnable) {
-            Rerunnable rerun = (Rerunnable) getExecutedEntity();
+        if (getResult().getNumErrors() + getResult().getNumFailures() > 0 && getExecutedEntity() instanceof Rerunable) {
+            Rerunable rerun = (Rerunable) getExecutedEntity();
 
             return rerun.getRemainingRerunTimes() > 0;
         } else {

@@ -70,6 +70,10 @@ public class GlobalStringConstants {
 
     public static final String CR_SPACE = " ";
 
+    public static final String CR_HYPHEN = "-";
+
+    public static final String CR_EOL = "\n";
+
     // Common action use
     public static final String ADD = GlobalMessageConstants.ADD;
 

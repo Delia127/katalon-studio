@@ -7,9 +7,15 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.kms.katalon.controller.ReportController;
+import com.kms.katalon.execution.launcher.IConsoleLauncher;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.result.LauncherStatus;
+
+import static com.kms.katalon.constants.GlobalStringConstants.CR_HYPHEN;
+import static com.kms.katalon.constants.GlobalStringConstants.CR_EOL;
 
 public class LauncherManager {
     private static LauncherManager _instance;
@@ -201,5 +207,31 @@ public class LauncherManager {
     
     public List<ILauncher> getRunningLaunchers() {
         return runningLaunchers;
+    }
+
+    public String getStatus(int consoleWidth) {
+        return new StringBuilder()
+                .append(CR_EOL)
+                .append(StringUtils.repeat(CR_HYPHEN, consoleWidth))
+                .append(CR_EOL)
+                .append(getChildrenLauncherStatus(consoleWidth))
+                .append(CR_EOL)
+                .append(StringUtils.repeat(CR_HYPHEN, consoleWidth))
+                .append(CR_EOL).toString();
+    }
+
+    protected String getChildrenLauncherStatus(int consoleWidth) {
+        StringBuilder launcherMessageStatus = new StringBuilder();
+        for (ILauncher launcher : getSortedLaunchers()) {
+            if (!(launcher instanceof IConsoleLauncher)) {
+                continue;
+            }
+            if (StringUtils.isNotEmpty(launcherMessageStatus.toString())) {
+                launcherMessageStatus.append(CR_EOL);
+            }
+            IConsoleLauncher consoleLauncher = (IConsoleLauncher) launcher;
+            launcherMessageStatus.append(consoleLauncher.getStatusMessage(consoleWidth));
+        }
+        return launcherMessageStatus.toString();
     }
 }

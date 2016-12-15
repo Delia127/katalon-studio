@@ -31,4 +31,8 @@ public interface ConsoleOption<T> {
      * @return true if the option is required; otherwise false
      */
     public boolean isRequired();
+
+    T getValue();
+    
+    void setValue(String rawValue);
 }

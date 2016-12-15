@@ -5,38 +5,30 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import joptsimple.OptionParser;
-import joptsimple.OptionSet;
-import joptsimple.OptionSpecBuilder;
-
 import org.apache.commons.lang.StringUtils;
 
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.entity.project.ProjectEntity;
-import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.collector.ConsoleOptionCollector;
-import com.kms.katalon.execution.collector.RunConfigurationCollector;
-import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.console.entity.ConsoleMainOptionContributor;
 import com.kms.katalon.execution.console.entity.ConsoleOption;
-import com.kms.katalon.execution.console.entity.ConsoleOptionContributor;
 import com.kms.katalon.execution.constants.StringConstants;
-import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
-import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.exception.InvalidConsoleArgumentException;
-import com.kms.katalon.execution.integration.ReportIntegrationFactory;
-import com.kms.katalon.execution.launcher.ConsoleLauncher;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
+import com.kms.katalon.logging.LogUtil;
+
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+import joptsimple.OptionSpecBuilder;
 
 public class ConsoleMain {
     public static final String ARGUMENT_SPLITTER = "=";
@@ -48,6 +40,8 @@ public class ConsoleMain {
     public static final String PROJECT_PK_OPTION = "projectPath";
 
     public final static String TESTSUITE_ID_OPTION = "testSuitePath";
+    
+    public final static String TESTSUITE_COLLECTION_ID_OPTION = "testSuiteCollectionPath";
 
     public final static String BROWSER_TYPE_OPTION = "browserType";
 
@@ -66,7 +60,8 @@ public class ConsoleMain {
      * @return the exit code for the console execution
      */
     public static int launch(String[] arguments) {
-        OptionParser parser = createParser();
+        ConsoleExecutor consoleExecutor = new ConsoleExecutor();
+        OptionParser parser = createParser(consoleExecutor);
         try {
             OptionSet options = parser.parse(arguments);
             Map<String, String> consoleOptionValueMap = new HashMap<String, String>();
@@ -76,26 +71,10 @@ public class ConsoleMain {
             if (options.has(PROPERTIES_FILE_OPTION)) {
                 readPropertiesFileAndSetToConsoleOptionValueMap(
                         String.valueOf(options.valueOf(PROPERTIES_FILE_OPTION)), consoleOptionValueMap);
+                List<String> addedArguments = buildArgumentsForPropertiesFile(arguments, consoleOptionValueMap);
+                parser.parse(addedArguments.toArray(new String[addedArguments.size()]));
             }
-
-            TestSuiteExecutedEntity testSuiteExecutedEntity = new TestSuiteExecutedEntity();
-
-            List<ConsoleOptionContributor> consoleOptionContributors = populateConsoleOptionContributors(testSuiteExecutedEntity);
-
-            setConsoleArgumentToConsoleValueMap(options, consoleOptionContributors, consoleOptionValueMap);
-            preCheckForRequiredArgumentFromConsoleMapValue(TESTSUITE_ID_OPTION, consoleOptionValueMap);
-            preCheckForRequiredArgumentFromConsoleMapValue(BROWSER_TYPE_OPTION, consoleOptionValueMap);
-
-            TestSuiteEntity testSuite = getTestSuite(project, consoleOptionValueMap.get(TESTSUITE_ID_OPTION));
-            testSuiteExecutedEntity.setTestSuite(testSuite);
-
-            // Set the arguments back to console options contributors
-            returnConsoleArgumentToConsoleContributors(consoleOptionContributors, consoleOptionValueMap);
-
-            IRunConfiguration runConfig = createRunConfiguration(project, testSuite,
-                    consoleOptionValueMap.get(BROWSER_TYPE_OPTION));
-
-            launchTestSuite(testSuite, runConfig, testSuiteExecutedEntity);
+            consoleExecutor.execute(project, options);
 
             waitForExecutionToFinish(options);
 
@@ -103,24 +82,35 @@ public class ConsoleMain {
             int exitCode = consoleLaunchers.get(consoleLaunchers.size() - 1).getResult().getReturnCode();
             return exitCode;
         } catch (InvalidConsoleArgumentException e) {
-            System.out.println(e.getMessage());
+            LogUtil.printErrorLine(e.getMessage());
             return LauncherResult.RETURN_CODE_INVALID_ARGUMENT;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            LogUtil.printErrorLine(e.getMessage());
             return LauncherResult.RETURN_CODE_ERROR;
         } finally {
             LauncherManager.getInstance().removeAllTerminated();
         }
     }
 
-    private static OptionParser createParser() {
+    private static List<String> buildArgumentsForPropertiesFile(String[] arguments,
+            Map<String, String> consoleOptionValueMap) {
+        List<String> addedArguments = Arrays.asList(arguments);
+        consoleOptionValueMap.forEach((key, value) -> {
+            addedArguments.add(key);
+            addedArguments.add(value);
+        });
+        return addedArguments;
+    }
+
+    private static OptionParser createParser(ConsoleExecutor executor) {
         OptionParser parser = new OptionParser(false);
         parser.allowsUnrecognizedOptions();
 
         // Accept properties file option
         parser.accepts(PROPERTIES_FILE_OPTION).withRequiredArg().ofType(String.class);
         // Accept all of katalon console arguments
-        acceptConsoleOptionList(parser, ConsoleOptionCollector.getInstance().getConsoleOptionList());
+        acceptConsoleOptionList(parser, new ConsoleMainOptionContributor().getConsoleOptionList());
+        acceptConsoleOptionList(parser, executor.getAllConsoleOptions());
         return parser;
     }
 
@@ -139,67 +129,11 @@ public class ConsoleMain {
         return getProject(projectPath);
     }
 
-    private static List<ConsoleOptionContributor> populateConsoleOptionContributors(
-            TestSuiteExecutedEntity testSuiteExecutedEntity) {
-        List<ConsoleOptionContributor> consoleOptionContributors = new ArrayList<ConsoleOptionContributor>();
-        consoleOptionContributors.add(testSuiteExecutedEntity);
-        consoleOptionContributors.add(new ConsoleMainOptionContributor());
-        consoleOptionContributors.addAll(RunConfigurationCollector.getInstance().getConsoleOptionContributorList());
-        consoleOptionContributors.addAll(ReportIntegrationFactory.getInstance().getConsoleOptionContributorList());
-        return consoleOptionContributors;
-    }
-
     private static void setDefaultExecutionPropertiesOfProject(ProjectEntity project,
             Map<String, String> consoleOptionValueMap) throws IOException {
         ConsoleOptionCollector.getInstance().writeDefaultPropertyFile(project);
         readPropertiesFileAndSetToConsoleOptionValueMap(project.getFolderLocation() + File.separator
                 + ConsoleOptionCollector.DEFAULT_EXECUTION_PROPERTY_FILE_NAME, consoleOptionValueMap);
-    }
-
-    private static void setConsoleArgumentToConsoleValueMap(OptionSet options,
-            List<ConsoleOptionContributor> consoleOptionContributors, Map<String, String> consoleOptionValueMap) {
-        List<ConsoleOption<?>> consoleOptionList = new ArrayList<ConsoleOption<?>>();
-        for (ConsoleOptionContributor consoleOptionContributor : consoleOptionContributors) {
-            consoleOptionList.addAll(consoleOptionContributor.getConsoleOptionList());
-        }
-        for (ConsoleOption<?> consoleOption : consoleOptionList) {
-            if (!options.has(consoleOption.getOption())) {
-                continue;
-            }
-            String value = "";
-            if (consoleOption.hasArgument()) {
-                value = String.valueOf(options.valueOf(consoleOption.getOption()));
-            }
-            consoleOptionValueMap.put(consoleOption.getOption(), value);
-        }
-    }
-
-    private static void returnConsoleArgumentToConsoleContributors(
-            List<ConsoleOptionContributor> consoleOptionContributors, Map<String, String> consoleOptionValueMap)
-            throws Exception {
-        for (ConsoleOptionContributor consoleOptionContributor : consoleOptionContributors) {
-            for (ConsoleOption<?> consoleOption : consoleOptionContributor.getConsoleOptionList()) {
-                validateRequiredArgument(consoleOptionValueMap, consoleOption);
-                if (consoleOptionValueMap.get(consoleOption.getOption()) == null) {
-                    continue;
-                }
-                consoleOptionContributor.setArgumentValue(consoleOption,
-                        consoleOptionValueMap.get(consoleOption.getOption()));
-            }
-        }
-    }
-
-    private static void validateRequiredArgument(Map<String, String> consoleOptionValueMap,
-            ConsoleOption<?> consoleOption) throws InvalidConsoleArgumentException {
-        if (isMissingRequiredArgument(consoleOptionValueMap, consoleOption)) {
-            throw new InvalidConsoleArgumentException(MessageFormat.format(
-                    StringConstants.MNG_PRT_MISSING_REQUIRED_ARG, consoleOption.getOption()));
-        }
-    }
-
-    private static boolean isMissingRequiredArgument(Map<String, String> consoleOptionValueMap,
-            ConsoleOption<?> consoleOption) {
-        return consoleOptionValueMap.get(consoleOption.getOption()) == null && consoleOption.isRequired();
     }
 
     private static void readPropertiesFileAndSetToConsoleOptionValueMap(String fileLocation,
@@ -242,17 +176,6 @@ public class ConsoleMain {
         }
     }
 
-    private static void preCheckForRequiredArgumentFromConsoleMapValue(String option,
-            Map<String, String> consoleOptionValueMap) throws InvalidConsoleArgumentException {
-        if (option == null) {
-            return;
-        }
-        if (consoleOptionValueMap.get(option) == null) {
-            throw new InvalidConsoleArgumentException(MessageFormat.format(
-                    StringConstants.MNG_PRT_MISSING_REQUIRED_ARG, option));
-        }
-    }
-
     private static void waitForExecutionToFinish(OptionSet options) {
         int progressDelay = DEFAULT_SHOW_PROGRESS_DELAY;
         if (options.has(SHOW_STATUS_DELAY_OPTION)) {
@@ -260,7 +183,7 @@ public class ConsoleMain {
             try {
                 progressDelay = Integer.valueOf(progressDelayString);
             } catch (NumberFormatException e) {
-                System.out.println(MessageFormat.format(
+                LogUtil.printErrorLine(MessageFormat.format(
                         StringConstants.MNG_PRT_INVALID_ARG_CANNOT_PARSE_X_FOR_Y_TO_INTEGER, progressDelayString,
                         SHOW_STATUS_DELAY_OPTION));
             }
@@ -284,51 +207,7 @@ public class ConsoleMain {
 
     private static void printStatus() {
         int consoleWidth = 80;
-        System.out.println();
-        for (int i = 0; i < consoleWidth; i++) {
-            System.out.print(ARGUMENT_PREFIX);
-        }
-        System.out.println();
-
-        for (ILauncher launcher : LauncherManager.getInstance().getSortedLaunchers()) {
-            StringBuilder builder = new StringBuilder(launcher.getName());
-            String launcherStatus = launcher.getResult().getExecutedTestCases() + "/"
-                    + launcher.getResult().getTotalTestCases();
-            builder.append(launcherStatus);
-            builder.insert(launcher.getName().length(),
-                    StringUtils.repeat(".", consoleWidth - builder.length() % consoleWidth));
-            System.out.println(wrap(builder.toString(), consoleWidth));
-        }
-
-        for (int i = 0; i < consoleWidth; i++) {
-            System.out.print(ARGUMENT_PREFIX);
-        }
-        System.out.println("\n");
-    }
-
-    private static String wrap(String longString, int maxWidth) {
-        List<String> childrenString = new ArrayList<String>();
-        int multiplier = 1;
-        while (longString.length() > maxWidth * multiplier) {
-            childrenString.add(longString.substring((multiplier - 1) * maxWidth, multiplier * maxWidth));
-            multiplier++;
-        }
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < multiplier - 1; i++) {
-            builder.append(childrenString.get(i));
-            builder.append("\n");
-        }
-        builder.append(longString.substring((multiplier - 1) * maxWidth, longString.length()));
-        return builder.toString();
-    }
-
-    private static void launchTestSuite(TestSuiteEntity testSuite, IRunConfiguration runConfig,
-            TestSuiteExecutedEntity testSuiteExecutedEntity) throws Exception, InterruptedException {
-        runConfig.build(testSuite, testSuiteExecutedEntity);
-        LauncherManager launcherManager = LauncherManager.getInstance();
-        ConsoleLauncher cslauncher = new ConsoleLauncher(launcherManager, runConfig);
-        launcherManager.addLauncher(cslauncher);
-        Thread.sleep(1000);
+        LogUtil.printOutputLine(LauncherManager.getInstance().getStatus(consoleWidth));
     }
 
     private static ProjectEntity getProject(String projectPk) throws Exception {
@@ -346,29 +225,5 @@ public class ConsoleMain {
                     StringConstants.MNG_PRT_INVALID_ARG_CANNOT_FIND_PROJ_X, projectPk));
         }
         return projectEntity;
-    }
-
-    private static TestSuiteEntity getTestSuite(ProjectEntity projectEntity, String testSuiteID) throws Exception {
-        TestSuiteEntity testSuite = TestSuiteController.getInstance().getTestSuiteByDisplayId(testSuiteID,
-                projectEntity);
-
-        if (testSuite == null) {
-            throw new InvalidConsoleArgumentException(MessageFormat.format(
-                    StringConstants.MNG_PRT_TEST_SUITE_X_NOT_FOUND, testSuiteID));
-        }
-        return testSuite;
-    }
-
-    private static IRunConfiguration createRunConfiguration(ProjectEntity projectEntity, TestSuiteEntity testSuite,
-            String browserType) throws IOException, ExecutionException, InterruptedException,
-            InvalidConsoleArgumentException {
-        IRunConfiguration runConfig = RunConfigurationCollector.getInstance().getRunConfiguration(browserType,
-                testSuite.getProject().getFolderLocation());
-
-        if (runConfig == null) {
-            throw new InvalidConsoleArgumentException(MessageFormat.format(StringConstants.MNG_PRT_INVALID_BROWSER_X,
-                    browserType));
-        }
-        return runConfig;
     }
 }

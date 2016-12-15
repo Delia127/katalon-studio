@@ -28,30 +28,6 @@ public class ConsoleMainOptionContributor implements ConsoleOptionContributor {
         };
     };
 
-    public static final StringConsoleOption TEST_SUITE_PATH_CONSOLE_OPTION = new StringConsoleOption() {
-        @Override
-        public String getOption() {
-            return ConsoleMain.TESTSUITE_ID_OPTION;
-        }
-
-        @Override
-        public boolean isRequired() {
-            return true;
-        }
-    };
-
-    public static final StringConsoleOption RUN_CONFIG_CONSOLE_OPTION = new StringConsoleOption() {
-        @Override
-        public String getOption() {
-            return ConsoleMain.BROWSER_TYPE_OPTION;
-        }
-
-        @Override
-        public boolean isRequired() {
-            return true;
-        }
-    };
-
     public static final IntegerConsoleOption STATUS_DELAY_CONSOLE_OPTION = new IntegerConsoleOption() {
         @Override
         public String getOption() {
@@ -68,8 +44,6 @@ public class ConsoleMainOptionContributor implements ConsoleOptionContributor {
     public List<ConsoleOption<?>> getConsoleOptionList() {
         List<ConsoleOption<?>> consoleOptionList = new ArrayList<ConsoleOption<?>>();
         consoleOptionList.add(PROJECT_PATH_CONSOLE_OPTION);
-        consoleOptionList.add(TEST_SUITE_PATH_CONSOLE_OPTION);
-        consoleOptionList.add(RUN_CONFIG_CONSOLE_OPTION);
         consoleOptionList.add(STATUS_DELAY_CONSOLE_OPTION);
         return consoleOptionList;
     }

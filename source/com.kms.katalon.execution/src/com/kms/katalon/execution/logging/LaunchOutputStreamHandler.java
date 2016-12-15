@@ -15,10 +15,12 @@ import com.kms.katalon.logging.SystemLogger;
 public class LaunchOutputStreamHandler extends Thread implements IOutputStream {
     private InputStream is;
     private SystemLogger logger;
+    private boolean printAllowed;
 
-    private LaunchOutputStreamHandler(InputStream is, SystemLogger logger) {
+    private LaunchOutputStreamHandler(InputStream is, SystemLogger logger, boolean printAllowed) {
         this.is = is;
         this.logger = logger;
+        this.printAllowed = printAllowed;
     }
 
     public void run() {
@@ -29,7 +31,9 @@ public class LaunchOutputStreamHandler extends Thread implements IOutputStream {
             br = new BufferedReader(isr);
             String line = null;
             while ((line = br.readLine()) != null) {
-                println(line);
+                if (printAllowed) {
+                    println(line);
+                }
             }
         } catch (IOException e) {
             // Stream closed
@@ -48,10 +52,18 @@ public class LaunchOutputStreamHandler extends Thread implements IOutputStream {
     }
 
     public static LaunchOutputStreamHandler outputHandlerFrom(InputStream is) {
-        return new LaunchOutputStreamHandler(is, LogManager.getOutputLogger());
+        return new LaunchOutputStreamHandler(is, LogManager.getOutputLogger(), true);
+    }
+    
+    public static LaunchOutputStreamHandler outputHandlerFrom(InputStream is, boolean printAllowed) {
+        return new LaunchOutputStreamHandler(is, LogManager.getOutputLogger(), printAllowed);
     }
 
     public static LaunchOutputStreamHandler errorHandlerFrom(InputStream is) {
-        return new LaunchOutputStreamHandler(is, LogManager.getErrorLogger());
+        return new LaunchOutputStreamHandler(is, LogManager.getErrorLogger(), true);
+    }
+    
+    public static LaunchOutputStreamHandler errorHandlerFrom(InputStream is, boolean printAllowed) {
+        return new LaunchOutputStreamHandler(is, LogManager.getErrorLogger(), printAllowed);
     }
 }

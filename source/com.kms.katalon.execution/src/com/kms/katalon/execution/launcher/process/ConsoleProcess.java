@@ -7,12 +7,16 @@ public class ConsoleProcess implements ILaunchProcess {
 
     private Process fSystemProcess;
 
-    private LaunchOutputStreamHandler fOutputStreamHandler;
-    private LaunchOutputStreamHandler fErrorStreamHandler;
+    protected LaunchOutputStreamHandler fOutputStreamHandler;
+    protected LaunchOutputStreamHandler fErrorStreamHandler;
 
     public ConsoleProcess(Process systemProcess) {
         fSystemProcess = systemProcess;
 
+        buildStreamHandler(systemProcess);
+    }
+
+    protected void buildStreamHandler(Process systemProcess) {
         fOutputStreamHandler = LaunchOutputStreamHandler.outputHandlerFrom(systemProcess.getInputStream());
         fOutputStreamHandler.start();
 

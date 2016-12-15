@@ -1,6 +1,6 @@
 package com.kms.katalon.execution.entity;
 
-public interface Rerunnable {
+public interface Rerunable {
     
     int getPreviousRerunTimes();
     

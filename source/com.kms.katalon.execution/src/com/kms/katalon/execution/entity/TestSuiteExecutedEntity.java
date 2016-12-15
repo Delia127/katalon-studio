@@ -24,7 +24,7 @@ import com.kms.katalon.execution.console.entity.ConsoleOptionContributor;
 import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.execution.util.MailUtil;
 
-public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportable, Rerunnable, ConsoleOptionContributor {
+public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportable, Rerunable, ConsoleOptionContributor {
     private List<IExecutedEntity> executedItems;
 
     private Map<String, TestData> testDataMap;
@@ -48,7 +48,7 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
         setTestSuite(testSuite);
     }
 
-    public TestSuiteExecutedEntity(TestSuiteEntity testSuite, Rerunnable rerunnable) throws Exception {
+    public TestSuiteExecutedEntity(TestSuiteEntity testSuite, Rerunable rerunnable) throws Exception {
         this(testSuite);
         rerunSetting.setPreviousRerunTimes(rerunnable.getPreviousRerunTimes());
         rerunSetting.setRemainingRerunTimes(rerunnable.getRemainingRerunTimes());
@@ -364,6 +364,10 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
     @Override
     public int getRemainingRerunTimes() {
         return rerunSetting.getRemainingRerunTimes();
+    }
+    
+    public void setEmailConfig(EmailConfig emailConfig) {
+        this.emailConfig = emailConfig;
     }
 
     public EmailConfig getEmailConfig() {
