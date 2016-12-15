@@ -84,6 +84,7 @@ public class OpenCheckpointHandler {
                 part.setIconURI(ImageConstants.URL_16_CHECKPOINT);
                 setContributionURI(part, checkpoint.getSourceInfo());
                 part.setCloseable(true);
+                part.setTooltip(checkpoint.getIdForDisplay());
                 partStack.getChildren().add(part);
             }
 

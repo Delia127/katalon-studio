@@ -79,6 +79,7 @@ public class OpenWebServiceRequestObjectHandler {
                 }
                 mPart.setCloseable(true);
                 mPart.setIconURI(ImageConstants.URL_16_WS_TEST_OBJECT);
+                mPart.setTooltip(requestObject.getIdForDisplay());
                 stack.getChildren().add(mPart);
             }
 
