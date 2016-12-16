@@ -58,6 +58,8 @@ public class HTMLElementUtil {
 
     private static final String ELEMENT_ID_KEY = "id";
 
+    private static final String ELEMENT_NAME_KEY = "name";
+
     private static final String ELEMENT_CLASS_KEY = "class";
 
     private static final String ELEMENT_TYPE_KEY = "type";
@@ -68,6 +70,10 @@ public class HTMLElementUtil {
         String content = attributes.get(ELEMENT_TEXT_KEY);
         if (content != null) {
             return elementType + "_" + toValidFileName(content);
+        }
+        String name = attributes.get(ELEMENT_NAME_KEY);
+        if (name != null) {
+            return elementType + "_" + toValidFileName(name);
         }
         String id = attributes.get(ELEMENT_ID_KEY);
         if (id != null) {
