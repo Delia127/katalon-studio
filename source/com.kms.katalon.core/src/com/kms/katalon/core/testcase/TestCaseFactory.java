@@ -17,7 +17,7 @@ import org.dom4j.io.SAXReader;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.StringConstants;
-import com.kms.katalon.core.util.ExceptionsUtil;
+import com.kms.katalon.core.util.internal.ExceptionsUtil;
 
 public class TestCaseFactory {
     private static final String TEST_CASE_META_ROOT_FOLDER_NAME = "Test Cases";
@@ -72,7 +72,7 @@ public class TestCaseFactory {
             Element rootElement = document.getRootElement();
             TestCase testCase = new TestCase(testCaseId);
             testCase.setDescription(rootElement.element(DESCRIPTION_NODE_NAME).getText());
-            List<Variable> variables = new ArrayList<>();
+            List<Variable> variables = new ArrayList<Variable>();
             for (Object variableObject : rootElement.elements(VARIABLE_NODE_NAME)) {
                 Element variableElement = (Element) variableObject;
                 Variable variable = new Variable();

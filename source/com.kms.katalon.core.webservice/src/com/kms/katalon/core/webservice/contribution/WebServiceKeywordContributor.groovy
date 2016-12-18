@@ -2,8 +2,8 @@ package com.kms.katalon.core.webservice.contribution;
 
 import groovy.transform.CompileStatic
 
-import com.kms.katalon.core.driver.IDriverCleaner
-import com.kms.katalon.core.keyword.IKeywordContributor
+import com.kms.katalon.core.driver.internal.IDriverCleaner
+import com.kms.katalon.core.keyword.internal.IKeywordContributor
 import com.kms.katalon.core.webservice.constants.StringConstants
 import com.kms.katalon.core.webservice.keyword.WSBuiltInKeywords
 

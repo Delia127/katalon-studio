@@ -17,8 +17,8 @@ import org.supercsv.prefs.CsvPreference;
 import com.kms.katalon.core.logging.model.ILogRecord;
 import com.kms.katalon.core.logging.model.TestStatus;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
+import com.kms.katalon.core.util.internal.DateUtil;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
-import com.kms.katalon.core.util.DateUtil;
 
 public class CsvWriter {
 

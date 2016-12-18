@@ -27,10 +27,10 @@ import com.kms.katalon.core.testdata.TestDataFactory;
 import com.kms.katalon.core.testdata.TestDataType;
 import com.kms.katalon.core.testdata.reader.CSVSeparator;
 import com.kms.katalon.core.testdata.reader.ExcelFactory;
-import com.kms.katalon.core.util.Base64;
-import com.kms.katalon.core.util.ExceptionsUtil;
-import com.kms.katalon.core.util.JsonUtil;
-import com.kms.katalon.core.util.PathUtil;
+import com.kms.katalon.core.util.internal.Base64;
+import com.kms.katalon.core.util.internal.ExceptionsUtil;
+import com.kms.katalon.core.util.internal.JsonUtil;
+import com.kms.katalon.core.util.internal.PathUtil;
 
 public class CheckpointFactory {
 

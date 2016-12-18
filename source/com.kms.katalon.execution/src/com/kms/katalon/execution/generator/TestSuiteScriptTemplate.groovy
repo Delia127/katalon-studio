@@ -10,10 +10,10 @@ import static com.kms.katalon.core.constants.StringConstants.METHOD_FIND_TEST_OB
 import static com.kms.katalon.core.constants.StringConstants.METHOD_FIND_TEST_DATA
 
 import com.kms.katalon.core.configuration.RunConfiguration
-import com.kms.katalon.core.driver.DriverCleanerCollector
+import com.kms.katalon.core.driver.internal.DriverCleanerCollector
 import com.kms.katalon.core.exception.StepFailedException
-import com.kms.katalon.core.keyword.IKeywordContributor
-import com.kms.katalon.core.keyword.KeywordContributorCollection
+import com.kms.katalon.core.keyword.internal.IKeywordContributor
+import com.kms.katalon.core.keyword.internal.KeywordContributorCollection
 import com.kms.katalon.core.logging.KeywordLogger
 import com.kms.katalon.core.main.TestCaseMain
 import com.kms.katalon.core.model.FailureHandling

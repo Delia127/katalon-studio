@@ -4,10 +4,13 @@ import groovy.transform.CompileStatic
 import java.text.MessageFormat
 import java.util.regex.Pattern
 import com.kms.katalon.core.annotation.Keyword
+import com.kms.katalon.core.annotation.internal.Action
 import com.kms.katalon.core.exception.StepErrorException
 import com.kms.katalon.core.exception.StepFailedException
 import com.kms.katalon.core.keyword.BuiltinKeywords
-import com.kms.katalon.core.keyword.KeywordMain
+import com.kms.katalon.core.keyword.internal.KeywordExecutor
+import com.kms.katalon.core.keyword.internal.KeywordMain
+import com.kms.katalon.core.keyword.internal.SupportLevel
 import com.kms.katalon.core.logging.KeywordLogger
 import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.RequestObject
@@ -15,12 +18,8 @@ import com.kms.katalon.core.testobject.ResponseObject
 import com.kms.katalon.core.webservice.common.ServiceRequestFactory
 import com.kms.katalon.core.webservice.constants.StringConstants
 import com.kms.katalon.core.webservice.helper.WebServiceCommonHelper
+import com.kms.katalon.core.webservice.keyword.internal.WebserviceAbstractKeyword
 import com.kms.katalon.core.configuration.RunConfiguration
-import com.kms.katalon.core.keyword.KeywordMain
-import com.kms.katalon.core.annotation.Action
-import com.kms.katalon.core.webservice.keyword.WebserviceAbstractKeyword
-import com.kms.katalon.core.keyword.SupportLevel
-import com.kms.katalon.core.keyword.KeywordExecutor
 
 @Action(value = "verifyElementPropertyValue")
 public class VerifyElementPropertyValueKeyword extends WebserviceAbstractKeyword {

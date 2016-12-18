@@ -26,16 +26,19 @@ import org.openqa.selenium.support.ui.WebDriverWait
 
 import com.google.common.base.Function
 import com.kms.katalon.core.annotation.Keyword
+import com.kms.katalon.core.annotation.internal.Action
 import com.kms.katalon.core.configuration.RunConfiguration
 import com.kms.katalon.core.exception.StepFailedException
 import com.kms.katalon.core.keyword.BuiltinKeywords
+import com.kms.katalon.core.keyword.internal.KeywordExecutor
+import com.kms.katalon.core.keyword.internal.SupportLevel
 import com.kms.katalon.core.logging.KeywordLogger
 import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.ConditionType
 import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.testobject.TestObjectProperty
-import com.kms.katalon.core.util.ExceptionsUtil
-import com.kms.katalon.core.util.PathUtil
+import com.kms.katalon.core.util.internal.ExceptionsUtil
+import com.kms.katalon.core.util.internal.PathUtil
 import com.kms.katalon.core.webui.common.ScreenUtil
 import com.kms.katalon.core.webui.common.WebUiCommonHelper
 import com.kms.katalon.core.webui.constants.StringConstants
@@ -43,12 +46,9 @@ import com.kms.katalon.core.webui.driver.DriverFactory
 import com.kms.katalon.core.webui.driver.WebUIDriverType
 import com.kms.katalon.core.webui.exception.BrowserNotOpenedException
 import com.kms.katalon.core.webui.exception.WebElementNotFoundException
+import com.kms.katalon.core.webui.keyword.internal.WebUIAbstractKeyword
+import com.kms.katalon.core.webui.keyword.internal.WebUIKeywordMain
 import com.kms.katalon.core.webui.util.FileUtil
-import com.kms.katalon.core.webui.keyword.WebUIKeywordMain
-import com.kms.katalon.core.annotation.Action
-import com.kms.katalon.core.webui.keyword.WebUIAbstractKeyword
-import com.kms.katalon.core.keyword.SupportLevel
-import com.kms.katalon.core.keyword.KeywordExecutor
 
 @Action(value = "doubleClick")
 public class DoubleClickKeyword extends WebUIAbstractKeyword {

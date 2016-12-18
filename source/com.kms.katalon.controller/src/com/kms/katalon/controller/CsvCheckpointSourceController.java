@@ -5,7 +5,7 @@ import org.apache.commons.lang.ArrayUtils;
 import com.kms.katalon.controller.constants.StringConstants;
 import com.kms.katalon.core.testdata.CSVData;
 import com.kms.katalon.core.testdata.reader.CSVSeparator;
-import com.kms.katalon.core.util.PathUtil;
+import com.kms.katalon.core.util.internal.PathUtil;
 import com.kms.katalon.entity.checkpoint.CsvCheckpointSourceInfo;
 
 public class CsvCheckpointSourceController implements CheckpointSourceController<CsvCheckpointSourceInfo> {

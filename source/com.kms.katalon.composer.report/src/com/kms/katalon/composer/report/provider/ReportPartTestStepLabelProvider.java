@@ -21,7 +21,7 @@ import com.kms.katalon.core.logging.model.ILogRecord;
 import com.kms.katalon.core.logging.model.MessageLogRecord;
 import com.kms.katalon.core.logging.model.TestStatus;
 import com.kms.katalon.core.logging.model.TestStepLogRecord;
-import com.kms.katalon.core.util.DateUtil;
+import com.kms.katalon.core.util.internal.DateUtil;
 
 public class ReportPartTestStepLabelProvider extends StyledCellLabelProvider {
     public static final int CLMN_TEST_LOG_ITEM_IDX = 0;

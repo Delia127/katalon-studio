@@ -1,8 +1,8 @@
 package com.kms.katalon.composer.execution.dialog;
 
 import static com.kms.katalon.composer.components.log.LoggerSingleton.logError;
-import static com.kms.katalon.core.util.PathUtil.absoluteToRelativePath;
-import static com.kms.katalon.core.util.PathUtil.relativeToAbsolutePath;
+import static com.kms.katalon.core.util.internal.PathUtil.absoluteToRelativePath;
+import static com.kms.katalon.core.util.internal.PathUtil.relativeToAbsolutePath;
 import static com.kms.katalon.execution.util.MailUtil.getDistinctRecipients;
 import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
 import static org.apache.commons.lang.StringUtils.isBlank;

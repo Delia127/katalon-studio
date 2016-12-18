@@ -8,8 +8,8 @@ import java.util.regex.Pattern;
 
 import com.kms.katalon.core.checkpoint.Checkpoint;
 import com.kms.katalon.core.checkpoint.CheckpointFactory;
-import com.kms.katalon.core.keyword.IKeywordContributor;
-import com.kms.katalon.core.keyword.KeywordContributorCollection;
+import com.kms.katalon.core.keyword.internal.IKeywordContributor;
+import com.kms.katalon.core.keyword.internal.KeywordContributorCollection;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testcase.TestCase;
 import com.kms.katalon.core.testcase.TestCaseFactory;

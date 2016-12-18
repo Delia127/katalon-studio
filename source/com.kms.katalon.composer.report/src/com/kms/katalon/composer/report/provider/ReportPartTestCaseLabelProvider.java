@@ -16,7 +16,7 @@ import org.eclipse.swt.graphics.Image;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.report.constants.ImageConstants;
 import com.kms.katalon.core.logging.model.ILogRecord;
-import com.kms.katalon.core.util.DateUtil;
+import com.kms.katalon.core.util.internal.DateUtil;
 
 public class ReportPartTestCaseLabelProvider extends StyledCellLabelProvider {
 

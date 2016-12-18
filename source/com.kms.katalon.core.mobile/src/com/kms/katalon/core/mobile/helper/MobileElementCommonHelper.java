@@ -22,9 +22,9 @@ import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.helper.KeywordHelper;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.mobile.constants.StringConstants;
-import com.kms.katalon.core.mobile.keyword.MobileDriverFactory;
-import com.kms.katalon.core.mobile.keyword.MobileSearchEngine;
-import com.kms.katalon.core.mobile.keyword.SelectorBuilderHelper;
+import com.kms.katalon.core.mobile.keyword.internal.MobileDriverFactory;
+import com.kms.katalon.core.mobile.keyword.internal.MobileSearchEngine;
+import com.kms.katalon.core.mobile.keyword.internal.SelectorBuilderHelper;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testobject.TestObject;
 

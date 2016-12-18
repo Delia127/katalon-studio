@@ -9,7 +9,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
-import com.kms.katalon.core.webui.driver.existings.ExistingRemoteWebDriver;
+import com.kms.katalon.core.webui.driver.ExistingRemoteWebDriver;
 
 public class ExecutionSession {
     protected String sessionId;

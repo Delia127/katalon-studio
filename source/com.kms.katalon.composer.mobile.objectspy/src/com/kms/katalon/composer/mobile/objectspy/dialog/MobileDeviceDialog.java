@@ -37,7 +37,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
 import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
-import com.kms.katalon.core.mobile.keyword.GUIObject;
+import com.kms.katalon.core.mobile.keyword.internal.GUIObject;
 
 public class MobileDeviceDialog extends Dialog {
 

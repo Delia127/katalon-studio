@@ -4,7 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.dialogs.DatabaseConnectionAbstractDialog;
-import com.kms.katalon.core.util.Base64;
+import com.kms.katalon.core.util.internal.Base64;
 import com.kms.katalon.entity.checkpoint.DatabaseCheckpointSourceInfo;
 
 public class EditCheckpointDatabaseDialog extends DatabaseConnectionAbstractDialog {

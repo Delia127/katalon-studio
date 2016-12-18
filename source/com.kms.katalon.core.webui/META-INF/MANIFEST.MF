@@ -18,7 +18,6 @@ Require-Bundle: org.codehaus.groovy,
  com.google.gson
 Export-Package: com.kms.katalon.core.webui.constants,
  com.kms.katalon.core.webui.driver,
- com.kms.katalon.core.webui.driver.existings,
  com.kms.katalon.core.webui.keyword,
  com.kms.katalon.core.webui.util
 Bundle-ClassPath: .,

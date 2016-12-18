@@ -5,7 +5,7 @@ import org.apache.commons.lang.StringUtils;
 import com.kms.katalon.controller.constants.StringConstants;
 import com.kms.katalon.core.testdata.ExcelData;
 import com.kms.katalon.core.testdata.reader.ExcelFactory;
-import com.kms.katalon.core.util.PathUtil;
+import com.kms.katalon.core.util.internal.PathUtil;
 import com.kms.katalon.entity.checkpoint.ExcelCheckpointSourceInfo;
 
 public class ExcelCheckpointSourceController implements CheckpointSourceController<ExcelCheckpointSourceInfo> {

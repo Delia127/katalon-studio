@@ -12,11 +12,11 @@ import org.codehaus.groovy.ast.ModuleNode
 import com.kms.katalon.core.ast.GroovyParser
 import com.kms.katalon.core.configuration.RunConfiguration
 import com.kms.katalon.core.constants.StringConstants
-import com.kms.katalon.core.driver.DriverCleanerCollector
+import com.kms.katalon.core.driver.internal.DriverCleanerCollector
 import com.kms.katalon.core.exception.StepFailedException
-import com.kms.katalon.core.keyword.IKeywordContributor
-import com.kms.katalon.core.keyword.KeywordContributorCollection
-import com.kms.katalon.core.keyword.KeywordExceptionHandler
+import com.kms.katalon.core.keyword.internal.IKeywordContributor
+import com.kms.katalon.core.keyword.internal.KeywordContributorCollection
+import com.kms.katalon.core.keyword.internal.KeywordExceptionHandler
 import com.kms.katalon.core.logging.ErrorCollector
 import com.kms.katalon.core.logging.KeywordLogger
 import com.kms.katalon.core.logging.LogLevel
@@ -29,7 +29,7 @@ import com.kms.katalon.core.testcase.TestCase
 import com.kms.katalon.core.testcase.TestCaseFactory
 import com.kms.katalon.core.testcase.Variable
 import com.kms.katalon.core.testdata.TestDataColumn
-import com.kms.katalon.core.util.ExceptionsUtil
+import com.kms.katalon.core.util.internal.ExceptionsUtil
 
 public class ExportTestCaseHelper {
     private static String LOG_FILE_NAME = "execution0.log";

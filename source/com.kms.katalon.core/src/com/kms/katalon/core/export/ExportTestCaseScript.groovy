@@ -17,7 +17,7 @@ import com.kms.katalon.core.logging.KeywordLogger.KeywordStackElement
 import com.kms.katalon.core.logging.model.TestStatus
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue
 import com.kms.katalon.core.main.TestResult
-import com.kms.katalon.core.util.ExceptionsUtil;
+import com.kms.katalon.core.util.internal.ExceptionsUtil
 
 @CompileStatic
 public abstract class ExportTestCaseScript {

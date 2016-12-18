@@ -47,7 +47,7 @@ import com.kms.katalon.core.testcase.Variable
 import com.kms.katalon.core.testdata.TestDataColumn
 import com.kms.katalon.core.testdata.TestDataFactory;
 import com.kms.katalon.core.testobject.ObjectRepository;
-import com.kms.katalon.core.util.ExceptionsUtil;
+import com.kms.katalon.core.util.internal.ExceptionsUtil
 import com.kms.katalon.core.configuration.RunConfiguration;
 
 import org.codehaus.groovy.control.CompilationUnit;
