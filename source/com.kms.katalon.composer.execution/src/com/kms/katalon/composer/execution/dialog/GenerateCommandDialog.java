@@ -53,9 +53,10 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.impl.dialogs.AddMailRecipientDialog;
-import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.execution.constants.GenerateCommandPreferenceConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.util.MobileDeviceUIProvider;
@@ -63,11 +64,13 @@ import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
 import com.kms.katalon.composer.explorer.providers.EntityProvider;
 import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
 import com.kms.katalon.controller.FolderController;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.core.appium.driver.AppiumDriverManager;
 import com.kms.katalon.core.application.Application;
 import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
+import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.collector.ConsoleOptionCollector;
@@ -178,6 +181,8 @@ public class GenerateCommandDialog extends AbstractDialog {
     private static final String ARG_STATUS_DELAY = ConsoleMain.SHOW_STATUS_DELAY_OPTION;
 
     private static final String ARG_TEST_SUITE_PATH = ConsoleMain.TESTSUITE_ID_OPTION;
+    
+    private static final String ARG_TEST_SUITE_COLLECTION_PATH = ConsoleMain.TESTSUITE_COLLECTION_ID_OPTION;
 
     private static final String ARG_REMOTE_WEB_DRIVER_URL = DriverFactory.REMOTE_WEB_DRIVER_URL;
 
@@ -192,6 +197,8 @@ public class GenerateCommandDialog extends AbstractDialog {
     private static final String ARG_RETRY_FAILED_TEST_CASES = DefaultRerunSetting.RETRY_FAIL_TEST_CASE_ONLY_OPTION;
 
     private List<MobileDeviceInfo> deviceInfos = new ArrayList<>();
+
+    private Group grpPlatform;
 
     public GenerateCommandDialog(Shell parentShell, ProjectEntity project) {
         super(parentShell);
@@ -252,7 +259,7 @@ public class GenerateCommandDialog extends AbstractDialog {
         platformContainer.setLayout(new GridLayout());
         platformContainer.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-        Group grpPlatform = new Group(platformContainer, SWT.NONE);
+        grpPlatform = new Group(platformContainer, SWT.NONE);
         grpPlatform.setLayout(new GridLayout(3, false));
         grpPlatform.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         grpPlatform.setText(StringConstants.DIA_GRP_EXECUTED_PLATFORM);
@@ -609,9 +616,9 @@ public class GenerateCommandDialog extends AbstractDialog {
                         return;
                     }
 
-                    TestSuiteTreeEntity tsTreeEntity = (TestSuiteTreeEntity) result;
-                    TestSuiteEntity testSuiteEntity = (TestSuiteEntity) tsTreeEntity.getObject();
-                    changeSuiteArtifact(testSuiteEntity);
+                    ITreeEntity tsTreeEntity = (ITreeEntity) result;
+                    FileEntity fileEntity = (FileEntity) tsTreeEntity.getObject();
+                    changeSuiteArtifact(fileEntity);
                 } catch (Exception e) {
                     logError(e);
                 }
@@ -937,11 +944,16 @@ public class GenerateCommandDialog extends AbstractDialog {
             args.put(ARG_RETRY_FAILED_TEST_CASES, Boolean.toString(chkRetryFailedTestCase.getSelection()));
         }
 
-        args.put(ARG_TEST_SUITE_PATH, getArgumentValueToSave(txtTestSuite.getText(), generateCommandMode));
-
-        String browserType = browserTypeIs(BROWSER_TYPE_CUSTOM) ? comboCustomExecution.getText()
-                : comboBrowser.getText();
-        args.put(ARG_BROWSER_TYPE, getArgumentValueToSave(browserType, generateCommandMode));
+        String entityId = txtTestSuite.getText();
+        if (isTestSuite(entityId)) {
+            args.put(ARG_TEST_SUITE_PATH, getArgumentValueToSave(entityId, generateCommandMode));
+    
+            String browserType = browserTypeIs(BROWSER_TYPE_CUSTOM) ? comboCustomExecution.getText()
+                    : comboBrowser.getText();
+            args.put(ARG_BROWSER_TYPE, getArgumentValueToSave(browserType, generateCommandMode));
+        } else {
+            args.put(ARG_TEST_SUITE_COLLECTION_PATH, getArgumentValueToSave(entityId, generateCommandMode));
+        }
 
         if (browserTypeIs(WebUIDriverType.REMOTE_WEB_DRIVER.toString())) {
             args.put(ARG_REMOTE_WEB_DRIVER_URL,
@@ -956,6 +968,16 @@ public class GenerateCommandDialog extends AbstractDialog {
         }
 
         return args;
+    }
+    
+    private boolean isTestSuite(String id) {
+        try {
+            return TestSuiteController.getInstance().getTestSuiteByDisplayId(id,
+                    ProjectController.getInstance().getCurrentProject()) != null;
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            return false;
+        }
     }
 
     private boolean browserTypeIs(String typeString) {
@@ -980,11 +1002,12 @@ public class GenerateCommandDialog extends AbstractDialog {
     private void validateUserInput() throws Exception {
         List<String> messages = new ArrayList<String>();
 
-        if (isBlank(txtTestSuite.getText())) {
+        String entityId = txtTestSuite.getText();
+        if (isBlank(entityId)) {
             messages.add(MessageFormat.format(StringConstants.DIA_MSG_PLS_SPECIFY_X, StringConstants.TEST_SUITE));
         }
 
-        if (isBlank(comboBrowser.getText())) {
+        if (isTestSuite(entityId) && isBlank(comboBrowser.getText())) {
             messages.add(
                     MessageFormat.format(StringConstants.DIA_MSG_PLS_SPECIFY_X, StringConstants.DIA_RADIO_BROWSER));
         }
@@ -1089,11 +1112,18 @@ public class GenerateCommandDialog extends AbstractDialog {
         comboCustomExecution.setEnabled(browserTypeIs(BROWSER_TYPE_CUSTOM));
     }
 
-    private void changeSuiteArtifact(TestSuiteEntity testSuiteEntity) {
-        txtTestSuite.setText(testSuiteEntity.getIdForDisplay());
+    private void changeSuiteArtifact(FileEntity fileEntity) {
+        txtTestSuite.setText(fileEntity.getIdForDisplay());
         updateRecipientList();
-        txtRetry.setText(Integer.toString(testSuiteEntity.getNumberOfRerun()));
-        chkRetryFailedTestCase.setSelection(testSuiteEntity.isRerunFailedTestCasesOnly());
+        if (fileEntity instanceof TestSuiteEntity) {
+            TestSuiteEntity testSuiteEntity = (TestSuiteEntity) fileEntity;
+            txtRetry.setText(Integer.toString(testSuiteEntity.getNumberOfRerun()));
+            chkRetryFailedTestCase.setSelection(testSuiteEntity.isRerunFailedTestCasesOnly());
+
+            ControlUtils.recursiveSetEnabled(grpPlatform, true);
+            return;
+        }
+        ControlUtils.recursiveSetEnabled(grpPlatform, false);
     }
 
     private static ScopedPreferenceStore getPreference() {
