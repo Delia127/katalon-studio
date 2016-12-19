@@ -2,6 +2,10 @@ package com.kms.katalon.composer.objectrepository.view;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.fieldassist.AutoCompleteField;
+import org.eclipse.jface.fieldassist.ComboContentAdapter;
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
@@ -20,11 +24,18 @@ import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 public class AddPropertyDialog extends Dialog {
 
     private String name;
+
     private String value;
+
     private String condition;
 
-    private Text txtName, txtValue;
+    private Text txtValue;
+
+    private ComboViewer cvName;
+
     private Combo cbbConditions;
+
+    private static final String[] commonNames = { "xpath", "css", "id", "title", "class" };
 
     public AddPropertyDialog(Shell parentShell) {
         super(parentShell);
@@ -44,11 +55,14 @@ public class AddPropertyDialog extends Dialog {
         Label lblName = new Label(container, SWT.NONE);
         lblName.setText(StringConstants.VIEW_LBL_NAME);
 
-        txtName = new Text(container, SWT.BORDER);
+        cvName = new ComboViewer(container, SWT.DROP_DOWN);
         GridData gdTxtName = new GridData(GridData.FILL_HORIZONTAL);
         gdTxtName.heightHint = ControlUtils.DF_CONTROL_HEIGHT;
         gdTxtName.verticalAlignment = SWT.FILL;
-        txtName.setLayoutData(gdTxtName);
+        cvName.getCombo().setLayoutData(gdTxtName);
+        cvName.setContentProvider(ArrayContentProvider.getInstance());
+        cvName.setInput(commonNames);
+        new AutoCompleteField(cvName.getCombo(), new ComboContentAdapter(), commonNames);
 
         Label lblCondition = new Label(container, SWT.NONE);
         lblCondition.setText(StringConstants.VIEW_LBL_MATCH_COND);
@@ -87,7 +101,7 @@ public class AddPropertyDialog extends Dialog {
 
     @Override
     protected void okPressed() {
-        name = txtName.getText();
+        name = cvName.getCombo().getText();
         value = txtValue.getText();
         condition = cbbConditions.getItem(cbbConditions.getSelectionIndex());
         if (name.trim().equals("")) {
