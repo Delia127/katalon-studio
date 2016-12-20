@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import com.kms.katalon.composer.testcase.keywords.KeywordBrowserTreeEntity;
 import com.kms.katalon.composer.testcase.util.KeywordURLUtil;
 import com.kms.katalon.composer.testcase.util.TestCaseEntityUtil;
+import com.kms.katalon.core.keyword.BuiltinKeywords;
 import com.kms.katalon.custom.factory.BuiltInMethodNodeFactory;
 
 public class TreeViewerKeywordTooltip {
@@ -133,7 +134,7 @@ public class TreeViewerKeywordTooltip {
         tip = new KeywordNodeTooltip(treeViewer.getTree());
         tip.setText(text);
         if (keyword.toLowerCase().equals(BuiltInMethodNodeFactory.CALL_TEST_CASE_METHOD_NAME.toLowerCase())) {
-            classKeyword = "";
+            classKeyword = BuiltinKeywords.class.getSimpleName();
         }
         tip.setKeywordURL(KeywordURLUtil.getKeywordDescriptionURI(classKeyword, keyword));
         return tip;
