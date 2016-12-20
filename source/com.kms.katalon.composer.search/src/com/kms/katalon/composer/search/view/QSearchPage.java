@@ -16,8 +16,11 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.Text;
+import org.osgi.framework.FrameworkUtil;
 
-import com.kms.katalon.composer.search.constants.ImageConstants;
+import com.kms.katalon.composer.resources.constants.IImageKeys;
+import com.kms.katalon.composer.resources.image.ImageManager;
+import com.kms.katalon.composer.resources.util.ImageUtil;
 import com.kms.katalon.composer.search.constants.StringConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.report.ReportEntity;
@@ -150,7 +153,8 @@ public class QSearchPage extends DialogPage implements ISearchPage {
         if (tabFolder.getItemCount() <= 0) {
             return;
         }
-        tabFolder.getItem(0).setImage(ImageConstants.IMG_16_SEARCH);
+        tabFolder.getItem(0).setImage(ImageUtil.loadImage(FrameworkUtil.getBundle(ImageManager.class),
+                ImageManager.IMAGE_PATH + IImageKeys.SEARCH_16));
     }
 
     /**

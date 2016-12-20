@@ -58,6 +58,8 @@ public class HTMLElementUtil {
 
     private static final String ELEMENT_ID_KEY = "id";
 
+    private static final String ELEMENT_NAME_KEY = "name";
+
     private static final String ELEMENT_CLASS_KEY = "class";
 
     private static final String ELEMENT_TYPE_KEY = "type";
@@ -68,6 +70,10 @@ public class HTMLElementUtil {
         String content = attributes.get(ELEMENT_TEXT_KEY);
         if (content != null) {
             return elementType + "_" + toValidFileName(content);
+        }
+        String name = attributes.get(ELEMENT_NAME_KEY);
+        if (name != null) {
+            return elementType + "_" + toValidFileName(name);
         }
         String id = attributes.get(ELEMENT_ID_KEY);
         if (id != null) {
@@ -412,7 +418,6 @@ public class HTMLElementUtil {
             }
             Map<String, String> attributes = new HashMap<String, String>();
             HTMLFrameElement parentFrameElement = null;
-            String xpath = null;
             for (WebElementPropertyEntity property : webElement.getWebElementProperties()) {
                 if (property.getMatchCondition().equals(MATCH_CONDITION.EQUAL.toString())) {
                     if (property.getName().equals(WebElementEntity.ref_element)) {
@@ -425,15 +430,9 @@ public class HTMLElementUtil {
                             LoggerSingleton.logError(e);
                         }
                     } else {
-                        if (property.getName().equals(XPATH_KEY)) {
-                            xpath = property.getValue();
-                        }
                         attributes.put(property.getName(), property.getValue());
                     }
                 }
-            }
-            if (xpath == null) {
-                attributes.put(XPATH_KEY, XPATH_KEY + System.currentTimeMillis());
             }
             HTMLElement element = null;
             if (isFrame) {

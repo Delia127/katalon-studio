@@ -16,8 +16,6 @@ import org.openqa.selenium.Platform;
 import org.openqa.selenium.Point
 import org.openqa.selenium.TimeoutException
 import org.openqa.selenium.WebDriver
-import org.openqa.selenium.WebDriverException
-import org.openqa.selenium.WebElement
 import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.interactions.Actions
 import org.openqa.selenium.support.ui.ExpectedCondition
@@ -32,11 +30,12 @@ import com.kms.katalon.core.annotation.Keyword
 import com.kms.katalon.core.configuration.RunConfiguration
 import com.kms.katalon.core.exception.StepFailedException
 import com.kms.katalon.core.keyword.BuiltinKeywords
-import com.kms.katalon.core.keyword.KeywordExecutor
+import com.kms.katalon.core.keyword.internal.KeywordExecutor
 import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.webui.constants.StringConstants
 import com.kms.katalon.core.webui.exception.WebElementNotFoundException
+import com.kms.katalon.core.webui.keyword.internal.WebUIAbstractKeyword
 
 @CompileStatic
 public class WebUiBuiltInKeywords extends BuiltinKeywords {
@@ -2375,7 +2374,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      * @param propertyName
      *          name of the property, for example, xpath, id, name,...
      * @param flowControl
-     * @return
+     * @return the new TestObject after its property is removed
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
@@ -2394,7 +2393,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      *          represent a web element
      * @param propertyName
      *          name of the property, for example, xpath, id, name,...
-     * @return
+     * @return the new TestObject after its property is removed
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)

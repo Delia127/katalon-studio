@@ -34,8 +34,8 @@ import com.kms.katalon.composer.testcase.constants.TestCasePreferenceConstants;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.parts.TestCaseCompositePart;
 import com.kms.katalon.controller.KeywordController;
-import com.kms.katalon.core.keyword.IKeywordContributor;
-import com.kms.katalon.core.keyword.KeywordContributorCollection;
+import com.kms.katalon.core.keyword.internal.IKeywordContributor;
+import com.kms.katalon.core.keyword.internal.KeywordContributorCollection;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.custom.keyword.KeywordMethod;
 

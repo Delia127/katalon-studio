@@ -142,16 +142,16 @@
       <children xsi:type="menu:ToolControl" xmi:id="_-DNO4CSUEeWwuK4yOgypdw" elementId="com.kms.katalon.composer.perspective.switcher" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.perspective.PerspectiveSwitcher"/>
     </trimBars>
     <trimBars xmi:id="_D8Z7cNa4EeS1ha7mm6JZag" elementId="com.kms.katalon.trimbar.right" side="Right">
-      <children xsi:type="menu:ToolControl" xmi:id="_Fy2fsNa4EeS1ha7mm6JZag" elementId="com.kms.katalon.partstack.outline(com.kms.katalon.composer.perspective.keyword)" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.addons.swt/org.eclipse.e4.ui.workbench.addons.minmax.TrimStack">
+      <children xsi:type="menu:ToolControl" xmi:id="_Fy2fsNa4EeS1ha7mm6JZag" elementId="com.kms.katalon.partstack.outline(com.kms.katalon.composer.window.main).(com.kms.katalon.composer.perspective.keyword)" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.addons.swt/org.eclipse.e4.ui.workbench.addons.minmax.TrimStack">
         <tags>TrimStack</tags>
         <tags>NoMove</tags>
       </children>
-      <children xsi:type="menu:ToolControl" xmi:id="_6JcfUDqeEeWympSUeHeJlA" elementId="com.kms.katalon.partstack.console(com.kms.katalon.composer.perspective.keyword)" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.addons.swt/org.eclipse.e4.ui.workbench.addons.minmax.TrimStack">
+      <children xsi:type="menu:ToolControl" xmi:id="_6JcfUDqeEeWympSUeHeJlA" elementId="com.kms.katalon.partstack.console(com.kms.katalon.composer.window.main).(com.kms.katalon.composer.perspective.keyword)" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.addons.swt/org.eclipse.e4.ui.workbench.addons.minmax.TrimStack">
         <tags>NoMove</tags>
       </children>
     </trimBars>
     <trimBars xmi:id="_jKbr8CYQEeWJ99-mW6KHQg" elementId="com.kms.katalon.trimbar.left" side="Left">
-      <children xsi:type="menu:ToolControl" xmi:id="_k7k5cCYQEeWJ99-mW6KHQg" elementId="com.kms.katalon.partstack.left.outline(com.kms.katalon.composer.perspective.keyword)" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.addons.swt/org.eclipse.e4.ui.workbench.addons.minmax.TrimStack">
+      <children xsi:type="menu:ToolControl" xmi:id="_k7k5cCYQEeWJ99-mW6KHQg" elementId="com.kms.katalon.partstack.left.outline(com.kms.katalon.composer.window.main).(com.kms.katalon.composer.perspective.keyword)" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.addons.swt/org.eclipse.e4.ui.workbench.addons.minmax.TrimStack">
         <tags>NoMove</tags>
       </children>
     </trimBars>

@@ -37,6 +37,7 @@ Require-Bundle: com.kms.katalon.core;bundle-version="1.0.0",
  com.kms.katalon.preferences,
  com.kms.katalon.composer.resources
 Export-Package: com.kms.katalon.objectspy.components,
+ com.kms.katalon.objectspy.constants,
  com.kms.katalon.objectspy.core,
  com.kms.katalon.objectspy.dialog,
  com.kms.katalon.objectspy.element,

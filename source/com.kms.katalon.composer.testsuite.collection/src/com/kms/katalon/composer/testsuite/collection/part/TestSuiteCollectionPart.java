@@ -348,11 +348,8 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
 
     private void redrawBtnExpandGeneralInfo() {
         btnExpandExecutionInformation.getParent().setRedraw(false);
-        if (isExecutionInfoCompositeExpanded) {
-            btnExpandExecutionInformation.setImage(ImageConstants.IMG_16_ARROW_RIGHT);
-        } else {
-            btnExpandExecutionInformation.setImage(ImageConstants.IMG_16_ARROW_DOWN);
-        }
+        btnExpandExecutionInformation.setImage(isExecutionInfoCompositeExpanded ? ImageConstants.IMG_16_ARROW_DOWN
+                : ImageConstants.IMG_16_ARROW_RIGHT);
         btnExpandExecutionInformation.getParent().setRedraw(true);
     }
 

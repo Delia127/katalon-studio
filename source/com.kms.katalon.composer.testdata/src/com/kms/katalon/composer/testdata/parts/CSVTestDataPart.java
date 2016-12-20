@@ -53,7 +53,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.core.testdata.CSVData;
 import com.kms.katalon.core.testdata.reader.CSVSeparator;
-import com.kms.katalon.core.util.PathUtil;
+import com.kms.katalon.core.util.internal.PathUtil;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity.DataFileDriverType;
 import com.kms.katalon.entity.testdata.DataFilePropertyInputEntity;

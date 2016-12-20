@@ -33,7 +33,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.ssl.SSLContextBuilder;
 
-import com.kms.katalon.core.util.JsonUtil;
+import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.integration.jira.JiraCredential;
 import com.kms.katalon.integration.jira.JiraIntegrationException;
 import com.kms.katalon.integration.jira.JiraInvalidURLException;

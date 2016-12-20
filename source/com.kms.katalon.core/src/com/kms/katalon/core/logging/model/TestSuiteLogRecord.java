@@ -116,7 +116,7 @@ public class TestSuiteLogRecord extends AbstractLogRecord {
     }
 
     public List<String> getLogFiles() {
-        List<String> logFiles = new ArrayList<>();
+        List<String> logFiles = new ArrayList<String>();
         for (String childFile : new File(getLogFolder()).list()) {
             if (!FilenameUtils.getExtension(childFile).equals("log")) {
                 continue;
@@ -133,7 +133,7 @@ public class TestSuiteLogRecord extends AbstractLogRecord {
 
     public void addXmlLogRecords(List<XmlLogRecord> xmlLogRecords) {
         if(this.xmlLogRecords == null){
-            this.xmlLogRecords = new ArrayList<>();
+            this.xmlLogRecords = new ArrayList<XmlLogRecord>();
         }
         this.xmlLogRecords.addAll(xmlLogRecords);
     }

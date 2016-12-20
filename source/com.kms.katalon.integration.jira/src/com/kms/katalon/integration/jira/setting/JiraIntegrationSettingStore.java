@@ -19,7 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.atlassian.jira.rest.client.api.domain.User;
 import com.google.gson.reflect.TypeToken;
 import com.kms.katalon.core.setting.BundleSettingStore;
-import com.kms.katalon.core.util.JsonUtil;
+import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.integration.jira.JiraAPIURL;
 import com.kms.katalon.integration.jira.JiraCredential;
 import com.kms.katalon.integration.jira.constant.StringConstants;

@@ -47,6 +47,7 @@ import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseAdapter;
@@ -108,6 +109,7 @@ import com.kms.katalon.objectspy.dialog.AddToObjectRepositoryDialog.AddToObjectR
 import com.kms.katalon.objectspy.element.DomElementXpath;
 import com.kms.katalon.objectspy.element.HTMLElement;
 import com.kms.katalon.objectspy.element.HTMLElement.HTMLStatus;
+import com.kms.katalon.objectspy.element.HTMLElement.MatchedStatus;
 import com.kms.katalon.objectspy.element.HTMLFrameElement;
 import com.kms.katalon.objectspy.element.HTMLPageElement;
 import com.kms.katalon.objectspy.element.HTMLRawElement;
@@ -118,6 +120,7 @@ import com.kms.katalon.objectspy.element.tree.HTMLRawElementTreeViewerFilter;
 import com.kms.katalon.objectspy.exception.DOMException;
 import com.kms.katalon.objectspy.exception.IEAddonNotInstalledException;
 import com.kms.katalon.objectspy.highlight.HighlightRequest;
+import com.kms.katalon.objectspy.util.BrowserUtil;
 import com.kms.katalon.objectspy.util.DOMUtils;
 import com.kms.katalon.objectspy.util.HTMLElementUtil;
 import com.kms.katalon.objectspy.util.InspectSessionUtil;
@@ -190,6 +193,8 @@ public class ObjectSpyDialog extends Dialog {
 
     private boolean isInstant = false;
 
+    private Text txtStartUrl;
+
     /**
      * Create the dialog.
      * 
@@ -261,14 +266,34 @@ public class ObjectSpyDialog extends Dialog {
         hSashForm.setWeights(new int[] { 3, 8 });
         mainContainer.pack();
 
+        txtStartUrl.setFocus();
         return mainContainer;
     }
 
     public void addStartBrowserToolbar(Composite toolbarComposite) {
-        final ToolBar startBrowserToolbar = new ToolBar(toolbarComposite, SWT.FLAT | SWT.RIGHT);
-        startBrowserToolbar.setLayout(new FillLayout(SWT.HORIZONTAL));
-        GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).grab(true, false).applyTo(startBrowserToolbar);
+        Composite toolbarRightSideComposite = new Composite(toolbarComposite, SWT.NONE);
+        toolbarRightSideComposite.setLayout(new GridLayout(3, false));
+        toolbarRightSideComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
+        Label lblStartUrl = new Label(toolbarRightSideComposite, SWT.NONE);
+        lblStartUrl.setText(ObjectspyMessageConstants.LBL_DLG_START_URL);
+        txtStartUrl = new Text(toolbarRightSideComposite, SWT.BORDER);
+        GridData gdTxtStartUrl = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+        gdTxtStartUrl.heightHint = 20;
+        gdTxtStartUrl.minimumWidth = 300;
+        txtStartUrl.setLayoutData(gdTxtStartUrl);
+        txtStartUrl.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.character == SWT.CR) {
+                    startObjectSpy(defaultBrowser, isInstant);
+                }
+            }
+        });
+
+        final ToolBar startBrowserToolbar = new ToolBar(toolbarRightSideComposite, SWT.FLAT | SWT.RIGHT);
+        startBrowserToolbar.setLayout(new FillLayout(SWT.HORIZONTAL));
+        GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).grab(false, false).applyTo(startBrowserToolbar);
         startBrowser = new ToolItem(startBrowserToolbar, SWT.DROP_DOWN);
         startBrowser.setText(StringConstants.DIA_BTN_START_BROWSER);
         startBrowser.setImage(getWebUIDriverToolItemImage(getWebUIDriver()));
@@ -532,24 +557,28 @@ public class ObjectSpyDialog extends Dialog {
         for (Object object : elements) {
             if (object instanceof HTMLElement) {
                 HTMLElement element = (HTMLElement) object;
+                MatchedStatus matchedStatus = element.getMatchedStatus();
+                matchedStatus.reset();
                 String elementXpath = HTMLElementUtil.buildXpathForHTMLElement(element);
                 try {
                     NodeList nodeList = evaluateXpath(elementXpath);
                     if (nodeList == null) {
-                        element.setStatus(HTMLStatus.Invalid);
+                        matchedStatus.setStatus(HTMLStatus.Invalid);
                         continue;
                     }
                     if (nodeList.getLength() <= 0) {
-                        element.setStatus(HTMLStatus.Missing);
+                        matchedStatus.setStatus(HTMLStatus.Missing);
                     } else if (nodeList.getLength() == 1) {
+                        Element matchedItem = (Element) nodeList.item(0);
                         try {
-                            DOMUtils.compareNodeAttributes(element, (Element) nodeList.item(0));
-                            element.setStatus(HTMLStatus.Exists);
+                            DOMUtils.compareNodeAttributes(element, matchedItem);
+                            matchedStatus.setStatus(HTMLStatus.Exists);
                         } catch (DOMException exception) {
-                            element.setStatus(HTMLStatus.Changed);
+                            matchedStatus.setStatus(HTMLStatus.Changed);
                         }
+                        matchedStatus.setMatchedElement(matchedItem);
                     } else {
-                        element.setStatus(HTMLStatus.Multiple);
+                        matchedStatus.setStatus(HTMLStatus.Multiple);
                     }
                     if (!isFirst) {
                         xpathQueryString.append(" | "); //$NON-NLS-1$
@@ -557,13 +586,14 @@ public class ObjectSpyDialog extends Dialog {
                     xpathQueryString.append(elementXpath);
                     isFirst = false;
                 } catch (XPathExpressionException e) {
-                    element.setStatus(HTMLStatus.Invalid);
+                    matchedStatus.setStatus(HTMLStatus.Invalid);
                 }
             }
         }
         txtXpathInput.setText(xpathQueryString.toString());
         setDomTreeXpath(xpathQueryString.toString());
         refreshTree(capturedObjectComposite.getElementTreeViewer(), null);
+        capturedObjectComposite.refreshAttributesTable();
     }
 
     private NodeList evaluateXpath(final String xpath) throws XPathExpressionException {
@@ -591,14 +621,7 @@ public class ObjectSpyDialog extends Dialog {
                             selectedDOMElementXpaths.add(DOMUtils.getDOMElementXpathForNode(nodeList.item(i)));
                         }
                         if (selectedDOMElementXpaths.isEmpty()) {
-                            Display.getDefault().syncExec(new Runnable() {
-                                @Override
-                                public void run() {
-                                    MessageDialog.openWarning(Display.getCurrent().getActiveShell(),
-                                            StringConstants.WARN, StringConstants.WARNING_NO_ELEMENT_FOUND_FOR_XPATH);
-                                }
-                            });
-                            return Status.OK_STATUS;
+                            return Status.CANCEL_STATUS;
                         }
                         Display.getDefault().syncExec(new Runnable() {
                             @Override
@@ -771,7 +794,7 @@ public class ObjectSpyDialog extends Dialog {
 
     private void addElementTreeToolbar(Composite explorerComposite) {
         mainToolbar = new ToolBar(explorerComposite, SWT.FLAT | SWT.RIGHT);
-        mainToolbar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
+        mainToolbar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, true, 1, 1));
 
         addPageElementToolItem = new ToolItem(mainToolbar, SWT.NONE);
         addPageElementToolItem.setImage(ImageConstants.IMG_24_NEW_PAGE_ELEMENT);
@@ -996,7 +1019,7 @@ public class ObjectSpyDialog extends Dialog {
      */
     @Override
     protected Point getInitialSize() {
-        return new Point(900, 600);
+        return new Point(1280, 720);
     }
 
     @Override
@@ -1144,6 +1167,11 @@ public class ObjectSpyDialog extends Dialog {
     }
 
     private void startObjectSpy(WebUIDriverType browser, boolean isInstant) {
+        if (!BrowserUtil.isBrowserInstalled(browser)) {
+            MessageDialog.openError(getShell(), StringConstants.ERROR_TITLE,
+                    ObjectspyMessageConstants.DIA_MSG_CANNOT_START_BROWSER);
+            return;
+        }
         try {
             if (browser == WebUIDriverType.IE_DRIVER) {
                 checkIEAddon();
@@ -1192,7 +1220,8 @@ public class ObjectSpyDialog extends Dialog {
         if (session != null) {
             session.stop();
         }
-        session = new InspectSession(server, browser, ProjectController.getInstance().getCurrentProject(), logger);
+        session = new InspectSession(server, browser, ProjectController.getInstance().getCurrentProject(), logger,
+                txtStartUrl.getText());
         new Thread(session).start();
     }
 

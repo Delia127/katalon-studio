@@ -8,8 +8,8 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.SafeRunner;
 
-import com.kms.katalon.core.keyword.IKeywordContributor;
-import com.kms.katalon.core.keyword.KeywordContributorCollection;
+import com.kms.katalon.core.keyword.internal.IKeywordContributor;
+import com.kms.katalon.core.keyword.internal.KeywordContributorCollection;
 
 public class EvaluateKeywordContributionsHandler {
     private static final String IKEYWORD_CONTRIBUTOR_ID = "com.kms.katalon.custom.keyword";

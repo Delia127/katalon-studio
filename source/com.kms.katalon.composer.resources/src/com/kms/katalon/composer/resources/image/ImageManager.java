@@ -13,7 +13,7 @@ import com.kms.katalon.composer.resources.util.ImageUtil;
 
 public class ImageManager {
 
-    private static final String IMAGE_PATH = "/icons/";
+    public static final String IMAGE_PATH = "/icons/";
 
     private static final Bundle currentBundle = FrameworkUtil.getBundle(ImageManager.class);
 

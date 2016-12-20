@@ -3,7 +3,7 @@ package com.kms.katalon.integration.jira.entity;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.kms.katalon.core.util.JsonUtil;
+import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.integration.jira.constant.StringConstants;
 
 public abstract class JiraIntegratedObject {

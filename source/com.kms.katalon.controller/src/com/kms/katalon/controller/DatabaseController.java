@@ -8,7 +8,7 @@ import com.kms.katalon.core.db.DatabaseConnection;
 import com.kms.katalon.core.db.DatabaseSettings;
 import com.kms.katalon.core.db.ListResultSetHandler;
 import com.kms.katalon.core.db.SqlRunner;
-import com.kms.katalon.core.util.Base64;
+import com.kms.katalon.core.util.internal.Base64;
 import com.kms.katalon.entity.project.ProjectEntity;
 
 public class DatabaseController {

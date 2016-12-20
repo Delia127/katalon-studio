@@ -32,6 +32,8 @@ public class CoreMessageConstants extends NLS {
     public static String MAIN_LOG_INFO_VARIABLE_NAME_X_IS_SET_TO_Y_AS_DEFAULT;
 
     public static String MAIN_LOG_MSG_SET_TEST_VARIABLE_ERROR_BECAUSE_OF;
+    
+    public static String MSG_ERR_UNABLE_TO_CREATE_LOGGER;
 
     public static String TD_ROW_INDEX_X_FOR_TEST_DATA_Y_INVALID;
 

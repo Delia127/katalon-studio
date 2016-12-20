@@ -653,8 +653,8 @@ public class ExplorerPart {
         if (object == null || !(object instanceof ITreeEntity)) {
             return;
         }
-        getViewer().setSelection(new StructuredSelection(object));
         getViewer().setExpandedState(object, true);
+        getViewer().setSelection(new StructuredSelection(object));
     }
 
     @Inject

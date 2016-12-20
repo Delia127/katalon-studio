@@ -2,12 +2,16 @@ package com.kms.katalon.objectspy.core;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import java.nio.file.InvalidPathException;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.core.services.log.Logger;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
@@ -21,6 +25,7 @@ import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.core.configuration.RunConfiguration;
+import com.kms.katalon.core.util.PathUtil;
 import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.core.webui.util.WebDriverPropertyUtil;
@@ -35,6 +40,8 @@ import com.kms.katalon.objectspy.util.FileUtil;
 
 @SuppressWarnings("restriction")
 public class InspectSession implements Runnable {
+    private static final String HTTP = "http";
+
     private static final String ABOUT_BLANK = "about:blank";
 
     public static final String OBJECT_SPY_ADD_ON_NAME = "Object Spy";
@@ -82,16 +89,24 @@ public class InspectSession implements Runnable {
 
     protected ProjectEntity currentProject;
 
+    private String startUrl;
+
     public InspectSession(HTMLElementCaptureServer server, WebUIDriverType webUiDriverType,
-            ProjectEntity currentProject, Logger logger) throws Exception {
+            ProjectEntity currentProject, Logger logger) {
         this.server = server;
         this.webUiDriverType = webUiDriverType;
         this.currentProject = currentProject;
         isRunFlag = true;
     }
 
-    protected void setUp(WebUIDriverType webUIDriverType, ProjectEntity currentProject) throws IOException,
-            ExtensionNotFoundException, BrowserNotSupportedException {
+    public InspectSession(HTMLElementCaptureServer server, WebUIDriverType webUiDriverType,
+            ProjectEntity currentProject, Logger logger, String startUrl) {
+        this(server, webUiDriverType, currentProject, logger);
+        this.startUrl = startUrl;
+    }
+
+    protected void setUp(WebUIDriverType webUIDriverType, ProjectEntity currentProject)
+            throws IOException, ExtensionNotFoundException, BrowserNotSupportedException {
         projectDir = currentProject.getFolderLocation();
 
         IDriverConnector webUIDriverConnector = WebUIExecutionUtil.getBrowserDriverConnector(webUIDriverType,
@@ -142,7 +157,13 @@ public class InspectSession implements Runnable {
             Thread.sleep(5);
 
             driver = DriverFactory.openWebDriver(webUiDriverType, projectDir, options);
-
+            if (StringUtils.isNotEmpty(startUrl)) {
+                try {
+                    driver.navigate().to(PathUtil.getUrl(startUrl, HTTP));
+                } catch (MalformedURLException | URISyntaxException | InvalidPathException e) {
+                    // Invalid url, ignore this
+                }
+            }
             while (isRunFlag) {
                 try {
                     Thread.sleep(5000);
@@ -159,15 +180,17 @@ public class InspectSession implements Runnable {
                     continue;
                 }
             }
-        } catch (UnreachableBrowserException e) {} catch (Exception e) {
+        } catch (UnreachableBrowserException e) {
+            // do nothing for this exception
+        } catch (Exception e) {
             LoggerSingleton.logError(e);
         } finally {
             dispose();
         }
     }
 
-    protected Object createDriverOptions(WebUIDriverType driverType) throws IOException, ExtensionNotFoundException,
-            BrowserNotSupportedException {
+    protected Object createDriverOptions(WebUIDriverType driverType)
+            throws IOException, ExtensionNotFoundException, BrowserNotSupportedException {
         if (driverType == WebUIDriverType.CHROME_DRIVER) {
             return createChromDriverOptions();
         }
@@ -211,8 +234,8 @@ public class InspectSession implements Runnable {
     }
 
     private void generateVariableInitFileForChrome(File chromeExtensionFolder) throws IOException {
-        File variableInitJSFile = new File(chromeExtensionFolder.getAbsolutePath() + File.separator
-                + VARIABLE_INIT_FILE_FOR_CHROME);
+        File variableInitJSFile = new File(
+                chromeExtensionFolder.getAbsolutePath() + File.separator + VARIABLE_INIT_FILE_FOR_CHROME);
         FileUtils.writeStringToFile(variableInitJSFile,
                 MessageFormat.format(VARIABLE_INIT_EXPRESSION_FOR_CHROME, String.valueOf(server.getServerPort())),
                 Charset.defaultCharset());
@@ -250,8 +273,7 @@ public class InspectSession implements Runnable {
             if (serverSettingFile.exists()) {
                 serverSettingFile.delete();
             }
-        } catch (UnreachableBrowserException e) {}
-        catch (WebDriverException e) {
+        } catch (UnreachableBrowserException e) {} catch (WebDriverException e) {
             LoggerSingleton.logError(e);
         }
     }

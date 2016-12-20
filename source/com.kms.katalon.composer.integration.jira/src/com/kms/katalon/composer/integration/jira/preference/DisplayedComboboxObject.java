@@ -55,6 +55,9 @@ public class DisplayedComboboxObject<T extends NamedEntity & AddressableEntity> 
     }
 
     public void setDefaultObjectIndex(int index) {
+        if (storedObject.getJiraObjects() == null) {
+            return;
+        }
         setDefaultObjectURI(storedObject.getJiraObjects()[index].getSelf());
     }
 

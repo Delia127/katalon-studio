@@ -9,7 +9,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.kms.katalon.core.annotation.Keyword;
-import com.kms.katalon.core.keyword.IKeywordContributor;
+import com.kms.katalon.core.keyword.internal.IKeywordContributor;
 
 public class KeywordClass {
     private String name;

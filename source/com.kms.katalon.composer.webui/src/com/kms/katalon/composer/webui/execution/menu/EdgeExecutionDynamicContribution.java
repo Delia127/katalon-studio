@@ -26,7 +26,7 @@ public class EdgeExecutionDynamicContribution extends AbstractExecutionMenuContr
 
     @Override
     protected String getIconUri() {
-        return ImageConstants.IMG_URL_16_IE;
+        return ImageConstants.IMG_URL_16_EDGE;
     }
     
     @Override

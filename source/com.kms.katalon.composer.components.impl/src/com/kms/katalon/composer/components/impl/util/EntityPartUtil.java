@@ -114,47 +114,46 @@ public class EntityPartUtil {
                 return null;
             }
 
-            if (partElementId.startsWith(IdConstants.TEST_CASE_PARENT_COMPOSITE_PART_ID_PREFIX)) {
-                String testCaseId = partElementId.substring(
-                        IdConstants.TEST_CASE_PARENT_COMPOSITE_PART_ID_PREFIX.length() + 1,
-                        partElementId.lastIndexOf(")"));
+            String testCaseId = getEntityIdFromPartId(partElementId,
+                    IdConstants.TEST_CASE_PARENT_COMPOSITE_PART_ID_PREFIX);
+            if (testCaseId != null) {
                 return TestCaseController.getInstance().getTestCase(testCaseId);
             }
 
-            if (partElementId.startsWith(IdConstants.TESTOBJECT_CONTENT_PART_ID_PREFIX)) {
-                String testObjectId = partElementId.substring(
-                        IdConstants.TESTOBJECT_CONTENT_PART_ID_PREFIX.length() + 1, partElementId.lastIndexOf(")"));
+            String testObjectId = getEntityIdFromPartId(partElementId, IdConstants.TESTOBJECT_CONTENT_PART_ID_PREFIX);
+            if (testObjectId != null) {
                 return ObjectRepositoryController.getInstance().getWebElement(testObjectId);
             }
 
-            if (partElementId.startsWith(IdConstants.TESTDATA_CONTENT_PART_ID_PREFIX)) {
-                String testDataId = partElementId.substring(IdConstants.TESTDATA_CONTENT_PART_ID_PREFIX.length() + 1,
-                        partElementId.lastIndexOf(")"));
+            String testDataId = getEntityIdFromPartId(partElementId, IdConstants.TESTDATA_CONTENT_PART_ID_PREFIX);
+            if (testDataId != null) {
                 return TestDataController.getInstance().getTestData(testDataId);
             }
 
-            if (partElementId.startsWith(IdConstants.TESTSUITE_CONTENT_PART_ID_PREFIX)) {
-                String testSuiteId = partElementId.substring(IdConstants.TESTSUITE_CONTENT_PART_ID_PREFIX.length() + 1,
-                        partElementId.lastIndexOf(")"));
+            String testSuiteId = getEntityIdFromPartId(partElementId, IdConstants.TESTSUITE_CONTENT_PART_ID_PREFIX);
+            if (testSuiteId != null) {
                 return TestSuiteController.getInstance().getTestSuite(testSuiteId);
             }
 
-            if (partElementId.startsWith(IdConstants.REPORT_CONTENT_PART_ID_PREFIX)) {
-                String reportId = partElementId.substring(IdConstants.REPORT_CONTENT_PART_ID_PREFIX.length() + 1,
-                        partElementId.lastIndexOf(")"));
+            String reportCollectionId = getEntityIdFromPartId(partElementId,
+                    IdConstants.REPORT_COLLECTION_CONTENT_PART_ID_PREFIX);
+            if (reportCollectionId != null) {
+                return ReportController.getInstance().getReportCollection(reportCollectionId);
+            }
+
+            String reportId = getEntityIdFromPartId(partElementId, IdConstants.REPORT_CONTENT_PART_ID_PREFIX);
+            if (reportId != null) {
                 return ReportController.getInstance().getReportEntity(reportId);
             }
 
-            if (partElementId.startsWith(IdConstants.TEST_SUITE_COLLECTION_CONTENT_PART_ID_PREFIX)) {
-                String testRunId = partElementId.substring(
-                        IdConstants.TEST_SUITE_COLLECTION_CONTENT_PART_ID_PREFIX.length() + 1,
-                        partElementId.lastIndexOf(")"));
-                return TestSuiteCollectionController.getInstance().getTestSuiteCollection(testRunId);
+            String testSuiteCollectionId = getEntityIdFromPartId(partElementId,
+                    IdConstants.TEST_SUITE_COLLECTION_CONTENT_PART_ID_PREFIX);
+            if (testSuiteCollectionId != null) {
+                return TestSuiteCollectionController.getInstance().getTestSuiteCollection(testSuiteCollectionId);
             }
 
-            if (partElementId.startsWith(IdConstants.CHECKPOINT_CONTENT_PART_ID_PREFIX)) {
-                String checkpointId = partElementId.substring(
-                        IdConstants.CHECKPOINT_CONTENT_PART_ID_PREFIX.length() + 1, partElementId.lastIndexOf(")"));
+            String checkpointId = getEntityIdFromPartId(partElementId, IdConstants.CHECKPOINT_CONTENT_PART_ID_PREFIX);
+            if (checkpointId != null) {
                 return CheckpointController.getInstance().getById(checkpointId);
             }
 
@@ -162,6 +161,13 @@ public class EntityPartUtil {
         } catch (Exception ex) {
             return null;
         }
+    }
+
+    private static String getEntityIdFromPartId(String partElementId, String entityPrefixId) {
+        if (!StringUtils.startsWith(partElementId, entityPrefixId)) {
+            return null;
+        }
+        return StringUtils.substringBetween(partElementId, "(", ")");
     }
 
     /**

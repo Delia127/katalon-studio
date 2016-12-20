@@ -28,7 +28,7 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
 
     private LauncherResult result;
 
-    private TestRunLauncherManager testRunManager;
+    protected TestSuiteCollectionLauncherManager subLauncherManager;
 
     private LauncherManager parentManager;
 
@@ -42,7 +42,7 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
 
     public TestSuiteCollectionLauncher(TestSuiteCollectionExecutedEntity executedEntity, LauncherManager parentManager,
             List<? extends ReportableLauncher> subLaunchers, ExecutionMode executionMode) {
-        this.testRunManager = new TestRunLauncherManager();
+        this.subLauncherManager = new TestSuiteCollectionLauncherManager();
         this.subLaunchers = subLaunchers;
         this.result = new LauncherResult(executedEntity.getTotalTestCases());
         this.parentManager = parentManager;
@@ -101,8 +101,8 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
 
     private void scheduleSubLaunchers() {
         for (ReportableLauncher launcher : subLaunchers) {
-            testRunManager.addLauncher(launcher);
-            launcher.setManager(testRunManager);
+            subLauncherManager.addLauncher(launcher);
+            launcher.setManager(subLauncherManager);
         }
     }
 
@@ -114,7 +114,7 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
         watchDog = new Thread(new Runnable() {
             @Override
             public void run() {
-                while (testRunManager.isAnyLauncherRunning()) {
+                while (subLauncherManager.isAnyLauncherRunning()) {
                     try {
                         Thread.sleep(IWatcher.DF_TIME_OUT_IN_MILLIS);
                     } catch (InterruptedException e) {
@@ -145,7 +145,7 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
         if (watchDog.isAlive()) {
             watchDog.interrupt();
         }
-        testRunManager.stopAllLauncher();
+        subLauncherManager.stopAllLauncher();
 
         setStatus(LauncherStatus.TERMINATED);
 
@@ -174,12 +174,27 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
         return result;
     }
 
-    private class TestRunLauncherManager extends LauncherManager {
+    public class TestSuiteCollectionLauncherManager extends LauncherManager {
         protected boolean isLauncherReadyToRun(ILauncher launcher) {
             if (executionMode == ExecutionMode.PARALLEL) {
                 return true;
             }
             return getRunningLaunchers().isEmpty();
+        }
+        
+        @Override
+        public String getChildrenLauncherStatus(int consoleWidth) {
+            return super.getChildrenLauncherStatus(consoleWidth);
+        }
+
+        @Override
+        protected void schedule() {
+            try {
+                Thread.sleep(IWatcher.DF_TIME_OUT_IN_MILLIS);
+            } catch (InterruptedException e) {
+                LogUtil.logError(e);
+            }
+            super.schedule();
         }
     }
 

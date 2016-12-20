@@ -17,8 +17,8 @@ import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConsta
 import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants;
 import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants.AddAction;
 import com.kms.katalon.controller.KeywordController;
-import com.kms.katalon.core.keyword.IKeywordContributor;
-import com.kms.katalon.core.keyword.KeywordContributorCollection;
+import com.kms.katalon.core.keyword.internal.IKeywordContributor;
+import com.kms.katalon.core.keyword.internal.KeywordContributorCollection;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.execution.session.ExecutionSession;
 import com.kms.katalon.execution.session.ExecutionSessionSocketServer;

@@ -363,7 +363,9 @@ public class RunConfiguration {
         try {
             return FailureHandling.valueOf(getStringProperty(EXCUTION_DEFAULT_FAILURE_HANDLING,
                     getExecutionGeneralProperties()));
-        } catch (NullPointerException | IllegalArgumentException e) {
+        } catch (NullPointerException e) {
+            return FailureHandling.STOP_ON_FAILURE;
+        } catch (IllegalArgumentException e) {
             return FailureHandling.STOP_ON_FAILURE;
         }
     }

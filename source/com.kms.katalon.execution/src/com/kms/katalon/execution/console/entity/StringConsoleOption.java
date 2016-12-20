@@ -5,4 +5,9 @@ public abstract class StringConsoleOption extends AbstractConsoleOption<String> 
     public Class<String> getArgumentType() {
         return String.class;
     }
+
+    @Override
+    public void setValue(String rawValue) {
+        value = rawValue;
+    }
 }

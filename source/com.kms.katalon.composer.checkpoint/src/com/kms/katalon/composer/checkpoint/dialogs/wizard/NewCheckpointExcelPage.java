@@ -22,7 +22,7 @@ import com.kms.katalon.composer.checkpoint.constants.StringConstants;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.testdata.job.LoadExcelFileJob;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.core.util.PathUtil;
+import com.kms.katalon.core.util.internal.PathUtil;
 import com.kms.katalon.entity.checkpoint.CheckpointSourceInfo;
 import com.kms.katalon.entity.checkpoint.ExcelCheckpointSourceInfo;
 

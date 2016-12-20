@@ -56,6 +56,8 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.TableDropTargetEffect;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
@@ -81,6 +83,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.TreeItem;
@@ -117,6 +120,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
 import com.kms.katalon.objectspy.components.CapturedHTMLElementsComposite;
+import com.kms.katalon.objectspy.constants.ObjectspyMessageConstants;
 import com.kms.katalon.objectspy.dialog.AddToObjectRepositoryDialog;
 import com.kms.katalon.objectspy.dialog.AddToObjectRepositoryDialog.AddToObjectRepositoryDialogResult;
 import com.kms.katalon.objectspy.dialog.GoToAddonStoreMessageDialog;
@@ -127,6 +131,7 @@ import com.kms.katalon.objectspy.element.HTMLPageElement;
 import com.kms.katalon.objectspy.element.tree.HTMLElementLabelProvider;
 import com.kms.katalon.objectspy.element.tree.HTMLElementTreeContentProvider;
 import com.kms.katalon.objectspy.exception.IEAddonNotInstalledException;
+import com.kms.katalon.objectspy.util.BrowserUtil;
 import com.kms.katalon.objectspy.util.WinRegistry;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
@@ -194,6 +199,8 @@ public class RecorderDialog extends Dialog {
 
     private ToolItem tltmDelete;
 
+    private Text txtStartUrl;
+
     /**
      * Create the dialog.
      * 
@@ -213,6 +220,11 @@ public class RecorderDialog extends Dialog {
     }
 
     private void startBrowser(boolean isInstant) {
+        if (!BrowserUtil.isBrowserInstalled(selectedBrowser)) {
+            MessageDialog.openError(getShell(), StringConstants.ERROR_TITLE,
+                    ComposerWebuiRecorderMessageConstants.DIA_MSG_CANNOT_START_BROWSER);
+            return;
+        }
         try {
             if (selectedBrowser == WebUIDriverType.IE_DRIVER) {
                 checkIEAddon();
@@ -320,7 +332,7 @@ public class RecorderDialog extends Dialog {
     private void startRecordSession(WebUIDriverType webUiDriverType) throws Exception {
         stopRecordSession();
         session = new RecordSession(server, webUiDriverType, ProjectController.getInstance().getCurrentProject(),
-                logger);
+                logger, txtStartUrl.getText());
         new Thread(session).start();
     }
 
@@ -422,7 +434,8 @@ public class RecorderDialog extends Dialog {
         createRightPanel(htmlDomComposite);
 
         hSashForm.setWeights(new int[] { 3, 8 });
-
+        
+        txtStartUrl.setFocus();
         return container;
     }
 
@@ -1131,8 +1144,30 @@ public class RecorderDialog extends Dialog {
     }
 
     private void createToolbar(Composite parent) {
-        toolBar = new ToolBar(parent, SWT.FLAT | SWT.RIGHT);
-        toolBar.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
+        Composite toolbarComposite = new Composite(parent, SWT.NONE);
+        toolbarComposite.setLayout(new GridLayout(3, false));
+        toolbarComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        
+        Label lblStartUrl = new Label(toolbarComposite, SWT.NONE);
+        lblStartUrl.setText(ObjectspyMessageConstants.LBL_DLG_START_URL);
+        
+        txtStartUrl = new Text(toolbarComposite, SWT.BORDER);
+        GridData gdTxtStartUrl = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+        gdTxtStartUrl.heightHint = 20;
+        gdTxtStartUrl.minimumWidth = 300;
+        txtStartUrl.setLayoutData(gdTxtStartUrl);
+        txtStartUrl.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.character == SWT.CR) {
+                    startBrowser();
+                }
+            }
+        });
+        
+        
+        toolBar = new ToolBar(toolbarComposite, SWT.FLAT | SWT.RIGHT);
+        toolBar.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
         toolBar.setLayout(new FillLayout(SWT.HORIZONTAL));
 
         toolItemBrowserDropdown = new ToolItem(toolBar, SWT.DROP_DOWN);
@@ -1393,7 +1428,7 @@ public class RecorderDialog extends Dialog {
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
         createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, false);
-        createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, true);
+        createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
     }
 
     @Override
@@ -1441,7 +1476,10 @@ public class RecorderDialog extends Dialog {
                 actionTableViewer.refresh();
                 actionTableViewer.reveal(newAction);
                 capturedObjectComposite.refreshElementTree(null);
-                capturedObjectComposite.getElementTreeViewer().reveal(newAction.getTargetElement());
+                HTMLElement targetElement = newAction.getTargetElement();
+                if (targetElement != null) {
+                    capturedObjectComposite.getElementTreeViewer().reveal(targetElement);
+                }
             }
         });
     }

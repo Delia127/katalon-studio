@@ -87,6 +87,8 @@ public class ComposerWebuiRecorderMessageConstants extends NLS {
 
     public static String LBL_DLG_CONTINUE_WITH_RECORDING;
 
+    public static String DIA_MSG_CANNOT_START_BROWSER;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerWebuiRecorderMessageConstants.class);

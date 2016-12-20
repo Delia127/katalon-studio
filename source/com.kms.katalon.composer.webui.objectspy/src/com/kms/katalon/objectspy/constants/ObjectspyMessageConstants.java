@@ -123,6 +123,12 @@ public class ObjectspyMessageConstants extends NLS {
 
     public static String LBL_DLG_GO_TO_STORE;
 
+    public static String DIA_MSG_CANNOT_START_BROWSER;
+
+    public static String LBL_DLG_START_URL;
+
+    public static String TABLE_ELEMENT_TIP_VALUE_CHANGED;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ObjectspyMessageConstants.class);

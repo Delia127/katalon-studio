@@ -17,7 +17,7 @@ import org.dom4j.io.SAXReader;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.logging.KeywordLogger;
-import com.kms.katalon.core.util.ExceptionsUtil;
+import com.kms.katalon.core.util.internal.ExceptionsUtil;
 
 public class ObjectRepository {
     private static KeywordLogger logger = KeywordLogger.getInstance();
@@ -184,7 +184,7 @@ public class ObjectRepository {
     }
 
     private static List<TestObjectProperty> parseProperties(List<Object> objects) {
-        List<TestObjectProperty> props = new ArrayList<>();
+        List<TestObjectProperty> props = new ArrayList<TestObjectProperty>();
         for (Object propertyElementObject : objects) {
             TestObjectProperty objectProperty = new TestObjectProperty();
             Element propertyElement = (Element) propertyElementObject;

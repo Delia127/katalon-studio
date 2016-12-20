@@ -8,8 +8,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
-import com.kms.katalon.core.mobile.keyword.AndroidProperties;
-import com.kms.katalon.core.mobile.keyword.GUIObject;
+import com.kms.katalon.core.mobile.keyword.internal.AndroidProperties;
+import com.kms.katalon.core.mobile.keyword.internal.GUIObject;
 
 public class AndroidSnapshotMobileElement extends RenderedTreeSnapshotMobileElement<Element> {
     private static final long serialVersionUID = -8005661770483917366L;

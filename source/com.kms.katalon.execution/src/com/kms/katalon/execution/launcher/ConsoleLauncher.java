@@ -13,7 +13,7 @@ import com.kms.katalon.execution.launcher.process.ConsoleProcess;
 import com.kms.katalon.execution.launcher.process.ILaunchProcess;
 import com.kms.katalon.execution.launcher.process.LaunchProcessor;
 
-public class ConsoleLauncher extends ReportableLauncher {
+public class ConsoleLauncher extends ReportableLauncher implements IConsoleLauncher {
     public ConsoleLauncher(LauncherManager manager, IRunConfiguration runConfig) {
         super(manager, runConfig);
     }
@@ -26,13 +26,18 @@ public class ConsoleLauncher extends ReportableLauncher {
     @Override
     protected ILaunchProcess launch() throws ExecutionException {
         try {
-            Process systemProcess = new LaunchProcessor(ClassPathResolver.getClassPaths(ProjectController.getInstance()
-                    .getCurrentProject()), runConfig.getAdditionalEnvironmentVariables()).execute(getRunConfig()
-                    .getExecutionSetting().getScriptFile());
+            Process systemProcess = executeProcess();
             return new ConsoleProcess(systemProcess);
         } catch (IOException ex) {
             throw new ExecutionException(ex);
         }
+    }
+
+    protected Process executeProcess() throws IOException {
+        Process systemProcess = new LaunchProcessor(ClassPathResolver.getClassPaths(ProjectController.getInstance()
+                .getCurrentProject()), runConfig.getAdditionalEnvironmentVariables()).execute(getRunConfig()
+                .getExecutionSetting().getScriptFile());
+        return systemProcess;
     }
 
     @Override
@@ -41,5 +46,10 @@ public class ConsoleLauncher extends ReportableLauncher {
 
         // No need to remember log records in console mode
         records.clear();
+    }
+
+    @Override
+    public String getStatusMessage(int consoleWidth) {
+        return getDefaultStatusMessage(consoleWidth);
     }
 }

@@ -10,7 +10,7 @@ import com.kms.katalon.execution.console.entity.ConsoleOption;
 import com.kms.katalon.execution.console.entity.ConsoleOptionContributor;
 import com.kms.katalon.execution.console.entity.IntegerConsoleOption;
 
-public class DefaultRerunSetting implements Rerunnable, ConsoleOptionContributor {
+public class DefaultRerunSetting implements Rerunable, ConsoleOptionContributor {
     public static final int DEFAULT_RERUN_TIME = 0;
     private static final int DEFAULT_PREVIOUS_RUN_TIME = 0;
     public static final boolean DEFAULT_RERUN_FAILED_TEST_CASE_ONLY = false;

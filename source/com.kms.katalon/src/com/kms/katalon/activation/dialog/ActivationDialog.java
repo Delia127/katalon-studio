@@ -27,12 +27,11 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.console.utils.ActivationInfoCollector;
 import com.kms.katalon.constants.ImageConstants;
+import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.logging.LogUtil;
 
 public class ActivationDialog extends Dialog {
-
-    private static final Character PASSWORD_CHAR_MASK = (char) 0x25cf;
 
     private Button btnActivate;
 
@@ -68,8 +67,7 @@ public class ActivationDialog extends Dialog {
         lblUsername.setText(StringConstants.USERNAME_TITLE);
 
         txtUserName = new Text(container, SWT.BORDER);
-        GridData gdTxtUserName = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
-        gdTxtUserName.widthHint = 356;
+        GridData gdTxtUserName = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
         gdTxtUserName.heightHint = 22;
         txtUserName.setLayoutData(gdTxtUserName);
 
@@ -82,24 +80,21 @@ public class ActivationDialog extends Dialog {
         lblPassword.setText(StringConstants.PASSSWORD_TITLE);
 
         txtPassword = new Text(container, SWT.BORDER);
-        GridData gdTxtPassword = new GridData(SWT.LEFT, SWT.BOTTOM, true, false, 1, 1);
-        gdTxtPassword.widthHint = 356;
+        GridData gdTxtPassword = new GridData(SWT.FILL, SWT.BOTTOM, true, false, 1, 1);
         gdTxtPassword.heightHint = 22;
         txtPassword.setLayoutData(gdTxtPassword);
-        txtPassword.setEchoChar(PASSWORD_CHAR_MASK);
+        txtPassword.setEchoChar(StringConstants.PASSWORD_CHAR_MASK);
 
         lblError = new Label(container, SWT.NONE);
         lblError.setAlignment(SWT.CENTER);
-        GridData gdLblError = new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1);
+        GridData gdLblError = new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1);
         gdLblError.verticalIndent = 5;
-        gdLblError.widthHint = 432;
         gdLblError.heightHint = 22;
         lblError.setLayoutData(gdLblError);
         lblError.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_RED));
 
         Composite composite = new Composite(container, SWT.NONE);
-        GridData gdComposite = new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1);
-        gdComposite.widthHint = 430;
+        GridData gdComposite = new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1);
         composite.setLayoutData(gdComposite);
         composite.setLayout(new GridLayout(9, false));
 
@@ -131,8 +126,6 @@ public class ActivationDialog extends Dialog {
 
         Link link = new Link(composite, SWT.NONE);
         link.setText(StringConstants.LINK_OPEN_ACTIVATE_FORM_OFFLINE);
-        new Label(composite, SWT.NONE);
-        new Label(composite, SWT.NONE);
         link.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseUp(MouseEvent e) {
@@ -145,6 +138,18 @@ public class ActivationDialog extends Dialog {
                 } catch (Exception ex) {
                     LogUtil.logError(ex);
                 }
+            }
+        });
+        
+        lblNewLabel = new Label(composite, SWT.NONE);
+        lblNewLabel.setText(StringConstants.SEPARATE_LINK);
+
+        Link linkConfigProxy = new Link(composite, SWT.NONE);
+        linkConfigProxy.setText(MessageConstants.CONFIG_PROXY);
+        linkConfigProxy.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseUp(MouseEvent e) {
+                new ProxyConfigurationDialog(ActivationDialog.this.getShell()).open();
             }
         });
 
