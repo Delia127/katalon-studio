@@ -9,6 +9,12 @@ import java.util.concurrent.Callable;
 import javax.annotation.PreDestroy;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.operations.AbstractOperation;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.jface.dialogs.Dialog;
@@ -67,6 +73,7 @@ import com.kms.katalon.composer.objectrepository.constant.ComposerObjectReposito
 import com.kms.katalon.composer.objectrepository.constant.ImageConstants;
 import com.kms.katalon.composer.objectrepository.constant.ObjectEventConstants;
 import com.kms.katalon.composer.objectrepository.constant.StringConstants;
+import com.kms.katalon.composer.objectrepository.part.TestObjectPart;
 import com.kms.katalon.composer.objectrepository.provider.IsSelectedColumnLabelProvider;
 import com.kms.katalon.composer.objectrepository.provider.ObjectPropetiesTableViewer;
 import com.kms.katalon.composer.objectrepository.provider.ParentObjectViewerFilter;
@@ -126,8 +133,10 @@ public class ObjectPropertyView implements EventHandler {
     private Composite compositeParentObject, compositeSettingsDetails, compositeSettings;
 
     private ObjectViewToolItemListener toolItemListener;
-    
+
     private String parentObjectId;
+
+    private TestObjectPart testObjectPart;
 
     private Listener layoutParentObjectCompositeListener = new Listener() {
 
@@ -137,10 +146,11 @@ public class ObjectPropertyView implements EventHandler {
         }
     };
 
-    public ObjectPropertyView(IEventBroker eventBroker, MDirtyable dt) {
+    public ObjectPropertyView(IEventBroker eventBroker, MDirtyable dt, TestObjectPart testObjectPart) {
         this.eventBroker = eventBroker;
         this.dirtyable = dt;
         this.toolItemListener = new ObjectViewToolItemListener();
+        this.testObjectPart = testObjectPart;
         eventBroker.subscribe(ObjectEventConstants.OBJECT_UPDATE_DIRTY, this);
         eventBroker.subscribe(ObjectEventConstants.OBJECT_UPDATE_IS_SELECTED_COLUMN_HEADER, this);
         eventBroker.subscribe(EventConstants.TEST_OBJECT_UPDATED, this);
@@ -223,7 +233,8 @@ public class ObjectPropertyView implements EventHandler {
         TableColumn trclmnColumnName = treeViewerColumnName.getColumn();
         trclmnColumnName.setText(StringConstants.VIEW_COL_NAME);
         trclmnColumnName.setWidth(100);
-        treeViewerColumnName.setEditingSupport(new PropertyNameEditingSupport(tableViewer, eventBroker));
+        treeViewerColumnName
+                .setEditingSupport(new PropertyNameEditingSupport(tableViewer, eventBroker, testObjectPart));
         treeViewerColumnName.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -235,7 +246,8 @@ public class ObjectPropertyView implements EventHandler {
         TableColumn trclmnColumnCondition = treeViewerColumnCondition.getColumn();
         trclmnColumnCondition.setText(StringConstants.VIEW_COL_MATCH_COND);
         trclmnColumnCondition.setWidth(150);
-        treeViewerColumnCondition.setEditingSupport(new PropertyConditionEditingSupport(tableViewer, eventBroker));
+        treeViewerColumnCondition
+                .setEditingSupport(new PropertyConditionEditingSupport(tableViewer, eventBroker, testObjectPart));
         treeViewerColumnCondition.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -247,7 +259,8 @@ public class ObjectPropertyView implements EventHandler {
         TableColumn trclmnColumnValue = treeViewerColumnValue.getColumn();
         trclmnColumnValue.setText(StringConstants.VIEW_COL_VALUE);
         trclmnColumnValue.setWidth(350);
-        treeViewerColumnValue.setEditingSupport(new PropertyValueEditingSupport(tableViewer, eventBroker));
+        treeViewerColumnValue
+                .setEditingSupport(new PropertyValueEditingSupport(tableViewer, eventBroker, testObjectPart));
         treeViewerColumnValue.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -256,7 +269,8 @@ public class ObjectPropertyView implements EventHandler {
         });
 
         TableViewerColumn treeViewerColumnSelected = new TableViewerColumn(tableViewer, SWT.NONE);
-        treeViewerColumnSelected.setEditingSupport(new PropertySelectedEditingSupport(tableViewer, eventBroker));
+        treeViewerColumnSelected
+                .setEditingSupport(new PropertySelectedEditingSupport(tableViewer, eventBroker, testObjectPart));
         treeViewerColumnSelected.setLabelProvider(new IsSelectedColumnLabelProvider());
 
         trclmnColumnSelected = treeViewerColumnSelected.getColumn();
@@ -288,7 +302,7 @@ public class ObjectPropertyView implements EventHandler {
 
             @Override
             public Boolean call() throws Exception {
-                return toolItemListener.isAbleToDelete();
+                return isAbleToDelete();
             }
         });
 
@@ -298,7 +312,7 @@ public class ObjectPropertyView implements EventHandler {
 
             @Override
             public Boolean call() throws Exception {
-                return toolItemListener.isAbleToClear();
+                return isAbleToClear();
             }
         });
     }
@@ -437,29 +451,7 @@ public class ObjectPropertyView implements EventHandler {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                try {
-                    if (txtImage.getText() != null && !txtImage.getText().trim().equals("")) {
-                        cloneTestObject.setUseRalativeImagePath(chkUseRelative.getSelection());
-                        String projectFolder = ProjectController.getInstance().getCurrentProject().getFolderLocation();
-                        String thePath = txtImage.getText();
-                        if (chkUseRelative.getSelection()) {
-                            String relPath = PathUtil.absoluteToRelativePath(thePath, projectFolder);
-                            txtImage.setText(relPath);
-                        } else {
-                            txtImage.setText(PathUtil.relativeToAbsolutePath(thePath, projectFolder));
-                        }
-
-                        File file = new File(chkUseRelative.getSelection()
-                                ? (projectFolder + File.separator + txtImage.getText()) : txtImage.getText());
-                        if (!file.exists() || !file.isFile()) {
-                            MessageDialog.openWarning(null, StringConstants.WARN_TITLE,
-                                    StringConstants.VIEW_WARN_FILE_NOT_FOUND);
-                        }
-                    }
-                    dirtyable.setDirty(true);
-                } catch (Exception ex) {
-                    LoggerSingleton.logError(ex);
-                }
+                testObjectPart.executeOperation(new CheckImageRelativePathOperation());
             }
         });
 
@@ -487,15 +479,7 @@ public class ObjectPropertyView implements EventHandler {
                 dialog.setFilterPath(projectFolder);
 
                 String absolutePath = dialog.open();
-                if (absolutePath == null)
-                    return;
-                if (chkUseRelative.getSelection()) {
-                    String relPath = PathUtil.absoluteToRelativePath(absolutePath, projectFolder);
-                    txtImage.setText(relPath);
-                } else {
-                    txtImage.setText(absolutePath);
-                }
-                dirtyable.setDirty(true);
+                testObjectPart.executeOperation(new ChangeImagePathOperation(absolutePath));
             }
         });
 
@@ -510,7 +494,7 @@ public class ObjectPropertyView implements EventHandler {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                enableParentObjectComposite(chkUseParentObject.getSelection());
+                testObjectPart.executeOperation(new CheckUseParentObjectOperation());
                 dirtyable.setDirty(true);
             }
         });
@@ -565,7 +549,7 @@ public class ObjectPropertyView implements EventHandler {
                 if (treeEntity.getObject() instanceof WebElementEntity) {
                     WebElementEntity parentObject = (WebElementEntity) treeEntity.getObject();
                     String parentObjectId = parentObject.getIdForDisplay();
-                    setParentObjectLinkText(parentObjectId);
+                    testObjectPart.executeOperation(new ChangeParentTestObjectOperation(parentObjectId));
                     dirtyable.setDirty(true);
                 }
             }
@@ -796,6 +780,7 @@ public class ObjectPropertyView implements EventHandler {
     }
 
     private class ObjectViewToolItemListener extends SelectionAdapter implements HotkeyActiveListener {
+
         @Override
         public void executeAction(String actionId) {
             if (actionId == null) {
@@ -803,67 +788,19 @@ public class ObjectPropertyView implements EventHandler {
             }
             switch (ActionId.parse(actionId)) {
                 case ADD: {
-                    handleAddItemAction();
+                    testObjectPart.executeOperation(new AddPropertyOperation());
                     break;
                 }
                 case DELETE: {
-                    handleRemoveItemsAction();
+                    testObjectPart.executeOperation(
+                            new RemovePropertyOperation(((IStructuredSelection) tableViewer.getSelection()).toList()));
                     break;
                 }
                 case CLEAR: {
-                    handleClearItemAction();
+                    testObjectPart.executeOperation(new ClearPropertyOperation());
                     break;
                 }
             }
-
-        }
-
-        private void handleAddItemAction() {
-            // set dialog's position is under btnAdd
-            Shell shell = new Shell(Display.getCurrent());
-            Point pt = tableViewer.getControl().toDisplay(1, 1);
-            shell.setSize(0, 0);
-            AddPropertyDialog dialog = new AddPropertyDialog(shell);
-            shell.setLocation(pt.x + dialog.getInitialSize().x / 2 - 65, pt.y + dialog.getInitialSize().y / 2 + 20);
-
-            int code = dialog.open();
-            if (code == Window.OK) {
-                String propName = dialog.getName();
-                String propVal = dialog.getValue();
-                String condition = dialog.getCondition();
-
-                WebElementPropertyEntity prop = new WebElementPropertyEntity();
-                prop.setName(propName);
-                prop.setValue(propVal);
-                prop.setMatchCondition(condition);
-                prop.setIsSelected(true);
-
-                tableViewer.addRow(prop);
-                dirtyable.setDirty(true);
-            }
-        }
-
-        @SuppressWarnings("unchecked")
-        private void handleRemoveItemsAction() {
-            if (isAbleToDelete()) {
-                tableViewer.deleteRows(((IStructuredSelection) tableViewer.getSelection()).toList());
-                dirtyable.setDirty(true);
-            }
-        }
-
-        public boolean isAbleToDelete() {
-            return tableViewer.getTable().getSelection().length > 0;
-        }
-
-        private void handleClearItemAction() {
-            if (isAbleToClear()) {
-                tableViewer.clear();
-                dirtyable.setDirty(true);
-            }
-        }
-
-        public boolean isAbleToClear() {
-            return tableViewer.getInput() != null && tableViewer.getInput().size() > 0;
         }
 
         @Override
@@ -874,6 +811,84 @@ public class ObjectPropertyView implements EventHandler {
             }
             executeAction(((ToolItem) widget).getText());
         }
+    }
+
+    private WebElementPropertyEntity openAddPropertyDialog() {
+        // set dialog's position is under btnAdd
+        Shell shell = new Shell(Display.getCurrent());
+        Point pt = tableViewer.getControl().toDisplay(1, 1);
+        shell.setSize(0, 0);
+        AddPropertyDialog dialog = new AddPropertyDialog(shell);
+        shell.setLocation(pt.x + dialog.getInitialSize().x / 2 - 65, pt.y + dialog.getInitialSize().y / 2 + 20);
+
+        int code = dialog.open();
+        if (code == Window.OK) {
+            String propName = dialog.getName();
+            String propVal = dialog.getValue();
+            String condition = dialog.getCondition();
+
+            WebElementPropertyEntity prop = new WebElementPropertyEntity();
+            prop.setName(propName);
+            prop.setValue(propVal);
+            prop.setMatchCondition(condition);
+            prop.setIsSelected(true);
+
+            return prop;
+        }
+        return null;
+    }
+
+    private boolean addProperty(WebElementPropertyEntity prop) {
+        if (prop == null) {
+            return false;
+        }
+        tableViewer.addRow(prop);
+        dirtyable.setDirty(true);
+        return true;
+    }
+
+    private boolean addPropertiesWithPosition(List<ObjectPropertyTableRow> props) {
+        if (props == null || props.isEmpty()) {
+            return false;
+        }
+        tableViewer.addRowsWithPosition(props);
+        dirtyable.setDirty(true);
+        return true;
+    }
+
+    private boolean addProperties(List<WebElementPropertyEntity> props) {
+        if (props == null || props.isEmpty()) {
+            return false;
+        }
+        tableViewer.addRows(props);
+        dirtyable.setDirty(true);
+        return true;
+    }
+
+    private boolean removeProperty(WebElementPropertyEntity prop) {
+        if (prop == null) {
+            return false;
+        }
+        tableViewer.deleteRow(prop);
+        dirtyable.setDirty(true);
+        return true;
+    }
+
+    private boolean removeProperties(List<WebElementPropertyEntity> props) {
+        if (props == null || props.isEmpty()) {
+            return false;
+        }
+        tableViewer.deleteRows(props);
+        dirtyable.setDirty(true);
+        return true;
+    }
+
+    public boolean isAbleToDelete() {
+        return tableViewer.getTable().getSelection().length > 0;
+    }
+
+    public boolean isAbleToClear() {
+        return tableViewer.getInput() != null && tableViewer.getInput().size() > 0;
     }
 
     public enum ActionId {
@@ -925,15 +940,288 @@ public class ObjectPropertyView implements EventHandler {
         return null;
     }
 
-    private void setParentObjectLinkText(String parentObjectId) {
+    private boolean setParentObjectLinkText(String parentObjectId) {
         if (parentObjectId == null) {
-            return;
+            return false;
         }
         txtParentObject.setText("<form><p><a>" + parentObjectId + "</a></p></form>", true, false);
         this.parentObjectId = parentObjectId;
+        return true;
     }
-    
+
     private String getParentObjectLinkText() {
         return parentObjectId;
+    }
+
+    private class AddPropertyOperation extends AbstractOperation {
+
+        WebElementPropertyEntity property;
+
+        public AddPropertyOperation() {
+            super(AddPropertyOperation.class.getName());
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            property = openAddPropertyDialog();
+            if (addProperty(property)) {
+                return Status.OK_STATUS;
+            }
+            return Status.CANCEL_STATUS;
+        }
+
+        @Override
+        public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            if (addProperty(property)) {
+                return Status.OK_STATUS;
+            }
+            return Status.CANCEL_STATUS;
+        }
+
+        @Override
+        public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            if (removeProperty(property)) {
+                return Status.OK_STATUS;
+            }
+            return Status.CANCEL_STATUS;
+        }
+    }
+
+    private class RemovePropertyOperation extends AbstractOperation {
+
+        private List<ObjectPropertyTableRow> objectPropertyRows;
+
+        public RemovePropertyOperation(List<WebElementPropertyEntity> properties) {
+            super(RemovePropertyOperation.class.getName());
+            objectPropertyRows = new ArrayList<>();
+            for (WebElementPropertyEntity entity : properties) {
+                objectPropertyRows.add(new ObjectPropertyTableRow(entity, tableViewer.getInput().indexOf(entity)));
+            }
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            if (removeProperties(getPropertyListFromRows(objectPropertyRows))) {
+                return Status.OK_STATUS;
+            }
+            return Status.CANCEL_STATUS;
+        }
+
+        @Override
+        public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            if (removeProperties(getPropertyListFromRows(objectPropertyRows))) {
+                return Status.OK_STATUS;
+            }
+            return Status.CANCEL_STATUS;
+        }
+
+        @Override
+        public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            if (addPropertiesWithPosition(objectPropertyRows)) {
+                return Status.OK_STATUS;
+            }
+            return Status.CANCEL_STATUS;
+        }
+    }
+
+    private class ClearPropertyOperation extends AbstractOperation {
+
+        List<WebElementPropertyEntity> properties = new ArrayList<>();
+
+        public ClearPropertyOperation() {
+            super(ClearPropertyOperation.class.getName());
+            for (int i = 0; i < tableViewer.getInput().size(); ++i) {
+                properties.add(tableViewer.getInput().get(i));
+            }
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            if (properties.isEmpty()) {
+                return Status.CANCEL_STATUS;
+            }
+            tableViewer.clear();
+            return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            tableViewer.clear();
+            return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            if (addProperties(properties)) {
+                return Status.OK_STATUS;
+            }
+            return Status.CANCEL_STATUS;
+        }
+    }
+
+    private class CheckUseParentObjectOperation extends AbstractOperation {
+
+        boolean value;
+
+        public CheckUseParentObjectOperation() {
+            super(CheckUseParentObjectOperation.class.getName());
+            value = chkUseParentObject.getSelection();
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            enableParentObjectComposite(value);
+            return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            enableParentObjectComposite(value);
+            chkUseParentObject.setSelection(value);
+            return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            enableParentObjectComposite(!value);
+            chkUseParentObject.setSelection(!value);
+            return Status.OK_STATUS;
+        }
+    }
+
+    private class CheckImageRelativePathOperation extends AbstractOperation {
+
+        boolean value;
+
+        public CheckImageRelativePathOperation() {
+            super(CheckImageRelativePathOperation.class.getName());
+            value = chkUseRelative.getSelection();
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            return doCheckImageRelativePath(value);
+        }
+
+        @Override
+        public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            return doCheckImageRelativePath(value);
+        }
+
+        @Override
+        public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            return doCheckImageRelativePath(!value);
+        }
+
+        public IStatus doCheckImageRelativePath(boolean value) {
+            try {
+                if (txtImage.getText() != null && !txtImage.getText().trim().equals("")) {
+                    cloneTestObject.setUseRalativeImagePath(value);
+                    String projectFolder = ProjectController.getInstance().getCurrentProject().getFolderLocation();
+                    String thePath = txtImage.getText();
+                    if (value) {
+                        String relPath = PathUtil.absoluteToRelativePath(thePath, projectFolder);
+                        txtImage.setText(relPath);
+                    } else {
+                        txtImage.setText(PathUtil.relativeToAbsolutePath(thePath, projectFolder));
+                    }
+                    File file = new File(
+                            value ? (projectFolder + File.separator + txtImage.getText()) : txtImage.getText());
+                    if (!file.exists() || !file.isFile()) {
+                        MessageDialog.openWarning(null, StringConstants.WARN_TITLE,
+                                StringConstants.VIEW_WARN_FILE_NOT_FOUND);
+                    }
+                }
+                chkUseRelative.setSelection(value);
+                dirtyable.setDirty(true);
+                return Status.OK_STATUS;
+            } catch (Exception ex) {
+                LoggerSingleton.logError(ex);
+            }
+            return Status.CANCEL_STATUS;
+        }
+    }
+
+    private class ChangeParentTestObjectOperation extends AbstractOperation {
+
+        String oldParentId, newParentId;
+
+        public ChangeParentTestObjectOperation(String value) {
+            super(ChangeParentTestObjectOperation.class.getName());
+            oldParentId = getParentObjectLinkText();
+            newParentId = value;
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            if (setParentObjectLinkText(newParentId)) {
+                return Status.OK_STATUS;
+            }
+            return Status.CANCEL_STATUS;
+        }
+
+        @Override
+        public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            if (setParentObjectLinkText(newParentId)) {
+                return Status.OK_STATUS;
+            }
+            return Status.CANCEL_STATUS;
+        }
+
+        @Override
+        public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            if (setParentObjectLinkText(oldParentId)) {
+                return Status.OK_STATUS;
+            }
+            return Status.CANCEL_STATUS;
+        }
+    }
+
+    private class ChangeImagePathOperation extends AbstractOperation {
+
+        String oldImagePath, newImagePath;
+
+        public ChangeImagePathOperation(String value) {
+            super(ChangeImagePathOperation.class.getName());
+            oldImagePath = txtImage.getText();
+            newImagePath = value;
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            return doSetImagePath(newImagePath);
+        }
+
+        @Override
+        public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            return doSetImagePath(newImagePath);
+        }
+
+        @Override
+        public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            return doSetImagePath(oldImagePath);
+        }
+
+        public IStatus doSetImagePath(String path) {
+            if (path == null)
+                return Status.CANCEL_STATUS;
+            if (chkUseRelative.getSelection()) {
+                String relPath = PathUtil.absoluteToRelativePath(path,
+                        ProjectController.getInstance().getCurrentProject().getFolderLocation());
+                txtImage.setText(relPath);
+            } else {
+                txtImage.setText(path);
+            }
+            dirtyable.setDirty(true);
+            return Status.OK_STATUS;
+        }
+    }
+
+    private List<WebElementPropertyEntity> getPropertyListFromRows(List<ObjectPropertyTableRow> objectPropertyRows) {
+        List<WebElementPropertyEntity> propertyEntities = new ArrayList<>();
+        for (ObjectPropertyTableRow row : objectPropertyRows) {
+            propertyEntities.add(row.getWebElementPropertyEntity());
+        }
+        return propertyEntities;
     }
 }
