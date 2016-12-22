@@ -10,8 +10,11 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.resource.JFaceResources;
@@ -60,8 +63,9 @@ import org.eclipse.swt.widgets.Text;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.components.part.IComposerPart;
+import com.kms.katalon.composer.components.part.IComposerPartEvent;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.report.constants.ImageConstants;
 import com.kms.katalon.composer.report.constants.StringConstants;
@@ -85,7 +89,7 @@ import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.util.ExecutionUtil;
 
-public class ReportPart implements EventHandler, IComposerPart {
+public class ReportPart implements EventHandler, IComposerPartEvent {
 
     @Inject
     private IEventBroker eventBroker;
@@ -927,11 +931,6 @@ public class ReportPart implements EventHandler, IComposerPart {
         }
     }
 
-    @PreDestroy
-    public void preDestroy() {
-        eventBroker.unsubscribe(this);
-    }
-
     @Override
     public void handleEvent(org.osgi.service.event.Event event) {
         if (event.getTopic().equals(EventConstants.REPORT_UPDATED)) {
@@ -960,5 +959,26 @@ public class ReportPart implements EventHandler, IComposerPart {
     @Override
     public String getEntityId() {
         return getReport().getIdForDisplay();
+    }
+
+    @Override
+    @Inject
+    @Optional
+    public void onSelect(@UIEventTopic(UIEvents.UILifeCycle.BRINGTOTOP) org.osgi.service.event.Event event) {
+        EventUtil.post(EventConstants.PROPERTIES_ENTITY, null);
+    }
+
+    @Override
+    @Inject
+    @Optional
+    public void onChangeEntityProperties(
+            @UIEventTopic(EventConstants.PROPERTIES_ENTITY_UPDATED) org.osgi.service.event.Event event) {
+        // do nothing
+    }
+
+    @Override
+    @PreDestroy
+    public void onClose() {
+        eventBroker.unsubscribe(this);
     }
 }
