@@ -105,4 +105,8 @@ public abstract class LoggableLauncher extends ProcessLauncher implements ILogCo
     public List<XmlLogRecord> getLogRecords() {
         return logRecords;
     }
+
+    protected void clearRecords() {
+        logRecords.clear();
+    }
 }
