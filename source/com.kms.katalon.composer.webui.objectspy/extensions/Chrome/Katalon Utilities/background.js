@@ -154,23 +154,28 @@ function tryToConnect() {
     getKatalonServerPort(function(port) {
         var socketUrl = "ws://localhost:" + port + "/";
         console.log("Try to connect to Katalon Studio at " + socketUrl);
-        var tempSocket = new WebSocket(socketUrl);
-        tempSocket.onmessage = function(event) {
-            console.log("Received message from Katalon Studio: \"" + event.data + "\"");
-            handleServerMessage(event.data);
-        }
-        tempSocket.onopen = function(event) {
-            console.log("Connected to Katalon Studio");
-            clientSocket = tempSocket;
-            clientSocket.onclose = function(event) {
-                console.log("Connection closed - Try to connect again...");
-                clientSocket = null;
-                stopAddon();
+        try {
+            var tempSocket = new WebSocket(socketUrl);
+            tempSocket.onmessage = function(event) {
+                console.log("Received message from Katalon Studio: \"" + event.data + "\"");
+                handleServerMessage(event.data);
+            }
+            tempSocket.onopen = function(event) {
+                console.log("Connected to Katalon Studio");
+                clientSocket = tempSocket;
+                clientSocket.onclose = function(event) {
+                    console.log("Connection closed - Try to connect again...");
+                    clientSocket = null;
+                    stopAddon();
+                    setTimeout(tryToConnect, 300);
+                }
+            }
+            tempSocket.onerror = function(event) {
+                console.log("Error Connecting - Try again...");
                 setTimeout(tryToConnect, 300);
             }
-        }
-        tempSocket.onerror = function(event) {
-            console.log("Error Connecting - Try again...");
+        } catch (e) {
+            console.log("Error Initializing - Try again... ");
             setTimeout(tryToConnect, 300);
         }
 

@@ -14,6 +14,10 @@ import com.kms.katalon.objectspy.constants.UtilitiesAddonPreferenceConstants;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 
 public class UtilitiesAddonPreferencePage extends FieldEditorPreferencePage {
+    private static final int MIN_PORT_NUMBER = 1;
+
+    private static final int MAX_PORT_NUMBER = 65534;
+
     public UtilitiesAddonPreferencePage() {
         setPreferenceStore(
                 PreferenceStoreManager.getPreferenceStore(UtilitiesAddonPreferenceConstants.UTILITIES_ADDON_QUALIFIER));
@@ -24,9 +28,12 @@ public class UtilitiesAddonPreferencePage extends FieldEditorPreferencePage {
         Composite composite = new Composite(parent, SWT.NONE);
         composite.setLayout(new GridLayout(2, false));
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        
-        addField(new IntegerFieldEditor(UtilitiesAddonPreferenceConstants.UTILITIES_ADDON_ACTIVE_BROWSER_PORT,
-                StringConstants.PREF_LBL_ACTIVE_BROWSER_PORT, composite));
+
+        IntegerFieldEditor portEditor = new IntegerFieldEditor(
+                UtilitiesAddonPreferenceConstants.UTILITIES_ADDON_ACTIVE_BROWSER_PORT,
+                StringConstants.PREF_LBL_ACTIVE_BROWSER_PORT, composite);
+        portEditor.setValidRange(MIN_PORT_NUMBER, MAX_PORT_NUMBER);
+        addField(portEditor);
         addCheckboxField(composite);
 
         initialize();
@@ -37,7 +44,8 @@ public class UtilitiesAddonPreferencePage extends FieldEditorPreferencePage {
     private void addCheckboxField(Composite parent) {
         Composite composite = new Composite(parent, SWT.NONE);
         composite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-        addField(new BooleanFieldEditor(UtilitiesAddonPreferenceConstants.UTILITIES_ADDON_ACTIVE_BROWSER_DO_NOT_SHOW_AGAIN,
+        addField(new BooleanFieldEditor(
+                UtilitiesAddonPreferenceConstants.UTILITIES_ADDON_ACTIVE_BROWSER_DO_NOT_SHOW_AGAIN,
                 StringConstants.PREF_LBL_ACTIVE_BROWSER_PORT_DO_NOT_SHOW_WARNING_DIALOG, composite));
     }
 
