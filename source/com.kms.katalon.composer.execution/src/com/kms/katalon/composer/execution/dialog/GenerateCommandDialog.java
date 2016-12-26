@@ -1121,6 +1121,7 @@ public class GenerateCommandDialog extends AbstractDialog {
             chkRetryFailedTestCase.setSelection(testSuiteEntity.isRerunFailedTestCasesOnly());
 
             ControlUtils.recursiveSetEnabled(grpPlatform, true);
+            onBrowserChanged();
             return;
         }
         ControlUtils.recursiveSetEnabled(grpPlatform, false);
