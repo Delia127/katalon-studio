@@ -1,8 +1,5 @@
 package com.kms.katalon.composer.mobile.objectspy.dialog;
 
-import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.ios.IOSDriver;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
@@ -12,6 +9,7 @@ import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
@@ -19,12 +17,14 @@ import org.openqa.selenium.OutputType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
 import com.kms.katalon.composer.mobile.objectspy.element.TreeMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.impl.AndroidSnapshotMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.impl.IosSnapshotMobileElement;
+import com.kms.katalon.composer.mobile.objectspy.element.impl.IosXCUISnapshotMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.util.Util;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.appium.driver.AppiumDriverManager;
@@ -34,6 +34,7 @@ import com.kms.katalon.core.appium.exception.MobileDriverInitializeException;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.core.mobile.keyword.internal.AndroidProperties;
+import com.kms.katalon.core.mobile.keyword.internal.IOSProperties;
 import com.kms.katalon.core.mobile.keyword.internal.MobileDriverFactory;
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
 import com.kms.katalon.execution.configuration.IDriverConnector;
@@ -46,6 +47,9 @@ import com.kms.katalon.execution.mobile.driver.AndroidDriverConnector;
 import com.kms.katalon.execution.mobile.driver.IosDriverConnector;
 import com.kms.katalon.execution.mobile.driver.MobileDriverConnector;
 import com.kms.katalon.execution.util.ExecutionUtil;
+
+import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.ios.IOSDriver;
 
 public class MobileInspectorController {
 
@@ -165,12 +169,7 @@ public class MobileInspectorController {
     public TreeMobileElement getMobileObjectRoot() {
         try {
             if (driver instanceof IOSDriver) {
-                @SuppressWarnings("unchecked")
-                Map<Object, Object> map = (Map<Object, Object>) driver.executeScript("UIATarget.localTarget().frontMostApp().getTree()");
-                JSONObject jsonObject = new JSONObject(map);
-                IosSnapshotMobileElement htmlMobileElementRootNode = new IosSnapshotMobileElement();
-                htmlMobileElementRootNode.render(jsonObject);
-                return htmlMobileElementRootNode;
+                return getIosObjectRoot();
             } else {
                 String pageSource = driver.getPageSource();
                 DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -190,6 +189,35 @@ public class MobileInspectorController {
             LoggerSingleton.logError(ex);
             return null;
         }
+    }
+
+    private TreeMobileElement getIosObjectRoot()
+            throws java.util.concurrent.ExecutionException, ParserConfigurationException, SAXException, IOException {
+        if (AppiumDriverManager.getXCodeVersion() >= 8) {
+            return getXCUIObjectRoot();
+        }
+        @SuppressWarnings("unchecked")
+        Map<Object, Object> map = (Map<Object, Object>) driver.executeScript("UIATarget.localTarget().frontMostApp().getTree()");
+        JSONObject jsonObject = new JSONObject(map);
+        IosSnapshotMobileElement htmlMobileElementRootNode = new IosSnapshotMobileElement();
+        htmlMobileElementRootNode.render(jsonObject);
+        return htmlMobileElementRootNode;
+    }
+
+    private TreeMobileElement getXCUIObjectRoot() throws ParserConfigurationException, SAXException, IOException {
+        String pageSource = driver.getPageSource();
+        DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        InputSource is = new InputSource();
+        is.setCharacterStream(new StringReader(pageSource));
+        Document doc = db.parse(is);
+        Element rootElement = doc.getDocumentElement();
+        
+        IosXCUISnapshotMobileElement htmlMobileElementRootNode = new IosXCUISnapshotMobileElement();
+
+        htmlMobileElementRootNode.getAttributes()
+                .put(IOSProperties.IOS_TYPE, rootElement.getTagName());
+        htmlMobileElementRootNode.render(rootElement);
+        return htmlMobileElementRootNode;
     }
 
 }

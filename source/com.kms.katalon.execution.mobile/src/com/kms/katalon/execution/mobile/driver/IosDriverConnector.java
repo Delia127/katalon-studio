@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.util.Map;
 
 import com.kms.katalon.core.driver.DriverType;
+import com.kms.katalon.core.mobile.constants.StringConstants;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.execution.configuration.IDriverConnector;
 import com.kms.katalon.execution.mobile.device.IosDeviceInfo;
+import com.kms.katalon.logging.LogUtil;
 
 public class IosDriverConnector extends MobileDriverConnector {
 
@@ -38,5 +40,16 @@ public class IosDriverConnector extends MobileDriverConnector {
             // do nothing
         }
         return null;
+    }
+	
+	@Override
+    public Map<String, Object> getSystemProperties() {
+        Map<String, Object> systemProperties = super.getSystemProperties();
+        try {
+            systemProperties.put(StringConstants.XML_LOG_DEVICE_CONSOLE_PATH_PROPERTY, IosDeviceInfo.getDeviceConsoleExecutablePath().getAbsolutePath());
+        } catch (IOException e) {
+            LogUtil.logError(e);;
+        }
+        return systemProperties;
     }
 }

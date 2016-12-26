@@ -262,6 +262,11 @@ public class RunConfiguration {
         return RunConfiguration.getDriverSystemProperty(StringConstants.CONF_PROPERTY_MOBILE_DRIVER,
                 StringConstants.CONF_APPIUM_DIRECTORY);
     }
+    
+    public static String getDeviceConsoleExecutable() {
+        return RunConfiguration.getDriverSystemProperty(StringConstants.CONF_PROPERTY_MOBILE_DRIVER,
+                StringConstants.XML_LOG_DEVICE_CONSOLE_PATH_PROPERTY);
+    }
 
     public static int getTimeOut() {
         return getIntProperty(TIMEOUT_PROPERTY, getExecutionGeneralProperties());

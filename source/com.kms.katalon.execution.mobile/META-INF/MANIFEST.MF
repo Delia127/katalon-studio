@@ -23,12 +23,12 @@ Require-Bundle: org.eclipse.swt,
  com.kms.katalon.execution.webui,
  org.apache.commons.lang,
  com.kms.katalon.core.appium,
- org.eclipse.osgi
+ org.eclipse.osgi,
+ com.kms.katalon.logging
 Export-Package: com.kms.katalon.execution.mobile.configuration,
  com.kms.katalon.execution.mobile.configuration.contributor,
  com.kms.katalon.execution.mobile.configuration.providers,
  com.kms.katalon.execution.mobile.constants,
  com.kms.katalon.execution.mobile.device,
  com.kms.katalon.execution.mobile.driver,
- com.kms.katalon.execution.mobile.exception,
- com.kms.katalon.execution.mobile.util
+ com.kms.katalon.execution.mobile.exception

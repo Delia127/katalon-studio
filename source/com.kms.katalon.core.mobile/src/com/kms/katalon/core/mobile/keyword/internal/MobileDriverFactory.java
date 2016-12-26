@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.text.MessageFormat;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
 
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -28,6 +29,10 @@ import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.remote.MobileCapabilityType;
 
 public class MobileDriverFactory {
+    private static final String REAL_DEVICE_LOGGER = "realDeviceLogger";
+
+    private static final String XCUI_TEST = "XCUITest";
+
     private static final String WAIT_FOR_APP_SCRIPT_TRUE = "true;";
 
     private static final String WAIT_FOR_APP_SCRIPT = "waitForAppScript";
@@ -116,6 +121,14 @@ public class MobileDriverFactory {
             capabilities
                     .merge(convertPropertiesMaptoDesireCapabilities(driverPreferences, MobileDriverType.IOS_DRIVER));
             capabilities.setCapability(WAIT_FOR_APP_SCRIPT, WAIT_FOR_APP_SCRIPT_TRUE);
+            try {
+                if (AppiumDriverManager.getXCodeVersion() >= 8) {
+                    capabilities.setCapability(MobileCapabilityType.AUTOMATION_NAME, XCUI_TEST);
+                    capabilities.setCapability(REAL_DEVICE_LOGGER, RunConfiguration.getDeviceConsoleExecutable());
+                }
+            } catch (ExecutionException e) {
+                // XCode version not found, ignore this
+            }
             if (deviceId == null) {
                 capabilities.setCapability(MobileCapabilityType.PLATFORM, getDeviceOS());
                 capabilities.setCapability(MobileCapabilityType.PLATFORM_VERSION, getDeviceOSVersion());
