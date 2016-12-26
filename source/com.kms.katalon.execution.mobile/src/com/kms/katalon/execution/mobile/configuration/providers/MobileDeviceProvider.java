@@ -11,12 +11,12 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.Platform;
 
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
+import com.kms.katalon.core.util.ConsoleCommandExecutor;
 import com.kms.katalon.execution.mobile.device.AndroidDeviceInfo;
 import com.kms.katalon.execution.mobile.device.IosDeviceInfo;
 import com.kms.katalon.execution.mobile.device.IosSimulatorInfo;
 import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
 import com.kms.katalon.execution.mobile.exception.MobileSetupException;
-import com.kms.katalon.execution.mobile.util.ConsoleCommandExecutor;
 
 public class MobileDeviceProvider {
     private static final String L_FLAG = "-l";

@@ -1,4 +1,4 @@
-package com.kms.katalon.execution.mobile.util;
+package com.kms.katalon.core.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;
