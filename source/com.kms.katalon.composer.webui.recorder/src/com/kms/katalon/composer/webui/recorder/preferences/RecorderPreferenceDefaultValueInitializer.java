@@ -21,10 +21,6 @@ public class RecorderPreferenceDefaultValueInitializer extends AbstractPreferenc
     @Override
     public void initializeDefaultPreferences() {
         ScopedPreferenceStore store = getPreferenceStore(RecorderPreferenceConstants.WEBUI_RECORDER_QUALIFIER);
-        store.setDefault(RecorderPreferenceConstants.WEBUI_RECORDER_INSTANT_BROWSER_PORT,
-                WEBUI_RECORDER_ACTIVE_BROWSERS_PORT_DEFAULT);
-        store.setDefault(RecorderPreferenceConstants.WEBUI_RECORDER_INSTANT_BROWSER_DO_NOT_SHOW_AGAIN,
-                WEBUI_RECORDER_ACTIVE_BROWSER_DO_NOT_SHOW_AGAIN_DEFAULT);
         store.setDefault(RecorderPreferenceConstants.WEBUI_RECORDER_DEFAULT_BROWSER, WEBUI_RECORDER_DEFAULT_BROWSER);
     }
 }

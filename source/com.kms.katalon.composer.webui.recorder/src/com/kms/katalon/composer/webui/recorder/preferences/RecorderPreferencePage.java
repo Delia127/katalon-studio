@@ -5,10 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
-import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -35,9 +33,6 @@ public class RecorderPreferencePage extends FieldEditorPreferencePage {
 
         addField(new ComboFieldEditor(RecorderPreferenceConstants.WEBUI_RECORDER_DEFAULT_BROWSER,
                 StringConstants.PREF_LBL_DEFAULT_BROWSER, getDefaultBrowserOptions(), composite));
-        addField(new IntegerFieldEditor(RecorderPreferenceConstants.WEBUI_RECORDER_INSTANT_BROWSER_PORT,
-                StringConstants.PREF_LBL_ACTIVE_BROWSER_PORT, composite));
-        addCheckboxField(composite);
 
         initialize();
         checkState();
@@ -53,13 +48,6 @@ public class RecorderPreferencePage extends FieldEditorPreferencePage {
         List<String[]> options = new ArrayList<>();
         browsers.forEach(browser -> options.add(new String[] { browser, browser }));
         return options.toArray(new String[][] {});
-    }
-
-    private void addCheckboxField(Composite parent) {
-        Composite composite = new Composite(parent, SWT.NONE);
-        composite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-        addField(new BooleanFieldEditor(RecorderPreferenceConstants.WEBUI_RECORDER_INSTANT_BROWSER_DO_NOT_SHOW_AGAIN,
-                StringConstants.PREF_LBL_ACTIVE_BROWSER_DO_NOT_SHOW_WARNING_DIALOG, composite));
     }
 
     @Override

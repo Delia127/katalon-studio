@@ -10,9 +10,24 @@
       </page>   
    </extension>
    <extension
+         point="com.kms.katalon.preferences.PreferencePages">
+      <page
+            category="com.kms.katalon.composer.preferences.GeneralPreferencePage"
+            class="com.kms.katalon.objectspy.preferences.UtilitiesAddonPreferencePage"
+            id="com.kms.katalon.composer.webui.utilitiesAddon"
+            name="Utilities Addon">
+      </page>   
+   </extension>
+   <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer
             class="com.kms.katalon.objectspy.preferences.ObjectSpyPreferenceDefaultValueInitializer">
+      </initializer>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="com.kms.katalon.objectspy.preferences.UtilitiesAddonPreferenceDefaultValueInitializer">
       </initializer>
    </extension>
 </plugin>

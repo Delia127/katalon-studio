@@ -116,14 +116,15 @@
       <import plugin="com.kms.katalon.custom" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="com.kms.katalon.composer.folder"/>
       <import plugin="com.kms.katalon.selenium-standalone" version="1.0.0" match="greaterOrEqual"/>
+      <import plugin="com.kms.katalon.core.webui"/>
       <import plugin="com.kms.katalon.core.mobile"/>
       <import plugin="com.kms.katalon.core.webservice"/>
-      <import plugin="com.kms.katalon.core.webui"/>
+      <import plugin="com.kms.katalon.dal" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="org.apache.commons.io" version="2.4.0" match="greaterOrEqual"/>
       <import plugin="org.apache.commons.codec" version="1.7.0" match="greaterOrEqual"/>
       <import plugin="com.kms.katalon.execution.webui"/>
-      <import plugin="com.kms.katalon.dal" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="com.kms.katalon.composer.testdata" version="1.0.0" match="greaterOrEqual"/>
+      <import plugin="com.kms.katalon.composer.webui.objectspy"/>
       <import plugin="com.kms.katalon.composer.testcase" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="org.apache.poi" version="3.9.0" match="greaterOrEqual"/>
       <import plugin="org.apache.poi.ooxml.schemas" version="3.9.0" match="greaterOrEqual"/>
@@ -180,6 +181,7 @@
       <import plugin="org.eclipse.compare.core" version="3.5.0" match="compatible"/>
       <import plugin="org.eclipse.core.expressions" version="3.4.100" match="compatible"/>
       <import plugin="org.eclipse.core.resources" version="3.3.0" match="compatible"/>
+      <import plugin="org.eclipse.text" version="3.1.0" match="compatible"/>
       <import plugin="org.eclipse.debug.core" version="3.9.0" match="compatible"/>
       <import plugin="org.eclipse.jdt.debug" version="3.7.100" match="compatible"/>
       <import plugin="org.eclipse.core.variables" version="3.2.0" match="compatible"/>
@@ -188,30 +190,17 @@
       <import plugin="org.eclipse.core.variables" version="3.2.800" match="compatible"/>
       <import plugin="org.codehaus.groovy.eclipse.core" version="2.9.2" match="greaterOrEqual"/>
       <import plugin="org.codehaus.groovy.eclipse.ui" version="2.9.2" match="greaterOrEqual"/>
-      <import plugin="org.codehaus.groovy" version="1.8.6" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.jdt.groovy.core" version="1.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ui.editors" version="3.5.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.jdt.groovy.core" version="2.9.2" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.core.resources" version="3.6.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.jdt.launching" version="3.5.0" match="greaterOrEqual"/>
       <import plugin="org.codehaus.groovy.eclipse.compilerResolver" version="2.9.2" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.jface.text" version="3.6.0" match="greaterOrEqual"/>
       <import plugin="org.codehaus.groovy.eclipse.codeassist.completion" version="2.9.2" match="greaterOrEqual"/>
-      <import plugin="org.codehaus.groovy.eclipse.dsl" version="2.9.2" match="greaterOrEqual"/>
       <import plugin="org.codehaus.groovy.eclipse.codebrowsing" version="2.9.2" match="greaterOrEqual"/>
+      <import plugin="org.codehaus.groovy.eclipse.dsl" version="2.9.2" match="greaterOrEqual"/>
       <import plugin="org.codehaus.groovy.eclipse.refactoring" version="2.9.2" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ui.editors" version="3.7.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ui.workbench.texteditor" version="3.7.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ltk.core.refactoring" version="3.5.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.jdt.junit" version="3.4.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ltk.ui.refactoring" version="3.4.100" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ui.browser" version="3.2.300" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.jdt.core.manipulation" version="1.3.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.search" version="3.6.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.jdt.ui" version="3.5.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui.editors" version="3.5.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ui.workbench.texteditor" version="3.5.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.core.runtime" version="3.6.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.text" version="3.5.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.help" version="3.4.0" match="compatible"/>
       <import plugin="org.eclipse.core.variables" version="3.2.200" match="compatible"/>
       <import plugin="org.eclipse.search" version="3.10.0" match="compatible"/>
@@ -307,6 +296,7 @@
       <import plugin="com.kms.katalon.composer.execution"/>
       <import plugin="javax.inject" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="javax.annotation" version="1.2.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.jetty.io" version="8.1.16" match="greaterOrEqual"/>
       <import plugin="com.kms.katalon.composer.mobile"/>
       <import plugin="com.kms.katalon.integration.qtest" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="com.kms.katalon.composer.report"/>
@@ -333,11 +323,10 @@
       <import plugin="org.apache.lucene.analysis" version="3.5.0" match="compatible"/>
       <import plugin="org.apache.lucene.core" version="3.5.0" match="compatible"/>
       <import plugin="org.eclipse.core.net" version="1.2.200" match="greaterOrEqual"/>
-      <import plugin="com.kms.katalon.composer.webui.objectspy"/>
-      <import plugin="org.eclipse.text" version="3.1.0" match="compatible"/>
-      <import plugin="org.eclipse.jetty.io" version="8.1.16" match="greaterOrEqual"/>
       <import plugin="com.kms.katalon.composer.webui"/>
-      <import plugin="com.kms.katalon.support.testing.katserver"/>
+      <import plugin="com.kms.katalon.support.testing.katserver" version="1.0.0" match="greaterOrEqual"/>
+      <import plugin="com.kms.katalon.jbrowser"/>
+      <import plugin="org.codehaus.groovy" version="1.8.9" match="greaterOrEqual"/>
    </requires>
 
    <plugin
@@ -1583,13 +1572,6 @@
          unpack="false"/>
 
    <plugin
-         id="com.fasterxml.jackson.core.jackson-core"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.jsoup"
          download-size="0"
          install-size="0"
@@ -2167,7 +2149,7 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-         
+
    <plugin
          id="com.kms.katalon.console"
          download-size="0"
@@ -2177,6 +2159,90 @@
 
    <plugin
          id="com.kms.katalon.composer.resources"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="javax.websocket-api"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.jetty.websocket.api"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.jetty.websocket.client"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.jetty.websocket.common"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.jetty.websocket.javax.websocket"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.jetty.websocket.javax.websocket.server"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.jetty.websocket.server"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.jetty.websocket.servlet"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.fasterxml.jackson.core.jackson-core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.objectweb.asm.all.debug"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.aries.util"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.aries.spifly.dynamic.bundle"
          download-size="0"
          install-size="0"
          version="0.0.0"
