@@ -6,6 +6,8 @@ var rec_infoDiv; // parent div to contains information
 var rec_elementInfoDiv; // informational div to show xpath of current hovered element
 var rec_elementInfoDivText; // xpath text to show in rec_elementInfoDiv
 
+var rec_navigateActionRecorded = false; // flag to check if navigate action is captured
+
 function rec_setupEventListeners() {
 	document.onchange = rec_change;
 	document.onmouseup = rec_mouseUp;
@@ -14,7 +16,7 @@ function rec_setupEventListeners() {
 	document.ondblclick = rec_dblClick;
 	document.onkeydown = rec_keyDown;
 	window.onmousemove = rec_mouseMoveWindow;
-	window.onmouseout = rec_rec_mouseOutWindow;
+	window.onmouseout = rec_mouseOutWindow;
 	
 	var forms = document.getElementsByTagName('form');
 	for (i = 0; i < forms.length; i++) {
@@ -111,7 +113,7 @@ function rec_mouseMoveWindow(e) {
 	rec_infoDiv.style.top = y + 'px';
 }
 
-function rec_rec_mouseOutWindow(e) {
+function rec_mouseOutWindow(e) {
 	rec_mouseMoveWindow(e);
 }
 
@@ -188,6 +190,7 @@ function rec_change(e) {
 	if (!isRecorded) {
 		return;
 	}
+	checkForNavigateAction();
 	var action = {};
 	action["actionName"] = 'inputChange';
 	if (elementTagName == 'select') {
@@ -248,7 +251,7 @@ function rec_mouseUp(e) {
 	if (!rec_isElementMouseUpEventRecordable(selectedElement, clickType)) {
 		return;
 	}
-	console.log("click recorded")
+	checkForNavigateAction();
 	var action = {};
 	action["actionName"] = 'click';
 	action["actionData"] = clickType;
@@ -258,6 +261,7 @@ function rec_mouseUp(e) {
 
 function rec_dblClick(e) {
 	var selectedElement = e ? e.target : window.event.srcElement;
+	checkForNavigateAction();
 	var action = {};
 	action["actionName"] = 'doubleClick';
 	action["actionData"] = '';
@@ -275,6 +279,7 @@ function rec_submit() {
 	if (rec_lastEvent != 'enter') {
 		return;
 	}
+	checkForNavigateAction();
 	var selectedElement = this;
 	var action = {};
 	action["actionName"] = 'submit';
@@ -288,6 +293,14 @@ function rec_sendData(action, element) {
 	}
 	var jsonObject = mapDOMForRecord(action, element, window);
 	rec_processObject(jsonObject);
+}
+
+function checkForNavigateAction() {
+    if (rec_navigateActionRecorded) {
+        return;
+    }
+    rec_addNavigationAction();
+    rec_navigateActionRecorded = true;
 }
 
 function rec_setParentJson(object, parentJson) {
@@ -375,7 +388,6 @@ function rec_receiveMessage(event) {
 function startRecord() {
     rec_setupEventListeners();
     rec_createInfoDiv();
-	rec_addNavigationAction();
 
 	// for Firefox
 	if (!detectChrome() && !detectIE() && !(typeof self === 'undefined')) {
@@ -394,4 +406,5 @@ function endRecord() {
     rec_disposeEventListeners();
     rec_removeInfoDiv();
     rec_clearHoverElement();
+    rec_navigateActionRecorded = false;
 }
