@@ -15,7 +15,7 @@
             category="com.kms.katalon.composer.preferences.GeneralPreferencePage"
             class="com.kms.katalon.objectspy.preferences.UtilitiesAddonPreferencePage"
             id="com.kms.katalon.composer.webui.utilitiesAddon"
-            name="Utilities Addon">
+            name="Utility Addon">
       </page>   
    </extension>
    <extension

@@ -1,8 +1,8 @@
 {
 	"manifest_version": 2,
-	"name": "Katalon Utilities",
+	"name": "Katalon Utility",
 	"description": "Chrome extension for Katalon",
-	"version": "1.0.0.1",
+	"version": "1.0.0.2",
 	"permissions": ["http://*/", "https://*/", "storage"],
 	"icons": { "16": "images/branding_16.png",
            "48": "images/branding_48.png",
@@ -23,7 +23,7 @@
 		"default_icon": {
 			"32": "images/branding_32.png"
 		},
-			"default_title": "Katalon Utilities"
+			"default_title": "Katalon Utility"
 		},
   "options_page": "options.html"
 }
