@@ -126,6 +126,7 @@ import com.kms.katalon.objectspy.util.BrowserUtil;
 import com.kms.katalon.objectspy.util.DOMUtils;
 import com.kms.katalon.objectspy.util.HTMLElementUtil;
 import com.kms.katalon.objectspy.util.UtilitiesAddonUtil;
+import com.kms.katalon.objectspy.util.Win32Helper;
 import com.kms.katalon.objectspy.util.WinRegistry;
 import com.kms.katalon.objectspy.websocket.AddonCommand;
 import com.kms.katalon.objectspy.websocket.AddonSocket;
@@ -1217,6 +1218,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
                 if (currentInstantSocket == null) {
                     return;
                 }
+                Win32Helper.switchFocusToBrowser(browser);
                 currentInstantSocket.sendMessage(new AddonMessage(AddonCommand.START_INSPECT));
             }
         }).run();

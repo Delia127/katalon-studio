@@ -135,6 +135,7 @@ import com.kms.katalon.objectspy.element.tree.HTMLElementTreeContentProvider;
 import com.kms.katalon.objectspy.exception.IEAddonNotInstalledException;
 import com.kms.katalon.objectspy.util.BrowserUtil;
 import com.kms.katalon.objectspy.util.UtilitiesAddonUtil;
+import com.kms.katalon.objectspy.util.Win32Helper;
 import com.kms.katalon.objectspy.util.WinRegistry;
 import com.kms.katalon.objectspy.websocket.AddonCommand;
 import com.kms.katalon.objectspy.websocket.AddonSocket;
@@ -281,6 +282,7 @@ public class RecorderDialog extends Dialog implements EventHandler {
                 if (currentInstantSocket == null) {
                     return;
                 }
+                Win32Helper.switchFocusToBrowser(selectedBrowser);
                 currentInstantSocket.sendMessage(new AddonMessage(AddonCommand.START_RECORD));
             }
         }).run();

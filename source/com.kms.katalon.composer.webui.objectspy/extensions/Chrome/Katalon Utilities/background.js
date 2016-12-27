@@ -9,6 +9,24 @@ var REQUEST_SEPARATOR = "_|_";
 var clientSocket = null;
 var runMode = RUN_MODE_IDLE;
 
+var curTabID = 0;
+var curWinID = 0;
+
+chrome.tabs.onSelectionChanged.addListener(function(tabId, selectInfo) {
+   if (clientSocket !== null) {
+       return;
+   }
+   curTabID = tabId;
+   curWinID = selectInfo.windowId;
+});
+
+chrome.windows.onFocusChanged.addListener(function (windowId) {
+    if (clientSocket !== null || windowId === chrome.windows.WINDOW_ID_NONE) {
+        return;
+    }
+    curWinID = windowId;
+});
+
 function processXHTTPAction(request, callback) {
     if (!clientSocket) {
         return;
@@ -225,11 +243,11 @@ function startAddon(newRunMode) {
             });
         }
     });
-    chrome.windows.getLastFocused(function(window) {
-        chrome.windows.update(window.id, {
-            focused : true
-        });
-    });
+    focusOnWindow();
+}
+
+function focusOnWindow() {
+    chrome.windows.update(curWinID, { focused : true });
 }
 
 function stopAddon() {
