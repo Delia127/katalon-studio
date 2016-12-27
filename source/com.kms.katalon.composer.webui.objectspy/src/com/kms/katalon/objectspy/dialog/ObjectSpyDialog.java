@@ -222,7 +222,6 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         elements = new ArrayList<HTMLPageElement>();
         // set default browser
         defaultBrowser = getWebUIDriver();
-        AddonSocketServer.getInstance().start(AddonSocket.class);
     }
 
     /**
@@ -1207,14 +1206,22 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         if (browser == WebUIDriverType.IE_DRIVER) {
             runInstantIE();
         }
-        currentInstantSocket = AddonSocketServer.getInstance()
-                .getAddonSocketByBrowserName(defaultBrowser.toString());
-        if (currentInstantSocket == null) {
-            return;
-        }
-        currentInstantSocket.sendMessage(new AddonMessage(AddonCommand.START_INSPECT));
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                AddonSocketServer socketServer = AddonSocketServer.getInstance();
+                if (!socketServer.isRunning()) {
+                    socketServer.start(AddonSocket.class);
+                }
+                currentInstantSocket = socketServer.getAddonSocketByBrowserName(defaultBrowser.toString());
+                if (currentInstantSocket == null) {
+                    return;
+                }
+                currentInstantSocket.sendMessage(new AddonMessage(AddonCommand.START_INSPECT));
+            }
+        }).run();
     }
-    
+
     private void closeInstantSession() {
         if (currentInstantSocket != null && currentInstantSocket.isConnected()) {
             currentInstantSocket.close();

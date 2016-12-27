@@ -224,7 +224,6 @@ public class RecorderDialog extends Dialog implements EventHandler {
         isPausing = false;
         this.eventBroker = eventBroker;
         eventBroker.subscribe(EventConstants.RECORDER_HTML_ACTION_CAPTURED, this);
-        AddonSocketServer.getInstance().start(RecorderAddonSocket.class);
     }
 
     private void startBrowser() {
@@ -270,11 +269,21 @@ public class RecorderDialog extends Dialog implements EventHandler {
         if (selectedBrowser == WebUIDriverType.IE_DRIVER) {
             runInstantIE();
         }
-        currentInstantSocket = AddonSocketServer.getInstance().getAddonSocketByBrowserName(selectedBrowser.toString());
-        if (currentInstantSocket == null) {
-            return;
-        }
-        currentInstantSocket.sendMessage(new AddonMessage(AddonCommand.START_RECORD));
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                AddonSocketServer socketServer = AddonSocketServer.getInstance();
+                if (!socketServer.isRunning()) {
+                    socketServer.start(RecorderAddonSocket.class);
+                }
+                currentInstantSocket = AddonSocketServer.getInstance()
+                        .getAddonSocketByBrowserName(selectedBrowser.toString());
+                if (currentInstantSocket == null) {
+                    return;
+                }
+                currentInstantSocket.sendMessage(new AddonMessage(AddonCommand.START_RECORD));
+            }
+        }).run();
     }
 
     private void closeInstantSession() {
@@ -1316,7 +1325,7 @@ public class RecorderDialog extends Dialog implements EventHandler {
                             }
                         };
                         int returnCode = messageDialogWithToggle.open();
-                        UtilitiesAddonUtil  .setNotShowingInstantBrowserDialog(messageDialogWithToggle.getToggleState());
+                        UtilitiesAddonUtil.setNotShowingInstantBrowserDialog(messageDialogWithToggle.getToggleState());
                         if (returnCode == IDialogConstants.NO_ID) {
                             return true;
                         }
