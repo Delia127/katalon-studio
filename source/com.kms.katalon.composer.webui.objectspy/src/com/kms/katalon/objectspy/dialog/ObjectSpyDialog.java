@@ -34,7 +34,9 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ITreeSelection;
@@ -223,6 +225,23 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         elements = new ArrayList<HTMLPageElement>();
         // set default browser
         defaultBrowser = getWebUIDriver();
+        startSocketServer();
+    }
+
+    private void startSocketServer() {
+        try {
+            new ProgressMonitorDialog(getParentShell()).run(true, false, new IRunnableWithProgress() {
+                @Override
+                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                    monitor.beginTask(ObjectspyMessageConstants.MSG_DLG_INIT_OBJECT_SPY, 1);
+                    AddonSocketServer.getInstance().start(AddonSocket.class);
+                }
+            });
+        } catch (InvocationTargetException e) {
+            LoggerSingleton.logError(e.getTargetException());
+        } catch (InterruptedException e) {
+            // Ignore this
+        }
     }
 
     /**
@@ -1207,21 +1226,12 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         if (browser == WebUIDriverType.IE_DRIVER) {
             runInstantIE();
         }
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                AddonSocketServer socketServer = AddonSocketServer.getInstance();
-                if (!socketServer.isRunning()) {
-                    socketServer.start(AddonSocket.class);
-                }
-                currentInstantSocket = socketServer.getAddonSocketByBrowserName(defaultBrowser.toString());
-                if (currentInstantSocket == null) {
-                    return;
-                }
-                Win32Helper.switchFocusToBrowser(browser);
-                currentInstantSocket.sendMessage(new AddonMessage(AddonCommand.START_INSPECT));
-            }
-        }).run();
+        currentInstantSocket = AddonSocketServer.getInstance().getAddonSocketByBrowserName(defaultBrowser.toString());
+        if (currentInstantSocket == null) {
+            return;
+        }
+        Win32Helper.switchFocusToBrowser(browser);
+        currentInstantSocket.sendMessage(new AddonMessage(AddonCommand.START_INSPECT));
     }
 
     private void closeInstantSession() {

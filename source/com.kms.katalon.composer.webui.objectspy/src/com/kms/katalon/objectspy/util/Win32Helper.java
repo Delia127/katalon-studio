@@ -12,10 +12,12 @@ import com.sun.jna.platform.win32.WinDef.HWND;
 import com.sun.jna.platform.win32.WinUser.WNDENUMPROC;
 
 public class Win32Helper {
+    private static final String SLACK = "Slack";
+
     private static final String CHROME_CLASS_NAME = "Chrome_WidgetWin_1";
 
     private static final String FIREFOX_CLASS_NAME = "MozillaWindowClass";
-    
+
     public static void switchFocusToBrowser(WebUIDriverType browser) {
         switch (browser) {
             case CHROME_DRIVER:
@@ -24,7 +26,7 @@ public class Win32Helper {
             default:
                 switchFocusToFirefox();
                 break;
-            
+
         }
     }
 
@@ -34,7 +36,7 @@ public class Win32Helper {
         }
         switchFocusToWindow(CHROME_CLASS_NAME);
     }
-    
+
     public static void switchFocusToFirefox() {
         if (isOnWin32()) {
             return;
@@ -75,11 +77,10 @@ public class Win32Helper {
                 }
                 String className = getWindowClassName(hWnd);
                 String title = getWindowTitle(hWnd);
-                if (className.contains(windowClassName) && StringUtils.isNotEmpty(title)) {
+                if (className.contains(windowClassName) && StringUtils.isNotEmpty(title) && !title.equals(SLACK)) {
                     foundWindowPointer.setPointer(0, hWnd.getPointer());
                 }
                 return true;
-
             }
         }, foundWindowPointer);
     }

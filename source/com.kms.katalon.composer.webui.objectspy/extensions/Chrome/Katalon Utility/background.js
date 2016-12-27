@@ -13,18 +13,47 @@ var curTabID = 0;
 var curWinID = 0;
 
 chrome.tabs.onSelectionChanged.addListener(function(tabId, selectInfo) {
-   if (clientSocket !== null) {
-       return;
-   }
-   curTabID = tabId;
-   curWinID = selectInfo.windowId;
+    if (clientSocket !== null) {
+        return;
+    }
+    curTabID = tabId;
+    curWinID = selectInfo.windowId;
 });
 
-chrome.windows.onFocusChanged.addListener(function (windowId) {
+chrome.windows.onFocusChanged.addListener(function(windowId) {
     if (clientSocket !== null || windowId === chrome.windows.WINDOW_ID_NONE) {
         return;
     }
     curWinID = windowId;
+});
+
+var injectIntoTab = function(tab) {
+    // You could iterate through the content scripts here
+    var scripts = chrome.app.getDetails().content_scripts[0].js;
+    var s = scripts.length;
+    for (var i = 0; i < s; i++) {
+        chrome.tabs.executeScript(tab.id, {
+            file : scripts[i]
+        });
+    }
+}
+
+chrome.runtime.onInstalled.addListener(function(details) {
+    // Get all windows
+    chrome.windows.getAll({
+        populate : true
+    }, function(windows) {
+        var w = windows.length;
+        var currentWindow;
+        for (var i = 0; i < w; i++) {
+            currentWindow = windows[i];
+            var t = currentWindow.tabs.length
+            var currentTab;
+            for (var j = 0; j < t; j++) {
+                injectIntoTab(currentWindow.tabs[j]);
+            }
+        }
+    });
 });
 
 function processXHTTPAction(request, callback) {
@@ -247,7 +276,9 @@ function startAddon(newRunMode) {
 }
 
 function focusOnWindow() {
-    chrome.windows.update(curWinID, { focused : true });
+    chrome.windows.update(curWinID, {
+        focused : true
+    });
 }
 
 function stopAddon() {

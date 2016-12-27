@@ -16,6 +16,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -25,7 +26,9 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
@@ -225,6 +228,23 @@ public class RecorderDialog extends Dialog implements EventHandler {
         isPausing = false;
         this.eventBroker = eventBroker;
         eventBroker.subscribe(EventConstants.RECORDER_HTML_ACTION_CAPTURED, this);
+        startSocketServer();
+    }
+    
+    private void startSocketServer() {
+        try {
+            new ProgressMonitorDialog(getParentShell()).run(true, false, new IRunnableWithProgress() {
+                @Override
+                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                    monitor.beginTask(ComposerWebuiRecorderMessageConstants.MSG_DLG_INIT_RECORDER, 1);
+                    AddonSocketServer.getInstance().start(RecorderAddonSocket.class);
+                }
+            });
+        } catch (InvocationTargetException e) {
+            LoggerSingleton.logError(e.getTargetException());
+        } catch (InterruptedException e) {
+            // Ignore this
+        }
     }
 
     private void startBrowser() {
@@ -270,22 +290,13 @@ public class RecorderDialog extends Dialog implements EventHandler {
         if (selectedBrowser == WebUIDriverType.IE_DRIVER) {
             runInstantIE();
         }
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                AddonSocketServer socketServer = AddonSocketServer.getInstance();
-                if (!socketServer.isRunning()) {
-                    socketServer.start(RecorderAddonSocket.class);
-                }
-                currentInstantSocket = AddonSocketServer.getInstance()
-                        .getAddonSocketByBrowserName(selectedBrowser.toString());
-                if (currentInstantSocket == null) {
-                    return;
-                }
-                Win32Helper.switchFocusToBrowser(selectedBrowser);
-                currentInstantSocket.sendMessage(new AddonMessage(AddonCommand.START_RECORD));
-            }
-        }).run();
+        currentInstantSocket = AddonSocketServer.getInstance()
+                .getAddonSocketByBrowserName(selectedBrowser.toString());
+        if (currentInstantSocket == null) {
+            return;
+        }
+        Win32Helper.switchFocusToBrowser(selectedBrowser);
+        currentInstantSocket.sendMessage(new AddonMessage(AddonCommand.START_RECORD));
     }
 
     private void closeInstantSession() {
