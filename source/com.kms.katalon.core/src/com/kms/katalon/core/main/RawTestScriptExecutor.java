@@ -35,7 +35,7 @@ public class RawTestScriptExecutor extends TestCaseExecutor {
     @Override
     protected void runMethod(File scriptFile, String methodName)
             throws ResourceException, ScriptException, ClassNotFoundException, IOException {
-        engine.setConfig(getConfigForExecutingScript(engine.getGroovyClassLoader()));
+        engine.changeConfigForExecutingScript();
         engine.runScriptMethodAsRawText(rawScript, scriptFile.getName(), methodName, variableBinding);
     }
 }
