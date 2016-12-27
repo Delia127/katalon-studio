@@ -16,7 +16,6 @@ import com.kms.katalon.composer.components.menu.MenuFactory;
 import com.kms.katalon.composer.integration.git.constants.GitIdConstant;
 import com.kms.katalon.composer.integration.git.constants.GitStringConstants;
 import com.kms.katalon.composer.integration.git.handlers.BranchHandler;
-import com.kms.katalon.composer.integration.git.preference.GitPreferenceUtil;
 import com.kms.katalon.constants.helper.ConstantsHelper;
 
 @SuppressWarnings("restriction")
@@ -27,30 +26,21 @@ public class GitMenuContribution {
     @AboutToShow
     public void aboutToShow(List<MMenuElement> items) {
         MMenuFactory menuFactory = MMenuFactory.INSTANCE;
-        final String gitMenuLabel = GitStringConstants.GIT_MENU_LABEL;
-        if (!GitPreferenceUtil.isGitEnabled()) {
-            items.add(createDisableMenuItem(menuFactory, gitMenuLabel));
-            return;
-        }
-        MMenu gitMenu = menuFactory.createMenu();
-        gitMenu.setLabel(gitMenuLabel);
-        addChildMenuItem(gitMenu, GitIdConstant.GIT_CLONE_COMMAND_ID, GitStringConstants.GIT_CLONE_MENU_ITEM_LABEL);
-        addChildMenuItem(gitMenu, GitIdConstant.GIT_SHARE_PROJECT_COMMAND_ID,
+
+        addChildMenuItem(items, GitIdConstant.GIT_CLONE_COMMAND_ID, GitStringConstants.GIT_CLONE_MENU_ITEM_LABEL);
+        addChildMenuItem(items, GitIdConstant.GIT_SHARE_PROJECT_COMMAND_ID,
                 GitStringConstants.GIT_SHARE_PROJECT_MENU_ITEM_LABEL);
-        addChildMenuItem(gitMenu, GitIdConstant.GIT_SHOW_HISTORY_COMMAND_ID,
+        addChildMenuItem(items, GitIdConstant.GIT_SHOW_HISTORY_COMMAND_ID,
                 GitStringConstants.GIT_SHOW_HISTORY_MENU_ITEM_LABEL);
 
-        addGitBranchMenu(menuFactory, gitMenu);
+        addGitBranchMenu(menuFactory, items);
 
-        addChildMenuItem(gitMenu, GitIdConstant.GIT_COMMIT_PROJECT_COMMAND_ID,
+        addChildMenuItem(items, GitIdConstant.GIT_COMMIT_PROJECT_COMMAND_ID,
                 GitStringConstants.GIT_COMMIT_MENU_ITEM_LABEL);
-        addChildMenuItem(gitMenu, GitIdConstant.GIT_PUSH_PROJECT_COMMAND_ID,
-                GitStringConstants.GIT_PUSH_MENU_ITEM_LABEL);
-        addChildMenuItem(gitMenu, GitIdConstant.GIT_PULL_PROJECT_COMMAND_ID,
-                GitStringConstants.GIT_PULL_MENU_ITEM_LABEL);
-        addChildMenuItem(gitMenu, GitIdConstant.GIT_FETCH_PROJECT_COMMAND_ID,
+        addChildMenuItem(items, GitIdConstant.GIT_PUSH_PROJECT_COMMAND_ID, GitStringConstants.GIT_PUSH_MENU_ITEM_LABEL);
+        addChildMenuItem(items, GitIdConstant.GIT_PULL_PROJECT_COMMAND_ID, GitStringConstants.GIT_PULL_MENU_ITEM_LABEL);
+        addChildMenuItem(items, GitIdConstant.GIT_FETCH_PROJECT_COMMAND_ID,
                 GitStringConstants.GIT_FETCH_MENU_ITEM_LABEL);
-        items.add(gitMenu);
     }
 
     public MDirectMenuItem createDisableMenuItem(MMenuFactory menuFactory, final String menuItemLabel) {
@@ -60,30 +50,29 @@ public class GitMenuContribution {
         return disabledMenuItem;
     }
 
-    public void addGitBranchMenu(MMenuFactory menuFactory, MMenu gitMenu) {
+    public void addGitBranchMenu(MMenuFactory menuFactory, List<MMenuElement> items) {
         if (!new BranchHandler().canExecute()) {
-            gitMenu.getChildren().add(createDisableMenuItem(menuFactory, GitStringConstants.GIT_BRANCH_MENU_LABEL));
+            items.add(createDisableMenuItem(menuFactory, GitStringConstants.GIT_BRANCH_MENU_LABEL));
             return;
         }
         MMenu gitBranchMenu = menuFactory.createMenu();
         gitBranchMenu.setLabel(GitStringConstants.GIT_BRANCH_MENU_LABEL);
-        addChildMenuItem(gitBranchMenu, GitIdConstant.GIT_NEW_BRANCH_PROJECT_COMMAND_ID,
+        List<MMenuElement> manageBranchChildren = gitBranchMenu.getChildren();
+        addChildMenuItem(manageBranchChildren, GitIdConstant.GIT_NEW_BRANCH_PROJECT_COMMAND_ID,
                 GitStringConstants.GIT_NEW_BRANCH_MENU_ITEM_LABEL);
-        addChildMenuItem(gitBranchMenu, GitIdConstant.GIT_CHECKOUT_BRANCH_PROJECT_COMMAND_ID,
+        addChildMenuItem(manageBranchChildren, GitIdConstant.GIT_CHECKOUT_BRANCH_PROJECT_COMMAND_ID,
                 GitStringConstants.GIT_CHECKOUT_BRANCH_MENU_ITEM_LABEL);
-        addChildMenuItem(gitBranchMenu, GitIdConstant.GIT_DELETE_BRANCH_PROJECT_COMMAND_ID,
+        addChildMenuItem(manageBranchChildren, GitIdConstant.GIT_DELETE_BRANCH_PROJECT_COMMAND_ID,
                 GitStringConstants.GIT_DELETE_BRANCH_MENU_ITEM_LABEL);
-        
-        gitBranchMenu.getChildren().add(menuFactory.createMenuSeparator());
-        addChildMenuItem(gitBranchMenu, GitIdConstant.GIT_BRANCH_PROJECT_COMMAND_ID,
+        addChildMenuItem(manageBranchChildren, GitIdConstant.GIT_BRANCH_PROJECT_COMMAND_ID,
                 GitStringConstants.GIT_ADVANCE_BRANCH_MENU_ITEM_LABEL);
-        gitMenu.getChildren().add(gitBranchMenu);
+        items.add(gitBranchMenu);
     }
 
-    private void addChildMenuItem(MMenu gitMenu, String commandId, String menuItemLabel) {
+    private void addChildMenuItem(List<MMenuElement> items, String commandId, String menuItemLabel) {
         MHandledMenuItem shareProjectmenuItem = MenuFactory.createPopupMenuItem(
                 commandService.createCommand(commandId, null), menuItemLabel, ConstantsHelper.getApplicationURI());
-        gitMenu.getChildren().add(shareProjectmenuItem);
+        items.add(shareProjectmenuItem);
     }
 
 }
