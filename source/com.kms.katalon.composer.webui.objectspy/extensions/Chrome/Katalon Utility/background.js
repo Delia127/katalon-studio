@@ -27,6 +27,10 @@ chrome.windows.onFocusChanged.addListener(function(windowId) {
     curWinID = windowId;
 });
 
+chrome.windows.onCreated.addListener(function() {
+    setCurrentWindow();
+})
+
 var injectIntoTab = function(tab) {
     // You could iterate through the content scripts here
     var scripts = chrome.app.getDetails().content_scripts[0].js;
@@ -54,6 +58,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
             }
         }
     });
+    setCurrentWindow();
 });
 
 function processXHTTPAction(request, callback) {
@@ -275,6 +280,12 @@ function startAddon(newRunMode) {
     focusOnWindow();
 }
 
+function setCurrentWindow() {
+    chrome.windows.getCurrent(function(window) {
+        curWinID = window.id;
+    });
+}
+
 function focusOnWindow() {
     chrome.windows.update(curWinID, {
         focused : true
@@ -295,6 +306,7 @@ function stopAddon() {
 }
 
 chrome.runtime.onStartup.addListener(function() {
+    setCurrentWindow();
     waitForConnection();
 });
 
