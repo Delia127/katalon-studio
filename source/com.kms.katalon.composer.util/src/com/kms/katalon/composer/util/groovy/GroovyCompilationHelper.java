@@ -34,6 +34,7 @@ import org.eclipse.text.edits.DeleteEdit;
 import org.eclipse.text.edits.MultiTextEdit;
 import org.eclipse.text.edits.ReplaceEdit;
 
+import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.core.annotation.Keyword;
 import com.kms.katalon.groovy.constant.GroovyConstants;
 
@@ -253,8 +254,15 @@ public class GroovyCompilationHelper {
             IBuffer buf = cu.getBuffer();
             String originalContent = buf.getText(range.getOffset(), range.getLength());
 
-            String formattedContent = CodeFormatterUtil.format(CodeFormatter.K_CLASS_BODY_DECLARATIONS,
-                    originalContent, indent, lineDelimiter, parentPackage.getJavaProject());
+            // add alias imports in front of class manually
+            originalContent = addAliasImportByManual(originalContent, null, null);
+            for (Entry<String, String> entry : GroovyConstants.DEFAULT_KEYWORD_CONTRIBUTOR_IMPORTS.entrySet()) {
+                originalContent = addAliasImportByManual(originalContent,
+                        StringUtils.substringAfterLast(entry.getValue(), "."), entry.getKey());
+            }
+
+            String formattedContent = CodeFormatterUtil.format(CodeFormatter.K_CLASS_BODY_DECLARATIONS, originalContent,
+                    indent, lineDelimiter, parentPackage.getJavaProject());
             formattedContent = Strings.trimLeadingTabsAndSpaces(formattedContent);
             buf.replace(range.getOffset(), range.getLength(), formattedContent);
 
@@ -282,11 +290,20 @@ public class GroovyCompilationHelper {
             imports.addStaticImport(entry.getValue(), entry.getKey(), false);
         }
 
-        for (Entry<String, String> entry : GroovyConstants.DEFAULT_KEYWORD_CONTRIBUTOR_IMPORTS.entrySet()) {
-            imports.addAliasImport(StringUtils.substringAfterLast(entry.getValue(), "."), entry.getKey());
-        }
+        // Since greclipse.org.eclipse.jdt.core.dom.rewrite.ImportRewrite is removed in groovy-eclipse, there is no way
+        // to add the alias import in groovy script programmatically
+        // for (Entry<String, String> entry : GroovyConstants.DEFAULT_KEYWORD_CONTRIBUTOR_IMPORTS.entrySet()) {
+        // imports.addAliasImport(StringUtils.substringAfterLast(entry.getValue(), "."), entry.getKey());
+        // }
 
         return imports;
+    }
+
+    private static String addAliasImportByManual(String bodyScript, String qualifiedTypeName, String aliasName) {
+        if (StringUtils.isBlank(qualifiedTypeName) || StringUtils.isBlank(aliasName)) {
+            return GlobalStringConstants.CRLF + bodyScript;
+        }
+        return "import " + qualifiedTypeName + " as " + aliasName + GlobalStringConstants.CRLF + bodyScript;
     }
 
     private static ImportsManager addImportsForCustomKeyword(IPackageFragment parentPackage, String typeName,
