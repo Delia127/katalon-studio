@@ -194,6 +194,9 @@
 								<artifact>
 									<id>org.apache.aries.spifly:org.apache.aries.spifly.dynamic.bundle:1.0.8</id>
 								</artifact>
+								<artifact>
+									<id>org.javalite:javalite-common:1.4.12</id>
+								</artifact>
 							</artifacts>
 						</configuration>
 					</execution>

@@ -1,21 +1,14 @@
 package com.kms.katalon.core.util.internal;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.commons.lang.StringUtils.defaultString;
 import static org.apache.commons.lang.StringUtils.isBlank;
-
-import java.nio.charset.Charset;
-
-import javax.xml.bind.DatatypeConverter;
+import static org.apache.commons.lang.StringUtils.isEmpty;
 
 /**
- * This class works around <code>base64</code> function for Java 7.
- * <p>
- * It still works correctly on Java 8 or later. Once code base upgraded to Java 8, {@link java.util.Base64} can be used
- * as a feature replacement.
- * </p>
- *
+ * A <code>base64</code> util-class
  */
 public class Base64 {
-    private static final Charset UTF8 = Charset.forName("UTF-8");
 
     /**
      * Encode string
@@ -25,11 +18,12 @@ public class Base64 {
      * @see #decode(String)
      */
     public static String encode(String plainText) {
-        if (isBlank(plainText)) {
+        if (isEmpty(plainText)) {
             return plainText;
         }
 
-        return DatatypeConverter.printBase64Binary(plainText.getBytes(UTF8));
+        // return DatatypeConverter.printBase64Binary(plainText.getBytes(UTF_8)); // Java 7
+        return java.util.Base64.getEncoder().encodeToString(plainText.getBytes(UTF_8)); // Java 8
     }
 
     /**
@@ -44,6 +38,29 @@ public class Base64 {
             return encodedText;
         }
 
-        return new String(DatatypeConverter.parseBase64Binary(encodedText), UTF8);
+        // return new String(DatatypeConverter.parseBase64Binary(encodedText), UTF_8); // Java 7
+        return new String(java.util.Base64.getDecoder().decode(encodedText), UTF_8); // Java 8
     }
+
+    public static String basicEncode(String username, String password) {
+        return encode(defaultString(username) + ":" + defaultString(password));
+    }
+
+    public static String[] basicDecode(String encodedString) {
+        String usernamePassword = decode(encodedString);
+        String[] data = new String[] { "", "" };
+        if (isEmpty(usernamePassword)) {
+            return data;
+        }
+
+        data[0] = usernamePassword;
+
+        int separatorPos = usernamePassword.indexOf(":");
+        if (separatorPos >= 0) {
+            data[0] = usernamePassword.substring(0, separatorPos);
+            data[1] = usernamePassword.substring(separatorPos + 1);
+        }
+        return data;
+    }
+
 }

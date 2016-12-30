@@ -11,101 +11,89 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
 import com.kms.katalon.composer.components.impl.constants.ImageConstants;
-import com.kms.katalon.composer.components.util.ColorUtil;
 
 public class ExpandableComposite {
 
-    CLabel btnExpandInformation;
+    /** The default margin of bodyComposite. This is the sum of arrow icon width (16) and CLabel.DEFAULT_MARGIN. */
+    private static final int DEFAULT_BODY_MARGIN = 24;
 
-    Composite container, compositeInfoDetails, compositeInfo;
+    private CLabel lblHeaderTitle;
 
-    private boolean isInfoCompositeExpanded = true;
+    private Composite parent, bodyComposite, composite;
+
+    boolean isExpanded;
 
     private String title;
 
     private int detailColumns;
 
-    public ExpandableComposite(Composite container, String title, int colums, boolean expandOnShow) {
-        this.container = container;
+    public ExpandableComposite(Composite parent, String title, int colums, boolean expandOnShow) {
+        this.parent = parent;
         this.title = title;
         this.detailColumns = colums;
+        this.isExpanded = expandOnShow;
     }
 
     public Composite createControl() {
+        composite = new Composite(parent, SWT.NONE);
+        GridLayout glCompositeInfo = new GridLayout();
+        glCompositeInfo.verticalSpacing = 0;
+        glCompositeInfo.horizontalSpacing = 0;
+        glCompositeInfo.marginWidth = 0;
+        glCompositeInfo.marginHeight = 0;
+        composite.setLayout(glCompositeInfo);
+        composite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
-        compositeInfo = new Composite(container, SWT.NONE);
-        GridLayout gl_compositeInfo = new GridLayout(1, false);
-        gl_compositeInfo.verticalSpacing = 0;
-        gl_compositeInfo.marginWidth = 0;
-        gl_compositeInfo.marginHeight = 0;
-        compositeInfo.setLayout(gl_compositeInfo);
-        compositeInfo.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-        compositeInfo.setBackground(ColorUtil.getCompositeBackgroundColor());
+        lblHeaderTitle = new CLabel(composite, SWT.NONE);
+        lblHeaderTitle.setCursor(Display.getCurrent().getSystemCursor(SWT.CURSOR_HAND));
+        lblHeaderTitle.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+        lblHeaderTitle.setText(title);
+        lblHeaderTitle.setFont(JFaceResources.getFontRegistry().getBold(""));
 
-        Composite compositeInfoHeader = new Composite(compositeInfo, SWT.NONE);
-        compositeInfoHeader.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-        compositeInfoHeader.setBounds(0, 0, 64, 64);
-        GridLayout gl_compositeInfoHeader = new GridLayout(2, false);
-        gl_compositeInfoHeader.marginWidth = 0;
-        gl_compositeInfoHeader.marginHeight = 0;
-        compositeInfoHeader.setLayout(gl_compositeInfoHeader);
-
-        btnExpandInformation = new CLabel(compositeInfoHeader, SWT.NONE);
-        redrawBtnExpandInfo();
-        GridData gd_btnExpandInfo = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        btnExpandInformation.setLayoutData(gd_btnExpandInfo);
-        btnExpandInformation.setText(title);
-        btnExpandInformation.setFont(JFaceResources.getFontRegistry().getBold(""));
-
-        compositeInfoDetails = new Composite(compositeInfo, SWT.NONE);
-        GridLayout gl_compositeInfoDetails = new GridLayout(detailColumns, true);
-        gl_compositeInfoDetails.marginRight = 40;
-        gl_compositeInfoDetails.marginLeft = 40;
-        gl_compositeInfoDetails.marginBottom = 5;
-        gl_compositeInfoDetails.horizontalSpacing = 30;
-        gl_compositeInfoDetails.marginHeight = 0;
-        gl_compositeInfoDetails.marginWidth = 0;
-        compositeInfoDetails.setLayout(gl_compositeInfoDetails);
-        compositeInfoDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        compositeInfoDetails.setBounds(0, 0, 64, 64);
+        bodyComposite = new Composite(composite, SWT.NONE);
+        GridLayout glBodyComposite = new GridLayout(detailColumns, false);
+        glBodyComposite.marginRight = DEFAULT_BODY_MARGIN;
+        glBodyComposite.marginLeft = DEFAULT_BODY_MARGIN;
+        glBodyComposite.marginHeight = 0;
+        glBodyComposite.marginWidth = 0;
+        bodyComposite.setLayout(glBodyComposite);
+        bodyComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
         hookControlSelectListerners();
 
-        return compositeInfoDetails;
+        expandCollapseBody();
+
+        return bodyComposite;
     }
 
-    private void redrawBtnExpandInfo() {
-        btnExpandInformation.getParent().setRedraw(false);
-        if (isInfoCompositeExpanded) {
-            btnExpandInformation.setImage(ImageConstants.IMG_16_ARROW_DOWN);
-        } else {
-            btnExpandInformation.setImage(ImageConstants.IMG_16_ARROW);
-        }
-        btnExpandInformation.getParent().setRedraw(true);
+    private void redrawHeaderTitleIndicator() {
+        lblHeaderTitle.getParent().setRedraw(false);
+        lblHeaderTitle.setImage(isExpanded ? ImageConstants.IMG_16_ARROW_DOWN : ImageConstants.IMG_16_ARROW);
+        lblHeaderTitle.getParent().setRedraw(true);
     }
 
     private void hookControlSelectListerners() {
-        btnExpandInformation.addMouseListener(new MouseAdapter() {
+        lblHeaderTitle.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseUp(MouseEvent e) {
-                Display.getDefault().timerExec(10, new Runnable() {
-                    @Override
-                    public void run() {
-                        isInfoCompositeExpanded = !isInfoCompositeExpanded;
-                        compositeInfoDetails.setVisible(isInfoCompositeExpanded);
-                        if (!isInfoCompositeExpanded) {
-                            ((GridData) compositeInfoDetails.getLayoutData()).exclude = true;
-                            compositeInfo.setSize(compositeInfo.getSize().x, compositeInfo.getSize().y);
-                        } else {
-                            ((GridData) compositeInfoDetails.getLayoutData()).exclude = false;
-                        }
-                        compositeInfo.layout(true, true);
-                        compositeInfo.getParent().layout();
-                        redrawBtnExpandInfo();
-                    }
-                });
+                expandCollapseBody();
             }
         });
-
     }
+
+    private void expandCollapseBody() {
+        Display.getDefault().syncExec(new Runnable() {
+            @Override
+            public void run() {
+                bodyComposite.setVisible(isExpanded);
+                GridData gdBodyComposite = (GridData) bodyComposite.getLayoutData();
+                gdBodyComposite.exclude = !isExpanded;
+                composite.layout(true, true);
+                composite.getParent().layout();
+                redrawHeaderTitleIndicator();
+                isExpanded = !isExpanded;
+            }
+        });
+    }
+
 }

@@ -7,13 +7,28 @@ public class WebServiceRequestEntity extends WebElementEntity {
 
     private static final long serialVersionUID = 1L;
 
-    public static final String[] SERVICE_TYPES = new String[] { "SOAP", "RESTful" };
+    public static final String SOAP = "SOAP";
 
-    public static final String[] SOAP_REQUEST_METHODS = new String[] { "POST", "GET" };
+    public static final String SOAP12 = "SOAP12";
 
-    public static final String[] REST_REQUEST_METHODS = new String[] { "GET", "POST", "PUT", "DELETE" };
+    public static final String RESTFUL = "RESTful";
 
-    private String serviceType = SERVICE_TYPES[0]; // Defaut
+    public static final String GET_METHOD = "GET";
+
+    public static final String POST_METHOD = "POST";
+
+    public static final String PUT_METHOD = "PUT";
+
+    public static final String DELETE_METHOD = "DELETE";
+
+    public static final String[] SERVICE_TYPES = new String[] { SOAP, RESTFUL };
+
+    public static final String[] SOAP_REQUEST_METHODS = new String[] { SOAP, SOAP12, GET_METHOD, POST_METHOD };
+
+    public static final String[] REST_REQUEST_METHODS = new String[] { GET_METHOD, POST_METHOD, PUT_METHOD,
+            DELETE_METHOD };
+
+    private String serviceType = SOAP; // Default
 
     private List<WebElementPropertyEntity> httpHeaderProperties;
 
