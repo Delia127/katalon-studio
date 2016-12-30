@@ -21,6 +21,12 @@ public class MessageConstants extends NLS {
 
     public static String PA_WELCOME;
 
+    public static String PA_WELCOME_TO_KATALON;
+
+    public static String PA_URL_KATALON_HOME_PAGE;
+
+    public static String PA_TOOLTIP_KATALON_HOME_PAGE;
+
     public static String PA_LBL_NEW_PROJECT;
 
     public static String PA_TOOLTIP_NEW_PROJECT;
@@ -52,6 +58,12 @@ public class MessageConstants extends NLS {
     public static String PA_LBL_ARTICLES;
 
     public static String PA_LBL_ARTICLES_DESCRIPTION;
+    
+    public static String PA_LBL_SAMPLE_WEB_UI_PROJECT;
+
+    public static String PA_LBL_SAMPLE_MOBILE_PROJECT;
+
+    public static String PA_LBL_SAMPLE_WEB_SERVICE_PROJECT;
 
     public static String PA_TOOLTIP_ARTICLES;
 
@@ -60,6 +72,12 @@ public class MessageConstants extends NLS {
     public static String PA_LBL_RECENT_PROJECT;
 
     public static String PA_TOOLTIP_OPEN_RECENT_PROJECT;
+
+    public static String PA_TOOLTIP_SAMPLE_WEB_UI_PROJECT;
+
+    public static String PA_TOOLTIP_SAMPLE_MOBILE_PROJECT;
+
+    public static String PA_TOOLTIP_SAMPLE_WEB_SERVICE_PROJECT;
 
     public static String DIA_TITLE_QUICK_GUIDE;
 

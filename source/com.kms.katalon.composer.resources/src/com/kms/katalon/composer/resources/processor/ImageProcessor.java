@@ -276,13 +276,17 @@ public class ImageProcessor {
 
     private void registerWelcomeImages() {
         ImageManager.registerImage(IImageKeys.START_PAGE_BACKGROUND);
-        ImageManager.registerImage(IImageKeys.FAQ_32);
-        ImageManager.registerImage(IImageKeys.GETTING_STARTED_32);
-        ImageManager.registerImage(IImageKeys.HOW_TO_ARTICLES_32);
+        ImageManager.registerImage(IImageKeys.FAQ_100);
+        ImageManager.registerImage(IImageKeys.GETTING_STARTED_100);
+        ImageManager.registerImage(IImageKeys.HOW_TO_ARTICLES_100);
         ImageManager.registerImage(IImageKeys.NEW_PROJECT_32);
         ImageManager.registerImage(IImageKeys.OPEN_PROJECT_32);
         ImageManager.registerImage(IImageKeys.RECENT_PROJECT_32);
-        ImageManager.registerImage(IImageKeys.BRANDING_TEXT_96);
+        ImageManager.registerImage(IImageKeys.KATALON_LOGO_67);
+        ImageManager.registerImage(IImageKeys.RECENT_PROJECT_FILE_16);
+        ImageManager.registerImage(IImageKeys.SAMPLE_WEB_UI_PROJECT_100);
+        ImageManager.registerImage(IImageKeys.SAMPLE_MOBILE_PROJECT_100);
+        ImageManager.registerImage(IImageKeys.SAMPLE_WEB_SERVICES_PROJECT_100);
     }
 
     private void registerIntroImages() {

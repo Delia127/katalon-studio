@@ -2,15 +2,19 @@ package com.kms.katalon.about.dialog;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.ui.internal.ProductProperties;
 import org.eclipse.ui.internal.about.AboutItem;
 import org.eclipse.ui.internal.about.AboutTextManager;
 
 import com.kms.katalon.console.utils.VersionUtil;
+import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.constants.MessageConstants;
 
 @SuppressWarnings({ "restriction" })
@@ -90,5 +94,10 @@ public class VersionAboutTextManager extends AboutTextManager {
 
         return new AboutItem(s, (int[][]) linkRanges.toArray(new int[linkRanges.size()][2]),
                 (String[]) links.toArray(new String[links.size()]));
+    }
+
+    public static String getVersionText() {
+        String[] lines = ProductProperties.getAboutText(Platform.getProduct()).split(GlobalStringConstants.CR_EOL);
+        return Arrays.asList(lines).stream().filter(s -> s.startsWith("Version")).findFirst().get();
     }
 }

@@ -47,7 +47,8 @@ Require-Bundle: org.eclipse.e4.core.di,
  com.kms.katalon.support.testing.katserver;bundle-version="1.0.0",
  com.kms.katalon.console,
  org.eclipse.e4.ui.css.swt,
- com.kms.katalon.composer.resources
+ com.kms.katalon.composer.resources,
+ org.eclipse.osgi
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: javax.annotation,
  org.eclipse.e4.core.services.log,
