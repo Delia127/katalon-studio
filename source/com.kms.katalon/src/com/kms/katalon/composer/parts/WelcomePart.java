@@ -45,7 +45,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.osgi.service.event.EventHandler;
 
-import com.kms.katalon.about.dialog.VersionAboutTextManager;
 import com.kms.katalon.composer.components.impl.control.ResizableBackgroundImageComposite;
 import com.kms.katalon.composer.components.impl.control.ScrollableComposite;
 import com.kms.katalon.composer.components.impl.handler.CommandCaller;
@@ -55,6 +54,7 @@ import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.project.constants.CommandId;
 import com.kms.katalon.composer.project.menu.RecentProjectParameterizedCommandBuilder;
 import com.kms.katalon.composer.project.template.SampleProjectProvider;
+import com.kms.katalon.console.utils.ApplicationInfo;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.ImageConstants;
 import com.kms.katalon.constants.MessageConstants;
@@ -382,7 +382,8 @@ public class WelcomePart {
 
         Label versionLabel = new Label(welcomeComposite, SWT.NONE);
         versionLabel.setLayoutData(new GridData(SWT.CENTER, SWT.TOP, true, false, 1, 1));
-        versionLabel.setText(VersionAboutTextManager.getVersionText());
+        versionLabel
+                .setText(MessageFormat.format(MessageConstants.PA_LBL_KATALON_VERSION, ApplicationInfo.versionNo()));
         versionLabel.setFont(getSmallFont());
     }
 

@@ -27,6 +27,8 @@ public class MessageConstants extends NLS {
 
     public static String PA_TOOLTIP_KATALON_HOME_PAGE;
 
+    public static String PA_LBL_KATALON_VERSION;
+
     public static String PA_LBL_NEW_PROJECT;
 
     public static String PA_TOOLTIP_NEW_PROJECT;

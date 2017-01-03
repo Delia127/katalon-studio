@@ -6,8 +6,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLDecoder;
+import java.util.Enumeration;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
+import org.apache.commons.io.FileUtils;
 
 import com.kms.katalon.composer.components.application.ApplicationSingleton;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
@@ -17,6 +22,7 @@ import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.project.constants.StringConstants;
 import com.kms.katalon.composer.project.handlers.OpenProjectHandler;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.execution.classpath.ClassPathResolver;
 
 public class SampleProjectProvider {
     private static final String DEFAULT_SAMPLES_PROJECT_LOCATION = System.getProperty("user.home") + File.separator
@@ -57,8 +63,7 @@ public class SampleProjectProvider {
     }
 
     private void processZipFileInputStream(InputStream is, String location) throws IOException {
-        ZipInputStream stream = new ZipInputStream(is);
-        try {
+        try (ZipInputStream stream = new ZipInputStream(is)) {
             ZipEntry entry;
             while ((entry = stream.getNextEntry()) != null) {
                 File file = new File(location, entry.getName());
@@ -70,8 +75,6 @@ public class SampleProjectProvider {
                     writeZipEntryToFile(stream, file);
                 }
             }
-        } finally {
-            stream.close();
         }
     }
 
@@ -99,7 +102,19 @@ public class SampleProjectProvider {
         if (jarFile.isDirectory()) { // built by IDE
             return new FileInputStream(new File(jarFile, filePath).getAbsolutePath());
         } else {
-            return clazz.getClassLoader().getResourceAsStream(filePath);
+            try (JarFile jar = new JarFile(jarFile)){
+                final Enumeration<JarEntry> entries = jar.entries();
+                String relativePath = filePath.replace(File.separator, "/");
+                while (entries.hasMoreElements()) {
+                    JarEntry jarEntry = entries.nextElement();
+                    if (jarEntry.getName().equals(relativePath)) {
+                        File extractedFile = new File(ClassPathResolver.getConfigurationFolder(), relativePath);
+                        FileUtils.copyInputStreamToFile(jar.getInputStream(jarEntry), extractedFile);
+                        return new FileInputStream(extractedFile);
+                    }
+                }
+                return null;
+            }
         }
     }
 
