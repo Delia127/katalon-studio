@@ -14,6 +14,10 @@ public class WebElementPropertyEntity implements Serializable {
     public static final String TYPE_RELATION = "Relation";
 
     public static final String TYPE_ADDITION = "Additional";
+    
+    public static final String TYPE_PROPERTY = "type";
+    
+    public static final String TAG_PROPERTY = "tag";
 
     private String name;
 

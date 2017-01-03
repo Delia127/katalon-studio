@@ -148,6 +148,16 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.FOLDER_TEST_OBJECT_16);
         ImageManager.registerImage(IImageKeys.CHECKPOINT_16);
         ImageManager.registerImage(IImageKeys.TEST_OBJECT_16);
+        ImageManager.registerImage(IImageKeys.BTN_TEST_OBJECT_16);
+        ImageManager.registerImage(IImageKeys.CBX_TEST_OBJECT_16);
+        ImageManager.registerImage(IImageKeys.CHK_TEST_OBJECT_16);
+        ImageManager.registerImage(IImageKeys.FILE_TEST_OBJECT_16);
+        ImageManager.registerImage(IImageKeys.IMG_TEST_OBJECT_16);
+        ImageManager.registerImage(IImageKeys.LBL_TEST_OBJECT_16);
+        ImageManager.registerImage(IImageKeys.LNK_TEST_OBJECT_16);
+        ImageManager.registerImage(IImageKeys.RBT_TEST_OBJECT_16);
+        ImageManager.registerImage(IImageKeys.TXT_TEST_OBJECT_16);
+
         ImageManager.registerImage(IImageKeys.TEST_SUITE_16);
         ImageManager.registerImage(IImageKeys.TEST_SUITE_COLLECTION_16);
         ImageManager.registerImage(IImageKeys.WS_TEST_OBJECT_16);

@@ -31,7 +31,8 @@ Require-Bundle: com.kms.katalon.entity;bundle-version="1.0.0",
  com.kms.katalon.core,
  org.eclipse.e4.ui.bindings,
  org.apache.commons.io,
- com.kms.katalon.composer.resources
+ com.kms.katalon.composer.resources,
+ com.kms.katalon.core.webui
 Export-Package: com.kms.katalon.composer.components.impl.constants,
  com.kms.katalon.composer.components.impl.control,
  com.kms.katalon.composer.components.impl.dialogs,
