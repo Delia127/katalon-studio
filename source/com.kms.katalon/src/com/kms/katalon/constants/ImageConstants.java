@@ -9,7 +9,7 @@ public class ImageConstants {
 
     public static final Image IMG_BRANDING_BACKGROUND = ImageManager.getImage(IImageKeys.START_PAGE_BACKGROUND);
 
-    public static final Image IMG_BRANDING = ImageManager.getImage(IImageKeys.BRANDING_TEXT_96);
+    public static final Image IMG_BRANDING = ImageManager.getImage(IImageKeys.KATALON_LOGO_67);
 
     public static final Image IMG_NEW_PROJECT = ImageManager.getImage(IImageKeys.NEW_PROJECT_32);
 
@@ -17,11 +17,19 @@ public class ImageConstants {
 
     public static final Image IMG_RECENT_PROJECT = ImageManager.getImage(IImageKeys.RECENT_PROJECT_32);
 
-    public static final Image IMG_FAQ = ImageManager.getImage(IImageKeys.FAQ_32);
+    public static final Image IMG_FAQ = ImageManager.getImage(IImageKeys.FAQ_100);
 
-    public static final Image IMG_GETTING_STARTED = ImageManager.getImage(IImageKeys.GETTING_STARTED_32);
+    public static final Image IMG_GETTING_STARTED = ImageManager.getImage(IImageKeys.GETTING_STARTED_100);
 
-    public static final Image IMG_HOW_TO_ARTICLES = ImageManager.getImage(IImageKeys.HOW_TO_ARTICLES_32);
+    public static final Image IMG_HOW_TO_ARTICLES = ImageManager.getImage(IImageKeys.HOW_TO_ARTICLES_100);
+    
+    public static final Image IMG_RECENT_PROJECT_FILE = ImageManager.getImage(IImageKeys.RECENT_PROJECT_FILE_16);
+    
+    public static final Image IMG_SAMPLE_WEB_UI_PROJECT = ImageManager.getImage(IImageKeys.SAMPLE_WEB_UI_PROJECT_100);
+    
+    public static final Image IMG_SAMPLE_MOBILE_PROJECT = ImageManager.getImage(IImageKeys.SAMPLE_MOBILE_PROJECT_100);
+    
+    public static final Image IMG_SAMPLE_WEB_SERVICE_PROJECT = ImageManager.getImage(IImageKeys.SAMPLE_WEB_SERVICES_PROJECT_100);
 
     public static final String URI_IMG_WELCOME = ImageManager.getImageURLString(IImageKeys.HIGHLIGHT_16);
 

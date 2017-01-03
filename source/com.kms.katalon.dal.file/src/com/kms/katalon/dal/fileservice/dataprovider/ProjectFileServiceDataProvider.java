@@ -1,5 +1,9 @@
 package com.kms.katalon.dal.fileservice.dataprovider;
 
+import java.io.File;
+
+import org.apache.commons.io.FilenameUtils;
+
 import com.kms.katalon.dal.IProjectDataProvider;
 import com.kms.katalon.dal.fileservice.EntityService;
 import com.kms.katalon.dal.fileservice.FileServiceConstant;
@@ -59,4 +63,21 @@ public class ProjectFileServiceDataProvider implements IProjectDataProvider {
 		EntityService.getInstance().saveEntity(projectEntity);
 		
 	}
+
+    @Override
+    public File getProjectFile(String folderLocation) {
+        if (folderLocation == null) {
+            return null;
+        }
+        File folder = new File(folderLocation);
+        if (!folder.exists()) {
+            return null;
+        }
+        for (File file : folder.listFiles()) {
+            if (('.' + FilenameUtils.getExtension(file.getAbsolutePath())).equals(ProjectEntity.getProjectFileExtension())) {
+                return file;
+            }
+        }
+        return null;
+    }
 }

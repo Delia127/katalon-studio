@@ -1,5 +1,7 @@
 package com.kms.katalon.dal;
 
+import java.io.File;
+
 import com.kms.katalon.entity.project.ProjectEntity;
 
 public interface IProjectDataProvider {
@@ -25,4 +27,6 @@ public interface IProjectDataProvider {
 	public String getExternalSettingFolder();
 	
 	public String getInternalSettingFolder();
+
+    File getProjectFile(String folderLocation);
 }

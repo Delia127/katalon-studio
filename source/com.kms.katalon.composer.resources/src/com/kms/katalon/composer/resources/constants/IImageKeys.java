@@ -19,11 +19,11 @@ public interface IImageKeys {
     // Welcome
     public static final String START_PAGE_BACKGROUND = "welcome/start_page_background.png"; //$NON-NLS-1$
 
-    public static final String FAQ_32 = "welcome/faqs_32.png"; //$NON-NLS-1$
+    public static final String FAQ_100 = "welcome/faqs_100.png"; //$NON-NLS-1$
 
-    public static final String GETTING_STARTED_32 = "welcome/getting_started_32.png"; //$NON-NLS-1$
+    public static final String GETTING_STARTED_100 = "welcome/getting_started_100.png"; //$NON-NLS-1$
 
-    public static final String HOW_TO_ARTICLES_32 = "welcome/how_to_articles_32.png"; //$NON-NLS-1$
+    public static final String HOW_TO_ARTICLES_100 = "welcome/how_to_articles_100.png"; //$NON-NLS-1$
 
     public static final String NEW_PROJECT_32 = "welcome/new_project_32.png"; //$NON-NLS-1$
 
@@ -31,7 +31,15 @@ public interface IImageKeys {
 
     public static final String RECENT_PROJECT_32 = "welcome/recent_project_32.png"; //$NON-NLS-1$
 
-    public static final String BRANDING_TEXT_96 = "welcome/branding_text_96.png"; //$NON-NLS-1$
+    public static final String KATALON_LOGO_67 = "welcome/katalon_logo_67.png"; //$NON-NLS-1$
+
+    public static final String RECENT_PROJECT_FILE_16 = "welcome/recent_project_file_16.png"; //$NON-NLS-1$
+    
+    public static final String SAMPLE_WEB_UI_PROJECT_100 = "welcome/sample_web_ui_100.png"; //$NON-NLS-1$
+    
+    public static final String SAMPLE_MOBILE_PROJECT_100 = "welcome/sample_mobile_100.png"; //$NON-NLS-1$
+    
+    public static final String SAMPLE_WEB_SERVICES_PROJECT_100 = "welcome/sample_web_services_100.png"; //$NON-NLS-1$
     // End Welcome
 
     // For Dialog
