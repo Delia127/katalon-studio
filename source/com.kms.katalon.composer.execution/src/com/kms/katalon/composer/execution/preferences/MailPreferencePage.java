@@ -1,15 +1,15 @@
 package com.kms.katalon.composer.execution.preferences;
 
+import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 import java.util.Arrays;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.debug.internal.ui.SWTFactory;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
@@ -21,10 +21,14 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 
+import com.kms.katalon.composer.components.dialogs.MessageDialogWithLink;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.preferences.editor.MultiLineStringFieldEditor;
 import com.kms.katalon.execution.constants.ExecutionPreferenceConstants;
@@ -36,6 +40,9 @@ import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 
 @SuppressWarnings("restriction")
 public class MailPreferencePage extends FieldEditorPreferencePage {
+
+    private static final char PASSWORD_CHAR_MASK = '\u2022';
+
     private StringFieldEditor recipientFieldEditor, hostFieldEditor, portFieldEditor, userNameFieldEditor,
             passwordFieldEditor;
 
@@ -67,9 +74,10 @@ public class MailPreferencePage extends FieldEditorPreferencePage {
                 StringConstants.PREF_LBL_USERNAME, 1, false);
         ((ExposedStringFieldEditor) userNameFieldEditor)
                 .setHintText(MailPreferenceDefaultValueInitializer.MAIL_CONFIG_USERNAME_DEFAULT_VALUE);
-        
+
         passwordFieldEditor = addStringFieldEditor(group, ExecutionPreferenceConstants.MAIL_CONFIG_PASSWORD,
                 StringConstants.PREF_LBL_PASSWORD, 1, false);
+        ((ExposedStringFieldEditor) passwordFieldEditor).setEchoChar(PASSWORD_CHAR_MASK);
 
         Composite spacer = SWTFactory.createComposite(group, 2, 2, GridData.FILL_HORIZONTAL);
 
@@ -107,30 +115,48 @@ public class MailPreferencePage extends FieldEditorPreferencePage {
                 if (conf == null) {
                     return;
                 }
-                Job job = new Job(StringConstants.PREF_LBL_SEND_TEST_EMAIL) {
 
-                    @Override
-                    protected IStatus run(IProgressMonitor monitor) {
-                        try {
-                            monitor.beginTask(StringConstants.PREF_SEND_TEST_EMAIL_JOB_NAME, 1);
-                            MailUtil.sendTestMail(conf);
-                            monitor.worked(1);
-                            return Status.OK_STATUS;
-                        } catch (Exception e1) {
-                            LoggerSingleton.logError(e1);
-                            MessageDialog.openError(
-                                    getShell(),
-                                    StringConstants.ERROR,
-                                    MessageFormat.format(StringConstants.ERROR_SEND_TEST_EMAIL_FAIL, e1.getClass()
-                                            .getName() + " " + e1.getMessage()));
-                            return Status.CANCEL_STATUS;
-                        } finally {
-                            monitor.done();
+                try {
+                    Shell shell = getShell();
+                    new ProgressMonitorDialog(shell).run(true, true, new IRunnableWithProgress() {
+
+                        @Override
+                        public void run(IProgressMonitor monitor)
+                                throws InvocationTargetException, InterruptedException {
+                            monitor.beginTask(StringConstants.PREF_SEND_TEST_EMAIL_JOB_NAME, IProgressMonitor.UNKNOWN);
+                            Display.getDefault().asyncExec(new Runnable() {
+
+                                @Override
+                                public void run() {
+                                    String message = ComposerExecutionMessageConstants.PREF_MSG_TEST_EMAIL_IS_SENT_SUCCESSFULLY;
+                                    String messageTitle = StringConstants.INFO;
+                                    int messageType = MessageDialog.INFORMATION;
+                                    try {
+                                        MailUtil.sendTestMail(conf);
+                                    } catch (Exception ex) {
+                                        LoggerSingleton.logError(ex);
+                                        messageTitle = StringConstants.ERROR;
+                                        messageType = MessageDialog.ERROR;
+                                        message = ex.getMessage();
+                                        if (StringUtils.startsWith(message,
+                                                ComposerExecutionMessageConstants.PREF_FAILED_APACHE_MAIL_PREFIX_ERROR_MSG)) {
+                                            message = StringUtils.removeStart(message,
+                                                    ComposerExecutionMessageConstants.PREF_FAILED_APACHE_MAIL_PREFIX_ERROR_MSG);
+                                            message = MessageFormat.format(
+                                                    ComposerExecutionMessageConstants.PREF_REPLACEMENT_APACHE_MAIL_ERROR_MSG,
+                                                    message);
+                                        }
+                                    } finally {
+                                        monitor.done();
+                                        MessageDialogWithLink.open(messageType, shell, messageTitle, message, SWT.NONE);
+                                    }
+                                }
+                            });
                         }
-                    }
-                };
-                job.setUser(true);
-                job.schedule();
+                    });
+                } catch (InvocationTargetException | InterruptedException ex) {
+                    LoggerSingleton.logError(ex);
+                }
             }
         });
         initialize();
@@ -208,7 +234,7 @@ public class MailPreferencePage extends FieldEditorPreferencePage {
     private static String[] getRecipients(String reportRecipients) {
         return StringUtils.split(reportRecipients.trim(), ";");
     }
-    
+
     private class ExposedStringFieldEditor extends StringFieldEditor {
         public ExposedStringFieldEditor(String name, String labelText, Composite parent) {
             super(name, labelText, parent);
@@ -216,6 +242,10 @@ public class MailPreferencePage extends FieldEditorPreferencePage {
 
         public void setHintText(String hint) {
             getTextControl().setMessage(hint);
+        }
+
+        public void setEchoChar(char echoChar) {
+            getTextControl().setEchoChar(echoChar);
         }
     }
 }
