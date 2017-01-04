@@ -235,6 +235,12 @@ public class ComposerExecutionMessageConstants extends NLS {
 
     public static String LBL_EXECUTION_NEW_SESSION;
 
+    public static String PREF_MSG_TEST_EMAIL_IS_SENT_SUCCESSFULLY;
+
+    public static String PREF_FAILED_APACHE_MAIL_PREFIX_ERROR_MSG;
+
+    public static String PREF_REPLACEMENT_APACHE_MAIL_ERROR_MSG;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerExecutionMessageConstants.class);
