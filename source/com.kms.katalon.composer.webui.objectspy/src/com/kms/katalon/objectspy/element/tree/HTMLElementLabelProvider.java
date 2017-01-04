@@ -44,6 +44,7 @@ public class HTMLElementLabelProvider extends StyledCellLabelProvider {
                     switch (HTMLTags.getElementType(htmlElement.getType(), htmlElement.getTypeAttribute())) {
                         case HTMLTags.TAG_A:
                             return ImageConstants.IMG_16_LNK_TEST_OBJECT;
+                        case HTMLTags.TAG_SUBMIT:
                         case HTMLTags.TAG_BUTTON:
                             return ImageConstants.IMG_16_BTN_TEST_OBJECT;
                         case HTMLTags.TAG_CHECKBOX:
