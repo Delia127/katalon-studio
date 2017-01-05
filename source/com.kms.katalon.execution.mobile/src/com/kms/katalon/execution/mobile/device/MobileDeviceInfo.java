@@ -10,8 +10,8 @@ import org.eclipse.core.runtime.Platform;
 
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.core.appium.constants.AppiumStringConstants;
+import com.kms.katalon.core.util.ConsoleCommandExecutor;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
-import com.kms.katalon.execution.mobile.util.ConsoleCommandExecutor;
 
 public abstract class MobileDeviceInfo {
     protected static final String X_FLAG = "+x";

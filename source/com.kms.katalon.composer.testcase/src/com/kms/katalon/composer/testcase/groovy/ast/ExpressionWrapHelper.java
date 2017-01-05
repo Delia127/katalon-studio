@@ -23,6 +23,7 @@ import org.codehaus.groovy.ast.expr.MapEntryExpression;
 import org.codehaus.groovy.ast.expr.MapExpression;
 import org.codehaus.groovy.ast.expr.MethodCallExpression;
 import org.codehaus.groovy.ast.expr.MethodPointerExpression;
+import org.codehaus.groovy.ast.expr.NotExpression;
 import org.codehaus.groovy.ast.expr.PostfixExpression;
 import org.codehaus.groovy.ast.expr.PrefixExpression;
 import org.codehaus.groovy.ast.expr.PropertyExpression;
@@ -303,6 +304,7 @@ public class ExpressionWrapHelper {
         expressionWrapperConverterMap.put(ArgumentListExpression.class.getSimpleName(), argumentListWrapperConverter);
         expressionWrapperConverterMap.put(ArrayExpression.class.getSimpleName(), arrayWrapperConverter);
         expressionWrapperConverterMap.put(BooleanExpression.class.getSimpleName(), booleanListWrapperConverter);
+        expressionWrapperConverterMap.put(NotExpression.class.getSimpleName(), booleanListWrapperConverter);
         expressionWrapperConverterMap.put(BitwiseNegationExpression.class.getSimpleName(), bitWiseWrapperConverter);
         expressionWrapperConverterMap.put(CastExpression.class.getSimpleName(), castWrapperConverter);
         expressionWrapperConverterMap.put(ClosureExpression.class.getSimpleName(), closureWrapperConverter);

@@ -11,9 +11,11 @@ import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.impl.transfer.TreeEntityTransfer;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.controller.ObjectRepositoryController;
+import com.kms.katalon.core.webui.constants.HTMLTags;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 
 public class WebElementTreeEntity extends AbstractTreeEntity {
@@ -55,7 +57,34 @@ public class WebElementTreeEntity extends AbstractTreeEntity {
         if (webElement instanceof WebServiceRequestEntity) {
             return ImageConstants.IMG_16_WS_TEST_OBJECT;
         }
-        return ImageConstants.IMG_16_TEST_OBJECT;
+        WebElementEntity webElement = (WebElementEntity) getObject();
+        switch (HTMLTags.getElementType(webElement.getPropertyValue(WebElementPropertyEntity.TAG_PROPERTY), 
+                webElement.getPropertyValue(WebElementPropertyEntity.TYPE_PROPERTY))) {
+            case HTMLTags.TAG_A:
+                return ImageConstants.IMG_16_LNK_TEST_OBJECT;
+            case HTMLTags.TAG_RESET:
+            case HTMLTags.TAG_SUBMIT:
+            case HTMLTags.TAG_BUTTON:
+                return ImageConstants.IMG_16_BTN_TEST_OBJECT;
+            case HTMLTags.TAG_CHECKBOX:
+                return ImageConstants.IMG_16_CHK_TEST_OBJECT;
+            case HTMLTags.TAG_FILE:
+                return ImageConstants.IMG_16_FILE_TEST_OBJECT;
+            case HTMLTags.TAG_IMG:
+            case HTMLTags.TAG_IMAGE:
+                return ImageConstants.IMG_16_IMG_TEST_OBJECT;
+            case HTMLTags.TAG_SELECT:
+                return ImageConstants.IMG_16_CBX_TEST_OBJECT;
+            case HTMLTags.TAG_LABEL:
+                return ImageConstants.IMG_16_LBL_TEST_OBJECT;
+            case HTMLTags.TAG_TEXTAREA:
+            case HTMLTags.TAG_TEXT:
+                return ImageConstants.IMG_16_TXT_TEST_OBJECT;
+            case HTMLTags.TAG_RADIO:
+                return ImageConstants.IMG_16_RBT_TEST_OBJECT;
+            default:
+                return ImageConstants.IMG_16_TEST_OBJECT;
+        }
     }
 
     @Override

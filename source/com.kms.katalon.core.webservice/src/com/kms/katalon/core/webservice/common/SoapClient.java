@@ -104,6 +104,7 @@ public class SoapClient implements Requestor {
         }
     }
 
+    @Override
     public ResponseObject send(RequestObject request) throws IOException, WSDLException, WebServiceException {
         this.requestObject = request;
         parseWsdl();

@@ -45,7 +45,7 @@ public class ConsoleLauncher extends ReportableLauncher implements IConsoleLaunc
         super.addLogRecords(records);
 
         // No need to remember log records in console mode
-        records.clear();
+        clearRecords();
     }
 
     @Override

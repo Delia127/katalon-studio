@@ -251,4 +251,7 @@ public class ProjectController extends EntityController {
         saveRecentProjects(recentProjects);
     }
 
+    public File getProjectFile(String folderLocation) {
+        return getDataProviderSetting().getProjectDataProvider().getProjectFile(folderLocation);
+    }
 }

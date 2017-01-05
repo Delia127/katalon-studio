@@ -55,6 +55,8 @@ public class ObjectspyMessageConstants extends NLS {
 
     public static String MENU_ITEM_ACTIVE_BROWSERS;
 
+    public static String MSG_DLG_INIT_OBJECT_SPY;
+
     public static String HAND_ACTIVE_BROWSERS_DIA_TITLE;
 
     public static String HAND_ACTIVE_BROWSERS_DIA_MESSAGE;

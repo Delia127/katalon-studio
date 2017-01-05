@@ -48,7 +48,9 @@ public class GoToAddonStoreMessageDialog extends MessageDialogWithToggle {
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
         super.createButtonsForButtonBar(parent);
-        getButton(OK_BUTTON_INDEX).setText(getOKButonLabel());
+        Button okButton = getButton(OK_BUTTON_INDEX);
+        okButton.setText(getOKButonLabel());
+        setCustomButtonLayoutData(okButton, 80);
         Button noButton = getButton(NO_BUTTON_INDEX);
         noButton.setText(getNoButtonLabel());
         setCustomButtonLayoutData(noButton, 100);

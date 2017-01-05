@@ -17,8 +17,8 @@ import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.webservice.constants.ImageConstants;
-import com.kms.katalon.composer.webservice.parts.RestRequestObjectPart;
-import com.kms.katalon.composer.webservice.parts.SoapRequestObjectPart;
+import com.kms.katalon.composer.webservice.parts.RestServicePart;
+import com.kms.katalon.composer.webservice.parts.SoapServicePart;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
@@ -27,10 +27,10 @@ public class OpenWebServiceRequestObjectHandler {
     public static final String BUNDLE_URI_WEBSERVICE = "bundleclass://com.kms.katalon.composer.webservice/";
 
     private static final String WEBSERVICE_SOAP_OBJECT_PART_URI = BUNDLE_URI_WEBSERVICE
-            + SoapRequestObjectPart.class.getName();
+            + SoapServicePart.class.getName();
 
     private static final String WEBSERVICE_REST_OBJECT_PART_URI = BUNDLE_URI_WEBSERVICE
-            + RestRequestObjectPart.class.getName();
+            + RestServicePart.class.getName();
 
     @Inject
     MApplication application;
@@ -63,7 +63,6 @@ public class OpenWebServiceRequestObjectHandler {
     }
 
     public void excute(WebServiceRequestEntity requestObject) {
-
         if (requestObject != null) {
             String partId = EntityPartUtil.getTestObjectPartId(requestObject.getId());
             MPartStack stack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
@@ -79,6 +78,7 @@ public class OpenWebServiceRequestObjectHandler {
                 }
                 mPart.setCloseable(true);
                 mPart.setIconURI(ImageConstants.URL_16_WS_TEST_OBJECT);
+                mPart.setTooltip(requestObject.getIdForDisplay());
                 stack.getChildren().add(mPart);
             }
 

@@ -259,6 +259,8 @@ public class StringConstants {
     public static final String XML_LOG_DEVICE_ID_PROPERTY = "deviceId";
 
     public static final String XML_LOG_DEVICE_PLATFORM_PROPERTY = "devicePlatform";
+    
+    public static final String XML_LOG_DEVICE_CONSOLE_PATH_PROPERTY = "deviceConsolePath";
 
     public static final String XML_LOG_START_LINE_PROPERTY = "startLine";
 

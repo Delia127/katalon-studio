@@ -205,11 +205,11 @@ public interface IdConstants {
 
     public static final String JOBVIEWER_PART_ID = "com.kms.katalon.composer.execution.part.job";
 
-    public static final String OUTLINE_TRIMSTACK_ID = "com.kms.katalon.partstack.outline(com.kms.katalon.composer.perspective.keyword)";
+    public static final String OUTLINE_TRIMSTACK_ID = "com.kms.katalon.partstack.outline(com.kms.katalon.composer.window.main).(com.kms.katalon.composer.perspective.keyword)";
 
     public static final String TOOLBAR_TRIMSTACK_ID = "com.kms.katalon.trimbar";
 
-    public static final String CONSOLE_TRIMSTACK_ID = "com.kms.katalon.partstack.console(com.kms.katalon.composer.perspective.keyword)";
+    public static final String CONSOLE_TRIMSTACK_ID = "com.kms.katalon.partstack.console(com.kms.katalon.composer.window.main).(com.kms.katalon.composer.perspective.keyword)";
 
     // Menu IDs
     public static final String MAIN_MENU_ID = "com.kms.katalon.composer.menu";
@@ -235,8 +235,6 @@ public interface IdConstants {
     public static final String MENU_ID_SEARCH_ = "com.kms.katalon.handledmenuitem.searchFile";
 
     public static final String MENU_ID_PROJECT = "com.kms.katalon.composer.menu.project";
-    
-    public static final String MENU_ID_INTEGRATION = "com.kms.katalon.menu.integration";
 
     public static final String MENU_ID_WINDOW = "com.kms.katalon.composer.menu.window";
 

@@ -25,7 +25,7 @@ import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.core.configuration.RunConfiguration;
-import com.kms.katalon.core.util.PathUtil;
+import com.kms.katalon.core.util.internal.PathUtil;
 import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.core.webui.util.WebDriverPropertyUtil;

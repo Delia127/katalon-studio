@@ -8,6 +8,7 @@ import java.net.MalformedURLException;
 import java.text.MessageFormat;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
 
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -23,6 +24,10 @@ import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.webui.constants.StringConstants;
 
 public class WebMobileDriverFactory {
+    private static final String REAL_DEVICE_LOGGER = "realDeviceLogger";
+
+    private static final String XCUI_TEST = "XCUITest";
+
     private static final String CHROME = "Chrome";
 
     private static final String SAFARI = "Safari";
@@ -67,6 +72,14 @@ public class WebMobileDriverFactory {
             if (deviceId == null) {
                 capabilities.setCapability(MobileCapabilityType.PLATFORM, getDeviceOS());
                 capabilities.setCapability(MobileCapabilityType.PLATFORM_VERSION, getDeviceOSVersion());
+            }
+            try {
+                if (AppiumDriverManager.getXCodeVersion() >= 8) {
+                    capabilities.setCapability(MobileCapabilityType.AUTOMATION_NAME, XCUI_TEST);
+                    capabilities.setCapability(REAL_DEVICE_LOGGER, RunConfiguration.getDeviceConsoleExecutable());
+                }
+            } catch (ExecutionException e) {
+                // XCode version not found, ignore this
             }
         } else if (driverPreferences != null && osType == WebUIDriverType.ANDROID_DRIVER) {
             capabilities.merge(toDesireCapabilities(driverPreferences, WebUIDriverType.ANDROID_DRIVER));

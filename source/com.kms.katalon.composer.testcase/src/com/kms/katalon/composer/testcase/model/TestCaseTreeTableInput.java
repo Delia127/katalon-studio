@@ -1120,6 +1120,8 @@ public class TestCaseTreeTableInput {
             reloadExpandedState(expandedElements);
             setTopItem(topItem);
             if (addSuccessfully) {
+                // Scroll down and show the new added item
+                treeTableViewer.getTree().showSelection();
                 return Status.OK_STATUS;
             }
             return Status.CANCEL_STATUS;
@@ -1591,4 +1593,5 @@ public class TestCaseTreeTableInput {
             return Status.OK_STATUS;
         }
     }
+
 }

@@ -7,6 +7,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
 
 import com.kms.katalon.composer.components.impl.editors.StringComboBoxCellEditor;
+import com.kms.katalon.composer.webservice.constants.HttpHeaderConstants;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 
 public class PropertyNameEditingSupport extends EditingSupport {
@@ -16,19 +17,6 @@ public class PropertyNameEditingSupport extends EditingSupport {
     private MDirtyable dirtyable;
 
     private boolean isHeaderField = false;
-
-    /**
-     * List of HTTP header request fields (standard and non-standard)
-     * 
-     * @see <a href="https://en.wikipedia.org/wiki/List_of_HTTP_header_fields">List of HTTP header fields</a>
-     */
-    public static final String[] headerRequestFieldName = new String[] { "Accept", "Accept-Charset", "Accept-Encoding",
-            "Accept-Language", "Authorization", "Cache-Control", "Connection", "Content-Length", "Content-Type",
-            "Cookie", "DNT", "Date", "Expect", "From", "Front-End-Https", "Host", "If-Match", "If-Modified-Since",
-            "If-None-Match", "If-Range", "If-Unmodified-Since", "Max-Forwards", "Origin", "Pragma",
-            "Proxy-Authorization", "Proxy-Connection", "Range", "Referer", "TE", "Upgrade", "User-Agent", "Via",
-            "Warning", "X-ATT-DeviceId", "X-Csrf-Token", "X-Forwarded-For", "X-Forwarded-Host", "X-Forwarded-Proto",
-            "X-Http-Method-Override", "X-Requested-With", "X-UIDH", "X-Wap-Profile" };
 
     public PropertyNameEditingSupport(TableViewer viewer, MDirtyable dirtyable) {
         super(viewer);
@@ -46,7 +34,7 @@ public class PropertyNameEditingSupport extends EditingSupport {
     @Override
     protected CellEditor getCellEditor(Object element) {
         if (isHeaderField) {
-            return new StringComboBoxCellEditor(viewer.getTable(), headerRequestFieldName);
+            return new StringComboBoxCellEditor(viewer.getTable(), HttpHeaderConstants.PRE_DEFINDED_HTTP_HEADER_FIELD_NAMES);
         }
         return new TextCellEditor(viewer.getTable());
     }

@@ -9,9 +9,12 @@
  *******************************************************************************/
 package com.kms.katalon.composer.components.impl.editors;
 
+import org.eclipse.jface.fieldassist.AutoCompleteField;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.widgets.Composite;
+
+import com.kms.katalon.composer.components.adapter.CComboContentAdapter;
 
 /**
  * An extended ComboBoxCellEditor that selects and returns Strings
@@ -34,6 +37,7 @@ public class StringComboBoxCellEditor extends ComboBoxCellEditor {
         super(parent, items, style);
     }
 
+    @Override
     protected Object doGetValue() {
         // otherwise limits to set of valid values
         Object index = super.doGetValue();
@@ -50,6 +54,7 @@ public class StringComboBoxCellEditor extends ComboBoxCellEditor {
         return null;
     }
 
+    @Override
     protected void doSetValue(Object value) {
         if (fSettingValue) {
             return;
@@ -78,6 +83,7 @@ public class StringComboBoxCellEditor extends ComboBoxCellEditor {
         fSettingValue = false;
     }
 
+    @Override
     public void setItems(String[] newItems) {
         if ((getControl() == null) || getControl().isDisposed()) {
             return;
@@ -86,6 +92,7 @@ public class StringComboBoxCellEditor extends ComboBoxCellEditor {
         // keep selection if possible
         Object previousSelectedValue = getValue();
         super.setItems(newItems);
+        new AutoCompleteField(getControl(), new CComboContentAdapter(), newItems);
         if ((previousSelectedValue != null) && (getControl() instanceof CCombo)) {
             for (int i = 0; i < newItems.length; i++) {
                 if (newItems[i].equals(previousSelectedValue)) {

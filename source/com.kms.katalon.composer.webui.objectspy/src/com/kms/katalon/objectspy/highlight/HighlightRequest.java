@@ -32,6 +32,11 @@ public class HighlightRequest extends ElementRequest {
     public int getClientId() {
         return clientId;
     }
+    
+    @Override
+    public String getData() {
+        return (String) super.getData();
+    }
 
     @Override
     public String processFailed() {

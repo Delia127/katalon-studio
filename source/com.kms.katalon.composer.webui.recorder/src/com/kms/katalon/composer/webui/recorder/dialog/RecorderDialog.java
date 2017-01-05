@@ -16,6 +16,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -25,7 +26,9 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
@@ -90,6 +93,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.dialogs.ISelectionStatusValidator;
 import org.osgi.framework.Bundle;
+import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.dialogs.AbstractDialogCellEditor;
 import com.kms.katalon.composer.components.impl.control.Dropdown;
@@ -114,7 +118,8 @@ import com.kms.katalon.composer.webui.recorder.constants.StringConstants;
 import com.kms.katalon.composer.webui.recorder.core.HTMLElementRecorderServer;
 import com.kms.katalon.composer.webui.recorder.core.RecordSession;
 import com.kms.katalon.composer.webui.recorder.util.HTMLActionUtil;
-import com.kms.katalon.composer.webui.recorder.util.RecordSessionUtil;
+import com.kms.katalon.composer.webui.recorder.websocket.RecorderAddonSocket;
+import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
@@ -132,14 +137,20 @@ import com.kms.katalon.objectspy.element.tree.HTMLElementLabelProvider;
 import com.kms.katalon.objectspy.element.tree.HTMLElementTreeContentProvider;
 import com.kms.katalon.objectspy.exception.IEAddonNotInstalledException;
 import com.kms.katalon.objectspy.util.BrowserUtil;
+import com.kms.katalon.objectspy.util.UtilitiesAddonUtil;
+import com.kms.katalon.objectspy.util.Win32Helper;
 import com.kms.katalon.objectspy.util.WinRegistry;
+import com.kms.katalon.objectspy.websocket.AddonCommand;
+import com.kms.katalon.objectspy.websocket.AddonSocket;
+import com.kms.katalon.objectspy.websocket.AddonSocketServer;
+import com.kms.katalon.objectspy.websocket.messages.AddonMessage;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef.HWND;
 
 @SuppressWarnings("restriction")
-public class RecorderDialog extends Dialog {
+public class RecorderDialog extends Dialog implements EventHandler {
     private static final String IE_WINDOW_CLASS = "IEFrame"; //$NON-NLS-1$
 
     private static final String relativePathToIEAddonSetup = File.separator + "extensions" + File.separator + "IE" //$NON-NLS-1$ //$NON-NLS-2$
@@ -150,8 +161,6 @@ public class RecorderDialog extends Dialog {
     private static final String IE_ADDON_BHO_KEY = "{FEA8CA38-7979-4F6A-83E4-2949EDEA96EF}"; //$NON-NLS-1$
 
     public static final String DIA_INSTANT_BROWSER_CHROME_RECORDER_EXTENSION_PATH = "<Katalon build path>/Resources/extensions/Chrome/Recorder Packed"; //$NON-NLS-1$
-
-    public static final String RECORDER_CHROME_ADDON_URL = "https://chrome.google.com/webstore/detail/katalon-recorder/bnaalgpdhfjepeanejkicnidgbpbmkhh"; //$NON-NLS-1$
 
     public static final String RECORDER_FIREFOX_ADDON_URL = "https://addons.mozilla.org/en-US/firefox/addon/katalon-recorder/"; //$NON-NLS-1$
 
@@ -201,6 +210,10 @@ public class RecorderDialog extends Dialog {
 
     private Text txtStartUrl;
 
+    private AddonSocket currentInstantSocket;
+
+    private IEventBroker eventBroker;
+
     /**
      * Create the dialog.
      * 
@@ -213,6 +226,25 @@ public class RecorderDialog extends Dialog {
         elements = new ArrayList<HTMLPageElement>();
         recordedActions = new ArrayList<HTMLActionMapping>();
         isPausing = false;
+        this.eventBroker = eventBroker;
+        eventBroker.subscribe(EventConstants.RECORDER_HTML_ACTION_CAPTURED, this);
+        startSocketServer();
+    }
+    
+    private void startSocketServer() {
+        try {
+            new ProgressMonitorDialog(getParentShell()).run(true, false, new IRunnableWithProgress() {
+                @Override
+                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                    monitor.beginTask(ComposerWebuiRecorderMessageConstants.MSG_DLG_INIT_RECORDER, 1);
+                    AddonSocketServer.getInstance().start(RecorderAddonSocket.class);
+                }
+            });
+        } catch (InvocationTargetException e) {
+            LoggerSingleton.logError(e.getTargetException());
+        } catch (InterruptedException e) {
+            // Ignore this
+        }
     }
 
     private void startBrowser() {
@@ -230,10 +262,7 @@ public class RecorderDialog extends Dialog {
                 checkIEAddon();
             }
             if (isInstant) {
-                startServer(getInstantBrowsersPort());
-                if (selectedBrowser == WebUIDriverType.IE_DRIVER) {
-                    runInstantIE();
-                }
+                startInstantSession();
             } else {
                 startServer();
                 startRecordSession(selectedBrowser);
@@ -254,6 +283,25 @@ public class RecorderDialog extends Dialog {
         } catch (Exception e) {
             logger.error(e);
             MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE, e.getMessage());
+        }
+    }
+
+    private void startInstantSession() throws Exception {
+        if (selectedBrowser == WebUIDriverType.IE_DRIVER) {
+            runInstantIE();
+        }
+        currentInstantSocket = AddonSocketServer.getInstance()
+                .getAddonSocketByBrowserName(selectedBrowser.toString());
+        if (currentInstantSocket == null) {
+            return;
+        }
+        Win32Helper.switchFocusToBrowser(selectedBrowser);
+        currentInstantSocket.sendMessage(new AddonMessage(AddonCommand.START_RECORD));
+    }
+
+    private void closeInstantSession() {
+        if (currentInstantSocket != null && currentInstantSocket.isConnected()) {
+            currentInstantSocket.close();
         }
     }
 
@@ -336,10 +384,6 @@ public class RecorderDialog extends Dialog {
         new Thread(session).start();
     }
 
-    private int getInstantBrowsersPort() {
-        return getPreferenceStore().getInt(RecorderPreferenceConstants.WEBUI_RECORDER_INSTANT_BROWSER_PORT);
-    }
-
     private WebUIDriverType getWebUIDriver() {
         return WebUIDriverType.fromStringValue(
                 getPreferenceStore().getString(RecorderPreferenceConstants.WEBUI_RECORDER_DEFAULT_BROWSER));
@@ -350,6 +394,7 @@ public class RecorderDialog extends Dialog {
     }
 
     private void startServer(int port) throws Exception {
+        closeInstantSession();
         if (server != null && server.isStarted() && isCurrentServerPortUsable(port)) {
             return;
         }
@@ -434,7 +479,7 @@ public class RecorderDialog extends Dialog {
         createRightPanel(htmlDomComposite);
 
         hSashForm.setWeights(new int[] { 3, 8 });
-        
+
         txtStartUrl.setFocus();
         return container;
     }
@@ -1147,10 +1192,10 @@ public class RecorderDialog extends Dialog {
         Composite toolbarComposite = new Composite(parent, SWT.NONE);
         toolbarComposite.setLayout(new GridLayout(3, false));
         toolbarComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        
+
         Label lblStartUrl = new Label(toolbarComposite, SWT.NONE);
         lblStartUrl.setText(ObjectspyMessageConstants.LBL_DLG_START_URL);
-        
+
         txtStartUrl = new Text(toolbarComposite, SWT.BORDER);
         GridData gdTxtStartUrl = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
         gdTxtStartUrl.heightHint = 20;
@@ -1164,8 +1209,7 @@ public class RecorderDialog extends Dialog {
                 }
             }
         });
-        
-        
+
         toolBar = new ToolBar(toolbarComposite, SWT.FLAT | SWT.RIGHT);
         toolBar.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
         toolBar.setLayout(new FillLayout(SWT.HORIZONTAL));
@@ -1227,11 +1271,9 @@ public class RecorderDialog extends Dialog {
         DropdownGroup activeBrowser = dropdown.addDropdownGroupItem(StringConstants.MENU_ITEM_ACTIVE_BROWSERS,
                 ImageManager.getImage(IImageKeys.ACTIVE_BROWSER_16));
         addActiveBrowserItem(activeBrowser, WebUIDriverType.CHROME_DRIVER);
-        addActiveBrowserItem(activeBrowser, WebUIDriverType.FIREFOX_DRIVER);
 
         if (Platform.OS_WIN32.equals(Platform.getOS())) {
             addNewBrowserItem(newBrowser, WebUIDriverType.IE_DRIVER);
-            addActiveBrowserItem(activeBrowser, WebUIDriverType.IE_DRIVER);
         }
     }
 
@@ -1253,7 +1295,7 @@ public class RecorderDialog extends Dialog {
                     public void widgetSelected(SelectionEvent event) {
                         try {
                             if (webUIDriverType != WebUIDriverType.IE_DRIVER
-                                    && !RecordSessionUtil.isNotShowingInstantBrowserDialog()
+                                    && !UtilitiesAddonUtil.isNotShowingInstantBrowserDialog()
                                     && !showInstantBrowserDialog()) {
                                 return;
                             }
@@ -1274,7 +1316,7 @@ public class RecorderDialog extends Dialog {
                                                 StringConstants.DIALOG_RUNNING_INSTANT_IE_MESSAGE,
                                                 StringConstants.HAND_ACTIVE_BROWSERS_DIA_TOOGLE_MESSAGE, false, null,
                                                 null);
-                                RecordSessionUtil
+                                UtilitiesAddonUtil
                                         .setNotShowingInstantBrowserDialog(messageDialogWithToggle.getToggleState());
                             }
                         });
@@ -1296,7 +1338,7 @@ public class RecorderDialog extends Dialog {
                             }
                         };
                         int returnCode = messageDialogWithToggle.open();
-                        RecordSessionUtil.setNotShowingInstantBrowserDialog(messageDialogWithToggle.getToggleState());
+                        UtilitiesAddonUtil.setNotShowingInstantBrowserDialog(messageDialogWithToggle.getToggleState());
                         if (returnCode == IDialogConstants.NO_ID) {
                             return true;
                         }
@@ -1317,7 +1359,7 @@ public class RecorderDialog extends Dialog {
 
                     private String getAddonUrl(final WebUIDriverType webUIDriverType) {
                         if (webUIDriverType == WebUIDriverType.CHROME_DRIVER) {
-                            return RECORDER_CHROME_ADDON_URL;
+                            return ObjectSpyDialog.OBJECT_SPY_CHROME_ADDON_URL;
                         }
                         if (webUIDriverType == WebUIDriverType.FIREFOX_DRIVER) {
                             return RECORDER_FIREFOX_ADDON_URL;
@@ -1332,6 +1374,7 @@ public class RecorderDialog extends Dialog {
         try {
             stopServer();
             stopRecordSession();
+            closeInstantSession();
         } catch (Exception e) {
             logger.error(e);
             MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE, e.getMessage());
@@ -1411,7 +1454,9 @@ public class RecorderDialog extends Dialog {
                 logger.error(e);
             }
         }
+        eventBroker.unsubscribe(this);
         stopRecordSession();
+        AddonSocketServer.getInstance().stop();
     }
 
     private void stopRecordSession() {
@@ -1529,6 +1574,19 @@ public class RecorderDialog extends Dialog {
 
     public AddToObjectRepositoryDialogResult getTargetFolderTreeEntity() {
         return targetFolderSelectionResult;
+    }
+
+    @Override
+    public void handleEvent(org.osgi.service.event.Event event) {
+        Object dataObject = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
+        switch (event.getTopic()) {
+            case EventConstants.RECORDER_HTML_ACTION_CAPTURED:
+                if (!(dataObject instanceof HTMLActionMapping)) {
+                    return;
+                }
+                addNewActionMapping((HTMLActionMapping) dataObject);
+                return;
+        }
     }
 
 }

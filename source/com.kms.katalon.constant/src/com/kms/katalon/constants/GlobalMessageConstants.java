@@ -29,6 +29,14 @@ public class GlobalMessageConstants extends NLS {
 
     public static String SEARCH;
 
+    public static String FORMAT;
+
+    public static String SELECT_ALL;
+
+    public static String UNDO;
+
+    public static String REDO;
+
     public static String BROWSE;
 
     public static String FIND;

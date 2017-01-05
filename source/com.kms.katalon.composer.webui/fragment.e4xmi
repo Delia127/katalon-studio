@@ -26,16 +26,6 @@
       <parameters xmi:id="_pOvpsJa1Eea2iIudedNSVw" elementId="com.kms.katalon.composer.webui.parameter.safari.runParam" name="com.kms.katalon.composer.execution.runMode" value="run"/>
     </elements>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_n72oYOwlEeWCzMi1cpQbtQ" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.run" positionInList="index:7">
-    <elements xsi:type="menu:Menu" xmi:id="_L2-9gOwnEeWCzMi1cpQbtQ" elementId="com.kms.katalon.composer.webui.execution.menu.remote_debug" label="Active Browser" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/active_browser_16.png">
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_PZk6gOwnEeWCzMi1cpQbtQ" elementId="com.kms.katalon.composer.webui.execution.handledmenuitem.remote_firefox" label="Remote Firefox" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/firefox_16.png" command="_dJ7eAOzBEeWXvtz1pF_UrQ">
-        <parameters xmi:id="_70_uwA3fEea64O-ZHny8jQ" elementId="com.kms.katalon.composer.webui.parameter.remote.firefox.runParam" name="com.kms.katalon.composer.execution.runMode" value="run"/>
-      </children>
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_1asrwOwoEeWCzMi1cpQbtQ" elementId="com.kms.katalon.composer.webui.execution.handledmenuitem.remote_chrome" label="Remote Chrome" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/chrome_16.png" command="_k5RIQOzBEeWXvtz1pF_UrQ">
-        <parameters xmi:id="_8LXnYA3fEea64O-ZHny8jQ" elementId="com.kms.katalon.composer.webui.parameter.remote.chrome.runParam" name="com.kms.katalon.composer.execution.runMode" value="run"/>
-      </children>
-    </elements>
-  </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_t9GNUEusEeWj7OhDHfltSQ" featurename="commands" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Command" xmi:id="_xoxN0EusEeWj7OhDHfltSQ" elementId="com.kms.katalon.composer.webui.execution.command.chrome" commandName="Chrome">
       <parameters xmi:id="_X7o-sAhhEeaOHID5tXhDTg" elementId="com.kms.katalon.composer.execution.runMode" name="Run Mode"/>
@@ -100,16 +90,6 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_twNCsJa1Eea2iIudedNSVw" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.debug" positionInList="index:6">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_twNCsZa1Eea2iIudedNSVw" elementId="com.kms.katalon.composer.webui.handledmenuitem.headless.debug" label="Headless" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/terminal_16.png" command="_YORLQJa1Eea2iIudedNSVw">
       <parameters xmi:id="_twNCspa1Eea2iIudedNSVw" elementId="com.kms.katalon.composer.webui.parameter.safari.runParam" name="com.kms.katalon.composer.execution.runMode" value="debug"/>
-    </elements>
-  </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_E1fXwAhiEeaOHID5tXhDTg" featurename="children" parentElementId="com.kms.katalon.composer.execution.menu.debug" positionInList="index:7">
-    <elements xsi:type="menu:Menu" xmi:id="_E1fXwQhiEeaOHID5tXhDTg" elementId="com.kms.katalon.composer.webui.execution.menu.remote_debug" label="Active Browser" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/active_browser_16.png">
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_E1fXwghiEeaOHID5tXhDTg" elementId="com.kms.katalon.composer.webui.execution.handledmenuitem.remote_firefox" label="Firefox" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/firefox_16.png" command="_dJ7eAOzBEeWXvtz1pF_UrQ">
-        <parameters xmi:id="_LkjX4A3gEea64O-ZHny8jQ" elementId="com.kms.katalon.composer.webui.parameter.remote.firefox.runParam" name="com.kms.katalon.composer.execution.runMode" value="debug"/>
-      </children>
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_E1fXwwhiEeaOHID5tXhDTg" elementId="com.kms.katalon.composer.webui.execution.handledmenuitem.remote_chrome" label="Chrome" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/execution/chrome_16.png" command="_k5RIQOzBEeWXvtz1pF_UrQ">
-        <parameters xmi:id="_LzcIcA3gEea64O-ZHny8jQ" elementId="com.kms.katalon.composer.webui.parameter.remote.chrome.runParam" name="com.kms.katalon.composer.execution.runMode" value="debug"/>
-      </children>
     </elements>
   </fragments>
 </fragment:ModelFragments>

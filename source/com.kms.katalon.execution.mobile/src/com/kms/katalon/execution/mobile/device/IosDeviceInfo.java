@@ -10,9 +10,12 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.Platform;
 
 import com.kms.katalon.core.mobile.constants.StringConstants;
-import com.kms.katalon.execution.mobile.util.ConsoleCommandExecutor;
+import com.kms.katalon.core.util.ConsoleCommandExecutor;
 
 public class IosDeviceInfo extends MobileDeviceInfo {
+
+    private static final String RELATIVE_PATH_TO_TOOLS_FOLDER = "resources" + File.separator + "tools" + File.separator;
+
     private static final String PATH = "PATH";
 
     private static final String DYLD_LIBRARY_PATH = "DYLD_LIBRARY_PATH";
@@ -25,9 +28,17 @@ public class IosDeviceInfo extends MobileDeviceInfo {
 
     private static final String DEVICE_CLASS_INFO_PREFIX = "DeviceClass:";
 
-    private static final String IMOBILE_DEVICE_FOLDER_RELATIVE_PATH = "resources" + File.separator + "tools"
-            + File.separator + "imobiledevice";
+    private static final String IMOBILE_DEVICE_FOLDER_RELATIVE_PATH = RELATIVE_PATH_TO_TOOLS_FOLDER + "imobiledevice";
 
+    private static final String IOS_DEPLOY_FOLDER_RELATIVE_PATH = RELATIVE_PATH_TO_TOOLS_FOLDER + "ios-deploy";
+
+    private static final String CARTHAGE_FOLDER_RELATIVE_PATH = RELATIVE_PATH_TO_TOOLS_FOLDER + "carthage"
+            + File.separator + "0.18.1" + File.separator + "bin";
+    
+    public static final String DEVICECONSOLE = "deviceconsole";
+    
+    private static final String DEVICE_CONSOLE_FOLDER_RELATIVE_PATH = RELATIVE_PATH_TO_TOOLS_FOLDER + DEVICECONSOLE;
+    
     protected String deviceClass = "";
 
     protected String deviceName = "";
@@ -44,7 +55,8 @@ public class IosDeviceInfo extends MobileDeviceInfo {
     protected void initDeviceInfos(String deviceId) throws IOException, InterruptedException {
         String[] deviceInfoCommand = new String[] {
                 getIMobileDeviceDirectoryAsString() + File.separator + "ideviceinfo", "-u", deviceId };
-        List<String> deviceInfos = ConsoleCommandExecutor.runConsoleCommandAndCollectResults(deviceInfoCommand, getIosAdditionalEnvironmentVariables());
+        List<String> deviceInfos = ConsoleCommandExecutor.runConsoleCommandAndCollectResults(deviceInfoCommand,
+                getIosAdditionalEnvironmentVariables());
         for (String deviceInfo : deviceInfos) {
             if (deviceInfo.contains(DEVICE_CLASS_INFO_PREFIX)) {
                 deviceClass = deviceInfo.substring(DEVICE_CLASS_INFO_PREFIX.length(), deviceInfo.length()).trim();
@@ -65,7 +77,7 @@ public class IosDeviceInfo extends MobileDeviceInfo {
             }
         }
     }
-    
+
     @Override
     public String getDeviceName() {
         return deviceName;
@@ -100,6 +112,18 @@ public class IosDeviceInfo extends MobileDeviceInfo {
         return getResourceFolder(IMOBILE_DEVICE_FOLDER_RELATIVE_PATH);
     }
 
+    private static File getIosDeployDirectory() throws IOException {
+        return getResourceFolder(IOS_DEPLOY_FOLDER_RELATIVE_PATH);
+    }
+
+    private static File getCarthageDirectory() throws IOException {
+        return getResourceFolder(CARTHAGE_FOLDER_RELATIVE_PATH);
+    }
+    
+    public static File getDeviceConsoleExecutablePath() throws IOException {
+        return new File(getResourceFolder(DEVICE_CONSOLE_FOLDER_RELATIVE_PATH), DEVICECONSOLE);
+    }
+
     public static String getIMobileDeviceDirectoryAsString() throws IOException {
         return getIMobileDeviceDirectory().getAbsolutePath();
     }
@@ -111,7 +135,8 @@ public class IosDeviceInfo extends MobileDeviceInfo {
             return new HashMap<String, String>();
         }
         additionalEnvironmentVariables.put(DYLD_LIBRARY_PATH, System.getenv(PATH) + ":" + iMobileDeviceDirectory);
-        additionalEnvironmentVariables.put(PATH, System.getenv(PATH) + ":" + iMobileDeviceDirectory);
+        additionalEnvironmentVariables.put(PATH, System.getenv(PATH) + ":" + iMobileDeviceDirectory + ":"
+                + getIosDeployDirectory().getAbsolutePath() + ":" + getCarthageDirectory().getAbsolutePath());
         return additionalEnvironmentVariables;
     }
 

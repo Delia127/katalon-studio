@@ -171,7 +171,14 @@ public class EventConstants {
     public static final String OBJECT_SPY_MOBILE_HIGHLIGHT = "OBJECT_SPY/MOBILE_HIGHLIGHT";
 
     public static final String OBJECT_SPY_MOBILE_SCREEN_CAPTURE = "OBJECT_SPY/MOBILE_SCREEN_CAPTURE";
-
+    
+    public static final String OBJECT_SPY_HTML_ELEMENT_CAPTURED = "OBJECT_SPY/HTML_ELEMENT_CAPTURED";
+    
+    public static final String OBJECT_SPY_HTML_DOM_CAPTURED = "OBJECT_SPY/HTML_DOM_CAPTURED";
+    
+    // Recorder Events
+    public static final String RECORDER_HTML_ACTION_CAPTURED = "RECORDER/HTML_ACTION_CAPTURED";
+    
     // Global Variable Events
     public static final String GLOBAL_VARIABLE_REFRESH = "GLOBAL_VARIABLE/REFRESH";
 

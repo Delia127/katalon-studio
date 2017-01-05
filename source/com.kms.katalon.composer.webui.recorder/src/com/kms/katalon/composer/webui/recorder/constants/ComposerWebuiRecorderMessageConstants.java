@@ -51,6 +51,8 @@ public class ComposerWebuiRecorderMessageConstants extends NLS {
 
     public static String MENU_ITEM_NEW_BROWSERS;
 
+    public static String MSG_DLG_INIT_RECORDER;
+
     public static String HAND_ACTIVE_BROWSERS_DIA_TITLE;
 
     public static String HAND_ACTIVE_BROWSERS_DIA_MESSAGE;

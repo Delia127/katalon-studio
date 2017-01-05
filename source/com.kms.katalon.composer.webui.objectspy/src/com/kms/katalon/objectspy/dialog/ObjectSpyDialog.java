@@ -34,7 +34,9 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ITreeSelection;
@@ -74,6 +76,8 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.osgi.framework.Bundle;
+import org.osgi.service.event.Event;
+import org.osgi.service.event.EventHandler;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -123,15 +127,20 @@ import com.kms.katalon.objectspy.highlight.HighlightRequest;
 import com.kms.katalon.objectspy.util.BrowserUtil;
 import com.kms.katalon.objectspy.util.DOMUtils;
 import com.kms.katalon.objectspy.util.HTMLElementUtil;
-import com.kms.katalon.objectspy.util.InspectSessionUtil;
+import com.kms.katalon.objectspy.util.UtilitiesAddonUtil;
+import com.kms.katalon.objectspy.util.Win32Helper;
 import com.kms.katalon.objectspy.util.WinRegistry;
+import com.kms.katalon.objectspy.websocket.AddonCommand;
+import com.kms.katalon.objectspy.websocket.AddonSocket;
+import com.kms.katalon.objectspy.websocket.AddonSocketServer;
+import com.kms.katalon.objectspy.websocket.messages.AddonMessage;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef.HWND;
 
 @SuppressWarnings("restriction")
-public class ObjectSpyDialog extends Dialog {
+public class ObjectSpyDialog extends Dialog implements EventHandler {
     private static final String IE_WINDOW_CLASS = "IEFrame"; //$NON-NLS-1$
 
     private static final String relativePathToIEAddonSetup = File.separator + "extensions" + File.separator + "IE" //$NON-NLS-1$ //$NON-NLS-2$
@@ -145,7 +154,7 @@ public class ObjectSpyDialog extends Dialog {
 
     public static final String IE_WINDOWS_BHO_REGISTRY_KEY = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\explorer\\Browser Helper Objects"; //$NON-NLS-1$
 
-    public static final String OBJECT_SPY_CHROME_ADDON_URL = "https://chrome.google.com/webstore/detail/katalon-object-spy/gblkfilmbkbkjgpcoihaeghdindcanom"; //$NON-NLS-1$
+    public static final String OBJECT_SPY_CHROME_ADDON_URL = "https://chrome.google.com/webstore/detail/katalon-utilities/ljdobmomdgdljniojadhoplhkpialdid"; //$NON-NLS-1$
 
     public static final String OBJECT_SPY_FIREFOX_ADDON_URL = "https://addons.mozilla.org/en-US/firefox/addon/katalon-object-spy"; //$NON-NLS-1$
 
@@ -195,6 +204,8 @@ public class ObjectSpyDialog extends Dialog {
 
     private Text txtStartUrl;
 
+    private AddonSocket currentInstantSocket;
+
     /**
      * Create the dialog.
      * 
@@ -208,10 +219,29 @@ public class ObjectSpyDialog extends Dialog {
         setShellStyle(SWT.SHELL_TRIM | SWT.NONE);
         this.logger = logger;
         this.eventBroker = eventBroker;
+        eventBroker.subscribe(EventConstants.OBJECT_SPY_HTML_ELEMENT_CAPTURED, this);
+        eventBroker.subscribe(EventConstants.OBJECT_SPY_HTML_DOM_CAPTURED, this);
         isDisposed = false;
         elements = new ArrayList<HTMLPageElement>();
         // set default browser
         defaultBrowser = getWebUIDriver();
+        startSocketServer();
+    }
+
+    private void startSocketServer() {
+        try {
+            new ProgressMonitorDialog(getParentShell()).run(true, false, new IRunnableWithProgress() {
+                @Override
+                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                    monitor.beginTask(ObjectspyMessageConstants.MSG_DLG_INIT_OBJECT_SPY, 1);
+                    AddonSocketServer.getInstance().start(AddonSocket.class);
+                }
+            });
+        } catch (InvocationTargetException e) {
+            LoggerSingleton.logError(e.getTargetException());
+        } catch (InterruptedException e) {
+            // Ignore this
+        }
     }
 
     /**
@@ -286,7 +316,7 @@ public class ObjectSpyDialog extends Dialog {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.character == SWT.CR) {
-                    startObjectSpy(defaultBrowser, isInstant);
+                    startBrowser();
                 }
             }
         });
@@ -304,7 +334,7 @@ public class ObjectSpyDialog extends Dialog {
 
             @Override
             public void itemSelected(SelectionEvent event) {
-                startObjectSpy(defaultBrowser, isInstant);
+                startBrowser();
             }
         });
     }
@@ -318,18 +348,15 @@ public class ObjectSpyDialog extends Dialog {
         DropdownGroup activeBrowser = dropdown.addDropdownGroupItem(StringConstants.MENU_ITEM_ACTIVE_BROWSERS,
                 ImageConstants.IMG_16_ACTIVE_BROWSER);
         addActiveBrowserItem(activeBrowser, WebUIDriverType.CHROME_DRIVER);
-        addActiveBrowserItem(activeBrowser, WebUIDriverType.FIREFOX_DRIVER);
 
         if (Platform.OS_WIN32.equals(Platform.getOS())) {
             addNewBrowserItem(newBrowser, WebUIDriverType.IE_DRIVER);
-            addActiveBrowserItem(activeBrowser, WebUIDriverType.IE_DRIVER);
         }
     }
 
     private void addNewBrowserItem(DropdownGroup newBrowserGroup, WebUIDriverType webUIDriverType) {
         newBrowserGroup.addItem(webUIDriverType.toString(), getWebUIDriverDropdownImage(webUIDriverType),
                 new SelectionAdapter() {
-
                     @Override
                     public void widgetSelected(SelectionEvent e) {
                         isInstant = false;
@@ -347,14 +374,14 @@ public class ObjectSpyDialog extends Dialog {
                     @Override
                     public void widgetSelected(SelectionEvent event) {
                         try {
-                            endInspectSession();
-                            if (!InspectSessionUtil.isNotShowingInstantBrowserDialog() && !showInstantBrowserDialog()) {
+                            if (!UtilitiesAddonUtil.isNotShowingInstantBrowserDialog() && !showInstantBrowserDialog()) {
                                 return;
                             }
+                            endInspectSession();
                             defaultBrowser = webUIDriverType;
                             startBrowser.setImage(getWebUIDriverToolItemImage(webUIDriverType));
                             isInstant = true;
-                            startInstantBrowser();
+                            startBrowser();
                         } catch (Exception exception) {
                             LoggerSingleton.logError(exception);
                         }
@@ -370,7 +397,7 @@ public class ObjectSpyDialog extends Dialog {
                                                 StringConstants.DIALOG_RUNNING_INSTANT_IE_MESSAGE,
                                                 StringConstants.HAND_INSTANT_BROWSERS_DIA_TOOGLE_MESSAGE, false, null,
                                                 null);
-                                InspectSessionUtil
+                                UtilitiesAddonUtil
                                         .setNotShowingInstantBrowserDialog(messageDialogWithToggle.getToggleState());
                             }
                         });
@@ -387,7 +414,7 @@ public class ObjectSpyDialog extends Dialog {
                                         webUIDriverType.toString()),
                                 StringConstants.HAND_INSTANT_BROWSERS_DIA_TOOGLE_MESSAGE);
                         int returnCode = messageDialogWithToggle.open();
-                        InspectSessionUtil.setNotShowingInstantBrowserDialog(messageDialogWithToggle.getToggleState());
+                        UtilitiesAddonUtil.setNotShowingInstantBrowserDialog(messageDialogWithToggle.getToggleState());
                         if (returnCode == IDialogConstants.NO_ID) {
                             return true;
                         }
@@ -416,10 +443,6 @@ public class ObjectSpyDialog extends Dialog {
                         return null;
                     }
                 });
-    }
-
-    private int getInstantBrowsersPort() {
-        return getPreferenceStore().getInt(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_ACTIVE_BROWSER_PORT);
     }
 
     private WebUIDriverType getWebUIDriver() {
@@ -1006,6 +1029,8 @@ public class ObjectSpyDialog extends Dialog {
         }
         endInspectSession();
         isDisposed = true;
+        eventBroker.unsubscribe(this);
+        AddonSocketServer.getInstance().stop();
     }
 
     private void endInspectSession() {
@@ -1178,10 +1203,7 @@ public class ObjectSpyDialog extends Dialog {
             }
             changeBrowserToolItemName();
             if (isInstant) {
-                startServerWithPort(getInstantBrowsersPort());
-                if (browser == WebUIDriverType.IE_DRIVER) {
-                    runInstantIE();
-                }
+                startInstantSession(browser);
                 return;
             }
             startServerWithPort(0);
@@ -1198,6 +1220,25 @@ public class ObjectSpyDialog extends Dialog {
             logger.error(ex);
             MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE, ex.getMessage());
         }
+    }
+
+    private void startInstantSession(WebUIDriverType browser) throws Exception {
+        if (browser == WebUIDriverType.IE_DRIVER) {
+            runInstantIE();
+        }
+        currentInstantSocket = AddonSocketServer.getInstance().getAddonSocketByBrowserName(defaultBrowser.toString());
+        if (currentInstantSocket == null) {
+            return;
+        }
+        Win32Helper.switchFocusToBrowser(browser);
+        currentInstantSocket.sendMessage(new AddonMessage(AddonCommand.START_INSPECT));
+    }
+
+    private void closeInstantSession() {
+        if (currentInstantSocket != null && currentInstantSocket.isConnected()) {
+            currentInstantSocket.close();
+        }
+        currentInstantSocket = null;
     }
 
     protected void runInstantIE() throws Exception {
@@ -1226,11 +1267,7 @@ public class ObjectSpyDialog extends Dialog {
     }
 
     private void startBrowser() {
-        startObjectSpy(defaultBrowser, false);
-    }
-
-    private void startInstantBrowser() {
-        startObjectSpy(defaultBrowser, true);
+        startObjectSpy(defaultBrowser, isInstant);
     }
 
     public void startServerWithPort(int port) throws Exception {
@@ -1241,6 +1278,7 @@ public class ObjectSpyDialog extends Dialog {
             server.stop();
         }
         try {
+            closeInstantSession();
             server = new HTMLElementCaptureServer(port, logger, this);
             server.start();
         } catch (BindException e) {
@@ -1328,6 +1366,10 @@ public class ObjectSpyDialog extends Dialog {
     }
 
     private void highlighObject(HTMLElement element) {
+        if (isInstant) {
+            highlightObjectInInstantMode(element);
+            return;
+        }
         HighlightRequest request = new HighlightRequest(element);
 
         KatalonRequestHandler.getInstance().setRequest(request, new RequestFailedListener() {
@@ -1343,13 +1385,16 @@ public class ObjectSpyDialog extends Dialog {
         });
     }
 
+    private void highlightObjectInInstantMode(HTMLElement element) {
+        if (currentInstantSocket == null) {
+            return;
+        }
+        String xpathExpression = new HighlightRequest(element).getData();
+        currentInstantSocket.sendMessage(new AddonMessage(AddonCommand.HIGHLIGHT_OBJECT, xpathExpression));
+    }
+
     @Override
     public int open() {
-        try {
-            startServerWithPort(getInstantBrowsersPort());
-        } catch (Exception ex) {
-            logger.error(ex);
-        }
         if (Platform.OS_WIN32.equals(Platform.getOS())) {
             if (getShell() == null) {
                 create();
@@ -1359,6 +1404,30 @@ public class ObjectSpyDialog extends Dialog {
             getShell().setMinimumSize(size.x + 65, size.y);
         }
         return super.open();
+    }
+
+    @Override
+    public void handleEvent(Event event) {
+        Object dataObject = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
+        switch (event.getTopic()) {
+            case EventConstants.OBJECT_SPY_HTML_ELEMENT_CAPTURED:
+                if (!(dataObject instanceof HTMLElement)) {
+                    return;
+                }
+                addNewElement((HTMLElement) dataObject);
+                return;
+            case EventConstants.OBJECT_SPY_HTML_DOM_CAPTURED:
+                if (!(dataObject instanceof Object[])) {
+                    return;
+                }
+                Object[] dataObjects = (Object[]) dataObject;
+                if (dataObjects.length != 2 || !(dataObjects[0] instanceof HTMLRawElement)
+                        || !(dataObjects[1] instanceof Document)) {
+                    return;
+                }
+                setHTMLDOMDocument((HTMLRawElement) dataObjects[0], (Document) dataObjects[1]);
+                return;
+        }
     }
 
 }

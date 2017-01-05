@@ -36,6 +36,7 @@ import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.addons.CommandBindingRemover;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.handlers.CloseHandler;
 import com.kms.katalon.composer.handlers.QuitHandler;
 import com.kms.katalon.composer.handlers.ResetPerspectiveHandler;
@@ -43,7 +44,6 @@ import com.kms.katalon.composer.handlers.SaveHandler;
 import com.kms.katalon.composer.handlers.SearchHandler;
 import com.kms.katalon.composer.handlers.WorkbenchSaveHandler;
 import com.kms.katalon.composer.initializer.CommandBindingInitializer;
-import com.kms.katalon.console.utils.VersionInfo;
 import com.kms.katalon.console.utils.VersionUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
@@ -118,6 +118,10 @@ public class LifeCycleManager {
             public void partBroughtToTop(IWorkbenchPartReference partRef) {
                 if (NewSearchUI.SEARCH_VIEW_ID.equals(partRef.getId())) {
                     SearchHandler.openSearchView();
+                    return;
+                }
+                if (IdConstants.GROOVY_EDITOR_URI.equals(partRef.getId())) {
+                    EventUtil.post(EventConstants.PROPERTIES_ENTITY, null);
                 }
             }
 

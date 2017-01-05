@@ -8,8 +8,8 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.Platform;
 
+import com.kms.katalon.core.util.ConsoleCommandExecutor;
 import com.kms.katalon.execution.mobile.exception.AndroidSetupException;
-import com.kms.katalon.execution.mobile.util.ConsoleCommandExecutor;
 
 public class AndroidDeviceInfo extends MobileDeviceInfo {
     private static final String EMULATOR_SUFFIX = ")";

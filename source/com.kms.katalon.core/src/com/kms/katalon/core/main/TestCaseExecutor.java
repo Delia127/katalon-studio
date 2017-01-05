@@ -1,13 +1,7 @@
 package com.kms.katalon.core.main;
 
-import groovy.lang.Binding;
-import groovy.lang.GroovyClassLoader;
-import groovy.util.ResourceException;
-import groovy.util.ScriptException;
-
 import java.io.File;
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.security.AccessController;
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -20,9 +14,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.ast.MethodNode;
 import org.codehaus.groovy.control.CompilationFailedException;
-import org.codehaus.groovy.control.CompilerConfiguration;
-import org.codehaus.groovy.control.customizers.ASTTransformationCustomizer;
-import org.codehaus.groovy.control.customizers.ImportCustomizer;
 
 import com.kms.katalon.core.annotation.SetUp;
 import com.kms.katalon.core.annotation.TearDown;
@@ -41,16 +32,13 @@ import com.kms.katalon.core.testcase.TestCase;
 import com.kms.katalon.core.testcase.TestCaseBinding;
 import com.kms.katalon.core.testcase.TestCaseFactory;
 import com.kms.katalon.core.testcase.Variable;
-import com.kms.katalon.core.testdata.TestDataFactory;
-import com.kms.katalon.core.testobject.ObjectRepository;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 
+import groovy.lang.Binding;
+import groovy.util.ResourceException;
+import groovy.util.ScriptException;
+
 public class TestCaseExecutor {
-    private static final String FIND_TEST_CASE_METHOD_NAME = "findTestCase";
-
-    private static final String FIND_TEST_DATA_METHOD_NAME = "findTestData";
-
-    private static final String FIND_TEST_OBJECT_METHOD_NAME = "findTestObject";
 
     private static KeywordLogger logger = KeywordLogger.getInstance();
 
@@ -190,11 +178,11 @@ public class TestCaseExecutor {
     private void processExecutionPhase() {
         try {
             // Prepare configuration before execution
-            engine.setConfig(getConfigForExecutingScript(engine.getGroovyClassLoader()));
+            engine.changeConfigForExecutingScript();
             setupContextClassLoader();
             doExecute();
         } catch (ExceptionInInitializerError e) {
-            // errors happened in static initilalizer like for Global Variable
+            // errors happened in static initializer like for Global Variable
             errorCollector.addError(e.getCause());
         } catch (Throwable e) {
             // logError(e, ExceptionsUtil.getMessageForThrowable(e));
@@ -227,7 +215,7 @@ public class TestCaseExecutor {
 
     protected void runMethod(File scriptFile, String methodName)
             throws ResourceException, ScriptException, ClassNotFoundException, IOException {
-        engine.setConfig(getConfigForExecutingScript(engine.getGroovyClassLoader()));
+        engine.changeConfigForExecutingScript();
         engine.runScriptMethodAsRawText(FileUtils.readFileToString(scriptFile), scriptFile.getName(), methodName,
                 variableBinding);
     }
@@ -244,33 +232,9 @@ public class TestCaseExecutor {
         return testProperties;
     }
 
-    @SuppressWarnings("unchecked")
-    /* package */static CompilerConfiguration getConfigForExecutingScript(GroovyClassLoader classLoader)
-            throws ClassNotFoundException {
-        CompilerConfiguration conf = new CompilerConfiguration(System.getProperties());
-        Class<?> astTransformationClass = classLoader.loadClass(StringConstants.TEST_STEP_TRANSFORMATION_CLASS);
-
-        conf.addCompilationCustomizers(
-                new ASTTransformationCustomizer((Class<? extends Annotation>) astTransformationClass));
-        return conf;
-    }
-
-    /* package */static CompilerConfiguration getConfigForCollectingVariable() {
-        CompilerConfiguration configuration = new CompilerConfiguration();
-        ImportCustomizer importCustomizer = new ImportCustomizer();
-        importCustomizer.addImport(TestDataFactory.class.getSimpleName(), TestDataFactory.class.getName());
-        importCustomizer.addImport(ObjectRepository.class.getSimpleName(), ObjectRepository.class.getName());
-        importCustomizer.addImport(TestCaseFactory.class.getSimpleName(), TestCaseFactory.class.getName());
-        importCustomizer.addStaticImport(TestDataFactory.class.getName(), FIND_TEST_DATA_METHOD_NAME);
-        importCustomizer.addStaticImport(ObjectRepository.class.getName(), FIND_TEST_OBJECT_METHOD_NAME);
-        importCustomizer.addStaticImport(TestCaseFactory.class.getName(), FIND_TEST_CASE_METHOD_NAME);
-        configuration.addCompilationCustomizers(importCustomizer);
-        return configuration;
-    }
-
     private Binding collectTestCaseVariables() {
         Binding variableBinding = new Binding();
-        engine.setConfig(getConfigForCollectingVariable());
+        engine.changeConfigForCollectingVariable();
 
         logger.logInfo(StringConstants.MAIN_LOG_INFO_START_EVALUATE_VARIABLE);
 

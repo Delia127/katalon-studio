@@ -18,6 +18,7 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -34,6 +35,7 @@ import com.kms.katalon.composer.components.part.IComposerPartEvent;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.objectrepository.constant.StringConstants;
 import com.kms.katalon.composer.objectrepository.view.ObjectPropertyView;
+import com.kms.katalon.composer.parts.CPart;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FolderController;
@@ -41,7 +43,7 @@ import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 
-public class TestObjectPart implements EventHandler, IComposerPartEvent {
+public class TestObjectPart extends CPart implements EventHandler, IComposerPartEvent {
     private static boolean isConfirmationDialogShowed = false;
 
     @Inject
@@ -55,6 +57,9 @@ public class TestObjectPart implements EventHandler, IComposerPartEvent {
 
     @Inject
     protected MDirtyable dirtyable;
+    
+    @Inject
+    private EPartService partService;
 
     private MPart mPart;
 
@@ -67,10 +72,12 @@ public class TestObjectPart implements EventHandler, IComposerPartEvent {
         this.mPart = part;
         parent.setLayout(new FillLayout());
 
-        objPropertyView = new ObjectPropertyView(eventBroker, dirtyable);
+        objPropertyView = new ObjectPropertyView(eventBroker, dirtyable, this);
         objPropertyView.createMainPage(parent);
         changeOriginalTestObject((WebElementEntity) part.getObject());
 
+        initialize(mPart, partService);
+        
         registerListeners();
     }
 
@@ -133,7 +140,7 @@ public class TestObjectPart implements EventHandler, IComposerPartEvent {
         }
     }
 
-    private void dispose() {
+    public void dispose() {
         eventBroker.unsubscribe(this);
         MPartStack mStackPart = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
         mStackPart.getChildren().remove(mPart);
@@ -185,6 +192,7 @@ public class TestObjectPart implements EventHandler, IComposerPartEvent {
     @PreDestroy
     private void destroy() {
         eventBroker.unsubscribe(this);
+        dispose();
     }
 
     private FolderTreeEntity getParentFolderTreeEntity(FolderEntity folderEntity, FolderEntity rootFolder) {

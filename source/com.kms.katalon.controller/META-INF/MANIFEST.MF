@@ -22,6 +22,10 @@ Require-Bundle: com.kms.katalon.constant,
  org.eclipse.osgi.services,
  org.eclipse.jdt.core,
  org.apache.commons.lang,
- com.kms.katalon.core
+ com.kms.katalon.core,
+ org.apache.httpcomponents.httpclient,
+ org.apache.httpcomponents.httpcore,
+ org.apache.commons.httpclient,
+ org.javalite.common
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy

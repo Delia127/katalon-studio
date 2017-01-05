@@ -1,8 +1,13 @@
 package com.kms.katalon.composer.report.parts;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
 
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.TableViewer;
@@ -14,15 +19,18 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.osgi.service.event.Event;
 
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
-import com.kms.katalon.composer.components.part.IComposerPart;
+import com.kms.katalon.composer.components.impl.util.EventUtil;
+import com.kms.katalon.composer.components.part.IComposerPartEvent;
 import com.kms.katalon.composer.report.constants.StringConstants;
 import com.kms.katalon.composer.report.provider.ReportActionColumnLabelProvider;
 import com.kms.katalon.composer.report.provider.ReportCollectionTableLabelProvider;
+import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.entity.report.ReportCollectionEntity;
 
-public class ReportCollectionPart implements IComposerPart {
+public class ReportCollectionPart implements IComposerPartEvent {
 
     private ReportCollectionEntity reportCollectionEntity;
 
@@ -102,5 +110,25 @@ public class ReportCollectionPart implements IComposerPart {
     @Override
     public String getEntityId() {
         return reportCollectionEntity.getIdForDisplay();
+    }
+
+    @Override
+    @Inject
+    @Optional
+    public void onSelect(@UIEventTopic(UIEvents.UILifeCycle.BRINGTOTOP) Event event) {
+        EventUtil.post(EventConstants.PROPERTIES_ENTITY, null);
+    }
+
+    @Override
+    @Inject
+    @Optional
+    public void onChangeEntityProperties(@UIEventTopic(EventConstants.PROPERTIES_ENTITY_UPDATED) Event event) {
+        // do nothing
+    }
+
+    @Override
+    @PreDestroy
+    public void onClose() {
+        // do nothing
     }
 }

@@ -53,10 +53,9 @@ public abstract class OpenFileEntityHandler<T extends FileEntity> implements Par
             mPart = modelService.createModelElement(MPart.class);
             mPart.setElementId(partId);
             mPart.setLabel(fileEntity.getName());
-
             mPart.setIconURI(getIconURI());
-
             mPart.setContributionURI(getContributionURI());
+            mPart.setTooltip(fileEntity.getIdForDisplay());
             mPart.setCloseable(true);
             stack.getChildren().add(mPart);
         }

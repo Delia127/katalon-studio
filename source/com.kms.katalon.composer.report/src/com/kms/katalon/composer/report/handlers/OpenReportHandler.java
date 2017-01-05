@@ -88,6 +88,7 @@ public class OpenReportHandler {
                 mPart.setContributionURI(REPORT_PART_URI);
                 mPart.setCloseable(true);
                 mPart.setIconURI(ImageConstants.URL_16_REPORT);
+                mPart.setTooltip(report.getIdForDisplay());
                 stack.getChildren().add(mPart);
             }
             context.set(ReportEntity.class, report);

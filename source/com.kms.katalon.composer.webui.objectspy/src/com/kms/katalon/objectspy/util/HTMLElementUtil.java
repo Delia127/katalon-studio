@@ -64,6 +64,8 @@ public class HTMLElementUtil {
 
     private static final String ELEMENT_TYPE_KEY = "type";
 
+    private static final String ELEMENT_TAG_KEY = "tag";
+
     private static final String XPATH_KEY = "xpath";
 
     public static String generateHTMLElementName(String elementType, Map<String, String> attributes) {
@@ -224,6 +226,8 @@ public class HTMLElementUtil {
         newWebElement.setElementGuidId(Util.generateGuid());
         newWebElement.setProject(parentFolder.getProject());
         newWebElement.setWebElementProperties(new ArrayList<WebElementPropertyEntity>());
+
+        newWebElement.getWebElementProperties().add(new WebElementPropertyEntity(ELEMENT_TAG_KEY, element.getType()));
 
         for (Map.Entry<String, String> entry : element.getAttributes().entrySet()) {
             WebElementPropertyEntity webElementPropertyEntity = new WebElementPropertyEntity();
@@ -435,12 +439,13 @@ public class HTMLElementUtil {
                 }
             }
             HTMLElement element = null;
+            String type = StringUtils.defaultString(webElement.getProperty(ELEMENT_TAG_KEY).getValue());
             if (isFrame) {
-                element = new HTMLFrameElement(webElement.getName(), "", attributes, parentFrameElement != null
-                        ? parentFrameElement : pageElement, new ArrayList<HTMLElement>());
+                element = new HTMLFrameElement(webElement.getName(), type, attributes,
+                        parentFrameElement != null ? parentFrameElement : pageElement, new ArrayList<HTMLElement>());
             } else {
-                element = new HTMLElement(webElement.getName(), "", attributes, parentFrameElement != null
-                        ? parentFrameElement : pageElement);
+                element = new HTMLElement(webElement.getName(), type, attributes,
+                        parentFrameElement != null ? parentFrameElement : pageElement);
             }
             elementsMap.put(webElement.getId(), element);
             return element;

@@ -1,14 +1,15 @@
 package com.kms.katalon.composer.webservice.view;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -39,34 +40,45 @@ public class ParameterTable extends TableViewer {
         super.setInput(data);
     }
 
+    public void addRow() {
+        addRow(new WebElementPropertyEntity(StringConstants.EMPTY, StringConstants.EMPTY));
+    }
+
     public void addRow(WebElementPropertyEntity property) {
         data.add(property);
-        this.update(property, null);
-        this.getTable().select(data.size() - 1);
-        this.refresh();
-        if (this.dirtyable != null) {
-            this.dirtyable.setDirty(true);
-        }
+        markDirty();
+        this.editElement(property, 0);
     }
 
     public void addRow(WebElementPropertyEntity property, int index) {
         data.add(index + 1, property);
-        this.update(property, null);
-        this.getTable().select(data.size() - 1);
-        this.refresh();
-        if (this.dirtyable != null) {
-            this.dirtyable.setDirty(true);
-        }
+        markDirty();
+        this.editElement(property, 0);
+    }
+
+    public void deleteRowByColumnValue(int columnIndex, String value) {
+        this.getInput().removeIf(i -> i.getName().equals(value));
+    }
+
+    public void deleteSelections() {
+        List<WebElementPropertyEntity> selectedRows = new ArrayList<WebElementPropertyEntity>();
+        Arrays.stream(this.getTable().getSelectionIndices()).forEach(i -> selectedRows.add(data.get(i)));
+        deleteRows(selectedRows);
     }
 
     public void deleteRows(List<WebElementPropertyEntity> properties) {
         data.removeAll(properties);
+        markDirty();
+    }
+
+    public void markDirty() {
         this.refresh();
         if (this.dirtyable != null) {
             this.dirtyable.setDirty(true);
         }
     }
 
+    @Override
     public List<WebElementPropertyEntity> getInput() {
         if (data == null) {
             data = new ArrayList<WebElementPropertyEntity>();
@@ -94,6 +106,7 @@ public class ParameterTable extends TableViewer {
 
         table.addListener(SWT.MenuDetect, new Listener() {
 
+            @Override
             public void handleEvent(Event event) {
                 createContextMenu();
             }
@@ -104,14 +117,17 @@ public class ParameterTable extends TableViewer {
     private Menu createContextMenu() {
         final Table table = this.getTable();
         Menu menu = table.getMenu();
-        if (menu != null) menu.dispose();
+        if (menu != null) {
+            menu.dispose();
+        }
         menu = new Menu(table);
 
         MenuItem menuItem = null;
 
         menuItem = new MenuItem(menu, SWT.PUSH);
         menuItem.setText(StringConstants.VIEW_MENU_CONTEXT_INSERT_PROP);
-        menuItem.addSelectionListener(new SelectionListener() {
+        menuItem.addSelectionListener(new SelectionAdapter() {
+
             @Override
             public void widgetSelected(SelectionEvent e) {
                 WebElementPropertyEntity newProp = new WebElementPropertyEntity(StringConstants.EMPTY,
@@ -123,28 +139,16 @@ public class ParameterTable extends TableViewer {
                     addRow(newProp);
                 }
             }
-
-            @Override
-            public void widgetDefaultSelected(SelectionEvent e) {
-            }
         });
 
         if (table.getItemCount() >= 1) {
             menuItem = new MenuItem(menu, SWT.PUSH);
             menuItem.setText(StringConstants.VIEW_MENU_CONTEXT_DEL_PROPS);
-            menuItem.addSelectionListener(new SelectionListener() {
-                @Override
-                public void widgetSelected(SelectionEvent e) {
-                    int[] indices = table.getSelectionIndices();
-                    List<WebElementPropertyEntity> removedList = new ArrayList<WebElementPropertyEntity>();
-                    for (int index : indices) {
-                        removedList.add(data.get(index));
-                    }
-                    deleteRows(removedList);
-                }
+            menuItem.addSelectionListener(new SelectionAdapter() {
 
                 @Override
-                public void widgetDefaultSelected(SelectionEvent e) {
+                public void widgetSelected(SelectionEvent e) {
+                    deleteSelections();
                 }
             });
         }

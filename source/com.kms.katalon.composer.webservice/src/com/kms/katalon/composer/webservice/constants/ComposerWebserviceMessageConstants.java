@@ -27,8 +27,6 @@ public class ComposerWebserviceMessageConstants extends NLS {
 
     public static String PA_LBL_REQ_METHOD;
 
-    public static String PA_LBL_REST_PARAMS;
-
     public static String PA_TITLE_SOAP;
 
     public static String PA_LBL_SERVICE_FUNCTION;
@@ -60,6 +58,44 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String LBL_LOAD_FROM_WSDL;
 
     public static String MSG_FETCHING_FROM_WSDL;
+
+    public static String BTN_SEND_TEST_REQUEST;
+
+    public static String BTN_LOAD_FROM_OPERATION;
+
+    public static String PART_MSG_CANNOT_FORMAT_THE_XML_CONTENT;
+
+    public static String PART_MSG_SENDING_TEST_REQUEST;
+
+    public static String PART_MSG_CANNOT_SEND_THE_TEST_REQUEST;
+
+    public static String BASIC_AUTH_PREFIX_VALUE;
+
+    public static String PART_MSG_DO_YOU_WANT_TO_SAVE_THE_CHANGES;
+
+    public static String PART_WARNING_MSG_BODY_CONTENT_WILL_BE_OVERWRITTEN;
+
+    public static String BTN_LOAD_FROM_FILE;
+
+    public static String LBL_USERNAME;
+
+    public static String LBL_PASSWORD;
+
+    public static String CHK_SHOW_PASSWORD;
+
+    public static String BTN_UPDATE_TO_HEADERS;
+
+    public static String TAB_AUTHORIZATION;
+
+    public static String TAB_RESPONSE;
+
+    public static String LBL_RESPONSE_HEADER;
+
+    public static String LBL_RESPONSE_BODY;
+
+    public static String BASIC_AUTH;
+
+    public static String NO_AUTH;
 
     static {
         // initialize resource bundle

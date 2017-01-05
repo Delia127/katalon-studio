@@ -46,9 +46,8 @@ public class ApplicationInfo {
         aboutMappingsProperties = new Properties();
 
         try {
-            aboutMappingsProperties.load(FrameworkUtil.getBundle(ApplicationInfo.class)
-                    .getResource(ABOUT_MAPPINGS_FILE_NAME)
-                    .openStream());
+            aboutMappingsProperties.load(
+                    FrameworkUtil.getBundle(ApplicationInfo.class).getResource(ABOUT_MAPPINGS_FILE_NAME).openStream());
         } catch (IOException e) {
             LogUtil.logError(e);
         }
@@ -87,6 +86,7 @@ public class ApplicationInfo {
         String buildNo = buildNo();
 
         getAppProperties();
+        System.setProperty(ConsoleStringConstants.APP_VERSION_NUMBER_KEY, version);
         logInfo(ConsoleStringConstants.APP_VERSION_NUMBER_KEY + "=" + version);
         logInfo(ConsoleStringConstants.APP_BUILD_NUMBER_KEY + "=" + buildNo);
 

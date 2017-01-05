@@ -148,6 +148,16 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.FOLDER_TEST_OBJECT_16);
         ImageManager.registerImage(IImageKeys.CHECKPOINT_16);
         ImageManager.registerImage(IImageKeys.TEST_OBJECT_16);
+        ImageManager.registerImage(IImageKeys.BTN_TEST_OBJECT_16);
+        ImageManager.registerImage(IImageKeys.CBX_TEST_OBJECT_16);
+        ImageManager.registerImage(IImageKeys.CHK_TEST_OBJECT_16);
+        ImageManager.registerImage(IImageKeys.FILE_TEST_OBJECT_16);
+        ImageManager.registerImage(IImageKeys.IMG_TEST_OBJECT_16);
+        ImageManager.registerImage(IImageKeys.LBL_TEST_OBJECT_16);
+        ImageManager.registerImage(IImageKeys.LNK_TEST_OBJECT_16);
+        ImageManager.registerImage(IImageKeys.RBT_TEST_OBJECT_16);
+        ImageManager.registerImage(IImageKeys.TXT_TEST_OBJECT_16);
+
         ImageManager.registerImage(IImageKeys.TEST_SUITE_16);
         ImageManager.registerImage(IImageKeys.TEST_SUITE_COLLECTION_16);
         ImageManager.registerImage(IImageKeys.WS_TEST_OBJECT_16);
@@ -276,13 +286,17 @@ public class ImageProcessor {
 
     private void registerWelcomeImages() {
         ImageManager.registerImage(IImageKeys.START_PAGE_BACKGROUND);
-        ImageManager.registerImage(IImageKeys.FAQ_32);
-        ImageManager.registerImage(IImageKeys.GETTING_STARTED_32);
-        ImageManager.registerImage(IImageKeys.HOW_TO_ARTICLES_32);
+        ImageManager.registerImage(IImageKeys.FAQ_100);
+        ImageManager.registerImage(IImageKeys.GETTING_STARTED_100);
+        ImageManager.registerImage(IImageKeys.HOW_TO_ARTICLES_100);
         ImageManager.registerImage(IImageKeys.NEW_PROJECT_32);
         ImageManager.registerImage(IImageKeys.OPEN_PROJECT_32);
         ImageManager.registerImage(IImageKeys.RECENT_PROJECT_32);
-        ImageManager.registerImage(IImageKeys.BRANDING_TEXT_96);
+        ImageManager.registerImage(IImageKeys.KATALON_LOGO_67);
+        ImageManager.registerImage(IImageKeys.RECENT_PROJECT_FILE_16);
+        ImageManager.registerImage(IImageKeys.SAMPLE_WEB_UI_PROJECT_100);
+        ImageManager.registerImage(IImageKeys.SAMPLE_MOBILE_PROJECT_100);
+        ImageManager.registerImage(IImageKeys.SAMPLE_WEB_SERVICES_PROJECT_100);
     }
 
     private void registerIntroImages() {

@@ -22,7 +22,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_TITLE_REST = ComposerWebserviceMessageConstants.PA_TITLE_REST;
     public static final String PA_LBL_URL = ComposerWebserviceMessageConstants.PA_LBL_URL;
     public static final String PA_LBL_REQ_METHOD = ComposerWebserviceMessageConstants.PA_LBL_REQ_METHOD;
-    public static final String PA_LBL_REST_PARAMS = ComposerWebserviceMessageConstants.PA_LBL_REST_PARAMS;
 
 	// SoapRequestObjectPart
     public static final String PA_TITLE_SOAP = ComposerWebserviceMessageConstants.PA_TITLE_SOAP;

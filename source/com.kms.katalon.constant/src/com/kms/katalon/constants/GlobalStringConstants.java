@@ -74,6 +74,9 @@ public class GlobalStringConstants {
 
     public static final String CR_EOL = "\n";
 
+    /** RFC 4180 defines line breaks as CRLF */
+    public static final String CRLF = "\r\n";
+
     // Common action use
     public static final String ADD = GlobalMessageConstants.ADD;
 
