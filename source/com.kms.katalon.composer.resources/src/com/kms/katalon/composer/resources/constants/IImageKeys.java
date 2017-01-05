@@ -270,6 +270,24 @@ public interface IImageKeys {
 
     public static final String TEST_OBJECT_16 = "entity/test_object_16.png"; //$NON-NLS-1$
 
+    public static final String BTN_TEST_OBJECT_16 = "entity/btn_test_object_16.png"; //$NON-NLS-1$
+
+    public static final String CBX_TEST_OBJECT_16 = "entity/cbx_test_object_16.png"; //$NON-NLS-1$
+
+    public static final String CHK_TEST_OBJECT_16 = "entity/chk_test_object_16.png"; //$NON-NLS-1$
+
+    public static final String FILE_TEST_OBJECT_16 = "entity/file_test_object_16.png"; //$NON-NLS-1$
+
+    public static final String IMG_TEST_OBJECT_16 = "entity/img_test_object_16.png"; //$NON-NLS-1$
+
+    public static final String LBL_TEST_OBJECT_16 = "entity/lbl_test_object_16.png"; //$NON-NLS-1$
+
+    public static final String LNK_TEST_OBJECT_16 = "entity/lnk_test_object_16.png"; //$NON-NLS-1$
+
+    public static final String RBT_TEST_OBJECT_16 = "entity/rbt_test_object_16.png"; //$NON-NLS-1$
+
+    public static final String TXT_TEST_OBJECT_16 = "entity/txt_test_object_16.png"; //$NON-NLS-1$
+
     public static final String TEST_SUITE_16 = "entity/test_suite_16.png"; //$NON-NLS-1$
 
     public static final String TEST_SUITE_COLLECTION_16 = "entity/test_suite_collection_16.png"; //$NON-NLS-1$

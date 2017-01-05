@@ -9,6 +9,7 @@ import org.eclipse.swt.widgets.Event;
 
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
+import com.kms.katalon.core.webui.constants.HTMLTags;
 import com.kms.katalon.objectspy.constants.ImageConstants;
 import com.kms.katalon.objectspy.constants.StringConstants;
 import com.kms.katalon.objectspy.element.HTMLElement;
@@ -40,7 +41,32 @@ public class HTMLElementLabelProvider extends StyledCellLabelProvider {
                     } else if (element instanceof HTMLFrameElement) {
                         return ImageConstants.IMG_16_FRAME_OBJECT;
                     }
-                    return ImageConstants.IMG_16_TEST_OBJECT;
+                    switch (HTMLTags.getElementType(htmlElement.getType(), htmlElement.getTypeAttribute())) {
+                        case HTMLTags.TAG_A:
+                            return ImageConstants.IMG_16_LNK_TEST_OBJECT;
+                        case HTMLTags.TAG_RESET:
+                        case HTMLTags.TAG_SUBMIT:
+                        case HTMLTags.TAG_BUTTON:
+                            return ImageConstants.IMG_16_BTN_TEST_OBJECT;
+                        case HTMLTags.TAG_CHECKBOX:
+                            return ImageConstants.IMG_16_CHK_TEST_OBJECT;
+                        case HTMLTags.TAG_FILE:
+                            return ImageConstants.IMG_16_FILE_TEST_OBJECT;
+                        case HTMLTags.TAG_IMG:
+                        case HTMLTags.TAG_IMAGE:
+                            return ImageConstants.IMG_16_IMG_TEST_OBJECT;
+                        case HTMLTags.TAG_SELECT:
+                            return ImageConstants.IMG_16_CBX_TEST_OBJECT;
+                        case HTMLTags.TAG_LABEL:
+                            return ImageConstants.IMG_16_LBL_TEST_OBJECT;
+                        case HTMLTags.TAG_TEXTAREA:
+                        case HTMLTags.TAG_TEXT:
+                            return ImageConstants.IMG_16_TXT_TEST_OBJECT;
+                        case HTMLTags.TAG_RADIO:
+                            return ImageConstants.IMG_16_RBT_TEST_OBJECT;
+                        default:
+                            return ImageConstants.IMG_16_TEST_OBJECT;
+                    }
                 case Invalid:
                     return ImageConstants.IMG_16_BUG;
             }

@@ -3,11 +3,14 @@ package com.kms.katalon.entity.repository;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 
 import com.kms.katalon.entity.file.FileEntity;
+import com.kms.katalon.entity.repository.WebElementPropertyEntity.MATCH_CONDITION;
 
 public class WebElementEntity extends FileEntity {
 
@@ -109,5 +112,18 @@ public class WebElementEntity extends FileEntity {
 
     public void setUseRalativeImagePath(boolean useRalativeImagePath) {
         this.useRalativeImagePath = useRalativeImagePath;
+    }
+
+    public WebElementPropertyEntity getProperty(String propertyName) {
+        Optional<WebElementPropertyEntity> optResult = getWebElementProperties().stream()
+                .filter(p -> p.getName().equals(propertyName)
+                        && MATCH_CONDITION.EQUAL.toString().equals(p.getMatchCondition()))
+                .findFirst();
+        return optResult.isPresent() ? optResult.get() : null;
+    }
+
+    public String getPropertyValue(String propertyName) {
+        WebElementPropertyEntity prop = getProperty(propertyName);
+        return prop != null ? prop.getValue() : StringUtils.EMPTY;
     }
 }

@@ -58,6 +58,26 @@ public class ImageConstants {
     public static final Image IMG_16_FRAME_OBJECT = ImageManager.getImage(IImageKeys.WEB_FRAME_ELEMENT_16);
 
     public static final Image IMG_16_TEST_OBJECT = ImageManager.getImage(IImageKeys.TEST_OBJECT_16);
+    
+    public static final Image IMG_16_BTN_TEST_OBJECT = ImageManager.getImage(IImageKeys.BTN_TEST_OBJECT_16);
+
+    public static final Image IMG_16_CBX_TEST_OBJECT = ImageManager.getImage(IImageKeys.CBX_TEST_OBJECT_16);
+
+    public static final Image IMG_16_CHK_TEST_OBJECT = ImageManager.getImage(IImageKeys.CHK_TEST_OBJECT_16);
+
+    public static final Image IMG_16_FILE_TEST_OBJECT = ImageManager.getImage(IImageKeys.FILE_TEST_OBJECT_16);
+
+    public static final Image IMG_16_IMG_TEST_OBJECT = ImageManager.getImage(IImageKeys.IMG_TEST_OBJECT_16);
+
+    public static final Image IMG_16_LBL_TEST_OBJECT = ImageManager.getImage(IImageKeys.LBL_TEST_OBJECT_16);
+
+    public static final Image IMG_16_LNK_TEST_OBJECT = ImageManager.getImage(IImageKeys.LNK_TEST_OBJECT_16);
+
+    public static final Image IMG_16_RBT_TEST_OBJECT = ImageManager.getImage(IImageKeys.RBT_TEST_OBJECT_16);
+
+    public static final Image IMG_16_TXT_TEST_OBJECT = ImageManager.getImage(IImageKeys.TXT_TEST_OBJECT_16);
+
+    public static final Image IMG_16_WS_TEST_OBJECT = ImageManager.getImage(IImageKeys.WS_TEST_OBJECT_16);
 
     public static final Image IMG_16_OK = ImageManager.getImage(IImageKeys.OK_16);
 
