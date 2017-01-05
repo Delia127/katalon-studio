@@ -16,6 +16,7 @@ import com.kms.katalon.composer.components.menu.MenuFactory;
 import com.kms.katalon.composer.integration.git.constants.GitIdConstant;
 import com.kms.katalon.composer.integration.git.constants.GitStringConstants;
 import com.kms.katalon.composer.integration.git.handlers.BranchHandler;
+import com.kms.katalon.composer.project.constants.StringConstants;
 import com.kms.katalon.constants.helper.ConstantsHelper;
 
 @SuppressWarnings("restriction")
@@ -41,6 +42,9 @@ public class GitMenuContribution {
         addChildMenuItem(items, GitIdConstant.GIT_PULL_PROJECT_COMMAND_ID, GitStringConstants.GIT_PULL_MENU_ITEM_LABEL);
         addChildMenuItem(items, GitIdConstant.GIT_FETCH_PROJECT_COMMAND_ID,
                 GitStringConstants.GIT_FETCH_MENU_ITEM_LABEL);
+        for (MMenuElement menuElement : items) {
+            menuElement.setTooltip(StringConstants.EMPTY);
+        }
     }
 
     public MDirectMenuItem createDisableMenuItem(MMenuFactory menuFactory, final String menuItemLabel) {

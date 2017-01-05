@@ -77,26 +77,26 @@
     <mainMenu xmi:id="_hQQH6RYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu">
       <children xsi:type="menu:Menu" xmi:id="_hQQH6hYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.file" label="File">
         <children xsi:type="menu:Menu" xmi:id="_4vwU0BsSEeSXreVpxhllQw" elementId="com.kms.katalon.menu.submenu.new" label="New"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_hQQH7BYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.file.save" label="Save" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/save_16.png" command="_hQQH4xYMEeSUMbyEN2kbFQ"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_VvjpYDayEeWjs_ysgU5nDA" elementId="com.kms.katalon.composer.menu.file.save_all" label="Save All" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/save_all_16.png" command="_8qJlUEO4EeSlQuaMBzQJOw"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_hQQH7RYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.file.quit" label="Quit" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/quit_16.png" command="_hQQH3BYMEeSUMbyEN2kbFQ"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_hQQH7BYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.file.save" label="Save" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/save_16.png" tooltip="" command="_hQQH4xYMEeSUMbyEN2kbFQ"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_VvjpYDayEeWjs_ysgU5nDA" elementId="com.kms.katalon.composer.menu.file.save_all" label="Save All" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/save_all_16.png" tooltip="" command="_8qJlUEO4EeSlQuaMBzQJOw"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_hQQH7RYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.file.quit" label="Quit" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/quit_16.png" tooltip="" command="_hQQH3BYMEeSUMbyEN2kbFQ"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_wT2ksBYeEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.edit" label="Edit">
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_GDm1EI7HEeantftUyMtBVg" elementId="com.kms.katalon.handledmenuitem.undo" label="Undo" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/undo_16.png" tooltip="Undo" command="_uIL9wI7GEeantftUyMtBVg"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_Kg3qkI7HEeantftUyMtBVg" elementId="com.kms.katalon.handledmenuitem.redo" label="Redo" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/redo_16.png" tooltip="Redo" command="_2yTOMI7GEeantftUyMtBVg"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_GDm1EI7HEeantftUyMtBVg" elementId="com.kms.katalon.handledmenuitem.undo" label="Undo" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/undo_16.png" tooltip="" command="_uIL9wI7GEeantftUyMtBVg"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_Kg3qkI7HEeantftUyMtBVg" elementId="com.kms.katalon.handledmenuitem.redo" label="Redo" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/redo_16.png" tooltip="" command="_2yTOMI7GEeantftUyMtBVg"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_0IJ8wBYeEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.importexport" toBeRendered="false" visible="false" label="Import/Export"/>
       <children xsi:type="menu:Menu" xmi:id="_2end0BYeEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.report" label="Report"/>
       <children xsi:type="menu:Menu" xmi:id="_0yMVUAmfEeWmsZWUQ_5cNA" elementId="com.kms.katalon.composer.menu.project" label="Project">
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_oiLmoAOIEeWmYfckKw0_5w" elementId="com.kms.katalon.handledmenuitem.searchFile" label="Search..." command="_N5ChkARIEeWyKYoESvUc1g"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_oiLmoAOIEeWmYfckKw0_5w" elementId="com.kms.katalon.handledmenuitem.searchFile" label="Search..." tooltip="" command="_N5ChkARIEeWyKYoESvUc1g"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_IjUoUNnnEeWQyuuwTERZYg" elementId="com.kms.katalon.composer.menu.window" label="Window">
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_xoCTINn4EeWQyuuwTERZYg" elementId="com.kms.katalon.composer.menu.window.resetPerspective" label="Reset Perspective..." command="_oilxkNn4EeWQyuuwTERZYg"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_xoCTINn4EeWQyuuwTERZYg" elementId="com.kms.katalon.composer.menu.window.resetPerspective" label="Reset Perspective..." tooltip="" command="_oilxkNn4EeWQyuuwTERZYg"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_hQQH7hYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.help" label="Help">
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_hQQH7xYMEeSUMbyEN2kbFQ" label="About" command="_hQQH5hYMEeSUMbyEN2kbFQ"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_dj8ScGgxEeatJ4Re1SnNtw" elementId="com.kms.katalon.handledmenuitem.welcome" label="Katalon Help" command="_jm89wGgxEeatJ4Re1SnNtw"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_iImwQGp9EeakEakFblwi9Q" elementId="com.kms.katalon.handledmenuitem.functionsintroduction" label="Quick Guide" command="_agaP0Gp9EeakEakFblwi9Q"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_hQQH7xYMEeSUMbyEN2kbFQ" label="About" tooltip="" command="_hQQH5hYMEeSUMbyEN2kbFQ"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_dj8ScGgxEeatJ4Re1SnNtw" elementId="com.kms.katalon.handledmenuitem.welcome" label="Katalon Help" tooltip="" command="_jm89wGgxEeatJ4Re1SnNtw"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_iImwQGp9EeakEakFblwi9Q" elementId="com.kms.katalon.handledmenuitem.functionsintroduction" label="Quick Guide" tooltip="" command="_agaP0Gp9EeakEakFblwi9Q"/>
       </children>
     </mainMenu>
     <sharedElements xsi:type="basic:Part" xmi:id="_yewVQD8LEeSqW-o8jtXO1g" elementId="org.eclipse.ui.console.ConsoleView" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Console" iconURI="platform:/plugin/org.eclipse.ui.console/icons/full/cview16/console_view.png"/>
