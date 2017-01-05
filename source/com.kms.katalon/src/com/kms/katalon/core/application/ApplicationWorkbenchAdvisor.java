@@ -14,7 +14,7 @@ import org.eclipse.ui.statushandlers.WorkbenchErrorHandler;
 import com.kms.katalon.constants.IdConstants;
 
 public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
-    private static final String STRING_INDEX_OUT_OF_RANGE_3 = "String index out of range: -3";
+    private static final String GREPCLIPSE_PACKAGE_NAME_PREFIX = "org.codehaus.groovy.eclipse";
 
     /**
      * The workbench error handler.
@@ -61,7 +61,11 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
                 if (!(status.getException() instanceof StringIndexOutOfBoundsException)) {
                     return false;
                 }
-                return status.getException().getMessage().equals(STRING_INDEX_OUT_OF_RANGE_3);
+                StackTraceElement[] stackTraces = status.getException().getStackTrace();
+                if (stackTraces.length < 2) {
+                    return false;
+                }
+                return stackTraces[1].getClassName().startsWith(GREPCLIPSE_PACKAGE_NAME_PREFIX);
             }
         };
         return workbenchErrorHandler;
