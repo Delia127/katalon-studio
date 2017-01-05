@@ -62,6 +62,7 @@ public class WebElementTreeEntity extends AbstractTreeEntity {
                 webElement.getPropertyValue(WebElementPropertyEntity.TYPE_PROPERTY))) {
             case HTMLTags.TAG_A:
                 return ImageConstants.IMG_16_LNK_TEST_OBJECT;
+            case HTMLTags.TAG_RESET:
             case HTMLTags.TAG_SUBMIT:
             case HTMLTags.TAG_BUTTON:
                 return ImageConstants.IMG_16_BTN_TEST_OBJECT;

@@ -24,12 +24,14 @@ public class HTMLTags {
 
     public static final String TAG_BUTTON = "button";
 
-    public static final String TAG_A = "a";
+    public static final String TAG_RESET = "reset";
 
     public static final String TAG_SUBMIT = "submit";
 
     public static final String TAG_INPUT = "input";
-    
+
+    public static final String TAG_A = "a";
+
     public static String getElementType(String tag, String type) {
         return TAG_INPUT.equals(tag) ? StringUtils.defaultString(type) : StringUtils.defaultString(tag);
     }
