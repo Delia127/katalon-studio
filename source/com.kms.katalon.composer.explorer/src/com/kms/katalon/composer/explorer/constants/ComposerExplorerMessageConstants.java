@@ -30,6 +30,8 @@ public class ComposerExplorerMessageConstants extends NLS {
     public static String LIS_ERROR_MSG_CANNOT_MOVE_INTO_DIFF_REGION;
 
     public static String TOOLTIP_MESSAGE_PROPERTIES_ENTITY;
+    
+    public static String ERROR_CANNOT_FIND_CONTAINING_FOLDER;
 
     static {
         // initialize resource bundle

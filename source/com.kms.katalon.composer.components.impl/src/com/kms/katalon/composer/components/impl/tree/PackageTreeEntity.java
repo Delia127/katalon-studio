@@ -27,7 +27,7 @@ public class PackageTreeEntity implements ITreeEntity {
 
     private static final String PACKAGE_TYPE_NAME = StringConstants.TREE_PACKAGE_TYPE_NAME;
 
-    private static final String DEFAULT_PACKAGE_LABEL = StringConstants.TREE_PACKAGE_DEFAULT_LBL;
+    public static final String DEFAULT_PACKAGE_LABEL = StringConstants.TREE_PACKAGE_DEFAULT_LBL;
     private IPackageFragment packageFragment;
     private String packageName;
     private boolean isDefaultPackage;
@@ -193,5 +193,12 @@ public class PackageTreeEntity implements ITreeEntity {
     @Override
     public List<TooltipPropertyDescription> getTooltipDescriptions() {
         return Collections.emptyList();
+    }
+    
+    public String getPackageName() {
+        if (isDefaultPackage) {
+            return DEFAULT_PACKAGE_LABEL;
+        }
+        return packageName;
     }
 }
