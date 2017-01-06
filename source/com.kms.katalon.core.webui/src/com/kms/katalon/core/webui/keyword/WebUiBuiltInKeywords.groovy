@@ -3356,4 +3356,29 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     public static int getElementWidth(TestObject to) {
         return (int)KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "getElementWidth", to)
     }
+
+    /**
+     * Get height of web element
+     * @param to represent the web element
+     * @param flowControl
+     * @return height of web element
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static int getElementHeight(TestObject to, FailureHandling flowControl) {
+        return (int) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "getElementHeight", to, flowControl)
+    }
+    
+    /**
+     * Get height of web element
+     * @param to represent the web element
+     * @return height of web element
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static int getElementHeight(TestObject to) {
+        return (int) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "getElementHeight", to)
+    }
 }
