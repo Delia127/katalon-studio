@@ -130,6 +130,8 @@ public class EventConstants {
     public static final String REPORT_UPDATED = "REPORT/UPDATED";
 
     public static final String REPORT_DELETED = "REPORT/DELETED";
+    
+    public static final String REPORT_RENAMED = "REPORT/RENAMED";
 
     // Keyword Events
     public static final String GROOVY_REFRESH_PROJECT = "GROOVY/REFRESH_PROJECT";

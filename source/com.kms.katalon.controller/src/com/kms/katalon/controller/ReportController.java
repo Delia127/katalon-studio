@@ -189,5 +189,9 @@ public class ReportController extends EntityController {
     public ReportCollectionEntity getReportCollection(String id) throws DALException {
         return getDataProviderSetting().getReportDataProvider().getReportCollectionEntity(id);
     }
+    
+    public ReportEntity renameReport(ReportEntity report, String newName) throws DALException {
+        return getDataProviderSetting().getReportDataProvider().renameReport(report, newName);
+    }
 
 }

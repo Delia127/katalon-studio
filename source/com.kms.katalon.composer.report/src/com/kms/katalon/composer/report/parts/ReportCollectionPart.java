@@ -5,6 +5,7 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.UIEvents;
@@ -22,6 +23,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.osgi.service.event.Event;
 
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
+import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
 import com.kms.katalon.composer.report.constants.StringConstants;
@@ -29,12 +31,16 @@ import com.kms.katalon.composer.report.provider.ReportActionColumnLabelProvider;
 import com.kms.katalon.composer.report.provider.ReportCollectionTableLabelProvider;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.entity.report.ReportCollectionEntity;
+import com.kms.katalon.entity.report.ReportItemDescription;
 
-public class ReportCollectionPart implements IComposerPartEvent {
+public class ReportCollectionPart extends EventServiceAdapter implements IComposerPartEvent {
 
     private ReportCollectionEntity reportCollectionEntity;
 
     private TableViewer tableViewer;
+
+    @Inject
+    private IEventBroker eventBroker;
 
     @PostConstruct
     public void initialize(Composite parent, MPart mpart) {
@@ -43,6 +49,8 @@ public class ReportCollectionPart implements IComposerPartEvent {
         createControls(parent);
 
         updateInput();
+
+        eventBroker.subscribe(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, this);
     }
 
     private void updateInput() {
@@ -66,42 +74,42 @@ public class ReportCollectionPart implements IComposerPartEvent {
         TableColumn tblclmnNo = tableViewerColumnNo.getColumn();
         tblclmnNo.setWidth(50);
         tblclmnNo.setText(StringConstants.NO_);
-        tableViewerColumnNo.setLabelProvider(new ReportCollectionTableLabelProvider(
-                ReportCollectionTableLabelProvider.CLM_NO_IDX));
+        tableViewerColumnNo.setLabelProvider(
+                new ReportCollectionTableLabelProvider(ReportCollectionTableLabelProvider.CLM_NO_IDX));
 
         TableViewerColumn tableViewerColumnId = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnId = tableViewerColumnId.getColumn();
         tblclmnId.setWidth(250);
         tblclmnId.setText(StringConstants.ID);
-        tableViewerColumnId.setLabelProvider(new ReportCollectionTableLabelProvider(
-                ReportCollectionTableLabelProvider.CLM_ID_IDX));
+        tableViewerColumnId.setLabelProvider(
+                new ReportCollectionTableLabelProvider(ReportCollectionTableLabelProvider.CLM_ID_IDX));
 
         TableViewerColumn tableViewerColumnEnviroment = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnEnvironment = tableViewerColumnEnviroment.getColumn();
         tblclmnEnvironment.setWidth(100);
         tblclmnEnvironment.setText(StringConstants.REPORT_COLLECTION_LBL_ENVIRONMENT);
-        tableViewerColumnEnviroment.setLabelProvider(new ReportCollectionTableLabelProvider(
-                ReportCollectionTableLabelProvider.CLM_EVN_IDX));
+        tableViewerColumnEnviroment.setLabelProvider(
+                new ReportCollectionTableLabelProvider(ReportCollectionTableLabelProvider.CLM_EVN_IDX));
 
         TableViewerColumn tableViewerColumnStatus = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnStatus = tableViewerColumnStatus.getColumn();
         tblclmnStatus.setWidth(100);
         tblclmnStatus.setText(StringConstants.STATUS);
-        tableViewerColumnStatus.setLabelProvider(new ReportCollectionTableLabelProvider(
-                ReportCollectionTableLabelProvider.CLM_STATUS_IDX));
+        tableViewerColumnStatus.setLabelProvider(
+                new ReportCollectionTableLabelProvider(ReportCollectionTableLabelProvider.CLM_STATUS_IDX));
 
         TableViewerColumn tableViewerColumnFailedTests = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnFailedTests = tableViewerColumnFailedTests.getColumn();
         tblclmnFailedTests.setWidth(120);
         tblclmnFailedTests.setText(StringConstants.REPORT_COLLECTION_COLUMN_FAILED_TEST);
-        tableViewerColumnFailedTests.setLabelProvider(new ReportCollectionTableLabelProvider(
-                ReportCollectionTableLabelProvider.CLM_FAILED_TESTS_IDX));
+        tableViewerColumnFailedTests.setLabelProvider(
+                new ReportCollectionTableLabelProvider(ReportCollectionTableLabelProvider.CLM_FAILED_TESTS_IDX));
 
         TableViewerColumn tableViewerColumnAction = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnAction = tableViewerColumnAction.getColumn();
         tblclmnAction.setWidth(90);
-        tableViewerColumnAction.setLabelProvider(new ReportActionColumnLabelProvider(
-                ReportCollectionTableLabelProvider.CLM_ACTION_IDX));
+        tableViewerColumnAction.setLabelProvider(
+                new ReportActionColumnLabelProvider(ReportCollectionTableLabelProvider.CLM_ACTION_IDX));
 
         tableViewer.setContentProvider(ArrayContentProvider.getInstance());
         ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
@@ -130,5 +138,34 @@ public class ReportCollectionPart implements IComposerPartEvent {
     @PreDestroy
     public void onClose() {
         // do nothing
+    }
+
+    @Override
+    public void handleEvent(Event event) {
+        switch (event.getTopic()) {
+            case EventConstants.EXPLORER_RENAMED_SELECTED_ITEM: {
+                Object[] objects = getObjects(event);
+                if (objects == null || objects.length != 2) {
+                    return;
+                }
+
+                Object oldRelativeId = objects[0];
+                ReportItemDescription reportNameChanged = getReportNameChanged(oldRelativeId);
+                if (reportNameChanged != null) {
+                    reportNameChanged.setReportLocation((String) objects[1]);
+                    tableViewer.refresh(reportNameChanged);
+                }
+                break;
+            }
+        }
+    }
+
+    private ReportItemDescription getReportNameChanged(Object oldRelativeId) {
+        for (ReportItemDescription itemDescription : reportCollectionEntity.getReportItemDescriptions()) {
+            if (itemDescription.getReportLocation().equals(oldRelativeId)) {
+                return itemDescription;
+            }
+        }
+        return null;
     }
 }

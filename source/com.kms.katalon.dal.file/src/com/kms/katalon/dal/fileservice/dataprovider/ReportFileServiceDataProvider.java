@@ -92,7 +92,7 @@ public class ReportFileServiceDataProvider implements IReportDataProvider {
 
     @Override
     public ReportEntity updateReport(ReportEntity report) throws Exception {
-        EntityService.getInstance().saveFolderMetadataEntity(report);
+        EntityService.getInstance().saveIntergratedFolderMetadataEntity(report);
         return report;
     }
 
@@ -191,6 +191,15 @@ public class ReportFileServiceDataProvider implements IReportDataProvider {
             EntityService.getInstance().deleteEntity(reportCollection);
 
             FolderFileServiceManager.deleteFolder(reportCollection.getParentFolder());
+        } catch (Exception e) {
+            throw new DALException(e);
+        }
+    }
+
+    @Override
+    public ReportEntity renameReport(ReportEntity report, String newName) throws DALException {
+        try {
+            return ReportFileServiceManager.renameReport(report, newName);
         } catch (Exception e) {
             throw new DALException(e);
         }
