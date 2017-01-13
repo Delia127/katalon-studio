@@ -43,7 +43,6 @@ import com.kms.katalon.core.appium.exception.AppiumStartException;
 import com.kms.katalon.core.appium.exception.MobileDriverInitializeException;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.driver.DriverType;
-import com.kms.katalon.core.driver.ExistingDriverType;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.logging.LogLevel;
@@ -170,7 +169,7 @@ public class DriverFactory {
     }
 
     private static boolean isUsingExistingDriver() {
-        return getExecutedBrowser() instanceof ExistingDriverType;
+        return RunConfiguration.getDriverSystemProperties(EXISTING_DRIVER_PROPERTY) != null;
     }
 
     private static WebDriver startNewBrowser(DriverType executedBrowser) throws MalformedURLException,
@@ -342,7 +341,7 @@ public class DriverFactory {
         	output = new PrintStream(myClient.getOutputStream());
             output.println(remoteWebDriver.getSessionId());
             output.println(getWebDriverServerUrl(remoteWebDriver));
-            DriverType remoteDriverType = DriverFactory.getExecutedBrowser();
+            DriverType remoteDriverType = getExecutedBrowser();
             output.println(remoteDriverType);
             output.println(RunConfiguration.getLogFolderPath());
             if (remoteDriverType == WebUIDriverType.ANDROID_DRIVER) {
@@ -694,8 +693,12 @@ public class DriverFactory {
 
     public static DriverType getExecutedBrowser() {
         DriverType webDriverType = null;
-        if (RunConfiguration.getDriverSystemProperties(EXISTING_DRIVER_PROPERTY) != null) {
-            return new ExistingDriverType(null);
+        if (isUsingExistingDriver()) {
+            webDriverType = WebUIDriverType.fromStringValue(RunConfiguration.getExisingSessionDriverType());
+        }
+        
+        if (webDriverType != null) {
+            return webDriverType;
         }
 
         String driverTypeString = RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY,
