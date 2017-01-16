@@ -31,8 +31,8 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.execution.setting.TestCaseSettingStore;
 
-public abstract class AstAbstractKeywordTreeTableNode extends AstInputEditableStatementTreeTableNode implements
-        IAstItemEditableNode, IAstObjectEditableNode, IAstOutputEditableNode {
+public abstract class AstAbstractKeywordTreeTableNode extends AstInputEditableStatementTreeTableNode
+        implements IAstItemEditableNode, IAstObjectEditableNode, IAstOutputEditableNode {
     private static final String COMMENT_KW_NAME = "comment";
 
     protected MethodCallExpressionWrapper methodCall;
@@ -41,7 +41,8 @@ public abstract class AstAbstractKeywordTreeTableNode extends AstInputEditableSt
 
     protected BinaryExpressionWrapper binaryExpression;
 
-    public AstAbstractKeywordTreeTableNode(ExpressionStatementWrapper methodCallStatement, AstTreeTableNode parentNode) {
+    public AstAbstractKeywordTreeTableNode(ExpressionStatementWrapper methodCallStatement,
+            AstTreeTableNode parentNode) {
         super(methodCallStatement, parentNode);
         if (methodCallStatement.getExpression() instanceof MethodCallExpressionWrapper) {
             this.methodCall = (MethodCallExpressionWrapper) methodCallStatement.getExpression();
@@ -61,7 +62,7 @@ public abstract class AstAbstractKeywordTreeTableNode extends AstInputEditableSt
     public String getItemText() {
         return TreeEntityUtil.getReadableKeywordName(getKeywordName());
     }
-    
+
     @Override
     public Object getItem() {
         return methodCall;
@@ -73,7 +74,7 @@ public abstract class AstAbstractKeywordTreeTableNode extends AstInputEditableSt
             return false;
         }
         MethodCallExpressionWrapper newMethodCall = (MethodCallExpressionWrapper) item;
-        if (newMethodCall.isEqualsTo(methodCall)) {
+        if (StringUtils.equals(newMethodCall.getMethodAsString(), getKeywordName())) {
             return false;
         }
         methodCall.setMethod(newMethodCall.getMethodAsString());
@@ -158,7 +159,7 @@ public abstract class AstAbstractKeywordTreeTableNode extends AstInputEditableSt
     public CellEditor getCellEditorForInput(Composite parent) {
         return new InputCellEditor(parent, getInputText(), methodCall.getArguments());
     }
-    
+
     @Override
     public final Object getInput() {
         return InputParameterBuilder.createForMethodCall(getInputParameters());
@@ -168,11 +169,11 @@ public abstract class AstAbstractKeywordTreeTableNode extends AstInputEditableSt
 
     @Override
     public final boolean setInput(Object input) {
-       if (input instanceof InputParameterBuilder) {
-           setInputParameters(((InputParameterBuilder) input).getOriginalParameters());
-           return true;
-       }
-       return false;
+        if (input instanceof InputParameterBuilder) {
+            setInputParameters(((InputParameterBuilder) input).getOriginalParameters());
+            return true;
+        }
+        return false;
     }
 
     protected boolean setInputParameters(List<InputParameter> originalParameters) {
@@ -228,15 +229,16 @@ public abstract class AstAbstractKeywordTreeTableNode extends AstInputEditableSt
 
     private boolean changeExistingOutput(String outputString) {
         if (binaryExpression.getLeftExpression() instanceof VariableExpressionWrapper) {
-            VariableExpressionWrapper variableExpressionWrapper = (VariableExpressionWrapper) binaryExpression.getLeftExpression();
+            VariableExpressionWrapper variableExpressionWrapper = (VariableExpressionWrapper) binaryExpression
+                    .getLeftExpression();
             if (variableExpressionWrapper.getVariable().equals(outputString)) {
                 return false;
             }
             variableExpressionWrapper.setVariable(outputString);
             return true;
         }
-        VariableExpressionWrapper newLeftExpression = new VariableExpressionWrapper(outputString,
-                getOutputReturnType(), binaryExpression);
+        VariableExpressionWrapper newLeftExpression = new VariableExpressionWrapper(outputString, getOutputReturnType(),
+                binaryExpression);
         if (!newLeftExpression.isEqualsTo(binaryExpression.getLeftExpression())) {
             binaryExpression.setLeftExpression(newLeftExpression);
             return true;
@@ -296,8 +298,8 @@ public abstract class AstAbstractKeywordTreeTableNode extends AstInputEditableSt
         if (StringUtils.equals(failureHandling.toString(), failureHandlingPropertyExpression.getPropertyAsString())) {
             return false;
         }
-        failureHandlingPropertyExpression.setProperty(new ConstantExpressionWrapper(failureHandling.toString(),
-                failureHandlingPropertyExpression));
+        failureHandlingPropertyExpression.setProperty(
+                new ConstantExpressionWrapper(failureHandling.toString(), failureHandlingPropertyExpression));
         return true;
     }
 
@@ -309,9 +311,9 @@ public abstract class AstAbstractKeywordTreeTableNode extends AstInputEditableSt
 
         FailureHandling failureHandling = getFailureHandlingValue();
         if (failureHandling == null) {
-            failureHandling = new TestCaseSettingStore(ProjectController.getInstance()
-                    .getCurrentProject()
-                    .getFolderLocation()).getDefaultFailureHandling();
+            failureHandling = new TestCaseSettingStore(
+                    ProjectController.getInstance().getCurrentProject().getFolderLocation())
+                            .getDefaultFailureHandling();
         }
 
         switch (failureHandling) {
@@ -325,10 +327,8 @@ public abstract class AstAbstractKeywordTreeTableNode extends AstInputEditableSt
     }
 
     private boolean isComment() {
-        return methodCall.getMethod() != null
-                && COMMENT_KW_NAME.equals(methodCall.getMethodAsString())
-                && methodCall.getObjectExpression() != null
-                && KeywordController.getInstance().getBuiltInKeywordClassByName(
-                        methodCall.getObjectExpressionAsString()) != null;
+        return methodCall.getMethod() != null && COMMENT_KW_NAME.equals(methodCall.getMethodAsString())
+                && methodCall.getObjectExpression() != null && KeywordController.getInstance()
+                        .getBuiltInKeywordClassByName(methodCall.getObjectExpressionAsString()) != null;
     }
 }
