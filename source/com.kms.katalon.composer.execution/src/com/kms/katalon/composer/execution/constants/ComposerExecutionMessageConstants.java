@@ -133,6 +133,8 @@ public class ComposerExecutionMessageConstants extends NLS {
 
     public static String PREF_BUTTON_SEND_TEST_EMAIL;
 
+    public static String ERR_MSG_LIB_FILE_BEING_USED;
+
     public static String ERROR_SEND_TEST_EMAIL_FAIL;
 
     public static String SETT_COL_DRIVER_PREFERENCE_NAME;
@@ -234,6 +236,10 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String LBL_EXECUTION_EXISTING_SESSION_BLANK_TITLE;
 
     public static String LBL_EXECUTION_NEW_SESSION;
+
+    public static String MSG_DELETING_FILE_X;
+
+    public static String MSG_DELETING_LIBRARY_FILES;
 
     public static String PREF_MSG_TEST_EMAIL_IS_SENT_SUCCESSFULLY;
 

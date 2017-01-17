@@ -3,6 +3,7 @@ package com.kms.katalon.composer.execution.settings;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -36,6 +37,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.ToolBar;
@@ -48,8 +50,10 @@ import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.providers.TypeCheckedStyleCellLabelProvider;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
+import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageConstants;
 import com.kms.katalon.composer.execution.constants.ImageConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
+import com.kms.katalon.composer.execution.exceptions.FileBeingUsedException;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -240,19 +244,27 @@ public class ExternalLibratiesSettingPage extends PreferencePage {
 
         try {
             new ProgressMonitorDialog(getShell()).run(true, false, new IRunnableWithProgress() {
-                private void removeUnusedFiles() {
-                    for (File file : getJars()) {
+                private void removeUnusedFiles(IProgressMonitor monitor) throws FileBeingUsedException {
+                    Collection<File> jarFiles = getJars();
+                    monitor.beginTask(ComposerExecutionMessageConstants.MSG_DELETING_LIBRARY_FILES, jarFiles.size());
+                    for (File file : jarFiles) {
                         if (externalJars.contains(file)) {
                             continue;
                         }
+                        monitor.subTask(MessageFormat.format(ComposerExecutionMessageConstants.MSG_DELETING_FILE_X,
+                                file.getName()));
                         safelyDeleleFile(file, DELETING_EXTERNAL_JAR_TIMEOUT);
+                        monitor.worked(TICK);
                     }
                 }
 
-                private void safelyDeleleFile(File file, long timeoutInMillis) {
+                private void safelyDeleleFile(File file, long timeoutInMillis) throws FileBeingUsedException {
                     long startTime = System.currentTimeMillis();
                     while (file.exists() && (System.currentTimeMillis() - startTime) <= timeoutInMillis) {
                         FileUtils.deleteQuietly(file);
+                    }
+                    if (file.exists()) {
+                        throw new FileBeingUsedException(file, getCurrentProject());
                     }
                 }
 
@@ -271,11 +283,13 @@ public class ExternalLibratiesSettingPage extends PreferencePage {
 
                         GroovyUtil.getGroovyProject(currentProject).close(new SubProgressMonitor(monitor, TICK));
 
-                        removeUnusedFiles();
-                        monitor.worked(TICK);
-
-                        projectController.openProjectForUI(currentProject.getId(),
-                                new SubProgressMonitor(monitor, TICK));
+                        try {
+                            removeUnusedFiles(monitor);
+                            monitor.worked(TICK);
+                        } finally {
+                            projectController.openProjectForUI(currentProject.getId(),
+                                    new SubProgressMonitor(monitor, TICK));
+                        }
                     } catch (final Exception e) {
                         throw new InvocationTargetException(e);
                     } finally {
@@ -286,7 +300,11 @@ public class ExternalLibratiesSettingPage extends PreferencePage {
             });
         } catch (InvocationTargetException e) {
             Throwable targetException = e.getTargetException();
-            LoggerSingleton.logError(targetException);
+            if (!(targetException instanceof FileBeingUsedException)) {
+                LoggerSingleton.logError(targetException);
+            } else {
+                updateInput();
+            }
             MultiStatusErrorDialog.showErrorDialog(targetException,
                     StringConstants.PAGE_EXTERNAL_LIB_MSG_UNABLE_UPDATE_PROJECT, targetException.getMessage());
             return false;
