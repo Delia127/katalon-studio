@@ -136,6 +136,9 @@ public class ControlUtils {
 
     public static void createOpenMenuWhenSelectOnlyOne(CMenu menu, FileEntity entity,
             Callable<Boolean> enableWhenItemSelected, SelectionAdapter adapter) {
+        if (entity == null) {
+            return;
+        }
         MenuItem openMenuItem = menu.createMenuItemWithoutSelectionListener(
                 ComposerComponentsImplMessageConstants.MENU_OPEN, null, enableWhenItemSelected, SWT.PUSH);
         openMenuItem.setID(ControlUtils.MENU_OPEN_ID);
