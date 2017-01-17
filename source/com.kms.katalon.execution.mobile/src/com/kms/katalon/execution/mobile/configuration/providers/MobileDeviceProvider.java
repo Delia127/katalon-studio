@@ -95,7 +95,9 @@ public class MobileDeviceProvider {
         if (!isRunningOnMacOSX()) {
             return Collections.emptyList();
         }
-        IosDeviceInfo.makeAllIMobileDeviceBinaryExecuteAble();
+        IosDeviceInfo.makeAllIMobileDeviceBinaryExecutable();
+        IosDeviceInfo.makeIosDeployExecutable();
+        IosDeviceInfo.makeDeviceConsoleExecutable();
         List<IosDeviceInfo> iosDevices = new ArrayList<IosDeviceInfo>();
         String[] getDeviceIdsCommand = {
                 IosDeviceInfo.getIMobileDeviceDirectoryAsString() + File.separator + IDEVICE_ID_COMMAND, L_FLAG };
