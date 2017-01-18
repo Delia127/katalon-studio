@@ -6,6 +6,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.AboutToShow;
 import org.eclipse.e4.ui.model.application.commands.MCommand;
@@ -57,7 +58,7 @@ public class RecentProjectsMenuContribution implements EventHandler {
                 recentProjectMenuItem.setLabel(labelName);
                 recentProjectMenuItem.setContributorURI(ConstantsHelper.getApplicationURI());
                 recentProjectMenuItem.setCommand(command);
-
+                recentProjectMenuItem.setTooltip(StringUtils.EMPTY);
                 // Create parameterized command
                 recentProjectMenuItem.setWbCommand(commandBuilder.createRecentProjectParameterizedCommand(project));
 

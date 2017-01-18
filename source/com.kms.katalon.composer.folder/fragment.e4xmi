@@ -7,7 +7,7 @@
     <elements xsi:type="commands:Handler" xmi:id="_NWtgUCEqEeSZXr0THRq18w" elementId="com.kms.katalon.composer.folder.handler.add" contributionURI="bundleclass://com.kms.katalon.composer.folder/com.kms.katalon.composer.folder.handlers.NewFolderHandler" command="_7DH0MCEpEeSZXr0THRq18w"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_n3ieMCErEeSZXr0THRq18w" featurename="children" parentElementId="com.kms.katalon.menu.submenu.new" positionInList="index:1">
-    <elements xsi:type="menu:HandledMenuItem" xmi:id="_t9tyQCErEeSZXr0THRq18w" elementId="com.kms.katalon.menu.submenu.new.folder" label="Folder" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/folder_16.png" tooltip="New Folder" command="_7DH0MCEpEeSZXr0THRq18w"/>
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_t9tyQCErEeSZXr0THRq18w" elementId="com.kms.katalon.menu.submenu.new.folder" label="Folder" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/folder_16.png" tooltip="" command="_7DH0MCEpEeSZXr0THRq18w"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_IYfA4CEsEeSZXr0THRq18w" featurename="children" parentElementId="com.kms.katalon.composer.explorer.popupmenu.new" positionInList="first">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_a_Zb8D8YEeSqW-o8jtXO1g" elementId="com.kms.katalon.composer.folder.popupmenu.new.dynamicmenucontribution" contributionURI="bundleclass://com.kms.katalon.composer.folder/com.kms.katalon.composer.folder.menu.NewFolderPopupMenuContribution"/>

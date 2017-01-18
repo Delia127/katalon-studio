@@ -140,11 +140,15 @@ public class IosDeviceInfo extends MobileDeviceInfo {
         return additionalEnvironmentVariables;
     }
 
-    public static void makeAllIMobileDeviceBinaryExecuteAble() throws IOException, InterruptedException {
+    public static void makeAllIMobileDeviceBinaryExecutable() throws IOException, InterruptedException {
         if (!Platform.OS_MACOSX.equals(Platform.getOS())) {
             return;
         }
-        File iMobileDeviceBinDirectory = getIMobileDeviceDirectory();
+        makeAllFilesInFolderExecutable(getIMobileDeviceDirectory());
+    }
+
+    private static void makeAllFilesInFolderExecutable(File iMobileDeviceBinDirectory)
+            throws IOException, InterruptedException {
         if (!(iMobileDeviceBinDirectory.exists() && iMobileDeviceBinDirectory.isDirectory())) {
             return;
         }
@@ -154,5 +158,23 @@ public class IosDeviceInfo extends MobileDeviceInfo {
             }
             makeFileExecutable(file);
         }
+    }
+    
+    public static void makeIosDeployExecutable() throws IOException, InterruptedException {
+        if (!Platform.OS_MACOSX.equals(Platform.getOS())) {
+            return;
+        }
+        makeAllFilesInFolderExecutable(getIosDeployDirectory());
+    }
+    
+    public static void makeDeviceConsoleExecutable() throws IOException, InterruptedException {
+        if (!Platform.OS_MACOSX.equals(Platform.getOS())) {
+            return;
+        }
+        File deviceConsoleBinary = getDeviceConsoleExecutablePath();
+        if (!deviceConsoleBinary.isFile()) {
+            return;
+        }
+        makeFileExecutable(deviceConsoleBinary);
     }
 }

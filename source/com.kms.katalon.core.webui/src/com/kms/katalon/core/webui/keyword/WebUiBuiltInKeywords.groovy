@@ -3306,4 +3306,54 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     public static String getCSSValue(TestObject to, String css, FailureHandling flowControl) {
         return (String) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "getCSSValue", to, css, flowControl)
     }
+    
+    /**
+     * Get left position of web element
+     * @param to represent the web element
+     * @param flowControl
+     * @return left position of web element
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static int getElementLeftPosition(TestObject to, FailureHandling flowControl) throws StepFailedException {
+        return (int) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "getElementLeftPosition", to, flowControl)
+    }
+    
+    /**
+     * Get the left position of web element
+     * @param to represent the web element
+     * @return left position of web element
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static int getElementLeftPosition(TestObject to) throws StepFailedException {
+        return (int) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "getElementLeftPosition", to)
+    }
+    
+    /**
+     * Get width of web element
+     * @param to represent the web element
+     * @param flowControl
+     * @return width of web element
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static int getElementWidth(TestObject to, FailureHandling flowControl) {
+        return (int)KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "getElementWidth", to, flowControl)
+    }
+    
+    /**
+     * Get width of web element
+     * @param to represent the web element
+     * @return width of web element
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static int getElementWidth(TestObject to) {
+        return (int)KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "getElementWidth", to)
+    }
 }

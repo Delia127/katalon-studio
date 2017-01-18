@@ -922,7 +922,19 @@ public class CoreWebuiMessageConstants extends NLS {
     public static String KW_LOG_INFO_GETTING_CSS_VALUE;
     
     public static String KW_LOG_PASSED_GET_CSS_VALUE;
-
+    
+    public static String KW_LOG_INFO_GETTING_ELEMENT_LEFT_POSITION;
+    
+    public static String KW_LOG_PASSED_GET_ELEMENT_LEFT_POSITION;
+    
+    public static String KW_MSG_CANNOT_GET_ELEMENT_LEFT_POSITION;
+    
+    public static String KW_LOG_INFO_GETTING_ELEMENT_WIDTH;
+    
+    public static String KW_LOG_PASSED_GET_ELEMENT_WIDTH;
+    
+    public static String KW_MSG_CANNOT_GET_WIDTH_ELEMENT;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, CoreWebuiMessageConstants.class);

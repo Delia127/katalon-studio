@@ -14,7 +14,7 @@
     <elements xsi:type="commands:Handler" xmi:id="_inpqgBrsEeSXreVpxhllQw" elementId="com.kms.katalon.composer.testcase.handler.add" contributionURI="bundleclass://com.kms.katalon.composer.testcase/com.kms.katalon.composer.testcase.handlers.NewTestCaseHandler" command="_HK4zYBrsEeSXreVpxhllQw"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_bvYgcBsTEeSXreVpxhllQw" featurename="children" parentElementId="com.kms.katalon.menu.submenu.new" positionInList="index:2">
-    <elements xsi:type="menu:HandledMenuItem" xmi:id="_9LE0IBsTEeSXreVpxhllQw" elementId="com.kms.katalon.menu.submenu.new.testcase" label="Test Case" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/test_case_16.png" tooltip="New Test Case" command="_HK4zYBrsEeSXreVpxhllQw"/>
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_9LE0IBsTEeSXreVpxhllQw" elementId="com.kms.katalon.menu.submenu.new.testcase" label="Test Case" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/test_case_16.png" tooltip="" command="_HK4zYBrsEeSXreVpxhllQw"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_i_UX0B4GEeS9B51WlLqF9g" featurename="children" parentElementId="com.kms.katalon.composer.explorer.popupmenu.new" positionInList="">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_rt6I0D7lEeSqW-o8jtXO1g" elementId="com.kms.katalon.composer.testcase.popupmenu.new.dynamicmenucontribution" contributionURI="bundleclass://com.kms.katalon.composer.testcase/com.kms.katalon.composer.testcase.menu.NewTestCasePopupMenuContribution"/>
