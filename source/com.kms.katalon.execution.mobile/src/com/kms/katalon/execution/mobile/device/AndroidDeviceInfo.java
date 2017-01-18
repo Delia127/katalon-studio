@@ -6,12 +6,28 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
 
 import com.kms.katalon.core.util.ConsoleCommandExecutor;
 import com.kms.katalon.execution.mobile.exception.AndroidSetupException;
 
 public class AndroidDeviceInfo extends MobileDeviceInfo {
+    private static final String BIN = "bin";
+
+    private static final String UNIX_PATH_SEPARATOR = ":";
+
+    private static final String WIN32_PATH_SEPARATOR = ";";
+
+    private static final String PATH = "PATH";
+
+    private static final String JAVA_HOME = "JAVA_HOME";
+
+    private static final String JRE = "jre";
+
+    private static final String MAC_JRE_HOME_RELATIVE_PATH = JRE + File.separator + "Contents" + File.separator + "Home"
+            + File.separator + JRE;
+
     private static final String EMULATOR_SUFFIX = ")";
 
     private static final String FOR_ANDROID_VERSION = " - Android ";
@@ -52,7 +68,7 @@ public class AndroidDeviceInfo extends MobileDeviceInfo {
     private String deviceOs;
 
     private String deviceOSVersion;
-    
+
     private boolean isEmulator;
 
     public AndroidDeviceInfo(String deviceId) throws AndroidSetupException, IOException, InterruptedException {
@@ -69,7 +85,8 @@ public class AndroidDeviceInfo extends MobileDeviceInfo {
     }
 
     private String initAndroidDeviceOS() throws AndroidSetupException, IOException, InterruptedException {
-        String[] getOSCommand = new String[] { getADBPath(), S_FLAG, this.deviceId, SHELL, GETPROP_COMMAND, NET_BT_NAME };
+        String[] getOSCommand = new String[] { getADBPath(), S_FLAG, this.deviceId, SHELL, GETPROP_COMMAND,
+                NET_BT_NAME };
         return ConsoleCommandExecutor.runConsoleCommandAndCollectFirstResult(getOSCommand);
     }
 
@@ -107,8 +124,8 @@ public class AndroidDeviceInfo extends MobileDeviceInfo {
         return adbPath;
     }
 
-    public static void makeAllAndroidSDKBinaryExecutable() throws IOException, InterruptedException,
-            AndroidSetupException {
+    public static void makeAllAndroidSDKBinaryExecutable()
+            throws IOException, InterruptedException, AndroidSetupException {
         if (!Platform.OS_MACOSX.equals(Platform.getOS())) {
             return;
         }
@@ -141,7 +158,7 @@ public class AndroidDeviceInfo extends MobileDeviceInfo {
         }
         return getDeviceManufacturer() + " " + getDeviceModel() + " " + getDeviceOSVersion();
     }
-    
+
     @Override
     public String getDeviceName() {
         return getDisplayName();
@@ -174,6 +191,22 @@ public class AndroidDeviceInfo extends MobileDeviceInfo {
         }
         Map<String, String> addtionalEnvironmentVariables = new HashMap<String, String>();
         addtionalEnvironmentVariables.put(ANDROID_HOME_ENVIRONMENT_VARIABLE_NAME, androidSDKFolder);
+        File jreFolder = getJREFolder();
+        addtionalEnvironmentVariables.put(JAVA_HOME, jreFolder.getAbsolutePath());
+        addtionalEnvironmentVariables.put(PATH,
+                System.getenv(PATH)
+                        + ((Platform.getOS() == Platform.OS_WIN32) ? WIN32_PATH_SEPARATOR : UNIX_PATH_SEPARATOR)
+                        + jreFolder + File.separator + BIN);
         return addtionalEnvironmentVariables;
+    }
+
+    private static File getJREFolder() throws IOException {
+        return new File(getConfigurationFolder().getParentFile(), MAC_JRE_HOME_RELATIVE_PATH);
+    }
+
+    private static File getConfigurationFolder() throws IOException {
+        File configurationFolder = new File(
+                FileLocator.resolve(Platform.getConfigurationLocation().getURL()).getFile());
+        return configurationFolder;
     }
 }
