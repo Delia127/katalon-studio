@@ -343,7 +343,6 @@ public abstract class TestDataMainPart extends CPart implements EventHandler, IP
             TestDataTreeEntity testDataTreeEntity = TreeEntityUtil.getTestDataTreeEntity(originalDataFile,
                     ProjectController.getInstance().getCurrentProject());
             eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, testDataTreeEntity);
-            eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, testDataTreeEntity);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }

@@ -83,6 +83,7 @@ import com.kms.katalon.composer.testcase.util.TestCaseMenuUtil;
 import com.kms.katalon.composer.testcase.views.FocusCellOwnerDrawForManualTestcase;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.core.model.FailureHandling;
+import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.execution.session.ExecutionSession;
 
 public class TestStepManualComposite {
@@ -648,6 +649,18 @@ public class TestStepManualComposite {
                 getTreeTableInput().addNewAstObject(menuItem.getID(), treeTableInput.getSelectedNode(), addType);
                 break;
         }
+    }
+
+    public void addStepByActionID(int id) {
+        getTreeTableInput().addNewAstObject(id, treeTableInput.getSelectedNode(), NodeAddType.Add);
+    }
+
+    public void addCallTestCaseStep(TestCaseEntity testCase) {
+        if (!getTreeTableInput().validateTestCase(testCase)) {
+            return;
+        }
+        getTreeTableInput().addCallTestCases(treeTableInput.getSelectedNode(), NodeAddType.Add,
+                new TestCaseEntity[] { testCase });
     }
 
     private void executeFromTestStep(ExecutionSession executionSession) {

@@ -627,7 +627,6 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
             TestSuiteCollectionTreeEntity tsCollectionTreeEntity = TreeEntityUtil.getTestSuiteCollectionTreeEntity(
                     originalTestSuite, ProjectController.getInstance().getCurrentProject());
             eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, tsCollectionTreeEntity);
-            eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, tsCollectionTreeEntity);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
@@ -666,6 +665,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         });
     }
 
+    @Override
     public TestSuiteCollectionEntity getTestSuiteCollection() {
         return originalTestSuite;
     }

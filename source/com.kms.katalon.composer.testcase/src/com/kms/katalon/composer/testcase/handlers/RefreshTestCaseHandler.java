@@ -34,6 +34,9 @@ public class RefreshTestCaseHandler {
 
 			@Override
 			public void handleEvent(Event event) {
+                if (ProjectController.getInstance().getCurrentProject() == null) {
+                    return;
+                }
 				Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
 				if (object != null && object instanceof TestCaseTreeEntity) {
 					try {

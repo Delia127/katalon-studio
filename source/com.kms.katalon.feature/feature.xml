@@ -319,9 +319,6 @@
       <import plugin="org.eclipse.ui.editors" version="3.4.0" match="compatible"/>
       <import plugin="com.jcraft.jsch" version="0.1.37" match="equivalent"/>
       <import plugin="com.jcraft.jsch" version="0.1.50" match="compatible"/>
-      <import plugin="org.eclipse.help.base" version="4.0.0" match="compatible"/>
-      <import plugin="org.apache.lucene.analysis" version="3.5.0" match="compatible"/>
-      <import plugin="org.apache.lucene.core" version="3.5.0" match="compatible"/>
       <import plugin="org.eclipse.core.net" version="1.2.200" match="greaterOrEqual"/>
       <import plugin="com.kms.katalon.composer.webui"/>
       <import plugin="com.kms.katalon.support.testing.katserver" version="1.0.0" match="greaterOrEqual"/>
@@ -2004,28 +2001,7 @@
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.help.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.help.base"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.equinox.http.jetty"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.apache.lucene.analysis"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -2042,7 +2018,7 @@
          id="org.apache.lucene.core"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="6.3.0"
          unpack="false"/>
 
    <plugin

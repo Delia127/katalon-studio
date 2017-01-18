@@ -24,6 +24,10 @@ public class EventConstants {
 
     public static final String PROJECT_SAVE_SESSION = "PROJECT/SAVE_SESSION";
 
+    public static final String PROJECT_SETTINGS = "PROJECT/SETTINGS";
+
+    public static final String PROJECT_INDEX = "PROJECT/INDEX";
+
     // Eclipse Events
     public static final String ECLIPSE_EDITOR_CLOSED = "EDITORS_CLOSED";
 
@@ -84,6 +88,8 @@ public class EventConstants {
     // TestCase Events
     public static final String TESTCASE_ALL = "TESTCASE/*";
 
+    public static final String TESTCASE_NEW = "TESTCASE/NEW";
+
     public static final String TESTCASE_OPEN = "TESTCASE/OPEN";
 
     public static final String TESTCASE_SAVE = "TESTCASE/SAVE";
@@ -96,13 +102,21 @@ public class EventConstants {
 
     public static final String TESTCASE_SETTINGS_FAILURE_HANDLING_UPDATED = "TESTCASE/FAILURE_HANDLING_UPDATED";
 
+    public static final String TESTCASE_ADD_STEP = "TESTCASE/ADD_STEP";
+
+    public static final String TESTCASE_ADD_STEP_CALL_TESTCASE = "TESTCASE/ADD_STEP/CALL_TESTCASE";
+
     // TestRun Events
+    public static final String TEST_SUITE_COLLECTION_NEW = "TEST_SUITE_COLLECTION/NEW";
+
     public static final String TEST_SUITE_COLLECTION_OPEN = "TEST_SUITE_COLLECTION/OPEN";
 
     public static final String TEST_SUITE_COLLECTION_UPDATED = "TEST_SUITE_COLLECTION/UPDATED";
 
     // TestSuite Events
     public static final String TEST_SUITE = "TESTSUITE/*";
+
+    public static final String TEST_SUITE_NEW = "TESTSUITE/NEW";
 
     public static final String TEST_SUITE_OPEN = "TESTSUITE/OPEN";
 
@@ -111,16 +125,22 @@ public class EventConstants {
     public static final String TEST_SUITE_UPDATED = "TESTSUITE/UPDATED";
 
     // TestData Events
+    public static final String TEST_DATA_NEW = "TESTDATA/NEW";
+
     public static final String TEST_DATA_OPEN = "TESTDATA/OPEN";
 
     public static final String TEST_DATA_UPDATED = "TESTDATA/UPDATE";
 
     // TestObject Events
+    public static final String TEST_OBJECT_NEW = "TESTOBJECT/NEW";
+
     public static final String TEST_OBJECT_OPEN = "TESTOBJECT/OPEN";
 
     public static final String TEST_OBJECT_SAVE = "TESTOBJECT/SAVE";
 
     public static final String TEST_OBJECT_UPDATED = "TESTOBJECT/UPDATED";
+
+    public static final String WEBSERVICE_REQUEST_OBJECT_NEW = "WSOBJECT/NEW";
 
     public static final String WEBSERVICE_REQUEST_OBJECT_OPEN = "WSOBJECT/OPEN";
 
@@ -130,13 +150,17 @@ public class EventConstants {
     public static final String REPORT_UPDATED = "REPORT/UPDATED";
 
     public static final String REPORT_DELETED = "REPORT/DELETED";
-    
+
     public static final String REPORT_RENAMED = "REPORT/RENAMED";
-    
+
     public static final String REPORT_COLLECTION_RENAMED = "REPORT/COLLECTION/RENAMED";
 
     // Keyword Events
     public static final String GROOVY_REFRESH_PROJECT = "GROOVY/REFRESH_PROJECT";
+
+    public static final String KEYWORD_NEW = "KEYWORD/NEW";
+
+    public static final String PACKAGE_NEW = "PACKAGE/NEW";
 
     // Import Events
     public static final String IMPORT_DUPLICATE_ENTITY_RESULT = "IMPORT/DUPLICATE_ENTITY_RESULT";
@@ -175,20 +199,26 @@ public class EventConstants {
     public static final String OBJECT_SPY_MOBILE_HIGHLIGHT = "OBJECT_SPY/MOBILE_HIGHLIGHT";
 
     public static final String OBJECT_SPY_MOBILE_SCREEN_CAPTURE = "OBJECT_SPY/MOBILE_SCREEN_CAPTURE";
-    
+
     public static final String OBJECT_SPY_HTML_ELEMENT_CAPTURED = "OBJECT_SPY/HTML_ELEMENT_CAPTURED";
-    
+
     public static final String OBJECT_SPY_HTML_DOM_CAPTURED = "OBJECT_SPY/HTML_DOM_CAPTURED";
-    
+
+    public static final String OBJECT_SPY_WEB = "OBJECT_SPY/WEB";
+
+    public static final String OBJECT_SPY_MOBILE = "OBJECT_SPY/MOBILE";
+
     // Recorder Events
     public static final String RECORDER_HTML_ACTION_CAPTURED = "RECORDER/HTML_ACTION_CAPTURED";
-    
+
     // Global Variable Events
     public static final String GLOBAL_VARIABLE_REFRESH = "GLOBAL_VARIABLE/REFRESH";
 
     public static final String GLOBAL_VARIABLE_SHOW_REFERENCES = "GLOBAL_VARIABLE/SHOW_REFERENCES";
 
     // Checkpoint Events
+    public static final String CHECKPOINT_NEW = "CHECKPOINT/NEW";
+
     public static final String CHECKPOINT_OPEN = "CHECKPOINT/OPEN";
 
     public static final String CHECKPOINT_UPDATED = "CHECKPOINT/UPDATED";
@@ -200,4 +230,21 @@ public class EventConstants {
 
     // Execution Events
     public static final String EXECUTE_FROM_TEST_STEP = "EXECUTE/FROM_TEST_STEP";
+
+    public static final String KATALON_HELP = "KATALON/HELP";
+
+    public static final String KATALON_QUICK_GUIDE = "KATALON/QUICK_GUIDE";
+
+    public static final String KATALON_PREFERENCES = "KATALON/PREFERENCES";
+
+    public static final String KATALON_LOAD_COMMANDS = "KATALON/LOAD_COMMANDS";
+
+    public static final String KATALON_OPEN_URL = "KATALON/OPEN_URL";
+
+    public static final String KATALON_UPDATE_HELP_CONTENTS = "KATALON/UPDATE_HELP_CONTENTS";
+
+    public static final String KATALON_RECORD = "KATALON/RECORD";
+
+    public static final String KATALON_GENERATE_COMMAND = "KATALON/GENERATE_COMMAND";
+
 }

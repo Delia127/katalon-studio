@@ -18,8 +18,7 @@ public class WorkbenchUtilizer {
         return getService(IEclipseContext.class);
     }
     
-    @SuppressWarnings("unchecked")
     public <T> T getService(Class<? extends T> clazz) {
-        return (T) getActiveWorkbench().getService(clazz);
+        return getActiveWorkbench().getService(clazz);
     }
 }

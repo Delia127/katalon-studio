@@ -50,6 +50,9 @@ public class CustomTreeViewerFocusCellManager extends TreeViewerFocusCellManager
 
     public void focusNextCell() {
         ViewerCell focusCell = cellHighlighter.getFocusCell();
+        if (focusCell == null) {
+            return;
+        }
         int cellIndex = focusCell.getColumnIndex();
         ViewerRow row = focusCell.getViewerRow();
         if (row == null) {
@@ -83,6 +86,9 @@ public class CustomTreeViewerFocusCellManager extends TreeViewerFocusCellManager
 
     public void focusPreviousCell() {
         ViewerCell focusCell = cellHighlighter.getFocusCell();
+        if (focusCell == null) {
+            return;
+        }
         int cellIndex = focusCell.getColumnIndex();
         ViewerRow row = focusCell.getViewerRow();
         if (row == null) {

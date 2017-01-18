@@ -32,6 +32,8 @@ public class MenuProcessor {
     public void run(MApplication app) {
         try {
             MWindow window = app.getChildren().get(0);
+            // Fix an unknown bug "Application do not have active window"
+            app.setSelectedElement(window);
             MMenu menu = window.getMainMenu();
             if (menu != null) {
                 return;

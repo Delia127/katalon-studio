@@ -9,6 +9,8 @@ import com.kms.katalon.entity.file.IntegratedFileEntity;
 public class ProjectEntity extends IntegratedFileEntity {
     private static final long serialVersionUID = 1L;
 
+    private String UUID;
+
     private short pageLoadTimeout;
 
     private String folderLocation;
@@ -16,6 +18,14 @@ public class ProjectEntity extends IntegratedFileEntity {
     private List<String> recentExpandedTreeEntityIds;
 
     private List<String> recentOpenedTreeEntityIds;
+
+    public String getUUID() {
+        return UUID;
+    }
+
+    public void setUUID(String UUID) {
+        this.UUID = UUID;
+    }
 
     public short getPageLoadTimeout() {
         return this.pageLoadTimeout;

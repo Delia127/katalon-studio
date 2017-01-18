@@ -18,6 +18,7 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
@@ -58,14 +59,19 @@ public class NewTestObjectHandler {
     
     private String newDefaultName = StringConstants.HAND_NEW_TEST_OBJ;
 
-	@CanExecute
-	private boolean canExecute() throws Exception {
-		if (ProjectController.getInstance().getCurrentProject() != null) {
-			return true;
-		} else {
-			return false;
-		}
-	}
+    @Inject
+    @Optional
+    private void executeByEvent(@UIEventTopic(EventConstants.TEST_OBJECT_NEW) Object unuse) {
+        if (!canExecute()) {
+            return;
+        }
+        execute(Display.getCurrent().getActiveShell());
+    }
+
+    @CanExecute
+    private boolean canExecute() {
+        return ProjectController.getInstance().getCurrentProject() != null;
+    }
 
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell) {

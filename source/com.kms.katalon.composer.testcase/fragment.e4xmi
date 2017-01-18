@@ -19,6 +19,7 @@
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_rVheoB7TEeSM__-V6-Nc3Q" featurename="addons" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="application:Addon" xmi:id="_nBBuIB7UEeSM__-V6-Nc3Q" elementId="com.kms.katalon.composer.testcase.addon.inject" contributionURI="bundleclass://com.kms.katalon.composer.testcase/com.kms.katalon.composer.testcase.addons.TestCaseInjectionManagerAddon"/>
+    <elements xsi:type="application:Addon" xmi:id="_xqPm0OxeEeaEL7_gfQD4GQ" elementId="com.kms.katalon.composer.testcase.addon.stepcommands" contributionURI="bundleclass://com.kms.katalon.composer.testcase/com.kms.katalon.composer.testcase.addons.TestCaseManualCommandAddon"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_M2QRgCYLEeWJ99-mW6KHQg" featurename="children" parentElementId="com.kms.katalon.partstack.left.outline" positionInList="first">
     <elements xsi:type="basic:Part" xmi:id="_ZljOoCYLEeWJ99-mW6KHQg" elementId="com.kms.katalon.composer.testcase.part.keywordsBrowser" contributionURI="bundleclass://com.kms.katalon.composer.testcase/com.kms.katalon.composer.testcase.parts.KeywordBrowserPart" label="Keywords Browser" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/folder_keyword_16.png">

@@ -3,6 +3,8 @@ package com.kms.katalon.composer.handlers;
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
@@ -12,6 +14,7 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.composer.parts.WelcomePart;
+import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.ImageConstants;
 import com.kms.katalon.constants.StringConstants;
@@ -55,6 +58,12 @@ public class OpenWelcomePageHandler {
 
         partService.showPart(mPart, PartState.ACTIVATE);
         stack.setSelectedElement(mPart);
+    }
+
+    @Inject
+    @Optional
+    public void execute(@UIEventTopic(EventConstants.KATALON_HELP) Object eventData) {
+        execute();
     }
 
     private String getPartId() {

@@ -5,10 +5,13 @@ import javax.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
@@ -43,7 +46,7 @@ public class NewTestSuiteCollectionHandler extends TestSuiteTreeRootCatcher {
         }
 
         try {
-            FolderEntity parentFolder = (FolderEntity) parentTreeFolder.getObject();
+            FolderEntity parentFolder = parentTreeFolder.getObject();
 
             String suggestedName = EntityNameController.getInstance().getAvailableName(
                     StringConstants.HDL_NEW_TEST_SUITE_COLLECTION_NAME, parentFolder, false);
@@ -61,13 +64,22 @@ public class NewTestSuiteCollectionHandler extends TestSuiteTreeRootCatcher {
                     parentTreeFolder);
             eventBroker.send(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, parentTreeFolder);
             eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, newTreeEntity);
-            eventBroker.post(EventConstants.TEST_SUITE_COLLECTION_OPEN, testRunEntity.getId());
+            eventBroker.post(EventConstants.TEST_SUITE_COLLECTION_OPEN, testRunEntity.getIdForDisplay());
 
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MultiStatusErrorDialog.showErrorDialog(e, StringConstants.HDL_MSG_UNABLE_TO_CREATE_TEST_SUITE_COLLECTION,
                     e.getMessage());
         }
+    }
+
+    @Inject
+    @Optional
+    private void execute(@UIEventTopic(EventConstants.TEST_SUITE_COLLECTION_NEW) Object eventData) {
+        if (!canExecute()) {
+            return;
+        }
+        execute(Display.getCurrent().getActiveShell());
     }
 
 }

@@ -197,6 +197,9 @@
 								<artifact>
 									<id>org.javalite:javalite-common:1.4.12</id>
 								</artifact>
+								<artifact>
+									<id>org.apache.lucene:lucene-core:6.3.0</id>
+								</artifact>
 							</artifacts>
 						</configuration>
 					</execution>

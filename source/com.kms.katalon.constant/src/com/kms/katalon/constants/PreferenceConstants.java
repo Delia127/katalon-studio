@@ -6,8 +6,10 @@ public interface PreferenceConstants {
     public static final String GENERAL_AUTO_RESTORE_PREVIOUS_SESSION = "general.autoRestorePreviousSession";
 
     public static final String GENERAL_APP_CLOSE_SUDDENLY = "general.appCloseSuddenly";
-    
+
     public static final String GENERAL_AUTO_CHECK_NEW_VERSION = "general.autoCheckNewVersion";
+
+    public static final String GENERAL_ONLINE_HELP_CONTENT = "general.onlineHelpContent";
 
     // Composer WebUi
     public static final String WEBUI_QUALIFIER = "com.kms.katalon.composer.webui";

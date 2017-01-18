@@ -272,6 +272,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
                 }
 
                 tabFolder.addSelectionListener(new SelectionAdapter() {
+                    @Override
                     public void widgetSelected(SelectionEvent event) {
                         if (tabFolder == null || childTestCasePart == null) {
                             return;
@@ -541,7 +542,6 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
                 TestCaseTreeEntity testCaseTreeEntity = TreeEntityUtil.getTestCaseTreeEntity(originalTestCase,
                         ProjectController.getInstance().getCurrentProject());
                 eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, testCaseTreeEntity);
-                eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, testCaseTreeEntity);
 
                 // raise Event to update Test Suite Part and others Test Case
                 // Part
@@ -767,6 +767,10 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
 
         updateDirty();
         setDirty(isAnyChildDirty);
+    }
+
+    public MPart getSelectedPart() {
+        return (MPart) subPartStack.getSelectedElement();
     }
 
     public void setSelectedPart(MPart partToSelect) {

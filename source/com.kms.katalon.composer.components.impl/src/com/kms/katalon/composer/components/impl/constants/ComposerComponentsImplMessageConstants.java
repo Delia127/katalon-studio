@@ -88,8 +88,60 @@ public class ComposerComponentsImplMessageConstants extends NLS {
     public static String DIA_TXT_POSTGRESQL_SAMPLE_LINK;
 
     public static String DIA_TXT_SQL_SERVER_SAMPLE_LINK;
-    
+
     public static String MENU_OPEN;
+
+    public static String DIA_TXT_MSG_COMMAND_PALETTE;
+
+    public static String DIA_LBL_PRESS_ESC_TO_CLOSE;
+
+    public static String DIA_KATALON_HELP_JSON_URL;
+
+    public static String DIA_NO_ONLINE_HELP_CONTENT;
+
+    public static String DIA_EXC_MSG_UNABLE_TO_LOAD_ONLINE_HELP_CONTENT;
+
+    public static String COMMAND_NAME_MORE_HELP;
+
+    public static String COMMAND_NAME_KATALON_PREFERENCES;
+
+    public static String COMMAND_NAME_KATALON_QUESTIONS_AND_ANSWERS;
+
+    public static String COMMAND_NAME_KATALON_DOCUMENT;
+
+    public static String COMMAND_NAME_KATALON_WEBSITE;
+
+    public static String COMMAND_NAME_KATALON_QUICK_GUIDE;
+
+    public static String COMMAND_NAME_KATALON_HELP;
+
+    public static String COMMAND_NAME_KATALON_COMMAND;
+
+    public static String COMMAND_NAME_PROJECT_SETTINGS;
+
+    public static String COMMAND_NAME_ADD_TEST_CASE_STEP;
+
+    public static String COMMAND_NAME_NEW;
+
+    public static String COMMAND_NAME_OPEN;
+
+    public static String COMMAND_NAME_SPY_WEB_OBJECT;
+
+    public static String COMMAND_NAME_SPY_MOBILE_OBJECT;
+
+    public static String COMMAND_NAME_RECORD;
+
+    public static String COMMAND_NAME_GENERATE_COMMAND;
+
+    public static String COMMAND_NAME_WEBSERVICE_OBJECT;
+
+    public static String KATALON_QA_URL;
+
+    public static String KATALON_WEBSITE_URL;
+
+    public static String KATALON_DOCUMENT_URL;
+
+    public static String COMMAND_NAME_TEST_SUITE_COLLECTION;
 
     static {
         // initialize resource bundle

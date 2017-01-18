@@ -92,8 +92,8 @@ public class OpenCheckpointHandler {
                 part.setObject(checkpoint);
             }
 
-            partService.showPart(part, PartState.ACTIVATE);
             partStack.setSelectedElement(part);
+            partService.showPart(part, PartState.ACTIVATE);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
