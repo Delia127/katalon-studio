@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="ASCII"?>
 <fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_zwV80BlXEeSIJ-03SEjqTg">
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_1iB84BlXEeSIJ-03SEjqTg" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="index:5">
-    <elements xsi:type="menu:HandledToolItem" xmi:id="_-UHdkBlXEeSIJ-03SEjqTg" elementId="com.kms.katalon.composer.toolbar.testcase.newtestcase" label="" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/new_test_case_24.png" tooltip="New Test Case" command="_HK4zYBrsEeSXreVpxhllQw">
-      <persistedState key="index" value="5"/>
-      <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/new_test_case_disabled_24.png"/>
-      <tags>FORCE_TEXT</tags>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_1iB84BlXEeSIJ-03SEjqTg" featurename="children" parentElementId="com.kms.katalon.composer.toolbar.new.menu" positionInList="">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_SUWNcNu0EeaEL7_gfQD4GQ" elementId="com.kms.katalon.composer.toolbar.testcase.newtestcase" label="Test Case" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/test_case_16.png" command="_HK4zYBrsEeSXreVpxhllQw">
+      <persistedState key="index" value="1"/>
     </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_l6UxoBrrEeSXreVpxhllQw" featurename="commands" parentElementId="com.kms.katalon.composer.application">

@@ -16,24 +16,22 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_0_h9ACauEeS9vYgzPyb1ug" featurename="children" parentElementId="com.kms.katalon.menu.submenu.new" positionInList="before:com.kms.katalon.composer.webservice.handledmenuitem.webServiceRequest">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_EVuD4CavEeS9vYgzPyb1ug" elementId="com.kms.katalon.menu.submenu.new.testobject" label="Test Object" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/test_object_16.png" tooltip="" command="_GJVzECauEeS9vYgzPyb1ug"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_4oSW8CavEeS9vYgzPyb1ug" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="before:com.kms.katalon.composer.webservice.handledtoolitem.newWsRequest">
-    <elements xsi:type="menu:HandledToolItem" xmi:id="_GQ0pMCawEeS9vYgzPyb1ug" elementId="com.kms.katalon.composer.objectrepository.handledtoolitem.newTestObject" label="" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/new_test_object_24.png" tooltip="New Test Object" command="_GJVzECauEeS9vYgzPyb1ug">
-      <persistedState key="index" value="8"/>
-      <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/new_test_object_disabled_24.png"/>
-      <tags>FORCE_TEXT</tags>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_4oSW8CavEeS9vYgzPyb1ug" featurename="children" parentElementId="com.kms.katalon.composer.toolbar.new.menu" positionInList="">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_G83iYNu1EeaEL7_gfQD4GQ" elementId="com.kms.katalon.composer.objectrepository.handledtoolitem.newTestObject" label="Test Object" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/test_object_16.png" command="_GJVzECauEeS9vYgzPyb1ug">
+      <persistedState key="index" value="4"/>
     </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_JvprECaxEeS9vYgzPyb1ug" featurename="children" parentElementId="com.kms.katalon.composer.explorer.popupmenu.new" positionInList="last">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_XVsyID-sEeSqW-o8jtXO1g" elementId="com.kms.katalon.composer.testobject.popupmenu.new.dynamicmenucontribution" contributionURI="bundleclass://com.kms.katalon.composer.objectrepository/com.kms.katalon.composer.objectrepository.menu.NewTestObjectPopupMenuContribution"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_SJ1VoLRCEeWoHIU1pZChOg" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="after:com.kms.katalon.composer.toolbar.handledtoolitem.new.keyword">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_SJ1VoLRCEeWoHIU1pZChOg" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="">
     <elements xsi:type="menu:ToolBarSeparator" xmi:id="_ZdBPYLRCEeWoHIU1pZChOg" elementId="com.kms.katalon.composer.objectrepository.toolbarseparator.1">
-      <persistedState key="index" value="13"/>
+      <persistedState key="index" value="4"/>
     </elements>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_6k2kYEPGEeSL9MJI7TlYNw" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="after:com.kms.katalon.composer.objectrepository.toolbarseparator.1">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_6k2kYEPGEeSL9MJI7TlYNw" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="">
     <elements xsi:type="menu:HandledToolItem" xmi:id="_OkY08EPHEeSL9MJI7TlYNw" elementId="com.kms.katalon.composer.objectrepository.handledtoolitem.objectSpy" label="" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/web_object_spy_24.png" tooltip="Web Object Spy" command="_qx_Y8DcrEeSiAqu25cXbFw">
-      <persistedState key="index" value="14"/>
+      <persistedState key="index" value="5"/>
       <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/web_object_spy_disabled_24.png"/>
       <tags>FORCE_TEXT</tags>
     </elements>

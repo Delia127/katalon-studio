@@ -19,18 +19,12 @@
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_RYbW4T-2EeSqW-o8jtXO1g" elementId="com.kms.katalon.composer.keyword.popupmenu.new.dynamicmenucontribution" contributionURI="bundleclass://com.kms.katalon.composer.keyword/com.kms.katalon.composer.keyword.menu.NewKeywordPopupMenuContribution"/>
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_H4j3EEIPEeSPr8gi-fpUXw" elementId="com.kms.katalon.composer.package.popupmenu.new.dynamicmenucontribution" contributionURI="bundleclass://com.kms.katalon.composer.keyword/com.kms.katalon.composer.keyword.menu.NewPackagePopupMenuContribution"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_--KSoD_DEeSqW-o8jtXO1g" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="after:com.kms.katalon.composer.toolbar.folder.newfolder">
-    <elements xsi:type="menu:HandledToolItem" xmi:id="_3TAaEEIOEeSPr8gi-fpUXw" elementId="com.kms.katalon.composer.toolbar.handledtoolitem.new.package" label="" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/new_package_24.png" tooltip="New Package for Keyword" command="_ojWuwEIOEeSPr8gi-fpUXw">
-      <persistedState key="index" value="4"/>
-      <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/new_package_disabled_24.png"/>
-      <tags>FORCE_TEXT</tags>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_--KSoD_DEeSqW-o8jtXO1g" featurename="children" parentElementId="com.kms.katalon.composer.toolbar.new.menu" positionInList="">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_ZY2ncNuzEeaEL7_gfQD4GQ" elementId="com.kms.katalon.composer.toolbar.handledtoolitem.new.package" label="Package" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/package_16.png" command="_ojWuwEIOEeSPr8gi-fpUXw">
+      <persistedState key="index" value="8"/>
     </elements>
-  </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_VJRQcBQLEeWFKqx225rIVg" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="after:com.kms.katalon.composer.toolbar.checkpoint.new">
-    <elements xsi:type="menu:HandledToolItem" xmi:id="_--KSoj_DEeSqW-o8jtXO1g" elementId="com.kms.katalon.composer.toolbar.handledtoolitem.new.keyword" label="" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/new_keyword_24.png" tooltip="New Keyword" command="_2KeX0T-1EeSqW-o8jtXO1g">
-      <persistedState key="index" value="12"/>
-      <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/new_keyword_disabled_24.png"/>
-      <tags>FORCE_TEXT</tags>
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_0cRKcNuzEeaEL7_gfQD4GQ" elementId="com.kms.katalon.composer.toolbar.handledtoolitem.new.keyword" label="Keyword" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/keyword_16.png" command="_2KeX0T-1EeSqW-o8jtXO1g">
+      <persistedState key="index" value="9"/>
     </elements>
   </fragments>
 </fragment:ModelFragments>
