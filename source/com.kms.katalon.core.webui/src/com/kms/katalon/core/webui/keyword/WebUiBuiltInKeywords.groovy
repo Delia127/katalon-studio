@@ -2479,7 +2479,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_BROWSER)
     public static void authenticate(final String url, String userName, String password, int timeout, FailureHandling flowControl) {
-        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "authenticate", String, userName, password, timeout, flowControl)
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "authenticate", url, userName, password, timeout, flowControl)
     }
 
     /**
@@ -2496,7 +2496,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_BROWSER)
     public static void authenticate(final String url, String userName, String password, int timeout) {
-        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "authenticate", String, userName, password, timeout)
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "authenticate", url, userName, password, timeout)
     }
 
     /**
