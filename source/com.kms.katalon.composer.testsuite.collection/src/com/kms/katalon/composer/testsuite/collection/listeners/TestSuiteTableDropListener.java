@@ -114,8 +114,8 @@ public class TestSuiteTableDropListener extends TableDropTargetEffect {
 
     private int getSelectedItemIndex(TestSuiteRunConfiguration selectedItem) {
         List<TestSuiteRunConfiguration> testSuiteRunConfigurations = tableViewerProvider.getTableItems();
-        int selectedIndex = (selectedItem != null) ? testSuiteRunConfigurations.indexOf(selectedItem)
-                : testSuiteRunConfigurations.size() - 1;
+        int selectedIndex = (selectedItem != null) ? testSuiteRunConfigurations.indexOf(selectedItem) + 1
+                : testSuiteRunConfigurations.size();
         return selectedIndex;
     }
 
@@ -156,7 +156,7 @@ public class TestSuiteTableDropListener extends TableDropTargetEffect {
     }
 
     private void insertTestSuiteRunConfiguration(TestSuiteRunConfiguration configuration, int index) {
-        if (index < 0 || index >= tableViewerProvider.getTableItems().size() - 1) {
+        if (index < 0 || index >= tableViewerProvider.getTableItems().size()) {
             tableViewerProvider.getTableItems().add(configuration);
             return;
         }
