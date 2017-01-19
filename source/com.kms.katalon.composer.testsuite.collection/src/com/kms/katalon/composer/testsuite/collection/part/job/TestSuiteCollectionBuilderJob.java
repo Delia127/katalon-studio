@@ -19,7 +19,13 @@ import com.kms.katalon.composer.testsuite.collection.constant.StringConstants;
 import com.kms.katalon.composer.testsuite.collection.part.launcher.IDETestSuiteCollectionLauncher;
 import com.kms.katalon.composer.testsuite.collection.part.launcher.SubIDELauncher;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
+import com.kms.katalon.dal.exception.DALException;
+import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.report.ReportCollectionEntity;
+import com.kms.katalon.entity.report.ReportItemDescription;
+import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteRunConfiguration;
@@ -47,6 +53,12 @@ public class TestSuiteCollectionBuilderJob extends Job {
             monitor.beginTask(StringConstants.JOB_TASK_BUILDING_TEST_SUITE_COLLECTION, totalSize);
             TestSuiteCollectionExecutedEntity executedEntity = new TestSuiteCollectionExecutedEntity(
                     testSuiteCollectionEntity);
+
+            ProjectEntity project = testSuiteCollectionEntity.getProject();
+            ReportController reportController = ReportController.getInstance();
+            ReportCollectionEntity reportCollection = reportController.newReportCollection(project,
+                    testSuiteCollectionEntity, executedEntity.getId());
+
             List<SubIDELauncher> tsLaunchers = new ArrayList<>();
             boolean cancelInstallWebDriver = false;
             for (TestSuiteRunConfiguration tsRunConfig : testSuiteCollectionEntity.getTestSuiteRunConfigurations()) {
@@ -65,7 +77,7 @@ public class TestSuiteCollectionBuilderJob extends Job {
                     continue;
                 }
 
-                SubIDELauncher subLauncher = buildLauncher(tsRunConfig);
+                SubIDELauncher subLauncher = buildLauncher(tsRunConfig, reportCollection);
                 if (subLauncher == null) {
                     return Status.CANCEL_STATUS;
                 }
@@ -84,7 +96,11 @@ public class TestSuiteCollectionBuilderJob extends Job {
             TestSuiteCollectionLauncher launcher = new IDETestSuiteCollectionLauncher(executedEntity, launcherManager,
                     tsLaunchers, testSuiteCollectionEntity.getExecutionMode());
             launcherManager.addLauncher(launcher);
+            reportController.updateReportCollection(reportCollection);
             return Status.OK_STATUS;
+        } catch (DALException e) {
+            LoggerSingleton.logError(e);
+            return Status.CANCEL_STATUS;
         } finally {
             monitor.done();
         }
@@ -118,26 +134,31 @@ public class TestSuiteCollectionBuilderJob extends Job {
         });
     }
 
-    private SubIDELauncher buildLauncher(final TestSuiteRunConfiguration tsRunConfig) {
+    private SubIDELauncher buildLauncher(final TestSuiteRunConfiguration tsRunConfig,
+            ReportCollectionEntity reportCollection) {
         String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
         try {
-            IRunConfiguration runConfig = RunConfigurationCollector.getInstance().getRunConfiguration(
-                    tsRunConfig.getConfiguration().getRunConfigurationId(), projectDir, tsRunConfig.getConfiguration());
+            RunConfigurationDescription configuration = tsRunConfig.getConfiguration();
+            IRunConfiguration runConfig = RunConfigurationCollector.getInstance()
+                    .getRunConfiguration(configuration.getRunConfigurationId(), projectDir, configuration);
             TestSuiteEntity testSuiteEntity = tsRunConfig.getTestSuiteEntity();
             runConfig.build(testSuiteEntity, new TestSuiteExecutedEntity(testSuiteEntity));
-            return new SubIDELauncher(runConfig, LaunchMode.RUN);
+            SubIDELauncher launcher = new SubIDELauncher(runConfig, LaunchMode.RUN);
+            reportCollection.getReportItemDescriptions()
+                    .add(ReportItemDescription.from(launcher.getReportEntity().getIdForDisplay(), configuration));
+            return launcher;
         } catch (final Exception e) {
             UISynchronizeService.syncExec(new Runnable() {
                 @Override
                 public void run() {
-                    MultiStatusErrorDialog.showErrorDialog(e, MessageFormat.format(
-                            StringConstants.JOB_MSG_UNABLE_TO_EXECUTE_TEST_SUITE, tsRunConfig.getTestSuiteEntity()
-                                    .getIdForDisplay()), e.getMessage());
+                    MultiStatusErrorDialog.showErrorDialog(e,
+                            MessageFormat.format(StringConstants.JOB_MSG_UNABLE_TO_EXECUTE_TEST_SUITE,
+                                    tsRunConfig.getTestSuiteEntity().getIdForDisplay()),
+                            e.getMessage());
                 }
             });
             LoggerSingleton.logError(e);
             return null;
         }
     }
-
 }

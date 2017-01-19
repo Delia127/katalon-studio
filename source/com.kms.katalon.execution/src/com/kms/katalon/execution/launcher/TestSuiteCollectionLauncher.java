@@ -3,14 +3,7 @@ package com.kms.katalon.execution.launcher;
 import java.io.IOException;
 import java.util.List;
 
-import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
-import com.kms.katalon.dal.exception.DALException;
-import com.kms.katalon.entity.project.ProjectEntity;
-import com.kms.katalon.entity.report.ReportCollectionEntity;
-import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
-import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity.ExecutionMode;
 import com.kms.katalon.execution.entity.TestSuiteCollectionExecutedEntity;
 import com.kms.katalon.execution.launcher.listener.LauncherEvent;
@@ -36,8 +29,6 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
 
     private TestSuiteCollectionExecutedEntity executedEntity;
 
-    protected final ReportCollectionEntity reportCollectionEntity;
-    
     private ExecutionMode executionMode;
 
     public TestSuiteCollectionLauncher(TestSuiteCollectionExecutedEntity executedEntity, LauncherManager parentManager,
@@ -47,7 +38,6 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
         this.result = new LauncherResult(executedEntity.getTotalTestCases());
         this.parentManager = parentManager;
         this.executedEntity = executedEntity;
-        this.reportCollectionEntity = createReportCollectionEntity();
         this.executionMode = executionMode;
         addListenerForChildren(subLaunchers);
     }
@@ -56,36 +46,6 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
         for (ReportableLauncher childLauncher : subLaunchers) {
             childLauncher.addListener(this);
         }
-    }
-
-    private final ReportCollectionEntity createReportCollectionEntity() {
-        try {
-            ReportController reportController = ReportController.getInstance();
-            ReportCollectionEntity reportCollection = reportController.newReportCollection(getCurrentProject(),
-                    getTestSuiteCollection(), getId());
-
-            for (int i = 0; i < subLaunchers.size(); i++) {
-                ReportableLauncher launcher = subLaunchers.get(i);
-                RunConfigurationDescription configDescription = executedEntity.getEntity()
-                        .getTestSuiteRunConfigurations()
-                        .get(i)
-                        .getConfiguration();
-                reportCollection.getReportItemDescriptions().add(launcher.getReportDescription(configDescription));
-            }
-            reportController.updateReportCollection(reportCollection);
-            return reportCollection;
-        } catch (DALException ex) {
-            LogUtil.logError(ex);
-            return null;
-        }
-    }
-
-    private ProjectEntity getCurrentProject() {
-        return ProjectController.getInstance().getCurrentProject();
-    }
-
-    private TestSuiteCollectionEntity getTestSuiteCollection() {
-        return executedEntity.getEntity();
     }
 
     @Override
@@ -181,7 +141,7 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
             }
             return getRunningLaunchers().isEmpty();
         }
-        
+
         @Override
         public String getChildrenLauncherStatus(int consoleWidth) {
             return super.getChildrenLauncherStatus(consoleWidth);
