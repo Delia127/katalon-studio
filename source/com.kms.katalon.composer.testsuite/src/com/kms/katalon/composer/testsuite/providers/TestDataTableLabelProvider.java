@@ -106,7 +106,7 @@ public class TestDataTableLabelProvider extends StyledCellLabelProvider {
     @Override
     public void update(ViewerCell cell) {
         cell.setText(getColumnText(cell.getElement()));
-        cell.setImage(getColumnImage(cell.getElement()));
+        cell.setImage(null);
 
         TestCaseTestDataLink link = (TestCaseTestDataLink) cell.getElement();
         String testDataId = link.getTestDataId();
@@ -129,7 +129,7 @@ public class TestDataTableLabelProvider extends StyledCellLabelProvider {
     @Override
     public String getToolTipText(Object element) {
         if (element == null || !(element instanceof TestCaseTestDataLink)) {
-            return "";
+            return null;
         }
 
         TestCaseTestDataLink link = (TestCaseTestDataLink) element;
@@ -146,7 +146,7 @@ public class TestDataTableLabelProvider extends StyledCellLabelProvider {
         } else {
             return getColumnText(element);
         }
-        return "";
+        return null;
     }
 
 }
