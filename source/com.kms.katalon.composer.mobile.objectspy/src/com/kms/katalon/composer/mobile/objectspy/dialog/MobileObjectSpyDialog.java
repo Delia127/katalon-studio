@@ -97,9 +97,11 @@ import com.kms.katalon.composer.mobile.objectspy.preferences.MobileObjectSpyPref
 import com.kms.katalon.composer.mobile.objectspy.viewer.CapturedObjectTableViewer;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ObjectRepositoryController;
+import com.kms.katalon.core.appium.exception.AppiumStartException;
 import com.kms.katalon.core.mobile.keyword.internal.GUIObject;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
 
 public class MobileObjectSpyDialog extends Dialog {
@@ -214,8 +216,8 @@ public class MobileObjectSpyDialog extends Dialog {
         TableColumnLayout tbclCapturedObjects = new TableColumnLayout();
         capturedObjectTableComposite.setLayout(tbclCapturedObjects);
 
-        capturedObjectsTableViewer = new CapturedObjectTableViewer(capturedObjectTableComposite, SWT.BORDER | SWT.MULTI
-                | SWT.FULL_SELECTION, this);
+        capturedObjectsTableViewer = new CapturedObjectTableViewer(capturedObjectTableComposite,
+                SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION, this);
         Table capturedObjectsTable = capturedObjectsTableViewer.getTable();
         capturedObjectsTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
         capturedObjectsTable.setHeaderVisible(true);
@@ -223,20 +225,22 @@ public class MobileObjectSpyDialog extends Dialog {
 
         TableViewerColumn tbvclCapturedObjectsSelection = new TableViewerColumn(capturedObjectsTableViewer, SWT.NONE);
         tblclmnCapturedObjectsSelection = tbvclCapturedObjectsSelection.getColumn();
-        tbvclCapturedObjectsSelection.setLabelProvider(new CapturedElementLabelProvider(
-                CapturedElementLabelProvider.SELECTION_COLUMN_IDX));
-        tbvclCapturedObjectsSelection.setEditingSupport(new SelectableElementEditingSupport(capturedObjectsTableViewer));
+        tbvclCapturedObjectsSelection
+                .setLabelProvider(new CapturedElementLabelProvider(CapturedElementLabelProvider.SELECTION_COLUMN_IDX));
+        tbvclCapturedObjectsSelection
+                .setEditingSupport(new SelectableElementEditingSupport(capturedObjectsTableViewer));
 
-        TableViewerColumn tableViewerColumnCapturedObjects = new TableViewerColumn(capturedObjectsTableViewer, SWT.NONE);
+        TableViewerColumn tableViewerColumnCapturedObjects = new TableViewerColumn(capturedObjectsTableViewer,
+                SWT.NONE);
         TableColumn tblclmnCapturedObjects = tableViewerColumnCapturedObjects.getColumn();
         tblclmnCapturedObjects.setText(StringConstants.NAME);
-        tableViewerColumnCapturedObjects.setLabelProvider(new CapturedElementLabelProvider(
-                CapturedElementLabelProvider.ELEMENT_COLUMN_IDX));
+        tableViewerColumnCapturedObjects
+                .setLabelProvider(new CapturedElementLabelProvider(CapturedElementLabelProvider.ELEMENT_COLUMN_IDX));
 
         capturedObjectsTableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
-        tbclCapturedObjects.setColumnData(tblclmnCapturedObjectsSelection, new ColumnWeightData(0, 
-                Platform.OS_MACOSX.equals(Platform.getOS()) ? 21 : 30));
+        tbclCapturedObjects.setColumnData(tblclmnCapturedObjectsSelection,
+                new ColumnWeightData(0, Platform.OS_MACOSX.equals(Platform.getOS()) ? 21 : 30));
         tbclCapturedObjects.setColumnData(tblclmnCapturedObjects, new ColumnWeightData(60));
 
         capturedObjectsTable.setToolTipText(StringUtils.EMPTY);
@@ -250,7 +254,7 @@ public class MobileObjectSpyDialog extends Dialog {
                 propertiesComposite.setEditingElement(firstElement);
             }
         });
-        
+
         capturedObjectsTableViewer.getTable().addMouseListener(new MouseAdapter() {
             public void mouseDown(MouseEvent e) {
                 if (e.button != 1) {
@@ -378,8 +382,8 @@ public class MobileObjectSpyDialog extends Dialog {
         TreeColumnLayout tbclAllObjects = new TreeColumnLayout();
         allObjectsTreeComposite.setLayout(tbclAllObjects);
 
-        allElementTreeViewer = new CheckboxTreeViewer(allObjectsTreeComposite, SWT.BORDER | SWT.FULL_SELECTION
-                | SWT.MULTI) {
+        allElementTreeViewer = new CheckboxTreeViewer(allObjectsTreeComposite,
+                SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI) {
             @Override
             public boolean setSubtreeChecked(Object element, boolean state) {
                 Widget widget = internalExpand(element, false);
@@ -594,8 +598,8 @@ public class MobileObjectSpyDialog extends Dialog {
         } catch (InvocationTargetException e) {
             LoggerSingleton.logError(e);
             Throwable targetException = e.getTargetException();
-            MultiStatusErrorDialog.showErrorDialog(targetException,
-                    StringConstants.DIA_ERROR_UNABLE_TO_COLLECT_DEVICES, targetException.getClass().getSimpleName());
+            MultiStatusErrorDialog.showErrorDialog(targetException, StringConstants.DIA_ERROR_UNABLE_TO_COLLECT_DEVICES,
+                    targetException.getClass().getSimpleName());
             canceledBeforeOpening = true;
         } finally {
             ControlUtils.recursiveSetEnabled(container, true);
@@ -644,15 +648,16 @@ public class MobileObjectSpyDialog extends Dialog {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 try {
-                    AddElementToObjectRepositoryDialog dialog = new AddElementToObjectRepositoryDialog(getParentShell());
+                    AddElementToObjectRepositoryDialog dialog = new AddElementToObjectRepositoryDialog(
+                            getParentShell());
                     if (dialog.open() != Dialog.OK) {
                         return;
                     }
                     FolderTreeEntity folderTreeEntity = dialog.getSelectedFolderTreeEntity();
                     FolderEntity folder = (FolderEntity) folderTreeEntity.getObject();
                     List<ITreeEntity> newTreeEntities = addElementsToRepository(folderTreeEntity, folder);
-                    removeSelectedCapturedElements(capturedObjectsTableViewer.getAllCheckedElements().toArray(
-                            new CapturedMobileElement[0]));
+                    removeSelectedCapturedElements(
+                            capturedObjectsTableViewer.getAllCheckedElements().toArray(new CapturedMobileElement[0]));
                     updateExplorerState(folderTreeEntity, newTreeEntities);
                 } catch (Exception ex) {
                     LoggerSingleton.logError(ex);
@@ -901,8 +906,8 @@ public class MobileObjectSpyDialog extends Dialog {
                         allElementTreeViewer.setInput(new Object[] { appRootElement });
                         allElementTreeViewer.refresh();
                         allElementTreeViewer.expandAll();
-                        verifyCapturedElementsStates(capturedObjectsTableViewer.getCapturedElements().toArray(
-                                new CapturedMobileElement[0]));
+                        verifyCapturedElementsStates(
+                                capturedObjectsTableViewer.getCapturedElements().toArray(new CapturedMobileElement[0]));
                         dialog.setCancelable(true);
                     }
                 });
@@ -983,13 +988,8 @@ public class MobileObjectSpyDialog extends Dialog {
                     progressDlg.runAndWait(new Callable<Object>() {
                         @Override
                         public Object call() throws Exception {
-                            try {
-                                // Start application using MobileDriver
-                                inspectorController.startMobileApp(selectDeviceInfo, appFile, false);
-                            } catch (Exception ex) {
-                                LoggerSingleton.logError(ex);
-                                throw new InvocationTargetException(ex, ex.getMessage());
-                            }
+                            // Start application using MobileDriver
+                            inspectorController.startMobileApp(selectDeviceInfo, appFile, false);
                             return null;
                         }
                     });
@@ -1008,9 +1008,11 @@ public class MobileObjectSpyDialog extends Dialog {
         } catch (InvocationTargetException | InterruptedException ex) {
             // If user intentionally cancel the progress, don't need to show error message
             if (ex instanceof InvocationTargetException) {
+                Throwable targetException = ((InvocationTargetException) ex).getTargetException();
+                String message = (targetException instanceof java.util.concurrent.ExecutionException)
+                        ? targetException.getCause().getMessage() : targetException.getMessage();
                 MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
-                        StringConstants.DIA_ERROR_MSG_CANNOT_START_APP_ON_CURRENT_DEVICE + ": "
-                                + ((InvocationTargetException) ex).getTargetException().getMessage());
+                        StringConstants.DIA_ERROR_MSG_CANNOT_START_APP_ON_CURRENT_DEVICE + ": " + message);
             }
 
             // Enable start button and show error dialog if application cannot start
@@ -1118,8 +1120,8 @@ public class MobileObjectSpyDialog extends Dialog {
     @Override
     protected Point getInitialLocation(Point initialSize) {
         Rectangle displayBounds = getShell().getMonitor().getBounds();
-        return new Point(calculateObjectSpyDialogStartX(displayBounds, initialSize), calculateObjectSpyDialogStartY(
-                displayBounds, initialSize));
+        return new Point(calculateObjectSpyDialogStartX(displayBounds, initialSize),
+                calculateObjectSpyDialogStartY(displayBounds, initialSize));
     }
 
     private MobileDeviceInfo getMobileDeviceInfo() {
