@@ -310,14 +310,14 @@
 					<textElement verticalAlignment="Middle">
 						<font size="9"/>
 					</textElement>
-					<textFieldExpression><![CDATA[com.kms.katalon.core.util.DateUtil.getDateTimeFormatted($P{TEST_SUITE}.getStartTime())]]></textFieldExpression>
+					<textFieldExpression><![CDATA[com.kms.katalon.core.util.internal.DateUtil.getDateTimeFormatted($P{TEST_SUITE}.getStartTime())]]></textFieldExpression>
 				</textField>
 				<textField>
 					<reportElement positionType="Float" x="340" y="199" width="175" height="14" uuid="72de1184-286f-4a2e-9f9f-3910ca887641"/>
 					<textElement verticalAlignment="Middle">
 						<font size="9"/>
 					</textElement>
-					<textFieldExpression><![CDATA[com.kms.katalon.core.util.DateUtil.getDateTimeFormatted($P{TEST_SUITE}.getEndTime())]]></textFieldExpression>
+					<textFieldExpression><![CDATA[com.kms.katalon.core.util.internal.DateUtil.getDateTimeFormatted($P{TEST_SUITE}.getEndTime())]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement positionType="Float" x="30" y="213" width="80" height="14" uuid="39b1a494-8fb8-4b11-83d3-110419c24d9f"/>
@@ -331,7 +331,7 @@
 					<textElement verticalAlignment="Middle">
 						<font size="9"/>
 					</textElement>
-					<textFieldExpression><![CDATA[com.kms.katalon.core.util.DateUtil.getElapsedTime($P{TEST_SUITE}.getStartTime(), $P{TEST_SUITE}.getEndTime())]]></textFieldExpression>
+					<textFieldExpression><![CDATA[com.kms.katalon.core.util.internal.DateUtil.getElapsedTime($P{TEST_SUITE}.getStartTime(), $P{TEST_SUITE}.getEndTime())]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement positionType="Float" x="30" y="121" width="80" height="14" uuid="33b6b556-11a3-4944-ba18-3201e4649ba2"/>
