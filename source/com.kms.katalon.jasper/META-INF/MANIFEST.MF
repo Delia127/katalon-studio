@@ -7,7 +7,8 @@ Bundle-Vendor: KMS
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: com.kms.katalon.core.logging.model,
  com.kms.katalon.core.reporting,
- com.kms.katalon.core.util
+ com.kms.katalon.core.util,
+ com.kms.katalon.core.util.internal
 Export-Package: com.kms.katalon.jasper.pdf,
  com.kms.katalon.jasper.pdf.exception
 Bundle-ClassPath: .,

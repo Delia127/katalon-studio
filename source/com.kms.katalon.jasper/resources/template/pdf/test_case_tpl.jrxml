@@ -426,7 +426,7 @@
 								<textElement verticalAlignment="Middle">
 									<font size="9"/>
 								</textElement>
-								<textFieldExpression><![CDATA[com.kms.katalon.core.util.DateUtil.getElapsedTime($F{startTime}, $F{endTime})]]></textFieldExpression>
+								<textFieldExpression><![CDATA[com.kms.katalon.core.util.internal.DateUtil.getElapsedTime($F{startTime}, $F{endTime})]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
