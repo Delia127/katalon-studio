@@ -191,7 +191,6 @@ public class ExternalLibratiesSettingPage extends PreferencePage {
         projectBuildPath = new ProjectBuildPath(currentProject);
         externalJars = getJars();
         tableViewer.setInput(externalJars);
-
         modified = false;
     }
 
@@ -245,12 +244,13 @@ public class ExternalLibratiesSettingPage extends PreferencePage {
         try {
             new ProgressMonitorDialog(getShell()).run(true, false, new IRunnableWithProgress() {
                 private void removeUnusedFiles(IProgressMonitor monitor) throws FileBeingUsedException {
-                    Collection<File> jarFiles = getJars();
-                    monitor.beginTask(ComposerExecutionMessageConstants.MSG_DELETING_LIBRARY_FILES, jarFiles.size());
-                    for (File file : jarFiles) {
-                        if (externalJars.contains(file)) {
-                            continue;
-                        }
+                    Collection<File> needRemovedJars = getJars();
+                    needRemovedJars.removeAll(externalJars);
+                    if (needRemovedJars.isEmpty()) {
+                        return;
+                    }
+                    monitor.beginTask(ComposerExecutionMessageConstants.MSG_DELETING_LIBRARY_FILES, needRemovedJars.size());
+                    for (File file : needRemovedJars) {
                         monitor.subTask(MessageFormat.format(ComposerExecutionMessageConstants.MSG_DELETING_FILE_X,
                                 file.getName()));
                         safelyDeleleFile(file, DELETING_EXTERNAL_JAR_TIMEOUT);
