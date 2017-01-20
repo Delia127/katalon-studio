@@ -57,12 +57,13 @@ public class RenameHandler extends CommonExplorerHandler {
                 }
             }
 
-            if (partService.saveAll(true) && selectionService.getSelection(IdConstants.EXPLORER_PART_ID) != null) {
-                Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
+            Object selection = selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
+            if (partService.saveAll(true) && selection instanceof Object[]) {
+                Object[] selectedObjects = (Object[]) selection;
                 if (selectedObjects.length > 0 && selectedObjects[0] instanceof ITreeEntity) {
                     try {
-                        eventBroker
-                                .post(EventConstants.EXPLORER_RENAME_SELECTED_ITEM, (ITreeEntity) selectedObjects[0]);
+                        eventBroker.post(EventConstants.EXPLORER_RENAME_SELECTED_ITEM,
+                                (ITreeEntity) selectedObjects[0]);
                     } catch (Exception e) {
                         logger.error(e);
                     }
