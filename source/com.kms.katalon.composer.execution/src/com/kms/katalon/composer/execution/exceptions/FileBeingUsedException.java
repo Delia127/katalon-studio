@@ -14,6 +14,6 @@ public class FileBeingUsedException extends Exception {
 
     public FileBeingUsedException(File file, ProjectEntity currentProject) {
         super(MessageFormat.format(ComposerExecutionMessageConstants.ERR_MSG_LIB_FILE_BEING_USED, file.getName(),
-                currentProject.getLocation() + File.separator));
+                currentProject.getFolderLocation() + File.separator));
     }
 }
