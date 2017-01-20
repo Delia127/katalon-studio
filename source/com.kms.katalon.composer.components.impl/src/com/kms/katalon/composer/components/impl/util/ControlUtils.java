@@ -149,6 +149,9 @@ public class ControlUtils {
 
     public static void createOpenMenuWhenSelectOnlyOne(final Menu menu, FileEntity entity, final TableViewer viewer,
             SelectionAdapter adapter) {
+        if (entity == null) {
+            return;
+        }
         MenuItem openMenuItem = new MenuItem(menu, SWT.PUSH);
         openMenuItem.setText(getFileEntityMenuItemLabel(entity));
         openMenuItem.setID(ControlUtils.MENU_OPEN_ID);
@@ -166,6 +169,9 @@ public class ControlUtils {
 
     public static void createSubMenuOpen(Menu subMenu, FileEntity fileEntity, SelectionAdapter selectionAdapter,
             String name) {
+        if (fileEntity == null) {
+            return;
+        }
         MenuItem menuItem = new MenuItem(subMenu, SWT.PUSH);
         menuItem.setText(name);
         menuItem.setData(fileEntity);
