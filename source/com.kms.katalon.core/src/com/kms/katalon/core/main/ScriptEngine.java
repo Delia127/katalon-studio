@@ -43,6 +43,8 @@ public class ScriptEngine extends GroovyScriptEngine {
 
     private GroovyClassLoader executingScriptClassLoader;
 
+    private GroovyClassLoader variableEvaluateClassLoader;
+
     public static ScriptEngine getDefault(ClassLoader parentClassLoader) throws IOException {
         URL[] roots = new URL[] { new File(RunConfiguration.getProjectDir(), StringConstants.CUSTOM_KEYWORD_FOLDER_NAME)
                 .toURI().toURL() };
@@ -72,6 +74,14 @@ public class ScriptEngine extends GroovyScriptEngine {
         return executingScriptClassLoader;
     }
 
+    private GroovyClassLoader getVariableValuateClassLoader() throws ClassNotFoundException {
+        if (variableEvaluateClassLoader == null) {
+            variableEvaluateClassLoader = new GroovyClassLoader(getParentClassLoader(),
+                    configurationProvider.getConfigForCollectingVariable());
+        }
+        return variableEvaluateClassLoader;
+    }
+
     protected synchronized String generateScriptName() {
         return "Script" + (++counter) + "." + StringConstants.SCRIPT_FILE_EXT;
     }
@@ -85,7 +95,7 @@ public class ScriptEngine extends GroovyScriptEngine {
     // Parse this temporary class without caching and not logging
     public Object runScriptWithoutLogging(final String scriptText, Binding binding)
             throws ResourceException, ScriptException, IOException, ClassNotFoundException {
-        Class<?> clazz = getExecutingScriptClassLoader()
+        Class<?> clazz = getVariableValuateClassLoader()
                 .parseClass(getGroovyCodeSource(scriptText, generateScriptName()), false);
         return getScript(clazz, binding, false).run();
     }
