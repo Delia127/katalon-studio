@@ -819,6 +819,10 @@ public class MobileObjectSpyDialog extends Dialog {
             return;
         }
         final TreeMobileElement foundElement = recursivelyFindElementByLocation(appRootElement, x, y);
+        if (foundElement == null) {
+            return;
+        }
+        highlightObject(foundElement);
         UISynchronizeService.syncExec(new Runnable() {
             @Override
             public void run() {
