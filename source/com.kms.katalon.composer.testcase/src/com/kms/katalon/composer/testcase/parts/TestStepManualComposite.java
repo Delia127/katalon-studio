@@ -15,7 +15,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.TreeViewerEditor;
-import org.eclipse.jface.viewers.TreeViewerFocusCellManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
@@ -24,8 +23,8 @@ import org.eclipse.swt.dnd.DragSourceListener;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -36,6 +35,7 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
@@ -49,8 +49,9 @@ import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.control.CTreeViewer;
 import com.kms.katalon.composer.components.impl.util.KeyEventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.viewer.CustomEditorActivationStrategy;
-import com.kms.katalon.composer.components.viewer.FocusCellOwnerDrawHighlighterForMultiSelection;
+import com.kms.katalon.composer.components.viewer.CustomTreeViewerFocusCellManager;
 import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
 import com.kms.katalon.composer.testcase.ast.dialogs.ClosureBuilderDialog;
 import com.kms.katalon.composer.testcase.ast.treetable.AstMethodTreeTableNode;
@@ -100,6 +101,8 @@ public class TestStepManualComposite {
     private TestCaseTreeTableInput treeTableInput;
 
     private List<AstTreeTableNode> dragNodes;
+
+    private CustomTreeViewerFocusCellManager focusCellManager;
 
     public TestStepManualComposite(ITestCasePart parentPart, Composite parent) {
         this.parentPart = parentPart;
@@ -268,11 +271,11 @@ public class TestStepManualComposite {
     private void setTreeTableActivation() {
         int activationBitMask = ColumnViewerEditor.TABBING_HORIZONTAL | ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR
                 | ColumnViewerEditor.KEYBOARD_ACTIVATION;
-        FocusCellOwnerDrawHighlighterForMultiSelection focusCellHighlighter = new FocusCellOwnerDrawForManualTestcase(
-                treeTable);
-        TreeViewerEditor.create(treeTable, new TreeViewerFocusCellManager(treeTable, focusCellHighlighter),
-                new CustomEditorActivationStrategy(treeTable, focusCellHighlighter), activationBitMask);
-
+        FocusCellOwnerDrawForManualTestcase focusCellHighlighter = new FocusCellOwnerDrawForManualTestcase(treeTable);
+        focusCellManager = new CustomTreeViewerFocusCellManager(treeTable, focusCellHighlighter);
+        CustomEditorActivationStrategy editorActivationStrategy = new CustomEditorActivationStrategy(treeTable,
+                focusCellHighlighter);
+        TreeViewerEditor.create(treeTable, focusCellManager, editorActivationStrategy, activationBitMask);
     }
 
     private void createContextMenu() {
@@ -385,15 +388,10 @@ public class TestStepManualComposite {
 
     /**
      * Add KeyListener to TreeTable.
-     * Handle Delete, Ctrl + c, Ctrl + x, Ctrl + v, Ctrl + d, Ctrl + e for test steps
+     * Handle Tab, Shift Tab, Delete, Ctrl + c, Ctrl + x, Ctrl + v, Ctrl + d, Ctrl + e for test steps
      */
     private void addTreeTableKeyListener() {
-        treeTable.getControl().addKeyListener(new KeyListener() {
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-            }
-
+        treeTable.getControl().addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
 
@@ -433,6 +431,39 @@ public class TestStepManualComposite {
                         treeTableInput.enable();
                     }
                 }
+            }
+        });
+
+        childTableTree.addListener(SWT.Traverse, new Listener() {
+            
+            @Override
+            public void handleEvent(Event event) {
+                switch (event.detail) {
+                    case SWT.TRAVERSE_TAB_NEXT:
+                        focusCellManager.focusNextCell();
+                        focusTree();
+                        return;
+                    case SWT.TRAVERSE_TAB_PREVIOUS:
+                        focusCellManager.focusPreviousCell();
+                        focusTree();
+                        return;
+                    default:
+                        return;
+                }
+            }
+
+            private void focusTree() {
+                childTableTree.getDisplay().timerExec(0, new Runnable() {
+                    @Override
+                    public void run() {
+                        UISynchronizeService.syncExec(new Runnable() {
+                            @Override
+                            public void run() {
+                                childTableTree.setFocus();
+                            }
+                        });
+                    }
+                });
             }
         });
     }
