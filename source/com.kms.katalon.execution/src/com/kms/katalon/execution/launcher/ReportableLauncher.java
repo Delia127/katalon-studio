@@ -26,8 +26,6 @@ import com.kms.katalon.core.testdata.reader.CSVSeparator;
 import com.kms.katalon.core.testdata.reader.CsvWriter;
 import com.kms.katalon.core.util.internal.PathUtil;
 import com.kms.katalon.entity.report.ReportEntity;
-import com.kms.katalon.entity.report.ReportItemDescription;
-import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.constants.StringConstants;
@@ -339,10 +337,9 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         return suitesSummaryForEmail;
     }
 
-    public ReportItemDescription getReportDescription(RunConfigurationDescription configDescription) {
+    public ReportEntity getReportEntity() {
         try {
-            ReportEntity reportEntity = ReportController.getInstance().getReportEntity(getTestSuite(), getId());
-            return ReportItemDescription.from(reportEntity.getIdForDisplay(), configDescription);
+            return ReportController.getInstance().getReportEntity(getTestSuite(), getId());
         } catch (Exception e) {
             LogUtil.logError(e);
             return null;

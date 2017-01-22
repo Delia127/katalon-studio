@@ -32,8 +32,8 @@ public class ReportFileServiceDataProvider implements IReportDataProvider {
 
     @Override
     public String getLogDirectory(TestSuiteEntity testSuite) throws Exception {
-        File testSuiteLogDir = new File(ReportFileServiceManager.getReportFolderOfTestSuite(testSuite.getProject(),
-                testSuite));
+        File testSuiteLogDir = new File(
+                ReportFileServiceManager.getReportFolderOfTestSuite(testSuite.getProject(), testSuite));
         ReportFileServiceManager.ensureFolderExist(testSuiteLogDir);
         return testSuiteLogDir.getAbsolutePath();
     }
@@ -98,15 +98,14 @@ public class ReportFileServiceDataProvider implements IReportDataProvider {
 
     @Override
     public FolderEntity getReportFolder(TestSuiteEntity testSuite, ProjectEntity project) throws Exception {
-        return FolderFileServiceManager.getFolder(ReportFileServiceManager.getReportFolderOfTestSuite(project,
-                testSuite));
+        return FolderFileServiceManager
+                .getFolder(ReportFileServiceManager.getReportFolderOfTestSuite(project, testSuite));
     }
 
     private String getReportCollectionEntityLocation(ProjectEntity project, TestSuiteCollectionEntity entity)
             throws DALException {
         try {
-            return project.getFolderLocation()
-                    + File.separator
+            return project.getFolderLocation() + File.separator
                     + entity.getIdForDisplay()
                             .replaceFirst(FileServiceConstant.TEST_SUITE_ROOT_FOLDER_NAME,
                                     FileServiceConstant.REPORT_ROOT_FOLDER_NAME)
@@ -144,11 +143,11 @@ public class ReportFileServiceDataProvider implements IReportDataProvider {
     public ReportCollectionEntity getReportCollectionEntity(ProjectEntity project, TestSuiteCollectionEntity entity,
             String reportName) throws DALException {
         try {
-            FolderEntity parentFolder = FolderFileServiceManager.getFolder(getReportCollectionEntityLocation(project,
-                    entity) + File.separator + reportName);
+            FolderEntity parentFolder = FolderFileServiceManager
+                    .getFolder(getReportCollectionEntityLocation(project, entity) + File.separator + reportName);
 
-            return getReportCollectionEntity(parentFolder.getId() + File.separator + reportName
-                    + ReportCollectionEntity.FILE_EXTENSION);
+            return getReportCollectionEntity(
+                    parentFolder.getId() + File.separator + reportName + ReportCollectionEntity.FILE_EXTENSION);
         } catch (Exception e) {
             throw new DALException(e);
         }

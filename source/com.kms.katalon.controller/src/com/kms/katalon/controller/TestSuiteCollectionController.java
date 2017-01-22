@@ -6,6 +6,7 @@ import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.dal.TestSuiteCollectionDataProvider;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 
 public class TestSuiteCollectionController extends EntityController {
@@ -32,7 +33,11 @@ public class TestSuiteCollectionController extends EntityController {
     }
 
     public TestSuiteCollectionEntity getTestRunByDisplayId(String testSuiteCollectionDisplayId) throws DALException {
-        String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
+        ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+        if (currentProject == null) {
+            return null;
+        }
+        String projectDir = currentProject.getFolderLocation();
         String id = projectDir + File.separator
                 + testSuiteCollectionDisplayId.replace(GlobalStringConstants.ENTITY_ID_SEPARATOR, File.separator)
                 + TestSuiteCollectionEntity.FILE_EXTENSION;
