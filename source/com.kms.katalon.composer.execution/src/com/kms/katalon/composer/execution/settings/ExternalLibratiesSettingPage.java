@@ -78,6 +78,10 @@ public class ExternalLibratiesSettingPage extends PreferencePage {
     private Collection<File> externalJars;
 
     private boolean modified;
+    
+    public ExternalLibratiesSettingPage() {
+        noDefaultButton();
+    }
 
     @Override
     protected Control createContents(Composite parent) {
