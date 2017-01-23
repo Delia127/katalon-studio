@@ -42,7 +42,7 @@ public class KeywordNodeTooltip {
     private static final String JAVADOC_SECTION_ITEM = JAVADOC_SUFFIX + "SECTION_ITEM]";
 
     private static final String JAVADOC_DESCRIPTION = JAVADOC_SUFFIX + "DESCRIPTION]";
-    
+
     private static final String JAVADOC_SECTION_ITEM_LIST = JAVADOC_SUFFIX + "_SECTION_ITEM_LIST]";
 
     private StyledText javaDocContent;
@@ -64,22 +64,25 @@ public class KeywordNodeTooltip {
     private ToolItem openKeywordDescToolItem;
 
     private ToolBar toolBar;
-    
+
     private boolean showBelow = true;
 
     private Shell openKeywordDescTooltip;
 
     private boolean openedDesc;
-    
+
+    private boolean isOpeningKeywordDescription = false;
+
     private static KeywordNodeTooltip currentTooltip = null;
 
     public KeywordNodeTooltip(Control control) {
         this.control = control;
     }
-    
+
     public Shell getShell() {
         return tip;
     }
+
     private void initComponents(Composite parent) {
         Composite composite = new Composite(parent, SWT.NONE);
         GridLayout layout = new GridLayout();
@@ -102,7 +105,6 @@ public class KeywordNodeTooltip {
         javaDocContent.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         javaDocContent.setLeftMargin(20);
         javaDocContent.setTopMargin(5);
-        
 
         Label lbl = new Label(composite, SWT.SEPARATOR | SWT.SHADOW_OUT | SWT.HORIZONTAL);
         GridData gd = new GridData();
@@ -111,7 +113,6 @@ public class KeywordNodeTooltip {
         gd.verticalAlignment = SWT.END;
         lbl.setLayoutData(gd);
 
-        
         toolBar = new ToolBar(composite, SWT.NONE);
         gd = new GridData();
         gd.horizontalAlignment = SWT.FILL;
@@ -120,11 +121,11 @@ public class KeywordNodeTooltip {
         gd.verticalAlignment = SWT.FILL;
         toolBar.setLayoutData(gd);
         toolBar.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
-        
+
         new ToolItem(toolBar, SWT.SEPARATOR);
         openKeywordDescToolItem = new ToolItem(toolBar, SWT.NONE);
         openKeywordDescToolItem.setImage(ImageConstants.IMG_KEYWORD_WIKI);
-        
+
         gd = new GridData();
         gd.horizontalAlignment = SWT.FILL;
         gd.widthHint = preferedWith;
@@ -152,9 +153,9 @@ public class KeywordNodeTooltip {
                         break;
                     case SWT.MouseMove:
                         processOpenKeywordTooltip();
-                        break;    
+                        break;
                 }
-                
+
             }
         };
         if (control instanceof Tree) {
@@ -170,11 +171,11 @@ public class KeywordNodeTooltip {
     }
 
     private void showOpenKeywordTooltip() {
-    	if (openKeywordDescTooltip != null && !openKeywordDescTooltip.isDisposed()) {
-    		return;
-    	}
+        if (openKeywordDescTooltip != null && !openKeywordDescTooltip.isDisposed()) {
+            return;
+        }
         Point cursorLoc = Display.getCurrent().getCursorLocation();
-        if (isCursorOnOpenKeywordDescButton(cursorLoc)) {            
+        if (isCursorOnOpenKeywordDescButton(cursorLoc)) {
             openKeywordDescTooltip = new Shell(tip, SWT.NONE);
             FillLayout fl = new FillLayout();
             openKeywordDescTooltip.setLayout(fl);
@@ -188,7 +189,7 @@ public class KeywordNodeTooltip {
             openKeywordDescTooltip.setVisible(true);
         }
     }
-    
+
     private void processOpenKeywordTooltip() {
         if (openKeywordDescTooltip == null || openKeywordDescToolItem.isDisposed()) {
             return;
@@ -197,17 +198,17 @@ public class KeywordNodeTooltip {
         if (!isCursorOnOpenKeywordDescButton(cursorLoc)) {
             openKeywordDescTooltip.dispose();
         } else {
-        	showOpenKeywordTooltip();
+            showOpenKeywordTooltip();
         }
     }
-    
+
     private void createTooltip() {
         tip = new Shell(control.getShell(), SWT.ON_TOP | SWT.TOOL);
         FillLayout fl = new FillLayout();
         tip.setLayout(fl);
         initComponents(tip);
     }
-    
+
     public boolean isShowBelowPoint() {
         return showBelow;
     }
@@ -240,12 +241,12 @@ public class KeywordNodeTooltip {
         openedDesc = false;
         tip.setVisible(true);
     }
-    
+
     private Point getLocation(Point suggestionLoc) {
         Rectangle bounds = Display.getCurrent().getBounds();
         Point tipSize = tip.getSize();
         showBelow = true;
-        
+
         if (suggestionLoc.x + tipSize.x < bounds.width && suggestionLoc.y + tipSize.y < bounds.height) {
             return suggestionLoc;
         }
@@ -256,14 +257,14 @@ public class KeywordNodeTooltip {
             showBelow = false;
             suggestionLoc.y -= tipSize.y;
         }
-        
+
         return suggestionLoc;
     }
 
     public synchronized void hide() {
         if (tip != null && !tip.isDisposed()) {
             Point cursorLoc = Display.getCurrent().getCursorLocation();
-            if (isOpenKeywordDescToolItem(cursorLoc)) {
+            if (isOpenKeywordDescToolItem(cursorLoc) && !isOpeningKeywordDescription()) {
                 openKeywordDesc();
             } else {
                 tip.dispose();
@@ -290,7 +291,7 @@ public class KeywordNodeTooltip {
             return false;
         }
     }
-    
+
     public boolean isCursorOnOpenKeywordDescButton(Point cursorPoint) {
         Rectangle bounds = openKeywordDescToolItem.getBounds();
         Point screenLocation = toolBar.toDisplay(bounds.x, bounds.y);
@@ -299,6 +300,7 @@ public class KeywordNodeTooltip {
     }
 
     public void openKeywordDesc() {
+        setIsOpeingKeywordDescription(true);
         try {
             Desktop.getDesktop().browse(new URI(keywordDescURI));
         } catch (Exception ex) {
@@ -308,6 +310,7 @@ public class KeywordNodeTooltip {
             if (isVisible()) {
                 tip.dispose();
             }
+            setIsOpeingKeywordDescription(false);
         }
     }
 
@@ -332,7 +335,7 @@ public class KeywordNodeTooltip {
         Matcher mat = pat.matcher(tipContent);
         List<StyleRange> styles = new ArrayList<>();
         boolean descriptionExsist = false;
-        
+
         while (mat.find()) {
             int start = mat.start(), i = mat.end();
             int end = mat.find() ? mat.start() : tipContent.length();
@@ -375,14 +378,14 @@ public class KeywordNodeTooltip {
         javaDocContent.setStyleRanges(styles.toArray(new StyleRange[] {}));
 
     }
-    
+
     private String wrapSelectionItemLongLine(String line) {
         GC graphicContext = new GC(javaDocContent);
         int limWidth = javaDocContent.getSize().x;
         String[] words = line.split("\\s{1,}");
         StringBuilder temp = new StringBuilder("\t\t");
         StringBuilder result = new StringBuilder();
-        
+
         for (int i = 0; i < words.length; ++i) {
             if (!appendWord(words[i], temp, graphicContext, limWidth)) {
                 if (result.length() < 1) {
@@ -393,7 +396,7 @@ public class KeywordNodeTooltip {
                 temp.delete(2, temp.length());
             }
         }
-    
+
         if (temp.length() > 2) {
             if (result.length() < 1) {
                 result.append(temp.toString());
@@ -404,7 +407,7 @@ public class KeywordNodeTooltip {
         graphicContext.dispose();
         return result.toString();
     }
-    
+
     private boolean appendWord(String word, StringBuilder line, GC graphicContext, int limWidth) {
         int lineWidth = graphicContext.textExtent(line.toString(), SWT.DRAW_TAB).x;
         if (lineWidth >= limWidth) {
@@ -425,6 +428,14 @@ public class KeywordNodeTooltip {
 
     public boolean isOpenedKeywordDesc() {
         return openedDesc;
+    }
+
+    private synchronized void setIsOpeingKeywordDescription(boolean isOpeningKeywordDescription) {
+        this.isOpeningKeywordDescription = isOpeningKeywordDescription;
+    }
+
+    private synchronized boolean isOpeningKeywordDescription() {
+        return isOpeningKeywordDescription;
     }
 
 }
