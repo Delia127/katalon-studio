@@ -967,7 +967,12 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     @Inject
     @Optional
     public void onSelect(@UIEventTopic(UIEvents.UILifeCycle.BRINGTOTOP) org.osgi.service.event.Event event) {
-        if (((PartImpl) event.getProperty(UIEvents.EventTags.ELEMENT)).getElementId().equals(EntityPartUtil.getReportPartId(getReport().getId()))) {
+        if (!(event.getProperty(UIEvents.EventTags.ELEMENT) instanceof PartImpl)) {
+            return;
+        }
+        PartImpl selectedPart = (PartImpl) event.getProperty(UIEvents.EventTags.ELEMENT);
+        String reportPartId = EntityPartUtil.getReportPartId(getReport().getId());
+        if (selectedPart.getElementId().equals(reportPartId)) {
             EventUtil.post(EventConstants.PROPERTIES_ENTITY, null);
         }
     }
