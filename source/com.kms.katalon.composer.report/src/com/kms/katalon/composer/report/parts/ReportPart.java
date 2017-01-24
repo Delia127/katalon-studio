@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.report.parts;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -10,13 +11,16 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
@@ -57,12 +61,14 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
@@ -125,6 +131,9 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     private boolean isSearching;
 
     private ReportEntity report;
+    
+    @Inject
+    private Shell shell;
 
     private final class MapDataKeyLabelProvider extends ColumnLabelProvider {
         @Override
@@ -366,12 +375,19 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         try {
             this.report = report;
 
-            if (report == null)
+            if (report == null) {
                 return;
-
-            this.testSuiteLogRecord = LogRecordLookup.getInstance().getTestSuiteLogRecord(report);
+            }
+            
+            new ProgressMonitorDialog(shell).run(true, true, new IRunnableWithProgress() {
+                @Override
+                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                    setTestSuiteLogRecord(LogRecordLookup.getInstance().getTestSuiteLogRecord(report, monitor));
+                }
+            });
 
             if (testSuiteLogRecord == null) {
+                closeThisPart();
                 return;
             }
 
@@ -456,6 +472,19 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
+    }
+
+    private void closeThisPart() {
+        Display.getDefault().asyncExec(new Runnable() {
+            @Override
+            public void run() {
+                EntityPartUtil.closePart(getReport());
+            }
+        });
+    }
+
+    private void setTestSuiteLogRecord(TestSuiteLogRecord logRecord) {
+        this.testSuiteLogRecord = logRecord;
     }
 
     public ILogRecord getSelectedTestCaseLogRecord() {
@@ -980,5 +1009,6 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     @PreDestroy
     public void onClose() {
         eventBroker.unsubscribe(this);
+        testSuiteLogRecord = null;
     }
 }
