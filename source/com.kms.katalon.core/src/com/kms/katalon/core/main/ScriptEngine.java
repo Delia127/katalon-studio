@@ -12,7 +12,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.customizers.ASTTransformationCustomizer;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
@@ -161,7 +160,7 @@ public class ScriptEngine extends GroovyScriptEngine {
 
     private GroovyCodeSource getGroovyCodeSource(final File file) {
         try {
-            return getGroovyCodeSource(FileUtils.readFileToString(file), FilenameUtils.getBaseName(file.getName()));
+            return getGroovyCodeSource(FileUtils.readFileToString(file), file.toURI().toURL().toExternalForm());
         } catch (IOException e) {
             return null;
         }
