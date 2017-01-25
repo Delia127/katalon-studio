@@ -237,6 +237,12 @@ public class ComposerExecutionMessageConstants extends NLS {
 
     public static String LBL_EXECUTION_NEW_SESSION;
 
+    public static String LBL_SETT_RECIPIENT_ADD;
+
+    public static String LBL_SETT_RECIPIENT_CLR;
+
+    public static String LBL_SETT_RECIPIENT_DEL;
+
     public static String MSG_DELETING_FILE_X;
 
     public static String MSG_DELETING_LIBRARY_FILES;
