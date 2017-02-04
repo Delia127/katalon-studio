@@ -14,6 +14,7 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.model.application.ui.basic.impl.PartImpl;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -63,6 +64,7 @@ import org.eclipse.swt.widgets.Text;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
@@ -965,7 +967,14 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     @Inject
     @Optional
     public void onSelect(@UIEventTopic(UIEvents.UILifeCycle.BRINGTOTOP) org.osgi.service.event.Event event) {
-        EventUtil.post(EventConstants.PROPERTIES_ENTITY, null);
+        if (!(event.getProperty(UIEvents.EventTags.ELEMENT) instanceof PartImpl)) {
+            return;
+        }
+        PartImpl selectedPart = (PartImpl) event.getProperty(UIEvents.EventTags.ELEMENT);
+        String reportPartId = EntityPartUtil.getReportPartId(getReport().getId());
+        if (selectedPart.getElementId().equals(reportPartId)) {
+            EventUtil.post(EventConstants.PROPERTIES_ENTITY, null);
+        }
     }
 
     @Override
