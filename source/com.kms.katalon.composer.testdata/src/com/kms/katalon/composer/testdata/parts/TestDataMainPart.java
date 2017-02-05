@@ -324,7 +324,7 @@ public abstract class TestDataMainPart extends CPart implements EventHandler, IP
 
     private void removePart() {
         getPartService().removePartListener(this);
-        if (mpart.isVisible()) {
+        if (!mpart.isVisible()) {
             getPartService().savePart(mpart, false);
         }
     }
