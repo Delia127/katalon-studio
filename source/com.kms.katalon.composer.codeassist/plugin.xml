@@ -39,4 +39,29 @@
             class="com.kms.katalon.composer.codeassist.processor.GroovyTemplateProcessor">
       </processor>
    </extension>
+   <extension point="org.eclipse.jdt.ui.javaCompletionProposalComputer"
+         id="com.kms.katalon.proposal"
+         name="Katalon Proposals">
+      <proposalCategory icon="icons/logo_16.png"/>
+   </extension>
+   <extension
+         point="org.eclipse.jdt.ui.javaCompletionProposalComputer"
+          id="com.kms.katalon.proposal.computer"
+         name="Katalon Proposals">
+      <javaCompletionProposalComputer
+            activate="true"
+            categoryId="com.kms.katalon.proposal"
+            class="com.kms.katalon.composer.codeassist.ImprovedGroovyCompletionProposalComputer">
+         <partition
+               type="__dftl_partition_content_type">
+         </partition>
+         <partition
+               type="__java_string">
+         </partition>
+         <!-- this is not an error, pde does not recognize this as a valid partition type -->
+         <partition
+               type="__groovy_multiline_string">
+         </partition>
+      </javaCompletionProposalComputer>
+   </extension>
 </plugin>

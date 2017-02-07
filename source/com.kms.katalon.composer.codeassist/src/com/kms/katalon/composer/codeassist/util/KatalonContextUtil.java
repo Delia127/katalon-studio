@@ -46,7 +46,7 @@ public class KatalonContextUtil {
             }
         }
 
-        if ((GroovyConstants.CUSTOM_KEYWORD_LIB_FILE_NAME + CR_DOT).equals(context.fullCompletionExpression)) {
+        if ((GroovyConstants.CUSTOM_KEYWORD_LIB_FILE_NAME + CR_DOT).equals(context.fullCompletionExpression.trim())) {
             return true;
         }
         return false;
@@ -67,7 +67,7 @@ public class KatalonContextUtil {
         }
 
         return keywordController.getBuiltInKeywordClassByName(
-                StringUtils.substringBeforeLast(context.fullCompletionExpression, CR_DOT));
+                StringUtils.substringBeforeLast(context.fullCompletionExpression, CR_DOT).trim());
     }
 
     @SuppressWarnings("restriction")
