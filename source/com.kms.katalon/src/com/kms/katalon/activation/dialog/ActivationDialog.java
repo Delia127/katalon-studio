@@ -42,9 +42,19 @@ public class ActivationDialog extends Dialog {
     private Text txtPassword;
 
     private Label lblError;
+    
+    private boolean allowOfflineActivation = true;
 
     public ActivationDialog(Shell parentShell) {
         super(parentShell);
+    }
+
+    public boolean isAllowOfflineActivation() {
+        return allowOfflineActivation;
+    }
+
+    public void setAllowOfflineActivation(boolean allowOfflineActivation) {
+        this.allowOfflineActivation = allowOfflineActivation;
     }
 
     @Override
@@ -124,22 +134,9 @@ public class ActivationDialog extends Dialog {
         Label lblNewLabel = new Label(composite, SWT.NONE);
         lblNewLabel.setText(StringConstants.SEPARATE_LINK);
 
-        Link link = new Link(composite, SWT.NONE);
-        link.setText(StringConstants.LINK_OPEN_ACTIVATE_FORM_OFFLINE);
-        link.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseUp(MouseEvent e) {
-                try {
-                    int result = new ActivationOfflineDialog(ActivationDialog.this.getShell()).open();
-                    if (result == Dialog.OK) {
-                        setReturnCode(Window.OK);
-                        close();
-                    }
-                } catch (Exception ex) {
-                    LogUtil.logError(ex);
-                }
-            }
-        });
+        if (isAllowOfflineActivation()) {
+            addOfflineActivationLink(composite);
+        }
         
         lblNewLabel = new Label(composite, SWT.NONE);
         lblNewLabel.setText(StringConstants.SEPARATE_LINK);
@@ -199,6 +196,25 @@ public class ActivationDialog extends Dialog {
         enableActivateButton();
 
         return container;
+    }
+
+    private void addOfflineActivationLink(Composite composite) {
+        Link linkOfflineActivation = new Link(composite, SWT.NONE);
+        linkOfflineActivation.setText(StringConstants.LINK_OPEN_ACTIVATE_FORM_OFFLINE);
+        linkOfflineActivation.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseUp(MouseEvent e) {
+                try {
+                    int result = new ActivationOfflineDialog(ActivationDialog.this.getShell()).open();
+                    if (result == Dialog.OK) {
+                        setReturnCode(Window.OK);
+                        close();
+                    }
+                } catch (Exception ex) {
+                    LogUtil.logError(ex);
+                }
+            }
+        });
     }
 
     private boolean isFullFillActivateInfo() {
