@@ -17,6 +17,8 @@ import java.util.TreeMap;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
+import javax.xml.stream.XMLStreamException;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.qas.api.internal.util.json.JsonArray;
@@ -26,6 +28,7 @@ import org.qas.api.internal.util.json.JsonObject;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.logging.CustomXmlFormatter;
 import com.kms.katalon.core.logging.LogLevel;
+import com.kms.katalon.core.logging.XMLParserException;
 import com.kms.katalon.core.logging.XmlLogRecord;
 import com.kms.katalon.core.logging.model.ILogRecord;
 import com.kms.katalon.core.logging.model.TestCaseLogRecord;
@@ -563,7 +566,7 @@ public class QTestIntegrationReportManager {
             logger.addHandler(fileHandler);
             List<XmlLogRecord> logRecs = new ArrayList<>();
             boolean foundTest = false;
-            for (XmlLogRecord rc : testSuiteLogRecord.getXmlLogRecords()) {
+            for (XmlLogRecord rc : ReportUtil.getAllLogRecords(testSuiteLogRecord.getLogFolder())) {
                 String level = rc.getLevel().getName();
                 String methodName = rc.getSourceMethodName();
                 if (level.equals(LogLevel.START.toString()) && StringConstants.LOG_START_SUITE_METHOD.equals(methodName)
@@ -602,7 +605,7 @@ public class QTestIntegrationReportManager {
             fileHandler.flush();
             fileHandler.close();
             return true;
-        } catch (SecurityException | IOException e) {
+        } catch (SecurityException | IOException | XMLParserException | XMLStreamException e) {
             LogUtil.logError(e);
             return false;
         }

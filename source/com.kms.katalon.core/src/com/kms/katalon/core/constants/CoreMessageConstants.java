@@ -35,6 +35,10 @@ public class CoreMessageConstants extends NLS {
     
     public static String MSG_ERR_UNABLE_TO_CREATE_LOGGER;
 
+    public static String MSG_INFO_PARSING_LOG_FILES;
+
+    public static String MSG_INFO_PARSING_X;
+
     public static String TD_ROW_INDEX_X_FOR_TEST_DATA_Y_INVALID;
 
     public static String TD_COLUMN_INDEX_X_FOR_TEST_DATA_Y_INVALID;

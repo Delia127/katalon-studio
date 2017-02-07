@@ -31,6 +31,8 @@ import com.kms.katalon.execution.entity.EmailConfig;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class MailUtil {
+    private static final int EMAIL_TIMEOUT = 600000;
+
     public enum MailSecurityProtocolType {
         None, SSL, TLS;
     }
@@ -69,7 +71,9 @@ public class MailUtil {
         email.setFrom(conf.getFrom(), "");
         email.addTo(conf.getTos());
         email.setSubject(subject);
-
+        email.setSocketConnectionTimeout(EMAIL_TIMEOUT);
+        email.setSocketTimeout(EMAIL_TIMEOUT);
+        
         email.setAuthenticator(new DefaultAuthenticator(conf.getUsername(), conf.getPassword()));
         switch (conf.getSecurityProtocol()) {
             case SSL:
