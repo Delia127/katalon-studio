@@ -216,7 +216,7 @@ public class MailUtil {
         try {
             EmailConfig conf = new EmailConfig();
             conf.setHost(store.getHost());
-            conf.setPort(Integer.toString(store.getPort()));
+            conf.setPort(store.getPort());
             conf.setFrom(store.getUsername());
             conf.setSecurityProtocol(MailSecurityProtocolType.valueOf(store.getProtocol()));
             conf.setUsername(store.getUsername());

@@ -21,11 +21,6 @@ public class EmailSettingStore extends BundleSettingStore {
         mailPreferenceStore = getPreferenceStore(ExecutionPreferenceConstants.EXECUTION_QUALIFIER);
     }
 
-    private int getIntFromSettingOrPrefs(String mailConfigSettingName) throws IOException {
-        return getInt(mailConfigSettingName,
-                mailPreferenceStore.getInt(mailConfigSettingName));
-    }
-
     private String getStringFromSettingOrPrefs(String mailConfigSettingName) throws IOException {
         return getString(mailConfigSettingName,
                 mailPreferenceStore.getString(mailConfigSettingName));
@@ -44,11 +39,11 @@ public class EmailSettingStore extends BundleSettingStore {
         setProperty(ExecutionPreferenceConstants.MAIL_CONFIG_HOST, hostName);
     }
 
-    public int getPort() throws IOException {
-        return getIntFromSettingOrPrefs(ExecutionPreferenceConstants.MAIL_CONFIG_PORT);
+    public String getPort() throws IOException {
+        return getStringFromSettingOrPrefs(ExecutionPreferenceConstants.MAIL_CONFIG_PORT);
     }
 
-    public void setPort(int port) throws IOException {
+    public void setPort(String port) throws IOException {
         setProperty(ExecutionPreferenceConstants.MAIL_CONFIG_PORT, port);
     }
 

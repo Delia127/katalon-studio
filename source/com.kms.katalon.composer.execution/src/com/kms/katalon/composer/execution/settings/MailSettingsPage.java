@@ -92,7 +92,7 @@ public class MailSettingsPage extends PreferencePage {
         try {
             EmailSettingStore settingStore = getSettingStore();
             txtHost.setText(settingStore.getHost());
-            txtPort.setText(Integer.toString(settingStore.getPort()));
+            txtPort.setText(settingStore.getPort());
             txtUsername.setText(settingStore.getUsername());
             txtPassword.setText(settingStore.getPassword());
             txtSignature.setText(settingStore.getSignature());
@@ -110,7 +110,7 @@ public class MailSettingsPage extends PreferencePage {
         try {
             EmailSettingStore settingStore = getSettingStore();
             settingStore.setHost(txtHost.getText());
-            settingStore.setPort(Integer.valueOf(txtPort.getText()));
+            settingStore.setPort(txtPort.getText());
             settingStore.setUsername(txtUsername.getText());
             settingStore.setPassword(txtPassword.getText());
             settingStore.setSignature(txtSignature.getText());
