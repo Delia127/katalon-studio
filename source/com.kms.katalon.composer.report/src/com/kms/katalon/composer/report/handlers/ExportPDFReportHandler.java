@@ -79,8 +79,9 @@ public class ExportPDFReportHandler {
                     TestSuiteLogRecord suiteLogRecord = LogRecordLookup.getInstance().getTestSuiteLogRecord(
                             reportEntity);
                     TestSuitePdfGenerator generator = new TestSuitePdfGenerator(suiteLogRecord);
-                    File exportedFile = generator.exportToPDF(new File(exportDirectory, FilenameUtils
-                            .getBaseName(reportEntity.getName()) + ".pdf").getAbsolutePath());
+                    File exportedFile = generator.exportToPDF(
+                            new File(exportDirectory, FilenameUtils.getBaseName(reportEntity.getDisplayName())
+                                    + ReportEntity.EXTENSION_PDF_REPORT).getAbsolutePath());
                     Desktop.getDesktop().open(exportedFile);
                 } catch (final JasperReportException | IOException e) {
                     sync.syncExec(new Runnable() {
