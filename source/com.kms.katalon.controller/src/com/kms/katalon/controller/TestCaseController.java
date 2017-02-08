@@ -67,7 +67,6 @@ public class TestCaseController extends EntityController {
         newTestCase.setName(getAvailableTestCaseName(parentFolder, testCaseName));
         newTestCase.setParentFolder(parentFolder);
         newTestCase.setProject(parentFolder.getProject());
-
         return newTestCase;
     }
 

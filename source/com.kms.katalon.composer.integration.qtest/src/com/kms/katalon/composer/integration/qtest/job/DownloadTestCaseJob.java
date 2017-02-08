@@ -31,6 +31,7 @@ import com.kms.katalon.composer.integration.qtest.dialog.model.DownloadedPreview
 import com.kms.katalon.composer.integration.qtest.dialog.model.ModuleDownloadedPreviewTreeNode;
 import com.kms.katalon.composer.integration.qtest.dialog.model.TestCaseDownloadedPreviewTreeNode;
 import com.kms.katalon.composer.util.groovy.GroovyGuiUtil;
+import com.kms.katalon.console.utils.EntityTrackingHelper;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.TestCaseController;
@@ -347,6 +348,7 @@ public class DownloadTestCaseJob extends QTestJob {
             } else {
                 TestCaseEntity newTestCaseEntity = TestCaseController.getInstance().newTestCase(parentFolder,
                         qTestCase.getName());
+                EntityTrackingHelper.trackTestCaseCreated();
 
                 addDescriptionForTestCase(qTestProject, qTestCase, newTestCaseEntity);
 
