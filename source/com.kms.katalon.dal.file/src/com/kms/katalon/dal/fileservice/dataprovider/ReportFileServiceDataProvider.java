@@ -43,8 +43,8 @@ public class ReportFileServiceDataProvider implements IReportDataProvider {
             throws Exception {
         String testSuiteReportFolderPath = ReportFileServiceManager.getReportFolderOfTestSuite(project, testSuite);
         FolderEntity parentFolder = FolderFileServiceManager.getFolder(testSuiteReportFolderPath);
-        ReportEntity report = ReportFileServiceManager.getReportEntity(testSuiteReportFolderPath + File.separator
-                + reportName + (reportName.endsWith(".html") ? "" : ".html"));
+        ReportEntity report = ReportFileServiceManager
+                .getReportEntity(testSuiteReportFolderPath + File.separator + reportName);
         if (report == null) {
             report = ReportFileServiceManager.createReportEntity(reportName, parentFolder);
         }
