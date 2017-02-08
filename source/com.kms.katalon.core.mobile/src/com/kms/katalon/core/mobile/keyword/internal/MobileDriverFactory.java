@@ -29,10 +29,6 @@ import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.remote.MobileCapabilityType;
 
 public class MobileDriverFactory {
-    private static final String REAL_DEVICE_LOGGER = "realDeviceLogger";
-
-    private static final String XCUI_TEST = "XCUITest";
-
     private static final String WAIT_FOR_APP_SCRIPT_TRUE = "true;";
 
     private static final String WAIT_FOR_APP_SCRIPT = "waitForAppScript";
@@ -123,8 +119,10 @@ public class MobileDriverFactory {
             capabilities.setCapability(WAIT_FOR_APP_SCRIPT, WAIT_FOR_APP_SCRIPT_TRUE);
             try {
                 if (AppiumDriverManager.getXCodeVersion() >= 8) {
-                    capabilities.setCapability(MobileCapabilityType.AUTOMATION_NAME, XCUI_TEST);
-                    capabilities.setCapability(REAL_DEVICE_LOGGER, RunConfiguration.getDeviceConsoleExecutable());
+                    capabilities.setCapability(MobileCapabilityType.AUTOMATION_NAME, AppiumDriverManager.XCUI_TEST);
+                    capabilities.setCapability(AppiumDriverManager.REAL_DEVICE_LOGGER,
+                            RunConfiguration.getDeviceConsoleExecutable());
+                    capabilities.setCapability(AppiumDriverManager.WDA_LOCAL_PORT, AppiumDriverManager.getFreePort());
                 }
             } catch (ExecutionException e) {
                 // XCode version not found, ignore this
