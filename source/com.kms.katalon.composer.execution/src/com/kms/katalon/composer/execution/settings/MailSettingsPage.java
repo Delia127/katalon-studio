@@ -329,7 +329,7 @@ public class MailSettingsPage extends PreferencePage {
 
     private void createLabel(Composite parent, String labelText) {
         Label label = new Label(parent, SWT.NONE);
-        label.setLayoutData(new GridData(SWT.LEFT, GridData.FILL, false, true, 1, 1));
+        label.setLayoutData(new GridData(SWT.LEFT, GridData.CENTER, false, true, 1, 1));
         label.setText(labelText);
     }
 
