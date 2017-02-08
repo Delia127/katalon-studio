@@ -41,6 +41,9 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
 
     @Inject
     private IEventBroker eventBroker;
+    
+    @Inject 
+    private MPart mpart;
 
     @PostConstruct
     public void initialize(Composite parent, MPart mpart) {
@@ -49,8 +52,11 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
         createControls(parent);
 
         updateInput();
+        
+        setPartLabel(reportCollectionEntity.getDisplayName());
 
         eventBroker.subscribe(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, this);
+        eventBroker.subscribe(EventConstants.REPORT_COLLECTION_RENAMED, this);
     }
 
     private void updateInput() {
@@ -143,20 +149,30 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
     @Override
     public void handleEvent(Event event) {
         switch (event.getTopic()) {
-            case EventConstants.EXPLORER_RENAMED_SELECTED_ITEM: {
+            case EventConstants.EXPLORER_RENAMED_SELECTED_ITEM:
                 Object[] objects = getObjects(event);
                 if (objects == null || objects.length != 2) {
                     return;
                 }
 
-                Object oldRelativeId = objects[0];
-                ReportItemDescription reportNameChanged = getReportNameChanged(oldRelativeId);
-                if (reportNameChanged != null) {
-                    reportNameChanged.setReportLocation((String) objects[1]);
-                    tableViewer.refresh(reportNameChanged);
-                }
+                handleRenamedReportItem(objects);
                 break;
-            }
+            case EventConstants.REPORT_COLLECTION_RENAMED:
+                Object eventObject = getObject(event);
+                if (!(eventObject instanceof ReportCollectionEntity)) {
+                    return;
+                }
+                setPartLabel(((ReportCollectionEntity) eventObject).getDisplayName());
+                break;
+        }
+    }
+
+    private void handleRenamedReportItem(Object[] objects) {
+        Object oldRelativeId = objects[0];
+        ReportItemDescription reportNameChanged = getReportNameChanged(oldRelativeId);
+        if (reportNameChanged != null) {
+            reportNameChanged.setReportLocation((String) objects[1]);
+            tableViewer.refresh(reportNameChanged);
         }
     }
 
@@ -167,5 +183,9 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
             }
         }
         return null;
+    }
+    
+    private void setPartLabel(String label) {
+        mpart.setLabel(label);
     }
 }

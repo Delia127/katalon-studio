@@ -177,9 +177,9 @@ public class ReportFileServiceDataProvider implements IReportDataProvider {
     }
 
     @Override
-    public void updateReportCollectionEntity(ReportCollectionEntity entity) throws DALException {
+    public void updateReportCollectionEntity(ReportCollectionEntity collectionReport) throws DALException {
         try {
-            getEntityService().saveEntity(entity, entity.getId());
+            getEntityService().saveEntity(collectionReport, collectionReport.getId());
         } catch (Exception e) {
             throw new DALException(e);
         }
@@ -200,6 +200,16 @@ public class ReportFileServiceDataProvider implements IReportDataProvider {
     public ReportEntity renameReport(ReportEntity report, String newName) throws DALException {
         try {
             return ReportFileServiceManager.renameReport(report, newName);
+        } catch (Exception e) {
+            throw new DALException(e);
+        }
+    }
+
+    @Override
+    public ReportCollectionEntity renameCollectionReport(ReportCollectionEntity collectionReport, String newName)
+            throws DALException {
+        try {
+            return ReportFileServiceManager.renameReportCollection(collectionReport, newName);
         } catch (Exception e) {
             throw new DALException(e);
         }

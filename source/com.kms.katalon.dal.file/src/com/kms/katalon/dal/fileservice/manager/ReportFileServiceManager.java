@@ -24,6 +24,7 @@ import com.kms.katalon.entity.dal.exception.FilePathTooLongException;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
@@ -135,9 +136,9 @@ public class ReportFileServiceManager {
         }
     }
 
-    private static void validateRenameReport(ReportEntity reportEntity, String newName) throws Exception {
+    private static void validateRenameReport(FileEntity fileEntity, String newName) throws Exception {
         EntityService.getInstance().validateName(newName);
-        String newLocation = reportEntity.getParentFolder().getLocation() + File.separator + newName;
+        String newLocation = fileEntity.getParentFolder().getLocation() + File.separator + newName;
         if (newLocation.length() > FileServiceConstant.MAX_FILE_PATH_LENGTH) {
             throw new FilePathTooLongException(newLocation.length(), FileServiceConstant.MAX_FILE_PATH_LENGTH);
         }
@@ -152,5 +153,16 @@ public class ReportFileServiceManager {
         EntityService.getInstance().saveFolderMetadataEntity(report);
         FolderFileServiceManager.refreshFolder(report.getParentFolder());
         return report;
+    }
+    
+    public static ReportCollectionEntity renameReportCollection(ReportCollectionEntity reportCollection, String newName) throws Exception {
+        if (reportCollection == null || reportCollection.getProject() == null) {
+            return null;
+        }
+        validateRenameReport(reportCollection, newName);
+        reportCollection.setDisplayName(newName);
+        EntityService.getInstance().saveEntity(reportCollection, reportCollection.getLocation());
+        FolderFileServiceManager.refreshFolder(reportCollection.getParentFolder());
+        return reportCollection;
     }
 }

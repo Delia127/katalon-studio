@@ -195,6 +195,9 @@ public class ReportUtil {
     public static List<XmlLogRecord> getAllLogRecords(String logFolder)
             throws XMLParserException, IOException, XMLStreamException {
         return XMLLoggerParser.readFromLogFolder(logFolder);
+        if (files == null) {
+            return null;
+        }
     }
 
     public static TestSuiteLogRecord generate(String logFolder, IProgressMonitor progressMonitor)

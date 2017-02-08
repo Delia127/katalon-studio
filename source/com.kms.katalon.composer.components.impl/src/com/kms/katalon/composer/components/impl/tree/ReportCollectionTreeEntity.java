@@ -61,7 +61,7 @@ public class ReportCollectionTreeEntity extends AbstractTreeEntity {
 
     @Override
     public boolean isRenamable() throws Exception {
-        return false;
+        return true;
     }
 
     @Override
@@ -104,5 +104,15 @@ public class ReportCollectionTreeEntity extends AbstractTreeEntity {
     @Override
     public List<TooltipPropertyDescription> getTooltipDescriptions() {
         return Collections.emptyList();
+    }
+    
+    @Override
+    public ReportCollectionEntity getObject() throws Exception {
+        return reportCollection;
+    }
+    
+    @Override
+    public String getText() throws Exception {
+        return reportCollection.getDisplayName();
     }
 }

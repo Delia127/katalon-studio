@@ -39,6 +39,8 @@ public interface IReportDataProvider {
             String reportName) throws DALException;
 
     void updateReportCollectionEntity(ReportCollectionEntity entity) throws DALException;
+    
+    public ReportCollectionEntity renameCollectionReport(ReportCollectionEntity collectionReport, String newName) throws DALException;
 
     ReportCollectionEntity newReportCollectionEntity(ProjectEntity project, TestSuiteCollectionEntity tsEntity,
             String newName) throws DALException;
