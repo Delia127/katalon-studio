@@ -45,12 +45,6 @@
             id="com.kms.katalon.composer.execution"
             name="Execution">
       </page>
-      <page
-            class="com.kms.katalon.composer.execution.preferences.MailPreferencePage"
-            id="com.kms.katalon.composer.execution.mail"
-            category="com.kms.katalon.composer.execution"
-            name="Email">
-      </page>   
    </extension>
    
    
@@ -88,6 +82,11 @@
             id="com.kms.katalon.composer.execution.externallib"
             name="External Libraries">
       </page>
+      <page
+            class="com.kms.katalon.composer.execution.settings.MailSettingsPage"
+            id="com.kms.katalon.composer.execution.mail"
+            name="Email">
+      </page>   
    </extension>
    <extension
          point="org.eclipse.debug.core.watchExpressionDelegates">

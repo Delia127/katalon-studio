@@ -1,9 +1,9 @@
 package com.kms.katalon.execution.util;
 
-import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
 import static org.apache.commons.lang.StringUtils.split;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.Arrays;
@@ -11,10 +11,6 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-
-import net.lingala.zip4j.core.ZipFile;
-import net.lingala.zip4j.model.ZipParameters;
-import net.lingala.zip4j.util.Zip4jConstants;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -26,15 +22,29 @@ import org.apache.commons.mail.HtmlEmail;
 import org.apache.commons.mail.ImageHtmlEmail;
 import org.apache.commons.mail.resolver.DataSourceUrlResolver;
 
-import com.kms.katalon.execution.constants.ExecutionPreferenceConstants;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.execution.entity.EmailConfig;
-import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
+import com.kms.katalon.execution.setting.EmailSettingStore;
+import com.kms.katalon.logging.LogUtil;
+
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.model.ZipParameters;
+import net.lingala.zip4j.util.Zip4jConstants;
 
 public class MailUtil {
     private static final int EMAIL_TIMEOUT = 600000;
 
     public enum MailSecurityProtocolType {
         None, SSL, TLS;
+
+        public static String[] getStringValues() {
+            MailSecurityProtocolType[] allSecurityProtocolTypes = values();
+            String[] stringValues = new String[allSecurityProtocolTypes.length];
+            for (int index = 0; index < allSecurityProtocolTypes.length; index++) {
+                stringValues[index] = allSecurityProtocolTypes[index].toString();
+            }
+            return stringValues;
+        }
     }
 
     public static final String EMAIL_SEPARATOR = ";";
@@ -119,10 +129,10 @@ public class MailUtil {
         String browser = ObjectUtils.toString(suitesSummaryForEmail.get(0)[7]);
 
         // Prepare email message
-        String htmlMessage = MessageFormat.format(EMAIL_HTML_TEMPLATE, hostName, os, browser, suiteName, passed,
-                failed, error, emailMsg, conf.getSignature());
-        String textMessage = MessageFormat.format(EMAIL_TEXT_TEMPLATE, hostName, os, browser, suiteName, passed,
-                failed, error, emailMsg, conf.getSignature());
+        String htmlMessage = MessageFormat.format(EMAIL_HTML_TEMPLATE, hostName, os, browser, suiteName, passed, failed,
+                error, emailMsg, conf.getSignature());
+        String textMessage = MessageFormat.format(EMAIL_TEXT_TEMPLATE, hostName, os, browser, suiteName, passed, failed,
+                error, emailMsg, conf.getSignature());
 
         // Define the base URL to resolve relative resource locations
         URL url = new URL("http://katalon.kms-technology.com");
@@ -206,18 +216,22 @@ public class MailUtil {
     }
 
     public static EmailConfig getDefaultEmailConfig() {
-        ScopedPreferenceStore prefs = getPreferenceStore(ExecutionPreferenceConstants.EXECUTION_QUALIFIER);
-
-        EmailConfig conf = new EmailConfig();
-        conf.setHost(prefs.getString(ExecutionPreferenceConstants.MAIL_CONFIG_HOST));
-        conf.setPort(prefs.getString(ExecutionPreferenceConstants.MAIL_CONFIG_PORT));
-        conf.setFrom(prefs.getString(ExecutionPreferenceConstants.MAIL_CONFIG_USERNAME));
-        conf.setSecurityProtocol(MailSecurityProtocolType.valueOf(prefs.getString(ExecutionPreferenceConstants.MAIL_CONFIG_SECURITY_PROTOCOL)));
-        conf.setUsername(prefs.getString(ExecutionPreferenceConstants.MAIL_CONFIG_USERNAME));
-        conf.setPassword(prefs.getString(ExecutionPreferenceConstants.MAIL_CONFIG_PASSWORD));
-        conf.setSignature(prefs.getString(ExecutionPreferenceConstants.MAIL_CONFIG_SIGNATURE));
-        conf.setSendAttachment(prefs.getBoolean(ExecutionPreferenceConstants.MAIL_CONFIG_ATTACHMENT));
-        conf.addRecipients(splitRecipientsString(prefs.getString(ExecutionPreferenceConstants.MAIL_CONFIG_REPORT_RECIPIENTS)));
-        return conf;
+        EmailSettingStore store = new EmailSettingStore(ProjectController.getInstance().getCurrentProject());
+        try {
+            EmailConfig conf = new EmailConfig();
+            conf.setHost(store.getHost());
+            conf.setPort(store.getPort());
+            conf.setFrom(store.getUsername());
+            conf.setSecurityProtocol(MailSecurityProtocolType.valueOf(store.getProtocol()));
+            conf.setUsername(store.getUsername());
+            conf.setPassword(store.getPassword());
+            conf.setSignature(store.getSignature());
+            conf.setSendAttachment(store.isAddAttachment());
+            conf.addRecipients(splitRecipientsString(store.getRecipients()));
+            return conf;
+        } catch (IOException e) {
+            LogUtil.logError(e);
+            return null;
+        }
     }
 }
