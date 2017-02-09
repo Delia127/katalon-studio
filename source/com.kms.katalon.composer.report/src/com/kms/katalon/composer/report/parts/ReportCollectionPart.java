@@ -4,6 +4,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UIEventTopic;
@@ -41,8 +42,8 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
 
     @Inject
     private IEventBroker eventBroker;
-    
-    @Inject 
+
+    @Inject
     private MPart mpart;
 
     @PostConstruct
@@ -52,7 +53,7 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
         createControls(parent);
 
         updateInput();
-        
+
         setPartLabel(reportCollectionEntity.getDisplayName());
 
         eventBroker.subscribe(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, this);
@@ -162,7 +163,11 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
                 if (!(eventObject instanceof ReportCollectionEntity)) {
                     return;
                 }
-                setPartLabel(((ReportCollectionEntity) eventObject).getDisplayName());
+                ReportCollectionEntity reportCollection = (ReportCollectionEntity) eventObject;
+                if (!StringUtils.equals(reportCollectionEntity.getId(), reportCollection.getId())) {
+                    return;
+                }
+                setPartLabel(reportCollection.getDisplayName());
                 break;
         }
     }
@@ -184,7 +189,7 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
         }
         return null;
     }
-    
+
     private void setPartLabel(String label) {
         mpart.setLabel(label);
     }
