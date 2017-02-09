@@ -136,6 +136,9 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     @Inject
     private Shell shell;
 
+    @Inject
+    private MPart mpart;
+
     private final class MapDataKeyLabelProvider extends ColumnLabelProvider {
         @Override
         public String getText(Object element) {
@@ -223,6 +226,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         createControls(parent);
         registerControlModifyListeners();
         updateInput(report);
+        setPartLabel(report.getDisplayName());
     }
 
     private void registerControlModifyListeners() {
@@ -621,9 +625,8 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
             if (!builder.isIntegrationEnabled(ProjectController.getInstance().getCurrentProject())) {
                 continue;
             }
-            TableViewerColumn viewerColumn = (TableViewerColumn) builder.getTestCaseIntegrationColumn(report).createIntegrationColumn(
-                    testCaseTableViewer,
-                    testCaseTableViewer.getTable().getColumnCount());
+            TableViewerColumn viewerColumn = (TableViewerColumn) builder.getTestCaseIntegrationColumn(report)
+                    .createIntegrationColumn(testCaseTableViewer, testCaseTableViewer.getTable().getColumnCount());
             tableLayout.setColumnData(viewerColumn.getColumn(), new ColumnWeightData(0, 32));
         }
     }
@@ -929,6 +932,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
 
     private void registerListeners() {
         eventBroker.subscribe(EventConstants.REPORT_UPDATED, this);
+        eventBroker.subscribe(EventConstants.REPORT_RENAMED, this);
     }
 
     public MPart getMPart() {
@@ -983,6 +987,22 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
             } catch (Exception e) {
                 LoggerSingleton.logError(e);
             }
+            return;
+        }
+        if (event.getTopic().equals(EventConstants.REPORT_RENAMED)) {
+            handleReportRenamed(event);
+            return;
+        }
+    }
+
+    private void handleReportRenamed(org.osgi.service.event.Event event) {
+        Object eventData = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
+        if (!(eventData instanceof ReportEntity)) {
+            return;
+        }
+        ReportEntity report = (ReportEntity) eventData;
+        if (getReport().getId().equals(report.getId())) {
+            setPartLabel(report.getDisplayName());
         }
     }
 
@@ -1018,5 +1038,9 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     public void onClose() {
         eventBroker.unsubscribe(this);
         testSuiteLogRecord = null;
+    }
+
+    public void setPartLabel(String label) {
+        mpart.setLabel(label);
     }
 }

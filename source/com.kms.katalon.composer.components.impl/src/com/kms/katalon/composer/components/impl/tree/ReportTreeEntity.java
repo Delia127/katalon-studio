@@ -35,7 +35,7 @@ public class ReportTreeEntity extends AbstractTreeEntity {
     }
 
     @Override
-    public Object getObject() throws Exception {
+    public ReportEntity getObject() throws Exception {
         ReportController.getInstance().reloadReport(report, entity);
         loadAllDescentdantEntities();
         return report;
@@ -73,7 +73,7 @@ public class ReportTreeEntity extends AbstractTreeEntity {
 
     @Override
     public boolean isRenamable() throws Exception {
-        return false;
+        return true;
     }
 
     @Override
@@ -121,5 +121,10 @@ public class ReportTreeEntity extends AbstractTreeEntity {
     @Override
     public List<TooltipPropertyDescription> getTooltipDescriptions() {
         return Collections.emptyList();
+    }
+    
+    @Override
+    public String getText() throws Exception {
+        return report.getDisplayName();
     }
 }

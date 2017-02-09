@@ -43,8 +43,8 @@ public class ReportFileServiceDataProvider implements IReportDataProvider {
             throws Exception {
         String testSuiteReportFolderPath = ReportFileServiceManager.getReportFolderOfTestSuite(project, testSuite);
         FolderEntity parentFolder = FolderFileServiceManager.getFolder(testSuiteReportFolderPath);
-        ReportEntity report = ReportFileServiceManager.getReportEntity(testSuiteReportFolderPath + File.separator
-                + reportName + (reportName.endsWith(".html") ? "" : ".html"));
+        ReportEntity report = ReportFileServiceManager
+                .getReportEntity(testSuiteReportFolderPath + File.separator + reportName);
         if (report == null) {
             report = ReportFileServiceManager.createReportEntity(reportName, parentFolder);
         }
@@ -92,7 +92,7 @@ public class ReportFileServiceDataProvider implements IReportDataProvider {
 
     @Override
     public ReportEntity updateReport(ReportEntity report) throws Exception {
-        EntityService.getInstance().saveFolderMetadataEntity(report);
+        EntityService.getInstance().saveIntergratedFolderMetadataEntity(report);
         return report;
     }
 
@@ -177,9 +177,9 @@ public class ReportFileServiceDataProvider implements IReportDataProvider {
     }
 
     @Override
-    public void updateReportCollectionEntity(ReportCollectionEntity entity) throws DALException {
+    public void updateReportCollectionEntity(ReportCollectionEntity collectionReport) throws DALException {
         try {
-            getEntityService().saveEntity(entity, entity.getId());
+            getEntityService().saveEntity(collectionReport, collectionReport.getId());
         } catch (Exception e) {
             throw new DALException(e);
         }
@@ -191,6 +191,25 @@ public class ReportFileServiceDataProvider implements IReportDataProvider {
             EntityService.getInstance().deleteEntity(reportCollection);
 
             FolderFileServiceManager.deleteFolder(reportCollection.getParentFolder());
+        } catch (Exception e) {
+            throw new DALException(e);
+        }
+    }
+
+    @Override
+    public ReportEntity renameReport(ReportEntity report, String newName) throws DALException {
+        try {
+            return ReportFileServiceManager.renameReport(report, newName);
+        } catch (Exception e) {
+            throw new DALException(e);
+        }
+    }
+
+    @Override
+    public ReportCollectionEntity renameCollectionReport(ReportCollectionEntity collectionReport, String newName)
+            throws DALException {
+        try {
+            return ReportFileServiceManager.renameReportCollection(collectionReport, newName);
         } catch (Exception e) {
             throw new DALException(e);
         }

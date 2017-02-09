@@ -4,6 +4,7 @@
 		<java-type name="ReportEntity">
 		<xml-root-element name="ReportEntity" />
 			<java-attributes>
+				<xml-element java-attribute="displayName" />
 			</java-attributes>
 		</java-type>
 	</java-types>

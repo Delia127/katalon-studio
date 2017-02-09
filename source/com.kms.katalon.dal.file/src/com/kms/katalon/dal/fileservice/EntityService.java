@@ -228,7 +228,7 @@ public final class EntityService {
         return true;
     }
 
-    public boolean saveFolderMetadataEntity(IntegratedFileEntity entity) throws Exception {
+    public boolean saveIntergratedFolderMetadataEntity(IntegratedFileEntity entity) throws Exception {
         String metaDataFileLocation = entity.getLocation() + File.separator + FolderEntity.getMetaDataFileExtension();
 
         if (metaDataFileLocation.length() > FileServiceConstant.MAX_FILE_PATH_LENGTH) {
@@ -245,6 +245,26 @@ public final class EntityService {
             // Write to File
             marshaller.marshal(entity, folderMetaFile);
         }
+
+        cache.put(entity.getLocation(), entity);
+        return true;
+    }
+    
+    public boolean saveFolderMetadataEntity(FileEntity entity) throws Exception {
+        String metaDataFileLocation = entity.getLocation() + File.separator + FolderEntity.getMetaDataFileExtension();
+
+        if (metaDataFileLocation.length() > FileServiceConstant.MAX_FILE_PATH_LENGTH) {
+            throw new FilePathTooLongException(metaDataFileLocation.length(), FileServiceConstant.MAX_FILE_PATH_LENGTH);
+        }
+
+        File folder = new File(entity.getLocation());
+        if (!folder.exists()) {
+            folder.mkdir();
+        }
+        File folderMetaFile = new File(metaDataFileLocation);
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        // Write to File
+        marshaller.marshal(entity, folderMetaFile);
 
         cache.put(entity.getLocation(), entity);
         return true;
