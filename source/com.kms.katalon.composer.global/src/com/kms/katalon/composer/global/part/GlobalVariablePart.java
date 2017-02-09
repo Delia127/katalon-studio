@@ -55,8 +55,11 @@ import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.operation.OperationExecutor;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.components.util.ColumnViewerUtil;
 import com.kms.katalon.composer.global.constants.StringConstants;
 import com.kms.katalon.composer.global.dialog.GlobalVariableBuilderDialog;
+import com.kms.katalon.composer.global.provider.TableViewerProvider;
+import com.kms.katalon.composer.global.support.GlobalVariableEdittingSupport;
 import com.kms.katalon.composer.parts.CPart;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.GlobalVariableController;
@@ -67,7 +70,7 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.groovy.constant.GroovyConstants;
 import com.kms.katalon.groovy.util.GroovyRefreshUtil;
 
-public class GlobalVariablePart extends CPart implements EventHandler {
+public class GlobalVariablePart extends CPart implements EventHandler, TableViewerProvider {
 
     private Table table;
 
@@ -185,6 +188,7 @@ public class GlobalVariablePart extends CPart implements EventHandler {
         TableColumn tblclmnName = tableViewerColumnName.getColumn();
         tblclmnName.setWidth(100);
         tblclmnName.setText(StringConstants.PA_COL_NAME);
+        tableViewerColumnName.setEditingSupport(new GlobalVariableEdittingSupport(this));
         tableViewerColumnName.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -199,6 +203,7 @@ public class GlobalVariablePart extends CPart implements EventHandler {
         TableColumn tblclmnValue = tableViewerColumnValue.getColumn();
         tblclmnValue.setWidth(150);
         tblclmnValue.setText(StringConstants.PA_COL_VALUE);
+        tableViewerColumnValue.setEditingSupport(new GlobalVariableEdittingSupport(this));
         tableViewerColumnValue.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -213,6 +218,7 @@ public class GlobalVariablePart extends CPart implements EventHandler {
         TableColumn tblclmnDescription = tableViewerColumnDescription.getColumn();
         tblclmnDescription.setWidth(150);
         tblclmnDescription.setText(StringConstants.PA_COL_DESCRIPTION);
+        tableViewerColumnDescription.setEditingSupport(new GlobalVariableEdittingSupport(this));
         tableViewerColumnDescription.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -222,7 +228,8 @@ public class GlobalVariablePart extends CPart implements EventHandler {
                 return "";
             }
         });
-
+        
+        ColumnViewerUtil.setTableActivation(tableViewer);
         setInput();
         registerControlModifyListeners();
     }
@@ -658,5 +665,15 @@ public class GlobalVariablePart extends CPart implements EventHandler {
             setDirty(true);
         }
 
+    }
+
+    @Override
+    public TableViewer getTableViewer() {
+        return tableViewer;
+    }
+
+    @Override
+    public void markDirty() {
+       setDirty(true); 
     }
 }
