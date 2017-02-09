@@ -121,22 +121,25 @@
     <trimBars xmi:id="_hQQH9RYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.trimbar">
       <children xsi:type="menu:ToolBar" xmi:id="_hQQH9hYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.toolbar">
         <tags>NoMove</tags>
-        <children xsi:type="menu:HandledToolItem" xmi:id="_hQQH-BYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.toolbar.save" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/save_24.png" tooltip="Save" command="_hQQH4xYMEeSUMbyEN2kbFQ">
+        <children xsi:type="menu:HandledToolItem" xmi:id="_hQQH-BYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.toolbar.save" label="Save" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/save_24.png" tooltip="" command="_hQQH4xYMEeSUMbyEN2kbFQ">
           <persistedState key="index" value="0"/>
           <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/save_disabled_24.png"/>
           <tags>Opaque</tags>
+          <tags>FORCE_TEXT</tags>
         </children>
-        <children xsi:type="menu:HandledToolItem" xmi:id="_5oUMAEO4EeSlQuaMBzQJOw" elementId="com.kms.katalon.composer.toolbar.saveAll" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/save_all_24.png" tooltip="Save All" command="_8qJlUEO4EeSlQuaMBzQJOw">
+        <children xsi:type="menu:HandledToolItem" xmi:id="_5oUMAEO4EeSlQuaMBzQJOw" elementId="com.kms.katalon.composer.toolbar.saveAll" label="Save All" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/save_all_24.png" tooltip="" command="_8qJlUEO4EeSlQuaMBzQJOw">
           <persistedState key="index" value="1"/>
           <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/save_all_disabled_24.png"/>
           <tags>Opaque</tags>
+          <tags>FORCE_TEXT</tags>
         </children>
         <children xsi:type="menu:ToolBarSeparator" xmi:id="_3PTrMBQXEeWFKqx225rIVg" elementId="com.kms.katalon.toolbarseparator.0">
           <persistedState key="index" value="2"/>
         </children>
-        <children xsi:type="menu:HandledToolItem" xmi:id="_vacCkNujEeaEL7_gfQD4GQ" elementId="com.kms.katalon.composer.toolbar.new" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/new_24.png" tooltip="New" command="_4ZGKMNukEeaEL7_gfQD4GQ">
+        <children xsi:type="menu:HandledToolItem" xmi:id="_vacCkNujEeaEL7_gfQD4GQ" elementId="com.kms.katalon.composer.toolbar.new" label="New" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/new_24.png" tooltip="" command="_4ZGKMNukEeaEL7_gfQD4GQ">
           <persistedState key="index" value="3"/>
           <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/new_disabled_24.png"/>
+          <tags>FORCE_TEXT</tags>
           <menu xmi:id="_x0pbMNujEeaEL7_gfQD4GQ" elementId="com.kms.katalon.composer.toolbar.new.menu" label=""/>
         </children>
       </children>
