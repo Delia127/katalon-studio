@@ -48,7 +48,7 @@ public class ProxyUtil {
         Proxy proxy = Proxy.NO_PROXY;
 
         if (ConsoleMessageConstants.USE_SYSTEM_PROXY.equals(proxyInfo.getProxyOption())) {
-            proxy = getSystemProxyFor(ServerAPICommunicationUtil.URL_API);
+            proxy = getSystemProxyFor(ServerAPICommunicationUtil.getAPIUrl());
         } else if (ConsoleMessageConstants.MANUAL_CONFIG_PROXY.equals(proxyInfo.getProxyOption())) {
             System.setProperty(USE_SYSTEM_PROXY_PROP, "false");
             try {

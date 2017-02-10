@@ -26,7 +26,8 @@ Require-Bundle: org.eclipse.e4.core.di,
  com.kms.katalon.preferences,
  org.apache.commons.io,
  org.apache.commons.lang,
- com.kms.katalon.composer.resources
+ com.kms.katalon.composer.resources,
+ com.kms.katalon.console
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: javax.annotation;version="1.2.0",
  javax.inject;version="1.0.0"

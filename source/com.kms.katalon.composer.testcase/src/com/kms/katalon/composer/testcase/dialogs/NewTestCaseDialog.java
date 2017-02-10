@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Text;
 import com.kms.katalon.composer.components.impl.dialogs.CommonNewEntityDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
+import com.kms.katalon.console.utils.EntityTrackingHelper;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
@@ -56,6 +57,7 @@ public class NewTestCaseDialog extends CommonNewEntityDialog<TestCaseEntity> {
     protected void createEntity() {
         try {
             entity = TestCaseController.getInstance().newTestCaseWithoutSave(parentFolder, getName());
+            EntityTrackingHelper.trackTestCaseCreated();
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }

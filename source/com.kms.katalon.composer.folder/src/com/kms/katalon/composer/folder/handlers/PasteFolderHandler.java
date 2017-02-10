@@ -39,6 +39,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.transfer.TransferMoveFlag;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.folder.constants.StringConstants;
+import com.kms.katalon.console.utils.EntityTrackingHelper;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.CheckpointController;
 import com.kms.katalon.controller.FolderController;
@@ -229,6 +230,7 @@ public class PasteFolderHandler {
                 eventBroker.post(EventConstants.EXPLORER_COPY_PASTED_SELECTED_ITEM,
                         new Object[] { testCase.getIdForDisplay(), copiedTestCase.getIdForDisplay() });
                 lastPastedTreeEntity = new TestCaseTreeEntity(copiedTestCase, parentPastedTreeEntity);
+                EntityTrackingHelper.trackTestCaseCreated();
             }
         }
     }

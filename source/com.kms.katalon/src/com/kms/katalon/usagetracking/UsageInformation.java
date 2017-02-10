@@ -16,6 +16,10 @@ public class UsageInformation {
     private int newTestcaseCount = 0;
 
     private int newTestRunCount = 0;
+    
+    private int newProjectCreatedCount = 0;
+    
+    private int newTestCaseCreatedCount = 0;
 
     public String getEmail() {
         return email;
@@ -79,6 +83,22 @@ public class UsageInformation {
 
     public void setNewTestRunCount(int newTestRunCount) {
         this.newTestRunCount = newTestRunCount;
+    }
+
+    public int getNewProjectCreatedCount() {
+        return newProjectCreatedCount;
+    }
+
+    public void setNewProjectCreatedCount(int newProjectCreatedCount) {
+        this.newProjectCreatedCount = newProjectCreatedCount;
+    }
+
+    public int getNewTestCaseCreatedCount() {
+        return newTestCaseCreatedCount;
+    }
+
+    public void setNewTestCaseCreatedCount(int newTestCaseCreatedCount) {
+        this.newTestCaseCreatedCount = newTestCaseCreatedCount;
     }
 
 }
