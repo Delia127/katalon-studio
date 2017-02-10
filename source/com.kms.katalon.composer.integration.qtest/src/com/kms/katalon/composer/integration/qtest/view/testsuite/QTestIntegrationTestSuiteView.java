@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
+import com.kms.katalon.composer.components.controls.HelpComposite;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.dialogs.PreferenceDialogBuilder;
 import com.kms.katalon.composer.components.impl.util.DesktopUtils;
@@ -50,6 +51,7 @@ import com.kms.katalon.composer.integration.qtest.model.TestSuiteRepo;
 import com.kms.katalon.composer.integration.qtest.preference.QTestPreferenceDefaultValueInitializer;
 import com.kms.katalon.composer.integration.qtest.view.testsuite.provider.QTestSuiteTableLabelProvider;
 import com.kms.katalon.composer.testsuite.parts.integration.AbstractTestSuiteIntegrationView;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -92,10 +94,11 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
         container.setLayout(new GridLayout(1, false));
 
         Composite compositeButton = new Composite(container, SWT.NONE);
-        GridLayout glCompositeButton = new GridLayout(6, false);
+        GridLayout glCompositeButton = new GridLayout(7, false);
         glCompositeButton.marginHeight = 0;
         glCompositeButton.marginWidth = 0;
         compositeButton.setLayout(glCompositeButton);
+        compositeButton.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
         btnUpload = new Button(compositeButton, SWT.FLAT);
         btnUpload.setToolTipText(StringConstants.VIEW_TOOLTIP_UPLOAD_TEST_SUITE);
@@ -121,6 +124,8 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
         btnRemove.setToolTipText(StringConstants.VIEW_TOOLTIP_REMOVE_TEST_SUITE_PARENT);
         btnRemove.setText(StringConstants.VIEW_TITLE_REMOVE_TEST_SUITE_PARENT);
         btnRemove.setEnabled(false);
+        
+        new HelpComposite(compositeButton, DocumentationMessageConstants.QTEST_TEST_SUITE_VIEW);
 
         SashForm sashForm = new SashForm(container, SWT.NONE);
         sashForm.setSashWidth(10);

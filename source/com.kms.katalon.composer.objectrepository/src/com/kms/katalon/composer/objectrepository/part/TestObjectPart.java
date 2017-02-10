@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Display;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
@@ -36,6 +37,7 @@ import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.objectrepository.constant.StringConstants;
 import com.kms.katalon.composer.objectrepository.view.ObjectPropertyView;
 import com.kms.katalon.composer.parts.CPart;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FolderController;
@@ -70,6 +72,7 @@ public class TestObjectPart extends CPart implements EventHandler, IComposerPart
     @PostConstruct
     public void createComposite(Composite parent, MPart part) {
         this.mPart = part;
+        new HelpToolBarForMPart(mPart, DocumentationMessageConstants.TEST_OBJECT_WEB_UI);
         parent.setLayout(new FillLayout());
 
         objPropertyView = new ObjectPropertyView(eventBroker, dirtyable, this);

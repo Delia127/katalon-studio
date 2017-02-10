@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.osgi.service.event.Event;
 
+import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
@@ -30,6 +31,7 @@ import com.kms.katalon.composer.components.part.IComposerPartEvent;
 import com.kms.katalon.composer.report.constants.StringConstants;
 import com.kms.katalon.composer.report.provider.ReportActionColumnLabelProvider;
 import com.kms.katalon.composer.report.provider.ReportCollectionTableLabelProvider;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.report.ReportItemDescription;
@@ -50,6 +52,8 @@ public class ReportCollectionPart extends EventServiceAdapter implements ICompos
     public void initialize(Composite parent, MPart mpart) {
         reportCollectionEntity = (ReportCollectionEntity) mpart.getObject();
 
+        new HelpToolBarForMPart(mpart, DocumentationMessageConstants.REPORT_TEST_SUITE_COLLECTION);
+        
         createControls(parent);
 
         updateInput();

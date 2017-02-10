@@ -1,11 +1,13 @@
 package com.kms.katalon.composer.execution.settings;
 
-import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-public class DefaultExecutionSettingPage extends PreferencePage {
+import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
+import com.kms.katalon.constants.DocumentationMessageConstants;
+
+public class DefaultExecutionSettingPage extends PreferencePageWithHelp {
     public DefaultExecutionSettingPage() {
         noDefaultAndApplyButton();
     }
@@ -14,4 +16,14 @@ public class DefaultExecutionSettingPage extends PreferencePage {
 	    Composite fieldEditorParent = new Composite(parent, SWT.NONE);
 		return fieldEditorParent;
 	}
+	
+    @Override
+    protected boolean hasDocumentation() {
+        return true;
+    }
+
+    @Override
+    protected String getDocumentationUrl() {
+        return DocumentationMessageConstants.SETTINGS_EXECUTION;
+    }
 }

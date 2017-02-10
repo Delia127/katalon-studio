@@ -33,10 +33,12 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.dialogs.MessageDialogWithLink;
+import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.impl.dialogs.AddMailRecipientDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.execution.entity.EmailConfig;
@@ -44,7 +46,7 @@ import com.kms.katalon.execution.setting.EmailSettingStore;
 import com.kms.katalon.execution.util.MailUtil;
 import com.kms.katalon.execution.util.MailUtil.MailSecurityProtocolType;
 
-public class MailSettingsPage extends PreferencePage {
+public class MailSettingsPage extends PreferencePageWithHelp {
     public static final String MAIL_CONFIG_USERNAME_HINT = "E.g: testemailkms@gmail.com";
 
     public static final String MAIL_CONFIG_PORT_HINT = "E.g: 465";
@@ -410,5 +412,15 @@ public class MailSettingsPage extends PreferencePage {
 
     private static String[] getRecipients(String reportRecipients) {
         return StringUtils.split(reportRecipients.trim(), ";");
+    }
+    
+    @Override
+    protected boolean hasDocumentation() {
+        return true;
+    }
+    
+    @Override
+    protected String getDocumentationUrl() {
+        return DocumentationMessageConstants.SETTINGS_EMAIL;
     }
 }

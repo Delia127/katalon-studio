@@ -79,6 +79,7 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.FOCUS_16);
         ImageManager.registerImage(IImageKeys.UNDO_16);
         ImageManager.registerImage(IImageKeys.REDO_16);
+        ImageManager.registerImage(IImageKeys.HELP_16);
     }
 
     private void registerSubToolbarImages() {

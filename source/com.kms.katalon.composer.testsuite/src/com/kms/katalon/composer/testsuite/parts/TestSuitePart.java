@@ -43,6 +43,7 @@ import org.eclipse.swt.widgets.Text;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.composer.components.controls.HelpComposite;
 import com.kms.katalon.composer.components.impl.control.ImageButton;
 import com.kms.katalon.composer.components.impl.dialogs.AddMailRecipientDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -449,7 +450,7 @@ public class TestSuitePart implements EventHandler {
 
         Composite compositeExecutionCompositeHeader = new Composite(compositeExecution, SWT.NONE);
         compositeExecutionCompositeHeader.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-        GridLayout glCompositeExecutionCompositeHeader = new GridLayout(2, false);
+        GridLayout glCompositeExecutionCompositeHeader = new GridLayout(3, false);
         glCompositeExecutionCompositeHeader.marginHeight = 0;
         glCompositeExecutionCompositeHeader.marginWidth = 0;
         compositeExecutionCompositeHeader.setLayout(glCompositeExecutionCompositeHeader);
@@ -465,6 +466,8 @@ public class TestSuitePart implements EventHandler {
         lblExecutionInformation.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         lblExecutionInformation.setFont(JFaceResources.getFontRegistry().getBold(""));
         lblExecutionInformation.setText("Execution Information");
+        
+        new HelpComposite(compositeExecutionCompositeHeader, "https://docs.katalon.com/x/5gAM");
 
         compositeExecutionDetails = new Composite(compositeExecution, SWT.NONE);
         compositeExecutionDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));

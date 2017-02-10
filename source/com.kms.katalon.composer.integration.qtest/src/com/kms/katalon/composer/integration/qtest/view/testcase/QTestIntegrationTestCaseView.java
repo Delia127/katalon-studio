@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
+import com.kms.katalon.composer.components.controls.HelpComposite;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.DesktopUtils;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
@@ -26,6 +27,7 @@ import com.kms.katalon.composer.integration.qtest.handler.QTestUploadTestCaseHan
 import com.kms.katalon.composer.integration.qtest.job.UploadTestCaseJob;
 import com.kms.katalon.composer.integration.qtest.model.TestCaseRepo;
 import com.kms.katalon.composer.testcase.parts.integration.AbstractTestCaseIntegrationView;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.entity.file.IntegratedFileEntity;
@@ -45,10 +47,13 @@ public class QTestIntegrationTestCaseView extends AbstractTestCaseIntegrationVie
     }
 
     private StyledText txtID, txtParentID, txtAlias;
+
     private QTestTestCase qTestTestCase;
 
     private Button btnUpload;
+
     private Button btnDisintegrate;
+
     private Button btnNavigate;
 
     /**
@@ -62,9 +67,10 @@ public class QTestIntegrationTestCaseView extends AbstractTestCaseIntegrationVie
         container.setLayout(glContainer);
 
         Composite compositeButton = new Composite(container, SWT.NONE);
-        GridLayout gl_compositeButton = new GridLayout(3, false);
+        GridLayout gl_compositeButton = new GridLayout(5, false);
         gl_compositeButton.marginWidth = 0;
         compositeButton.setLayout(gl_compositeButton);
+        compositeButton.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
         btnUpload = new Button(compositeButton, SWT.FLAT);
         btnUpload.setToolTipText(StringConstants.VIEW_TOOLTIP_UPLOAD_TEST_CASE);
@@ -78,11 +84,13 @@ public class QTestIntegrationTestCaseView extends AbstractTestCaseIntegrationVie
         btnNavigate.setToolTipText(StringConstants.VIEW_TOOLTIP_NAVIGATE_TEST_CASE);
         btnNavigate.setText(StringConstants.CM_NAVIGATE);
 
+        new HelpComposite(compositeButton, DocumentationMessageConstants.QTEST_TEST_CASE_VIEW);
+
         Composite compositeInfo = new Composite(container, SWT.BORDER);
         compositeInfo.setBackground(ColorUtil.getWhiteBackgroundColor());
         compositeInfo.setBackgroundMode(SWT.INHERIT_FORCE);
-        
-        compositeInfo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+
+        compositeInfo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
         GridLayout gl_compositeInfo = new GridLayout(2, false);
         gl_compositeInfo.verticalSpacing = 7;
         gl_compositeInfo.horizontalSpacing = 15;
@@ -143,14 +151,13 @@ public class QTestIntegrationTestCaseView extends AbstractTestCaseIntegrationVie
         try {
             if (MessageDialog.openConfirm(null, StringConstants.CONFIRMATION,
                     StringConstants.VIEW_CONFIRM_DISINTEGRATE_TEST_CASE)) {
-                testCaseEntity.getIntegratedEntities().remove(
-                        QTestIntegrationUtil.getIntegratedEntity(testCaseEntity));
+                testCaseEntity.getIntegratedEntities().remove(QTestIntegrationUtil.getIntegratedEntity(testCaseEntity));
                 reloadView();
                 setDirty(true);
             }
         } catch (Exception e) {
-            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.VIEW_MSG_UNABLE_DISINTEGRATE_TEST_CASE, e
-                    .getClass().getSimpleName());
+            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.VIEW_MSG_UNABLE_DISINTEGRATE_TEST_CASE,
+                    e.getClass().getSimpleName());
         }
 
     }
@@ -164,8 +171,8 @@ public class QTestIntegrationTestCaseView extends AbstractTestCaseIntegrationVie
                     projectEntity.getFolderLocation());
             DesktopUtils.openUri(url.toURI());
         } catch (Exception e) {
-            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.VIEW_MSG_UNABLE_NAVIGATE_TEST_CASE, e.getClass()
-                    .getSimpleName());
+            MultiStatusErrorDialog.showErrorDialog(e, StringConstants.VIEW_MSG_UNABLE_NAVIGATE_TEST_CASE,
+                    e.getClass().getSimpleName());
         }
     }
 
@@ -185,7 +192,8 @@ public class QTestIntegrationTestCaseView extends AbstractTestCaseIntegrationVie
                 return;
             }
 
-            QTestModule module = QTestIntegrationFolderManager.getQTestModuleByFolderEntity(testCaseEntity.getParentFolder());
+            QTestModule module = QTestIntegrationFolderManager
+                    .getQTestModuleByFolderEntity(testCaseEntity.getParentFolder());
 
             // If the parent module is qTest's root module, open a warning message that system cannot upload this test
             // case.
@@ -206,8 +214,8 @@ public class QTestIntegrationTestCaseView extends AbstractTestCaseIntegrationVie
 
             uploadJob.doTask();
         } catch (Exception ex) {
-            MultiStatusErrorDialog.showErrorDialog(ex, StringConstants.VIEW_MSG_UNABLE_UPLOAD_TEST_CASE, ex.getClass()
-                    .getSimpleName());
+            MultiStatusErrorDialog.showErrorDialog(ex, StringConstants.VIEW_MSG_UNABLE_UPLOAD_TEST_CASE,
+                    ex.getClass().getSimpleName());
         }
     }
 

@@ -31,6 +31,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
 import com.kms.katalon.composer.explorer.providers.EntityProvider;
 import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
@@ -181,5 +182,10 @@ public class CheckpointTestDataPart extends CheckpointAbstractPart {
             return;
         }
         txtTestDataLink.setText("<form><p><a>" + testDataLink + "</a></p></form>", true, false);
+    }
+    
+    @Override
+    protected String getDocumentationUrl() {
+        return DocumentationMessageConstants.CHECKPOINT_EXISTING_DATA;
     }
 }

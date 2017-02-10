@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
+import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
 
 public abstract class AbstractDialog extends Dialog {
@@ -98,5 +99,36 @@ public abstract class AbstractDialog extends Dialog {
     public String getDialogTitle() {
         return this.dialogTitle;
     }
+    
+    /**
+     * @return if this dialog have available documentation
+     */
+    protected boolean hasDocumentation() {
+        return false;
+    }
 
+    /**
+     * Get documentation for this dialog
+     * @return return empty for default
+     */
+    protected String getDocumentationUrl() {
+        return "";
+    }
+    
+    @Override
+    protected Control createButtonBar(Composite parent) {
+        if (!hasDocumentation()) {
+            return super.createButtonBar(parent);
+        }
+        Composite bottomComposite = new Composite(parent, SWT.NONE);
+        GridLayout layout = new GridLayout(2, false);
+        layout.marginHeight = 0;
+        layout.marginWidth = 0;
+        bottomComposite.setLayout(layout);
+        bottomComposite.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_CENTER));
+        new HelpCompositeForDialog(bottomComposite, getDocumentationUrl());
+        super.createButtonBar(bottomComposite);
+
+        return bottomComposite;
+    }
 }

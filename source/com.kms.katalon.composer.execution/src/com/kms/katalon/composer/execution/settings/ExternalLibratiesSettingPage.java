@@ -16,6 +16,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.commands.common.CommandException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -45,6 +46,7 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.IHandlerService;
 
+import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.providers.TypeCheckedStyleCellLabelProvider;
@@ -54,13 +56,14 @@ import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageCons
 import com.kms.katalon.composer.execution.constants.ImageConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.exceptions.FileBeingUsedException;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.classpath.ProjectBuildPath;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
-public class ExternalLibratiesSettingPage extends PreferencePage {
+public class ExternalLibratiesSettingPage extends PreferencePageWithHelp {
     private static final int DELETING_EXTERNAL_JAR_TIMEOUT = 30000;
 
     private static final int TICK = 1;
@@ -340,4 +343,13 @@ public class ExternalLibratiesSettingPage extends PreferencePage {
         });
     }
 
+    @Override
+    protected boolean hasDocumentation() {
+        return true;
+    }
+
+    @Override
+    protected String getDocumentationUrl() {
+        return DocumentationMessageConstants.SETTINGS_EXTERNAL_LIBRARIES;
+    }
 }

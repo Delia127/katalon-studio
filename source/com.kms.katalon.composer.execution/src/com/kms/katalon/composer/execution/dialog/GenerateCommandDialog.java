@@ -63,6 +63,7 @@ import com.kms.katalon.composer.execution.util.MobileDeviceUIProvider;
 import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
 import com.kms.katalon.composer.explorer.providers.EntityProvider;
 import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestSuiteController;
@@ -181,7 +182,7 @@ public class GenerateCommandDialog extends AbstractDialog {
     private static final String ARG_STATUS_DELAY = ConsoleMain.SHOW_STATUS_DELAY_OPTION;
 
     private static final String ARG_TEST_SUITE_PATH = ConsoleMain.TESTSUITE_ID_OPTION;
-    
+
     private static final String ARG_TEST_SUITE_COLLECTION_PATH = ConsoleMain.TESTSUITE_COLLECTION_ID_OPTION;
 
     private static final String ARG_REMOTE_WEB_DRIVER_URL = DriverFactory.REMOTE_WEB_DRIVER_URL;
@@ -420,6 +421,16 @@ public class GenerateCommandDialog extends AbstractDialog {
         createButton(parent, GENERATE_PROPERTY_ID, StringConstants.DIA_BTN_GEN_PROPERTY_FILE, false);
         createButton(parent, GENERATE_COMMAND_ID, StringConstants.DIA_BTN_GEN_COMMAND, true);
         createButton(parent, IDialogConstants.CLOSE_ID, IDialogConstants.CLOSE_LABEL, false);
+    }
+
+    @Override
+    protected boolean hasDocumentation() {
+        return true;
+    }
+
+    @Override
+    protected String getDocumentationUrl() {
+        return DocumentationMessageConstants.DIALOG_GENERATE_COMMAND;
     }
 
     @Override
@@ -947,7 +958,7 @@ public class GenerateCommandDialog extends AbstractDialog {
         String entityId = txtTestSuite.getText();
         if (isTestSuite(entityId)) {
             args.put(ARG_TEST_SUITE_PATH, getArgumentValueToSave(entityId, generateCommandMode));
-    
+
             String browserType = browserTypeIs(BROWSER_TYPE_CUSTOM) ? comboCustomExecution.getText()
                     : comboBrowser.getText();
             args.put(ARG_BROWSER_TYPE, getArgumentValueToSave(browserType, generateCommandMode));
@@ -969,7 +980,7 @@ public class GenerateCommandDialog extends AbstractDialog {
 
         return args;
     }
-    
+
     private boolean isTestSuite(String id) {
         try {
             return TestSuiteController.getInstance().getTestSuiteByDisplayId(id,

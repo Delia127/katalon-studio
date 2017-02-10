@@ -46,6 +46,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
 import com.kms.katalon.composer.components.impl.control.ImageButton;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
@@ -54,6 +55,7 @@ import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.testdata.constants.ImageConstants;
 import com.kms.katalon.composer.testdata.constants.StringConstants;
 import com.kms.katalon.composer.testdata.job.LoadExcelFileJob;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.core.testdata.ExcelData;
@@ -130,6 +132,7 @@ public class ExcelTestDataPart extends TestDataMainPart {
     @PostConstruct
     public void createControls(Composite parent, MPart mpart) {
         ableToReload = true;
+        new HelpToolBarForMPart(mpart, DocumentationMessageConstants.TEST_DATA_EXCEL);
         super.createControls(parent, mpart);
     }
 
