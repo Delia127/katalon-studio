@@ -2,10 +2,8 @@ package com.kms.katalon.zendesk;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
-import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
@@ -41,6 +39,7 @@ import com.google.gson.Gson;
 import com.kms.katalon.console.constants.ConsoleStringConstants;
 import com.kms.katalon.console.utils.ApplicationInfo;
 import com.kms.katalon.console.utils.ProxyUtil;
+import com.kms.katalon.core.webservice.support.UrlEncoder;
 import com.kms.katalon.zendesk.ZendeskTicket.ZendeskCollaborator;
 import com.kms.katalon.zendesk.ZendeskTicket.ZendeskTicketComment;
 
@@ -195,9 +194,8 @@ public class ZendeskHTTPRequestHelper {
         }
     }
 
-    private static String buildUploadAttachmentUrl(String fileName, String previouseToken)
-            throws UnsupportedEncodingException {
-        return API_UPLOADS + WITH_PARAMS + FILENAME_PARAM + WITH_PARAM_VALUE + URLEncoder.encode(fileName, "UTF-8")
+    private static String buildUploadAttachmentUrl(String fileName, String previouseToken) {
+        return API_UPLOADS + WITH_PARAMS + FILENAME_PARAM + WITH_PARAM_VALUE + UrlEncoder.encode(fileName)
                 + (previouseToken != null ? AND_PARAM + TOKEN_PARAM + WITH_PARAM_VALUE + previouseToken
                         : StringUtils.EMPTY);
     }

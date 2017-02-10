@@ -13,4 +13,5 @@ Require-Bundle: org.codehaus.groovy,
  org.apache.commons.lang,
  org.eclipse.osgi
 Export-Package: com.kms.katalon.core.webservice.contribution,
- com.kms.katalon.core.webservice.keyword
+ com.kms.katalon.core.webservice.keyword,
+ com.kms.katalon.core.webservice.support
