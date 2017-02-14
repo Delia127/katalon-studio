@@ -293,7 +293,7 @@ public abstract class FieldEditorPreferencePageWithHelp extends PreferencePageWi
         if (style == FLAT) {
             // Create a new parent for each field editor
             Composite parent = new Composite(fieldEditorParent, SWT.NULL);
-            parent.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+            parent.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
             return parent;
         }
         // Just return the parent

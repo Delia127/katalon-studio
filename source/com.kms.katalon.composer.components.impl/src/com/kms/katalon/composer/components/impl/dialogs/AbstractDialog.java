@@ -125,7 +125,8 @@ public abstract class AbstractDialog extends Dialog {
         layout.marginHeight = 0;
         layout.marginWidth = 0;
         bottomComposite.setLayout(layout);
-        bottomComposite.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_CENTER));
+        bottomComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        
         new HelpCompositeForDialog(bottomComposite, getDocumentationUrl());
         super.createButtonBar(bottomComposite);
 
