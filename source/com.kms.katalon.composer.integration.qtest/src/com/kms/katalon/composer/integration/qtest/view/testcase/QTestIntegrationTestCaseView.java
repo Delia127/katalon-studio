@@ -16,7 +16,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
-import com.kms.katalon.composer.components.controls.HelpComposite;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.DesktopUtils;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
@@ -27,7 +26,6 @@ import com.kms.katalon.composer.integration.qtest.handler.QTestUploadTestCaseHan
 import com.kms.katalon.composer.integration.qtest.job.UploadTestCaseJob;
 import com.kms.katalon.composer.integration.qtest.model.TestCaseRepo;
 import com.kms.katalon.composer.testcase.parts.integration.AbstractTestCaseIntegrationView;
-import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.entity.file.IntegratedFileEntity;
@@ -67,7 +65,7 @@ public class QTestIntegrationTestCaseView extends AbstractTestCaseIntegrationVie
         container.setLayout(glContainer);
 
         Composite compositeButton = new Composite(container, SWT.NONE);
-        GridLayout gl_compositeButton = new GridLayout(5, false);
+        GridLayout gl_compositeButton = new GridLayout(4, false);
         gl_compositeButton.marginWidth = 0;
         compositeButton.setLayout(gl_compositeButton);
         compositeButton.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
@@ -83,8 +81,6 @@ public class QTestIntegrationTestCaseView extends AbstractTestCaseIntegrationVie
         btnNavigate = new Button(compositeButton, SWT.FLAT);
         btnNavigate.setToolTipText(StringConstants.VIEW_TOOLTIP_NAVIGATE_TEST_CASE);
         btnNavigate.setText(StringConstants.CM_NAVIGATE);
-
-        new HelpComposite(compositeButton, DocumentationMessageConstants.QTEST_TEST_CASE_VIEW);
 
         Composite compositeInfo = new Composite(container, SWT.BORDER);
         compositeInfo.setBackground(ColorUtil.getWhiteBackgroundColor());
