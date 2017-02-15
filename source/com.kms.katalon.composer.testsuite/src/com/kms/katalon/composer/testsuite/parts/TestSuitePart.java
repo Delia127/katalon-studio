@@ -51,6 +51,7 @@ import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.testsuite.constants.ImageConstants;
 import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.composer.testsuite.constants.TestSuiteEventConstants;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
@@ -463,11 +464,12 @@ public class TestSuitePart implements EventHandler {
         redrawBtnExpandExecutionInfo();
 
         lblExecutionInformation = new Label(compositeExecutionCompositeHeader, SWT.NONE);
-        lblExecutionInformation.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        lblExecutionInformation.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
         lblExecutionInformation.setFont(JFaceResources.getFontRegistry().getBold(""));
         lblExecutionInformation.setText("Execution Information");
         
-        new HelpComposite(compositeExecutionCompositeHeader, "https://docs.katalon.com/x/5gAM");
+        HelpComposite helpComposite = new HelpComposite(compositeExecutionCompositeHeader, DocumentationMessageConstants.TEST_SUITE_EXECUTION_INFORMATION);
+        helpComposite.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false));
 
         compositeExecutionDetails = new Composite(compositeExecution, SWT.NONE);
         compositeExecutionDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
