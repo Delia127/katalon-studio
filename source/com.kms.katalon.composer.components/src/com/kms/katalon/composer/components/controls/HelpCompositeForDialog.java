@@ -12,7 +12,7 @@ public class HelpCompositeForDialog extends HelpComposite {
     }
     
     protected GridData createGridData() {
-        return new GridData(SWT.LEFT, SWT.BOTTOM, true, false);
+        return new GridData(SWT.LEFT, SWT.CENTER, true, false);
     }
 
     protected GridLayout createLayout() {
