@@ -37,7 +37,6 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
-import com.kms.katalon.composer.components.controls.HelpComposite;
 import com.kms.katalon.composer.components.impl.control.CMenu;
 import com.kms.katalon.composer.components.impl.control.ImageButton;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
@@ -60,7 +59,6 @@ import com.kms.katalon.composer.testsuite.support.TestDataIterationColumnEditing
 import com.kms.katalon.composer.testsuite.support.VariableTestDataLinkColumnEditingSupport;
 import com.kms.katalon.composer.testsuite.support.VariableTypeEditingSupport;
 import com.kms.katalon.composer.testsuite.support.VariableValueEditingSupport;
-import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.controller.TestDataController;
@@ -408,8 +406,6 @@ public class TestSuitePartDataBindingView {
         compositeTestDataDetails.setLayout(glCompositeTestDataDetails);
 
         createCompositeTestDataToolbar();
-
-        new HelpComposite(compositeTestDataHeader, DocumentationMessageConstants.TEST_SUITE_DATA_MAPPING);
 
         createTestDataTreeTable();
     }

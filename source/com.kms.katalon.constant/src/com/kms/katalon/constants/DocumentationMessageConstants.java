@@ -45,7 +45,7 @@ public class DocumentationMessageConstants extends NLS {
 
     public static String TEST_CASE_INTEGRATION;
 
-    public static String QTEST_TEST_SUITE_VIEW;
+    public static String TEST_SUITE_INTEGRATION;
 
     public static String REPORT_INTEGRATION_JIRA_TEST_CASE;
 
@@ -85,13 +85,9 @@ public class DocumentationMessageConstants extends NLS {
 
     public static String TEST_OBJECT_WEB_SERVICES;
 
-    public static String TEST_SUITE_DATA_MAPPING;
-
-    public static String TEST_SUITE_TEST_CASE_TABLE;
-
     public static String TEST_SUITE_COLLECTION;
 
-    public static String TEST_SUITE_EXECUTION_INFORMATION;
+    public static String TEST_SUITE_MAIN;
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, DocumentationMessageConstants.class);

@@ -50,7 +50,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
-import com.kms.katalon.composer.components.controls.HelpComposite;
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.KeyEventUtil;
@@ -72,7 +71,6 @@ import com.kms.katalon.composer.testsuite.providers.TestCaseTableViewerFilter;
 import com.kms.katalon.composer.testsuite.support.TestCaseIdColumnEditingSupport;
 import com.kms.katalon.composer.testsuite.support.TestCaseIsRunColumnEditingSupport;
 import com.kms.katalon.composer.testsuite.transfer.TestSuiteTestCaseLinkTransfer;
-import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.entity.file.FileEntity;
@@ -508,8 +506,6 @@ public class TestSuitePartTestCaseView {
         tltmDown.setToolTipText(StringConstants.PA_TOOLITEM_DOWN);
         tltmDown.setImage(ImageConstants.IMG_16_MOVE_DOWN);
         tltmDown.setData(ToolItemConstants.DOWN);
-        
-        new HelpComposite(compositeTableButtons, DocumentationMessageConstants.TEST_SUITE_TEST_CASE_TABLE);
     }
 
     /* package */void initExpandedState() {
