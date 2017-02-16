@@ -95,6 +95,8 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.MOBILE_16);
         ImageManager.registerImage(IImageKeys.MOVE_DOWN_16);
         ImageManager.registerImage(IImageKeys.MOVE_UP_16);
+        ImageManager.registerImage(IImageKeys.MOVE_LEFT_16);
+        ImageManager.registerImage(IImageKeys.MOVE_RIGHT_16);
         ImageManager.registerImage(IImageKeys.PLAY_16);
         ImageManager.registerImage(IImageKeys.PAUSE_16);
         ImageManager.registerImage(IImageKeys.REFRESH_16);

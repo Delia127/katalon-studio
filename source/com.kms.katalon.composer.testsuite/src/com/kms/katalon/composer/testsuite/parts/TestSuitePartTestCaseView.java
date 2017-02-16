@@ -58,6 +58,9 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.explorer.custom.AdvancedSearchDialog;
 import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
+import com.kms.katalon.composer.resources.constants.IImageKeys;
+import com.kms.katalon.composer.resources.image.ImageManager;
+import com.kms.katalon.composer.testsuite.constants.ComposerTestsuiteMessageConstants;
 import com.kms.katalon.composer.testsuite.constants.ImageConstants;
 import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.composer.testsuite.constants.ToolItemConstants;
@@ -87,6 +90,10 @@ public class TestSuitePartTestCaseView {
     private static final String NUMBER_COLUMN_HEADER = StringConstants.PA_COL_NO;
 
     private static final String DESCRIPTION_COLUMN_HEADER = StringConstants.PA_COL_DESC;
+
+    private static final String BTN_SHOW_DATA_BINDING = ComposerTestsuiteMessageConstants.BTN_SHOW_DATA_BINDING;
+
+    private static final String BTN_HIDE_DATA_BINDING = ComposerTestsuiteMessageConstants.BTN_HIDE_DATA_BINDING;
 
     private Composite compositeTestCase;
 
@@ -118,6 +125,12 @@ public class TestSuitePartTestCaseView {
 
     private Menu tableContextMenu;
 
+    private ToolItem tltmShowHideDataBinding;
+
+    private SashForm sashForm;
+
+    private Composite compositeTableButtons;
+
     /* package */TestSuitePartTestCaseView(TestSuitePart testSuitePart) {
         this.testSuitePart = testSuitePart;
         this.dataAndVariableView = new TestSuitePartDataBindingView(this);
@@ -131,14 +144,13 @@ public class TestSuitePartTestCaseView {
         compositeTablePart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         compositeTablePart.setBackground(ColorUtil.getCompositeBackgroundColor());
 
-        SashForm sashForm = new SashForm(compositeTablePart, SWT.NONE);
-        sashForm.setSashWidth(5);
+        sashForm = new SashForm(compositeTablePart, SWT.NONE);
         sashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         sashForm.setBackground(ColorUtil.getExtraLightGrayBackgroundColor());
 
-        createCompositeTestCaseButtons(sashForm);
+        createCompositeTestCaseButtons();
         createCompositeTestCaseSearch();
-        createCompositeTestCaseContent(sashForm);
+        createCompositeTestCaseContent();
 
         compositeTablePart.setContent(sashForm);
         compositeTablePart.setExpandHorizontal(true);
@@ -147,7 +159,7 @@ public class TestSuitePartTestCaseView {
         return compositeTablePart;
     }
 
-    private void createCompositeTestCaseContent(SashForm sashForm) {
+    private void createCompositeTestCaseContent() {
         Composite compositeTableContent = new Composite(compositeTestCase, SWT.NONE);
         compositeTableContent.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
@@ -216,6 +228,8 @@ public class TestSuitePartTestCaseView {
         createCompositeTestDataAndVariable(sashForm);
 
         sashForm.setWeights(new int[] { 5, 5 });
+        sashForm.setMaximizedControl(compositeTestCase);
+
         hookDropTestCaseEvent();
         hookDragTestCaseEvent();
         setTestCaseTableViewerSelection();
@@ -385,6 +399,14 @@ public class TestSuitePartTestCaseView {
                 testCaseTableViewer.setIsRunValueAllTestCases();
             }
         });
+
+        tltmShowHideDataBinding.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                setDataBindingVisible(BTN_SHOW_DATA_BINDING.equals(tltmShowHideDataBinding.getText()));
+            }
+        });
     }
 
     private void createCompositeTestCaseSearch() {
@@ -468,12 +490,11 @@ public class TestSuitePartTestCaseView {
         }
     }
 
-    private void createCompositeTestCaseButtons(SashForm sashForm) {
+    private void createCompositeTestCaseButtons() {
         compositeTestCase = new Composite(sashForm, SWT.NONE);
         compositeTestCase.setLayout(new GridLayout(1, false));
         compositeTestCase.setBackground(ColorUtil.getCompositeBackgroundColor());
-        
-        final Composite compositeTableButtons = new Composite(compositeTestCase, SWT.NONE);
+        compositeTableButtons = new Composite(compositeTestCase, SWT.NONE);
         compositeTableButtons.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
         GridLayout glCompositeTableButtons = new GridLayout(2, false);
         compositeTableButtons.setBackground(ColorUtil.getCompositeBackgroundColor());
@@ -482,6 +503,7 @@ public class TestSuitePartTestCaseView {
         compositeTableButtons.setLayout(glCompositeTableButtons);
 
         testCaseToolbar = new ToolBar(compositeTableButtons, SWT.FLAT | SWT.RIGHT);
+        testCaseToolbar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
         ToolItem tltmAddTestCases = new ToolItem(testCaseToolbar, SWT.NONE);
         tltmAddTestCases.setText(StringConstants.PA_TOOLITEM_ADD);
@@ -506,6 +528,12 @@ public class TestSuitePartTestCaseView {
         tltmDown.setToolTipText(StringConstants.PA_TOOLITEM_DOWN);
         tltmDown.setImage(ImageConstants.IMG_16_MOVE_DOWN);
         tltmDown.setData(ToolItemConstants.DOWN);
+
+        ToolBar showHideDetails = new ToolBar(compositeTableButtons, SWT.FLAT | SWT.RIGHT);
+        showHideDetails.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+        tltmShowHideDataBinding = new ToolItem(showHideDetails, SWT.NONE);
+        tltmShowHideDataBinding.setText(BTN_SHOW_DATA_BINDING);
+        tltmShowHideDataBinding.setImage(ImageManager.getImage(IImageKeys.MOVE_LEFT_16));
     }
 
     /* package */void initExpandedState() {
@@ -646,5 +674,13 @@ public class TestSuitePartTestCaseView {
         }
         return map;
     }
-    
+
+    private void setDataBindingVisible(boolean isVisible) {
+        sashForm.setMaximizedControl(isVisible ? null : compositeTestCase);
+        tltmShowHideDataBinding.setText(isVisible ? BTN_HIDE_DATA_BINDING : BTN_SHOW_DATA_BINDING);
+        tltmShowHideDataBinding
+                .setImage(ImageManager.getImage(isVisible ? IImageKeys.MOVE_RIGHT_16 : IImageKeys.MOVE_LEFT_16));
+        compositeTableButtons.layout();
+    }
+
 }

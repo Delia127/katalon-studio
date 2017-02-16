@@ -116,7 +116,6 @@ public class TestSuitePartDataBindingView {
     void createCompositeTestDataAndVariable(SashForm sashForm) {
 
         sashFormBindingView = new SashForm(sashForm, SWT.VERTICAL);
-        sashFormBindingView.setSashWidth(5);
         sashFormBindingView.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         sashFormBindingView.setBackground(ColorUtil.getExtraLightGrayBackgroundColor());
 

@@ -154,8 +154,12 @@ public class ComposerTestsuiteMessageConstants extends NLS {
     public static String DIA_TITLE_TEST_SUITE_PROPERTIES;
 
     public static String DIA_TITLE_VARIABLE_BINDING_VALUE_BUILDER;
-    
+
     public static String MENU_OPEN;
+
+    public static String BTN_SHOW_DATA_BINDING;
+
+    public static String BTN_HIDE_DATA_BINDING;
 
     static {
         // initialize resource bundle
