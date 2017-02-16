@@ -131,14 +131,13 @@ public class ActivationDialog extends Dialog {
         Link linkRegister = new Link(composite, SWT.NONE);
         linkRegister.setText(StringConstants.LINK_LABEL_REGISTER_TEXT);
 
-        Label lblNewLabel = new Label(composite, SWT.NONE);
-        lblNewLabel.setText(StringConstants.SEPARATE_LINK);
-
         if (isAllowOfflineActivation()) {
+            Label lblNewLabel = new Label(composite, SWT.NONE);
+            lblNewLabel.setText(StringConstants.SEPARATE_LINK);
             addOfflineActivationLink(composite);
         }
         
-        lblNewLabel = new Label(composite, SWT.NONE);
+        Label lblNewLabel = new Label(composite, SWT.NONE);
         lblNewLabel.setText(StringConstants.SEPARATE_LINK);
 
         Link linkConfigProxy = new Link(composite, SWT.NONE);
