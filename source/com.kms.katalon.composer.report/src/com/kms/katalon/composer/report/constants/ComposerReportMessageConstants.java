@@ -79,6 +79,10 @@ public class ComposerReportMessageConstants extends NLS {
 
     public static String PROVIDER_TOOLTIP_SHOW_DETAILS;
 
+    public static String BTN_SHOW_TEST_CASE_DETAILS;
+
+    public static String BTN_HIDE_TEST_CASE_DETAILS;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerReportMessageConstants.class);
