@@ -73,6 +73,7 @@ import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Widget;
 
+import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.dialogs.ProgressMonitorDialogWithThread;
@@ -95,13 +96,12 @@ import com.kms.katalon.composer.mobile.objectspy.element.tree.MobileElementLabel
 import com.kms.katalon.composer.mobile.objectspy.element.tree.MobileElementTreeContentProvider;
 import com.kms.katalon.composer.mobile.objectspy.preferences.MobileObjectSpyPreferencesHelper;
 import com.kms.katalon.composer.mobile.objectspy.viewer.CapturedObjectTableViewer;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ObjectRepositoryController;
-import com.kms.katalon.core.appium.exception.AppiumStartException;
 import com.kms.katalon.core.mobile.keyword.internal.GUIObject;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
-import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
 
 public class MobileObjectSpyDialog extends Dialog {
@@ -167,14 +167,18 @@ public class MobileObjectSpyDialog extends Dialog {
     @Override
     protected Control createDialogArea(Composite parent) {
         container = (Composite) super.createDialogArea(parent);
-        container.setLayout(new FillLayout(SWT.HORIZONTAL));
+        GridLayout layout = new GridLayout();
+        layout.marginHeight = 0;
+        layout.marginWidth = 0;
+        container.setLayout(layout);
 
         SashForm sashForm = new SashForm(container, SWT.NONE);
         sashForm.setSashWidth(3);
         sashForm.setLayout(new FillLayout());
+        sashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         Composite explorerComposite = new Composite(sashForm, SWT.BORDER);
-        explorerComposite.setLayout(new GridLayout());
+        explorerComposite.setLayout(layout);
 
         addElementTreeToolbar(explorerComposite);
 
@@ -189,7 +193,7 @@ public class MobileObjectSpyDialog extends Dialog {
         hSashForm.setWeights(new int[] { 1, 1 });
 
         Composite contentComposite = new Composite(sashForm, SWT.BORDER);
-        contentComposite.setLayout(new GridLayout());
+        contentComposite.setLayout(layout);
 
         addStartStopToolbar(contentComposite);
 
@@ -198,6 +202,8 @@ public class MobileObjectSpyDialog extends Dialog {
         createAllObjectsComposite(contentComposite);
 
         sashForm.setWeights(new int[] { 4, 6 });
+
+        new HelpCompositeForDialog(container, DocumentationMessageConstants.DIALOG_OBJECT_SPY_MOBILE);
 
         return container;
     }
@@ -689,7 +695,11 @@ public class MobileObjectSpyDialog extends Dialog {
     }
 
     private void addStartStopToolbar(Composite contentComposite) {
-        ToolBar contentToolbar = new ToolBar(contentComposite, SWT.FLAT | SWT.RIGHT);
+        Composite toolbarComposite = new Composite(contentComposite, SWT.NONE);
+        toolbarComposite.setLayout(new GridLayout(2, false));
+        toolbarComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+
+        ToolBar contentToolbar = new ToolBar(toolbarComposite, SWT.FLAT | SWT.RIGHT);
         contentToolbar.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
 
         btnCapture = new ToolItem(contentToolbar, SWT.NONE);
@@ -733,7 +743,6 @@ public class MobileObjectSpyDialog extends Dialog {
                 stopObjectInspectorAction();
             }
         });
-
     }
 
     @Override

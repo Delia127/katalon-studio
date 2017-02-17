@@ -59,6 +59,7 @@ import org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.composer.components.controls.HelpToolBarForCompositePart;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
@@ -81,6 +82,7 @@ import com.kms.katalon.composer.testcase.providers.TestObjectScriptDropListener;
 import com.kms.katalon.composer.testcase.util.TestCaseEntityUtil;
 import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
 import com.kms.katalon.composer.util.groovy.GroovyGuiUtil;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FolderController;
@@ -177,6 +179,29 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
         isScriptChanged = false;
         changeOriginalTestCase((TestCaseEntity) compositePart.getObject());
         initListeners();
+        createToolBar(compositePart);
+    }
+
+    private void createToolBar(MPart part) {
+        new HelpToolBarForCompositePart(part, partService) {
+            @Override
+            protected String getDocumentationUrlForPartObject(Object partObject) {
+                if (partObject instanceof TestCasePart) {
+                    return DocumentationMessageConstants.TEST_CASE_MANUAL;
+                }
+                if (partObject instanceof TestCaseVariablePart) {
+                    return DocumentationMessageConstants.TEST_CASE_VARIABLE;
+                }
+                if (partObject instanceof CompatibilityEditor) {
+                    return DocumentationMessageConstants.TEST_CASE_SCRIPT;
+                }
+                if (partObject instanceof TestCaseIntegrationPart) {
+                    return DocumentationMessageConstants.TEST_CASE_INTEGRATION;
+                }
+                return null;
+            }
+            
+        };
     }
 
     public void initDefaultSelectedPart() {
@@ -431,7 +456,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
     public MPart getChildCompatibilityPart() {
         return childTestCaseEditorPart.getModel();
     }
-    
+
     public GroovyEditor getChildGroovyEditor() {
         return (GroovyEditor) childTestCaseEditorPart.getEditor();
     }
@@ -792,7 +817,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
         }
         return (childTestCasePart.isTestCaseEmpty());
     }
-    
+
     private void addTestObjectDropListener() {
         Control control = (Control) groovyEditor.getAdapter(Control.class);
         if (!(control instanceof StyledText)) {

@@ -472,9 +472,10 @@ public class TestSuitePartTestCaseView {
         compositeTestCase = new Composite(sashForm, SWT.NONE);
         compositeTestCase.setLayout(new GridLayout(1, false));
         compositeTestCase.setBackground(ColorUtil.getCompositeBackgroundColor());
+        
         final Composite compositeTableButtons = new Composite(compositeTestCase, SWT.NONE);
         compositeTableButtons.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-        GridLayout glCompositeTableButtons = new GridLayout(1, false);
+        GridLayout glCompositeTableButtons = new GridLayout(2, false);
         compositeTableButtons.setBackground(ColorUtil.getCompositeBackgroundColor());
         glCompositeTableButtons.marginHeight = 0;
         glCompositeTableButtons.marginWidth = 0;

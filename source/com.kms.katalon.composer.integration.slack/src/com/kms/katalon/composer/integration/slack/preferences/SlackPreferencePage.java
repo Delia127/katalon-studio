@@ -12,7 +12,6 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.BooleanFieldEditor;
-import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
@@ -23,6 +22,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 
+import com.kms.katalon.composer.components.dialogs.FieldEditorPreferencePageWithHelp;
 import com.kms.katalon.composer.components.impl.control.GifCLabel;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
@@ -31,8 +31,9 @@ import com.kms.katalon.composer.integration.slack.constants.SlackPreferenceConst
 import com.kms.katalon.composer.integration.slack.constants.StringConstants;
 import com.kms.katalon.composer.integration.slack.util.SlackUtil;
 import com.kms.katalon.composer.integration.slack.util.SlackUtil.SlackMsgStatus;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 
-public class SlackPreferencePage extends FieldEditorPreferencePage {
+public class SlackPreferencePage extends FieldEditorPreferencePageWithHelp {
     private Composite fieldEditorParent;
 
     private BooleanFieldEditor enabled;
@@ -427,4 +428,13 @@ public class SlackPreferencePage extends FieldEditorPreferencePage {
         job.schedule();
     }
 
+    @Override
+    protected boolean hasDocumentation() {
+        return true;
+    }
+
+    @Override
+    protected String getDocumentationUrl() {
+        return DocumentationMessageConstants.PREFERENCE_SLACK;
+    }
 }

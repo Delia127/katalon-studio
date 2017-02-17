@@ -51,6 +51,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
+import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -61,6 +62,7 @@ import com.kms.katalon.composer.testdata.parts.provider.InternalDataColumViewerE
 import com.kms.katalon.composer.testdata.parts.provider.InternalDataEditingSupport;
 import com.kms.katalon.composer.testdata.parts.provider.InternalDataLabelProvider;
 import com.kms.katalon.composer.testdata.views.NewTestDataColumnDialog;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity.DataFileDriverType;
@@ -109,6 +111,7 @@ public class InternalTestDataPart extends TestDataMainPart {
     @Override
     @PostConstruct
     public void createControls(Composite parent, MPart mpart) {
+        new HelpToolBarForMPart(mpart, DocumentationMessageConstants.TEST_DATA_INTERNAL);
         super.createControls(parent, mpart);
     }
 

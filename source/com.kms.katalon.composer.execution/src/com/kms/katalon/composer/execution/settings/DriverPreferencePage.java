@@ -4,21 +4,22 @@ import java.io.File;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
+import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.execution.components.DriverPreferenceComposite;
 import com.kms.katalon.composer.execution.constants.StringConstants;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.configuration.IDriverConnector;
 
-public abstract class DriverPreferencePage extends PreferencePage {
+public abstract class DriverPreferencePage extends PreferencePageWithHelp {
     protected DriverPreferenceComposite driverPreferenceComposite;
 
     protected IDriverConnector driverConnector;
@@ -80,5 +81,15 @@ public abstract class DriverPreferencePage extends PreferencePage {
         initilize();
         updateInput();
         super.performDefaults();
+    }
+    
+    @Override
+    protected boolean hasDocumentation() {
+        return true;
+    }
+
+    @Override
+    protected String getDocumentationUrl() {
+        return DocumentationMessageConstants.SETTINGS_EXECUTION;
     }
 }

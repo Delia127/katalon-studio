@@ -55,10 +55,6 @@ public class TestCasePart extends CPart implements EventHandler, ITestCasePart {
 
     private MPart mPart;
 
-    public MPart getMPart() {
-        return mPart;
-    }
-
     @Inject
     private IEventBroker eventBroker;
 
@@ -82,6 +78,10 @@ public class TestCasePart extends CPart implements EventHandler, ITestCasePart {
 
         registerEventBrokerListeners();
         createControls(parent);
+    }
+
+    public MPart getMPart() {
+        return mPart;
     }
 
     @Focus

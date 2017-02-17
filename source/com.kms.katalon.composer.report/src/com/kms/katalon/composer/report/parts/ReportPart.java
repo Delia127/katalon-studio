@@ -68,6 +68,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
@@ -83,6 +84,7 @@ import com.kms.katalon.composer.report.parts.integration.TestCaseLogDetailsInteg
 import com.kms.katalon.composer.report.provider.ReportPartTestCaseLabelProvider;
 import com.kms.katalon.composer.report.provider.ReportTestCaseTableViewer;
 import com.kms.katalon.composer.report.provider.ReportTestCaseTableViewerFilter;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.ProjectController;
@@ -218,11 +220,12 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     }
 
     @PostConstruct
-    public void init(Composite parent, ReportEntity report) {
+    public void init(Composite parent, ReportEntity report, MPart part) {
         this.report = report;
         testLogView = new ReportPartTestLogView(this);
         isSearching = false;
         registerListeners();
+        new HelpToolBarForMPart(part, DocumentationMessageConstants.REPORT_TEST_SUITE);
         createControls(parent);
         registerControlModifyListeners();
         updateInput(report);

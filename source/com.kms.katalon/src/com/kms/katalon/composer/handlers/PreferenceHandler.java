@@ -92,7 +92,6 @@ public class PreferenceHandler extends AbstractHandler {
 
         private static final String GENERAL_PAGE_NAME = "General";
 
-        @SuppressWarnings("unchecked")
         @Override
         public int compare(Viewer viewer, Object e1, Object e2) {
             int cat1 = category(e1);

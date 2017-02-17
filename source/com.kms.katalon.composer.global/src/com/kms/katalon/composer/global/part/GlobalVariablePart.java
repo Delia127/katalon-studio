@@ -51,6 +51,7 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
 import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.operation.OperationExecutor;
@@ -61,6 +62,7 @@ import com.kms.katalon.composer.global.dialog.GlobalVariableBuilderDialog;
 import com.kms.katalon.composer.global.provider.TableViewerProvider;
 import com.kms.katalon.composer.global.support.GlobalVariableEdittingSupport;
 import com.kms.katalon.composer.parts.CPart;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.controller.ProjectController;
@@ -102,6 +104,7 @@ public class GlobalVariablePart extends CPart implements EventHandler, TableView
     public void init(Composite parent, MPart mpart) {
         this.mpart = mpart;
         initialize(mpart, partService);
+        new HelpToolBarForMPart(mpart, DocumentationMessageConstants.GLOBAL_VARIABLES);
         createComposite(parent);
         registerEventListeners();
     }

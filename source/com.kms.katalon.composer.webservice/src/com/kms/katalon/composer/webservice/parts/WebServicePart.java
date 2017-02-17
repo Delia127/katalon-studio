@@ -76,6 +76,7 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
 import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
@@ -96,6 +97,7 @@ import com.kms.katalon.composer.webservice.support.PropertyValueEditingSupport;
 import com.kms.katalon.composer.webservice.view.ExpandableComposite;
 import com.kms.katalon.composer.webservice.view.ParameterTable;
 import com.kms.katalon.composer.webservice.view.WebServiceAPIControl;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.GlobalMessageConstants;
 import com.kms.katalon.constants.IdConstants;
@@ -187,6 +189,7 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
     @PostConstruct
     public void createComposite(Composite parent, MPart part) {
         this.mPart = part;
+        new HelpToolBarForMPart(part, DocumentationMessageConstants.TEST_OBJECT_WEB_SERVICES);
         this.originalWsObject = (WebServiceRequestEntity) part.getObject();
 
         parent.setLayout(new FillLayout());

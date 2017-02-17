@@ -6,6 +6,7 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: KMS
 Export-Package: com.kms.katalon.composer.components.adapter,
  com.kms.katalon.composer.components.application,
+ com.kms.katalon.composer.components.controls,
  com.kms.katalon.composer.components.dialogs,
  com.kms.katalon.composer.components.event,
  com.kms.katalon.composer.components.log,
@@ -31,7 +32,8 @@ Require-Bundle: org.eclipse.jface,
  org.eclipse.ui.workbench,
  org.eclipse.e4.ui.css.swt,
  org.eclipse.osgi.services,
- org.eclipse.e4.core.di
+ org.eclipse.e4.core.di,
+ com.kms.katalon.composer.resources
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: javax.annotation;version="1.2.0"

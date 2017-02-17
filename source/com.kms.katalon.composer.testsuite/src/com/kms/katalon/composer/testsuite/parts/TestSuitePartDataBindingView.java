@@ -96,7 +96,7 @@ public class TestSuitePartDataBindingView {
     private Callable<Boolean> enableWhenItemSelected;
 
     private CMenu menu;
-    
+
     private Listener layoutTestDataCompositeListener = new Listener() {
 
         @Override
@@ -111,8 +111,8 @@ public class TestSuitePartDataBindingView {
     }
 
     /* package *//**
-     * @wbp.parser.entryPoint
-     */
+                  * @wbp.parser.entryPoint
+                  */
     void createCompositeTestDataAndVariable(SashForm sashForm) {
 
         sashFormBindingView = new SashForm(sashForm, SWT.VERTICAL);
@@ -197,8 +197,8 @@ public class TestSuitePartDataBindingView {
                 SWT.NONE);
         TableColumn tblclmnTestDataLinkId = variableTestDataLinkIDViewerColumn.getColumn();
         tblclmnTestDataLinkId.setText(StringConstants.PA_TREE_VIEWER_COL_TEST_DATA);
-        variableTestDataLinkIDViewerColumn.setEditingSupport(new VariableTestDataLinkColumnEditingSupport(
-                testCaseVariableTableViewer, this));
+        variableTestDataLinkIDViewerColumn
+                .setEditingSupport(new VariableTestDataLinkColumnEditingSupport(testCaseVariableTableViewer, this));
 
         TableViewerColumn variableValueColumnViewer = new TableViewerColumn(testCaseVariableTableViewer, SWT.NONE);
         TableColumn tblclmnVariableValue = variableValueColumnViewer.getColumn();
@@ -218,26 +218,26 @@ public class TestSuitePartDataBindingView {
 
         testCaseVariableTableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
-        variableNotificationColumnViewer.setLabelProvider(new VariableTableLabelProvider(
-                VariableTableLabelProvider.COLUMN_NOTIFICATION_INDEX, this));
+        variableNotificationColumnViewer.setLabelProvider(
+                new VariableTableLabelProvider(VariableTableLabelProvider.COLUMN_NOTIFICATION_INDEX, this));
 
-        variableOrderColumnViewer.setLabelProvider(new VariableTableLabelProvider(
-                VariableTableLabelProvider.COLUMN_NO_INDEX, this));
+        variableOrderColumnViewer
+                .setLabelProvider(new VariableTableLabelProvider(VariableTableLabelProvider.COLUMN_NO_INDEX, this));
 
-        variableNameColumnViewer.setLabelProvider(new VariableTableLabelProvider(
-                VariableTableLabelProvider.COLUMN_NAME_INDEX, this));
+        variableNameColumnViewer
+                .setLabelProvider(new VariableTableLabelProvider(VariableTableLabelProvider.COLUMN_NAME_INDEX, this));
 
-        variableDefaultValueColumnViewer.setLabelProvider(new VariableTableLabelProvider(
-                VariableTableLabelProvider.COLUMN_DEFAULT_VALUE_INDEX, this));
+        variableDefaultValueColumnViewer.setLabelProvider(
+                new VariableTableLabelProvider(VariableTableLabelProvider.COLUMN_DEFAULT_VALUE_INDEX, this));
 
-        variableTypeColumnViewer.setLabelProvider(new VariableTableLabelProvider(
-                VariableTableLabelProvider.COLUMN_TYPE_INDEX, this));
+        variableTypeColumnViewer
+                .setLabelProvider(new VariableTableLabelProvider(VariableTableLabelProvider.COLUMN_TYPE_INDEX, this));
 
-        variableTestDataLinkIDViewerColumn.setLabelProvider(new VariableTableLabelProvider(
-                VariableTableLabelProvider.COLUMN_TEST_DATA_ID_INDEX, this));
+        variableTestDataLinkIDViewerColumn.setLabelProvider(
+                new VariableTableLabelProvider(VariableTableLabelProvider.COLUMN_TEST_DATA_ID_INDEX, this));
 
-        variableValueColumnViewer.setLabelProvider(new VariableTableLabelProvider(
-                VariableTableLabelProvider.COLUMN_VALUE_INDEX, this));
+        variableValueColumnViewer
+                .setLabelProvider(new VariableTableLabelProvider(VariableTableLabelProvider.COLUMN_VALUE_INDEX, this));
 
         testCaseVariableTableViewer.getTable().setToolTipText("");
         ColumnViewerToolTipSupport.enableFor(testCaseVariableTableViewer, ToolTip.NO_RECREATE);
@@ -247,7 +247,7 @@ public class TestSuitePartDataBindingView {
 
     private void createCompositeTestDataToolbar() {
         Composite compositeTestDataButton = new Composite(compositeTestDataDetails, SWT.NONE);
-        compositeTestDataButton.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 1, 1));
+        compositeTestDataButton.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
         GridLayout glCompositeTestDataButton = new GridLayout(1, false);
         glCompositeTestDataButton.marginWidth = 0;
         glCompositeTestDataButton.marginHeight = 0;
@@ -284,7 +284,7 @@ public class TestSuitePartDataBindingView {
         testDataTable.setLinesVisible(true);
         testDataTable.setHeaderVisible(true);
         ColumnViewerUtil.setTableActivation(testDataTableViewer);
-        
+
         TableViewerColumn treeViewerColumnNotification = new TableViewerColumn(testDataTableViewer, SWT.NONE);
         TableColumn trclmnNotification = treeViewerColumnNotification.getColumn();
         trclmnNotification.setImage(ImageConstants.IMG_16_NOTIFICATION_HEADER);
@@ -302,14 +302,14 @@ public class TestSuitePartDataBindingView {
         TableViewerColumn testDataTableViewerColumnIteration = new TableViewerColumn(testDataTableViewer, SWT.NONE);
         TableColumn tblclmnTestDataIteration = testDataTableViewerColumnIteration.getColumn();
         tblclmnTestDataIteration.setText(StringConstants.PA_TREE_VIEWER_COL_DATA_ITERATION);
-        testDataTableViewerColumnIteration.setEditingSupport(new TestDataIterationColumnEditingSupport(
-                testDataTableViewer, this));
+        testDataTableViewerColumnIteration
+                .setEditingSupport(new TestDataIterationColumnEditingSupport(testDataTableViewer, this));
 
         TableViewerColumn testDataTableViewerColumnCombination = new TableViewerColumn(testDataTableViewer, SWT.NONE);
         TableColumn tblclmnCombination = testDataTableViewerColumnCombination.getColumn();
         tblclmnCombination.setText(StringConstants.PA_TREE_VIEWER_COL_TYPE);
-        testDataTableViewerColumnCombination.setEditingSupport(new TestDataCombinationColumnEditingSupport(
-                testDataTableViewer, this));
+        testDataTableViewerColumnCombination
+                .setEditingSupport(new TestDataCombinationColumnEditingSupport(testDataTableViewer, this));
 
         // Set layout
         TableColumnLayout treeLayout = new TableColumnLayout();
@@ -327,16 +327,16 @@ public class TestSuitePartDataBindingView {
         testDataTableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
         // Set data provider
-        treeViewerColumnNotification.setLabelProvider(new TestDataTableLabelProvider(
-                TestDataTableLabelProvider.COLUMN_NOTIFICATION_INDEX, this));
-        treeViewerColumnNo.setLabelProvider(new TestDataTableLabelProvider(
-                TestDataTableLabelProvider.COLUMN_ORDER_INDEX, this));
-        testDataTableViewerColumnID.setLabelProvider(new TestDataTableLabelProvider(
-                TestDataTableLabelProvider.COLUMN_ID_INDEX, this));
-        testDataTableViewerColumnIteration.setLabelProvider(new TestDataTableLabelProvider(
-                TestDataTableLabelProvider.COLUMN_ITERATION_INDEX, this));
-        testDataTableViewerColumnCombination.setLabelProvider(new TestDataTableLabelProvider(
-                TestDataTableLabelProvider.COLUMN_COMBINATION_INDEX, this));
+        treeViewerColumnNotification.setLabelProvider(
+                new TestDataTableLabelProvider(TestDataTableLabelProvider.COLUMN_NOTIFICATION_INDEX, this));
+        treeViewerColumnNo
+                .setLabelProvider(new TestDataTableLabelProvider(TestDataTableLabelProvider.COLUMN_ORDER_INDEX, this));
+        testDataTableViewerColumnID
+                .setLabelProvider(new TestDataTableLabelProvider(TestDataTableLabelProvider.COLUMN_ID_INDEX, this));
+        testDataTableViewerColumnIteration.setLabelProvider(
+                new TestDataTableLabelProvider(TestDataTableLabelProvider.COLUMN_ITERATION_INDEX, this));
+        testDataTableViewerColumnCombination.setLabelProvider(
+                new TestDataTableLabelProvider(TestDataTableLabelProvider.COLUMN_COMBINATION_INDEX, this));
 
         hookDropTestDataEvent();
         hookDragTestDataEvent();
@@ -384,7 +384,7 @@ public class TestSuitePartDataBindingView {
         compositeTestData.setLayout(glCompositeTestData);
 
         Composite compositeTestDataHeader = new Composite(compositeTestData, SWT.NONE);
-        GridLayout glCompositeTestDataHeader = new GridLayout(2, false);
+        GridLayout glCompositeTestDataHeader = new GridLayout(3, false);
         glCompositeTestDataHeader.marginWidth = 0;
         glCompositeTestDataHeader.marginHeight = 0;
         compositeTestDataHeader.setLayout(glCompositeTestDataHeader);
@@ -406,6 +406,7 @@ public class TestSuitePartDataBindingView {
         compositeTestDataDetails.setLayout(glCompositeTestDataDetails);
 
         createCompositeTestDataToolbar();
+
         createTestDataTreeTable();
     }
 
@@ -522,7 +523,7 @@ public class TestSuitePartDataBindingView {
     public void refreshVariableLink(VariableLink link) {
         testCaseVariableTableViewer.update(link, null);
     }
-    
+
     private void createDynamicGotoTestDataMenu() {
         ControlUtils.removeOldOpenMenuItem(menu);
         IStructuredSelection selection = (IStructuredSelection) testDataTableViewer.getSelection();
@@ -542,10 +543,12 @@ public class TestSuitePartDataBindingView {
             }
         };
         if (dataFileEntities.size() == 1) {
-            ControlUtils.createOpenMenuWhenSelectOnlyOne(menu, dataFileEntities.get(0), enableWhenItemSelected, openSubMenuSelected);
+            ControlUtils.createOpenMenuWhenSelectOnlyOne(menu, dataFileEntities.get(0), enableWhenItemSelected,
+                    openSubMenuSelected);
             return;
         }
-        MenuUtils.createOpenTestArtifactsMenu(getMapFileEntityToSelectionAdapter(dataFileEntities, openSubMenuSelected), menu);
+        MenuUtils.createOpenTestArtifactsMenu(getMapFileEntityToSelectionAdapter(dataFileEntities, openSubMenuSelected),
+                menu);
     }
 
     private DataFileEntity getDataFileFromMenuItem(MenuItem selectedMenuItem) {
@@ -564,8 +567,7 @@ public class TestSuitePartDataBindingView {
                 continue;
             }
             try {
-                fileEntities.add(controller.getTestDataByDisplayId(
-                        ((TestCaseTestDataLink) object).getTestDataId()));
+                fileEntities.add(controller.getTestDataByDisplayId(((TestCaseTestDataLink) object).getTestDataId()));
             } catch (Exception e) {
                 LoggerSingleton.logError(e);
             }
@@ -573,7 +575,8 @@ public class TestSuitePartDataBindingView {
         return fileEntities;
     }
 
-    private HashMap<FileEntity, SelectionAdapter> getMapFileEntityToSelectionAdapter(List<? extends FileEntity> fileEntities, SelectionAdapter openTestData) {
+    private HashMap<FileEntity, SelectionAdapter> getMapFileEntityToSelectionAdapter(
+            List<? extends FileEntity> fileEntities, SelectionAdapter openTestData) {
         HashMap<FileEntity, SelectionAdapter> map = new HashMap<>();
         for (FileEntity fileEntity : fileEntities) {
             if (fileEntity instanceof DataFileEntity) {

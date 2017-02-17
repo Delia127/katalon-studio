@@ -5,7 +5,6 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -27,19 +26,21 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 
+import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.constants.TestCasePreferenceConstants;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.parts.TestCaseCompositePart;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.core.keyword.internal.IKeywordContributor;
 import com.kms.katalon.core.keyword.internal.KeywordContributorCollection;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.custom.keyword.KeywordMethod;
 
-public class TestCasePreferencePage extends PreferencePage {
+public class TestCasePreferencePage extends PreferencePageWithHelp {
 
     private Button btnDefaultVariableIsConstant, btnDefaultVariableIsVariable;
 
@@ -545,5 +546,15 @@ public class TestCasePreferencePage extends PreferencePage {
             performApply();
         }
         return true;
+    }
+    
+    @Override
+    protected boolean hasDocumentation() {
+        return true;
+    }
+
+    @Override
+    protected String getDocumentationUrl() {
+        return DocumentationMessageConstants.PREFERENCE_TEST_CASE;
     }
 }

@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.checkpoint.constants.StringConstants;
 import com.kms.katalon.composer.checkpoint.dialogs.EditCheckpointExcelSourceDialog;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.checkpoint.CheckpointSourceInfo;
 import com.kms.katalon.entity.checkpoint.ExcelCheckpointSourceInfo;
@@ -88,5 +89,10 @@ public class CheckpointExcelPart extends CheckpointAbstractPart {
             setDirty(true);
             return Status.OK_STATUS;
         }
+    }
+
+    @Override
+    protected String getDocumentationUrl() {
+        return DocumentationMessageConstants.CHECKPOINT_EXCEL;
     }
 }

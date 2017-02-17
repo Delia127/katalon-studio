@@ -11,6 +11,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Display;
 
 import com.kms.katalon.composer.checkpoint.dialogs.EditCheckpointCsvSourceDialog;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.checkpoint.CsvCheckpointSourceInfo;
 
@@ -48,5 +49,10 @@ public class CheckpointCsvPart extends CheckpointExcelPart {
             setDirty(true);
             return Status.OK_STATUS;
         }
+    }
+    
+    @Override
+    protected String getDocumentationUrl() {
+        return DocumentationMessageConstants.CHECKPOINT_CSV;
     }
 }
