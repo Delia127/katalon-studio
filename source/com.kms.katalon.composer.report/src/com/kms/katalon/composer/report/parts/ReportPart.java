@@ -16,7 +16,6 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.e4.ui.model.application.ui.basic.impl.PartImpl;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -66,6 +65,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
@@ -75,6 +76,7 @@ import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.report.constants.ComposerReportMessageConstants;
 import com.kms.katalon.composer.report.constants.ImageConstants;
 import com.kms.katalon.composer.report.constants.StringConstants;
 import com.kms.katalon.composer.report.integration.ReportComposerIntegrationFactory;
@@ -84,6 +86,8 @@ import com.kms.katalon.composer.report.parts.integration.TestCaseLogDetailsInteg
 import com.kms.katalon.composer.report.provider.ReportPartTestCaseLabelProvider;
 import com.kms.katalon.composer.report.provider.ReportTestCaseTableViewer;
 import com.kms.katalon.composer.report.provider.ReportTestCaseTableViewerFilter;
+import com.kms.katalon.composer.resources.constants.IImageKeys;
+import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
@@ -99,6 +103,10 @@ import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.util.ExecutionUtil;
 
 public class ReportPart implements EventHandler, IComposerPartEvent {
+
+    private static final String BTN_SHOW_TEST_CASE_DETAILS = ComposerReportMessageConstants.BTN_SHOW_TEST_CASE_DETAILS;
+
+    private static final String BTN_HIDE_TEST_CASE_DETAILS = ComposerReportMessageConstants.BTN_HIDE_TEST_CASE_DETAILS;
 
     @Inject
     private IEventBroker eventBroker;
@@ -122,6 +130,8 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     private Button btnFilterTestCasePassed, btnFilterTestCaseFailed, btnFilterTestCaseError,
             btnFilterTestCaseIncomplete;
 
+    private ToolItem btnShowHideTestCaseDetails;
+
     private TableViewer runDataTable, executionSettingTable;
 
     private ReportPartTestLogView testLogView;
@@ -134,12 +144,18 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     private boolean isSearching;
 
     private ReportEntity report;
-    
+
     @Inject
     private Shell shell;
 
     @Inject
     private MPart mpart;
+
+    private SashForm sashForm;
+
+    private SashForm sashFormSummary;
+
+    private Composite compositeTestCaseFilterSelection;
 
     private final class MapDataKeyLabelProvider extends ColumnLabelProvider {
         @Override
@@ -237,7 +253,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
 
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
-                ILogRecord selectedLogRecord = (ILogRecord) getSelectedTestCaseLogRecord();
+                ILogRecord selectedLogRecord = getSelectedTestCaseLogRecord();
 
                 if (selectedLogRecord == null) {
                     return;
@@ -284,6 +300,14 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                 testCaseTableFilter.showIncomplete(btnFilterTestCaseIncomplete.getSelection());
                 testCaseTableViewer.refresh();
                 testLogView.updateSelectedTestCase(getSelectedTestCaseLogRecord());
+            }
+        });
+
+        btnShowHideTestCaseDetails.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                setTestCaseDetailsVisible(BTN_SHOW_TEST_CASE_DETAILS.equals(btnShowHideTestCaseDetails.getText()));
             }
         });
 
@@ -510,9 +534,9 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         compositeTestCaseFilter.setLayout(gl_compositeTestCaseFilter);
         compositeTestCaseFilter.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 
-        Composite compositeTestCaseFilterSelection = new Composite(compositeTestCaseFilter, SWT.NONE);
+        compositeTestCaseFilterSelection = new Composite(compositeTestCaseFilter, SWT.NONE);
         compositeTestCaseFilterSelection.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        compositeTestCaseFilterSelection.setLayout(new GridLayout(4, false));
+        compositeTestCaseFilterSelection.setLayout(new GridLayout(6, false));
 
         btnFilterTestCasePassed = new Button(compositeTestCaseFilterSelection, SWT.CHECK);
         btnFilterTestCasePassed.setText("Passed");
@@ -533,6 +557,14 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         btnFilterTestCaseIncomplete.setText("Incomplete");
         btnFilterTestCaseIncomplete.setImage(ImageConstants.IMG_16_INCOMPLETE);
         btnFilterTestCaseIncomplete.setSelection(true);
+
+        Label spacer = new Label(compositeTestCaseFilterSelection, SWT.NONE);
+        spacer.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+
+        ToolBar tbShowHideDetails = new ToolBar(compositeTestCaseFilterSelection, SWT.FLAT | SWT.RIGHT);
+        btnShowHideTestCaseDetails = new ToolItem(tbShowHideDetails, SWT.NONE);
+        btnShowHideTestCaseDetails.setText(BTN_SHOW_TEST_CASE_DETAILS);
+        btnShowHideTestCaseDetails.setImage(ImageManager.getImage(IImageKeys.MOVE_LEFT_16));
 
         Composite compositeTableTestCaseSearch = new Composite(compositeTestCaseFilter, SWT.BORDER);
         compositeTableTestCaseSearch.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
@@ -906,11 +938,11 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         composite.setBounds(0, 0, 561, 500);
         composite.setLayout(new GridLayout(1, false));
 
-        SashForm sashForm = new SashForm(composite, SWT.NONE);
+        sashForm = new SashForm(composite, SWT.NONE);
         sashForm.setSashWidth(5);
         sashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-        SashForm sashFormSummary = new SashForm(sashForm, SWT.VERTICAL);
+        sashFormSummary = new SashForm(sashForm, SWT.VERTICAL);
         sashFormSummary.setSashWidth(5);
 
         createCompositeTestCaseTable(sashFormSummary);
@@ -926,7 +958,8 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
 
         sashFormSummary.setWeights(new int[] { 75, 25 });
 
-        sashForm.setWeights(new int[] { 35, 65 });
+        sashForm.setWeights(new int[] { 40, 60 });
+        sashForm.setMaximizedControl(sashFormSummary);
     }
 
     public void setLabelToBeBold(Label label) {
@@ -1018,10 +1051,10 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     @Inject
     @Optional
     public void onSelect(@UIEventTopic(UIEvents.UILifeCycle.BRINGTOTOP) org.osgi.service.event.Event event) {
-        if (!(event.getProperty(UIEvents.EventTags.ELEMENT) instanceof PartImpl)) {
+        MPart selectedPart = EventUtil.getPart(event);
+        if (selectedPart == null) {
             return;
         }
-        PartImpl selectedPart = (PartImpl) event.getProperty(UIEvents.EventTags.ELEMENT);
         String reportPartId = EntityPartUtil.getReportPartId(getReport().getId());
         if (selectedPart.getElementId().equals(reportPartId)) {
             EventUtil.post(EventConstants.PROPERTIES_ENTITY, null);
@@ -1045,5 +1078,13 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
 
     public void setPartLabel(String label) {
         mpart.setLabel(label);
+    }
+
+    private void setTestCaseDetailsVisible(boolean isVisible) {
+        sashForm.setMaximizedControl(isVisible ? null : sashFormSummary);
+        btnShowHideTestCaseDetails.setText(isVisible ? BTN_HIDE_TEST_CASE_DETAILS : BTN_SHOW_TEST_CASE_DETAILS);
+        btnShowHideTestCaseDetails
+                .setImage(ImageManager.getImage(isVisible ? IImageKeys.MOVE_RIGHT_16 : IImageKeys.MOVE_LEFT_16));
+        compositeTestCaseFilterSelection.layout();
     }
 }
