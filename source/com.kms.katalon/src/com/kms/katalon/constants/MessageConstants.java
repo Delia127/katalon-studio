@@ -60,7 +60,7 @@ public class MessageConstants extends NLS {
     public static String PA_LBL_ARTICLES;
 
     public static String PA_LBL_ARTICLES_DESCRIPTION;
-    
+
     public static String PA_LBL_SAMPLE_WEB_UI_PROJECT;
 
     public static String PA_LBL_SAMPLE_MOBILE_PROJECT;
@@ -121,6 +121,8 @@ public class MessageConstants extends NLS {
 
     public static String BTN_COPY_TITLE;
 
+    public static String BTN_DLG_SUBMIT_TICKET;
+
     public static String PROMT_ENTER_ACTIVATE_CODE;
 
     public static String SEND_SUCCESS_RESPONSE;
@@ -141,13 +143,23 @@ public class MessageConstants extends NLS {
 
     public static String DIA_UPDATE_NEW_VERSION_TITLE;
 
+    public static String DLG_TITLE_DLG_REPORT_ISSUE;
+
     public static String CONFIG_PROXY;
 
     public static String TITLE_DLG_PROXY_SETTING;
 
+    public static String TITLE_DLG_REPORT_ISSUE;
+
     public static String TITLE_WINDOW_DLG_PROXY_SETTING;
 
     public static String MSG_DLG_PROXY_SETTING;
+
+    public static String MSG_DLG_REPORT_ISSUE;
+
+    public static String MSG_DLG_SUBMIT_ISSUE_SUCCESS;
+
+    public static String MSG_PRG_SUBMITTING_TICKET;
 
     public static String LBL_PROXY_OPTION;
 
@@ -159,9 +171,31 @@ public class MessageConstants extends NLS {
 
     public static String CHK_TEXT_PROXY_SERVER_TYPE_REQUIRE_AUTHENTICATION;
 
+    public static String ERR_MSG_ATTACHMENTS_SIZE_MUST_BE_LESS_OR_EQUAL_X_MB;
+
+    public static String ERR_MSG_DSC_CANNOT_BE_BLANK;
+
+    public static String ERR_MSG_FILES_DUPLICATED_NAMES_X;
+
+    public static String ERR_MSG_MISSING_EMAIL;
+
+    public static String ERR_MSG_SUBJECT_CANNOT_BE_BLANK;
+
     public static String LBL_USERNAME;
 
     public static String LBL_PASSWORD;
+
+    public static String LBL_DLG_SUBJECT;
+
+    public static String LBL_DLG_DESCRIPTION;
+
+    public static String LBL_DLG_ATTACHMENTS;
+
+    public static String TOOLITEM_DLG_ADD;
+
+    public static String TOOLITEM_DLG_DELETE;
+
+    public static String TOOLITEM_DLG_CLEAR;
 
     static {
         // initialize resource bundle
