@@ -148,4 +148,11 @@ public class WebElementTreeEntity extends AbstractTreeEntity {
     @Override
     public void loadAllDescentdantEntities() throws Exception {
     }
+    
+    public boolean canAddToObjectSpy() {
+        if (webElement instanceof WebServiceRequestEntity) {
+            return false;
+        }
+        return true;
+    }
 }
