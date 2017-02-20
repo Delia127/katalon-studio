@@ -439,7 +439,7 @@ public class HTMLElementUtil {
                 }
             }
             HTMLElement element = null;
-            String type = StringUtils.defaultString(webElement.getProperty(ELEMENT_TAG_KEY).getValue());
+            String type = StringUtils.defaultString(webElement.getPropertyValue(ELEMENT_TAG_KEY));
             if (isFrame) {
                 element = new HTMLFrameElement(webElement.getName(), type, attributes,
                         parentFrameElement != null ? parentFrameElement : pageElement, new ArrayList<HTMLElement>());
