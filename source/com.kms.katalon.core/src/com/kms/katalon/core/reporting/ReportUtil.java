@@ -24,6 +24,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 
 import com.kms.katalon.core.constants.StringConstants;
+import com.kms.katalon.core.logging.TestSuiteXMLLogParser;
 import com.kms.katalon.core.logging.XMLLoggerParser;
 import com.kms.katalon.core.logging.XMLParserException;
 import com.kms.katalon.core.logging.XmlLogRecord;
@@ -199,9 +200,9 @@ public class ReportUtil {
 
     public static TestSuiteLogRecord generate(String logFolder, IProgressMonitor progressMonitor)
             throws XMLParserException, IOException, XMLStreamException {
-        return XMLLoggerParser.readTestSuiteLogFromXMLFiles(logFolder, progressMonitor);
+        return new TestSuiteXMLLogParser().readTestSuiteLogFromXMLFiles(logFolder, progressMonitor);
     }
-    
+
     public static TestSuiteLogRecord generate(String logFolder)
             throws XMLParserException, IOException, XMLStreamException {
         return generate(logFolder, new NullProgressMonitor());
