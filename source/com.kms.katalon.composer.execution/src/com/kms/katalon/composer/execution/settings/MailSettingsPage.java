@@ -11,7 +11,6 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ListViewer;
@@ -109,6 +108,9 @@ public class MailSettingsPage extends PreferencePageWithHelp {
 
     @Override
     public boolean performOk() {
+        if (!isControlCreated()) {
+            return super.performOk();
+        }
         try {
             EmailSettingStore settingStore = getSettingStore();
             settingStore.setHost(txtHost.getText());
