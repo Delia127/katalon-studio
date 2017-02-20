@@ -50,7 +50,12 @@ public class VariableTypeEditingSupport extends TypeCheckedEditingSupport<Variab
             return;
         }
 
-        VariableType variableType = VariableType.fromValue(variableTypes.get((int) value));
+        int selectedIndex = (int) value;
+
+        if (selectedIndex < 0) {
+            return;
+        }
+        VariableType variableType = VariableType.fromValue(variableTypes.get(selectedIndex));
         if (variableType == variableLink.getType()) {
             return;
         }
