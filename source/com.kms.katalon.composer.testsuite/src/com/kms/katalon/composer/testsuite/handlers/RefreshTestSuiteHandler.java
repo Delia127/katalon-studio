@@ -15,7 +15,6 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.folder.FolderEntity;
-import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 public class RefreshTestSuiteHandler {
@@ -28,6 +27,9 @@ public class RefreshTestSuiteHandler {
 
             @Override
             public void handleEvent(Event event) {
+                if (ProjectController.getInstance().getCurrentProject() == null) {
+                    return;
+                }
                 Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
                 if (object != null && object instanceof TestSuiteTreeEntity) {
                     try {
@@ -42,16 +44,16 @@ public class RefreshTestSuiteHandler {
 
     private void excute(TestSuiteTreeEntity testSuiteTreeEntity) throws Exception {
         if (testSuiteTreeEntity.getObject() == null) {
-            ProjectEntity project = ProjectController.getInstance().getCurrentProject();
             ITreeEntity parentEntity = testSuiteTreeEntity.getParent();
             if (parentEntity != null && parentEntity instanceof FolderTreeEntity) {
                 eventBroker.post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, parentEntity);
             } else {
-                FolderEntity folder = FolderController.getInstance().getTestCaseRoot(project);
+                FolderEntity folder = FolderController.getInstance()
+                        .getTestCaseRoot(ProjectController.getInstance().getCurrentProject());
                 eventBroker.post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, new FolderTreeEntity(folder, null));
             }
         } else {
-            TestSuiteEntity testSuite = (TestSuiteEntity) testSuiteTreeEntity.getObject();
+            TestSuiteEntity testSuite = testSuiteTreeEntity.getObject();
             FolderController.getInstance().refreshFolder(testSuite.getParentFolder());
         }
     }

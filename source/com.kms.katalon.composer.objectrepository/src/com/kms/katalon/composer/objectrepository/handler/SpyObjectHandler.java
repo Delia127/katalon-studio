@@ -12,6 +12,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.event.Event;
+import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -30,7 +31,7 @@ public class SpyObjectHandler {
     private IEventBroker eventBroker;
 
     private ObjectSpyDialog objectSpyDialog;
-    
+
     @PostConstruct
     public void registerAddToObjectSpyEvent() {
         eventBroker.subscribe(EventConstants.OBJECT_SPY_TEST_OBJECT_ADDED, new EventServiceAdapter() {
@@ -38,6 +39,16 @@ public class SpyObjectHandler {
             @Override
             public void handleEvent(Event event) {
                 openDialogAndAddObject(Display.getCurrent().getActiveShell(), getObjects(event)); 
+            }
+        });
+        eventBroker.subscribe(EventConstants.OBJECT_SPY_WEB, new EventHandler() {
+
+            @Override
+            public void handleEvent(Event event) {
+                if (!canExecute()) {
+                    return;
+                }
+                execute(Display.getCurrent().getActiveShell());
             }
         });
     }
@@ -68,12 +79,8 @@ public class SpyObjectHandler {
     }
 
     @CanExecute
-    private boolean canExecute() throws Exception {
-        if (ProjectController.getInstance().getCurrentProject() != null) {
-            return true;
-        } else {
-            return false;
-        }
+    private boolean canExecute() {
+        return ProjectController.getInstance().getCurrentProject() != null;
     }
 
     public static ITreeEntity getParentTreeEntity(Object[] selectedObjects) throws Exception {

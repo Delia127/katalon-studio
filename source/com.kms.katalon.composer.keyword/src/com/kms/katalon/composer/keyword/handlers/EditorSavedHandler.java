@@ -107,6 +107,5 @@ public class EditorSavedHandler implements EventHandler {
         KeywordTreeEntity keywordTreeEntity = TreeEntityUtil.getKeywordTreeEntity(
                 file.getProjectRelativePath().toString(), ProjectController.getInstance().getCurrentProject());
         eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, keywordTreeEntity);
-        eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, keywordTreeEntity);
     }
 }

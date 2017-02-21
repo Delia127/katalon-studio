@@ -11,6 +11,7 @@ import com.kms.katalon.dal.fileservice.EntityService;
 import com.kms.katalon.dal.fileservice.FileServiceConstant;
 import com.kms.katalon.dal.fileservice.constants.StringConstants;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.util.Util;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
 public class ProjectFileServiceManager {
@@ -27,6 +28,7 @@ public class ProjectFileServiceManager {
         }
 
         ProjectEntity project = new ProjectEntity();
+        project.setUUID(Util.generateGuid());
         project.setFolderLocation(projectFolder.getAbsolutePath());
         project.setName(name);
         project.setDescription(description);

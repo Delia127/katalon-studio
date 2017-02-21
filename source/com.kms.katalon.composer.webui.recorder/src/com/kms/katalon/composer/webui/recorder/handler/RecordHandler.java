@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -26,6 +27,8 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.osgi.service.event.Event;
+import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -70,6 +73,20 @@ public class RecordHandler {
 
     @Inject
     private UISynchronize sync;
+
+    @PostConstruct
+    public void registerEventHandler() {
+        eventBroker.subscribe(EventConstants.KATALON_RECORD, new EventHandler() {
+
+            @Override
+            public void handleEvent(Event event) {
+                if (!canExecute()) {
+                    return;
+                }
+                execute(Display.getCurrent().getActiveShell());
+            }
+        });
+    }
 
     @CanExecute
     public boolean canExecute() {

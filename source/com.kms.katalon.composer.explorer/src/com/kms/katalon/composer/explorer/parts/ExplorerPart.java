@@ -30,6 +30,7 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -597,6 +598,7 @@ public class ExplorerPart {
     private void refresh(Object object) {
         treeViewer.getControl().setRedraw(false);
         TreePath[] expandedTreePaths = getViewer().getExpandedTreePaths();
+        ISelection selection = getViewer().getSelection();
         getViewer().collapseAll();
         if (object == null) {
             treeViewer.refresh();
@@ -604,6 +606,7 @@ public class ExplorerPart {
             treeViewer.refresh(object);
         }
         getViewer().setExpandedTreePaths(expandedTreePaths);
+        getViewer().setSelection(selection);
         treeViewer.getControl().setRedraw(true);
     }
 

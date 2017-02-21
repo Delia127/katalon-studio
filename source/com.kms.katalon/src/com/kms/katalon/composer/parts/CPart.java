@@ -52,7 +52,7 @@ public abstract class CPart extends WorkbenchPart {
 
         @Override
         public EvaluationResult evaluate(IEvaluationContext context) throws CoreException {
-            if (partService.getActivePart().equals(mPart) && !isModalDialogPresent()) {
+            if (mPart.equals(partService.getActivePart()) && !isModalDialogPresent()) {
                 return EvaluationResult.TRUE;
             }
             return EvaluationResult.FALSE;

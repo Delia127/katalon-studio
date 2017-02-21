@@ -24,6 +24,7 @@ import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
@@ -186,4 +187,14 @@ public class NewKeywordHandler {
             LoggerSingleton.logError(e);
         }
     }
+
+    @Inject
+    @Optional
+    private void execute(@UIEventTopic(EventConstants.KEYWORD_NEW) Object eventData) {
+        if (!canExecute()) {
+            return;
+        }
+        execute(Display.getCurrent().getActiveShell());
+    }
+
 }

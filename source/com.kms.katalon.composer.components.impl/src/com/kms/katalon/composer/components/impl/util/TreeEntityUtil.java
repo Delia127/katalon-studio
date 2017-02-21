@@ -50,7 +50,7 @@ import com.kms.katalon.groovy.util.GroovyUtil;
 public class TreeEntityUtil {
     public static Object[] getChildren(FolderTreeEntity folderTreeEntity) throws Exception {
         if (folderTreeEntity.getObject() instanceof FolderEntity) {
-            return getChildren(folderTreeEntity, (FolderEntity) folderTreeEntity.getObject());
+            return getChildren(folderTreeEntity, folderTreeEntity.getObject());
         }
         return Collections.emptyList().toArray();
     }
@@ -63,12 +63,14 @@ public class TreeEntityUtil {
                 if (childrenEntities[i] instanceof FolderEntity) {
                     childrenEntities[i] = new FolderTreeEntity((FolderEntity) childrenEntities[i], folderTreeEntity);
                 } else if (childrenEntities[i] instanceof TestCaseEntity) {
-                    childrenEntities[i] = new TestCaseTreeEntity((TestCaseEntity) childrenEntities[i], folderTreeEntity);
+                    childrenEntities[i] = new TestCaseTreeEntity((TestCaseEntity) childrenEntities[i],
+                            folderTreeEntity);
                 } else if (childrenEntities[i] instanceof TestSuiteEntity) {
                     childrenEntities[i] = new TestSuiteTreeEntity((TestSuiteEntity) childrenEntities[i],
                             folderTreeEntity);
                 } else if (childrenEntities[i] instanceof DataFileEntity) {
-                    childrenEntities[i] = new TestDataTreeEntity((DataFileEntity) childrenEntities[i], folderTreeEntity);
+                    childrenEntities[i] = new TestDataTreeEntity((DataFileEntity) childrenEntities[i],
+                            folderTreeEntity);
                 } else if (childrenEntities[i] instanceof WebElementEntity) {
                     childrenEntities[i] = new WebElementTreeEntity((WebElementEntity) childrenEntities[i],
                             folderTreeEntity);
@@ -90,47 +92,48 @@ public class TreeEntityUtil {
         return Collections.emptyList().toArray();
     }
 
-    public static FolderTreeEntity createSelectedTreeEntityHierachy(FolderEntity folderEntity, FolderEntity rootFolder) {
+    public static FolderTreeEntity createSelectedTreeEntityHierachy(FolderEntity folderEntity,
+            FolderEntity rootFolder) {
         if (folderEntity == null || folderEntity.equals(rootFolder)) {
             return new FolderTreeEntity(rootFolder, null);
         }
-        return new FolderTreeEntity(folderEntity, createSelectedTreeEntityHierachy(folderEntity.getParentFolder(),
-                rootFolder));
+        return new FolderTreeEntity(folderEntity,
+                createSelectedTreeEntityHierachy(folderEntity.getParentFolder(), rootFolder));
     }
 
     public static TestCaseTreeEntity getTestCaseTreeEntity(TestCaseEntity testCaseEntity, ProjectEntity projectEntity)
             throws Exception {
         FolderEntity testCaseRootFolder = FolderController.getInstance().getTestCaseRoot(projectEntity);
-        return new TestCaseTreeEntity(testCaseEntity, createSelectedTreeEntityHierachy(
-                testCaseEntity.getParentFolder(), testCaseRootFolder));
+        return new TestCaseTreeEntity(testCaseEntity,
+                createSelectedTreeEntityHierachy(testCaseEntity.getParentFolder(), testCaseRootFolder));
     }
 
     public static WebElementTreeEntity getWebElementTreeEntity(WebElementEntity testObjectEntity,
             ProjectEntity projectEntity) throws Exception {
         FolderEntity testCaseRootFolder = FolderController.getInstance().getObjectRepositoryRoot(projectEntity);
-        return new WebElementTreeEntity(testObjectEntity, createSelectedTreeEntityHierachy(
-                testObjectEntity.getParentFolder(), testCaseRootFolder));
+        return new WebElementTreeEntity(testObjectEntity,
+                createSelectedTreeEntityHierachy(testObjectEntity.getParentFolder(), testCaseRootFolder));
     }
 
     public static TestDataTreeEntity getTestDataTreeEntity(DataFileEntity testDataEntity, ProjectEntity projectEntity)
             throws Exception {
         FolderEntity testCaseRootFolder = FolderController.getInstance().getTestDataRoot(projectEntity);
-        return new TestDataTreeEntity(testDataEntity, createSelectedTreeEntityHierachy(
-                testDataEntity.getParentFolder(), testCaseRootFolder));
+        return new TestDataTreeEntity(testDataEntity,
+                createSelectedTreeEntityHierachy(testDataEntity.getParentFolder(), testCaseRootFolder));
     }
 
     public static TestSuiteTreeEntity getTestSuiteTreeEntity(TestSuiteEntity testSuiteEntity,
             ProjectEntity projectEntity) throws Exception {
         FolderEntity testCaseRootFolder = FolderController.getInstance().getTestSuiteRoot(projectEntity);
-        return new TestSuiteTreeEntity(testSuiteEntity, createSelectedTreeEntityHierachy(
-                testSuiteEntity.getParentFolder(), testCaseRootFolder));
+        return new TestSuiteTreeEntity(testSuiteEntity,
+                createSelectedTreeEntityHierachy(testSuiteEntity.getParentFolder(), testCaseRootFolder));
     }
 
     public static ReportTreeEntity getReportTreeEntity(ReportEntity reportEntity, ProjectEntity projectEntity)
             throws Exception {
         FolderEntity testCaseRootFolder = FolderController.getInstance().getReportRoot(projectEntity);
-        return new ReportTreeEntity(reportEntity, createSelectedTreeEntityHierachy(reportEntity.getParentFolder(),
-                testCaseRootFolder));
+        return new ReportTreeEntity(reportEntity,
+                createSelectedTreeEntityHierachy(reportEntity.getParentFolder(), testCaseRootFolder));
     }
 
     public static ReportCollectionTreeEntity getReportCollectionTreeEntity(
@@ -142,8 +145,8 @@ public class TreeEntityUtil {
 
     public static CheckpointTreeEntity getCheckpointTreeEntity(CheckpointEntity checkpointEntity) throws Exception {
         FolderEntity checkpointRootFolder = FolderController.getInstance().getReportRoot(checkpointEntity.getProject());
-        return new CheckpointTreeEntity(checkpointEntity, createSelectedTreeEntityHierachy(
-                checkpointEntity.getParentFolder(), checkpointRootFolder));
+        return new CheckpointTreeEntity(checkpointEntity,
+                createSelectedTreeEntityHierachy(checkpointEntity.getParentFolder(), checkpointRootFolder));
     }
 
     public static PackageTreeEntity getPackageTreeEntity(String packageRelativeLocation, ProjectEntity projectEntity)
@@ -164,7 +167,8 @@ public class TreeEntityUtil {
                 StringConstants.ENTITY_ID_SEPARATOR);
         PackageTreeEntity packageTreeEntity = getPackageTreeEntity(packageLocation, projectEntity);
         if (packageTreeEntity != null) {
-            ICompilationUnit keywordFile = ((IPackageFragment) packageTreeEntity.getObject()).getCompilationUnit(keywordName);
+            ICompilationUnit keywordFile = ((IPackageFragment) packageTreeEntity.getObject())
+                    .getCompilationUnit(keywordName);
             if (keywordFile != null && keywordFile.exists()) {
                 return new KeywordTreeEntity(keywordFile, packageTreeEntity);
             }
@@ -175,8 +179,8 @@ public class TreeEntityUtil {
     public static TestSuiteCollectionTreeEntity getTestSuiteCollectionTreeEntity(
             TestSuiteCollectionEntity testSuiteCollectionEntity, ProjectEntity projectEntity) throws Exception {
         FolderEntity testSuiteRootFolder = FolderController.getInstance().getTestSuiteRoot(projectEntity);
-        return new TestSuiteCollectionTreeEntity(testSuiteCollectionEntity, createSelectedTreeEntityHierachy(
-                testSuiteCollectionEntity.getParentFolder(), testSuiteRootFolder));
+        return new TestSuiteCollectionTreeEntity(testSuiteCollectionEntity,
+                createSelectedTreeEntityHierachy(testSuiteCollectionEntity.getParentFolder(), testSuiteRootFolder));
     }
 
     /**

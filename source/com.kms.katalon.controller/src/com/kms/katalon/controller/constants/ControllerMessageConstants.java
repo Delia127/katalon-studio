@@ -47,6 +47,10 @@ public class ControllerMessageConstants extends NLS {
 
     public static String CTRL_EXC_INVALID_CSV_SEPARATOR;
 
+    public static String CTRL_EXC_REQUEST_BODY_IS_BLANK;
+
+    public static String CTRL_EXC_REQUEST_URL_IS_BLANK;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ControllerMessageConstants.class);

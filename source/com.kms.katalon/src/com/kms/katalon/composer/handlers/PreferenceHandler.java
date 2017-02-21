@@ -1,7 +1,11 @@
 package com.kms.katalon.composer.handlers;
 
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.jface.preference.IPreferenceNode;
 import org.eclipse.jface.preference.PreferenceManager;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -13,6 +17,7 @@ import org.eclipse.ui.internal.dialogs.WorkbenchPreferenceDialog;
 
 import com.kms.katalon.composer.components.impl.handler.AbstractHandler;
 import com.kms.katalon.composer.components.impl.providers.TypeCheckedStyleCellLabelProvider;
+import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.preferences.internal.PreferencesRegistry;
 
 @SuppressWarnings("restriction")
@@ -43,6 +48,12 @@ public class PreferenceHandler extends AbstractHandler {
         openPreferenceDialog(workbenchPref);
 
         removeApplicationNodesFromWorkbenchPreferenceManager(workbenchPref, applicationNodes);
+    }
+
+    @Inject
+    @Optional
+    public void execute(@UIEventTopic(EventConstants.KATALON_PREFERENCES) Object eventData) {
+        execute();
     }
 
     private void removeUnnecessaryNodes(PreferenceManager workbenchPref) {

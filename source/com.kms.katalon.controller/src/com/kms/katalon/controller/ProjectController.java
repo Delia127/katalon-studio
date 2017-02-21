@@ -19,6 +19,7 @@ import org.eclipse.e4.core.di.annotations.Creatable;
 import com.kms.katalon.custom.factory.CustomMethodNodeFactory;
 import com.kms.katalon.dal.state.DataProviderState;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.util.Util;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
 @Creatable
@@ -60,6 +61,10 @@ public class ProjectController extends EntityController {
 
             if (project != null) {
                 monitor.beginTask("Initialzing project's working space...", 10);
+                if (project.getUUID() == null) {
+                    project.setUUID(Util.generateGuid());
+                    updateProject(project);
+                }
                 DataProviderState.getInstance().setCurrentProject(project);
                 GroovyUtil.initGroovyProject(project, FolderController.getInstance().getTestCaseRoot(project),
                         new SubProgressMonitor(monitor, 4, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK));

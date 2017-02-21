@@ -2,6 +2,7 @@ package com.kms.katalon.composer.webservice.handlers;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -17,7 +18,10 @@ import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.osgi.service.event.Event;
+import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
@@ -53,14 +57,24 @@ public class NewWebServiceRequestObjectHandler {
 
 	private FolderTreeEntity objectRepositoryTreeRoot;
 
-	@CanExecute
-	private boolean canExecute() throws Exception {
-		if (ProjectController.getInstance().getCurrentProject() != null) {
-			return true;
-		} else {
-			return false;
-		}
-	}
+    @PostConstruct
+    public void registerEventHandler() {
+        eventBroker.subscribe(EventConstants.WEBSERVICE_REQUEST_OBJECT_NEW, new EventHandler() {
+
+            @Override
+            public void handleEvent(Event event) {
+                if (!canExecute()) {
+                    return;
+                }
+                execute(null, Display.getCurrent().getActiveShell());
+            }
+        });
+    }
+
+    @CanExecute
+    private boolean canExecute() {
+        return ProjectController.getInstance().getCurrentProject() != null;
+    }
 
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional Object[] selectedObjects,

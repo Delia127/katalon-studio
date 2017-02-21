@@ -294,7 +294,6 @@ public class TestSuiteCompositePart implements EventHandler, MultipleTabsComposi
             TestSuiteTreeEntity testSuiteTreeEntity = TreeEntityUtil.getTestSuiteTreeEntity(
                     originalTestSuite, ProjectController.getInstance().getCurrentProject());
             eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, testSuiteTreeEntity);
-            eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, testSuiteTreeEntity);
 
             // Send event if Test Suite name has changed
             if (!StringUtils.equalsIgnoreCase(temp.getName(), originalTestSuite.getName())) {
