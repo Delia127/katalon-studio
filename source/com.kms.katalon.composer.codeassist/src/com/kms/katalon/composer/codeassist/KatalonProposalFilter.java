@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.codehaus.groovy.eclipse.codeassist.processors.IProposalFilter;
+import org.codehaus.groovy.eclipse.codeassist.proposals.GroovyCategoryMethodProposal;
 import org.codehaus.groovy.eclipse.codeassist.proposals.IGroovyProposal;
 import org.codehaus.groovy.eclipse.codeassist.requestor.ContentAssistContext;
 import org.eclipse.jdt.ui.text.java.JavaContentAssistInvocationContext;
@@ -32,7 +33,14 @@ public class KatalonProposalFilter implements IProposalFilter {
             }
             return whiteListProposals;
         } else {
-            return proposals;
+            List<IGroovyProposal> whiteListProposals = new ArrayList<IGroovyProposal>();
+            for (IGroovyProposal groovyProposal : proposals) {
+                if (groovyProposal instanceof GroovyCategoryMethodProposal) {
+                    continue;
+                }
+                whiteListProposals.add(groovyProposal);
+            }
+            return whiteListProposals;
         }
     }
 

@@ -16,7 +16,8 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 
 public class ImprovedGroovyCompletionProposalComputer extends GroovyCompletionProposalComputer {
 
-    public List<ICompletionProposal> computeCompletionProposals(ContentAssistInvocationContext context, IProgressMonitor monitor) {
+    public List<ICompletionProposal> computeCompletionProposals(ContentAssistInvocationContext context,
+            IProgressMonitor monitor) {
         if (!(context instanceof JavaContentAssistInvocationContext)) {
             return Collections.emptyList();
         }
@@ -36,7 +37,7 @@ public class ImprovedGroovyCompletionProposalComputer extends GroovyCompletionPr
                 }
             }
         }
-        
+
         return super.computeCompletionProposals(context, monitor);
     }
 

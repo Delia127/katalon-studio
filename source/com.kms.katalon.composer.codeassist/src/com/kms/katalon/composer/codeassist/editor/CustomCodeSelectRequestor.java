@@ -553,9 +553,11 @@ public class CustomCodeSelectRequestor extends CodeSelectRequestor {
         for (int i = 0; i < maybeMethodParameters.length; i++) {
             String maybeMethodParameterSignature = removeGenerics(maybeMethodParameters[i]);
             ClassNode parameterType = parameters[i].getType();
-            String originalMethodSignature = Signature.createTypeSignature(parameterType.getNameWithoutPackage(),
+            String nameWithoutPackage = parameterType.getNameWithoutPackage();
+            String originalMethodSignature = parameterType.isArray() ? nameWithoutPackage : Signature.createTypeSignature(nameWithoutPackage,
                     isBinaryType);
-            String originalMethodFullSignature = Signature.createTypeSignature(parameterType.getName(), isBinaryType);
+            String name = parameterType.getName();
+            String originalMethodFullSignature =  parameterType.isArray() ? name : Signature.createTypeSignature(name, isBinaryType);
             if (!originalMethodSignature.equals(maybeMethodParameterSignature)
                     && !originalMethodFullSignature.equals(maybeMethodParameterSignature)) {
                 return false;

@@ -13,9 +13,14 @@ import org.codehaus.groovy.eclipse.codeassist.processors.IProposalProvider;
 import org.codehaus.groovy.eclipse.codeassist.proposals.IGroovyProposal;
 import org.codehaus.groovy.eclipse.codeassist.requestor.ContentAssistContext;
 
+import com.kms.katalon.composer.codeassist.proposal.CheckpointIDProposalProvider;
 import com.kms.katalon.composer.codeassist.proposal.KatalonBuitInKeywordAliasProposal;
 import com.kms.katalon.composer.codeassist.proposal.KatalonLocalVariableProposal;
 import com.kms.katalon.composer.codeassist.proposal.KatalonMethodNodeProposal;
+import com.kms.katalon.composer.codeassist.proposal.ProposalProvider;
+import com.kms.katalon.composer.codeassist.proposal.TestCaseIDProposalProvider;
+import com.kms.katalon.composer.codeassist.proposal.TestDataIDProposalProvider;
+import com.kms.katalon.composer.codeassist.proposal.TestObjectIDProposalProvider;
 import com.kms.katalon.composer.codeassist.util.KatalonContextUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.controller.KeywordController;
@@ -35,13 +40,13 @@ public class KatalonProposalProvider implements IProposalProvider {
     @Override
     public List<IGroovyProposal> getStatementAndExpressionProposals(ContentAssistContext context,
             ClassNode completionType, boolean isStatic, Set<ClassNode> categories) {
-        List<IGroovyProposal> groovyProposals = new ArrayList<IGroovyProposal>();
+        List<IGroovyProposal> groovyProposals = new ArrayList<>();
         String completionExpression = context.completionExpression;
 
         // Add keyword proposals for BuiltinKeyword class
         if (KatalonContextUtil.isBuiltinKeywordCompletionClassNode(context)) {
-            ClassNode classNode = new ClassNode(KatalonContextUtil.getBuiltInKeywordCompletionClassNode(context)
-                    .getType());
+            ClassNode classNode = new ClassNode(
+                    KatalonContextUtil.getBuiltInKeywordCompletionClassNode(context).getType());
             for (MethodNode methodNode : classNode.getAllDeclaredMethods()) {
                 if (StringUtils.startsWith(methodNode.getName(), completionExpression.trim())
                         && isKeywordNode(methodNode)) {
@@ -53,8 +58,8 @@ public class KatalonProposalProvider implements IProposalProvider {
         // Add keyword proposals for CustomKeyword class
         if (KatalonContextUtil.isCustomKeywordCompletionClassNode(context)) {
             try {
-                for (MethodNode methodNode : KeywordController.getInstance().getCustomKeywords(
-                        ProjectController.getInstance().getCurrentProject())) {
+                for (MethodNode methodNode : KeywordController.getInstance()
+                        .getCustomKeywords(ProjectController.getInstance().getCurrentProject())) {
                     groovyProposals.add(new KatalonMethodNodeProposal(methodNode));
                 }
             } catch (Exception e) {
@@ -81,8 +86,8 @@ public class KatalonProposalProvider implements IProposalProvider {
             }
         }
 
-        //Support completion type of imported static method
-        if (enclosingGroovyType != null && !completionType.equals(enclosingGroovyType)
+        // Support completion type of imported static method
+        if (isStatic && enclosingGroovyType != null && !completionType.equals(enclosingGroovyType)
                 && !completionType.isRedirectNode()) {
             for (MethodNode methodNode : completionType.getMethods()) {
                 if (!methodNode.isPublic()) {
@@ -91,7 +96,25 @@ public class KatalonProposalProvider implements IProposalProvider {
                 groovyProposals.add(new KatalonMethodNodeProposal(methodNode));
             }
         }
+
+        groovyProposals.addAll(collectArtifactIDProposals(context, completionType));
+
         return groovyProposals;
+    }
+
+    private List<IGroovyProposal> collectArtifactIDProposals(ContentAssistContext context,
+            ClassNode completionType) {
+        ProposalProvider[] proposalProviders = new ProposalProvider[] {
+                new TestCaseIDProposalProvider(),
+                new TestObjectIDProposalProvider(),
+                new TestDataIDProposalProvider(),
+                new CheckpointIDProposalProvider()
+        };
+        List<IGroovyProposal> artifactIDProposals = new ArrayList<>();
+        for (ProposalProvider provider : proposalProviders) {
+            artifactIDProposals.addAll(provider.getProposals(context, completionType));
+        }
+        return artifactIDProposals;
     }
 
     @Override

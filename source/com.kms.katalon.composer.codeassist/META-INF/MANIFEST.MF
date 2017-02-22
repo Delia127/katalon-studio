@@ -40,4 +40,5 @@ Require-Bundle: org.eclipse.core.runtime,
  com.kms.katalon.composer.resources,
  org.eclipse.e4.core.di.annotations,
  org.eclipse.e4.ui.workbench,
- com.kms.katalon.preferences
+ com.kms.katalon.preferences,
+ com.kms.katalon.composer.components.impl
