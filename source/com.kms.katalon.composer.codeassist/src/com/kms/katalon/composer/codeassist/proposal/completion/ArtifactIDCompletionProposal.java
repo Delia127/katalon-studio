@@ -83,6 +83,8 @@ public class ArtifactIDCompletionProposal extends GroovyCompletionProposal {
 
         private String selectedText;
 
+        private int startOffset;
+
         public ArtifactIDJavaCompletionProposal(ArtifactIDCompletionProposal proposal, SequenceFinder finder,
                 JavaContentAssistInvocationContext javaContext) {
             super(proposal, image,
@@ -91,7 +93,7 @@ public class ArtifactIDCompletionProposal extends GroovyCompletionProposal {
             this.finder = finder;
             this.javaContext = javaContext;
             selectedText = StringUtils.defaultString(textSelection().getText());
-            setCursorPosition(textSelection().getOffset());
+            startOffset = textSelection().getOffset();
         }
 
         private TextSelection textSelection() {
@@ -102,7 +104,7 @@ public class ArtifactIDCompletionProposal extends GroovyCompletionProposal {
         public void apply(IDocument document, char trigger, int offset) {
             try {
                 this.replace(document,
-                        proposal.getReplaceStart(), offset - getCursorPosition() + proposal.getReplaceEnd()
+                        proposal.getReplaceStart(), offset - startOffset + proposal.getReplaceEnd()
                                 - proposal.getReplaceStart() - selectedText.length() + textSelection().getLength(),
                         getReplacementString());
             } catch (BadLocationException e) {
