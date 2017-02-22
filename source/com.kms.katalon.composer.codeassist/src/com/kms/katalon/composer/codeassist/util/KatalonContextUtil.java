@@ -46,10 +46,8 @@ public class KatalonContextUtil {
             }
         }
 
-        if ((GroovyConstants.CUSTOM_KEYWORD_LIB_FILE_NAME + CR_DOT).equals(context.fullCompletionExpression.trim())) {
-            return true;
-        }
-        return false;
+        return (GroovyConstants.CUSTOM_KEYWORD_LIB_FILE_NAME + CR_DOT).equals(
+                StringUtils.defaultString(context.fullCompletionExpression).trim());
     }
 
     public static boolean isBuiltinKeywordCompletionClassNode(ContentAssistContext context) {
@@ -66,8 +64,8 @@ public class KatalonContextUtil {
             keywordController.getBuiltInKeywordClassByName(className);
         }
 
-        return keywordController.getBuiltInKeywordClassByName(
-                StringUtils.substringBeforeLast(context.fullCompletionExpression, CR_DOT).trim());
+        return keywordController.getBuiltInKeywordClassByName(StringUtils
+                .substringBeforeLast(StringUtils.defaultString(context.fullCompletionExpression), CR_DOT).trim());
     }
 
     @SuppressWarnings("restriction")
