@@ -125,7 +125,7 @@ public class CStackRenderer extends StackRenderer {
                 part = (MPart) ((element instanceof MPart) ? element : ((MPlaceholder) element).getRef());
             }
 
-            if (isPartBeingRemoved(part)) {
+            if (isPartBeingRemoved()) {
                 return;
             }
 
@@ -198,16 +198,12 @@ public class CStackRenderer extends StackRenderer {
      * {@link MCompositePart} parts that are being removed (https://incubation.kms-technology.com/browse/KAT-1952)
      * 
      * Should try to fix this using better methods in the future
-     * @param part
-     * @return true if the part is being removed, otherwise false
+     * @return true if a part is being removed, otherwise false
      */
-    private boolean isPartBeingRemoved(MPart part) {
-        if (!(part instanceof MCompositePart)) {
-            return false;
-        }
+    private boolean isPartBeingRemoved() {
         try {
             MUIElement removingElement = (MUIElement) getRemoveRootField().get(renderer);
-            if (removingElement != null && removingElement.getElementId().equals(part.getElementId())) {
+            if (removingElement != null) {
                 return true;
             }
         } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
