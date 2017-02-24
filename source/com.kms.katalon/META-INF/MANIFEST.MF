@@ -55,7 +55,9 @@ Require-Bundle: org.eclipse.e4.core.di,
  org.apache.httpcomponents.httpcore,
  org.apache.httpcomponents.httpmime,
  org.apache.commons.validator,
- com.kms.katalon.core.webservice
+ com.kms.katalon.core.webservice,
+ org.eclipse.e4.core.di.extensions,
+ org.eclipse.e4.ui.css.core
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: javax.annotation,
