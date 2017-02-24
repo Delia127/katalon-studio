@@ -457,8 +457,7 @@ public class KatalonMethodCompletionProposal extends ParameterGuessingProposal {
             String className = methodNode.getDeclaringClass().getName();
             String methodName = methodNode.getName();
             if (GroovyConstants.CUSTOM_KEYWORD_LIB_FILE_NAME.equals(methodNode.getDeclaringClass().getName())
-                    || (KeywordController.getInstance().getBuiltInKeywordByName(className, methodName,
-                            KatalonContextUtil.getAstParameterTypes(methodNode.getParameters())) != null)) {
+                    || (KeywordController.getInstance().getBuiltInKeywordByName(className, methodName)) != null) {
                 return KatalonContextUtil.getKatalonSignature();
             }
         } catch (Exception e) {

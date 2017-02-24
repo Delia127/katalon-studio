@@ -9,6 +9,7 @@ import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.ast.AnnotationNode;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.MethodNode;
+import org.codehaus.groovy.ast.stmt.BlockStatement;
 import org.codehaus.groovy.eclipse.codeassist.processors.IProposalProvider;
 import org.codehaus.groovy.eclipse.codeassist.proposals.IGroovyProposal;
 import org.codehaus.groovy.eclipse.codeassist.requestor.ContentAssistContext;
@@ -40,15 +41,18 @@ public class KatalonProposalProvider implements IProposalProvider {
     @Override
     public List<IGroovyProposal> getStatementAndExpressionProposals(ContentAssistContext context,
             ClassNode completionType, boolean isStatic, Set<ClassNode> categories) {
+        if (context.completionNode instanceof BlockStatement) {
+            return Collections.emptyList();
+        }
         List<IGroovyProposal> groovyProposals = new ArrayList<>();
-        String completionExpression = context.completionExpression;
+        String completionExpression = StringUtils.trimToEmpty(context.completionExpression);
 
         // Add keyword proposals for BuiltinKeyword class
         if (KatalonContextUtil.isBuiltinKeywordCompletionClassNode(context)) {
             ClassNode classNode = new ClassNode(
                     KatalonContextUtil.getBuiltInKeywordCompletionClassNode(context).getType());
             for (MethodNode methodNode : classNode.getAllDeclaredMethods()) {
-                if (StringUtils.startsWith(methodNode.getName(), completionExpression.trim())
+                if (StringUtils.startsWithIgnoreCase(methodNode.getName(), completionExpression.trim())
                         && isKeywordNode(methodNode)) {
                     groovyProposals.add(new KatalonMethodNodeProposal(methodNode));
                 }
@@ -81,7 +85,8 @@ public class KatalonProposalProvider implements IProposalProvider {
         }
 
         for (KeywordClass keywordClass : KeywordController.getInstance().getBuiltInKeywordClasses()) {
-            if (StringUtils.startsWith(keywordClass.getAliasName(), context.fullCompletionExpression)) {
+            if (StringUtils.startsWithIgnoreCase(keywordClass.getAliasName(),
+                    StringUtils.trimToEmpty(context.fullCompletionExpression))) {
                 groovyProposals.add(new KatalonBuitInKeywordAliasProposal(keywordClass));
             }
         }
@@ -98,7 +103,6 @@ public class KatalonProposalProvider implements IProposalProvider {
         }
 
         groovyProposals.addAll(collectArtifactIDProposals(context, completionType));
-
         return groovyProposals;
     }
 
