@@ -679,4 +679,14 @@ public class GlobalVariablePart extends CPart implements EventHandler, TableView
     public void markDirty() {
        setDirty(true); 
     }
+
+    @Override
+    public Map<GlobalVariableEntity, String> getNeedToUpdateVariables() {
+        return needToUpdateVariables;
+    }
+
+    @Override
+    public void performOperation(AbstractOperation operation) {
+        executeOperation(operation);
+    }
 }
