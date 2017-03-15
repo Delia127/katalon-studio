@@ -46,9 +46,6 @@ public class AstTreeLabelProvider extends StyledCellLabelProvider {
                 }
                 return "";
             case CLMN_DESCRIPTION_IDX:
-                if (!(treeTableNode instanceof AstStatementTreeTableNode)) {
-                    return "";
-                }
                 return getDescriptionString(treeTableNode);
             default:
                 return "";
@@ -56,6 +53,9 @@ public class AstTreeLabelProvider extends StyledCellLabelProvider {
     }
 
     private String getDescriptionString(AstTreeTableNode treeTableNode) {
+        if (!(treeTableNode instanceof AstStatementTreeTableNode)) {
+            return "";
+        }
         return StringUtils.defaultString(((AstStatementTreeTableNode) treeTableNode).getDescription());
     }
 

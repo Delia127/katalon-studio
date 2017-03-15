@@ -132,6 +132,17 @@ public class ReportUtil {
     }
 
     public static void writeLogRecordToFiles(TestSuiteLogRecord suiteLogEntity, File logFolder) throws Exception {
+        writeHtmlReport(suiteLogEntity, logFolder);
+
+        // Write CSV file
+        writeCSVReport(suiteLogEntity, logFolder);
+
+        writeSimpleHTMLReport(suiteLogEntity, logFolder);
+
+    }
+
+    public static void writeHtmlReport(TestSuiteLogRecord suiteLogEntity, File logFolder)
+            throws IOException, URISyntaxException {
         List<String> strings = new LinkedList<String>();
 
         JsSuiteModel jsSuiteModel = new JsSuiteModel(suiteLogEntity, strings);
@@ -144,25 +155,28 @@ public class ReportUtil {
 
         // Write main HTML Report
         FileUtils.writeStringToFile(new File(logFolder, logFolder.getName() + ".html"), htmlSb.toString());
+    }
 
-        // Write CSV file
+    public static void writeCSVReport(TestSuiteLogRecord suiteLogEntity, File logFolder) throws IOException {
         CsvWriter.writeCsvReport(suiteLogEntity, new File(logFolder, logFolder.getName() + ".csv"),
                 Arrays.asList(suiteLogEntity.getChildRecords()));
+    }
 
+    public static void writeSimpleHTMLReport(TestSuiteLogRecord suiteLogEntity, File logFolder)
+            throws IOException, URISyntaxException {
         List<ILogRecord> infoLogs = new ArrayList<ILogRecord>();
         collectInfoLines(suiteLogEntity, infoLogs);
         for (ILogRecord infoLog : infoLogs) {
             infoLog.getParentLogRecord().removeChildRecord(infoLog);
         }
-        strings = new LinkedList<String>();
-        jsSuiteModel = new JsSuiteModel(suiteLogEntity, strings);
-        sbModel = jsSuiteModel.toArrayString();
-        htmlSb = new StringBuilder();
-        readFileToStringBuilder(ResourceLoader.HTML_TEMPLATE_FILE, htmlSb);
-        htmlSb.append(generateVars(strings, suiteLogEntity, sbModel));
-        readFileToStringBuilder(ResourceLoader.HTML_TEMPLATE_CONTENT, htmlSb);
-        FileUtils.writeStringToFile(new File(logFolder, "Report.html"), htmlSb.toString());
-
+        List<String> simpleStrings = new LinkedList<String>();
+        JsSuiteModel simpleJsSuiteModel = new JsSuiteModel(suiteLogEntity, simpleStrings);
+        StringBuilder simpleSbModel = simpleJsSuiteModel.toArrayString();
+        StringBuilder simpleHtmlSb = new StringBuilder();
+        readFileToStringBuilder(ResourceLoader.HTML_TEMPLATE_FILE, simpleHtmlSb);
+        simpleHtmlSb.append(generateVars(simpleStrings, suiteLogEntity, simpleSbModel));
+        readFileToStringBuilder(ResourceLoader.HTML_TEMPLATE_CONTENT, simpleHtmlSb);
+        FileUtils.writeStringToFile(new File(logFolder, "Report.html"), simpleHtmlSb.toString());
     }
 
     public static void writeLogRecordToHTMLFile(TestSuiteLogRecord suiteLogEntity, File destFile,
