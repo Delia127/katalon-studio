@@ -20,6 +20,7 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.StringBuilderWriter;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 
@@ -46,8 +47,7 @@ public class ReportUtil {
             if (line.equals(ResourceLoader.HTML_TEMPLATE_SUITE_MODEL_TOKEN)) {
                 sb.append(model);
             } else if (line.equals(ResourceLoader.HTML_TEMPLATE_STRINGS_CONSTANT_TOKEN)) {
-                StringBuilder stringSb = listToStringArray(strings);
-                sb.append(stringSb);
+                sb.append(StringUtils.join(strings, (",")));
             } else if (line.equals(ResourceLoader.HTML_TEMPLATE_EXEC_ENV_TOKEN)) {
                 StringBuilder envInfoSb = new StringBuilder();
                 envInfoSb.append("{");
@@ -95,18 +95,6 @@ public class ReportUtil {
         return hostName;
     }
 
-    private static StringBuilder listToStringArray(List<String> strings) {
-        StringBuilder sb = new StringBuilder();
-        for (int idx = 0; idx < strings.size(); idx++) {
-            if (idx > 0) {
-                sb.append(",");
-            }
-            sb.append("\"" + (strings.get(idx) == null ? ""
-                    : strings.get(idx).equals("*") ? strings.get(idx) : ("*" + strings.get(idx))) + "\"");
-        }
-        return sb;
-    }
-
     private static void collectInfoLines(ILogRecord logRecord, List<ILogRecord> rmvLogs) {
         if (logRecord instanceof MessageLogRecord) {
             if (logRecord.getStatus().getStatusValue() == TestStatusValue.INCOMPLETE
@@ -143,7 +131,7 @@ public class ReportUtil {
 
     public static void writeHtmlReport(TestSuiteLogRecord suiteLogEntity, File logFolder)
             throws IOException, URISyntaxException {
-        List<String> strings = new LinkedList<String>();
+        List<String> strings = new ArrayList<String>();
 
         JsSuiteModel jsSuiteModel = new JsSuiteModel(suiteLogEntity, strings);
         StringBuilder sbModel = jsSuiteModel.toArrayString();

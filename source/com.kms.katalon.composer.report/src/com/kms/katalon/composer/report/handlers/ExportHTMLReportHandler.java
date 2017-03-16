@@ -49,7 +49,7 @@ public class ExportHTMLReportHandler {
                                 report.getDisplayName() + ReportEntity.EXTENSION_HTML_REPORT));
 						Desktop.getDesktop().open(exportDirectory);
 					}
-				} catch (Exception e) {
+				} catch (Throwable e) {
 					LoggerSingleton.logError(e);
 					MessageDialog.openError(shell, "Error", "Unable to export html report (" + e.getMessage() + ")");
 				}
