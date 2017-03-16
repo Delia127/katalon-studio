@@ -25,6 +25,8 @@ import com.kms.katalon.execution.launcher.model.LaunchMode;
 
 public class IDELaunchShorcut extends GroovyScriptLaunchShortcut {
 
+    private static final String JVM_ARGUMENT_MAX_MEMORY_KEY = "-Xmx";
+
     public IDELaunchShorcut() {
         super();
     }
@@ -66,11 +68,21 @@ public class IDELaunchShorcut extends GroovyScriptLaunchShortcut {
         if (environmentVariables != null && !environmentVariables.isEmpty()) {
             workingConfig.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, environmentVariables);
         }
+        String vmArguments = workingConfig.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, "");
+        if (!vmArguments.contains(JVM_ARGUMENT_MAX_MEMORY_KEY)) {
+            vmArguments += " " + JVM_ARGUMENT_MAX_MEMORY_KEY + byteToMegabytes(Runtime.getRuntime().maxMemory()) + "m";
+            workingConfig.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, vmArguments);
+        }
         workingConfig.setAttribute(IJavaLaunchConfigurationConstants.ATTR_CLASSPATH,
                 Arrays.asList(JavaRuntime.computeDefaultRuntimeClassPath(javaProject)));
         ILaunchConfiguration config = workingConfig.doSave();
+        config.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, "");
 
         return config.launch(mode, new NullProgressMonitor());
+    }
+
+    private static long byteToMegabytes(long maxMemory) {
+        return maxMemory / (1024 * 1024);
     }
 
     public ILaunch launch(IFile scriptFile, LaunchMode launchMode) throws CoreException {
