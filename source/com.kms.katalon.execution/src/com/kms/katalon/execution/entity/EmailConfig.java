@@ -1,20 +1,13 @@
 package com.kms.katalon.execution.entity;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
-
-import com.kms.katalon.execution.console.entity.ConsoleOption;
-import com.kms.katalon.execution.console.entity.ConsoleOptionContributor;
-import com.kms.katalon.execution.console.entity.StringConsoleOption;
 import com.kms.katalon.execution.util.MailUtil;
 import com.kms.katalon.execution.util.MailUtil.MailSecurityProtocolType;
 
-public class EmailConfig implements ConsoleOptionContributor {
-    public final static String SEND_EMAIL_OPTION = "sendMail";
+public class EmailConfig {
 
     private String host = "";
 
@@ -33,13 +26,6 @@ public class EmailConfig implements ConsoleOptionContributor {
     private String signature = "";
 
     private boolean sendAttachment = false;
-
-    private static ConsoleOption<String> sendEmailConsoleOption = new StringConsoleOption() {
-        @Override
-        public String getOption() {
-            return SEND_EMAIL_OPTION;
-        }
-    };
 
     public void setSendAttachment(boolean sendAttachment) {
         this.sendAttachment = sendAttachment;
@@ -123,22 +109,5 @@ public class EmailConfig implements ConsoleOptionContributor {
 
     public String[] getTos() {
         return tos.toArray(new String[tos.size()]);
-    }
-
-    @Override
-    public List<ConsoleOption<?>> getConsoleOptionList() {
-        List<ConsoleOption<?>> consoleOptionList = new ArrayList<ConsoleOption<?>>();
-        consoleOptionList.add(sendEmailConsoleOption);
-        return consoleOptionList;
-    }
-
-    @Override
-    public void setArgumentValue(ConsoleOption<?> consoleOption, String argumentValue) throws Exception {
-        if (StringUtils.isBlank(argumentValue)) {
-            return;
-        }
-        if (consoleOption == sendEmailConsoleOption) {
-            addRecipients(argumentValue);
-        }
     }
 }

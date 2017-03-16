@@ -70,7 +70,7 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
                     .getExecutedEntity();
             tsExecutedEntity.setRerunSetting((DefaultRerunSetting) executedEntity.getRunnable());
             tsExecutedEntity.setReportLocation(executedEntity.getReportLocationForChildren(subLauncher.getId()));
-            tsExecutedEntity.setEmailConfig(executedEntity.getEmailConfig());
+            tsExecutedEntity.setEmailConfig(executedEntity.getEmailConfig(testSuiteCollection.getProject()));
             if (tsExecutedEntity.getTotalTestCases() == 0) {
                 throw new ExecutionException(ExecutionMessageConstants.LAU_MESSAGE_EMPTY_TEST_SUITE);
             }

@@ -17,6 +17,7 @@ import com.kms.katalon.core.testdata.TestDataFactory;
 import com.kms.katalon.entity.link.TestCaseTestDataLink;
 import com.kms.katalon.entity.link.TestDataCombinationType;
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
+import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.console.entity.ConsoleOption;
@@ -33,12 +34,12 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
 
     private DefaultRerunSetting rerunSetting;
 
-    private EmailConfig emailConfig;
+    private EmailSettings emailSettings;
 
     public TestSuiteExecutedEntity() {
         testDataMap = new HashMap<>();
         reportLocationSetting = new ReportLocationSetting();
-        emailConfig = MailUtil.getDefaultEmailConfig();
+        emailSettings = new EmailSettings();
         rerunSetting = new DefaultRerunSetting();
         executedItems = new ArrayList<IExecutedEntity>();
     }
@@ -57,7 +58,7 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
 
     public void setTestSuite(TestSuiteEntity testSuite) throws IOException, Exception {
         updateEntity(testSuite);
-        emailConfig.addRecipients(MailUtil.splitRecipientsString(testSuite.getMailRecipient()));
+        getEmailConfig(testSuite.getProject()).addRecipients(MailUtil.splitRecipientsString(testSuite.getMailRecipient()));
         rerunSetting.setRemainingRerunTimes(testSuite.getNumberOfRerun());
         rerunSetting.setRerunFailedTestCaseOnly(testSuite.isRerunFailedTestCasesOnly());
         loadTestDataForTestSuiteExecutedEntity(testSuite);
@@ -367,18 +368,18 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
     }
     
     public void setEmailConfig(EmailConfig emailConfig) {
-        this.emailConfig = emailConfig;
+        this.emailSettings.setEmailConfig(emailConfig);
     }
 
-    public EmailConfig getEmailConfig() {
-        return emailConfig;
+    public EmailConfig getEmailConfig(ProjectEntity project) {
+        return emailSettings.getEmailConfig(project);
     }
 
     @Override
     public List<ConsoleOption<?>> getConsoleOptionList() {
         List<ConsoleOption<?>> consoleOptionList = new ArrayList<ConsoleOption<?>>();
         consoleOptionList.addAll(reportLocationSetting.getConsoleOptionList());
-        consoleOptionList.addAll(emailConfig.getConsoleOptionList());
+        consoleOptionList.addAll(emailSettings.getConsoleOptionList());
         consoleOptionList.addAll(rerunSetting.getConsoleOptionList());
         return consoleOptionList;
     }
@@ -386,7 +387,7 @@ public class TestSuiteExecutedEntity extends ExecutedEntity implements Reportabl
     @Override
     public void setArgumentValue(ConsoleOption<?> consoleOption, String argumentValue) throws Exception {
         reportLocationSetting.setArgumentValue(consoleOption, argumentValue);
-        emailConfig.setArgumentValue(consoleOption, argumentValue);
+        emailSettings.setArgumentValue(consoleOption, argumentValue);
         rerunSetting.setArgumentValue(consoleOption, argumentValue);
     }
     

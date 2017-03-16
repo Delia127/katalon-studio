@@ -80,7 +80,7 @@ import com.kms.katalon.execution.console.ConsoleMain;
 import com.kms.katalon.execution.console.entity.OsgiConsoleOptionContributor;
 import com.kms.katalon.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.execution.entity.DefaultRerunSetting;
-import com.kms.katalon.execution.entity.EmailConfig;
+import com.kms.katalon.execution.entity.EmailSettings;
 import com.kms.katalon.execution.entity.ReportLocationSetting;
 import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
 import com.kms.katalon.execution.util.ExecutionUtil;
@@ -173,7 +173,7 @@ public class GenerateCommandDialog extends AbstractDialog {
 
     private static final String ARG_REPORT_FILE_NAME = ReportLocationSetting.REPORT_FILE_NAME_OPTION;
 
-    private static final String ARG_SEND_MAIL = EmailConfig.SEND_EMAIL_OPTION;
+    private static final String ARG_SEND_MAIL = EmailSettings.SEND_EMAIL_OPTION;
 
     private static final String ARG_OSGI_CONSOLE_LOG = OsgiConsoleOptionContributor.OSGI_CONSOLE_LOG_OPTION;
 
