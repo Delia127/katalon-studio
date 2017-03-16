@@ -64,7 +64,7 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
             TestSuiteEntity testSuite = getTestSuite(project, testSuitePathOption.getValue());
             TestSuiteExecutedEntity executedEntity = new TestSuiteExecutedEntity(testSuite);
             executedEntity.setReportLocation(reportableSetting.getReportLocationSetting());
-            executedEntity.setEmailConfig(reportableSetting.getEmailConfig());
+            executedEntity.setEmailConfig(reportableSetting.getEmailConfig(project));
             executedEntity.setRerunSetting(rerunSetting);
             IRunConfiguration runConfig = createRunConfiguration(project, testSuite, browserTypeOption.getValue());
             runConfig.build(testSuite, executedEntity);

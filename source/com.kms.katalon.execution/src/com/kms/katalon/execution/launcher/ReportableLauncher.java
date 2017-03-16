@@ -63,8 +63,8 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 
         try {
             setStatus(LauncherStatus.PREPARE_REPORT);
-            Date startTime = ReportController.getInstance().getDateFromReportFolderName(
-                    getRunConfig().getExecutionSetting().getName());
+            Date startTime = ReportController.getInstance()
+                    .getDateFromReportFolderName(getRunConfig().getExecutionSetting().getName());
 
             updateLastRun(startTime);
 
@@ -85,8 +85,8 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             TestSuiteEntity testSuite = getTestSuite();
 
             try {
-                IExecutedEntity newTestSuiteExecutedEntity = ExecutionUtil.getRerunExecutedEntity(
-                        (TestSuiteExecutedEntity) getExecutedEntity(), getResult());
+                IExecutedEntity newTestSuiteExecutedEntity = ExecutionUtil
+                        .getRerunExecutedEntity((TestSuiteExecutedEntity) getExecutedEntity(), getResult());
                 writeLine("\n");
                 writeLine(MessageFormat.format(StringConstants.LAU_RPT_RERUN_TEST_SUITE,
                         getExecutedEntity().getSourceId(), String.valueOf(rerun.getPreviousRerunTimes() + 1)));
@@ -126,7 +126,8 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             return;
         }
 
-        EmailConfig emailConfig = ((TestSuiteExecutedEntity) getExecutedEntity()).getEmailConfig();
+        EmailConfig emailConfig = ((TestSuiteExecutedEntity) getExecutedEntity())
+                .getEmailConfig(ProjectController.getInstance().getCurrentProject());
         if (emailConfig == null || !emailConfig.canSend()) {
             return;
         }
@@ -229,9 +230,8 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         if (!(getExecutedEntity() instanceof Reportable)) {
             return;
         }
-        for (Entry<String, ReportIntegrationContribution> reportContributorEntry : ReportIntegrationFactory.getInstance()
-                .getIntegrationContributorMap()
-                .entrySet()) {
+        for (Entry<String, ReportIntegrationContribution> reportContributorEntry : ReportIntegrationFactory
+                .getInstance().getIntegrationContributorMap().entrySet()) {
             ReportIntegrationContribution contribution = reportContributorEntry.getValue();
             if (contribution == null || !contribution.isIntegrationActive(getTestSuite())) {
                 continue;

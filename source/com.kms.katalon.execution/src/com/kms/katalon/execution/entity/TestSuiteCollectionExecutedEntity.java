@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 
 public class TestSuiteCollectionExecutedEntity extends ExecutedEntity implements Reportable {
@@ -79,7 +80,7 @@ public class TestSuiteCollectionExecutedEntity extends ExecutedEntity implements
     }
 
     @Override
-    public EmailConfig getEmailConfig() {
-        return reportable.getEmailConfig();
+    public EmailConfig getEmailConfig(ProjectEntity project) {
+        return reportable.getEmailConfig(project);
     }
 }

@@ -23,6 +23,7 @@ import org.apache.commons.mail.ImageHtmlEmail;
 import org.apache.commons.mail.resolver.DataSourceUrlResolver;
 
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.entity.EmailConfig;
 import com.kms.katalon.execution.setting.EmailSettingStore;
 import com.kms.katalon.logging.LogUtil;
@@ -215,8 +216,11 @@ public class MailUtil {
         return recipientCollector;
     }
 
-    public static EmailConfig getDefaultEmailConfig() {
-        EmailSettingStore store = new EmailSettingStore(ProjectController.getInstance().getCurrentProject());
+    public static EmailConfig getDefaultEmailConfig(ProjectEntity project) {
+        if (project == null) {
+            return null;
+        }
+        EmailSettingStore store = new EmailSettingStore(project);
         try {
             EmailConfig conf = new EmailConfig();
             conf.setHost(store.getHost());

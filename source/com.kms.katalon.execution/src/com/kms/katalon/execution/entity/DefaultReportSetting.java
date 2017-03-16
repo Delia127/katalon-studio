@@ -3,24 +3,26 @@ package com.kms.katalon.execution.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.console.entity.ConsoleOption;
 import com.kms.katalon.execution.console.entity.ConsoleOptionContributor;
-import com.kms.katalon.execution.util.MailUtil;
 
 public class DefaultReportSetting implements Reportable, ConsoleOptionContributor {
+
     private ReportLocationSetting reportLocationSetting;
-    private EmailConfig emailConfig;
-    
+
+    private EmailSettings emailSettings;
+
     public DefaultReportSetting() {
         reportLocationSetting = new ReportLocationSetting();
-        emailConfig = MailUtil.getDefaultEmailConfig();
+        emailSettings = new EmailSettings();
     }
 
     @Override
     public List<ConsoleOption<?>> getConsoleOptionList() {
         List<ConsoleOption<?>> consoleOptions = new ArrayList<>();
         consoleOptions.addAll(reportLocationSetting.getConsoleOptionList());
-        consoleOptions.addAll(emailConfig.getConsoleOptionList());
+        consoleOptions.addAll(emailSettings.getConsoleOptionList());
         return consoleOptions;
     }
 
@@ -30,9 +32,9 @@ public class DefaultReportSetting implements Reportable, ConsoleOptionContributo
             reportLocationSetting.setArgumentValue(consoleOption, argumentValue);
             return;
         }
-        
-        if (emailConfig.getConsoleOptionList().contains(consoleOption)) {
-            emailConfig.setArgumentValue(consoleOption, argumentValue);;
+        if (emailSettings.getConsoleOptionList().contains(consoleOption)) {
+            emailSettings.setArgumentValue(consoleOption, argumentValue);
+            return;
         }
     }
 
@@ -42,8 +44,8 @@ public class DefaultReportSetting implements Reportable, ConsoleOptionContributo
     }
 
     @Override
-    public EmailConfig getEmailConfig() {
-        return emailConfig;
+    public EmailConfig getEmailConfig(ProjectEntity project) {
+        return emailSettings.getEmailConfig(project);
     }
 
 }
