@@ -121,7 +121,7 @@ public class EntityIndexingUtil {
                     .sorted()
                     .collect(Collectors.toList());
             return ids;
-        } catch (IOException e) {
+        } catch (Exception e) {
             LoggerSingleton.logError(e);
             return Collections.emptyList();
         } finally {
@@ -231,7 +231,11 @@ public class EntityIndexingUtil {
 
     private TopDocs search(String searchQuery) throws IOException {
         Query query = queryParser.createBooleanQuery(FIELD_TYPE, searchQuery);
-        return searcher.search(query, reader.maxDoc()); // get all result
+        int maxDoc = reader.maxDoc();
+        if (maxDoc <= 0) {
+            return null;
+        }
+        return searcher.search(query, maxDoc); // get all result
     }
 
 }
