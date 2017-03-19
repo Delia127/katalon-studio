@@ -53,6 +53,9 @@ public class ImprovedGroovyCompletionProposalComputer extends GroovyCompletionPr
     private Collection<String> getImportedNames(ICompilationUnit unit) {
         final Collection<String> importedNames = new LinkedHashSet<>();
         importedNames.add(GroovyConstants.CUSTOM_KEYWORD_LIB_FILE_NAME);
+        if (unit == null) {
+            return importedNames;
+        }
         try {
             for (IImportDeclaration imp : unit.getImports()) {
                 importedNames.add(imp.getElementName());
@@ -169,9 +172,13 @@ public class ImprovedGroovyCompletionProposalComputer extends GroovyCompletionPr
             IDocument document) {
         ContentAssistContext cs = super.createContentAssistContext(unit, invocationOffset, document);
         // Remove suggestions for declaring variable name
-        if (cs.lhsNode != null && ObjectUtils.equals(cs.lhsNode, cs.completionNode)) {
+        if (isSuggestionForVariableDeclare(cs)) {
             return null;
         }
         return cs;
+    }
+
+    private boolean isSuggestionForVariableDeclare(ContentAssistContext cs) {
+        return cs != null && cs.lhsNode != null && ObjectUtils.equals(cs.lhsNode, cs.completionNode);
     }
 }
