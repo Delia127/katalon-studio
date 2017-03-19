@@ -10,7 +10,7 @@ public class JsModel {
 	protected static final String ARRAY_CLOSE = "]";
 	protected static final String ARRAY_DLMT = ",";
 	protected static final String ARRAY_EMPTY = "[]";
-	protected static final String EMPTY_STRING = "*";
+	protected static final String EMPTY_STRING = "\"*\"";
 	protected static final String EMPTY_STRING_INDEX = "0";
 	
 	protected void appendAndEscapeString(List<String> listStrings, String string) {
