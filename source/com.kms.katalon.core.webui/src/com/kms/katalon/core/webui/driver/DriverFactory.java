@@ -336,9 +336,8 @@ public class DriverFactory {
         Socket myClient = null;
         PrintStream output = null;
         try {
-        	myClient = new Socket(RunConfiguration.getSessionServerHost(),
-                    RunConfiguration.getSessionServerPort());
-        	output = new PrintStream(myClient.getOutputStream());
+            myClient = new Socket(RunConfiguration.getSessionServerHost(), RunConfiguration.getSessionServerPort());
+            output = new PrintStream(myClient.getOutputStream());
             output.println(remoteWebDriver.getSessionId());
             output.println(getWebDriverServerUrl(remoteWebDriver));
             DriverType remoteDriverType = getExecutedBrowser();
@@ -355,16 +354,16 @@ public class DriverFactory {
         } catch (Exception e) {
             // Ignore for this exception
         } finally {
-        	if (myClient != null) {
-        		try {
-					myClient.close();
-				} catch (IOException e) {
-					// Ignore for this exception
-				}
-        	}
-        	if (output != null) {
-        		output.close();
-        	}
+            if (myClient != null) {
+                try {
+                    myClient.close();
+                } catch (IOException e) {
+                    // Ignore for this exception
+                }
+            }
+            if (output != null) {
+                output.close();
+            }
         }
     }
 
@@ -519,6 +518,12 @@ public class DriverFactory {
         }
     }
 
+    /**
+     * Get the current alert if there is one popped up
+     * 
+     * @return the current alert if there is one popped up, or null it there is none
+     * @throws WebDriverException
+     */
     public static Alert getAlert() throws WebDriverException {
         startExistingBrowserIfPossible();
         verifyWebDriverIsOpen();
@@ -577,6 +582,12 @@ public class DriverFactory {
         }
     }
 
+    /**
+     * Wait for an alert to pop up for a specific time
+     * 
+     * @param timeOut the timeout to wait for the alert (in milliseconds)
+     * @return
+     */
     public static boolean waitForAlert(int timeOut) {
         startExistingBrowserIfPossible();
         verifyWebDriverIsOpen();
@@ -599,6 +610,9 @@ public class DriverFactory {
         return false;
     }
 
+    /**
+     * Switch the active web driver to any available window
+     */
     public static void switchToAvailableWindow() {
         startExistingBrowserIfPossible();
         verifyWebDriverIsOpen();
@@ -626,6 +640,11 @@ public class DriverFactory {
         }
     }
 
+    /**
+     * Get the index of the window the web driver is on
+     * 
+     * @return the index of the window the web driver is on
+     */
     public static int getCurrentWindowIndex() {
         startExistingBrowserIfPossible();
         verifyWebDriverIsOpen();
@@ -649,9 +668,9 @@ public class DriverFactory {
             } catch (MalformedURLException exception) {
                 // Ignore this
             } catch (ConnectException exception) {
-            	// Ignore this
+                // Ignore this
             } catch (MobileDriverInitializeException exception) {
-            	// Ignore this
+                // Ignore this
             }
         }
     }
@@ -664,6 +683,11 @@ public class DriverFactory {
         return RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, EDGE_DRIVER_PATH_PROPERTY);
     }
 
+    /**
+     * Get the absolute path of the current ChromeDriver
+     * 
+     * @return the absolute path of the current ChromeDriver
+     */
     public static String getChromeDriverPath() {
         return RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, CHROME_DRIVER_PATH_PROPERTY);
     }
@@ -676,27 +700,48 @@ public class DriverFactory {
                 RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, WAIT_FOR_IE_HANGING_PROPERTY));
     }
 
+    /**
+     * Check if page load timeout is enabled
+     * 
+     * @return true if page load timeout is enabled; otherwise false
+     */
     public static boolean isEnablePageLoadTimeout() {
         return RunConfiguration.getBooleanProperty(ENABLE_PAGE_LOAD_TIMEOUT,
                 RunConfiguration.getExecutionGeneralProperties());
     }
 
+    /**
+     * Get the default page load timeout
+     * 
+     * @return the default page load timeout
+     */
     public static int getDefaultPageLoadTimeout() {
         return RunConfiguration.getIntProperty(DEFAULT_PAGE_LOAD_TIMEOUT,
                 RunConfiguration.getExecutionGeneralProperties());
     }
 
+    /**
+     * Check if ignoring the page load timeout exception
+     * 
+     * @return true if ignoring the page load timeout exception; otherwise false
+     */
     public static boolean isIgnorePageLoadTimeoutException() {
         return RunConfiguration.getBooleanProperty(IGNORE_PAGE_LOAD_TIMEOUT_EXCEPTION,
                 RunConfiguration.getExecutionGeneralProperties());
     }
 
+    /**
+     * Get the current executed browser type
+     * 
+     * @see WebUIDriverType
+     * @return the current executed browser type as a {@link DriverType} object
+     */
     public static DriverType getExecutedBrowser() {
         DriverType webDriverType = null;
         if (isUsingExistingDriver()) {
             webDriverType = WebUIDriverType.fromStringValue(RunConfiguration.getExisingSessionDriverType());
         }
-        
+
         if (webDriverType != null) {
             return webDriverType;
         }
@@ -715,14 +760,29 @@ public class DriverFactory {
         return webDriverType;
     }
 
+    /**
+     * Get the url of the remove web driver is the current web driver type is remote
+     * 
+     * @return the url of the remove web driver is the current web driver type is remote, or null if it is not
+     */
     public static String getRemoteWebDriverServerUrl() {
         return RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, REMOTE_WEB_DRIVER_URL);
     }
 
+    /**
+     * Get the type of the remove web driver is the current web driver type is remote
+     * <p>
+     * Possible values: "Selenium", "Appium"
+     * 
+     * @return the type of the remove web driver is the current web driver type is remote, or null if it is not
+     */
     public static String getRemoteWebDriverServerType() {
         return RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, REMOTE_WEB_DRIVER_TYPE);
     }
 
+    /**
+     * Close the active web driver
+     */
     public static void closeWebDriver() {
         startExistingBrowserIfPossible();
         DriverType driverType = getExecutedBrowser();
@@ -808,19 +868,19 @@ public class DriverFactory {
             InetSocketAddress address = new InetSocketAddress(networkUtils.obtainLoopbackIp4Address(), newport);
             Socket socket = null;
             try {
-            	socket = new Socket();
+                socket = new Socket();
                 socket.bind(address);
                 return newport;
             } catch (IOException e) {
                 // Port is already bound. Skip it and continue
             } finally {
-            	if (socket != null) {
-            		try {
-						socket.close();
-					} catch (IOException e) {
-						// Ignore this error
-					}
-            	}
+                if (socket != null) {
+                    try {
+                        socket.close();
+                    } catch (IOException e) {
+                        // Ignore this error
+                    }
+                }
             }
         }
         throw new WebDriverException(String.format("Cannot find free port in the range %d to %d ", port, newport));

@@ -24,6 +24,11 @@ public class Checkpoint {
         id = checkpointId;
     }
 
+    /**
+     * Get the id
+     * 
+     * @return the id
+     */
     public String getId() {
         return id;
     }
@@ -32,6 +37,11 @@ public class Checkpoint {
         this.id = id;
     }
 
+    /**
+     * Get the checkpoint data
+     * 
+     * @return the checkpoint data
+     */
     public List<List<CheckpointCell>> getCheckpointData() {
         return checkpointData;
     }
@@ -40,6 +50,11 @@ public class Checkpoint {
         this.checkpointData = checkpointData;
     }
 
+    /**
+     * Get the source data
+     * 
+     * @return the source data
+     */
     public List<List<Object>> getSourceData() {
         return sourceData;
     }
@@ -48,6 +63,11 @@ public class Checkpoint {
         this.sourceData = sourceData;
     }
 
+    /**
+     * Get the taken date
+     * 
+     * @return the taken date
+     */
     public Date getTakenDate() {
         return takenDate;
     }
@@ -56,6 +76,11 @@ public class Checkpoint {
         this.takenDate = takenDate;
     }
 
+    /**
+     * Get the description
+     * 
+     * @return the description
+     */
     public String getDescription() {
         return description;
     }
@@ -64,10 +89,20 @@ public class Checkpoint {
         this.description = description;
     }
 
+    /**
+     * Get the row total count number of the checkpoint
+     * 
+     * @return the row total count number of the checkpoint
+     */
     public int getCheckpointRowNumbers() {
         return getCheckpointData().size();
     }
 
+    /**
+     * Get the column total count number of the checkpoint
+     * 
+     * @return the column total count number of the checkpoint
+     */
     public int getCheckpointColumnNumbers() {
         if (getCheckpointRowNumbers() == 0) {
             return 0;
@@ -75,10 +110,20 @@ public class Checkpoint {
         return getCheckpointData().get(0).size();
     }
 
+    /**
+     * Get the row total count number of the source
+     * 
+     * @return the row total count number of the source
+     */
     public int getSourceRowNumbers() {
         return getSourceData().size();
     }
 
+    /**
+     * Get the column total count number of the source
+     * 
+     * @return the column total count number of the source
+     */
     public int getSourceColumnNumbers() {
         if (getSourceRowNumbers() == 0) {
             return 0;

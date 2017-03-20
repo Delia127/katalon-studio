@@ -12,6 +12,13 @@ public abstract class ExcelData extends AbstractTestData implements SpreadSheet 
         super(sourceUrl, hasHeaders);
     }
 
+    /**
+     * Get the max column of a row
+     * 
+     * @param rowIndex the row index
+     * @return the max column of a row, or -1 if the row index is invalid
+     * @throws IOException
+     */
     public abstract int getMaxColumn(int rowIndex) throws IOException;
 
     @Override

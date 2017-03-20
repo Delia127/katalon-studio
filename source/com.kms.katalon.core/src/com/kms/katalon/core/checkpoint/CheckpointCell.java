@@ -18,18 +18,38 @@ public class CheckpointCell {
         this.checked = checked;
     }
 
+    /**
+     * Get value of the cell
+     * 
+     * @return value of the cell
+     */
     public Object getValue() {
         return value;
     }
 
+    /**
+     * Set the value to the cell
+     * 
+     * @param value new value of the cell
+     */
     public void setValue(Object value) {
         this.value = value;
     }
 
+    /**
+     * Check if this cell is checked
+     * 
+     * @return true if this cell is checked; otherwise false
+     */
     public boolean isChecked() {
         return checked;
     }
 
+    /**
+     * Set the checked flag for this cell
+     * 
+     * @param checked the checked flag
+     */
     public void setChecked(boolean checked) {
         this.checked = checked;
     }

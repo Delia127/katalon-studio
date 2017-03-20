@@ -50,7 +50,7 @@ public class RunConfiguration {
     public static final String EXECUTION_SYSTEM_PROPERTY = StringConstants.CONF_PROPERTY_EXECUTION_SYSTEM_PROPERTY;
 
     public static final String EXECUTION_PREFS_PROPERTY = StringConstants.CONF_PROPERTY_EXECUTION_PREFS_PROPERTY;
-    
+
     public static final String EXECUTION_TEST_DATA_INFO_PROPERTY = StringConstants.CONF_PROPERTY_TEST_DATA_INFO;
 
     public static final String EXECUTION_PROPERTY = StringConstants.CONF_PROPERTY_EXEC;
@@ -66,13 +66,13 @@ public class RunConfiguration {
     public static final String APP_VERSION = StringConstants.APP_VERSION;
 
     public static final String APP_INFO_FILE_LOCATION = StringConstants.APP_INFO_FILE_LOCATION;
-    
+
     public static final String SESSION_SERVER_HOST = StringConstants.CONF_SESSION_SERVER_HOST;
-    
+
     public static final String SESSION_SERVER_PORT = StringConstants.CONF_SESSION_SERVER_PORT;
 
     public static final String EXCUTION_DEFAULT_FAILURE_HANDLING = StringConstants.CONF_PROPERTY_DEFAULT_FAILURE_HANDLING;
-    
+
     private static String settingFilePath;
 
     private static final ThreadLocal<Map<String, Object>> localExecutionSettingMapStorage = new ThreadLocal<Map<String, Object>>() {
@@ -186,7 +186,7 @@ public class RunConfiguration {
 
         return doubleValue.intValue();
     }
-    
+
     public static boolean getBooleanProperty(String propertyKey, Map<String, Object> jsonObjProperties) {
         return Boolean.valueOf(getStringProperty(propertyKey, jsonObjProperties));
     }
@@ -242,6 +242,11 @@ public class RunConfiguration {
         return settingFilePath;
     }
 
+    /**
+     * Get the absolute path of the execution folder that contains log files
+     * 
+     * @return the absolute path of the execution folder that contains log files
+     */
     public static String getLogFolderPath() {
         String logFilePath = RunConfiguration.getSettingFilePath();
         return (logFilePath != null) ? new File(logFilePath).getParentFile().getAbsolutePath() : "";
@@ -249,10 +254,8 @@ public class RunConfiguration {
 
     public static String getAppiumLogFilePath() {
         if (StringUtils.isBlank(localAppiumDriverStores.get())) {
-            String appiumLogFilePath = getLogFolderPath()
-                    + File.separator
-                    + RunConfiguration.getDriverSystemProperty(StringConstants.CONF_PROPERTY_MOBILE_DRIVER,
-                            StringConstants.CONF_APPIUM_LOG_FILE);
+            String appiumLogFilePath = getLogFolderPath() + File.separator + RunConfiguration.getDriverSystemProperty(
+                    StringConstants.CONF_PROPERTY_MOBILE_DRIVER, StringConstants.CONF_APPIUM_LOG_FILE);
             localAppiumDriverStores.set(appiumLogFilePath);
         }
         return localAppiumDriverStores.get();
@@ -262,49 +265,79 @@ public class RunConfiguration {
         return RunConfiguration.getDriverSystemProperty(StringConstants.CONF_PROPERTY_MOBILE_DRIVER,
                 StringConstants.CONF_APPIUM_DIRECTORY);
     }
-    
+
     public static String getDeviceConsoleExecutable() {
         return RunConfiguration.getDriverSystemProperty(StringConstants.CONF_PROPERTY_MOBILE_DRIVER,
                 StringConstants.XML_LOG_DEVICE_CONSOLE_PATH_PROPERTY);
     }
 
+    /**
+     * Get the execution time out (in seconds)
+     * 
+     * @return the execution time out (in seconds)
+     */
     public static int getTimeOut() {
         return getIntProperty(TIMEOUT_PROPERTY, getExecutionGeneralProperties());
     }
 
+    /**
+     * Get the absolute path of the current project's folder
+     * 
+     * @return the absolute path of the current project's folder
+     */
     public static String getProjectDir() {
         return getStringProperty(PROJECT_DIR_PROPERTY);
     }
 
+    /**
+     * Get the absolute path of the executed target ( test case | test suite | test suite collection )
+     * 
+     * @return the absolute path of the executed target ( test case | test suite | test suite collection )
+     */
     public static String getExecutionSource() {
         return getStringProperty(EXCUTION_SOURCE);
     }
 
+    /**
+     * Get the name of the executed target ( test case | test suite | test suite collection )
+     * 
+     * @return the name of the executed target ( test case | test suite | test suite collection )
+     */
     public static String getExecutionSourceName() {
         return getStringProperty(EXCUTION_SOURCE_NAME);
     }
 
+    /**
+     * Get the id of the executed target ( test case | test suite | test suite collection )
+     * 
+     * @return the id of the executed target ( test case | test suite | test suite collection )
+     */
     public static String getExecutionSourceId() {
         return getStringProperty(EXCUTION_SOURCE_ID);
     }
 
+    /**
+     * Get the description of the executed target ( test case | test suite | test suite collection )
+     * 
+     * @return the description of the executed target ( test case | test suite | test suite collection )
+     */
     public static String getExecutionSourceDescription() {
         return getStringProperty(EXCUTION_SOURCE_DESCRIPTION);
     }
-    
+
     public static int getSessionServerPort() {
         return getIntProperty(SESSION_SERVER_PORT);
     }
-    
+
     public static String getSessionServerHost() {
         return getStringProperty(SESSION_SERVER_HOST);
     }
-    
+
     public static String getExisingSessionSessionId() {
         return RunConfiguration.getDriverSystemProperty(StringConstants.CONF_PROPERTY_EXISTING_DRIVER,
                 StringConstants.CONF_PROPERTY_EXISTING_SESSION_SESSION_ID);
     }
-    
+
     public static String getExisingSessionServerUrl() {
         return RunConfiguration.getDriverSystemProperty(StringConstants.CONF_PROPERTY_EXISTING_DRIVER,
                 StringConstants.CONF_PROPERTY_EXISTING_SESSION_SERVER_URL);
@@ -315,10 +348,20 @@ public class RunConfiguration {
                 StringConstants.CONF_PROPERTY_EXISTING_SESSION_DRIVER_TYPE);
     }
 
+    /**
+     * Get the host name of the current execution machine
+     * 
+     * @return the host name of the current execution machine
+     */
     public static String getHostName() {
         return getStringProperty(HOST_NAME, getHostProperties());
     }
 
+    /**
+     * Get the information of the OS of the current execution machine
+     * 
+     * @return the information of the OS of the current execution machine
+     */
     public static String getOS() {
         return getStringProperty(HOST_OS, getHostProperties());
     }
@@ -355,6 +398,11 @@ public class RunConfiguration {
         }
     }
 
+    /**
+     * Get the current version of Katalon Studio
+     * 
+     * @return the current version of Katalon Studio
+     */
     public static String getAppVersion() {
         Properties appInfo = applicationInfo.get();
         if (appInfo.isEmpty()) {
@@ -363,18 +411,18 @@ public class RunConfiguration {
         return appInfo.getProperty(GlobalStringConstants.APP_VERSION_NUMBER_KEY) + "."
                 + appInfo.getProperty(GlobalStringConstants.APP_BUILD_NUMBER_KEY);
     }
-    
+
     public static FailureHandling getDefaultFailureHandling() {
         try {
-            return FailureHandling.valueOf(getStringProperty(EXCUTION_DEFAULT_FAILURE_HANDLING,
-                    getExecutionGeneralProperties()));
+            return FailureHandling
+                    .valueOf(getStringProperty(EXCUTION_DEFAULT_FAILURE_HANDLING, getExecutionGeneralProperties()));
         } catch (NullPointerException e) {
             return FailureHandling.STOP_ON_FAILURE;
         } catch (IllegalArgumentException e) {
             return FailureHandling.STOP_ON_FAILURE;
         }
     }
-    
+
     public static Map<String, String> getCollectedTestDataProperties() {
         Map<String, Object> generalProperties = getExecutionGeneralProperties();
         return (Map<String, String>) generalProperties.get(EXECUTION_TEST_DATA_INFO_PROPERTY);
