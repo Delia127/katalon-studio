@@ -75,7 +75,7 @@ def static "<%= key %>.<%= it.getName() %>"(<% it.getParameters().eachWithIndex 
                 methodNode.getParameters().each { param ->
                     String className = resolveClassName(param.getType(), true)
                     if (canBeImported(className)) {
-                        importClassNames.add(className)
+                        importClassNames.add(getFullClassName(param.getType()))
                         shortClassNameLookup.put(className, ClassUtils.getShortCanonicalName(className))
                     }
                 }
