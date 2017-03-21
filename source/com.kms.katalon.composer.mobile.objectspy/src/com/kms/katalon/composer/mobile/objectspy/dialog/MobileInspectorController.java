@@ -85,9 +85,6 @@ public class MobileInspectorController {
 
         mobileDriverConnector = (MobileDriverConnector) mobileDriverConnector.clone();
 
-        // Only use system properties in inspecting mode.
-        mobileDriverConnector.getUserConfigProperties().clear();
-
         Map<String, IDriverConnector> driverConnectors = new HashMap<String, IDriverConnector>(1);
         driverConnectors.put(MobileDriverFactory.MOBILE_DRIVER_PROPERTY, mobileDriverConnector);
         DefaultExecutionSetting generalExecutionSetting = new DefaultExecutionSetting();
