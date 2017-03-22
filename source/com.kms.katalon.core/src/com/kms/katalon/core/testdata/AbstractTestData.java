@@ -22,11 +22,22 @@ public abstract class AbstractTestData implements TestData {
         this.hasHeaders = hasHeaders;
     }
 
+    /**
+     * Get the url of the data source
+     * 
+     * @return the url of the data source
+     */
     @Override
     public final String getSourceUrl() {
         return sourceUrl;
     }
 
+    /**
+     * Check if this test data has headers
+     * 
+     * @return true if this test data uses headers; otherwise false
+     * @throws IOException if any io errors happened
+     */
     @Override
     public final boolean hasHeaders() {
         return hasHeaders;
@@ -65,16 +76,40 @@ public abstract class AbstractTestData implements TestData {
         }
     }
 
+    /**
+     * Get value (in String) of the test data at a cell with the column index and row index
+     * 
+     * @param columnIndex column index (column number), starting from 1
+     * @param rowIndex row index (row number), starting from 1
+     * @return value (in String) of the test data
+     * @throws IOException if any io errors happened
+     */
     @Override
     public final String getValue(int columnIndex, int rowIndex) throws IOException {
         return ObjectUtils.toString(getObjectValue(columnIndex, rowIndex));
     }
 
+    /**
+     * Get value (in String) of the test data at a cell with the column name and row index
+     * 
+     * @param columnName column name
+     * @param rowIndex row index (row number), starting from 1
+     * @return value (in String) of the test data
+     * @throws IOException if any io errors happened
+     */
     @Override
     public final String getValue(String columnName, int rowIndex) throws IOException {
         return ObjectUtils.toString(getObjectValue(columnName, rowIndex));
     }
 
+    /**
+     * Get raw value of the test data at a cell with the column index and row index
+     * 
+     * @param columnIndex index of the column, starting from 1
+     * @param rowIndex row number
+     * @return Object value
+     * @throws IOException if any io errors happened
+     */
     @Override
     public final Object getObjectValue(int columnIndex, int rowIndex) throws IOException {
         verifyColumnIndex(columnIndex);
@@ -82,6 +117,14 @@ public abstract class AbstractTestData implements TestData {
         return internallyGetValue(columnIndex - BASE_INDEX, rowIndex - BASE_INDEX);
     }
 
+    /**
+     * Get raw value of the test data at a cell with the column name and row index
+     * 
+     * @param columnName column name
+     * @param rowIndex row index (row number), starting from 1
+     * @return raw value of the test data
+     * @throws IOException if any io errors happened
+     */
     @Override
     public final Object getObjectValue(String columnName, int rowIndex) throws IOException {
         verifyRowIndex(rowIndex);
@@ -97,6 +140,12 @@ public abstract class AbstractTestData implements TestData {
         return hasHeaders ? 1 : 0;
     }
 
+    /**
+     * Set if this test data has headers
+     * 
+     * @param active true to set this test data to use headers
+     * @throws IOException if any io errors happened
+     */
     @Override
     public void activeHeaders(boolean active) throws IOException {
         hasHeaders = active;

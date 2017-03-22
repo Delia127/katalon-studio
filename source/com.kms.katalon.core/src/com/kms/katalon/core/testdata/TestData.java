@@ -93,6 +93,12 @@ public interface TestData {
      */
     boolean hasHeaders();
 
+    /**
+     * Set if this test data has headers
+     * 
+     * @param active true to set this test data to use headers
+     * @throws IOException if any io errors happened
+     */
     void activeHeaders(boolean active) throws IOException;
 
     /**
