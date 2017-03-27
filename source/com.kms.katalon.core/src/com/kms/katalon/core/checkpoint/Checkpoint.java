@@ -90,18 +90,18 @@ public class Checkpoint {
     }
 
     /**
-     * Get the row total count number of the checkpoint
+     * Get the total row numbers of the checkpoint
      * 
-     * @return the row total count number of the checkpoint
+     * @return the total row numbers of the checkpoint
      */
     public int getCheckpointRowNumbers() {
         return getCheckpointData().size();
     }
 
     /**
-     * Get the column total count number of the checkpoint
+     * Get the total column numbers of the checkpoint
      * 
-     * @return the column total count number of the checkpoint
+     * @return the total column numbers of the checkpoint
      */
     public int getCheckpointColumnNumbers() {
         if (getCheckpointRowNumbers() == 0) {
@@ -111,18 +111,18 @@ public class Checkpoint {
     }
 
     /**
-     * Get the row total count number of the source
+     * Get the total row numbers of the source
      * 
-     * @return the row total count number of the source
+     * @return the the total row numbers of the source
      */
     public int getSourceRowNumbers() {
         return getSourceData().size();
     }
 
     /**
-     * Get the column total count number of the source
+     * Get the total column numbers of the source
      * 
-     * @return the column total count number of the source
+     * @return the total column numbers of the source
      */
     public int getSourceColumnNumbers() {
         if (getSourceRowNumbers() == 0) {
