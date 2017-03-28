@@ -20,98 +20,155 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
-
 public class ResponseObject {
 
-	private String contentType = "text";
-	
-	private String responseText;
-	
-	private int statusCode;
-	
-	private Map<String, List<String>> headerFields;
-	
-	public ResponseObject(){}
-	
-	public ResponseObject(String responseText){
-		this.responseText = responseText;
-	}
-	
-	//TODO: Detect the source to see if it is JSON, XML, HTML or plain text
-	public String getResponseBodyContent() throws Exception{
-		if(responseText != null){
-			if(contentType != null && contentType.startsWith("application/xml")){
-				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-				Document doc = dbf.newDocumentBuilder().parse(new InputSource(new StringReader(responseText)));
-				XPath xPath = XPathFactory.newInstance().newXPath();
-				Node node = (Node) xPath.evaluate("//*//*//*", doc, XPathConstants.NODE);
-				return nodeToString(node);
-			}
-			else if(contentType != null && contentType.startsWith("application/json")){
-				return responseText;
-			}
-			//plain text/html
-			else{
-				return responseText;
-			}
-		}
-		return "";
-	}
-	
-	public String getResponseText() {
-		return responseText;
-	}
+    private String contentType = "text";
 
-	public void setResponseText(String responseText) {
-		this.responseText = responseText;
-	}
-	
-	public String getContentType() {
-		return contentType;
-	}
-	
-	public void setContentType(String ct) {
-		this.contentType = ct;;
-	}
+    private String responseText;
 
-	private String nodeToString(Node node) throws TransformerException {
-		StringWriter writer = new StringWriter();
-		Transformer xform = TransformerFactory.newInstance().newTransformer();
-		xform.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-		xform.transform(new DOMSource(node), new StreamResult(writer));
-		return writer.toString();
-	}
-	
-	public boolean isJsonContentType(){
-		return contentType != null && contentType.toLowerCase().startsWith("application/json");
-	}
-	
-	public boolean isXmlContentType(){
-	    String contentTypeString = contentType.toLowerCase();
-		return contentType != null && (
-		        contentTypeString.startsWith("application/xml")
-		        || contentTypeString.equals("application/soap+xml") 
-		        || contentTypeString.equals("text/xml") 
-		        );
-	}
-	
-	public boolean isTextContentType(){
-		return !isJsonContentType() && !isXmlContentType();
-	}
-	
-	public Map<String, List<String>> getHeaderFields() {
-		return headerFields;
-	}
+    private int statusCode;
 
-	public void setHeaderFields(Map<String, List<String>> headerFields) {
-		this.headerFields = headerFields;
-	}
-	
-	public int getStatusCode() {
-		return statusCode;
-	}
+    private Map<String, List<String>> headerFields;
 
-	public void setStatusCode(int statusCode) {
-		this.statusCode = statusCode;
-	}
+    public ResponseObject() {
+    }
+
+    public ResponseObject(String responseText) {
+        this.responseText = responseText;
+    }
+
+    /**
+     * Get the response body content as a String
+     * 
+     * @return the response body content as a String
+     * @throws Exception if errors happened
+     */
+    // TODO: Detect the source to see if it is JSON, XML, HTML or plain text
+    public String getResponseBodyContent() throws Exception {
+        if (responseText != null) {
+            if (contentType != null && contentType.startsWith("application/xml")) {
+                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                Document doc = dbf.newDocumentBuilder().parse(new InputSource(new StringReader(responseText)));
+                XPath xPath = XPathFactory.newInstance().newXPath();
+                Node node = (Node) xPath.evaluate("//*//*//*", doc, XPathConstants.NODE);
+                return nodeToString(node);
+            } else if (contentType != null && contentType.startsWith("application/json")) {
+                return responseText;
+            }
+            // plain text/html
+            else {
+                return responseText;
+            }
+        }
+        return "";
+    }
+
+    /**
+     * Get the raw response text
+     * 
+     * @return the raw response text
+     */
+    public String getResponseText() {
+        return responseText;
+    }
+
+    /**
+     * Set the raw response text
+     * 
+     * @param responseText the new raw response text
+     */
+    public void setResponseText(String responseText) {
+        this.responseText = responseText;
+    }
+
+    /**
+     * Get the content type
+     * 
+     * @return the content type
+     */
+    public String getContentType() {
+        return contentType;
+    }
+
+    /**
+     * Set the content type
+     * 
+     * @param contentType the new content type
+     */
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
+    private String nodeToString(Node node) throws TransformerException {
+        StringWriter writer = new StringWriter();
+        Transformer xform = TransformerFactory.newInstance().newTransformer();
+        xform.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+        xform.transform(new DOMSource(node), new StreamResult(writer));
+        return writer.toString();
+    }
+
+    /**
+     * Check if the content type of this response is json
+     * 
+     * @return true if the content type of this response is json, otherwise false
+     */
+    public boolean isJsonContentType() {
+        return contentType != null && contentType.toLowerCase().startsWith("application/json");
+    }
+
+    /**
+     * Check if the content type of this response is xml
+     * 
+     * @return true if the content type of this response is xml, otherwise false
+     */
+    public boolean isXmlContentType() {
+        String contentTypeString = contentType.toLowerCase();
+        return contentType != null && (contentTypeString.startsWith("application/xml")
+                || contentTypeString.equals("application/soap+xml") || contentTypeString.equals("text/xml"));
+    }
+
+    /**
+     * Check if the content type of this response is raw text
+     * 
+     * @return true if the content type of this response is raw text, otherwise false
+     */
+    public boolean isTextContentType() {
+        return !isJsonContentType() && !isXmlContentType();
+    }
+
+    /**
+     * Get the header fields as a {@link Map}
+     * 
+     * @return the header fields as a {@link Map}
+     */
+    public Map<String, List<String>> getHeaderFields() {
+        return headerFields;
+    }
+
+    /**
+     * Set the header fields
+     * 
+     * @param headerFields the new header fields as a {@link Map}
+     */
+    public void setHeaderFields(Map<String, List<String>> headerFields) {
+        this.headerFields = headerFields;
+    }
+
+    /**
+     * Get the status code
+     * 
+     * @return the status code
+     */
+    public int getStatusCode() {
+        return statusCode;
+    }
+
+    /**
+     * Set the status code
+     * 
+     * @param statusCode the status code
+     */
+    public void setStatusCode(int statusCode) {
+        this.statusCode = statusCode;
+    }
 }

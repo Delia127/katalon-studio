@@ -37,21 +37,44 @@ public class InternalData extends AbstractTestData {
         return -1;
     }
 
+    /**
+     * Get the type of the test data
+     * 
+     * @see TestDataType
+     * @return type of test data
+     */
     @Override
     public TestDataType getType() {
         return TestDataType.INTERNAL_DATA;
     }
 
+    /**
+     * Get all column names of the test data
+     * 
+     * @return an array that contains names of all columns
+     * @throws IOException if any io errors happened
+     */
     @Override
     public String[] getColumnNames() {
         return columnNames.toArray(new String[columnNames.size()]);
     }
 
+    /**
+     * Get total rows of the test data
+     * 
+     * @return total rows of the test data
+     */
     @Override
     public int getRowNumbers() {
         return data.size();
     }
 
+    /**
+     * Get total column of the test data
+     * 
+     * @return total columns of the test data
+     * @throws IOException if any io errors happened
+     */
     @Override
     public int getColumnNumbers() {
         return columnNames.size();
@@ -61,6 +84,13 @@ public class InternalData extends AbstractTestData {
         return data;
     }
 
+    /**
+     * Collect all data of this test data
+     * 
+     * @return a {@link List} that contains all data of each rows, which each item is a {@link List} of raw data from
+     * each cell in that row
+     * @throws IOException if any io errors happened
+     */
     @Override
     public List<List<Object>> getAllData() {
         List<List<Object>> data = new ArrayList<List<Object>>();

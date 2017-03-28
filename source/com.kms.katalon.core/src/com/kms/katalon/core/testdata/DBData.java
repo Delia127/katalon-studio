@@ -36,6 +36,13 @@ public class DBData extends AbstractTestData {
         return fetchedData;
     }
 
+    /**
+     * Collect all data of this test data
+     * 
+     * @return a {@link List} that contains all data of each rows, which each item is a {@link List} of raw data from
+     * each cell in that row
+     * @throws IOException if any io errors happened
+     */
     @Override
     public List<List<Object>> getAllData() {
         return getData();
@@ -45,21 +52,44 @@ public class DBData extends AbstractTestData {
         return retrievedDate;
     }
 
+    /**
+     * Get the type of the test data
+     * 
+     * @see TestDataType
+     * @return type of test data
+     */
     @Override
     public TestDataType getType() {
         return TestDataType.DB_DATA;
     }
 
+    /**
+     * Get all column names of the test data
+     * 
+     * @return an array that contains names of all columns
+     * @throws IOException if any io errors happened
+     */
     @Override
     public String[] getColumnNames() {
         return rsHandler.getColumnNames().toArray(new String[getColumnNumbers()]);
     }
 
+    /**
+     * Get total rows of the test data
+     * 
+     * @return total rows of the test data
+     */
     @Override
     public int getRowNumbers() {
         return fetchedData.size();
     }
 
+    /**
+     * Get total column of the test data
+     * 
+     * @return total columns of the test data
+     * @throws IOException if any io errors happened
+     */
     @Override
     public int getColumnNumbers() {
         return rsHandler.getColumnCount();
@@ -78,20 +108,20 @@ public class DBData extends AbstractTestData {
     @Override
     protected void verifyColumnName(String columnName) throws IOException {
         if (columnNames.indexOf(columnName) == -1) {
-            throw new IllegalArgumentException(MessageFormat.format(
-                    StringConstants.TD_COLUMN_NAME_X_FOR_TEST_DATA_Y_INVALID, columnName, getSourceUrl(),
-                    columnNames.toString()));
+            throw new IllegalArgumentException(
+                    MessageFormat.format(StringConstants.TD_COLUMN_NAME_X_FOR_TEST_DATA_Y_INVALID, columnName,
+                            getSourceUrl(), columnNames.toString()));
         }
     }
 
     private List<List<Object>> fetchData() throws SQLException {
-    	SqlRunner sqlRunner = null;
+        SqlRunner sqlRunner = null;
         try {
-        	sqlRunner = new SqlRunner(databaseConnection, query);
+            sqlRunner = new SqlRunner(databaseConnection, query);
             return sqlRunner.query(rsHandler);
         } finally {
             if (sqlRunner != null) {
-            	sqlRunner.close();
+                sqlRunner.close();
             }
             retrievedDate = new Date();
         }
@@ -102,7 +132,7 @@ public class DBData extends AbstractTestData {
         if (databaseConnection == null) {
             return null;
         }
-        
+
         return databaseConnection.getDBDataInfo();
     }
 }
