@@ -84,7 +84,7 @@ public class OpenReportHandler {
             if (mPart == null) {
                 mPart = modelService.createModelElement(MPart.class);
                 mPart.setElementId(partId);
-                mPart.setLabel(report.getName());
+                mPart.setLabel(report.getDisplayName());
                 mPart.setContributionURI(REPORT_PART_URI);
                 mPart.setCloseable(true);
                 mPart.setIconURI(ImageConstants.URL_16_REPORT);

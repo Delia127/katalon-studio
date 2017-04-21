@@ -128,11 +128,16 @@ public class VariableTableLabelProvider extends TypeCheckedStyleCellLabelProvide
     protected String getElementToolTipText(VariableLink variableLink) {
         VariableType type = variableLink.getType();
         if (type == VariableType.DEFAULT || type == VariableType.SCRIPT_VARIABLE) {
-            getText(variableLink);
+            return StringUtils.defaultIfEmpty(getText(variableLink), null);
         }
 
         switch (columnIndex) {
             case COLUMN_NOTIFICATION_INDEX:
+                String variableType =  variableLink.getType().toString();
+                if (StringUtils.equals(VariableType.SCRIPT_VARIABLE.toString(), variableType) ||
+                        StringUtils.equals(VariableType.DEFAULT.toString(), variableType)) {
+                    return null;
+                }
                 StringBuilder tooltipText = new StringBuilder();
                 if (StringUtils.isEmpty(variableLink.getTestDataLinkId())) {
                     tooltipText.append(StringConstants.LP_WARN_MSG_SET_TEST_DATA_NOTIFY);
@@ -144,21 +149,21 @@ public class VariableTableLabelProvider extends TypeCheckedStyleCellLabelProvide
                     }
                     tooltipText.append(StringConstants.LP_WARN_MSG_SET_TEST_DATA_COLUMN_NOTIFY);
                 }
-                return tooltipText.toString();
+                return StringUtils.defaultIfEmpty(tooltipText.toString(), null);
             case COLUMN_TEST_DATA_ID_INDEX: {
                 if (StringUtils.isEmpty(variableLink.getTestDataLinkId())) {
                     return StringConstants.LP_WARN_MSG_SET_TEST_DATA;
                 }
-                return getText(variableLink);
+                return StringUtils.defaultIfEmpty(getText(variableLink), null);
             }
             case COLUMN_VALUE_INDEX: {
                 if (StringUtils.isEmpty(variableLink.getValue())) {
                     return StringConstants.LP_WARN_MSG_SET_TEST_DATA_COLUMN;
                 }
-                return getText(variableLink);
+                return StringUtils.defaultIfEmpty(getText(variableLink), null);
             }
             default:
-                return getText(variableLink);
+                return StringUtils.defaultIfEmpty(getText(variableLink), null);
         }
     }
 }

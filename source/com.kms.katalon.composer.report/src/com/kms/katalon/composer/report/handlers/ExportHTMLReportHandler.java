@@ -45,10 +45,11 @@ public class ExportHTMLReportHandler {
 						if (!htmlFile.exists()) {
 							ReportUtil.writeLogRecordToFiles(report.getLocation());
 						}
-						FileUtils.copyFileToDirectory(htmlFile, exportDirectory);
+						FileUtils.copyFile(htmlFile, new File(exportDirectory,
+                                report.getDisplayName() + ReportEntity.EXTENSION_HTML_REPORT));
 						Desktop.getDesktop().open(exportDirectory);
 					}
-				} catch (Exception e) {
+				} catch (Throwable e) {
 					LoggerSingleton.logError(e);
 					MessageDialog.openError(shell, "Error", "Unable to export html report (" + e.getMessage() + ")");
 				}

@@ -6,15 +6,17 @@ import javax.inject.Named;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.checkpoint.constants.StringConstants;
-import com.kms.katalon.composer.checkpoint.dialogs.wizard.NewCheckpointWizardDialog;
 import com.kms.katalon.composer.checkpoint.dialogs.wizard.NewCheckpointWizard;
+import com.kms.katalon.composer.checkpoint.dialogs.wizard.NewCheckpointWizardDialog;
 import com.kms.katalon.composer.components.impl.tree.CheckpointTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -149,6 +151,15 @@ public class NewCheckpointHandler {
         }
 
         return (ITreeEntity) selectedObject;
+    }
+
+    @Inject
+    @Optional
+    private void execute(@UIEventTopic(EventConstants.CHECKPOINT_NEW) Object eventData) {
+        if (!canExecute()) {
+            return;
+        }
+        execute();
     }
 
 }

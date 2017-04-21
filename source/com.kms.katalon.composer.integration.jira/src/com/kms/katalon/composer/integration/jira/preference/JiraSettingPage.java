@@ -5,7 +5,6 @@ import java.text.MessageFormat;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -22,19 +21,21 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.atlassian.jira.rest.client.api.domain.User;
+import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.jira.constant.ComposerJiraIntegrationMessageConstant;
 import com.kms.katalon.composer.integration.jira.constant.StringConstants;
 import com.kms.katalon.composer.integration.jira.preference.JiraConnectionJob.JiraConnectionResult;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.integration.jira.JiraCredential;
 import com.kms.katalon.integration.jira.entity.JiraIssueType;
 import com.kms.katalon.integration.jira.entity.JiraProject;
 import com.kms.katalon.integration.jira.setting.JiraIntegrationSettingStore;
 
-public class JiraSettingPage extends PreferencePage {
+public class JiraSettingPage extends PreferencePageWithHelp {
 
     private Composite container;
 
@@ -286,5 +287,15 @@ public class JiraSettingPage extends PreferencePage {
     @Override
     protected void performDefaults() {
         initialize();
+    }
+    
+    @Override
+    protected boolean hasDocumentation() {
+        return true;
+    }
+
+    @Override
+    protected String getDocumentationUrl() {
+        return DocumentationMessageConstants.SETTINGS_JIRA;
     }
 }

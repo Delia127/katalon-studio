@@ -20,6 +20,7 @@ import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.KeywordController;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -37,6 +38,9 @@ public class RefreshFolderHandler {
             @SuppressWarnings("restriction")
             @Override
             public void handleEvent(Event event) {
+                if (ProjectController.getInstance().getCurrentProject() == null) {
+                    return;
+                }
                 try {
                     Object selectedObject = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
                     if (selectedObject != null && selectedObject instanceof FolderTreeEntity) {
@@ -64,7 +68,7 @@ public class RefreshFolderHandler {
         }
 
         if ((folderTreeEntity.getObject() != null) && (folderTreeEntity.getObject() instanceof FolderEntity)) {
-            FolderEntity folderEntity = (FolderEntity) folderTreeEntity.getObject();
+            FolderEntity folderEntity = folderTreeEntity.getObject();
 
             if (!isRecursive) {
                 RefreshingFolderJob refreshingJob = new RefreshingFolderJob(folderEntity);

@@ -26,10 +26,9 @@ import com.kms.katalon.core.testdata.reader.CSVSeparator;
 import com.kms.katalon.core.testdata.reader.CsvWriter;
 import com.kms.katalon.core.util.internal.PathUtil;
 import com.kms.katalon.entity.report.ReportEntity;
-import com.kms.katalon.entity.report.ReportItemDescription;
-import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
+import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.execution.entity.EmailConfig;
 import com.kms.katalon.execution.entity.IExecutedEntity;
@@ -63,9 +62,9 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         }
 
         try {
-            setStatus(LauncherStatus.SENDING_REPORT);
-            Date startTime = ReportController.getInstance().getDateFromReportFolderName(
-                    getRunConfig().getExecutionSetting().getName());
+            setStatus(LauncherStatus.PREPARE_REPORT);
+            Date startTime = ReportController.getInstance()
+                    .getDateFromReportFolderName(getRunConfig().getExecutionSetting().getName());
 
             updateLastRun(startTime);
 
@@ -86,8 +85,8 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             TestSuiteEntity testSuite = getTestSuite();
 
             try {
-                IExecutedEntity newTestSuiteExecutedEntity = ExecutionUtil.getRerunExecutedEntity(
-                        (TestSuiteExecutedEntity) getExecutedEntity(), getResult());
+                IExecutedEntity newTestSuiteExecutedEntity = ExecutionUtil
+                        .getRerunExecutedEntity((TestSuiteExecutedEntity) getExecutedEntity(), getResult());
                 writeLine("\n");
                 writeLine(MessageFormat.format(StringConstants.LAU_RPT_RERUN_TEST_SUITE,
                         getExecutedEntity().getSourceId(), String.valueOf(rerun.getPreviousRerunTimes() + 1)));
@@ -115,36 +114,38 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 
     private void sendReport() {
         try {
-            setStatus(LauncherStatus.SENDING_REPORT, StringConstants.LAU_MESSAGE_SENDING_EMAIL);
-            File testSuiteReportSourceFolder = new File(getRunConfig().getExecutionSetting().getFolderPath());
-
-            File csvFile = new File(testSuiteReportSourceFolder,
-                    FilenameUtils.getBaseName(testSuiteReportSourceFolder.getName()) + ".csv");
-
-            List<String> csvReports = new ArrayList<String>();
-
-            csvReports.add(csvFile.getAbsolutePath());
-
-            List<Object[]> suitesSummaryForEmail = collectSummaryData(csvReports);
-
-            sendReportEmail(csvFile, suitesSummaryForEmail);
+            sendReportEmail();
         } catch (Exception e) {
             writeError(MessageFormat.format(StringConstants.MSG_RP_ERROR_TO_EMAIL_REPORT, e.getMessage()));
         }
     }
 
-    private void sendReportEmail(File csvFile, List<Object[]> suitesSummaryForEmail) throws Exception {
+    private void sendReportEmail() throws Exception {
+        
         if (!(getExecutedEntity() instanceof TestSuiteExecutedEntity)) {
             return;
         }
 
-        EmailConfig emailConfig = ((TestSuiteExecutedEntity) getExecutedEntity()).getEmailConfig();
+        EmailConfig emailConfig = ((TestSuiteExecutedEntity) getExecutedEntity())
+                .getEmailConfig(ProjectController.getInstance().getCurrentProject());
         if (emailConfig == null || !emailConfig.canSend()) {
             return;
         }
 
+        setStatus(LauncherStatus.SENDING_REPORT, StringConstants.LAU_MESSAGE_SENDING_EMAIL);
         writeLine(MessageFormat.format(StringConstants.LAU_PRT_SENDING_EMAIL_RPT_TO,
                 Arrays.toString(emailConfig.getTos())));
+
+        File testSuiteReportSourceFolder = new File(getRunConfig().getExecutionSetting().getFolderPath());
+
+        File csvFile = new File(testSuiteReportSourceFolder,
+                FilenameUtils.getBaseName(testSuiteReportSourceFolder.getName()) + ".csv");
+        
+        List<String> csvReports = new ArrayList<String>();
+
+        csvReports.add(csvFile.getAbsolutePath());
+
+        List<Object[]> suitesSummaryForEmail = collectSummaryData(csvReports);
 
         // Send report email
         MailUtil.sendSummaryMail(emailConfig, csvFile, getReportFolder(), suitesSummaryForEmail);
@@ -163,8 +164,19 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 
     protected TestSuiteLogRecord prepareReport() {
         try {
+            setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_GENERATE_REPORT);
             TestSuiteLogRecord suiteLog = ReportUtil.generate(getRunConfig().getExecutionSetting().getFolderPath());
-            ReportUtil.writeLogRecordToFiles(suiteLog, getReportFolder());
+            File reportFolder = getReportFolder();
+            
+            setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_HTML);
+            ReportUtil.writeHtmlReport(suiteLog, reportFolder);
+
+            setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_CSV);
+            ReportUtil.writeCSVReport(suiteLog, reportFolder);
+
+            setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_SIMPLE_HTML);
+            ReportUtil.writeSimpleHTMLReport(suiteLog, reportFolder);
+            
             copyReport();
             return suiteLog;
         } catch (Exception e) {
@@ -218,15 +230,14 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         if (!(getExecutedEntity() instanceof Reportable)) {
             return;
         }
-        for (Entry<String, ReportIntegrationContribution> reportContributorEntry : ReportIntegrationFactory.getInstance()
-                .getIntegrationContributorMap()
-                .entrySet()) {
+        for (Entry<String, ReportIntegrationContribution> reportContributorEntry : ReportIntegrationFactory
+                .getInstance().getIntegrationContributorMap().entrySet()) {
             ReportIntegrationContribution contribution = reportContributorEntry.getValue();
             if (contribution == null || !contribution.isIntegrationActive(getTestSuite())) {
                 continue;
             }
             String integratingProductName = reportContributorEntry.getKey();
-            setStatus(LauncherStatus.SENDING_REPORT,
+            setStatus(LauncherStatus.UPLOAD_REPORT,
                     MessageFormat.format(StringConstants.LAU_MESSAGE_UPLOADING_RPT, integratingProductName));
             try {
                 writeLine(MessageFormat.format(StringConstants.LAU_PRT_SENDING_RPT_TO, integratingProductName));
@@ -339,10 +350,9 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         return suitesSummaryForEmail;
     }
 
-    public ReportItemDescription getReportDescription(RunConfigurationDescription configDescription) {
+    public ReportEntity getReportEntity() {
         try {
-            ReportEntity reportEntity = ReportController.getInstance().getReportEntity(getTestSuite(), getId());
-            return ReportItemDescription.from(reportEntity.getIdForDisplay(), configDescription);
+            return ReportController.getInstance().getReportEntity(getTestSuite(), getId());
         } catch (Exception e) {
             LogUtil.logError(e);
             return null;

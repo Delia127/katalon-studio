@@ -1,5 +1,6 @@
 package com.kms.katalon.dal.fileservice.dataprovider;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,11 +11,12 @@ import com.kms.katalon.dal.fileservice.EntityService;
 import com.kms.katalon.dal.fileservice.constants.StringConstants;
 import com.kms.katalon.dal.fileservice.manager.EntityFileServiceManager;
 import com.kms.katalon.dal.fileservice.manager.FolderFileServiceManager;
+import com.kms.katalon.dal.state.DataProviderState;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
-import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity.ExecutionMode;
+import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 public class TestSuiteCollectionFileServiceDataProvider implements TestSuiteCollectionDataProvider {
 
@@ -29,7 +31,12 @@ public class TestSuiteCollectionFileServiceDataProvider implements TestSuiteColl
     @Override
     public TestSuiteCollectionEntity get(String testSuiteCollectionId) throws DALException {
         try {
-            return (TestSuiteCollectionEntity) getEntityService().getEntityByPath(testSuiteCollectionId);
+            TestSuiteCollectionEntity testSuiteCollection = (TestSuiteCollectionEntity) EntityFileServiceManager
+                    .get(new File(testSuiteCollectionId));
+            if (testSuiteCollection != null) {
+                testSuiteCollection.setProject(DataProviderState.getInstance().getCurrentProject());
+            }
+            return testSuiteCollection;
         } catch (Exception e) {
             throw new DALException(e);
         }
@@ -134,8 +141,8 @@ public class TestSuiteCollectionFileServiceDataProvider implements TestSuiteColl
         }
     }
 
-    public List<TestSuiteCollectionEntity> getTestSuiteCollectionReferences(TestSuiteEntity testSuite, ProjectEntity project)
-            throws DALException {
+    public List<TestSuiteCollectionEntity> getTestSuiteCollectionReferences(TestSuiteEntity testSuite,
+            ProjectEntity project) throws DALException {
         try {
             List<TestSuiteCollectionEntity> allTestSuiteCollections = EntityFileServiceManager.getDescendants(
                     FolderFileServiceManager.getTestSuiteRoot(project), TestSuiteCollectionEntity.class);
@@ -151,15 +158,15 @@ public class TestSuiteCollectionFileServiceDataProvider implements TestSuiteColl
         }
     }
 
-    public void removeTestSuiteCollectionReferences(TestSuiteEntity testSuite, List<TestSuiteCollectionEntity> testSuiteReferences)
-            throws DALException {
+    public void removeTestSuiteCollectionReferences(TestSuiteEntity testSuite,
+            List<TestSuiteCollectionEntity> testSuiteReferences) throws DALException {
         try {
             for (TestSuiteCollectionEntity referralCollection : testSuiteReferences) {
                 if (!referralCollection.hasTestSuiteReferences(testSuite)) {
                     continue;
                 }
-                referralCollection.getTestSuiteRunConfigurations().removeAll(
-                        referralCollection.findRunConfigurations(testSuite));
+                referralCollection.getTestSuiteRunConfigurations()
+                        .removeAll(referralCollection.findRunConfigurations(testSuite));
                 update(referralCollection);
             }
         } catch (Exception e) {
@@ -167,7 +174,8 @@ public class TestSuiteCollectionFileServiceDataProvider implements TestSuiteColl
         }
     }
 
-    public void updateTestSuiteCollectionReferences(TestSuiteEntity testSuite, ProjectEntity project) throws DALException {
+    public void updateTestSuiteCollectionReferences(TestSuiteEntity testSuite, ProjectEntity project)
+            throws DALException {
         try {
             for (TestSuiteCollectionEntity referralCollection : getTestSuiteCollectionReferences(testSuite, project)) {
                 getEntityService().saveEntity(referralCollection);

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
@@ -36,8 +37,6 @@ public class LogRecordLookup implements EventHandler {
         }
         return _instance;
     }
-    
-
 
     public TestSuiteLogRecord getTestSuiteLogRecord(String reportId) {
         if (StringUtils.isEmpty(reportId)) {
@@ -64,7 +63,20 @@ public class LogRecordLookup implements EventHandler {
                 LoggerSingleton.logError(e);
             }
         }
+        return suiteLogRecord;
+    }
 
+    public synchronized TestSuiteLogRecord getTestSuiteLogRecord(ReportEntity reportEntity,
+            IProgressMonitor progressMonitor) {
+        TestSuiteLogRecord suiteLogRecord = suiteLogRecordMap.get(reportEntity.getId());
+        if (suiteLogRecord == null) {
+            try {
+                suiteLogRecord = ReportUtil.generate(reportEntity.getLocation(), progressMonitor);
+                suiteLogRecordMap.put(reportEntity.getId(), suiteLogRecord);
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+            }
+        }
         return suiteLogRecord;
     }
 
@@ -83,30 +95,30 @@ public class LogRecordLookup implements EventHandler {
     public void handleEvent(Event event) {
         String topic = event.getTopic();
         switch (topic) {
-        case EventConstants.REPORT_UPDATED: {
-            // Remove TestSuiteLogRecord if it's out of date
-            Object[] objects = (Object[]) event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-            if (objects == null || objects.length != 2) {
-                return;
+            case EventConstants.REPORT_UPDATED: {
+                // Remove TestSuiteLogRecord if it's out of date
+                Object[] objects = (Object[]) event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
+                if (objects == null || objects.length != 2) {
+                    return;
+                }
+                String updatedReportId = (String) objects[0];
+                if (suiteLogRecordMap.containsKey(updatedReportId)) {
+                    suiteLogRecordMap.remove(updatedReportId);
+                }
+                break;
             }
-            String updatedReportId = (String) objects[0];
-            if (suiteLogRecordMap.containsKey(updatedReportId)) {
-                suiteLogRecordMap.remove(updatedReportId);
+            case EventConstants.REPORT_DELETED: {
+                // Remove TestSuiteLogRecord if it has been deleted
+                String reportId = (String) event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
+                if (suiteLogRecordMap.containsKey(reportId)) {
+                    suiteLogRecordMap.remove(reportId);
+                }
+                break;
             }
-            break;
-        }
-        case EventConstants.REPORT_DELETED: {
-            // Remove TestSuiteLogRecord if it has been deleted
-            String reportId = (String) event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-            if (suiteLogRecordMap.containsKey(reportId)) {
-                suiteLogRecordMap.remove(reportId);
+            case EventConstants.PROJECT_OPENED: {
+                suiteLogRecordMap.clear();
+                break;
             }
-            break;
-        }
-        case EventConstants.PROJECT_OPENED: {
-            suiteLogRecordMap.clear();
-            break;
-        }
         }
     }
 }

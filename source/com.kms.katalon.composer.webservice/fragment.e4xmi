@@ -15,10 +15,9 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_GaNPAHPGEeW6OYuGjekwrg" featurename="children" parentElementId="com.kms.katalon.menu.submenu.new" positionInList="after:com.kms.katalon.menu.submenu.new.testsuite">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_OZOUAHPGEeW6OYuGjekwrg" elementId="com.kms.katalon.composer.webservice.handledmenuitem.webServiceRequest" label="Web Service Request" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/ws_test_object_16.png" tooltip="" command="_zzY_QLEBEeSrwsGaXHfzzg"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_vpqigHPdEeW6OYuGjekwrg" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="after:com.kms.katalon.composer.objectrepository.handledtoolitem.newTestObject">
-    <elements xsi:type="menu:HandledToolItem" xmi:id="_1XCVAHPdEeW6OYuGjekwrg" elementId="com.kms.katalon.composer.webservice.handledtoolitem.newWsRequest" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/new_ws_test_object_24.png" tooltip="New Web Service Request" command="_zzY_QLEBEeSrwsGaXHfzzg">
-      <persistedState key="index" value="9"/>
-      <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/new_ws_test_object_disabled_24.png"/>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_vpqigHPdEeW6OYuGjekwrg" featurename="children" parentElementId="com.kms.katalon.composer.toolbar.new.menu" positionInList="">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_9jHaYNvYEeaEL7_gfQD4GQ" elementId="com.kms.katalon.composer.webservice.handledtoolitem.newWsRequest" label="Web Service Request" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/ws_test_object_16.png" command="_zzY_QLEBEeSrwsGaXHfzzg">
+      <persistedState key="index" value="5"/>
     </elements>
   </fragments>
 </fragment:ModelFragments>

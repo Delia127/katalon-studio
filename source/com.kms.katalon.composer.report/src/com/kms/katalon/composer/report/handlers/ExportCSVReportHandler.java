@@ -50,7 +50,7 @@ public class ExportCSVReportHandler {
                             return;
                         }
                         
-                        File exportedFile = new File(exportDirectory, report.getName() + ".csv");                  
+                        File exportedFile = new File(exportDirectory, report.getDisplayName() + ReportEntity.EXTENSION_CSV_REPORT);                  
                         ReportUtil.writeLogRecordToCSVFile(suiteLogRecord, exportedFile,
                                 Arrays.asList(suiteLogRecord.getChildRecords()));
                         Desktop.getDesktop().open(exportedFile);

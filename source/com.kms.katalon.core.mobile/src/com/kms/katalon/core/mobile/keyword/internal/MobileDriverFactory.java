@@ -29,10 +29,6 @@ import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.remote.MobileCapabilityType;
 
 public class MobileDriverFactory {
-    private static final String REAL_DEVICE_LOGGER = "realDeviceLogger";
-
-    private static final String XCUI_TEST = "XCUITest";
-
     private static final String WAIT_FOR_APP_SCRIPT_TRUE = "true;";
 
     private static final String WAIT_FOR_APP_SCRIPT = "waitForAppScript";
@@ -45,43 +41,98 @@ public class MobileDriverFactory {
 
     public static final String EXISTING_DRIVER_PROPERTY = StringConstants.CONF_PROPERTY_EXISTING_DRIVER;
 
+    /**
+     * Clean up all running drivers and processes
+     * 
+     * @throws InterruptedException
+     * @throws IOException
+     */
     public static void cleanup() throws InterruptedException, IOException {
         AppiumDriverManager.cleanup();
     }
 
+    /**
+     * Get the native app mobile driver type of the current active driver
+     * 
+     * @see MobileDriverType
+     * @return the driver type
+     */
     public static MobileDriverType getMobileDriverType() {
         return MobileDriverType.valueOf(RunConfiguration.getDriverSystemProperty(MOBILE_DRIVER_PROPERTY,
                 AppiumDriverManager.EXECUTED_PLATFORM));
     }
 
+    /**
+     * Get the platform of the current active driver
+     * <p>
+     * Possible values: iOS, Android
+     * 
+     * @return the platform
+     */
     public static String getDevicePlatform() {
         return getMobileDriverType().toString();
     }
 
+    /**
+     * Get the id of the current mobile device
+     * 
+     * @return the id of the current mobile device
+     */
     public static String getDeviceId() {
         return AppiumDriverManager.getDeviceId(MOBILE_DRIVER_PROPERTY);
     }
 
+    /**
+     * Get the name of the current mobile device
+     * 
+     * @return the name of the current mobile device
+     */
     public static String getDeviceName() {
         return AppiumDriverManager.getDeviceName(MOBILE_DRIVER_PROPERTY);
     }
 
+    /**
+     * Get the model of the current mobile device
+     * 
+     * @return the model of the current mobile device
+     */
     public static String getDeviceModel() {
         return AppiumDriverManager.getDeviceModel(MOBILE_DRIVER_PROPERTY);
     }
 
+    /**
+     * Get the manufacturer of the current mobile device
+     * 
+     * @return the manufacturer of the current mobile device
+     */
     public static String getDeviceManufacturer() {
         return AppiumDriverManager.getDeviceManufacturer(MOBILE_DRIVER_PROPERTY);
     }
 
+    /**
+     * Get the os version of the current mobile device
+     * 
+     * @return the os version of the current mobile device
+     */
     public static String getDeviceOSVersion() {
         return AppiumDriverManager.getDeviceOSVersion(MOBILE_DRIVER_PROPERTY);
     }
 
+    /**
+     * Get the os of the current mobile device
+     * 
+     * @return the os of the current mobile device
+     */
     public static String getDeviceOS() {
         return AppiumDriverManager.getDeviceOS(MOBILE_DRIVER_PROPERTY);
     }
 
+    /**
+     * Get the current active native app mobile driver
+     * 
+     * @return the active mobile driver as an {@link AppiumDriver} object
+     * @throws StepFailedException
+     */
     public static AppiumDriver<?> getDriver() throws StepFailedException {
         try {
             AppiumDriver<?> driver = AppiumDriverManager.getDriver();
@@ -98,6 +149,9 @@ public class MobileDriverFactory {
         }
     }
 
+    /**
+     * Close the current active mobile driver
+     */
     public static void closeDriver() {
         AppiumDriverManager.closeDriver();
     }
@@ -123,8 +177,10 @@ public class MobileDriverFactory {
             capabilities.setCapability(WAIT_FOR_APP_SCRIPT, WAIT_FOR_APP_SCRIPT_TRUE);
             try {
                 if (AppiumDriverManager.getXCodeVersion() >= 8) {
-                    capabilities.setCapability(MobileCapabilityType.AUTOMATION_NAME, XCUI_TEST);
-                    capabilities.setCapability(REAL_DEVICE_LOGGER, RunConfiguration.getDeviceConsoleExecutable());
+                    capabilities.setCapability(MobileCapabilityType.AUTOMATION_NAME, AppiumDriverManager.XCUI_TEST);
+                    capabilities.setCapability(AppiumDriverManager.REAL_DEVICE_LOGGER,
+                            RunConfiguration.getDeviceConsoleExecutable());
+                    capabilities.setCapability(AppiumDriverManager.WDA_LOCAL_PORT, AppiumDriverManager.getFreePort());
                 }
             } catch (ExecutionException e) {
                 // XCode version not found, ignore this
@@ -153,6 +209,18 @@ public class MobileDriverFactory {
         return getExecutedDriver() instanceof ExistingDriverType;
     }
 
+    /**
+     * Start a new native app mobile driver
+     * 
+     * @param appFile the absolute path of the application file
+     * @param uninstallAfterCloseApp true to un-install the app after execution
+     * @return the newly created driver with type {@link AppiumDriver}
+     * @throws AppiumStartException
+     * @throws IOException
+     * @throws InterruptedException
+     * @throws MobileDriverInitializeException
+     * @throws IOSWebkitStartException
+     */
     public static AppiumDriver<?> startMobileDriver(String appFile, boolean uninstallAfterCloseApp)
             throws AppiumStartException, IOException, InterruptedException, MobileDriverInitializeException,
             IOSWebkitStartException {
@@ -187,6 +255,12 @@ public class MobileDriverFactory {
         }
     }
 
+    /**
+     * Get the native app mobile driver type of the current active driver
+     * 
+     * @see MobileDriverType
+     * @return the driver type
+     */
     public static DriverType getExecutedDriver() {
         if (RunConfiguration.getDriverSystemProperties(EXISTING_DRIVER_PROPERTY) != null) {
             return new ExistingDriverType(null);
@@ -205,6 +279,20 @@ public class MobileDriverFactory {
                 RunConfiguration.getExisingSessionSessionId(), RunConfiguration.getExisingSessionServerUrl());
     }
 
+    /**
+     * Start a new native app mobile driver
+     * 
+     * @param osType the os type for the new mobile driver with type {@link MobileDriverType}
+     * @param deviceId id of the device
+     * @param deviceName name of the device
+     * @param appFile absolute path of the application file
+     * @param uninstallAfterCloseApp true to un-install the app after execution
+     * @return the newly created driver with type {@link AppiumDriver}
+     * @throws MobileDriverInitializeException
+     * @throws IOException
+     * @throws InterruptedException
+     * @throws AppiumStartException
+     */
     public static AppiumDriver<?> startMobileDriver(MobileDriverType osType, String deviceId, String deviceName,
             String appFile, boolean uninstallAfterCloseApp)
             throws MobileDriverInitializeException, IOException, InterruptedException, AppiumStartException {

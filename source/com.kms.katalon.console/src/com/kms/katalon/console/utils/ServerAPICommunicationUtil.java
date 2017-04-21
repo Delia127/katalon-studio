@@ -4,26 +4,19 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.Authenticator;
 import java.net.HttpURLConnection;
-import java.net.InetSocketAddress;
-import java.net.PasswordAuthentication;
-import java.net.Proxy;
-import java.net.ProxySelector;
-import java.net.URI;
 import java.net.URL;
-import java.util.List;
-import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.kms.katalon.console.constants.ConsoleMessageConstants;
 import com.kms.katalon.logging.LogUtil;
 
 public class ServerAPICommunicationUtil {
-    public static final String URL_API = "https://backend-dev.katalon.com/api";
+    private static final String DEVELOPMENT_URL_API = "https://backend-dev.katalon.com/api";
+    
+    private static final String PRODUCTION_URL_API = "https://update.katalon.com/api";
 
     private static final String POST = "POST";
 
@@ -36,7 +29,7 @@ public class ServerAPICommunicationUtil {
     public static String invoke(String method, String function, String jsonData) throws IOException {
         HttpURLConnection connection = null;
         try {
-            connection = createConnection(method, URL_API + function);
+            connection = createConnection(method, getAPIUrl() + function);
             return sendAndReceiveData(connection, jsonData);
         } catch (Exception ex) {
             LogUtil.logError(ex);
@@ -46,6 +39,13 @@ public class ServerAPICommunicationUtil {
                 connection.disconnect();
             }
         }
+    }
+    
+    public static String getAPIUrl() {
+        if (VersionUtil.isInternalBuild()) {
+            return DEVELOPMENT_URL_API;
+        }
+        return PRODUCTION_URL_API;
     }
 
     public static String getInformation(String url, JsonObject jsonObject) {

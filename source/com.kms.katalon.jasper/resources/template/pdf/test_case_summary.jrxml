@@ -29,7 +29,7 @@
 				<textElement>
 					<font fontName="DejaVu Sans" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[com.kms.katalon.core.util.DateUtil.getDateTimeFormatted($P{testCaseRecord}.getEndTime())]]></textFieldExpression>
+				<textFieldExpression><![CDATA[com.kms.katalon.core.util.internal.DateUtil.getDateTimeFormatted($P{testCaseRecord}.getEndTime())]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement positionType="Float" x="110" y="50" width="360" height="20" uuid="19bd3299-ceb2-4b3f-a4d2-4947b3781fad"/>
@@ -92,7 +92,7 @@
 				<textElement>
 					<font fontName="DejaVu Sans" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[com.kms.katalon.core.util.DateUtil.getDateTimeFormatted($P{testCaseRecord}.getStartTime())]]></textFieldExpression>
+				<textFieldExpression><![CDATA[com.kms.katalon.core.util.internal.DateUtil.getDateTimeFormatted($P{testCaseRecord}.getStartTime())]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement positionType="Float" x="40" y="73" width="430" height="20" uuid="258e934a-7b9a-4767-a88e-35fac11b29e1"/>
@@ -120,7 +120,7 @@
 				<textElement>
 					<font fontName="DejaVu Sans" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[com.kms.katalon.core.util.DateUtil.getElapsedTime($P{testCaseRecord}.getStartTime(), $P{testCaseRecord}.getEndTime())]]></textFieldExpression>
+				<textFieldExpression><![CDATA[com.kms.katalon.core.util.internal.DateUtil.getElapsedTime($P{testCaseRecord}.getStartTime(), $P{testCaseRecord}.getEndTime())]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement positionType="Float" x="255" y="73" width="70" height="20" uuid="e2a7ee78-560d-4bef-909c-d2bb83a0f1ee"/>

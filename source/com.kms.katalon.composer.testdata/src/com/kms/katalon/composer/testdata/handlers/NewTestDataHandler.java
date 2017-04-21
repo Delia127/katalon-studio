@@ -18,6 +18,7 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
@@ -58,11 +59,8 @@ public class NewTestDataHandler {
 	private FolderTreeEntity testDataTreeRoot;
 
 	@CanExecute
-	private boolean canExecute() throws Exception {
-		if (ProjectController.getInstance().getCurrentProject() != null) {
-			return true;
-		}
-		return false;
+    private boolean canExecute() {
+        return ProjectController.getInstance().getCurrentProject() != null;
 	}
 
     @Execute
@@ -123,7 +121,7 @@ public class NewTestDataHandler {
 							return (ITreeEntity) entity;
 						}
 					} else if (entityObject instanceof DataFileEntity) {
-						return (ITreeEntity) ((ITreeEntity) entity).getParent();
+						return ((ITreeEntity) entity).getParent();
 					}
 				}
 			}
@@ -150,4 +148,14 @@ public class NewTestDataHandler {
 			LoggerSingleton.logError(e);
 		}
 	}
+
+    @Inject
+    @Optional
+    private void execute(@UIEventTopic(EventConstants.TEST_DATA_NEW) Object eventData) {
+        if (!canExecute()) {
+            return;
+        }
+        execute(Display.getCurrent().getActiveShell());
+    }
+
 }

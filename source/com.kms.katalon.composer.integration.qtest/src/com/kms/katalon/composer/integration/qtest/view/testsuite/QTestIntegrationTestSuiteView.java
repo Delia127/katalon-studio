@@ -96,6 +96,7 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
         glCompositeButton.marginHeight = 0;
         glCompositeButton.marginWidth = 0;
         compositeButton.setLayout(glCompositeButton);
+        compositeButton.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
         btnUpload = new Button(compositeButton, SWT.FLAT);
         btnUpload.setToolTipText(StringConstants.VIEW_TOOLTIP_UPLOAD_TEST_SUITE);

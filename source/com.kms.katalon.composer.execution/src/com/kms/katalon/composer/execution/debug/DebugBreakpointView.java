@@ -186,7 +186,9 @@ public class DebugBreakpointView extends JDIModelPresentation implements IDebugE
             String testCaseId = getTestCaseIdByClassName(className);
             if (StringUtils.isNotEmpty(testCaseId)) {
                 TestCaseEntity testCase = TestCaseController.getInstance().getTestCaseByDisplayId(testCaseId);
-                addTextHover(getTestScriptEditor(testCase), new DebugTextHover());
+                AbstractTextEditor testScriptEditor = getTestScriptEditor(testCase);
+                addTextHover(testScriptEditor, new DebugTextHover());
+                positionEditor(testScriptEditor, frame);
             }
         } catch (Exception e) {
             // If an exception occurs that means test case meta data

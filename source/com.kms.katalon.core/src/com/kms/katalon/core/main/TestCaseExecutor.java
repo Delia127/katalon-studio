@@ -210,14 +210,15 @@ public class TestCaseExecutor {
 
     private Object runScript(File scriptFile)
             throws ResourceException, ScriptException, IOException, ClassNotFoundException {
-        return engine.runScriptAsRawText(FileUtils.readFileToString(scriptFile), scriptFile.getName(), variableBinding);
+        return engine.runScriptAsRawText(FileUtils.readFileToString(scriptFile),
+                scriptFile.toURI().toURL().toExternalForm(), variableBinding);
     }
 
     protected void runMethod(File scriptFile, String methodName)
             throws ResourceException, ScriptException, ClassNotFoundException, IOException {
         engine.changeConfigForExecutingScript();
-        engine.runScriptMethodAsRawText(FileUtils.readFileToString(scriptFile), scriptFile.getName(), methodName,
-                variableBinding);
+        engine.runScriptMethodAsRawText(FileUtils.readFileToString(scriptFile),
+                scriptFile.toURI().toURL().toExternalForm(), methodName, variableBinding);
     }
 
     private Map<String, String> getTestCaseProperties(TestCaseBinding testCaseBinding, TestCase testCase,

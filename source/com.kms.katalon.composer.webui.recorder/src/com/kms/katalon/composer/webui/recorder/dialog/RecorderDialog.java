@@ -22,7 +22,6 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.jdt.internal.ui.dialogs.StatusInfo;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
@@ -95,11 +94,13 @@ import org.eclipse.ui.dialogs.ISelectionStatusValidator;
 import org.osgi.framework.Bundle;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
 import com.kms.katalon.composer.components.dialogs.AbstractDialogCellEditor;
 import com.kms.katalon.composer.components.impl.control.Dropdown;
 import com.kms.katalon.composer.components.impl.control.DropdownGroup;
 import com.kms.katalon.composer.components.impl.control.DropdownItemSelectionListener;
 import com.kms.katalon.composer.components.impl.control.DropdownToolItemSelectionListener;
+import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
@@ -119,6 +120,7 @@ import com.kms.katalon.composer.webui.recorder.core.HTMLElementRecorderServer;
 import com.kms.katalon.composer.webui.recorder.core.RecordSession;
 import com.kms.katalon.composer.webui.recorder.util.HTMLActionUtil;
 import com.kms.katalon.composer.webui.recorder.websocket.RecorderAddonSocket;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
@@ -150,7 +152,7 @@ import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef.HWND;
 
 @SuppressWarnings("restriction")
-public class RecorderDialog extends Dialog implements EventHandler {
+public class RecorderDialog extends AbstractDialog implements EventHandler {
     private static final String IE_WINDOW_CLASS = "IEFrame"; //$NON-NLS-1$
 
     private static final String relativePathToIEAddonSetup = File.separator + "extensions" + File.separator + "IE" //$NON-NLS-1$ //$NON-NLS-2$
@@ -230,7 +232,7 @@ public class RecorderDialog extends Dialog implements EventHandler {
         eventBroker.subscribe(EventConstants.RECORDER_HTML_ACTION_CAPTURED, this);
         startSocketServer();
     }
-    
+
     private void startSocketServer() {
         try {
             new ProgressMonitorDialog(getParentShell()).run(true, false, new IRunnableWithProgress() {
@@ -290,8 +292,7 @@ public class RecorderDialog extends Dialog implements EventHandler {
         if (selectedBrowser == WebUIDriverType.IE_DRIVER) {
             runInstantIE();
         }
-        currentInstantSocket = AddonSocketServer.getInstance()
-                .getAddonSocketByBrowserName(selectedBrowser.toString());
+        currentInstantSocket = AddonSocketServer.getInstance().getAddonSocketByBrowserName(selectedBrowser.toString());
         if (currentInstantSocket == null) {
             return;
         }
@@ -438,19 +439,23 @@ public class RecorderDialog extends Dialog implements EventHandler {
     }
 
     @Override
-    protected Control createDialogArea(Composite parent) {
+    protected Control createDialogContainer(Composite parent) {
         // Set window title for dialog
-        if (getShell() != null)
+        if (getShell() != null) {
             getShell().setText(StringConstants.DIA_TITLE_RECORD);
+        }
 
-        Composite container = (Composite) super.createDialogArea(parent);
-        GridLayout gl_container = new GridLayout();
-        container.setLayout(gl_container);
+        Composite container = new Composite(parent, SWT.NONE);
+        GridLayout glMain = new GridLayout();
+        glMain.marginHeight = 0;
+        glMain.marginWidth = 0;
+        container.setLayout(glMain);
 
         createToolbar(container);
 
-        Composite bodyComposite = (Composite) super.createDialogArea(container);
+        Composite bodyComposite = new Composite(container, SWT.NONE);
         bodyComposite.setLayout(new FillLayout(SWT.VERTICAL));
+        bodyComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         SashForm hSashForm = new SashForm(bodyComposite, SWT.NONE);
         hSashForm.setSashWidth(5);
@@ -1477,6 +1482,21 @@ public class RecorderDialog extends Dialog implements EventHandler {
     }
 
     @Override
+    protected Control createButtonBar(Composite parent) {
+        Composite bottomComposite = new Composite(parent, SWT.NONE);
+        GridLayout layout = new GridLayout(2, false);
+        layout.marginHeight = 0;
+        layout.marginWidth = 0;
+        bottomComposite.setLayout(layout);
+        bottomComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        
+        new HelpCompositeForDialog(bottomComposite, DocumentationMessageConstants.DIALOG_RECORDER_WEB_UI);
+        super.createButtonBar(bottomComposite);
+
+        return bottomComposite;
+    }
+
+    @Override
     protected void okPressed() {
         AddToObjectRepositoryDialog addToObjectRepositoryDialog = new AddToObjectRepositoryDialog(getParentShell(),
                 true, elements, capturedObjectComposite.getElementTreeViewer().getExpandedElements());
@@ -1587,6 +1607,16 @@ public class RecorderDialog extends Dialog implements EventHandler {
                 addNewActionMapping((HTMLActionMapping) dataObject);
                 return;
         }
+    }
+
+    @Override
+    protected void registerControlModifyListeners() {
+        // Do nothing for this
+    }
+
+    @Override
+    protected void setInput() {
+        // Do nothing for this
     }
 
 }

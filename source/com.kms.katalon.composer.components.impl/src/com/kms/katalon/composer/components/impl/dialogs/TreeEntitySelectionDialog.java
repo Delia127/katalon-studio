@@ -22,6 +22,7 @@ import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 
 import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
+import com.kms.katalon.composer.components.impl.control.CTreeViewer;
 import com.kms.katalon.composer.components.impl.providers.AbstractEntityViewerFilter;
 import com.kms.katalon.composer.components.impl.providers.IEntityLabelProvider;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -103,6 +104,11 @@ public class TreeEntitySelectionDialog extends ElementTreeSelectionDialog {
         treeViewer.getTree().setFocus();
 
         return treeViewer;
+    }
+    
+    @Override
+    protected TreeViewer doCreateTreeViewer(Composite parent, int style) {
+        return new CTreeViewer(parent, style);
     }
 
     protected void expandTreeViewerToInitialElements() {

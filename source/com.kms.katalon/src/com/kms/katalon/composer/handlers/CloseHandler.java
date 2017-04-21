@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor;
 
 import com.kms.katalon.composer.components.impl.handler.AbstractHandler;
@@ -49,14 +48,10 @@ public class CloseHandler extends AbstractHandler {
             }
         } else {
             if (part.getObject() instanceof CompatibilityEditor) {
-                PlatformUI.getWorkbench()
-                        .getActiveWorkbenchWindow()
-                        .getActivePage()
-                        .closeEditor(((CompatibilityEditor) part.getObject()).getEditor(), true);
-            } else {
-                if (partService.savePart(part, true)) {
-                    partService.hidePart(part);
-                }
+                part = ((CompatibilityEditor) part.getObject()).getModel();
+            }
+            if (partService.savePart(part, true)) {
+                partService.hidePart(part);
             }
         }
     }

@@ -449,7 +449,7 @@ public class TestSuitePart implements EventHandler {
 
         Composite compositeExecutionCompositeHeader = new Composite(compositeExecution, SWT.NONE);
         compositeExecutionCompositeHeader.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-        GridLayout glCompositeExecutionCompositeHeader = new GridLayout(2, false);
+        GridLayout glCompositeExecutionCompositeHeader = new GridLayout(3, false);
         glCompositeExecutionCompositeHeader.marginHeight = 0;
         glCompositeExecutionCompositeHeader.marginWidth = 0;
         compositeExecutionCompositeHeader.setLayout(glCompositeExecutionCompositeHeader);
@@ -462,7 +462,7 @@ public class TestSuitePart implements EventHandler {
         redrawBtnExpandExecutionInfo();
 
         lblExecutionInformation = new Label(compositeExecutionCompositeHeader, SWT.NONE);
-        lblExecutionInformation.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        lblExecutionInformation.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
         lblExecutionInformation.setFont(JFaceResources.getFontRegistry().getBold(""));
         lblExecutionInformation.setText("Execution Information");
 

@@ -5,19 +5,14 @@ import java.util.List;
 
 import org.eclipse.swt.widgets.Display;
 
-import com.kms.katalon.composer.components.impl.handler.CommonExplorerHandler;
+import com.kms.katalon.composer.components.impl.handler.AddTestObjectHandler;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 
-public class AddToMobileObjectSpyHandler extends CommonExplorerHandler {
-
-    @Override
-    public boolean canExecute() {
-        return true;
-    }
+public class AddToMobileObjectSpyHandler extends AddTestObjectHandler {
 
     @Override
     public void execute() {
@@ -37,7 +32,6 @@ public class AddToMobileObjectSpyHandler extends CommonExplorerHandler {
                 LoggerSingleton.logError(e);
             }
         }
-
         MobileSpyMobileHandler.getInstance().openAndAddElements(Display.getCurrent().getActiveShell(), webElements);
     }
 }

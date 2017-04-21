@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:advanced="http://www.eclipse.org/ui/2010/UIModel/application/ui/advanced" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_hQQH0BYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.application">
-  <children xsi:type="basic:TrimmedWindow" xmi:id="_hQQH0RYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.window.main" label="Katalon Studio" iconURI="" bindingContexts="_mWGB8AQqEeWyKYoESvUc1g" x="0" y="0" width="800" height="600">
+  <children xsi:type="basic:TrimmedWindow" xmi:id="_hQQH0RYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.window.main" selectedElement="_hQQH8BYMEeSUMbyEN2kbFQ" label="Katalon Studio" iconURI="" bindingContexts="_mWGB8AQqEeWyKYoESvUc1g" x="0" y="0" width="800" height="600">
     <tags>shellMaximized</tags>
     <children xsi:type="advanced:PerspectiveStack" xmi:id="_hQQH8BYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.perspectiveStack" selectedElement="_hQQH8RYMEeSUMbyEN2kbFQ">
       <children xsi:type="advanced:Perspective" xmi:id="_hQQH8RYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.perspective.keyword" selectedElement="_hQQH8hYMEeSUMbyEN2kbFQ" label="Keyword" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/keyword_perspective_16.png" tooltip="Keyword Perspective">
@@ -92,11 +92,13 @@
       </children>
       <children xsi:type="menu:Menu" xmi:id="_IjUoUNnnEeWQyuuwTERZYg" elementId="com.kms.katalon.composer.menu.window" label="Window">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_xoCTINn4EeWQyuuwTERZYg" elementId="com.kms.katalon.composer.menu.window.resetPerspective" label="Reset Perspective..." tooltip="" command="_oilxkNn4EeWQyuuwTERZYg"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="__AZwYO9jEeaEL7_gfQD4GQ" elementId="com.kms.katalon.handledmenuitem.commandpalette" label="Command Palette..." mnemonics="" command="_nGeSINxwEeaEL7_gfQD4GQ"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_hQQH7hYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.help" label="Help">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_hQQH7xYMEeSUMbyEN2kbFQ" label="About" tooltip="" command="_hQQH5hYMEeSUMbyEN2kbFQ"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_dj8ScGgxEeatJ4Re1SnNtw" elementId="com.kms.katalon.handledmenuitem.welcome" label="Katalon Help" tooltip="" command="_jm89wGgxEeatJ4Re1SnNtw"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_iImwQGp9EeakEakFblwi9Q" elementId="com.kms.katalon.handledmenuitem.functionsintroduction" label="Quick Guide" tooltip="" command="_agaP0Gp9EeakEakFblwi9Q"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_YU7NEOxNEeal34fhcBE7BQ" elementId="com.kms.katalon.handledmenuitem.reportIssue" label="Report Issue" tooltip="" command="_blPuUOxNEeal34fhcBE7BQ"/>
       </children>
     </mainMenu>
     <sharedElements xsi:type="basic:Part" xmi:id="_yewVQD8LEeSqW-o8jtXO1g" elementId="org.eclipse.ui.console.ConsoleView" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Console" iconURI="platform:/plugin/org.eclipse.ui.console/icons/full/cview16/console_view.png"/>
@@ -121,18 +123,26 @@
     <trimBars xmi:id="_hQQH9RYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.trimbar">
       <children xsi:type="menu:ToolBar" xmi:id="_hQQH9hYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.toolbar">
         <tags>NoMove</tags>
-        <children xsi:type="menu:HandledToolItem" xmi:id="_hQQH-BYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.toolbar.save" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/save_24.png" tooltip="Save" command="_hQQH4xYMEeSUMbyEN2kbFQ">
+        <children xsi:type="menu:HandledToolItem" xmi:id="_hQQH-BYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.toolbar.save" label="Save" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/save_24.png" tooltip="" command="_hQQH4xYMEeSUMbyEN2kbFQ">
           <persistedState key="index" value="0"/>
           <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/save_disabled_24.png"/>
           <tags>Opaque</tags>
+          <tags>FORCE_TEXT</tags>
         </children>
-        <children xsi:type="menu:HandledToolItem" xmi:id="_5oUMAEO4EeSlQuaMBzQJOw" elementId="com.kms.katalon.composer.toolbar.saveAll" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/save_all_24.png" tooltip="Save All" command="_8qJlUEO4EeSlQuaMBzQJOw">
+        <children xsi:type="menu:HandledToolItem" xmi:id="_5oUMAEO4EeSlQuaMBzQJOw" elementId="com.kms.katalon.composer.toolbar.saveAll" label="Save All" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/save_all_24.png" tooltip="" command="_8qJlUEO4EeSlQuaMBzQJOw">
           <persistedState key="index" value="1"/>
           <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/save_all_disabled_24.png"/>
           <tags>Opaque</tags>
+          <tags>FORCE_TEXT</tags>
         </children>
         <children xsi:type="menu:ToolBarSeparator" xmi:id="_3PTrMBQXEeWFKqx225rIVg" elementId="com.kms.katalon.toolbarseparator.0">
           <persistedState key="index" value="2"/>
+        </children>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_vacCkNujEeaEL7_gfQD4GQ" elementId="com.kms.katalon.composer.toolbar.new" label="New" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/new_24.png" tooltip="" command="_4ZGKMNukEeaEL7_gfQD4GQ">
+          <persistedState key="index" value="3"/>
+          <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/new_disabled_24.png"/>
+          <tags>FORCE_TEXT</tags>
+          <menu xmi:id="_x0pbMNujEeaEL7_gfQD4GQ" elementId="com.kms.katalon.composer.toolbar.new.menu" label=""/>
         </children>
       </children>
       <children xsi:type="menu:ToolControl" xmi:id="_1-cu4OJUEeSyVPtKyNklew" elementId="PerspectiveSpacer" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.renderers.swt/org.eclipse.e4.ui.workbench.renderers.swt.LayoutModifierToolControl">
@@ -163,8 +173,15 @@
   <handlers xmi:id="_uIDlQNn4EeWQyuuwTERZYg" elementId="com.kms.katalon.composer.menu.handler.resetPerspective" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.ResetPerspectiveHandler" command="_oilxkNn4EeWQyuuwTERZYg"/>
   <handlers xmi:id="_oHfwwGgxEeatJ4Re1SnNtw" elementId="com.kms.katalon.handler.welcome" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenWelcomePageHandler" command="_jm89wGgxEeatJ4Re1SnNtw"/>
   <handlers xmi:id="_Z3rb4Gp9EeakEakFblwi9Q" elementId="com.kms.katalon.handler.functionsIntroduction" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenFunctionsIntroductionHandler" command="_agaP0Gp9EeakEakFblwi9Q"/>
+  <handlers xmi:id="_dcHiMNurEeaEL7_gfQD4GQ" elementId="com.kms.katalon.handler.toolbar.new" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.NewHandler" command="_4ZGKMNukEeaEL7_gfQD4GQ"/>
+  <handlers xmi:id="_fCWuYOxNEeal34fhcBE7BQ" elementId="com.kms.katalon.handler.reportIssue" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.ReportIssueHandler" command="_blPuUOxNEeal34fhcBE7BQ"/>
+  <handlers xmi:id="_sGnLMNxwEeaEL7_gfQD4GQ" elementId="com.kms.katalon.handler.commandpalette" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.CommandPaletteHandler" command="_nGeSINxwEeaEL7_gfQD4GQ"/>
+  <handlers xmi:id="_MI5sEPKjEeaEMap8QCd-4Q" elementId="com.kms.katalon.handler.preferences" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.PreferenceHandler" command="_H0WtsPKjEeaEMap8QCd-4Q"/>
   <bindingTables xmi:id="_GQOAAAONEeWmYfckKw0_5w" elementId="com.kms.katalon.bindingtable.window" bindingContext="_mWGB8AQqEeWyKYoESvUc1g">
     <bindings xmi:id="_RvI6YAONEeWmYfckKw0_5w" elementId="com.kms.katalon.keybinding.search" keySequence="M1+H" command="_N5ChkARIEeWyKYoESvUc1g">
+      <tags>type:user</tags>
+    </bindings>
+    <bindings xmi:id="_gS9-ANxwEeaEL7_gfQD4GQ" elementId="com.kms.katalon.keybinding.commandpalette" keySequence="CTRL+ALT+C" command="_nGeSINxwEeaEL7_gfQD4GQ">
       <tags>type:user</tags>
     </bindings>
   </bindingTables>
@@ -180,6 +197,10 @@
   <commands xmi:id="_agaP0Gp9EeakEakFblwi9Q" elementId="com.kms.katalon.command.openFunctionsIntroductionCommand" commandName="openFunctionsIntroductionCommand"/>
   <commands xmi:id="_uIL9wI7GEeantftUyMtBVg" elementId="org.eclipse.ui.edit.undo" commandName="undoCommand"/>
   <commands xmi:id="_2yTOMI7GEeantftUyMtBVg" elementId="org.eclipse.ui.edit.redo" commandName="redoCommand"/>
+  <commands xmi:id="_4ZGKMNukEeaEL7_gfQD4GQ" elementId="com.kms.katalon.command.new" commandName="New Command" description="Command for New button on toolbar"/>
+  <commands xmi:id="_blPuUOxNEeal34fhcBE7BQ" elementId="com.kms.katalon.command.reportIssue" commandName="reportIssueCommand"/>
+  <commands xmi:id="_nGeSINxwEeaEL7_gfQD4GQ" elementId="com.kms.katalon.command.commandpalette" commandName="Command Palette"/>
+  <commands xmi:id="_H0WtsPKjEeaEMap8QCd-4Q" elementId="com.kms.katalon.command.katalonpreferences" commandName="Katalon Preferences"/>
   <addons xmi:id="_hQQH0hYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_hQQH0xYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_hQQH1BYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>
@@ -189,4 +210,5 @@
   <addons xmi:id="_hQQH2BYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.ui.workbench.bindings.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.swt/org.eclipse.e4.ui.workbench.swt.util.BindingProcessingAddon"/>
   <addons xmi:id="_efHPkNn6EeWQyuuwTERZYg" elementId="com.kms.katalon.addons.PerspectiveResetAddon" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.addons.PerspectiveResetAddon"/>
   <addons xmi:id="_s3AskJDxEea1OZrYaBxRZA" elementId="com.kms.katalon.addon.CustomJFaceDialogMessageImages" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.addons.CustomJFaceDialogMessageImages"/>
+  <addons xmi:id="_MsrW0PfuEeagEZnDjERnuw" elementId="com.kms.katalon.addon.defaultwindow" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.addons.ApplicationDefaultSelectedWindowAddon"/>
 </application:Application>

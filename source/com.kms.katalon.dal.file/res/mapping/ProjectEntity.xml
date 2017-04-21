@@ -5,6 +5,7 @@
 		<java-type name="ProjectEntity">
 			<xml-root-element name="Project" />
 			<java-attributes>
+				<xml-element java-attribute="UUID"/>
 				<xml-element java-attribute="pageLoadTimeout"/>
 				<xml-transient java-attribute="folderLocation"/>
 			</java-attributes>

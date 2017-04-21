@@ -13,6 +13,7 @@ import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.testcase.ast.editors.InputCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.TestObjectCellEditor;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
+import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.TokenWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.BinaryExpressionWrapper;
@@ -25,6 +26,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStateme
 import com.kms.katalon.composer.testcase.model.InputParameter;
 import com.kms.katalon.composer.testcase.model.InputParameterBuilder;
 import com.kms.katalon.composer.testcase.model.InputValueType;
+import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
 import com.kms.katalon.composer.testcase.util.AstValueUtil;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
@@ -126,7 +128,7 @@ public abstract class AstAbstractKeywordTreeTableNode extends AstInputEditableSt
     public String getTestObjectText() {
         ExpressionWrapper expression = getTestObjectExpression();
         if (expression == null) {
-            return "";
+            return StringUtils.EMPTY;
         }
         InputValueType inputValueType = AstValueUtil.getTypeValue(expression);
         if (inputValueType != null) {
@@ -137,7 +139,15 @@ public abstract class AstAbstractKeywordTreeTableNode extends AstInputEditableSt
 
     @Override
     public String getTestObjectTooltipText() {
-        return getTestObjectText();
+        ExpressionWrapper expression = getTestObjectExpression();
+        if (expression == null) {
+            return StringUtils.EMPTY;
+        }
+        InputValueType inputValueType = AstValueUtil.getTypeValue(expression);
+        if (inputValueType != null) {
+            return getTestObjectTooltipText(expression);
+        }
+        return getTestObjectExpression().getText();
     }
 
     @Override
@@ -330,5 +340,16 @@ public abstract class AstAbstractKeywordTreeTableNode extends AstInputEditableSt
         return methodCall.getMethod() != null && COMMENT_KW_NAME.equals(methodCall.getMethodAsString())
                 && methodCall.getObjectExpression() != null && KeywordController.getInstance()
                         .getBuiltInKeywordClassByName(methodCall.getObjectExpressionAsString()) != null;
+    }
+    
+    public String getTestObjectTooltipText(ASTNodeWrapper astObject) {
+        if (astObject instanceof MethodCallExpressionWrapper) {
+            return getTooltipForTestObjectArgument((MethodCallExpressionWrapper) astObject);
+        }
+        return ((ASTNodeWrapper) astObject).getText();
+    }
+    
+    public String getTooltipForTestObjectArgument(MethodCallExpressionWrapper methodCall) {
+        return AstEntityInputUtil.getEntityRelativeIdFromMethodCall(methodCall);
     }
 }

@@ -8,11 +8,11 @@ import java.net.Socket;
 import java.util.List;
 
 import javax.net.ServerSocketFactory;
+import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.io.IOUtils;
 
 import com.kms.katalon.core.logging.XMLLoggerParser;
-import com.kms.katalon.core.logging.XMLParserException;
 import com.kms.katalon.core.logging.XmlLogRecord;
 import com.kms.katalon.logging.LogUtil;
 
@@ -54,7 +54,7 @@ public class SocketWatcher extends AbstractLogWatcher {
                     builder.append(LINE_SEPERATOR + line);
 
                     if (TAG_END_RECORD.equals(line.trim()) && builder.length() > 0) {
-                        List<XmlLogRecord> records = XMLLoggerParser.parseLogString(prepareString(builder));
+                        List<XmlLogRecord> records = XMLLoggerParser.readFromString(prepareString(builder));
                         logCollection.addLogRecords(records);
                         break;
                     }
@@ -63,7 +63,7 @@ public class SocketWatcher extends AbstractLogWatcher {
 
         } catch (IOException | InterruptedException e) {
             // Don't need to log here
-        } catch (XMLParserException e) {
+        } catch (XMLStreamException e) {
             LogUtil.logError(e);
         } finally {
             IOUtils.closeQuietly(reader);

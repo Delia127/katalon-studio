@@ -12,11 +12,9 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_hyP94CkhEeSovtUyBOitzw" featurename="children" parentElementId="com.kms.katalon.menu.submenu.new" positionInList="before:com.kms.katalon.menu.submenu.new.package">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_q9XCkCkhEeSovtUyBOitzw" elementId="com.kms.katalon.menu.submenu.new.testdata" label="Test Data" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/test_data_16.png" tooltip="" command="_KAfY4CkhEeSovtUyBOitzw"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_4fH-cCkhEeSovtUyBOitzw" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="before:com.kms.katalon.composer.toolbar.handledtoolitem.new.keyword">
-    <elements xsi:type="menu:HandledToolItem" xmi:id="_8oQXACkhEeSovtUyBOitzw" elementId="com.kms.katalon.composer.toolbar.testdata.newtestdata" label="" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/new_test_data_24.png" tooltip="New Test Data" command="_KAfY4CkhEeSovtUyBOitzw">
-      <persistedState key="index" value="10"/>
-      <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/new_test_data_disabled_24.png"/>
-      <tags>FORCE_TEXT</tags>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_4fH-cCkhEeSovtUyBOitzw" featurename="children" parentElementId="com.kms.katalon.composer.toolbar.new.menu" positionInList="">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_bB6asNvZEeaEL7_gfQD4GQ" elementId="com.kms.katalon.composer.toolbar.testdata.newtestdata" label="Test Data" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/test_data_16.png" command="_KAfY4CkhEeSovtUyBOitzw">
+      <persistedState key="index" value="6"/>
     </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_I9IpACkiEeSovtUyBOitzw" featurename="children" parentElementId="com.kms.katalon.composer.explorer.popupmenu.new" positionInList="">

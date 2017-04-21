@@ -75,7 +75,7 @@ def static "<%= key %>.<%= it.getName() %>"(<% it.getParameters().eachWithIndex 
                 methodNode.getParameters().each { param ->
                     String className = resolveClassName(param.getType(), true)
                     if (canBeImported(className)) {
-                        importClassNames.add(className)
+                        importClassNames.add(getFullClassName(param.getType()))
                         shortClassNameLookup.put(className, ClassUtils.getShortCanonicalName(className))
                     }
                 }
@@ -85,7 +85,7 @@ def static "<%= key %>.<%= it.getName() %>"(<% it.getParameters().eachWithIndex 
     }
 
     private static boolean canBeImported(String className) {
-        return StringUtils.isNotEmpty(className) && className.contains(DOT) && !isGroovyImportedClassName(className) 
+        return StringUtils.isNotEmpty(className) && className.contains(DOT);
     }
 
     public static String resolveClassName(ClassNode classNode, boolean resolveGeneric) {
@@ -115,7 +115,7 @@ def static "<%= key %>.<%= it.getName() %>"(<% it.getParameters().eachWithIndex 
                 classNameBuilder.append(">")
                 return classNameBuilder.toString()
             }
-            return isGroovyImportedClassName(fullClassName) ? ClassUtils.getShortCanonicalName(fullClassName) : fullClassName
+            return fullClassName;
         } catch (Exception ignored) {
             return classNode.getUnresolvedName()
         }

@@ -13,7 +13,6 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditor;
-import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
@@ -28,10 +27,12 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Link;
 
+import com.kms.katalon.composer.components.dialogs.FieldEditorPreferencePageWithHelp;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.preferences.ComboFieldEditor;
 import com.kms.katalon.composer.integration.kobiton.constants.ComposerIntegrationKobitonMessageConstants;
 import com.kms.katalon.composer.integration.kobiton.constants.ComposerKobitonStringConstants;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.integration.kobiton.constants.KobitonPreferenceConstants;
 import com.kms.katalon.integration.kobiton.entity.KobitonApiKey;
 import com.kms.katalon.integration.kobiton.entity.KobitonLoginInfo;
@@ -39,7 +40,7 @@ import com.kms.katalon.integration.kobiton.exceptions.KobitonApiException;
 import com.kms.katalon.integration.kobiton.providers.KobitonApiProvider;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 
-public class KobitonPreferencesPage extends FieldEditorPreferencePage {
+public class KobitonPreferencesPage extends FieldEditorPreferencePageWithHelp {
     private static final char PASSWORD_ECHO_CHAR = '*';
 
     private ComboFieldEditor apiKeyComboEditor;
@@ -277,4 +278,13 @@ public class KobitonPreferencesPage extends FieldEditorPreferencePage {
         return composite;
     }
 
+    @Override
+    protected boolean hasDocumentation() {
+        return true;
+    }
+
+    @Override
+    protected String getDocumentationUrl() {
+        return DocumentationMessageConstants.PREFERENCE_KOBITON;
+    }
 }

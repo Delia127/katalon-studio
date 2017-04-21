@@ -17,10 +17,16 @@
 		<product.win32OutputDirectory>${product.buildDirectory}/${product.id}/win32/win32/x86</product.win32OutputDirectory>
 		<product.win64OutputDirectory>${product.buildDirectory}/${product.id}/win32/win32/x86_64</product.win64OutputDirectory>
 		<product.mac64OutputDirectory>${product.buildDirectory}/${product.id}/macosx/cocoa/x86_64/${product.name}.app/Contents/Eclipse</product.mac64OutputDirectory>
+		<product.linux32OutputDirectory>${product.buildDirectory}/${product.id}/linux/gtk/x86</product.linux32OutputDirectory>		
+ 		<product.linux64OutputDirectory>${product.buildDirectory}/${product.id}/linux/gtk/x86_64</product.linux64OutputDirectory>
+		
 		<product.resourcesDirectory>configuration/resources</product.resourcesDirectory>
 		<product.mac64ResourcesDirectory>configuration/macosx64_resources</product.mac64ResourcesDirectory>
 		<product.win32ResourcesDirectory>configuration/win32_resources</product.win32ResourcesDirectory>
 		<product.win64ResourcesDirectory>configuration/win64_resources</product.win64ResourcesDirectory>
+		<product.linux32ResourcesDirectory>configuration/linux32_resources</product.linux32ResourcesDirectory>		
+		<product.linux64ResourcesDirectory>configuration/linux64_resources</product.linux64ResourcesDirectory>
+ 
 		<product.apidocDirectory>${product.resourcesDirectory}/apidocs</product.apidocDirectory>
 
 		<product.archiveFileName>katalon-studio</product.archiveFileName>
@@ -34,6 +40,12 @@
 
 		<product.mac64ZipFileSrc>${product.buildDirectory}/${product.id}-macosx.cocoa.x86_64.tar.gz</product.mac64ZipFileSrc>
 		<product.mac64ZipFileDest>${product.buildDirectory}/${product.name} MacOS.tar.gz</product.mac64ZipFileDest>
+		
+		<product.linux32ZipFileSrc>${product.buildDirectory}/${product.id}-linux.gtk.x86.tar.gz</product.linux32ZipFileSrc>
+		<product.linux32ZipFileDest>${product.buildDirectory}/${product.name} Linux 32.tar.gz</product.linux32ZipFileDest>
+		
+		<product.linux64ZipFileSrc>${product.buildDirectory}/${product.id}-linux.gtk.x86_64.tar.gz</product.linux64ZipFileSrc>
+		<product.linux64ZipFileDest>${product.buildDirectory}/${product.name} Linux 64.tar.gz</product.linux64ZipFileDest>
 	</properties>
 
 	<build>
@@ -155,6 +167,42 @@
 							</resources>
 						</configuration>
 					</execution>
+					<execution>						
+						<id>copy-resources-linux32</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${product.linux32OutputDirectory}/configuration/resources/</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${project.parent.build.directory}/${resourcesDiretory}</directory>
+								</resource>
+								<resource>
+									<directory>${project.parent.build.directory}/${linux32ResourcesDirectory}</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+					<execution>						
+						<id>copy-resources-linux64</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${product.linux64OutputDirectory}/configuration/resources/</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${project.parent.build.directory}/${resourcesDiretory}</directory>
+								</resource>
+								<resource>
+									<directory>${project.parent.build.directory}/${linux64ResourcesDirectory}</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 			<plugin>
@@ -193,6 +241,28 @@
 						<configuration>
 							<sourceFile>${product.mac64ZipFileSrc}</sourceFile>
 							<destinationFile>${product.mac64ZipFileDest}</destinationFile>
+						</configuration>
+					 </execution>
+					 <execution>
+						<id>rename-linux32-zip-file</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>rename</goal>
+						</goals>
+						<configuration>
+							<sourceFile>${product.linux32ZipFileSrc}</sourceFile>
+							<destinationFile>${product.linux32ZipFileDest}</destinationFile>
+						</configuration>
+					 </execution>
+					 <execution>
+						<id>rename-linux64-zip-file</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>rename</goal>
+						</goals>
+						<configuration>
+							<sourceFile>${product.linux64ZipFileSrc}</sourceFile>
+							<destinationFile>${product.linux64ZipFileDest}</destinationFile>
 						</configuration>
 					 </execution>
 				</executions>

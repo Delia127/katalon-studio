@@ -27,8 +27,10 @@ public interface IReportDataProvider {
 
     public ReportEntity updateReport(ReportEntity report) throws Exception;
 
+    public ReportEntity renameReport(ReportEntity report, String newName) throws DALException;
+
     public List<ReportEntity> listReportEntities(TestSuiteEntity testSuite, ProjectEntity project) throws Exception;
-    
+
     public FolderEntity getReportFolder(TestSuiteEntity testSuite, ProjectEntity project) throws Exception;
 
     ReportCollectionEntity getReportCollectionEntity(String id) throws DALException;
@@ -37,6 +39,8 @@ public interface IReportDataProvider {
             String reportName) throws DALException;
 
     void updateReportCollectionEntity(ReportCollectionEntity entity) throws DALException;
+    
+    public ReportCollectionEntity renameCollectionReport(ReportCollectionEntity collectionReport, String newName) throws DALException;
 
     ReportCollectionEntity newReportCollectionEntity(ProjectEntity project, TestSuiteCollectionEntity tsEntity,
             String newName) throws DALException;

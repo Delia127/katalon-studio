@@ -270,6 +270,10 @@ public class FolderFileServiceManager {
     public static List<DataFileEntity> getDescendantDataFilesOfFolder(FolderEntity folder) throws Exception {
         return EntityFileServiceManager.getDescendants(folder, DataFileEntity.class);
     }
+    
+    public static List<ReportCollectionEntity> getDescendantReportCollectionOfFolder(FolderEntity folder) throws Exception {
+        return EntityFileServiceManager.getDescendants(folder, ReportCollectionEntity.class);
+    }
 
     public static void updateFolderName(FolderEntity folderEntity, String newName) throws Exception {
         // validate name
@@ -360,7 +364,7 @@ public class FolderFileServiceManager {
                 String oldKey = EntityService.getInstance().getEntityCache().getKey(folderEntity);
                 EntityService.getInstance().getEntityCache().remove(oldKey);
                 EntityService.getInstance().getEntityCache().put(folderEntity.getLocation(), folderEntity);
-                EntityService.getInstance().saveFolderMetadataEntity(folderEntity);
+                EntityService.getInstance().saveIntergratedFolderMetadataEntity(folderEntity);
                 refreshFolder(folderEntity.getParentFolder());
             }
         }
@@ -553,7 +557,7 @@ public class FolderFileServiceManager {
     }
 
     public static FolderEntity saveFolder(FolderEntity folder) throws Exception {
-        EntityService.getInstance().saveFolderMetadataEntity(folder);
+        EntityService.getInstance().saveIntergratedFolderMetadataEntity(folder);
         return folder;
     }
 }

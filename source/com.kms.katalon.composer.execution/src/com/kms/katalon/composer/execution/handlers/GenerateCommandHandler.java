@@ -3,22 +3,43 @@ package com.kms.katalon.composer.execution.handlers;
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.osgi.service.event.Event;
+import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageConstants;
 import com.kms.katalon.composer.execution.dialog.GenerateCommandDialog;
+import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 
 public class GenerateCommandHandler {
 
     private ProjectController pController = ProjectController.getInstance();
+
+    @Inject
+    private IEventBroker eventBroker;
+
+    @PostConstruct
+    public void registerEvent() {
+        eventBroker.subscribe(EventConstants.KATALON_GENERATE_COMMAND, new EventHandler() {
+
+            @Override
+            public void handleEvent(Event event) {
+                execute();
+            }
+        });
+    }
 
     @CanExecute
     public boolean canExecute() {

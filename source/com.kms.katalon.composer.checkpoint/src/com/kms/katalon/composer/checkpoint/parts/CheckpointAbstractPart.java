@@ -66,6 +66,7 @@ import org.osgi.service.event.EventHandler;
 import com.kms.katalon.composer.checkpoint.constants.StringConstants;
 import com.kms.katalon.composer.checkpoint.parts.providers.CheckpointCellLabelProvider;
 import com.kms.katalon.composer.checkpoint.parts.supports.CheckpointCellEditingSupport;
+import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
 import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.tree.CheckpointTreeEntity;
@@ -137,6 +138,7 @@ public abstract class CheckpointAbstractPart extends CPart implements EventHandl
     @PostConstruct
     public void postConstruct(Composite parent) {
         initialize(part, partService);
+        new HelpToolBarForMPart(part, getDocumentationUrl());
         createControls(parent);
         addControlListeners();
         redrawArrowIndicator();
@@ -144,6 +146,8 @@ public abstract class CheckpointAbstractPart extends CPart implements EventHandl
         loadCheckpoint((CheckpointEntity) getPart().getObject());
         setDirty(false);
     }
+
+    protected abstract String getDocumentationUrl();
 
     private void createControls(Composite parent) {
         parent.setLayout(new GridLayout());
@@ -561,7 +565,6 @@ public abstract class CheckpointAbstractPart extends CPart implements EventHandl
                     new Object[] { checkpoint.getIdForDisplay(), checkpoint });
             CheckpointTreeEntity checkpointTreeEntity = TreeEntityUtil.getCheckpointTreeEntity(checkpoint);
             eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, checkpointTreeEntity);
-            eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, checkpointTreeEntity);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MultiStatusErrorDialog.showErrorDialog(e, StringConstants.ERROR,

@@ -305,7 +305,7 @@ public class AstEntityInputUtil {
                 || FailureHandling.class.isAssignableFrom(clazz));
     }
 
-    private static String getEntityRelativeIdFromMethodCall(MethodCallExpressionWrapper methodCallExpression) {
+    public static String getEntityRelativeIdFromMethodCall(MethodCallExpressionWrapper methodCallExpression) {
         if (methodCallExpression == null || methodCallExpression.getArguments().getExpressions().size() == 0) {
             return StringUtils.EMPTY;
         }

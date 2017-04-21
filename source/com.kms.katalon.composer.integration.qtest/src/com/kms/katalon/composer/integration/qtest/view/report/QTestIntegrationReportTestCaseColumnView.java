@@ -5,6 +5,8 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ViewerColumn;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.TableColumn;
 
@@ -13,6 +15,7 @@ import com.kms.katalon.composer.integration.qtest.constant.ImageConstants;
 import com.kms.katalon.composer.report.lookup.LogRecordLookup;
 import com.kms.katalon.composer.report.parts.integration.IntegrationTestCaseColumnLabelProvider;
 import com.kms.katalon.composer.report.parts.integration.TestCaseIntegrationColumn;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.core.logging.model.TestCaseLogRecord;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.integration.qtest.QTestIntegrationReportManager;
@@ -70,6 +73,14 @@ public class QTestIntegrationReportTestCaseColumnView extends TestCaseIntegratio
             }
         });
         tblclmnTCIntegration.setImage(getProductImage());
+
+        tblclmnTCIntegration.setToolTipText(DocumentationMessageConstants.MSG_CLICK_TO_GO_TO_DOCUMENTATION);
+        tblclmnTCIntegration.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                openBrowserToLink(DocumentationMessageConstants.REPORT_INTEGRATION_QTEST_TEST_CASE);
+            }
+        });
         return tableViewerColumnIntegration;
     }
 

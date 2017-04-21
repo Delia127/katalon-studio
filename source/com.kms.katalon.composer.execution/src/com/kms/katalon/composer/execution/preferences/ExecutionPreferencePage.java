@@ -3,7 +3,6 @@ package com.kms.katalon.composer.execution.preferences;
 import java.text.MessageFormat;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -17,13 +16,15 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.execution.constants.StringConstants;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.execution.collector.RunConfigurationCollector;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
 import com.kms.katalon.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 
-public class ExecutionPreferencePage extends PreferencePage {
+public class ExecutionPreferencePage extends PreferencePageWithHelp {
     private Button chckNotifyMe, chckOpenReport, chckQuitDrivers;
 
     private Text txtDefaultTimeout;
@@ -227,5 +228,15 @@ public class ExecutionPreferencePage extends PreferencePage {
             performApply();
         }
         return super.performOk();
+    }
+    
+    @Override
+    protected boolean hasDocumentation() {
+        return true;
+    }
+
+    @Override
+    protected String getDocumentationUrl() {
+        return DocumentationMessageConstants.PREFERENCE_EXECUTION;
     }
 }

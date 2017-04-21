@@ -701,7 +701,6 @@ public class ObjectPropertyView implements EventHandler {
             WebElementTreeEntity testObjectTreeEntity = TreeEntityUtil.getWebElementTreeEntity(originalTestObject,
                     ProjectController.getInstance().getCurrentProject());
             eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, testObjectTreeEntity);
-            eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, testObjectTreeEntity);
             dirtyable.setDirty(false);
         } catch (DuplicatedFileNameException dupplicatedEx) {
             copyObjectProperties(temp, originalTestObject);

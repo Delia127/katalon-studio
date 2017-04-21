@@ -28,10 +28,11 @@
     <elements xsi:type="commands:Command" xmi:id="_QEYUAGhHEeaXdLB_F7wkyw" elementId="com.kms.katalon.composer.integration.git.command.branch.delete" commandName="Delete Branch"/>
     <elements xsi:type="commands:Command" xmi:id="_mAJbMKVlEeaLHqsq9YYXMA" elementId="com.kms.katalon.composer.integration.git.toolbar.command" commandName="Git Toolbar Command" description="Git Toolbar Command"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_X2rbkKVkEeaLHqsq9YYXMA" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="last">
-    <elements xsi:type="menu:HandledToolItem" xmi:id="_vDvYEKVkEeaLHqsq9YYXMA" elementId="com.kms.katalon.composer.integration.git.handledtoolitem" label="" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/git_24.png" tooltip="Git Integration" command="_mAJbMKVlEeaLHqsq9YYXMA">
-      <persistedState key="index" value="23"/>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_X2rbkKVkEeaLHqsq9YYXMA" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="">
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_vDvYEKVkEeaLHqsq9YYXMA" elementId="com.kms.katalon.composer.integration.git.handledtoolitem" label="Git" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/git_24.png" tooltip="" command="_mAJbMKVlEeaLHqsq9YYXMA">
+      <persistedState key="index" value="14"/>
       <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/git_disabled_24.png"/>
+      <tags>FORCE_TEXT</tags>
       <menu xmi:id="_AhF_wKVlEeaLHqsq9YYXMA" elementId="com.kms.katalon.composer.integration.git.handledtoolitem.menu">
         <children xsi:type="menu:DynamicMenuContribution" xmi:id="_URKw0KWNEeaLl490YPKYoA" elementId="com.kms.katalon.composer.integration.git.dynamicmenucontribution.0" contributionURI="bundleclass://com.kms.katalon.composer.integration.git/com.kms.katalon.composer.integration.git.menu.GitMenuContribution"/>
       </menu>

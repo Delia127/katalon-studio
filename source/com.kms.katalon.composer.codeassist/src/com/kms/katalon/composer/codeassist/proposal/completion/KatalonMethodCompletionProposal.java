@@ -134,15 +134,16 @@ public class KatalonMethodCompletionProposal extends ParameterGuessingProposal {
 
                 for (int i = 0; i < fPositions.length; i++) {
                     LinkedPositionGroup group = new LinkedPositionGroup();
-                    int positionOffset = fPositions[i].getOffset();
-                    int positionLength = fPositions[i].getLength();
+                    Position fPosition = fPositions[i];
+                    int positionOffset = fPosition.getOffset();
+                    int positionLength = fPosition.getLength();
 
                     if (fChoices[i].length < 2) {
                         group.addPosition(new LinkedPosition(document, positionOffset, positionLength,
                                 LinkedPositionGroup.NO_STOP));
                     } else {
                         ensurePositionCategoryInstalled(document, model);
-                        document.addPosition(getCategory(), fPositions[i]);
+                        document.addPosition(getCategory(), fPosition);
                         group.addPosition(new ProposalPosition(document, positionOffset, positionLength,
                                 LinkedPositionGroup.NO_STOP, fChoices[i]));
                     }
@@ -456,9 +457,8 @@ public class KatalonMethodCompletionProposal extends ParameterGuessingProposal {
         try {
             String className = methodNode.getDeclaringClass().getName();
             String methodName = methodNode.getName();
-            if (GroovyConstants.CUSTOM_KEYWORD_LIB_FILE_NAME.equals(methodNode.getDeclaringClass().getName())
-                    || (KeywordController.getInstance().getBuiltInKeywordByName(className, methodName,
-                            KatalonContextUtil.getAstParameterTypes(methodNode.getParameters())) != null)) {
+            if (GroovyConstants.CUSTOM_KEYWORD_LIB_FILE_NAME.equals(className)
+                    || (KeywordController.getInstance().getBuiltInKeywordByName(className, methodName)) != null) {
                 return KatalonContextUtil.getKatalonSignature();
             }
         } catch (Exception e) {

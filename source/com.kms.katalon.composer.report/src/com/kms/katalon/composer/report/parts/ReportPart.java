@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.report.parts;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -10,13 +11,16 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
@@ -57,16 +61,22 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.report.constants.ComposerReportMessageConstants;
 import com.kms.katalon.composer.report.constants.ImageConstants;
 import com.kms.katalon.composer.report.constants.StringConstants;
 import com.kms.katalon.composer.report.integration.ReportComposerIntegrationFactory;
@@ -76,6 +86,9 @@ import com.kms.katalon.composer.report.parts.integration.TestCaseLogDetailsInteg
 import com.kms.katalon.composer.report.provider.ReportPartTestCaseLabelProvider;
 import com.kms.katalon.composer.report.provider.ReportTestCaseTableViewer;
 import com.kms.katalon.composer.report.provider.ReportTestCaseTableViewerFilter;
+import com.kms.katalon.composer.resources.constants.IImageKeys;
+import com.kms.katalon.composer.resources.image.ImageManager;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.ProjectController;
@@ -90,6 +103,10 @@ import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.util.ExecutionUtil;
 
 public class ReportPart implements EventHandler, IComposerPartEvent {
+
+    private static final String BTN_SHOW_TEST_CASE_DETAILS = ComposerReportMessageConstants.BTN_SHOW_TEST_CASE_DETAILS;
+
+    private static final String BTN_HIDE_TEST_CASE_DETAILS = ComposerReportMessageConstants.BTN_HIDE_TEST_CASE_DETAILS;
 
     @Inject
     private IEventBroker eventBroker;
@@ -113,6 +130,8 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     private Button btnFilterTestCasePassed, btnFilterTestCaseFailed, btnFilterTestCaseError,
             btnFilterTestCaseIncomplete;
 
+    private ToolItem btnShowHideTestCaseDetails;
+
     private TableViewer runDataTable, executionSettingTable;
 
     private ReportPartTestLogView testLogView;
@@ -125,6 +144,18 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     private boolean isSearching;
 
     private ReportEntity report;
+
+    @Inject
+    private Shell shell;
+
+    @Inject
+    private MPart mpart;
+
+    private SashForm sashForm;
+
+    private SashForm sashFormSummary;
+
+    private Composite compositeTestCaseFilterSelection;
 
     private final class MapDataKeyLabelProvider extends ColumnLabelProvider {
         @Override
@@ -205,14 +236,16 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     }
 
     @PostConstruct
-    public void init(Composite parent, ReportEntity report) {
+    public void init(Composite parent, ReportEntity report, MPart part) {
         this.report = report;
         testLogView = new ReportPartTestLogView(this);
         isSearching = false;
         registerListeners();
+        new HelpToolBarForMPart(part, DocumentationMessageConstants.REPORT_TEST_SUITE);
         createControls(parent);
         registerControlModifyListeners();
         updateInput(report);
+        setPartLabel(report.getDisplayName());
     }
 
     private void registerControlModifyListeners() {
@@ -220,7 +253,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
 
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
-                ILogRecord selectedLogRecord = (ILogRecord) getSelectedTestCaseLogRecord();
+                ILogRecord selectedLogRecord = getSelectedTestCaseLogRecord();
 
                 if (selectedLogRecord == null) {
                     return;
@@ -267,6 +300,14 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                 testCaseTableFilter.showIncomplete(btnFilterTestCaseIncomplete.getSelection());
                 testCaseTableViewer.refresh();
                 testLogView.updateSelectedTestCase(getSelectedTestCaseLogRecord());
+            }
+        });
+
+        btnShowHideTestCaseDetails.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                setTestCaseDetailsVisible(BTN_SHOW_TEST_CASE_DETAILS.equals(btnShowHideTestCaseDetails.getText()));
             }
         });
 
@@ -366,12 +407,19 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         try {
             this.report = report;
 
-            if (report == null)
+            if (report == null) {
                 return;
-
-            this.testSuiteLogRecord = LogRecordLookup.getInstance().getTestSuiteLogRecord(report);
+            }
+            
+            new ProgressMonitorDialog(shell).run(true, true, new IRunnableWithProgress() {
+                @Override
+                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                    setTestSuiteLogRecord(LogRecordLookup.getInstance().getTestSuiteLogRecord(report, monitor));
+                }
+            });
 
             if (testSuiteLogRecord == null) {
+                closeThisPart();
                 return;
             }
 
@@ -458,6 +506,19 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         }
     }
 
+    private void closeThisPart() {
+        Display.getDefault().asyncExec(new Runnable() {
+            @Override
+            public void run() {
+                EntityPartUtil.closePart(getReport());
+            }
+        });
+    }
+
+    private void setTestSuiteLogRecord(TestSuiteLogRecord logRecord) {
+        this.testSuiteLogRecord = logRecord;
+    }
+
     public ILogRecord getSelectedTestCaseLogRecord() {
         StructuredSelection selection = (StructuredSelection) testCaseTableViewer.getSelection();
         if (selection == null || selection.size() != 1) {
@@ -473,9 +534,9 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         compositeTestCaseFilter.setLayout(gl_compositeTestCaseFilter);
         compositeTestCaseFilter.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 
-        Composite compositeTestCaseFilterSelection = new Composite(compositeTestCaseFilter, SWT.NONE);
+        compositeTestCaseFilterSelection = new Composite(compositeTestCaseFilter, SWT.NONE);
         compositeTestCaseFilterSelection.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        compositeTestCaseFilterSelection.setLayout(new GridLayout(4, false));
+        compositeTestCaseFilterSelection.setLayout(new GridLayout(6, false));
 
         btnFilterTestCasePassed = new Button(compositeTestCaseFilterSelection, SWT.CHECK);
         btnFilterTestCasePassed.setText("Passed");
@@ -496,6 +557,14 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         btnFilterTestCaseIncomplete.setText("Incomplete");
         btnFilterTestCaseIncomplete.setImage(ImageConstants.IMG_16_INCOMPLETE);
         btnFilterTestCaseIncomplete.setSelection(true);
+
+        Label spacer = new Label(compositeTestCaseFilterSelection, SWT.NONE);
+        spacer.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+
+        ToolBar tbShowHideDetails = new ToolBar(compositeTestCaseFilterSelection, SWT.FLAT | SWT.RIGHT);
+        btnShowHideTestCaseDetails = new ToolItem(tbShowHideDetails, SWT.NONE);
+        btnShowHideTestCaseDetails.setText(BTN_SHOW_TEST_CASE_DETAILS);
+        btnShowHideTestCaseDetails.setImage(ImageManager.getImage(IImageKeys.MOVE_LEFT_16));
 
         Composite compositeTableTestCaseSearch = new Composite(compositeTestCaseFilter, SWT.BORDER);
         compositeTableTestCaseSearch.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
@@ -591,9 +660,8 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
             if (!builder.isIntegrationEnabled(ProjectController.getInstance().getCurrentProject())) {
                 continue;
             }
-            TableViewerColumn viewerColumn = (TableViewerColumn) builder.getTestCaseIntegrationColumn(report).createIntegrationColumn(
-                    testCaseTableViewer,
-                    testCaseTableViewer.getTable().getColumnCount());
+            TableViewerColumn viewerColumn = (TableViewerColumn) builder.getTestCaseIntegrationColumn(report)
+                    .createIntegrationColumn(testCaseTableViewer, testCaseTableViewer.getTable().getColumnCount());
             tableLayout.setColumnData(viewerColumn.getColumn(), new ColumnWeightData(0, 32));
         }
     }
@@ -870,11 +938,11 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         composite.setBounds(0, 0, 561, 500);
         composite.setLayout(new GridLayout(1, false));
 
-        SashForm sashForm = new SashForm(composite, SWT.NONE);
+        sashForm = new SashForm(composite, SWT.NONE);
         sashForm.setSashWidth(5);
         sashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-        SashForm sashFormSummary = new SashForm(sashForm, SWT.VERTICAL);
+        sashFormSummary = new SashForm(sashForm, SWT.VERTICAL);
         sashFormSummary.setSashWidth(5);
 
         createCompositeTestCaseTable(sashFormSummary);
@@ -890,7 +958,8 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
 
         sashFormSummary.setWeights(new int[] { 75, 25 });
 
-        sashForm.setWeights(new int[] { 35, 65 });
+        sashForm.setWeights(new int[] { 40, 60 });
+        sashForm.setMaximizedControl(sashFormSummary);
     }
 
     public void setLabelToBeBold(Label label) {
@@ -899,6 +968,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
 
     private void registerListeners() {
         eventBroker.subscribe(EventConstants.REPORT_UPDATED, this);
+        eventBroker.subscribe(EventConstants.REPORT_RENAMED, this);
     }
 
     public MPart getMPart() {
@@ -953,6 +1023,22 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
             } catch (Exception e) {
                 LoggerSingleton.logError(e);
             }
+            return;
+        }
+        if (event.getTopic().equals(EventConstants.REPORT_RENAMED)) {
+            handleReportRenamed(event);
+            return;
+        }
+    }
+
+    private void handleReportRenamed(org.osgi.service.event.Event event) {
+        Object eventData = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
+        if (!(eventData instanceof ReportEntity)) {
+            return;
+        }
+        ReportEntity report = (ReportEntity) eventData;
+        if (getReport().getId().equals(report.getId())) {
+            setPartLabel(report.getDisplayName());
         }
     }
 
@@ -965,7 +1051,14 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     @Inject
     @Optional
     public void onSelect(@UIEventTopic(UIEvents.UILifeCycle.BRINGTOTOP) org.osgi.service.event.Event event) {
-        EventUtil.post(EventConstants.PROPERTIES_ENTITY, null);
+        MPart selectedPart = EventUtil.getPart(event);
+        if (selectedPart == null) {
+            return;
+        }
+        String reportPartId = EntityPartUtil.getReportPartId(getReport().getId());
+        if (selectedPart.getElementId().equals(reportPartId)) {
+            EventUtil.post(EventConstants.PROPERTIES_ENTITY, null);
+        }
     }
 
     @Override
@@ -980,5 +1073,18 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     @PreDestroy
     public void onClose() {
         eventBroker.unsubscribe(this);
+        testSuiteLogRecord = null;
+    }
+
+    public void setPartLabel(String label) {
+        mpart.setLabel(label);
+    }
+
+    private void setTestCaseDetailsVisible(boolean isVisible) {
+        sashForm.setMaximizedControl(isVisible ? null : sashFormSummary);
+        btnShowHideTestCaseDetails.setText(isVisible ? BTN_HIDE_TEST_CASE_DETAILS : BTN_SHOW_TEST_CASE_DETAILS);
+        btnShowHideTestCaseDetails
+                .setImage(ImageManager.getImage(isVisible ? IImageKeys.MOVE_RIGHT_16 : IImageKeys.MOVE_LEFT_16));
+        compositeTestCaseFilterSelection.layout();
     }
 }

@@ -11,20 +11,16 @@ import com.google.gson.JsonObject;
 import com.kms.katalon.composer.components.util.FileUtil;
 import com.kms.katalon.console.utils.ApplicationInfo;
 import com.kms.katalon.console.utils.ServerAPICommunicationUtil;
+import com.kms.katalon.constants.UsagePropertyConstant;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.logging.LogUtil;
 
 public class UsageInfoCollector {
+
     private static final String TEST_CASE_FOLDER = "Test Cases";
 
     private static final String REPORT_FOLDER = "Reports";
-
-    private static final String ORG_TIME_KEY = "orgTime";
-
-    private static final String NUM_TEST_CASE_KEY = "ntc";
-
-    private static final String NUM_TEST_RUN_KEY = "ntr";
 
     private static final String EMAIL_KEY = "email";
 
@@ -32,13 +28,15 @@ public class UsageInfoCollector {
         UsageInformation usageInfo = getUsageInfo();
         JsonObject jsObject = new JsonObject();
         JsonObject jsTraits = new JsonObject();
-        jsTraits.addProperty("kat_version", usageInfo.getVersion());
-        jsTraits.addProperty("project", usageInfo.getProjectCount());
-        jsTraits.addProperty("test_case", usageInfo.getTestCaseCount());
-        jsTraits.addProperty("test_run", usageInfo.getTestCaseRunCount());
-        jsTraits.addProperty("new_project", usageInfo.getNewProjectCount());
-        jsTraits.addProperty("new_test_case", usageInfo.getNewTestCaseCount());
-        jsTraits.addProperty("new_test_run", usageInfo.getNewTestRunCount());
+        jsTraits.addProperty(UsagePropertyConstant.PROPERTY_KAT_VERSION, usageInfo.getVersion());
+        jsTraits.addProperty(UsagePropertyConstant.PROPERTY_PROJECT, usageInfo.getProjectCount());
+        jsTraits.addProperty(UsagePropertyConstant.PROPERTY_TEST_CASE, usageInfo.getTestCaseCount());
+        jsTraits.addProperty(UsagePropertyConstant.PROPERTY_TEST_RUN, usageInfo.getTestCaseRunCount());
+        jsTraits.addProperty(UsagePropertyConstant.PROPERTY_NEW_PROJECT, usageInfo.getNewProjectCount());
+        jsTraits.addProperty(UsagePropertyConstant.PROPERTY_NEW_TEST_CASE, usageInfo.getNewTestCaseCount());
+        jsTraits.addProperty(UsagePropertyConstant.PROPERTY_NEW_TEST_RUN, usageInfo.getNewTestRunCount());
+        jsTraits.addProperty(UsagePropertyConstant.PROPERTY_NEW_TEST_CASE_CREATED, usageInfo.getNewTestCaseCreatedCount());
+        jsTraits.addProperty(UsagePropertyConstant.PROPERTY_NEW_PROJECT_CREATED, usageInfo.getNewProjectCreatedCount());
 
         jsObject.add("traits", jsTraits);
         jsObject.addProperty("userId", usageInfo.getEmail());
@@ -51,9 +49,11 @@ public class UsageInfoCollector {
         try {
             ServerAPICommunicationUtil.post("/product/usage", jsObject.toString());
             LogUtil.logErrorMessage(jsObject.toString());
-            ApplicationInfo.setAppProperty(NUM_TEST_CASE_KEY, usageInfo.getTestCaseCount() + "", true);
-            ApplicationInfo.setAppProperty(NUM_TEST_RUN_KEY, usageInfo.getTestCaseRunCount() + "", true);
-            ApplicationInfo.setAppProperty(ORG_TIME_KEY, new Date().getTime() + "", true);
+            ApplicationInfo.setAppProperty(UsagePropertyConstant.KEY_NUM_TEST_CASE, usageInfo.getTestCaseCount() + "", true);
+            ApplicationInfo.setAppProperty(UsagePropertyConstant.KEY_NUM_TEST_RUN, usageInfo.getTestCaseRunCount() + "", true);
+            ApplicationInfo.setAppProperty(UsagePropertyConstant.KEY_NUM_TEST_CASE_CREATED, String.valueOf(0), true);
+            ApplicationInfo.setAppProperty(UsagePropertyConstant.KEY_NUM_PROJECT_CREATED, String.valueOf(0), true);
+            ApplicationInfo.setAppProperty(UsagePropertyConstant.KEY_ORG_TIME, new Date().getTime() + "", true);
         } catch (Exception ex) {
             LogUtil.logError(ex);
         }
@@ -61,12 +61,15 @@ public class UsageInfoCollector {
 
     private static Date restorePreviousUsageInfo(UsageInformation usageInfo) {
         try {
-            String sTime = ApplicationInfo.getAppProperty(ORG_TIME_KEY);
+            String sTime = ApplicationInfo.getAppProperty(UsagePropertyConstant.KEY_ORG_TIME);
             if (sTime == null) {
                 return new Date(0);
             }
-            usageInfo.setTestCaseCount(Integer.parseInt(ApplicationInfo.getAppProperty(NUM_TEST_CASE_KEY)));
-            usageInfo.setTestCaseRunCount(Integer.parseInt(ApplicationInfo.getAppProperty(NUM_TEST_RUN_KEY)));
+            usageInfo.setTestCaseCount(getIntProperty(UsagePropertyConstant.KEY_NUM_TEST_CASE));
+            usageInfo.setTestCaseRunCount(getIntProperty(UsagePropertyConstant.KEY_NUM_TEST_RUN));
+            usageInfo.setNewTestCaseCreatedCount(getIntProperty(UsagePropertyConstant.KEY_NUM_TEST_CASE_CREATED));
+            usageInfo.setNewProjectCreatedCount(getIntProperty(UsagePropertyConstant.KEY_NUM_PROJECT_CREATED));
+            
             return new Date(Long.parseLong(sTime));
         } catch (Exception ex) {
             LogUtil.logError(ex);
@@ -74,6 +77,10 @@ public class UsageInfoCollector {
             usageInfo.setTestCaseRunCount(0);
             return new Date(0);
         }
+    }
+
+    private static int getIntProperty(String key) {
+        return Integer.parseInt(ApplicationInfo.getAppProperty(key));
     }
 
     public static UsageInformation getUsageInfo() {

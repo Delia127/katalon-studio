@@ -10,7 +10,6 @@ import java.util.Map;
 import org.apache.commons.io.FilenameUtils;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
-import com.kms.katalon.core.logging.XmlLogRecord;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 
 public class TestSuiteLogRecord extends AbstractLogRecord {
@@ -22,8 +21,6 @@ public class TestSuiteLogRecord extends AbstractLogRecord {
     private String logFolder;
 
     private Map<String, String> runData;
-
-    private List<XmlLogRecord> xmlLogRecords;
 
     public TestSuiteLogRecord(String name, String logFolder) {
         super(name);
@@ -124,17 +121,5 @@ public class TestSuiteLogRecord extends AbstractLogRecord {
             logFiles.add(childFile);
         }
         return logFiles;
-    }
-    
-    
-    public List<XmlLogRecord> getXmlLogRecords() {
-        return xmlLogRecords;
-    }
-
-    public void addXmlLogRecords(List<XmlLogRecord> xmlLogRecords) {
-        if(this.xmlLogRecords == null){
-            this.xmlLogRecords = new ArrayList<XmlLogRecord>();
-        }
-        this.xmlLogRecords.addAll(xmlLogRecords);
     }
 }

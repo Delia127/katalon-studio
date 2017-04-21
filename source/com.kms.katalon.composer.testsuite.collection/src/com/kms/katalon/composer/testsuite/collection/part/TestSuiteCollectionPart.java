@@ -58,6 +58,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.osgi.service.event.Event;
 
+import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
 import com.kms.katalon.composer.components.impl.control.CMenu;
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.components.impl.control.ImageButton;
@@ -92,6 +93,7 @@ import com.kms.katalon.composer.testsuite.collection.part.support.RunConfigurati
 import com.kms.katalon.composer.testsuite.collection.part.support.RunEnabledEditingSupport;
 import com.kms.katalon.composer.testsuite.collection.part.support.TestSuiteIdEditingSupport;
 import com.kms.katalon.composer.testsuite.collection.transfer.TestSuiteRunConfigurationTransfer;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestSuiteCollectionController;
@@ -167,6 +169,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         this.isExecutionInfoCompositeExpanded = true;
         registerEventListeners();
 
+        new HelpToolBarForMPart(mpart, DocumentationMessageConstants.TEST_SUITE_COLLECTION);
         createControls(parent);
         registerControlModifyListeners();
         updateTestSuiteCollections((TestSuiteCollectionEntity) mpart.getObject());
@@ -624,7 +627,6 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
             TestSuiteCollectionTreeEntity tsCollectionTreeEntity = TreeEntityUtil.getTestSuiteCollectionTreeEntity(
                     originalTestSuite, ProjectController.getInstance().getCurrentProject());
             eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, tsCollectionTreeEntity);
-            eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, tsCollectionTreeEntity);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
@@ -663,6 +665,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         });
     }
 
+    @Override
     public TestSuiteCollectionEntity getTestSuiteCollection() {
         return originalTestSuite;
     }

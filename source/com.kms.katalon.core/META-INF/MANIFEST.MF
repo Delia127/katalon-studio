@@ -53,4 +53,5 @@ Require-Bundle: net.sf.supercsv.super-csv,
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Import-Package: com.google.common.io,
+ org.eclipse.core.runtime,
  org.qas.api.internal.util.google.io

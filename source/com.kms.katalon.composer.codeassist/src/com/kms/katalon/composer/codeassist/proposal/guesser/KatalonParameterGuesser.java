@@ -8,7 +8,6 @@ public class KatalonParameterGuesser extends ParameterGuesser {
 
     public KatalonParameterGuesser(IJavaElement enclosingElement) {
         super(enclosingElement);
-        // TODO Auto-generated constructor stub
     }
 
 }

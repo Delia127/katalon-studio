@@ -6,7 +6,6 @@ import java.text.MessageFormat;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
@@ -24,16 +23,18 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.db.DatabaseConnection;
 import com.kms.katalon.core.db.DatabaseSettings;
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
 
-public class DatabasePreferencePage extends PreferencePage {
+public class DatabasePreferencePage extends PreferencePageWithHelp {
 
     private static final String PROJECT_DIR = ProjectController.getInstance().getCurrentProject().getFolderLocation();
 
@@ -288,5 +289,15 @@ public class DatabasePreferencePage extends PreferencePage {
                     com.kms.katalon.composer.testdata.constants.StringConstants.DIA_MSG_UNABLE_TO_SAVE_DB_SETTING_PAGE);
             return false;
         }
+    }
+    
+    @Override
+    protected boolean hasDocumentation() {
+        return true;
+    }
+
+    @Override
+    protected String getDocumentationUrl() {
+        return DocumentationMessageConstants.SETTINGS_DATABASE;
     }
 }

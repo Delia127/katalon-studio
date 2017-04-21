@@ -61,6 +61,8 @@ public class ComposerReportMessageConstants extends NLS {
 
     public static String DIA_LBL_INCLUDE_CHILD_LOGS;
 
+    public static String ERR_MSG_UNABLE_RENAME_REPORT;
+
     public static String PAGE_LBL_TAKE_SCREENSHOT_SETTINGS;
 
     public static String PAGE_TXT_ENABLE_TAKE_SCREENSHOT;
@@ -76,6 +78,10 @@ public class ComposerReportMessageConstants extends NLS {
     public static String PROVIDER_TOOLTIP_CLICK_TO_SEE_DETAILS;
 
     public static String PROVIDER_TOOLTIP_SHOW_DETAILS;
+
+    public static String BTN_SHOW_TEST_CASE_DETAILS;
+
+    public static String BTN_HIDE_TEST_CASE_DETAILS;
 
     static {
         // initialize resource bundle

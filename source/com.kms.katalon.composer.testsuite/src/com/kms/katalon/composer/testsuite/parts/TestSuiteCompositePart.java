@@ -22,6 +22,7 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.model.application.ui.basic.MStackElement;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -30,6 +31,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.composer.components.controls.HelpToolBarForCompositePart;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
@@ -43,6 +45,7 @@ import com.kms.katalon.composer.parts.MultipleTabsCompositePart;
 import com.kms.katalon.composer.testsuite.constants.ImageConstants;
 import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.composer.testsuite.util.TestSuiteEntityUtil;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FolderController;
@@ -101,6 +104,9 @@ public class TestSuiteCompositePart implements EventHandler, MultipleTabsComposi
 
     @Inject
     private MDirtyable dirty;
+    
+    @Inject 
+    private EPartService partService;
 
     public MDirtyable getDirty() {
         return dirty;
@@ -116,6 +122,19 @@ public class TestSuiteCompositePart implements EventHandler, MultipleTabsComposi
         this.compositePart = compositePart;
         dirty.setDirty(false);
         isInitialized = false;
+        new HelpToolBarForCompositePart(compositePart, partService) {
+            
+            @Override
+            protected String getDocumentationUrlForPartObject(Object partObject) {
+                if (partObject instanceof TestSuitePart) {
+                    return DocumentationMessageConstants.TEST_SUITE_MAIN;
+                }
+                if (partObject instanceof TestSuiteIntegrationPart) {
+                    return DocumentationMessageConstants.TEST_SUITE_INTEGRATION;
+                }
+                return null;
+            }
+        };
 
         changeOriginalTestSuite((TestSuiteEntity) compositePart.getObject());
         initListeners();
@@ -275,7 +294,6 @@ public class TestSuiteCompositePart implements EventHandler, MultipleTabsComposi
             TestSuiteTreeEntity testSuiteTreeEntity = TreeEntityUtil.getTestSuiteTreeEntity(
                     originalTestSuite, ProjectController.getInstance().getCurrentProject());
             eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, testSuiteTreeEntity);
-            eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, testSuiteTreeEntity);
 
             // Send event if Test Suite name has changed
             if (!StringUtils.equalsIgnoreCase(temp.getName(), originalTestSuite.getName())) {

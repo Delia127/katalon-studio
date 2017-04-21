@@ -50,8 +50,8 @@ public class ReportController extends EntityController {
      * @throws Exception
      */
     public String generateReportFolder(TestCaseEntity testCase) throws Exception {
-        String testCaseRootLogFolder = getDataProviderSetting().getReportDataProvider().getLogDirectory(
-                (TestCaseEntity) testCase);
+        String testCaseRootLogFolder = getDataProviderSetting().getReportDataProvider()
+                .getLogDirectory((TestCaseEntity) testCase);
         return generateReportFolder(testCaseRootLogFolder);
     }
 
@@ -177,11 +177,11 @@ public class ReportController extends EntityController {
         return getDataProviderSetting().getReportDataProvider().newReportCollectionEntity(projectEntity, entity,
                 newName);
     }
-    
+
     public void updateReportCollection(ReportCollectionEntity reportCollection) throws DALException {
         getDataProviderSetting().getReportDataProvider().updateReportCollectionEntity(reportCollection);
     }
-    
+
     public void deleteReportCollection(ReportCollectionEntity reportCollection) throws DALException {
         getDataProviderSetting().getReportDataProvider().deleteReportCollection(reportCollection);
     }
@@ -190,4 +190,12 @@ public class ReportController extends EntityController {
         return getDataProviderSetting().getReportDataProvider().getReportCollectionEntity(id);
     }
 
+    public ReportEntity renameReport(ReportEntity report, String newName) throws DALException {
+        return getDataProviderSetting().getReportDataProvider().renameReport(report, newName);
+    }
+
+    public ReportCollectionEntity renameReportCollection(ReportCollectionEntity collectionReport, String newName)
+            throws DALException {
+        return getDataProviderSetting().getReportDataProvider().renameCollectionReport(collectionReport, newName);
+    }
 }

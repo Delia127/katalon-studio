@@ -8,6 +8,10 @@ import org.apache.commons.lang.StringUtils;
 
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.controller.ReportController;
+import com.kms.katalon.dal.exception.DALException;
+import com.kms.katalon.entity.report.ReportCollectionEntity;
+import com.kms.katalon.entity.report.ReportItemDescription;
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
@@ -33,29 +37,40 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
 
     public static TestSuiteCollectionConsoleLauncher newInstance(TestSuiteCollectionEntity testSuiteCollection,
             LauncherManager parentManager, Reportable reportable, Rerunable rerunable) throws ExecutionException {
-        TestSuiteCollectionExecutedEntity executedEntity = new TestSuiteCollectionExecutedEntity(
-                testSuiteCollection);
+        TestSuiteCollectionExecutedEntity executedEntity = new TestSuiteCollectionExecutedEntity(testSuiteCollection);
         executedEntity.setReportable(reportable);
         executedEntity.setRerunable(rerunable);
-        return new TestSuiteCollectionConsoleLauncher(executedEntity,
-                parentManager, buildSubLaunchers(testSuiteCollection, executedEntity, parentManager));
-    }
 
+        try {
+            ReportCollectionEntity reportCollection = ReportController.getInstance()
+                    .newReportCollection(testSuiteCollection.getProject(), testSuiteCollection, executedEntity.getId());
+
+            TestSuiteCollectionConsoleLauncher testSuiteCollectionConsoleLauncher = new TestSuiteCollectionConsoleLauncher(
+                    executedEntity, parentManager,
+                    buildSubLaunchers(testSuiteCollection, executedEntity, parentManager, reportCollection));
+
+            ReportController.getInstance().updateReportCollection(reportCollection);
+            return testSuiteCollectionConsoleLauncher;
+        } catch (DALException e) {
+            throw new ExecutionException(e);
+        }
+    }
+    
     private static List<ConsoleLauncher> buildSubLaunchers(TestSuiteCollectionEntity testSuiteCollection,
-            TestSuiteCollectionExecutedEntity executedEntity, LauncherManager launcherManager)
-            throws ExecutionException {
+            TestSuiteCollectionExecutedEntity executedEntity, LauncherManager launcherManager,
+            ReportCollectionEntity reportCollection) throws ExecutionException {
         List<ConsoleLauncher> tsLaunchers = new ArrayList<>();
         for (TestSuiteRunConfiguration tsRunConfig : testSuiteCollection.getTestSuiteRunConfigurations()) {
             if (!tsRunConfig.isRunEnabled()) {
                 continue;
             }
-            ConsoleLauncher subLauncher = buildLauncher(tsRunConfig, launcherManager);
+            ConsoleLauncher subLauncher = buildLauncher(tsRunConfig, launcherManager, reportCollection);
             final TestSuiteExecutedEntity tsExecutedEntity = (TestSuiteExecutedEntity) subLauncher.getRunConfig()
                     .getExecutionSetting()
                     .getExecutedEntity();
             tsExecutedEntity.setRerunSetting((DefaultRerunSetting) executedEntity.getRunnable());
             tsExecutedEntity.setReportLocation(executedEntity.getReportLocationForChildren(subLauncher.getId()));
-            tsExecutedEntity.setEmailConfig(executedEntity.getEmailConfig());
+            tsExecutedEntity.setEmailConfig(executedEntity.getEmailConfig(testSuiteCollection.getProject()));
             if (tsExecutedEntity.getTotalTestCases() == 0) {
                 throw new ExecutionException(ExecutionMessageConstants.LAU_MESSAGE_EMPTY_TEST_SUITE);
             }
@@ -65,16 +80,19 @@ public class TestSuiteCollectionConsoleLauncher extends TestSuiteCollectionLaunc
         return tsLaunchers;
     }
 
-    private static ConsoleLauncher buildLauncher(final TestSuiteRunConfiguration tsRunConfig, LauncherManager launcherManager)
-            throws ExecutionException {
+    private static ConsoleLauncher buildLauncher(final TestSuiteRunConfiguration tsRunConfig,
+            LauncherManager launcherManager, ReportCollectionEntity reportCollection) throws ExecutionException {
         String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
         try {
             RunConfigurationDescription configDescription = tsRunConfig.getConfiguration();
-            IRunConfiguration runConfig = RunConfigurationCollector.getInstance().getRunConfiguration(
-                    configDescription.getRunConfigurationId(), projectDir, configDescription);
+            IRunConfiguration runConfig = RunConfigurationCollector.getInstance()
+                    .getRunConfiguration(configDescription.getRunConfigurationId(), projectDir, configDescription);
             TestSuiteEntity testSuiteEntity = tsRunConfig.getTestSuiteEntity();
             runConfig.build(testSuiteEntity, new TestSuiteExecutedEntity(testSuiteEntity));
-            return new SubConsoleLauncher(launcherManager, runConfig);
+            SubConsoleLauncher launcher = new SubConsoleLauncher(launcherManager, runConfig);
+            reportCollection.getReportItemDescriptions()
+                    .add(ReportItemDescription.from(launcher.getReportEntity().getIdForDisplay(), configDescription));
+            return launcher;
         } catch (final Exception e) {
             LogUtil.logError(e);
             throw new ExecutionException(

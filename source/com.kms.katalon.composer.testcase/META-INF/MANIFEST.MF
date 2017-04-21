@@ -46,7 +46,8 @@ Require-Bundle: com.kms.katalon.composer.explorer,
  org.eclipse.core.expressions,
  com.kms.katalon.composer.resources,
  com.kms.katalon.dal,
- org.eclipse.jdt.groovy.core
+ org.eclipse.jdt.groovy.core,
+ com.kms.katalon.console
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: com.kms.katalon.composer.testcase.ast.dialogs,

@@ -11,6 +11,7 @@ import com.kms.katalon.composer.report.handlers.EvaluateIntegrationContributionV
 import com.kms.katalon.composer.report.handlers.OpenReportCollectionHandler;
 import com.kms.katalon.composer.report.handlers.OpenReportHandler;
 import com.kms.katalon.composer.report.handlers.RefreshReportHandler;
+import com.kms.katalon.composer.report.handlers.RenameReportHandler;
 
 public class ReportInjectionManagerAddon {
 
@@ -22,5 +23,6 @@ public class ReportInjectionManagerAddon {
         ContextInjectionFactory.make(OpenReportCollectionHandler.class, context);
         ContextInjectionFactory.make(RefreshReportHandler.class, context);
         ContextInjectionFactory.make(EvaluateIntegrationContributionViewHandler.class, context);
+        ContextInjectionFactory.make(RenameReportHandler.class, context);
     }
 }

@@ -33,7 +33,6 @@ public class KatalonMethodNodeProposal extends GroovyMethodProposal {
     @Override
     public IJavaCompletionProposal createJavaProposal(ContentAssistContext context,
             JavaContentAssistInvocationContext javaContext) {
-
         GroovyCompletionProposal proposal = new GroovyCompletionProposal(CompletionProposal.METHOD_REF,
                 context.completionLocation);
 

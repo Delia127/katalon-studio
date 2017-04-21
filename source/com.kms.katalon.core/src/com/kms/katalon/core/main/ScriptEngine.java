@@ -12,7 +12,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.customizers.ASTTransformationCustomizer;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
@@ -43,6 +42,8 @@ public class ScriptEngine extends GroovyScriptEngine {
 
     private GroovyClassLoader executingScriptClassLoader;
 
+    private GroovyClassLoader variableEvaluateClassLoader;
+
     public static ScriptEngine getDefault(ClassLoader parentClassLoader) throws IOException {
         URL[] roots = new URL[] { new File(RunConfiguration.getProjectDir(), StringConstants.CUSTOM_KEYWORD_FOLDER_NAME)
                 .toURI().toURL() };
@@ -72,6 +73,14 @@ public class ScriptEngine extends GroovyScriptEngine {
         return executingScriptClassLoader;
     }
 
+    private GroovyClassLoader getVariableValuateClassLoader() throws ClassNotFoundException {
+        if (variableEvaluateClassLoader == null) {
+            variableEvaluateClassLoader = new GroovyClassLoader(getParentClassLoader(),
+                    configurationProvider.getConfigForCollectingVariable());
+        }
+        return variableEvaluateClassLoader;
+    }
+
     protected synchronized String generateScriptName() {
         return "Script" + (++counter) + "." + StringConstants.SCRIPT_FILE_EXT;
     }
@@ -85,7 +94,7 @@ public class ScriptEngine extends GroovyScriptEngine {
     // Parse this temporary class without caching and not logging
     public Object runScriptWithoutLogging(final String scriptText, Binding binding)
             throws ResourceException, ScriptException, IOException, ClassNotFoundException {
-        Class<?> clazz = getExecutingScriptClassLoader()
+        Class<?> clazz = getVariableValuateClassLoader()
                 .parseClass(getGroovyCodeSource(scriptText, generateScriptName()), false);
         return getScript(clazz, binding, false).run();
     }
@@ -151,7 +160,7 @@ public class ScriptEngine extends GroovyScriptEngine {
 
     private GroovyCodeSource getGroovyCodeSource(final File file) {
         try {
-            return getGroovyCodeSource(FileUtils.readFileToString(file), FilenameUtils.getBaseName(file.getName()));
+            return getGroovyCodeSource(FileUtils.readFileToString(file), file.toURI().toURL().toExternalForm());
         } catch (IOException e) {
             return null;
         }

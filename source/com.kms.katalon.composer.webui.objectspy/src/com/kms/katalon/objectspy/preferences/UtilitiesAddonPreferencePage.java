@@ -1,7 +1,6 @@
 package com.kms.katalon.objectspy.preferences;
 
 import org.eclipse.jface.preference.BooleanFieldEditor;
-import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -9,11 +8,13 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
+import com.kms.katalon.composer.components.dialogs.FieldEditorPreferencePageWithHelp;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.objectspy.constants.StringConstants;
 import com.kms.katalon.objectspy.constants.UtilitiesAddonPreferenceConstants;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 
-public class UtilitiesAddonPreferencePage extends FieldEditorPreferencePage {
+public class UtilitiesAddonPreferencePage extends FieldEditorPreferencePageWithHelp {
     private static final int MIN_PORT_NUMBER = 1;
 
     private static final int MAX_PORT_NUMBER = 65534;
@@ -52,5 +53,15 @@ public class UtilitiesAddonPreferencePage extends FieldEditorPreferencePage {
     @Override
     protected void createFieldEditors() {
         // do nothing because we overload the create contents method instead
+    }
+
+    @Override
+    protected boolean hasDocumentation() {
+        return true;
+    }
+
+    @Override
+    protected String getDocumentationUrl() {
+        return DocumentationMessageConstants.PREFERENCE_UTILITY_ADDON;
     }
 }

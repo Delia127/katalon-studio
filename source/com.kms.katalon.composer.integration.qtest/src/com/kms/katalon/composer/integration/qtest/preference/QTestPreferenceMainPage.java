@@ -11,7 +11,6 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -31,6 +30,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
@@ -38,6 +38,7 @@ import com.kms.katalon.composer.integration.qtest.constant.EventConstants;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.dialog.GenerateNewTokenDialog;
 import com.kms.katalon.composer.integration.qtest.wizard.SetupWizardDialog;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.integration.qtest.credential.IQTestCredential;
@@ -51,7 +52,7 @@ import com.kms.katalon.integration.qtest.setting.QTestSettingCredential;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 import com.kms.katalon.integration.qtest.setting.QTestVersion;
 
-public class QTestPreferenceMainPage extends PreferencePage {
+public class QTestPreferenceMainPage extends PreferencePageWithHelp {
 
     @Named(IServiceConstants.ACTIVE_SHELL)
     private Shell shell;
@@ -461,5 +462,17 @@ public class QTestPreferenceMainPage extends PreferencePage {
     @Override
     protected void performDefaults() {
         initialize();
+    }
+    
+
+    
+    @Override
+    protected boolean hasDocumentation() {
+        return true;
+    }
+
+    @Override
+    protected String getDocumentationUrl() {
+        return DocumentationMessageConstants.SETTINGS_QTEST;
     }
 }

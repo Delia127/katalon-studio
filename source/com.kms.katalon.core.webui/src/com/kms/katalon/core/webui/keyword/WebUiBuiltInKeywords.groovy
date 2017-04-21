@@ -2479,7 +2479,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_BROWSER)
     public static void authenticate(final String url, String userName, String password, int timeout, FailureHandling flowControl) {
-        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "authenticate", String, userName, password, timeout, flowControl)
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "authenticate", url, userName, password, timeout, flowControl)
     }
 
     /**
@@ -2496,7 +2496,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_BROWSER)
     public static void authenticate(final String url, String userName, String password, int timeout) {
-        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "authenticate", String, userName, password, timeout)
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "authenticate", url, userName, password, timeout)
     }
 
     /**
@@ -3355,5 +3355,30 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
     public static int getElementWidth(TestObject to) {
         return (int)KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "getElementWidth", to)
+    }
+
+    /**
+     * Get height of web element
+     * @param to represent the web element
+     * @param flowControl
+     * @return height of web element
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static int getElementHeight(TestObject to, FailureHandling flowControl) {
+        return (int) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "getElementHeight", to, flowControl)
+    }
+    
+    /**
+     * Get height of web element
+     * @param to represent the web element
+     * @return height of web element
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static int getElementHeight(TestObject to) {
+        return (int) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "getElementHeight", to)
     }
 }

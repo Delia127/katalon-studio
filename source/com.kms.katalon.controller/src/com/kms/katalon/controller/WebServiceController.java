@@ -19,7 +19,7 @@ import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 
 public class WebServiceController extends EntityController {
 
-    private static final String KATALON_VERSION_NUMBER_KEY = "katalon.versionNumber";
+    public static final String KATALON_VERSION_NUMBER_KEY = "katalon.versionNumber";
 
     private static final String HTTP_USER_AGENT = "User-Agent";
 

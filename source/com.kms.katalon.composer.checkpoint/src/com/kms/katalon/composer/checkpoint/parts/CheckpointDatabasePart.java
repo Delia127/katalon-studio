@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.checkpoint.constants.StringConstants;
 import com.kms.katalon.composer.checkpoint.dialogs.EditCheckpointDatabaseDialog;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.checkpoint.CheckpointSourceInfo;
 import com.kms.katalon.entity.checkpoint.DatabaseCheckpointSourceInfo;
@@ -90,5 +91,10 @@ public class CheckpointDatabasePart extends CheckpointAbstractPart {
             setDirty(true);
             return Status.OK_STATUS;
         }
+    }
+
+    @Override
+    protected String getDocumentationUrl() {
+        return DocumentationMessageConstants.CHECKPOINT_DATABASE;
     }
 }

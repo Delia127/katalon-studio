@@ -13,6 +13,8 @@ public class ReportCollectionEntity extends FileEntity {
     public static final String FILE_EXTENSION = ".rp";
     
     private List<ReportItemDescription> reportItemDescriptions;
+    
+    private String displayName;
 
     @Override
     public String getLocation() {
@@ -33,6 +35,17 @@ public class ReportCollectionEntity extends FileEntity {
 
     public void setReportItemDescriptions(List<ReportItemDescription> reportItemDescriptions) {
         this.reportItemDescriptions = reportItemDescriptions;
+    }
+
+    public String getDisplayName() {
+        if (displayName == null) {
+            return getName();
+        }
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
 }

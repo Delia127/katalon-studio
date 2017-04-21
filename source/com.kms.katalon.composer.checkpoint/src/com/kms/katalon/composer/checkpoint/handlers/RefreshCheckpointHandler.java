@@ -27,6 +27,9 @@ public class RefreshCheckpointHandler {
 
             @Override
             public void handleEvent(Event event) {
+                if (ProjectController.getInstance().getCurrentProject() == null) {
+                    return;
+                }
                 Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
                 if (!(object instanceof CheckpointTreeEntity)) {
                     return;
@@ -54,8 +57,8 @@ public class RefreshCheckpointHandler {
             return;
         }
 
-        FolderEntity checkpointRootFolder = FolderController.getInstance().getCheckpointRoot(
-                ProjectController.getInstance().getCurrentProject());
+        FolderEntity checkpointRootFolder = FolderController.getInstance()
+                .getCheckpointRoot(ProjectController.getInstance().getCurrentProject());
         eventBroker.post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM,
                 new FolderTreeEntity(checkpointRootFolder, null));
     }

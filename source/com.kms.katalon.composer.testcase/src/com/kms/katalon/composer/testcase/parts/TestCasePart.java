@@ -29,6 +29,7 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
+import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.impl.util.MenuUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.parts.CPart;
@@ -55,10 +56,6 @@ public class TestCasePart extends CPart implements EventHandler, ITestCasePart {
 
     private MPart mPart;
 
-    public MPart getMPart() {
-        return mPart;
-    }
-
     @Inject
     private IEventBroker eventBroker;
 
@@ -84,6 +81,11 @@ public class TestCasePart extends CPart implements EventHandler, ITestCasePart {
         createControls(parent);
     }
 
+    public MPart getMPart() {
+        return mPart;
+    }
+
+    @Override
     @Focus
     public void setFocus() {
         testStepManualComposite.setFocus();
@@ -97,6 +99,8 @@ public class TestCasePart extends CPart implements EventHandler, ITestCasePart {
 
     private void registerEventBrokerListeners() {
         eventBroker.subscribe(EventConstants.TESTCASE_SETTINGS_FAILURE_HANDLING_UPDATED, this);
+        eventBroker.subscribe(EventConstants.TESTCASE_ADD_STEP, this);
+        eventBroker.subscribe(EventConstants.TESTCASE_ADD_STEP_CALL_TESTCASE, this);
     }
 
     private void createControls(Composite parent) {
@@ -104,6 +108,7 @@ public class TestCasePart extends CPart implements EventHandler, ITestCasePart {
         testStepManualComposite = new TestStepManualComposite(this, parent);
     }
 
+    @Override
     public void setDirty(boolean isDirty) {
         if (mPart != null) {
             mPart.setDirty(isDirty);
@@ -127,7 +132,7 @@ public class TestCasePart extends CPart implements EventHandler, ITestCasePart {
     @Override
     public void handleEvent(Event event) {
         switch (event.getTopic()) {
-            case EventConstants.TESTCASE_SETTINGS_FAILURE_HANDLING_UPDATED:
+            case EventConstants.TESTCASE_SETTINGS_FAILURE_HANDLING_UPDATED: {
                 try {
                     if (getTreeTableInput() != null) {
                         loadASTNodesToTreeTable(getTreeTableInput().getMainClassNode());
@@ -135,10 +140,54 @@ public class TestCasePart extends CPart implements EventHandler, ITestCasePart {
                 } catch (Exception e) {
                     LoggerSingleton.logError(e);
                 }
-                break;
+                return;
+            }
+
+            case EventConstants.TESTCASE_ADD_STEP: {
+                Object eventData = EventUtil.getData(event);
+                if (isInvalidTargetPart(eventData)) {
+                    return;
+                }
+
+                switchToManualView();
+
+                Object actionId = ((Object[]) eventData)[1];
+                testStepManualComposite.addStepByActionID((int) actionId);
+                return;
+            }
+
+            case EventConstants.TESTCASE_ADD_STEP_CALL_TESTCASE: {
+                Object eventData = EventUtil.getData(event);
+                if (isInvalidTargetPart(eventData)) {
+                    return;
+                }
+
+                Object testcase = ((Object[]) eventData)[1];
+                if (!(testcase instanceof TestCaseEntity)) {
+                    return;
+                }
+
+                switchToManualView();
+
+                testStepManualComposite.addCallTestCaseStep((TestCaseEntity) testcase);
+                return;
+            }
+
             default:
-                break;
+                return;
         }
+    }
+
+    private void switchToManualView() {
+        if (mPart.equals(parentTestCaseCompositePart.getSelectedPart())) {
+            return;
+        }
+        parentTestCaseCompositePart.setSelectedPart(mPart);
+    }
+
+    private boolean isInvalidTargetPart(Object eventData) {
+        return !eventData.getClass().isArray() || ((Object[]) eventData).length != 2
+                || !mPart.getElementId().startsWith((String) ((Object[]) eventData)[0]);
     }
 
     @Persist
@@ -156,22 +205,27 @@ public class TestCasePart extends CPart implements EventHandler, ITestCasePart {
         getTreeTableInput().addNewAstObjects(statements, getTreeTableInput().getSelectedNode(), addType);
     }
 
+    @Override
     public TestCaseEntity getTestCase() {
         return parentTestCaseCompositePart.getTestCase();
     }
 
+    @Override
     public TestCaseTreeTableInput getTreeTableInput() {
         return testStepManualComposite.getTreeTableInput();
     }
 
+    @Override
     public void addVariables(VariableEntity[] variables) {
         parentTestCaseCompositePart.addVariables(variables);
     }
 
+    @Override
     public void deleteVariables(List<VariableEntity> variables) {
         parentTestCaseCompositePart.deleteVariables(variables);
     }
 
+    @Override
     public VariableEntity[] getVariables() {
         return parentTestCaseCompositePart.getVariables();
     }
@@ -184,6 +238,7 @@ public class TestCasePart extends CPart implements EventHandler, ITestCasePart {
         return testStepManualComposite.getTreeTable();
     }
 
+    @Override
     public List<AstTreeTableNode> getDragNodes() {
         return testStepManualComposite.getDragNodes();
     }
@@ -201,6 +256,7 @@ public class TestCasePart extends CPart implements EventHandler, ITestCasePart {
         return true;
     }
 
+    @Override
     public void createDynamicGotoMenu(Menu menu) {
         if (menu == null) {
             return;

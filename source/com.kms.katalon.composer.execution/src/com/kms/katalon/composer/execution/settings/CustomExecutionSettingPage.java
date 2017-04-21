@@ -8,7 +8,6 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.layout.TableColumnLayout;
-import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CellLabelProvider;
@@ -31,11 +30,13 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
+import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.components.DriverConnectorListCellEditor;
 import com.kms.katalon.composer.execution.constants.StringConstants;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.execution.collector.DriverConnectorCollector;
 import com.kms.katalon.execution.collector.RunConfigurationCollector;
@@ -43,7 +44,7 @@ import com.kms.katalon.execution.configuration.CustomRunConfiguration;
 import com.kms.katalon.execution.configuration.IDriverConnector;
 import com.kms.katalon.execution.exception.ExecutionException;
 
-public class CustomExecutionSettingPage extends PreferencePage {
+public class CustomExecutionSettingPage extends PreferencePageWithHelp {
     private static final String DEFAULT_CUSTOM_CONFIGURATION_NAME = "custom";
     private List<CustomRunConfiguration> customRunConfigurationList;
 
@@ -342,5 +343,14 @@ public class CustomExecutionSettingPage extends PreferencePage {
         }
         return true;
     }
+    
+    @Override
+    protected boolean hasDocumentation() {
+        return true;
+    }
 
+    @Override
+    protected String getDocumentationUrl() {
+        return DocumentationMessageConstants.SETTINGS_EXECUTION;
+    }
 }

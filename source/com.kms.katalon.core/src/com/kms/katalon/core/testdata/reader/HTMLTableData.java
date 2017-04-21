@@ -32,16 +32,33 @@ public class HTMLTableData extends ExcelData {
         sheetName = FilenameUtils.getBaseName(sourceUrl);
     }
 
+    /**
+     * Get all column names of the test data
+     * 
+     * @return an array that contains names of all columns
+     * @throws IOException if any io errors happened
+     */
     @Override
     public String[] getColumnNames() throws IOException {
         return getInternalData().getColumnNames();
     }
 
+    /**
+     * Get total rows of the test data
+     * 
+     * @return total rows of the test data
+     */
     @Override
     public int getRowNumbers() throws IOException {
         return getInternalData().getRowNumbers();
     }
 
+    /**
+     * Get total column of the test data
+     * 
+     * @return total columns of the test data
+     * @throws IOException if any io errors happened
+     */
     @Override
     public int getColumnNumbers() throws IOException {
         return getInternalData().getColumnNumbers();
@@ -110,17 +127,32 @@ public class HTMLTableData extends ExcelData {
         }
         return data;
     }
-
+    
+    /**
+     * Get all sheet names of the parent excel file
+     * 
+     * @return an array contains all the sheet name
+     */
     @Override
     public String[] getSheetNames() {
         return new String[] { sheetName };
     }
-
+    
+    /**
+     * This method does nothing for this type of test data
+     */
     @Override
     public void changeSheet(String sheetName) {
         // Not thing to change here
     }
 
+    /**
+     * Get the max column of a row
+     * 
+     * @param rowIndex the row index
+     * @return the max column of a row, or -1 if the row index is invalid
+     * @throws IOException
+     */
     @Override
     public int getMaxColumn(int rowIndex) throws IOException {
         return getInternalData().getColumnNumbers();
@@ -130,12 +162,18 @@ public class HTMLTableData extends ExcelData {
     protected String internallyGetValue(String columnName, int rowIndex) throws IOException {
         return getInternalData().internallyGetValue(columnName, rowIndex);
     }
-
+    
     @Override
     protected String internallyGetValue(int columnIdx, int rowIndex) throws IOException {
         return getInternalData().internallyGetValue(columnIdx, rowIndex);
     }
 
+    /**
+     * Set if this test data has headers
+     * 
+     * @param active true to set this test data to use headers
+     * @throws IOException if any io errors happened
+     */
     @Override
     public void activeHeaders(boolean active) throws IOException {
         super.activeHeaders(active);
@@ -143,6 +181,16 @@ public class HTMLTableData extends ExcelData {
             return;
         }
         createInternalData();
+    }
+
+    /**
+     * Get the sheet name of this excel data
+     * 
+     * @return the sheet name
+     */
+    @Override
+    public String getSheetName() {
+        return sheetName;
     }
 
 }
