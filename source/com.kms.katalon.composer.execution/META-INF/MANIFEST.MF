@@ -76,7 +76,8 @@ Require-Bundle: org.eclipse.e4.core.di,
  com.kms.katalon.core.appium,
  org.eclipse.e4.ui.workbench.renderers.swt,
  com.kms.katalon.composer.resources,
- com.kms.katalon.dal
+ com.kms.katalon.dal,
+ com.kms.katalon.console
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: com.google.common.base,

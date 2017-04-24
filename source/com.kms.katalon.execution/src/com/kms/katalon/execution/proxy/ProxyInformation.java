@@ -1,8 +1,8 @@
-package com.kms.katalon.console.utils;
+package com.kms.katalon.execution.proxy;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.kms.katalon.console.constants.ConsoleMessageConstants;
+import com.kms.katalon.execution.entity.ProxyOption;
 import com.kms.katalon.logging.LogUtil;
 
 public class ProxyInformation {
@@ -24,7 +24,7 @@ public class ProxyInformation {
 
     public void setProxyOption(String proxyOption) {
         if (StringUtils.isEmpty(proxyOption)) {
-            proxyOption = ConsoleMessageConstants.NO_PROXY;
+            proxyOption = ProxyOption.NO_PROXY.getDisplayName();
         }
         this.proxyOption = proxyOption;
     }
@@ -63,6 +63,10 @@ public class ProxyInformation {
 
     public int getProxyServerPort() {
         return proxyServerPort;
+    }
+    
+    public void setProxyServerPort(int proxyServerPort) {
+        this.proxyServerPort = proxyServerPort;
     }
 
     public void setProxyServerPort(String proxyServerPort) {
