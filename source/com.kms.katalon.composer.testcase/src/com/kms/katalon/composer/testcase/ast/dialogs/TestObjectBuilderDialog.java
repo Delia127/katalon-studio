@@ -3,10 +3,16 @@ package com.kms.katalon.composer.testcase.ast.dialogs;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -21,25 +27,37 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.dialogs.ISelectionStatusValidator;
 import org.osgi.framework.FrameworkUtil;
 
+import com.kms.katalon.composer.components.impl.control.ImageButton;
 import com.kms.katalon.composer.components.impl.dialogs.TreeEntitySelectionDialog;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.components.util.ColumnViewerUtil;
 import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
 import com.kms.katalon.composer.explorer.providers.EntityProvider;
 import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
+import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
+import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.MapEntryExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.MapExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.providers.AstInputTypeLabelProvider;
@@ -47,6 +65,7 @@ import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueTypeColumnSupport;
 import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
+import com.kms.katalon.composer.testcase.util.AstInputValueTypeOptionsProvider;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
@@ -54,12 +73,18 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 
 public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implements IAstDialogBuilder {
-    private static final InputValueType[] defaultInputValueTypes = { InputValueType.Variable, InputValueType.GlobalVariable };
+    private static final InputValueType[] defaultInputValueTypes = { InputValueType.Variable,
+            InputValueType.GlobalVariable };
+
+    private static final InputValueType[] defaultVariableInputValueTypes = AstInputValueTypeOptionsProvider
+            .getInputValueTypeOptions(InputValueType.Map);
+
+    private static final String DEFAULT_VARIABLE_NAME = "variable";
 
     private static final String pluginId = FrameworkUtil.getBundle(TestObjectBuilderDialog.class).getSymbolicName();
 
-
-    private static final String OBJECT_FINDER_TAB_NAME = TreeEntityUtil.getReadableKeywordName(InputValueType.TestObject.getName());
+    private static final String OBJECT_FINDER_TAB_NAME = TreeEntityUtil
+            .getReadableKeywordName(InputValueType.TestObject.getName());
 
     private static final String[] TEST_OBJECT_TABS = { OBJECT_FINDER_TAB_NAME, StringConstants.DIA_TAB_OTHER };
 
@@ -85,29 +110,68 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
 
     private Combo combo;
 
-    public TestObjectBuilderDialog(Shell parentShell, ExpressionWrapper objectExpressionWrapper, boolean haveOtherTypes) {
+    private Label lblVariables;
+
+    private Composite compositeVariables, compositeVariablesDetails;
+
+    private ImageButton btnExpandVariablesComposite;
+
+    private TableViewer variableTableViewer;
+
+    private MapExpressionWrapper variableMaps = null;
+
+    private boolean isVariablesCompositeExpanded = false;
+
+    private Listener layoutExecutionCompositeListener = new Listener() {
+
+        @Override
+        public void handleEvent(org.eclipse.swt.widgets.Event event) {
+            isVariablesCompositeExpanded = !isVariablesCompositeExpanded;
+            layoutExecutionInfo();
+        }
+    };
+
+    public TestObjectBuilderDialog(Shell parentShell, ExpressionWrapper objectExpressionWrapper,
+            boolean haveOtherTypes) {
         super(parentShell, new EntityLabelProvider(), new EntityProvider(),
                 new EntityViewerFilter(new EntityProvider()));
         _instance = this;
         this.haveOtherTypes = haveOtherTypes;
         this.objectExpressionWrapper = objectExpressionWrapper.clone();
+        initVariableMap();
         setAllowMultiple(false);
         setShellStyle(SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | getDefaultOrientation());
         try {
-            setInput(TreeEntityUtil.getChildren(
-                    null,
-                    FolderController.getInstance().getObjectRepositoryRoot(
-                            ProjectController.getInstance().getCurrentProject())));
+            setInput(TreeEntityUtil.getChildren(null, FolderController.getInstance()
+                    .getObjectRepositoryRoot(ProjectController.getInstance().getCurrentProject())));
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
         refreshSelectionTree();
     }
 
+    private void initVariableMap() {
+        if (!isObjectExpressionFindTestObjectMethodCall()) {
+            return;
+        }
+        MethodCallExpressionWrapper methodCallObjectExpression = (MethodCallExpressionWrapper) objectExpressionWrapper;
+        if (methodCallObjectExpression.getArguments().getExpressions().size() <= 1) {
+            variableMaps = new MapExpressionWrapper(methodCallObjectExpression.getArguments());
+            return;
+        }
+        ExpressionWrapper secondParam = methodCallObjectExpression.getArguments().getExpressions().get(1);
+        if (!(secondParam instanceof MapExpressionWrapper)) {
+            variableMaps = new MapExpressionWrapper(methodCallObjectExpression.getArguments());
+            return;
+        }
+        variableMaps = (MapExpressionWrapper) secondParam;
+    }
+
     protected void refreshSelectionTree() {
         String testObjectId = null;
         if (isObjectExpressionFindTestObjectMethodCall()) {
-            testObjectId = AstEntityInputUtil.findTestObjectIdFromFindTestObjectMethodCall((MethodCallExpressionWrapper) objectExpressionWrapper);
+            testObjectId = AstEntityInputUtil.findTestObjectIdFromFindTestObjectMethodCall(
+                    (MethodCallExpressionWrapper) objectExpressionWrapper);
         }
         if (testObjectId == null) {
             return;
@@ -116,16 +180,16 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         FolderEntity objectRepositoryRoot = null;
         try {
             selectedWebElement = ObjectRepositoryController.getInstance().getWebElementByDisplayPk(testObjectId);
-            objectRepositoryRoot = FolderController.getInstance().getObjectRepositoryRoot(
-                    ProjectController.getInstance().getCurrentProject());
+            objectRepositoryRoot = FolderController.getInstance()
+                    .getObjectRepositoryRoot(ProjectController.getInstance().getCurrentProject());
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
         if (selectedWebElement == null || objectRepositoryRoot == null) {
             return;
         }
-        setInitialSelection(new WebElementTreeEntity(selectedWebElement, createSelectedTreeEntityHierachy(
-                selectedWebElement.getParentFolder(), objectRepositoryRoot)));
+        setInitialSelection(new WebElementTreeEntity(selectedWebElement,
+                createSelectedTreeEntityHierachy(selectedWebElement.getParentFolder(), objectRepositoryRoot)));
     }
 
     @Override
@@ -147,6 +211,7 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         applyDialogFont(stackComposite);
         stackLayout = new StackLayout();
         stackComposite.setLayout(stackLayout);
+        stackComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
 
         objectFinderComposite = new Composite(stackComposite, SWT.NONE);
         objectFinderComposite.setLayout(new GridLayout(1, false));
@@ -173,6 +238,9 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         });
 
         treeWidget.setEnabled(true);
+
+        createVariableComposite();
+
         stackLayout.topControl = objectFinderComposite;
 
         if (haveOtherTypes) {
@@ -189,6 +257,334 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
 
         refresh();
         return stackComposite;
+    }
+
+    private void createVariableComposite() {
+        compositeVariables = new Composite(objectFinderComposite, SWT.NONE);
+        compositeVariables.setBackground(ColorUtil.getCompositeBackgroundColor());
+        GridLayout glCompositeExecution = new GridLayout(1, true);
+        glCompositeExecution.verticalSpacing = 0;
+        glCompositeExecution.horizontalSpacing = 0;
+        glCompositeExecution.marginHeight = 0;
+        glCompositeExecution.marginWidth = 0;
+        compositeVariables.setLayout(glCompositeExecution);
+        compositeVariables.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+
+        Composite compositeExecutionCompositeHeader = new Composite(compositeVariables, SWT.NONE);
+        compositeExecutionCompositeHeader.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+        GridLayout glCompositeExecutionCompositeHeader = new GridLayout(3, false);
+        glCompositeExecutionCompositeHeader.marginHeight = 0;
+        glCompositeExecutionCompositeHeader.marginWidth = 0;
+        compositeExecutionCompositeHeader.setLayout(glCompositeExecutionCompositeHeader);
+        compositeExecutionCompositeHeader
+                .setCursor(compositeExecutionCompositeHeader.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
+        compositeExecutionCompositeHeader
+                .setCursor(compositeExecutionCompositeHeader.getDisplay().getSystemCursor(SWT.CURSOR_HAND));
+
+        btnExpandVariablesComposite = new ImageButton(compositeExecutionCompositeHeader, SWT.NONE);
+        redrawBtnExpandExecutionInfo();
+
+        lblVariables = new Label(compositeExecutionCompositeHeader, SWT.NONE);
+        lblVariables.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+        lblVariables.setFont(JFaceResources.getFontRegistry().getBold(""));
+        lblVariables.setText(ComposerTestcaseMessageConstants.OBJECT_VARIABLE_LABEL);
+
+        lblVariables.addListener(SWT.MouseDown, layoutExecutionCompositeListener);
+
+        btnExpandVariablesComposite.addListener(SWT.MouseDown, layoutExecutionCompositeListener);
+
+        compositeVariablesDetails = new Composite(compositeVariables, SWT.NONE);
+        compositeVariablesDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        compositeVariablesDetails.setLayout(new GridLayout(1, true));
+
+        ToolBar toolBar = new ToolBar(compositeVariablesDetails, SWT.FLAT | SWT.RIGHT);
+
+        ToolItem tltmAddVariable = new ToolItem(toolBar, SWT.NONE);
+        tltmAddVariable.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                addVariable();
+            }
+        });
+        tltmAddVariable.setText(StringConstants.PA_BTN_TIP_ADD);
+        tltmAddVariable.setImage(ImageConstants.IMG_16_ADD);
+
+        final ToolItem tltmRemove = new ToolItem(toolBar, SWT.NONE);
+        tltmRemove.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                removeVariables();
+            }
+        });
+        tltmRemove.setText(StringConstants.PA_BTN_TIP_REMOVE);
+        tltmRemove.setImage(ImageConstants.IMG_16_REMOVE);
+        tltmRemove.setEnabled(false);
+
+        ToolItem tltmClear = new ToolItem(toolBar, SWT.NONE);
+        tltmClear.setText(StringConstants.PA_BTN_TIP_CLEAR);
+        tltmClear.setImage(ImageConstants.IMG_16_CLEAR);
+
+        tltmClear.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                clearVariables();
+            }
+        });
+
+        variableTableViewer = new TableViewer(compositeVariablesDetails, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+        ColumnViewerUtil.setTableActivation(variableTableViewer);
+
+        variableTableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                // Should disable Delete button if there is no selection
+                tltmRemove.setEnabled(!variableTableViewer.getSelection().isEmpty());
+            }
+        });
+
+        Table table = variableTableViewer.getTable();
+        table.setHeaderVisible(true);
+        table.setLinesVisible(true);
+        GridData variableTableLayoutData = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
+        variableTableLayoutData.minimumHeight = 100;
+        table.setLayoutData(variableTableLayoutData);
+
+        TableViewerColumn tableViewerColumnParamType = new TableViewerColumn(variableTableViewer, SWT.NONE);
+        tableViewerColumnParamType.setEditingSupport(
+                new AstInputBuilderValueTypeColumnSupport(variableTableViewer, defaultVariableInputValueTypes) {
+                    @Override
+                    protected void setValue(Object element, Object value) {
+                        super.setValue(((MapEntryExpressionWrapper) element).getKeyExpression(), value);
+                    }
+
+                    @Override
+                    protected Object getValue(Object element) {
+                        return super.getValue(((MapEntryExpressionWrapper) element).getKeyExpression());
+                    }
+
+                    @Override
+                    protected boolean canEdit(Object element) {
+                        if (element instanceof MapEntryExpressionWrapper) {
+                            return super.canEdit(((MapEntryExpressionWrapper) element).getKeyExpression());
+                        }
+                        return false;
+                    }
+
+                    @Override
+                    protected CellEditor getCellEditor(Object element) {
+                        return super.getCellEditor(((MapEntryExpressionWrapper) element).getKeyExpression());
+                    }
+                });
+        TableColumn tblclmnParamType = tableViewerColumnParamType.getColumn();
+        tblclmnParamType.setWidth(100);
+        tblclmnParamType.setText(ComposerTestcaseMessageConstants.OBJECT_VARIABLE_TABLE_COL_PARAM_TYPE);
+        tableViewerColumnParamType.setLabelProvider(new AstInputTypeLabelProvider() {
+            @Override
+            public String getText(Object element) {
+                if (element instanceof MapEntryExpressionWrapper) {
+                    return super.getText(((MapEntryExpressionWrapper) element).getKeyExpression());
+                }
+                return StringUtils.EMPTY;
+            }
+        });
+
+        TableViewerColumn tableViewerColumnName = new TableViewerColumn(variableTableViewer, SWT.NONE);
+        tableViewerColumnName.setEditingSupport(new AstInputBuilderValueColumnSupport(variableTableViewer) {
+            @Override
+            protected boolean canEdit(Object element) {
+                if (element instanceof MapEntryExpressionWrapper) {
+                    return super.canEdit(((MapEntryExpressionWrapper) element).getKeyExpression());
+                }
+                return false;
+            }
+
+            @Override
+            protected void setValue(Object element, Object value) {
+                super.setValue(((MapEntryExpressionWrapper) element).getKeyExpression(), value);
+            }
+
+            @Override
+            protected Object getValue(Object element) {
+                return super.getValue(((MapEntryExpressionWrapper) element).getKeyExpression());
+            }
+
+            @Override
+            protected CellEditor getCellEditor(Object element) {
+                return super.getCellEditor(((MapEntryExpressionWrapper) element).getKeyExpression());
+            }
+        });
+        tableViewerColumnName.setLabelProvider(new AstInputValueLabelProvider() {
+            @Override
+            public String getText(Object element) {
+                if (element instanceof MapEntryExpressionWrapper) {
+                    return super.getText(((MapEntryExpressionWrapper) element).getKeyExpression());
+                }
+                return StringUtils.EMPTY;
+            }
+        });
+        TableColumn tblclmnName = tableViewerColumnName.getColumn();
+        tblclmnName.setWidth(100);
+        tblclmnName.setText(ComposerTestcaseMessageConstants.OBJECT_VARIABLE_TABLE_COL_PARAM);
+
+        TableViewerColumn tableViewerColumnValueType = new TableViewerColumn(variableTableViewer, SWT.NONE);
+        tableViewerColumnValueType.setEditingSupport(
+                new AstInputBuilderValueTypeColumnSupport(variableTableViewer, defaultVariableInputValueTypes) {
+                    @Override
+                    protected void setValue(Object element, Object value) {
+                        super.setValue(((MapEntryExpressionWrapper) element).getValueExpression(), value);
+                    }
+
+                    @Override
+                    protected Object getValue(Object element) {
+                        return super.getValue(((MapEntryExpressionWrapper) element).getValueExpression());
+                    }
+
+                    @Override
+                    protected boolean canEdit(Object element) {
+                        if (element instanceof MapEntryExpressionWrapper) {
+                            return super.canEdit(((MapEntryExpressionWrapper) element).getValueExpression());
+                        }
+                        return false;
+                    }
+
+                    @Override
+                    protected CellEditor getCellEditor(Object element) {
+                        return super.getCellEditor(((MapEntryExpressionWrapper) element).getValueExpression());
+                    }
+                });
+        TableColumn tblclmnValueType = tableViewerColumnValueType.getColumn();
+        tblclmnValueType.setWidth(100);
+        tblclmnValueType.setText(ComposerTestcaseMessageConstants.OBJECT_VARIABLE_TABLE_COL_VALUE_TYPE);
+        tableViewerColumnValueType.setLabelProvider(new AstInputTypeLabelProvider() {
+            @Override
+            public String getText(Object element) {
+                if (element instanceof MapEntryExpressionWrapper) {
+                    return super.getText(((MapEntryExpressionWrapper) element).getValueExpression());
+                }
+                return StringUtils.EMPTY;
+            }
+        });
+
+        TableViewerColumn tableViewerColumnValue = new TableViewerColumn(variableTableViewer, SWT.NONE);
+        tableViewerColumnValue.setEditingSupport(new AstInputBuilderValueColumnSupport(variableTableViewer) {
+            @Override
+            protected void setValue(Object element, Object value) {
+                super.setValue(((MapEntryExpressionWrapper) element).getValueExpression(), value);
+            }
+
+            @Override
+            protected Object getValue(Object element) {
+                return super.getValue(((MapEntryExpressionWrapper) element).getValueExpression());
+            }
+
+            @Override
+            protected boolean canEdit(Object element) {
+                if (element instanceof MapEntryExpressionWrapper) {
+                    return super.canEdit(((MapEntryExpressionWrapper) element).getValueExpression());
+                }
+                return false;
+            }
+
+            @Override
+            protected CellEditor getCellEditor(Object element) {
+                return super.getCellEditor(((MapEntryExpressionWrapper) element).getValueExpression());
+            }
+        });
+        TableColumn tblclmnValue = tableViewerColumnValue.getColumn();
+        tblclmnValue.setWidth(200);
+        tblclmnValue.setText(ComposerTestcaseMessageConstants.OBJECT_VARIABLE_TABLE_COL_VALUE);
+        tableViewerColumnValue.setLabelProvider(new AstInputValueLabelProvider() {
+            @Override
+            public String getText(Object element) {
+                if (element instanceof MapEntryExpressionWrapper) {
+                    return super.getText(((MapEntryExpressionWrapper) element).getValueExpression());
+                }
+                return StringUtils.EMPTY;
+            }
+        });
+
+        variableTableViewer.setContentProvider(new ArrayContentProvider());
+        variableTableViewer.setInput(variableMaps.getMapEntryExpressions());
+        layoutExecutionInfo();
+    }
+
+    private void layoutExecutionInfo() {
+        Display.getDefault().timerExec(10, new Runnable() {
+            @Override
+            public void run() {
+                compositeVariablesDetails.setVisible(isVariablesCompositeExpanded);
+                if (!isVariablesCompositeExpanded) {
+                    ((GridData) compositeVariablesDetails.getLayoutData()).exclude = true;
+                } else {
+                    ((GridData) compositeVariablesDetails.getLayoutData()).exclude = false;
+                }
+                compositeVariables.layout(true, true);
+                compositeVariables.getParent().layout();
+                redrawBtnExpandExecutionInfo();
+            }
+        });
+    }
+
+    private void redrawBtnExpandExecutionInfo() {
+        btnExpandVariablesComposite.getParent().setRedraw(false);
+        if (isVariablesCompositeExpanded) {
+            btnExpandVariablesComposite.setImage(ImageConstants.IMG_16_ARROW_DOWN);
+        } else {
+            btnExpandVariablesComposite.setImage(ImageConstants.IMG_16_ARROW);
+        }
+        btnExpandVariablesComposite.getParent().setRedraw(true);
+    }
+
+    private void clearVariables() {
+        variableMaps.clearExpressions();
+        variableTableViewer.refresh();
+    }
+
+    private void removeVariables() {
+        StructuredSelection selection = (StructuredSelection) variableTableViewer.getSelection();
+        Object[] selectionElements = selection.toArray();
+        if (selectionElements.length == 0) {
+            return;
+        }
+        for (Object object : selectionElements) {
+            if (object instanceof MapEntryExpressionWrapper) {
+                variableMaps.removeExpression((MapEntryExpressionWrapper) object);
+            }
+        }
+        variableTableViewer.refresh();
+    }
+
+    private void addVariable() {
+        MapEntryExpressionWrapper newMapEntry = new MapEntryExpressionWrapper(variableMaps);
+        newMapEntry.setKeyExpression(new ConstantExpressionWrapper(generateNewPropertyName(), newMapEntry));
+        newMapEntry.setValueExpression(new ConstantExpressionWrapper("", newMapEntry));
+        variableMaps.addExpression(newMapEntry);
+        variableTableViewer.refresh();
+    }
+
+    private String generateNewPropertyName() {
+        String name = DEFAULT_VARIABLE_NAME;
+        int index = 0;
+        boolean isUnique = false;
+        String newName = name;
+        while (!isUnique) {
+            isUnique = true;
+            for (MapEntryExpressionWrapper mapEntry : variableMaps.getMapEntryExpressions()) {
+                if (!(mapEntry.getKeyExpression() instanceof ConstantExpressionWrapper)) {
+                    continue;
+                }
+                if (newName.equals(((ConstantExpressionWrapper) mapEntry.getKeyExpression()).getValue())) {
+                    isUnique = false;
+                    break;
+                }
+            }
+            if (isUnique) {
+                return newName;
+            }
+            newName = name + "_" + index;
+            index++;
+        }
+        return newName;
     }
 
     private boolean isObjectExpressionFindTestObjectMethodCall() {
@@ -224,10 +620,12 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
                 String tabName = TEST_OBJECT_TABS[index];
                 ExpressionWrapper newExpression = null;
                 if (tabName.equals(OBJECT_FINDER_TAB_NAME)) {
-                    newExpression = (ExpressionWrapper) InputValueType.TestObject.getNewValue(objectExpressionWrapper.getParent());
+                    newExpression = (ExpressionWrapper) InputValueType.TestObject
+                            .getNewValue(objectExpressionWrapper.getParent());
                     stackLayout.topControl = objectFinderComposite;
                 } else {
-                    newExpression = (ExpressionWrapper) defaultInputValueTypes[0].getNewValue(objectExpressionWrapper.getParent());
+                    newExpression = (ExpressionWrapper) defaultInputValueTypes[0]
+                            .getNewValue(objectExpressionWrapper.getParent());
                     stackLayout.topControl = otherTypesInputTableComposite;
                     setSelectionResult(null);
                 }
@@ -246,22 +644,22 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         tableViewerColumnValueType.getColumn().setWidth(100);
         tableViewerColumnValueType.setLabelProvider(new AstInputTypeLabelProvider());
 
-        tableViewerColumnValueType.setEditingSupport(new AstInputBuilderValueTypeColumnSupport(
-                tableViewer, defaultInputValueTypes) {
-            @Override
-            protected void setValue(Object element, Object value) {
-                if (!(value instanceof Integer) || (int) value < 0 || (int) value >= inputValueTypes.length) {
-                    return;
-                }
-                ASTNodeWrapper newAstNode = getNewAstNode(value, objectExpressionWrapper);
-                if (newAstNode == null || !(newAstNode instanceof ExpressionWrapper)) {
-                    return;
-                }
-                newAstNode.copyProperties(objectExpressionWrapper);
-                objectExpressionWrapper = (ExpressionWrapper) newAstNode;
-                refresh();
-            }
-        });
+        tableViewerColumnValueType
+                .setEditingSupport(new AstInputBuilderValueTypeColumnSupport(tableViewer, defaultInputValueTypes) {
+                    @Override
+                    protected void setValue(Object element, Object value) {
+                        if (!(value instanceof Integer) || (int) value < 0 || (int) value >= inputValueTypes.length) {
+                            return;
+                        }
+                        ASTNodeWrapper newAstNode = getNewAstNode(value, objectExpressionWrapper);
+                        if (newAstNode == null || !(newAstNode instanceof ExpressionWrapper)) {
+                            return;
+                        }
+                        newAstNode.copyProperties(objectExpressionWrapper);
+                        objectExpressionWrapper = (ExpressionWrapper) newAstNode;
+                        refresh();
+                    }
+                });
 
         TableViewerColumn tableViewerColumnValue = new TableViewerColumn(tableViewer, SWT.NONE);
         tableViewerColumnValue.getColumn().setText(StringConstants.DIA_COL_VALUE);
@@ -270,12 +668,13 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         tableViewerColumnValue.setEditingSupport(new AstInputBuilderValueColumnSupport(tableViewer));
     }
 
-    private static FolderTreeEntity createSelectedTreeEntityHierachy(FolderEntity folderEntity, FolderEntity rootFolder) {
+    private static FolderTreeEntity createSelectedTreeEntityHierachy(FolderEntity folderEntity,
+            FolderEntity rootFolder) {
         if (folderEntity == null || folderEntity.equals(rootFolder)) {
             return null;
         }
-        return new FolderTreeEntity(folderEntity, createSelectedTreeEntityHierachy(folderEntity.getParentFolder(),
-                rootFolder));
+        return new FolderTreeEntity(folderEntity,
+                createSelectedTreeEntityHierachy(folderEntity.getParentFolder(), rootFolder));
     }
 
     public void refresh() {
@@ -321,9 +720,12 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         if (objectPk == null) {
             return;
         }
-        ExpressionWrapper newMethodCall = AstEntityInputUtil.createNewFindTestObjectMethodCall(objectPk,
+        MethodCallExpressionWrapper newMethodCall = AstEntityInputUtil.createNewFindTestObjectMethodCall(objectPk,
                 objectExpressionWrapper.getParent());
         newMethodCall.copyProperties(objectExpressionWrapper);
+        if (variableMaps != null && variableMaps.getMapEntryExpressions().size() > 0) {
+            newMethodCall.getArguments().addExpression(variableMaps);
+        }
         objectExpressionWrapper = newMethodCall;
     }
 
