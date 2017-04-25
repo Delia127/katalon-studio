@@ -21,7 +21,6 @@ import org.eclipse.swt.widgets.Text;
 import com.kms.katalon.console.constants.ConsoleMessageConstants;
 import com.kms.katalon.console.utils.ProxyUtil;
 import com.kms.katalon.constants.MessageConstants;
-import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.execution.entity.ProxyOption;
 import com.kms.katalon.execution.entity.ProxyServerType;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
@@ -179,10 +178,9 @@ public class ProxyConfigurationPreferencesPage extends PreferencePage {
         lblPassword.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
         lblPassword.setText(MessageConstants.LBL_PASSWORD);
 
-        txtPass = new Text(authenticateGroup, SWT.BORDER);
+        txtPass = new Text(authenticateGroup, SWT.BORDER | SWT.PASSWORD);
         GridData gdPass = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
         txtPass.setLayoutData(gdPass);
-        txtPass.setEchoChar(StringConstants.PASSWORD_CHAR_MASK);
         
         initialize();
 
