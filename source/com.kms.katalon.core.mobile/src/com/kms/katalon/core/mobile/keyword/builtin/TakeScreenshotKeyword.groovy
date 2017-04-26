@@ -58,14 +58,29 @@ public class TakeScreenshotKeyword extends MobileAbstractKeyword {
     @CompileStatic
     @Override
     public Object execute(Object ...params) {
-        String fileName = (String) params[0]
-        FailureHandling flowControl = (FailureHandling)(params.length > 1 && params[1] instanceof FailureHandling ? params[1] : RunConfiguration.getDefaultFailureHandling())
-        takeScreenshot(fileName,flowControl)
+        switch (params.length) {
+            case 0:
+                return takeScreenshot(defaultFileName(), RunConfiguration.getDefaultFailureHandling());
+            case 1:
+                if (params[0] instanceof String) {
+                    return takeScreenshot((String) params[0], RunConfiguration.getDefaultFailureHandling());
+                }
+                if (params[0] instanceof FailureHandling) {
+                    return takeScreenshot(defaultFileName(), (FailureHandling) params[0]);
+                }
+                break;
+            case 2:
+                return takeScreenshot((String) params[0], (FailureHandling) params[1]);
+        }
+    }
+
+    private String defaultFileName() {
+        return KeywordLogger.getInstance().getLogFolderPath() + File.separator + System.currentTimeMillis() + ".png";
     }
 
     @CompileStatic
-    public void takeScreenshot(String fileName, FailureHandling flowControl) throws StepFailedException {
-        KeywordMain.runKeyword({
+    public String takeScreenshot(String fileName, FailureHandling flowControl) throws StepFailedException {
+        return KeywordMain.runKeyword({
             AppiumDriver<?> driver = getAnyAppiumDriver()
             String context = driver.getContext()
             try {
@@ -83,6 +98,7 @@ public class TakeScreenshotKeyword extends MobileAbstractKeyword {
                     // do nothing
                 }
                 logger.logPassed(StringConstants.KW_LOG_PASSED_SCREENSHOT_IS_TAKEN)
+                return fileName
             } finally {
                 driver.context(context)
             }

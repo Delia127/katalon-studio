@@ -161,8 +161,8 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
-    public static void takeScreenshot(String fileName, FailureHandling flowControl) throws StepFailedException {
-        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "takeScreenshot", fileName, flowControl)
+    public static String takeScreenshot(String fileName, FailureHandling flowControl) throws StepFailedException {
+        return KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "takeScreenshot", fileName, flowControl)
     }
 
     /**
@@ -170,11 +170,35 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
      * @param fileName
      *      the absolute path of the saved screenshot image file
      * @throws StepFailedException
+     * @return the absolute path of the saved screenshot image file
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
-    public static void takeScreenshot(String fileName) throws StepFailedException {
-        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "takeScreenshot", fileName)
+    public static String takeScreenshot(String fileName) throws StepFailedException {
+        return KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "takeScreenshot", fileName)
+    }
+    
+    /**
+     * Taking screenshot of the mobile device screen
+     * @throws StepFailedException
+     * @param flowControl
+     * @return the absolute path of the saved screenshot image file
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
+    public static String takeScreenshot(FailureHandling flowControl) throws StepFailedException {
+        return KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "takeScreenshot", flowControl)
+    }
+
+    /**
+     * Taking screenshot of the mobile device screen
+     * @throws StepFailedException
+     * @return the absolute path of the saved screenshot image file
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
+    public static String takeScreenshot() throws StepFailedException {
+        return KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "takeScreenshot")
     }
 
     /**
