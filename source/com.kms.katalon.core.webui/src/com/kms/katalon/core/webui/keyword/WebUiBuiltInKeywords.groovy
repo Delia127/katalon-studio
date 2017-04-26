@@ -2683,20 +2683,47 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
 
     /**
      * Take screenshot of the browser
-     * @param flowControl
+     * @param fileName
+     *      the absolute path of the saved screenshot image file
+     * @return the captured file path.
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
-    public static void takeScreenshot(FailureHandling flowControl) {
-        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeScreenshot", flowControl)
+    public static String takeScreenshot(String fileName) {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeScreenshot", fileName)
     }
 
     /**
      * Take screenshot of the browser
+     * @param fileName
+     *      the absolute path of the saved screenshot image file
+     * @param flowControl
+     * @return the captured file path.
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
-    public static void takeScreenshot() {
+    public static String takeScreenshot(String fileName, FailureHandling flowControl) {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeScreenshot", fileName, flowControl)
+    }
+
+    /**
+     * Take screenshot of the browser
+     * @param flowControl
+     * @return the captured file path.
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
+    public static String takeScreenshot(FailureHandling flowControl) {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeScreenshot", flowControl)
+    }
+
+    /**
+     * Take screenshot of the browser.
+     * @return the captured file path.
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
+    public static String takeScreenshot() {
         KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "takeScreenshot")
     }
 
