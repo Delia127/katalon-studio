@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -218,7 +219,9 @@ public class RunConfiguration {
     }
 
     public static Map<String, Object> getDriverSystemProperties(String driverConnectorId) {
-        return (Map<String, Object>) getDriverExecutionProperties(EXECUTION_SYSTEM_PROPERTY).get(driverConnectorId);
+        Map<String, Object> systemProperties = getDriverExecutionProperties(EXECUTION_SYSTEM_PROPERTY);
+        return systemProperties.containsKey(driverConnectorId)
+                ? (Map<String, Object>) systemProperties.get(driverConnectorId) : null;
     }
 
     public static Map<String, Object> getDriverPreferencesProperties(String driverConnectorId) {
