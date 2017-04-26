@@ -8,4 +8,12 @@
             uri="fragment.e4xmi">
       </fragment>
    </extension>
+   <extension
+         point="com.kms.katalon.preferences.ProjectSettingPages">
+      <page
+            class="com.kms.katalon.composer.webservice.settings.NetworkSettingPage"
+            id="com.kms.katalon.composer.webservice.network"
+            name="Network">
+      </page>
+   </extension>
 </plugin>

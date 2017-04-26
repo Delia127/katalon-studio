@@ -34,4 +34,9 @@ public class StringConstants {
     public static final String KW_LOG_FAILED_RESPONSE_OBJECT_CONTENT_IS_NULL = CoreWebserviceMessageConstants.KW_LOG_FAILED_RESPONSE_OBJECT_CONTENT_IS_NULL;
     
     public static final String MSG_NO_SERVICE_OPERATION = CoreWebserviceMessageConstants.MSG_NO_SERVICE_OPERATION;
+
+    // WebServiceSettingStore
+    public static final String WEBSERVICE_BUNDLE_ID = "com.kms.katalon.core.webservice";
+
+    public static final String SETTING_SSL_CERTIFICATE = "network.sslCert";
 }
