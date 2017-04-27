@@ -8,12 +8,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -62,8 +58,7 @@ public class RestfulClient implements Requestor {
     }
 
     private ResponseObject sendPostRequest(RequestObject request) throws Exception {
-
-        if (request.getRestUrl() != null && request.getRestUrl().toLowerCase().startsWith("https")) {
+        if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith("https")) {
             SSLContext sc = SSLContext.getInstance("SSL");
             sc.init(null, getTrustManagers(), new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
@@ -97,8 +92,7 @@ public class RestfulClient implements Requestor {
     }
 
     private ResponseObject sendDeleteRequest(RequestObject request) throws Exception {
-
-        if (request.getRestUrl() != null && request.getRestUrl().toLowerCase().startsWith("https")) {
+        if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith("https")) {
             SSLContext sc = SSLContext.getInstance("SSL");
             sc.init(null, getTrustManagers(), new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
@@ -122,30 +116,6 @@ public class RestfulClient implements Requestor {
         }
 
         return response(httpConnection);
-    }
-
-    private TrustManager[] getTrustManagers() {
-        TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
-            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                return null;
-            }
-
-            public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
-            }
-
-            public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
-            }
-        } };
-        return trustAllCerts;
-    }
-
-    private HostnameVerifier getHostnameVerifier() {
-        HostnameVerifier hv = new HostnameVerifier() {
-            public boolean verify(String urlHostName, SSLSession session) {
-                return true;
-            }
-        };
-        return hv;
     }
 
     private static void processRequestParams(RequestObject request) throws MalformedURLException {
