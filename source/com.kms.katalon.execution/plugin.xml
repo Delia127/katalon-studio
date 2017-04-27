@@ -14,5 +14,9 @@
       <initializer
             class="com.kms.katalon.execution.preferences.MailPreferenceDefaultValueInitializer">
       </initializer>
+      
+      <initializer
+            class="com.kms.katalon.execution.preferences.ProxyPreferenceDefaultValueInitializer">
+      </initializer>
    </extension>
 </plugin>

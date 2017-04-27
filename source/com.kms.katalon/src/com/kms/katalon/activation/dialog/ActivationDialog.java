@@ -89,11 +89,10 @@ public class ActivationDialog extends Dialog {
         Label lblPassword = new Label(container, SWT.NONE);
         lblPassword.setText(StringConstants.PASSSWORD_TITLE);
 
-        txtPassword = new Text(container, SWT.BORDER);
+        txtPassword = new Text(container, SWT.BORDER | SWT.PASSWORD);
         GridData gdTxtPassword = new GridData(SWT.FILL, SWT.BOTTOM, true, false, 1, 1);
         gdTxtPassword.heightHint = 22;
         txtPassword.setLayoutData(gdTxtPassword);
-        txtPassword.setEchoChar(StringConstants.PASSWORD_CHAR_MASK);
 
         lblError = new Label(container, SWT.NONE);
         lblError.setAlignment(SWT.CENTER);
