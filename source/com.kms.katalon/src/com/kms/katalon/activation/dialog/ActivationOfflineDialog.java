@@ -11,6 +11,7 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -59,7 +60,7 @@ public class ActivationOfflineDialog extends Dialog {
         container.setLayout(glContainer);
 
         Composite compositeActivationCode = new Composite(container, SWT.NONE);
-        GridData gdCompositeActivationCode = new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1);
+        GridData gdCompositeActivationCode = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
         gdCompositeActivationCode.widthHint = 518;
         gdCompositeActivationCode.heightHint = 169;
         compositeActivationCode.setLayoutData(gdCompositeActivationCode);
@@ -70,8 +71,8 @@ public class ActivationOfflineDialog extends Dialog {
         glCompositeActivationCode.horizontalSpacing = 0;
         compositeActivationCode.setLayout(glCompositeActivationCode);
 
-        Label lblNewLabel = new Label(compositeActivationCode, SWT.NONE);
-        lblNewLabel.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
+        Label lblNewLabel = new Label(compositeActivationCode, SWT.WRAP);
+        lblNewLabel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         lblNewLabel.setText(StringConstants.LBL_ACTIVATE_OFFLINE_HELP);
 
         new Label(compositeActivationCode, SWT.NONE);
@@ -125,9 +126,10 @@ public class ActivationOfflineDialog extends Dialog {
         lblNewLabelOne.setText(StringConstants.LBL_ACTIVATE_CODE);
 
         txtActivationCode = new Text(compositeOne, SWT.BORDER);
-        GridData gdTxtActivationCode = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+        GridData gdTxtActivationCode = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
         gdTxtActivationCode.widthHint = 422;
         gdTxtActivationCode.heightHint = 22;
+        gdTxtActivationCode.minimumHeight = 22;
         txtActivationCode.setLayoutData(gdTxtActivationCode);
         txtActivationCode.addKeyListener(new KeyAdapter() {
             @Override
