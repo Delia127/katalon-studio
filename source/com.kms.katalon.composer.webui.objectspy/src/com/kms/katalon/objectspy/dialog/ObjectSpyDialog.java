@@ -136,6 +136,7 @@ import com.kms.katalon.objectspy.websocket.AddonCommand;
 import com.kms.katalon.objectspy.websocket.AddonSocket;
 import com.kms.katalon.objectspy.websocket.AddonSocketServer;
 import com.kms.katalon.objectspy.websocket.messages.AddonMessage;
+import com.kms.katalon.objectspy.websocket.messages.StartInspectAddonMessage;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.sun.jna.platform.win32.User32;
@@ -1235,7 +1236,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
             return;
         }
         Win32Helper.switchFocusToBrowser(browser);
-        currentInstantSocket.sendMessage(new AddonMessage(AddonCommand.START_INSPECT));
+        currentInstantSocket.sendMessage(new StartInspectAddonMessage());
     }
 
     private void closeInstantSession() {

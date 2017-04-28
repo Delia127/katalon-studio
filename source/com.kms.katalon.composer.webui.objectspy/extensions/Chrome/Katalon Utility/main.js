@@ -24,7 +24,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, callback) {
     }
     switch (request.action) {
     case START_ADDON:
-        start(request.runMode);
+        start(request.runMode, request.data);
         break;
     case STOP_ADDON:
         stop();
@@ -34,14 +34,14 @@ chrome.runtime.onMessage.addListener(function(request, sender, callback) {
 
 chrome.runtime.sendMessage({
     action : CHECK_ADDON_START_STATUS
-}, function(runMode) {
-    start(runMode);
+}, function(response) {
+    start(response.runMode, response.data);
 });
 
-function start(newRunMode) {
+function start(newRunMode, data) {
     switch (newRunMode) {
     case RUN_MODE_OBJECT_SPY:
-        startObjectSpy();
+        startObjectSpy(data);
         break;
     case RUN_MODE_RECORDER:
         startRecorder();
@@ -52,13 +52,13 @@ function start(newRunMode) {
     }
 }
 
-function startObjectSpy() {
+function startObjectSpy(data) {
     if (runMode !== RUN_MODE_IDLE) {
         stop();
     }
     console.log("Starting Object Spy")
     $('document').ready(function() {
-        startInspection();
+        startInspection(data);
         startGetRequestSchedule();
         runMode = RUN_MODE_OBJECT_SPY;
     });

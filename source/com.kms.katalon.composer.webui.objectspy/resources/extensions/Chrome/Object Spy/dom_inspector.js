@@ -7,6 +7,10 @@ var elementInfoDiv; // informational div to show xpath of current hovered
 var elementInfoDivText; // xpath text to show in elementInfoDiv
 var currentEventOrigin; // store event origin for posting message
 
+// HTML Constants
+var space = '\u00A0';
+var dot = '\u25CF';
+
 // setup
 function setupEventListeners() {
 	document.onkeyup = keyUp;
@@ -55,23 +59,42 @@ function createInstructionDiv() {
 	instructionDiv = document.createElement('div');
 	instructionDiv.id = 'katalon-instructionDiv';
 
-	var space = '\u00A0';
-	var dot = '\u25CF';
-
 	addSpanElementToElement('Capture object: ', instructionDiv)
-	addKbdElementToElement('Alt', instructionDiv);
-	instructionDiv.appendChild(document.createTextNode(space));
-	addKbdElementToElement('~', instructionDiv);
-	instructionDiv.appendChild(document.createTextNode(space));
-	addSpanElementToElement(dot + ' Load DOM Map: ', instructionDiv)
-	addKbdElementToElement('Ctrl', instructionDiv);
-	instructionDiv.appendChild(document.createTextNode(space));
-	addKbdElementToElement('Alt', instructionDiv);
-	instructionDiv.appendChild(document.createTextNode(space));
-	addKbdElementToElement('~', instructionDiv);
+    createElementForHotKey(spy_captureObjectHotKey, instructionDiv)
+
+    addSpanElementToElement(dot + ' Load DOM Map: ', instructionDiv)
+    createElementForHotKey(spy_loadDomMapHotKey, instructionDiv)
+    infoDiv.appendChild(instructionDiv);
 
 	infoDiv.appendChild(instructionDiv);
 }
+
+function createElementForHotKey(hotKeyObject, parentDiv) {
+    if (!hotKeyObject) {
+        return;
+    }
+    if (hotKeyObject.useCtrlKey) {
+        addKbdElementToElement('Ctrl', parentDiv);
+        parentDiv.appendChild(document.createTextNode(space));
+    }
+    if (hotKeyObject.useAltKey) {
+        addKbdElementToElement('Alt', parentDiv);
+        parentDiv.appendChild(document.createTextNode(space));
+    }
+    if (hotKeyObject.useShiftKey) {
+        addKbdElementToElement('Shift', parentDiv);
+        parentDiv.appendChild(document.createTextNode(space));
+    }
+    if (hotKeyObject.useMetaKey) {
+        addKbdElementToElement(String.fromCharCode(224), parentDiv);
+        parentDiv.appendChild(document.createTextNode(space));
+    }
+    if (hotKeyObject.keyCode) {
+        addKbdElementToElement(String.fromCharCode(hotKeyObject.keyCode), parentDiv);
+        parentDiv.appendChild(document.createTextNode(space));
+    }
+}
+
 
 function createXpathDiv() {
 	elementInfoDiv = document.createElement('div');
@@ -201,21 +224,23 @@ function sendData() {
 }
 
 function keyUp(e) {
-	keyCode = document.all ? window.event.keyCode : e.keyCode;
-	var isAltKeyPressed = e ? e.altKey : window.event.altKey;
-	var isCtrlKeyPressed = e ? e.ctrlKey : window.event.ctrlKey;
-	if (!isAltKeyPressed) {
-		return;
-	}
-	// Ctrl + Alt + '~'
-	if (isCtrlKeyPressed && keyCode === 192) {
-		forwardPostDomMapEvent();
-		return;
-	}
-	// Alt + '~'
-	if (keyCode === 192) {
-		sendData();
-	}
+    if (isHotKeyPressed(spy_captureObjectHotKey, e)) {
+        sendData();
+        return;
+    }
+    if (isHotKeyPressed(spy_loadDomMapHotKey, e)) {
+        forwardPostDomMapEvent();
+    }
+}
+
+function isHotKeyPressed(hotkeyObject, event) {
+    var keyCode = document.all ? window.event.keyCode : event.keyCode;
+    var isAltKeyPressed = event ? event.altKey : window.event.altKey;
+    var isCtrlKeyPressed = event ? event.ctrlKey : window.event.ctrlKey;
+    var isShiftKeyPressed = event ? event.shiftKey : window.event.shiftKey;
+    var isMetaKeyPressed = event ? event.metaKey : window.event.metaKey;
+    return (keyCode === hotkeyObject.keyCode && isAltKeyPressed === hotkeyObject.useAltKey
+            && isCtrlKeyPressed === hotkeyObject.useCtrlKey && isShiftKeyPressed === hotkeyObject.useShiftKey && isMetaKeyPressed === hotkeyObject.useMetaKey);
 }
 
 function postData(url, object) {

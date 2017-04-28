@@ -85,6 +85,8 @@ public class ObjectspyMessageConstants extends NLS {
 
     public static String ERR_DLG_OBJECT_SPY_PORT_IN_USE;
 
+    public static String ERR_MSG_DUPLICATED_HOTKEYS;
+
     public static String EXC_OBJ_SPY_FOR_BROWSER_IS_NOT_SUPPORTED;
 
     public static String EXC_EXTENSION_FOR_BROWSER_NOT_FOUND;
@@ -134,6 +136,8 @@ public class ObjectspyMessageConstants extends NLS {
     public static String DIA_MSG_CANNOT_START_BROWSER;
 
     public static String LBL_DLG_START_URL;
+
+    public static String ObjectSpyPreferencePage_WARN_MSG_INVALID_KEY_COMBINATION;
 
     public static String TABLE_ELEMENT_TIP_VALUE_CHANGED;
 

@@ -23,6 +23,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.UnreachableBrowserException;
 import org.osgi.framework.FrameworkUtil;
 
+import com.google.gson.Gson;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.util.internal.PathUtil;
@@ -36,7 +37,9 @@ import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.execution.webui.util.WebUIExecutionUtil;
 import com.kms.katalon.objectspy.exception.BrowserNotSupportedException;
 import com.kms.katalon.objectspy.exception.ExtensionNotFoundException;
+import com.kms.katalon.objectspy.preferences.ObjectSpyPreferences;
 import com.kms.katalon.objectspy.util.FileUtil;
+import com.kms.katalon.objectspy.websocket.AddonHotKeyData;
 
 @SuppressWarnings("restriction")
 public class InspectSession implements Runnable {
@@ -48,8 +51,9 @@ public class InspectSession implements Runnable {
 
     protected static final String LOAD_EXTENSION_CHROME_PREFIX = "load-extension=";
 
-    private static final String VARIABLE_INIT_EXPRESSION_FOR_CHROME = "katalonServerPort = ''{0}''" + "\r\n"
-            + "katalonOnOffStatus = true";
+    private static final String VARIABLE_INIT_EXPRESSION_FOR_CHROME = "katalonServerPort = ''{0}''\r\n"
+            + "katalonOnOffStatus = true\r\n" + "spy_captureObjectHotKey = {1};\r\n"
+            + "spy_loadDomMapHotKey = {2};\r\n";
 
     private static final String VARIABLE_INIT_FILE_FOR_CHROME = "chrome_variables_init.js";
 
@@ -236,8 +240,12 @@ public class InspectSession implements Runnable {
     private void generateVariableInitFileForChrome(File chromeExtensionFolder) throws IOException {
         File variableInitJSFile = new File(
                 chromeExtensionFolder.getAbsolutePath() + File.separator + VARIABLE_INIT_FILE_FOR_CHROME);
+        AddonHotKeyData captureObjectHotKey = AddonHotKeyData.buildFrom(ObjectSpyPreferences.getCaptureObjectHotKey());
+        AddonHotKeyData loadDomMapHotKey = AddonHotKeyData.buildFrom(ObjectSpyPreferences.getLoadDomMapHotKey());
+        Gson gson = new Gson();
         FileUtils.writeStringToFile(variableInitJSFile,
-                MessageFormat.format(VARIABLE_INIT_EXPRESSION_FOR_CHROME, String.valueOf(server.getServerPort())),
+                MessageFormat.format(VARIABLE_INIT_EXPRESSION_FOR_CHROME, String.valueOf(server.getServerPort()),
+                        gson.toJson(captureObjectHotKey), gson.toJson(loadDomMapHotKey)),
                 Charset.defaultCharset());
     }
 
