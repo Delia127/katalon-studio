@@ -1,6 +1,6 @@
 package com.kms.katalon.objectspy.websocket;
 
-import java.awt.event.KeyEvent;
+import org.eclipse.swt.SWT;
 
 /**
  * Data class to send to javascript addon
@@ -21,19 +21,32 @@ public class AddonHotKeyData {
         AddonHotKeyData hotkeyData = new AddonHotKeyData();
         hotkeyData.setKeyCode(hotkeyConfig.getKeyCode());
         int modifiers = hotkeyConfig.getModifiers();
-        hotkeyData.setUseAltKey((modifiers & KeyEvent.ALT_MASK) != 0);
-        hotkeyData.setUseCtrlKey((modifiers & KeyEvent.CTRL_MASK) != 0);
-        hotkeyData.setUseMetaKey((modifiers & KeyEvent.META_MASK) != 0);
-        hotkeyData.setUseShiftKey((modifiers & KeyEvent.SHIFT_MASK) != 0);
+        hotkeyData.setUseAltKey((modifiers & SWT.ALT) != 0);
+        hotkeyData.setUseCtrlKey((modifiers & SWT.CTRL) != 0);
+        hotkeyData.setUseMetaKey((modifiers & SWT.COMMAND) != 0);
+        hotkeyData.setUseShiftKey((modifiers & SWT.SHIFT) != 0);
         return hotkeyData;
     }
-    
+
+    /**
+     * Accept key from a..z and ~
+     */
+    private static int convertSWTKeyCodeToJsKeyCode(int swtKeyCode) {
+        if (swtKeyCode == '`') {
+            return 192;
+        }
+        if (swtKeyCode >= 'a' && swtKeyCode <= 'z') {
+            return swtKeyCode - 32;
+        }
+        return swtKeyCode;
+    }
+
     public int getKeyCode() {
         return keyCode;
     }
 
     public void setKeyCode(int keyCode) {
-        this.keyCode = keyCode;
+        this.keyCode = convertSWTKeyCodeToJsKeyCode(keyCode);
     }
 
     public boolean isUseAltKey() {

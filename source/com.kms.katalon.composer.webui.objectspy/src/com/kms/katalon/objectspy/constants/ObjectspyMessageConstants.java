@@ -137,7 +137,7 @@ public class ObjectspyMessageConstants extends NLS {
 
     public static String LBL_DLG_START_URL;
 
-    public static String ObjectSpyPreferencePage_WARN_MSG_INVALID_KEY_COMBINATION;
+    public static String WARN_MSG_INVALID_KEY_COMBINATION;
 
     public static String TABLE_ELEMENT_TIP_VALUE_CHANGED;
 

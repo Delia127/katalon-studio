@@ -4,27 +4,19 @@ import static com.kms.katalon.objectspy.constants.ObjectSpyPreferenceConstants.W
 import static com.kms.katalon.objectspy.constants.ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_HK_CAPTURE_OBJECT;
 import static com.kms.katalon.objectspy.constants.ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_HK_LOAD_DOM_MAP;
 
-import java.awt.Frame;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import java.awt.Toolkit;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.awt.SWT_AWT;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
@@ -33,6 +25,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 
 import com.google.gson.Gson;
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
@@ -41,7 +34,6 @@ import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.objectspy.constants.ObjectSpyPreferenceConstants;
 import com.kms.katalon.objectspy.constants.ObjectspyMessageConstants;
 import com.kms.katalon.objectspy.constants.StringConstants;
-import com.kms.katalon.objectspy.util.KeyUtils;
 import com.kms.katalon.objectspy.websocket.AddonHotKeyConfig;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
@@ -53,7 +45,7 @@ public class ObjectSpyPreferencePage extends PreferencePageWithHelp {
 
     private ScopedPreferenceStore preferenceStore;
 
-    private JTextField loadDomMapTextField, captureObjectTextField;
+    private Text txtCaptureObject, txtLoadDOMMap;
 
     private AddonHotKeyConfig hotKeyCaptureObject, hotKeyLoadDomMap;
 
@@ -66,20 +58,24 @@ public class ObjectSpyPreferencePage extends PreferencePageWithHelp {
                 .getPreferenceStore(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_QUALIFIER);
 
         initAcceptableKeycode();
+
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+                | UnsupportedLookAndFeelException e) {
+            LoggerSingleton.logError(e);
+        }
     }
 
     /**
-     * Accept key from a..z, 0..9 and ~
+     * Accept key from a..z and ~
      */
     private void initAcceptableKeycode() {
         acceptTableKeycodes = new ArrayList<>();
-        for (int index = KeyEvent.VK_0; index <= KeyEvent.VK_9; index++) {
+        for (int index = 'a'; index <= 'z'; index++) {
             acceptTableKeycodes.add(index);
         }
-        for (int index = KeyEvent.VK_A; index <= KeyEvent.VK_Z; index++) {
-            acceptTableKeycodes.add(index);
-        }
-        acceptTableKeycodes.add(KeyEvent.VK_BACK_QUOTE);
+        acceptTableKeycodes.add((int) '`');
     }
 
     private List<String> getDefaultBrowserOptions() {
@@ -117,78 +113,34 @@ public class ObjectSpyPreferencePage extends PreferencePageWithHelp {
     protected void createHotKeyComposite(Composite composite) {
         Group grpHotKeys = new Group(composite, SWT.NONE);
         grpHotKeys.setText(ObjectspyMessageConstants.PREF_LBL_HOTKEYS);
-
         GridLayout glGrpHotKeys = new GridLayout(2, false);
         glGrpHotKeys.horizontalSpacing = 15;
         grpHotKeys.setLayout(glGrpHotKeys);
         grpHotKeys.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false, 2, 1));
 
-        Composite swtAwtComposite = new Composite(grpHotKeys, SWT.EMBEDDED);
-        swtAwtComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 2));
-        Frame frame = SWT_AWT.new_Frame(swtAwtComposite);
+        Label lblCaptureObject = new Label(grpHotKeys, SWT.NONE);
+        lblCaptureObject.setText(ObjectspyMessageConstants.PREF_LBL_CAPTURE_OBJECT);
 
-        JPanel panel = new JPanel();
-        panel.setFont(getCurrentSystemFont());
-        panel.setLayout(new java.awt.GridBagLayout());
-        panel.add(new java.awt.Label(ObjectspyMessageConstants.PREF_LBL_CAPTURE_OBJECT),
-                createGridBagConstrains(0, 0, new Insets(10, 0, 0, 0)));
+        txtCaptureObject = new Text(grpHotKeys, SWT.BORDER);
+        txtCaptureObject.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-        captureObjectTextField = createTextField();
-        panel.add(captureObjectTextField,
-                createGridBagConstrains(1, 0, 1.0, 0.5, GridBagConstraints.BOTH, new Insets(10, 0, 0, 0)));
+        Label lblLoadDOMMap = new Label(grpHotKeys, SWT.NONE);
+        lblLoadDOMMap.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+        lblLoadDOMMap.setText(ObjectspyMessageConstants.PREF_LBL_LOAD_DOM_MAP);
 
-        panel.add(new java.awt.Label(ObjectspyMessageConstants.PREF_LBL_LOAD_DOM_MAP),
-                createGridBagConstrains(0, 1, new Insets(10, 0, 0, 0)));
-
-        loadDomMapTextField = createTextField();
-        panel.add(loadDomMapTextField,
-                createGridBagConstrains(1, 1, 1.0, 0.5, GridBagConstraints.BOTH, new Insets(10, 0, 0, 0)));
-
-        frame.add(panel);
-    }
-
-    private static GridBagConstraints createGridBagConstrains(int gridX, int gridY, Insets insets) {
-        return createGridBagConstrains(gridX, gridY, 0, 0, GridBagConstraints.NONE, insets);
-    }
-
-    private static GridBagConstraints createGridBagConstrains(int gridX, int gridY, double weightX, double weightY,
-            int fill, Insets insets) {
-        GridBagConstraints gridBagConstraints = new GridBagConstraints();
-        gridBagConstraints.weightx = weightX;
-        gridBagConstraints.weighty = weightY;
-        gridBagConstraints.fill = fill;
-        gridBagConstraints.gridx = gridX;
-        gridBagConstraints.gridy = gridY;
-        gridBagConstraints.insets = insets;
-        return gridBagConstraints;
-    }
-
-    private static java.awt.Font getCurrentSystemFont() {
-        Font currentSystemFont = Display.getDefault().getSystemFont();
-        FontData fontData = currentSystemFont.getFontData()[0];
-
-        int resolution = Toolkit.getDefaultToolkit().getScreenResolution();
-        int awtFontSize = (int) Math.round((double) fontData.getHeight() * resolution / 72.0);
-        return new java.awt.Font(fontData.getName(), fontData.getStyle(), awtFontSize);
-    }
-
-    private static JTextField createTextField() {
-        final JTextField textField = new JTextField();
-        textField.setBorder(
-                BorderFactory.createCompoundBorder(textField.getBorder(), BorderFactory.createEmptyBorder(0, 5, 0, 0)));
-        return textField;
+        txtLoadDOMMap = new Text(grpHotKeys, SWT.BORDER);
+        txtLoadDOMMap.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
     }
 
     private void addControlModifyListeners() {
-        captureObjectTextField.addKeyListener(
-                new KeyCaptureAdapter(captureObjectTextField, hotKeyCaptureObject, acceptTableKeycodes, this));
+        txtCaptureObject.addKeyListener(
+                new KeyCaptureAdapter(txtCaptureObject, hotKeyCaptureObject, acceptTableKeycodes, this));
 
-        loadDomMapTextField.addKeyListener(
-                new KeyCaptureAdapter(loadDomMapTextField, hotKeyLoadDomMap, acceptTableKeycodes, this));
+        txtLoadDOMMap.addKeyListener(new KeyCaptureAdapter(txtLoadDOMMap, hotKeyLoadDomMap, acceptTableKeycodes, this));
     }
 
-    private static class KeyCaptureAdapter extends KeyAdapter {
-        private JTextField textField;
+    private static class KeyCaptureAdapter extends org.eclipse.swt.events.KeyAdapter {
+        private Text text;
 
         private AddonHotKeyConfig hotkeyConfig;
 
@@ -196,30 +148,28 @@ public class ObjectSpyPreferencePage extends PreferencePageWithHelp {
 
         private ObjectSpyPreferencePage parentPage;
 
-        public KeyCaptureAdapter(JTextField textField, AddonHotKeyConfig hotkeyConfig, List<Integer> acceptableKeycodes,
+        public KeyCaptureAdapter(Text text, AddonHotKeyConfig hotkeyConfig, List<Integer> acceptableKeycodes,
                 ObjectSpyPreferencePage parentPage) {
-            this.textField = textField;
+            this.text = text;
             this.hotkeyConfig = hotkeyConfig;
             this.acceptableKeycodes = acceptableKeycodes;
             this.parentPage = parentPage;
         }
 
         @Override
-        public void keyPressed(java.awt.event.KeyEvent keyEvent) {
-            int keyCode = keyEvent.getKeyCode();
-            int modifiers = keyEvent.getModifiers();
-            if (modifiers == java.awt.event.KeyEvent.VK_UNDEFINED || KeyUtils.isModifier(keyCode)
-                    || acceptableKeycodes.indexOf(keyCode) == -1) {
-                setParentPageMessage(ObjectspyMessageConstants.ObjectSpyPreferencePage_WARN_MSG_INVALID_KEY_COMBINATION,
+        public void keyPressed(KeyEvent keyEvent) {
+            keyEvent.doit = false;
+            int keyCode = keyEvent.keyCode;
+            int modifiers = keyEvent.stateMask;
+            if (modifiers == SWT.NONE || acceptableKeycodes.indexOf(keyCode) == -1) {
+                setParentPageMessage(ObjectspyMessageConstants.WARN_MSG_INVALID_KEY_COMBINATION,
                         WARNING);
                 return;
             }
-            textField.setText(getTextForKeyStroke(keyCode, modifiers));
+            text.setText(KeyStroke.getInstance(modifiers, keyCode).format());
             hotkeyConfig.setKeyCode(keyCode);
             hotkeyConfig.setModifiers(modifiers);
-            keyEvent.consume();
             setParentPageMessage(null, INFORMATION);
-
         }
 
         protected void setParentPageMessage(final String message, final int type) {
@@ -229,11 +179,6 @@ public class ObjectSpyPreferencePage extends PreferencePageWithHelp {
                     parentPage.setMessage(message, type);
                 }
             });
-        }
-
-        @Override
-        public void keyTyped(java.awt.event.KeyEvent keyEvent) {
-            keyEvent.consume();
         }
     }
 
@@ -248,18 +193,11 @@ public class ObjectSpyPreferencePage extends PreferencePageWithHelp {
         hotKeyLoadDomMap = gson.fromJson(preferenceStore.getString(WEBUI_OBJECTSPY_HK_LOAD_DOM_MAP),
                 AddonHotKeyConfig.class);
 
-        // set input for Hotkeys group
-        captureObjectTextField.setText(getTextForKeyStroke(hotKeyCaptureObject));
+        txtCaptureObject.setText(
+                KeyStroke.getInstance(hotKeyCaptureObject.getModifiers(), hotKeyCaptureObject.getKeyCode()).format());
 
-        loadDomMapTextField.setText(getTextForKeyStroke(hotKeyLoadDomMap));
-    }
-
-    private static String getTextForKeyStroke(AddonHotKeyConfig addonHotKeyConfig) {
-        return getTextForKeyStroke(addonHotKeyConfig.getKeyCode(), addonHotKeyConfig.getModifiers());
-    }
-
-    private static String getTextForKeyStroke(int keycode, int modifiers) {
-        return java.awt.event.KeyEvent.getKeyModifiersText(modifiers) + "+" + KeyUtils.getKeyText(keycode);
+        txtLoadDOMMap.setText(
+                KeyStroke.getInstance(hotKeyLoadDomMap.getModifiers(), hotKeyLoadDomMap.getKeyCode()).format());
     }
 
     @Override
@@ -307,8 +245,10 @@ public class ObjectSpyPreferencePage extends PreferencePageWithHelp {
                 AddonHotKeyConfig.class);
 
         // set input for Hotkeys group
-        captureObjectTextField.setText(getTextForKeyStroke(hotKeyCaptureObject));
+        txtCaptureObject.setText(
+                KeyStroke.getInstance(hotKeyCaptureObject.getModifiers(), hotKeyCaptureObject.getKeyCode()).format());
 
-        loadDomMapTextField.setText(getTextForKeyStroke(hotKeyLoadDomMap));
+        txtLoadDOMMap.setText(
+                KeyStroke.getInstance(hotKeyLoadDomMap.getModifiers(), hotKeyLoadDomMap.getKeyCode()).format());
     }
 }

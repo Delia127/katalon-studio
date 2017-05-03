@@ -2,10 +2,8 @@ package com.kms.katalon.objectspy.preferences;
 
 import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
 
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
+import org.eclipse.swt.SWT;
 
 import com.google.gson.Gson;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
@@ -19,7 +17,8 @@ public class ObjectSpyPreferenceDefaultValueInitializer extends AbstractPreferen
     public static final String[] SUPPORTED_BROWSERS = new String[] { WebUIDriverType.CHROME_DRIVER.toString(),
             WebUIDriverType.FIREFOX_DRIVER.toString(), WebUIDriverType.IE_DRIVER.toString() };
     
-
+    public static final int DEFAULT_KEY_CODE = (int) '`';
+    
     @Override
     public void initializeDefaultPreferences() {
         ScopedPreferenceStore store = getPreferenceStore(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_QUALIFIER);
@@ -28,9 +27,9 @@ public class ObjectSpyPreferenceDefaultValueInitializer extends AbstractPreferen
 
         Gson gson = new Gson();
         store.setDefault(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_HK_CAPTURE_OBJECT,
-                gson.toJson(new AddonHotKeyConfig(KeyEvent.VK_BACK_QUOTE, InputEvent.ALT_MASK)));
+                gson.toJson(new AddonHotKeyConfig(DEFAULT_KEY_CODE, SWT.ALT)));
         
         store.setDefault(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_HK_LOAD_DOM_MAP,
-                gson.toJson(new AddonHotKeyConfig(KeyEvent.VK_BACK_QUOTE, InputEvent.ALT_MASK | InputEvent.CTRL_MASK)));
+                gson.toJson(new AddonHotKeyConfig(DEFAULT_KEY_CODE, SWT.ALT | SWT.CTRL)));
     }
 }

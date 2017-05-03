@@ -2,9 +2,6 @@ package com.kms.katalon.core.application;
 
 import java.util.Map;
 
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
@@ -14,7 +11,6 @@ import org.eclipse.ui.PlatformUI;
 import org.osgi.framework.BundleException;
 
 import com.kms.katalon.composer.components.application.ApplicationSingleton;
-import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.console.addons.MacOSAddon;
 import com.kms.katalon.console.utils.ApplicationInfo;
 import com.kms.katalon.constants.IdConstants;
@@ -74,12 +70,6 @@ public class Application implements IApplication {
         ApplicationSession.clean();
         MacOSAddon.initMacOSConfig();
         ApplicationInfo.setAppInfoIntoUserHomeDir();
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
-                | UnsupportedLookAndFeelException e) {
-            LoggerSingleton.logError(e);
-        }
     }
 
     private OptionSet parseOption(final String[] appArgs) {
