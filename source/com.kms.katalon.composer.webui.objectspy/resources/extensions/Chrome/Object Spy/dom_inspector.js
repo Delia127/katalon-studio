@@ -86,7 +86,7 @@ function createElementForHotKey(hotKeyObject, parentDiv) {
         parentDiv.appendChild(document.createTextNode(space));
     }
     if (hotKeyObject.useMetaKey) {
-        addKbdElementToElement(String.fromCharCode(224), parentDiv);
+        addKbdElementToElement('⌘', parentDiv);
         parentDiv.appendChild(document.createTextNode(space));
     }
     if (hotKeyObject.keyCode) {

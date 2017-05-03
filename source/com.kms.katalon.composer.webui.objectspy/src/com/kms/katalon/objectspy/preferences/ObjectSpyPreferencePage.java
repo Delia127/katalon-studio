@@ -10,9 +10,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.swt.SWT;
@@ -58,13 +55,6 @@ public class ObjectSpyPreferencePage extends PreferencePageWithHelp {
                 .getPreferenceStore(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_QUALIFIER);
 
         initAcceptableKeycode();
-
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
-                | UnsupportedLookAndFeelException e) {
-            LoggerSingleton.logError(e);
-        }
     }
 
     /**
@@ -161,9 +151,8 @@ public class ObjectSpyPreferencePage extends PreferencePageWithHelp {
             keyEvent.doit = false;
             int keyCode = keyEvent.keyCode;
             int modifiers = keyEvent.stateMask;
-            if (modifiers == SWT.NONE || acceptableKeycodes.indexOf(keyCode) == -1) {
-                setParentPageMessage(ObjectspyMessageConstants.WARN_MSG_INVALID_KEY_COMBINATION,
-                        WARNING);
+            if (modifiers == SWT.NONE || (modifiers & SWT.COMMAND) != 0 || acceptableKeycodes.indexOf(keyCode) == -1) {
+                setParentPageMessage(ObjectspyMessageConstants.WARN_MSG_INVALID_KEY_COMBINATION, WARNING);
                 return;
             }
             text.setText(KeyStroke.getInstance(modifiers, keyCode).format());
