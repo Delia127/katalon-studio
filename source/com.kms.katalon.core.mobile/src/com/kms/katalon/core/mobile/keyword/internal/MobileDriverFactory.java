@@ -303,9 +303,9 @@ public class MobileDriverFactory {
     public static AppiumDriver<?> startMobileDriver(MobileDriverType osType, String deviceId, String deviceName,
             String appFile, boolean uninstallAfterCloseApp)
             throws MobileDriverInitializeException, IOException, InterruptedException, AppiumStartException {
-        Preconditions.checkArgument(osType != null && StringUtils.isEmpty(deviceName),
+        Preconditions.checkArgument(osType != null && StringUtils.isNotEmpty(deviceName),
                 CoreMobileMessageConstants.KW_MSG_DEVICE_MISSING);
-        Preconditions.checkArgument(StringUtils.isEmpty(appFile), CoreMobileMessageConstants.KW_MSG_APP_FILE_MISSING);
+        Preconditions.checkArgument(StringUtils.isNotEmpty(appFile), CoreMobileMessageConstants.KW_MSG_APP_FILE_MISSING);
         return AppiumDriverManager.createMobileDriver(osType, deviceId,
                 createCapabilities(osType, deviceId, deviceName, appFile, uninstallAfterCloseApp));
     }
