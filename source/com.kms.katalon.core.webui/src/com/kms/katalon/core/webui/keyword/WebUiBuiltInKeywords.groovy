@@ -2298,6 +2298,89 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Wait for Angular/AJAX to load within the default timeout <code>RunConfiguration.getTimeout()</code>.
+     *
+     * @param seconds
+     *         the number of seconds to wait
+     * @return true if Angular/AJAX is ready. Otherwise, false.
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_BROWSER)
+    public static boolean waitForAngularLoad() throws StepFailedException {
+        return KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "waitForAngularLoad")
+    }
+
+    /**
+     * Wait for Angular/AJAX to load within the given time in second unit.
+     *
+     * @param seconds
+     *         the number of seconds to wait
+     * @return true if Angular/AJAX is ready. Otherwise, false.
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_BROWSER)
+    public static boolean waitForAngularLoad(int seconds) throws StepFailedException {
+        return KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "waitForAngularLoad", seconds)
+    }
+
+    /**
+     * Wait for Angular/AJAX call to load within the given time in second unit.
+     *
+     * @param seconds
+     *         the number of seconds to wait
+     * @param flowControl
+     * @return true if Angular/AJAX is ready. Otherwise, false.
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_BROWSER)
+    public static boolean waitForAngularLoad(int seconds, FailureHandling flowControl) throws StepFailedException {
+        return KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "waitForAngularLoad", seconds, flowControl)
+    }
+
+    /**
+     * Wait for jQuery to load within the default timeout <code>RunConfiguration.getTimeout()</code>.
+     * 
+     * @return true if jQuery is ready. Otherwise, false.
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_BROWSER)
+    public static boolean waitForJQueryLoad() throws StepFailedException {
+        return KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "waitForJQueryLoad")
+    }
+
+    /**
+     * Wait for jQuery to load within the given time in second unit.
+     * 
+     * @param flowControl
+     * @return true if jQuery is ready. Otherwise, false.
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_BROWSER)
+    public static boolean waitForJQueryLoad(int seconds) throws StepFailedException {
+        return KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "waitForJQueryLoad", seconds)
+    }
+
+    /**
+     * Wait for jQuery to load within the given time in second unit.
+     *
+     * @param seconds
+     *         the number of seconds to wait
+     * @param flowControl
+     * @return true if jQuery is ready. Otherwise, false.
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_BROWSER)
+    public static boolean waitForJQueryLoad(int seconds, FailureHandling flowControl) throws StepFailedException {
+        return KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "waitForJQueryLoad", seconds, flowControl)
+    }
+
+    /**
      * Modify property of test object. If the property is not existed then the
      * property will be created. If the changed value is null then the existed
      * value will not be changed. Use when test object has attributes changing
