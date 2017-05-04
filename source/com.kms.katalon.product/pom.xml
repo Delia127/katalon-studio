@@ -17,16 +17,16 @@
 		<product.win32OutputDirectory>${product.buildDirectory}/${product.id}/win32/win32/x86</product.win32OutputDirectory>
 		<product.win64OutputDirectory>${product.buildDirectory}/${product.id}/win32/win32/x86_64</product.win64OutputDirectory>
 		<product.mac64OutputDirectory>${product.buildDirectory}/${product.id}/macosx/cocoa/x86_64/${product.name}.app/Contents/Eclipse</product.mac64OutputDirectory>
-		<product.linux32OutputDirectory>${product.buildDirectory}/${product.id}/linux/gtk/x86</product.linux32OutputDirectory>		
- 		<product.linux64OutputDirectory>${product.buildDirectory}/${product.id}/linux/gtk/x86_64</product.linux64OutputDirectory>
-		
+		<product.linux32OutputDirectory>${product.buildDirectory}/${product.id}/linux/gtk/x86</product.linux32OutputDirectory>
+		<product.linux64OutputDirectory>${product.buildDirectory}/${product.id}/linux/gtk/x86_64</product.linux64OutputDirectory>
+
 		<product.resourcesDirectory>configuration/resources</product.resourcesDirectory>
 		<product.mac64ResourcesDirectory>configuration/macosx64_resources</product.mac64ResourcesDirectory>
 		<product.win32ResourcesDirectory>configuration/win32_resources</product.win32ResourcesDirectory>
 		<product.win64ResourcesDirectory>configuration/win64_resources</product.win64ResourcesDirectory>
-		<product.linux32ResourcesDirectory>configuration/linux32_resources</product.linux32ResourcesDirectory>		
+		<product.linux32ResourcesDirectory>configuration/linux32_resources</product.linux32ResourcesDirectory>
 		<product.linux64ResourcesDirectory>configuration/linux64_resources</product.linux64ResourcesDirectory>
- 
+
 		<product.apidocDirectory>${product.resourcesDirectory}/apidocs</product.apidocDirectory>
 
 		<product.archiveFileName>katalon-studio</product.archiveFileName>
@@ -77,6 +77,64 @@
 				<artifactId>tycho-p2-director-plugin</artifactId>
 				<version>${tycho.version}</version>
 				<configuration>
+					<products>
+						<product>
+							<id>${product.id}</id>
+							<rootFolders>
+								<macosx>${product.name}.app</macosx>
+							</rootFolders>
+						</product>
+					</products>
+				</configuration>
+				<executions>
+					<execution>
+						<id>materialize-products</id>
+						<goals>
+							<goal>materialize-products</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<id>delete-p2-binary-cache</id>
+						<phase>package</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<delete>
+									<fileset
+										dir="${product.win32OutputDirectory}/p2/org.eclipse.equinox.p2.core/cache/binary"
+										includes="*" />
+									<fileset
+										dir="${product.win64OutputDirectory}/p2/org.eclipse.equinox.p2.core/cache/binary"
+										includes="*" />
+									<fileset
+										dir="${product.mac64OutputDirectory}/p2/org.eclipse.equinox.p2.core/cache/binary"
+										includes="*" />
+									<fileset
+										dir="${product.linux32OutputDirectory}/p2/org.eclipse.equinox.p2.core/cache/binary"
+										includes="*" />
+									<fileset
+										dir="${product.linux64OutputDirectory}/p2/org.eclipse.equinox.p2.core/cache/binary"
+										includes="*" />
+								</delete>
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-p2-director-plugin</artifactId>
+				<version>${tycho.version}</version>
+				<configuration>
 					<formats>
 						<win32>zip</win32>
 						<linux>tar.gz</linux>
@@ -94,13 +152,8 @@
 				</configuration>
 				<executions>
 					<execution>
-						<id>materialize-products</id>
-						<goals>
-							<goal>materialize-products</goal>
-						</goals>
-					</execution>
-					<execution>
 						<id>archive-products</id>
+						<phase>verify</phase>
 						<goals>
 							<goal>archive-products</goal>
 						</goals>
@@ -112,7 +165,7 @@
 				<version>${maven-resources-plugin.version}</version>
 				<executions>
 					<!-- copy selenium standalone into product's directory -->
-					<execution>						
+					<execution>
 						<id>copy-resources-win32</id>
 						<phase>generate-resources</phase>
 						<goals>
@@ -130,8 +183,8 @@
 							</resources>
 						</configuration>
 					</execution>
-					
-					<execution>						
+
+					<execution>
 						<id>copy-resources-win64</id>
 						<phase>generate-resources</phase>
 						<goals>
@@ -148,8 +201,8 @@
 								</resource>
 							</resources>
 						</configuration>
-					</execution>					
-					<execution>						
+					</execution>
+					<execution>
 						<id>copy-resources-mac64</id>
 						<phase>generate-resources</phase>
 						<goals>
@@ -167,7 +220,7 @@
 							</resources>
 						</configuration>
 					</execution>
-					<execution>						
+					<execution>
 						<id>copy-resources-linux32</id>
 						<phase>generate-resources</phase>
 						<goals>
@@ -185,7 +238,7 @@
 							</resources>
 						</configuration>
 					</execution>
-					<execution>						
+					<execution>
 						<id>copy-resources-linux64</id>
 						<phase>generate-resources</phase>
 						<goals>
@@ -220,8 +273,8 @@
 							<sourceFile>${product.win32ZipFileSrc}</sourceFile>
 							<destinationFile>${product.win32ZipFileDest}</destinationFile>
 						</configuration>
-					 </execution>
-					 <execution>
+					</execution>
+					<execution>
 						<id>rename-win64-zip-file</id>
 						<phase>verify</phase>
 						<goals>
@@ -231,8 +284,8 @@
 							<sourceFile>${product.win64ZipFileSrc}</sourceFile>
 							<destinationFile>${product.win64ZipFileDest}</destinationFile>
 						</configuration>
-					 </execution>
-					 <execution>
+					</execution>
+					<execution>
 						<id>rename-macos-zip-file</id>
 						<phase>verify</phase>
 						<goals>
@@ -242,8 +295,8 @@
 							<sourceFile>${product.mac64ZipFileSrc}</sourceFile>
 							<destinationFile>${product.mac64ZipFileDest}</destinationFile>
 						</configuration>
-					 </execution>
-					 <execution>
+					</execution>
+					<execution>
 						<id>rename-linux32-zip-file</id>
 						<phase>verify</phase>
 						<goals>
@@ -253,8 +306,8 @@
 							<sourceFile>${product.linux32ZipFileSrc}</sourceFile>
 							<destinationFile>${product.linux32ZipFileDest}</destinationFile>
 						</configuration>
-					 </execution>
-					 <execution>
+					</execution>
+					<execution>
 						<id>rename-linux64-zip-file</id>
 						<phase>verify</phase>
 						<goals>
@@ -264,9 +317,9 @@
 							<sourceFile>${product.linux64ZipFileSrc}</sourceFile>
 							<destinationFile>${product.linux64ZipFileDest}</destinationFile>
 						</configuration>
-					 </execution>
+					</execution>
 				</executions>
-		  </plugin>
+			</plugin>
 		</plugins>
 	</build>
 
