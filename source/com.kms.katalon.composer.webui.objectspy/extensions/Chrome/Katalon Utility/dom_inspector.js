@@ -110,7 +110,9 @@ function createElementForHotKey(hotKeyObject, parentDiv) {
         parentDiv.appendChild(document.createTextNode(space));
     }
     if (hotKeyObject.keyCode) {
-        addKbdElementToElement(String.fromCharCode(hotKeyObject.keyCode), parentDiv);
+        var keyCode = hotKeyObject.keyCode;
+        var keyCodeChar = keyCode === 192 ? '`' : String.fromCharCode(hotKeyObject.keyCode);
+        addKbdElementToElement(keyCodeChar, parentDiv);
         parentDiv.appendChild(document.createTextNode(space));
     }
 }

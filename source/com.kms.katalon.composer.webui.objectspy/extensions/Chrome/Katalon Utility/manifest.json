@@ -2,7 +2,7 @@
 	"manifest_version": 2,
 	"name": "Katalon Utility",
 	"description": "Chrome extension for Katalon",
-	"version": "1.0.0.5",
+	"version": "1.0.0.6",
 	"permissions": ["http://*/", "https://*/", "storage"],
 	"icons": { "16": "images/branding_16.png",
            "48": "images/branding_48.png",
