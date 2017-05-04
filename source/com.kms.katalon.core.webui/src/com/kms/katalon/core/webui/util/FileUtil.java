@@ -15,7 +15,6 @@ import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriverException;
 
 import com.kms.katalon.core.exception.StepFailedException;
-import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.webui.driver.DriverFactory;
 
 public class FileUtil {
@@ -24,12 +23,11 @@ public class FileUtil {
 	private static final String KMS_IE_DRIVER_FOLDER = "resources/drivers/kmsie";
 	private static final String AUTHENTICATION_FOLDER = "resources/authentication";
 
-	public static String takesScreenshot() throws IOException, WebDriverException, StepFailedException {
-		String fileName = System.currentTimeMillis() + ".png";
-		FileUtils.copyFile(((TakesScreenshot) DriverFactory.getWebDriver()).getScreenshotAs(OutputType.FILE), 
-		        new File(KeywordLogger.getInstance().getLogFolderPath() + File.separator + fileName), false);
-		return fileName;
-	}
+    public static String takesScreenshot(String fileName) throws IOException, WebDriverException, StepFailedException {
+        FileUtils.copyFile(((TakesScreenshot) DriverFactory.getWebDriver()).getScreenshotAs(OutputType.FILE),
+                new File(fileName), false);
+        return fileName;
+    }
 
 	public static File extractScreenFiles() throws Exception {
 		String path = FileUtil.class.getProtectionDomain().getCodeSource().getLocation().getFile();

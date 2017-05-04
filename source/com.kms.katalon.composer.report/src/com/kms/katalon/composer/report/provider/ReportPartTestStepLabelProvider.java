@@ -1,6 +1,5 @@
 package com.kms.katalon.composer.report.provider;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -22,6 +21,7 @@ import com.kms.katalon.core.logging.model.MessageLogRecord;
 import com.kms.katalon.core.logging.model.TestStatus;
 import com.kms.katalon.core.logging.model.TestStepLogRecord;
 import com.kms.katalon.core.util.internal.DateUtil;
+import com.kms.katalon.core.util.internal.PathUtil;
 
 public class ReportPartTestStepLabelProvider extends StyledCellLabelProvider {
     public static final int CLMN_TEST_LOG_ITEM_IDX = 0;
@@ -180,8 +180,8 @@ public class ReportPartTestStepLabelProvider extends StyledCellLabelProvider {
         if (columnIndex == CLMN_TEST_LOG_ATTACHMENT_IDX && element instanceof MessageLogRecord
                 && (reportPart.getReport() != null)) {
             MessageLogRecord messageLog = (MessageLogRecord) element;
-            return new Image(getColumn().getViewer().getControl().getDisplay(), reportPart.getReport().getLocation()
-                    + File.separator + messageLog.getAttachment());
+            return new Image(getColumn().getViewer().getControl().getDisplay(),
+                    PathUtil.relativeToAbsolutePath(messageLog.getAttachment(), reportPart.getReport().getLocation()));
         }
         return null;
     }
