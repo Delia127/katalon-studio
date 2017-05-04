@@ -367,15 +367,9 @@ public class GroovyWrapperParser {
         if (mapEntryExpressionWrapper.getKeyExpression() instanceof SpreadMapExpressionWrapper) {
             print("*");
         } else {
-            if (mapEntryExpressionWrapper.getKeyExpression() instanceof PropertyExpressionWrapper
-                    || mapEntryExpressionWrapper.getKeyExpression() instanceof VariableExpressionWrapper
-                    || mapEntryExpressionWrapper.getKeyExpression() instanceof MethodCallExpressionWrapper) {
-                print("(");
-                parseExpression(mapEntryExpressionWrapper.getKeyExpression());
-                print(")");
-            } else {
-                parseExpression(mapEntryExpressionWrapper.getKeyExpression());
-            }
+            print("(");
+            parseExpression(mapEntryExpressionWrapper.getKeyExpression());
+            print(")");
         }
         print(" : ");
         parseExpression(mapEntryExpressionWrapper.getValueExpression());
