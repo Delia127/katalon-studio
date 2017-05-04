@@ -6,6 +6,7 @@ import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -132,12 +133,17 @@ public class ObjectRepository {
      * 
      * @return an instance of {@link TestObject} or <code>null</code> if test object id is null
      */
-    public static TestObject findTestObject(String testObjectRelativeId, Map<String, Object> variables) {
+    public static TestObject findTestObject(String testObjectRelativeId, Map<Object, Object> variables) {
         TestObject testObject = findTestObject(testObjectRelativeId);
         if (testObject == null || variables == null || variables.isEmpty()) {
             return testObject;
         }
-        StrSubstitutor strSubtitutor = new StrSubstitutor(variables);
+        Map<String, Object> variablesStringMap = new HashMap<String, Object>();
+        variables.entrySet()
+                .stream()
+                .forEach(entry -> variablesStringMap.put(String.valueOf(entry.getKey()), entry.getValue()));
+
+        StrSubstitutor strSubtitutor = new StrSubstitutor(variablesStringMap);
         testObject.getProperties().parallelStream().forEach(
                 objectProperty -> objectProperty.setValue(strSubtitutor.replace(objectProperty.getValue())));
         return testObject;
