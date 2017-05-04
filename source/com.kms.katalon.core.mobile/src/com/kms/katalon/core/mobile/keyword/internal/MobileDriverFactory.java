@@ -9,10 +9,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.HttpCommandExecutor;
 
+import com.google.common.base.Preconditions;
 import com.kms.katalon.core.appium.driver.AppiumDriverManager;
 import com.kms.katalon.core.appium.exception.AppiumStartException;
 import com.kms.katalon.core.appium.exception.IOSWebkitStartException;
@@ -24,6 +26,7 @@ import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.mobile.constants.StringConstants;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
+import com.kms.katalon.core.mobile.constants.CoreMobileMessageConstants;
 
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.remote.MobileCapabilityType;
@@ -58,8 +61,9 @@ public class MobileDriverFactory {
      * @return the driver type
      */
     public static MobileDriverType getMobileDriverType() {
-        return MobileDriverType.valueOf(RunConfiguration.getDriverSystemProperty(MOBILE_DRIVER_PROPERTY,
-                AppiumDriverManager.EXECUTED_PLATFORM));
+        String mobileDriverType = RunConfiguration.getDriverSystemProperty(MOBILE_DRIVER_PROPERTY,
+                AppiumDriverManager.EXECUTED_PLATFORM);
+        return mobileDriverType != null ? MobileDriverType.valueOf(mobileDriverType) : null;
     }
 
     /**
@@ -206,7 +210,7 @@ public class MobileDriverFactory {
     }
 
     private static boolean isUsingExistingDriver() {
-        return getExecutedDriver() instanceof ExistingDriverType;
+        return getExistingDriver() != null;
     }
 
     /**
@@ -224,14 +228,12 @@ public class MobileDriverFactory {
     public static AppiumDriver<?> startMobileDriver(String appFile, boolean uninstallAfterCloseApp)
             throws AppiumStartException, IOException, InterruptedException, MobileDriverInitializeException,
             IOSWebkitStartException {
-        AppiumDriver<?> driver = null;
         if (isUsingExistingDriver()) {
-            driver = startExistingBrowser();
-        } else {
-            driver = startMobileDriver(getMobileDriverType(), getDeviceId(), getDeviceName(), appFile,
-                    uninstallAfterCloseApp);
-            saveWebDriverSessionData(driver);
+            return startExistingBrowser();
         }
+        AppiumDriver<?> driver = startMobileDriver(getMobileDriverType(), getDeviceId(), getDeviceName(), appFile,
+                uninstallAfterCloseApp);
+        saveWebDriverSessionData(driver);
         return driver;
     }
 
@@ -262,10 +264,15 @@ public class MobileDriverFactory {
      * @return the driver type
      */
     public static DriverType getExecutedDriver() {
+        ExistingDriverType existingDriver = getExistingDriver();
+        return existingDriver != null ? existingDriver : getMobileDriverType();
+    }
+
+    private static ExistingDriverType getExistingDriver() {
         if (RunConfiguration.getDriverSystemProperties(EXISTING_DRIVER_PROPERTY) != null) {
-            return new ExistingDriverType(null);
+            return new ExistingDriverType(StringUtils.EMPTY);
         }
-        return getMobileDriverType();
+        return null;
     }
 
     private static String getWebDriverServerUrl(AppiumDriver<?> remoteWebDriver) {
@@ -296,6 +303,9 @@ public class MobileDriverFactory {
     public static AppiumDriver<?> startMobileDriver(MobileDriverType osType, String deviceId, String deviceName,
             String appFile, boolean uninstallAfterCloseApp)
             throws MobileDriverInitializeException, IOException, InterruptedException, AppiumStartException {
+        Preconditions.checkArgument(osType != null && StringUtils.isNotEmpty(deviceName),
+                CoreMobileMessageConstants.KW_MSG_DEVICE_MISSING);
+        Preconditions.checkArgument(StringUtils.isNotEmpty(appFile), CoreMobileMessageConstants.KW_MSG_APP_FILE_MISSING);
         return AppiumDriverManager.createMobileDriver(osType, deviceId,
                 createCapabilities(osType, deviceId, deviceName, appFile, uninstallAfterCloseApp));
     }
