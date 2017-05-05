@@ -339,6 +339,16 @@ public class ComposerTestcaseMessageConstants extends NLS {
     
     public static String DIA_TITLE_CHECKPOINT_BROWSER;
 
+    public static String OBJECT_VARIABLE_LABEL;
+
+    public static String OBJECT_VARIABLE_TABLE_COL_PARAM;
+
+    public static String OBJECT_VARIABLE_TABLE_COL_PARAM_TYPE;
+
+    public static String OBJECT_VARIABLE_TABLE_COL_VALUE;
+
+    public static String OBJECT_VARIABLE_TABLE_COL_VALUE_TYPE;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerTestcaseMessageConstants.class);

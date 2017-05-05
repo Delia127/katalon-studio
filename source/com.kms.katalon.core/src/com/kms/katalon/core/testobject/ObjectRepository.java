@@ -6,10 +6,13 @@ import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.text.StrSubstitutor;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -20,6 +23,7 @@ import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 
 public class ObjectRepository {
+
     private static KeywordLogger logger = KeywordLogger.getInstance();
 
     private static final String TEST_OBJECT_ROOT_FOLDER_NAME = "Object Repository";
@@ -89,6 +93,7 @@ public class ObjectRepository {
      * 
      * @return an instance of {@link TestObject} or <code>null</code> if the parameter is null or test object doesn't
      * exist
+     * @see {@link #findTestObject(String, Map) findTestObject} for parameterizing test object
      */
     public static TestObject findTestObject(String testObjectRelativeId) {
         if (testObjectRelativeId == null) {
@@ -99,10 +104,49 @@ public class ObjectRepository {
         logger.logInfo(MessageFormat.format(StringConstants.TO_LOG_INFO_FINDING_TEST_OBJ_W_ID, testObjectId));
         File objectFile = new File(RunConfiguration.getProjectDir(), testObjectId + WEBELEMENT_FILE_EXTENSION);
         if (!objectFile.exists()) {
-            logger.logWarning(MessageFormat.format(StringConstants.TO_LOG_WARNING_TEST_OBJ_DOES_NOT_EXIST, testObjectId));
+            logger.logWarning(
+                    MessageFormat.format(StringConstants.TO_LOG_WARNING_TEST_OBJ_DOES_NOT_EXIST, testObjectId));
             return null;
         }
         return readTestObjectFile(testObjectId, objectFile);
+    }
+
+    /**
+     * Finds {@link TestObject} by its id or relative id using a variables map to parameterized its properties values
+     * <p>
+     * Object properties values are parameterized using the ${variable} syntax
+     * <p>
+     * For example: the test object has a xpath property with value ".//div[@class='class']//a[text()='${Variable}']"
+     * <p>
+     * If the test object is created using findTestObject(testObjectId, ['Variable': 'Text']) then the result xpath
+     * property of the created test object will be ".//div[@class='class']//a[text()='Text']"
+     * <p>
+     * Use "$" to escape the "${" special characters, for example: "The variable $${${name}} must be used."
+     * 
+     * @param testObjectRelativeId
+     * Can be test object full id or test object relative id
+     * <p>
+     * Eg: Using "Object Repository/Sample Test Object" (full id) OR "Sample Test Object" (relative id) as
+     * <code>testObjectRelativeId</code> is accepted for the test object with id "Object Repository/Sample Test Object"
+     * 
+     * @param variables the variables map to parameterized the found test object
+     * 
+     * @return an instance of {@link TestObject} or <code>null</code> if test object id is null
+     */
+    public static TestObject findTestObject(String testObjectRelativeId, Map<Object, Object> variables) {
+        TestObject testObject = findTestObject(testObjectRelativeId);
+        if (testObject == null || variables == null || variables.isEmpty()) {
+            return testObject;
+        }
+        Map<String, Object> variablesStringMap = new HashMap<String, Object>();
+        variables.entrySet()
+                .stream()
+                .forEach(entry -> variablesStringMap.put(String.valueOf(entry.getKey()), entry.getValue()));
+
+        StrSubstitutor strSubtitutor = new StrSubstitutor(variablesStringMap);
+        testObject.getProperties().parallelStream().forEach(
+                objectProperty -> objectProperty.setValue(strSubtitutor.replace(objectProperty.getValue())));
+        return testObject;
     }
 
     private static TestObject readTestObjectFile(String testObjectId, File objectFile) {
@@ -118,9 +162,8 @@ public class ObjectRepository {
             }
             return null;
         } catch (DocumentException e) {
-            logger.logWarning(MessageFormat.format(
-                    StringConstants.TO_LOG_WARNING_CANNOT_GET_TEST_OBJECT_X_BECAUSE_OF_Y, testObjectId,
-                    ExceptionsUtil.getMessageForThrowable(e)));
+            logger.logWarning(MessageFormat.format(StringConstants.TO_LOG_WARNING_CANNOT_GET_TEST_OBJECT_X_BECAUSE_OF_Y,
+                    testObjectId, ExceptionsUtil.getMessageForThrowable(e)));
             return null;
         }
     }
@@ -138,9 +181,11 @@ public class ObjectRepository {
             Element propertyElement = (Element) propertyElementObject;
 
             String propertyName = StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_NAME));
-            ConditionType propertyCondition = ConditionType.fromValue(StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_CONDITION)));
+            ConditionType propertyCondition = ConditionType
+                    .fromValue(StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_CONDITION)));
             String propertyValue = StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_VALUE));
-            boolean isPropertySelected = Boolean.valueOf(StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_IS_SELECTED)));
+            boolean isPropertySelected = Boolean
+                    .valueOf(StringEscapeUtils.unescapeXml(propertyElement.elementText(PROPERTY_IS_SELECTED)));
 
             objectProperty.setName(propertyName);
             objectProperty.setCondition(propertyCondition);
