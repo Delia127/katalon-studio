@@ -7,12 +7,14 @@ import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
 
+import com.google.gson.Gson;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.configuration.IExecutionSetting;
 import com.kms.katalon.execution.entity.IExecutedEntity;
+import com.kms.katalon.execution.preferences.ProxyPreferences;
 import com.kms.katalon.execution.setting.ExecutionSettingStore;
 import com.kms.katalon.execution.setting.TestCaseSettingStore;
 import com.kms.katalon.logging.LogUtil;
@@ -47,6 +49,7 @@ public class DefaultExecutionSetting implements IExecutionSetting {
         generalProperties.put(RunConfiguration.TIMEOUT_PROPERTY, timeout);
         generalProperties.put(StringConstants.CONF_PROPERTY_REPORT, getReportProperties());
         generalProperties.put(RunConfiguration.EXCUTION_DEFAULT_FAILURE_HANDLING, getDefaultFailureHandlingSetting());
+        generalProperties.put(RunConfiguration.PROXY_PROPERTY, getJsonProxyInformation());
         if (executedEntity != null) {
             generalProperties.put(RunConfiguration.EXECUTION_TEST_DATA_INFO_PROPERTY, executedEntity.getCollectedDataInfo());
         }
@@ -134,5 +137,9 @@ public class DefaultExecutionSetting implements IExecutionSetting {
 
     public String getDefaultFailureHandlingSetting() {
         return new TestCaseSettingStore(getCurrentProject().getFolderLocation()).getDefaultFailureHandling().name();
+    }
+
+    private String getJsonProxyInformation() {
+        return new Gson().toJson(ProxyPreferences.getProxyInformation());
     }
 }

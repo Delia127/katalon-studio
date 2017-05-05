@@ -20,9 +20,9 @@ import com.kms.katalon.core.webservice.support.UrlEncoder;
 
 public class RestfulClient implements Requestor {
 
-    private static final String DEFAULT_USER_AGENT = "Mozilla/5.0";
+    private static final String DEFAULT_USER_AGENT = "Katalon Studio";
 
-    private static final String DEFAULT_ACCEPT_CONTENT_TYPE = "application/json";
+    private static final String HTTP_USER_AGENT = "User-Agent";
 
     @Override
     public ResponseObject send(RequestObject request) throws Exception {
@@ -39,22 +39,29 @@ public class RestfulClient implements Requestor {
     }
 
     private ResponseObject sendGetRequest(RequestObject request) throws Exception {
+        if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith("https")) {
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, getTrustManagers(), new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+        }
+
         // If there are some parameters, they should be append after the Service URL
         processRequestParams(request);
 
-        URL obj = new URL(request.getRestUrl());
-        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-        con.setRequestMethod("GET");
+        URL url = new URL(request.getRestUrl());
+        HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection(getProxy());
+        if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith("https")) {
+            ((HttpsURLConnection) httpConnection).setHostnameVerifier(getHostnameVerifier());
+        }
+        httpConnection.setRequestMethod(request.getRestRequestMethod());
 
         // Default if not set
-        con.setRequestProperty("User-Agent", DEFAULT_USER_AGENT);
-        // RESTFul usually return JSON, but it is not always, if user not set it, default is JSON
-        con.setRequestProperty("Content-Type", DEFAULT_ACCEPT_CONTENT_TYPE);
+        httpConnection.setRequestProperty(HTTP_USER_AGENT, DEFAULT_USER_AGENT);
         for (TestObjectProperty property : request.getHttpHeaderProperties()) {
-            con.setRequestProperty(property.getName(), property.getValue());
+            httpConnection.setRequestProperty(property.getName(), property.getValue());
         }
 
-        return response(con);
+        return response(httpConnection);
     }
 
     private ResponseObject sendPostRequest(RequestObject request) throws Exception {
@@ -68,15 +75,14 @@ public class RestfulClient implements Requestor {
         processRequestParams(request);
 
         URL url = new URL(request.getRestUrl());
-        HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
-        if (request.getRestUrl() != null && request.getRestUrl().toLowerCase().startsWith("https")) {
+        HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection(getProxy());
+        if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith("https")) {
             ((HttpsURLConnection) httpConnection).setHostnameVerifier(getHostnameVerifier());
         }
         httpConnection.setRequestMethod(request.getRestRequestMethod());
 
         // Default if not set
-        httpConnection.setRequestProperty("User-Agent", DEFAULT_USER_AGENT);
-        httpConnection.setRequestProperty("Content-Type", DEFAULT_ACCEPT_CONTENT_TYPE);
+        httpConnection.setRequestProperty(HTTP_USER_AGENT, DEFAULT_USER_AGENT);
         for (TestObjectProperty property : request.getHttpHeaderProperties()) {
             httpConnection.setRequestProperty(property.getName(), property.getValue());
         }
@@ -102,15 +108,14 @@ public class RestfulClient implements Requestor {
         processRequestParams(request);
 
         URL url = new URL(request.getRestUrl());
-        HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
-        if (request.getRestUrl() != null && request.getRestUrl().toLowerCase().startsWith("https")) {
+        HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection(getProxy());
+        if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith("https")) {
             ((HttpsURLConnection) httpConnection).setHostnameVerifier(getHostnameVerifier());
         }
 
         httpConnection.setRequestMethod(request.getRestRequestMethod());
         // Default if not set
-        httpConnection.setRequestProperty("User-Agent", DEFAULT_USER_AGENT);
-        httpConnection.setRequestProperty("Content-Type", DEFAULT_ACCEPT_CONTENT_TYPE);
+        httpConnection.setRequestProperty(HTTP_USER_AGENT, DEFAULT_USER_AGENT);
         for (TestObjectProperty property : request.getHttpHeaderProperties()) {
             httpConnection.setRequestProperty(property.getName(), property.getValue());
         }
@@ -139,7 +144,6 @@ public class RestfulClient implements Requestor {
     }
 
     private ResponseObject response(HttpURLConnection conn) throws Exception {
-
         if (conn == null) {
             return null;
         }

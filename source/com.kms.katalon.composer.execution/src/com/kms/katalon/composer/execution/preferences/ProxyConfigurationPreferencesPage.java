@@ -21,10 +21,10 @@ import org.eclipse.swt.widgets.Text;
 import com.kms.katalon.console.constants.ConsoleMessageConstants;
 import com.kms.katalon.console.utils.ProxyUtil;
 import com.kms.katalon.constants.MessageConstants;
-import com.kms.katalon.execution.entity.ProxyOption;
-import com.kms.katalon.execution.entity.ProxyServerType;
+import com.kms.katalon.core.network.ProxyInformation;
+import com.kms.katalon.core.network.ProxyOption;
+import com.kms.katalon.core.network.ProxyServerType;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
-import com.kms.katalon.execution.proxy.ProxyInformation;
 
 public class ProxyConfigurationPreferencesPage extends PreferencePage {
     private Text txtAddress;
@@ -227,7 +227,7 @@ public class ProxyConfigurationPreferencesPage extends PreferencePage {
         } else {
             proxyInfo = ProxyUtil.getProxyInformation();
         }
-        cboProxyOption.setText(proxyInfo.getProxyOption());
+        cboProxyOption.setText(ProxyOption.valueOf(proxyInfo.getProxyOption()).getDisplayName());
         cboProxyServerType.setText(proxyInfo.getProxyServerType());
         txtAddress.setText(proxyInfo.getProxyServerAddress());
         txtPort.setText(proxyInfo.getProxyServerPort() >= 0 ? proxyInfo.getProxyServerPort() + "" : "");
@@ -254,7 +254,7 @@ public class ProxyConfigurationPreferencesPage extends PreferencePage {
     public boolean performOk() {
         ProxyInformation proxyInfo = new ProxyInformation();
 
-        proxyInfo.setProxyOption(cboProxyOption.getText());
+        proxyInfo.setProxyOption(ProxyOption.valueOfDisplayName(cboProxyOption.getText()).name());
         proxyInfo.setProxyServerType(cboProxyServerType.getText());
         proxyInfo.setProxyServerAddress(txtAddress.getText());
         proxyInfo.setProxyServerPort(txtPort.getText());

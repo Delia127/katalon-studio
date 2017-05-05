@@ -126,7 +126,7 @@ public class SoapClient implements Requestor {
         ResponseObject responseObject = new ResponseObject();
 
         URL oURL = new URL(endPoint);
-        HttpURLConnection con = (HttpURLConnection) oURL.openConnection();
+        HttpURLConnection con = (HttpURLConnection) oURL.openConnection(getProxy());
         if (isHttps(request)) {
             ((HttpsURLConnection) con).setHostnameVerifier(getHostnameVerifier());
         }

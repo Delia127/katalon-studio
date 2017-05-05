@@ -23,7 +23,7 @@ import com.kms.katalon.console.constants.ConsoleMessageConstants;
 import com.kms.katalon.console.constants.ConsoleStringConstants;
 import com.kms.katalon.console.utils.ProxyUtil;
 import com.kms.katalon.constants.MessageConstants;
-import com.kms.katalon.execution.proxy.ProxyInformation;
+import com.kms.katalon.core.network.ProxyInformation;
 
 public class ProxyConfigurationDialog extends TitleAreaDialog {
     private Text txtAddress;

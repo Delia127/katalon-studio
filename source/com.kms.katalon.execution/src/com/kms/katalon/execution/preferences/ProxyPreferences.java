@@ -2,9 +2,9 @@ package com.kms.katalon.execution.preferences;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 
+import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.execution.constants.ProxyPreferenceConstants;
-import com.kms.katalon.execution.proxy.ProxyInformation;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 

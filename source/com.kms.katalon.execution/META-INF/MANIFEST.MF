@@ -25,7 +25,6 @@ Export-Package: com.kms.katalon.execution.classpath,
  com.kms.katalon.execution.launcher.result,
  com.kms.katalon.execution.logging,
  com.kms.katalon.execution.preferences,
- com.kms.katalon.execution.proxy,
  com.kms.katalon.execution.session,
  com.kms.katalon.execution.setting,
  com.kms.katalon.execution.util

@@ -1,6 +1,8 @@
 package com.kms.katalon.core.webservice.common;
 
 import java.io.IOException;
+import java.net.Proxy;
+import java.net.URISyntaxException;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
@@ -8,8 +10,11 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
+import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
+import com.kms.katalon.core.util.internal.ProxyUtil;
+import com.kms.katalon.core.webservice.exception.WebServiceException;
 import com.kms.katalon.core.webservice.setting.SSLCertificateOption;
 import com.kms.katalon.core.webservice.setting.WebServiceSettingStore;
 
@@ -49,5 +54,19 @@ public interface Requestor {
                 }
             }
         };
+    }
+
+    public default Proxy getProxy() throws WebServiceException {
+        ProxyInformation proxyInformation = RunConfiguration.getProxyInformation();
+        if (proxyInformation == null) {
+            return Proxy.NO_PROXY;
+        }
+        try {
+            return ProxyUtil.getProxy(proxyInformation);
+        } catch (URISyntaxException e) {
+            throw new WebServiceException(e);
+        } catch (IOException e) {
+            throw new WebServiceException(e);
+        }
     }
 }
