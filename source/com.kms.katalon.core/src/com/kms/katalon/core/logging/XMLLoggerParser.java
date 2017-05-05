@@ -40,7 +40,8 @@ public class XMLLoggerParser {
 
     public static final String METHOD_NODE_NAME = "method";
 
-    // private static final String NESTED_LEVEL_NODE_NAME = "nestedLevel";
+    private static final String NESTED_LEVEL_NODE_NAME = "nestedLevel";
+
     // private static final String START_TIME_NODE_NAME = "startTime";
     public static final String EXCEPTION_NODE_NAME = "exception";
 
@@ -174,6 +175,10 @@ public class XMLLoggerParser {
                             String propName = reader.getAttributeValue(null, LOG_RECORD_PROP_NAME_ATTRIBUTE);
                             String propVal = readCharacters(reader);
                             record.getProperties().put(propName, propVal);
+                            break;
+                        case NESTED_LEVEL_NODE_NAME:
+                            record.setNestedLevel(readInt(reader));
+                            break;
                         default:
                             break;
                     }
