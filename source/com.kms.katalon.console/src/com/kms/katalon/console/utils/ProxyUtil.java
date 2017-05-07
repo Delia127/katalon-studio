@@ -14,7 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.kms.katalon.console.constants.ConsoleMessageConstants;
 import com.kms.katalon.console.constants.ConsoleStringConstants;
-import com.kms.katalon.execution.proxy.ProxyInformation;
+import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.logging.LogUtil;
 
 public class ProxyUtil {

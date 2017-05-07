@@ -1,4 +1,4 @@
-package com.kms.katalon.execution.entity;
+package com.kms.katalon.core.network;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;

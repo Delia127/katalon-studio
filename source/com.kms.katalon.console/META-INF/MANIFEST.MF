@@ -20,7 +20,8 @@ Require-Bundle: org.eclipse.equinox.app,
  com.kms.katalon.preferences,
  com.kms.katalon.controller,
  org.eclipse.jdt.launching,
- com.kms.katalon.custom
+ com.kms.katalon.custom,
+ com.kms.katalon.core
 Export-Package: com.kms.katalon.console.addons,
  com.kms.katalon.console.application,
  com.kms.katalon.console.constants,
