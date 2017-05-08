@@ -2298,20 +2298,6 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
-     * Wait for Angular/AJAX to load within the default timeout <code>RunConfiguration.getTimeout()</code>.
-     *
-     * @param seconds
-     *         the number of seconds to wait
-     * @return true if Angular/AJAX is ready. Otherwise, false.
-     * @throws StepFailedException
-     */
-    @CompileStatic
-    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_BROWSER)
-    public static boolean waitForAngularLoad() throws StepFailedException {
-        return KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "waitForAngularLoad")
-    }
-
-    /**
      * Wait for Angular/AJAX to load within the given time in second unit.
      *
      * @param seconds
@@ -2338,18 +2324,6 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_BROWSER)
     public static boolean waitForAngularLoad(int seconds, FailureHandling flowControl) throws StepFailedException {
         return KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "waitForAngularLoad", seconds, flowControl)
-    }
-
-    /**
-     * Wait for jQuery to load within the default timeout <code>RunConfiguration.getTimeout()</code>.
-     * 
-     * @return true if jQuery is ready. Otherwise, false.
-     * @throws StepFailedException
-     */
-    @CompileStatic
-    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_BROWSER)
-    public static boolean waitForJQueryLoad() throws StepFailedException {
-        return KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "waitForJQueryLoad")
     }
 
     /**
