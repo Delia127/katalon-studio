@@ -8,6 +8,7 @@ var REQUEST_SEPARATOR = "_|_";
 
 var clientSocket = null;
 var runMode = RUN_MODE_IDLE;
+var runData = {};
 
 var curTabID = 0;
 var curWinID = 0;
@@ -191,7 +192,10 @@ chrome.runtime.onMessage.addListener(function(request, sender, callback) {
     } else if (request.action == "GET_REQUEST") {
         // startSendRequest(request);
     } else if (request.action == CHECK_ADDON_START_STATUS) {
-        callback(runMode)
+        callback({
+            runMode : runMode,
+            data : runData
+        })
     }
 });
 
@@ -251,10 +255,10 @@ function handleServerMessage(message) {
         clientSocket.send(JSON.stringify(message));
         break;
     case START_INSPECT:
-        startAddon(RUN_MODE_OBJECT_SPY);
+        startAddon(RUN_MODE_OBJECT_SPY, jsonMessage.data);
         break;
     case START_RECORD:
-        startAddon(RUN_MODE_RECORDER);
+        startAddon(RUN_MODE_RECORDER, jsonMessage.data);
         break;
     case HIGHLIGHT_OBJECT:
         if (!jsonMessage.data) {
@@ -265,13 +269,15 @@ function handleServerMessage(message) {
     }
 }
 
-function startAddon(newRunMode) {
+function startAddon(newRunMode, data) {
     runMode = newRunMode;
+    runData = data;
     chrome.tabs.query({}, function(tabs) {
         for (i = 0; i < tabs.length; ++i) {
             chrome.tabs.sendMessage(tabs[i].id, {
                 action : START_ADDON,
-                runMode : newRunMode
+                runMode : newRunMode,
+                data : data
             }, function() {
                 // nothing here
             });
@@ -294,6 +300,7 @@ function focusOnWindow() {
 
 function stopAddon() {
     runMode = RUN_MODE_IDLE;
+    runData = {};
     chrome.tabs.query({}, function(tabs) {
         for (i = 0; i < tabs.length; ++i) {
             chrome.tabs.sendMessage(tabs[i].id, {
