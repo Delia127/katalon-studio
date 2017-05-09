@@ -200,7 +200,7 @@ public class TreeEntityUtil {
             return "Un-check";
         }
         if ("waitForJQueryLoad".equals(keywordMethodName)) {
-            return "Wait for JQuery Load";
+            return "Wait For jQuery Load";
         }
         return StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(StringUtils.capitalize(keywordMethodName)),
                 " ");
