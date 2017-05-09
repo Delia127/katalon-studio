@@ -941,7 +941,25 @@ public class CoreWebuiMessageConstants extends NLS {
     public static String KW_LOG_PASSED_GET_ELEMENT_HEIGHT;
     
     public static String KW_MSG_CANNOT_GET_ELEMENT_HEIGHT;
-        
+    
+    // WaitForAngularLoadKeyword
+    public static String KW_MSG_CANNOT_WAIT_FOR_ANGULAR_LOAD;
+
+    public static String KW_MSG_ANGULAR_NOT_USED;
+
+    public static String KW_LOG_ANGULAR_READY;
+
+    public static String KW_LOG_ANGULAR_NOT_READY;
+
+    // WaitForJQueryLoadKeyword
+    public static String KW_MSG_CANNOT_WAIT_FOR_JQUERY_LOAD;
+
+    public static String KW_LOG_JQUERY_READY;
+
+    public static String KW_LOG_JQUERY_NOT_READY;
+
+    public static String KW_MSG_JQUERY_NOT_USED;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, CoreWebuiMessageConstants.class);

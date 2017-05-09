@@ -95,9 +95,6 @@ public class KeywordURLUtil {
             }
             keyword = new StringBuilder(key);
         }
-        if (keyword.toString().equals("uncheck")) {
-            return "Un-check";
-        }
         return TreeEntityUtil.getReadableKeywordName(keyword.toString());
     }
 }
