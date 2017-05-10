@@ -32,12 +32,13 @@ import com.ibm.wsdl.extensions.soap.SOAPAddressImpl;
 import com.ibm.wsdl.extensions.soap.SOAPBindingImpl;
 import com.ibm.wsdl.extensions.soap12.SOAP12AddressImpl;
 import com.ibm.wsdl.extensions.soap12.SOAP12BindingImpl;
+import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.webservice.constants.CoreWebserviceMessageConstants;
 import com.kms.katalon.core.webservice.exception.WebServiceException;
 
-public class SoapClient implements Requestor {
+public class SoapClient extends BasicRequestor {
 
     private String serviceName;
 
@@ -49,7 +50,8 @@ public class SoapClient implements Requestor {
 
     private RequestObject requestObject;
 
-    public SoapClient() {
+    public SoapClient(String projectDir, ProxyInformation proxyInformation) {
+        super(projectDir, proxyInformation);
     }
 
     private void parseWsdl() throws WSDLException, WebServiceException {

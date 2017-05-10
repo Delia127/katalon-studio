@@ -149,7 +149,7 @@ public class ObjectRepository {
         return testObject;
     }
 
-    private static TestObject readTestObjectFile(String testObjectId, File objectFile) {
+    public static TestObject readTestObjectFile(String testObjectId, File objectFile) {
         try {
             Element rootElement = new SAXReader().read(objectFile).getRootElement();
             String elementName = rootElement.getName();

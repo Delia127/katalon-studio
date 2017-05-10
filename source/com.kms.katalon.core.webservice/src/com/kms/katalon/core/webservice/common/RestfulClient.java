@@ -13,16 +13,21 @@ import javax.net.ssl.SSLContext;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.testobject.TestObjectProperty;
 import com.kms.katalon.core.webservice.support.UrlEncoder;
 
-public class RestfulClient implements Requestor {
+public class RestfulClient extends BasicRequestor {
 
     private static final String DEFAULT_USER_AGENT = "Katalon Studio";
 
     private static final String HTTP_USER_AGENT = "User-Agent";
+    
+    public RestfulClient(String projectDir, ProxyInformation proxyInfomation) {
+        super(projectDir, proxyInfomation);
+    }
 
     @Override
     public ResponseObject send(RequestObject request) throws Exception {

@@ -2,6 +2,7 @@ package com.kms.katalon.core.testobject;
 
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -142,6 +143,9 @@ public class ResponseObject {
      * @return the header fields as a {@link Map}
      */
     public Map<String, List<String>> getHeaderFields() {
+        if (headerFields == null) {
+            headerFields = Collections.emptyMap();
+        }
         return headerFields;
     }
 
