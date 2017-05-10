@@ -3,21 +3,18 @@ package com.kms.katalon.composer.objectrepository.view;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.fieldassist.AutoCompleteField;
-import org.eclipse.jface.fieldassist.ComboContentAdapter;
-import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-import com.kms.katalon.composer.components.impl.util.ControlUtils;
+import com.kms.katalon.composer.components.adapter.CComboContentAdapter;
 import com.kms.katalon.composer.objectrepository.constant.StringConstants;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 
@@ -31,11 +28,11 @@ public class AddPropertyDialog extends Dialog {
 
     private Text txtValue;
 
-    private ComboViewer cvName;
+    private CCombo ccbName;
 
-    private Combo cbbConditions;
+    private CCombo ccbConditions;
 
-    private static final String[] commonNames = { "xpath", "css", "id", "title", "class" };
+    private static final String[] commonNames = { "class", "css", "id", "name", "title", "xpath" };
 
     public AddPropertyDialog(Shell parentShell) {
         super(parentShell);
@@ -55,35 +52,28 @@ public class AddPropertyDialog extends Dialog {
         Label lblName = new Label(container, SWT.NONE);
         lblName.setText(StringConstants.VIEW_LBL_NAME);
 
-        cvName = new ComboViewer(container, SWT.DROP_DOWN);
-        GridData gdTxtName = new GridData(GridData.FILL_HORIZONTAL);
-        gdTxtName.heightHint = ControlUtils.DF_CONTROL_HEIGHT;
-        gdTxtName.verticalAlignment = SWT.FILL;
-        cvName.getCombo().setLayoutData(gdTxtName);
-        cvName.setContentProvider(ArrayContentProvider.getInstance());
-        cvName.setInput(commonNames);
-        new AutoCompleteField(cvName.getCombo(), new ComboContentAdapter(), commonNames);
+        ccbName = new CCombo(container, SWT.BORDER | SWT.FLAT);
+        ccbName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        ccbName.setItems(commonNames);
+        new AutoCompleteField(ccbName, new CComboContentAdapter(), commonNames);
 
         Label lblCondition = new Label(container, SWT.NONE);
         lblCondition.setText(StringConstants.VIEW_LBL_MATCH_COND);
 
-        cbbConditions = new Combo(container, SWT.READ_ONLY);
-        GridData gdCbbConditions = new GridData(GridData.FILL_HORIZONTAL);
-        gdCbbConditions.heightHint = ControlUtils.DF_CONTROL_HEIGHT;
-        cbbConditions.setLayoutData(gdCbbConditions);
-        cbbConditions.setItems(WebElementPropertyEntity.MATCH_CONDITION.getTextVlues());
-        cbbConditions.select(0);
+        ccbConditions = new CCombo(container, SWT.BORDER | SWT.READ_ONLY);
+        ccbConditions.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        ccbConditions.setItems(WebElementPropertyEntity.MATCH_CONDITION.getTextVlues());
+        ccbConditions.select(0);
 
         Label lblValue = new Label(container, SWT.NONE);
-        GridData gd_lblValue = new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1);
-        gd_lblValue.verticalIndent = 5;
-        lblValue.setLayoutData(gd_lblValue);
+        lblValue.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
         lblValue.setText(StringConstants.VIEW_LBL_VALUE);
 
         txtValue = new Text(container, SWT.BORDER);
-        GridData gdTxtValue = new GridData(GridData.FILL_HORIZONTAL);
-        gdTxtValue.heightHint = ControlUtils.DF_CONTROL_HEIGHT;
-        txtValue.setLayoutData(gdTxtValue);
+        txtValue.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+
+        Label separator = new Label(parent, SWT.HORIZONTAL | SWT.SEPARATOR);
+        separator.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
         return area;
     }
@@ -96,14 +86,14 @@ public class AddPropertyDialog extends Dialog {
 
     @Override
     protected Point getInitialSize() {
-        return new Point(450, 230);
+        return new Point(450, 200);
     }
 
     @Override
     protected void okPressed() {
-        name = cvName.getCombo().getText();
+        name = ccbName.getText();
         value = txtValue.getText();
-        condition = cbbConditions.getItem(cbbConditions.getSelectionIndex());
+        condition = ccbConditions.getItem(ccbConditions.getSelectionIndex());
         if (name.trim().equals("")) {
             MessageDialog.openWarning(getParentShell(), StringConstants.WARN_TITLE,
                     StringConstants.VIEW_WARN_MSG_PROPERTY_CANNOT_BE_BLANK);
