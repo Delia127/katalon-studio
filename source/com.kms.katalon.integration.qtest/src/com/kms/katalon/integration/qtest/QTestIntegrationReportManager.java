@@ -248,7 +248,11 @@ public class QTestIntegrationReportManager {
             bodyProperties.put("attachments", new JsonArray(jsonObjects));
             attachmentIncluded = true;
 
-            FileUtils.cleanDirectory(logTempFolder);
+            try {
+                FileUtils.cleanDirectory(logTempFolder);
+            } catch (IOException e) {
+                LogUtil.logError(e);
+            }
         }
 
         // upload result of the given test run

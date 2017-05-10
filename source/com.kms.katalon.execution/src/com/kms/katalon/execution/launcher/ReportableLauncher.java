@@ -117,6 +117,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             sendReportEmail();
         } catch (Exception e) {
             writeError(MessageFormat.format(StringConstants.MSG_RP_ERROR_TO_EMAIL_REPORT, e.getMessage()));
+            LogUtil.logError(e);
         }
     }
 
@@ -248,6 +249,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             } catch (Exception e) {
                 writeError(MessageFormat.format(StringConstants.MSG_RP_ERROR_TO_SEND_INTEGRATION_REPORT,
                         integratingProductName, e.getMessage()));
+                LogUtil.logError(e);
             }
         }
     }
