@@ -10,19 +10,19 @@
 
 	<artifactId>com.kms.katalon.core.webui</artifactId>
 	<packaging>eclipse-plugin</packaging>
-  
-  <properties>
+
+	<properties>
 		<groovydocOutputDirectory>${mainBuildDirectory}/${apidocDirectory}/${project.artifactId}</groovydocOutputDirectory>
-  </properties>
-  
+	</properties>
+
 	<build>
-		<plugins>		
+		<plugins>
 			<!-- Copies resources to parent's resources directory -->
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
 				<version>${maven-resources-plugin.version}</version>
 				<executions>
-					<execution>						
+					<execution>
 						<id>copy-core-webui-resources</id>
 						<phase>generate-resources</phase>
 						<goals>
@@ -37,71 +37,139 @@
 							</resources>
 						</configuration>
 					</execution>
+					<execution>
+						<id>copy-core-webui-mac_resources</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.parent.build.directory}/${mac64ResourcesDirectory}</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${basedir}/os_resources/macosx/resources</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-core-webui-win32_resources</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.parent.build.directory}/${win32ResourcesDirectory}</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${basedir}/os_resources/win32/resources</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-core-webui-win64_resources</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.parent.build.directory}/${win64ResourcesDirectory}</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${basedir}/os_resources/win64/resources</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-core-webui-linux32_resources</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.parent.build.directory}/${linux32ResourcesDirectory}</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${basedir}/os_resources/linux32/resources</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-core-webui-linux64_resources</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.parent.build.directory}/${linux64ResourcesDirectory}</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${basedir}/os_resources/linux64/resources</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
-			
+
 			<!-- Generates groovy doc and copy output to parent's resources directory -->
 			<!-- AntRun cannot read project.parent, so must workaround like this (http://stackoverflow.com/questions/4040778/parent-properties-inside-maven-antrun-plugin) -->
-      <plugin>
-        <groupId>org.codehaus.gmaven</groupId>
-        <artifactId>gmaven-plugin</artifactId>
-        <version>1.5</version>
-        <executions>
-          <execution>
-            <id>set-custom-property</id>
-            <phase>validate</phase>
-            <goals>
-              <goal>execute</goal>
-            </goals>
-            <configuration>
-              <providerSelection>2.0</providerSelection>
-              <source>
-                project.properties.setProperty('mainBuildDirectory', project.parent.build.directory.toString())
-              </source>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.7</version>
-        <executions>
-          <execution>
-            <id>groovydoc</id>
-            <phase>compile</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <configuration>
-              <target>
-                <taskdef name="groovydoc"
-                  classname="org.codehaus.groovy.ant.Groovydoc" 
-                  classpathref="maven.compile.classpath"
-                />
-                <groovydoc destdir="${groovydocOutputDirectory}"
-                  sourcepath="${project.basedir}/src" use="true"
-                  windowtitle="${project.name}"
-                  doctitle="${project.name}" 
-                  packagenames="com.kms.katalon.core.webui.driver,com.kms.katalon.core.webui.keyword"
-                >
-                  <link packages="java.,org.xml.,javax.,org.xml."
-                    href="http://download.oracle.com/javase/6/docs/api" />
-                  <link packages="org.apache.tools.ant." 
-                    href="http://evgeny-goldin.org/javadoc/ant/api" />
-                  <link packages="org.junit.,junit.framework."
-                    href="http://kentbeck.github.com/junit/javadoc/latest" />
-                  <link packages="groovy.,org.codehaus.groovy."
-                    href="http://groovy.codehaus.org/api/" />
-                  <link packages="org.codehaus.gmaven."
-                    href="http://evgeny-goldin.org/javadoc/gmaven" />
-                </groovydoc>
-              </target>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
+			<plugin>
+				<groupId>org.codehaus.gmaven</groupId>
+				<artifactId>gmaven-plugin</artifactId>
+				<version>1.5</version>
+				<executions>
+					<execution>
+						<id>set-custom-property</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<configuration>
+							<providerSelection>2.0</providerSelection>
+							<source>
+								project.properties.setProperty('mainBuildDirectory', project.parent.build.directory.toString())
+							</source>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<id>groovydoc</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<taskdef name="groovydoc" classname="org.codehaus.groovy.ant.Groovydoc"
+									classpathref="maven.compile.classpath" />
+								<groovydoc destdir="${groovydocOutputDirectory}"
+									sourcepath="${project.basedir}/src" use="true" windowtitle="${project.name}"
+									doctitle="${project.name}"
+									packagenames="com.kms.katalon.core.webui.driver,com.kms.katalon.core.webui.keyword">
+									<link packages="java.,org.xml.,javax.,org.xml."
+										href="http://download.oracle.com/javase/6/docs/api" />
+									<link packages="org.apache.tools.ant." href="http://evgeny-goldin.org/javadoc/ant/api" />
+									<link packages="org.junit.,junit.framework."
+										href="http://kentbeck.github.com/junit/javadoc/latest" />
+									<link packages="groovy.,org.codehaus.groovy." href="http://groovy.codehaus.org/api/" />
+									<link packages="org.codehaus.gmaven." href="http://evgeny-goldin.org/javadoc/gmaven" />
+								</groovydoc>
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.kms</groupId>
@@ -8,11 +8,11 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Katalon Studio</name>
-	
+
 	<prerequisites>
 		<maven>3.0</maven>
 	</prerequisites>
-	
+
 	<modules>
 		<module>com.kms.katalon.code.refactoring</module>
 		<module>com.kms.katalon.composer.checkpoint</module>
@@ -25,11 +25,11 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<module>com.kms.katalon.composer.folder</module>
 		<module>com.kms.katalon.composer.global</module>
 		<module>com.kms.katalon.composer.import</module>
-		<module>com.kms.katalon.composer.integration.qtest</module> 
-		<module>com.kms.katalon.composer.integration.jira</module> 
-		<module>com.kms.katalon.composer.integration.slack</module> 
-		<module>com.kms.katalon.composer.integration.git</module> 
-		<module>com.kms.katalon.composer.integration.kobiton</module> 
+		<module>com.kms.katalon.composer.integration.qtest</module>
+		<module>com.kms.katalon.composer.integration.jira</module>
+		<module>com.kms.katalon.composer.integration.slack</module>
+		<module>com.kms.katalon.composer.integration.git</module>
+		<module>com.kms.katalon.composer.integration.kobiton</module>
 		<module>com.kms.katalon.composer.keyword</module>
 		<module>com.kms.katalon.composer.mobile.objectspy</module>
 		<module>com.kms.katalon.composer.mobile</module>
@@ -39,7 +39,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<module>com.kms.katalon.composer.properties</module>
 		<module>com.kms.katalon.composer.report</module>
 		<module>com.kms.katalon.composer.resources</module>
-		<module>com.kms.katalon.composer.search</module>        
+		<module>com.kms.katalon.composer.search</module>
 		<module>com.kms.katalon.composer.testcase</module>
 		<module>com.kms.katalon.composer.testdata</module>
 		<module>com.kms.katalon.composer.testsuite.collection</module>
@@ -83,30 +83,35 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 	<properties>
 		<tycho.version>0.24.0</tycho.version>
 		<gmavenplus.version>1.5</gmavenplus.version>
-    <maven-compiler.version>3.1</maven-compiler.version>
+		<maven-compiler.version>3.1</maven-compiler.version>
 		<maven-resources-plugin.version>2.6</maven-resources-plugin.version>
-		
+
 		<eclipse_repo_url>http://download.eclipse.org/eclipse/updates/4.6/</eclipse_repo_url>
 		<eclipse_orbit_repo_url>http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository/</eclipse_orbit_repo_url>
 		<egit_repo_url>http://download.eclipse.org/egit/updates-4.4.1/</egit_repo_url>
-		
+
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		
-    <sonar.language>java</sonar.language>
-    <sonar.login>qautomate</sonar.login>
-    <sonar.password>qautomate@2014</sonar.password>
-		
+
+		<sonar.language>java</sonar.language>
+		<sonar.login>qautomate</sonar.login>
+		<sonar.password>qautomate@2014</sonar.password>
+
 		<resourcesDiretory>resources</resourcesDiretory>
+		<mac64ResourcesDirectory>mac64Resources</mac64ResourcesDirectory>
+		<win32ResourcesDirectory>win32Resources</win32ResourcesDirectory>
+		<win64ResourcesDirectory>win64Resources</win64ResourcesDirectory>
+		<linux32ResourcesDirectory>linux32Resources</linux32ResourcesDirectory>
+		<linux64ResourcesDirectory>linux64Resources</linux64ResourcesDirectory>
 		<apidocDirectory>${resourcesDiretory}/apidocs</apidocDirectory>
 	</properties>
-	
+
 	<repositories>
 		<repository>
 			<id>eclipse_repo</id>
 			<url>${eclipse_repo_url}</url>
 			<layout>p2</layout>
 		</repository>
-		
+
 		<repository>
 			<id>eclipse_orbit_repo</id>
 			<url>${eclipse_orbit_repo_url}</url>
@@ -122,22 +127,22 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 
 	<build>
 		<pluginManagement>
-		  <plugins>
-			<plugin>
-			  <groupId>org.codehaus.gmavenplus</groupId>
-			  <artifactId>gmavenplus-plugin</artifactId>
-			  <version>${gmavenplus.version}</version>
-			</plugin>
-		  </plugins>
+			<plugins>
+				<plugin>
+					<groupId>org.codehaus.gmavenplus</groupId>
+					<artifactId>gmavenplus-plugin</artifactId>
+					<version>${gmavenplus.version}</version>
+				</plugin>
+			</plugins>
 		</pluginManagement>
-		<plugins>			
+		<plugins>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-maven-plugin</artifactId>
 				<version>${tycho.version}</version>
 				<extensions>true</extensions>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-compiler-plugin</artifactId>
@@ -147,9 +152,9 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 					<excludeResources>
 						<excludeResource>**/*.groovy</excludeResource>
 					</excludeResources>
-				</configuration>				
+				</configuration>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>target-platform-configuration</artifactId>
@@ -180,62 +185,62 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 						</environment>
 						<environment>
 							<os>linux</os>
- 							<ws>gtk</ws>
- 							<arch>x86</arch>
- 						</environment>
- 						<environment>
- 							<os>linux</os>
- 							<ws>gtk</ws>
- 							<arch>x86_64</arch>
- 						</environment>
+							<ws>gtk</ws>
+							<arch>x86</arch>
+						</environment>
+						<environment>
+							<os>linux</os>
+							<ws>gtk</ws>
+							<arch>x86_64</arch>
+						</environment>
 					</environments>
 				</configuration>
 			</plugin>
-			
+
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>${maven-compiler.version}</version>
 				<configuration>
-				  <compilerId>groovy-eclipse-compiler</compilerId>
+					<compilerId>groovy-eclipse-compiler</compilerId>
 				</configuration>
 				<dependencies>
-				  <dependency>
-					<groupId>org.codehaus.groovy</groupId>
-					<artifactId>groovy-eclipse-compiler</artifactId>
-					<version>2.9.2-01</version>
-				  </dependency>
-				  <dependency>
-					<groupId>org.codehaus.groovy</groupId>
-					<artifactId>groovy-eclipse-batch</artifactId>
-					<version>2.4.3-01</version>				  
-				  </dependency>
+					<dependency>
+						<groupId>org.codehaus.groovy</groupId>
+						<artifactId>groovy-eclipse-compiler</artifactId>
+						<version>2.9.2-01</version>
+					</dependency>
+					<dependency>
+						<groupId>org.codehaus.groovy</groupId>
+						<artifactId>groovy-eclipse-batch</artifactId>
+						<version>2.4.3-01</version>
+					</dependency>
 				</dependencies>
 				<executions>
 					<execution>
-						<goals>							
+						<goals>
 							<goal>compile</goal>
 							<goal>testCompile</goal>
 						</goals>
 					</execution>
-				</executions> 
+				</executions>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>${maven-compiler.version}</version>
-					<configuration>
-						<fork>true</fork>
-						<meminitial>128m</meminitial>
-						<maxmem>1024m</maxmem>
-						<compilerArgs>
+				<configuration>
+					<fork>true</fork>
+					<meminitial>128m</meminitial>
+					<maxmem>1024m</maxmem>
+					<compilerArgs>
 						<arg>-XX:MaxPermSize=128m</arg>
 					</compilerArgs>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
-	
+
 	<!--These dependencies used for generating groovy document -->
 	<dependencies>
 		<dependency>

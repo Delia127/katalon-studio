@@ -77,7 +77,7 @@ public class SeleniumWebDriverProvider {
     }
 
     private static String getChromeDriverPathForMac() throws IOException {
-        String chromeDriverPath = getDriverDirectory().getAbsolutePath() + File.separator + "chromedriver_mac32" + File.separator
+        String chromeDriverPath = getDriverDirectory().getAbsolutePath() + File.separator + "chromedriver_mac" + File.separator
                 + "chromedriver";
         makeFileExecutable(chromeDriverPath);
         return chromeDriverPath;
