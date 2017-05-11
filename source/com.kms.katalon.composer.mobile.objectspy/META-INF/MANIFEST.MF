@@ -43,6 +43,11 @@ Require-Bundle: com.kms.katalon.entity;bundle-version="1.0.0",
  com.kms.katalon.composer.mobile,
  com.kms.katalon.composer.resources
 Bundle-ClassPath: .
-Export-Package: com.kms.katalon.composer.mobile.objectspy.dialog
+Export-Package: com.kms.katalon.composer.mobile.objectspy.dialog,
+ com.kms.katalon.composer.mobile.objectspy.element,
+ com.kms.katalon.composer.mobile.objectspy.element.impl,
+ com.kms.katalon.composer.mobile.objectspy.element.tree,
+ com.kms.katalon.composer.mobile.objectspy.preferences,
+ com.kms.katalon.composer.mobile.objectspy.util
 Import-Package: com.kms.katalon.composer.mobile.util
 

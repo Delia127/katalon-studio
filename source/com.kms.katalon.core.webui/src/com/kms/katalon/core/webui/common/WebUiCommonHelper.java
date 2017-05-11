@@ -48,7 +48,7 @@ public class WebUiCommonHelper extends KeywordHelper {
     private static final String XPATH_GET_TEXT_METHOD = "text()";
     private static final String WEB_ELEMENT_ATTRIBUTE_LINK_TEXT = "link_text";
     private static final String WEB_ELEMENT_ATTRIBUTE_TEXT = "text";
-    private static final String WEB_ELEMENT_XPATH = "xpath";
+    public static final String WEB_ELEMENT_XPATH = "xpath";
     private static KeywordLogger logger = KeywordLogger.getInstance();
 
     private static final String XPATH_INTESECTION_FORMULA = "%s[count(. | %s) = count(%s)]";

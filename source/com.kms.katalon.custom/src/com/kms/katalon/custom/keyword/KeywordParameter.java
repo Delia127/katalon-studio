@@ -28,7 +28,7 @@ public class KeywordParameter {
         this.type = type;
     }
     
-    public boolean isHTMLParam() {
+    public boolean isGeneralParam() {
         return !isTestObjectParam() && !isFailureHandlingParam();
     }
 

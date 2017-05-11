@@ -16,7 +16,7 @@ import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
 
-public class MobileElementConverter implements Converter<CapturedMobileElement, WebElementEntity> {
+public class CapturedMobileElementConverter implements Converter<CapturedMobileElement, WebElementEntity> {
 
     @Override
     public WebElementEntity convert(CapturedMobileElement element) {

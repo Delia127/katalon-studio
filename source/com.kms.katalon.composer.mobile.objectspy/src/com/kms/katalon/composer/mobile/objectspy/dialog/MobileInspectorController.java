@@ -100,6 +100,10 @@ public class MobileInspectorController {
                 mobileDeviceInfo.getDeviceName(), appFile, uninstallAfterCloseApp);
     }
 
+    public AppiumDriver<?> getDriver() {
+        return driver;
+    }
+
     private Map<String, String> getAdditionalEnvironmentVariables(MobileDriverType mobileDriverType) throws IOException {
         if (mobileDriverType == MobileDriverType.ANDROID_DRIVER) {
             return AndroidDeviceInfo.getAndroidAdditionalEnvironmentVariables();
@@ -141,6 +145,7 @@ public class MobileInspectorController {
     public boolean closeApp() {
         try {
             MobileDriverFactory.closeDriver();
+            driver = null;
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
@@ -216,5 +221,4 @@ public class MobileInspectorController {
         htmlMobileElementRootNode.render(rootElement);
         return htmlMobileElementRootNode;
     }
-
 }

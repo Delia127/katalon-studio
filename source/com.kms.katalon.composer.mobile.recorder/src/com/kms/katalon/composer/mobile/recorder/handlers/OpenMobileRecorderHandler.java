@@ -1,0 +1,270 @@
+package com.kms.katalon.composer.mobile.recorder.handlers;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.codehaus.groovy.control.CompilationFailedException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.e4.core.di.annotations.CanExecute;
+import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
+import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.window.Window;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.osgi.service.event.Event;
+import org.osgi.service.event.EventHandler;
+
+import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
+import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
+import com.kms.katalon.composer.mobile.recorder.actions.MobileActionMapping;
+import com.kms.katalon.composer.mobile.recorder.components.MobileRecorderDialog;
+import com.kms.katalon.composer.mobile.recorder.constants.MobileRecoderMessagesConstants;
+import com.kms.katalon.composer.mobile.recorder.constants.MobileRecorderStringConstants;
+import com.kms.katalon.composer.mobile.recorder.utils.MobileActionUtil;
+import com.kms.katalon.composer.mobile.recorder.utils.MobileElementConverter;
+import com.kms.katalon.composer.mobile.util.MobileUtil;
+import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
+import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
+import com.kms.katalon.composer.testcase.parts.TestCaseCompositePart;
+import com.kms.katalon.composer.testcase.parts.TestCasePart;
+import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.controller.ObjectRepositoryController;
+import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
+
+public class OpenMobileRecorderHandler {
+    private MobileRecorderDialog recorderDialog;
+
+    private Shell activeShell;
+
+    @Inject
+    private MApplication application;
+
+    @Inject
+    private EModelService modelService;
+
+    @Inject
+    private IEventBroker eventBroker;
+
+    private static OpenMobileRecorderHandler instance;
+
+    public OpenMobileRecorderHandler() {
+        instance = this;
+    }
+
+    public static OpenMobileRecorderHandler getInstance() {
+        return instance;
+    }
+
+    @PostConstruct
+    public void registerEvent() {
+        eventBroker.subscribe(EventConstants.OBJECT_SPY_MOBILE, new EventHandler() {
+
+            @Override
+            public void handleEvent(Event event) {
+                if (!canExecute()) {
+                    return;
+                }
+                execute(Display.getCurrent().getActiveShell());
+            }
+        });
+    }
+
+    @Execute
+    public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell activeShell) {
+        MobileUtil.detectAppiumAndNodeJs(activeShell);
+        openRecorderDialog(activeShell);
+    }
+
+    private boolean openRecorderDialog(Shell activeShell) {
+        try {
+            if (this.activeShell == null) {
+                this.activeShell = activeShell;
+            }
+
+            if (!isRecorderDialogRunning()) {
+                MPart selectedPart = getSelectedPart();
+                if (selectedPart == null) {
+                    return false;
+                }
+                final TestCaseCompositePart testCaseCompositePart = (TestCaseCompositePart) selectedPart.getObject();
+                boolean isVerified = verifyTestCase(testCaseCompositePart);
+                if (!isVerified) {
+                    return false;
+                }
+
+                recorderDialog = new MobileRecorderDialog(activeShell);
+                int responseCode = recorderDialog.open();
+                if (responseCode != Window.OK) {
+                    return false;
+                }
+                exportRecordedActionsToScripts(recorderDialog.getRecordedActions(),
+                        recorderDialog.getTargetFolderEntity(), recorderDialog.getSelectDeviceInfo(),
+                        testCaseCompositePart);
+            }
+
+            if (!recorderDialog.isCanceledBeforeOpening() && recorderDialog.getShell() != null) {
+                recorderDialog.getShell().forceActive();
+            }
+            return true;
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            if (isRecorderDialogRunning()) {
+                recorderDialog.dispose();
+                recorderDialog.close();
+            }
+            MessageDialog.openError(activeShell, MobileRecorderStringConstants.ERROR, e.getMessage());
+            return false;
+        }
+    }
+
+    private void exportRecordedActionsToScripts(List<MobileActionMapping> recordedActions,
+            FolderTreeEntity targetFolderTreeEntity, MobileDeviceInfo mobileDeviceInfo,
+            TestCaseCompositePart testCaseCompositePart) {
+        Job job = new Job(MobileRecoderMessagesConstants.MSG_TASK_GENERATE_SCRIPT) {
+            @Override
+            protected IStatus run(IProgressMonitor monitor) {
+                try {
+                    final TestCasePart testCasePart = testCaseCompositePart.getChildTestCasePart();
+                    final List<StatementWrapper> generatedStatementWrappers = generateStatementWrappersFromRecordedActions(
+                            recordedActions, testCasePart, targetFolderTreeEntity, mobileDeviceInfo, monitor);
+                    UISynchronizeService.syncExec(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                testCasePart.addDefaultImports();
+                                testCasePart.addStatements(generatedStatementWrappers, NodeAddType.InserAfter);
+                                testCaseCompositePart.refreshScript();
+                            } catch (Exception e) {
+                                LoggerSingleton.logError(e);
+                            }
+                        }
+                    });
+
+                    eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, targetFolderTreeEntity.getParent());
+                    eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, targetFolderTreeEntity);
+                    eventBroker.send(EventConstants.EXPLORER_EXPAND_TREE_ENTITY, targetFolderTreeEntity);
+
+                    return Status.OK_STATUS;
+                } catch (final Exception e) {
+                    UISynchronizeService.syncExec(new Runnable() {
+                        @Override
+                        public void run() {
+                            MessageDialog.openError(Display.getCurrent().getActiveShell(),
+                                    MobileRecorderStringConstants.ERROR, MobileRecoderMessagesConstants.MSG_ERR_CANNOT_GENERATE_TEST_STEPS);
+                            LoggerSingleton.logError(e);
+                        }
+                    });
+                    LoggerSingleton.logError(e);
+                    return Status.CANCEL_STATUS;
+                } finally {
+                    monitor.done();
+                }
+            }
+        };
+
+        job.setUser(true);
+        job.schedule();
+    }
+
+    private boolean verifyTestCase(TestCaseCompositePart testCaseCompositePart) throws Exception {
+        if (testCaseCompositePart.getDirty().isDirty()) {
+            if (!MessageDialog.openConfirm(activeShell, MobileRecorderStringConstants.WARN,
+                    MobileRecoderMessagesConstants.MSG_ERR_TEST_CASE_HAVE_UNSAVE_CHANGES)) {
+                return false;
+            }
+            testCaseCompositePart.save();
+        }
+        try {
+            testCaseCompositePart.getAstNodesFromScript();
+        } catch (CompilationFailedException compilationFailedExcption) {
+            MessageDialog.openWarning(activeShell, MobileRecorderStringConstants.WARN,
+                    MobileRecoderMessagesConstants.MSG_ERR_TEST_CASE_HAVE_ERRORS);
+            return false;
+        }
+        return true;
+    }
+
+    private WebElementEntity addRecordedElement(MobileElement element, FolderEntity parentFolder,
+            MobileDeviceInfo deviceInfo, Map<MobileElement, WebElementEntity> entitySavedMap) throws Exception {
+        if (element == null) {
+            return null;
+        }
+        if (entitySavedMap != null && entitySavedMap.get(element) != null) {
+            return entitySavedMap.get(element);
+        }
+        WebElementEntity importedElement = ObjectRepositoryController.getInstance().importWebElement(
+                new MobileElementConverter().convert(element, parentFolder, deviceInfo), parentFolder);
+        entitySavedMap.put(element, importedElement);
+        return importedElement;
+    }
+
+    private List<StatementWrapper> generateStatementWrappersFromRecordedActions(
+            List<MobileActionMapping> recordedActions, TestCasePart testCasePart,
+            FolderTreeEntity folderSelectionResult, MobileDeviceInfo deviceInfo, IProgressMonitor monitor)
+            throws Exception {
+        Map<MobileElement, WebElementEntity> entitySavedMap = new HashMap<>();
+        FolderEntity targetFolder = folderSelectionResult.getObject();
+
+        monitor.beginTask(MobileRecoderMessagesConstants.MSG_TASK_GENERATE_SCRIPT, recordedActions.size());
+
+        ASTNodeWrapper mainClassNode = testCasePart.getTreeTableInput().getMainClassNode();
+        List<StatementWrapper> resultStatementWrappers = new ArrayList<StatementWrapper>();
+        for (MobileActionMapping action : recordedActions) {
+            WebElementEntity createdTestObject = addRecordedElement(action.getTargetElement(), targetFolder, deviceInfo,
+                    entitySavedMap);
+            StatementWrapper generatedStatementWrapper = MobileActionUtil.generateMobileTestStep(action,
+                    createdTestObject, mainClassNode);
+            monitor.worked(1);
+            resultStatementWrappers.add(generatedStatementWrapper);
+        }
+        return resultStatementWrappers;
+    }
+
+    @CanExecute
+    public boolean canExecute() {
+        if (ProjectController.getInstance().getCurrentProject() == null) {
+            return false;
+        }
+
+        MPart selectedPart = getSelectedPart();
+        if (selectedPart == null) {
+            return false;
+        }
+        return selectedPart.getElementId().startsWith(IdConstants.TEST_CASE_PARENT_COMPOSITE_PART_ID_PREFIX);
+    }
+
+    protected MPart getSelectedPart() {
+        MPartStack composerStack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID,
+                application);
+        if (!composerStack.isVisible() || !(composerStack.getSelectedElement() instanceof MPart)) {
+            return null;
+        }
+        return (MPart) composerStack.getSelectedElement();
+    }
+
+    public boolean isRecorderDialogRunning() {
+        return recorderDialog != null && !recorderDialog.isDisposed();
+    }
+}
