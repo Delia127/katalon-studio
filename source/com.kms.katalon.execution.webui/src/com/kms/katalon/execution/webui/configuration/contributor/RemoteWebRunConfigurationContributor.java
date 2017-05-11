@@ -11,7 +11,6 @@ import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
-import com.kms.katalon.execution.console.entity.AbstractConsoleOption;
 import com.kms.katalon.execution.console.entity.ConsoleOption;
 import com.kms.katalon.execution.console.entity.StringConsoleOption;
 import com.kms.katalon.execution.exception.ExecutionException;
@@ -42,15 +41,10 @@ public class RemoteWebRunConfigurationContributor extends WebUIRunConfigurationC
         };
     };
 
-    public static final ConsoleOption<RemoteWebDriverConnectorType> REMOTE_WEB_DRIVER_CONNECTOR_TYPE_CONSOLE_OPTION = new AbstractConsoleOption<RemoteWebDriverConnectorType>() {
+    public static final StringConsoleOption REMOTE_WEB_DRIVER_CONNECTOR_TYPE_CONSOLE_OPTION = new StringConsoleOption() {
         @Override
         public String getOption() {
             return DriverFactory.REMOTE_WEB_DRIVER_TYPE;
-        }
-
-        @Override
-        public Class<RemoteWebDriverConnectorType> getArgumentType() {
-            return RemoteWebDriverConnectorType.class;
         }
 
         @Override
