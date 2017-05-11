@@ -26,6 +26,8 @@ public class NetworkSettingPage extends PreferencePageWithHelp {
 
     private Map<SSLCertificateOption, Button> sslCertButtons;
 
+    private Composite container;
+
     public NetworkSettingPage() {
         settingStore = WebServiceSettingStore
                 .create(ProjectController.getInstance().getCurrentProject().getFolderLocation());
@@ -37,7 +39,7 @@ public class NetworkSettingPage extends PreferencePageWithHelp {
      */
     @Override
     protected Control createContents(Composite parent) {
-        Composite container = new Composite(parent, SWT.NONE);
+        container = new Composite(parent, SWT.NONE);
         container.setLayout(new GridLayout());
         container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
@@ -73,11 +75,19 @@ public class NetworkSettingPage extends PreferencePageWithHelp {
         }
     }
 
+    private boolean isInitialized() {
+        return container != null;
+    }
+
     /**
      * Saves all updated value to setting store (eg. selected {@link SSLCertificateOption});
      */
     @Override
     public boolean performOk() {
+        if (!isInitialized()) {
+            return true;
+        }
+
         SSLCertificateOption selectedSSLOption = sslCertButtons.entrySet()
                 .stream()
                 .filter(entry -> entry.getValue().getSelection())
