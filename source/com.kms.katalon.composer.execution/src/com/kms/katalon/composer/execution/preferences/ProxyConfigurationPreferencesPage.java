@@ -24,6 +24,7 @@ import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.network.ProxyOption;
 import com.kms.katalon.core.network.ProxyServerType;
+import com.kms.katalon.execution.preferences.ProxyPreferenceDefaultValueInitializer;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
 
 public class ProxyConfigurationPreferencesPage extends PreferencePage {
@@ -42,6 +43,11 @@ public class ProxyConfigurationPreferencesPage extends PreferencePage {
     private Button chkRequireAuthentication;
 
     private static final int MAX_PORT_VALUE = 65535;
+    
+    public ProxyConfigurationPreferencesPage() {
+        super();
+        noDefaultButton();
+    }
 
     @Override
     protected Control createContents(Composite parent) {
@@ -87,7 +93,7 @@ public class ProxyConfigurationPreferencesPage extends PreferencePage {
                         return;
                     default:
                         break;
-                    
+
                 }
             }
         });
@@ -138,7 +144,11 @@ public class ProxyConfigurationPreferencesPage extends PreferencePage {
             @Override
             public void verifyText(VerifyEvent e) {
                 String text = txtPort.getText();
-                String newText = text.substring(0, e.start) + e.text + text.substring(e.start);
+                String newText = text.substring(0, e.start) + e.text + text.substring(e.end);
+                if (StringUtils.isEmpty(newText)) {
+                    e.doit = true;
+                    return;
+                }
                 try {
                     int val = Integer.parseInt(newText);
                     e.doit = val >= 0 && val <= MAX_PORT_VALUE;
@@ -160,7 +170,7 @@ public class ProxyConfigurationPreferencesPage extends PreferencePage {
                 txtPass.setText(selection ? txtPass.getText() : "");
             }
         });
-        
+
         Group authenticateGroup = new Group(innerComposite, SWT.NONE);
         authenticateGroup.setText("Authentication");
         authenticateGroup.setLayout(new GridLayout(2, false));
@@ -181,7 +191,7 @@ public class ProxyConfigurationPreferencesPage extends PreferencePage {
         txtPass = new Text(authenticateGroup, SWT.BORDER | SWT.PASSWORD);
         GridData gdPass = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
         txtPass.setLayoutData(gdPass);
-        
+
         initialize();
 
         return area;
@@ -230,7 +240,7 @@ public class ProxyConfigurationPreferencesPage extends PreferencePage {
         cboProxyOption.setText(ProxyOption.valueOf(proxyInfo.getProxyOption()).getDisplayName());
         cboProxyServerType.setText(proxyInfo.getProxyServerType());
         txtAddress.setText(proxyInfo.getProxyServerAddress());
-        txtPort.setText(proxyInfo.getProxyServerPort() >= 0 ? proxyInfo.getProxyServerPort() + "" : "");
+        txtPort.setText(proxyInfo.getProxyServerPort() > 0 ? proxyInfo.getProxyServerPort() + "" : "");
         txtUsername.setText(proxyInfo.getUsername());
         txtPass.setText(proxyInfo.getPassword());
 
@@ -257,7 +267,9 @@ public class ProxyConfigurationPreferencesPage extends PreferencePage {
         proxyInfo.setProxyOption(ProxyOption.valueOfDisplayName(cboProxyOption.getText()).name());
         proxyInfo.setProxyServerType(cboProxyServerType.getText());
         proxyInfo.setProxyServerAddress(txtAddress.getText());
-        proxyInfo.setProxyServerPort(txtPort.getText());
+        final String portValue = txtPort.getText();
+        proxyInfo.setProxyServerPort(StringUtils.isEmpty(portValue)
+                ? String.valueOf(ProxyPreferenceDefaultValueInitializer.PROXY_SERVER_PORT_DEFAULT_VALUE) : portValue);
         proxyInfo.setUsername(txtUsername.getText());
         proxyInfo.setPassword(txtPass.getText());
         ProxyPreferences.saveProxyInformation(proxyInfo);
