@@ -11,6 +11,8 @@ import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 
 public class ProxyPreferenceDefaultValueInitializer extends AbstractPreferenceInitializer {
 
+    public static final int PROXY_SERVER_PORT_DEFAULT_VALUE = 0;
+
     @Override
     public void initializeDefaultPreferences() {
         IPreferenceStore store = PreferenceStoreManager
@@ -18,7 +20,7 @@ public class ProxyPreferenceDefaultValueInitializer extends AbstractPreferenceIn
         store.setDefault(ProxyPreferenceConstants.PROXY_OPTION, ProxyOption.NO_PROXY.name());
         store.setDefault(ProxyPreferenceConstants.PROXY_SERVER_TYPE, ProxyServerType.HTTP.name());
         store.setDefault(ProxyPreferenceConstants.PROXY_SERVER_ADDRESS, "");
-        store.setDefault(ProxyPreferenceConstants.PROXY_SERVER_PORT, 0);
+        store.setDefault(ProxyPreferenceConstants.PROXY_SERVER_PORT, PROXY_SERVER_PORT_DEFAULT_VALUE);
         store.setDefault(ProxyPreferenceConstants.PROXY_USERNAME, "");
         store.setDefault(ProxyPreferenceConstants.PROXY_PASSWORD, "");
         store.setDefault(ProxyPreferenceConstants.PROXY_PREFERENCE_SET, false);

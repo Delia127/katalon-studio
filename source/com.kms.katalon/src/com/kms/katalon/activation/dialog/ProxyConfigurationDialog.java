@@ -135,7 +135,11 @@ public class ProxyConfigurationDialog extends TitleAreaDialog {
             @Override
             public void verifyText(VerifyEvent e) {
                 String text = txtPort.getText();
-                String newText = text.substring(0, e.start) + e.text + text.substring(e.start);
+                String newText = text.substring(0, e.start) + e.text + text.substring(e.end);
+                if (StringUtils.isEmpty(newText)) {
+                    e.doit = true;
+                    return;
+                }
                 try {
                     int val = Integer.parseInt(newText);
                     e.doit = val >= 0 && val <= MAX_PORT_VALUE;

@@ -201,6 +201,9 @@ public class ObjectSpyPreferencePage extends PreferencePageWithHelp {
 
     @Override
     public boolean performOk() {
+        if (!isInitialized()) {
+            return true;
+        }
         if (hotKeyCaptureObject.equals(hotKeyLoadDomMap)) {
             setErrorMessage(ObjectspyMessageConstants.ERR_MSG_DUPLICATED_HOTKEYS);
             return false;
@@ -223,6 +226,9 @@ public class ObjectSpyPreferencePage extends PreferencePageWithHelp {
 
     @Override
     protected void performDefaults() {
+        if (!isInitialized()) {
+            return;
+        }
         // set default input for default browser
         int defaultBrowser = browserOptions.indexOf(preferenceStore.getDefaultString(WEBUI_OBJECTSPY_DEFAULT_BROWSER));
         cbbDefaultBrowsers.select(defaultBrowser);
@@ -239,5 +245,9 @@ public class ObjectSpyPreferencePage extends PreferencePageWithHelp {
 
         txtLoadDOMMap.setText(
                 KeyStroke.getInstance(hotKeyLoadDomMap.getModifiers(), hotKeyLoadDomMap.getKeyCode()).format());
+    }
+
+    protected boolean isInitialized() {
+        return cbbDefaultBrowsers != null;
     }
 }
