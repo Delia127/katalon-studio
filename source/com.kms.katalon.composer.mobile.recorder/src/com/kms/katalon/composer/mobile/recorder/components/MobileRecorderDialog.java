@@ -95,10 +95,15 @@ import com.kms.katalon.composer.mobile.recorder.constants.MobileRecorderStringCo
 import com.kms.katalon.composer.mobile.recorder.exceptions.MobileRecordException;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
 import com.kms.katalon.core.exception.StepFailedException;
+import com.kms.katalon.core.mobile.driver.MobileDriverType;
+import com.kms.katalon.core.mobile.keyword.internal.AndroidProperties;
 import com.kms.katalon.core.mobile.keyword.internal.GUIObject;
+import com.kms.katalon.core.mobile.keyword.internal.IOSProperties;
 import com.kms.katalon.core.testobject.ConditionType;
 import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.core.testobject.TestObjectProperty;
+import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
 
 public class MobileRecorderDialog extends AbstractDialog implements MobileElementInspectorDialog {
@@ -492,10 +497,20 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                 })
                 .collect(Collectors.toList()));
     }
+    
+    private boolean isMobileDriverTypeOf(MobileDriverType type, MobileDeviceInfo deviceInfo) {
+        return MobileInspectorController.getMobileDriverType(deviceInfo) == type;
+    }
 
-    private TestObject convertMobileElementToTestObject(MobileElement targetElement) {
+    private TestObject convertMobileElementToTestObject(MobileElement targetElement, MobileDeviceInfo deviceInfo) {
         if (targetElement == null) {
             return null;
+        }
+        List<String> typicalProps = new ArrayList<>();
+        if (isMobileDriverTypeOf(MobileDriverType.ANDROID_DRIVER, deviceInfo)) {
+            typicalProps.addAll(Arrays.asList(AndroidProperties.ANDROID_TYPICAL_PROPERTIES));
+        } else if (isMobileDriverTypeOf(MobileDriverType.IOS_DRIVER, deviceInfo)) {
+            typicalProps.addAll(Arrays.asList(IOSProperties.IOS_TYPICAL_PROPERTIES));
         }
         TestObject testObject = new TestObject(targetElement.getName());
         testObject.getProperties().addAll(targetElement.getAttributes().entrySet().stream().map(entry -> {
@@ -504,7 +519,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
             objectProperty.setName(keyValue);
             objectProperty.setValue(entry.getValue());
             objectProperty.setCondition(ConditionType.EQUALS);
-            objectProperty.setActive(keyValue.equals(GUIObject.XPATH));
+            objectProperty.setActive(typicalProps.contains(keyValue));
             return objectProperty;
         }).collect(Collectors.toList()));
         return testObject;
@@ -513,7 +528,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
     private MobileActionMapping performAction(MobileAction action, MobileElement targetElement)
             throws MobileRecordException {
         try {
-            TestObject testObject = convertMobileElementToTestObject(targetElement);
+            TestObject testObject = convertMobileElementToTestObject(targetElement, getSelectDeviceInfo());
             final MobileActionMapping mobileActionMapping = new MobileActionMapping(action, targetElement);
             MobileActionHelper mobileActionHelper = new MobileActionHelper(inspectorController.getDriver());
 
