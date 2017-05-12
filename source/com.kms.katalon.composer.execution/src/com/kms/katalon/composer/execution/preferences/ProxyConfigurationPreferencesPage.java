@@ -262,8 +262,10 @@ public class ProxyConfigurationPreferencesPage extends PreferencePage {
 
     @Override
     public boolean performOk() {
+        if (cboProxyOption == null) {
+            return true;
+        }
         ProxyInformation proxyInfo = new ProxyInformation();
-
         proxyInfo.setProxyOption(ProxyOption.valueOfDisplayName(cboProxyOption.getText()).name());
         proxyInfo.setProxyServerType(cboProxyServerType.getText());
         proxyInfo.setProxyServerAddress(txtAddress.getText());
