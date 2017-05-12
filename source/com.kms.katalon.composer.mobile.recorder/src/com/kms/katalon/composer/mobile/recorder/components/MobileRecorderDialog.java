@@ -873,6 +873,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
             btnCapture.setEnabled(true);
             btnStop.setEnabled(true);
             getButton(IDialogConstants.OK_ID).setEnabled(true);
+            recordedActions.clear();
             MobileActionMapping startAppAction = new MobileActionMapping(MobileAction.StartApplication, null);
             startAppAction.getData()[0].setValue(new ConstantExpressionWrapper(appFile));
             recordedActions.add(startAppAction);
