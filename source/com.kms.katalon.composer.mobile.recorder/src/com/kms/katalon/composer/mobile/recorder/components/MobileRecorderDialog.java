@@ -236,13 +236,14 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         return displayBounds.width - dialogSize.x;
     }
 
-    private int calculateObjectSpyDialogStartX(Rectangle displayBounds, Point dialogSize) {
+    private int calculateDialogStartX(Rectangle displayBounds, Point dialogSize) {
         int dialogsWidth = dialogSize.x + MobileDeviceDialog.DIALOG_SIZE.x;
-        int startX = (displayBounds.width - dialogsWidth) / 2 + displayBounds.x;
+        final int screenRemainer = displayBounds.width - dialogsWidth;
+        int startX = screenRemainer + (screenRemainer / 2) + displayBounds.x;
         return Math.max(startX, 0);
     }
 
-    private int calculateObjectSpyDialogStartY(Rectangle displayBounds, Point dialogSize) {
+    private int calculateDialogStartY(Rectangle displayBounds, Point dialogSize) {
         int startY = displayBounds.height - dialogSize.y;
         return Math.max(startY, 0) / 2;
     }
@@ -250,17 +251,17 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
     @Override
     protected Point getInitialLocation(Point initialSize) {
         Rectangle displayBounds = getShell().getMonitor().getBounds();
-        return new Point(calculateObjectSpyDialogStartX(displayBounds, initialSize),
-                calculateObjectSpyDialogStartY(displayBounds, initialSize));
+        return new Point(calculateDialogStartX(displayBounds, initialSize),
+                calculateDialogStartY(displayBounds, initialSize));
     }
 
     private Point calculateInitPositionForDeviceViewDialog() {
         Rectangle displayBounds = getShell().getMonitor().getBounds();
         Point dialogSize = MobileDeviceDialog.DIALOG_SIZE;
         Rectangle objectSpyViewBounds = getShell().getBounds();
-        int startX = getDeviceViewStartXIfPlaceRight(objectSpyViewBounds);
+        int startX = getDeviceViewStartXIfPlaceLeft(objectSpyViewBounds, dialogSize);
         if (isOutOfBound(displayBounds, dialogSize, startX)) {
-            startX = getDeviceViewStartXIfPlaceLeft(objectSpyViewBounds, dialogSize);
+            startX = getDeviceViewStartXIfPlaceRight(objectSpyViewBounds);
             if (isOutOfBound(displayBounds, dialogSize, startX)) {
                 startX = getDefaultDeviceViewDialogStartX(displayBounds, dialogSize);
             }
@@ -330,7 +331,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
     }
 
     protected int[] getSashFormChildsWeights() {
-        return new int[] { 4, 3, 6 };
+        return new int[] { 6, 3, 4 };
     }
 
     /**
@@ -353,11 +354,9 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
      * @param sashForm
      */
     protected void populateSashForm(SashForm sashForm) {
-        createLeftPaneComposite(sashForm);
-
-        createMiddlePaneComposite(sashForm);
-
         createContentComposite(sashForm);
+        createMiddlePaneComposite(sashForm);
+        createRecordedActionComposite(sashForm);
     }
 
     private void createMiddlePaneComposite(SashForm sashForm) {
@@ -373,10 +372,6 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         propertiesComposite = new MobileReadonlyElementPropertiesComposite(hSashForm);
 
         hSashForm.setWeights(new int[] { 3, 7 });
-    }
-
-    protected void createLeftPaneComposite(SashForm sashForm) {
-        createRecordedActionComposite(sashForm);
     }
 
     private void createRecordedActionComposite(SashForm sashForm) {
