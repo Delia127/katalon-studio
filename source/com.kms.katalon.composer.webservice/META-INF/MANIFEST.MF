@@ -51,4 +51,4 @@ Require-Bundle: com.kms.katalon.composer.explorer,
  org.apache.commons.validator,
  com.kms.katalon.composer.preferences,
  com.kms.katalon.core.webservice,
- com.kms.katalon.console
+ com.kms.katalon.execution

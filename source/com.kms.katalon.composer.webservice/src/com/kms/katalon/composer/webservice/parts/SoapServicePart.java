@@ -65,13 +65,13 @@ import com.kms.katalon.composer.webservice.util.WSDLHelper;
 import com.kms.katalon.composer.webservice.view.xml.ColorManager;
 import com.kms.katalon.composer.webservice.view.xml.XMLConfiguration;
 import com.kms.katalon.composer.webservice.view.xml.XMLPartitionScanner;
-import com.kms.katalon.console.utils.ProxyUtil;
 import com.kms.katalon.constants.GlobalMessageConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.WebServiceController;
 import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
+import com.kms.katalon.execution.preferences.ProxyPreferences;
 
 public class SoapServicePart extends WebServicePart {
 
@@ -133,7 +133,7 @@ public class SoapServicePart extends WebServicePart {
 
                                         String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
                                         ResponseObject responseObject = WebServiceController.getInstance().sendRequest(
-                                                getWSRequestObject(), projectDir, ProxyUtil.getProxyInformation());
+                                                getWSRequestObject(), projectDir, ProxyPreferences.getProxyInformation());
 
                                         responseHeader.setDocument(createXMLDocument(getPrettyHeaders(responseObject)));
 
