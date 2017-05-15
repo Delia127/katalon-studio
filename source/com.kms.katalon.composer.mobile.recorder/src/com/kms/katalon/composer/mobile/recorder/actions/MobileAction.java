@@ -3,6 +3,7 @@ package com.kms.katalon.composer.mobile.recorder.actions;
 import org.apache.commons.lang3.StringUtils;
 
 import com.kms.katalon.composer.mobile.recorder.utils.MobileActionUtil;
+import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.core.mobile.keyword.MobileBuiltInKeywords;
 
 public enum MobileAction implements IMobileAction {
@@ -10,7 +11,7 @@ public enum MobileAction implements IMobileAction {
     TapAndHold("tapAndHold", "Tap and hold on the given element"),
     SetText("setText", "Set text to the given element"),
     ClearText("clearText", "Clear text on the given element"),
-    PressBack("pressBack", "Press back button on the mobile device (Android only)"),
+    PressBack("pressBack", "Press back button on the mobile device (Android only)", MobileDriverType.ANDROID_DRIVER),
     SwitchToLandscape("switchToLandscape", "Switch the mobile device's orientation to landscape mode"),
     SwitchToPortrait("switchToPortrait", "Switch the mobile device's orientation to portrait mode"),
     StartApplication("startApplication", "Start the application", false),
@@ -27,30 +28,38 @@ public enum MobileAction implements IMobileAction {
     protected MobileActionParam[] params;
 
     private boolean hasElement = false;
-    
+
     private boolean isUserInputAction = true;
+
+    private MobileDriverType supportedDriverType = null;
 
     private MobileAction(String mappedKeywordMethod) {
         this(mappedKeywordMethod, "");
     }
-    
+
     private MobileAction(String mappedKeywordMethod, String description) {
         this(MobileBuiltInKeywords.class.getName(), MobileBuiltInKeywords.class.getSimpleName(), mappedKeywordMethod,
-                description, true);
+                description, true, null);
     }
 
     private MobileAction(String mappedKeywordMethod, String description, boolean isUserInputAction) {
         this(MobileBuiltInKeywords.class.getName(), MobileBuiltInKeywords.class.getSimpleName(), mappedKeywordMethod,
-                description, isUserInputAction);
+                description, isUserInputAction, null);
+    }
+
+    private MobileAction(String mappedKeywordMethod, String description, MobileDriverType supportedDriverType) {
+        this(MobileBuiltInKeywords.class.getName(), MobileBuiltInKeywords.class.getSimpleName(), mappedKeywordMethod,
+                description, true, supportedDriverType);
     }
 
     private MobileAction(String mappedKeywordClassName, String mappedKeywordSimpleName, String mappedKeywordMethod,
-            String description, boolean isUserInputAction) {
+            String description, boolean isUserInputAction, MobileDriverType supportedDriverType) {
         this.mappedKeywordClassName = mappedKeywordClassName;
         this.mappedKeywordClassSimpleName = mappedKeywordSimpleName;
         this.mappedKeywordMethod = mappedKeywordMethod;
         this.description = description;
         this.isUserInputAction = isUserInputAction;
+        this.supportedDriverType = supportedDriverType;
         params = MobileActionUtil.collectKeywordParam(mappedKeywordClassName, mappedKeywordMethod);
         hasElement = MobileActionUtil.hasElement(mappedKeywordClassName, mappedKeywordMethod);
     }
@@ -85,6 +94,13 @@ public enum MobileAction implements IMobileAction {
 
     public boolean isUserInputAction() {
         return isUserInputAction;
+    }
+
+    public boolean isDriverTypeSupported(MobileDriverType driverType) {
+        if (supportedDriverType == null) {
+            return true;
+        }
+        return supportedDriverType == driverType;
     }
 
     @Override
