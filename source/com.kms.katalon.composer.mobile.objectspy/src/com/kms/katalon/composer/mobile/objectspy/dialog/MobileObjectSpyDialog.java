@@ -886,7 +886,9 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
                     @Override
                     public Object call() throws Exception {
                         appRootElement = inspectorController.getMobileObjectRoot();
-                        appRootElement.setName(appName);
+                        if (appRootElement != null) {
+                            appRootElement.setName(appName);
+                        }
                         return null;
                     }
                 });

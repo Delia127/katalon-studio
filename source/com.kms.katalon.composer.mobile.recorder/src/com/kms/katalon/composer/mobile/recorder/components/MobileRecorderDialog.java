@@ -33,7 +33,6 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -520,7 +519,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
             objectProperty.setName(keyValue);
             objectProperty.setValue(entry.getValue());
             objectProperty.setCondition(ConditionType.EQUALS);
-            objectProperty.setActive(typicalProps.contains(keyValue));
+            objectProperty.setActive(keyValue.equals(IOSProperties.XPATH));
             return objectProperty;
         }).collect(Collectors.toList()));
         return testObject;
