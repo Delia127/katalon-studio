@@ -23,7 +23,6 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
-import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -57,16 +56,20 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 
+import com.kms.katalon.composer.components.impl.control.CTreeViewer;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.dialogs.ProgressMonitorDialogWithThread;
@@ -102,8 +105,6 @@ import com.kms.katalon.core.mobile.keyword.internal.IOSProperties;
 import com.kms.katalon.core.testobject.ConditionType;
 import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.core.testobject.TestObjectProperty;
-import com.kms.katalon.entity.repository.WebElementEntity;
-import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
 
 public class MobileRecorderDialog extends AbstractDialog implements MobileElementInspectorDialog {
@@ -451,8 +452,8 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
 
         TableColumnLayout tableLayout = new TableColumnLayout();
         tableLayout.setColumnData(tableViewerNo, new ColumnWeightData(0, 30));
-        tableLayout.setColumnData(tableColumnAction, new ColumnWeightData(25, 50));
-        tableLayout.setColumnData(tableColumnElement, new ColumnWeightData(40, 60));
+        tableLayout.setColumnData(tableColumnAction, new ColumnWeightData(25, 100));
+        tableLayout.setColumnData(tableColumnElement, new ColumnWeightData(40, 120));
 
         actionTableComposite.setLayout(tableLayout);
 
@@ -497,7 +498,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                 })
                 .collect(Collectors.toList()));
     }
-    
+
     private boolean isMobileDriverTypeOf(MobileDriverType type, MobileDeviceInfo deviceInfo) {
         return MobileInspectorController.getMobileDriverType(deviceInfo) == type;
     }
@@ -1134,18 +1135,13 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         lblAllObjects.setText(MobileRecoderMessagesConstants.LBL_ALL_OBJECTS);
 
         Composite allObjectsTreeComposite = new Composite(allObjectsComposite, SWT.NONE);
-        allObjectsTreeComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        TreeColumnLayout tbclAllObjects = new TreeColumnLayout();
-        allObjectsTreeComposite.setLayout(tbclAllObjects);
+        allObjectsTreeComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
+        allObjectsTreeComposite.setLayout(new GridLayout(1, false));
 
-        allElementTreeViewer = new TreeViewer(allObjectsTreeComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE);
-
-        TreeViewerColumn treeViewerColumn = new TreeViewerColumn(allElementTreeViewer, SWT.NONE);
-        TreeColumn treeColumn = treeViewerColumn.getColumn();
-        tbclAllObjects.setColumnData(treeColumn, new ColumnWeightData(98));
-
-        treeViewerColumn.setLabelProvider(new MobileElementLabelProvider());
-
+        allElementTreeViewer = new CTreeViewer(allObjectsTreeComposite,
+                SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
+        allElementTreeViewer.getTree().setLayoutData(new GridData(GridData.FILL_BOTH));
+        allElementTreeViewer.setLabelProvider(new MobileElementLabelProvider());
         allElementTreeViewer.setContentProvider(new MobileElementTreeContentProvider());
 
         allElementTreeViewer.getTree().setToolTipText(StringUtils.EMPTY);
@@ -1165,6 +1161,28 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                 }
             }
         });
+
+        Tree tree = (Tree) allElementTreeViewer.getControl();
+
+        Listener listener = new Listener() {
+
+            @Override
+            public void handleEvent(Event event) {
+                TreeItem treeItem = (TreeItem) event.item;
+                final TreeColumn[] treeColumns = treeItem.getParent().getColumns();
+                UISynchronizeService.syncExec(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        for (TreeColumn treeColumn : treeColumns) {
+                            treeColumn.pack();
+                        }
+                    }
+                });
+            }
+        };
+
+        tree.addListener(SWT.Expand, listener);
     }
 
     // Highlight Selected object on captured screenshot

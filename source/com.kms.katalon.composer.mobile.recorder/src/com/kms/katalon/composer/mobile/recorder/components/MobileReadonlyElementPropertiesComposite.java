@@ -110,8 +110,8 @@ public class MobileReadonlyElementPropertiesComposite {
             }
         });
 
-        tableColumnLayout.setColumnData(keyColumn.getColumn(), new ColumnWeightData(20, 70, true));
-        tableColumnLayout.setColumnData(valueColumn.getColumn(), new ColumnWeightData(80, 70, true));
+        tableColumnLayout.setColumnData(keyColumn.getColumn(), new ColumnWeightData(20, 80, true));
+        tableColumnLayout.setColumnData(valueColumn.getColumn(), new ColumnWeightData(80, 120, true));
     }
 
     private String getTextForEntryKey(Object element) {
