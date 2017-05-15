@@ -40,6 +40,8 @@ public class TestCaseFactory {
 
     private static final String VARIABLE_DEFAULTVALUE_PROPERTY = "defaultValue";
 
+    private static final String VARIABLE_MASKED_PROPERTY = "masked";
+
     /**
      * Finds {@link TestCase} by its id or relative id
      * 
@@ -78,6 +80,9 @@ public class TestCaseFactory {
                 Variable variable = new Variable();
                 variable.setName(variableElement.elementText(VARIABLE_NAME_PROPERTY));
                 variable.setDefaultValue(variableElement.elementText(VARIABLE_DEFAULTVALUE_PROPERTY));
+                String maskValueAsText = variableElement.elementText(VARIABLE_MASKED_PROPERTY);
+                variable.setMasked(StringUtils.isNotEmpty(maskValueAsText) ? Boolean.valueOf(maskValueAsText)
+                        : variable.isMasked());
                 variables.add(variable);
             }
             testCase.setVariables(variables);

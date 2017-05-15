@@ -885,6 +885,39 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Set the value of an input field, as though you type it in. It also clears the previous value of the input field.
+     * The text value will be masked.
+     *
+     * @param to
+     *      represent a web element
+     * @param text
+     *      the text to type
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_TEXT)
+    public static void setMaskedText(TestObject to, String text) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "setMaskedText", to, text)
+    }
+
+    /**
+     * Set the value of an input field, as though you type it in. It also clears the previous value of the input field.
+     * The text value will be masked.
+     *
+     * @param to
+     *      represent a web element
+     * @param text
+     *      the text to type
+     * @param flowControl
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_TEXT)
+    public static void setMaskedText(TestObject to, String text, FailureHandling flowControl) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "setMaskedText", to, text, flowControl)
+    }
+
+    /**
      * Check a toggle-button (check-box/radio-button)
      * @param to
      *      represent a web element
