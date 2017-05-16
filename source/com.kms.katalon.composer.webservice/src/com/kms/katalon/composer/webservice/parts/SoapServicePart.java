@@ -53,7 +53,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
-import org.javalite.http.Request;
 
 import com.kms.katalon.composer.components.impl.dialogs.ProgressMonitorDialogWithThread;
 import com.kms.katalon.composer.components.impl.util.KeyEventUtil;
@@ -68,8 +67,11 @@ import com.kms.katalon.composer.webservice.view.xml.XMLConfiguration;
 import com.kms.katalon.composer.webservice.view.xml.XMLPartitionScanner;
 import com.kms.katalon.constants.GlobalMessageConstants;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.controller.WebServiceController;
+import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
+import com.kms.katalon.execution.preferences.ProxyPreferences;
 
 public class SoapServicePart extends WebServicePart {
 
@@ -129,22 +131,13 @@ public class SoapServicePart extends WebServicePart {
                                     try {
                                         tabResponse.getParent().setSelection(tabResponse);
 
-                                        Request<?> response = WSDLHelper
-                                                .newInstance(requestURL, getAuthorizationHeaderValue()).sendSOAPRequest(
-                                                        wsApiControl.getRequestMethod(), ccbOperation.getText(),
-                                                        httpHeaders, requestBody.getTextWidget().getText());
-                                        if (response == null) {
-                                            return;
-                                        }
+                                        String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
+                                        ResponseObject responseObject = WebServiceController.getInstance().sendRequest(
+                                                getWSRequestObject(), projectDir, ProxyPreferences.getProxyInformation());
 
-                                        responseHeader.setDocument(new Document(getPrettyHeaders(response)));
+                                        responseHeader.setDocument(createXMLDocument(getPrettyHeaders(responseObject)));
 
-                                        String bodyContent = null;
-                                        try {
-                                            bodyContent = response.text();
-                                        } catch (Exception e) {
-                                            // Bad request. Ignore this.
-                                        }
+                                        String bodyContent = responseObject.getResponseText();
 
                                         if (bodyContent == null) {
                                             return;
@@ -156,7 +149,7 @@ public class SoapServicePart extends WebServicePart {
                                             // The responded message has issue with syntax, then reuse raw message.
                                         }
                                         responseBody.setDocument(createXMLDocument(bodyContent));
-                                    } catch (WSDLException e) {
+                                    } catch (Exception e) {
                                         LoggerSingleton.logError(e);
                                         ErrorDialog.openError(activeShell, StringConstants.ERROR_TITLE,
                                                 ComposerWebserviceMessageConstants.PART_MSG_CANNOT_SEND_THE_TEST_REQUEST,

@@ -13,16 +13,21 @@ import javax.net.ssl.SSLContext;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.testobject.TestObjectProperty;
 import com.kms.katalon.core.webservice.support.UrlEncoder;
 
-public class RestfulClient implements Requestor {
+public class RestfulClient extends BasicRequestor {
 
     private static final String DEFAULT_USER_AGENT = "Katalon Studio";
 
     private static final String HTTP_USER_AGENT = "User-Agent";
+    
+    public RestfulClient(String projectDir, ProxyInformation proxyInfomation) {
+        super(projectDir, proxyInfomation);
+    }
 
     @Override
     public ResponseObject send(RequestObject request) throws Exception {
@@ -150,11 +155,13 @@ public class RestfulClient implements Requestor {
 
         int statusCode = conn.getResponseCode();
         StringBuffer sb = new StringBuffer();
+
+        char[] buffer = new char[1024];
         try (InputStream inputStream = (statusCode >= 400) ? conn.getErrorStream() : conn.getInputStream();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
-            String inputLine;
-            while ((inputLine = reader.readLine()) != null) {
-                sb.append(inputLine);
+            int len = 0;
+            while ((len = reader.read(buffer)) != -1) {
+                sb.append(buffer, 0, len);
             }
         }
 
