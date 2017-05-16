@@ -21,7 +21,7 @@ public class WebServiceSettingStore extends BundleSettingStore {
 
     public SSLCertificateOption getSSLCertificateOption() throws IOException {
         return SSLCertificateOption
-                .valueOf(getString(StringConstants.SETTING_SSL_CERTIFICATE, SSLCertificateOption.NONE.name()));
+                .valueOf(getString(StringConstants.SETTING_SSL_CERTIFICATE, SSLCertificateOption.BYPASS.name()));
     }
     
     public void saveSSLCertificateOption(SSLCertificateOption option) throws IOException {
