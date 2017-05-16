@@ -1,5 +1,7 @@
 package com.kms.katalon.core.network;
 
+import java.util.Objects;
+
 import org.apache.commons.lang.StringUtils;
 
 public class ProxyInformation {
@@ -74,4 +76,14 @@ public class ProxyInformation {
         }
     }
 
+    @Override
+    public String toString() {
+        return "ProxyInformation{"
+                + "proxyOption=" + proxyOption + ", "
+                + "proxyServerType=" + proxyServerType + ", "
+                + "password=" + password + ", "
+                + "proxyServerAddress=" + proxyServerAddress + ", "
+                + "proxyServerPort=" + proxyServerPort
+                + "}";
+    }
 }

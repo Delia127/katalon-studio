@@ -14,9 +14,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Alert;
+import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.NoSuchWindowException;
+import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriver.Timeouts;
 import org.openqa.selenium.WebDriverException;
@@ -32,6 +35,7 @@ import org.openqa.selenium.ie.InternetExplorerDriverLogLevel;
 import org.openqa.selenium.ie.InternetExplorerDriverService;
 import org.openqa.selenium.internal.BuildInfo;
 import org.openqa.selenium.net.NetworkUtils;
+import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.HttpCommandExecutor;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -53,7 +57,9 @@ import com.kms.katalon.core.webui.driver.ie.InternetExploreDriverServiceBuilder;
 import com.kms.katalon.core.webui.exception.BrowserNotOpenedException;
 import com.kms.katalon.core.webui.util.FirefoxExecutable;
 import com.kms.katalon.core.webui.util.WebDriverPropertyUtil;
+import com.kms.katalon.core.webui.util.WebDriverProxyUtil;
 import com.machinepublishers.jbrowserdriver.JBrowserDriver;
+import com.machinepublishers.jbrowserdriver.Settings;
 
 import io.appium.java_client.ios.IOSDriver;
 
@@ -194,6 +200,7 @@ public class DriverFactory {
         if (driverPreferenceProps != null) {
             desireCapibilities = WebDriverPropertyUtil.toDesireCapabilities(driverPreferenceProps, driver);
         }
+
         WebDriver webDriver = null;
         switch (driver) {
             case FIREFOX_DRIVER:
@@ -206,8 +213,7 @@ public class DriverFactory {
                 webDriver = new SafariDriver(desireCapibilities);
                 break;
             case CHROME_DRIVER:
-                System.setProperty(CHROME_DRIVER_PATH_PROPERTY_KEY, getChromeDriverPath());
-                webDriver = new ChromeDriver(desireCapibilities);
+                webDriver = createNewChromeDriver(desireCapibilities);
                 break;
             case REMOTE_WEB_DRIVER:
             case KOBITON_WEB_DRIVER:
@@ -227,7 +233,7 @@ public class DriverFactory {
                 webDriver = createNewRemoteChromeDriver(desireCapibilities);
                 break;
             case HEADLESS_DRIVER:
-                webDriver = new JBrowserDriver(desireCapibilities);
+                webDriver = createNewJBrowserDriver(desireCapibilities);
                 break;
             default:
                 throw new StepFailedException(
@@ -235,6 +241,31 @@ public class DriverFactory {
         }
         saveWebDriverSessionData(webDriver);
         return webDriver;
+    }
+
+    private static JBrowserDriver createNewJBrowserDriver(DesiredCapabilities desireCapibilities) {
+        Capabilities jBrowserCapbilities = Settings.builder()
+                .proxy(WebDriverProxyUtil.getProxyConfigForJBrowser(RunConfiguration.getProxyInformation()))
+                .buildCapabilities();
+        return new JBrowserDriver(new DesiredCapabilities(desireCapibilities, jBrowserCapbilities));
+    }
+
+    private static WebDriver createNewChromeDriver(DesiredCapabilities desireCapibilities) {
+        System.setProperty(CHROME_DRIVER_PATH_PROPERTY_KEY, getChromeDriverPath());
+        Proxy proxy = getDefaultProxy();
+        String sockProxy = proxy.getSocksProxy();
+        if (StringUtils.isNotEmpty(sockProxy)) {
+            ChromeOptions chromeOptions = new ChromeOptions();
+            chromeOptions.addArguments("--proxy-server=socks5://" + sockProxy);
+            desireCapibilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
+        } else {
+            desireCapibilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
+        }
+        return new ChromeDriver(desireCapibilities);
+    }
+
+    private static Proxy getDefaultProxy() {
+        return WebDriverProxyUtil.getSeleniumProxy(RunConfiguration.getProxyInformation());
     }
 
     @SuppressWarnings("rawtypes")
@@ -306,11 +337,15 @@ public class DriverFactory {
         if (!edgeService.isRunning()) {
             edgeService.start();
         }
+        DesiredCapabilities desiredCapabilities = WebDriverPropertyUtil.toDesireCapabilities(driverPreferenceProps,
+                DesiredCapabilities.edge(), false);
+        desiredCapabilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
         return new EdgeDriver(edgeService,
-                WebDriverPropertyUtil.toDesireCapabilities(driverPreferenceProps, DesiredCapabilities.edge(), false));
+                desiredCapabilities);
     }
 
     private static WebDriver createNewIEDriver(DesiredCapabilities desireCapibilities) {
+        desireCapibilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
         ieDriverService = new InternetExploreDriverServiceBuilder().withLogLevel(InternetExplorerDriverLogLevel.TRACE)
                 .usingDriverExecutable(new File(getIEDriverPath()))
                 .withLogFile(
@@ -321,9 +356,11 @@ public class DriverFactory {
 
     private static WebDriver createNewFirefoxDriver(DesiredCapabilities desireCapibilities) {
         if (FirefoxExecutable.isUsingFirefox47AndAbove(desireCapibilities)) {
-            // webDriver = FirefoxExecutable.startGeckoDriver(desireCapibilities);
+            desireCapibilities.setCapability(CapabilityType.PROXY,
+                    WebDriverProxyUtil.getProxyForGekoDriver(RunConfiguration.getProxyInformation()));
             return new FirefoxDriver47(desireCapibilities);
         }
+        desireCapibilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
         return new FirefoxDriver(desireCapibilities);
     }
 
@@ -400,14 +437,15 @@ public class DriverFactory {
                         ? ((RemoteWebDriver) webDriver).getCapabilities().getPlatform().toString()
                         : System.getProperty("os.name"));
         logger.logRunData(StringConstants.XML_LOG_SELENIUM_VERSION, new BuildInfo().getReleaseLabel());
+        logger.logRunData("proxyInformation", RunConfiguration.getProxyInformation().toString());
     }
 
     private static String getBrowserVersion(WebDriver webDriver) {
         if (webDriver instanceof JBrowserDriver) {
             return HEADLESS_BROWSER_NAME;
         }
-        try {
 
+        try {
             return WebUiCommonHelper.getBrowserAndVersion(webDriver);
         } catch (Exception e) {
             e.printStackTrace();
