@@ -621,13 +621,16 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
 
     private void targetElementChanged(MobileElement mobileElement) {
         propertiesComposite.setEditingElement(mobileElement);
-        MobileDeviceInfo deviceInfo = getSelectDeviceInfo();
+        updateActionButtonsVisibility(mobileElement, getSelectDeviceInfo());
+    }
+
+    protected void updateActionButtonsVisibility(MobileElement mobileElement, MobileDeviceInfo deviceInfo) {
         MobileDriverType mobileDriverType = MobileInspectorController.getMobileDriverType(deviceInfo);
         actionButtons.stream().forEach(actionButton -> {
             MobileAction action = actionButton.getMobileAction();
             actionButton.setEnabledButton(
                     inspectorController.getDriver() != null && (!action.hasElement() || mobileElement != null)
-                            && action.isDriverTypeSupported(mobileDriverType));
+                            && (mobileDriverType != null && action.isDriverTypeSupported(mobileDriverType)));
         });
     }
 
@@ -802,6 +805,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         } finally {
             ControlUtils.recursiveSetEnabled(container, true);
             validateToEnableStartButton();
+            updateActionButtonsVisibility(propertiesComposite.getEditingElement(), getSelectDeviceInfo());
         }
     }
 
