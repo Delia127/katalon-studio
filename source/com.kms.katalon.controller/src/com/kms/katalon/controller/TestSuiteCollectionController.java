@@ -33,6 +33,9 @@ public class TestSuiteCollectionController extends EntityController {
     }
 
     public TestSuiteCollectionEntity getTestRunByDisplayId(String testSuiteCollectionDisplayId) throws DALException {
+        if (testSuiteCollectionDisplayId == null) {
+            return null;
+        }
         ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
         if (currentProject == null) {
             return null;
