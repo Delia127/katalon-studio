@@ -23,19 +23,19 @@ public class MobileActionMapping {
                                 GroovyStringUtil.toGroovyStringFormat(recordedData)));
             }
         }
-        this.setAction(action);
         this.setTargetElement(targetElement);
+        this.setAction(action);
     }
 
     public MobileActionMapping(IMobileAction action, MobileActionParamValueType[] data, MobileElement targetElement) {
-        this.setTargetElement(targetElement);
         this.setData(data);
+        this.setTargetElement(targetElement);
         this.setAction(action);
     }
 
     public MobileActionMapping(IMobileAction action, MobileElement targetElement) {
-        this.setAction(action);
         this.setTargetElement(targetElement);
+        this.setAction(action);
     }
 
     public MobileActionParamValueType[] getData() {
@@ -62,7 +62,7 @@ public class MobileActionMapping {
         this.action = action;
         paramDatas = MobileActionUtil.generateParamDatas(action, paramDatas);
         if (!action.hasElement()) {
-            targetElement = null;
+            setTargetElement(null);
         }
     }
 }
