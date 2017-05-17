@@ -6,6 +6,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.GeneralSecurityException;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -15,18 +23,19 @@ import com.kms.katalon.logging.LogUtil;
 
 public class ServerAPICommunicationUtil {
     private static final String DEVELOPMENT_URL_API = "https://backend-dev.katalon.com/api";
-    
+
     private static final String PRODUCTION_URL_API = "https://update.katalon.com/api";
 
     private static final String POST = "POST";
 
     private static final String GET = "GET";
 
-    public static String post(String function, String jsonData) throws IOException {
+    public static String post(String function, String jsonData) throws IOException, GeneralSecurityException {
         return invoke(POST, function, jsonData);
     }
 
-    public static String invoke(String method, String function, String jsonData) throws IOException {
+    public static String invoke(String method, String function, String jsonData)
+            throws IOException, GeneralSecurityException {
         HttpURLConnection connection = null;
         try {
             connection = createConnection(method, getAPIUrl() + function);
@@ -40,7 +49,7 @@ public class ServerAPICommunicationUtil {
             }
         }
     }
-    
+
     public static String getAPIUrl() {
         if (VersionUtil.isInternalBuild()) {
             return DEVELOPMENT_URL_API;
@@ -51,7 +60,7 @@ public class ServerAPICommunicationUtil {
     public static String getInformation(String url, JsonObject jsonObject) {
         try {
             return invoke(GET, url, jsonObject.toString());
-        } catch (IOException ex) {
+        } catch (IOException | GeneralSecurityException ex) {
             return null;
         }
     }
@@ -59,7 +68,7 @@ public class ServerAPICommunicationUtil {
     public static String getInformation(String url) {
         try {
             return invoke(GET, url, null);
-        } catch (IOException ex) {
+        } catch (IOException | GeneralSecurityException ex) {
             return null;
         }
     }
@@ -67,7 +76,7 @@ public class ServerAPICommunicationUtil {
     public static JsonObject getJsonInformation(String url, JsonObject jsonObject) {
         try {
             return new JsonParser().parse(invoke(GET, url, jsonObject.toString())).getAsJsonObject();
-        } catch (IOException ex) {
+        } catch (IOException | GeneralSecurityException ex) {
             return null;
         }
     }
@@ -75,7 +84,7 @@ public class ServerAPICommunicationUtil {
     public static JsonObject getJsonInformation(String url, String jsonData) {
         try {
             return new JsonParser().parse(invoke(GET, url, jsonData)).getAsJsonObject();
-        } catch (IOException ex) {
+        } catch (IOException | GeneralSecurityException ex) {
             return null;
         }
     }
@@ -83,7 +92,7 @@ public class ServerAPICommunicationUtil {
     public static JsonObject getJsonInformation(String url) {
         try {
             return new JsonParser().parse(invoke(GET, url, null)).getAsJsonObject();
-        } catch (IOException ex) {
+        } catch (IOException | GeneralSecurityException ex) {
             return null;
         }
     }
@@ -109,11 +118,17 @@ public class ServerAPICommunicationUtil {
         return result;
     }
 
-    private static HttpURLConnection createConnection(String method, String sUrl) throws IOException {
+    private static HttpURLConnection createConnection(String method, String sUrl)
+            throws IOException, GeneralSecurityException {
         URL url = new URL(sUrl);
-        HttpURLConnection uc = null;
-        
-        uc = (HttpURLConnection) url.openConnection(ProxyUtil.getProxy());
+
+        SSLContext sc = SSLContext.getInstance("SSL");
+        sc.init(null, getTrustManagers(), new java.security.SecureRandom());
+        HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+
+        HttpsURLConnection uc = null;
+        uc = (HttpsURLConnection) url.openConnection(ProxyUtil.getProxy());
+        uc.setHostnameVerifier(getHostnameVerifier());
         uc.setRequestMethod(method);
         uc.setRequestProperty("Content-Type", "application/json");
         uc.setUseCaches(false);
@@ -122,6 +137,26 @@ public class ServerAPICommunicationUtil {
         return uc;
     }
 
-    
+    private static TrustManager[] getTrustManagers() throws IOException {
+        return new TrustManager[] { new X509TrustManager() {
+            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                return null;
+            }
+
+            public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+            }
+
+            public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+            }
+        } };
+    }
+
+    private static HostnameVerifier getHostnameVerifier() {
+        return new HostnameVerifier() {
+            public boolean verify(String urlHostName, SSLSession session) {
+                return true;
+            }
+        };
+    }
 
 }
