@@ -1,6 +1,5 @@
 package com.kms.katalon.core.webui.util;
 
-import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.Proxy.ProxyType;
 
@@ -34,8 +33,9 @@ public class WebDriverProxyUtil {
      * @return an instance of {@link Proxy}. if the param is null, return a no Proxy.
      */
     public static Proxy getSeleniumProxy(ProxyInformation proxyInformation) {
+        Proxy noProxy = new Proxy().setProxyType(ProxyType.DIRECT);
         if (proxyInformation == null) {
-            return new Proxy().setNoProxy(StringUtils.EMPTY);
+            return noProxy;
         }
         switch (ProxyOption.valueOf(proxyInformation.getProxyOption())) {
             case MANUAL_CONFIG:
@@ -52,11 +52,11 @@ public class WebDriverProxyUtil {
                                 .setSocksPassword(proxyInformation.getPassword());
                 }
             case NO_PROXY:
-                return new Proxy().setNoProxy(StringUtils.EMPTY);
+                return noProxy;
             case USE_SYSTEM:
                 return new Proxy().setProxyType(ProxyType.SYSTEM);
         }
-        return new Proxy().setNoProxy(StringUtils.EMPTY);
+        return noProxy;
     }
 
     /**
