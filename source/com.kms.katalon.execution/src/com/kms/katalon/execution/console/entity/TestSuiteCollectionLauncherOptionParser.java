@@ -23,6 +23,10 @@ public class TestSuiteCollectionLauncherOptionParser extends ReportableLauncherO
         public String getOption() {
             return ConsoleMain.TESTSUITE_COLLECTION_ID_OPTION;
         }
+        
+        public boolean isRequired() {
+            return true;
+        };
     };
 
     @Override
