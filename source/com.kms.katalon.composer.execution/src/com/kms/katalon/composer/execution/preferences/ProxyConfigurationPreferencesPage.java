@@ -43,7 +43,7 @@ public class ProxyConfigurationPreferencesPage extends PreferencePage {
     private Button chkRequireAuthentication;
 
     private static final int MAX_PORT_VALUE = 65535;
-    
+
     public ProxyConfigurationPreferencesPage() {
         super();
         noDefaultButton();
@@ -234,10 +234,11 @@ public class ProxyConfigurationPreferencesPage extends PreferencePage {
         ProxyInformation proxyInfo = null;
         if (ProxyPreferences.isProxyPreferencesSet()) {
             proxyInfo = ProxyPreferences.getProxyInformation();
+            cboProxyOption.setText(ProxyOption.valueOf(proxyInfo.getProxyOption()).getDisplayName());
         } else {
             proxyInfo = ProxyUtil.getProxyInformation();
+            cboProxyOption.setText(proxyInfo.getProxyOption());
         }
-        cboProxyOption.setText(ProxyOption.valueOf(proxyInfo.getProxyOption()).getDisplayName());
         cboProxyServerType.setText(proxyInfo.getProxyServerType());
         txtAddress.setText(proxyInfo.getProxyServerAddress());
         txtPort.setText(proxyInfo.getProxyServerPort() > 0 ? proxyInfo.getProxyServerPort() + "" : "");
