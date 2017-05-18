@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.io.StringReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -104,24 +105,28 @@ public class XMLLoggerParser {
         return files;
     }
 
-    public static List<XmlLogRecord> readFromXMLFile(File xmlFile) throws XMLStreamException, FileNotFoundException {
+    public static List<XmlLogRecord> readFromXMLFile(File xmlFile) throws XMLStreamException, IOException {
         if (xmlFile == null || !xmlFile.exists()) {
             return Collections.emptyList();
         }
         XMLInputFactory inputFactory = XMLInputFactory.newInstance();
         XMLStreamReader reader = null;
+        FileInputStream fileInputStream = null;
         try {
-            reader = inputFactory.createXMLStreamReader(new FileInputStream(xmlFile), UTF_8);
+            fileInputStream = new FileInputStream(xmlFile);
+            reader = inputFactory.createXMLStreamReader(fileInputStream, UTF_8);
             return readDocument(reader);
         } finally {
             if (reader != null) {
                 reader.close();
             }
+            if (fileInputStream != null) {
+                fileInputStream.close();
+            }
         }
     }
 
-    public static List<XmlLogRecord> readFromLogFolder(String logFolder)
-            throws XMLStreamException, FileNotFoundException {
+    public static List<XmlLogRecord> readFromLogFolder(String logFolder) throws XMLStreamException, IOException {
         File[] files = getSortedLogFile(logFolder);
         List<XmlLogRecord> xmlLogRecords = new ArrayList<>();
         for (File file : files) {

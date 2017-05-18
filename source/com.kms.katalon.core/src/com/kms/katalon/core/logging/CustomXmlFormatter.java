@@ -3,28 +3,12 @@ package com.kms.katalon.core.logging;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 import java.util.logging.XMLFormatter;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
 public class CustomXmlFormatter extends XMLFormatter {
-
-    public CustomXmlFormatter() {
-        super();
-    }
-
-    @Override
-    public String getHead(Handler handler) {
-        // Remove DOCTYPE
-        return "<?xml version=\"1.0\" encoding=\"windows-1252\" standalone=\"no\"?>\n<log>\n";
-    }
-    
-    public String getTail(Handler h) {
-        return "</log>\n";
-      }
-
     @Override
     public String format(LogRecord record) {
         int nestedLevel = 0;

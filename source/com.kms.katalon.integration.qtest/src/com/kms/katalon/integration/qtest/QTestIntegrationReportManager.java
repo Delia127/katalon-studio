@@ -314,22 +314,23 @@ public class QTestIntegrationReportManager {
         String contentType = "";
         if (format == null) {
             contentType = "application/octet-stream";
-        }
-        switch (format) {
-            case CSV:
-                contentType = "text/csv";
-                break;
-            case HTML:
-                contentType = "text/html";
-                break;
-            case LOG:
-                contentType = "application/xml";
-                break;
-            case PDF:
-                contentType = "application/pdf";
-                break;
-            default:
-                break;
+        } else {
+            switch (format) {
+                case CSV:
+                    contentType = "text/csv";
+                    break;
+                case HTML:
+                    contentType = "text/html";
+                    break;
+                case LOG:
+                    contentType = "application/xml";
+                    break;
+                case PDF:
+                    contentType = "application/pdf";
+                    break;
+                default:
+                    break;
+            }
         }
         Map<String, Object> attachmentMap = new LinkedHashMap<String, Object>();
         attachmentMap.put("name", FilenameUtils.getName(filePath));

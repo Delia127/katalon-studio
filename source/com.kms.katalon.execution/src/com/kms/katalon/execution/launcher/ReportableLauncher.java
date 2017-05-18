@@ -14,6 +14,7 @@ import java.util.Map.Entry;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
@@ -96,7 +97,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                 ReportableLauncher rerunLauncher = clone(newConfig);
                 LauncherManager.getInstance().addLauncher(rerunLauncher);
             } catch (Exception e) {
-                writeError(MessageFormat.format(StringConstants.MSG_RP_ERROR_TO_RERUN_TEST_SUITE, e.getMessage()));
+                writeError(MessageFormat.format(StringConstants.MSG_RP_ERROR_TO_RERUN_TEST_SUITE, ExceptionUtils.getStackTrace(e)));
                 LogUtil.logError(e);
             }
         }
@@ -116,7 +117,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         try {
             sendReportEmail();
         } catch (Exception e) {
-            writeError(MessageFormat.format(StringConstants.MSG_RP_ERROR_TO_EMAIL_REPORT, e.getMessage()));
+            writeError(MessageFormat.format(StringConstants.MSG_RP_ERROR_TO_EMAIL_REPORT, ExceptionUtils.getStackTrace(e)));
             LogUtil.logError(e);
         }
     }
@@ -248,7 +249,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                 writeLine(MessageFormat.format(StringConstants.LAU_PRT_REPORT_SENT, integratingProductName));
             } catch (Exception e) {
                 writeError(MessageFormat.format(StringConstants.MSG_RP_ERROR_TO_SEND_INTEGRATION_REPORT,
-                        integratingProductName, e.getMessage()));
+                        integratingProductName, ExceptionUtils.getStackTrace(e)));
                 LogUtil.logError(e);
             }
         }
@@ -275,6 +276,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                     getRunConfig().getExecutionSetting().getExecutedEntity().getSourceId(),
                     ProjectController.getInstance().getCurrentProject());
         } catch (Exception e) {
+            LogUtil.logError(e);
             return null;
         }
     }
