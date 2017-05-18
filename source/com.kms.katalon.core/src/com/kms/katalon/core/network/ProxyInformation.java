@@ -74,4 +74,14 @@ public class ProxyInformation {
         }
     }
 
+    @Override
+    public String toString() {
+        return "ProxyInformation{"
+                + "proxyOption=" + proxyOption + ", "
+                + "proxyServerType=" + proxyServerType + ", "
+                + "password=" + password + ", "
+                + "proxyServerAddress=" + proxyServerAddress + ", "
+                + "proxyServerPort=" + proxyServerPort
+                + "}";
+    }
 }
