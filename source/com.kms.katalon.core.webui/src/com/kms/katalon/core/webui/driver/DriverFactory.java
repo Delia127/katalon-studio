@@ -14,12 +14,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.NoSuchWindowException;
-import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriver.Timeouts;
 import org.openqa.selenium.WebDriverException;
@@ -42,6 +40,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.UnreachableBrowserException;
 import org.openqa.selenium.safari.SafariDriver;
 
+import com.google.gson.JsonObject;
 import com.kms.katalon.core.appium.driver.SwipeableAndroidDriver;
 import com.kms.katalon.core.appium.exception.AppiumStartException;
 import com.kms.katalon.core.appium.exception.MobileDriverInitializeException;
@@ -50,6 +49,7 @@ import com.kms.katalon.core.driver.DriverType;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.logging.LogLevel;
+import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.webui.common.WebUiCommonHelper;
 import com.kms.katalon.core.webui.constants.StringConstants;
 import com.kms.katalon.core.webui.driver.firefox.FirefoxDriver47;
@@ -64,6 +64,8 @@ import com.machinepublishers.jbrowserdriver.Settings;
 import io.appium.java_client.ios.IOSDriver;
 
 public class DriverFactory {
+
+    private static final String CAP_IE_USE_PER_PROCESS_PROXY = "ie.usePerProcessProxy";
 
     private static final String IE_DRIVER_SERVER_LOG_FILE_NAME = "IEDriverServer.log";
 
@@ -252,11 +254,11 @@ public class DriverFactory {
 
     private static WebDriver createNewChromeDriver(DesiredCapabilities desireCapibilities) {
         System.setProperty(CHROME_DRIVER_PATH_PROPERTY_KEY, getChromeDriverPath());
-        Proxy proxy = getDefaultProxy();
-        String sockProxy = proxy.getSocksProxy();
-        if (StringUtils.isNotEmpty(sockProxy)) {
+        ProxyInformation proxyInformation = RunConfiguration.getProxyInformation();
+        if (WebDriverProxyUtil.isManualSocks(proxyInformation)) {
             ChromeOptions chromeOptions = new ChromeOptions();
-            chromeOptions.addArguments("--proxy-server=socks5://" + sockProxy);
+            chromeOptions
+                    .addArguments("--proxy-server=socks5://" + WebDriverProxyUtil.getProxyString(proxyInformation));
             desireCapibilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
         } else {
             desireCapibilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
@@ -264,7 +266,7 @@ public class DriverFactory {
         return new ChromeDriver(desireCapibilities);
     }
 
-    private static Proxy getDefaultProxy() {
+    private static JsonObject getDefaultProxy() {
         return WebDriverProxyUtil.getSeleniumProxy(RunConfiguration.getProxyInformation());
     }
 
@@ -345,6 +347,7 @@ public class DriverFactory {
     }
 
     private static WebDriver createNewIEDriver(DesiredCapabilities desireCapibilities) {
+        desireCapibilities.setCapability(CAP_IE_USE_PER_PROCESS_PROXY, "true");
         desireCapibilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
         ieDriverService = new InternetExploreDriverServiceBuilder().withLogLevel(InternetExplorerDriverLogLevel.TRACE)
                 .usingDriverExecutable(new File(getIEDriverPath()))
@@ -355,12 +358,10 @@ public class DriverFactory {
     }
 
     private static WebDriver createNewFirefoxDriver(DesiredCapabilities desireCapibilities) {
+        desireCapibilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
         if (FirefoxExecutable.isUsingFirefox47AndAbove(desireCapibilities)) {
-            desireCapibilities.setCapability(CapabilityType.PROXY,
-                    WebDriverProxyUtil.getProxyForGekoDriver(RunConfiguration.getProxyInformation()));
             return new FirefoxDriver47(desireCapibilities);
         }
-        desireCapibilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
         return new FirefoxDriver(desireCapibilities);
     }
 

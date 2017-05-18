@@ -1,7 +1,6 @@
 package com.kms.katalon.core.webui.util;
 
 import org.openqa.selenium.Proxy;
-import org.openqa.selenium.Proxy.ProxyType;
 
 import com.google.gson.JsonObject;
 import com.kms.katalon.core.network.ProxyInformation;
@@ -15,13 +14,13 @@ public class WebDriverProxyUtil {
 
     private static final String PROP_SOCKS_USERNAME = "socksUsername";
 
-    private static final String PROP_SOCKS_PROXY_PORT = "socksProxyPort";
-
     private static final String PROP_SOCKS_PROXY = "socksProxy";
 
-    private static final String PROP_HTTP_PROXY_PORT = "httpProxyPort";
-
     private static final String PROP_HTTP_PROXY = "httpProxy";
+
+    private static final String PROP_SSL_PROXY = "sslProxy";
+
+    private static final String PROP_FTP_PROXY = "ftpProxy";
 
     private static final String PROP_PROXY_TYPE = "proxyType";
 
@@ -32,55 +31,22 @@ public class WebDriverProxyUtil {
      * @param proxyInfomation: Proxy settings
      * @return an instance of {@link Proxy}. if the param is null, return a no Proxy.
      */
-    public static Proxy getSeleniumProxy(ProxyInformation proxyInformation) {
-        Proxy noProxy = new Proxy().setProxyType(ProxyType.DIRECT);
-        if (proxyInformation == null) {
-            return noProxy;
-        }
-        switch (ProxyOption.valueOf(proxyInformation.getProxyOption())) {
-            case MANUAL_CONFIG:
-                switch (ProxyServerType.valueOf(proxyInformation.getProxyServerType())) {
-                    case HTTP:
-                    case HTTPS:
-                        return new Proxy().setHttpProxy(String.format("%s:%d", proxyInformation.getProxyServerAddress(),
-                                proxyInformation.getProxyServerPort()));
-                    case SOCKS:
-                        return new Proxy()
-                                .setSocksProxy(String.format("%s:%d", proxyInformation.getProxyServerAddress(),
-                                        proxyInformation.getProxyServerPort()))
-                                .setSocksUsername(proxyInformation.getUsername())
-                                .setSocksPassword(proxyInformation.getPassword());
-                }
-            case NO_PROXY:
-                return noProxy;
-            case USE_SYSTEM:
-                return new Proxy().setProxyType(ProxyType.SYSTEM);
-        }
-        return noProxy;
-    }
-
-    /**
-     * Returns a proxy object as JSON string that follows geko driver
-     * 
-     * @param proxyInformation
-     * <a href="https://github.com/mozilla/geckodriver#proxy-object">
-     * Official link
-     * </a>
-     */
-    public static JsonObject getProxyForGekoDriver(ProxyInformation proxyInformation) {
+    public static JsonObject getSeleniumProxy(ProxyInformation proxyInformation) {
         JsonObject jsonObject = new JsonObject();
+
+        String proxyString = getProxyString(proxyInformation);
         switch (ProxyOption.valueOf(proxyInformation.getProxyOption())) {
             case MANUAL_CONFIG:
                 jsonObject.addProperty(PROP_PROXY_TYPE, "manual");
                 switch (ProxyServerType.valueOf(proxyInformation.getProxyServerType())) {
                     case HTTP:
                     case HTTPS:
-                        jsonObject.addProperty(PROP_HTTP_PROXY, proxyInformation.getProxyServerAddress());
-                        jsonObject.addProperty(PROP_HTTP_PROXY_PORT, proxyInformation.getProxyServerPort());
+                        jsonObject.addProperty(PROP_HTTP_PROXY, proxyString);
+                        jsonObject.addProperty(PROP_FTP_PROXY, proxyString);
+                        jsonObject.addProperty(PROP_SSL_PROXY, proxyString);
                         break;
                     case SOCKS:
-                        jsonObject.addProperty(PROP_SOCKS_PROXY, proxyInformation.getProxyServerAddress());
-                        jsonObject.addProperty(PROP_SOCKS_PROXY_PORT, "111");
+                        jsonObject.addProperty(PROP_SOCKS_PROXY, proxyString);
                         jsonObject.addProperty(PROP_SOCKS_USERNAME, proxyInformation.getUsername());
                         jsonObject.addProperty(PROP_SOCKS_PASSWORD, proxyInformation.getPassword());
                         break;
@@ -90,10 +56,20 @@ public class WebDriverProxyUtil {
                 jsonObject.addProperty(PROP_PROXY_TYPE, "system");
                 break;
             case NO_PROXY:
-                jsonObject.addProperty(PROP_PROXY_TYPE, "noproxy");
+                jsonObject.addProperty(PROP_PROXY_TYPE, "direct");
                 break;
         }
         return jsonObject;
+    }
+
+    public static String getProxyString(ProxyInformation proxyInformation) {
+        return String.format("%s:%d", proxyInformation.getProxyServerAddress(), proxyInformation.getProxyServerPort());
+    }
+
+    public static boolean isManualSocks(ProxyInformation proxyInformation) {
+        return proxyInformation != null
+                && ProxyOption.valueOf(proxyInformation.getProxyOption()) == ProxyOption.MANUAL_CONFIG
+                && ProxyServerType.valueOf(proxyInformation.getProxyServerType()) == ProxyServerType.SOCKS;
     }
 
     /**

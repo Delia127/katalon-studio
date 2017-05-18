@@ -1,7 +1,5 @@
 package com.kms.katalon.core.network;
 
-import java.util.Objects;
-
 import org.apache.commons.lang.StringUtils;
 
 public class ProxyInformation {
