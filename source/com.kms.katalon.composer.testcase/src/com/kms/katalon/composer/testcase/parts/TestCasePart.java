@@ -47,6 +47,7 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 
@@ -293,9 +294,12 @@ public class TestCasePart extends CPart implements EventHandler, ITestCasePart {
                     return;
                 }
                 WebElementEntity webElementEntity = getWebElementFromMenuItem((MenuItem) object);
-                if (webElementEntity != null) {
-                    eventBroker.send(EventConstants.TEST_OBJECT_OPEN, webElementEntity);
+                if (webElementEntity == null) {
+                    return;
                 }
+                String openEventName = webElementEntity instanceof WebServiceRequestEntity
+                        ? EventConstants.WEBSERVICE_REQUEST_OBJECT_OPEN : EventConstants.TEST_OBJECT_OPEN;
+                eventBroker.send(openEventName, webElementEntity);
             }
         };
         if (testObjects.size() == 1) {
