@@ -596,7 +596,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                     monitor.done();
                 }
             };
-            progressDlg.run(true, true, processToRun);
+            progressDlg.run(true, false, processToRun);
             captureObjectAction();
             targetElementChanged(null);
             allElementTreeViewer.setSelection(StructuredSelection.EMPTY);
