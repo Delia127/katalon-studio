@@ -13,6 +13,8 @@ import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.core.services.log.Logger;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -25,6 +27,7 @@ import org.osgi.framework.FrameworkUtil;
 
 import com.google.gson.Gson;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.util.internal.PathUtil;
 import com.kms.katalon.core.webui.driver.DriverFactory;
@@ -35,6 +38,7 @@ import com.kms.katalon.execution.configuration.IDriverConnector;
 import com.kms.katalon.execution.configuration.impl.DefaultExecutionSetting;
 import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.execution.webui.util.WebUIExecutionUtil;
+import com.kms.katalon.objectspy.constants.StringConstants;
 import com.kms.katalon.objectspy.exception.BrowserNotSupportedException;
 import com.kms.katalon.objectspy.exception.ExtensionNotFoundException;
 import com.kms.katalon.objectspy.preferences.ObjectSpyPreferences;
@@ -133,10 +137,11 @@ public class InspectSession implements Runnable {
     public void run() {
         try {
             setUp(webUiDriverType, currentProject);
-            runSeleniumWebDriver();
         } catch (IOException | ExtensionNotFoundException | BrowserNotSupportedException e) {
             LoggerSingleton.logError(e);
+            showErrorMessageDialog(e.getMessage());
         }
+        runSeleniumWebDriver();
     }
 
     public void setupIE() throws IOException {
@@ -184,13 +189,23 @@ public class InspectSession implements Runnable {
                     continue;
                 }
             }
-        } catch (UnreachableBrowserException e) {
-            // do nothing for this exception
+        } catch (WebDriverException e) {
+            showErrorMessageDialog(e.getMessage());
         } catch (Exception e) {
             LoggerSingleton.logError(e);
+            showErrorMessageDialog(e.getMessage());
         } finally {
             dispose();
         }
+    }
+
+    private static void showErrorMessageDialog(String message) {
+        UISynchronizeService.syncExec(new Runnable() {
+            @Override
+            public void run() {
+                MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, message);
+            }
+        });
     }
 
     protected Object createDriverOptions(WebUIDriverType driverType)
