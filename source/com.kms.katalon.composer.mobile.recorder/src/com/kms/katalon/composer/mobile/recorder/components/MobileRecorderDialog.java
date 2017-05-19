@@ -976,7 +976,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         try {
             btnCapture.setEnabled(false);
             openDeviceView();
-            dialog.run(true, true, runnable);
+            dialog.run(true, false, runnable);
         } catch (InterruptedException ignored) {
             // User canceled
         } catch (InvocationTargetException e) {
