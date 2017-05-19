@@ -72,4 +72,11 @@ public class KobitonDriverConnector extends RemoteWebDriverConnector {
         configProperties.putAll(kobitonDevice.toDesireCapabilitiesMap());
         return configProperties;
     }
+    
+    @Override
+    public Map<String, Object> getSystemProperties() {
+        Map<String, Object> systemProperties = super.getSystemProperties();
+        systemProperties.putAll(kobitonDevice.toDesireCapabilitiesMap());
+        return systemProperties;
+    }
 }

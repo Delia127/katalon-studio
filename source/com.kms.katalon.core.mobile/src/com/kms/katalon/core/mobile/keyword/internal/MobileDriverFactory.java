@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.Socket;
+import java.net.URL;
 import java.text.MessageFormat;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -24,9 +25,9 @@ import com.kms.katalon.core.driver.DriverType;
 import com.kms.katalon.core.driver.ExistingDriverType;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.KeywordLogger;
+import com.kms.katalon.core.mobile.constants.CoreMobileMessageConstants;
 import com.kms.katalon.core.mobile.constants.StringConstants;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
-import com.kms.katalon.core.mobile.constants.CoreMobileMessageConstants;
 
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.remote.MobileCapabilityType;
@@ -64,6 +65,13 @@ public class MobileDriverFactory {
         String mobileDriverType = RunConfiguration.getDriverSystemProperty(MOBILE_DRIVER_PROPERTY,
                 AppiumDriverManager.EXECUTED_PLATFORM);
         return mobileDriverType != null ? MobileDriverType.valueOf(mobileDriverType) : null;
+    }
+
+    /**
+     * @return the remote web driver url if running Mobile keyword on cloud services
+     */
+    public static String getRemoteWebDriverServerUrl() {
+        return RunConfiguration.getDriverSystemProperty(MOBILE_DRIVER_PROPERTY, "remoteWebDriverUrl");
     }
 
     /**
@@ -175,6 +183,10 @@ public class MobileDriverFactory {
             String appFile, boolean uninstallAfterCloseApp) {
         DesiredCapabilities capabilities = new DesiredCapabilities();
         Map<String, Object> driverPreferences = RunConfiguration.getDriverPreferencesProperties(MOBILE_DRIVER_PROPERTY);
+        // Running app so no browser name
+        if (driverPreferences.containsKey(MobileCapabilityType.BROWSER_NAME)) {
+            driverPreferences.remove(MobileCapabilityType.BROWSER_NAME);
+        }
         if (driverPreferences != null && osType == MobileDriverType.IOS_DRIVER) {
             capabilities
                     .merge(convertPropertiesMaptoDesireCapabilities(driverPreferences, MobileDriverType.IOS_DRIVER));
@@ -305,7 +317,14 @@ public class MobileDriverFactory {
             throws MobileDriverInitializeException, IOException, InterruptedException, AppiumStartException {
         Preconditions.checkArgument(osType != null && StringUtils.isNotEmpty(deviceName),
                 CoreMobileMessageConstants.KW_MSG_DEVICE_MISSING);
-        Preconditions.checkArgument(StringUtils.isNotEmpty(appFile), CoreMobileMessageConstants.KW_MSG_APP_FILE_MISSING);
+        Preconditions.checkArgument(StringUtils.isNotEmpty(appFile),
+                CoreMobileMessageConstants.KW_MSG_APP_FILE_MISSING);
+        String remoteWebUrl = getRemoteWebDriverServerUrl();
+        if (StringUtils.isNotEmpty(remoteWebUrl)) {
+            return AppiumDriverManager.createMobileDriver(osType,
+                    createCapabilities(osType, deviceId, deviceName, appFile, uninstallAfterCloseApp),
+                    new URL(remoteWebUrl));
+        }
         return AppiumDriverManager.createMobileDriver(osType, deviceId,
                 createCapabilities(osType, deviceId, deviceName, appFile, uninstallAfterCloseApp));
     }

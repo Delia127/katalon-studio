@@ -7,6 +7,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.openqa.selenium.ScreenOrientation;
 
+import com.kms.katalon.core.appium.driver.AppiumDriverManager;
+import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.integration.kobiton.entity.KobitonDeviceCapabilities.Browser;
 
 public class KobitonDevice {
@@ -107,13 +109,22 @@ public class KobitonDevice {
 
     public Map<String, Object> toDesireCapabilitiesMap() {
         Map<String, Object> desireCapabilitiesMap = new HashMap<>();
-        desireCapabilitiesMap.put(CAPABILITIES_PLATFORM_NAME, capabilities.getPlatformName());
+        final String platformName = capabilities.getPlatformName();
+        desireCapabilitiesMap.put(CAPABILITIES_PLATFORM_NAME, platformName);
         desireCapabilitiesMap.put(CAPABILITIES_DEVICE_NAME, capabilities.getDeviceName());
         desireCapabilitiesMap.put(CAPABILITIES_BROWSER_NAME, getBrowserName());
         desireCapabilitiesMap.put(CAPABILITIES_PLATFORM_VERSION, capabilities.getPlatformVersion());
         desireCapabilitiesMap.put(CAPABILITIES_DEVICE_ORIENTATION, orientation.value());
         desireCapabilitiesMap.put(CAPABILITIES_CAPTURE_SREEN_SHOTS, true);
         desireCapabilitiesMap.put(CAPABILITIES_ACCEPT_SSL_CERTS, true);
+        if (capabilities.getPlatformName().equals(PLATFORM_NAME_IOS)) {
+            desireCapabilitiesMap.put(AppiumDriverManager.EXECUTED_PLATFORM,
+                    MobileDriverType.IOS_DRIVER.getPropertyValue());
+        }
+        if (capabilities.getPlatformName().equals(PLATFORM_NAME_ANDROID)) {
+            desireCapabilitiesMap.put(AppiumDriverManager.EXECUTED_PLATFORM,
+                    MobileDriverType.ANDROID_DRIVER.getPropertyValue());
+        }
         return desireCapabilitiesMap;
     }
 

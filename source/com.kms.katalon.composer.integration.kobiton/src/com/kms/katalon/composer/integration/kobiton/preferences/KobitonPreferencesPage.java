@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Link;
 
 import com.kms.katalon.composer.components.dialogs.FieldEditorPreferencePageWithHelp;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.execution.preferences.ComboFieldEditor;
 import com.kms.katalon.composer.integration.kobiton.constants.ComposerIntegrationKobitonMessageConstants;
 import com.kms.katalon.composer.integration.kobiton.constants.ComposerKobitonStringConstants;
@@ -188,7 +189,13 @@ public class KobitonPreferencesPage extends FieldEditorPreferencePageWithHelp {
                                 monitor.beginTask(
                                         ComposerIntegrationKobitonMessageConstants.MSG_DLG_PRG_RETRIEVING_KEYS, 2);
                                 monitor.subTask(ComposerIntegrationKobitonMessageConstants.MSG_DLG_PRG_CONNECTING_TO_SERVER);
-                                KobitonLoginInfo loginInfo = KobitonApiProvider.login(userName, password);
+                                final KobitonLoginInfo loginInfo = KobitonApiProvider.login(userName, password);
+                                UISynchronizeService.syncExec(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        userNameEditor.setStringValue(loginInfo.getUser().getUsername());
+                                    }
+                                });
                                 monitor.worked(1);
                                 monitor.subTask(ComposerIntegrationKobitonMessageConstants.MSG_DLG_PRG_GETTING_KEYS);
                                 apiKeys.addAll(KobitonApiProvider.getApiKeyList(loginInfo.getToken()));
