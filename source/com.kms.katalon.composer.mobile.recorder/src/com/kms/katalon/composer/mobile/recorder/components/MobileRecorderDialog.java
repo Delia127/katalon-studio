@@ -879,6 +879,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
             btnStop.setEnabled(true);
             getButton(IDialogConstants.OK_ID).setEnabled(true);
             recordedActions.clear();
+            targetElementChanged(null);
             MobileActionMapping startAppAction = new MobileActionMapping(MobileAction.StartApplication, null);
             startAppAction.getData()[0].setValue(new ConstantExpressionWrapper(appFile));
             recordedActions.add(startAppAction);
@@ -1078,6 +1079,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                 // Validate all required informations are filled
                 if (validateData()) {
                     startObjectInspectorAction();
+                    updateActionButtonsVisibility(propertiesComposite.getEditingElement(), getSelectDeviceInfo());
                 }
             }
         });
