@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.mobile.objectspy.util;
+package com.kms.katalon.composer.mobile.recorder.utils;
 
 import java.util.ArrayList;
 import java.util.Map;

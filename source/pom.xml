@@ -32,6 +32,7 @@
 		<module>com.kms.katalon.composer.integration.kobiton</module>
 		<module>com.kms.katalon.composer.keyword</module>
 		<module>com.kms.katalon.composer.mobile.objectspy</module>
+		<module>com.kms.katalon.composer.mobile.recorder</module>
 		<module>com.kms.katalon.composer.mobile</module>
 		<module>com.kms.katalon.composer.objectrepository</module>
 		<module>com.kms.katalon.composer.preferences</module>

@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileObjectSpyDialog;
-import com.kms.katalon.composer.mobile.objectspy.element.MobileElementConverter;
+import com.kms.katalon.composer.mobile.objectspy.element.CapturedMobileElementConverter;
 import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElement;
 import com.kms.katalon.entity.repository.WebElementEntity;
 
@@ -60,7 +60,7 @@ public class CapturedObjectTableViewer extends CTableViewer {
     }
 
     public void addElements(List<WebElementEntity> webElements) {
-        MobileElementConverter converter = new MobileElementConverter();
+        CapturedMobileElementConverter converter = new CapturedMobileElementConverter();
         List<CapturedMobileElement> newMobileElements = new ArrayList<>();
         for (WebElementEntity webElement : webElements) {
             newMobileElements.add(converter.revert(webElement));

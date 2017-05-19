@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_qS9pcCaqEeS9vYgzPyb1ug">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_MUtL4DRsEeem58Ih33kujQ" featurename="commands" parentElementId="com.kms.katalon.composer.application">
+    <elements xsi:type="commands:Command" xmi:id="_Ouqs4DRsEeem58Ih33kujQ" elementId="com.kms.katalon.composer.mobile.recorder.command.open" commandName="Open Recorder" description="Open Recorder"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_TCiV0DRsEeem58Ih33kujQ" featurename="handlers" parentElementId="com.kms.katalon.composer.application">
+    <elements xsi:type="commands:Handler" xmi:id="_UzO3YDRsEeem58Ih33kujQ" elementId="com.kms.katalon.composer.mobile.recorder.handler.open" contributionURI="bundleclass://com.kms.katalon.composer.mobile.recorder/com.kms.katalon.composer.mobile.recorder.handlers.OpenMobileRecorderHandler" command="_Ouqs4DRsEeem58Ih33kujQ"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_ZRMQcDRsEeem58Ih33kujQ" featurename="children" parentElementId="com.kms.katalon.composer.toolbar">
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_fo3kMDRsEeem58Ih33kujQ" elementId="com.kms.katalon.composer.mobile.recorder.handledtoolitem.record.mobile" label="Record Mobile" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/mobile_record_24.png" tooltip="" command="_Ouqs4DRsEeem58Ih33kujQ">
+      <persistedState key="index" value="9"/>
+      <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/mobile_record_disabled_24.png"/>
+      <tags>FORCE_TEXT</tags>
+    </elements>
+  </fragments>
+</fragment:ModelFragments>

@@ -87,7 +87,7 @@ import com.kms.katalon.composer.execution.util.MobileDeviceUIProvider;
 import com.kms.katalon.composer.mobile.objectspy.constant.ImageConstants;
 import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
 import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
-import com.kms.katalon.composer.mobile.objectspy.element.MobileElementConverter;
+import com.kms.katalon.composer.mobile.objectspy.element.CapturedMobileElementConverter;
 import com.kms.katalon.composer.mobile.objectspy.element.TreeMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.provider.CapturedElementLabelProvider;
@@ -104,7 +104,7 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
 
-public class MobileObjectSpyDialog extends Dialog {
+public class MobileObjectSpyDialog extends Dialog implements MobileElementInspectorDialog {
 
     public static final Point DIALOG_SIZE = new Point(800, 800);
 
@@ -545,7 +545,7 @@ public class MobileObjectSpyDialog extends Dialog {
         });
     }
 
-    /* package */void updateSelectedElement(CapturedMobileElement selectedElement) {
+    /* package */ void updateSelectedElement(CapturedMobileElement selectedElement) {
         capturedObjectsTableViewer.refresh(selectedElement, true);
         TreeMobileElement element = selectedElement.getLink();
         if (element != null) {
@@ -679,7 +679,7 @@ public class MobileObjectSpyDialog extends Dialog {
 
             private List<ITreeEntity> addElementsToRepository(FolderTreeEntity folderTreeEntity, FolderEntity folder)
                     throws Exception {
-                MobileElementConverter converter = new MobileElementConverter();
+                CapturedMobileElementConverter converter = new CapturedMobileElementConverter();
                 List<ITreeEntity> newTreeEntities = new ArrayList<>();
 
                 ObjectRepositoryController objectRepositoryController = ObjectRepositoryController.getInstance();
@@ -828,7 +828,7 @@ public class MobileObjectSpyDialog extends Dialog {
         setDeviceView(deviceView);
     }
 
-    /* package */void setSelectedElementByLocation(int x, int y) {
+    public void setSelectedElementByLocation(int x, int y) {
         if (appRootElement == null) {
             return;
         }
@@ -886,7 +886,9 @@ public class MobileObjectSpyDialog extends Dialog {
                     @Override
                     public Object call() throws Exception {
                         appRootElement = inspectorController.getMobileObjectRoot();
-                        appRootElement.setName(appName);
+                        if (appRootElement != null) {
+                            appRootElement.setName(appName);
+                        }
                         return null;
                     }
                 });
@@ -1154,7 +1156,7 @@ public class MobileObjectSpyDialog extends Dialog {
             return;
         }
 
-        MobileElementConverter converter = new MobileElementConverter();
+        CapturedMobileElementConverter converter = new CapturedMobileElementConverter();
         List<CapturedMobileElement> newMobileElements = new ArrayList<>();
         for (WebElementEntity webElement : webElements) {
             newMobileElements.add(converter.revert(webElement));

@@ -16,6 +16,8 @@ import org.json.JSONObject;
 import org.openqa.selenium.OutputType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -100,6 +102,10 @@ public class MobileInspectorController {
                 mobileDeviceInfo.getDeviceName(), appFile, uninstallAfterCloseApp);
     }
 
+    public AppiumDriver<?> getDriver() {
+        return driver;
+    }
+
     private Map<String, String> getAdditionalEnvironmentVariables(MobileDriverType mobileDriverType) throws IOException {
         if (mobileDriverType == MobileDriverType.ANDROID_DRIVER) {
             return AndroidDeviceInfo.getAndroidAdditionalEnvironmentVariables();
@@ -141,6 +147,7 @@ public class MobileInspectorController {
     public boolean closeApp() {
         try {
             MobileDriverFactory.closeDriver();
+            driver = null;
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
@@ -208,13 +215,24 @@ public class MobileInspectorController {
         is.setCharacterStream(new StringReader(pageSource));
         Document doc = db.parse(is);
         Element rootElement = doc.getDocumentElement();
+        Element appElement = null;
+        NodeList childElementNodes = rootElement.getChildNodes();
+        int count = childElementNodes.getLength();
+        for (int i = 0; i < count; i++) {
+            Node node = childElementNodes.item(i);
+            if (node instanceof Element) {
+                appElement = (Element) node;
+            }
+        }
+        if (appElement == null) {
+            return null;
+        }
         
         IosXCUISnapshotMobileElement htmlMobileElementRootNode = new IosXCUISnapshotMobileElement();
 
         htmlMobileElementRootNode.getAttributes()
-                .put(IOSProperties.IOS_TYPE, rootElement.getTagName());
-        htmlMobileElementRootNode.render(rootElement);
+                .put(IOSProperties.IOS_TYPE, appElement.getTagName());
+        htmlMobileElementRootNode.render(appElement);
         return htmlMobileElementRootNode;
     }
-
 }
