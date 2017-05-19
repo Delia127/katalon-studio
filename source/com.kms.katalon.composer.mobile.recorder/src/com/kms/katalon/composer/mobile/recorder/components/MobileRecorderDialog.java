@@ -197,6 +197,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         txtAppFile.setText(preferencesHelper.getLastAppFile());
         validateToEnableStartButton();
         targetElementChanged(null);
+        updateActionButtonsVisibility(null, getSelectDeviceInfo());
         getButton(IDialogConstants.OK_ID).setEnabled(false);
     }
 
@@ -624,7 +625,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         updateActionButtonsVisibility(mobileElement, getSelectDeviceInfo());
     }
 
-    protected void updateActionButtonsVisibility(MobileElement mobileElement, MobileDeviceInfo deviceInfo) {
+    private void updateActionButtonsVisibility(MobileElement mobileElement, MobileDeviceInfo deviceInfo) {
         MobileDriverType mobileDriverType = MobileInspectorController.getMobileDriverType(deviceInfo);
         actionButtons.stream().forEach(actionButton -> {
             MobileAction action = actionButton.getMobileAction();
@@ -677,6 +678,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
             @Override
             public void widgetSelected(SelectionEvent e) {
                 validateToEnableStartButton();
+                updateActionButtonsVisibility(propertiesComposite.getEditingElement(), getSelectDeviceInfo());
             }
         });
 
@@ -686,6 +688,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
             @Override
             public void widgetSelected(SelectionEvent e) {
                 updateDeviceNames();
+                updateActionButtonsVisibility(propertiesComposite.getEditingElement(), getSelectDeviceInfo());
             }
         });
 
@@ -700,6 +703,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
             @Override
             public void widgetSelected(SelectionEvent e) {
                 validateToEnableStartButton();
+                updateActionButtonsVisibility(propertiesComposite.getEditingElement(), getSelectDeviceInfo());
             }
         });
 
@@ -805,7 +809,6 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         } finally {
             ControlUtils.recursiveSetEnabled(container, true);
             validateToEnableStartButton();
-            updateActionButtonsVisibility(propertiesComposite.getEditingElement(), getSelectDeviceInfo());
         }
     }
 
