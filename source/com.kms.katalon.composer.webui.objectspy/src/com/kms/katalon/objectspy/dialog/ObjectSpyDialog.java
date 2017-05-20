@@ -1197,11 +1197,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
     }
 
     private void startObjectSpy(WebUIDriverType browser, boolean isInstant) {
-        if (!BrowserUtil.isBrowserInstalled(browser)) {
-            MessageDialog.openError(getShell(), StringConstants.ERROR_TITLE,
-                    ObjectspyMessageConstants.DIA_MSG_CANNOT_START_BROWSER);
-            return;
-        }
+
         try {
             if (browser == WebUIDriverType.IE_DRIVER) {
                 checkIEAddon();
