@@ -535,14 +535,14 @@ public class GenerateCommandDialog extends AbstractDialog {
                 }
             }
 
-            if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_REPORT_OUTPUT_LOCATION)) {
-                txtOutputLocation.setText(
-                        prefs.getString(GenerateCommandPreferenceConstants.GEN_COMMAND_REPORT_OUTPUT_LOCATION));
-            }
-
             if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_REPORT_USE_RELATIVE_PATH)) {
                 chkUseRelativePath.setSelection(
                         prefs.getBoolean(GenerateCommandPreferenceConstants.GEN_COMMAND_REPORT_USE_RELATIVE_PATH));
+            }
+            
+
+            if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_REPORT_OUTPUT_LOCATION)) {
+                updateReportOutputLocation(prefs.getString(GenerateCommandPreferenceConstants.GEN_COMMAND_REPORT_OUTPUT_LOCATION));
             }
 
             if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_REPORT_OUTPUT_NAME)) {
@@ -815,7 +815,14 @@ public class GenerateCommandDialog extends AbstractDialog {
         if (chkUseRelativePath.getSelection()) {
             location = absoluteToRelativePath(location, projectLocation());
         }
+        if (isRootDrive(location)) {
+            location = location + "\\";
+        }
         txtOutputLocation.setText(location);
+    }
+    
+    private boolean isRootDrive(String outputLocation) {
+        return outputLocation.endsWith(":\\");
     }
 
     private String getReportOutputAbsolutePath() {
