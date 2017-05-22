@@ -188,8 +188,17 @@ public class GroovyWrapperParser {
 
     private void parseBinary(BinaryExpressionWrapper binaryExpressionWrapper) {
         preParseASTNode(binaryExpressionWrapper);
-        parseExpression(binaryExpressionWrapper.getLeftExpression());
-        if (binaryExpressionWrapper.getRightExpression() != null) {
+        binaryExpressionWrapper.getOperation().getToken().getType();
+        final ExpressionWrapper leftExpression = binaryExpressionWrapper.getLeftExpression();
+        if (leftExpression instanceof BinaryExpressionWrapper) {
+            print("(");
+        }
+        parseExpression(leftExpression);
+        if (leftExpression instanceof BinaryExpressionWrapper) {
+            print(")");
+        }
+        final ExpressionWrapper rightExpression = binaryExpressionWrapper.getRightExpression();
+        if (rightExpression != null) {
             TokenWrapper token = binaryExpressionWrapper.getOperation();
             preParseASTNode(token);
             if (token.getText().equals("[")) {
@@ -199,7 +208,13 @@ public class GroovyWrapperParser {
             }
             postParseASTNode(token);
             checkWrapLongLine();
-            parseExpression(binaryExpressionWrapper.getRightExpression());
+            if (rightExpression instanceof BinaryExpressionWrapper) {
+                print("(");
+            }
+            parseExpression(rightExpression);
+            if (rightExpression instanceof BinaryExpressionWrapper) {
+                print(")");
+            }
             if (binaryExpressionWrapper.getOperation().getText().equals("[")) {
                 print("]");
             }
@@ -300,8 +315,8 @@ public class GroovyWrapperParser {
             // This to prevent the problem that is the class
             // EmptyExpressionWrapper is
             // not yet implemented for ASTVisitor
-            declarationExpressionWrapper.setRightExpression(new ConstantExpressionWrapper(new ConstantExpression(null),
-                    declarationExpressionWrapper));
+            declarationExpressionWrapper.setRightExpression(
+                    new ConstantExpressionWrapper(new ConstantExpression(null), declarationExpressionWrapper));
         }
 
         if (declarationExpressionWrapper.getLeftExpression() instanceof ArgumentListExpressionWrapper) {
@@ -314,7 +329,8 @@ public class GroovyWrapperParser {
             }
         } else {
             if (declarationExpressionWrapper.getLeftExpression() instanceof VariableExpressionWrapper) {
-                VariableExpressionWrapper variableExpressionWrapper = (VariableExpressionWrapper) declarationExpressionWrapper.getLeftExpression();
+                VariableExpressionWrapper variableExpressionWrapper = (VariableExpressionWrapper) declarationExpressionWrapper
+                        .getLeftExpression();
                 parseType(variableExpressionWrapper.getOriginType());
                 print(" " + variableExpressionWrapper.getName());
             } else {
@@ -403,8 +419,8 @@ public class GroovyWrapperParser {
         if (methodCallExpressionWrapper.isSafe()) {
             print("?");
         }
-        if (!(objectExp instanceof VariableExpressionWrapper && ((VariableExpressionWrapper) objectExp).getName()
-                .equals("this"))) {
+        if (!(objectExp instanceof VariableExpressionWrapper
+                && ((VariableExpressionWrapper) objectExp).getName().equals("this"))) {
             print(".");
         }
         ExpressionWrapper method = methodCallExpressionWrapper.getMethod();
@@ -1299,7 +1315,7 @@ public class GroovyWrapperParser {
         }
         return null;
     }
-    
+
     public static ExpressionWrapper parseGroovyScriptAndGetFirstExpression(String scriptContent) {
         return parseGroovyScriptAndGetFirstExpression(scriptContent, null);
     }
