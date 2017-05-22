@@ -2329,7 +2329,8 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     /**
      * Wait for jQuery to load within the given time in second unit.
      * 
-     * @param flowControl
+     * @param seconds
+     *         the number of seconds to wait
      * @return true if jQuery is ready. Otherwise, false.
      * @throws StepFailedException
      */
