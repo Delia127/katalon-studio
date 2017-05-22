@@ -1,8 +1,10 @@
 package com.kms.katalon.core.webui.util;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.openqa.selenium.Proxy;
 
-import com.google.gson.JsonObject;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.network.ProxyOption;
 import com.kms.katalon.core.network.ProxyServerType;
@@ -31,35 +33,35 @@ public class WebDriverProxyUtil {
      * @param proxyInfomation: Proxy settings
      * @return an instance of {@link Proxy}. if the param is null, return a no Proxy.
      */
-    public static JsonObject getSeleniumProxy(ProxyInformation proxyInformation) {
-        JsonObject jsonObject = new JsonObject();
+    public static Map<String, Object> getSeleniumProxy(ProxyInformation proxyInformation) {
+        Map<String, Object> proxyMap = new HashMap<>();
 
         String proxyString = getProxyString(proxyInformation);
         switch (ProxyOption.valueOf(proxyInformation.getProxyOption())) {
             case MANUAL_CONFIG:
-                jsonObject.addProperty(PROP_PROXY_TYPE, "manual");
+                proxyMap.put(PROP_PROXY_TYPE, "manual");
                 switch (ProxyServerType.valueOf(proxyInformation.getProxyServerType())) {
                     case HTTP:
                     case HTTPS:
-                        jsonObject.addProperty(PROP_HTTP_PROXY, proxyString);
-                        jsonObject.addProperty(PROP_FTP_PROXY, proxyString);
-                        jsonObject.addProperty(PROP_SSL_PROXY, proxyString);
+                        proxyMap.put(PROP_HTTP_PROXY, proxyString);
+                        proxyMap.put(PROP_FTP_PROXY, proxyString);
+                        proxyMap.put(PROP_SSL_PROXY, proxyString);
                         break;
                     case SOCKS:
-                        jsonObject.addProperty(PROP_SOCKS_PROXY, proxyString);
-                        jsonObject.addProperty(PROP_SOCKS_USERNAME, proxyInformation.getUsername());
-                        jsonObject.addProperty(PROP_SOCKS_PASSWORD, proxyInformation.getPassword());
+                        proxyMap.put(PROP_SOCKS_PROXY, proxyString);
+                        proxyMap.put(PROP_SOCKS_USERNAME, proxyInformation.getUsername());
+                        proxyMap.put(PROP_SOCKS_PASSWORD, proxyInformation.getPassword());
                         break;
                 }
                 break;
             case USE_SYSTEM:
-                jsonObject.addProperty(PROP_PROXY_TYPE, "system");
+                proxyMap.put(PROP_PROXY_TYPE, "system");
                 break;
             case NO_PROXY:
-                jsonObject.addProperty(PROP_PROXY_TYPE, "direct");
+                proxyMap.put(PROP_PROXY_TYPE, "direct");
                 break;
         }
-        return jsonObject;
+        return proxyMap;
     }
 
     public static String getProxyString(ProxyInformation proxyInformation) {
