@@ -40,7 +40,6 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.UnreachableBrowserException;
 import org.openqa.selenium.safari.SafariDriver;
 
-import com.google.gson.JsonObject;
 import com.kms.katalon.core.appium.driver.SwipeableAndroidDriver;
 import com.kms.katalon.core.appium.exception.AppiumStartException;
 import com.kms.katalon.core.appium.exception.MobileDriverInitializeException;
@@ -266,7 +265,7 @@ public class DriverFactory {
         return new ChromeDriver(desireCapibilities);
     }
 
-    private static JsonObject getDefaultProxy() {
+    private static Map<String, Object> getDefaultProxy() {
         return WebDriverProxyUtil.getSeleniumProxy(RunConfiguration.getProxyInformation());
     }
 
