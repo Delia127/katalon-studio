@@ -14,6 +14,8 @@ public class RecorderPreferenceDefaultValueInitializer extends AbstractPreferenc
     public static final boolean WEBUI_RECORDER_ACTIVE_BROWSER_DO_NOT_SHOW_AGAIN_DEFAULT = false;
 
     public static final String WEBUI_RECORDER_DEFAULT_BROWSER = WebUIDriverType.FIREFOX_DRIVER.toString();
+    
+    public static final String WEBUI_RECORDER_DEFAULT_URL = "http://demoaut.katalon.com/";
 
     public static final String[] SUPPORTED_BROWSERS = new String[] { WebUIDriverType.CHROME_DRIVER.toString(),
             WebUIDriverType.FIREFOX_DRIVER.toString(), WebUIDriverType.IE_DRIVER.toString() };
@@ -22,5 +24,6 @@ public class RecorderPreferenceDefaultValueInitializer extends AbstractPreferenc
     public void initializeDefaultPreferences() {
         ScopedPreferenceStore store = getPreferenceStore(RecorderPreferenceConstants.WEBUI_RECORDER_QUALIFIER);
         store.setDefault(RecorderPreferenceConstants.WEBUI_RECORDER_DEFAULT_BROWSER, WEBUI_RECORDER_DEFAULT_BROWSER);
+        store.setDefault(RecorderPreferenceConstants.WEBUI_RECORDER_DEFAULT_URL, WEBUI_RECORDER_DEFAULT_URL);
     }
 }
