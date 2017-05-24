@@ -21,10 +21,9 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.console.constants.ConsoleMessageConstants;
 import com.kms.katalon.console.constants.ConsoleStringConstants;
-import com.kms.katalon.console.utils.ProxyInformation;
 import com.kms.katalon.console.utils.ProxyUtil;
 import com.kms.katalon.constants.MessageConstants;
-import com.kms.katalon.constants.StringConstants;
+import com.kms.katalon.core.network.ProxyInformation;
 
 public class ProxyConfigurationDialog extends TitleAreaDialog {
     private Text txtAddress;
@@ -136,7 +135,11 @@ public class ProxyConfigurationDialog extends TitleAreaDialog {
             @Override
             public void verifyText(VerifyEvent e) {
                 String text = txtPort.getText();
-                String newText = text.substring(0, e.start) + e.text + text.substring(e.start);
+                String newText = text.substring(0, e.start) + e.text + text.substring(e.end);
+                if (StringUtils.isEmpty(newText)) {
+                    e.doit = true;
+                    return;
+                }
                 try {
                     int val = Integer.parseInt(newText);
                     e.doit = val >= 0 && val <= MAX_PORT_VALUE;
@@ -172,11 +175,10 @@ public class ProxyConfigurationDialog extends TitleAreaDialog {
         lblPassword.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
         lblPassword.setText(MessageConstants.LBL_PASSWORD);
 
-        txtPass = new Text(innerComposite, SWT.BORDER);
+        txtPass = new Text(innerComposite, SWT.BORDER | SWT.PASSWORD);
         GridData gdPass = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
         gdPass.widthHint = 207;
         txtPass.setLayoutData(gdPass);
-        txtPass.setEchoChar(StringConstants.PASSWORD_CHAR_MASK);
         
         setTitle(MessageConstants.TITLE_DLG_PROXY_SETTING);
         setMessage(MessageConstants.MSG_DLG_PROXY_SETTING, IMessageProvider.INFORMATION);

@@ -91,21 +91,33 @@ public class BuiltInMethodNodeFactory {
         return new ArrayList<KeywordMethod>(findKeywordMethodClassByName(className));
     }
 
-    public static List<KeywordMethod> getFilteredMethods(String className, boolean excludeFlowControl) {
-        List<KeywordMethod> kwMethods = getFilteredMethods(className);
-        if (excludeFlowControl) {
-            List<KeywordMethod> excludedMethods = new ArrayList<KeywordMethod>();
-            for (KeywordMethod kwMethod : kwMethods) {
-                for (KeywordParameter kwParam : kwMethod.getParameters()) {
-                    if (kwParam.isFailureHandlingParam()) {
-                        excludedMethods.add(kwMethod);
-                        break;
-                    }
-                }
+    private static boolean hasFailureHandling(KeywordMethod kwMethod) {
+        for (KeywordParameter kwParam : kwMethod.getParameters()) {
+            if (kwParam.isFailureHandlingParam()) {
+                return true;
             }
-            kwMethods.removeAll(excludedMethods);
         }
-        return kwMethods;
+        return false;
+    }
+
+    public static List<KeywordMethod> getFilteredMethods(String className, boolean excludeFlowControl) {
+        Map<String, KeywordMethod> storageFilteredMethods = new HashMap<>();
+        for (KeywordMethod kwMethod : getFilteredMethods(className)) {
+            String kwName = kwMethod.getName();
+            if (!storageFilteredMethods.containsKey(kwName) && 
+                    (!excludeFlowControl || !hasFailureHandling(kwMethod))) {
+                storageFilteredMethods.put(kwName, kwMethod);
+            }
+        }
+        List<KeywordMethod> filteredMethods = new ArrayList<>(storageFilteredMethods.values());
+        Collections.sort(filteredMethods, new Comparator<KeywordMethod>() {
+            @Override
+            public int compare(KeywordMethod kwA, KeywordMethod kwB) {
+                return kwA.getName().compareTo(kwB.getName());
+            }
+        });
+        
+        return filteredMethods;
     }
 
     public static KeywordMethod findCallTestCaseMethod(String className) {

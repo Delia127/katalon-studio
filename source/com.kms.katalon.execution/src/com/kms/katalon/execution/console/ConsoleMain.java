@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -40,7 +42,7 @@ public class ConsoleMain {
     public static final String PROJECT_PK_OPTION = "projectPath";
 
     public final static String TESTSUITE_ID_OPTION = "testSuitePath";
-    
+
     public final static String TESTSUITE_COLLECTION_ID_OPTION = "testSuiteCollectionPath";
 
     public final static String BROWSER_TYPE_OPTION = "browserType";
@@ -69,10 +71,10 @@ public class ConsoleMain {
             setDefaultExecutionPropertiesOfProject(project, consoleOptionValueMap);
 
             if (options.has(PROPERTIES_FILE_OPTION)) {
-                readPropertiesFileAndSetToConsoleOptionValueMap(
-                        String.valueOf(options.valueOf(PROPERTIES_FILE_OPTION)), consoleOptionValueMap);
+                readPropertiesFileAndSetToConsoleOptionValueMap(String.valueOf(options.valueOf(PROPERTIES_FILE_OPTION)),
+                        consoleOptionValueMap);
                 List<String> addedArguments = buildArgumentsForPropertiesFile(arguments, consoleOptionValueMap);
-                parser.parse(addedArguments.toArray(new String[addedArguments.size()]));
+                options = parser.parse(addedArguments.toArray(new String[addedArguments.size()]));
             }
             consoleExecutor.execute(project, options);
 
@@ -85,7 +87,7 @@ public class ConsoleMain {
             LogUtil.printErrorLine(e.getMessage());
             return LauncherResult.RETURN_CODE_INVALID_ARGUMENT;
         } catch (Exception e) {
-            LogUtil.printErrorLine(e.getMessage());
+            LogUtil.printErrorLine(ExceptionUtils.getStackTrace(e));
             return LauncherResult.RETURN_CODE_ERROR;
         } finally {
             LauncherManager.getInstance().removeAllTerminated();
@@ -94,10 +96,9 @@ public class ConsoleMain {
 
     private static List<String> buildArgumentsForPropertiesFile(String[] arguments,
             Map<String, String> consoleOptionValueMap) {
-        List<String> addedArguments = Arrays.asList(arguments);
+        List<String> addedArguments = new ArrayList<>(Arrays.asList(arguments));
         consoleOptionValueMap.forEach((key, value) -> {
-            addedArguments.add(key);
-            addedArguments.add(value);
+            addedArguments.add("-" + key + "=" + value);
         });
         return addedArguments;
     }
@@ -123,8 +124,8 @@ public class ConsoleMain {
                     PROJECT_PK_OPTION);
         }
         if (projectPath == null) {
-            throw new InvalidConsoleArgumentException(MessageFormat.format(
-                    StringConstants.MNG_PRT_MISSING_REQUIRED_ARG, PROJECT_PK_OPTION));
+            throw new InvalidConsoleArgumentException(
+                    MessageFormat.format(StringConstants.MNG_PRT_MISSING_REQUIRED_ARG, PROJECT_PK_OPTION));
         }
         return getProject(projectPath);
     }
@@ -183,9 +184,9 @@ public class ConsoleMain {
             try {
                 progressDelay = Integer.valueOf(progressDelayString);
             } catch (NumberFormatException e) {
-                LogUtil.printErrorLine(MessageFormat.format(
-                        StringConstants.MNG_PRT_INVALID_ARG_CANNOT_PARSE_X_FOR_Y_TO_INTEGER, progressDelayString,
-                        SHOW_STATUS_DELAY_OPTION));
+                LogUtil.printErrorLine(
+                        MessageFormat.format(StringConstants.MNG_PRT_INVALID_ARG_CANNOT_PARSE_X_FOR_Y_TO_INTEGER,
+                                progressDelayString, SHOW_STATUS_DELAY_OPTION));
             }
         }
         waitForExecutionToFinish(progressDelay);
@@ -221,8 +222,8 @@ public class ConsoleMain {
         }
         ProjectEntity projectEntity = ProjectController.getInstance().openProject(projectPk);
         if (projectEntity == null) {
-            throw new InvalidConsoleArgumentException(MessageFormat.format(
-                    StringConstants.MNG_PRT_INVALID_ARG_CANNOT_FIND_PROJ_X, projectPk));
+            throw new InvalidConsoleArgumentException(
+                    MessageFormat.format(StringConstants.MNG_PRT_INVALID_ARG_CANNOT_FIND_PROJ_X, projectPk));
         }
         return projectEntity;
     }

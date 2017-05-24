@@ -1,6 +1,5 @@
 package com.kms.katalon.composer.report.parts;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
@@ -82,6 +81,7 @@ import com.kms.katalon.core.logging.model.MessageLogRecord;
 import com.kms.katalon.core.logging.model.TestCaseLogRecord;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.core.util.internal.DateUtil;
+import com.kms.katalon.core.util.internal.PathUtil;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 
@@ -1007,7 +1007,7 @@ public class ReportPartTestLogView {
             if (messageLog.getAttachment() != null) {
 
                 selectedTestLogImage = new Image(selectedTestLogCanvas.getDisplay(),
-                        getReport().getLocation() + File.separator + messageLog.getAttachment());
+                        PathUtil.relativeToAbsolutePath(messageLog.getAttachment(), getReport().getLocation()));
                 compositeSTLSImageView.setMinSize(
                         new Point(selectedTestLogImage.getBounds().width, selectedTestLogImage.getBounds().height));
 

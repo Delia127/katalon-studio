@@ -976,13 +976,19 @@ public class RecorderDialog extends AbstractDialog implements EventHandler {
 
             @Override
             protected void setValue(Object element, Object value) {
-                if (value instanceof Integer) {
-                    HTMLActionMapping actionMapping = (HTMLActionMapping) element;
-                    IHTMLAction newAction = htmlActions.get((int) value);
-                    if (!actionMapping.getAction().getName().equals(newAction.getName())) {
-                        actionMapping.setAction(newAction);
-                        actionTableViewer.refresh(actionMapping);
-                    }
+                if (!(value instanceof Integer)) {
+                    return;
+                }
+
+                HTMLActionMapping actionMapping = (HTMLActionMapping) element;
+                int selectionIndex = (int) value;
+                if (selectionIndex < 0 || selectionIndex >= htmlActions.size()) {
+                    return;
+                }
+                IHTMLAction newAction = htmlActions.get(selectionIndex);
+                if (!actionMapping.getAction().getName().equals(newAction.getName())) {
+                    actionMapping.setAction(newAction);
+                    actionTableViewer.refresh(actionMapping);
                 }
             }
 

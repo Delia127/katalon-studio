@@ -48,7 +48,7 @@ public class MobileElementPropertiesComposite {
         this.dialog = dialog;
     }
 
-    /* package */void setEditingElement(CapturedMobileElement editingElement) {
+    public void setEditingElement(CapturedMobileElement editingElement) {
         this.editingElement = editingElement;
         refreshAttributesTable();
     }
@@ -56,7 +56,7 @@ public class MobileElementPropertiesComposite {
     /**
      * @wbp.parser.entryPoint
      */
-    /* package */void createObjectPropertiesComposite(Composite parent) {
+    public void createObjectPropertiesComposite(Composite parent) {
         Composite objectPropertiesComposite = new Composite(parent, SWT.NONE);
         GridLayout glObjectPropertiesComposite = new GridLayout();
         glObjectPropertiesComposite.horizontalSpacing = 10;

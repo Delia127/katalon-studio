@@ -68,5 +68,6 @@ Require-Bundle: org.eclipse.e4.core.contexts,
  com.kms.katalon.core.webui,
  com.kms.katalon.selenium-standalone,
  io.appium.java-client,
- com.kms.katalon.core.mobile
+ com.kms.katalon.core.mobile,
+ org.apache.commons.lang3
 Bundle-Activator: com.kms.katalon.execution.addon.ExecutionBundleActivator

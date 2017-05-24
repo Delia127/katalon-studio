@@ -11,8 +11,8 @@ import org.eclipse.swt.widgets.Shell;
 
 public class CWizardDialog extends WizardDialog {
 
-    /** Default height of dialog is 250 */
-    private int height = 250;
+    /** Default height of dialog is 300 */
+    private int height = 300;
 
     public CWizardDialog(Shell parentShell, IWizard newWizard) {
         super(parentShell, newWizard);

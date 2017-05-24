@@ -33,7 +33,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
-import org.javalite.http.Request;
 
 import com.kms.katalon.composer.components.impl.dialogs.ProgressMonitorDialogWithThread;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -44,8 +43,10 @@ import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.view.ExpandableComposite;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.WebServiceController;
+import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
+import com.kms.katalon.execution.preferences.ProxyPreferences;
 
 public class RestServicePart extends WebServicePart {
 
@@ -94,20 +95,13 @@ public class RestServicePart extends WebServicePart {
                                     try {
                                         tabResponse.getParent().setSelection(tabResponse);
 
-                                        Request<?> response = WebServiceController.getInstance()
-                                                .sendRESTfulRequest(getWSRequestObject());
-                                        if (response == null) {
-                                            return;
-                                        }
+                                        String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
+                                        ResponseObject responseObject = WebServiceController.getInstance().sendRequest(
+                                                getWSRequestObject(), projectDir, ProxyPreferences.getProxyInformation());
 
-                                        responseHeader.setDocument(createDocument(getPrettyHeaders(response)));
+                                        responseHeader.setDocument(createDocument(getPrettyHeaders(responseObject)));
 
-                                        String bodyContent = null;
-                                        try {
-                                            bodyContent = response.text();
-                                        } catch (Exception e) {
-                                            // Bad request. Ignore this.
-                                        }
+                                        String bodyContent = responseObject.getResponseText();
 
                                         if (bodyContent == null) {
                                             return;

@@ -6,8 +6,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.GeneralSecurityException;
 import java.util.Map;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
 import javax.wsdl.Definition;
 import javax.wsdl.WSDLException;
 import javax.wsdl.extensions.http.HTTPOperation;
@@ -18,6 +21,7 @@ import javax.wsdl.xml.WSDLReader;
 import javax.xml.namespace.QName;
 
 import org.apache.bsf.util.IOUtils;
+import org.apache.commons.lang.StringUtils;
 
 import com.ibm.wsdl.BindingOperationImpl;
 import com.ibm.wsdl.PortImpl;
@@ -28,12 +32,13 @@ import com.ibm.wsdl.extensions.soap.SOAPAddressImpl;
 import com.ibm.wsdl.extensions.soap.SOAPBindingImpl;
 import com.ibm.wsdl.extensions.soap12.SOAP12AddressImpl;
 import com.ibm.wsdl.extensions.soap12.SOAP12BindingImpl;
+import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.webservice.constants.CoreWebserviceMessageConstants;
 import com.kms.katalon.core.webservice.exception.WebServiceException;
 
-public class SoapClient implements Requestor {
+public class SoapClient extends BasicRequestor {
 
     private String serviceName;
 
@@ -45,7 +50,8 @@ public class SoapClient implements Requestor {
 
     private RequestObject requestObject;
 
-    public SoapClient() {
+    public SoapClient(String projectDir, ProxyInformation proxyInformation) {
+        super(projectDir, proxyInformation);
     }
 
     private void parseWsdl() throws WSDLException, WebServiceException {
@@ -104,14 +110,28 @@ public class SoapClient implements Requestor {
         }
     }
 
+    private boolean isHttps(RequestObject request) {
+        return StringUtils.defaultString(request.getWsdlAddress()).toLowerCase().startsWith("https");
+    }
+
     @Override
-    public ResponseObject send(RequestObject request) throws IOException, WSDLException, WebServiceException {
+    public ResponseObject send(RequestObject request)
+            throws IOException, WSDLException, WebServiceException, GeneralSecurityException {
         this.requestObject = request;
         parseWsdl();
+        if (isHttps(request)) {
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, getTrustManagers(), new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+        }
+
         ResponseObject responseObject = new ResponseObject();
 
         URL oURL = new URL(endPoint);
-        HttpURLConnection con = (HttpURLConnection) oURL.openConnection();
+        HttpURLConnection con = (HttpURLConnection) oURL.openConnection(getProxy());
+        if (isHttps(request)) {
+            ((HttpsURLConnection) con).setHostnameVerifier(getHostnameVerifier());
+        }
         con.setRequestMethod("POST");
         con.setDoOutput(true);
 

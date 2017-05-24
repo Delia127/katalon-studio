@@ -194,7 +194,7 @@ public abstract class PreferencePageWithHelp extends PreferencePage {
             int widthHint = convertHorizontalDLUsToPixels(IDialogConstants.BUTTON_WIDTH);
 
             if (createDefaultButton) {
-                String label = JFaceResources.getString("defaults"); //$NON-NLS-1$
+                String label = getDefaultButtonLabel(); //$NON-NLS-1$
                 defaultsButton = new Button(buttonBar, SWT.PUSH);
                 defaultsButton.setText(label);
                 Dialog.applyDialogFont(defaultsButton);
@@ -210,7 +210,7 @@ public abstract class PreferencePageWithHelp extends PreferencePage {
                 });
             }
             if (createApplyButton) {
-                String label = JFaceResources.getString("apply"); //$NON-NLS-1$
+                String label = getApplyButtonLabel(); //$NON-NLS-1$
 
                 applyButton = new Button(buttonBar, SWT.PUSH);
                 applyButton.setText(label);
@@ -238,6 +238,14 @@ public abstract class PreferencePageWithHelp extends PreferencePage {
                 buttonBar.dispose();
             }
         }
+    }
+
+    protected String getDefaultButtonLabel() {
+        return JFaceResources.getString("defaults");
+    }
+
+    protected String getApplyButtonLabel() {
+        return JFaceResources.getString("apply");
     }
 
     protected Composite createDefaultButtonBarComposite(Composite content) {

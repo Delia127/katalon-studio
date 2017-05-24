@@ -71,7 +71,6 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
-import org.javalite.http.Request;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
@@ -103,6 +102,7 @@ import com.kms.katalon.constants.GlobalMessageConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ObjectRepositoryController;
+import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.util.internal.Base64;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
@@ -827,9 +827,9 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
         dirtyable.setDirty(true);
     }
 
-    protected String getPrettyHeaders(Request<?> request) {
+    protected String getPrettyHeaders(ResponseObject reponseObject) {
         StringBuilder sb = new StringBuilder();
-        request.headers().forEach((key, value) -> sb.append((key == null) ? "" : key + ": ")
+        reponseObject.getHeaderFields().forEach((key, value) -> sb.append((key == null) ? "" : key + ": ")
                 .append(StringUtils.join(value, "\t"))
                 .append("\n"));
         return sb.toString();

@@ -192,6 +192,7 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.BUG_24);
         ImageManager.registerImage(IImageKeys.GIT_24);
         ImageManager.registerImage(IImageKeys.MOBILE_OBJECT_SPY_24);
+        ImageManager.registerImage(IImageKeys.MOBILE_RECORD_24);
         ImageManager.registerImage(IImageKeys.NEW_24);
         ImageManager.registerImage(IImageKeys.NEW_CHECKPOINT_24);
         ImageManager.registerImage(IImageKeys.NEW_FOLDER_24);
@@ -219,6 +220,7 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.BUG_DISABLED_24);
         ImageManager.registerImage(IImageKeys.GIT_DISABLED_24);
         ImageManager.registerImage(IImageKeys.MOBILE_OBJECT_SPY_DISABLED_24);
+        ImageManager.registerImage(IImageKeys.MOBILE_RECORD_DISABLED_24);
         ImageManager.registerImage(IImageKeys.NEW_DISABLED_24);
         ImageManager.registerImage(IImageKeys.NEW_CHECKPOINT_DISABLED_24);
         ImageManager.registerImage(IImageKeys.NEW_FOLDER_DISABLED_24);

@@ -2,6 +2,7 @@ package com.kms.katalon.core.webui.keyword.builtin
 
 import groovy.transform.CompileStatic
 
+import java.io.File
 import java.text.MessageFormat
 import java.util.concurrent.TimeUnit
 
@@ -61,20 +62,37 @@ public class TakeScreenshotKeyword extends WebUIAbstractKeyword {
 
     @CompileStatic
     @Override
-    public Object execute(Object ...params) {
-        FailureHandling flowControl = (FailureHandling)(params.length > 0 && params[0] instanceof FailureHandling ? params[0] : RunConfiguration.getDefaultFailureHandling())
-        takeScreenshot(flowControl)
+    public Object execute(Object... params) {
+        switch (params.length) {
+            case 0:
+                return takeScreenshot(defaultFileName(), RunConfiguration.getDefaultFailureHandling());
+            case 1:
+                if (params[0] instanceof String) {
+                    return takeScreenshot((String) params[0], RunConfiguration.getDefaultFailureHandling());
+                }
+                if (params[0] instanceof FailureHandling) {
+                    return takeScreenshot(defaultFileName(), (FailureHandling) params[0]);
+                }
+                break;
+            case 2:
+                return takeScreenshot((String) params[0], (FailureHandling) params[1]);
+        }
+    }
+
+    private String defaultFileName() {
+        return KeywordLogger.getInstance().getLogFolderPath() + File.separator + System.currentTimeMillis() + ".png";
     }
 
     @CompileStatic
-    public void takeScreenshot(FailureHandling flowControl) {
-        WebUIKeywordMain.runKeyword({
-            String screenFileName = FileUtil.takesScreenshot()
+    public String takeScreenshot(String fileName, FailureHandling flowControl) {
+        return WebUIKeywordMain.runKeyword({
+            String screenFileName = FileUtil.takesScreenshot(fileName)
             if (screenFileName != null) {
-                Map<String, String> attributes = new HashMap<String, String>()
-                attributes.put(com.kms.katalon.core.constants.StringConstants.XML_LOG_ATTACHMENT_PROPERTY, screenFileName)
+                Map<String, String> attributes = new HashMap<>()
+                attributes.put(StringConstants.XML_LOG_ATTACHMENT_PROPERTY, screenFileName)
                 logger.logPassed("Taking screenshot successfully", attributes)
             }
+            return screenFileName;
         }, flowControl, true, StringConstants.KW_LOG_WARNING_CANNOT_TAKE_SCREENSHOT)
     }
 }

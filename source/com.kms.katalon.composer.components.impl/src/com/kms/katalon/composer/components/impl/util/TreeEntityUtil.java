@@ -196,6 +196,12 @@ public class TreeEntityUtil {
         if (keywordMethodName == null) {
             return keywordMethodName;
         }
+        if ("uncheck".equals(keywordMethodName)) {
+            return "Un-check";
+        }
+        if ("waitForJQueryLoad".equals(keywordMethodName)) {
+            return "Wait For jQuery Load";
+        }
         return StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(StringUtils.capitalize(keywordMethodName)),
                 " ");
     }

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -108,22 +109,19 @@ public class ConsoleExecutor {
                 if (StringUtils.isNotEmpty(messageBuilder.toString())) {
                     messageBuilder.append(" or ");
                 }
-                messageBuilder.append(getOptions(launcherOption));
+                messageBuilder.append(getRequiredOptionsString(launcherOption));
             }
             return new InvalidConsoleArgumentException(
                     MessageFormat.format(StringConstants.MNG_PRT_MISSING_REQUIRED_ARG, messageBuilder.toString()));
         }
 
-        private String getOptions(LauncherOptionParser launcherOption) {
-            Iterator<ConsoleOption<?>> iterator = launcherOption.getConsoleOptionList().iterator();
-            StringBuilder optionStringBuilder = new StringBuilder();
-            while (iterator.hasNext()) {
-                if (StringUtils.isNotEmpty(optionStringBuilder.toString())) {
-                    optionStringBuilder.append(", ");
-                }
-                optionStringBuilder.append(iterator.next().getOption());
-            }
-            return MessageFormat.format("[{0}]", optionStringBuilder.toString());
+        private String getRequiredOptionsString(LauncherOptionParser launcherOption) {
+            final String requiredOptions = launcherOption.getConsoleOptionList()
+                    .stream()
+                    .filter(option -> option.isRequired())
+                    .map(option -> "-" + option.getOption())
+                    .collect(Collectors.joining(", "));
+            return "{" + requiredOptions + "}";
         }
 
         private boolean evaluate(LauncherOptionParser optionParser, OptionSet optionSet)
@@ -146,7 +144,7 @@ public class ConsoleExecutor {
                 }
                 return false;
             }
-            return true;
+            return anyRequiesExisted;
         }
     }
 }

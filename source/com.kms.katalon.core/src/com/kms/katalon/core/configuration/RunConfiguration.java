@@ -20,6 +20,7 @@ import com.google.gson.reflect.TypeToken;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.model.FailureHandling;
+import com.kms.katalon.core.network.ProxyInformation;
 
 /**
  * Provides access to execution properties and settings
@@ -72,6 +73,8 @@ public class RunConfiguration {
     public static final String SESSION_SERVER_PORT = StringConstants.CONF_SESSION_SERVER_PORT;
 
     public static final String EXCUTION_DEFAULT_FAILURE_HANDLING = StringConstants.CONF_PROPERTY_DEFAULT_FAILURE_HANDLING;
+    
+    public static final String PROXY_PROPERTY = StringConstants.CONF_PROPERTY_PROXY;
 
     private static String settingFilePath;
 
@@ -218,7 +221,9 @@ public class RunConfiguration {
     }
 
     public static Map<String, Object> getDriverSystemProperties(String driverConnectorId) {
-        return (Map<String, Object>) getDriverExecutionProperties(EXECUTION_SYSTEM_PROPERTY).get(driverConnectorId);
+        Map<String, Object> systemProperties = getDriverExecutionProperties(EXECUTION_SYSTEM_PROPERTY);
+        return systemProperties.containsKey(driverConnectorId)
+                ? (Map<String, Object>) systemProperties.get(driverConnectorId) : null;
     }
 
     public static Map<String, Object> getDriverPreferencesProperties(String driverConnectorId) {
@@ -426,5 +431,14 @@ public class RunConfiguration {
     public static Map<String, String> getCollectedTestDataProperties() {
         Map<String, Object> generalProperties = getExecutionGeneralProperties();
         return (Map<String, String>) generalProperties.get(EXECUTION_TEST_DATA_INFO_PROPERTY);
+    }
+
+    public static ProxyInformation getProxyInformation() {
+        Map<String, Object> generalProperties = getExecutionGeneralProperties();
+        if (!generalProperties.containsKey(PROXY_PROPERTY)) {
+            return null;
+        }
+        Gson gson = new Gson();
+        return gson.fromJson((String) generalProperties.get(PROXY_PROPERTY), ProxyInformation.class);
     }
 }

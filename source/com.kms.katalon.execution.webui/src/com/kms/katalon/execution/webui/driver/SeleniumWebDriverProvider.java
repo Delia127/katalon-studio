@@ -28,12 +28,33 @@ public class SeleniumWebDriverProvider {
         Bundle bundleExec = Platform.getBundle(IdConstants.KATALON_WEB_UI_BUNDLE_ID);
         File bundleFile = FileLocator.getBundleFile(bundleExec);
         if (bundleFile.isDirectory()) { // run by IDE
-            return new File(bundleFile + File.separator + DRIVERS_FOLDER_NAME);
+            String osResourcesFolderName = "";
+            switch (getOS()) {
+                case OS_WIN32:
+                    if (getOSArch().equals(ARCH_X86_64)) {
+                        osResourcesFolderName = "win64";
+                    } else {
+                        osResourcesFolderName = "win32";
+                    }
+                    break;
+                case OS_LINUX:
+                    if (getOSArch().equals(ARCH_X86_64)) {
+                        osResourcesFolderName = "linux64";
+                    } else {
+                        osResourcesFolderName = "linux32";
+                    }
+                    break;
+                case OS_MACOSX:
+                    osResourcesFolderName = "macosx";
+                    break;
+            }
+            return new File(bundleFile + File.separator + "os_resources" + File.separator + osResourcesFolderName
+                    + File.separator + DRIVERS_FOLDER_NAME);
         }
         // run as product
         return new File(ClassPathResolver.getConfigurationFolder() + File.separator + DRIVERS_FOLDER_NAME);
     }
-    
+
     private static void makeFileExecutable(String filePath) throws IOException {
         File file = new File(filePath);
         if (file.exists() && file.isFile()) {
@@ -44,7 +65,7 @@ public class SeleniumWebDriverProvider {
             Files.setPosixFilePermissions(file.toPath(), perms);
         }
     }
-    
+
     public static String getChromeDriverPath() {
         try {
             switch (getOS()) {
@@ -77,8 +98,8 @@ public class SeleniumWebDriverProvider {
     }
 
     private static String getChromeDriverPathForMac() throws IOException {
-        String chromeDriverPath = getDriverDirectory().getAbsolutePath() + File.separator + "chromedriver_mac32" + File.separator
-                + "chromedriver";
+        String chromeDriverPath = getDriverDirectory().getAbsolutePath() + File.separator + "chromedriver_mac"
+                + File.separator + "chromedriver";
         makeFileExecutable(chromeDriverPath);
         return chromeDriverPath;
     }
@@ -107,12 +128,13 @@ public class SeleniumWebDriverProvider {
 
     public static String getEdgeDriverPath() {
         try {
-            return getDriverDirectory().getAbsolutePath() + File.separator + "edgedriver" + File.separator + "MicrosoftWebDriver.exe";
+            return getDriverDirectory().getAbsolutePath() + File.separator + "edgedriver" + File.separator
+                    + "MicrosoftWebDriver.exe";
         } catch (IOException ex) {
             return "";
         }
     }
-    
+
     public static String getGeckoDriverPath() throws IOException {
         switch (getOS()) {
             case OS_WIN32:
@@ -122,8 +144,8 @@ public class SeleniumWebDriverProvider {
                 return getDriverDirectory().getAbsolutePath() + File.separator + "firefox_linux64" + File.separator
                         + "wires";
             case OS_MACOSX:
-                String geckoDriverPath = getDriverDirectory().getAbsolutePath() + File.separator + "firefox_mac" + File.separator
-                        + "wires";
+                String geckoDriverPath = getDriverDirectory().getAbsolutePath() + File.separator + "firefox_mac"
+                        + File.separator + "wires";
                 makeFileExecutable(geckoDriverPath);
                 return geckoDriverPath;
         }

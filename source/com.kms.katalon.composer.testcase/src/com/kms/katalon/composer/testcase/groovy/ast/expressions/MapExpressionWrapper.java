@@ -130,6 +130,10 @@ public class MapExpressionWrapper extends ExpressionWrapper {
         mapEntryExpressions.remove(index);
         return true;
     }
+    
+    public void clearExpressions() {
+        mapEntryExpressions.clear();
+    }
 
     public boolean setExpression(MapEntryExpressionWrapper expression, int index) {
         if (expression == null || index < 0 || index > mapEntryExpressions.size()) {

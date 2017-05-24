@@ -8,25 +8,26 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.testobject.TestObjectProperty;
 import com.kms.katalon.core.webservice.support.UrlEncoder;
 
-public class RestfulClient implements Requestor {
+public class RestfulClient extends BasicRequestor {
 
-    private static final String DEFAULT_USER_AGENT = "Mozilla/5.0";
+    private static final String DEFAULT_USER_AGENT = "Katalon Studio";
 
-    private static final String DEFAULT_ACCEPT_CONTENT_TYPE = "application/json";
+    private static final String HTTP_USER_AGENT = "User-Agent";
+    
+    public RestfulClient(String projectDir, ProxyInformation proxyInfomation) {
+        super(projectDir, proxyInfomation);
+    }
 
     @Override
     public ResponseObject send(RequestObject request) throws Exception {
@@ -43,27 +44,7 @@ public class RestfulClient implements Requestor {
     }
 
     private ResponseObject sendGetRequest(RequestObject request) throws Exception {
-        // If there are some parameters, they should be append after the Service URL
-        processRequestParams(request);
-
-        URL obj = new URL(request.getRestUrl());
-        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-        con.setRequestMethod("GET");
-
-        // Default if not set
-        con.setRequestProperty("User-Agent", DEFAULT_USER_AGENT);
-        // RESTFul usually return JSON, but it is not always, if user not set it, default is JSON
-        con.setRequestProperty("Content-Type", DEFAULT_ACCEPT_CONTENT_TYPE);
-        for (TestObjectProperty property : request.getHttpHeaderProperties()) {
-            con.setRequestProperty(property.getName(), property.getValue());
-        }
-
-        return response(con);
-    }
-
-    private ResponseObject sendPostRequest(RequestObject request) throws Exception {
-
-        if (request.getRestUrl() != null && request.getRestUrl().toLowerCase().startsWith("https")) {
+        if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith("https")) {
             SSLContext sc = SSLContext.getInstance("SSL");
             sc.init(null, getTrustManagers(), new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
@@ -73,15 +54,40 @@ public class RestfulClient implements Requestor {
         processRequestParams(request);
 
         URL url = new URL(request.getRestUrl());
-        HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
-        if (request.getRestUrl() != null && request.getRestUrl().toLowerCase().startsWith("https")) {
+        HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection(getProxy());
+        if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith("https")) {
             ((HttpsURLConnection) httpConnection).setHostnameVerifier(getHostnameVerifier());
         }
         httpConnection.setRequestMethod(request.getRestRequestMethod());
 
         // Default if not set
-        httpConnection.setRequestProperty("User-Agent", DEFAULT_USER_AGENT);
-        httpConnection.setRequestProperty("Content-Type", DEFAULT_ACCEPT_CONTENT_TYPE);
+        httpConnection.setRequestProperty(HTTP_USER_AGENT, DEFAULT_USER_AGENT);
+        for (TestObjectProperty property : request.getHttpHeaderProperties()) {
+            httpConnection.setRequestProperty(property.getName(), property.getValue());
+        }
+
+        return response(httpConnection);
+    }
+
+    private ResponseObject sendPostRequest(RequestObject request) throws Exception {
+        if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith("https")) {
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, getTrustManagers(), new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+        }
+
+        // If there are some parameters, they should be append after the Service URL
+        processRequestParams(request);
+
+        URL url = new URL(request.getRestUrl());
+        HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection(getProxy());
+        if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith("https")) {
+            ((HttpsURLConnection) httpConnection).setHostnameVerifier(getHostnameVerifier());
+        }
+        httpConnection.setRequestMethod(request.getRestRequestMethod());
+
+        // Default if not set
+        httpConnection.setRequestProperty(HTTP_USER_AGENT, DEFAULT_USER_AGENT);
         for (TestObjectProperty property : request.getHttpHeaderProperties()) {
             httpConnection.setRequestProperty(property.getName(), property.getValue());
         }
@@ -97,8 +103,7 @@ public class RestfulClient implements Requestor {
     }
 
     private ResponseObject sendDeleteRequest(RequestObject request) throws Exception {
-
-        if (request.getRestUrl() != null && request.getRestUrl().toLowerCase().startsWith("https")) {
+        if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith("https")) {
             SSLContext sc = SSLContext.getInstance("SSL");
             sc.init(null, getTrustManagers(), new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
@@ -108,44 +113,19 @@ public class RestfulClient implements Requestor {
         processRequestParams(request);
 
         URL url = new URL(request.getRestUrl());
-        HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
-        if (request.getRestUrl() != null && request.getRestUrl().toLowerCase().startsWith("https")) {
+        HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection(getProxy());
+        if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith("https")) {
             ((HttpsURLConnection) httpConnection).setHostnameVerifier(getHostnameVerifier());
         }
 
         httpConnection.setRequestMethod(request.getRestRequestMethod());
         // Default if not set
-        httpConnection.setRequestProperty("User-Agent", DEFAULT_USER_AGENT);
-        httpConnection.setRequestProperty("Content-Type", DEFAULT_ACCEPT_CONTENT_TYPE);
+        httpConnection.setRequestProperty(HTTP_USER_AGENT, DEFAULT_USER_AGENT);
         for (TestObjectProperty property : request.getHttpHeaderProperties()) {
             httpConnection.setRequestProperty(property.getName(), property.getValue());
         }
 
         return response(httpConnection);
-    }
-
-    private TrustManager[] getTrustManagers() {
-        TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
-            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                return null;
-            }
-
-            public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
-            }
-
-            public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
-            }
-        } };
-        return trustAllCerts;
-    }
-
-    private HostnameVerifier getHostnameVerifier() {
-        HostnameVerifier hv = new HostnameVerifier() {
-            public boolean verify(String urlHostName, SSLSession session) {
-                return true;
-            }
-        };
-        return hv;
     }
 
     private static void processRequestParams(RequestObject request) throws MalformedURLException {
@@ -169,18 +149,19 @@ public class RestfulClient implements Requestor {
     }
 
     private ResponseObject response(HttpURLConnection conn) throws Exception {
-
         if (conn == null) {
             return null;
         }
 
         int statusCode = conn.getResponseCode();
         StringBuffer sb = new StringBuffer();
+
+        char[] buffer = new char[1024];
         try (InputStream inputStream = (statusCode >= 400) ? conn.getErrorStream() : conn.getInputStream();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
-            String inputLine;
-            while ((inputLine = reader.readLine()) != null) {
-                sb.append(inputLine);
+            int len = 0;
+            while ((len = reader.read(buffer)) != -1) {
+                sb.append(buffer, 0, len);
             }
         }
 

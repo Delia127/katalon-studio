@@ -10,8 +10,8 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.osgi.framework.BundleException;
 
-import com.kms.katalon.console.addons.MacOSAddon;
 import com.kms.katalon.composer.components.application.ApplicationSingleton;
+import com.kms.katalon.console.addons.MacOSAddon;
 import com.kms.katalon.console.utils.ApplicationInfo;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.logging.LogUtil;
@@ -33,6 +33,7 @@ public class Application implements IApplication {
     public static final String RUN_MODE_OPTION_CONSOLE = "console";
 
     private static final Object RUN_MODE_OPTION_SELFTEST = "selfTest";
+
     /*
      * (non-Javadoc)
      * @see org.eclipse.equinox.app.IApplication#start(org.eclipse.equinox.app.
@@ -55,7 +56,7 @@ public class Application implements IApplication {
                 context.applicationRunning();
                 return com.kms.katalon.console.application.Application.runConsole(appArgs);
             case SELFTEST:
-                return runSelfTest();    
+                return runSelfTest();
             case GUI:
                 return runGUI();
             default:
@@ -78,13 +79,13 @@ public class Application implements IApplication {
         OptionSet options = parser.parse(appArgs);
         return options;
     }
-    
+
     private int runSelfTest() {
         ApplicationSingleton.getInstance().enableServerMode();
         new KatServer().start();
         return runGUI();
     }
-    
+
     private int runGUI() {
         int returnCode = internalRunGUI();
         if (returnCode == PlatformUI.RETURN_RESTART) {

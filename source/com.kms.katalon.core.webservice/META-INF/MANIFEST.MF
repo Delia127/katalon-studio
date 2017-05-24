@@ -12,6 +12,8 @@ Require-Bundle: org.codehaus.groovy,
  wsdl4j,
  org.apache.commons.lang,
  org.eclipse.osgi
-Export-Package: com.kms.katalon.core.webservice.contribution,
+Export-Package: com.kms.katalon.core.webservice.common,
+ com.kms.katalon.core.webservice.contribution,
  com.kms.katalon.core.webservice.keyword,
+ com.kms.katalon.core.webservice.setting,
  com.kms.katalon.core.webservice.support

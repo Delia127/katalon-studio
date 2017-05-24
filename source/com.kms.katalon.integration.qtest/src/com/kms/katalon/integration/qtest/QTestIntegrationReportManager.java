@@ -147,11 +147,11 @@ public class QTestIntegrationReportManager {
      * 
      * @param projectDir
      * @param preparedTestCaseResult
-     *            the prepared test log that's formated by user
+     * the prepared test log that's formated by user
      * @param tempDir
-     *            qTest folder inside Katalon temporary folder used for creating ZIP file
+     * qTest folder inside Katalon temporary folder used for creating ZIP file
      * @param logFolder
-     *            the folder that contains the ZIP file a.k.a attachment
+     * the folder that contains the ZIP file a.k.a attachment
      * @return
      * @throws QTestException
      * @throws IOException
@@ -159,8 +159,8 @@ public class QTestIntegrationReportManager {
      * @throws URISyntaxException
      */
     public static QTestLog uploadTestLog(String projectDir, QTestLogUploadedPreview preparedTestCaseResult,
-            String tempDir, TestSuiteLogRecord testSuiteLogRecord) throws QTestException, IOException,
-            JasperReportException, URISyntaxException {
+            String tempDir, TestSuiteLogRecord testSuiteLogRecord)
+            throws QTestException, IOException, JasperReportException, URISyntaxException {
 
         QTestProject qTestProject = preparedTestCaseResult.getQTestProject();
         QTestTestCase qTestCase = preparedTestCaseResult.getQTestCase();
@@ -172,26 +172,27 @@ public class QTestIntegrationReportManager {
         SimpleDateFormat sdf = new SimpleDateFormat(DateUtil.DATE_FORMAT);
         String startDate = sdf.format(testCaseLogRecord.getStartTime());
         String endDate = sdf.format(testCaseLogRecord.getEndTime());
-        //Should report for latest version? If not, submit to the current version kept by Katalon
+        // Should report for latest version? If not, submit to the current version kept by Katalon
         Long testLongVersionId = null;
-        if(QTestSettingStore.isSubmitResultToLatestVersionActive(projectDir) == false){
-        	testLongVersionId = qTestCase.getVersionId();	
-        }
-        
-        String message = (qTestLog != null) ? qTestLog.getMessage() : testCaseLogRecord.getMessage();
-        if(testSuiteLogRecord.getRunData() != null && testSuiteLogRecord.getRunData().containsKey("browser")){
-        	message += "\nBrowser: " + testSuiteLogRecord.getRunData().get("browser");	
+        if (QTestSettingStore.isSubmitResultToLatestVersionActive(projectDir) == false) {
+            testLongVersionId = qTestCase.getVersionId();
         }
 
-        IQTestCredential credential = QTestSettingCredential.getCredential(projectDir);;
+        String message = (qTestLog != null) ? qTestLog.getMessage() : testCaseLogRecord.getMessage();
+        if (testSuiteLogRecord.getRunData() != null && testSuiteLogRecord.getRunData().containsKey("browser")) {
+            message += "\nBrowser: " + testSuiteLogRecord.getRunData().get("browser");
+        }
+
+        IQTestCredential credential = QTestSettingCredential.getCredential(projectDir);
+        ;
 
         TestStatusValue testCaseStatus = testCaseLogRecord.getStatus().getStatusValue();
 
         QTestExecutionStatus qTestExStatus = getMappingStatus(qTestProject.getId(), credential, testCaseStatus);
         if (qTestExStatus == null) {
-            throw new QTestInvalidFormatException(MessageFormat.format(
-                    QTestMessageConstants.QTEST_EXC_INVALID_LOG_STATUS, testCaseLogRecord.getStatus().getStatusValue()
-                            .name()));
+            throw new QTestInvalidFormatException(
+                    MessageFormat.format(QTestMessageConstants.QTEST_EXC_INVALID_LOG_STATUS,
+                            testCaseLogRecord.getStatus().getStatusValue().name()));
         }
 
         Map<String, Object> statusProperties = new HashMap<String, Object>();
@@ -224,11 +225,11 @@ public class QTestIntegrationReportManager {
                         if (!isValidFileToAttach(reportEntry, projectDir)) {
                             continue;
                         }
-                        QTestReportFormatType format = QTestReportFormatType.getTypeByExtension(FilenameUtils
-                                .getExtension(reportEntry.getAbsolutePath()));
+                        QTestReportFormatType format = QTestReportFormatType
+                                .getTypeByExtension(FilenameUtils.getExtension(reportEntry.getAbsolutePath()));
                         if (format == QTestReportFormatType.LOG) {
-                            //Extract log for this test case
-                            if(!extractTestCaseLog(testSuiteLogRecord, testCaseLogRecord, logTempFolder)){
+                            // Extract log for this test case
+                            if (!extractTestCaseLog(testSuiteLogRecord, testCaseLogRecord, logTempFolder)) {
                                 moveReportFile(reportEntry, new File(logTempFolder, reportEntry.getName()));
                             }
                         }
@@ -247,12 +248,16 @@ public class QTestIntegrationReportManager {
             bodyProperties.put("attachments", new JsonArray(jsonObjects));
             attachmentIncluded = true;
 
-            FileUtils.cleanDirectory(logTempFolder);
+            try {
+                FileUtils.cleanDirectory(logTempFolder);
+            } catch (IOException e) {
+                LogUtil.logError(e);
+            }
         }
 
         // upload result of the given test run
-        String result = uploadTestResult(credential, qTestProject.getId(), qTestRun.getId(), new JsonObject(
-                bodyProperties).toString());
+        String result = uploadTestResult(credential, qTestProject.getId(), qTestRun.getId(),
+                new JsonObject(bodyProperties).toString());
 
         try {
             if (result != null && !result.isEmpty()) {
@@ -276,31 +281,32 @@ public class QTestIntegrationReportManager {
     }
 
     private static void generateReportFile(QTestReportFormatType format, File destReportFile,
-            TestCaseLogRecord testCaseLogRecord, TestSuiteLogRecord testSuiteLR) throws IOException,
-            JasperReportException, URISyntaxException {
+            TestCaseLogRecord testCaseLogRecord, TestSuiteLogRecord testSuiteLR)
+            throws IOException, JasperReportException, URISyntaxException {
         switch (format) {
-        case CSV:
-            ReportUtil.writeLogRecordToCSVFile(testSuiteLR, destReportFile,
-                    Arrays.asList(new ILogRecord[] { testCaseLogRecord }));
-            break;
-        case HTML:
-            ReportUtil.writeLogRecordToHTMLFile(testSuiteLR, destReportFile,
-                    Arrays.asList(new ILogRecord[] { testCaseLogRecord }));
-            break;
-        case PDF:
-            TestCasePdfGenerator generator = new TestCasePdfGenerator(testCaseLogRecord, testSuiteLR.getLogFolder());
-            generator.exportToPDF(destReportFile.getAbsolutePath());
-            break;
-        default:
-            break;
+            case CSV:
+                ReportUtil.writeLogRecordToCSVFile(testSuiteLR, destReportFile,
+                        Arrays.asList(new ILogRecord[] { testCaseLogRecord }));
+                break;
+            case HTML:
+                ReportUtil.writeLogRecordToHTMLFile(testSuiteLR, destReportFile,
+                        Arrays.asList(new ILogRecord[] { testCaseLogRecord }));
+                break;
+            case PDF:
+                TestCasePdfGenerator generator = new TestCasePdfGenerator(testCaseLogRecord,
+                        testSuiteLR.getLogFolder());
+                generator.exportToPDF(destReportFile.getAbsolutePath());
+                break;
+            default:
+                break;
         }
 
     }
 
     private static boolean isValidFileToAttach(File file, String projectDir) {
         String fileExt = FilenameUtils.getExtension(file.getAbsolutePath());
-        return QTestSettingStore.getFormatReportTypes(projectDir).contains(
-                QTestReportFormatType.getTypeByExtension(fileExt));
+        return QTestSettingStore.getFormatReportTypes(projectDir)
+                .contains(QTestReportFormatType.getTypeByExtension(fileExt));
     }
 
     private static JsonObject getAttachmentJsonObject(String filePath) throws QTestException, IOException {
@@ -308,22 +314,23 @@ public class QTestIntegrationReportManager {
         String contentType = "";
         if (format == null) {
             contentType = "application/octet-stream";
-        }
-        switch (format) {
-        case CSV:
-            contentType = "text/csv";
-            break;
-        case HTML:
-            contentType = "text/html";
-            break;
-        case LOG:
-            contentType = "application/xml";
-            break;
-        case PDF:
-            contentType = "application/pdf";
-            break;
-        default:
-            break;
+        } else {
+            switch (format) {
+                case CSV:
+                    contentType = "text/csv";
+                    break;
+                case HTML:
+                    contentType = "text/html";
+                    break;
+                case LOG:
+                    contentType = "application/xml";
+                    break;
+                case PDF:
+                    contentType = "application/pdf";
+                    break;
+                default:
+                    break;
+            }
         }
         Map<String, Object> attachmentMap = new LinkedHashMap<String, Object>();
         attachmentMap.put("name", FilenameUtils.getName(filePath));
@@ -336,17 +343,17 @@ public class QTestIntegrationReportManager {
     private static boolean isAvailableForSendingAttachment(TestStatusValue status, String projectDir) {
         QTestAttachmentSendingType statusSendingType = null;
         switch (status) {
-        case ERROR:
-            statusSendingType = QTestAttachmentSendingType.SEND_IF_FAILS;
-            break;
-        case FAILED:
-            statusSendingType = QTestAttachmentSendingType.SEND_IF_FAILS;
-            break;
-        case PASSED:
-            statusSendingType = QTestAttachmentSendingType.SEND_IF_PASSES;
-            break;
-        default:
-            break;
+            case ERROR:
+                statusSendingType = QTestAttachmentSendingType.SEND_IF_FAILS;
+                break;
+            case FAILED:
+                statusSendingType = QTestAttachmentSendingType.SEND_IF_FAILS;
+                break;
+            case PASSED:
+                statusSendingType = QTestAttachmentSendingType.SEND_IF_PASSES;
+                break;
+            default:
+                break;
         }
 
         return QTestSettingStore.getAttachmentSendingTypes(projectDir).contains(statusSendingType);
@@ -355,17 +362,17 @@ public class QTestIntegrationReportManager {
     public static boolean isAvailableForSendingResult(TestStatusValue status, String projectDir) {
         QTestResultSendingType statusSendingType = null;
         switch (status) {
-        case ERROR:
-            statusSendingType = QTestResultSendingType.SEND_IF_FAILS;
-            break;
-        case FAILED:
-            statusSendingType = QTestResultSendingType.SEND_IF_FAILS;
-            break;
-        case PASSED:
-            statusSendingType = QTestResultSendingType.SEND_IF_PASSES;
-            break;
-        default:
-            break;
+            case ERROR:
+                statusSendingType = QTestResultSendingType.SEND_IF_FAILS;
+                break;
+            case FAILED:
+                statusSendingType = QTestResultSendingType.SEND_IF_FAILS;
+                break;
+            case PASSED:
+                statusSendingType = QTestResultSendingType.SEND_IF_PASSES;
+                break;
+            default:
+                break;
         }
 
         if (statusSendingType == null) {
@@ -379,17 +386,18 @@ public class QTestIntegrationReportManager {
      * Uploads the request that contains all the parameters to qTest via qTest API Returns the response body content
      * 
      * @param credential
-     *            qTest credential
+     * qTest credential
      * @param projectId
      * @param testRunId
-     * @param postBody 
+     * @param postBody
      * @return the response body content
      * @throws QTestException
-     *             thrown if system cannot send request
+     * thrown if system cannot send request
      */
-    public static String uploadTestResult(IQTestCredential credential, long projectId, long testRunId,
-            String postBody) throws QTestException {
-        String url = String.format(credential.getServerUrl() + "/api/v3/projects/%s/test-runs/%s/test-logs", projectId, testRunId);
+    public static String uploadTestResult(IQTestCredential credential, long projectId, long testRunId, String postBody)
+            throws QTestException {
+        String url = String.format(credential.getServerUrl() + "/api/v3/projects/%s/test-runs/%s/test-logs", projectId,
+                testRunId);
         String resText = QTestAPIRequestHelper.sendPostRequestViaAPI(url, credential.getToken(), postBody);
         return resText;
     }
@@ -398,7 +406,7 @@ public class QTestIntegrationReportManager {
      * Uploads the request that contains all the parameters to qTest via qTest API Returns the response body content
      * 
      * @param credential
-     *            qTest credential
+     * qTest credential
      * @param projectId
      * @param postBody
      * @return
@@ -428,7 +436,7 @@ public class QTestIntegrationReportManager {
      * 
      * @param projectId
      * @param credential
-     *            qTest credential
+     * qTest credential
      * @param status
      * @return
      * @throws QTestException
@@ -450,7 +458,7 @@ public class QTestIntegrationReportManager {
      * 
      * @param projectId
      * @param credential
-     *            qTest credential
+     * qTest credential
      * @return
      * @throws QTestException
      */
@@ -460,8 +468,9 @@ public class QTestIntegrationReportManager {
             throw new QTestUnauthorizedException(QTestMessageConstants.QTEST_EXC_INVALID_TOKEN);
         }
         List<QTestExecutionStatus> list = new ArrayList<QTestExecutionStatus>();
-        String jsonString = QTestAPIRequestHelper.sendGetRequestViaAPI(credential.getServerUrl() + "/api/v3/projects/"
-                + projectId + "/test-runs/execution-statuses", credential.getToken());
+        String jsonString = QTestAPIRequestHelper.sendGetRequestViaAPI(
+                credential.getServerUrl() + "/api/v3/projects/" + projectId + "/test-runs/execution-statuses",
+                credential.getToken());
         try {
             JsonArray jArr = new JsonArray(jsonString);
             for (int i = 0; i < jArr.length(); i++) {
@@ -555,7 +564,7 @@ public class QTestIntegrationReportManager {
             throw QTestInvalidFormatException.createInvalidJsonFormatException(resText);
         }
     }
-    
+
     private static boolean extractTestCaseLog(TestSuiteLogRecord testSuiteLogRecord,
             TestCaseLogRecord testCaseLogRecord, File toFolder) {
         Logger logger = Logger.getLogger("");
@@ -565,10 +574,13 @@ public class QTestIntegrationReportManager {
             fileHandler.setFormatter(new CustomXmlFormatter());
             logger.addHandler(fileHandler);
             List<XmlLogRecord> logRecs = new ArrayList<>();
+            String testCaseId = testCaseLogRecord.getId();
             boolean foundTest = false;
+            int foundTestNestedLevel = -1;
             for (XmlLogRecord rc : ReportUtil.getAllLogRecords(testSuiteLogRecord.getLogFolder())) {
                 String level = rc.getLevel().getName();
                 String methodName = rc.getSourceMethodName();
+                int nestedLevel = rc.getNestedLevel();
                 if (level.equals(LogLevel.START.toString()) && StringConstants.LOG_START_SUITE_METHOD.equals(methodName)
                         || level.equals(LogLevel.END.toString())
                                 && StringConstants.LOG_END_SUITE_METHOD.equals(methodName)) {
@@ -576,9 +588,9 @@ public class QTestIntegrationReportManager {
                     continue;
                 }
                 if (level.equals(LogLevel.START.toString()) && StringConstants.LOG_START_TEST_METHOD.equals(methodName)
-                        && testCaseLogRecord.getId()
-                                .equals(rc.getProperties().get(StringConstants.XML_LOG_ID_PROPERTY))) {
+                        && testCaseId.equals(rc.getProperties().get(StringConstants.XML_LOG_ID_PROPERTY))) {
                     foundTest = true;
+                    foundTestNestedLevel = rc.getNestedLevel();
                     logRecs.add(rc);
                     continue;
                 }
@@ -586,14 +598,16 @@ public class QTestIntegrationReportManager {
                 if (foundTest) {
                     // If this test was not ended gracefully, stop when reach begin another test
                     if (level.equals(LogLevel.START.toString())
-                            && StringConstants.LOG_START_TEST_METHOD.equals(methodName)) {
+                            && StringConstants.LOG_START_TEST_METHOD.equals(methodName)
+                            && nestedLevel <= foundTestNestedLevel) {
                         foundTest = false;
                         continue;
                     }
                     logRecs.add(rc);
                     // If reach end test, stop collecting
-                    if (level.equals(LogLevel.END.toString())
-                            && StringConstants.LOG_END_TEST_METHOD.equals(methodName)) {
+                    if (level.equals(LogLevel.END.toString()) && StringConstants.LOG_END_TEST_METHOD.equals(methodName)
+                            && testCaseId.equals(rc.getProperties().get(StringConstants.XML_LOG_ID_PROPERTY))
+                            && nestedLevel == foundTestNestedLevel) {
                         foundTest = false;
                         continue;
                     }

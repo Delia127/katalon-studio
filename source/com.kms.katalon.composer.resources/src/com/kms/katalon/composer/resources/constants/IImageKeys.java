@@ -122,6 +122,8 @@ public interface IImageKeys {
     public static final String GIT_24 = "toolbar/git_24.png"; //$NON-NLS-1$
 
     public static final String MOBILE_OBJECT_SPY_24 = "toolbar/mobile_object_spy_24.png"; //$NON-NLS-1$
+    
+    public static final String MOBILE_RECORD_24 = "toolbar/mobile_record_24.png"; //$NON-NLS-1$
 
     public static final String NEW_24 = "toolbar/new_24.png"; //$NON-NLS-1$
 
@@ -173,6 +175,8 @@ public interface IImageKeys {
     public static final String GIT_DISABLED_24 = "toolbar/git_disabled_24.png"; //$NON-NLS-1$
 
     public static final String MOBILE_OBJECT_SPY_DISABLED_24 = "toolbar/mobile_object_spy_disabled_24.png"; //$NON-NLS-1$
+    
+    public static final String MOBILE_RECORD_DISABLED_24 = "toolbar/mobile_record_disabled_24.png"; //$NON-NLS-1$
 
     public static final String NEW_DISABLED_24 = "toolbar/new_disabled_24.png"; //$NON-NLS-1$
 

@@ -69,11 +69,11 @@ public class MobileDeviceDialog extends Dialog {
 
     private Point initialLocation;
     
-    private MobileObjectSpyDialog objectSpyDialog;
+    private MobileElementInspectorDialog mobileInspetorDialog;
 
-    public MobileDeviceDialog(Shell parentShell, MobileObjectSpyDialog objectSpyDialog, Point location) {
+    public MobileDeviceDialog(Shell parentShell, MobileElementInspectorDialog mobileInspectorDialog, Point location) {
         super(parentShell);
-        this.objectSpyDialog = objectSpyDialog;
+        this.mobileInspetorDialog = mobileInspectorDialog;
         this.initialLocation = location;
         setShellStyle(SWT.SHELL_TRIM | SWT.FILL | SWT.RESIZE);
         this.isDisposed = false;
@@ -121,7 +121,7 @@ public class MobileDeviceDialog extends Dialog {
     private void inspectElementAt(int x, int y) {
         Double realX = x / wRatio;
         Double realY = y / hRatio;
-        objectSpyDialog.setSelectedElementByLocation(safeRoundDouble(realX), safeRoundDouble(realY));
+        mobileInspetorDialog.setSelectedElementByLocation(safeRoundDouble(realX), safeRoundDouble(realY));
     }
 
     public void highlight(final double x, final double y, final double width, final double height) {
@@ -141,7 +141,7 @@ public class MobileDeviceDialog extends Dialog {
                 label.setBounds(safeRoundDouble(currentX), safeRoundDouble(currentY), safeRoundDouble(currentWidth),
                         safeRoundDouble(currentHeight));
                 // flash
-                for (int i = 0; i < 6; i++) {
+                for (int i = 0; i < 5; i++) {
                     c.add(label);
                     c.revalidate();
                     c.repaint();
@@ -195,11 +195,11 @@ public class MobileDeviceDialog extends Dialog {
         return parent;
     }
 
-    /* package */void closeApp() {
+    public void closeApp() {
         handleShellCloseEvent();
     }
 
-    /* package */void highlightElement(MobileElement selectedElement) {
+    public void highlightElement(MobileElement selectedElement) {
         Map<String, String> attributes = selectedElement.getAttributes();
         if (attributes == null || !attributes.containsKey(GUIObject.X) || !attributes.containsKey(GUIObject.Y)
                 || !attributes.containsKey(GUIObject.WIDTH) || !attributes.containsKey(GUIObject.HEIGHT)) {

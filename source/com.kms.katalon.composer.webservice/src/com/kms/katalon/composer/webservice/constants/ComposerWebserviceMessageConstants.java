@@ -97,6 +97,16 @@ public class ComposerWebserviceMessageConstants extends NLS {
 
     public static String NO_AUTH;
 
+    public static String DIA_MSG_UNABLE_TO_LOAD_NETWORK_PAGE;
+
+    public static String DIA_MSG_UNABLE_TO_UPDATE_NETWORK_PAGE;
+
+    public static String DIA_GRP_LBL_CERTITICATES;
+
+    public static String DIA_LBL_SSL_CERT_NONE_OPT;
+
+    public static String DIA_LBL_SSL_CERT_BYPASS_OPT;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerWebserviceMessageConstants.class);

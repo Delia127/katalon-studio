@@ -69,6 +69,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.core.appium.driver.AppiumDriverManager;
 import com.kms.katalon.core.application.Application;
+import com.kms.katalon.core.setting.PropertySettingStoreUtil;
 import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.entity.file.FileEntity;
@@ -85,11 +86,14 @@ import com.kms.katalon.execution.entity.ReportLocationSetting;
 import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
 import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.execution.util.MailUtil;
+import com.kms.katalon.execution.webui.driver.RemoteWebDriverConnector;
 import com.kms.katalon.execution.webui.driver.RemoteWebDriverConnector.RemoteWebDriverConnectorType;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class GenerateCommandDialog extends AbstractDialog {
+
+    private static final String[] WEB_DRIVER_TYPES = RemoteWebDriverConnectorType.stringValues();
 
     private enum GenerateCommandMode {
         CONSOLE_COMMAND, PROPERTIES_FILE
@@ -432,6 +436,24 @@ public class GenerateCommandDialog extends AbstractDialog {
     protected String getDocumentationUrl() {
         return DocumentationMessageConstants.DIALOG_GENERATE_COMMAND;
     }
+    
+    private void setInputForRemoteDriverComponent() {
+        txtRemoteWebDriverURL.setEnabled(false);
+        comboRemoteWebDriverType.setEnabled(false);
+        comboRemoteWebDriverType.setItems(WEB_DRIVER_TYPES);
+        comboRemoteWebDriverType.select(0);
+        try {
+            String internalSettingFolder = ProjectController.getInstance().getCurrentProject().getFolderLocation()
+                    + File.separator + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME;
+            RemoteWebDriverConnector remoteWebDriverConnector = new RemoteWebDriverConnector(internalSettingFolder);
+            txtRemoteWebDriverURL.setText(remoteWebDriverConnector.getRemoteServerUrl());
+            
+            comboRemoteWebDriverType.select(
+                    RemoteWebDriverConnectorType.indexOf(remoteWebDriverConnector.getRemoteWebDriverConnectorType()));
+        } catch (IOException e) {
+            LoggerSingleton.logError(e);
+        }
+    }
 
     @Override
     protected void setInput() {
@@ -442,11 +464,7 @@ public class GenerateCommandDialog extends AbstractDialog {
         browsers.remove(WebUIDriverType.KOBITON_WEB_DRIVER.toString());
         comboBrowser.setItems(browsers.toArray(new String[0]));
 
-        txtRemoteWebDriverURL.setEnabled(false);
-        comboRemoteWebDriverType.setEnabled(false);
-        String[] webDriverTypes = RemoteWebDriverConnectorType.stringValues();
-        comboRemoteWebDriverType.setItems(webDriverTypes);
-        comboRemoteWebDriverType.select(0);
+        setInputForRemoteDriverComponent();
 
         comboMobileDevice.setEnabled(false);
         if (mobileDevices == null) {
@@ -470,7 +488,7 @@ public class GenerateCommandDialog extends AbstractDialog {
         enableRetryFailedTestCase();
 
         // load previous working values
-        loadLastWorkingData(browsers, Arrays.asList(webDriverTypes), Arrays.asList(customRunConfigurationIds));
+        loadLastWorkingData(browsers, Arrays.asList(WEB_DRIVER_TYPES), Arrays.asList(customRunConfigurationIds));
     }
 
     private void loadLastWorkingData(List<String> browsers, List<String> webDriverTypes,
@@ -517,14 +535,14 @@ public class GenerateCommandDialog extends AbstractDialog {
                 }
             }
 
-            if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_REPORT_OUTPUT_LOCATION)) {
-                txtOutputLocation.setText(
-                        prefs.getString(GenerateCommandPreferenceConstants.GEN_COMMAND_REPORT_OUTPUT_LOCATION));
-            }
-
             if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_REPORT_USE_RELATIVE_PATH)) {
                 chkUseRelativePath.setSelection(
                         prefs.getBoolean(GenerateCommandPreferenceConstants.GEN_COMMAND_REPORT_USE_RELATIVE_PATH));
+            }
+            
+
+            if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_REPORT_OUTPUT_LOCATION)) {
+                updateReportOutputLocation(prefs.getString(GenerateCommandPreferenceConstants.GEN_COMMAND_REPORT_OUTPUT_LOCATION));
             }
 
             if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_REPORT_OUTPUT_NAME)) {
@@ -797,7 +815,14 @@ public class GenerateCommandDialog extends AbstractDialog {
         if (chkUseRelativePath.getSelection()) {
             location = absoluteToRelativePath(location, projectLocation());
         }
+        if (isRootDrive(location)) {
+            location = location + "\\";
+        }
         txtOutputLocation.setText(location);
+    }
+    
+    private boolean isRootDrive(String outputLocation) {
+        return outputLocation.endsWith(":\\");
     }
 
     private String getReportOutputAbsolutePath() {

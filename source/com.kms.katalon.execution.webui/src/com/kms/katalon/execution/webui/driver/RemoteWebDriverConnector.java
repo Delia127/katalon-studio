@@ -35,8 +35,12 @@ public class RemoteWebDriverConnector extends WebUiDriverConnector {
     protected String remoteServerUrl;
     protected RemoteWebDriverConnectorType remoteWebDriverConnectorType;
 
-    public RemoteWebDriverConnector(String projectDir) throws IOException {
-        super(projectDir);
+    /**
+     * @param configurationFolderPath It should be [project folder]/settings/internal
+     * 
+     */
+    public RemoteWebDriverConnector(String configurationFolderPath) throws IOException {
+        super(configurationFolderPath);
     }
 
     @Override

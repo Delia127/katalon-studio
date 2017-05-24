@@ -219,7 +219,7 @@ public class HTMLActionUtil {
         List<HTMLActionParam> paramList = new ArrayList<HTMLActionParam>();
         for (int i = 0; i < keywordMethod.getParameters().length; i++) {
             KeywordParameter parameter = keywordMethod.getParameters()[i];
-            if (parameter.isHTMLParam()) {
+            if (parameter.isGeneralParam()) {
                 paramList.add(new HTMLActionParam(parameter.getName(), parameter.getType()));
             }
         }

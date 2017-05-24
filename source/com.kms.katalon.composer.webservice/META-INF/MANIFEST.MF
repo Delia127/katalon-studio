@@ -48,4 +48,7 @@ Require-Bundle: com.kms.katalon.composer.explorer,
  org.dom4j,
  wsdl4j,
  org.apache.httpcomponents.httpcore,
- org.apache.commons.validator
+ org.apache.commons.validator,
+ com.kms.katalon.composer.preferences,
+ com.kms.katalon.core.webservice,
+ com.kms.katalon.execution

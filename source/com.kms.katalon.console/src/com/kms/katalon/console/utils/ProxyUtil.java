@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.kms.katalon.console.constants.ConsoleMessageConstants;
 import com.kms.katalon.console.constants.ConsoleStringConstants;
+import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.logging.LogUtil;
 
 public class ProxyUtil {
@@ -33,7 +34,8 @@ public class ProxyUtil {
     public static ProxyInformation getProxyInformation() {
         ProxyInformation proxyInfo = new ProxyInformation();
 
-        proxyInfo.setProxyOption(ApplicationInfo.getAppProperty(ConsoleStringConstants.PROXY_OPTION));
+        final String proxyOption = ApplicationInfo.getAppProperty(ConsoleStringConstants.PROXY_OPTION);
+        proxyInfo.setProxyOption(StringUtils.isEmpty(proxyOption) ? ConsoleMessageConstants.NO_PROXY : proxyOption);
         proxyInfo.setProxyServerType(ApplicationInfo.getAppProperty(ConsoleStringConstants.PROXY_SERVER_TYPE));
         proxyInfo.setProxyServerAddress(ApplicationInfo.getAppProperty(ConsoleStringConstants.PROXY_SERVER_ADDRESS));
         proxyInfo.setProxyServerPort(ApplicationInfo.getAppProperty(ConsoleStringConstants.PROXY_SERVER_PORT));
