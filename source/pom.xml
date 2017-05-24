@@ -14,7 +14,6 @@
 	</prerequisites>
 
 	<modules>
-		<module>com.kms.katalon.code.refactoring</module>
 		<module>com.kms.katalon.composer.checkpoint</module>
 		<module>com.kms.katalon.composer.codeassist</module>
 		<module>com.kms.katalon.composer.components.impl</module>

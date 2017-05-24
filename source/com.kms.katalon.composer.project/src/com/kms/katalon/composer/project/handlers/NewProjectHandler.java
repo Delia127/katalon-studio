@@ -17,11 +17,9 @@ import com.kms.katalon.composer.project.constants.StringConstants;
 import com.kms.katalon.composer.project.views.NewProjectDialog;
 import com.kms.katalon.console.utils.EntityTrackingHelper;
 import com.kms.katalon.constants.EventConstants;
-import com.kms.katalon.constants.UsagePropertyConstant;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.dal.exception.FilePathTooLongException;
 import com.kms.katalon.entity.project.ProjectEntity;
-import com.kms.katalon.execution.launcher.manager.LauncherManager;
 
 @SuppressWarnings("restriction")
 public class NewProjectHandler {
@@ -48,10 +46,6 @@ public class NewProjectHandler {
 
             // Open created project
             eventBroker.send(EventConstants.PROJECT_OPEN, newProject.getId());
-
-            LauncherManager.refresh();
-            eventBroker.post(EventConstants.JOB_REFRESH, null);
-            eventBroker.post(EventConstants.CONSOLE_LOG_REFRESH, null);
         } catch (FilePathTooLongException ex) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
                     ex.getMessage());

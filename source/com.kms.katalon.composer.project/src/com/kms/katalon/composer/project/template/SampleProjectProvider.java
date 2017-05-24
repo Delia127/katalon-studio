@@ -102,7 +102,7 @@ public class SampleProjectProvider {
         if (jarFile.isDirectory()) { // built by IDE
             return new FileInputStream(new File(jarFile, filePath).getAbsolutePath());
         } else {
-            try (JarFile jar = new JarFile(jarFile)){
+            try (JarFile jar = new JarFile(jarFile)) {
                 final Enumeration<JarEntry> entries = jar.entries();
                 String relativePath = filePath.replace(File.separator, "/");
                 while (entries.hasMoreElements()) {
@@ -131,6 +131,10 @@ public class SampleProjectProvider {
                 PartServiceSingleton.getInstance().getPartService(),
                 ModelServiceSingleton.getInstance().getModelService(),
                 ApplicationSingleton.getInstance().getApplication());
+    }
+
+    public void extractSampleWebUIProject(String projectType, String location) throws IOException {
+        extractProjectSource(projectType, location);
     }
 
     public void openSampleWebUIProject() throws Exception {
