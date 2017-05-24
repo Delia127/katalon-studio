@@ -83,7 +83,6 @@
 
 	<properties>
 		<tycho.version>0.24.0</tycho.version>
-		<gmavenplus.version>1.5</gmavenplus.version>
 		<maven-compiler.version>3.1</maven-compiler.version>
 		<maven-resources-plugin.version>2.6</maven-resources-plugin.version>
 
@@ -103,7 +102,6 @@
 		<win64ResourcesDirectory>win64Resources</win64ResourcesDirectory>
 		<linux32ResourcesDirectory>linux32Resources</linux32ResourcesDirectory>
 		<linux64ResourcesDirectory>linux64Resources</linux64ResourcesDirectory>
-		<apidocDirectory>${resourcesDiretory}/apidocs</apidocDirectory>
 	</properties>
 
 	<repositories>
@@ -127,15 +125,6 @@
 	</repositories>
 
 	<build>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.codehaus.gmavenplus</groupId>
-					<artifactId>gmavenplus-plugin</artifactId>
-					<version>${gmavenplus.version}</version>
-				</plugin>
-			</plugins>
-		</pluginManagement>
 		<plugins>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
@@ -231,18 +220,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
-	<!--These dependencies used for generating groovy document -->
-	<dependencies>
-		<dependency>
-			<groupId>org.codehaus.groovy</groupId>
-			<artifactId>groovy-all</artifactId>
-			<version>2.4.7</version>
-		</dependency>
-		<dependency>
-			<groupId>org.fusesource.jansi</groupId>
-			<artifactId>jansi</artifactId>
-			<version>1.11</version>
-		</dependency>
-	</dependencies>
 </project> 
