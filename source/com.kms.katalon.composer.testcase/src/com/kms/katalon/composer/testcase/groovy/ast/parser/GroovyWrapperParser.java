@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Stack;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.ClassNode;
@@ -277,7 +276,7 @@ public class GroovyWrapperParser {
     }
 
     private void printString(String string) {
-        print("'" + StringEscapeUtils.escapeJava(string).replace("'", "\\'") + "'");
+        print("'" + string.replace("'", "\\'") + "'");
     }
 
     private void parseConstructorCall(ConstructorCallExpressionWrapper constructorCallExpressionWrapper) {
