@@ -19,7 +19,7 @@ public class ComposerExecutionPreferenceDefaultValueInitializer extends Abstract
 
     public static final boolean EXECUTION_DEFAULT_SHOW_WARNING_LOGS_VALUE = false;
 
-    public static final boolean EXECUTION_DEFAULT_SHOW_LOGS_AS_TREE = false;
+    public static final boolean EXECUTION_DEFAULT_SHOW_LOGS_AS_TREE = true;
 
     public static final boolean EXECUTION_DEFAULT_PIN_LOG = false;
 

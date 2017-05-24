@@ -60,9 +60,7 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String PA_LOADING_LOGS;
 
     public static String PA_LBL_START;
-
-    public static String PA_LBL_END;
-
+    
     public static String PA_LBL_ELAPSED_TIME;
 
     public static String PA_LBL_RUNS;
@@ -72,6 +70,8 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String PA_LBL_FAILURES;
 
     public static String PA_LBL_ERRORS;
+
+    public static String PA_LBL_NAME;
 
     public static String PA_LOG_RESUME;
 

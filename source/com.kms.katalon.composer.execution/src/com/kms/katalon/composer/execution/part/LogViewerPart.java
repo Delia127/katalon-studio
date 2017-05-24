@@ -73,6 +73,7 @@ import org.osgi.service.event.EventHandler;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageConstants;
 import com.kms.katalon.composer.execution.constants.ComposerExecutionPreferenceConstants;
 import com.kms.katalon.composer.execution.constants.ImageConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
@@ -138,7 +139,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
 
     private LogRecordTreeViewer treeViewer;
 
-    private StyledText txtStartTime, txtEndTime, txtEslapedTime, txtMessage;
+    private StyledText txtStartTime, txtName, txtEslapedTime, txtMessage;
 
     private ToolItem btnShowAllLogs, btnShowInfoLogs, btnShowPassedLogs, btnShowFailedLogs, btnShowErrorLogs,
             btnShowWarningLogs, btnShowNotRunLogs;
@@ -517,13 +518,8 @@ public class LogViewerPart implements EventHandler, LauncherListener {
             if (logTreeNode instanceof ILogParentTreeNode) {
                 ILogParentTreeNode logParentTreeNode = (ILogParentTreeNode) logTreeNode;
 
-                txtStartTime.setText(logParentTreeNode.getRecordStart().toString());
-                if (logParentTreeNode.getRecordEnd() != null) {
-                    txtEndTime.setText(logParentTreeNode.getRecordEnd().toString());
-                } else {
-                    txtEndTime.setText(StringConstants.EMPTY);
-                }
-
+                txtStartTime.setText(logParentTreeNode.getRecordStart().getLogTimeString());
+                txtName.setText(logParentTreeNode.getMessage());
                 txtEslapedTime.setText(logParentTreeNode.getFullElapsedTime());
                 StyledString styledString = new StyledString(txtEslapedTime.getText(), StyledString.COUNTER_STYLER);
                 txtEslapedTime.setStyleRanges(styledString.getStyleRanges());
@@ -532,9 +528,9 @@ public class LogViewerPart implements EventHandler, LauncherListener {
 
             } else {
                 txtStartTime.setText(StringConstants.EMPTY);
-                txtEndTime.setText(StringConstants.EMPTY);
                 txtEslapedTime.setText(StringConstants.EMPTY);
                 txtMessage.setText(logTreeNode.getMessage());
+                txtName.setText(StringConstants.EMPTY);
             }
         }
     }
@@ -549,8 +545,16 @@ public class LogViewerPart implements EventHandler, LauncherListener {
 
     private void createTreeNodePropertiesComposite(SashForm sashForm) {
         Composite compositeTreeNodeProperties = new Composite(sashForm, SWT.BORDER);
-        compositeTreeNodeProperties.setLayout(new GridLayout(2, false));
+        compositeTreeNodeProperties.setLayout(new GridLayout(4, false));
         compositeTreeNodeProperties.setBackground(ColorUtil.getWhiteBackgroundColor());
+        
+        Label lblName = new Label(compositeTreeNodeProperties, SWT.NONE);
+        lblName.setFont(JFaceResources.getFontRegistry().getBold(""));
+        lblName.setText(ComposerExecutionMessageConstants.PA_LBL_NAME);
+
+        txtName = new StyledText(compositeTreeNodeProperties, SWT.BORDER);
+        txtName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
+        txtName.setEditable(false);
 
         Label lblLogStart = new Label(compositeTreeNodeProperties, SWT.NONE);
         lblLogStart.setFont(JFaceResources.getFontRegistry().getBold(""));
@@ -559,14 +563,6 @@ public class LogViewerPart implements EventHandler, LauncherListener {
         txtStartTime = new StyledText(compositeTreeNodeProperties, SWT.BORDER);
         txtStartTime.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtStartTime.setEditable(false);
-
-        Label lblLogEnd = new Label(compositeTreeNodeProperties, SWT.NONE);
-        lblLogEnd.setFont(JFaceResources.getFontRegistry().getBold(""));
-        lblLogEnd.setText(StringConstants.PA_LBL_END);
-
-        txtEndTime = new StyledText(compositeTreeNodeProperties, SWT.BORDER);
-        txtEndTime.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        txtEndTime.setEditable(false);
 
         Label lblLogRunTime = new Label(compositeTreeNodeProperties, SWT.NONE);
         lblLogRunTime.setFont(JFaceResources.getFontRegistry().getBold(""));
@@ -582,7 +578,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
         lblMessage.setText(StringConstants.PA_LBL_MESSAGE);
 
         txtMessage = new StyledText(compositeTreeNodeProperties, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI);
-        txtMessage.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        txtMessage.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
         txtMessage.setEditable(false);
         setWrapTxtMessage();
     }
