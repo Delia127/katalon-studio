@@ -235,7 +235,7 @@ public class QTestPreferenceMainPage extends PreferencePageWithHelp {
                 if (QTestSettingStore.isTheFirstTime(projectDir) && (qTestProjectIntegratedEntity == null)) {
                     QTestSettingStore.usedSetupWizard(projectDir);
 
-                    if (!MessageDialog.openQuestion(null, StringConstants.CM_QUESTION,
+                    if (!MessageDialog.openQuestion(null, StringConstants.INFO,
                             StringConstants.DIA_TITLE_ASK_USE_SETUP)) {
                         return;
                     }
