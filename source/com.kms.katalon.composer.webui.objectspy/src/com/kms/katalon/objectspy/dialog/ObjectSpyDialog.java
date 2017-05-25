@@ -300,6 +300,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         mainContainer.pack();
 
         txtStartUrl.setFocus();
+        txtStartUrl.selectAll();
 
         new HelpCompositeForDialog(mainContainer, DocumentationMessageConstants.DIALOG_OBJECT_SPY_WEB_UI);
         return mainContainer;
