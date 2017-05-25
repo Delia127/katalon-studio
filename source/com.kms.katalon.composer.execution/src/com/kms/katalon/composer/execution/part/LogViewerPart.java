@@ -43,6 +43,7 @@ import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -544,9 +545,18 @@ public class LogViewerPart implements EventHandler, LauncherListener {
     }
 
     private void createTreeNodePropertiesComposite(SashForm sashForm) {
-        Composite compositeTreeNodeProperties = new Composite(sashForm, SWT.BORDER);
+        ScrolledComposite scrolledComposite = new ScrolledComposite(sashForm, SWT.H_SCROLL | SWT.V_SCROLL);
+        scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        scrolledComposite.setLayout(new GridLayout());
+        scrolledComposite.setExpandHorizontal(true);
+        scrolledComposite.setExpandVertical(true);
+        scrolledComposite.setMinSize(420, 150);
+        
+        Composite compositeTreeNodeProperties = new Composite(scrolledComposite, SWT.BORDER);
         compositeTreeNodeProperties.setLayout(new GridLayout(4, false));
+        compositeTreeNodeProperties.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         compositeTreeNodeProperties.setBackground(ColorUtil.getWhiteBackgroundColor());
+        scrolledComposite.setContent(compositeTreeNodeProperties);
         
         Label lblName = new Label(compositeTreeNodeProperties, SWT.NONE);
         lblName.setFont(JFaceResources.getFontRegistry().getBold(""));
