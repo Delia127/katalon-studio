@@ -561,7 +561,10 @@ public class LogViewerPart implements EventHandler, LauncherListener {
         lblLogStart.setText(StringConstants.PA_LBL_START);
 
         txtStartTime = new StyledText(compositeTreeNodeProperties, SWT.BORDER);
-        txtStartTime.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        final GridData layoutDataStartTime = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+        layoutDataStartTime.minimumWidth = 200;
+        layoutDataStartTime.widthHint = 200;
+        txtStartTime.setLayoutData(layoutDataStartTime);
         txtStartTime.setEditable(false);
 
         Label lblLogRunTime = new Label(compositeTreeNodeProperties, SWT.NONE);
@@ -569,7 +572,10 @@ public class LogViewerPart implements EventHandler, LauncherListener {
         lblLogRunTime.setText(StringConstants.PA_LBL_ELAPSED_TIME);
 
         txtEslapedTime = new StyledText(compositeTreeNodeProperties, SWT.BORDER);
-        txtEslapedTime.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        final GridData layoutDataElapsedTime = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+        layoutDataElapsedTime.minimumWidth = 200;
+        layoutDataElapsedTime.widthHint = 200;
+        txtEslapedTime.setLayoutData(layoutDataElapsedTime);
         txtEslapedTime.setEditable(false);
 
         Label lblMessage = new Label(compositeTreeNodeProperties, SWT.NONE);
