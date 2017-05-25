@@ -11,5 +11,7 @@ public interface ObjectSpyPreferenceConstants {
     public static final String WEBUI_OBJECTSPY_HK_CAPTURE_OBJECT = "objectspy.hotkey.captureObject";
     
     public static final String WEBUI_OBJECTSPY_HK_LOAD_DOM_MAP = "objectspy.hotkey.loadDOMMap";
+    
+    public static final String WEBUI_OBJECTSPY_DEFAULT_STARTING_URL = "objectspy.defaultStartingURL";
 
 }

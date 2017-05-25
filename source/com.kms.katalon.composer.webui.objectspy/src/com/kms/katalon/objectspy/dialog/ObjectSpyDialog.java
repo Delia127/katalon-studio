@@ -300,6 +300,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         mainContainer.pack();
 
         txtStartUrl.setFocus();
+        txtStartUrl.selectAll();
 
         new HelpCompositeForDialog(mainContainer, DocumentationMessageConstants.DIALOG_OBJECT_SPY_WEB_UI);
         return mainContainer;
@@ -325,6 +326,8 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
                 }
             }
         });
+        txtStartUrl.setText(
+                getPreferenceStore().getString(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_DEFAULT_STARTING_URL));
 
         final ToolBar startBrowserToolbar = new ToolBar(toolbarRightSideComposite, SWT.FLAT | SWT.RIGHT);
         startBrowserToolbar.setLayout(new FillLayout(SWT.HORIZONTAL));
@@ -1409,6 +1412,13 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
             getShell().setMinimumSize(size.x + 65, size.y);
         }
         return super.open();
+    }
+
+    @Override
+    public boolean close() {
+        getPreferenceStore().setValue(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_DEFAULT_STARTING_URL,
+                txtStartUrl.getText());
+        return super.close();
     }
 
     @Override
