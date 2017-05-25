@@ -257,13 +257,7 @@ public class MailSettingsPage extends PreferencePageWithHelp {
 
             @Override
             public void verifyText(VerifyEvent e) {
-                final String oldString = txtPort.getText();
-                final String newString = oldString.substring(0, e.start) + e.text + oldString.substring(e.end);
-                try {
-                    Integer.parseInt(newString);
-                } catch (NumberFormatException ex) {
-                    e.doit = false;
-                }
+                e.doit = StringUtils.isNumeric(e.text);
             }
         });
 
