@@ -6,8 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileInspectorController;
 import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElement;
+import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.core.mobile.keyword.internal.AndroidProperties;
 import com.kms.katalon.core.mobile.keyword.internal.IOSProperties;
@@ -17,7 +20,6 @@ import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
 
 public class CapturedMobileElementConverter implements Converter<CapturedMobileElement, WebElementEntity> {
-
     @Override
     public WebElementEntity convert(CapturedMobileElement element) {
         WebElementEntity newWebElement = new WebElementEntity();
@@ -34,8 +36,11 @@ public class CapturedMobileElementConverter implements Converter<CapturedMobileE
         return newWebElement;
     }
 
-    public WebElementEntity convert(CapturedMobileElement element, FolderEntity folder, MobileDeviceInfo deviceInfo) {
+    public WebElementEntity convert(CapturedMobileElement element, FolderEntity folder, MobileDeviceInfo deviceInfo)
+            throws Exception {
         WebElementEntity newWebElement = convert(element);
+        newWebElement.setName(ObjectRepositoryController.getInstance().getAvailableWebElementName(folder,
+                ObjectRepositoryController.toValidFileName(StringUtils.trim(element.getName()))));
         newWebElement.setParentFolder(folder);
         newWebElement.setProject(folder.getProject());
         autoSelectObjectProperties(newWebElement, deviceInfo);
