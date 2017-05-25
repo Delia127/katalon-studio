@@ -485,6 +485,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
         }
         saveTestScript();
         saveTestCase();
+        updateDirty();
     }
 
     public void addVariables(VariableEntity[] variables) {

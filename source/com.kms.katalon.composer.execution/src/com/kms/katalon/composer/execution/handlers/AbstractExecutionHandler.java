@@ -34,6 +34,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.PlatformUI;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
@@ -150,7 +151,7 @@ public abstract class AbstractExecutionHandler {
         MPartStack composerStack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID,
                 application);
         MPart selectedPart = (MPart) composerStack.getSelectedElement();
-        if (partService.saveAll(true) && partService.getDirtyParts().isEmpty()) {
+        if (saveAllParts() && isAnyPartDirty()) {
             String partElementId = selectedPart.getElementId();
             // check the selected part is a test case or test suite part
             if (partElementId.startsWith(IdConstants.TEST_CASE_PARENT_COMPOSITE_PART_ID_PREFIX)
@@ -184,6 +185,16 @@ public abstract class AbstractExecutionHandler {
             }
         }
         return null;
+    }
+
+    protected static boolean isAnyPartDirty() {
+        return PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getDirtyEditors().length == 0
+                && partService.getDirtyParts().isEmpty();
+    }
+
+    protected static boolean saveAllParts() {
+        return PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().saveAllEditors(false)
+                && partService.saveAll(false);
     }
 
     protected abstract IRunConfiguration getRunConfigurationForExecution(String projectDir)
