@@ -9,6 +9,8 @@ public interface PreferenceConstants {
 
     public static final String GENERAL_AUTO_CHECK_NEW_VERSION = "general.autoCheckNewVersion";
 
+    public static final String GENERAL_SHOW_HELP_AT_START_UP = "general.showHelpAtStartUp";
+
     public static final String GENERAL_ONLINE_HELP_CONTENT = "general.onlineHelpContent";
 
     // Composer WebUi
