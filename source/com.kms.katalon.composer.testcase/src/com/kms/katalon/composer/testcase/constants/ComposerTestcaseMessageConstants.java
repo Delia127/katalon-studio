@@ -161,6 +161,8 @@ public class ComposerTestcaseMessageConstants extends NLS {
 
     public static String PA_TAB_INTEGRATION;
 
+    public static String PA_TAB_PROPERTIES;
+
     public static String PA_ERROR_MSG_PLS_FIX_ERROR_IN_SCRIPT;
 
     public static String PARSING_SCRIPT_PROGRESS_NAME;

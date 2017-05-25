@@ -87,6 +87,8 @@ public interface IdConstants {
     public static final String TEST_CASE_INTEGRATION_PART_ID_SUFFIX = TEST_CASE_SUB_PART_STACK_ID_SUFFIX
             + ".integration";
 
+    public static final String TEST_CASE_PROPERTIES_PART_ID_SUFFIX = TEST_CASE_SUB_PART_STACK_ID_SUFFIX + ".properties";
+
     public static final String TEST_CASE_GENERAL_PART_ID_SUFFIX = TEST_CASE_SUB_PART_STACK_ID_SUFFIX + ".testCasePart";
 
     // Test Object Part content
