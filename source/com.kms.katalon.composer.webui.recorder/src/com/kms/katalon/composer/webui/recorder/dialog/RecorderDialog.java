@@ -216,6 +216,8 @@ public class RecorderDialog extends AbstractDialog implements EventHandler {
 
     private IEventBroker eventBroker;
 
+    private ScopedPreferenceStore store;
+
     /**
      * Create the dialog.
      * 
@@ -224,6 +226,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler {
     public RecorderDialog(Shell parentShell, Logger logger, IEventBroker eventBroker) {
         super(parentShell);
         setShellStyle(SWT.SHELL_TRIM | SWT.APPLICATION_MODAL);
+        store = PreferenceStoreManager.getPreferenceStore(RecorderPreferenceConstants.WEBUI_RECORDER_QUALIFIER);
         this.logger = logger;
         elements = new ArrayList<HTMLPageElement>();
         recordedActions = new ArrayList<HTMLActionMapping>();
@@ -486,7 +489,15 @@ public class RecorderDialog extends AbstractDialog implements EventHandler {
         hSashForm.setWeights(new int[] { 3, 8 });
 
         txtStartUrl.setFocus();
+
+        initializeInput();
+
         return container;
+    }
+
+    private void initializeInput() {
+        txtStartUrl.setText(store.getString(RecorderPreferenceConstants.WEBUI_RECORDER_DEFAULT_URL));
+        txtStartUrl.selectAll();
     }
 
     private void createLeftPanel(Composite parent) {
@@ -1495,7 +1506,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler {
         layout.marginWidth = 0;
         bottomComposite.setLayout(layout);
         bottomComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-        
+
         new HelpCompositeForDialog(bottomComposite, DocumentationMessageConstants.DIALOG_RECORDER_WEB_UI);
         super.createButtonBar(bottomComposite);
 
@@ -1510,6 +1521,21 @@ public class RecorderDialog extends AbstractDialog implements EventHandler {
             targetFolderSelectionResult = addToObjectRepositoryDialog.getDialogResult();
             super.okPressed();
             dispose();
+        }
+    }
+
+    @Override
+    public boolean close() {
+        updateStore();
+        return super.close();
+    }
+
+    private void updateStore() {
+        store.setValue(RecorderPreferenceConstants.WEBUI_RECORDER_DEFAULT_URL, txtStartUrl.getText());
+        try {
+            store.save();
+        } catch (IOException e) {
+            LoggerSingleton.logError(e);
         }
     }
 
