@@ -3479,7 +3479,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_COMBOBOX)
-    public static boolean verifyOptionsPresent(TestObject to, List<String> expectedOptions) throws StepFailedException {
+    public static boolean verifyOptionsPresent(TestObject to, List expectedOptions) throws StepFailedException {
         return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "verifyOptionsPresent", to, expectedOptions)
     }
 
@@ -3496,7 +3496,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_COMBOBOX)
-    public static boolean verifyOptionsPresent(TestObject to, List<String> expectedOptions,
+    public static boolean verifyOptionsPresent(TestObject to, List expectedOptions,
             FailureHandling flowControl) throws StepFailedException {
         return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "verifyOptionsPresent", to, expectedOptions, flowControl)
     }

@@ -32,14 +32,14 @@ public class VerifyOptionsPresentKeyword extends WebUIAbstractKeyword {
     @Override
     public Object execute(Object ...params) {
         TestObject to = getTestObject(params[0])
-        List<String> expectedOptions = (List<String>) params[1]
+        List expectedOptions = (List) params[1]
         FailureHandling flowControl = (FailureHandling)(params.length > 2 && params[2] instanceof FailureHandling ? 
             params[2] : RunConfiguration.getDefaultFailureHandling())
         return verifyOptionsPresent(to, expectedOptions, flowControl)
     }
 
     @CompileStatic
-    public boolean verifyOptionsPresent(TestObject to, List<String> expectedOptions,
+    public boolean verifyOptionsPresent(TestObject to, List expectedOptions,
             FailureHandling flowControl) throws StepFailedException {
         return WebUIKeywordMain.runKeyword({
             boolean isSwitchIntoFrame = false
@@ -69,6 +69,6 @@ public class VerifyOptionsPresentKeyword extends WebUIAbstractKeyword {
                     WebUiCommonHelper.switchToDefaultContent()
                 }
             }
-        }, flowControl, true, "")
+        }, flowControl, true, MessageFormat.format(CoreWebuiMessageConstants.KW_MSG_TXT_OPTIONS_NOT_PRESENT, expectedOptions))
     }
 }
