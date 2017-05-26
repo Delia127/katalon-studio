@@ -43,14 +43,19 @@
         </children>
       </children>
       <children xsi:type="advanced:Perspective" xmi:id="_0wirECUgEeWUFICrCSQG_A" elementId="org.eclipse.debug.ui.DebugPerspective" selectedElement="__qZwkCUgEeWUFICrCSQG_A" label="Debug" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/debug_perspective_16.png" tooltip="Debug">
-        <children xsi:type="basic:PartSashContainer" xmi:id="__qZwkCUgEeWUFICrCSQG_A" elementId="com.kms.katalon.partsashcontainer.debug.main" containerData="100">
-          <children xsi:type="basic:PartSashContainer" xmi:id="_E6OrcCUhEeWUFICrCSQG_A" elementId="com.kms.katalon.partsashcontainer.debug.top" containerData="40" horizontal="true">
-            <children xsi:type="basic:PartStack" xmi:id="_UxEoUCUhEeWUFICrCSQG_A" elementId="com.kms.katalon.partstack.debug.top.left" containerData="50" selectedElement="_9i8C4CUiEeWg5dy9vQb4CQ">
+        <children xsi:type="basic:PartSashContainer" xmi:id="__qZwkCUgEeWUFICrCSQG_A" elementId="com.kms.katalon.partsashcontainer.debug.main" containerData="100" horizontal="true">
+          <children xsi:type="basic:PartSashContainer" xmi:id="_E6OrcCUhEeWUFICrCSQG_A" elementId="com.kms.katalon.partsashcontainer.debug.top" containerData="60">
+            <children xsi:type="basic:PartStack" xmi:id="_UxEoUCUhEeWUFICrCSQG_A" elementId="com.kms.katalon.partstack.debug.top.left" visible="false" containerData="40" selectedElement="_9i8C4CUiEeWg5dy9vQb4CQ">
+              <tags>Minimized</tags>
+              <tags>newtablook</tags>
               <children xsi:type="advanced:Placeholder" xmi:id="_9i8C4CUiEeWg5dy9vQb4CQ" elementId="com.kms.katalon.placeholder.debug.top.debug" ref="_PY0KMCUhEeWUFICrCSQG_A">
                 <tags>NoClose</tags>
               </children>
             </children>
-            <children xsi:type="basic:PartStack" xmi:id="_Z2fqACUhEeWUFICrCSQG_A" elementId="com.kms.katalon.partstack.debug.top.right" containerData="50" selectedElement="__AbUkCUiEeWg5dy9vQb4CQ">
+            <children xsi:type="advanced:Placeholder" xmi:id="_8cemkCUhEeWUFICrCSQG_A" elementId="org.eclipse.ui.editorss" containerData="60" ref="_2Ev6oD8CEeSqW-o8jtXO1g"/>
+          </children>
+          <children xsi:type="basic:PartSashContainer" xmi:id="_JswmUCUhEeWUFICrCSQG_A" elementId="com.kms.katalon.partsashcontainer.debug.bottom" containerData="40">
+            <children xsi:type="basic:PartStack" xmi:id="_Z2fqACUhEeWUFICrCSQG_A" elementId="com.kms.katalon.partstack.debug.top.right" containerData="40" selectedElement="__AbUkCUiEeWg5dy9vQb4CQ">
               <children xsi:type="advanced:Placeholder" xmi:id="__AbUkCUiEeWg5dy9vQb4CQ" elementId="com.kms.katalon.placeholder.debug.top.variable" ref="_bXaDICUhEeWUFICrCSQG_A">
                 <tags>NoClose</tags>
               </children>
@@ -61,10 +66,7 @@
                 <tags>NoClose</tags>
               </children>
             </children>
-          </children>
-          <children xsi:type="basic:PartSashContainer" xmi:id="_JswmUCUhEeWUFICrCSQG_A" elementId="com.kms.katalon.partsashcontainer.debug.bottom" containerData="60" selectedElement="_8cemkCUhEeWUFICrCSQG_A" horizontal="true">
-            <children xsi:type="advanced:Placeholder" xmi:id="_8cemkCUhEeWUFICrCSQG_A" elementId="org.eclipse.ui.editorss" containerData="50" ref="_2Ev6oD8CEeSqW-o8jtXO1g"/>
-            <children xsi:type="basic:PartStack" xmi:id="_kWnFIDqeEeWympSUeHeJlA" elementId="com.kms.katalon.partstack.console" containerData="50" selectedElement="_msmsIDqeEeWympSUeHeJlA">
+            <children xsi:type="basic:PartStack" xmi:id="_kWnFIDqeEeWympSUeHeJlA" elementId="com.kms.katalon.partstack.console" containerData="60" selectedElement="_msmsIDqeEeWympSUeHeJlA">
               <children xsi:type="advanced:Placeholder" xmi:id="_msmsIDqeEeWympSUeHeJlA" elementId="org.eclipse.ui.console.ConsoleView" ref="_yewVQD8LEeSqW-o8jtXO1g">
                 <tags>NoClose</tags>
               </children>
@@ -162,6 +164,9 @@
     <trimBars xmi:id="_jKbr8CYQEeWJ99-mW6KHQg" elementId="com.kms.katalon.trimbar.left" side="Left">
       <children xsi:type="menu:ToolControl" xmi:id="_k7k5cCYQEeWJ99-mW6KHQg" elementId="com.kms.katalon.partstack.left.outline(com.kms.katalon.composer.window.main).(com.kms.katalon.composer.perspective.keyword)" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.addons.swt/org.eclipse.e4.ui.workbench.addons.minmax.TrimStack">
         <tags>NoMove</tags>
+      </children>
+      <children xsi:type="menu:ToolControl" xmi:id="_zh7iQEECEeeCyJl6oj9E9A" elementId="com.kms.katalon.partstack.debug.top.left(com.kms.katalon.composer.window.main).(org.eclipse.debug.ui.DebugPerspective)" toBeRendered="false" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.addons.swt/org.eclipse.e4.ui.workbench.addons.minmax.TrimStack">
+        <tags>TrimStack</tags>
       </children>
     </trimBars>
   </children>
