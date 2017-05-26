@@ -83,8 +83,6 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String PA_LBL_START = ComposerExecutionMessageConstants.PA_LBL_START;
 
-    public static final String PA_LBL_END = ComposerExecutionMessageConstants.PA_LBL_END;
-
     public static final String PA_LBL_ELAPSED_TIME = ComposerExecutionMessageConstants.PA_LBL_ELAPSED_TIME;
 
     public static final String PA_LBL_MESSAGE = MESSAGE + ":";
