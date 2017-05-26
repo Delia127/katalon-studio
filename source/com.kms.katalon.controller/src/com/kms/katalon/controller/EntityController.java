@@ -25,4 +25,8 @@ public abstract class EntityController {
         IEclipseContext eclipseContext = EclipseContextFactory.getServiceContext(bundleContext);
         dataProviderSetting = eclipseContext.get(IDataProviderSetting.class);
     }
+    
+    public static String toValidFileName(String fileName) {
+        return fileName.replaceAll("[^A-Za-z-0-9_().\\- ]", "");
+    }
 }
