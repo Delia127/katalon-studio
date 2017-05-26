@@ -46,10 +46,14 @@ import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -550,17 +554,20 @@ public class LogViewerPart implements EventHandler, LauncherListener {
         scrolledComposite.setLayout(new GridLayout());
         scrolledComposite.setExpandHorizontal(true);
         scrolledComposite.setExpandVertical(true);
-        scrolledComposite.setMinSize(420, 150);
+        
+        final Color whiteBackgroundColor = ColorUtil.getWhiteBackgroundColor();
+        scrolledComposite.setBackground(whiteBackgroundColor);
         
         Composite compositeTreeNodeProperties = new Composite(scrolledComposite, SWT.BORDER);
         compositeTreeNodeProperties.setLayout(new GridLayout(4, false));
         compositeTreeNodeProperties.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        compositeTreeNodeProperties.setBackground(ColorUtil.getWhiteBackgroundColor());
+        compositeTreeNodeProperties.setBackground(whiteBackgroundColor);
         scrolledComposite.setContent(compositeTreeNodeProperties);
         
         Label lblName = new Label(compositeTreeNodeProperties, SWT.NONE);
         lblName.setFont(JFaceResources.getFontRegistry().getBold(""));
         lblName.setText(ComposerExecutionMessageConstants.PA_LBL_NAME);
+        lblName.setBackground(whiteBackgroundColor);
 
         txtName = new StyledText(compositeTreeNodeProperties, SWT.BORDER);
         txtName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
@@ -569,6 +576,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
         Label lblLogStart = new Label(compositeTreeNodeProperties, SWT.NONE);
         lblLogStart.setFont(JFaceResources.getFontRegistry().getBold(""));
         lblLogStart.setText(StringConstants.PA_LBL_START);
+        lblLogStart.setBackground(whiteBackgroundColor);
 
         txtStartTime = new StyledText(compositeTreeNodeProperties, SWT.BORDER);
         final GridData layoutDataStartTime = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
@@ -580,6 +588,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
         Label lblLogRunTime = new Label(compositeTreeNodeProperties, SWT.NONE);
         lblLogRunTime.setFont(JFaceResources.getFontRegistry().getBold(""));
         lblLogRunTime.setText(StringConstants.PA_LBL_ELAPSED_TIME);
+        lblLogRunTime.setBackground(whiteBackgroundColor);
 
         txtEslapedTime = new StyledText(compositeTreeNodeProperties, SWT.BORDER);
         final GridData layoutDataElapsedTime = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
@@ -592,11 +601,14 @@ public class LogViewerPart implements EventHandler, LauncherListener {
         lblMessage.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
         lblMessage.setFont(JFaceResources.getFontRegistry().getBold(""));
         lblMessage.setText(StringConstants.PA_LBL_MESSAGE);
+        lblMessage.setBackground(whiteBackgroundColor);
 
         txtMessage = new StyledText(compositeTreeNodeProperties, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI);
         txtMessage.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
         txtMessage.setEditable(false);
         setWrapTxtMessage();
+        
+        scrolledComposite.setMinSize(compositeTreeNodeProperties.computeSize(SWT.DEFAULT, SWT.DEFAULT));
     }
 
     private void createStatusComposite(Composite container) {
