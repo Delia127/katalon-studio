@@ -18,6 +18,7 @@ import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
@@ -43,6 +44,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.ui.PlatformUI;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.impl.control.ResizableBackgroundImageComposite;
@@ -58,6 +60,7 @@ import com.kms.katalon.console.utils.ApplicationInfo;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.ImageConstants;
 import com.kms.katalon.constants.MessageConstants;
+import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -94,7 +97,13 @@ public class WelcomePart {
         eventBroker.subscribe(EventConstants.PROJECT_OPENED, new EventHandler() {
             @Override
             public void handleEvent(org.osgi.service.event.Event event) {
-                partService.hidePart(welcomePart);
+                IPreferenceStore prefStore = PlatformUI.getPreferenceStore();
+                if (!prefStore.contains(PreferenceConstants.GENERAL_SHOW_HELP_AT_START_UP)) {
+                    prefStore.setDefault(PreferenceConstants.GENERAL_SHOW_HELP_AT_START_UP, true);
+                }
+                if (!prefStore.getBoolean(PreferenceConstants.GENERAL_SHOW_HELP_AT_START_UP)) {
+                    partService.hidePart(welcomePart);
+                }
             }
         });
     }
@@ -532,6 +541,7 @@ public class WelcomePart {
             setCaret(null);
         }
 
+        @Override
         public void setText(String text) {
             super.setText(text);
             hyperLinkStyleRange = new StyleRange(0, text.length(), getDefaultForeground(), getDefaultBackground());
