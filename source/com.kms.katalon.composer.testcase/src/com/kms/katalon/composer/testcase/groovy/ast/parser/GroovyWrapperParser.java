@@ -276,7 +276,7 @@ public class GroovyWrapperParser {
     }
 
     private void printString(String string) {
-        print("'" + string.replace("'", "\\'").replace("\\", "\\\\") + "'");
+        print("'" + string.replace("\\", "\\\\").replace("'", "\\'") + "'");
     }
 
     private void parseConstructorCall(ConstructorCallExpressionWrapper constructorCallExpressionWrapper) {
