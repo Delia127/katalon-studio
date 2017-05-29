@@ -549,6 +549,9 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                                 case ClearText:
                                     mobileActionHelper.clearText(testObject);
                                     break;
+                                case HideKeyboard:
+                                    mobileActionHelper.hideKeyboard();
+                                    break;
                                 case PressBack:
                                     mobileActionHelper.pressBack();
                                     break;

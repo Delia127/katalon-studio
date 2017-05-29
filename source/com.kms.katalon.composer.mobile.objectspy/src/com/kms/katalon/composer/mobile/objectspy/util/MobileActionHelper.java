@@ -22,6 +22,8 @@ import io.appium.java_client.MobileElement;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.AndroidKeyCode;
+import io.appium.java_client.ios.IOSDriver;
+import io.appium.java_client.remote.HideKeyboardStrategy;
 
 /**
  * This class duplicated codes from keywords to use for recorder
@@ -104,6 +106,26 @@ public class MobileActionHelper {
         }
         element.clear();
         element.sendKeys(text);
+    }
+
+    public void hideKeyboard() {
+        String context = driver.getContext();
+        try {
+            internalSwitchToNativeContext(driver);
+            try {
+                driver.hideKeyboard();
+            } catch (WebDriverException e) {
+                if (!(e.getMessage().startsWith(StringConstants.APPIUM_DRIVER_ERROR_JS_FAILED)
+                        && driver instanceof IOSDriver<?>)) {
+                    throw e;
+                }
+                // default hide keyboard strategy (tap outside) failed on iOS, use "Done" button
+                IOSDriver<?> iosDriver = (IOSDriver<?>) driver;
+                iosDriver.hideKeyboard(HideKeyboardStrategy.PRESS_KEY, "Done");
+            }
+        } finally { 
+            driver.context(context);
+        }
     }
 
     public void clearText(TestObject to) throws Exception {
