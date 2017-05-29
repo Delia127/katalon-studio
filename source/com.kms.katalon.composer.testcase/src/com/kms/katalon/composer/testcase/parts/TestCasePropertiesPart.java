@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.testcase.parts;
 
+import static org.apache.commons.lang.StringUtils.join;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
@@ -50,6 +52,8 @@ public class TestCasePropertiesPart extends CPart {
     private Text txtDescription;
 
     private Text txtComment;
+
+    private boolean isInputLoaded;
 
     @PostConstruct
     public void postConstruct(Composite parentComposite, MPart mPart) {
@@ -155,7 +159,7 @@ public class TestCasePropertiesPart extends CPart {
             public void modifyText(ModifyEvent e) {
                 String text = txtTag.getText();
                 parentPart.getTestCase().setTag(text);
-                setDirty(!text.equals(parentPart.getOriginalTestCase().getTag()));
+                setDirty(true);
             }
         });
         txtDescription.addModifyListener(new ModifyListener() {
@@ -164,12 +168,13 @@ public class TestCasePropertiesPart extends CPart {
             public void modifyText(ModifyEvent e) {
                 String text = txtDescription.getText();
                 parentPart.getTestCase().setDescription(text);
-                setDirty(!text.equals(parentPart.getOriginalTestCase().getDescription()));
+                setDirty(true);
             }
         });
     }
 
     public void loadInput() {
+        isInputLoaded = false;
         TestCaseEntity originalTestCase = parentPart.getOriginalTestCase();
         TestCaseEntity testCase = parentPart.getTestCase();
         populateTxtFieldValue(txtId, originalTestCase.getIdForDisplay());
@@ -179,7 +184,7 @@ public class TestCasePropertiesPart extends CPart {
         populateTxtFieldValue(txtTag, testCase.getTag());
         populateTxtFieldValue(txtDescription, testCase.getDescription());
         populateTxtFieldValue(txtComment, getComments());
-        setDirty(false);
+        isInputLoaded = true;
     }
 
     private void populateTxtFieldValue(Text txtField, Object value) {
@@ -190,8 +195,7 @@ public class TestCasePropertiesPart extends CPart {
     }
 
     private String getComments() {
-        // TODO KAT-2119 Implement Comment field of Properties Tab
-        return parentPart.getTestCase().getComment();
+        return join(parentPart.getChildTestCasePart().getCommentSteps(), "\n");
     }
 
     public MPart getMPart() {
@@ -203,8 +207,16 @@ public class TestCasePropertiesPart extends CPart {
     }
 
     public void setDirty(boolean isDirty) {
+        if (!isInputLoaded) {
+            return;
+        }
         mPart.setDirty(isDirty);
         parentPart.updateDirty();
+    }
+
+    public void preSave() {
+        // save the comment for advanced searching purpose
+        parentPart.getTestCase().setComment(txtComment.getText());
     }
 
     @PreDestroy
