@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.testcase.ast.treetable;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.eclipse.swt.graphics.Image;
 
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
@@ -55,7 +56,11 @@ public class AstStatementTreeTableNode extends AstAbstractTreeTableNode {
     }
     
     public String getDescription() {
-        return statement.getDescription();
+        final String description = statement.getDescription();
+        if (description == null) {
+            return description;
+        }
+        return StringEscapeUtils.unescapeJava(description);
     }
 
     public boolean setDescription(String description) {
