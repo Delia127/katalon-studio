@@ -29,6 +29,10 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -91,6 +95,7 @@ import com.kms.katalon.composer.mobile.objectspy.util.MobileActionHelper;
 import com.kms.katalon.composer.mobile.recorder.actions.MobileAction;
 import com.kms.katalon.composer.mobile.recorder.actions.MobileActionMapping;
 import com.kms.katalon.composer.mobile.recorder.actions.MobileActionParamValueType;
+import com.kms.katalon.composer.mobile.recorder.constants.ImageConstants;
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecoderMessagesConstants;
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecorderImageConstants;
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecorderStringConstants;
@@ -104,6 +109,7 @@ import com.kms.katalon.core.mobile.keyword.internal.IOSProperties;
 import com.kms.katalon.core.testobject.ConditionType;
 import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.core.testobject.TestObjectProperty;
+import com.kms.katalon.execution.mobile.constants.StringConstants;
 import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
 
 public class MobileRecorderDialog extends AbstractDialog implements MobileElementInspectorDialog {
@@ -154,6 +160,8 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
     private MobileReadonlyElementPropertiesComposite propertiesComposite;
 
     private MobileDeviceInfo selectDeviceInfo;
+
+    private ToolItem tltmDelete;
 
     public MobileRecorderDialog(Shell parentShell) {
         super(parentShell);
@@ -384,6 +392,8 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         lblRecordedActions.setFont(getFontBold(lblRecordedActions));
         lblRecordedActions.setText(MobileRecoderMessagesConstants.LBL_RECORDED_ACTIONS);
 
+        createActionToolbar(recordedActionComposite);
+
         Composite actionTableComposite = new Composite(recordedActionComposite, SWT.None);
         actionTableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         actionTableComposite.setLayout(new GridLayout());
@@ -454,6 +464,49 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
 
         actionTableViewer.setContentProvider(ArrayContentProvider.getInstance());
         actionTableViewer.setInput(recordedActions);
+        actionTableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                tltmDelete.setEnabled(isAnyTableItemSelected());
+            }
+
+            private boolean isAnyTableItemSelected() {
+                if (actionTableViewer == null) {
+                    return false;
+                }
+
+                ISelection selection = actionTableViewer.getSelection();
+                return selection != null && !selection.isEmpty();
+            }
+        });
+    }
+
+    private void createActionToolbar(Composite parent) {
+        ToolBar actionToolBar = new ToolBar(parent, SWT.FLAT | SWT.RIGHT);
+        actionToolBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+
+        tltmDelete = new ToolItem(actionToolBar, SWT.PUSH);
+        tltmDelete.setImage(ImageConstants.IMG_16_DELETE);
+        tltmDelete.setEnabled(false);
+        tltmDelete.setText(StringConstants.DELETE);
+        tltmDelete.addListener(SWT.Selection, new Listener() {
+            @Override
+            public void handleEvent(Event event) {
+                if (!(actionTableViewer.getSelection() instanceof IStructuredSelection)) {
+                    return;
+                }
+                IStructuredSelection selection = (IStructuredSelection) actionTableViewer.getSelection();
+                for (Object selectedObject : selection.toArray()) {
+                    if (!(selectedObject instanceof MobileActionMapping)) {
+                        continue;
+                    }
+                    MobileActionMapping selectedActionMapping = (MobileActionMapping) selectedObject;
+                    recordedActions.remove(selectedActionMapping);
+                }
+                actionTableViewer.refresh();
+            }
+        });
     }
 
     private void createActionListComposite(SashForm sashForm) {
@@ -1005,7 +1058,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
             public void run() {
                 // Quit Driver
                 if (inspectorController.getDriver() != null) {
-                    recordedActions.add(new MobileActionMapping(MobileAction.CloseApplication, null));
+                    addAdditionalActions();
                     inspectorController.closeApp();
                 }
             }
@@ -1027,6 +1080,16 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
             deviceView.closeApp();
         }
         dispose();
+    }
+
+    private void addAdditionalActions() {
+        if (recordedActions.isEmpty() || recordedActions.get(0).getAction() != MobileAction.StartApplication) {
+            recordedActions.add(0, new MobileActionMapping(MobileAction.StartApplication, null));
+        }
+        MobileActionMapping lastRecordAction = recordedActions.get(recordedActions.size() - 1);
+        if (lastRecordAction.getAction() != MobileAction.CloseApplication) {
+            recordedActions.add(new MobileActionMapping(MobileAction.CloseApplication, null));
+        }
     }
 
     public void dispose() {
