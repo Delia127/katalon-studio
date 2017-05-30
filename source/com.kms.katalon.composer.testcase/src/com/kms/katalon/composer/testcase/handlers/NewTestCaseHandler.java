@@ -35,26 +35,26 @@ import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 
 public class NewTestCaseHandler {
-	@Inject
-	IEventBroker eventBroker;
+    @Inject
+    IEventBroker eventBroker;
 
-	@Inject
-	EModelService modelService;
+    @Inject
+    EModelService modelService;
 
-	@Inject
-	MApplication application;
+    @Inject
+    MApplication application;
 
-	@Inject
-	private ESelectionService selectionService;
+    @Inject
+    private ESelectionService selectionService;
 
-	private FolderTreeEntity testCaseTreeRoot;
+    private FolderTreeEntity testCaseTreeRoot;
 
-	private String newDefaultName = StringConstants.HAND_NEW_TEST_CASE;
+    private static final String DEFAULT_NEW_TEST_CASE_NAME = StringConstants.HAND_NEW_TEST_CASE;
 
-	@CanExecute
-	private boolean canExecute() {
+    @CanExecute
+    private boolean canExecute() {
         return ProjectController.getInstance().getCurrentProject() != null;
-	}
+    }
 
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell) {
@@ -62,36 +62,9 @@ public class NewTestCaseHandler {
             Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
             ITreeEntity parentTreeEntity = findParentTreeEntity(selectedObjects);
             if (parentTreeEntity == null) {
-                if (testCaseTreeRoot == null) {
-                    return;
-                }
                 parentTreeEntity = testCaseTreeRoot;
             }
-
-            FolderEntity parentFolderEntity = (FolderEntity) parentTreeEntity.getObject();
-            TestCaseController tcController = TestCaseController.getInstance();
-            String suggestedName = tcController.getAvailableTestCaseName(parentFolderEntity, newDefaultName);
-
-            NewTestCaseDialog dialog = new NewTestCaseDialog(parentShell, parentFolderEntity, suggestedName);
-            if (dialog.open() != Dialog.OK) {
-                return;
-            }
-
-            // create new test case
-            TestCaseEntity testCaseEntity = tcController.saveNewTestCase(dialog.getEntity());
-
-            if (testCaseEntity == null) {
-                // No project found. This case won't happen but need to handle.
-                MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE,
-                        StringConstants.HAND_ERROR_MSG_UNABLE_TO_CREATE_TEST_CASE);
-                return;
-            }
-
-            eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
-            eventBroker.send(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, parentTreeEntity);
-            eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, new TestCaseTreeEntity(testCaseEntity,
-                    parentTreeEntity));
-            eventBroker.send(EventConstants.TESTCASE_OPEN, testCaseEntity);
+            doCreateNewTestCase(parentTreeEntity, eventBroker);
         } catch (FilePathTooLongException e) {
             MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE, e.getMessage());
         } catch (Exception e) {
@@ -100,45 +73,82 @@ public class NewTestCaseHandler {
                     StringConstants.HAND_ERROR_MSG_UNABLE_TO_CREATE_TEST_CASE);
         }
     }
+    public static TestCaseEntity doCreateNewTestCase(ITreeEntity parentTreeEntity, IEventBroker eventBroker)
+            throws Exception {
+        if (parentTreeEntity == null) {
+            return null;
+        }
+        FolderEntity parentFolderEntity = (FolderEntity) parentTreeEntity.getObject();
+        TestCaseController tcController = TestCaseController.getInstance();
+        String suggestedName = tcController.getAvailableTestCaseName(parentFolderEntity, DEFAULT_NEW_TEST_CASE_NAME);
 
-	public static ITreeEntity findParentTreeEntity(Object[] selectedObjects) throws Exception {
-		if (selectedObjects != null) {
-			for (Object entity : selectedObjects) {
-				if (entity instanceof ITreeEntity) {
-					Object entityObject = ((ITreeEntity) entity).getObject();
-					if (entityObject instanceof FolderEntity) {
-						FolderEntity folder = (FolderEntity) entityObject;
-						if (folder.getFolderType() == FolderType.TESTCASE) {
-							return (ITreeEntity) entity;
-						}
-					} else if (entityObject instanceof TestCaseEntity) {
-						return ((ITreeEntity) entity).getParent();
-					}
-				}
-			}
-		}
-		return null;
-	}
+        final Shell activeShell = Display.getCurrent().getActiveShell();
+        NewTestCaseDialog dialog = new NewTestCaseDialog(activeShell, parentFolderEntity, suggestedName);
+        if (dialog.open() != Dialog.OK) {
+            return null;
+        }
 
-	@Inject
-	@Optional
-	private void catchTestCaseTreeEntitiesRoot(
-			@UIEventTopic(EventConstants.EXPLORER_RELOAD_INPUT) List<Object> treeEntities) {
-		try {
-			for (Object o : treeEntities) {
-				Object entityObject = ((ITreeEntity) o).getObject();
-				if (entityObject instanceof FolderEntity) {
-					FolderEntity folder = (FolderEntity) entityObject;
-					if (folder.getFolderType() == FolderType.TESTCASE) {
-						testCaseTreeRoot = (FolderTreeEntity) o;
-						return;
-					}
-				}
-			}
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-		}
-	}
+        // create new test case
+        TestCaseEntity testCaseEntity = tcController.saveNewTestCase(dialog.getEntity());
+
+        if (testCaseEntity == null) {
+            // No project found. This case won't happen but need to handle.
+            MessageDialog.openError(activeShell, StringConstants.ERROR_TITLE,
+                    StringConstants.HAND_ERROR_MSG_UNABLE_TO_CREATE_TEST_CASE);
+            return null;
+        }
+
+        eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
+        eventBroker.send(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, parentTreeEntity);
+        eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM,
+                new TestCaseTreeEntity(testCaseEntity, parentTreeEntity));
+        eventBroker.send(EventConstants.TESTCASE_OPEN, testCaseEntity);
+        return testCaseEntity;
+    }
+
+    public static ITreeEntity findParentTreeEntity(Object[] selectedObjects) throws Exception {
+        if (selectedObjects != null) {
+            for (Object entity : selectedObjects) {
+                if (entity instanceof ITreeEntity) {
+                    Object entityObject = ((ITreeEntity) entity).getObject();
+                    if (entityObject instanceof FolderEntity) {
+                        FolderEntity folder = (FolderEntity) entityObject;
+                        if (folder.getFolderType() == FolderType.TESTCASE) {
+                            return (ITreeEntity) entity;
+                        }
+                    } else if (entityObject instanceof TestCaseEntity) {
+                        return ((ITreeEntity) entity).getParent();
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    @Inject
+    @Optional
+    private void catchTestCaseTreeEntitiesRoot(
+            @UIEventTopic(EventConstants.EXPLORER_RELOAD_INPUT) List<Object> treeEntities) {
+        try {
+            testCaseTreeRoot = findTestCaseTreeRoot(treeEntities);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+    }
+
+    private static FolderTreeEntity findTestCaseTreeRoot(List<Object> treeEntities) throws Exception {
+        for (Object o : treeEntities) {
+            Object entityObject = ((ITreeEntity) o).getObject();
+            if (!(entityObject instanceof FolderEntity)) {
+                return null;
+            }
+            FolderEntity folder = (FolderEntity) entityObject;
+            if (folder.getFolderType() == FolderType.TESTCASE) {
+                return (FolderTreeEntity) o;
+            }
+        }
+        return null;
+    }
 
     @Inject
     @Optional
