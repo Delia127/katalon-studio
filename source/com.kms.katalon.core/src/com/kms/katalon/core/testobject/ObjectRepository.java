@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -139,13 +140,14 @@ public class ObjectRepository {
             return testObject;
         }
         Map<String, Object> variablesStringMap = new HashMap<String, Object>();
-        variables.entrySet()
-                .stream()
-                .forEach(entry -> variablesStringMap.put(String.valueOf(entry.getKey()), entry.getValue()));
+        for (Entry<Object, Object> entry : variables.entrySet()) {
+            variablesStringMap.put(String.valueOf(entry.getKey()), entry.getValue());
+        }
 
         StrSubstitutor strSubtitutor = new StrSubstitutor(variablesStringMap);
-        testObject.getProperties().parallelStream().forEach(
-                objectProperty -> objectProperty.setValue(strSubtitutor.replace(objectProperty.getValue())));
+        for (TestObjectProperty objectProperty : testObject.getProperties()) {
+            objectProperty.setValue(strSubtitutor.replace(objectProperty.getValue()));
+        }
         return testObject;
     }
 

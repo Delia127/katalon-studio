@@ -21,10 +21,15 @@ public class ConsoleCommandExecutor {
         Process process = pb.start();
         process.waitFor();
         List<String> resultLines = new ArrayList<String>();
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+        BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        try {
             String line;
             while ((line = br.readLine()) != null) {
                 resultLines.add(line);
+            }
+        } finally {
+            if (br != null) {
+                br.close();
             }
         }
         return resultLines;
