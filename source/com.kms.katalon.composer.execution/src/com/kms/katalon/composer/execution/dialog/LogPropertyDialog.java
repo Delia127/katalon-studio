@@ -19,10 +19,18 @@ import com.kms.katalon.core.logging.XmlLogRecord;
 public class LogPropertyDialog extends Dialog {
 
     private XmlLogRecord record;
+    
+    private boolean isOpen = false;
 
     public LogPropertyDialog(Shell parentShell, XmlLogRecord record) {
         super(parentShell);
         this.record = record;
+    }
+    
+    @Override
+    public int open() {
+        isOpen = true;
+        return super.open();
     }
 
     @Override
@@ -79,6 +87,16 @@ public class LogPropertyDialog extends Dialog {
     @Override
     protected void setShellStyle(int arg0) {
         super.setShellStyle(SWT.CLOSE | SWT.TITLE | SWT.RESIZE);
+    }
+    
+    @Override
+    public boolean close() {
+        isOpen = false;
+        return super.close();
+    }
+
+    public boolean isOpen() {
+        return isOpen;
     }
 
     @Override
