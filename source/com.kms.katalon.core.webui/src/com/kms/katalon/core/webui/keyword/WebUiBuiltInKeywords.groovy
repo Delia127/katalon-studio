@@ -3474,13 +3474,14 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      *         represent a web element
      * @param expectedOptions
      *         displayed texts of the options to be verified if existing
+     * @param flowControl
      * @return true if expectedOptions are all present. Otherwise, false.
      * @throws StepFailedException
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_COMBOBOX)
-    public static boolean verifyOptionsPresent(TestObject to, List expectedOptions) throws StepFailedException {
-        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "verifyOptionsPresent", to, expectedOptions)
+    public static boolean verifyOptionsPresent(TestObject to, List expectedOptions, FailureHandling flowControl) throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "verifyOptionsPresent", to, expectedOptions, flowControl)
     }
 
     /**
@@ -3490,13 +3491,12 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      *         represent a web element
      * @param expectedOptions
      *         displayed texts of the options to be verified if existing
-     * @param flowControl
      * @return true if expectedOptions are all present. Otherwise, false.
      * @throws StepFailedException
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_COMBOBOX)
-    public static boolean verifyOptionsPresent(TestObject to, List expectedOptions, FailureHandling flowControl) throws StepFailedException {
-        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "verifyOptionsPresent", to, expectedOptions, flowControl)
+    public static boolean verifyOptionsPresent(TestObject to, List expectedOptions) throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "verifyOptionsPresent", to, expectedOptions)
     }
 }
