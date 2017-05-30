@@ -53,8 +53,8 @@ public class VerifyOptionsPresentKeyword extends WebUIAbstractKeyword {
                 for (WebElement childElement : new Select(webElement).getOptions()) {
                     actualOptions.add(childElement.getText())
                 }
-                boolean isEqual = actualOptions.equals(expectedOptions)
-                if (isEqual) {
+                boolean presented = actualOptions.containsAll(expectedOptions)
+                if (presented) {
                     logger.logPassed(MessageFormat.format(CoreWebuiMessageConstants.KW_MSG_TXT_OPTIONS_PRESENT, expectedOptions))
                     return true
                 }
