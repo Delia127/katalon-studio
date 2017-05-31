@@ -27,7 +27,8 @@ public class BinaryBuilderDialog extends AbstractAstBuilderWithTableDialog {
 
     private static final String LEFT_EXPRESSION_LABEL = "Left Expression";
 
-    private static final InputValueType[] defaultValueTypes = AstInputValueTypeOptionsProvider.getInputValueTypeOptions(InputValueType.Binary);
+    private static final InputValueType[] defaultValueTypes = AstInputValueTypeOptionsProvider
+            .getInputValueTypeOptions(InputValueType.Binary);
 
     private BinaryExpressionWrapper binaryExpressionWrapper;
 
@@ -77,16 +78,16 @@ public class BinaryBuilderDialog extends AbstractAstBuilderWithTableDialog {
         tableViewerColumnValueType.getColumn().setWidth(100);
         tableViewerColumnValueType.getColumn().setText(StringConstants.DIA_COL_VALUE_TYPE);
         tableViewerColumnValueType.setLabelProvider(new AstInputTypeLabelProvider());
-        tableViewerColumnValueType.setEditingSupport(new AstInputBuilderValueTypeColumnSupport(
-                tableViewer, defaultValueTypes) {
-            @Override
-            protected boolean canEdit(Object element) {
-                if (element == binaryExpressionWrapper.getOperation()) {
-                    return false;
-                }
-                return super.canEdit(element);
-            }
-        });
+        tableViewerColumnValueType
+                .setEditingSupport(new AstInputBuilderValueTypeColumnSupport(tableViewer, defaultValueTypes) {
+                    @Override
+                    protected boolean canEdit(Object element) {
+                        if (element == binaryExpressionWrapper.getOperation()) {
+                            return false;
+                        }
+                        return super.canEdit(element);
+                    }
+                });
 
         TableViewerColumn tableViewerColumnValue = new TableViewerColumn(tableViewer, SWT.NONE);
         tableViewerColumnValue.getColumn().setWidth(300);
@@ -127,15 +128,16 @@ public class BinaryBuilderDialog extends AbstractAstBuilderWithTableDialog {
 
             @Override
             protected void setValue(Object element, Object value) {
-                if (element == binaryExpressionWrapper.getOperation()
-                        && value instanceof TokenWrapper
+                if (element != binaryExpressionWrapper.getOperation()) {
+                    super.setValue(element, value);
+                    return;
+                }
+                if (value instanceof TokenWrapper
                         && !StringUtils.equals(binaryExpressionWrapper.getOperation().getText(),
                                 ((TokenWrapper) value).getText())) {
                     binaryExpressionWrapper.setOperation((TokenWrapper) value);
                     getViewer().refresh();
-                    return;
                 }
-                super.setValue(element, value);
             }
         });
     }
