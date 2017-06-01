@@ -77,6 +77,8 @@ public class ComposerExecutionMessageConstants extends NLS {
 
     public static String PA_LOG_PAUSE;
 
+    public static String PA_TOOLTIP_SHOW_FAILED_STEPS_ONLY0;
+
     public static String TRACE_WARN_MSG_UNABLE_TO_OPEN_TEST_CASE;
 
     public static String TRACE_WARN_MSG_UNABLE_TO_OPEN_KEYWORD_FILE;

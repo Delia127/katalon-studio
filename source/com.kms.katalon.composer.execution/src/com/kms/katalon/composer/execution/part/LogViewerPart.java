@@ -29,6 +29,7 @@ import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -87,7 +88,8 @@ import com.kms.katalon.composer.execution.provider.LogRecordTreeViewer;
 import com.kms.katalon.composer.execution.provider.LogRecordTreeViewerContentProvider;
 import com.kms.katalon.composer.execution.provider.LogRecordTreeViewerLabelProvider;
 import com.kms.katalon.composer.execution.provider.LogTableViewer;
-import com.kms.katalon.composer.execution.provider.LogTableViewerFilter;
+import com.kms.katalon.composer.execution.provider.LogTreeViewerFilter;
+import com.kms.katalon.composer.execution.provider.LogViewerFilter;
 import com.kms.katalon.composer.execution.trace.LogExceptionNavigator;
 import com.kms.katalon.composer.execution.tree.ILogParentTreeNode;
 import com.kms.katalon.composer.execution.tree.ILogTreeNode;
@@ -143,8 +145,12 @@ public class LogViewerPart implements EventHandler, LauncherListener {
 
     private StyledText txtStartTime, txtName, txtEslapedTime, txtMessage;
 
+    // For log table viewer
     private ToolItem btnShowAllLogs, btnShowInfoLogs, btnShowPassedLogs, btnShowFailedLogs, btnShowErrorLogs,
             btnShowWarningLogs, btnShowNotRunLogs;
+
+    // For log tree viewer
+    private ToolItem tltmFilterFailedLogs;
 
     private List<XmlLogRecord> currentRecords;
 
@@ -313,6 +319,21 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                 }
             }
         });
+
+        tltmFilterFailedLogs = new ToolItem(toolBar, SWT.CHECK);
+        tltmFilterFailedLogs.setData(StringConstants.ID,
+                ComposerExecutionPreferenceConstants.EXECUTION_TREE_VIEW_SHOW_FAILED_LOGS);
+        tltmFilterFailedLogs.setToolTipText(ComposerExecutionMessageConstants.PA_TOOLTIP_SHOW_FAILED_STEPS_ONLY0);
+        tltmFilterFailedLogs.setImage(ImageConstants.IMG_16_LOGVIEW_FAILED);
+
+        tltmFilterFailedLogs.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                performFilterLogs(tltmFilterFailedLogs, preferenceStore, treeViewer);
+            }
+        });
+
+        updateTreeToolbarItems();
     }
 
     private boolean isLaunchersWatchedValid() {
@@ -334,6 +355,8 @@ public class LogViewerPart implements EventHandler, LauncherListener {
 
         treeViewer = new LogRecordTreeViewer(compositeTreeDetails, SWT.BORDER);
         treeViewer.setContentProvider(new LogRecordTreeViewerContentProvider());
+        treeViewer.addFilter(new LogTreeViewerFilter());
+
         ColumnViewerToolTipSupport.enableFor(treeViewer, ToolTip.NO_RECREATE);
 
         TreeViewerColumn treeViewerColumn = new TreeViewerColumn(treeViewer, SWT.NONE);
@@ -740,15 +763,23 @@ public class LogViewerPart implements EventHandler, LauncherListener {
     }
 
     private void performFilterTableLogs(ToolItem button) {
+        performFilterLogs(button, preferenceStore, tableViewer);
+    }
+
+    private void performFilterLogs(ToolItem button, ScopedPreferenceStore preferenceStore, ColumnViewer viewer) {
         String prefId = (String) button.getData(StringConstants.ID);
         if (isBlank(prefId)) {
             return;
         }
+        updatePreferenceValue(preferenceStore, prefId, button.getSelection());
+        viewer.refresh();
+    }
 
+    private void updatePreferenceValue(ScopedPreferenceStore preferenceStore, String preferenceKey,
+            final boolean value) {
         try {
-            preferenceStore.setValue(prefId, button.getSelection());
+            preferenceStore.setValue(preferenceKey, value);
             preferenceStore.save();
-            tableViewer.refresh();
         } catch (IOException e) {
             logError(e);
         }
@@ -769,6 +800,11 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                 preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_WARNING_LOGS));
         btnShowNotRunLogs.setSelection(
                 preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_NOT_RUN_LOGS));
+    }
+
+    private void updateTreeToolbarItems() {
+        tltmFilterFailedLogs.setSelection(
+                preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_TREE_VIEW_SHOW_FAILED_LOGS));
     }
 
     private void createTableCompositeDetails(Composite container) {
@@ -829,7 +865,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                 return StringConstants.EMPTY;
             }
         });
-        tableViewer.addFilter(new LogTableViewerFilter());
+        tableViewer.addFilter(new LogViewerFilter());
 
         table.addListener(SWT.EraseItem, new Listener() {
             public void handleEvent(org.eclipse.swt.widgets.Event event) {

@@ -21,4 +21,6 @@ public interface ComposerExecutionPreferenceConstants {
     public static final String EXECUTION_PIN_LOG = "log.pinView";
 
     public static final String EXECUTION_ENABLE_WORD_WRAP = "log.wordWrap";
+    
+    public static final String EXECUTION_TREE_VIEW_SHOW_FAILED_LOGS = "log.treeViewer.showFailures";
 }
