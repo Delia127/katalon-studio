@@ -4,7 +4,6 @@ import org.eclipse.swt.graphics.Image;
 
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
-import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
 
 public class AstStatementTreeTableNode extends AstAbstractTreeTableNode {
@@ -58,11 +57,7 @@ public class AstStatementTreeTableNode extends AstAbstractTreeTableNode {
     }
 
     public String getDescription() {
-        final String description = statement.getDescription();
-        if (description == null) {
-            return description;
-        }
-        return GroovyWrapperParser.unescapeJavaString(description);
+        return statement.getDescription();
     }
 
     public boolean setDescription(String description) {
