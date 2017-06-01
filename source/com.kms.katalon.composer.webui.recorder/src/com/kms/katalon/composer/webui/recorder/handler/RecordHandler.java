@@ -7,7 +7,6 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -21,7 +20,6 @@ import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
-import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
@@ -30,7 +28,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
+import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
@@ -38,6 +38,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressi
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
+import com.kms.katalon.composer.testcase.handlers.NewTestCaseHandler;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
 import com.kms.katalon.composer.testcase.parts.TestCaseCompositePart;
 import com.kms.katalon.composer.testcase.parts.TestCasePart;
@@ -47,11 +48,13 @@ import com.kms.katalon.composer.webui.recorder.dialog.RecorderDialog;
 import com.kms.katalon.composer.webui.recorder.util.HTMLActionUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.objectspy.dialog.AddToObjectRepositoryDialog.AddToObjectRepositoryDialogResult;
 import com.kms.katalon.objectspy.element.HTMLElement;
 import com.kms.katalon.objectspy.element.HTMLFrameElement;
@@ -83,39 +86,22 @@ public class RecordHandler {
                 if (!canExecute()) {
                     return;
                 }
-                execute(Display.getCurrent().getActiveShell());
+                execute();
             }
         });
     }
 
     @CanExecute
     public boolean canExecute() {
-        if (ProjectController.getInstance().getCurrentProject() != null) {
-            MPartStack composerStack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID,
-                    application);
-            if (composerStack.isVisible() && composerStack.getSelectedElement() != null) {
-                MPart part = (MPart) composerStack.getSelectedElement();
-                if (part.getElementId().startsWith(IdConstants.TEST_CASE_PARENT_COMPOSITE_PART_ID_PREFIX)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return ProjectController.getInstance().getCurrentProject() != null;
     }
 
     @Execute
-    public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell activeShell) {
+    public void execute() {
         try {
-            MPartStack composerStack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID,
-                    application);
-            MPart selectedPart = (MPart) composerStack.getSelectedElement();
-            if (!selectedPart.getElementId().startsWith(IdConstants.TEST_CASE_PARENT_COMPOSITE_PART_ID_PREFIX)
-                    || !(selectedPart.getObject() instanceof TestCaseCompositePart)) {
-                return;
-            }
-            final TestCaseCompositePart testCaseCompositePart = (TestCaseCompositePart) selectedPart.getObject();
-            boolean isVerified = verifyTestCase(activeShell, testCaseCompositePart);
-            if (!isVerified) {
+            Shell activeShell = Display.getCurrent().getActiveShell();
+            TestCaseCompositePart testCaseCompositePart = getSelectedTestCasePart();
+            if (testCaseCompositePart != null && !verifyTestCase(testCaseCompositePart)) {
                 return;
             }
             final RecorderDialog recordDialog = new RecorderDialog(activeShell,
@@ -124,58 +110,13 @@ public class RecordHandler {
             if (responseCode != Window.OK) {
                 return;
             }
-            final TestCasePart testCasePart = testCaseCompositePart.getChildTestCasePart();
-            Job job = new Job(StringConstants.JOB_GENERATE_SCRIPT_MESSAGE) {
-                @Override
-                protected IStatus run(IProgressMonitor monitor) {
-                    try {
-                        monitor.beginTask(StringConstants.JOB_GENERATE_SCRIPT_MESSAGE,
-                                recordDialog.getActions().size() + recordDialog.getElements().size());
-                        AddToObjectRepositoryDialogResult folderSelectionResult = recordDialog
-                                .getTargetFolderTreeEntity();
-                        final List<StatementWrapper> generatedStatementWrappers = generateStatementWrappersFromRecordedActions(
-                                recordDialog.getActions(), recordDialog.getElements(), testCasePart,
-                                folderSelectionResult, monitor);
-                        sync.syncExec(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    testCasePart.addDefaultImports();
-                                    testCasePart.addStatements(generatedStatementWrappers, NodeAddType.InserAfter);
-                                    testCaseCompositePart.refreshScript();
-                                } catch (Exception e) {
-                                    LoggerSingleton.logError(e);
-                                }
-                            }
-                        });
-
-                        FolderTreeEntity targetFolderTreeEntity = folderSelectionResult.getSelectedParentFolder();
-                        eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY,
-                                targetFolderTreeEntity.getParent());
-                        eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, targetFolderTreeEntity);
-                        eventBroker.send(EventConstants.EXPLORER_EXPAND_TREE_ENTITY, targetFolderTreeEntity);
-
-                        return Status.OK_STATUS;
-                    } catch (final Exception e) {
-                        sync.syncExec(new Runnable() {
-                            @Override
-                            public void run() {
-                                MessageDialog.openError(Display.getCurrent().getActiveShell(),
-                                        StringConstants.ERROR_TITLE,
-                                        StringConstants.HAND_ERROR_MSG_CANNOT_GEN_TEST_STEPS);
-                                LoggerSingleton.logError(e);
-                            }
-                        });
-                        LoggerSingleton.logError(e);
-                        return Status.CANCEL_STATUS;
-                    } finally {
-                        monitor.done();
-                    }
-                }
-            };
-
-            job.setUser(true);
-            job.schedule();
+            final AddToObjectRepositoryDialogResult folderSelectionResult = recordDialog.getTargetFolderTreeEntity();
+            final List<HTMLActionMapping> recordedActions = recordDialog.getActions();
+            final List<HTMLPageElement> recordedElements = recordDialog.getElements();
+            if (testCaseCompositePart == null) {
+                testCaseCompositePart = createNewTestCase();
+            }
+            doGenerateTestScripts(testCaseCompositePart, folderSelectionResult, recordedActions, recordedElements);
         } catch (Exception e) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
                     StringConstants.HAND_ERROR_MSG_CANNOT_GEN_TEST_STEPS);
@@ -183,7 +124,97 @@ public class RecordHandler {
         }
     }
 
-    private boolean verifyTestCase(Shell activeShell, TestCaseCompositePart testCaseCompositePart) throws Exception {
+    private TestCaseCompositePart createNewTestCase() throws Exception {
+        TestCaseEntity testCase = NewTestCaseHandler.doCreateNewTestCase(
+                new FolderTreeEntity(FolderController.getInstance()
+                        .getTestCaseRoot(ProjectController.getInstance().getCurrentProject()), null),
+                EventBrokerSingleton.getInstance().getEventBroker());
+        if (testCase == null) {
+            return null;
+        }
+
+        return getTestCasePartByTestCase(testCase);
+    }
+
+    private void doGenerateTestScripts(final TestCaseCompositePart testCaseCompositePart,
+            final AddToObjectRepositoryDialogResult folderSelectionResult,
+            final List<HTMLActionMapping> recordedActions, final List<HTMLPageElement> recordedElements) {
+        if (testCaseCompositePart == null) {
+            return;
+        }
+        final TestCasePart testCasePart = testCaseCompositePart.getChildTestCasePart();
+        Job job = new Job(StringConstants.JOB_GENERATE_SCRIPT_MESSAGE) {
+            @Override
+            protected IStatus run(IProgressMonitor monitor) {
+                try {
+                    monitor.beginTask(StringConstants.JOB_GENERATE_SCRIPT_MESSAGE,
+                            recordedActions.size() + recordedElements.size());
+                    final List<StatementWrapper> generatedStatementWrappers = generateStatementWrappersFromRecordedActions(
+                            recordedActions, recordedElements, testCasePart, folderSelectionResult, monitor);
+                    sync.syncExec(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                testCasePart.addDefaultImports();
+                                testCasePart.addStatements(generatedStatementWrappers, NodeAddType.InserAfter);
+                                testCaseCompositePart.refreshScript();
+                                testCaseCompositePart.save();
+                            } catch (Exception e) {
+                                LoggerSingleton.logError(e);
+                            }
+                        }
+                    });
+
+                    FolderTreeEntity targetFolderTreeEntity = folderSelectionResult.getSelectedParentFolder();
+                    eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, targetFolderTreeEntity.getParent());
+                    eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, targetFolderTreeEntity);
+                    eventBroker.send(EventConstants.EXPLORER_EXPAND_TREE_ENTITY, targetFolderTreeEntity);
+
+                    return Status.OK_STATUS;
+                } catch (final Exception e) {
+                    sync.syncExec(new Runnable() {
+                        @Override
+                        public void run() {
+                            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
+                                    StringConstants.HAND_ERROR_MSG_CANNOT_GEN_TEST_STEPS);
+                            LoggerSingleton.logError(e);
+                        }
+                    });
+                    LoggerSingleton.logError(e);
+                    return Status.CANCEL_STATUS;
+                } finally {
+                    monitor.done();
+                }
+            }
+        };
+
+        job.setUser(true);
+        job.schedule();
+    }
+
+    private TestCaseCompositePart getSelectedTestCasePart() throws Exception {
+        MPartStack composerStack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID,
+                application);
+        MPart selectedPart = (MPart) composerStack.getSelectedElement();
+        if (selectedPart == null
+                || !selectedPart.getElementId().startsWith(IdConstants.TEST_CASE_PARENT_COMPOSITE_PART_ID_PREFIX)
+                || !(selectedPart.getObject() instanceof TestCaseCompositePart)) {
+            return null;
+        }
+        return (TestCaseCompositePart) selectedPart.getObject();
+    }
+
+    private TestCaseCompositePart getTestCasePartByTestCase(TestCaseEntity testCase) throws Exception {
+        MPart selectedPart = (MPart) modelService.find(EntityPartUtil.getTestCaseCompositePartId(testCase.getId()),
+                application);
+        if (selectedPart == null || !(selectedPart.getObject() instanceof TestCaseCompositePart)) {
+            return null;
+        }
+        return (TestCaseCompositePart) selectedPart.getObject();
+    }
+
+    private boolean verifyTestCase(TestCaseCompositePart testCaseCompositePart) throws Exception {
+        Shell activeShell = Display.getCurrent().getActiveShell();
         if (testCaseCompositePart.getDirty().isDirty()) {
             if (!MessageDialog.openConfirm(activeShell, StringConstants.WARN,
                     StringConstants.HAND_ERROR_MSG_PLS_SAVE_TEST_CASE)) {

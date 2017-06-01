@@ -29,7 +29,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
+import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
@@ -42,15 +44,18 @@ import com.kms.katalon.composer.mobile.recorder.utils.MobileElementConverter;
 import com.kms.katalon.composer.mobile.util.MobileUtil;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
+import com.kms.katalon.composer.testcase.handlers.NewTestCaseHandler;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
 import com.kms.katalon.composer.testcase.parts.TestCaseCompositePart;
 import com.kms.katalon.composer.testcase.parts.TestCasePart;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
 
 public class OpenMobileRecorderHandler {
@@ -104,20 +109,17 @@ public class OpenMobileRecorderHandler {
             }
 
             if (!isRecorderDialogRunning()) {
-                MPart selectedPart = getSelectedPart();
-                if (selectedPart == null) {
+                TestCaseCompositePart testCaseCompositePart = getSelectedTestCasePart();
+                if (testCaseCompositePart != null && !verifyTestCase(testCaseCompositePart)) {
                     return false;
                 }
-                final TestCaseCompositePart testCaseCompositePart = (TestCaseCompositePart) selectedPart.getObject();
-                boolean isVerified = verifyTestCase(testCaseCompositePart);
-                if (!isVerified) {
-                    return false;
-                }
-
                 recorderDialog = new MobileRecorderDialog(activeShell);
                 int responseCode = recorderDialog.open();
                 if (responseCode != Window.OK) {
                     return false;
+                }
+                if (testCaseCompositePart == null) {
+                    testCaseCompositePart = createNewTestCase();
                 }
                 exportRecordedActionsToScripts(recorderDialog.getRecordedActions(),
                         recorderDialog.getTargetFolderEntity(), recorderDialog.getSelectDeviceInfo(),
@@ -139,9 +141,42 @@ public class OpenMobileRecorderHandler {
         }
     }
 
+    private TestCaseCompositePart createNewTestCase() throws Exception {
+        TestCaseEntity testCase = NewTestCaseHandler.doCreateNewTestCase(
+                new FolderTreeEntity(FolderController.getInstance()
+                        .getTestCaseRoot(ProjectController.getInstance().getCurrentProject()), null),
+                EventBrokerSingleton.getInstance().getEventBroker());
+        if (testCase == null) {
+            return null;
+        }
+
+        return getTestCasePartByTestCase(testCase);
+    }
+    
+    private TestCaseCompositePart getTestCasePartByTestCase(TestCaseEntity testCase) throws Exception {
+        MPart selectedPart = (MPart) modelService.find(EntityPartUtil.getTestCaseCompositePartId(testCase.getId()),
+                application);
+        if (selectedPart == null || !(selectedPart.getObject() instanceof TestCaseCompositePart)) {
+            return null;
+        }
+        return (TestCaseCompositePart) selectedPart.getObject();
+    }
+
+    private TestCaseCompositePart getSelectedTestCasePart() {
+        MPart selectedPart = getSelectedPart();
+        if (selectedPart == null || !(selectedPart.getObject() instanceof TestCaseCompositePart)) {
+            return null;
+        }
+        final TestCaseCompositePart testCaseCompositePart = (TestCaseCompositePart) selectedPart.getObject();
+        return testCaseCompositePart;
+    }
+
     private void exportRecordedActionsToScripts(List<MobileActionMapping> recordedActions,
             FolderTreeEntity targetFolderTreeEntity, MobileDeviceInfo mobileDeviceInfo,
             TestCaseCompositePart testCaseCompositePart) {
+        if (testCaseCompositePart == null) {
+            return;
+        }
         Job job = new Job(MobileRecoderMessagesConstants.MSG_TASK_GENERATE_SCRIPT) {
             @Override
             protected IStatus run(IProgressMonitor monitor) {
@@ -156,6 +191,7 @@ public class OpenMobileRecorderHandler {
                                 testCasePart.addDefaultImports();
                                 testCasePart.addStatements(generatedStatementWrappers, NodeAddType.InserAfter);
                                 testCaseCompositePart.refreshScript();
+                                testCaseCompositePart.save();
                             } catch (Exception e) {
                                 LoggerSingleton.logError(e);
                             }
@@ -244,15 +280,7 @@ public class OpenMobileRecorderHandler {
 
     @CanExecute
     public boolean canExecute() {
-        if (ProjectController.getInstance().getCurrentProject() == null) {
-            return false;
-        }
-
-        MPart selectedPart = getSelectedPart();
-        if (selectedPart == null) {
-            return false;
-        }
-        return selectedPart.getElementId().startsWith(IdConstants.TEST_CASE_PARENT_COMPOSITE_PART_ID_PREFIX);
+        return ProjectController.getInstance().getCurrentProject() != null;
     }
 
     protected MPart getSelectedPart() {
