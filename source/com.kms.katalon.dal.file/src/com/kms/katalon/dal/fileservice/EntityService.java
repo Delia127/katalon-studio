@@ -84,7 +84,7 @@ public final class EntityService {
                 String name = jarEntry.getName();
                 if (name.startsWith(BIDING_FILES_LOCATION) && name.endsWith(".xml")) {
                     String mappingFileName = name.replace(BIDING_FILES_LOCATION + "/", "");
-                    File tmpFile = new File(System.getProperty("java.io.tmpdir") + mappingFileName);
+                    File tmpFile = new File(System.getProperty("java.io.tmpdir"), mappingFileName);
                     FileOutputStream fos = new FileOutputStream(tmpFile);
                     IOUtils.copy(jar.getInputStream(jarEntry), fos);
                     bindingFiles.add(tmpFile);
@@ -94,7 +94,7 @@ public final class EntityService {
             }
             jar.close();
         } else { // Run with IDE
-            File mapping = new File(path + BIDING_FILES_LOCATION);
+            File mapping = new File(path, BIDING_FILES_LOCATION);
             for (File xmlFile : mapping.listFiles(EntityFileServiceManager.fileFilter)) {
                 bindingFiles.add(xmlFile);
             }
