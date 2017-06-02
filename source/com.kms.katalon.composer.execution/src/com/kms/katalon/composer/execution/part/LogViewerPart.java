@@ -128,7 +128,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
     private Label lblNumTestcases, lblNumFailures, lblNumPasses, lblNumErrors;
 
     private Composite parentComposite;
-    
+
     private IDEObservableLauncher rootLauncherWatched;
 
     private List<IDEObservableLauncher> launchersWatched;
@@ -166,17 +166,20 @@ public class LogViewerPart implements EventHandler, LauncherListener {
             MDirectToolItem toolItem = (MDirectToolItem) toolbarElement;
             switch (toolItem.getElementId()) {
                 case IdConstants.LOG_VIEWER_TOOL_ITEM_TREE_ID:
-                    toolItem.setSelected(preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE));
+                    toolItem.setSelected(preferenceStore
+                            .getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE));
                     break;
                 case IdConstants.LOG_VIEWER_TOOL_ITEM_PIN_ID:
-                    toolItem.setSelected(preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_PIN_LOG));
+                    toolItem.setSelected(
+                            preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_PIN_LOG));
                     break;
             }
         }
     }
 
     private void updateMenuStatus(MPart mpart) {
-        boolean isShowLogAsTree = preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE);
+        boolean isShowLogAsTree = preferenceStore
+                .getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE);
         for (MMenu menu : mpart.getMenus()) {
             if (!IdConstants.LOG_VIEWER_MENU_TREEVIEW.equals(menu.getElementId())) {
                 menu.setVisible(true);
@@ -189,7 +192,8 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                     if (childElement instanceof MDirectMenuItem
                             && IdConstants.LOG_VIEWER_MENU_ITEM_WORD_WRAP.equals(childElement.getElementId())) {
                         MDirectMenuItem wordWrapElement = (MDirectMenuItem) childElement;
-                        wordWrapElement.setSelected(preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_ENABLE_WORD_WRAP));
+                        wordWrapElement.setSelected(preferenceStore
+                                .getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_ENABLE_WORD_WRAP));
                     }
                 }
             } else {
@@ -218,7 +222,8 @@ public class LogViewerPart implements EventHandler, LauncherListener {
     private void createLogViewerControl(Composite parent) {
         disposeChildrenFromIndex(parent, AFTER_STATUS_MENU_INDEX);
 
-        boolean showLogsAsTree = preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE);
+        boolean showLogsAsTree = preferenceStore
+                .getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE);
 
         if (showLogsAsTree) {
             createTreeCompositeContainer(parent);
@@ -245,8 +250,8 @@ public class LogViewerPart implements EventHandler, LauncherListener {
         eventBroker.subscribe(EventConstants.EXPLORER_RELOAD_INPUT, this);
         eventBroker.subscribe(EventConstants.CONSOLE_LOG_WORD_WRAP, this);
 
-        PlatformUI.getWorkbench().getActiveWorkbenchWindow().getPages()[0].addPostSelectionListener(
-                IConsoleConstants.ID_CONSOLE_VIEW, new ISelectionListener() {
+        PlatformUI.getWorkbench().getActiveWorkbenchWindow().getPages()[0]
+                .addPostSelectionListener(IConsoleConstants.ID_CONSOLE_VIEW, new ISelectionListener() {
 
                     @Override
                     public void selectionChanged(IWorkbenchPart part, ISelection selection) {
@@ -452,11 +457,12 @@ public class LogViewerPart implements EventHandler, LauncherListener {
 
                             String exceptionLogString = exceptionLogEntry.toString();
                             if (LogExceptionFilter.isTestCaseScript(exceptionLogEntry.getClassName())) {
-                                TestCaseEntity testCase = LogExceptionFilter.getTestCaseByLogException(exceptionLogEntry);
+                                TestCaseEntity testCase = LogExceptionFilter
+                                        .getTestCaseByLogException(exceptionLogEntry);
                                 if (testCase != null) {
                                     String testCaseId = testCase.getIdForDisplay();
-                                    exceptionLogString = exceptionLogEntry.toString().replace(
-                                            exceptionLogEntry.getClassName(), testCaseId);
+                                    exceptionLogString = exceptionLogEntry.toString()
+                                            .replace(exceptionLogEntry.getClassName(), testCaseId);
                                 }
                             }
 
@@ -477,9 +483,8 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                     txtMessage.setStyleRanges(styleRanges.toArray(new StyleRange[0]));
 
                     while (txtMessage.getListeners(SWT.MouseDown).length > 1) {
-                        txtMessage.removeListener(
-                                SWT.MouseDown,
-                                txtMessage.getListeners(SWT.MouseDown)[txtMessage.getListeners(SWT.MouseDown).length - 1]);
+                        txtMessage.removeListener(SWT.MouseDown, txtMessage
+                                .getListeners(SWT.MouseDown)[txtMessage.getListeners(SWT.MouseDown).length - 1]);
                     }
 
                     txtMessage.addListener(SWT.MouseDown, mouseDownListener);
@@ -508,6 +513,8 @@ public class LogViewerPart implements EventHandler, LauncherListener {
             }
         }
     };
+
+    private LogPropertyDialog dialog;
 
     private void showTreeLogProperties() throws Exception {
         StructuredSelection selection = (StructuredSelection) treeViewer.getSelection();
@@ -551,16 +558,16 @@ public class LogViewerPart implements EventHandler, LauncherListener {
         scrolledComposite.setLayout(new GridLayout());
         scrolledComposite.setExpandHorizontal(true);
         scrolledComposite.setExpandVertical(true);
-        
+
         final Color whiteBackgroundColor = ColorUtil.getWhiteBackgroundColor();
         scrolledComposite.setBackground(whiteBackgroundColor);
-        
+
         Composite compositeTreeNodeProperties = new Composite(scrolledComposite, SWT.BORDER);
         compositeTreeNodeProperties.setLayout(new GridLayout(4, false));
         compositeTreeNodeProperties.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         compositeTreeNodeProperties.setBackground(whiteBackgroundColor);
         scrolledComposite.setContent(compositeTreeNodeProperties);
-        
+
         Label lblName = new Label(compositeTreeNodeProperties, SWT.NONE);
         lblName.setFont(JFaceResources.getFontRegistry().getBold(""));
         lblName.setText(ComposerExecutionMessageConstants.PA_LBL_NAME);
@@ -604,7 +611,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
         txtMessage.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
         txtMessage.setEditable(false);
         setWrapTxtMessage();
-        
+
         scrolledComposite.setMinSize(compositeTreeNodeProperties.computeSize(SWT.DEFAULT, SWT.DEFAULT));
     }
 
@@ -702,7 +709,8 @@ public class LogViewerPart implements EventHandler, LauncherListener {
         btnShowErrorLogs.setImage(ImageConstants.IMG_16_LOGVIEW_ERROR);
 
         btnShowWarningLogs = new ToolItem(toolBar, SWT.CHECK);
-        btnShowWarningLogs.setData(StringConstants.ID, ComposerExecutionPreferenceConstants.EXECUTION_SHOW_WARNING_LOGS);
+        btnShowWarningLogs.setData(StringConstants.ID,
+                ComposerExecutionPreferenceConstants.EXECUTION_SHOW_WARNING_LOGS);
         btnShowWarningLogs.setText(StringConstants.PA_TIP_WARNING);
         btnShowWarningLogs.setToolTipText(StringConstants.PA_TIP_WARNING);
         btnShowWarningLogs.setImage(ImageConstants.IMG_16_LOGVIEW_WARNING);
@@ -747,13 +755,20 @@ public class LogViewerPart implements EventHandler, LauncherListener {
     }
 
     private void updateTableButtons() {
-        btnShowAllLogs.setSelection(preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_ALL_LOGS));
-        btnShowInfoLogs.setSelection(preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_INFO_LOGS));
-        btnShowPassedLogs.setSelection(preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_PASSED_LOGS));
-        btnShowFailedLogs.setSelection(preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_FAILED_LOGS));
-        btnShowErrorLogs.setSelection(preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_ERROR_LOGS));
-        btnShowWarningLogs.setSelection(preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_WARNING_LOGS));
-        btnShowNotRunLogs.setSelection(preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_NOT_RUN_LOGS));
+        btnShowAllLogs
+                .setSelection(preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_ALL_LOGS));
+        btnShowInfoLogs.setSelection(
+                preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_INFO_LOGS));
+        btnShowPassedLogs.setSelection(
+                preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_PASSED_LOGS));
+        btnShowFailedLogs.setSelection(
+                preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_FAILED_LOGS));
+        btnShowErrorLogs.setSelection(
+                preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_ERROR_LOGS));
+        btnShowWarningLogs.setSelection(
+                preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_WARNING_LOGS));
+        btnShowNotRunLogs.setSelection(
+                preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_NOT_RUN_LOGS));
     }
 
     private void createTableCompositeDetails(Composite container) {
@@ -865,6 +880,9 @@ public class LogViewerPart implements EventHandler, LauncherListener {
     }
 
     private void showRecordProperties() {
+        if (dialog != null && dialog.isOpen()) {
+            return;
+        }
         int index = table.getSelectionIndex();
 
         if (index == -1) {
@@ -873,7 +891,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
 
         TableItem selectedItem = table.getItem(index);
         XmlLogRecord selectedRecord = (XmlLogRecord) selectedItem.getData();
-        LogPropertyDialog dialog = new LogPropertyDialog(table.getDisplay().getActiveShell(), selectedRecord);
+        dialog = new LogPropertyDialog(table.getDisplay().getActiveShell(), selectedRecord);
         dialog.open();
     }
 
@@ -898,8 +916,8 @@ public class LogViewerPart implements EventHandler, LauncherListener {
 
                 final int numExecuted = result.getExecutedTestCases();
                 progressBar.setSelection(numExecuted * INCREMENT);
-                lblNumTestcases.setText(Integer.toString(numExecuted) + "/"
-                        + Integer.toString(result.getTotalTestCases()));
+                lblNumTestcases
+                        .setText(Integer.toString(numExecuted) + "/" + Integer.toString(result.getTotalTestCases()));
                 // update
                 lblNumPasses.setText(Integer.toString(result.getNumPasses()));
                 lblNumFailures.setText(Integer.toString(result.getNumFailures()));
@@ -940,7 +958,8 @@ public class LogViewerPart implements EventHandler, LauncherListener {
         isBusy = true;
 
         try {
-            boolean showLogsAsTree = preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE);
+            boolean showLogsAsTree = preferenceStore
+                    .getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE);
 
             if (showLogsAsTree) {
                 treeViewer.addRecords(records);
@@ -1002,8 +1021,6 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                 refreshPart(launcherListener);
             }
 
-            
-
             private void clearWatchedLaunchers(final LauncherListener launcherListener) {
                 selectedLauncherWatchedIndex = -1;
                 if (launchersWatched == null || launchersWatched.isEmpty()) {
@@ -1017,7 +1034,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
             }
         }).start();
     }
-    
+
     private void refreshPart(final LauncherListener launcherListener) {
         sync.syncExec(new Runnable() {
 
@@ -1151,9 +1168,8 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                 });
                 break;
             case UPDATE_RESULT:
-                if (launcherWatched != null
-                        && StringUtils.defaultIfEmpty(launcherWatched.getId(), "").equals(
-                                notifiedObject.getLauncherId())) {
+                if (launcherWatched != null && StringUtils.defaultIfEmpty(launcherWatched.getId(), "")
+                        .equals(notifiedObject.getLauncherId())) {
                     updateProgressBar();
                 }
                 break;
@@ -1161,11 +1177,11 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                 break;
         }
     }
-    
+
     public List<IDEObservableLauncher> getLaunchersWatched() {
         return launchersWatched;
     }
-    
+
     public void changeSelectedLaucherWatchedById(String launcherId) {
         if (StringUtils.isEmpty(launcherId)) {
             return;
