@@ -375,7 +375,7 @@
 									<jr:listContents height="20" width="345">
 										<image scaleImage="RealSize" hAlign="Center">
 											<reportElement x="0" y="0" width="290" height="0" isPrintWhenDetailOverflows="true" uuid="a9247211-a6a1-444a-9eaa-5987ca97180b"/>
-											<imageExpression><![CDATA[$P{LOG_FOLDER} + java.io.File.separator + $F{_THIS}]]></imageExpression>
+											<imageExpression><![CDATA[(new File($F{_THIS}).isAbsolute()) ? ($F{_THIS}) : ($P{LOG_FOLDER} + java.io.File.separator + $F{_THIS})]]></imageExpression>
 										</image>
 									</jr:listContents>
 								</jr:list>
