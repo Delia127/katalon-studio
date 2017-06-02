@@ -1,7 +1,7 @@
 package com.kms.katalon.core.logging.model;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 
@@ -10,6 +10,7 @@ public class TestCaseLogRecord extends AbstractLogRecord {
 
     public TestCaseLogRecord(String name) {
         super(name);
+        setType(ILogRecord.LOG_TYPE_TEST_CASE);
     }
 
     /**
@@ -28,33 +29,30 @@ public class TestCaseLogRecord extends AbstractLogRecord {
     }
 
     @Override
-    public ILogRecord[] getChildRecords() {
-        List<ILogRecord> resultRecords = new ArrayList<ILogRecord>();
-        for (ILogRecord logRecord : childRecords) {
-            if (logRecord instanceof TestStepLogRecord) {
-                resultRecords.add(logRecord);
-            }
-        }
-        return resultRecords.toArray(new ILogRecord[resultRecords.size()]);
+    public List<ILogRecord> getChildren() {
+        return super.getChildren().stream()
+                .filter(item -> item instanceof TestStepLogRecord)
+                .collect(Collectors.toList());
     }
 
     @Override
     public TestStatus getStatus() {
-        TestStatus testStatus = super.getStatus(); 
+        TestStatus testStatus = super.getStatus();
 
         if (isInterrupted()) {
             testStatus.setStatusValue(TestStatusValue.INCOMPLETE);
             return testStatus;
         }
-        
+
         if (getChildRecords().length == 0) {
             testStatus.setStatusValue(TestStatusValue.PASSED);
-            if (childRecords.size() > 0) {
-                ILogRecord logRecord = childRecords.get(childRecords.size() - 1);
+            if (children.size() > 0) {
+                ILogRecord logRecord = children.get(children.size() - 1);
                 setMessage(logRecord.getMessage());
                 return logRecord.getStatus();
             }
         }
+
         return testStatus;
     }
 }

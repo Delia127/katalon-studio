@@ -1,11 +1,11 @@
 package com.kms.katalon.core.logging.model;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -13,7 +13,7 @@ import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 
 public class TestSuiteLogRecord extends AbstractLogRecord {
-    
+
     private String deviceName;
 
     private String devicePlatform;
@@ -26,6 +26,7 @@ public class TestSuiteLogRecord extends AbstractLogRecord {
         super(name);
         this.logFolder = logFolder;
         runData = new HashMap<String, String>();
+        setType(ILogRecord.LOG_TYPE_TEST_SUITE);
     }
 
     public String getBrowser() {
@@ -57,17 +58,11 @@ public class TestSuiteLogRecord extends AbstractLogRecord {
     }
 
     private int getTotalTestCasesWithTestStatusValue(TestStatusValue testStatusValue) {
-        ILogRecord[] childLogRecords = getChildRecords();
-        int total = 0;
-        for (ILogRecord childLogRecord : childLogRecords) {
-            if (childLogRecord instanceof TestCaseLogRecord) {
-                TestCaseLogRecord testCaseLog = (TestCaseLogRecord) childLogRecord;
-                if (testStatusValue == null || testCaseLog.getStatus().statusValue == testStatusValue) {
-                    total++;
-                }
-            }
-        }
-        return total;
+        long count = children.parallelStream()
+                .filter(item -> (item instanceof TestCaseLogRecord) && (testStatusValue == null
+                        || ((TestCaseLogRecord) item).getStatus().statusValue == testStatusValue))
+                .count();
+        return Math.toIntExact(count);
     }
 
     public String getDeviceName() {
@@ -109,17 +104,28 @@ public class TestSuiteLogRecord extends AbstractLogRecord {
     }
 
     public <T extends ILogRecord> int getChildIndex(T child) {
-        return Arrays.asList(getChildRecords()).indexOf(child);
+        return getChildren().indexOf(child);
     }
 
     public List<String> getLogFiles() {
-        List<String> logFiles = new ArrayList<String>();
-        for (String childFile : new File(getLogFolder()).list()) {
-            if (!FilenameUtils.getExtension(childFile).equals("log")) {
-                continue;
-            }
-            logFiles.add(childFile);
+        return Arrays.asList(new File(getLogFolder()).list())
+                .stream()
+                .filter(item -> FilenameUtils.getExtension(item).equals("log"))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public String getSystemOutMsg() {
+        return getJUnitMessage();
+    }
+
+    @Override
+    public String getSystemErrorMsg() {
+        TestStatus status = getStatus();
+        String stackTrace = status.getStackTrace();
+        if (status.getStatusValue().isError()) {
+            return getJUnitMessage() + stackTrace;
         }
-        return logFiles;
+        return stackTrace;
     }
 }

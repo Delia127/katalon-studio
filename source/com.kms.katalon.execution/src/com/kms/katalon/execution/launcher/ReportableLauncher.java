@@ -169,7 +169,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_GENERATE_REPORT);
             TestSuiteLogRecord suiteLog = ReportUtil.generate(getRunConfig().getExecutionSetting().getFolderPath());
             File reportFolder = getReportFolder();
-            
+
             setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_HTML);
             ReportUtil.writeHtmlReport(suiteLog, reportFolder);
 
@@ -178,7 +178,13 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 
             setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_SIMPLE_HTML);
             ReportUtil.writeSimpleHTMLReport(suiteLog, reportFolder);
-            
+
+            setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_JSON);
+            ReportUtil.writeJsonReport(suiteLog, reportFolder);
+
+            setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_JUNIT);
+            ReportUtil.writeJUnitReport(suiteLog, reportFolder);
+
             copyReport();
             return suiteLog;
         } catch (Exception e) {

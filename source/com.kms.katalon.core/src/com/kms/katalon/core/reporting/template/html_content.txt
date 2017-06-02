@@ -1,12 +1,15 @@
-<title></title>
+<!DOCTYPE html>
+<html>
+<head>
+<title>Katalon HTML Report</title>
 </head>
 <body>
 <div id="javascript-disabled">
-  <h1>Opening qAutomate Framework log failed</h1>
+  <h1>Failed to open Katalon report</h1>
+  <p>Ensure that:</p>
   <ul>
-    <li>Verify that you have <b>JavaScript enabled</b> in your browser.</li>
-    <li>Make sure you are using a <b>modern enough browser</b>. Firefox 3.5, IE 8, or equivalent is required, newer browsers are recommended.</li>
-    <li>Check are there messages in your browser's <b>JavaScript error log</b>. Please report the problem if you suspect you have encountered a bug.</li>
+    <li>You have <b>JavaScript enabled</b> in your browser.</li>
+    <li>You are using a <b>modern browser</b>. Firefox 3.5, IE 8, or equivalent is required, newer browsers are recommended.</li>
   </ul>
 </div>
 <script type="text/javascript">removeJavaScriptDisabledWarning();</script>
