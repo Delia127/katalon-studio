@@ -959,10 +959,10 @@ public class LogViewerPart implements EventHandler, LauncherListener {
     private synchronized void changeObservedLauncher(final Event event) throws Exception {
         final LauncherListener launcherListener = this;
         new Thread(new Runnable() {
-            private void getWatchedLauncherFromEvent() {
+            private IDEObservableLauncher getWatchedLauncherFromEvent() {
                 Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
                 if (!(object instanceof String)) {
-                    return;
+                    return null;
                 }
 
                 String launcherId = (String) object;
@@ -970,16 +970,9 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                     if (!launcher.getId().equals(launcherId)) {
                         continue;
                     }
-                    if (launcher instanceof IDEObservableParentLauncher) {
-                        rootLauncherWatched = (IDEObservableParentLauncher) launcher;
-                        launchersWatched.addAll(((IDEObservableParentLauncher) rootLauncherWatched).getSubLaunchers());
-                        return;
-                    }
-                    if (launcher instanceof IDEObservableLauncher) {
-                        rootLauncherWatched = (IDEObservableLauncher) launcher;
-                        launchersWatched.add(rootLauncherWatched);
-                    }
+                    return (IDEObservableLauncher) launcher;
                 }
+                return null;
             }
 
             @Override
@@ -988,12 +981,21 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                     return;
                 }
                 waitForNotBusy();
-
+                IDEObservableLauncher watchedLauncher = getWatchedLauncherFromEvent();
+                if (watchedLauncher.equals(rootLauncherWatched)) {
+                    launchersWatched = ((IDEObservableParentLauncher) rootLauncherWatched).getSubLaunchers();
+                    return;
+                }
                 currentRecords.clear();
                 clearWatchedLaunchers(launcherListener);
 
                 loadingLogCanceled = false;
-                getWatchedLauncherFromEvent();
+                rootLauncherWatched = watchedLauncher;
+                if (rootLauncherWatched instanceof IDEObservableParentLauncher) {
+                    launchersWatched = ((IDEObservableParentLauncher) rootLauncherWatched).getSubLaunchers();
+                } else {
+                    launchersWatched.add(rootLauncherWatched);
+                }
                 if (launchersWatched != null && !launchersWatched.isEmpty()) {
                     selectedLauncherWatchedIndex = 0;
                 }
