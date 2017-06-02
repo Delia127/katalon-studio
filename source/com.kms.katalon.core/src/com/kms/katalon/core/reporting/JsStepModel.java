@@ -15,6 +15,7 @@ import com.kms.katalon.core.logging.model.MessageLogRecord;
 import com.kms.katalon.core.logging.model.TestCaseLogRecord;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.core.logging.model.TestStepLogRecord;
+import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 
 public class JsStepModel extends JsModel {
 
@@ -163,7 +164,13 @@ public class JsStepModel extends JsModel {
                 jsLogRecModel.props.add(new JsModelProperty("message", logStatMsg, listStrings));
                 // if (stepLogEntity.getAttachment() != null && !stepLogEntity.getAttachment().isEmpty()) {
                 if (messageLog.getAttachment() != null && !messageLog.getAttachment().isEmpty()) {
-                    final File attachmentFile = new File(messageLog.getAttachment());
+                    File attachmentFile = new File(messageLog.getAttachment());
+                    if (!attachmentFile.isAbsolute()) {
+                        String logFolder = getLogFolder(messageLog);
+                        if (logFolder != null) {
+                            attachmentFile = new File(logFolder + File.separator + messageLog.getAttachment());
+                        }
+                    }
                     if (attachmentFile.exists()) {
                         try {
                             String md5 = encodeFileContent(attachmentFile);
@@ -177,6 +184,19 @@ public class JsStepModel extends JsModel {
                 logRecords.add(jsLogRecModel);
             }
         }
+    }
+
+    private String getLogFolder(MessageLogRecord messageLog) {
+        // Find log folder
+        String logFolder = null;
+        ILogRecord logRecord = messageLog;
+        while (logRecord != null) {
+            if (logRecord instanceof TestSuiteLogRecord) {
+                return ((TestSuiteLogRecord) logRecord).getLogFolder();
+            }
+            logRecord = logRecord.getParentLogRecord();
+        }
+        return null;
     }
 
     private String encodeFileContent(final File file) throws FileNotFoundException, Exception, IOException {
