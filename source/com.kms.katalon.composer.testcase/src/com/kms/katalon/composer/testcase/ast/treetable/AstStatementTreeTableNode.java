@@ -6,10 +6,11 @@ import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
 
-
 public class AstStatementTreeTableNode extends AstAbstractTreeTableNode {
     protected StatementWrapper statement;
+
     private Image icon;
+
     private String itemText = StatementWrapper.TEXT;
 
     public AstStatementTreeTableNode(StatementWrapper statement, AstTreeTableNode parentNode) {
@@ -24,7 +25,8 @@ public class AstStatementTreeTableNode extends AstAbstractTreeTableNode {
         this(statement, parentNode, ImageConstants.IMG_16_FAILED_CONTINUE, itemText);
     }
 
-    public AstStatementTreeTableNode(StatementWrapper statement, AstTreeTableNode parentNode, Image icon, String itemText) {
+    public AstStatementTreeTableNode(StatementWrapper statement, AstTreeTableNode parentNode, Image icon,
+            String itemText) {
         super(parentNode);
         this.statement = statement;
         this.icon = icon;
@@ -45,15 +47,15 @@ public class AstStatementTreeTableNode extends AstAbstractTreeTableNode {
     public Image getIcon() {
         return icon;
     }
-    
+
     public boolean canHaveDescription() {
         return statement.canHaveDescription();
     }
-    
+
     public boolean hasDecription() {
         return statement.hasDescription();
     }
-    
+
     public String getDescription() {
         return statement.getDescription();
     }
@@ -61,19 +63,19 @@ public class AstStatementTreeTableNode extends AstAbstractTreeTableNode {
     public boolean setDescription(String description) {
         return statement.setDescription(description);
     }
-    
+
     public boolean canBeDisabled() {
         return statement.canHaveLabel();
     }
-    
+
     public boolean disable() {
         return statement.disable();
     }
-    
+
     public boolean enable() {
         return statement.enable();
     }
-    
+
     public void toogleEnable() {
         statement.toogleEnable();
     }

@@ -276,7 +276,22 @@ public class GroovyWrapperParser {
     }
 
     private void printString(String string) {
-        print("'" + string.replace("'", "\\'") + "'");
+        print("'" + escapeJavaString(string) + "'");
+    }
+
+    public static String escapeJavaString(String string) {
+        return string.replace("\t", "\\t")
+                .replace("\b", "\\b")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\f", "\\f")
+                .replace("\\", "\\\\")
+                .replace("'", "\\'");
+    }
+
+    public static String unescapeJavaString(String string) {
+        return string.replace("\\f", "\f").replace("\\r", "\r").replace("\\n", "\n").replace("\\b", "\b").replace("\\t",
+                "\t");
     }
 
     private void parseConstructorCall(ConstructorCallExpressionWrapper constructorCallExpressionWrapper) {

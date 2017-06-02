@@ -13,6 +13,7 @@ import org.codehaus.groovy.ast.stmt.Statement;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapHelper;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.CommentWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
 import com.kms.katalon.core.constants.StringConstants;
 
 /**
@@ -144,7 +145,8 @@ public class BlockStatementWrapper extends StatementWrapper {
 
     @Override
     public boolean isChildAssignble(ASTNodeWrapper astNode) {
-        return (astNode instanceof StatementWrapper && !(astNode instanceof ComplexChildStatementWrapper) && !(astNode instanceof ComplexLastStatementWrapper));
+        return (astNode instanceof StatementWrapper && !(astNode instanceof ComplexChildStatementWrapper)
+                && !(astNode instanceof ComplexLastStatementWrapper));
     }
 
     @Override
@@ -182,11 +184,15 @@ public class BlockStatementWrapper extends StatementWrapper {
 
     private static boolean isDescriptionStatement(Statement statement) {
         return (statement instanceof ExpressionStatement
-                && ((ExpressionStatement) statement).getExpression() instanceof ConstantExpression && ((ConstantExpression) ((ExpressionStatement) statement).getExpression()).getValue() instanceof String);
+                && ((ExpressionStatement) statement).getExpression() instanceof ConstantExpression
+                && ((ConstantExpression) ((ExpressionStatement) statement).getExpression())
+                        .getValue() instanceof String);
     }
 
     private static String getDecriptionStatementValue(Statement statement) {
-        return ((ConstantExpression) ((ExpressionStatement) statement).getExpression()).getValue().toString();
+        final String descriptionValue = (String) ((ConstantExpression) ((ExpressionStatement) statement).getExpression())
+                .getValue();
+        return GroovyWrapperParser.unescapeJavaString(descriptionValue);
     }
 
     public static List<StatementWrapper> getStatementNodeWrappersFromBlockStatement(BlockStatement blockStatement,
@@ -221,14 +227,14 @@ public class BlockStatementWrapper extends StatementWrapper {
             }
         }
         if (pendingDescriptionStatement != null) {
-            statements.add(ASTNodeWrapHelper.getStatementNodeWrapperFromStatement(pendingDescriptionStatement,
-                    parentNode));
+            statements.add(
+                    ASTNodeWrapHelper.getStatementNodeWrapperFromStatement(pendingDescriptionStatement, parentNode));
         }
         return statements;
     }
-    
-    @Override 
-    public boolean canHaveLabel() { 
-        return false; 
+
+    @Override
+    public boolean canHaveLabel() {
+        return false;
     }
 }
