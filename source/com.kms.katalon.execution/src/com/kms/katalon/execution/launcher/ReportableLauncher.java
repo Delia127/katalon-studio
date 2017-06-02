@@ -95,7 +95,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                 IRunConfiguration newConfig = getRunConfig().cloneConfig();
                 newConfig.build(testSuite, newTestSuiteExecutedEntity);
                 ReportableLauncher rerunLauncher = clone(newConfig);
-                LauncherManager.getInstance().addLauncher(rerunLauncher);
+                rerunLauncher.getManager().addLauncher(rerunLauncher);
             } catch (Exception e) {
                 writeError(MessageFormat.format(StringConstants.MSG_RP_ERROR_TO_RERUN_TEST_SUITE, ExceptionUtils.getStackTrace(e)));
                 LogUtil.logError(e);

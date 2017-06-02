@@ -33,6 +33,7 @@ import com.kms.katalon.execution.collector.RunConfigurationCollector;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.entity.TestSuiteCollectionExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
+import com.kms.katalon.execution.launcher.ReportableLauncher;
 import com.kms.katalon.execution.launcher.TestSuiteCollectionLauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
@@ -59,7 +60,7 @@ public class TestSuiteCollectionBuilderJob extends Job {
             ReportCollectionEntity reportCollection = reportController.newReportCollection(project,
                     testSuiteCollectionEntity, executedEntity.getId());
 
-            List<SubIDELauncher> tsLaunchers = new ArrayList<>();
+            List<ReportableLauncher> tsLaunchers = new ArrayList<>();
             boolean cancelInstallWebDriver = false;
             for (TestSuiteRunConfiguration tsRunConfig : testSuiteCollectionEntity.getTestSuiteRunConfigurations()) {
                 if (!cancelInstallWebDriver) {
@@ -94,7 +95,7 @@ public class TestSuiteCollectionBuilderJob extends Job {
 
             LauncherManager launcherManager = LauncherManager.getInstance();
             TestSuiteCollectionLauncher launcher = new IDETestSuiteCollectionLauncher(executedEntity, launcherManager,
-                    tsLaunchers, testSuiteCollectionEntity.getExecutionMode());
+                    tsLaunchers, testSuiteCollectionEntity.getExecutionMode(), reportCollection);
             launcherManager.addLauncher(launcher);
             reportController.updateReportCollection(reportCollection);
             return Status.OK_STATUS;
@@ -143,7 +144,7 @@ public class TestSuiteCollectionBuilderJob extends Job {
                     .getRunConfiguration(configuration.getRunConfigurationId(), projectDir, configuration);
             TestSuiteEntity testSuiteEntity = tsRunConfig.getTestSuiteEntity();
             runConfig.build(testSuiteEntity, new TestSuiteExecutedEntity(testSuiteEntity));
-            SubIDELauncher launcher = new SubIDELauncher(runConfig, LaunchMode.RUN);
+            SubIDELauncher launcher = new SubIDELauncher(runConfig, LaunchMode.RUN, configuration);
             reportCollection.getReportItemDescriptions()
                     .add(ReportItemDescription.from(launcher.getReportEntity().getIdForDisplay(), configuration));
             return launcher;
