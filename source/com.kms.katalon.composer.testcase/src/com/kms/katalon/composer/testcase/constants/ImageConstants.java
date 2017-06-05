@@ -19,6 +19,8 @@ public class ImageConstants extends com.kms.katalon.composer.components.impl.con
 
     public static final Image IMG_16_INTEGRATION = ImageManager.getImage(IImageKeys.TAB_INTEGRATION_16);
 
+    public static final Image IMG_16_PROPERTIES = ImageManager.getImage(IImageKeys.PROPERTIES_16);
+
     // TestCasePart
     public static final Image IMG_16_RECORD = ImageManager.getImage(IImageKeys.RECORD_16);
 
