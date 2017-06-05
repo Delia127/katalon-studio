@@ -552,7 +552,7 @@ public class FolderFileServiceManager {
 
     public static void refreshFolderScriptReferences(String oldFolderId, FolderEntity folder) throws CoreException,
             IOException {
-        new TestArtifactScriptRefactor(folder.getFolderType(), oldFolderId, false).updateReferenceForProject(
+        new TestArtifactScriptRefactor(folder.getFolderType(), oldFolderId, false, false, false).updateReferenceForProject(
         		folder.getIdForDisplay() + StringConstants.ENTITY_ID_SEPARATOR, folder.getProject());
     }
 
