@@ -149,10 +149,6 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
 
     private MobileInspectorController inspectorController = new MobileInspectorController();
 
-    private boolean disposed = false;
-
-    private boolean canceledBeforeOpening;
-
     private MobileObjectSpyPreferencesHelper preferencesHelper = new MobileObjectSpyPreferencesHelper();
 
     private Composite container;
@@ -168,20 +164,21 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         setShellStyle(SWT.SHELL_TRIM | SWT.RESIZE);
     }
 
-    public boolean isCanceledBeforeOpening() {
-        return canceledBeforeOpening;
-    }
-
     @Override
     public int open() {
         try {
-            canceledBeforeOpening = false;
-            return super.open();
-        } finally {
-            if (canceledBeforeOpening) {
-                close();
-            }
+            updateDeviceNames();
+        } catch (InterruptedException ignored) {
+           return SWT.CANCEL;
+        } catch (InvocationTargetException e) {
+            LoggerSingleton.logError(e);
+            Throwable targetException = e.getTargetException();
+            MultiStatusErrorDialog.showErrorDialog(targetException,
+                    MobileRecoderMessagesConstants.MSG_ERR_CANNOT_COLLECT_DEVICES,
+                    targetException.getClass().getSimpleName());
+            return SWT.CANCEL;
         }
+        return super.open();
     }
 
     @Override
@@ -194,13 +191,10 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         }
         return super.close();
     }
-
+    
     @Override
     public void create() {
         super.create();
-
-        updateDeviceNames();
-
         cbbAppType.select(0);
         txtAppFile.setText(preferencesHelper.getLastAppFile());
         validateToEnableStartButton();
@@ -743,8 +737,22 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         btnRefreshDevice.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                updateDeviceNames();
-                updateActionButtonsVisibility(propertiesComposite.getEditingElement(), getSelectDeviceInfo());
+                try {
+                    ControlUtils.recursiveSetEnabled(container, false);
+                    updateDeviceNames();
+                    updateActionButtonsVisibility(propertiesComposite.getEditingElement(), getSelectDeviceInfo());
+                } catch (InvocationTargetException exception) {
+                    Throwable targetException = exception.getTargetException();
+                    LoggerSingleton.logError(targetException);
+                    MultiStatusErrorDialog.showErrorDialog(targetException,
+                            MobileRecoderMessagesConstants.MSG_ERR_CANNOT_COLLECT_DEVICES,
+                            targetException.getClass().getSimpleName());
+                } catch (InterruptedException ignored) {
+                    // ignore this
+                } finally {
+                    ControlUtils.recursiveSetEnabled(container, true);
+                    validateToEnableStartButton();
+                }
             }
         });
 
@@ -826,46 +834,29 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         return devicesNameList;
     }
 
-    private void updateDeviceNames() {
-        try {
-            ControlUtils.recursiveSetEnabled(container, false);
-            new ProgressMonitorDialogWithThread(getShell()).run(true, true, new IRunnableWithProgress() {
-                @Override
-                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                    monitor.beginTask(MobileRecoderMessagesConstants.MSG_TASK_LOADING_DEVICES,
-                            IProgressMonitor.UNKNOWN);
+    private void updateDeviceNames() throws InvocationTargetException, InterruptedException {
+        new ProgressMonitorDialogWithThread(getShell()).run(true, true, new IRunnableWithProgress() {
+            @Override
+            public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                monitor.beginTask(MobileRecoderMessagesConstants.MSG_TASK_LOADING_DEVICES, IProgressMonitor.UNKNOWN);
 
-                    final List<String> devices = getAllDevicesName();
+                final List<String> devices = getAllDevicesName();
 
-                    checkMonitorCanceled(monitor);
+                checkMonitorCanceled(monitor);
 
-                    UISynchronizeService.syncExec(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (!devices.isEmpty()) {
-                                cbbDevices.setItems(devices.toArray(new String[] {}));
-                                cbbDevices.select(Math.max(0, devices.indexOf(cbbDevices.getText())));
-                            }
+                UISynchronizeService.syncExec(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!devices.isEmpty() && cbbDevices != null && !cbbDevices.isDisposed()) {
+                            cbbDevices.setItems(devices.toArray(new String[] {}));
+                            cbbDevices.select(Math.max(0, devices.indexOf(cbbDevices.getText())));
                         }
-                    });
+                    }
+                });
 
-                    monitor.done();
-                }
-            });
-        } catch (InterruptedException ignored) {
-            // User canceled
-            canceledBeforeOpening = true;
-        } catch (InvocationTargetException e) {
-            LoggerSingleton.logError(e);
-            Throwable targetException = e.getTargetException();
-            MultiStatusErrorDialog.showErrorDialog(targetException,
-                    MobileRecoderMessagesConstants.MSG_ERR_CANNOT_COLLECT_DEVICES,
-                    targetException.getClass().getSimpleName());
-            canceledBeforeOpening = true;
-        } finally {
-            ControlUtils.recursiveSetEnabled(container, true);
-            validateToEnableStartButton();
-        }
+                monitor.done();
+            }
+        });
     }
 
     private void openDeviceView() {
@@ -1064,7 +1055,8 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
             }
         });
         thread.start();
-        if (!getShell().isDisposed()) {
+        final Shell shell = getShell();
+        if (shell != null && !shell.isDisposed()) {
             // Update UI
             btnStart.setEnabled(true);
             btnStop.setEnabled(false);
@@ -1079,7 +1071,6 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         if (deviceView != null) {
             deviceView.closeApp();
         }
-        dispose();
     }
 
     private void addAdditionalActions() {
@@ -1090,20 +1081,6 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         if (lastRecordAction.getAction() != MobileAction.CloseApplication) {
             recordedActions.add(new MobileActionMapping(MobileAction.CloseApplication, null));
         }
-    }
-
-    public void dispose() {
-        disposed = true;
-    }
-
-    public boolean isDisposed() {
-        return disposed;
-    }
-
-    @Override
-    protected void handleShellCloseEvent() {
-        super.handleShellCloseEvent();
-        dispose();
     }
 
     private void validateToEnableStartButton() {
