@@ -108,34 +108,26 @@ public class OpenMobileRecorderHandler {
                 this.activeShell = activeShell;
             }
 
-            if (!isRecorderDialogRunning()) {
-                TestCaseCompositePart testCaseCompositePart = getSelectedTestCasePart();
-                if (testCaseCompositePart != null && !verifyTestCase(testCaseCompositePart)) {
-                    return false;
-                }
-                recorderDialog = new MobileRecorderDialog(activeShell);
-                int responseCode = recorderDialog.open();
-                if (responseCode != Window.OK) {
-                    return false;
-                }
-                if (testCaseCompositePart == null) {
-                    testCaseCompositePart = createNewTestCase();
-                }
-                exportRecordedActionsToScripts(recorderDialog.getRecordedActions(),
-                        recorderDialog.getTargetFolderEntity(), recorderDialog.getSelectDeviceInfo(),
-                        testCaseCompositePart);
+            MPart selectedPart = getSelectedPart();
+            if (selectedPart == null) {
+                return false;
             }
-
-            if (!recorderDialog.isCanceledBeforeOpening() && recorderDialog.getShell() != null) {
-                recorderDialog.getShell().forceActive();
+            TestCaseCompositePart testCaseCompositePart = getSelectedTestCasePart();
+            if (testCaseCompositePart != null && !verifyTestCase(testCaseCompositePart)) {
+                return false;
             }
+            recorderDialog = new MobileRecorderDialog(activeShell);
+            if (recorderDialog.open() != Window.OK) {
+                return false;
+            }
+            if (testCaseCompositePart == null) {
+                testCaseCompositePart = createNewTestCase();
+            }
+            exportRecordedActionsToScripts(recorderDialog.getRecordedActions(), recorderDialog.getTargetFolderEntity(),
+                    recorderDialog.getSelectDeviceInfo(), testCaseCompositePart);
             return true;
         } catch (Exception e) {
             LoggerSingleton.logError(e);
-            if (isRecorderDialogRunning()) {
-                recorderDialog.dispose();
-                recorderDialog.close();
-            }
             MessageDialog.openError(activeShell, MobileRecorderStringConstants.ERROR, e.getMessage());
             return false;
         }
@@ -152,7 +144,7 @@ public class OpenMobileRecorderHandler {
 
         return getTestCasePartByTestCase(testCase);
     }
-    
+
     private TestCaseCompositePart getTestCasePartByTestCase(TestCaseEntity testCase) throws Exception {
         MPart selectedPart = (MPart) modelService.find(EntityPartUtil.getTestCaseCompositePartId(testCase.getId()),
                 application);
@@ -208,7 +200,8 @@ public class OpenMobileRecorderHandler {
                         @Override
                         public void run() {
                             MessageDialog.openError(Display.getCurrent().getActiveShell(),
-                                    MobileRecorderStringConstants.ERROR, MobileRecoderMessagesConstants.MSG_ERR_CANNOT_GENERATE_TEST_STEPS);
+                                    MobileRecorderStringConstants.ERROR,
+                                    MobileRecoderMessagesConstants.MSG_ERR_CANNOT_GENERATE_TEST_STEPS);
                             LoggerSingleton.logError(e);
                         }
                     });
@@ -290,9 +283,5 @@ public class OpenMobileRecorderHandler {
             return null;
         }
         return (MPart) composerStack.getSelectedElement();
-    }
-
-    public boolean isRecorderDialogRunning() {
-        return recorderDialog != null && !recorderDialog.isDisposed();
     }
 }

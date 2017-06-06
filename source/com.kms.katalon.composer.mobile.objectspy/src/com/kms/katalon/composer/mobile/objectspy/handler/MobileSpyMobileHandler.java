@@ -83,8 +83,9 @@ public class MobileSpyMobileHandler {
 
             if (!objectSpyDialog.isCanceledBeforeOpening()) {
                 objectSpyDialog.getShell().forceActive();
+                return true;
             }
-            return true;
+            return false;
         } catch (Exception e) {
             if (isObjectSpyDialogRunning()) {
                 objectSpyDialog.dispose();
