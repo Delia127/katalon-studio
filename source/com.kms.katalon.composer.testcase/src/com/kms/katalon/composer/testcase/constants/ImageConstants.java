@@ -68,4 +68,8 @@ public class ImageConstants extends com.kms.katalon.composer.components.impl.con
 
     public static final Image IMG_KEYWORD_WIKI = ImageManager.getImage(IImageKeys.KEYWORD_WIKI_16);
 
+    // TestCaseVariablePart
+    public static final Image IMG_16_CHECKBOX_CHECKED = ImageManager.getImage(IImageKeys.CHECKBOX_CHECKED_16);
+
+    public static final Image IMG_16_CHECKBOX_UNCHECKED = ImageManager.getImage(IImageKeys.CHECKBOX_UNCHECKED_16);
 }

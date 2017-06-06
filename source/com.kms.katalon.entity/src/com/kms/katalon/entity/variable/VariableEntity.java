@@ -5,61 +5,79 @@ import java.io.Serializable;
 import com.kms.katalon.entity.util.Util;
 
 public class VariableEntity implements Serializable {
-	protected static final long serialVersionUID = 1L;
-	protected String defaultValue; // raw string of default value of the variable
-	protected String name;
-	protected String id;
-	protected String description;
+    protected static final long serialVersionUID = 1L;
 
-	public VariableEntity() {
-		id = Util.generateGuid();
-		name = "";
-		defaultValue = "";
-		description = "";
-	}
+    protected String defaultValue; // raw string of default value of the variable
 
-	public String getName() {
-		return name;
-	}
+    protected String name;
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    protected String id;
 
-	public String getDefaultValue() {
-	    if (defaultValue.isEmpty()) {
-	        return "null";
-	    }
-		return defaultValue;
-	}
+    protected String description;
 
-	public void setDefaultValue(String defaultValue) {
-		this.defaultValue = defaultValue;
-	}
+    /**
+     * A flag that marks the variable's default value will be masked in logs.
+     */
+    private boolean masked;
 
-	public String getId() {
-		return id;
-	}
+    public VariableEntity() {
+        id = Util.generateGuid();
+        name = "";
+        defaultValue = "";
+        description = "";
+        masked = false;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
-	
-	@Override
-	public VariableEntity clone() {
-	    VariableEntity newVariable = new VariableEntity();
-	    newVariable.setName(getName());
-	    newVariable.setDefaultValue(getDefaultValue());
-	    newVariable.setDescription(getDescription());
-	    return newVariable;
-	}
-	
-	public String getDescription() {
-		return description;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
+    public String getDefaultValue() {
+        if (defaultValue.isEmpty()) {
+            return "null";
+        }
+        return defaultValue;
+    }
+
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    @Override
+    public VariableEntity clone() {
+        VariableEntity newVariable = new VariableEntity();
+        newVariable.setName(getName());
+        newVariable.setDefaultValue(getDefaultValue());
+        newVariable.setDescription(getDescription());
+        newVariable.setMasked(isMasked());
+        return newVariable;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public boolean isMasked() {
+        return masked;
+    }
+
+    public void setMasked(boolean masked) {
+        this.masked = masked;
+    }
 }

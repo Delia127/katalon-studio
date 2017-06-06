@@ -350,6 +350,11 @@ public class ComposerTestcaseMessageConstants extends NLS {
     public static String OBJECT_VARIABLE_TABLE_COL_VALUE;
 
     public static String OBJECT_VARIABLE_TABLE_COL_VALUE_TYPE;
+    
+    //TestCaseVariablePart
+    public static String PA_COL_MASKED;
+    
+    public static String PA_COL_MASKED_TOOLTIP;
 
     static {
         // initialize resource bundle

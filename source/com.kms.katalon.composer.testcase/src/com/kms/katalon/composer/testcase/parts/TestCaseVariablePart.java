@@ -14,6 +14,8 @@ import org.eclipse.e4.ui.model.application.ui.basic.MCompositePart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -28,6 +30,7 @@ import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -37,16 +40,21 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
+import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
+import com.kms.katalon.composer.components.impl.providers.TypeCheckStyleCellTableLabelProvider;
+import com.kms.katalon.composer.components.impl.support.TypeCheckedEditingSupport;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColumnViewerUtil;
 import com.kms.katalon.composer.parts.CPart;
+import com.kms.katalon.composer.testcase.ast.variable.operations.ChangeVariableMaskedOperation;
 import com.kms.katalon.composer.testcase.ast.variable.operations.ClearVariableOperation;
 import com.kms.katalon.composer.testcase.ast.variable.operations.DeleteVariableOperation;
 import com.kms.katalon.composer.testcase.ast.variable.operations.DownVariableOperation;
 import com.kms.katalon.composer.testcase.ast.variable.operations.NewVariableOperation;
 import com.kms.katalon.composer.testcase.ast.variable.operations.UpVariableOperation;
+import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
@@ -75,7 +83,7 @@ public class TestCaseVariablePart extends CPart {
 
     private MPart mpart;
 
-    private TableViewer tableViewer;
+    private CTableViewer tableViewer;
 
     private TestCaseCompositePart parentTestCaseCompositePart;
 
@@ -176,7 +184,7 @@ public class TestCaseVariablePart extends CPart {
         compositeTable.setLayout(new FillLayout(SWT.HORIZONTAL));
         compositeTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-        tableViewer = new TableViewer(compositeTable, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+        tableViewer = new CTableViewer(compositeTable, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
         ColumnViewerUtil.setTableActivation(tableViewer);
 
         tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
@@ -293,8 +301,65 @@ public class TestCaseVariablePart extends CPart {
             }
         });
         TableColumn tblColumnDescription = tableViewerColumnDescription.getColumn();
-        tblColumnDescription.setWidth(500);
+        tblColumnDescription.setWidth(400);
         tblColumnDescription.setText(StringConstants.PA_COL_DESCRIPTION);
+
+        TableViewerColumn tableViewerColumnLogged = new TableViewerColumn(tableViewer, SWT.NONE);
+        tableViewerColumnLogged.setLabelProvider(new TypeCheckStyleCellTableLabelProvider<VariableEntity>(5) {
+            @Override
+            protected Class<VariableEntity> getElementType() {
+                return VariableEntity.class;
+            }
+
+            @Override
+            protected Image getImage(VariableEntity element) {
+                return element.isMasked() ? ImageConstants.IMG_16_CHECKBOX_CHECKED
+                        : ImageConstants.IMG_16_CHECKBOX_UNCHECKED;
+            }
+
+            @Override
+            protected String getText(VariableEntity element) {
+                return "";
+            }
+        });
+        tableViewerColumnLogged.setEditingSupport(new TypeCheckedEditingSupport<VariableEntity>(tableViewer) {
+
+            @Override
+            protected Class<VariableEntity> getElementType() {
+                return VariableEntity.class;
+            }
+
+            @Override
+            protected CellEditor getCellEditorByElement(VariableEntity element) {
+                return new CheckboxCellEditor(getComposite());
+            }
+
+            @Override
+            protected boolean canEditElement(VariableEntity element) {
+                return element != null;
+            }
+
+            @Override
+            protected Object getElementValue(VariableEntity element) {
+                return element.isMasked();
+            }
+
+            @Override
+            protected void setElementValue(VariableEntity element, Object value) {
+                if (!(value instanceof Boolean)) {
+                    return;
+                }
+                boolean newMasked = (boolean) value;
+                if (element.isMasked() == newMasked) {
+                    return;
+                }
+                executeOperation(new ChangeVariableMaskedOperation(TestCaseVariablePart.this, element, newMasked));
+            }
+        });
+        TableColumn tblColumnLogged = tableViewerColumnLogged.getColumn();
+        tblColumnLogged.setWidth(100);
+        tblColumnLogged.setText(ComposerTestcaseMessageConstants.PA_COL_MASKED);
+        tblColumnLogged.setToolTipText(ComposerTestcaseMessageConstants.PA_COL_MASKED_TOOLTIP);
 
         tableViewer.setContentProvider(new ArrayContentProvider());
     }

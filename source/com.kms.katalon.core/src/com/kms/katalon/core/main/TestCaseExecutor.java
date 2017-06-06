@@ -4,10 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.security.AccessController;
 import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Stack;
 
 import org.apache.commons.io.FileUtils;
@@ -31,7 +32,6 @@ import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testcase.TestCase;
 import com.kms.katalon.core.testcase.TestCaseBinding;
 import com.kms.katalon.core.testcase.TestCaseFactory;
-import com.kms.katalon.core.testcase.Variable;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 
 import groovy.lang.Binding;
@@ -233,43 +233,49 @@ public class TestCaseExecutor {
         return testProperties;
     }
 
+    private Map<String, Object> getBindedValues() {
+        Map<String, Object> bindedValues = testCaseBinding.getBindedValues();
+        return bindedValues != null ? bindedValues : Collections.emptyMap();
+    }
+
     private Binding collectTestCaseVariables() {
         Binding variableBinding = new Binding();
         engine.changeConfigForCollectingVariable();
 
         logger.logInfo(StringConstants.MAIN_LOG_INFO_START_EVALUATE_VARIABLE);
-
-        if (testCaseBinding.getBindedValues() != null) {
-            for (Entry<String, Object> entry : testCaseBinding.getBindedValues().entrySet()) {
-                logger.logInfo(MessageFormat.format(StringConstants.MAIN_LOG_INFO_VARIABLE_NAME_X_IS_SET_TO_Y,
-                        entry.getKey(), entry.getValue()));
-                variableBinding.setVariable(entry.getKey(), entry.getValue());
-            }
-        }
-
-        for (Variable testCaseVariable : testCase.getVariables()) {
-            if (variableBinding.hasVariable(testCaseVariable.getName())) {
-                continue;
+        testCase.getVariables().stream().forEach(testCaseVariable -> {
+            String variableName = testCaseVariable.getName();
+            if (getBindedValues().containsKey(variableName)) {
+                Object variableValue = testCaseBinding.getBindedValues().get(variableName);
+                logVariableValue(variableName, variableValue, testCaseVariable.isMasked(),
+                        StringConstants.MAIN_LOG_INFO_VARIABLE_NAME_X_IS_SET_TO_Y);
+                variableBinding.setVariable(variableName, variableValue);
+                return;
             }
 
             try {
                 String defaultValue = StringUtils.defaultIfEmpty(testCaseVariable.getDefaultValue(),
                         StringConstants.NULL_AS_STRING);
                 Object defaultValueObject = engine.runScriptWithoutLogging(defaultValue, null);
-                logger.logInfo(
-                        MessageFormat.format(StringConstants.MAIN_LOG_INFO_VARIABLE_NAME_X_IS_SET_TO_Y_AS_DEFAULT,
-                                testCaseVariable.getName(), defaultValueObject));
-                variableBinding.setVariable(testCaseVariable.getName(), defaultValueObject);
+                logVariableValue(variableName, defaultValueObject, testCaseVariable.isMasked(),
+                        StringConstants.MAIN_LOG_INFO_VARIABLE_NAME_X_IS_SET_TO_Y_AS_DEFAULT);
+                variableBinding.setVariable(variableName, defaultValueObject);
             } catch (ExceptionInInitializerError e) {
                 logger.logWarning(MessageFormat.format(StringConstants.MAIN_LOG_MSG_SET_TEST_VARIABLE_ERROR_BECAUSE_OF,
-                        testCaseVariable.getName(), e.getCause().getMessage()));
+                        variableName, e.getCause().getMessage()));
             } catch (Exception e) {
                 logger.logWarning(MessageFormat.format(StringConstants.MAIN_LOG_MSG_SET_TEST_VARIABLE_ERROR_BECAUSE_OF,
-                        testCaseVariable.getName(), e.getMessage()));
+                        variableName, e.getMessage()));
             }
-        }
-
+        });
         return variableBinding;
+    }
+
+    private void logVariableValue(String variableName, Object value, boolean isMasked, String message) {
+        String objectAsString = Objects.toString(value);
+        String loggedText = isMasked ? StringUtils.repeat("*", objectAsString.length())
+                : Objects.toString(objectAsString);
+        logger.logInfo(MessageFormat.format(message, variableName, loggedText));
     }
 
     private void logError(Throwable t, String message) {
