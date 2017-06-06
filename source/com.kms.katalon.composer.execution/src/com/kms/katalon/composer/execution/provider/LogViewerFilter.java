@@ -47,8 +47,11 @@ public class LogViewerFilter extends ViewerFilter {
     }
 
     protected int evaluteLog(XmlLogRecord record) {
-        LogLevel level = LogLevel.valueOf(record.getLevel().getName());
         int value = ALL;
+        if (record == null) {
+            return value;
+        }
+        LogLevel level = LogLevel.valueOf(record.getLevel().getName());
         if (level == LogLevel.INFO) {
             value |= INFO;
         } else if (level == LogLevel.PASSED) {

@@ -7,6 +7,7 @@ import org.eclipse.jface.viewers.Viewer;
 import com.kms.katalon.composer.execution.constants.ComposerExecutionPreferenceConstants;
 import com.kms.katalon.composer.execution.tree.ILogParentTreeNode;
 import com.kms.katalon.composer.execution.tree.ILogTreeNode;
+import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class LogTreeViewerFilter extends LogViewerFilter {
@@ -20,13 +21,17 @@ public class LogTreeViewerFilter extends LogViewerFilter {
             return ((evaluteLog(logTreeNode.getLogRecord()) & getPreferenceShowedValue()) != 0);
         }
         final ILogParentTreeNode logParentTreeNode = (ILogParentTreeNode) logTreeNode;
-        if (!isLogEnded(logParentTreeNode)) {
+        if (!isLogEnded(logParentTreeNode) || isTestSuiteLog(logParentTreeNode)) {
             return true;
         }
         if (isGeneralStep(logParentTreeNode)) {
             return false;
         }
         return ((evaluteLog(logParentTreeNode.getResult()) & getPreferenceShowedValue()) != 0);
+    }
+
+    private boolean isTestSuiteLog(ILogParentTreeNode logParentTreeNode) {
+        return StringConstants.LOG_START_SUITE_METHOD.equals(logParentTreeNode.getRecordStart().getSourceMethodName());
     }
 
     protected boolean isGeneralStep(final ILogParentTreeNode logParentTreeNode) {
