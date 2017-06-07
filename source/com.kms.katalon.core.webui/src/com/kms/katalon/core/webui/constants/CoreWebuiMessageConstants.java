@@ -276,6 +276,14 @@ public class CoreWebuiMessageConstants extends NLS {
     public static String KW_MSG_CANNOT_MOVE_MOUSE_OVER_OBJ_X;
 
     public static String KW_MSG_CANNOT_MOVE_MOUSE_OVER_OBJ;
+    
+    public static String KW_LOG_INFO_MOVING_MOUSE_OVER_OBJ_OFFSET_X_Y;
+    
+    public static String KW_LOG_PASSED_OBJ_IS_HOVERED_OFFSET_X_Y;
+    
+    public static String KW_MSG_CANNOT_MOVE_MOUSE_OVER_OBJ_X_OFFSET_Y_Z;
+    
+    public static String KW_MSG_CANNOT_MOVE_MOUSE_OVER_OBJ_OFFSET;
 
     public static String KW_LOG_INFO_SENDING_KEYS_TO_OBJ;
 
