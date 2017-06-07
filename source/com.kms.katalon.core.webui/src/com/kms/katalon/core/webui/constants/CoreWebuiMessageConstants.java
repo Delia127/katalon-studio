@@ -959,6 +959,13 @@ public class CoreWebuiMessageConstants extends NLS {
     public static String KW_LOG_JQUERY_NOT_READY;
 
     public static String KW_MSG_JQUERY_NOT_USED;
+    
+    //Verify Options Present
+    public static String KW_MSG_TXT_OPTIONS_PRESENT;
+
+    public static String KW_MSG_TXT_OPTIONS_NOT_PRESENT;
+
+    public static String KW_MSG_TXT_OPTIONS_NOT_PRESENT_REASON;
 
     static {
         // initialize resource bundle

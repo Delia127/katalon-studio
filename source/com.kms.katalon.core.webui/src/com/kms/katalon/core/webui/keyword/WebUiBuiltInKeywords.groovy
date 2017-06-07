@@ -3499,4 +3499,37 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     public static int getElementHeight(TestObject to) {
         return (int) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "getElementHeight", to)
     }
+
+    /**
+     * Verify if all expected options are present within the given test object.
+     *
+     * @param to
+     *         represent a web element
+     * @param expectedOptions
+     *         the list of all expected options for the given web element
+     * @param flowControl
+     * @return true if all expected options are present. Otherwise, false.
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_COMBOBOX)
+    public static boolean verifyOptionsPresent(TestObject to, List expectedOptions, FailureHandling flowControl) throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "verifyOptionsPresent", to, expectedOptions, flowControl)
+    }
+
+    /**
+     * Verify if all expected options are present within the given test object.
+     *
+     * @param to
+     *         represent a web element
+     * @param expectedOptions
+     *         the list of all expected options for the given web element
+     * @return true if all expected options are present. Otherwise, false.
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_COMBOBOX)
+    public static boolean verifyOptionsPresent(TestObject to, List expectedOptions) throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "verifyOptionsPresent", to, expectedOptions)
+    }
 }
