@@ -61,9 +61,9 @@
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_KPtzAD-pEeeqRZPk8JkZ3g" featurename="children" parentElementId="com.kms.katalon.composer.menu.file" positionInList="index:1">
     <elements xsi:type="menu:Menu" xmi:id="_-BqNYEA6Eee1vqj3mySoiQ" elementId="com.kms.katalon.composer.project.menu.new.sample" label="New Sample Project" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/new_project_16.png">
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_AkEfwEA7Eee1vqj3mySoiQ" elementId="com.kms.katalon.composer.project.handledmenuitem.new.webui" label="Sample Web UI Testing Project" iconURI="" command="_eKuKoEAyEee1vqj3mySoiQ"/>
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_qs16gEBKEee1vqj3mySoiQ" elementId="com.kms.katalon.composer.project.handledmenuitem.new.mobile" label="Sample Mobile Testing Project" iconURI="" command="_i3LSsEAyEee1vqj3mySoiQ"/>
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_wui-QEBKEee1vqj3mySoiQ" elementId="com.kms.katalon.composer.project.handledmenuitem.new.webservice" label="Sample Web Services Testing Project" iconURI="" command="_mcEVwEAyEee1vqj3mySoiQ"/>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_AkEfwEA7Eee1vqj3mySoiQ" elementId="com.kms.katalon.composer.project.handledmenuitem.new.webui" label="Sample Web UI Testing Project" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/sample_web_ui_16.png" command="_eKuKoEAyEee1vqj3mySoiQ"/>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_qs16gEBKEee1vqj3mySoiQ" elementId="com.kms.katalon.composer.project.handledmenuitem.new.mobile" label="Sample Mobile Testing Project" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/sample_mobile_16.png" command="_i3LSsEAyEee1vqj3mySoiQ"/>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_wui-QEBKEee1vqj3mySoiQ" elementId="com.kms.katalon.composer.project.handledmenuitem.new.webservice" label="Sample Web Services Testing Project" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/sample_web_service_16.png" command="_mcEVwEAyEee1vqj3mySoiQ"/>
     </elements>
   </fragments>
 </fragment:ModelFragments>
