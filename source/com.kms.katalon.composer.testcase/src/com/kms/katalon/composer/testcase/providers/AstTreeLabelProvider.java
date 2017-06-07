@@ -56,7 +56,8 @@ public class AstTreeLabelProvider extends StyledCellLabelProvider {
         if (!(treeTableNode instanceof AstStatementTreeTableNode)) {
             return "";
         }
-        return StringUtils.defaultString(((AstStatementTreeTableNode) treeTableNode).getDescription());
+        return StringUtils.defaultString(((AstStatementTreeTableNode) treeTableNode).getDescription()).replace("\t",
+                "    ");
     }
 
     @Override
