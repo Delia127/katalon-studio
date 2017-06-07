@@ -10,7 +10,7 @@ import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.logging.XmlLogRecord;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
-public class LogTableViewerFilter extends ViewerFilter {
+public class LogViewerFilter extends ViewerFilter {
 
     public static final int ALL = 1 << 0;
 
@@ -32,8 +32,8 @@ public class LogTableViewerFilter extends ViewerFilter {
         return ((evaluteLog(record) & getPreferenceShowedValue()) != 0);
     }
 
-    private int getPreferenceShowedValue() {
-        ScopedPreferenceStore store = getPreferenceStore(LogTableViewerFilter.class);
+    protected int getPreferenceShowedValue() {
+        ScopedPreferenceStore store = getPreferenceStore(LogViewerFilter.class);
         int showAllLogs = store.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_ALL_LOGS) ? ALL : 0;
         int showInfoLogs = store.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_INFO_LOGS) ? INFO : 0;
         int showPassedLogs = store.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_PASSED_LOGS) ? PASSED : 0;
@@ -46,9 +46,12 @@ public class LogTableViewerFilter extends ViewerFilter {
                 | (showIncompleteLogs & ERROR) | (showWarningLogs & WARNING) | (showNotRunLogs & NOT_RUN);
     }
 
-    private int evaluteLog(XmlLogRecord record) {
-        LogLevel level = LogLevel.valueOf(record.getLevel().getName());
+    protected int evaluteLog(XmlLogRecord record) {
         int value = ALL;
+        if (record == null) {
+            return value;
+        }
+        LogLevel level = LogLevel.valueOf(record.getLevel().getName());
         if (level == LogLevel.INFO) {
             value |= INFO;
         } else if (level == LogLevel.PASSED) {

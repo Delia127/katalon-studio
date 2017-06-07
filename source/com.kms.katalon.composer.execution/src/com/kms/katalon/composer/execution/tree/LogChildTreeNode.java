@@ -22,4 +22,9 @@ public class LogChildTreeNode implements ILogTreeNode {
         return parentTreeNode;
     }
 
+    @Override
+    public XmlLogRecord getLogRecord() {
+        return record;
+    }
+
 }
