@@ -3468,14 +3468,14 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
-     * Verify if the expectedOptions (displayed texts) are all present
+     * Verify if all expected options are present within the given test object.
      *
      * @param to
      *         represent a web element
      * @param expectedOptions
-     *         displayed texts of the options to be verified if existing
+     *         the list of all expected options for the given web element
      * @param flowControl
-     * @return true if expectedOptions are all present. Otherwise, false.
+     * @return true if all expected options are present. Otherwise, false.
      * @throws StepFailedException
      */
     @CompileStatic
@@ -3485,13 +3485,13 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
-     * Verify if the expectedOptions (displayed texts) are all present
+     * Verify if all expected options are present within the given test object.
      *
      * @param to
      *         represent a web element
      * @param expectedOptions
-     *         displayed texts of the options to be verified if existing
-     * @return true if expectedOptions are all present. Otherwise, false.
+     *         the list of all expected options for the given web element
+     * @return true if all expected options are present. Otherwise, false.
      * @throws StepFailedException
      */
     @CompileStatic
