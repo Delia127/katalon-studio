@@ -638,6 +638,35 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Click on the given element with the relative position (x, y) from the top-left corner of that element
+     * @param to
+     *       represent a web element
+     * @param offsetX x position in relative to the element
+     * @param offsetY y position in relative to the element
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void clickOffset(TestObject to, int offsetX, int offsetY) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "clickOffset", to, offsetX, offsetY)
+    }
+    
+    /**
+     * Click on the given element with the relative position (x, y) from the top-left corner of that element
+     * @param to
+     *       represent a web element
+     * @param offsetX x position in relative to the element
+     * @param offsetY y position in relative to the element
+     * @param flowControl
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void clickOffset(TestObject to, int offsetX, int offsetY, FailureHandling flowControl) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "clickOffset", to, offsetX, offsetY, flowControl)
+    }
+
+    /**
      * If this current element is a form, or an element within a form, then this will be submitted. 
      * If this causes the current page to change, then this method will block until the new page is loaded.
      * @param to

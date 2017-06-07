@@ -244,6 +244,14 @@ public class CoreWebuiMessageConstants extends NLS {
     public static String KW_MSG_CANNOT_CLICK_ON_OBJ_X;
 
     public static String KW_MSG_CANNOT_CLICK_ON_OBJ;
+    
+    public static String KW_LOG_INFO_CLICKING_ON_OBJ_OFFSET_X_Y;
+    
+    public static String KW_LOG_PASSED_OBJ_CLICKED_OFFSET_X_Y;
+    
+    public static String KW_MSG_CANNOT_CLICK_ON_OBJ_X_OFFSET_Y_Z;
+    
+    public static String KW_MSG_CANNOT_CLICK_ON_OBJ_OFFSET;
 
     public static String KW_LOG_INFO_SUBMITTING_ON_FORM_CONTAINING_OBJ;
 
