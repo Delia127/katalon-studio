@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.testcase.ast.dialogs;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -504,7 +505,7 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         });
 
         variableTableViewer.setContentProvider(new ArrayContentProvider());
-        variableTableViewer.setInput(variableMaps.getMapEntryExpressions());
+        variableTableViewer.setInput(variableMaps != null ? variableMaps.getMapEntryExpressions() : Collections.emptyMap());
         layoutExecutionInfo();
     }
 
