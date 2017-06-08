@@ -38,9 +38,15 @@ public class ConcatenateKeyword extends AbstractKeyword {
 
     @CompileStatic
     @Override
-    public Object execute(Object ...params) {
-        String[] strings = (String[]) params[0]
-        FailureHandling flowControl = (FailureHandling)(params.length > 1 && params[1] instanceof FailureHandling ? params[1] : RunConfiguration.getDefaultFailureHandling())
+    public Object execute(Object... params) {
+        String[] strings = []
+        FailureHandling flowControl = RunConfiguration.getDefaultFailureHandling()
+        if (params.length == 2 && params[1] instanceof FailureHandling) {
+            strings = (String[]) params[0]
+            flowControl = (FailureHandling) params[1]
+        } else {
+            strings = (String[]) params
+        }
         return concatenate(strings,flowControl)
     }
 
