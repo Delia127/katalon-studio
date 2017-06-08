@@ -11,6 +11,7 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
@@ -521,6 +522,14 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
                 compositeVariables.layout(true, true);
                 compositeVariables.getParent().layout();
                 redrawBtnExpandExecutionInfo();
+                showSelectedTestObject();
+            }
+
+            private void showSelectedTestObject() {
+                IStructuredSelection selection = getTreeViewer().getStructuredSelection();
+                if (selection != null) {
+                    getTreeViewer().getTree().showSelection();
+                }
             }
         });
     }
