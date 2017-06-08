@@ -23,6 +23,7 @@ import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
 import com.kms.katalon.execution.mobile.driver.AndroidDriverConnector;
 import com.kms.katalon.execution.mobile.driver.IosDriverConnector;
 import com.kms.katalon.execution.mobile.exception.MobileSetupException;
+import com.kms.katalon.execution.mobile.util.MobileExecutionUtil;
 
 public abstract class MobileRunConfigurationContributor implements IRunConfigurationContributor {
     public static final String DEVICE_ID_CONFIGURATION_KEY = "deviceId";
@@ -50,6 +51,7 @@ public abstract class MobileRunConfigurationContributor implements IRunConfigura
     @Override
     public IRunConfiguration getRunConfiguration(String projectDir) throws IOException, ExecutionException,
             InterruptedException {
+        MobileExecutionUtil.detectInstalledAppiumAndNodeJs();
         deviceName = StringUtils.isNotBlank(deviceName) ? deviceName : getDefaultDeviceId(projectDir,
                 getMobileDriverType());
         if (StringUtils.isBlank(deviceName)) {

@@ -29,17 +29,9 @@ public class ComposerMobileMessageConstants extends NLS {
 
     public static String WARNING_TITLE;
 
-    public static String MSG_NO_APPIUM;
-
-    public static String MSG_NO_NODEJS;
-
-    public static String MSG_NO_APPIUM_AND_NODEJS;
-
-    public static String MSG_FAILED_DETECT_NODEJS;
-
     public static String LINK;
-
-    public static String MAC_DEFAULT_NODEJS_LOCATION;
+    
+    public static String SETUP_LINK;
 
     static {
         // initialize resource bundle
