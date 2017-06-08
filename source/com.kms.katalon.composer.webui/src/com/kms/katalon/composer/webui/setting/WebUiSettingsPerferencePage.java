@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.webui.constants.ComposerWebuiMessageConstants;
 import com.kms.katalon.composer.webui.constants.StringConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
@@ -26,7 +27,7 @@ import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
 public class WebUiSettingsPerferencePage extends PreferencePage {
     private WebUiExecutionSettingStore store;
 
-    private Text txtDefaultPageLoadTimeout;
+    private Text txtDefaultPageLoadTimeout, txtActionDelay;
 
     private Composite fieldEditorParent;
 
@@ -67,6 +68,18 @@ public class WebUiSettingsPerferencePage extends PreferencePage {
         new Label(grpDefaultPageLoadTimeout, SWT.NONE);
         chckIgnorePageLoadTimeoutException = new Button(grpDefaultPageLoadTimeout, SWT.CHECK);
         chckIgnorePageLoadTimeoutException.setText(StringConstants.PREF_LBL_IGNORE_DEFAULT_PAGE_LOAD_TIMEOUT_EXCEPTION);
+        
+        Composite cpActionDelay = new Composite(fieldEditorParent, SWT.NONE);
+        cpActionDelay.setLayout(new GridLayout(2, false));
+        cpActionDelay.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+        
+        Label lblActionDelay = new Label(cpActionDelay, SWT.NONE);
+        lblActionDelay.setText(ComposerWebuiMessageConstants.LBL_ACTION_DELAY);
+        
+        txtActionDelay = new Text(cpActionDelay, SWT.BORDER);
+        final GridData ldActionDelay = new GridData();
+        ldActionDelay.widthHint = 30;
+        txtActionDelay.setLayoutData(ldActionDelay);
 
         try {
             initialize();
@@ -98,6 +111,7 @@ public class WebUiSettingsPerferencePage extends PreferencePage {
         txtDefaultPageLoadTimeout.setEnabled(usePageLoadTimeout);
         chckIgnorePageLoadTimeoutException.setSelection(store.getIgnorePageLoadTimeout());
         chckIgnorePageLoadTimeoutException.setEnabled(usePageLoadTimeout);
+        txtActionDelay.setText(String.valueOf(store.getActionDelay()));
     }
 
     @Override
@@ -113,6 +127,7 @@ public class WebUiSettingsPerferencePage extends PreferencePage {
         txtDefaultPageLoadTimeout.setEnabled(usePageLoadTimeout);
         chckIgnorePageLoadTimeoutException.setSelection(WebUiExecutionSettingStore.EXECUTION_DEFAULT_IGNORE_PAGELOAD_TIMEOUT_EXCEPTION);
         chckIgnorePageLoadTimeoutException.setEnabled(usePageLoadTimeout);
+        txtActionDelay.setText(String.valueOf(WebUiExecutionSettingStore.EXECUTION_DEFAULT_ACTION_DELAY));
     }
 
     @Override
@@ -129,6 +144,9 @@ public class WebUiSettingsPerferencePage extends PreferencePage {
             }
             if (chckIgnorePageLoadTimeoutException != null) {
                 store.setIgnorePageLoadTimeout(chckIgnorePageLoadTimeoutException.getSelection());
+            }
+            if (txtActionDelay != null) {
+                store.setActionDelay(Integer.parseInt(txtActionDelay.getText()));
             }
         } catch (IOException e) {
             LoggerSingleton.logError(e);

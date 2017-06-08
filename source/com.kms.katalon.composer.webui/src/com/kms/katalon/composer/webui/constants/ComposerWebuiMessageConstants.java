@@ -13,6 +13,8 @@ public class ComposerWebuiMessageConstants extends NLS {
 
     public static String PREF_LBL_DEFAULT_WAIT_FOR_IE_HANGING_TIMEOUT;
 
+    public static String LBL_ACTION_DELAY;
+
     public static String LBL_REMOTE_EXECUTION_MENU_ITEM;
 
     public static String LBL_REMOTE_SERVER_URL;

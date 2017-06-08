@@ -3,19 +3,15 @@ package com.kms.katalon.core.webui.driver.firefox;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.firefox.ExtensionConnection;
 import org.openqa.selenium.firefox.FirefoxBinary;
-import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.internal.Lock;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
-public class FirefoxDriver47 extends FirefoxDriver {
+import com.kms.katalon.selenium.driver.CFirefoxDriver;
 
-    public FirefoxDriver47() {
-        super();
-    }
-
-    public FirefoxDriver47(DesiredCapabilities desiredCapabilities) {
-        super(desiredCapabilities);
+public class CFirefoxDriver47 extends CFirefoxDriver {
+    public CFirefoxDriver47(DesiredCapabilities desiredCapabilities, int actionDelay) {
+        super(desiredCapabilities, actionDelay);
     }
 
     @Override

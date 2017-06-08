@@ -23,6 +23,7 @@ public class WebUIExecutionSetting extends DefaultExecutionSetting {
         try {
             reportProps.put(DriverFactory.ENABLE_PAGE_LOAD_TIMEOUT, webUiSettingStore.getEnablePageLoadTimeout());
             reportProps.put(DriverFactory.DEFAULT_PAGE_LOAD_TIMEOUT, webUiSettingStore.getPageLoadTimeout());
+            reportProps.put(DriverFactory.ACTION_DELAY, webUiSettingStore.getActionDelay());
             reportProps.put(DriverFactory.IGNORE_PAGE_LOAD_TIMEOUT_EXCEPTION,
                     webUiSettingStore.getIgnorePageLoadTimeout());
         } catch (IOException e) {
