@@ -76,6 +76,12 @@ public class ComposerProjectMessageConstants extends NLS {
     public static String HAND_PROJECT_SETTINGS_PAGE_ID_NOT_FOUND;
 
     public static String HAND_INDEXING_PROJECT;
+    
+    public static String VIEW_TITLE_NEW_SAMPLE_WEB_UI_PROJ;
+
+    public static String VIEW_TITLE_NEW_SAMPLE_MOBILE_PROJ;
+
+    public static String VIEW_TITLE_NEW_SAMPLE_WS_PROJ;
 
     static {
         // initialize resource bundle
