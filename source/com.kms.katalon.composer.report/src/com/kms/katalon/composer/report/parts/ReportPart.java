@@ -11,6 +11,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -161,9 +162,9 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         @Override
         public String getText(Object element) {
             if (element instanceof Entry) {
-                return String.valueOf(((Entry<?, ?>) element).getKey());
+                return ObjectUtils.toString(((Entry<?, ?>) element).getKey());
             }
-            return "";
+            return StringConstants.EMPTY;
         }
     }
 
@@ -182,7 +183,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
             if (element instanceof Entry) {
                 return ((Entry<?, ?>) element).getKey();
             }
-            return null;
+            return StringConstants.EMPTY;
         }
 
         @Override
@@ -200,9 +201,9 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         @Override
         public String getText(Object element) {
             if (element instanceof Entry) {
-                return String.valueOf(((Entry<?, ?>) element).getValue());
+                return ObjectUtils.toString(((Entry<?, ?>) element).getValue());
             }
-            return "";
+            return StringConstants.EMPTY;
         }
     }
 
@@ -219,9 +220,9 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         @Override
         protected Object getValue(Object element) {
             if (element instanceof Entry) {
-                return ((Entry<?, ?>) element).getValue();
+                return ObjectUtils.toString(((Entry<?, ?>) element).getValue());
             }
-            return null;
+            return StringConstants.EMPTY;
         }
 
         @Override
