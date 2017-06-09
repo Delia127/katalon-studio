@@ -39,6 +39,8 @@ public class TreeEntitySelectionDialog extends ElementTreeSelectionDialog {
 
     private boolean isSearched;
 
+    private TreeViewer treeViewer;
+
     public TreeEntitySelectionDialog(Shell parent, IEntityLabelProvider labelProvider,
             ITreeContentProvider contentProvider, AbstractEntityViewerFilter entityViewerFilter) {
         super(parent, labelProvider, contentProvider);
@@ -97,12 +99,16 @@ public class TreeEntitySelectionDialog extends ElementTreeSelectionDialog {
             }
         });
 
-        TreeViewer treeViewer = super.createTreeViewer(parent);
+        treeViewer = super.createTreeViewer(parent);
         expandTreeViewerToInitialElements();
         treeViewer.addFilter(entityViewerFilter);
         treeViewer.getTree().setLayoutData(new GridData(GridData.FILL_BOTH));
         treeViewer.getTree().setFocus();
 
+        return treeViewer;
+    }
+
+    protected TreeViewer getTreeViewer() {
         return treeViewer;
     }
     
