@@ -86,6 +86,7 @@ public class MobileInspectorController {
         }
 
         mobileDriverConnector = (MobileDriverConnector) mobileDriverConnector.clone();
+        mobileDriverConnector.setDevice(mobileDeviceInfo);
 
         Map<String, IDriverConnector> driverConnectors = new HashMap<String, IDriverConnector>(1);
         driverConnectors.put(MobileDriverFactory.MOBILE_DRIVER_PROPERTY, mobileDriverConnector);
