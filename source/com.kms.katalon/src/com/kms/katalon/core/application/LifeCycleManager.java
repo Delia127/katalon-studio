@@ -45,6 +45,7 @@ import com.kms.katalon.composer.handlers.SearchHandler;
 import com.kms.katalon.composer.handlers.WorkbenchSaveHandler;
 import com.kms.katalon.composer.initializer.CommandBindingInitializer;
 import com.kms.katalon.composer.initializer.ContentAssistProposalInitializer;
+import com.kms.katalon.composer.initializer.ProblemViewImageInitializer;
 import com.kms.katalon.console.utils.VersionUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
@@ -132,6 +133,7 @@ public class LifeCycleManager {
         new CommandBindingInitializer().setup();
         new CommandBindingRemover().setup();
         new ContentAssistProposalInitializer().setup();
+        new ProblemViewImageInitializer().setup();
     }
 
     private void setupPreferences() {
