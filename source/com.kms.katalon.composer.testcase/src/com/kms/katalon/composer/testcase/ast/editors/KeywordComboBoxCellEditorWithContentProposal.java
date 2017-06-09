@@ -4,6 +4,7 @@ import org.codehaus.groovy.ast.MethodNode;
 import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.composer.testcase.editors.ComboBoxCellEditorWithContentProposal;
+import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
 import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
@@ -32,6 +33,11 @@ public class KeywordComboBoxCellEditorWithContentProposal extends ComboBoxCellEd
             String newMethodName = getMethodName(selectedItem);
             MethodCallExpressionWrapper newMethodCall = new MethodCallExpressionWrapper(keywordClassAliasName,
                     newMethodName, parentStatement);
+            ASTNodeWrapper currentInput = parentStatement.getInput();
+            //keep current input if they are the same type with the newer.
+            if (currentInput instanceof MethodCallExpressionWrapper) {
+                newMethodCall.setArguments(((MethodCallExpressionWrapper) currentInput).getArguments());
+            }
             generateArguments(newMethodCall);
             return newMethodCall;
         } catch (Exception ex) {
