@@ -311,9 +311,20 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
                         if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_MANUAL_PART_INDEX
                                 && (isScriptChanged || scriptNode == null)) {
                             setScriptContentToManual();
-                        } else if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_EDITOR_PART_INDEX
+                            return;
+                        }
+
+                        if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_EDITOR_PART_INDEX
                                 && childTestCasePart.isManualScriptChanged()) {
                             setChildEditorContents(scriptNode);
+                            return;
+                        }
+
+                        if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_PROPERTIES_PART_INDEX) {
+                            if (isScriptChanged || scriptNode == null) {
+                                setScriptContentToManual();
+                            }
+                            propertiesPart.loadInput();
                         }
                     }
                 });
@@ -321,11 +332,11 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
             }
             childTestCaseVariablesPart.loadVariables();
             childTestCaseIntegrationPart.loadInput();
-            propertiesPart.loadInput();
             initDefaultSelectedPart();
             if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_MANUAL_PART_INDEX) {
                 setScriptContentToManual();
             }
+            propertiesPart.loadInput();
             isInitialized = true;
         }
     }
@@ -553,6 +564,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
             List<VariableEntity> variableList = testCase.getVariables();
             variableList.clear();
             variableList.addAll(childTestCaseVariablesPart.getVariablesList());
+            propertiesPart.preSave();
 
             // back-up
             String oldPk = originalTestCase.getId();

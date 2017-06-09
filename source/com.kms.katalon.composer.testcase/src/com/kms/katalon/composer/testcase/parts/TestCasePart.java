@@ -1,13 +1,16 @@
 package com.kms.katalon.composer.testcase.parts;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
@@ -37,6 +40,7 @@ import com.kms.katalon.composer.testcase.ast.treetable.AstBuiltInKeywordTreeTabl
 import com.kms.katalon.composer.testcase.ast.treetable.AstCallTestCaseKeywordTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
 import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
+import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
@@ -255,6 +259,21 @@ public class TestCasePart extends CPart implements EventHandler, ITestCasePart {
             }
         }
         return true;
+    }
+
+    public List<String> getCommentSteps() {
+        return Arrays.asList(getTestCaseTreeTable().getTree().getItems())
+                .stream()
+                .filter(item -> item.getText(0).contains(StringConstants.COMMENT))
+                .map(item -> getCommentText(item.getText(2)))
+                .collect(Collectors.toList());
+    }
+
+    private String getCommentText(String comment) {
+        String doubleQuote = "\"";
+        comment = StringUtils.removeStart(comment, doubleQuote);
+        comment = StringUtils.removeEnd(comment, doubleQuote);
+        return comment;
     }
 
     @Override
