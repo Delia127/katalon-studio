@@ -7,11 +7,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.openqa.selenium.ScreenOrientation;
 
+import com.kms.katalon.core.appium.constants.AppiumStringConstants;
 import com.kms.katalon.core.appium.driver.AppiumDriverManager;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.integration.kobiton.entity.KobitonDeviceCapabilities.Browser;
 
 public class KobitonDevice {
+    private static final String CAPABILITIES_SESSION_DESCRIPTION = "sessionDescription";
+
+    private static final String CAPABILITIES_SESSION_NAME = "sessionName";
+
     private static final String CAPABILITIES_ACCEPT_SSL_CERTS = "acceptSslCerts";
 
     private static final String CAPABILITIES_CAPTURE_SREEN_SHOTS = "captureSreenShots";
@@ -109,23 +114,32 @@ public class KobitonDevice {
 
     public Map<String, Object> toDesireCapabilitiesMap() {
         Map<String, Object> desireCapabilitiesMap = new HashMap<>();
-        final String platformName = capabilities.getPlatformName();
-        desireCapabilitiesMap.put(CAPABILITIES_PLATFORM_NAME, platformName);
+        desireCapabilitiesMap.put(CAPABILITIES_PLATFORM_NAME, capabilities.getPlatformName());
         desireCapabilitiesMap.put(CAPABILITIES_DEVICE_NAME, capabilities.getDeviceName());
         desireCapabilitiesMap.put(CAPABILITIES_BROWSER_NAME, getBrowserName());
         desireCapabilitiesMap.put(CAPABILITIES_PLATFORM_VERSION, capabilities.getPlatformVersion());
         desireCapabilitiesMap.put(CAPABILITIES_DEVICE_ORIENTATION, orientation.value());
         desireCapabilitiesMap.put(CAPABILITIES_CAPTURE_SREEN_SHOTS, true);
         desireCapabilitiesMap.put(CAPABILITIES_ACCEPT_SSL_CERTS, true);
+        desireCapabilitiesMap.put(CAPABILITIES_SESSION_NAME, "Automation test session");
+        desireCapabilitiesMap.put(CAPABILITIES_SESSION_DESCRIPTION, "");
+        return desireCapabilitiesMap;
+    }
+    
+    public Map<String, Object> getSystemPropertiesMap() {
+        Map<String, Object> systemProperties = new HashMap<>();
+        systemProperties.put(AppiumStringConstants.CONF_EXECUTED_DEVICE_NAME, capabilities.getDeviceName());
+        systemProperties.put(AppiumStringConstants.CONF_EXECUTED_DEVICE_OS, capabilities.getPlatformName());
+        systemProperties.put(AppiumStringConstants.CONF_EXECUTED_DEVICE_OS_VERSON, capabilities.getPlatformVersion());
         if (capabilities.getPlatformName().equals(PLATFORM_NAME_IOS)) {
-            desireCapabilitiesMap.put(AppiumDriverManager.EXECUTED_PLATFORM,
+            systemProperties.put(AppiumDriverManager.EXECUTED_PLATFORM,
                     MobileDriverType.IOS_DRIVER.getPropertyValue());
         }
         if (capabilities.getPlatformName().equals(PLATFORM_NAME_ANDROID)) {
-            desireCapabilitiesMap.put(AppiumDriverManager.EXECUTED_PLATFORM,
+            systemProperties.put(AppiumDriverManager.EXECUTED_PLATFORM,
                     MobileDriverType.ANDROID_DRIVER.getPropertyValue());
         }
-        return desireCapabilitiesMap;
+        return systemProperties;
     }
 
     @Override
