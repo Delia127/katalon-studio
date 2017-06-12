@@ -33,6 +33,4 @@ public class StringConstants extends GlobalStringConstants {
     public static final String LBL_IOS_EXECUTION_MENU_ITEM = ComposerMobileMessageConstants.LBL_IOS_EXECUTION_MENU_ITEM;
 
     public static final String WARNING_TITLE = ComposerMobileMessageConstants.WARNING_TITLE;
-
-    public static final String LINK = ComposerMobileMessageConstants.LINK;
 }

@@ -29,10 +29,6 @@ public class ComposerMobileMessageConstants extends NLS {
 
     public static String WARNING_TITLE;
 
-    public static String LINK;
-    
-    public static String SETUP_LINK;
-
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerMobileMessageConstants.class);

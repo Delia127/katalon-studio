@@ -24,6 +24,7 @@ Require-Bundle: org.eclipse.osgi,
  org.eclipse.e4.ui.di,
  org.eclipse.e4.ui.model.workbench,
  org.eclipse.core.runtime,
- com.kms.katalon.composer.resources
+ com.kms.katalon.composer.resources,
+ com.kms.katalon.composer.components.impl
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: com.kms.katalon.composer.mobile.util

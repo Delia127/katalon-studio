@@ -143,6 +143,11 @@ public class ComposerComponentsImplMessageConstants extends NLS {
 
     public static String COMMAND_NAME_TEST_SUITE_COLLECTION;
 
+    // MissingMobileDriverWarningDialog
+    public static String LINK;
+
+    public static String SETUP_LINK;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerComponentsImplMessageConstants.class);
