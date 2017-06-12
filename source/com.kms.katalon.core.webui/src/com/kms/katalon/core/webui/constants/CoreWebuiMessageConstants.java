@@ -967,6 +967,13 @@ public class CoreWebuiMessageConstants extends NLS {
 
     public static String KW_MSG_TXT_OPTIONS_NOT_PRESENT_REASON;
 
+    // VerifyElementKeyword
+    public static String KW_MSG_ACTUAL_ELEMENT_TXT_NOT_MATCHED_EXPECTED_TXT;
+
+    public static String KW_LOG_ACTUAL_ELEMENT_TXT_MATCHED_EXPECTED_TXT;
+
+    public static String KW_MSG_VERIFY_ELEMENT_TEXT_FAILED;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, CoreWebuiMessageConstants.class);

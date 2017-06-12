@@ -3532,4 +3532,38 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     public static boolean verifyOptionsPresent(TestObject to, List expectedOptions) throws StepFailedException {
         return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "verifyOptionsPresent", to, expectedOptions)
     }
+
+    /**
+     * Verify text of an element.
+     *
+     * @param to
+     *          represent a web element.
+     * @param expectedText
+     *          text of the element to verify.
+     * @param flowControl
+     * @return true if the element has the desired text, otherwise false.
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyElementText(TestObject to, String expectedText, FailureHandling flowControl) throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "verifyElementText", to, expectedText, flowControl)
+    }
+
+    /**
+     * Verify text of an element.
+     *
+     * @param to
+     *          represent a web element.
+     * @param expectedText
+     *          text of the element to verify.
+     * @return true if the element has the desired text, otherwise false.
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyElementText(TestObject to, String expectedText) throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "verifyElementText", to, expectedText)
+    }
+
 }
