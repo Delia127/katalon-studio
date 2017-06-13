@@ -745,12 +745,13 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      *       represent a web element
      * @param offsetX x position in relative to the element
      * @param offsetY y position in relative to the element
+     * @param flowControl
      * @throws StepFailedException
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
-    public static void mouseOverOffset(TestObject to, int offsetX, int offsetY) throws StepFailedException {
-        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "mouseOverOffset", to, offsetX, offsetY)
+    public static void mouseOverOffset(TestObject to, int offsetX, int offsetY, FailureHandling flowControl) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "mouseOverOffset", to, offsetX, offsetY, flowControl);
     }
 
     /**
@@ -759,13 +760,12 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      *       represent a web element
      * @param offsetX x position in relative to the element
      * @param offsetY y position in relative to the element
-     * @param flowControl
      * @throws StepFailedException
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
-    public static void mouseOverOffset(TestObject to, int offsetX, int offsetY, FailureHandling flowControl) throws StepFailedException {
-        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "mouseOverOffset", to, offsetX, offsetY, flowControl);
+    public static void mouseOverOffset(TestObject to, int offsetX, int offsetY) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "mouseOverOffset", to, offsetX, offsetY)
     }
 
     /**
