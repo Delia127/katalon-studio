@@ -255,6 +255,13 @@ public class ComposerExecutionMessageConstants extends NLS {
 
     public static String PREF_REPLACEMENT_APACHE_MAIL_ERROR_MSG;
 
+    // LogViewerPart
+    public static String DIA_WARN_TEST_CASE_NOT_FOUND;
+
+    public static String DIA_WARN_UNABLE_NAVIGATE_TEST_CASE_STEP;
+    
+    public static String MENU_ITEM_NAVIGATE_TEST_CASE_STEP;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerExecutionMessageConstants.class);

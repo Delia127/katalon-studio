@@ -1,10 +1,16 @@
 package com.kms.katalon.composer.execution.util;
 
+import java.util.List;
+
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 
+import com.kms.katalon.composer.execution.exceptions.StepNotFoundException;
 import com.kms.katalon.composer.execution.trace.LogExceptionNavigator;
+import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
+import com.kms.katalon.composer.testcase.parts.TestCaseCompositePart;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 
@@ -19,5 +25,30 @@ public class TestCaseEditorUtil {
         MPart compatibilityEditorPart = new LogExceptionNavigator().getTestCaseGroovyEditor(testCase);
         CompatibilityEditor compatibilityEditor = (CompatibilityEditor) compatibilityEditorPart.getObject();
         return (AbstractTextEditor) compatibilityEditor.getEditor();
+    }
+
+    public static void navigateToTestStep(TestCaseEntity testCase, int stepIndex) throws Exception {
+        TestCaseCompositePart testCaseComposite = new LogExceptionNavigator().openTestCaseComposite(testCase);
+        testCaseComposite.setScriptContentToManual();
+        List<? extends ASTNodeWrapper> astNodes = testCaseComposite.getChildTestCasePart()
+                .getTreeTableInput()
+                .getMainClassNode()
+                .getRunMethod()
+                .getAstChildren();
+        if (astNodes.size() <= stepIndex - 1) {
+            throw new StepNotFoundException(stepIndex, testCase.getIdForDisplay());
+        }
+
+        testCaseComposite.setSelectedPart(testCaseComposite.getChildCompatibilityPart());
+
+        int lineNumber = astNodes.get(stepIndex - 1).getLineNumber();
+        if (lineNumber < 0) {
+            throw new StepNotFoundException(stepIndex, testCase.getIdForDisplay());
+        }
+        CompatibilityEditor groovyEditor = (CompatibilityEditor) testCaseComposite.getChildCompatibilityPart()
+                .getObject();
+        AbstractTextEditor editor = (AbstractTextEditor) groovyEditor.getEditor();
+        IDocument document = editor.getDocumentProvider().getDocument(groovyEditor.getEditor().getEditorInput());
+        editor.selectAndReveal(document.getLineOffset(lineNumber - 1), document.getLineLength(lineNumber - 1));
     }
 }
