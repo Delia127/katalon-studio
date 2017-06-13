@@ -217,10 +217,11 @@ public class AndroidDeviceInfo extends MobileDeviceInfo {
             return new File(System.getProperty("java.home"));
         }
         // run as product
-        if (Platform.getOS() == Platform.OS_MACOSX) {
-            return new File(getConfigurationFolder().getParentFile(), MAC_JRE_HOME_RELATIVE_PATH);
+        File parentFile = getConfigurationFolder().getParentFile();
+        if (Platform.OS_MACOSX.equals(Platform.getOS())) {
+            return new File(parentFile, MAC_JRE_HOME_RELATIVE_PATH);
         }
-        return new File(getConfigurationFolder().getParentFile(), JRE);
+        return new File(parentFile, JRE);
     }
 
     private static File getConfigurationFolder() throws IOException {
