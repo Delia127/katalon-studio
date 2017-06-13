@@ -9,6 +9,7 @@
     <elements xsi:type="commands:Command" xmi:id="_EqUEgJpvEeW8A_Dz0N0JOw" elementId="com.kms.katalon.composer.report.command.export.pdf" commandName="Export PDF Report"/>
     <elements xsi:type="commands:Command" xmi:id="_2SesEEwrEeeyBLadkF36tw" elementId="com.kms.katalon.composer.report.command.export.junit" commandName="Export JUnit Report"/>
     <elements xsi:type="commands:Command" xmi:id="_yq8vgDw1EeWh_4qGzXcOEA" elementId="com.kms.katalon.composer.report.command.empty" commandName="Empty"/>
+    <elements xsi:type="commands:Command" xmi:id="_6Gj2EE9qEeeMj7rqXOPx-g" elementId="com.kms.katalon.composer.report.command.export.html.tsc" commandName="Export TSC HTML Report" description="Export Test Suite Collection HTML Report"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_2o5IsDXHEeWwGcZVEIUXdw" featurename="handlers" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Handler" xmi:id="_2o5IsTXHEeWwGcZVEIUXdw" elementId="com.kms.katalon.composer.report.handler.export.html" contributionURI="bundleclass://com.kms.katalon.composer.report/com.kms.katalon.composer.report.handlers.ExportHTMLReportHandler" command="_pLRtATXHEeWwGcZVEIUXdw"/>
@@ -16,6 +17,7 @@
     <elements xsi:type="commands:Handler" xmi:id="_DlyFYJpvEeW8A_Dz0N0JOw" elementId="com.kms.katalon.composer.report.handler.export.pdf" contributionURI="bundleclass://com.kms.katalon.composer.report/com.kms.katalon.composer.report.handlers.ExportPDFReportHandler" command="_EqUEgJpvEeW8A_Dz0N0JOw"/>
     <elements xsi:type="commands:Handler" xmi:id="_3dYjwDw1EeWh_4qGzXcOEA" elementId="com.kms.katalon.composer.report.handler.empty" contributionURI="bundleclass://com.kms.katalon.composer.report/com.kms.katalon.composer.report.handlers.EmptyHandler" command="_yq8vgDw1EeWh_4qGzXcOEA"/>
     <elements xsi:type="commands:Handler" xmi:id="_GlNTsEwsEeeyBLadkF36tw" elementId="com.kms.katalon.composer.report.handler.export.junit" contributionURI="bundleclass://com.kms.katalon.composer.report/com.kms.katalon.composer.report.handlers.ExportJUnitReportHandler" command="_2SesEEwrEeeyBLadkF36tw"/>
+    <elements xsi:type="commands:Handler" xmi:id="_JL5dgE9rEeeMj7rqXOPx-g" elementId="com.kms.katalon.composer.report.handler.export.html.tsc" contributionURI="bundleclass://com.kms.katalon.composer.report/com.kms.katalon.composer.report.handlers.ExportTSCollectionHTMLReportHandler" command="_6Gj2EE9qEeeMj7rqXOPx-g"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_l07JwDytEeWh_4qGzXcOEA" featurename="children" parentElementId="com.kms.katalon.composer.explorer.popupmenu.new" positionInList="first">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_07ojQDw2EeWh_4qGzXcOEA" elementId="com.kms.katalon.composer.report.dynamicmenucontribution.empty" contributionURI="bundleclass://com.kms.katalon.composer.report/com.kms.katalon.composer.report.menu.EmptyPopupMenuContribution"/>

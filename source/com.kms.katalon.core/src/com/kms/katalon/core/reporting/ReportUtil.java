@@ -254,6 +254,23 @@ public class ReportUtil {
         FileUtils.writeStringToFile(new File(logFolder, "JSON_Report.json"), json);
     }
 
+    public static void writeTSCollectionHTMLReport(String reportTitle, String tsReportsJson, File destDir)
+            throws IOException, URISyntaxException {
+        StringBuilder htmlSb = new StringBuilder();
+        readFileToStringBuilder(ResourceLoader.HTML_COLLECTION_INDEX_TEMPLATE, htmlSb);
+        String template = htmlSb.toString();
+        template = StringUtils.replace(template, "REPORT_TITLE", reportTitle);
+        template = StringUtils.replace(template, "TEST_SUITE_REPORT_LIST", tsReportsJson);
+        FileUtils.writeStringToFile(new File(destDir, "index.html"), template);
+
+        htmlSb = new StringBuilder();
+        readFileToStringBuilder(ResourceLoader.HTML_COLLECTION_FRAME_TEMPLATE, htmlSb);
+        template = htmlSb.toString();
+        template = StringUtils.replace(template, "REPORT_TITLE", reportTitle);
+        template = StringUtils.replace(template, "TEST_SUITE_REPORT_LIST", tsReportsJson);
+        FileUtils.writeStringToFile(new File(destDir, "index-frame-view.html"), template);
+    }
+
     public static void writeHtmlReport(TestSuiteLogRecord suiteLogEntity, File logFolder)
             throws IOException, URISyntaxException {
         List<String> strings = new ArrayList<String>();
