@@ -34,7 +34,8 @@ Require-Bundle: org.eclipse.e4.ui.model.workbench,
  com.kms.katalon.composer.execution,
  org.eclipse.debug.core,
  com.kms.katalon.core.webui,
- com.kms.katalon.composer.resources
+ com.kms.katalon.composer.resources,
+ com.kms.katalon.execution.mobile
 Import-Package: javax.annotation;version="1.2.0"
 Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

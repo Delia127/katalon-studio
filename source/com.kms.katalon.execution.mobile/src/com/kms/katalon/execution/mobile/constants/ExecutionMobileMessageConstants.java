@@ -9,6 +9,13 @@ public class ExecutionMobileMessageConstants extends NLS {
 
     public static String MOBILE_ERR_CANNOT_FIND_DEVICE_WITH_NAME_X;
 
+    // MobileExecutionUtil
+    public static String MSG_NO_APPIUM;
+
+    public static String MSG_NO_NODEJS;
+
+    public static String MSG_NO_APPIUM_AND_NODEJS;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ExecutionMobileMessageConstants.class);

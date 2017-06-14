@@ -11,6 +11,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 
+import com.kms.katalon.composer.components.impl.dialogs.MissingMobileDriverWarningDialog;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
@@ -37,6 +38,7 @@ import com.kms.katalon.execution.launcher.ReportableLauncher;
 import com.kms.katalon.execution.launcher.TestSuiteCollectionLauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
+import com.kms.katalon.execution.mobile.exception.MobileSetupException;
 
 public class TestSuiteCollectionBuilderJob extends Job {
 
@@ -148,7 +150,12 @@ public class TestSuiteCollectionBuilderJob extends Job {
             reportCollection.getReportItemDescriptions()
                     .add(ReportItemDescription.from(launcher.getReportEntity().getIdForDisplay(), configuration));
             return launcher;
-        } catch (final Exception e) {
+        } catch (final MobileSetupException e) {
+            UISynchronizeService.syncExec(() -> MissingMobileDriverWarningDialog
+                    .showWarning(Display.getCurrent().getActiveShell(), e.getMessage()));
+            return null;
+        }
+        catch (final Exception e) {
             UISynchronizeService.syncExec(new Runnable() {
                 @Override
                 public void run() {

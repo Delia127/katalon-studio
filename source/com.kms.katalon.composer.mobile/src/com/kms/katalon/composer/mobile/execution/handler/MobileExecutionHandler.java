@@ -21,7 +21,9 @@ import com.kms.katalon.execution.mobile.exception.MobileSetupException;
 
 public abstract class MobileExecutionHandler extends AbstractExecutionHandler {
     protected static MobileDeviceInfo getDevice(MobileDriverType platform) {
-        MobileUtil.detectAppiumAndNodeJs(Display.getCurrent().getActiveShell());
+        if (!MobileUtil.detectAppiumAndNodeJs(Display.getCurrent().getActiveShell())) {
+            return null;
+        }
         DeviceSelectionDialog dialog = new DeviceSelectionDialog(Display.getCurrent().getActiveShell(), platform);
         dialog.open();
         if (dialog.getReturnCode() != Dialog.OK) {

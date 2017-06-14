@@ -33,16 +33,4 @@ public class StringConstants extends GlobalStringConstants {
     public static final String LBL_IOS_EXECUTION_MENU_ITEM = ComposerMobileMessageConstants.LBL_IOS_EXECUTION_MENU_ITEM;
 
     public static final String WARNING_TITLE = ComposerMobileMessageConstants.WARNING_TITLE;
-
-    public static final String MSG_NO_APPIUM = ComposerMobileMessageConstants.MSG_NO_APPIUM;
-
-    public static final String MSG_NO_NODEJS = ComposerMobileMessageConstants.MSG_NO_NODEJS;
-
-    public static final String MSG_NO_APPIUM_AND_NODEJS = ComposerMobileMessageConstants.MSG_NO_APPIUM_AND_NODEJS;
-
-    public static final String MSG_FAILED_DETECT_NODEJS = ComposerMobileMessageConstants.MSG_FAILED_DETECT_NODEJS;
-
-    public static final String LINK = ComposerMobileMessageConstants.LINK;
-    
-    public static final String MAC_DEFAULT_NODEJS_LOCATION = ComposerMobileMessageConstants.MAC_DEFAULT_NODEJS_LOCATION;
 }
