@@ -32,6 +32,12 @@ public class ImageConstants {
     public static final Image IMG_SAMPLE_WEB_SERVICE_PROJECT = ImageManager.getImage(IImageKeys.SAMPLE_WEB_SERVICES_PROJECT_100);
 
     public static final String URI_IMG_WELCOME = ImageManager.getImageURLString(IImageKeys.HIGHLIGHT_16);
+    
+    public static final Image IMG_SCREENSHOT_SCREEN_SHOT_LOG_VIEWER = ImageManager.getImage(IImageKeys.SCREEN_SHOT_LOG_VIEWER);
+    
+    public static final Image IMG_SCREENSHOT_SCREEN_SHOT_RECORD = ImageManager.getImage(IImageKeys.SCREEN_SHOT_RECORD);
+    
+    public static final Image IMG_SCREENSHOT_SCREEN_SHOT_RUN = ImageManager.getImage(IImageKeys.SCREEN_SHOT_RUN);
 
     // FunctionsIntroductionDialog
     public static final Image IMG_INTRO_SCREEN_1 = ImageManager.getImage(IImageKeys.INTRO_SCREEN_1);

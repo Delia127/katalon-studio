@@ -53,7 +53,6 @@ import com.kms.katalon.composer.components.impl.handler.CommandCaller;
 import com.kms.katalon.composer.components.impl.util.DesktopUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
-import com.kms.katalon.composer.project.constants.CommandId;
 import com.kms.katalon.composer.project.menu.RecentProjectParameterizedCommandBuilder;
 import com.kms.katalon.composer.project.template.SampleProjectProvider;
 import com.kms.katalon.console.utils.ApplicationInfo;
@@ -136,7 +135,7 @@ public class WelcomePart {
         bottomCompositeLayout.marginRight = 30;
         bottomCompositeLayout.marginLeft = 30;
         bottomComposite.setLayout(bottomCompositeLayout);
-        bottomComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        bottomComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 
         final Composite leftSections = createLeftSectionComposite(bottomComposite);
 
@@ -160,7 +159,7 @@ public class WelcomePart {
             }
 
             private void adjustTopCompositeSize(GridData topCompositeLayoutData) {
-                topCompositeLayoutData.heightHint = mainComposite.getSize().y / 8;
+                topCompositeLayoutData.heightHint = mainComposite.getSize().y / 20;
             }
 
             private void equalizeSectionsWidth(Composite leftSectionComposite, Composite rightSectionComposite) {
@@ -196,39 +195,29 @@ public class WelcomePart {
 
     private Composite createRightSectionComposite(Composite bottomComposite) {
         final Composite rightSections = new Composite(bottomComposite, SWT.NONE);
-        rightSections.setLayout(new GridLayout(1, false));
-        rightSections.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1));
+        final GridLayout glRIghtSection = new GridLayout(1, false);
+        glRIghtSection.verticalSpacing = 40;
+        rightSections.setLayout(glRIghtSection);
+        rightSections.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+
+        createWelcomeComposite(rightSections);
+
+        createFeaturesComposite(rightSections);
+
+        createProjectComponentComposites(rightSections);
+
+        return rightSections;
+    }
+
+    protected void createFeaturesComposite(final Composite rightSections) {
         Composite featureComposite = new Composite(rightSections, SWT.NONE);
         GridLayout glFeatureComposite = new GridLayout(3, true);
         glFeatureComposite.marginHeight = 0;
-        glFeatureComposite.verticalSpacing = 110;
+        glFeatureComposite.marginWidth = 0;
+        glFeatureComposite.verticalSpacing = 50;
+        glFeatureComposite.horizontalSpacing = 0;
         featureComposite.setLayout(glFeatureComposite);
-        featureComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-
-        createFeatureComponentComposite(featureComposite, StringConstants.PA_LBL_FAQ,
-                StringConstants.PA_LBL_FAQ_DESCRIPTION, ImageConstants.IMG_FAQ, new MouseAdapter() {
-                    @Override
-                    public void mouseDown(MouseEvent e) {
-                        openURL(StringConstants.PA_URL_FAQ);
-                    }
-                });
-
-        createFeatureComponentComposite(featureComposite, StringConstants.PA_LBL_GETTING_STARTED,
-                StringConstants.PA_LBL_GETTING_STARTED_DESCRIPTION, ImageConstants.IMG_GETTING_STARTED,
-                new MouseAdapter() {
-                    @Override
-                    public void mouseDown(MouseEvent e) {
-                        openURL(StringConstants.PA_URL_GETTING_STARTED);
-                    }
-                });
-
-        createFeatureComponentComposite(featureComposite, StringConstants.PA_LBL_ARTICLES,
-                StringConstants.PA_LBL_ARTICLES_DESCRIPTION, ImageConstants.IMG_HOW_TO_ARTICLES, new MouseAdapter() {
-                    @Override
-                    public void mouseDown(MouseEvent e) {
-                        openURL(StringConstants.PA_URL_ARTICLES_STARTED);
-                    }
-                });
+        featureComposite.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
 
         createFeatureComponentComposite(featureComposite, MessageConstants.PA_LBL_SAMPLE_WEB_UI_PROJECT,
                 MessageConstants.PA_TOOLTIP_SAMPLE_WEB_UI_PROJECT, ImageConstants.IMG_SAMPLE_WEB_UI_PROJECT,
@@ -268,7 +257,31 @@ public class WelcomePart {
                         }
                     }
                 });
-        return rightSections;
+
+        createFeatureComponentComposite(featureComposite, StringConstants.PA_LBL_FAQ,
+                StringConstants.PA_LBL_FAQ_DESCRIPTION, ImageConstants.IMG_FAQ, new MouseAdapter() {
+                    @Override
+                    public void mouseDown(MouseEvent e) {
+                        openURL(StringConstants.PA_URL_FAQ);
+                    }
+                });
+
+        createFeatureComponentComposite(featureComposite, StringConstants.PA_LBL_GETTING_STARTED,
+                StringConstants.PA_LBL_GETTING_STARTED_DESCRIPTION, ImageConstants.IMG_GETTING_STARTED,
+                new MouseAdapter() {
+                    @Override
+                    public void mouseDown(MouseEvent e) {
+                        openURL(StringConstants.PA_URL_GETTING_STARTED);
+                    }
+                });
+
+        createFeatureComponentComposite(featureComposite, StringConstants.PA_LBL_ARTICLES,
+                StringConstants.PA_LBL_ARTICLES_DESCRIPTION, ImageConstants.IMG_HOW_TO_ARTICLES, new MouseAdapter() {
+                    @Override
+                    public void mouseDown(MouseEvent e) {
+                        openURL(StringConstants.PA_URL_ARTICLES_STARTED);
+                    }
+                });
     }
 
     private void openURL(String url) {
@@ -282,9 +295,10 @@ public class WelcomePart {
     private void createFeatureComponentComposite(Composite featureComposite, String header, String description,
             Image image, MouseListener mouseListener) {
         Composite componentComposite = new Composite(featureComposite, SWT.NONE);
-        componentComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        componentComposite.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, true, false, 1, 1));
         GridLayout glComponentComposite = new GridLayout(1, false);
         glComponentComposite.marginHeight = 0;
+        glComponentComposite.marginWidth = 0;
         glComponentComposite.verticalSpacing = 10;
         componentComposite.setLayout(glComponentComposite);
 
@@ -322,58 +336,61 @@ public class WelcomePart {
     private Composite createLeftSectionComposite(Composite bottomComposite) {
         final Composite leftSections = new Composite(bottomComposite, SWT.NONE);
         GridLayout leftSectionLayout = new GridLayout(1, false);
-        leftSectionLayout.verticalSpacing = 30;
+        leftSectionLayout.verticalSpacing = 50;
         leftSections.setLayout(leftSectionLayout);
-        leftSections.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1));
+        leftSections.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-        createWelcomeComposite(leftSections);
-
-        createProjectComponentComposites(leftSections);
+        createCommonStepComposite(leftSections);
 
         return leftSections;
+    }
+
+    private void createCommonStepComposite(Composite leftSections) {
+        createCommonStepChildComposite(leftSections, MessageConstants.LBL_COMMON_STEP_RECORD_PREFIX, MessageConstants.LBL_COMMON_STEP_RECORD_DESCRIPTION,
+                ImageConstants.IMG_SCREENSHOT_SCREEN_SHOT_RECORD);
+        createCommonStepChildComposite(leftSections, MessageConstants.LBL_COMMON_STEP_RUN_PREFIX, MessageConstants.LBL_COMMON_STEP_RUN_DESCRIPTION,
+                ImageConstants.IMG_SCREENSHOT_SCREEN_SHOT_RUN);
+        createCommonStepChildComposite(leftSections, MessageConstants.LBL_COMMON_STEP_VIEW_LOGGER_PREFIX, MessageConstants.LBL_COMMON_STEP_VIEW_LOGGER_DESCRIPTION,
+                ImageConstants.IMG_SCREENSHOT_SCREEN_SHOT_LOG_VIEWER);
+    }
+
+    private void createCommonStepChildComposite(Composite parentComposite, final String stepPrefixText,
+            final String stepDetailsContentText, final Image screenshotImage) {
+        Composite stepComposite = new Composite(parentComposite, SWT.NONE);
+        stepComposite.setLayout(new GridLayout(2, false));
+        stepComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+
+        Label stepText = new Label(stepComposite, SWT.NONE);
+        stepText.setText(stepPrefixText);
+        stepText.setFont(getLargerBoldFont());
+
+        Label stepDescriptionText = new Label(stepComposite, SWT.NONE);
+        stepDescriptionText.setText(stepDetailsContentText);
+        stepDescriptionText.setFont(getLargerFont());
+
+        Label logoLabel = new Label(stepComposite, SWT.NONE);
+        logoLabel.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 2, 1));
+        logoLabel.setImage(screenshotImage);
     }
 
     private void createProjectComponentComposites(final Composite leftSections) {
         Composite projectComposite = new Composite(leftSections, SWT.NONE);
         projectComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        GridLayout glProjectComposite = new GridLayout();
-        glProjectComposite.verticalSpacing = 20;
-        projectComposite.setLayout(glProjectComposite);
-
-        createClickableComponentComposite(projectComposite, StringConstants.PA_LBL_NEW_PROJECT,
-                StringConstants.PA_LBL_NEW_PROJECT_DESCRIPTION, ImageConstants.IMG_NEW_PROJECT, new MouseAdapter() {
-                    @Override
-                    public void mouseDown(MouseEvent e) {
-                        try {
-                            commandCaller.call(CommandId.PROJECT_ADD);
-                        } catch (CommandException ex) {
-                            LoggerSingleton.logError(ex);
-                        }
-                    }
-                });
-
-        createClickableComponentComposite(projectComposite, StringConstants.PA_LBL_OPEN_PROJECT,
-                StringConstants.PA_LBL_OPEN_PROJECT_DESCRIPTION, ImageConstants.IMG_OPEN_PROJECT, new MouseAdapter() {
-                    @Override
-                    public void mouseDown(MouseEvent e) {
-                        try {
-                            commandCaller.call(CommandId.PROJECT_OPEN);
-                        } catch (CommandException ex) {
-                            LoggerSingleton.logError(ex);
-                        }
-                    }
-                });
+        projectComposite.setLayout(new GridLayout());
 
         createRecentProjectComposite(projectComposite);
     }
 
     private void createWelcomeComposite(final Composite leftSections) {
         Composite welcomeComposite = new Composite(leftSections, SWT.NONE);
-        welcomeComposite.setLayout(new GridLayout(1, false));
+        final GridLayout glWelcomeComposite = new GridLayout(2, false);
+        glWelcomeComposite.horizontalSpacing = 20;
+        glWelcomeComposite.marginLeft = 55;
+        welcomeComposite.setLayout(glWelcomeComposite);
         welcomeComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
         Label logoLabel = new Label(welcomeComposite, SWT.NONE);
-        logoLabel.setLayoutData(new GridData(SWT.CENTER, SWT.TOP, true, false, 1, 1));
+        logoLabel.setLayoutData(new GridData(SWT.CENTER, SWT.TOP, false, false, 1, 1));
         logoLabel.setImage(ImageConstants.IMG_BRANDING);
         logoLabel.setCursor(handCursor);
         logoLabel.setToolTipText(MessageConstants.PA_TOOLTIP_KATALON_HOME_PAGE);
@@ -384,50 +401,74 @@ public class WelcomePart {
             }
         });
 
-        Label welcomeLabel = new Label(welcomeComposite, SWT.NONE);
-        welcomeLabel.setLayoutData(new GridData(SWT.CENTER, SWT.TOP, true, false, 1, 1));
-        welcomeLabel.setText(MessageConstants.PA_WELCOME_TO_KATALON);
-        welcomeLabel.setFont(getLargeFont());
+        Composite welcomeTextComposite = new Composite(welcomeComposite, SWT.NONE);
+        final GridLayout layout = new GridLayout();
+        layout.marginHeight = 0;
+        layout.marginWidth = 0;
+        welcomeTextComposite.setLayout(layout);
+        welcomeTextComposite.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, true, true, 1, 1));
 
-        Label versionLabel = new Label(welcomeComposite, SWT.NONE);
-        versionLabel.setLayoutData(new GridData(SWT.CENTER, SWT.TOP, true, false, 1, 1));
+        Label welcomeLabel = new Label(welcomeTextComposite, SWT.NONE);
+        welcomeLabel.setLayoutData(new GridData(SWT.LEFT, SWT.BOTTOM, true, true, 1, 1));
+        welcomeLabel.setText(MessageConstants.PA_WELCOME_TO_KATALON);
+        welcomeLabel.setFont(getLargestFont());
+
+        Label versionLabel = new Label(welcomeTextComposite, SWT.NONE);
+        versionLabel.setLayoutData(new GridData(SWT.LEFT, SWT.BOTTOM, true, false, 1, 1));
         versionLabel
                 .setText(MessageFormat.format(MessageConstants.PA_LBL_KATALON_VERSION, ApplicationInfo.versionNo()));
         versionLabel.setFont(getSmallFont());
     }
 
     private void createRecentProjectComposite(Composite projectComposite) {
-        Composite recentProjectComposite = createComponentLayout(projectComposite);
+        Composite recentProjectComposite = new Composite(projectComposite, SWT.NONE);
+
+        GridLayout glComponentProjectComposite = new GridLayout(2, false);
+        glComponentProjectComposite.horizontalSpacing = 15;
+        glComponentProjectComposite.marginLeft = 55;
+        recentProjectComposite.setLayout(glComponentProjectComposite);
+
+        GridData gdComponentProjectComposite = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+        gdComponentProjectComposite.widthHint = MINIMUM_LEFT_SECTION_SIZE;
+        recentProjectComposite.setLayoutData(gdComponentProjectComposite);
+
         Label lblComponent = new Label(recentProjectComposite, SWT.NONE);
         lblComponent.setImage(ImageConstants.IMG_RECENT_PROJECT);
 
         Label txtComponent = new Label(recentProjectComposite, SWT.NONE);
         txtComponent.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         txtComponent.setText(StringConstants.PA_LBL_RECENT_PROJECT);
-        txtComponent.setFont(getNormalFont());
+        txtComponent.setFont(getNormalBoldFont());
 
         Composite recentProjectDetails = new Composite(recentProjectComposite, SWT.NONE);
         GridData recentProjectDetailsLayoutData = new GridData(SWT.FILL, SWT.TOP, true, false, 2, 1);
-        recentProjectDetailsLayoutData.horizontalIndent = 50;
+        recentProjectDetailsLayoutData.horizontalIndent = 30;
         recentProjectDetails.setLayoutData(recentProjectDetailsLayoutData);
-        GridLayout gdRecentProjectDetails = new GridLayout(2, false);
-        gdRecentProjectDetails.horizontalSpacing = 10;
+        GridLayout gdRecentProjectDetails = new GridLayout(2, true);
+        gdRecentProjectDetails.horizontalSpacing = 70;
         recentProjectDetails.setLayout(gdRecentProjectDetails);
+
         final RecentProjectParameterizedCommandBuilder commandBuilder = new RecentProjectParameterizedCommandBuilder();
         for (final ProjectEntity project : getRecentProjects()) {
-            Label imgRecentProjectFile = new Label(recentProjectDetails, SWT.NONE);
+            Composite cpRecentProject = new Composite(recentProjectDetails, SWT.NONE);
+            cpRecentProject.setLayout(new GridLayout(2, false));
+            cpRecentProject.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
+
+            Label imgRecentProjectFile = new Label(cpRecentProject, SWT.NONE);
             imgRecentProjectFile.setImage(ImageConstants.IMG_RECENT_PROJECT_FILE);
             imgRecentProjectFile.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
 
-            HyperLinkStyledText txtRecentProjectName = new HyperLinkStyledText(recentProjectDetails, SWT.WRAP) {
+            HyperLinkStyledText txtRecentProjectName = new HyperLinkStyledText(cpRecentProject, SWT.WRAP) {
                 @Override
                 protected Color getDefaultForeground() {
                     return ColorUtil.getHighlightForegroundColor();
                 }
             };
+            GridData gdRecentProjectName = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+            gdRecentProjectName.horizontalIndent = 5;
             txtRecentProjectName.setFont(getNormalFont());
-            txtRecentProjectName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-            txtRecentProjectName.setText(project.getName());
+            txtRecentProjectName.setLayoutData(gdRecentProjectName);
+            txtRecentProjectName.setText(StringUtils.abbreviate(project.getName(), 30));
             txtRecentProjectName.setToolTipText(
                     MessageFormat.format(StringConstants.PA_TOOLTIP_OPEN_RECENT_PROJECT, project.getName()));
             txtRecentProjectName.addMouseListener(new MouseAdapter() {
@@ -443,42 +484,6 @@ public class WelcomePart {
         }
     }
 
-    private Composite createClickableComponentComposite(Composite parentComposite, String header, String description,
-            Image image, MouseListener mouseListener) {
-        Composite componentProjectComposite = createComponentLayout(parentComposite);
-
-        Label lblComponent = new Label(componentProjectComposite, SWT.NONE);
-        lblComponent.setImage(image);
-        lblComponent.setCursor(handCursor);
-
-        HyperLinkStyledText txtComponent = new HyperLinkStyledText(componentProjectComposite, SWT.NONE);
-        txtComponent.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        txtComponent.setText(header);
-        txtComponent.setFont(getNormalFont());
-
-        if (StringUtils.isNotEmpty(description)) {
-            lblComponent.setToolTipText(description);
-            txtComponent.setToolTipText(description);
-        }
-        if (mouseListener != null) {
-            lblComponent.addMouseListener(mouseListener);
-            txtComponent.addMouseListener(mouseListener);
-        }
-        return componentProjectComposite;
-    }
-
-    private Composite createComponentLayout(Composite parentComposite) {
-        Composite componentProjectComposite = new Composite(parentComposite, SWT.NONE);
-        GridLayout glComponentProjectComposite = new GridLayout(2, false);
-        glComponentProjectComposite.horizontalSpacing = 15;
-        glComponentProjectComposite.marginLeft = 50;
-        componentProjectComposite.setLayout(glComponentProjectComposite);
-        GridData gdComponentProjectComposite = new GridData(SWT.CENTER, SWT.TOP, true, false, 1, 1);
-        gdComponentProjectComposite.widthHint = MINIMUM_LEFT_SECTION_SIZE;
-        componentProjectComposite.setLayoutData(gdComponentProjectComposite);
-        return componentProjectComposite;
-    }
-
     private Display getCurrentDisplay() {
         if (mainComposite == null || mainComposite.isDisposed()) {
             return Display.getCurrent();
@@ -486,12 +491,24 @@ public class WelcomePart {
         return mainComposite.getDisplay();
     }
 
-    private Font getLargeFont() {
-        return getHeaderFont(18, SWT.BOLD);
+    private Font getLargestFont() {
+        return getHeaderFont(20, SWT.BOLD);
+    }
+
+    private Font getLargerFont() {
+        return getHeaderFont(15, SWT.NONE);
+    }
+
+    private Font getLargerBoldFont() {
+        return getHeaderFont(15, SWT.BOLD);
     }
 
     private Font getNormalFont() {
         return getHeaderFont(12, SWT.NONE);
+    }
+
+    private Font getNormalBoldFont() {
+        return getHeaderFont(12, SWT.BOLD);
     }
 
     private Font getSmallFont() {

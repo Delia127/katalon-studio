@@ -169,6 +169,18 @@ public class MessageConstants extends NLS {
 
     public static String LBL_ADDRESS;
 
+    public static String LBL_COMMON_STEP_RECORD_DESCRIPTION;
+
+    public static String LBL_COMMON_STEP_RECORD_PREFIX;
+
+    public static String LBL_COMMON_STEP_RUN_DESCRIPTION;
+
+    public static String LBL_COMMON_STEP_RUN_PREFIX;
+
+    public static String LBL_COMMON_STEP_VIEW_LOGGER_DESCRIPTION;
+
+    public static String LBL_COMMON_STEP_VIEW_LOGGER_PREFIX;
+
     public static String LBL_PORT;
 
     public static String CHK_TEXT_PROXY_SERVER_TYPE_REQUIRE_AUTHENTICATION;
