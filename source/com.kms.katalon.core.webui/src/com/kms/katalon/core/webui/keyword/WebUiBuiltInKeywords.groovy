@@ -636,6 +636,35 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     public static void click(TestObject to) throws StepFailedException {
         KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "click", to)
     }
+    
+    /**
+     * Click on the given element with the relative position (x, y) from the top-left corner of that element
+     * @param to
+     *       represent a web element
+     * @param offsetX x position in relative to the element
+     * @param offsetY y position in relative to the element
+     * @param flowControl
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void clickOffset(TestObject to, int offsetX, int offsetY, FailureHandling flowControl) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "clickOffset", to, offsetX, offsetY, flowControl)
+    }
+
+    /**
+     * Click on the given element with the relative position (x, y) from the top-left corner of that element
+     * @param to
+     *       represent a web element
+     * @param offsetX x position in relative to the element
+     * @param offsetY y position in relative to the element
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void clickOffset(TestObject to, int offsetX, int offsetY) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "clickOffset", to, offsetX, offsetY)
+    }
 
     /**
      * If this current element is a form, or an element within a form, then this will be submitted. 
