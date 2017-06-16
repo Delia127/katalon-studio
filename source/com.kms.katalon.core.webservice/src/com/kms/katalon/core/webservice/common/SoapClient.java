@@ -147,6 +147,7 @@ public class SoapClient extends BasicRequestor {
         // SOAP is HTTP-XML protocol
         responseObject.setContentType("application/xml");
         responseObject.setResponseText(responseText);
+        responseObject.setStatusCode(con.getResponseCode());
         return responseObject;
     }
 
