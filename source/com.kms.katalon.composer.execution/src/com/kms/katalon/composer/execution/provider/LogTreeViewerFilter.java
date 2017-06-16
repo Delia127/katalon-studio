@@ -24,9 +24,6 @@ public class LogTreeViewerFilter extends LogViewerFilter {
         if (!isLogEnded(logParentTreeNode) || isTestSuiteLog(logParentTreeNode)) {
             return true;
         }
-        if (isGeneralStep(logParentTreeNode)) {
-            return false;
-        }
         return ((evaluteLog(logParentTreeNode.getResult()) & getPreferenceShowedValue()) != 0);
     }
 
