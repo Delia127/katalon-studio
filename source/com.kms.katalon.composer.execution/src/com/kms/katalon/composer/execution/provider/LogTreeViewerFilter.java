@@ -26,6 +26,14 @@ public class LogTreeViewerFilter extends LogViewerFilter {
         }
         return ((evaluteLog(logParentTreeNode.getResult()) & getPreferenceShowedValue()) != 0);
     }
+    
+    @Override
+    public boolean isFilterProperty(Object element, String property) {
+        if ("filter".equals(property)) {
+            return true;
+        }
+        return super.isFilterProperty(element, property);
+    }
 
     private boolean isTestSuiteLog(ILogParentTreeNode logParentTreeNode) {
         return StringConstants.LOG_START_SUITE_METHOD.equals(logParentTreeNode.getRecordStart().getSourceMethodName());
@@ -36,7 +44,7 @@ public class LogTreeViewerFilter extends LogViewerFilter {
     }
 
     protected boolean isLogEnded(final ILogParentTreeNode logParentTreeNode) {
-        return logParentTreeNode.getRecordEnd() != null;
+        return logParentTreeNode.getRecordEnd() != null || logParentTreeNode.getResult() != null;
     }
 
     // Only allow to filter failed logs for now

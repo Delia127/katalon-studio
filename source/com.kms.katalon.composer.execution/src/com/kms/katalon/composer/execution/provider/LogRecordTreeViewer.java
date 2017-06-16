@@ -77,8 +77,9 @@ public class LogRecordTreeViewer extends TreeViewer {
             case END: {
                 currentParentTreeNode.setRecordEnd(record);
                 LogParentTreeNode currentParentNodeImpl = (LogParentTreeNode) currentParentTreeNode;
-                refresh(currentParentNodeImpl);
 
+                refresh(currentParentNodeImpl);
+                update(currentParentNodeImpl, new String[] {"filter"});
                 // if a node is passed, collapse it, otherwise keep its current
                 // state.
                 if (currentParentNodeImpl.getResult() == null
@@ -87,7 +88,6 @@ public class LogRecordTreeViewer extends TreeViewer {
                         setExpandedState(currentParentNodeImpl, false);
                     }
                 }
-                refresh(currentParentNodeImpl);
                 select(new StructuredSelection(currentParentNodeImpl));
 
                 // switch to parent node
@@ -152,6 +152,9 @@ public class LogRecordTreeViewer extends TreeViewer {
     }
 
     private ILogParentTreeNode findSiblingNode(ILogTreeNode treeNode, boolean previousFlag) {
+        if (treeNode == null) {
+            return null;
+        }
         if (treeNode.getParent() == null) {
             int index = rootNodes.indexOf(treeNode);
             if (index < 0) return null;
@@ -218,7 +221,7 @@ public class LogRecordTreeViewer extends TreeViewer {
                         previousFlag);
             }
 
-            if (qualifiedNodeFound == null && treeNode.getParent() != null) {
+            if (qualifiedNodeFound == null && treeNode != null && treeNode.getParent() != null) {
                 ILogParentTreeNode parentNode = treeNode.getParent();
                 return selectFailureRecursively(selectedNode, (ILogTreeNode) parentNode, previousFlag);
             }
