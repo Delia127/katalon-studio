@@ -135,7 +135,7 @@ public class WelcomePart {
         bottomCompositeLayout.marginRight = 30;
         bottomCompositeLayout.marginLeft = 30;
         bottomComposite.setLayout(bottomCompositeLayout);
-        bottomComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        bottomComposite.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, true, false, 1, 1));
 
         final Composite leftSections = createLeftSectionComposite(bottomComposite);
 
@@ -163,7 +163,7 @@ public class WelcomePart {
             }
 
             private void equalizeSectionsWidth(Composite leftSectionComposite, Composite rightSectionComposite) {
-                int totalWidth = mainComposite.getSize().x - 300;
+                int totalWidth = mainComposite.getSize().x - 500;
                 GridData leftSectionLayoutData = (GridData) leftSectionComposite.getLayoutData();
                 GridData rightSectionLayoutData = (GridData) rightSectionComposite.getLayoutData();
                 leftSectionLayoutData.widthHint = Math.max(MINIMUM_LEFT_SECTION_SIZE, totalWidth / 4);
@@ -198,7 +198,9 @@ public class WelcomePart {
         final GridLayout glRIghtSection = new GridLayout(1, false);
         glRIghtSection.verticalSpacing = 40;
         rightSections.setLayout(glRIghtSection);
-        rightSections.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+        final GridData layoutData = new GridData(SWT.LEFT, SWT.TOP, true, true, 1, 1);
+        layoutData.minimumWidth = 550;
+        rightSections.setLayoutData(layoutData);
 
         createWelcomeComposite(rightSections);
 
@@ -338,10 +340,14 @@ public class WelcomePart {
         GridLayout leftSectionLayout = new GridLayout(1, false);
         leftSectionLayout.verticalSpacing = 50;
         leftSections.setLayout(leftSectionLayout);
-        leftSections.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        final GridData layoutData = new GridData(SWT.RIGHT, SWT.FILL, true, true, 1, 1);
+        layoutData.widthHint = 380;
+        layoutData.minimumWidth = 380;
+        leftSections.setLayoutData(layoutData);
 
         createCommonStepComposite(leftSections);
 
+        leftSections.pack();
         return leftSections;
     }
 
@@ -489,7 +495,7 @@ public class WelcomePart {
             gdRecentProjectName.horizontalIndent = 5;
             txtRecentProjectName.setFont(getNormalFont());
             txtRecentProjectName.setLayoutData(gdRecentProjectName);
-            txtRecentProjectName.setText(StringUtils.abbreviate(project.getName(), 30));
+            txtRecentProjectName.setText(StringUtils.abbreviate(project.getName(), 19));
             txtRecentProjectName.setToolTipText(
                     MessageFormat.format(StringConstants.PA_TOOLTIP_OPEN_RECENT_PROJECT, project.getName()));
             txtRecentProjectName.addMouseListener(new MouseAdapter() {
@@ -517,11 +523,11 @@ public class WelcomePart {
     }
 
     private Font getLargerFont() {
-        return getHeaderFont(15, SWT.NONE);
+        return getHeaderFont(14, SWT.NONE);
     }
 
     private Font getLargerBoldFont() {
-        return getHeaderFont(15, SWT.BOLD);
+        return getHeaderFont(14, SWT.BOLD);
     }
 
     private Font getNormalFont() {
