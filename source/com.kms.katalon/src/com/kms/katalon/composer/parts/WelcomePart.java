@@ -346,30 +346,51 @@ public class WelcomePart {
     }
 
     private void createCommonStepComposite(Composite leftSections) {
-        createCommonStepChildComposite(leftSections, MessageConstants.LBL_COMMON_STEP_RECORD_PREFIX, MessageConstants.LBL_COMMON_STEP_RECORD_DESCRIPTION,
-                ImageConstants.IMG_SCREENSHOT_SCREEN_SHOT_RECORD);
-        createCommonStepChildComposite(leftSections, MessageConstants.LBL_COMMON_STEP_RUN_PREFIX, MessageConstants.LBL_COMMON_STEP_RUN_DESCRIPTION,
-                ImageConstants.IMG_SCREENSHOT_SCREEN_SHOT_RUN);
-        createCommonStepChildComposite(leftSections, MessageConstants.LBL_COMMON_STEP_VIEW_LOGGER_PREFIX, MessageConstants.LBL_COMMON_STEP_VIEW_LOGGER_DESCRIPTION,
+        createCommonStepChildComposite(leftSections, MessageConstants.LBL_COMMON_STEP_RECORD_PREFIX,
+                MessageConstants.LBL_COMMON_STEP_RECORD_URL_PREFIX, MessageConstants.LBL_COMMON_STEP_RECORD_DESCRIPTION,
+                MessageConstants.URL_COMMON_STEP_RECORD, ImageConstants.IMG_SCREENSHOT_SCREEN_SHOT_RECORD);
+        createCommonStepChildComposite(leftSections, MessageConstants.LBL_COMMON_STEP_RUN_PREFIX,
+                MessageConstants.LBL_COMMON_STEP_RUN_URL_PREFIX, MessageConstants.LBL_COMMON_STEP_RUN_DESCRIPTION,
+                MessageConstants.URL_COMMON_STEP_RUN, ImageConstants.IMG_SCREENSHOT_SCREEN_SHOT_RUN);
+        createCommonStepChildComposite(leftSections, MessageConstants.LBL_COMMON_STEP_VIEW_LOGGER_PREFIX,
+                MessageConstants.LBL_COMMON_STEP_VIEW_LOGGER_URL_PREFIX,
+                MessageConstants.LBL_COMMON_STEP_VIEW_LOGGER_DESCRIPTION, MessageConstants.URL_COMMON_STEP_VIEW_LOGGER,
                 ImageConstants.IMG_SCREENSHOT_SCREEN_SHOT_LOG_VIEWER);
     }
 
     private void createCommonStepChildComposite(Composite parentComposite, final String stepPrefixText,
-            final String stepDetailsContentText, final Image screenshotImage) {
+            final String stepPrefixHyperLinkText, final String stepDetailsContentText, final String stepURL,
+            final Image screenshotImage) {
         Composite stepComposite = new Composite(parentComposite, SWT.NONE);
-        stepComposite.setLayout(new GridLayout(2, false));
+        stepComposite.setLayout(new GridLayout(3, false));
         stepComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 
         Label stepText = new Label(stepComposite, SWT.NONE);
         stepText.setText(stepPrefixText);
         stepText.setFont(getLargerBoldFont());
 
+        HyperLinkStyledText stepPrefixHyperLinkStyledText = new HyperLinkStyledText(stepComposite, SWT.WRAP) {
+            @Override
+            protected Color getDefaultForeground() {
+                return ColorUtil.getHighlightForegroundColor();
+            }
+        };
+
+        stepPrefixHyperLinkStyledText.setFont(getLargerFont());
+        stepPrefixHyperLinkStyledText.setText(stepPrefixHyperLinkText);
+        stepPrefixHyperLinkStyledText.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseDown(MouseEvent e) {
+                openURL(stepURL);
+            }
+        });
+
         Label stepDescriptionText = new Label(stepComposite, SWT.NONE);
         stepDescriptionText.setText(stepDetailsContentText);
         stepDescriptionText.setFont(getLargerFont());
 
         Label logoLabel = new Label(stepComposite, SWT.NONE);
-        logoLabel.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 2, 1));
+        logoLabel.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 3, 1));
         logoLabel.setImage(screenshotImage);
     }
 
