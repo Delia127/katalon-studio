@@ -8,9 +8,11 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.composer.testcase.ast.editors.KeywordComboBoxCellEditorWithContentProposal;
+import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
 import com.kms.katalon.composer.testcase.model.InputParameter;
 import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
 import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
@@ -47,10 +49,14 @@ public class AstCustomKeywordTreeTableNode extends AstAbstractKeywordTreeTableNo
         return new KeywordComboBoxCellEditorWithContentProposal(parent, parentStatement, getClassName(),
                 keywordMethodArray, keywordMethodArray, tooltips) {
             @Override
-            protected void generateArguments(MethodCallExpressionWrapper newMethodCall) {
-                AstKeywordsInputUtil.generateCustomKeywordArguments(newMethodCall);
+            protected MethodCallExpressionWrapper createNewKeywordExpression(String keywordClass, String newMethodName,
+                    StatementWrapper parentStatement) {
+                ASTNodeWrapper currentInput = parentStatement.getInput();
+                ArgumentListExpressionWrapper currentArguments = currentInput instanceof MethodCallExpressionWrapper
+                        ? ((MethodCallExpressionWrapper) currentInput).getArguments() : null;
+                return AstKeywordsInputUtil.generateCustomKeywordExpression(keywordClass, newMethodName, currentArguments, parentStatement);
             }
-            
+
             @Override
             protected String getKeywordName(MethodCallExpressionWrapper methodCall) {
                 return KeywordController.getInstance().getRawCustomKeywordName(methodCall.getMethodAsString());
