@@ -11,6 +11,8 @@ import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class LogTreeViewerFilter extends LogViewerFilter {
+    public static final String PROPERTY_FILTER = "filter";
+
     @Override
     public boolean select(Viewer viewer, Object parentElement, Object element) {
         if (!(element instanceof ILogTreeNode)) {
@@ -29,7 +31,7 @@ public class LogTreeViewerFilter extends LogViewerFilter {
     
     @Override
     public boolean isFilterProperty(Object element, String property) {
-        if ("filter".equals(property)) {
+        if (PROPERTY_FILTER.equals(property)) {
             return true;
         }
         return super.isFilterProperty(element, property);

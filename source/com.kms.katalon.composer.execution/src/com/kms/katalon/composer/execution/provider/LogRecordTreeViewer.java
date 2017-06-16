@@ -79,7 +79,7 @@ public class LogRecordTreeViewer extends TreeViewer {
                 LogParentTreeNode currentParentNodeImpl = (LogParentTreeNode) currentParentTreeNode;
 
                 refresh(currentParentNodeImpl);
-                update(currentParentNodeImpl, new String[] {"filter"});
+                update(currentParentNodeImpl, new String[] { LogTreeViewerFilter.PROPERTY_FILTER });
                 // if a node is passed, collapse it, otherwise keep its current
                 // state.
                 if (currentParentNodeImpl.getResult() == null
@@ -126,25 +126,30 @@ public class LogRecordTreeViewer extends TreeViewer {
     }
 
     private ILogParentTreeNode findFirstFailureNodeInBranch(ILogTreeNode selectedNode, ILogParentTreeNode parentNode) {
-        if (isFailureNode(parentNode) && !parentNode.equals(selectedNode)) return parentNode;
+        if (isFailureNode(parentNode) && !parentNode.equals(selectedNode))
+            return parentNode;
         for (ILogTreeNode childNode : parentNode.getChildren()) {
             if (childNode instanceof ILogParentTreeNode) {
                 ILogParentTreeNode foundNode = findFirstFailureNodeInBranch(selectedNode,
                         (ILogParentTreeNode) childNode);
-                if (foundNode != null) return foundNode;
+                if (foundNode != null)
+                    return foundNode;
             }
         }
         return null;
     }
 
     private ILogParentTreeNode findLastFailureNodeInBranch(ILogTreeNode selectedNode, ILogParentTreeNode parentNode) {
-        if (parentNode.equals(selectedNode)) return null;
+        if (parentNode.equals(selectedNode))
+            return null;
 
         for (int index = parentNode.getChildren().size() - 1; index >= 0; index--) {
             ILogTreeNode childNode = parentNode.getChildren().get(index);
             if (childNode instanceof ILogParentTreeNode) {
-                ILogParentTreeNode foundNode = findLastFailureNodeInBranch(selectedNode, (ILogParentTreeNode) childNode);
-                if (foundNode != null) return foundNode;
+                ILogParentTreeNode foundNode = findLastFailureNodeInBranch(selectedNode,
+                        (ILogParentTreeNode) childNode);
+                if (foundNode != null)
+                    return foundNode;
             }
         }
 
@@ -157,9 +162,12 @@ public class LogRecordTreeViewer extends TreeViewer {
         }
         if (treeNode.getParent() == null) {
             int index = rootNodes.indexOf(treeNode);
-            if (index < 0) return null;
-            if (previousFlag && index > 0) return rootNodes.get(index - 1);
-            if (!previousFlag && index < rootNodes.size() - 1) return rootNodes.get(index + 1);
+            if (index < 0)
+                return null;
+            if (previousFlag && index > 0)
+                return rootNodes.get(index - 1);
+            if (!previousFlag && index < rootNodes.size() - 1)
+                return rootNodes.get(index + 1);
         } else {
             ILogParentTreeNode parentNode = treeNode.getParent();
             int index = parentNode.getChildren().indexOf(treeNode);
@@ -183,9 +191,11 @@ public class LogRecordTreeViewer extends TreeViewer {
     }
 
     private boolean isAncentor(ILogParentTreeNode parentNode, ILogTreeNode treeNode) {
-        if (parentNode == null) return false;
+        if (parentNode == null)
+            return false;
 
-        if (parentNode.equals(treeNode.getParent())) return true;
+        if (parentNode.equals(treeNode.getParent()))
+            return true;
 
         if (treeNode.getParent() != null) {
             return isAncentor(parentNode, (ILogTreeNode) treeNode.getParent());
@@ -202,7 +212,8 @@ public class LogRecordTreeViewer extends TreeViewer {
 
             if (previousFlag) {
                 if (isAncentor(parentNode, selectedNode)) {
-                    if (isFailureNode(parentNode)) return parentNode;
+                    if (isFailureNode(parentNode))
+                        return parentNode;
                 } else {
                     qualifiedNodeFound = findLastFailureNodeInBranch(selectedNode, parentNode);
                 }
@@ -235,7 +246,8 @@ public class LogRecordTreeViewer extends TreeViewer {
         if (selection != null) {
             ILogTreeNode selectedNode = (ILogTreeNode) selection.getFirstElement();
             ILogParentTreeNode foundNode = selectFailureRecursively(selectedNode, selectedNode, true);
-            if (foundNode != null) setSelection(new StructuredSelection(foundNode));
+            if (foundNode != null)
+                setSelection(new StructuredSelection(foundNode));
         }
     }
 
