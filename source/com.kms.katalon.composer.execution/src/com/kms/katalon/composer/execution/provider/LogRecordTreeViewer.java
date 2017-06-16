@@ -96,6 +96,8 @@ public class LogRecordTreeViewer extends TreeViewer {
             }
             case PASSED:
             case FAILED:
+            case WARNING:
+            case NOT_RUN:
             case ERROR: {
                 if (currentParentTreeNode == null) {
                     break;
