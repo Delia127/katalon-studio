@@ -50,8 +50,8 @@ import com.kms.katalon.custom.keyword.KeywordParameter;
  */
 public class AstKeywordsInputUtil {
     public static ExpressionStatementWrapper createNewCustomKeywordStatement(ASTNodeWrapper parentNode) {
-        List<MethodNode> customKeywords = KeywordController.getInstance().getCustomKeywords(
-                ProjectController.getInstance().getCurrentProject());
+        List<MethodNode> customKeywords = KeywordController.getInstance()
+                .getCustomKeywords(ProjectController.getInstance().getCurrentProject());
         if (customKeywords == null || customKeywords.isEmpty()) {
             return null;
         }
@@ -62,18 +62,14 @@ public class AstKeywordsInputUtil {
 
     public static ExpressionStatementWrapper createNewCustomKeywordStatement(String keywordClass, String keywordName,
             ASTNodeWrapper parentNode) {
-        MethodCallExpressionWrapper keywordMethodCallExpression = new MethodCallExpressionWrapper(keywordClass,
-                keywordName, parentNode);
-        generateCustomKeywordArguments(keywordMethodCallExpression);
-        return new ExpressionStatementWrapper(keywordMethodCallExpression, parentNode);
+        return new ExpressionStatementWrapper(generateCustomKeywordExpression(keywordClass, keywordName, null),
+                parentNode);
     }
 
     public static ExpressionStatementWrapper createBuiltInKeywordStatement(String classSimpleName, String keyword,
             ASTNodeWrapper parentNode) {
-        MethodCallExpressionWrapper keywordMethodCallExpression = new MethodCallExpressionWrapper(classSimpleName,
-                keyword, parentNode);
-        generateBuiltInKeywordArguments(keywordMethodCallExpression);
-        return new ExpressionStatementWrapper(keywordMethodCallExpression, parentNode);
+        return new ExpressionStatementWrapper(generateBuiltInKeywordExpression(classSimpleName, keyword, null),
+                parentNode);
     }
 
     public static List<InputParameter> generateBuiltInKeywordInputParameters(String buitInKWClassSimpleName,
@@ -141,7 +137,8 @@ public class AstKeywordsInputUtil {
         return inputParameters;
     }
 
-    public static PropertyExpressionWrapper createPropertyExpressionForClass(String className, ASTNodeWrapper parentNode) {
+    public static PropertyExpressionWrapper createPropertyExpressionForClass(String className,
+            ASTNodeWrapper parentNode) {
         if (className.equals(FailureHandling.class.getName())
                 || className.equals(FailureHandling.class.getSimpleName())) {
             return getNewFailureHandlingPropertyExpression(parentNode);
@@ -173,24 +170,42 @@ public class AstKeywordsInputUtil {
         return childPropertyExpression;
     }
 
-    public static void generateBuiltInKeywordArguments(MethodCallExpressionWrapper keywordCallExpression) {
-        if (keywordCallExpression == null || keywordCallExpression.getMethod() == null) {
-            return;
-        }
+    public static MethodCallExpressionWrapper generateBuiltInKeywordExpression(String keywordClassName,
+            final String keywordMethodName, ASTNodeWrapper parentNode) {
+        return generateBuiltInKeywordExpression(keywordClassName, keywordMethodName, null, parentNode);
+    }
+
+    public static MethodCallExpressionWrapper generateBuiltInKeywordExpression(String keywordClassName,
+            final String keywordMethodName, final ArgumentListExpressionWrapper currentArguments,
+            ASTNodeWrapper parentNode) {
+        MethodCallExpressionWrapper keywordMethodCallExpression = new MethodCallExpressionWrapper(keywordClassName,
+                keywordMethodName, parentNode);
         KeywordController keywordController = KeywordController.getInstance();
-        KeywordClass keywordClass = keywordController.getBuiltInKeywordClassByName(
-                keywordCallExpression.getObjectExpressionAsString());
-        KeywordMethod keywordMethod = keywordController.getBuiltInKeywordByName(keywordClass,
-                keywordCallExpression.getMethodAsString());
-        if (keywordMethod != null) {
-            generateMethodCallArguments(keywordCallExpression, keywordMethod);
+        KeywordClass keywordClass = keywordController.getBuiltInKeywordClassByName(keywordClassName);
+        if (keywordClass == null) {
+            return keywordMethodCallExpression;
         }
+        KeywordMethod keywordMethod = keywordController.getBuiltInKeywordByName(keywordClass.getName(),
+                keywordMethodName, currentArguments != null ? currentArguments.getArgumentListParameterTypes() : null);
+        if (keywordMethod == null) {
+            keywordMethod = keywordController.getBuiltInKeywordByName(keywordClassName, keywordMethodName);
+        }
+        if (keywordMethod != null) {
+            generateMethodCallArguments(keywordMethodCallExpression, currentArguments, keywordMethod);
+        }
+        return keywordMethodCallExpression;
     }
 
     public static void generateMethodCallArguments(MethodCallExpressionWrapper keywordCallExpression,
             KeywordMethod keywordMethod) {
+        generateMethodCallArguments(keywordCallExpression, null, keywordMethod);
+    }
+
+    public static void generateMethodCallArguments(MethodCallExpressionWrapper keywordCallExpression,
+            ArgumentListExpressionWrapper currentArguments, KeywordMethod keywordMethod) {
         ArgumentListExpressionWrapper parentNode = keywordCallExpression.getArguments();
-        List<ExpressionWrapper> exisitingArgumentList = parentNode.getExpressions();
+        List<ExpressionWrapper> exisitingArgumentList = currentArguments != null ? currentArguments.getExpressions()
+                : new ArrayList<>();
         List<ExpressionWrapper> newArgumentList = new ArrayList<ExpressionWrapper>();
         String keywordName = keywordMethod.getName();
         for (int i = 0; i < keywordMethod.getParameters().length; i++) {
@@ -214,19 +229,22 @@ public class AstKeywordsInputUtil {
         parentNode.setExpressions(newArgumentList);
     }
 
-    public static void generateCustomKeywordArguments(MethodCallExpressionWrapper keywordCallExpression) {
-        if (keywordCallExpression == null || keywordCallExpression.getMethod() == null) {
-            return;
-        }
-        MethodNode keywordMethod = KeywordController.getInstance().getCustomKeywordByName(
-                keywordCallExpression.getObjectExpressionAsString(), keywordCallExpression.getMethodAsString(),
+    public static MethodCallExpressionWrapper generateCustomKeywordExpression(String className, String methodName,
+            ASTNodeWrapper parentNode) {
+        return generateCustomKeywordExpression(className, methodName, null, parentNode);
+    }
+
+    public static MethodCallExpressionWrapper generateCustomKeywordExpression(String className, String methodName,
+            ArgumentListExpressionWrapper currentArguments, ASTNodeWrapper parentNode) {
+        MethodCallExpressionWrapper keywordCallExpression = new MethodCallExpressionWrapper(className, methodName,
+                parentNode);
+        MethodNode keywordMethod = KeywordController.getInstance().getCustomKeywordByName(className, methodName,
                 ProjectController.getInstance().getCurrentProject());
         if (keywordMethod == null) {
-            return;
+            return keywordCallExpression;
         }
-        ArgumentListExpressionWrapper parentNode = keywordCallExpression.getArguments();
-        String methodName = keywordMethod.getName();
-        List<ExpressionWrapper> exisitingArgumentList = parentNode.getExpressions();
+        ArgumentListExpressionWrapper argumentListExpression = keywordCallExpression.getArguments();
+        List<ExpressionWrapper> exisitingArgumentList = currentArguments != null ? currentArguments.getExpressions() : new ArrayList<>();
         List<ExpressionWrapper> newArgumentList = new ArrayList<ExpressionWrapper>();
         for (int i = 0; i < keywordMethod.getParameters().length; i++) {
             ClassNode classNode = keywordMethod.getParameters()[i].getType();
@@ -234,9 +252,11 @@ public class AstKeywordsInputUtil {
                 continue;
             }
             ExpressionWrapper existingParam = (i < exisitingArgumentList.size()) ? exisitingArgumentList.get(i) : null;
-            newArgumentList.add(generateExpressionForKeyword(methodName, classNode, existingParam, parentNode));
+            newArgumentList
+                    .add(generateExpressionForKeyword(methodName, classNode, existingParam, argumentListExpression));
         }
-        parentNode.setExpressions(newArgumentList);
+        argumentListExpression.setExpressions(newArgumentList);
+        return keywordCallExpression;
     }
 
     private static ExpressionWrapper generateExpressionForKeyword(String keywordName, KeywordParameter keywordParam,
@@ -281,7 +301,7 @@ public class AstKeywordsInputUtil {
         if (isClassAssignable(paramClassFullName, List.class) || isArrayParam) {
             return generateArgumentForListParam(existingParam, parentNode);
         }
-        
+
         if (isClassAssignable(paramClassFullName, Checkpoint.class)) {
             return generateArgumentForCheckPointParam(existingParam, parentNode);
         }
@@ -305,7 +325,8 @@ public class AstKeywordsInputUtil {
     private static boolean isFailureHandlingPropertyExpression(PropertyExpressionWrapper propertyExpression) {
         if (!(propertyExpression.getObjectExpression() instanceof VariableExpressionWrapper))
             return false;
-        return (propertyExpression.isObjectExpressionOfClass(FailureHandling.class) && propertyExpression.getProperty() instanceof ConstantExpressionWrapper);
+        return (propertyExpression.isObjectExpressionOfClass(FailureHandling.class)
+                && propertyExpression.getProperty() instanceof ConstantExpressionWrapper);
     }
 
     private static ExpressionWrapper generateArgumentForDelaySecondParam(ExpressionWrapper existingParam,
@@ -347,8 +368,8 @@ public class AstKeywordsInputUtil {
 
     private static ExpressionWrapper generateArgumentForNumberConstantExpression(ExpressionWrapper existingParam,
             ASTNodeWrapper parentNode) {
-        if (existingParam != null
-                && (isClassAssignable(existingParam.getType().getName(), Number.class) || isUnknowTypeParam(existingParam))) {
+        if (existingParam != null && (isClassAssignable(existingParam.getType().getName(), Number.class)
+                || isUnknowTypeParam(existingParam))) {
             return existingParam;
         }
         return new ConstantExpressionWrapper(0, parentNode);
@@ -357,8 +378,9 @@ public class AstKeywordsInputUtil {
     private static ExpressionWrapper generateArgumentForStringConstantParam(ExpressionWrapper existingParam,
             ASTNodeWrapper parentNode) {
         if (existingParam != null
-                && (isClassAssignable(existingParam.getType().getName(), String.class) || isClassAssignable(
-                        existingParam.getType().getName(), Character.class)) || isUnknowTypeParam(existingParam)) {
+                && (isClassAssignable(existingParam.getType().getName(), String.class)
+                        || isClassAssignable(existingParam.getType().getName(), Character.class))
+                || isUnknowTypeParam(existingParam)) {
             return existingParam;
         }
         return new ConstantExpressionWrapper("", parentNode);
@@ -376,7 +398,8 @@ public class AstKeywordsInputUtil {
     private static ExpressionWrapper generateArgumentForListParam(ExpressionWrapper existingParam,
             ASTNodeWrapper parentNode) {
         if (existingParam instanceof ListExpressionWrapper
-                || (existingParam instanceof CastExpressionWrapper && ((CastExpressionWrapper) existingParam).getExpression() instanceof ListExpressionWrapper)
+                || (existingParam instanceof CastExpressionWrapper
+                        && ((CastExpressionWrapper) existingParam).getExpression() instanceof ListExpressionWrapper)
                 || isUnknowTypeParam(existingParam)) {
             return existingParam;
         }
@@ -390,7 +413,7 @@ public class AstKeywordsInputUtil {
         }
         return AstEntityInputUtil.createNewFindTestObjectMethodCall(null, parentNode);
     }
-    
+
     private static ExpressionWrapper generateArgumentForCheckPointParam(ExpressionWrapper existingParam,
             ASTNodeWrapper parentNode) {
         if (isFindCheckpointMethodCall(existingParam) || (isUnknowTypeParam(existingParam))) {
@@ -403,7 +426,7 @@ public class AstKeywordsInputUtil {
         return existingParam instanceof MethodCallExpressionWrapper
                 && ((MethodCallExpressionWrapper) existingParam).isFindTestObjectMethodCall();
     }
-    
+
     private static boolean isFindCheckpointMethodCall(ExpressionWrapper existingParam) {
         return existingParam instanceof MethodCallExpressionWrapper
                 && ((MethodCallExpressionWrapper) existingParam).isFindCheckpointMethodCall();
@@ -412,7 +435,8 @@ public class AstKeywordsInputUtil {
     private static boolean isUnknowTypeParam(ExpressionWrapper existingParam) {
         return (existingParam instanceof VariableExpressionWrapper || existingParam instanceof MapExpressionWrapper
                 || existingParam instanceof CastExpressionWrapper || existingParam instanceof BinaryExpressionWrapper
-                || isGlobalVariableExpression(existingParam) || (existingParam instanceof MethodCallExpressionWrapper && !isFindTestObjectMethodCall(existingParam)));
+                || isGlobalVariableExpression(existingParam) || (existingParam instanceof MethodCallExpressionWrapper
+                        && !isFindTestObjectMethodCall(existingParam)));
     }
 
     private static boolean isGlobalVariableExpression(ExpressionWrapper existingParam) {
@@ -457,20 +481,20 @@ public class AstKeywordsInputUtil {
     }
 
     public static boolean isVoidClass(Class<?> clazz) {
-        return (clazz.getName().equals(Void.class.getName()) || clazz.getName().equals(Void.class.getSimpleName()) || clazz.getName()
-                .equals(Void.TYPE.getName()));
+        return (clazz.getName().equals(Void.class.getName()) || clazz.getName().equals(Void.class.getSimpleName())
+                || clazz.getName().equals(Void.TYPE.getName()));
     }
 
     public static boolean isVoidClass(ClassNodeWrapper classNode) {
         return (classNode.getName().equals(Void.class.getName())
-                || classNode.getName().equals(Void.class.getSimpleName()) || classNode.getName().equals(
-                Void.TYPE.getName()));
+                || classNode.getName().equals(Void.class.getSimpleName())
+                || classNode.getName().equals(Void.TYPE.getName()));
     }
 
     public static boolean isVoidClass(ClassNode classNode) {
         return (classNode.getName().equals(Void.class.getName())
-                || classNode.getName().equals(Void.class.getSimpleName()) || classNode.getName().equals(
-                Void.TYPE.getName()));
+                || classNode.getName().equals(Void.class.getSimpleName())
+                || classNode.getName().equals(Void.TYPE.getName()));
     }
 
     public static Class<?> loadType(String typeName, ClassNodeWrapper classNode) {
@@ -532,7 +556,7 @@ public class AstKeywordsInputUtil {
         }
         return null;
     }
-    
+
     public static Class<?> getFirstAccessibleMethodReturnType(Class<?> clazz, String methodName, boolean staticOnly) {
         if (clazz == null || methodName == null) {
             return null;
@@ -549,6 +573,7 @@ public class AstKeywordsInputUtil {
     public static boolean isGlobalVariablePropertyExpression(PropertyExpressionWrapper propertyExprs) {
         if (!(propertyExprs.getObjectExpression() instanceof VariableExpressionWrapper))
             return false;
-        return (propertyExprs.getObjectExpressionAsString().equals(InputValueType.GlobalVariable.name()) && propertyExprs.getProperty() instanceof ConstantExpressionWrapper);
+        return (propertyExprs.getObjectExpressionAsString().equals(InputValueType.GlobalVariable.name())
+                && propertyExprs.getProperty() instanceof ConstantExpressionWrapper);
     }
 }
