@@ -11,6 +11,8 @@ import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class LogTreeViewerFilter extends LogViewerFilter {
+    public static final String PROPERTY_FILTER = "filter";
+
     @Override
     public boolean select(Viewer viewer, Object parentElement, Object element) {
         if (!(element instanceof ILogTreeNode)) {
@@ -24,10 +26,15 @@ public class LogTreeViewerFilter extends LogViewerFilter {
         if (!isLogEnded(logParentTreeNode) || isTestSuiteLog(logParentTreeNode)) {
             return true;
         }
-        if (isGeneralStep(logParentTreeNode)) {
-            return false;
-        }
         return ((evaluteLog(logParentTreeNode.getResult()) & getPreferenceShowedValue()) != 0);
+    }
+    
+    @Override
+    public boolean isFilterProperty(Object element, String property) {
+        if (PROPERTY_FILTER.equals(property)) {
+            return true;
+        }
+        return super.isFilterProperty(element, property);
     }
 
     private boolean isTestSuiteLog(ILogParentTreeNode logParentTreeNode) {
@@ -39,7 +46,7 @@ public class LogTreeViewerFilter extends LogViewerFilter {
     }
 
     protected boolean isLogEnded(final ILogParentTreeNode logParentTreeNode) {
-        return logParentTreeNode.getRecordEnd() != null;
+        return logParentTreeNode.getRecordEnd() != null || logParentTreeNode.getResult() != null;
     }
 
     // Only allow to filter failed logs for now
