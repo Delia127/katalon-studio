@@ -65,8 +65,6 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 
 public class WelcomePart {
-    private static final int MINIMUM_RIGHT_SECTION_SIZE = 500;
-
     private static final int MINIMUM_LEFT_SECTION_SIZE = 350;
 
     @Inject
@@ -117,76 +115,36 @@ public class WelcomePart {
         mainComposite = new ResizableBackgroundImageComposite(wrappedComposite, SWT.NONE, null);
         mainComposite.setBackground(ColorUtil.getWhiteBackgroundColor());
         mainComposite.setBackgroundMode(SWT.INHERIT_FORCE);
-        mainComposite.setLayout(new GridLayout());
+        GridLayout mainGridLayout = new GridLayout();
+        mainGridLayout.verticalSpacing = 0;
+        mainGridLayout.horizontalSpacing = 0;
+        mainComposite.setLayout(mainGridLayout);
 
         wrappedComposite.setContent(mainComposite);
         wrappedComposite.setMinSize(new Point(1000, 600));
         wrappedComposite.setExpandHorizontal(true);
         wrappedComposite.setExpandVertical(true);
 
-        Composite topComposite = new Composite(mainComposite, SWT.NONE);
-        topComposite.setLayout(new GridLayout(1, false));
-        final GridData topCompositeLayoutData = new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1);
-        topComposite.setLayoutData(topCompositeLayoutData);
-
         Composite bottomComposite = new Composite(mainComposite, SWT.NONE);
         GridLayout bottomCompositeLayout = new GridLayout(3, false);
-        bottomCompositeLayout.horizontalSpacing = 30;
-        bottomCompositeLayout.marginRight = 30;
-        bottomCompositeLayout.marginLeft = 30;
         bottomComposite.setLayout(bottomCompositeLayout);
-        bottomComposite.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, true, false, 1, 1));
+        GridData bottomLayoutData = new GridData(SWT.CENTER, SWT.TOP, true, true, 1, 1);
+        bottomLayoutData.verticalIndent = 50;
+        bottomComposite.setLayoutData(bottomLayoutData);
 
-        final Composite leftSections = createLeftSectionComposite(bottomComposite);
+        createLeftSectionComposite(bottomComposite);
 
-        final Composite separatorComposite = createSeparatorComposite(bottomComposite);
+        createSeparatorComposite(bottomComposite);
 
-        final Composite rightSections = createRightSectionComposite(bottomComposite);
-
-        mainComposite.addListener(SWT.Resize, new Listener() {
-            @Override
-            public void handleEvent(Event event) {
-                layoutPage(topCompositeLayoutData, leftSections, separatorComposite, rightSections);
-            }
-
-            private void layoutPage(final GridData topCompositeLayoutData, final Composite leftSections,
-                    final Composite separatorComposite, final Composite rightSections) {
-                adjustTopCompositeSize(topCompositeLayoutData);
-                equalizeSectionsWidth(leftSections, rightSections);
-                mainComposite.layout();
-                equalizeSectionsHeight(leftSections, rightSections, separatorComposite);
-                mainComposite.layout();
-            }
-
-            private void adjustTopCompositeSize(GridData topCompositeLayoutData) {
-                topCompositeLayoutData.heightHint = mainComposite.getSize().y / 20;
-            }
-
-            private void equalizeSectionsWidth(Composite leftSectionComposite, Composite rightSectionComposite) {
-                int totalWidth = mainComposite.getSize().x - 500;
-                GridData leftSectionLayoutData = (GridData) leftSectionComposite.getLayoutData();
-                GridData rightSectionLayoutData = (GridData) rightSectionComposite.getLayoutData();
-                leftSectionLayoutData.widthHint = Math.max(MINIMUM_LEFT_SECTION_SIZE, totalWidth / 4);
-                rightSectionLayoutData.widthHint = Math.max(MINIMUM_RIGHT_SECTION_SIZE,
-                        totalWidth - leftSectionLayoutData.widthHint);
-            }
-
-            private void equalizeSectionsHeight(Composite leftSectionComposite, Composite rightSectionComposite,
-                    Composite separatorComposite) {
-                Point leftSectionsSize = leftSectionComposite.getSize();
-                Point rightSectionsSize = rightSectionComposite.getSize();
-                int maxHeight = Math.max(leftSectionsSize.y, rightSectionsSize.y);
-                leftSectionComposite.setSize(leftSectionsSize.x, maxHeight);
-                rightSectionComposite.setSize(rightSectionsSize.x, maxHeight);
-                separatorComposite.setSize(separatorComposite.getSize().x, maxHeight);
-            }
-        });
+        createRightSectionComposite(bottomComposite);
     }
 
     private Composite createSeparatorComposite(Composite bottomComposite) {
         Composite separatorComposite = new Composite(bottomComposite, SWT.NONE);
         separatorComposite.setLayout(new GridLayout(1, false));
-        separatorComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
+        GridData layoutData = new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1);
+        layoutData.horizontalIndent = 25;
+        separatorComposite.setLayoutData(layoutData);
 
         Label separator = new Label(separatorComposite, SWT.SEPARATOR | SWT.VERTICAL);
         separator.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, true, true, 1, 1));
@@ -198,8 +156,10 @@ public class WelcomePart {
         final GridLayout glRIghtSection = new GridLayout(1, false);
         glRIghtSection.verticalSpacing = 40;
         rightSections.setLayout(glRIghtSection);
-        final GridData layoutData = new GridData(SWT.LEFT, SWT.TOP, true, true, 1, 1);
-        layoutData.minimumWidth = 550;
+        final GridData layoutData = new GridData(SWT.LEFT, SWT.TOP, false, true, 1, 1);
+        int minimumWidth = isOnMacOS() ? 480 : 530;
+        layoutData.widthHint = minimumWidth;
+        layoutData.minimumWidth = minimumWidth;
         rightSections.setLayoutData(layoutData);
 
         createWelcomeComposite(rightSections);
@@ -219,7 +179,10 @@ public class WelcomePart {
         glFeatureComposite.verticalSpacing = 50;
         glFeatureComposite.horizontalSpacing = 0;
         featureComposite.setLayout(glFeatureComposite);
-        featureComposite.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
+        GridData layoutData = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+        layoutData.minimumWidth = 400;
+        layoutData.widthHint = 400;
+        featureComposite.setLayoutData(layoutData);
 
         createFeatureComponentComposite(featureComposite, MessageConstants.PA_LBL_SAMPLE_WEB_UI_PROJECT,
                 MessageConstants.PA_TOOLTIP_SAMPLE_WEB_UI_PROJECT, ImageConstants.IMG_SAMPLE_WEB_UI_PROJECT,
@@ -297,7 +260,7 @@ public class WelcomePart {
     private void createFeatureComponentComposite(Composite featureComposite, String header, String description,
             Image image, MouseListener mouseListener) {
         Composite componentComposite = new Composite(featureComposite, SWT.NONE);
-        componentComposite.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, true, false, 1, 1));
+        componentComposite.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, false, false, 1, 1));
         GridLayout glComponentComposite = new GridLayout(1, false);
         glComponentComposite.marginHeight = 0;
         glComponentComposite.marginWidth = 0;
@@ -310,10 +273,13 @@ public class WelcomePart {
         imgLabel.setCursor(handCursor);
 
         HyperLinkStyledText txtLabel = new HyperLinkStyledText(componentComposite, SWT.WRAP | SWT.CENTER);
-        final GridData gdTxtLabel = new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1);
+        final GridData gdTxtLabel = new GridData(SWT.CENTER, SWT.CENTER, true, false);
         txtLabel.setLayoutData(gdTxtLabel);
         txtLabel.setText(header);
         txtLabel.setFont(getNormalFont());
+        GC gc = new GC(txtLabel);
+        gdTxtLabel.widthHint = Math.max(130, gc.textExtent(txtLabel.getText()).x * 2 / 3);
+        gc.dispose();
         txtLabel.addListener(SWT.Resize, new Listener() {
             @Override
             public void handleEvent(Event event) {
@@ -337,28 +303,33 @@ public class WelcomePart {
 
     private Composite createLeftSectionComposite(Composite bottomComposite) {
         final Composite leftSections = new Composite(bottomComposite, SWT.NONE);
-        GridLayout leftSectionLayout = new GridLayout(1, false);
-        leftSectionLayout.verticalSpacing = 50;
-        leftSections.setLayout(leftSectionLayout);
+        leftSections.setLayout(new GridLayout(1, false));
         final GridData layoutData = new GridData(SWT.RIGHT, SWT.FILL, true, true, 1, 1);
-        layoutData.widthHint = 380;
-        layoutData.minimumWidth = 380;
+        int minimumWidth = isOnMacOS() ? 480 : 530;
+        layoutData.widthHint = minimumWidth;
+        layoutData.minimumWidth = minimumWidth;
         leftSections.setLayoutData(layoutData);
 
         createCommonStepComposite(leftSections);
-
-        leftSections.pack();
         return leftSections;
     }
 
     private void createCommonStepComposite(Composite leftSections) {
-        createCommonStepChildComposite(leftSections, MessageConstants.LBL_COMMON_STEP_RECORD_PREFIX,
+        final Composite commonStepComposite = new Composite(leftSections, SWT.NONE);
+        GridLayout commonStepCompositeLayout = new GridLayout(1, false);
+        commonStepCompositeLayout.verticalSpacing = 37;
+        commonStepComposite.setLayout(commonStepCompositeLayout);
+        GridData commonStepCompositeGridData = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
+        commonStepCompositeGridData.horizontalIndent = 5;
+        leftSections.setLayoutData(commonStepCompositeGridData);
+
+        createCommonStepChildComposite(commonStepComposite, MessageConstants.LBL_COMMON_STEP_RECORD_PREFIX,
                 MessageConstants.LBL_COMMON_STEP_RECORD_URL_PREFIX, MessageConstants.LBL_COMMON_STEP_RECORD_DESCRIPTION,
                 MessageConstants.URL_COMMON_STEP_RECORD, ImageConstants.IMG_SCREENSHOT_SCREEN_SHOT_RECORD);
-        createCommonStepChildComposite(leftSections, MessageConstants.LBL_COMMON_STEP_RUN_PREFIX,
+        createCommonStepChildComposite(commonStepComposite, MessageConstants.LBL_COMMON_STEP_RUN_PREFIX,
                 MessageConstants.LBL_COMMON_STEP_RUN_URL_PREFIX, MessageConstants.LBL_COMMON_STEP_RUN_DESCRIPTION,
                 MessageConstants.URL_COMMON_STEP_RUN, ImageConstants.IMG_SCREENSHOT_SCREEN_SHOT_RUN);
-        createCommonStepChildComposite(leftSections, MessageConstants.LBL_COMMON_STEP_VIEW_LOGGER_PREFIX,
+        createCommonStepChildComposite(commonStepComposite, MessageConstants.LBL_COMMON_STEP_VIEW_LOGGER_PREFIX,
                 MessageConstants.LBL_COMMON_STEP_VIEW_LOGGER_URL_PREFIX,
                 MessageConstants.LBL_COMMON_STEP_VIEW_LOGGER_DESCRIPTION, MessageConstants.URL_COMMON_STEP_VIEW_LOGGER,
                 ImageConstants.IMG_SCREENSHOT_SCREEN_SHOT_LOG_VIEWER);
@@ -368,20 +339,29 @@ public class WelcomePart {
             final String stepPrefixHyperLinkText, final String stepDetailsContentText, final String stepURL,
             final Image screenshotImage) {
         Composite stepComposite = new Composite(parentComposite, SWT.NONE);
-        stepComposite.setLayout(new GridLayout(3, false));
+        GridLayout layout = new GridLayout(3, false);
+        if (isOnRetinaDisplay()) {
+            layout.horizontalSpacing = 0;
+        }
+        stepComposite.setLayout(layout);
         stepComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 
         Label stepText = new Label(stepComposite, SWT.NONE);
         stepText.setText(stepPrefixText);
         stepText.setFont(getLargerBoldFont());
 
-        HyperLinkStyledText stepPrefixHyperLinkStyledText = new HyperLinkStyledText(stepComposite, SWT.WRAP) {
+        HyperLinkStyledText stepPrefixHyperLinkStyledText = new HyperLinkStyledText(stepComposite, SWT.NONE) {
             @Override
             protected Color getDefaultForeground() {
                 return ColorUtil.getHighlightForegroundColor();
             }
         };
-
+        GridData styleTextLayoutData = new GridData(SWT.FILL, SWT.TOP, false, true);
+        if (isOnRetinaDisplay()) {
+            styleTextLayoutData.verticalIndent = 1;
+            styleTextLayoutData.horizontalIndent = 5;
+        }
+        stepPrefixHyperLinkStyledText.setLayoutData(styleTextLayoutData);
         stepPrefixHyperLinkStyledText.setFont(getLargerFont());
         stepPrefixHyperLinkStyledText.setText(stepPrefixHyperLinkText);
         stepPrefixHyperLinkStyledText.addMouseListener(new MouseAdapter() {
@@ -392,6 +372,11 @@ public class WelcomePart {
         });
 
         Label stepDescriptionText = new Label(stepComposite, SWT.NONE);
+        GridData descriptionTextLayoutData = new GridData(SWT.LEFT, SWT.TOP, true, true);
+        stepDescriptionText.setLayoutData(descriptionTextLayoutData);
+        if (isOnRetinaDisplay()) {
+            descriptionTextLayoutData.horizontalIndent = 2;
+        }
         stepDescriptionText.setText(stepDetailsContentText);
         stepDescriptionText.setFont(getLargerFont());
 
@@ -400,8 +385,21 @@ public class WelcomePart {
         logoLabel.setImage(screenshotImage);
     }
 
-    private void createProjectComponentComposites(final Composite leftSections) {
-        Composite projectComposite = new Composite(leftSections, SWT.NONE);
+    private boolean isOnRetinaDisplay() {
+        return isOnMacOS() && isOnHiDpiDisplay();
+    }
+
+    private boolean isOnMacOS() {
+        return Platform.getOS().equals(Platform.OS_MACOSX);
+    }
+
+    private boolean isOnHiDpiDisplay() {
+        final Point dpiValue = Display.getDefault().getDPI();
+        return dpiValue.x == 72 && dpiValue.y == 72;
+    }
+
+    private void createProjectComponentComposites(final Composite parentSections) {
+        Composite projectComposite = new Composite(parentSections, SWT.NONE);
         projectComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         projectComposite.setLayout(new GridLayout());
 
@@ -411,13 +409,13 @@ public class WelcomePart {
     private void createWelcomeComposite(final Composite leftSections) {
         Composite welcomeComposite = new Composite(leftSections, SWT.NONE);
         final GridLayout glWelcomeComposite = new GridLayout(2, false);
-        glWelcomeComposite.horizontalSpacing = 20;
-        glWelcomeComposite.marginLeft = 55;
         welcomeComposite.setLayout(glWelcomeComposite);
         welcomeComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
         Label logoLabel = new Label(welcomeComposite, SWT.NONE);
-        logoLabel.setLayoutData(new GridData(SWT.CENTER, SWT.TOP, false, false, 1, 1));
+        GridData brandingImagelayoutData = new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1);
+        brandingImagelayoutData.horizontalIndent = isOnMacOS() ? 47 : 61;
+        logoLabel.setLayoutData(brandingImagelayoutData);
         logoLabel.setImage(ImageConstants.IMG_BRANDING);
         logoLabel.setCursor(handCursor);
         logoLabel.setToolTipText(MessageConstants.PA_TOOLTIP_KATALON_HOME_PAGE);
@@ -452,7 +450,7 @@ public class WelcomePart {
 
         GridLayout glComponentProjectComposite = new GridLayout(2, false);
         glComponentProjectComposite.horizontalSpacing = 15;
-        glComponentProjectComposite.marginLeft = 55;
+        glComponentProjectComposite.marginLeft = isOnMacOS() ? 43 : 58;
         recentProjectComposite.setLayout(glComponentProjectComposite);
 
         GridData gdComponentProjectComposite = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
@@ -469,7 +467,7 @@ public class WelcomePart {
 
         Composite recentProjectDetails = new Composite(recentProjectComposite, SWT.NONE);
         GridData recentProjectDetailsLayoutData = new GridData(SWT.FILL, SWT.TOP, true, false, 2, 1);
-        recentProjectDetailsLayoutData.horizontalIndent = 30;
+        recentProjectDetailsLayoutData.horizontalIndent = 40;
         recentProjectDetails.setLayoutData(recentProjectDetailsLayoutData);
         GridLayout gdRecentProjectDetails = new GridLayout(2, true);
         gdRecentProjectDetails.horizontalSpacing = 70;
