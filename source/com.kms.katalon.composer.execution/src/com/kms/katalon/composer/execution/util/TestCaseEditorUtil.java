@@ -10,6 +10,7 @@ import org.eclipse.ui.texteditor.AbstractTextEditor;
 import com.kms.katalon.composer.execution.exceptions.StepNotFoundException;
 import com.kms.katalon.composer.execution.trace.LogExceptionNavigator;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.BlockStatementWrapper;
 import com.kms.katalon.composer.testcase.parts.TestCaseCompositePart;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
@@ -30,11 +31,20 @@ public class TestCaseEditorUtil {
     public static void navigateToTestStep(TestCaseEntity testCase, int stepIndex) throws Exception {
         TestCaseCompositePart testCaseComposite = new LogExceptionNavigator().openTestCaseComposite(testCase);
         testCaseComposite.setScriptContentToManual();
-        List<? extends ASTNodeWrapper> astNodes = testCaseComposite.getChildTestCasePart()
+        List<? extends ASTNodeWrapper> classAstNodes = testCaseComposite.getChildTestCasePart()
                 .getTreeTableInput()
                 .getMainClassNode()
                 .getRunMethod()
                 .getAstChildren();
+        if (classAstNodes == null || classAstNodes.isEmpty()) {
+            throw new StepNotFoundException(stepIndex, testCase.getIdForDisplay());
+        }
+
+        ASTNodeWrapper blockStatement = classAstNodes.get(0);
+        if (!(blockStatement instanceof BlockStatementWrapper)) {
+            throw new StepNotFoundException(stepIndex, testCase.getIdForDisplay());
+        }
+        List<? extends ASTNodeWrapper> astNodes = blockStatement.getAstChildren();
         if (astNodes.size() <= stepIndex - 1) {
             throw new StepNotFoundException(stepIndex, testCase.getIdForDisplay());
         }
