@@ -133,6 +133,7 @@ public class OpenProjectHandler {
                     monitor.worked(1);
                     LauncherManager.refresh();
                     eventBrokerService.post(EventConstants.JOB_REFRESH, null);
+                    eventBrokerService.post(EventConstants.CONSOLE_LOG_RESET, null);
                     monitor.worked(1);
 
                     TimeUnit.SECONDS.sleep(1);

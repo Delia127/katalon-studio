@@ -1,10 +1,13 @@
 package com.kms.katalon.composer.execution.part;
 
 import static com.kms.katalon.composer.components.log.LoggerSingleton.logError;
+import static com.kms.katalon.core.constants.StringConstants.LOG_START_SUITE;
+import static com.kms.katalon.core.constants.StringConstants.LOG_START_TEST;
 import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.LogRecord;
@@ -25,6 +28,7 @@ import org.eclipse.e4.ui.model.application.ui.menu.MDirectToolItem;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenu;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuElement;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBarElement;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.resource.JFaceResources;
@@ -36,6 +40,7 @@ import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.StyledString;
@@ -47,6 +52,8 @@ import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
@@ -65,6 +72,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
@@ -93,8 +101,10 @@ import com.kms.katalon.composer.execution.provider.LogViewerFilter;
 import com.kms.katalon.composer.execution.trace.LogExceptionNavigator;
 import com.kms.katalon.composer.execution.tree.ILogParentTreeNode;
 import com.kms.katalon.composer.execution.tree.ILogTreeNode;
+import com.kms.katalon.composer.execution.util.TestCaseEditorUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.logging.XMLLoggerParser;
 import com.kms.katalon.core.logging.XmlLogRecord;
@@ -365,6 +375,76 @@ public class LogViewerPart implements EventHandler, LauncherListener {
         treeViewerColumn.setLabelProvider(new LogRecordTreeViewerLabelProvider());
 
         treeColumnLayout.setColumnData(treeColumn, new ColumnWeightData(95, treeColumn.getWidth()));
+
+        treeViewer.getTree().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseDown(MouseEvent e) {
+                Tree tree = treeViewer.getTree();
+                Menu oldMenu = tree.getMenu();
+                if (oldMenu != null) {
+                    oldMenu.dispose();
+                }
+                Menu treeMenu = new Menu(tree);
+
+                IStructuredSelection selection = treeViewer.getStructuredSelection();
+                if (isFirstSelectionParentNode(selection)) {
+                    ILogParentTreeNode treeNode = (ILogParentTreeNode) selection.getFirstElement();
+                    if (isMainStep(treeNode)) {
+                        addGotoStepMenuItem(treeMenu);
+                    }
+                }
+                tree.setMenu(treeMenu);
+            }
+
+            private void addGotoStepMenuItem(Menu treeMenu) {
+                MenuItem stepNavigationMenuItem = new MenuItem(treeMenu, SWT.PUSH);
+                stepNavigationMenuItem.setText(ComposerExecutionMessageConstants.MENU_ITEM_NAVIGATE_TEST_CASE_STEP);
+                stepNavigationMenuItem.addSelectionListener(new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        navigateToStep((ILogParentTreeNode) treeViewer.getStructuredSelection().getFirstElement());
+                    }
+                });
+            }
+
+            private boolean isFirstSelectionParentNode(IStructuredSelection selection) {
+                return selection != null && selection.size() == 1
+                        && selection.getFirstElement() instanceof ILogParentTreeNode;
+            }
+
+            private void navigateToStep(ILogParentTreeNode treeNode) {
+                ILogParentTreeNode parent = treeNode.getParent();
+                String testCaseId = parent.getMessage();
+                TestCaseEntity testCaseEntity = null;
+                try {
+                    testCaseEntity = TestCaseController.getInstance().getTestCaseByDisplayId(testCaseId);
+                } catch (Exception e) {
+                    MessageDialog.openWarning(null, StringConstants.WARN_TITLE, MessageFormat
+                            .format(ComposerExecutionMessageConstants.DIA_WARN_TEST_CASE_NOT_FOUND, testCaseId));
+                }
+
+                try {
+                    TestCaseEditorUtil.navigateToTestStep(testCaseEntity, treeNode.getIndex());
+                } catch (Exception e) {
+                    MessageDialog.openWarning(null, StringConstants.WARN_TITLE, e.getMessage());
+                }
+            }
+
+            private boolean isMainStep(ILogParentTreeNode treeNode) {
+                ILogParentTreeNode parent = treeNode.getParent();
+                if (parent == null) {
+                    return false;
+                }
+                if (!parent.getLogRecord().getMessage().startsWith(LOG_START_TEST)) {
+                    return false;
+                }
+                ILogParentTreeNode grandParent = parent.getParent();
+                if (grandParent == null) {
+                    return true;
+                }
+                return grandParent.getLogRecord().getMessage().startsWith(LOG_START_SUITE);
+            }
+        });
     }
 
     private void createTreeCompositeContainer(Composite parent) {
@@ -1037,7 +1117,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                 }
                 waitForNotBusy();
                 IDEObservableLauncher watchedLauncher = getWatchedLauncherFromEvent();
-                if (watchedLauncher.equals(rootLauncherWatched)) {
+                if (watchedLauncher != null && watchedLauncher.equals(rootLauncherWatched)) {
                     launchersWatched = ((IDEObservableParentLauncher) rootLauncherWatched).getSubLaunchers();
                     return;
                 }
@@ -1046,10 +1126,14 @@ public class LogViewerPart implements EventHandler, LauncherListener {
 
                 loadingLogCanceled = false;
                 rootLauncherWatched = watchedLauncher;
-                if (rootLauncherWatched instanceof IDEObservableParentLauncher) {
-                    launchersWatched = ((IDEObservableParentLauncher) rootLauncherWatched).getSubLaunchers();
+                if (rootLauncherWatched == null) {
+                    launchersWatched = new ArrayList<>();
                 } else {
-                    launchersWatched.add(rootLauncherWatched);
+                    if (rootLauncherWatched instanceof IDEObservableParentLauncher) {
+                        launchersWatched = ((IDEObservableParentLauncher) rootLauncherWatched).getSubLaunchers();
+                    } else {
+                        launchersWatched.add(rootLauncherWatched);
+                    }
                 }
                 if (launchersWatched != null && !launchersWatched.isEmpty()) {
                     selectedLauncherWatchedIndex = 0;

@@ -47,33 +47,37 @@ public class LogExceptionNavigator {
     private EPartService partService;
 
     public LogExceptionNavigator() {
-		this.eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
-		this.modelService = ModelServiceSingleton.getInstance().getModelService();
-		this.application = ApplicationSingleton.getInstance().getApplication();
-		this.partService = PartServiceSingleton.getInstance().getPartService();
-	}
+        this.eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
+        this.modelService = ModelServiceSingleton.getInstance().getModelService();
+        this.application = ApplicationSingleton.getInstance().getApplication();
+        this.partService = PartServiceSingleton.getInstance().getPartService();
+    }
 
-    public MPart getTestCaseGroovyEditor(TestCaseEntity testCase) {
+    public TestCaseCompositePart openTestCaseComposite(TestCaseEntity testCase) {
         MPartStack stack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
-        if (stack != null) {
-            String testCaseCompositePartId = EntityPartUtil.getTestCaseCompositePartId(testCase.getId());
-            MCompositePart mcompositePart = (MCompositePart) modelService.find(testCaseCompositePartId, stack);
-            if (mcompositePart == null) {
-                eventBroker.send(EventConstants.TESTCASE_OPEN, testCase);
-                mcompositePart = (MCompositePart) modelService.find(testCaseCompositePartId, stack);
-            }
-            partService.showPart(mcompositePart, PartState.ACTIVATE);
-
-            TestCaseCompositePart testCaseCompositePart = (TestCaseCompositePart) mcompositePart.getObject();
-
-            testCaseCompositePart.setSelectedPart(testCaseCompositePart.getChildCompatibilityPart());
-
-            MPart groovyEditor = testCaseCompositePart.getChildCompatibilityPart();
-
-            return groovyEditor;
-        } else {
+        if (stack == null) {
             return null;
         }
+        String testCaseCompositePartId = EntityPartUtil.getTestCaseCompositePartId(testCase.getId());
+        MCompositePart mcompositePart = (MCompositePart) modelService.find(testCaseCompositePartId, stack);
+        if (mcompositePart == null) {
+            eventBroker.send(EventConstants.TESTCASE_OPEN, testCase);
+            mcompositePart = (MCompositePart) modelService.find(testCaseCompositePartId, stack);
+        }
+        partService.showPart(mcompositePart, PartState.ACTIVATE);
+
+        TestCaseCompositePart testCaseCompositePart = (TestCaseCompositePart) mcompositePart.getObject();
+        return testCaseCompositePart;
+    }
+
+    public MPart getTestCaseGroovyEditor(TestCaseEntity testCase) {
+        TestCaseCompositePart testCaseCompositePart = openTestCaseComposite(testCase);
+        if (testCaseCompositePart == null) {
+            return null;
+        }
+        testCaseCompositePart.setSelectedPart(testCaseCompositePart.getChildCompatibilityPart());
+        MPart groovyEditor = testCaseCompositePart.getChildCompatibilityPart();
+        return groovyEditor;
     }
 
     public void openTestCaseByLogException(XmlLogRecordException logException) {
