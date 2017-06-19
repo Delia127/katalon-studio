@@ -1117,7 +1117,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                 }
                 waitForNotBusy();
                 IDEObservableLauncher watchedLauncher = getWatchedLauncherFromEvent();
-                if (watchedLauncher.equals(rootLauncherWatched)) {
+                if (watchedLauncher != null && watchedLauncher.equals(rootLauncherWatched)) {
                     launchersWatched = ((IDEObservableParentLauncher) rootLauncherWatched).getSubLaunchers();
                     return;
                 }
@@ -1126,10 +1126,14 @@ public class LogViewerPart implements EventHandler, LauncherListener {
 
                 loadingLogCanceled = false;
                 rootLauncherWatched = watchedLauncher;
-                if (rootLauncherWatched instanceof IDEObservableParentLauncher) {
-                    launchersWatched = ((IDEObservableParentLauncher) rootLauncherWatched).getSubLaunchers();
+                if (rootLauncherWatched == null) {
+                    launchersWatched = new ArrayList<>();
                 } else {
-                    launchersWatched.add(rootLauncherWatched);
+                    if (rootLauncherWatched instanceof IDEObservableParentLauncher) {
+                        launchersWatched = ((IDEObservableParentLauncher) rootLauncherWatched).getSubLaunchers();
+                    } else {
+                        launchersWatched.add(rootLauncherWatched);
+                    }
                 }
                 if (launchersWatched != null && !launchersWatched.isEmpty()) {
                     selectedLauncherWatchedIndex = 0;
