@@ -1,11 +1,20 @@
 package com.kms.katalon.core.reporting;
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;
 import javax.xml.namespace.QName;
+
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
+
+import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 
 @XmlRegistry
 public class JUnitReportObjectFactory {
@@ -94,6 +103,22 @@ public class JUnitReportObjectFactory {
     @XmlElementDecl(namespace = "", name = "system-err")
     public JAXBElement<String> createSystemErr(String value) {
         return new JAXBElement<String>(_SystemErr_QNAME, String.class, null, value);
+    }
+
+    public String sanitizeReportAttachments(TestSuiteLogRecord suiteLogEntity) {
+        return listToString(Arrays.asList(suiteLogEntity.getAttachments(true)));
+    }
+
+    public String sanitizeReportLogs(TestSuiteLogRecord suiteLogEntity) {
+        List<String> logFiles = suiteLogEntity.getLogFiles()
+                .stream()
+                .map(item -> StringEscapeUtils.escapeJava(suiteLogEntity.getLogFolder() + File.separator + item))
+                .collect(Collectors.toList());
+        return listToString(logFiles);
+    }
+
+    private String listToString(List<String> list) {
+        return StringUtils.join(list, ", ");
     }
 
 }

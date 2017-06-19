@@ -211,20 +211,24 @@ public abstract class AbstractLogRecord implements ILogRecord {
      * @return An array of String that each element represents for the location of an attachment file.
      */
     public String[] getAttachments() {
+        return getAttachments(false);
+    }
+
+    public String[] getAttachments(boolean isInAbsolutePath) {
         List<String> attachments = new ArrayList<String>();
 
         ILogRecord[] childRecords = getChildRecords();
 
         if (childRecords != null) {
             for (ILogRecord childRc : childRecords) {
-                attachments.addAll(Arrays.asList(((AbstractLogRecord) childRc).getAttachments()));
+                attachments.addAll(Arrays.asList(((AbstractLogRecord) childRc).getAttachments(isInAbsolutePath)));
             }
         }
 
         String attachment = null;
 
         if (this instanceof MessageLogRecord) {
-            attachment = ((MessageLogRecord) this).getAttachment();
+            attachment = ((MessageLogRecord) this).getAttachment(isInAbsolutePath);
         }
         if (!StringUtils.isBlank(attachment)) {
             attachments.add(attachment);
@@ -307,6 +311,13 @@ public abstract class AbstractLogRecord implements ILogRecord {
         }
         sb.append(LINE_SEPARATOR);
         return sb.toString();
+    }
+
+    protected ILogRecord getParentLogRecordByType(ILogRecord parent, String type) {
+        if (parent.getType().equals(type)) {
+            return parent;
+        }
+        return getParentLogRecordByType(parent.getParentLogRecord(), type);
     }
 
 }

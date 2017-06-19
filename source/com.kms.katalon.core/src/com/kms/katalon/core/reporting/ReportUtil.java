@@ -23,6 +23,7 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.StringBuilderWriter;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -161,9 +162,9 @@ public class ReportUtil {
         List<JUnitProperty> propertyList = properties.getProperty();
         propertyList.add(new JUnitProperty("deviceName", suiteLogEntity.getDeviceName()));
         propertyList.add(new JUnitProperty("devicePlatform", suiteLogEntity.getDevicePlatform()));
-        propertyList.add(new JUnitProperty("logFolder", suiteLogEntity.getLogFolder()));
-        propertyList.add(new JUnitProperty("logFiles", StringUtils.join(suiteLogEntity.getLogFiles(), ", ")));
-        propertyList.add(new JUnitProperty("attachments", StringUtils.join(suiteLogEntity.getAttachments(), ", ")));
+        propertyList.add(new JUnitProperty("logFolder", StringEscapeUtils.escapeJava(suiteLogEntity.getLogFolder())));
+        propertyList.add(new JUnitProperty("logFiles", factory.sanitizeReportLogs(suiteLogEntity)));
+        propertyList.add(new JUnitProperty("attachments", factory.sanitizeReportAttachments(suiteLogEntity)));
         suiteLogEntity.getRunData().forEach((name, value) -> propertyList.add(new JUnitProperty(name, value)));
 
         JUnitTestSuite ts = factory.createTestSuite();
