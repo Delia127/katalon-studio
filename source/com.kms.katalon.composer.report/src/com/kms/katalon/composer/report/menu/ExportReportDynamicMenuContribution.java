@@ -11,6 +11,7 @@ import org.eclipse.e4.ui.model.application.ui.menu.MMenu;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuElement;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 
+import com.kms.katalon.composer.components.impl.tree.ReportCollectionTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.ReportTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.menu.MenuFactory;
@@ -23,6 +24,8 @@ public class ExportReportDynamicMenuContribution {
     private static final String EXPORT_CSV_REPORT_COMMAND_ID = "com.kms.katalon.composer.report.command.export.csv";
 
     private static final String EXPORT_HTML_REPORT_COMMAND_ID = "com.kms.katalon.composer.report.command.export.html";
+
+    private static final String EXPORT_TSC_HTML_REPORT_COMMAND_ID = "com.kms.katalon.composer.report.command.export.html.tsc";
 
     private static final String EXPORT_PDF_REPORT_COMMAND_ID = "com.kms.katalon.composer.report.command.export.pdf";
 
@@ -49,45 +52,66 @@ public class ExportReportDynamicMenuContribution {
         try {
             Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
             if (canExecute(selectedObjects)) {
-                MMenu newMenu = MenuFactory.createPopupMenu(EXPORT_POPUPMENU_LABEL,
-                        ConstantsHelper.getApplicationURI());
-                if (newMenu != null) {
-                    MHandledMenuItem exportHTML = MenuFactory.createPopupMenuItem(
-                            commandService.createCommand(EXPORT_HTML_REPORT_COMMAND_ID, null),
-                            HTML_REPORT_POPUPMENUITEM_LABEL, ConstantsHelper.getApplicationURI());
-                    if (exportHTML != null) {
-                        newMenu.getChildren().add(exportHTML);
-                    }
+                showMenuInTestSuiteReport(menuItems);
+                return;
+            }
 
-                    MHandledMenuItem exportCSVMenuItem = MenuFactory.createPopupMenuItem(
-                            commandService.createCommand(EXPORT_CSV_REPORT_COMMAND_ID, null),
-                            CSV_REPORT_POPUPMENUITEM_LABEL, ConstantsHelper.getApplicationURI());
-                    if (exportCSVMenuItem != null) {
-                        newMenu.getChildren().add(exportCSVMenuItem);
-                    }
-
-                    MHandledMenuItem exportPDFMenuItem = MenuFactory.createPopupMenuItem(
-                            commandService.createCommand(EXPORT_PDF_REPORT_COMMAND_ID, null),
-                            PDF_REPORT_POPUPMENUITEM_LABEL, ConstantsHelper.getApplicationURI());
-                    if (exportPDFMenuItem != null) {
-                        newMenu.getChildren().add(exportPDFMenuItem);
-                    }
-
-                    MHandledMenuItem exportJUnitMenuItem = MenuFactory.createPopupMenuItem(
-                            commandService.createCommand(EXPORT_JUNIT_REPORT_COMMAND_ID, null),
-                            JUNIT_REPORT_POPUPMENUITEM_LABEL, ConstantsHelper.getApplicationURI());
-                    if (exportJUnitMenuItem != null) {
-                        newMenu.getChildren().add(exportJUnitMenuItem);
-                    }
-                    menuItems.add(newMenu);
-                }
+            if (getFirstSelectedCollectionReport(selectedObjects) != null) {
+                showMenuInTestSuiteCollectionReport(menuItems);
             }
         } catch (Exception e) {
-            LoggerSingleton.getInstance().getLogger().error(e);
+            LoggerSingleton.logError(e);
         }
     }
 
-    public static boolean canExecute(Object[] selectedObjects) {
+    public void showMenuInTestSuiteReport(List<MMenuElement> menuItems) {
+        MMenu newMenu = MenuFactory.createPopupMenu(EXPORT_POPUPMENU_LABEL, ConstantsHelper.getApplicationURI());
+        if (newMenu != null) {
+            MHandledMenuItem exportHTML = MenuFactory.createPopupMenuItem(
+                    commandService.createCommand(EXPORT_HTML_REPORT_COMMAND_ID, null), HTML_REPORT_POPUPMENUITEM_LABEL,
+                    ConstantsHelper.getApplicationURI());
+            if (exportHTML != null) {
+                newMenu.getChildren().add(exportHTML);
+            }
+
+            MHandledMenuItem exportCSVMenuItem = MenuFactory.createPopupMenuItem(
+                    commandService.createCommand(EXPORT_CSV_REPORT_COMMAND_ID, null), CSV_REPORT_POPUPMENUITEM_LABEL,
+                    ConstantsHelper.getApplicationURI());
+            if (exportCSVMenuItem != null) {
+                newMenu.getChildren().add(exportCSVMenuItem);
+            }
+
+            MHandledMenuItem exportPDFMenuItem = MenuFactory.createPopupMenuItem(
+                    commandService.createCommand(EXPORT_PDF_REPORT_COMMAND_ID, null), PDF_REPORT_POPUPMENUITEM_LABEL,
+                    ConstantsHelper.getApplicationURI());
+            if (exportPDFMenuItem != null) {
+                newMenu.getChildren().add(exportPDFMenuItem);
+            }
+
+            MHandledMenuItem exportJUnitMenuItem = MenuFactory.createPopupMenuItem(
+                    commandService.createCommand(EXPORT_JUNIT_REPORT_COMMAND_ID, null),
+                    JUNIT_REPORT_POPUPMENUITEM_LABEL, ConstantsHelper.getApplicationURI());
+            if (exportJUnitMenuItem != null) {
+                newMenu.getChildren().add(exportJUnitMenuItem);
+            }
+            menuItems.add(newMenu);
+        }
+    }
+
+    public void showMenuInTestSuiteCollectionReport(List<MMenuElement> menuItems) {
+        MMenu newMenu = MenuFactory.createPopupMenu(EXPORT_POPUPMENU_LABEL, ConstantsHelper.getApplicationURI());
+        if (newMenu != null) {
+            MHandledMenuItem exportHTML = MenuFactory.createPopupMenuItem(
+                    commandService.createCommand(EXPORT_TSC_HTML_REPORT_COMMAND_ID, null),
+                    HTML_REPORT_POPUPMENUITEM_LABEL, ConstantsHelper.getApplicationURI());
+            if (exportHTML != null) {
+                newMenu.getChildren().add(exportHTML);
+            }
+            menuItems.add(newMenu);
+        }
+    }
+
+    public boolean canExecute(Object[] selectedObjects) {
         if (selectedObjects == null || selectedObjects.length == 0) {
             return false;
         }
@@ -100,6 +124,14 @@ public class ExportReportDynamicMenuContribution {
             }
         }
         return isHandled;
+    }
+
+    public static ReportCollectionTreeEntity getFirstSelectedCollectionReport(Object[] selectedObjects) {
+        if (selectedObjects.length == 0 || !(selectedObjects[0] instanceof ReportCollectionTreeEntity)) {
+            return null;
+        }
+
+        return (ReportCollectionTreeEntity) selectedObjects[0];
     }
 
 }

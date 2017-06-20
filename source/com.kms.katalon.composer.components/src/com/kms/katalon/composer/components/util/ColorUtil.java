@@ -23,9 +23,9 @@ public class ColorUtil {
 
     private static final String INCOMPLETE_LOG_COLOR = "#997515";
 
-    private static final String FAILED_STATUS_BACKGROUND_COLOR = "#f19696";
+    public static final String FAILED_STATUS_BACKGROUND_COLOR = "#f19696";
 
-    private static final String INCOMPLETE_STATUS_BACKGROUND_COLOR = "#f2bc70";
+    public static final String INCOMPLETE_STATUS_BACKGROUND_COLOR = "#f2bc70";
 
     private static final String EXTRA_LIGHT_GRAY_COLOR = "#f6f6f6";
 
