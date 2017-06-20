@@ -20,75 +20,86 @@ import com.kms.katalon.constants.helper.ConstantsHelper;
 @SuppressWarnings("restriction")
 public class ExportReportDynamicMenuContribution {
 
-	private static final String EXPORT_CSV_REPORT_COMMAND_ID = "com.kms.katalon.composer.report.command.export.csv";
-	private static final String EXPORT_HTML_REPORT_COMMAND_ID = "com.kms.katalon.composer.report.command.export.html";
-	private static final String EXPORT_PDF_REPORT_COMMAND_ID = "com.kms.katalon.composer.report.command.export.pdf";
-	
-	private static final String CSV_REPORT_POPUPMENUITEM_LABEL = "CSV";
+    private static final String EXPORT_CSV_REPORT_COMMAND_ID = "com.kms.katalon.composer.report.command.export.csv";
 
-	private static final String HTML_REPORT_POPUPMENUITEM_LABEL = "HTML";
-	
-	private static final String PDF_REPORT_POPUPMENUITEM_LABEL = "PDF";
+    private static final String EXPORT_HTML_REPORT_COMMAND_ID = "com.kms.katalon.composer.report.command.export.html";
 
-	
+    private static final String EXPORT_PDF_REPORT_COMMAND_ID = "com.kms.katalon.composer.report.command.export.pdf";
 
-	private static final String EXPORT_POPUPMENU_LABEL = "Export as";
+    private static final String EXPORT_JUNIT_REPORT_COMMAND_ID = "com.kms.katalon.composer.report.command.export.junit";
 
-	@Inject
-	private ECommandService commandService;
+    private static final String CSV_REPORT_POPUPMENUITEM_LABEL = "CSV";
 
-	@Inject
-	private ESelectionService selectionService;
+    private static final String HTML_REPORT_POPUPMENUITEM_LABEL = "HTML";
 
-	@AboutToShow
-	public void aboutToShow(List<MMenuElement> menuItems) {
-		try {
-			Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
-			if (canExecute(selectedObjects)) {
-				MMenu newMenu = MenuFactory
-						.createPopupMenu(EXPORT_POPUPMENU_LABEL, ConstantsHelper.getApplicationURI());
-				if (newMenu != null) {
-					MHandledMenuItem exportHTML = MenuFactory.createPopupMenuItem(
-							commandService.createCommand(EXPORT_HTML_REPORT_COMMAND_ID, null),
-							HTML_REPORT_POPUPMENUITEM_LABEL, ConstantsHelper.getApplicationURI());
-					if (exportHTML != null) {
-						newMenu.getChildren().add(exportHTML);
-					}
+    private static final String PDF_REPORT_POPUPMENUITEM_LABEL = "PDF";
 
-					MHandledMenuItem exportCSVMenuItem = MenuFactory.createPopupMenuItem(
-							commandService.createCommand(EXPORT_CSV_REPORT_COMMAND_ID, null),
-							CSV_REPORT_POPUPMENUITEM_LABEL, ConstantsHelper.getApplicationURI());
-					if (exportCSVMenuItem != null) {
-						newMenu.getChildren().add(exportCSVMenuItem);
-					}					
-					
-					MHandledMenuItem exportPDFMenuItem = MenuFactory.createPopupMenuItem(
+    private static final String JUNIT_REPORT_POPUPMENUITEM_LABEL = "JUnit";
+
+    private static final String EXPORT_POPUPMENU_LABEL = "Export as";
+
+    @Inject
+    private ECommandService commandService;
+
+    @Inject
+    private ESelectionService selectionService;
+
+    @AboutToShow
+    public void aboutToShow(List<MMenuElement> menuItems) {
+        try {
+            Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
+            if (canExecute(selectedObjects)) {
+                MMenu newMenu = MenuFactory.createPopupMenu(EXPORT_POPUPMENU_LABEL,
+                        ConstantsHelper.getApplicationURI());
+                if (newMenu != null) {
+                    MHandledMenuItem exportHTML = MenuFactory.createPopupMenuItem(
+                            commandService.createCommand(EXPORT_HTML_REPORT_COMMAND_ID, null),
+                            HTML_REPORT_POPUPMENUITEM_LABEL, ConstantsHelper.getApplicationURI());
+                    if (exportHTML != null) {
+                        newMenu.getChildren().add(exportHTML);
+                    }
+
+                    MHandledMenuItem exportCSVMenuItem = MenuFactory.createPopupMenuItem(
+                            commandService.createCommand(EXPORT_CSV_REPORT_COMMAND_ID, null),
+                            CSV_REPORT_POPUPMENUITEM_LABEL, ConstantsHelper.getApplicationURI());
+                    if (exportCSVMenuItem != null) {
+                        newMenu.getChildren().add(exportCSVMenuItem);
+                    }
+
+                    MHandledMenuItem exportPDFMenuItem = MenuFactory.createPopupMenuItem(
                             commandService.createCommand(EXPORT_PDF_REPORT_COMMAND_ID, null),
                             PDF_REPORT_POPUPMENUITEM_LABEL, ConstantsHelper.getApplicationURI());
                     if (exportPDFMenuItem != null) {
                         newMenu.getChildren().add(exportPDFMenuItem);
                     }
-                    menuItems.add(newMenu);
-				}
-			}
-		} catch (Exception e) {
-			LoggerSingleton.getInstance().getLogger().error(e);
-		}
-	}
 
-	public static boolean canExecute(Object[] selectedObjects) {
+                    MHandledMenuItem exportJUnitMenuItem = MenuFactory.createPopupMenuItem(
+                            commandService.createCommand(EXPORT_JUNIT_REPORT_COMMAND_ID, null),
+                            JUNIT_REPORT_POPUPMENUITEM_LABEL, ConstantsHelper.getApplicationURI());
+                    if (exportJUnitMenuItem != null) {
+                        newMenu.getChildren().add(exportJUnitMenuItem);
+                    }
+                    menuItems.add(newMenu);
+                }
+            }
+        } catch (Exception e) {
+            LoggerSingleton.getInstance().getLogger().error(e);
+        }
+    }
+
+    public static boolean canExecute(Object[] selectedObjects) {
         if (selectedObjects == null || selectedObjects.length == 0) {
             return false;
         }
-		
-		boolean isHandled = true;
-		for (Object selectedObject : selectedObjects) {
-			if (!(selectedObject instanceof ReportTreeEntity)) {
-				isHandled = false;
-				break;
-			}
-		}
-		return isHandled;
-	}
+
+        boolean isHandled = true;
+        for (Object selectedObject : selectedObjects) {
+            if (!(selectedObject instanceof ReportTreeEntity)) {
+                isHandled = false;
+                break;
+            }
+        }
+        return isHandled;
+    }
 
 }

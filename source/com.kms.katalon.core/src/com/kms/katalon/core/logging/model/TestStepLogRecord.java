@@ -16,11 +16,12 @@ public class TestStepLogRecord extends AbstractLogRecord {
     private FailureHandling flowControl;
 
     private int index;
-    
+
     private boolean isIgnoredIfFailed;
 
     public TestStepLogRecord(String name) {
         super(name);
+        setType(ILogRecord.LOG_TYPE_TEST_STEP);
     }
 
     public List<String> getArguments() {
@@ -46,15 +47,15 @@ public class TestStepLogRecord extends AbstractLogRecord {
     public TestStatus getStatus() {
         TestStatus testStatus = super.getStatus();
 
-        if (childRecords == null || childRecords.size() == 0) {
+        if (children == null || children.size() == 0) {
             return testStatus;
         }
 
-        if (childRecords.size() == 1 && childRecords.get(0).getStatus().getStatusValue() == TestStatusValue.NOT_RUN) {
+        if (children.size() == 1 && children.get(0).getStatus().getStatusValue() == TestStatusValue.NOT_RUN) {
             testStatus.setStatusValue(TestStatusValue.NOT_RUN);
         }
 
-        setMessage(childRecords.get(childRecords.size() - 1).getMessage());
+        setMessage(children.get(children.size() - 1).getMessage());
 
         for (ILogRecord logRecord : getChildRecords()) {
             String childAttachment = null;

@@ -15,15 +15,22 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.StringBuilderWriter;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
+import com.google.gson.GsonBuilder;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.logging.TestSuiteXMLLogParser;
 import com.kms.katalon.core.logging.XMLLoggerParser;
@@ -31,10 +38,12 @@ import com.kms.katalon.core.logging.XMLParserException;
 import com.kms.katalon.core.logging.XmlLogRecord;
 import com.kms.katalon.core.logging.model.ILogRecord;
 import com.kms.katalon.core.logging.model.MessageLogRecord;
+import com.kms.katalon.core.logging.model.TestStatus;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.core.reporting.template.ResourceLoader;
 import com.kms.katalon.core.testdata.reader.CsvWriter;
+import com.kms.katalon.core.util.internal.DateUtil;
 
 public class ReportUtil {
 
@@ -127,6 +136,122 @@ public class ReportUtil {
 
         writeSimpleHTMLReport(suiteLogEntity, logFolder);
 
+        writeJsonReport(suiteLogEntity, logFolder);
+
+        writeJUnitReport(suiteLogEntity, logFolder);
+    }
+
+    public static void writeLogRecordToJUnitFile(String logFolder) throws Exception {
+        TestSuiteLogRecord testSuiteLogRecord = generate(logFolder);
+        if (testSuiteLogRecord != null) {
+            writeJUnitReport(testSuiteLogRecord, new File(logFolder));
+        }
+    }
+
+    public static void writeJUnitReport(TestSuiteLogRecord suiteLogEntity, File logFolder)
+            throws JAXBException, IOException {
+        JUnitReportObjectFactory factory = new JUnitReportObjectFactory();
+
+        String testSuiteName = suiteLogEntity.getName();
+        String totalPass = suiteLogEntity.getTotalPassedTestCases() + "";
+        String totalError = suiteLogEntity.getTotalErrorTestCases() + "";
+        String totalFailure = suiteLogEntity.getTotalFailedTestCases() + "";
+        String duration = ((suiteLogEntity.getEndTime() - suiteLogEntity.getStartTime()) / 1000) + "";
+
+        JUnitProperties properties = factory.createProperties();
+        List<JUnitProperty> propertyList = properties.getProperty();
+        propertyList.add(new JUnitProperty("deviceName", suiteLogEntity.getDeviceName()));
+        propertyList.add(new JUnitProperty("devicePlatform", suiteLogEntity.getDevicePlatform()));
+        propertyList.add(new JUnitProperty("logFolder", StringEscapeUtils.escapeJava(suiteLogEntity.getLogFolder())));
+        propertyList.add(new JUnitProperty("logFiles", factory.sanitizeReportLogs(suiteLogEntity)));
+        propertyList.add(new JUnitProperty("attachments", factory.sanitizeReportAttachments(suiteLogEntity)));
+        suiteLogEntity.getRunData().forEach((name, value) -> propertyList.add(new JUnitProperty(name, value)));
+
+        JUnitTestSuite ts = factory.createTestSuite();
+        ts.setProperties(properties);
+        ts.setId(suiteLogEntity.getId());
+        ts.setName(testSuiteName);
+        ts.setHostname(suiteLogEntity.getHostName());
+        ts.setTime(duration);
+        ts.setTimestamp(DateUtil.getDateTimeFormatted(suiteLogEntity.getStartTime()));
+        ts.setSystemOut(suiteLogEntity.getSystemOutMsg().trim());
+        ts.setSystemErr(suiteLogEntity.getSystemErrorMsg().trim());
+
+        // tests: The total number of tests in the suite, required
+        ts.setTests(totalPass);
+        // errors: The total number of tests in the suite that error
+        ts.setErrors(totalError);
+        // failures: The total number of tests in the suite that failed
+        ts.setFailures(totalFailure);
+
+        suiteLogEntity.getChildren().stream().forEach(item -> {
+            JUnitTestCase tc = factory.createTestCase();
+            tc.setClassname(item.getId());
+            tc.setName(item.getName());
+
+            TestStatus status = item.getStatus();
+            TestStatusValue statusValue = status.getStatusValue();
+            tc.setStatus(statusValue.name());
+            if (TestStatusValue.ERROR == statusValue) {
+                JUnitError error = factory.createError();
+                error.setType(statusValue.name());
+                error.setMessage(status.getStackTrace());
+                tc.getError().add(error);
+            }
+            if (TestStatusValue.FAILED == statusValue) {
+                JUnitFailure failure = factory.createFailure();
+                failure.setType(statusValue.name());
+                failure.setMessage(status.getStackTrace());
+                tc.getFailure().add(failure);
+            }
+
+            tc.getSystemOut().add(item.getSystemOutMsg().trim());
+            tc.getSystemErr().add(item.getSystemErrorMsg().trim());
+            ts.getTestcase().add(tc);
+        });
+
+        // This is a single test suite. Thus, the info for the test suites is the same as test suite
+        JUnitTestSuites tss = factory.createTestSuites();
+        // errors: total number of tests with error result from all test suite
+        tss.setErrors(totalError);
+        // failures: total number of failed tests from all test suite
+        tss.setFailures(totalFailure);
+        // tests: total number of successful tests from all test suite
+        tss.setTests(totalPass);
+        // time: in seconds to execute all test suites
+        tss.setTime(duration);
+        // name
+        tss.setName(testSuiteName);
+
+        tss.getTestsuite().add(ts);
+
+        JAXBContext context = JAXBContext
+                .newInstance(new Class[] { JUnitError.class, JUnitFailure.class, JUnitProperties.class,
+                        JUnitProperty.class, JUnitTestCase.class, JUnitTestSuites.class, JUnitTestSuite.class });
+        Marshaller marshaller = context.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        marshaller.marshal(tss, new File(logFolder, "JUnit_Report.xml"));
+    }
+
+    public static void writeJsonReport(TestSuiteLogRecord suiteLogEntity, File logFolder) throws IOException {
+        List<String> excludedFieldNames = Arrays.asList(suiteLogEntity.getJsonExcludedFields());
+        ExclusionStrategy excludeFields = new ExclusionStrategy() {
+
+            @Override
+            public boolean shouldSkipField(FieldAttributes paramFieldAttributes) {
+                return excludedFieldNames.size() == 0 ? false
+                        : excludedFieldNames.contains(paramFieldAttributes.getName());
+            }
+
+            @Override
+            public boolean shouldSkipClass(Class<?> paramClass) {
+                return false;
+            }
+        };
+        String json = new GsonBuilder().addSerializationExclusionStrategy(excludeFields)
+                .create()
+                .toJson(suiteLogEntity);
+        FileUtils.writeStringToFile(new File(logFolder, "JSON_Report.json"), json);
     }
 
     public static void writeHtmlReport(TestSuiteLogRecord suiteLogEntity, File logFolder)

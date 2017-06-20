@@ -1,51 +1,65 @@
 package com.kms.katalon.core.logging.model;
 
-
-
 public interface ILogRecord {
-	public String getName();
+    public static final String LOG_TYPE_TEST_SUITE = "TEST_SUITE";
 
-	public void setName(String name);
+    public static final String LOG_TYPE_TEST_CASE = "TEST_CASE";
 
-	public String getId();
+    public static final String LOG_TYPE_TEST_STEP = "TEST_STEP";
 
-	public void setId(String id);
+    public static final String LOG_TYPE_MESSAGE = "MESSAGE";
 
-	public long getStartTime();
+    public String getName();
 
-	public void setStartTime(long startTime);
+    public void setName(String name);
 
-	public long getEndTime();
+    public String getId();
 
-	public void setEndTime(long endTime);
+    public void setId(String id);
 
-	public String getSource();
+    public long getStartTime();
 
-	public void setSource(String source);
+    public void setStartTime(long startTime);
 
-	public TestStatus getStatus();
+    public long getEndTime();
 
-	public String getDescription();
+    public void setEndTime(long endTime);
 
-	public void setDescription(String description);
-	
-	public boolean hasChildRecords();
-	
-	public ILogRecord[] getChildRecords();
-	
-	public void addChildRecord(ILogRecord childRecord);
-	
-	public void removeChildRecord(ILogRecord childRecord);
-	
-	public String getMessage();
+    public String getSource();
 
-	public void setMessage(String message);
-	
-	public ILogRecord getParentLogRecord();
+    public void setSource(String source);
+
+    public TestStatus getStatus();
+
+    public String getDescription();
+
+    public void setDescription(String description);
+
+    public boolean hasChildRecords();
+
+    public ILogRecord[] getChildRecords();
+
+    public void addChildRecord(ILogRecord childRecord);
+
+    public void removeChildRecord(ILogRecord childRecord);
+
+    public String getMessage();
+
+    public void setMessage(String message);
+
+    public ILogRecord getParentLogRecord();
 
     public void setParentLogRecord(ILogRecord parentLogRecord);
-    
+
     public boolean isInterrupted();
-    
+
     public void setInterrupted(boolean interrupted);
+
+    public String getType();
+
+    public String getJUnitMessage();
+
+    public String getSystemOutMsg();
+
+    public String getSystemErrorMsg();
 }

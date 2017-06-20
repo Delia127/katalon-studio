@@ -59,6 +59,10 @@ public class ExecutionMessageConstants extends NLS {
 
     public static String MSG_PREPARE_REPORT_SIMPLE_HTML;
 
+    public static String MSG_PREPARE_REPORT_JSON;
+
+    public static String MSG_PREPARE_REPORT_JUNIT;
+
     public static String MSG_RP_ERROR_TO_EMAIL_REPORT;
 
     public static String MSG_RP_ERROR_TO_RERUN_TEST_SUITE;

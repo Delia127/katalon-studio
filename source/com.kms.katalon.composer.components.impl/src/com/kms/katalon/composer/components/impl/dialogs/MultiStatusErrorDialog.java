@@ -72,6 +72,7 @@ public class MultiStatusErrorDialog extends AbstractDialog {
         txtDetails.setEditable(false);
     }
 
+    @Override
     protected Control createDialogContainer(Composite parent) {
         Composite composite = new Composite(parent, SWT.NONE);
         composite.setLayout(new GridLayout(2, false));
@@ -102,10 +103,12 @@ public class MultiStatusErrorDialog extends AbstractDialog {
         return composite;
     }
 
+    @Override
     protected void registerControlModifyListeners() {
         txtDetails.addListener(SWT.Resize, ControlUtils.getAutoHideStyledTextScrollbarListener);
 
         getButton(IDialogConstants.DETAILS_ID).addSelectionListener(new SelectionAdapter() {
+            @Override
             public void widgetSelected(SelectionEvent e) {
                 detailsShowed = !detailsShowed;
                 updateDetailsCompositeAndButton();
@@ -113,6 +116,7 @@ public class MultiStatusErrorDialog extends AbstractDialog {
         });
     }
 
+    @Override
     public String getDialogTitle() {
         return StringConstants.WARN;
     }
@@ -122,6 +126,7 @@ public class MultiStatusErrorDialog extends AbstractDialog {
         return new Point(500, super.getInitialSize().y);
     }
 
+    @Override
     protected void createButtonsForButtonBar(Composite parent) {
         createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL,
                 true);
@@ -129,6 +134,7 @@ public class MultiStatusErrorDialog extends AbstractDialog {
                 getDetailsButtonText(), false);
     }
 
+    @Override
     protected void setInput() {
         lblTitle.setText(StringUtils.defaultString(title));
         lblDescription.setText(StringUtils.defaultString(errorDescription));
@@ -161,6 +167,12 @@ public class MultiStatusErrorDialog extends AbstractDialog {
     public static void showErrorDialog(Throwable e, String title, String errorDescription) {
         MultiStatusErrorDialog dialog = new MultiStatusErrorDialog(Display.getCurrent().getActiveShell(), title,
                 errorDescription, e.getMessage());
+        dialog.open();
+    }
+
+    public static void showErrorDialog(String message, String reason, String details) {
+        MultiStatusErrorDialog dialog = new MultiStatusErrorDialog(Display.getCurrent().getActiveShell(), message,
+                reason, details);
         dialog.open();
     }
 }
