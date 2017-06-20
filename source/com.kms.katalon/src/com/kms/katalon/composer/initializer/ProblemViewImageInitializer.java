@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.initializer;
 
+import java.net.MalformedURLException;
+
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jdt.internal.ui.JavaPluginImages;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -9,6 +11,11 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.ide.IDEInternalWorkbenchImages;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+
+import com.kms.katalon.composer.resources.constants.IImageKeys;
+import com.kms.katalon.composer.resources.image.ImageManager;
+import com.kms.katalon.composer.resources.util.ImageUtil;
+import com.kms.katalon.logging.LogUtil;
 
 @SuppressWarnings("restriction")
 public class ProblemViewImageInitializer implements ApplicationInitializer {
@@ -53,6 +60,16 @@ public class ProblemViewImageInitializer implements ApplicationInitializer {
             imageRegistry.put(IDEInternalWorkbenchImages.IMG_OBJS_ERROR_PATH, getProblemImage(IMG_SHOWERR_TSK_URL));
             imageRegistry.put(IDEInternalWorkbenchImages.IMG_OBJS_WARNING_PATH, getProblemImage(IMG_SHOWWARN_TSK_URL));
             imageRegistry.put(IDEInternalWorkbenchImages.IMG_OBJS_INFO_PATH, getProblemImage(IMG_SHOWINFO_TSK_URL));
+
+            try {
+                // Preference Dialog
+                imageRegistry.put(ISharedImages.IMG_TOOL_BACK, 
+                        ImageUtil.loadImageDescriptor(ImageManager.getImageURLString(IImageKeys.MOVE_LEFT_16)));
+                imageRegistry.put(ISharedImages.IMG_TOOL_FORWARD,
+                        ImageUtil.loadImageDescriptor(ImageManager.getImageURLString(IImageKeys.MOVE_RIGHT_16)));
+            } catch (MalformedURLException e) {
+                LogUtil.logError(e);
+            }
         }
 
         private ImageDescriptor getProblemImage(String url) {
