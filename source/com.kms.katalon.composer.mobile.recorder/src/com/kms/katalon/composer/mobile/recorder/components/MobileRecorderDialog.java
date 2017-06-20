@@ -795,7 +795,6 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         btnBrowse = new Button(appFileChooserComposite, SWT.PUSH);
         btnBrowse.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
         btnBrowse.setText(MobileRecorderStringConstants.BROWSE);
-        btnBrowse.setEnabled(false);
         btnBrowse.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
