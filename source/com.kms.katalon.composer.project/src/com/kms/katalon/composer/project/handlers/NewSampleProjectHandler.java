@@ -49,29 +49,34 @@ public class NewSampleProjectHandler {
     public void execute(ParameterizedCommand command, @Named(IServiceConstants.ACTIVE_SHELL) Shell activeShell) {
         try {
             String sampleProjectType = command.getCommand().getParameter(SAMPLE_PROJECT_TYPE_PARAMETER_ID).getName();
-            NewProjectDialog dialog = new NewProjectDialog(activeShell, DIALOG_TITLES.get(sampleProjectType));
-            if (dialog.open() != Dialog.OK) {
-                return;
-            }
-            String projectName = dialog.getProjectName();
-            String projectParentLocation = dialog.getProjectLocation();
-            String projectDescription = dialog.getProjectDescription();
-
-            String projectLocation = new File(projectParentLocation, projectName).getAbsolutePath();
-            SampleProjectProvider.getInstance().extractSampleWebUIProject(sampleProjectType, projectLocation);
-            FileUtils.forceDelete(ProjectController.getInstance().getProjectFile(projectLocation));
-
-            ProjectEntity newProject = NewProjectHandler.createNewProject(projectName, projectParentLocation,
-                    projectDescription);
-            if (newProject == null) {
-                return;
-            }
-            eventBroker.send(EventConstants.PROJECT_CREATED, newProject);
-
-            // Open created project
-            eventBroker.send(EventConstants.PROJECT_OPEN, newProject.getId());
+            doCreateNewSampleProject(activeShell, sampleProjectType, eventBroker);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
+    }
+
+    public static void doCreateNewSampleProject(Shell activeShell, String sampleProjectType, IEventBroker eventBroker)
+            throws Exception {
+        NewProjectDialog dialog = new NewProjectDialog(activeShell, DIALOG_TITLES.get(sampleProjectType));
+        if (dialog.open() != Dialog.OK) {
+            return;
+        }
+        String projectName = dialog.getProjectName();
+        String projectParentLocation = dialog.getProjectLocation();
+        String projectDescription = dialog.getProjectDescription();
+
+        String projectLocation = new File(projectParentLocation, projectName).getAbsolutePath();
+        SampleProjectProvider.getInstance().extractSampleWebUIProject(sampleProjectType, projectLocation);
+        FileUtils.forceDelete(ProjectController.getInstance().getProjectFile(projectLocation));
+
+        ProjectEntity newProject = NewProjectHandler.createNewProject(projectName, projectParentLocation,
+                projectDescription);
+        if (newProject == null) {
+            return;
+        }
+        eventBroker.send(EventConstants.PROJECT_CREATED, newProject);
+
+        // Open created project
+        eventBroker.send(EventConstants.PROJECT_OPEN, newProject.getId());
     }
 }

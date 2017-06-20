@@ -53,6 +53,7 @@ import com.kms.katalon.composer.components.impl.handler.CommandCaller;
 import com.kms.katalon.composer.components.impl.util.DesktopUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.project.handlers.NewSampleProjectHandler;
 import com.kms.katalon.composer.project.menu.RecentProjectParameterizedCommandBuilder;
 import com.kms.katalon.composer.project.template.SampleProjectProvider;
 import com.kms.katalon.console.utils.ApplicationInfo;
@@ -121,7 +122,7 @@ public class WelcomePart {
         mainComposite.setLayout(mainGridLayout);
 
         wrappedComposite.setContent(mainComposite);
-        wrappedComposite.setMinSize(new Point(1000, 600));
+        wrappedComposite.setMinSize(new Point(1000, 630));
         wrappedComposite.setExpandHorizontal(true);
         wrappedComposite.setExpandVertical(true);
 
@@ -190,7 +191,8 @@ public class WelcomePart {
                     @Override
                     public void mouseDown(MouseEvent e) {
                         try {
-                            SampleProjectProvider.getInstance().openSampleWebUIProject();
+                            NewSampleProjectHandler.doCreateNewSampleProject(Display.getCurrent().getActiveShell(),
+                                    SampleProjectProvider.SAMPLE_WEB_UI, eventBroker);
                         } catch (Exception ex) {
                             MessageDialog.openError(null, StringConstants.ERROR, ex.getMessage());
                         }
@@ -203,7 +205,8 @@ public class WelcomePart {
                     @Override
                     public void mouseDown(MouseEvent e) {
                         try {
-                            SampleProjectProvider.getInstance().openSampleMobileProject();
+                            NewSampleProjectHandler.doCreateNewSampleProject(Display.getCurrent().getActiveShell(),
+                                    SampleProjectProvider.SAMPLE_MOBILE, eventBroker);
                         } catch (Exception ex) {
                             MessageDialog.openError(null, StringConstants.ERROR, ex.getMessage());
                         }
@@ -216,7 +219,8 @@ public class WelcomePart {
                     @Override
                     public void mouseDown(MouseEvent e) {
                         try {
-                            SampleProjectProvider.getInstance().openSampleWebServiceProject();
+                            NewSampleProjectHandler.doCreateNewSampleProject(Display.getCurrent().getActiveShell(),
+                                    SampleProjectProvider.SAMPLE_WEB_SERVICE, eventBroker);
                         } catch (Exception ex) {
                             MessageDialog.openError(null, StringConstants.ERROR, ex.getMessage());
                         }
@@ -317,10 +321,11 @@ public class WelcomePart {
     private void createCommonStepComposite(Composite leftSections) {
         final Composite commonStepComposite = new Composite(leftSections, SWT.NONE);
         GridLayout commonStepCompositeLayout = new GridLayout(1, false);
-        commonStepCompositeLayout.verticalSpacing = 37;
+        commonStepCompositeLayout.verticalSpacing = 40;
         commonStepComposite.setLayout(commonStepCompositeLayout);
         GridData commonStepCompositeGridData = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
         commonStepCompositeGridData.horizontalIndent = 5;
+        commonStepCompositeGridData.verticalIndent = 7;
         leftSections.setLayoutData(commonStepCompositeGridData);
 
         createCommonStepChildComposite(commonStepComposite, MessageConstants.LBL_COMMON_STEP_RECORD_PREFIX,
@@ -344,7 +349,7 @@ public class WelcomePart {
             layout.horizontalSpacing = 0;
         }
         stepComposite.setLayout(layout);
-        stepComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        stepComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
         Label stepText = new Label(stepComposite, SWT.NONE);
         stepText.setText(stepPrefixText);
