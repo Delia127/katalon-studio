@@ -28,7 +28,7 @@ public abstract class AbstractLogRecord implements ILogRecord {
 
     protected long endTime;
 
-    protected List<ILogRecord> children;
+    protected List<ILogRecord> childRecords;
 
     protected ILogRecord parentLogRecord;
 
@@ -36,7 +36,7 @@ public abstract class AbstractLogRecord implements ILogRecord {
 
     public AbstractLogRecord(String name) {
         setName(name);
-        children = new ArrayList<ILogRecord>();
+        childRecords = new ArrayList<ILogRecord>();
         interuppted = false;
         type = "";
     }
@@ -110,14 +110,14 @@ public abstract class AbstractLogRecord implements ILogRecord {
             testStatus.setStatusValue(TestStatusValue.PASSED);
         }
 
-        if (children == null || children.size() == 0) {
+        if (childRecords == null || childRecords.size() == 0) {
             return testStatus;
         }
 
-        setMessage(children.get(children.size() - 1).getMessage());
+        setMessage(childRecords.get(childRecords.size() - 1).getMessage());
 
-        for (int index = children.size() - 1; index >= 0; index--) {
-            ILogRecord messageRecord = children.get(index);
+        for (int index = childRecords.size() - 1; index >= 0; index--) {
+            ILogRecord messageRecord = childRecords.get(index);
             if (!(messageRecord instanceof MessageLogRecord)) {
                 continue;
             }
@@ -156,33 +156,25 @@ public abstract class AbstractLogRecord implements ILogRecord {
         this.description = description;
     }
 
-    public List<ILogRecord> getChildren() {
-        return children;
-    }
-
-    public void setChildren(List<ILogRecord> children) {
-        this.children = children;
-    }
-
     @Override
     public boolean hasChildRecords() {
-        return children != null && children.size() > 0;
+        return childRecords != null && childRecords.size() > 0;
     }
 
     @Override
     public ILogRecord[] getChildRecords() {
-        return getChildren().toArray(new ILogRecord[0]);
+        return childRecords.toArray(new ILogRecord[0]);
     }
 
     @Override
     public void addChildRecord(ILogRecord childRecord) {
-        children.add(childRecord);
+        childRecords.add(childRecord);
         childRecord.setParentLogRecord(this);
     }
 
     @Override
     public void removeChildRecord(ILogRecord childRecord) {
-        children.remove(childRecord);
+        childRecords.remove(childRecord);
     }
 
     @Override
@@ -282,9 +274,9 @@ public abstract class AbstractLogRecord implements ILogRecord {
         sb.append(getJUnitMessage());
 
         if (hasChildRecords()) {
-            getChildren().stream().forEach(item -> {
+            for (ILogRecord item : getChildRecords()) {
                 sb.append(item.getSystemOutMsg());
-            });
+            }
         }
         return sb.toString();
     }
@@ -304,10 +296,12 @@ public abstract class AbstractLogRecord implements ILogRecord {
         sb.append(getStatus().getStackTrace());
 
         if (hasChildRecords()) {
-            getChildren().stream().filter(item -> item.getStatus().getStatusValue().isError()).forEach(item -> {
-                sb.append(item.getStatus().getStackTrace());
-                sb.append(LINE_SEPARATOR);
-            });
+            for (ILogRecord item : getChildRecords()) {
+                if (item.getStatus().getStatusValue().isError()) {
+                    sb.append(item.getStatus().getStackTrace());
+                    sb.append(LINE_SEPARATOR);
+                }
+            }
         }
         sb.append(LINE_SEPARATOR);
         return sb.toString();
