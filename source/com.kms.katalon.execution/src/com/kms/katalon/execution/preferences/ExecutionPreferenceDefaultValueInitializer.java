@@ -7,7 +7,9 @@ import com.kms.katalon.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 
 public class ExecutionPreferenceDefaultValueInitializer extends AbstractPreferenceInitializer {
-    private static final boolean EXECUTION_DEFAULT_QUIT_DRIVERS_AFTER_EXECUTING = false;
+    private static final boolean EXECUTION_DEFAULT_QUIT_DRIVERS_AFTER_EXECUTING_TEST_SUITE = true;
+
+    private static final boolean EXECUTION_DEFAULT_QUIT_DRIVERS_AFTER_EXECUTING_TEST_CASE = false;
 
     public static final int EXECUTION_DEFAULT_TIMEOUT_VALUE = 30;
 
@@ -28,7 +30,9 @@ public class ExecutionPreferenceDefaultValueInitializer extends AbstractPreferen
                 EXECUTION_DEFAULT_IS_NOTIFY_ALLOWED_VALUE);
         store.setDefault(ExecutionPreferenceConstants.EXECUTION_OPEN_REPORT_AFTER_EXECUTING,
                 EXECUTION_DEFAULT_OPEN_REPORT_REPORT_VALUE);
-        store.setDefault(ExecutionPreferenceConstants.EXECUTION_QUIT_DRIVERS_AFTER_EXECUTING,
-                EXECUTION_DEFAULT_QUIT_DRIVERS_AFTER_EXECUTING);
+        store.setDefault(ExecutionPreferenceConstants.EXECUTION_QUIT_DRIVERS_AFTER_EXECUTING_TEST_CASE,
+                EXECUTION_DEFAULT_QUIT_DRIVERS_AFTER_EXECUTING_TEST_CASE);
+        store.setDefault(ExecutionPreferenceConstants.EXECUTION_QUIT_DRIVERS_AFTER_EXECUTING_TEST_SUITE,
+                EXECUTION_DEFAULT_QUIT_DRIVERS_AFTER_EXECUTING_TEST_SUITE);
     }
 }

@@ -51,7 +51,8 @@ Require-Bundle: net.sf.supercsv.super-csv,
  org.postgresql.jdbc41,
  org.eclipse.osgi,
  com.kms.katalon.constant,
- org.eclipse.persistence.eclipselink
+ org.eclipse.persistence.eclipselink,
+ com.kms.katalon.selenium-standalone
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Import-Package: com.google.common.io,

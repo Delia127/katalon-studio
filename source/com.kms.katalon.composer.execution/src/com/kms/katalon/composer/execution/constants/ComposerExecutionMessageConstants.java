@@ -95,6 +95,8 @@ public class ComposerExecutionMessageConstants extends NLS {
 
     public static String PREF_CHKBOX_QUIT_DRIVERS_AFTER_EXE_COMPLETELY;
 
+    public static String PREF_CHKBOX_QUIT_DRIVERS_AFTER_EXE_TEST_SUITE_COMPLETELY;
+
     public static String PREF_ERROR_MSG_VAL_MUST_BE_AN_INT_BETWEEN_X_Y;
 
     public static String PREF_GROUP_LBL_MAIL_SERVER;

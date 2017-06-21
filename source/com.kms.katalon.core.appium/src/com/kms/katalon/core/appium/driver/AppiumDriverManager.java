@@ -33,6 +33,7 @@ import com.kms.katalon.core.driver.DriverType;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.util.ConsoleCommandExecutor;
+import com.kms.katalon.core.util.internal.ProcessUtil;
 
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.ios.IOSDriver;
@@ -454,20 +455,37 @@ public class AppiumDriverManager {
     }
 
     public static void quitServer() {
-        KeywordLogger.getInstance().logInfo("quitServer");
         if (localStorageAppiumServer.get() != null && localStorageAppiumServer.get().isAlive()) {
-            localStorageAppiumServer.get().destroy();
-            localStorageAppiumServer.set(null);
+            try {
+                ProcessUtil.terminateProcess(localStorageAppiumServer.get());
+            } catch (ReflectiveOperationException | IOException e) {
+                KeywordLogger.getInstance().logInfo("Error when trying to stop Appium Server: " + e.getMessage());
+            } finally {
+                localStorageAppiumServer.set(null);
+            }
         }
         if (localStorageWebProxyProcess.get() != null) {
-            localStorageWebProxyProcess.get().destroy();
-            localStorageWebProxyProcess.set(null);
+            try {
+                ProcessUtil.terminateProcess(localStorageWebProxyProcess.get());
+            } catch (ReflectiveOperationException | IOException e) {
+                KeywordLogger.getInstance().logInfo("Error when trying to stop Web Proxy Server: " + e.getMessage());
+            } finally {
+                localStorageWebProxyProcess.set(null);
+            }
         }
     }
 
     public static AppiumDriver<?> getDriver() throws StepFailedException {
         verifyWebDriverIsOpen();
         return localStorageAppiumDriver.get();
+    }
+
+    public static Process getAppiumSeverProcess() {
+        return localStorageAppiumServer.get();
+    }
+
+    public static Process getIosWebKitProcess() {
+        return localStorageWebProxyProcess.get();
     }
 
     private static void verifyWebDriverIsOpen() throws StepFailedException {

@@ -32,13 +32,15 @@ RunConfiguration.setExecutionSettingFile('<%= executionConfigFilePath %>')
 TestCaseMain.beforeStart()
 try {
     <% if (rawScript == null) { %>
-	    TestCaseMain.runTestCase('<%= testCaseId %>', <%= testCaseBinding %>, FailureHandling.STOP_ON_FAILURE <%= isQuitDriversAfterRun ? ", true" : "" %>)
+	    TestCaseMain.runTestCase('<%= testCaseId %>', <%= testCaseBinding %>, FailureHandling.STOP_ON_FAILURE)
     <% } else { %>
         TestCaseMain.runTestCaseRawScript(
-''' + executeRawTpl + ''', '<%= testCaseId %>', <%= testCaseBinding %>, FailureHandling.STOP_ON_FAILURE <%= isQuitDriversAfterRun ? ", true" : "" %>)
+        ''' + executeRawTpl + ''', '<%= testCaseId %>', <%= testCaseBinding %>, FailureHandling.STOP_ON_FAILURE)
     <% } %>
 } catch (Exception e) {
     TestCaseMain.logError(e, '<%= testCaseId %>')
+} finally {
+    <%= isQuitDriversAfterRun ? "DriverCleanerCollector.getInstance().cleanDrivers()" : "" %>
 }
 '''
 
@@ -71,7 +73,7 @@ try {
             "testCaseId"      : testCaseId,
             "testCaseBinding" : testCaseBinding,
             "executionConfigFilePath" : GroovyStringUtil.escapeGroovy(config.getExecutionSetting().getSettingFilePath()),
-            "isQuitDriversAfterRun" : ExecutionUtil.isQuitDriversAfterExecuting(),
+            "isQuitDriversAfterRun" : ExecutionUtil.isQuitDriversAfterExecutingTestCase(),
             "driverCleaners" : driverCleaners,
             "rawScript" : config.getExecutionSetting().getRawScript()
         ]

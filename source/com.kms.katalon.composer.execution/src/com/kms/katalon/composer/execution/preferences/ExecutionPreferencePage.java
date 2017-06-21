@@ -17,15 +17,15 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
+import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
-import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.execution.collector.RunConfigurationCollector;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
 import com.kms.katalon.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 
 public class ExecutionPreferencePage extends PreferencePageWithHelp {
-    private Button chckNotifyMe, chckOpenReport, chckQuitDrivers;
+    private Button chckNotifyMe, chckOpenReport, chckQuitDriversTestCase, chckQuitDriversTestSuite;
 
     private Text txtDefaultTimeout;
 
@@ -86,9 +86,12 @@ public class ExecutionPreferencePage extends PreferencePageWithHelp {
         chckOpenReport = new Button(grpAfterExecuting, SWT.CHECK);
         chckOpenReport.setText(StringConstants.PREF_CHKBOX_OPEN_RPT_AFTER_EXE_COMPLETELY);
 
-        chckQuitDrivers = new Button(grpAfterExecuting, SWT.CHECK);
-        chckQuitDrivers.setText(StringConstants.PREF_CHKBOX_QUIT_DRIVERS_AFTER_EXE_COMPLETELY);
-
+        chckQuitDriversTestCase = new Button(grpAfterExecuting, SWT.CHECK);
+        chckQuitDriversTestCase.setText(StringConstants.PREF_CHKBOX_QUIT_DRIVERS_AFTER_EXE_COMPLETELY);
+        
+        chckQuitDriversTestSuite = new Button(grpAfterExecuting, SWT.CHECK);
+        chckQuitDriversTestSuite.setText(ComposerExecutionMessageConstants.PREF_CHKBOX_QUIT_DRIVERS_AFTER_EXE_TEST_SUITE_COMPLETELY);
+        
         initialize();
 
         registerControlModifyListeners();
@@ -118,8 +121,10 @@ public class ExecutionPreferencePage extends PreferencePageWithHelp {
                 ExecutionPreferenceConstants.EXECUTION_NOTIFY_AFTER_EXECUTING));
         chckOpenReport.setSelection(getPreferenceStore().getBoolean(
                 ExecutionPreferenceConstants.EXECUTION_OPEN_REPORT_AFTER_EXECUTING));
-        chckQuitDrivers.setSelection(getPreferenceStore().getBoolean(
-                ExecutionPreferenceConstants.EXECUTION_QUIT_DRIVERS_AFTER_EXECUTING));
+        chckQuitDriversTestCase.setSelection(getPreferenceStore().getBoolean(
+                ExecutionPreferenceConstants.EXECUTION_QUIT_DRIVERS_AFTER_EXECUTING_TEST_CASE));
+        chckQuitDriversTestSuite.setSelection(getPreferenceStore().getBoolean(
+                ExecutionPreferenceConstants.EXECUTION_QUIT_DRIVERS_AFTER_EXECUTING_TEST_SUITE));
         txtDefaultTimeout.setText(Integer.toString(getPreferenceStore().getInt(
                 ExecutionPreferenceConstants.EXECUTION_DEFAULT_TIMEOUT)));
         selectedExecutionConfiguration = getPreferenceStore().getString(
@@ -162,8 +167,10 @@ public class ExecutionPreferencePage extends PreferencePageWithHelp {
                 ExecutionPreferenceConstants.EXECUTION_NOTIFY_AFTER_EXECUTING));
         chckOpenReport.setSelection(getPreferenceStore().getDefaultBoolean(
                 ExecutionPreferenceConstants.EXECUTION_OPEN_REPORT_AFTER_EXECUTING));
-        chckQuitDrivers.setSelection(getPreferenceStore().getDefaultBoolean(
-                ExecutionPreferenceConstants.EXECUTION_QUIT_DRIVERS_AFTER_EXECUTING));
+        chckQuitDriversTestCase.setSelection(getPreferenceStore().getDefaultBoolean(
+                ExecutionPreferenceConstants.EXECUTION_QUIT_DRIVERS_AFTER_EXECUTING_TEST_CASE));
+        chckQuitDriversTestSuite.setSelection(getPreferenceStore().getDefaultBoolean(
+                ExecutionPreferenceConstants.EXECUTION_QUIT_DRIVERS_AFTER_EXECUTING_TEST_SUITE));
         txtDefaultTimeout.setText(Integer.toString(getPreferenceStore().getDefaultInt(
                 ExecutionPreferenceConstants.EXECUTION_DEFAULT_TIMEOUT)));
         String selectedExecutionConfiguration = getPreferenceStore().getDefaultString(
@@ -205,11 +212,16 @@ public class ExecutionPreferencePage extends PreferencePageWithHelp {
                     chckOpenReport.getSelection());
         }
 
-        if (chckQuitDrivers != null) {
-            getPreferenceStore().setValue(ExecutionPreferenceConstants.EXECUTION_QUIT_DRIVERS_AFTER_EXECUTING,
-                    chckQuitDrivers.getSelection());
+        if (chckQuitDriversTestCase != null) {
+            getPreferenceStore().setValue(ExecutionPreferenceConstants.EXECUTION_QUIT_DRIVERS_AFTER_EXECUTING_TEST_CASE,
+                    chckQuitDriversTestCase.getSelection());
         }
-
+        
+        if (chckQuitDriversTestSuite != null) {
+            getPreferenceStore().setValue(ExecutionPreferenceConstants.EXECUTION_QUIT_DRIVERS_AFTER_EXECUTING_TEST_SUITE,
+                    chckQuitDriversTestSuite.getSelection());
+        }
+        
         if (txtDefaultTimeout != null) {
             getPreferenceStore().setValue(ExecutionPreferenceConstants.EXECUTION_DEFAULT_TIMEOUT,
                     Integer.parseInt(txtDefaultTimeout.getText()));
@@ -237,6 +249,6 @@ public class ExecutionPreferencePage extends PreferencePageWithHelp {
 
     @Override
     protected String getDocumentationUrl() {
-        return DocumentationMessageConstants.PREFERENCE_EXECUTION;
+        return "https://docs.katalon.com/x/YYUw";
     }
 }
