@@ -184,7 +184,7 @@ public class ReportUtil {
         // failures: The total number of tests in the suite that failed
         ts.setFailures(totalFailure);
 
-        suiteLogEntity.getChildren().stream().forEach(item -> {
+        Arrays.asList(suiteLogEntity.getChildRecords()).stream().forEach(item -> {
             JUnitTestCase tc = factory.createTestCase();
             tc.setClassname(item.getId());
             tc.setName(item.getName());

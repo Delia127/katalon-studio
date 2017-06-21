@@ -47,15 +47,15 @@ public class TestStepLogRecord extends AbstractLogRecord {
     public TestStatus getStatus() {
         TestStatus testStatus = super.getStatus();
 
-        if (children == null || children.size() == 0) {
+        if (childRecords == null || childRecords.size() == 0) {
             return testStatus;
         }
 
-        if (children.size() == 1 && children.get(0).getStatus().getStatusValue() == TestStatusValue.NOT_RUN) {
+        if (childRecords.size() == 1 && childRecords.get(0).getStatus().getStatusValue() == TestStatusValue.NOT_RUN) {
             testStatus.setStatusValue(TestStatusValue.NOT_RUN);
         }
 
-        setMessage(children.get(children.size() - 1).getMessage());
+        setMessage(childRecords.get(childRecords.size() - 1).getMessage());
 
         for (ILogRecord logRecord : getChildRecords()) {
             String childAttachment = null;

@@ -1,11 +1,11 @@
 package com.kms.katalon.core.logging.model;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -58,11 +58,17 @@ public class TestSuiteLogRecord extends AbstractLogRecord {
     }
 
     private int getTotalTestCasesWithTestStatusValue(TestStatusValue testStatusValue) {
-        long count = children.parallelStream()
-                .filter(item -> (item instanceof TestCaseLogRecord) && (testStatusValue == null
-                        || ((TestCaseLogRecord) item).getStatus().statusValue == testStatusValue))
-                .count();
-        return Math.toIntExact(count);
+        ILogRecord[] childLogRecords = getChildRecords();
+        int total = 0;
+        for (ILogRecord childLogRecord : childLogRecords) {
+            if (childLogRecord instanceof TestCaseLogRecord) {
+                TestCaseLogRecord testCaseLog = (TestCaseLogRecord) childLogRecord;
+                if (testStatusValue == null || testCaseLog.getStatus().statusValue == testStatusValue) {
+                    total++;
+                }
+            }
+        }
+        return total;
     }
 
     public String getDeviceName() {
@@ -104,14 +110,18 @@ public class TestSuiteLogRecord extends AbstractLogRecord {
     }
 
     public <T extends ILogRecord> int getChildIndex(T child) {
-        return getChildren().indexOf(child);
+        return Arrays.asList(getChildRecords()).indexOf(child);
     }
 
     public List<String> getLogFiles() {
-        return Arrays.asList(new File(getLogFolder()).list())
-                .stream()
-                .filter(item -> FilenameUtils.getExtension(item).equals("log"))
-                .collect(Collectors.toList());
+        List<String> logFiles = new ArrayList<String>();
+        for (String childFile : new File(getLogFolder()).list()) {
+            if (!FilenameUtils.getExtension(childFile).equals("log")) {
+                continue;
+            }
+            logFiles.add(childFile);
+        }
+        return logFiles;
     }
 
     @Override

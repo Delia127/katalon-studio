@@ -1,7 +1,7 @@
 package com.kms.katalon.core.logging.model;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 
@@ -29,10 +29,14 @@ public class TestCaseLogRecord extends AbstractLogRecord {
     }
 
     @Override
-    public List<ILogRecord> getChildren() {
-        return super.getChildren().stream()
-                .filter(item -> item instanceof TestStepLogRecord)
-                .collect(Collectors.toList());
+    public ILogRecord[] getChildRecords() {
+        List<ILogRecord> resultRecords = new ArrayList<ILogRecord>();
+        for (ILogRecord logRecord : childRecords) {
+            if (logRecord instanceof TestStepLogRecord) {
+                resultRecords.add(logRecord);
+            }
+        }
+        return resultRecords.toArray(new ILogRecord[resultRecords.size()]);
     }
 
     @Override
@@ -46,13 +50,12 @@ public class TestCaseLogRecord extends AbstractLogRecord {
 
         if (getChildRecords().length == 0) {
             testStatus.setStatusValue(TestStatusValue.PASSED);
-            if (children.size() > 0) {
-                ILogRecord logRecord = children.get(children.size() - 1);
+            if (childRecords.size() > 0) {
+                ILogRecord logRecord = childRecords.get(childRecords.size() - 1);
                 setMessage(logRecord.getMessage());
                 return logRecord.getStatus();
             }
         }
-
         return testStatus;
     }
 }
