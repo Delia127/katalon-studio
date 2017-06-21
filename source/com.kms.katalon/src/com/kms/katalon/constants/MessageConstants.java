@@ -93,6 +93,12 @@ public class MessageConstants extends NLS {
 
     public static String PROMT_ENTER_USERNAME_PASSWORD;
 
+    public static String URL_COMMON_STEP_RECORD;
+
+    public static String URL_COMMON_STEP_RUN;
+
+    public static String URL_COMMON_STEP_VIEW_LOGGER;
+
     public static String USERNAME_TITLE;
 
     public static String PASSSWORD_TITLE;
@@ -168,6 +174,24 @@ public class MessageConstants extends NLS {
     public static String LBL_PROXY_SERVER_TYPE;
 
     public static String LBL_ADDRESS;
+
+    public static String LBL_COMMON_STEP_RECORD_DESCRIPTION;
+
+    public static String LBL_COMMON_STEP_RECORD_PREFIX;
+
+    public static String LBL_COMMON_STEP_RECORD_URL_PREFIX;
+
+    public static String LBL_COMMON_STEP_RUN_DESCRIPTION;
+
+    public static String LBL_COMMON_STEP_RUN_PREFIX;
+
+    public static String LBL_COMMON_STEP_RUN_URL_PREFIX;
+
+    public static String LBL_COMMON_STEP_VIEW_LOGGER_DESCRIPTION;
+
+    public static String LBL_COMMON_STEP_VIEW_LOGGER_PREFIX;
+
+    public static String LBL_COMMON_STEP_VIEW_LOGGER_URL_PREFIX;
 
     public static String LBL_PORT;
 

@@ -40,6 +40,12 @@ public interface IImageKeys {
     public static final String SAMPLE_MOBILE_PROJECT_100 = "welcome/sample_mobile_100.png"; //$NON-NLS-1$
     
     public static final String SAMPLE_WEB_SERVICES_PROJECT_100 = "welcome/sample_web_services_100.png"; //$NON-NLS-1$
+    
+    public static final String SCREEN_SHOT_LOG_VIEWER = "welcome/log_viewer.png"; //$NON-NLS-1$
+    
+    public static final String SCREEN_SHOT_RECORD = "welcome/record.png"; //$NON-NLS-1$
+    
+    public static final String SCREEN_SHOT_RUN = "welcome/run.png"; //$NON-NLS-1$
     // End Welcome
 
     // For Dialog

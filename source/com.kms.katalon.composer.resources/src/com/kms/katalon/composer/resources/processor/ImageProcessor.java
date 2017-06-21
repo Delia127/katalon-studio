@@ -302,6 +302,9 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.SAMPLE_WEB_UI_PROJECT_100);
         ImageManager.registerImage(IImageKeys.SAMPLE_MOBILE_PROJECT_100);
         ImageManager.registerImage(IImageKeys.SAMPLE_WEB_SERVICES_PROJECT_100);
+        ImageManager.registerImage(IImageKeys.SCREEN_SHOT_LOG_VIEWER);
+        ImageManager.registerImage(IImageKeys.SCREEN_SHOT_RECORD);
+        ImageManager.registerImage(IImageKeys.SCREEN_SHOT_RUN);
     }
 
     private void registerIntroImages() {
