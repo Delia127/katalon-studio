@@ -1028,6 +1028,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
                         ? targetException.getCause().getMessage() : targetException.getMessage();
                 MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
                         StringConstants.DIA_ERROR_MSG_CANNOT_START_APP_ON_CURRENT_DEVICE + ": " + message);
+                LoggerSingleton.logError(targetException);
             }
 
             // Enable start button and show error dialog if application cannot start

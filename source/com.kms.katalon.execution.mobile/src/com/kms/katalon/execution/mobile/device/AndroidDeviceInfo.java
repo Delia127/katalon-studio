@@ -1,5 +1,12 @@
 package com.kms.katalon.execution.mobile.device;
 
+import static org.eclipse.core.runtime.Platform.ARCH_X86_64;
+import static org.eclipse.core.runtime.Platform.OS_LINUX;
+import static org.eclipse.core.runtime.Platform.OS_MACOSX;
+import static org.eclipse.core.runtime.Platform.OS_WIN32;
+import static org.eclipse.core.runtime.Platform.getOS;
+import static org.eclipse.core.runtime.Platform.getOSArch;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -8,8 +15,11 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
+import org.osgi.framework.Bundle;
 
+import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.core.util.ConsoleCommandExecutor;
+import com.kms.katalon.execution.classpath.ClassPathResolver;
 import com.kms.katalon.execution.mobile.exception.AndroidSetupException;
 
 public class AndroidDeviceInfo extends MobileDeviceInfo {
@@ -201,7 +211,17 @@ public class AndroidDeviceInfo extends MobileDeviceInfo {
     }
 
     private static File getJREFolder() throws IOException {
-        return new File(getConfigurationFolder().getParentFile(), MAC_JRE_HOME_RELATIVE_PATH);
+        Bundle bundleExec = Platform.getBundle(IdConstants.KATALON_MOBILE_BUNDLE_ID);
+        File bundleFile = FileLocator.getBundleFile(bundleExec);
+        if (bundleFile.isDirectory()) { // run by IDE
+            return new File(System.getProperty("java.home"));
+        }
+        // run as product
+        File parentFile = getConfigurationFolder().getParentFile();
+        if (Platform.OS_MACOSX.equals(Platform.getOS())) {
+            return new File(parentFile, MAC_JRE_HOME_RELATIVE_PATH);
+        }
+        return new File(parentFile, JRE);
     }
 
     private static File getConfigurationFolder() throws IOException {

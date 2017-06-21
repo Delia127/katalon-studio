@@ -107,11 +107,6 @@ public class OpenMobileRecorderHandler {
             if (this.activeShell == null) {
                 this.activeShell = activeShell;
             }
-
-            MPart selectedPart = getSelectedPart();
-            if (selectedPart == null) {
-                return false;
-            }
             TestCaseCompositePart testCaseCompositePart = getSelectedTestCasePart();
             if (testCaseCompositePart != null && !verifyTestCase(testCaseCompositePart)) {
                 return false;

@@ -45,6 +45,8 @@ public class AppiumDriverManager {
     public static final String WDA_LOCAL_PORT = "wdaLocalPort";
 
     public static final String REAL_DEVICE_LOGGER = "realDeviceLogger";
+    
+    public static final String UIAUTOMATOR2 = "uiautomator2";
 
     public static final String XCUI_TEST = "XCUITest";
 

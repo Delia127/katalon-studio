@@ -731,6 +731,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                 updateActionButtonsVisibility(propertiesComposite.getEditingElement(), getSelectDeviceInfo());
             }
         });
+        updateCbbDevices();
 
         btnRefreshDevice = new Button(devicesComposite, SWT.FLAT);
         btnRefreshDevice.setText(MobileRecorderStringConstants.REFRESH);
@@ -739,6 +740,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
             public void widgetSelected(SelectionEvent e) {
                 try {
                     ControlUtils.recursiveSetEnabled(container, false);
+                    clearDeviceInfos();
                     updateDeviceNames();
                     updateActionButtonsVisibility(propertiesComposite.getEditingElement(), getSelectDeviceInfo());
                 } catch (InvocationTargetException exception) {
@@ -793,7 +795,6 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         btnBrowse = new Button(appFileChooserComposite, SWT.PUSH);
         btnBrowse.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
         btnBrowse.setText(MobileRecorderStringConstants.BROWSE);
-        btnBrowse.setEnabled(false);
         btnBrowse.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -824,9 +825,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         return new String[] { ANDROID_FILTER_EXTS };
     }
 
-    private List<String> getAllDevicesName() {
-        deviceInfos.clear();
-        deviceInfos.addAll(MobileDeviceUIProvider.getAllDevices());
+    private List<String> getDeviceInfoNameList() {
         List<String> devicesNameList = new ArrayList<String>();
         for (MobileDeviceInfo deviceInfo : deviceInfos) {
             devicesNameList.add(deviceInfo.getDisplayName());
@@ -834,23 +833,36 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         return devicesNameList;
     }
 
+    private void refreshDeviceInfos() {
+        deviceInfos.addAll(MobileDeviceUIProvider.getAllDevices());
+    }
+
+    private void clearDeviceInfos() {
+        deviceInfos.clear();
+    }
+
+    private void updateCbbDevices() {
+        final List<String> devices = getDeviceInfoNameList();
+        if (!devices.isEmpty() && cbbDevices != null && !cbbDevices.isDisposed()) {
+            cbbDevices.setItems(devices.toArray(new String[] {}));
+            cbbDevices.select(Math.max(0, devices.indexOf(cbbDevices.getText())));
+        }
+    }
+
     private void updateDeviceNames() throws InvocationTargetException, InterruptedException {
         new ProgressMonitorDialogWithThread(getShell()).run(true, true, new IRunnableWithProgress() {
             @Override
             public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                 monitor.beginTask(MobileRecoderMessagesConstants.MSG_TASK_LOADING_DEVICES, IProgressMonitor.UNKNOWN);
-
-                final List<String> devices = getAllDevicesName();
+                
+                refreshDeviceInfos();
 
                 checkMonitorCanceled(monitor);
 
                 UISynchronizeService.syncExec(new Runnable() {
                     @Override
                     public void run() {
-                        if (!devices.isEmpty() && cbbDevices != null && !cbbDevices.isDisposed()) {
-                            cbbDevices.setItems(devices.toArray(new String[] {}));
-                            cbbDevices.select(Math.max(0, devices.indexOf(cbbDevices.getText())));
-                        }
+                        updateCbbDevices();
                     }
                 });
 
