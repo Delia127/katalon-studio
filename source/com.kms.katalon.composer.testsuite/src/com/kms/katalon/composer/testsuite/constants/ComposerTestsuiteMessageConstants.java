@@ -161,6 +161,8 @@ public class ComposerTestsuiteMessageConstants extends NLS {
 
     public static String BTN_HIDE_DATA_BINDING;
 
+    public static String TOOLTIP_MAP_ALL;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerTestsuiteMessageConstants.class);

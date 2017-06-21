@@ -45,6 +45,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.components.util.ColumnViewerUtil;
 import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
+import com.kms.katalon.composer.testsuite.constants.ComposerTestsuiteMessageConstants;
 import com.kms.katalon.composer.testsuite.constants.ImageConstants;
 import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.composer.testsuite.constants.ToolItemConstants;
@@ -272,6 +273,11 @@ public class TestSuitePartDataBindingView {
         tltmDownTestData.setText(ToolItemConstants.DOWN);
         tltmDownTestData.setToolTipText(ToolItemConstants.DOWN);
         tltmDownTestData.setImage(ImageConstants.IMG_16_MOVE_DOWN);
+
+        ToolItem tltmMapAllTestData = new ToolItem(testDataToolBar, SWT.NONE);
+        tltmMapAllTestData.setText(ToolItemConstants.MAPALL);
+        tltmMapAllTestData.setToolTipText(ComposerTestsuiteMessageConstants.TOOLTIP_MAP_ALL);
+        tltmMapAllTestData.setImage(ImageConstants.IMG_16_MAP_ALL);
     }
 
     private void createTestDataTreeTable() {

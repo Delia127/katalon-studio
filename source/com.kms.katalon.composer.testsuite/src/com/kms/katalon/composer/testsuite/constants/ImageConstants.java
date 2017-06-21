@@ -27,6 +27,8 @@ public class ImageConstants extends com.kms.katalon.composer.components.impl.con
 
     public static final Image IMG_16_ADVANCED_SEARCH = ImageManager.getImage(IImageKeys.ADVANCE_SEARCH_16);
 
+    public static final Image IMG_16_MAP_ALL = ImageManager.getImage(IImageKeys.MAP_ALL_16);
+
     // Table
     public static final Image IMG_16_NOTIFICATION_HEADER = ImageManager.getImage(IImageKeys.ALERT_16);
 
