@@ -10,9 +10,12 @@ import org.eclipse.swt.graphics.Image;
 import org.osgi.framework.Bundle;
 
 public class ImageUtil {
+    public static ImageDescriptor loadImageDescriptor(String imageUrl) throws MalformedURLException {
+        return ImageDescriptor.createFromURL(new URL(imageUrl));
+    }
+
     public static Image loadImage(String imageUrl) throws MalformedURLException {
-        ImageDescriptor image = ImageDescriptor.createFromURL(new URL(imageUrl));
-        return image.createImage();
+        return loadImageDescriptor(imageUrl).createImage();
     }
 
     public static Image loadImage(Bundle bundle, String imageURI) {
