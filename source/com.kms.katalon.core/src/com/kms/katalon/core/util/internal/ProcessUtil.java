@@ -3,6 +3,7 @@ package com.kms.katalon.core.util.internal;
 import java.io.IOException;
 import java.lang.reflect.Field;
 
+import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.util.ConsoleCommandExecutor;
 import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
@@ -53,6 +54,7 @@ public class ProcessUtil {
         try {
             handle = getHandle(p);
             Kernel32.INSTANCE.TerminateProcess(handle, 0);
+            Kernel32.INSTANCE.WaitForSingleObject(handle, RunConfiguration.getTimeOut() * 1000);
         } finally {
             if (handle != null) {
                 Kernel32.INSTANCE.CloseHandle(handle);

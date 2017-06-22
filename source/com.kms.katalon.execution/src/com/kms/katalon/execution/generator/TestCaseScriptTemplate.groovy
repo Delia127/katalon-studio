@@ -32,15 +32,13 @@ RunConfiguration.setExecutionSettingFile('<%= executionConfigFilePath %>')
 TestCaseMain.beforeStart()
 try {
     <% if (rawScript == null) { %>
-	    TestCaseMain.runTestCase('<%= testCaseId %>', <%= testCaseBinding %>, FailureHandling.STOP_ON_FAILURE)
+	    TestCaseMain.runTestCase('<%= testCaseId %>', <%= testCaseBinding %>, FailureHandling.STOP_ON_FAILURE <%= isQuitDriversAfterRun ? ", true" : "" %>)
     <% } else { %>
         TestCaseMain.runTestCaseRawScript(
-        ''' + executeRawTpl + ''', '<%= testCaseId %>', <%= testCaseBinding %>, FailureHandling.STOP_ON_FAILURE)
+''' + executeRawTpl + ''', '<%= testCaseId %>', <%= testCaseBinding %>, FailureHandling.STOP_ON_FAILURE <%= isQuitDriversAfterRun ? ", true" : "" %>)
     <% } %>
 } catch (Exception e) {
     TestCaseMain.logError(e, '<%= testCaseId %>')
-} finally {
-    <%= isQuitDriversAfterRun ? "DriverCleanerCollector.getInstance().cleanDrivers()" : "" %>
 }
 '''
 
