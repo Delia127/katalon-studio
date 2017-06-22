@@ -536,6 +536,8 @@ public interface IImageKeys {
     public static final String REDO_16 = "redo_16.png"; //$NON-NLS-1$
     
     public static final String HELP_16 = "help_16.png"; //$NON-NLS-1$
+
+    public static final String MAP_ALL_16 = "map_all_16.png"; //$NON-NLS-1$
     // End Common
 
 }
