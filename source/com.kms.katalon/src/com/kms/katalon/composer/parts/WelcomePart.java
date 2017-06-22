@@ -502,9 +502,15 @@ public class WelcomePart {
     }
 
     private void fillRecentProjectComposite(Composite parent) {
+        final List<ProjectEntity> recentProjects = getRecentProjects();
+        if (recentProjects.isEmpty()) {
+            // add a temp composite to prevent the bug happened when a composite is not display correctly after adding
+            // an element when it's first created with no children
+            new Composite(parent, SWT.NONE);
+            return;
+        }
         final RecentProjectParameterizedCommandBuilder commandBuilder = new RecentProjectParameterizedCommandBuilder();
-
-        for (final ProjectEntity project : getRecentProjects()) {
+        for (final ProjectEntity project : recentProjects) {
             Composite cpRecentProject = new Composite(parent, SWT.NONE);
             cpRecentProject.setLayout(new GridLayout(2, false));
             cpRecentProject.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
@@ -619,7 +625,8 @@ public class WelcomePart {
     private void refreshRecentProjectComposite() {
         clearCompositeChildren(recentProjectDetails);
         fillRecentProjectComposite(recentProjectDetails);
-        recentProjectDetails.layout(true);
+        recentProjectDetails.layout(true, true);
+        recentProjectDetails.redraw();
     }
 
     private List<ProjectEntity> getRecentProjects() {
