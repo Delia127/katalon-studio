@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
@@ -40,6 +41,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -82,6 +84,10 @@ public class WelcomePart {
 
     private Cursor handCursor;
 
+    private Composite recentProjectDetails;
+
+    private Font largestFont, largerFont, largerBoldFont, normalFont, normalBoldFont, smallFont;
+
     @PostConstruct
     public void initialize(final Composite parentComposite, MPart welcomePart) {
         commandCaller = new CommandCaller();
@@ -91,17 +97,22 @@ public class WelcomePart {
         mainComposite.layout();
     }
 
+    private void showThisPart() {
+        IPreferenceStore prefStore = PlatformUI.getPreferenceStore();
+        if (!prefStore.contains(PreferenceConstants.GENERAL_SHOW_HELP_AT_START_UP)) {
+            prefStore.setDefault(PreferenceConstants.GENERAL_SHOW_HELP_AT_START_UP, true);
+        }
+        if (!prefStore.getBoolean(PreferenceConstants.GENERAL_SHOW_HELP_AT_START_UP)) {
+            partService.hidePart(welcomePart);
+        }
+    }
+
     private void registerEventListeners() {
         eventBroker.subscribe(EventConstants.PROJECT_OPENED, new EventHandler() {
             @Override
             public void handleEvent(org.osgi.service.event.Event event) {
-                IPreferenceStore prefStore = PlatformUI.getPreferenceStore();
-                if (!prefStore.contains(PreferenceConstants.GENERAL_SHOW_HELP_AT_START_UP)) {
-                    prefStore.setDefault(PreferenceConstants.GENERAL_SHOW_HELP_AT_START_UP, true);
-                }
-                if (!prefStore.getBoolean(PreferenceConstants.GENERAL_SHOW_HELP_AT_START_UP)) {
-                    partService.hidePart(welcomePart);
-                }
+                showThisPart();
+                refreshRecentProjectComposite();
             }
         });
     }
@@ -470,7 +481,7 @@ public class WelcomePart {
         txtComponent.setText(StringConstants.PA_LBL_RECENT_PROJECT);
         txtComponent.setFont(getNormalBoldFont());
 
-        Composite recentProjectDetails = new Composite(recentProjectComposite, SWT.NONE);
+        recentProjectDetails = new Composite(recentProjectComposite, SWT.NONE);
         GridData recentProjectDetailsLayoutData = new GridData(SWT.FILL, SWT.TOP, true, false, 2, 1);
         recentProjectDetailsLayoutData.horizontalIndent = 40;
         recentProjectDetails.setLayoutData(recentProjectDetailsLayoutData);
@@ -478,9 +489,23 @@ public class WelcomePart {
         gdRecentProjectDetails.horizontalSpacing = 70;
         recentProjectDetails.setLayout(gdRecentProjectDetails);
 
+        fillRecentProjectComposite(recentProjectDetails);
+    }
+
+    private void clearCompositeChildren(Composite parent) {
+        for (Control control : parent.getChildren()) {
+            if (control.isDisposed()) {
+                continue;
+            }
+            control.dispose();
+        }
+    }
+
+    private void fillRecentProjectComposite(Composite parent) {
         final RecentProjectParameterizedCommandBuilder commandBuilder = new RecentProjectParameterizedCommandBuilder();
+
         for (final ProjectEntity project : getRecentProjects()) {
-            Composite cpRecentProject = new Composite(recentProjectDetails, SWT.NONE);
+            Composite cpRecentProject = new Composite(parent, SWT.NONE);
             cpRecentProject.setLayout(new GridLayout(2, false));
             cpRecentProject.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
 
@@ -522,27 +547,45 @@ public class WelcomePart {
     }
 
     private Font getLargestFont() {
-        return getHeaderFont(20, SWT.BOLD);
+        if (largestFont == null) {
+            largestFont = getHeaderFont(20, SWT.BOLD);
+        }
+        return largestFont;
     }
 
     private Font getLargerFont() {
-        return getHeaderFont(14, SWT.NONE);
+        if (largerFont == null) {
+            largerFont = getHeaderFont(14, SWT.NONE);
+        }
+        return largerFont;
     }
 
     private Font getLargerBoldFont() {
-        return getHeaderFont(14, SWT.BOLD);
+        if (largerBoldFont == null) {
+            largerBoldFont = getHeaderFont(14, SWT.BOLD);
+        }
+        return largerBoldFont;
     }
 
     private Font getNormalFont() {
-        return getHeaderFont(12, SWT.NONE);
+        if (normalFont == null) {
+            normalFont = getHeaderFont(12, SWT.NONE);
+        }
+        return normalFont;
     }
 
     private Font getNormalBoldFont() {
-        return getHeaderFont(12, SWT.BOLD);
+        if (normalBoldFont == null) {
+            normalBoldFont = getHeaderFont(12, SWT.BOLD);
+        }
+        return normalBoldFont;
     }
 
     private Font getSmallFont() {
-        return getHeaderFont(11, SWT.ITALIC);
+        if (smallFont == null) {
+            smallFont = getHeaderFont(11, SWT.ITALIC);
+        }
+        return smallFont;
     }
 
     private Font getHeaderFont(int size, int style) {
@@ -554,9 +597,29 @@ public class WelcomePart {
                 : JFaceResources.getHeaderFont().getFontData()[0].getName();
     }
 
+    @PreDestroy
+    public void dispose() {
+        dispostFont();
+    }
+
+    private void dispostFont() {
+        largestFont.dispose();
+        largerFont.dispose();
+        largerBoldFont.dispose();
+        normalFont.dispose();
+        normalBoldFont.dispose();
+        smallFont.dispose();
+    }
+
     @Focus
     public void setFocus() {
         mainComposite.forceFocus();
+    }
+
+    private void refreshRecentProjectComposite() {
+        clearCompositeChildren(recentProjectDetails);
+        fillRecentProjectComposite(recentProjectDetails);
+        recentProjectDetails.layout(true);
     }
 
     private List<ProjectEntity> getRecentProjects() {
