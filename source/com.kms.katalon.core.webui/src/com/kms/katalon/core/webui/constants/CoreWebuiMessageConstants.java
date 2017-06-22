@@ -982,6 +982,9 @@ public class CoreWebuiMessageConstants extends NLS {
     public static String KW_MSG_TXT_OPTIONS_NOT_PRESENT;
 
     public static String KW_MSG_TXT_OPTIONS_NOT_PRESENT_REASON;
+    
+    //Action delay
+    public static String KW_MSG_ACTION_DELAY_X;
 
     // VerifyElementKeyword
     public static String KW_MSG_ACTUAL_ELEMENT_TXT_NOT_MATCHED_EXPECTED_TXT;
