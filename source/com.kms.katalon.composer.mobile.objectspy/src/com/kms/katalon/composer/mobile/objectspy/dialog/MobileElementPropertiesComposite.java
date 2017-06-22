@@ -58,9 +58,8 @@ public class MobileElementPropertiesComposite {
      */
     public void createObjectPropertiesComposite(Composite parent) {
         Composite objectPropertiesComposite = new Composite(parent, SWT.NONE);
-        GridLayout glObjectPropertiesComposite = new GridLayout();
+        GridLayout glObjectPropertiesComposite = new GridLayout(2, false);
         glObjectPropertiesComposite.horizontalSpacing = 10;
-        glObjectPropertiesComposite.numColumns = 2;
         objectPropertiesComposite.setLayout(glObjectPropertiesComposite);
 
         Label lblObjectProperties = new Label(objectPropertiesComposite, SWT.NONE);
