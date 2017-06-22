@@ -10,13 +10,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 
 public class CWizardDialog extends WizardDialog {
-
-    /** Default height of dialog is 300 */
-    private int height = 300;
-
     public CWizardDialog(Shell parentShell, IWizard newWizard) {
         super(parentShell, newWizard);
-		setShellStyle(SWT.CLOSE | SWT.TITLE | SWT.APPLICATION_MODAL | getDefaultOrientation());
+        setShellStyle(SWT.CLOSE | SWT.TITLE | SWT.APPLICATION_MODAL | getDefaultOrientation());
     }
 
     @Override
@@ -32,15 +28,6 @@ public class CWizardDialog extends WizardDialog {
     @Override
     protected Point getInitialSize() {
         Point initSize = super.getInitialSize();
-        return new Point(initSize.x, getHeight());
+        return new Point(initSize.x, initSize.y - initSize.y / 4);
     }
-
-	public int getHeight() {
-        return height;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
-    }
-
 }
