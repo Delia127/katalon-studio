@@ -2,6 +2,7 @@ package com.kms.katalon.core.appium.driver;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.Arrays;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
@@ -16,10 +17,10 @@ public class AppiumOutputStreamHandler {
 
     public void start() {
         try {
-            FileOutputStream fileOs = new FileOutputStream(RunConfiguration.getAppiumLogFilePath(), true);
+            PrintStream filePrintStream = new PrintStream(new FileOutputStream(RunConfiguration.getAppiumLogFilePath(), true));
 
-            StreamHandler.create(appiumProcess.getInputStream(), Arrays.asList(fileOs, System.out)).start();
-            StreamHandler.create(appiumProcess.getErrorStream(), Arrays.asList(fileOs, System.err)).start();
+            StreamHandler.create(appiumProcess.getInputStream(), Arrays.asList(filePrintStream, System.out)).start();
+            StreamHandler.create(appiumProcess.getErrorStream(), Arrays.asList(filePrintStream, System.err)).start();
         } catch (FileNotFoundException ignored) {}
     }
 

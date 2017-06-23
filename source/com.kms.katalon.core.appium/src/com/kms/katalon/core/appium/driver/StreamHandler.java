@@ -4,18 +4,18 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.List;
 
 public class StreamHandler extends Thread {
     private InputStream is;
 
-    private List<OutputStream> oses;
+    private List<PrintStream> printStreams;
 
-    private StreamHandler(InputStream is, List<OutputStream> oses) {
+    private StreamHandler(InputStream is, List<PrintStream> printStreams) {
         this.is = is;
-        this.oses = oses;
+        this.printStreams = printStreams;
     }
 
     public void run() {
@@ -31,19 +31,14 @@ public class StreamHandler extends Thread {
     }
 
     private void println(String line) {
-        try {
-            Iterator<OutputStream> iterator = oses.iterator();
-            while (iterator.hasNext()) {
-                OutputStream os = iterator.next();
-
-                os.write(line.getBytes());
-                os.write(System.lineSeparator().getBytes());
-            }
-        } catch (IOException ignored) {}
+        Iterator<PrintStream> iterator = printStreams.iterator();
+        while (iterator.hasNext()) {
+            iterator.next().println(line);
+        }
     }
 
-    public static StreamHandler create(InputStream is, List<OutputStream> oses) {
-        return new StreamHandler(is, oses);
+    public static StreamHandler create(InputStream is, List<PrintStream> printStreams) {
+        return new StreamHandler(is, printStreams);
     }
 
 }
