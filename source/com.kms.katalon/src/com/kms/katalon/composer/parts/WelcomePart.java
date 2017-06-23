@@ -503,12 +503,7 @@ public class WelcomePart {
 
     private void fillRecentProjectComposite(Composite parent) {
         final List<ProjectEntity> recentProjects = getRecentProjects();
-        if (recentProjects.isEmpty()) {
-            // add a temp composite to prevent the bug happened when a composite is not display correctly after adding
-            // an element when it's first created with no children
-            new Composite(parent, SWT.NONE);
-            return;
-        }
+        
         final RecentProjectParameterizedCommandBuilder commandBuilder = new RecentProjectParameterizedCommandBuilder();
         for (final ProjectEntity project : recentProjects) {
             Composite cpRecentProject = new Composite(parent, SWT.NONE);
@@ -542,6 +537,12 @@ public class WelcomePart {
                     }
                 }
             });
+        }
+        
+        // add temp composites to prevent the bug happened when a composite is not display correctly after changing
+        // children elements when it's first created with different size of children
+        for (int tempIndex = 0; tempIndex < ProjectController.NUMBER_OF_RECENT_PROJECTS - recentProjects.size(); tempIndex++) {
+            new Composite(parent, SWT.NONE);
         }
     }
 

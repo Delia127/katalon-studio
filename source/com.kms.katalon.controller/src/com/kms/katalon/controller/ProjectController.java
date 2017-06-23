@@ -31,7 +31,7 @@ public class ProjectController extends EntityController {
     private static final String RECENT_PROJECT_FILE_LOCATION = Platform.getLocation().toString() + File.separator
             + "recent_projects";
 
-    private static final int NUMBER_OF_RECENT_PROJECTS = 6;
+    public static final int NUMBER_OF_RECENT_PROJECTS = 6;
 
     private ProjectController() {
         super();
