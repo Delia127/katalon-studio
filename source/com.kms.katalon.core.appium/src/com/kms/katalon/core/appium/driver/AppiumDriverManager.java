@@ -273,9 +273,12 @@ public class AppiumDriverManager {
         }
         ProcessBuilder pb = new ProcessBuilder(cmdList.toArray(new String[cmdList.size()]));
         pb.environment().putAll(environmentVariables);
-        pb.redirectOutput(new File(RunConfiguration.getAppiumLogFilePath()));
-        localStorageAppiumServer.set(pb.start());
+
+        Process appiumServerProcess = pb.start();
+        localStorageAppiumServer.set(appiumServerProcess);
+        AppiumOutputStreamHandler.create(appiumServerProcess).start();
     }
+    
 
     private static File findNodeInCurrentFileSystem() {
         String nodeJSExec = System.getProperty(NODE_PATH);
