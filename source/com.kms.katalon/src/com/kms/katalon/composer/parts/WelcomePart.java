@@ -542,7 +542,9 @@ public class WelcomePart {
         // add temp composites to prevent the bug happened when a composite is not display correctly after changing
         // children elements when it's first created with different size of children
         for (int tempIndex = 0; tempIndex < ProjectController.NUMBER_OF_RECENT_PROJECTS - recentProjects.size(); tempIndex++) {
-            new Composite(parent, SWT.NONE);
+            Composite tempComposite = new Composite(parent, SWT.NONE);
+            tempComposite.setLayout(new GridLayout(2, false));
+            tempComposite.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false, 1, 1));
         }
     }
 
@@ -626,8 +628,13 @@ public class WelcomePart {
     private void refreshRecentProjectComposite() {
         clearCompositeChildren(recentProjectDetails);
         fillRecentProjectComposite(recentProjectDetails);
-        recentProjectDetails.layout(true, true);
-        recentProjectDetails.redraw();
+        refreshComposite(mainComposite);
+    }
+
+    private void refreshComposite(final Composite composite) {
+        composite.layout(true, true);
+        composite.redraw();
+        composite.pack();
     }
 
     private List<ProjectEntity> getRecentProjects() {
