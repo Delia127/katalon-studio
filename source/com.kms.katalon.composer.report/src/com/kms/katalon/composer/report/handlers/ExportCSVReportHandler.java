@@ -13,21 +13,25 @@ import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.impl.tree.ReportTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.report.constants.StringConstants;
 import com.kms.katalon.composer.report.lookup.LogRecordLookup;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.core.reporting.ReportUtil;
 import com.kms.katalon.entity.report.ReportEntity;
-import com.kms.katalon.composer.report.constants.StringConstants;
 
 public class ExportCSVReportHandler {
     @CanExecute
-    public static boolean canExecute(ESelectionService selectionService) {
+    public boolean canExecute(ESelectionService selectionService) {
         return true;
     }
 
     @Execute
-    public static void execute(ESelectionService selectionService, Shell shell) {
+    public void execute(ESelectionService selectionService, Shell shell) {
+        execute(selectionService, shell, false);
+    }
+
+    protected void execute(ESelectionService selectionService, Shell shell, boolean isSummaryReport) {
         DirectoryDialog directoryDialog = new DirectoryDialog(shell);
         directoryDialog.open();
 
@@ -43,16 +47,17 @@ public class ExportCSVReportHandler {
                 try {
                     if (selectedObject instanceof ReportTreeEntity
                             && ((ReportTreeEntity) selectedObject).getObject() instanceof ReportEntity) {
-                        ReportEntity report = (ReportEntity) ((ReportTreeEntity) selectedObject).getObject();
-                        TestSuiteLogRecord suiteLogRecord = LogRecordLookup.getInstance().getTestSuiteLogRecord(report);  
+                        ReportEntity report = ((ReportTreeEntity) selectedObject).getObject();
+                        TestSuiteLogRecord suiteLogRecord = LogRecordLookup.getInstance().getTestSuiteLogRecord(report);
                         if (suiteLogRecord == null) {
                             MessageDialog.openWarning(null, StringConstants.WARN, "Report not found.");
                             return;
                         }
-                        
-                        File exportedFile = new File(exportDirectory, report.getDisplayName() + ReportEntity.EXTENSION_CSV_REPORT);                  
+
+                        File exportedFile = new File(exportDirectory,
+                                report.getDisplayName() + ReportEntity.EXTENSION_CSV_REPORT);
                         ReportUtil.writeLogRecordToCSVFile(suiteLogRecord, exportedFile,
-                                Arrays.asList(suiteLogRecord.getChildRecords()));
+                                Arrays.asList(suiteLogRecord.getChildRecords()), !isSummaryReport);
                         Desktop.getDesktop().open(exportedFile);
                     }
                 } catch (Exception e) {
