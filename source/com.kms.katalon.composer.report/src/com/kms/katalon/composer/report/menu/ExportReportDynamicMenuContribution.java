@@ -21,7 +21,9 @@ import com.kms.katalon.constants.helper.ConstantsHelper;
 @SuppressWarnings("restriction")
 public class ExportReportDynamicMenuContribution {
 
-    private static final String EXPORT_CSV_REPORT_COMMAND_ID = "com.kms.katalon.composer.report.command.export.csv";
+    private static final String EXPORT_CSV_SUMMARY_REPORT_COMMAND_ID = "com.kms.katalon.composer.report.command.export.csv.summary";
+
+    private static final String EXPORT_CSV_DETAILS_REPORT_COMMAND_ID = "com.kms.katalon.composer.report.command.export.csv";
 
     private static final String EXPORT_HTML_REPORT_COMMAND_ID = "com.kms.katalon.composer.report.command.export.html";
 
@@ -31,7 +33,9 @@ public class ExportReportDynamicMenuContribution {
 
     private static final String EXPORT_JUNIT_REPORT_COMMAND_ID = "com.kms.katalon.composer.report.command.export.junit";
 
-    private static final String CSV_REPORT_POPUPMENUITEM_LABEL = "CSV";
+    private static final String CSV_SUMMARY_REPORT_POPUPMENUITEM_LABEL = "CSV (Summary Report)";
+
+    private static final String CSV_DETAILS_REPORT_POPUPMENUITEM_LABEL = "CSV (Details Report)";
 
     private static final String HTML_REPORT_POPUPMENUITEM_LABEL = "HTML";
 
@@ -74,9 +78,16 @@ public class ExportReportDynamicMenuContribution {
                 newMenu.getChildren().add(exportHTML);
             }
 
+            MHandledMenuItem exportCSVSummaryMenuItem = MenuFactory.createPopupMenuItem(
+                    commandService.createCommand(EXPORT_CSV_SUMMARY_REPORT_COMMAND_ID, null),
+                    CSV_SUMMARY_REPORT_POPUPMENUITEM_LABEL, ConstantsHelper.getApplicationURI());
+            if (exportCSVSummaryMenuItem != null) {
+                newMenu.getChildren().add(exportCSVSummaryMenuItem);
+            }
+
             MHandledMenuItem exportCSVMenuItem = MenuFactory.createPopupMenuItem(
-                    commandService.createCommand(EXPORT_CSV_REPORT_COMMAND_ID, null), CSV_REPORT_POPUPMENUITEM_LABEL,
-                    ConstantsHelper.getApplicationURI());
+                    commandService.createCommand(EXPORT_CSV_DETAILS_REPORT_COMMAND_ID, null),
+                    CSV_DETAILS_REPORT_POPUPMENUITEM_LABEL, ConstantsHelper.getApplicationURI());
             if (exportCSVMenuItem != null) {
                 newMenu.getChildren().add(exportCSVMenuItem);
             }

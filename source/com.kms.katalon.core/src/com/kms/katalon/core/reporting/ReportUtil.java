@@ -125,7 +125,12 @@ public class ReportUtil {
 
     public static void writeLogRecordToCSVFile(TestSuiteLogRecord suiteLogEntity, File destFile,
             List<ILogRecord> filteredTestCases) throws IOException {
-        CsvWriter.writeCsvReport(suiteLogEntity, destFile, filteredTestCases);
+        writeLogRecordToCSVFile(suiteLogEntity, destFile, filteredTestCases, true);
+    }
+
+    public static void writeLogRecordToCSVFile(TestSuiteLogRecord suiteLogEntity, File destFile,
+            List<ILogRecord> filteredTestCases, boolean stepsIncluded) throws IOException {
+        CsvWriter.writeCsvReport(suiteLogEntity, destFile, filteredTestCases, stepsIncluded);
     }
 
     public static void writeLogRecordToFiles(TestSuiteLogRecord suiteLogEntity, File logFolder) throws Exception {
