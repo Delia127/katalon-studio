@@ -380,6 +380,11 @@ public class CoreMobileMessageConstants extends NLS {
 
     public static String KW_MSG_VERIFY_ELEMENT_TEXT_FAILED;
 
+    // SendKeys
+    public static String KW_MSG_CANNOT_SEND_KEYS_X_ON_ELEMENT_Y;
+
+    public static String KW_LOG_SEND_KEYS_X_ON_ELEMENT_Y_SUCCESSFULLY;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, CoreMobileMessageConstants.class);
