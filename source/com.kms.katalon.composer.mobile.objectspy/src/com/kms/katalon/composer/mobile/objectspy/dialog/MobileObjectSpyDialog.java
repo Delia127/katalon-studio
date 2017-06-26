@@ -20,7 +20,6 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
-import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -36,7 +35,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
@@ -70,7 +68,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
-import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Widget;
 
@@ -394,16 +391,11 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         allObjectsComposite.setLayout(new GridLayout());
 
         Label lblAllObjects = new Label(allObjectsComposite, SWT.NONE);
-        lblAllObjects.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        lblAllObjects.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
         lblAllObjects.setFont(getFontBold(lblAllObjects));
         lblAllObjects.setText(StringConstants.DIA_LBL_ALL_OBJECTS);
 
-        Composite allObjectsTreeComposite = new Composite(allObjectsComposite, SWT.NONE);
-        allObjectsTreeComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        TreeColumnLayout tbclAllObjects = new TreeColumnLayout();
-        allObjectsTreeComposite.setLayout(tbclAllObjects);
-
-        allElementTreeViewer = new CheckboxTreeViewer(allObjectsTreeComposite,
+        allElementTreeViewer = new CheckboxTreeViewer(allObjectsComposite,
                 SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.FULL_SELECTION | SWT.MULTI) {
             @Override
             public boolean setSubtreeChecked(Object element, boolean state) {
@@ -416,26 +408,23 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
                 return false;
             }
         };
+        Tree tree = allElementTreeViewer.getTree();
+        tree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-        TreeViewerColumn treeViewerColumn = new TreeViewerColumn(allElementTreeViewer, SWT.NONE);
-        TreeColumn treeColumn = treeViewerColumn.getColumn();
-        tbclAllObjects.setColumnData(treeColumn, new ColumnWeightData(98));
-
-        treeViewerColumn.setLabelProvider(new MobileElementLabelProvider());
-
+        allElementTreeViewer.setLabelProvider(new MobileElementLabelProvider());
         allElementTreeViewer.setContentProvider(new MobileElementTreeContentProvider());
 
-        allElementTreeViewer.getTree().setToolTipText(StringUtils.EMPTY);
+        tree.setToolTipText(StringUtils.EMPTY);
         ColumnViewerToolTipSupport.enableFor(allElementTreeViewer, ToolTip.NO_RECREATE);
 
-        allElementTreeViewer.getTree().addMouseListener(new MouseAdapter() {
+        tree.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseDown(MouseEvent e) {
                 if (e.button != 1) {
                     return;
                 }
                 Point pt = new Point(e.x, e.y);
-                TreeItem item = allElementTreeViewer.getTree().getItem(pt);
+                TreeItem item = tree.getItem(pt);
                 if (item != null) {
                     highlightObject((MobileElement) item.getData());
                 }
