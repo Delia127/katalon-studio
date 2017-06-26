@@ -164,6 +164,11 @@ public class MobileDeviceProvider {
                 return iosDeviceInfo;
             }
         }
+        for (IosDeviceInfo iosDeviceInfo : getIosSimulators()) {
+            if (StringUtils.equals(iosDeviceInfo.getDeviceId(), deviceId)) {
+                return iosDeviceInfo;
+            }
+        }
         return null;
     }
 }
