@@ -22,15 +22,9 @@ public class DriverCleanerCollector {
 		getInstance().driverCleaners.add(driverCleaner);
 	}
 	
-	public void cleanDriversAfterRunningTestSuite() {
+	public void cleanDrivers() {
 		for (IDriverCleaner cleaner : getInstance().driverCleaners) {
-			cleaner.cleanDriverAfterRunningTestSuite();
+			cleaner.cleanDrivers();;
 		}
 	}
-	
-	public void cleanDriversAfterRunningTestCase() {
-        for (IDriverCleaner cleaner : getInstance().driverCleaners) {
-            cleaner.cleanDriverAfterRunningTestCase();
-        }
-    }
 }

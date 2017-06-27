@@ -205,7 +205,7 @@ public class TestCaseExecutor {
     }
 
     private void cleanUp() {
-        DriverCleanerCollector.getInstance().cleanDriversAfterRunningTestCase();
+        DriverCleanerCollector.getInstance().cleanDrivers();
     }
 
     private Object runScript(File scriptFile)

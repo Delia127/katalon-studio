@@ -14,6 +14,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.openqa.selenium.OutputType;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -39,6 +40,7 @@ import com.kms.katalon.core.mobile.keyword.internal.AndroidProperties;
 import com.kms.katalon.core.mobile.keyword.internal.IOSProperties;
 import com.kms.katalon.core.mobile.keyword.internal.MobileDriverFactory;
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
+import com.kms.katalon.core.util.internal.ProcessUtil;
 import com.kms.katalon.execution.configuration.IDriverConnector;
 import com.kms.katalon.execution.configuration.impl.DefaultExecutionSetting;
 import com.kms.katalon.execution.exception.ExecutionException;
@@ -58,6 +60,10 @@ public class MobileInspectorController {
     private static final int SERVER_START_TIMEOUT = 60;
 
     private AppiumDriver<?> driver;
+    
+    private Process appiumServerProcess;
+    
+    private Process iosWebKitProcess;
 
     public MobileInspectorController() {
     }
@@ -101,6 +107,9 @@ public class MobileInspectorController {
                 getAdditionalEnvironmentVariables(mobileDriverType));
         driver = MobileDriverFactory.startMobileDriver(mobileDriverType, mobileDeviceInfo.getDeviceId(),
                 mobileDeviceInfo.getDeviceName(), appFile, uninstallAfterCloseApp);
+        
+        appiumServerProcess = AppiumDriverManager.getAppiumSeverProcess();
+        iosWebKitProcess = AppiumDriverManager.getIosWebKitProcess();
     }
 
     public AppiumDriver<?> getDriver() {
@@ -147,12 +156,24 @@ public class MobileInspectorController {
 
     public boolean closeApp() {
         try {
-            MobileDriverFactory.closeDriver();
-            driver = null;
+            if (null != driver && null != ((RemoteWebDriver) driver).getSessionId()) {
+                driver.quit();
+            }
+            if (appiumServerProcess != null && appiumServerProcess.isAlive()) {
+                ProcessUtil.terminateProcess(appiumServerProcess);
+            }
+            if (iosWebKitProcess != null && iosWebKitProcess.isAlive()) {
+                ProcessUtil.terminateProcess(iosWebKitProcess);
+            }
+            return true;
         } catch (Exception e) {
             LoggerSingleton.logError(e);
+            return false;
+        } finally {
+            driver = null;
+            appiumServerProcess = null;
+            iosWebKitProcess = null;
         }
-        return true;
     }
 
     public String captureScreenshot() throws Exception {

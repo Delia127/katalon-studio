@@ -39,6 +39,7 @@ public class TestSuiteScriptTemplate {
 <% testCaseIds.eachWithIndex { item, index -> %>
 def static runTestCase_<%= index %>() {
     TestCaseMain.runTestCase('<%= item %>', <%= testCaseBindings.get(index) %>, FailureHandling.STOP_ON_FAILURE)
+    <%= isQuitDriversAfterTestCase ? "DriverCleanerCollector.getInstance().cleanDrivers()" : "" %>
 }
 <% } %>
 
@@ -62,7 +63,7 @@ KeywordLogger.getInstance().startSuite('<%= testSuite.getName() %>', suiteProper
     "<%= trigger %>"()
 }
 
-<%= isQuitDriversAfterRun ? "DriverCleanerCollector.getInstance().cleanDriversAfterRunningTestSuite()" : "" %>
+<%= isQuitDriversAfterRun ? "DriverCleanerCollector.getInstance().cleanDrivers()" : "" %>
 
 KeywordLogger.getInstance().endSuite('<%= testSuite.getName() %>', null)
 '''
@@ -114,7 +115,8 @@ KeywordLogger.getInstance().endSuite('<%= testSuite.getName() %>', null)
             "configProperties" : ExecutionUtil.escapeGroovy(testSuiteExecutedEntity.getAttributes()),
             "executionConfigFilePath" : GroovyStringUtil.escapeGroovy(runConfig.getExecutionSetting().getSettingFilePath()),
             "driverCleaners" : driverCleaners,
-            "isQuitDriversAfterRun" : ExecutionUtil.isQuitDriversAfterExecuting(),
+            "isQuitDriversAfterTestCase" : ExecutionUtil.isQuitDriversAfterExecutingTestCase(),
+            "isQuitDriversAfterRun" : ExecutionUtil.isQuitDriversAfterExecutingTestSuite(),
             "trigger": 'runTestCase_${it}'
         ]
 

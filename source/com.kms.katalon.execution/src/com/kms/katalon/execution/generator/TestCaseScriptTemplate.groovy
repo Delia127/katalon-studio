@@ -71,7 +71,7 @@ try {
             "testCaseId"      : testCaseId,
             "testCaseBinding" : testCaseBinding,
             "executionConfigFilePath" : GroovyStringUtil.escapeGroovy(config.getExecutionSetting().getSettingFilePath()),
-            "isQuitDriversAfterRun" : ExecutionUtil.isQuitDriversAfterExecuting(),
+            "isQuitDriversAfterRun" : ExecutionUtil.isQuitDriversAfterExecutingTestCase(),
             "driverCleaners" : driverCleaners,
             "rawScript" : config.getExecutionSetting().getRawScript()
         ]
