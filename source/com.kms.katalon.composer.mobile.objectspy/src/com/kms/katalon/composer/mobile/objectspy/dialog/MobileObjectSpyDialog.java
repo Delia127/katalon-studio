@@ -20,7 +20,6 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
-import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -36,10 +35,10 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.ModifyEvent;
@@ -69,7 +68,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
-import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Widget;
 
@@ -86,8 +84,8 @@ import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.execution.util.MobileDeviceUIProvider;
 import com.kms.katalon.composer.mobile.objectspy.constant.ImageConstants;
 import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
-import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.CapturedMobileElementConverter;
+import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.TreeMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.provider.CapturedElementLabelProvider;
@@ -177,7 +175,12 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         sashForm.setLayout(new FillLayout());
         sashForm.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-        Composite explorerComposite = new Composite(sashForm, SWT.BORDER);
+        ScrolledComposite leftSashForm = new ScrolledComposite(sashForm, SWT.H_SCROLL | SWT.V_SCROLL);
+        leftSashForm.setExpandHorizontal(true);
+        leftSashForm.setExpandVertical(true);
+        leftSashForm.setMinSize(180, 400);
+
+        Composite explorerComposite = new Composite(leftSashForm, SWT.BORDER);
         explorerComposite.setLayout(layout);
 
         addElementTreeToolbar(explorerComposite);
@@ -191,8 +194,14 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         propertiesComposite.createObjectPropertiesComposite(hSashForm);
 
         hSashForm.setWeights(new int[] { 1, 1 });
+        leftSashForm.setContent(explorerComposite);
 
-        Composite contentComposite = new Composite(sashForm, SWT.BORDER);
+        ScrolledComposite rightSashForm = new ScrolledComposite(sashForm, SWT.H_SCROLL | SWT.V_SCROLL);
+        rightSashForm.setExpandHorizontal(true);
+        rightSashForm.setExpandVertical(true);
+        rightSashForm.setMinSize(280, 400);
+
+        Composite contentComposite = new Composite(rightSashForm, SWT.BORDER);
         contentComposite.setLayout(layout);
 
         addStartStopToolbar(contentComposite);
@@ -200,6 +209,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         createSettingComposite(contentComposite);
 
         createAllObjectsComposite(contentComposite);
+        rightSashForm.setContent(contentComposite);
 
         sashForm.setWeights(new int[] { 4, 6 });
 
@@ -223,7 +233,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         capturedObjectTableComposite.setLayout(tbclCapturedObjects);
 
         capturedObjectsTableViewer = new CapturedObjectTableViewer(capturedObjectTableComposite,
-                SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION, this);
+                SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI | SWT.FULL_SELECTION, this);
         Table capturedObjectsTable = capturedObjectsTableViewer.getTable();
         capturedObjectsTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
         capturedObjectsTable.setHeaderVisible(true);
@@ -245,9 +255,10 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
 
         capturedObjectsTableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
+        int selectionColMinWidth = Platform.OS_MACOSX.equals(Platform.getOS()) ? 21 : 30;
         tbclCapturedObjects.setColumnData(tblclmnCapturedObjectsSelection,
-                new ColumnWeightData(0, Platform.OS_MACOSX.equals(Platform.getOS()) ? 21 : 30));
-        tbclCapturedObjects.setColumnData(tblclmnCapturedObjects, new ColumnWeightData(60));
+                new ColumnWeightData(0, selectionColMinWidth, false));
+        tbclCapturedObjects.setColumnData(tblclmnCapturedObjects, new ColumnWeightData(60, 250 - selectionColMinWidth));
 
         capturedObjectsTable.setToolTipText(StringUtils.EMPTY);
         ColumnViewerToolTipSupport.enableFor(capturedObjectsTableViewer);
@@ -262,6 +273,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         });
 
         capturedObjectsTableViewer.getTable().addMouseListener(new MouseAdapter() {
+            @Override
             public void mouseDown(MouseEvent e) {
                 if (e.button != 1) {
                     return;
@@ -379,17 +391,12 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         allObjectsComposite.setLayout(new GridLayout());
 
         Label lblAllObjects = new Label(allObjectsComposite, SWT.NONE);
-        lblAllObjects.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        lblAllObjects.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
         lblAllObjects.setFont(getFontBold(lblAllObjects));
         lblAllObjects.setText(StringConstants.DIA_LBL_ALL_OBJECTS);
 
-        Composite allObjectsTreeComposite = new Composite(allObjectsComposite, SWT.NONE);
-        allObjectsTreeComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        TreeColumnLayout tbclAllObjects = new TreeColumnLayout();
-        allObjectsTreeComposite.setLayout(tbclAllObjects);
-
-        allElementTreeViewer = new CheckboxTreeViewer(allObjectsTreeComposite,
-                SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI) {
+        allElementTreeViewer = new CheckboxTreeViewer(allObjectsComposite,
+                SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.FULL_SELECTION | SWT.MULTI) {
             @Override
             public boolean setSubtreeChecked(Object element, boolean state) {
                 Widget widget = internalExpand(element, false);
@@ -401,25 +408,23 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
                 return false;
             }
         };
+        Tree tree = allElementTreeViewer.getTree();
+        tree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-        TreeViewerColumn treeViewerColumn = new TreeViewerColumn(allElementTreeViewer, SWT.NONE);
-        TreeColumn treeColumn = treeViewerColumn.getColumn();
-        tbclAllObjects.setColumnData(treeColumn, new ColumnWeightData(98));
-
-        treeViewerColumn.setLabelProvider(new MobileElementLabelProvider());
-
+        allElementTreeViewer.setLabelProvider(new MobileElementLabelProvider());
         allElementTreeViewer.setContentProvider(new MobileElementTreeContentProvider());
 
-        allElementTreeViewer.getTree().setToolTipText(StringUtils.EMPTY);
+        tree.setToolTipText(StringUtils.EMPTY);
         ColumnViewerToolTipSupport.enableFor(allElementTreeViewer, ToolTip.NO_RECREATE);
 
-        allElementTreeViewer.getTree().addMouseListener(new MouseAdapter() {
+        tree.addMouseListener(new MouseAdapter() {
+            @Override
             public void mouseDown(MouseEvent e) {
                 if (e.button != 1) {
                     return;
                 }
                 Point pt = new Point(e.x, e.y);
-                TreeItem item = allElementTreeViewer.getTree().getItem(pt);
+                TreeItem item = tree.getItem(pt);
                 if (item != null) {
                     highlightObject((MobileElement) item.getData());
                 }
@@ -642,7 +647,10 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
 
     private void addElementTreeToolbar(Composite explorerComposite) {
         ToolBar elementTreeToolbar = new ToolBar(explorerComposite, SWT.FLAT | SWT.RIGHT);
-        elementTreeToolbar.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+        GridData layoutData = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+        layoutData.horizontalIndent = 2;
+        layoutData.minimumWidth = 180;
+        elementTreeToolbar.setLayoutData(layoutData);
 
         btnAdd = new ToolItem(elementTreeToolbar, SWT.NONE);
         btnAdd.setImage(ImageConstants.IMG_24_ADD_TO_OBJECT_REPOSITORY);
@@ -660,7 +668,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
                         return;
                     }
                     FolderTreeEntity folderTreeEntity = dialog.getSelectedFolderTreeEntity();
-                    FolderEntity folder = (FolderEntity) folderTreeEntity.getObject();
+                    FolderEntity folder = folderTreeEntity.getObject();
                     List<ITreeEntity> newTreeEntities = addElementsToRepository(folderTreeEntity, folder);
                     removeSelectedCapturedElements(
                             capturedObjectsTableViewer.getAllCheckedElements().toArray(new CapturedMobileElement[0]));
@@ -767,6 +775,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
     protected void configureShell(Shell shell) {
         super.configureShell(shell);
         shell.setText(DIALOG_TITLE);
+        shell.setMinimumSize(500, 500);
     }
 
     // Highlight Selected object on captured screenshot
@@ -828,6 +837,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         setDeviceView(deviceView);
     }
 
+    @Override
     public void setSelectedElementByLocation(int x, int y) {
         if (appRootElement == null) {
             return;
