@@ -95,9 +95,11 @@ public class TakeScreenshotKeyword extends MobileAbstractKeyword {
                     FileUtils.forceDelete(tempFile)
                 } catch (Exception e) {
                     logger.logWarning(e.getMessage())
-                    // do nothing
+                    return null;
                 }
-                logger.logPassed(StringConstants.KW_LOG_PASSED_SCREENSHOT_IS_TAKEN)
+                Map<String, String> attributes = new HashMap<>()
+                attributes.put(StringConstants.XML_LOG_ATTACHMENT_PROPERTY, fileName);
+                logger.logPassed(StringConstants.KW_LOG_PASSED_SCREENSHOT_IS_TAKEN, attributes)
                 return fileName
             } finally {
                 driver.context(context)
