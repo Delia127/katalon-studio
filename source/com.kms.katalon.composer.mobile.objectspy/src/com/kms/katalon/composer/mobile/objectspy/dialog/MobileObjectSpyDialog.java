@@ -581,7 +581,8 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
     private void updateDeviceNames() {
         try {
             ControlUtils.recursiveSetEnabled(container, false);
-            new ProgressMonitorDialogWithThread(getShell()).run(true, true, new IRunnableWithProgress() {
+            new ProgressMonitorDialogWithThread(Display.getDefault().getActiveShell()).run(true, true,
+                    new IRunnableWithProgress() {
                 @Override
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                     monitor.beginTask(StringConstants.DIA_JOB_TASK_LOADING_DEVICES, IProgressMonitor.UNKNOWN);
