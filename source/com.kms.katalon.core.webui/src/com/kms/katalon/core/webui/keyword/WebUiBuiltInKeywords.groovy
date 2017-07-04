@@ -798,6 +798,35 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
 
     /**
+     * Simulate users hovering a mouse over the given element with the relative position (x, y) from the top-left corner of that element
+     * @param to
+     *       represent a web element
+     * @param offsetX x position in relative to the element
+     * @param offsetY y position in relative to the element
+     * @param flowControl
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void mouseOverOffset(TestObject to, int offsetX, int offsetY, FailureHandling flowControl) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "mouseOverOffset", to, offsetX, offsetY, flowControl);
+    }
+
+    /**
+     * Simulate users hovering a mouse over the given element with the relative position (x, y) from the top-left corner of that element
+     * @param to
+     *       represent a web element
+     * @param offsetX x position in relative to the element
+     * @param offsetY y position in relative to the element
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void mouseOverOffset(TestObject to, int offsetX, int offsetY) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "mouseOverOffset", to, offsetX, offsetY)
+    }
+
+    /**
      * Simulates keystroke events on the specified element, as though you typed the value key-by-key
      * @param to
      *      represent a web element
