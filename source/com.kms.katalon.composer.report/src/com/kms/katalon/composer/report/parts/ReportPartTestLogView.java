@@ -485,7 +485,7 @@ public class ReportPartTestLogView {
         tltmCollapseAllLogs = new ToolItem(testLogToolbar, SWT.NONE);
         tltmCollapseAllLogs.setToolTipText("Collapse All Logs");
         tltmCollapseAllLogs
-                .setImage(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_ELCL_COLLAPSEALL));
+                .setImage(ImageUtil.loadImage(Platform.getBundle("org.eclipse.ui"), "icons/full/elcl16/collapseall.png"));
 
         tltmExpandAllLogs = new ToolItem(testLogToolbar, SWT.NONE);
         tltmExpandAllLogs.setToolTipText("Expand All Logs");
