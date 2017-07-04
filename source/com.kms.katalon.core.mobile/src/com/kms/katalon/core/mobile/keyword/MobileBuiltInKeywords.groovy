@@ -1732,4 +1732,37 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     public static void selectListItemByIndex(TestObject to, int index, int timeout) throws StepFailedException {
         KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "selectListItemByIndex", to, index, timeout)
     }
+
+    /**
+     * Verify text of an element.
+     *
+     * @param to
+     *          represent a mobile element.
+     * @param expectedText
+     *          text of the element to verify.
+     * @param flowControl
+     * @return true if the element has the desired text, otherwise false.
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyElementText(TestObject to, String expectedText, FailureHandling flowControl) throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "verifyElementText", to, expectedText, flowControl)
+    }
+
+    /**
+     * Verify text of an element.
+     *
+     * @param to
+     *          represent a mobile element.
+     * @param expectedText
+     *          text of the element to verify.
+     * @return true if the element has the desired text, otherwise false.
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyElementText(TestObject to, String expectedText) throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "verifyElementText", to, expectedText)
+    }
 }

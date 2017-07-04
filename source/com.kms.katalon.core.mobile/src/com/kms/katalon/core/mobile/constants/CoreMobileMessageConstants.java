@@ -373,6 +373,13 @@ public class CoreMobileMessageConstants extends NLS {
 
     public static String KW_MSG_FAILED_TO_GET_HEIGHT_OF_ELEMENT;
 
+    // VerifyElementTextKeyword
+    public static String KW_MSG_ACTUAL_ELEMENT_TXT_NOT_MATCHED_EXPECTED_TXT;
+
+    public static String KW_LOG_ACTUAL_ELEMENT_TXT_MATCHED_EXPECTED_TXT;
+
+    public static String KW_MSG_VERIFY_ELEMENT_TEXT_FAILED;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, CoreMobileMessageConstants.class);
