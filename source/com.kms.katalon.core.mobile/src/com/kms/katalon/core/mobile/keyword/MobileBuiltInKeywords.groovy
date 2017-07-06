@@ -17,6 +17,7 @@ import org.apache.commons.io.FileUtils
 import org.apache.commons.lang.StringUtils
 import org.codehaus.groovy.transform.tailrec.VariableReplacedListener.*
 import org.openqa.selenium.Dimension
+import org.openqa.selenium.Keys
 import org.openqa.selenium.OutputType
 import org.openqa.selenium.Point
 import org.openqa.selenium.ScreenOrientation
@@ -1764,5 +1765,37 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
     public static boolean verifyElementText(TestObject to, String expectedText) throws StepFailedException {
         return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "verifyElementText", to, expectedText)
+    }
+
+    /**
+     * Simulates keystroke events on the specified element, as though you typed the value key-by-key.
+     *
+     * @param to
+     *          represent a mobile element.
+     * @param strokeKeys
+     *          the combination of keys to type
+     * @param flowControl
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void sendKeys(TestObject to, String strokeKeys, FailureHandling flowControl) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "sendKeys", to, strokeKeys, flowControl)
+    }
+
+    /**
+     * Simulates keystroke events on the specified element, as though you typed the value key-by-key.
+     *
+     * @param to
+     *          represent a mobile element.
+     * @param strokeKeys
+     *          the combination of keys to type
+     * @param flowControl
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void sendKeys(TestObject to, String strokeKeys) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "sendKeys", to, strokeKeys)
     }
 }
