@@ -120,6 +120,8 @@ import com.kms.katalon.execution.logging.LogExceptionFilter;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class LogViewerPart implements EventHandler, LauncherListener {
+    
+    private static final int RIGHT_CLICK = 3;
 
     private static final int AFTER_STATUS_MENU_INDEX = 1;
 
@@ -379,6 +381,9 @@ public class LogViewerPart implements EventHandler, LauncherListener {
         treeViewer.getTree().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseDown(MouseEvent e) {
+                if (e.button != RIGHT_CLICK) {
+                    return;
+                }
                 Tree tree = treeViewer.getTree();
                 Menu oldMenu = tree.getMenu();
                 if (oldMenu != null) {
@@ -394,6 +399,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                     }
                 }
                 tree.setMenu(treeMenu);
+                treeMenu.setVisible(true);
             }
 
             private void addGotoStepMenuItem(Menu treeMenu) {
