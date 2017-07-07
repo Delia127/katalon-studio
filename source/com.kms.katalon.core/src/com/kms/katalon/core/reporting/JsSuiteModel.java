@@ -80,7 +80,10 @@ public class JsSuiteModel extends JsModel {
 		int totalFail = 0;
 		int totalErr = 0;
 		int totalInComplete = 0;
-		for (ILogRecord testLogEntity : suiteLog.getChildRecords()) {
+        for (ILogRecord testLogEntity : suiteLog.getChildRecords()) {
+		    if (!(testLogEntity instanceof TestCaseLogRecord)) {
+		        continue;
+		    }
 			TestStatus testStatus = testLogEntity.getStatus();  
 			if (testStatus != null && testStatus.getStatusValue() == TestStatusValue.FAILED) {
 				suiteStat = TestStatusValue.FAILED;
@@ -113,7 +116,12 @@ public class JsSuiteModel extends JsModel {
 
 	private void initSummary(int[] totalFailsErrorsIncompletes) {
 		// Summary result
-		int totalChildCount = suiteLog.getChildRecords().length;
+		int totalChildCount = 0;
+		for (int index = 0; index < suiteLog.getChildRecords().length; index++) {
+		    if (suiteLog.getChildRecords()[index] instanceof TestCaseLogRecord) {
+		        totalChildCount++;
+		    }
+		}
 		sum = new JsModel();
 		sum.props.add(new JsModelProperty("total", String.valueOf(totalChildCount), null));
 		sum.props.add(new JsModelProperty("passes", String.valueOf(totalChildCount - (totalFailsErrorsIncompletes[0] + totalFailsErrorsIncompletes[1] + totalFailsErrorsIncompletes[2])), null));

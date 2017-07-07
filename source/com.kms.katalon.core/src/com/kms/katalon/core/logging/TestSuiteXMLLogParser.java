@@ -184,6 +184,10 @@ public class TestSuiteXMLLogParser {
     }
 
     private static void processStepMessageLog(XmlLogRecord xmlLogRecord, ILogRecord logRecord) {
+        if (logRecord instanceof TestSuiteLogRecord) {
+            // not adding any message log to test suite
+            return;
+        }
         MessageLogRecord messageLogRecord = new MessageLogRecord();
         messageLogRecord.setStartTime(xmlLogRecord.getMillis());
         messageLogRecord.setMessage(xmlLogRecord.getMessage());
