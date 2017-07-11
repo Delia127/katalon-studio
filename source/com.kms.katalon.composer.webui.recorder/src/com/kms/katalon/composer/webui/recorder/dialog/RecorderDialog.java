@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.FileLocator;
@@ -616,18 +617,37 @@ public class RecorderDialog extends AbstractDialog implements EventHandler {
         deleteMenuItem.addListener(SWT.Selection, new Listener() {
             @Override
             public void handleEvent(Event event) {
-                if (actionTableViewer.getSelection() instanceof IStructuredSelection) {
-                    IStructuredSelection selection = (IStructuredSelection) actionTableViewer.getSelection();
-                    for (Object selectedObject : selection.toArray()) {
-                        if (selectedObject instanceof HTMLActionMapping) {
-                            HTMLActionMapping selectedActionMapping = (HTMLActionMapping) selectedObject;
-                            recordedActions.remove(selectedActionMapping);
-                        }
-                    }
-                    actionTableViewer.refresh();
-                }
+                deleteSelectedItems();
             }
         });
+    }
+
+    private void deleteSelectedItems() {
+        if (!(actionTableViewer.getSelection() instanceof IStructuredSelection)) {
+            return;
+        }
+        IStructuredSelection selection = (IStructuredSelection) actionTableViewer.getSelection();
+        if (selection.isEmpty()) {
+            return;
+        }
+        List<HTMLActionMapping> selectedActionMappings = Arrays.asList(selection.toArray())
+                .stream()
+                .filter(selectedObject -> selectedObject instanceof HTMLActionMapping)
+                .map(selectedObject -> (HTMLActionMapping) selectedObject)
+                .collect(Collectors.toList());
+        HTMLActionMapping lastSelectedElement = selectedActionMappings.get(selectedActionMappings.size() - 1);
+        int lastSelectedElementIndex = recordedActions.indexOf(lastSelectedElement);
+        HTMLActionMapping nextFocusedElement = (lastSelectedElementIndex >= recordedActions.size() - 1) ? null
+                : recordedActions.get(lastSelectedElementIndex + 1);
+        recordedActions.removeAll(selectedActionMappings);
+        actionTableViewer.refresh();
+        if (recordedActions.isEmpty()) {
+            return;
+        }
+        if (nextFocusedElement == null) {
+            nextFocusedElement = recordedActions.get(recordedActions.size() - 1);
+        }
+        actionTableViewer.setSelection(new StructuredSelection(nextFocusedElement));
     }
 
     private void createAddActionItem(Item addActionMenuItem) {
