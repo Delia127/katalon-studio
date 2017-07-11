@@ -16,6 +16,8 @@ public interface TestCasePreferenceConstants extends PreferenceConstants {
     String TESTCASE_DEFAULT_FAILURE_HANDLING = "default.failureHandling";
     
     String TESTCASE_PART_DEFAULT_START_VIEW = "default.startView";
+
+    String TESTCASE_RECENT_KEYWORDS = "recent.keywords";
     
     String MANUAL = "manual.";
 

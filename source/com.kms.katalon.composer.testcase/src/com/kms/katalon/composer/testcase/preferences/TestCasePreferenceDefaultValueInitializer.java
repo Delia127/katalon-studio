@@ -2,7 +2,12 @@ package com.kms.katalon.composer.testcase.preferences;
 
 import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
 
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -13,17 +18,21 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
+import com.google.gson.reflect.TypeToken;
 import com.kms.katalon.composer.testcase.constants.TestCasePreferenceConstants;
 import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.parts.TestCaseCompositePart;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.core.keyword.internal.IKeywordContributor;
 import com.kms.katalon.core.model.FailureHandling;
+import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.custom.keyword.KeywordClass;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class TestCasePreferenceDefaultValueInitializer extends AbstractPreferenceInitializer {
     private static final String CALL_TEST_CASE = "callTestCase";
+
+    private static final int MAXIMUM_RECENT_KEYWORDS_NUM = 10;
 
     private static ScopedPreferenceStore getStore() {
         return getPreferenceStore(TestCasePreferenceDefaultValueInitializer.class);
@@ -41,14 +50,14 @@ public class TestCasePreferenceDefaultValueInitializer extends AbstractPreferenc
         store.setDefault(TestCasePreferenceConstants.TESTCASE_AUTO_EXPORT_VARIABLE, false);
 
         // Default Added Keyword
-        store.setDefault(TestCasePreferenceConstants.TESTCASE_DEFAULT_KEYWORD_TYPE, KeywordController.getInstance()
-                .getBuiltInKeywordClasses()
-                .get(0)
-                .getName());
+        store.setDefault(TestCasePreferenceConstants.TESTCASE_DEFAULT_KEYWORD_TYPE,
+                KeywordController.getInstance().getBuiltInKeywordClasses().get(0).getName());
         Map<String, String> defaultKeywords = new HashMap<String, String>();
         for (KeywordClass keywordClass : KeywordController.getInstance().getBuiltInKeywordClasses()) {
-            defaultKeywords.put(keywordClass.getName(),
-                    KeywordController.getInstance().getBuiltInKeywords(keywordClass.getSimpleName(), true).get(0).getName());
+            defaultKeywords.put(keywordClass.getName(), KeywordController.getInstance()
+                    .getBuiltInKeywords(keywordClass.getSimpleName(), true)
+                    .get(0)
+                    .getName());
         }
 
         store.setDefault(TestCasePreferenceConstants.TESTCASE_DEFAULT_KEYWORDS,
@@ -57,9 +66,15 @@ public class TestCasePreferenceDefaultValueInitializer extends AbstractPreferenc
         // Default Failure Handling
         store.setDefault(TestCasePreferenceConstants.TESTCASE_DEFAULT_FAILURE_HANDLING,
                 FailureHandling.STOP_ON_FAILURE.name());
-        
+
         // Default view for test case part
-        store.setDefault(TestCasePreferenceConstants.TESTCASE_PART_DEFAULT_START_VIEW, TestCaseCompositePart.MANUAL_TAB_TITLE);
+        store.setDefault(TestCasePreferenceConstants.TESTCASE_PART_DEFAULT_START_VIEW,
+                TestCaseCompositePart.MANUAL_TAB_TITLE);
+
+        // Default recent keywords
+        Type listType = new TypeToken<List<String>>() {}.getType();
+        store.setDefault(TestCasePreferenceConstants.TESTCASE_RECENT_KEYWORDS,
+                JsonUtil.toJson(Collections.emptyList(), listType, false));
     }
 
     public static boolean isSetGenerateVariableDefaultValue() {
@@ -81,8 +96,8 @@ public class TestCasePreferenceDefaultValueInitializer extends AbstractPreferenc
             JsonArray parser = (JsonArray) new JsonParser().parse(defaultKeywordJsonString);
             for (int i = 0; i < parser.size(); i++) {
                 JsonObject jsonObject = (JsonObject) parser.get(i);
-                defaultKeywords.put(jsonObject.get("keywordType").getAsString(), jsonObject.get("keywordName")
-                        .getAsString());
+                defaultKeywords.put(jsonObject.get("keywordType").getAsString(),
+                        jsonObject.get("keywordName").getAsString());
             }
         }
 
@@ -123,7 +138,8 @@ public class TestCasePreferenceDefaultValueInitializer extends AbstractPreferenc
     }
 
     public static FailureHandling getDefaultFailureHandling() {
-        String failureHandlingName = getStore().getString(TestCasePreferenceConstants.TESTCASE_DEFAULT_FAILURE_HANDLING);
+        String failureHandlingName = getStore()
+                .getString(TestCasePreferenceConstants.TESTCASE_DEFAULT_FAILURE_HANDLING);
         return FailureHandling.valueOf(failureHandlingName);
     }
 
@@ -131,4 +147,26 @@ public class TestCasePreferenceDefaultValueInitializer extends AbstractPreferenc
         return getStore().getString(TestCasePreferenceConstants.TESTCASE_PART_DEFAULT_START_VIEW);
     }
 
+    public static List<StoredKeyword> getRecentKeywords() {
+        String recentKeywordsAsJSONString = getStore().getString(TestCasePreferenceConstants.TESTCASE_RECENT_KEYWORDS);
+        Type listType = new TypeToken<List<StoredKeyword>>() {}.getType();
+        return JsonUtil.fromJson(recentKeywordsAsJSONString, listType);
+    }
+
+    public static void addNewRecentKeywords(StoredKeyword recent) {
+        List<StoredKeyword> recentKeywords = new LinkedList<>(getRecentKeywords());
+        if (recentKeywords.contains(recent)) {
+            recentKeywords.remove(recent);
+        }
+        recentKeywords.add(0, recent);
+        String recentKeywordsAsJSONString = JsonUtil
+                .toJson(recentKeywords.subList(0, Math.min(MAXIMUM_RECENT_KEYWORDS_NUM, recentKeywords.size())), false);
+        getStore().setValue(TestCasePreferenceConstants.TESTCASE_RECENT_KEYWORDS, recentKeywordsAsJSONString);
+    }
+
+    public static void saveStore() throws IOException {
+        if (getStore().needsSaving()) {
+            getStore().save();
+        }
+    }
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.bindings.keys.IKeyLookup;
 import org.eclipse.jface.layout.TreeColumnLayout;
@@ -25,6 +26,7 @@ import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -44,6 +46,7 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
+import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.control.CTreeViewer;
@@ -57,6 +60,7 @@ import com.kms.katalon.composer.testcase.ast.dialogs.ClosureBuilderDialog;
 import com.kms.katalon.composer.testcase.ast.treetable.AstMethodTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
 import com.kms.katalon.composer.testcase.components.KeywordTreeViewerToolTipSupport;
+import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants;
@@ -67,6 +71,10 @@ import com.kms.katalon.composer.testcase.keywords.KeywordBrowserTreeEntityTransf
 import com.kms.katalon.composer.testcase.model.ExecuteFromTestStepEntity;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
+import com.kms.katalon.composer.testcase.parts.decoration.DecoratedKeyword;
+import com.kms.katalon.composer.testcase.parts.decoration.KeywordDecorationService;
+import com.kms.katalon.composer.testcase.preferences.StoredKeyword;
+import com.kms.katalon.composer.testcase.preferences.TestCasePreferenceDefaultValueInitializer;
 import com.kms.katalon.composer.testcase.providers.AstTreeItemLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstTreeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstTreeTableContentProvider;
@@ -95,7 +103,7 @@ public class TestStepManualComposite {
 
     private Tree childTableTree;
 
-    private ToolItem tltmAddStep, tltmRemoveStep, tltmUp, tltmDown;
+    private ToolItem tltmAddStep, tltmRemoveStep, tltmUp, tltmDown, tltmRecent;
 
     private TestCaseSelectionListener selectionListener;
 
@@ -104,6 +112,8 @@ public class TestStepManualComposite {
     private List<AstTreeTableNode> dragNodes;
 
     private CustomTreeViewerFocusCellManager focusCellManager;
+
+    private Menu recentMenu;
 
     public TestStepManualComposite(ITestCasePart parentPart, Composite parent) {
         this.parentPart = parentPart;
@@ -128,6 +138,8 @@ public class TestStepManualComposite {
         compositeDetails.setLayout(new FormLayout());
 
         createTestCaseManualTableControls(compositeDetails);
+
+        registerEventBrokerListeners();
     }
 
     public void setFocus() {
@@ -189,6 +201,12 @@ public class TestStepManualComposite {
         Menu addMenu = new Menu(tltmAddStep.getParent().getShell());
         tltmAddStep.setData(addMenu);
         TestCaseMenuUtil.fillActionMenu(TreeTableMenuItemConstants.AddAction.Add, selectionListener, addMenu);
+
+        tltmRecent = new ToolItem(toolbar, SWT.DROP_DOWN);
+        tltmRecent.setText(ComposerTestcaseMessageConstants.PA_BTN_TIP_RECENT);
+        tltmRecent.setImage(ImageConstants.IMG_16_RECENT);
+        tltmRecent.addSelectionListener(selectionListener);
+        setRecentKeywordItemState();
 
         tltmRemoveStep = new ToolItem(toolbar, SWT.NONE);
         tltmRemoveStep.setText(StringConstants.PA_BTN_TIP_REMOVE);
@@ -436,7 +454,7 @@ public class TestStepManualComposite {
         });
 
         childTableTree.addListener(SWT.Traverse, new Listener() {
-            
+
             @Override
             public void handleEvent(Event event) {
                 switch (event.detail) {
@@ -583,6 +601,7 @@ public class TestStepManualComposite {
     }
 
     public void performToolItemSelected(ToolItem toolItem, SelectionEvent selectionEvent) {
+        getTreeTable().applyEditorValue();
         if (toolItem.equals(tltmAddStep)) {
             openToolItemMenu(toolItem, selectionEvent);
             return;
@@ -598,9 +617,67 @@ public class TestStepManualComposite {
         if (toolItem.equals(tltmDown)) {
             downStep();
         }
+        if (toolItem.equals(tltmRecent)) {
+            openRecentKeywordItems();
+        }
+    }
+
+    private void openRecentKeywordItems() {
+        List<StoredKeyword> recentKeywords = TestCasePreferenceDefaultValueInitializer.getRecentKeywords();
+        if (recentKeywords.isEmpty()) {
+            return;
+        }
+        if (recentMenu != null && !recentMenu.isDisposed()) {
+            recentMenu.dispose();
+        }
+        recentMenu = new Menu(tltmRecent.getParent());
+        recentKeywords.forEach(keyword -> {
+            addRecentMenuItem(keyword);
+        });
+        Rectangle rect = tltmRecent.getBounds();
+        Point pt = tltmRecent.getParent().toDisplay(new Point(rect.x, rect.y));
+        recentMenu.setLocation(pt.x, pt.y + rect.height);
+        recentMenu.setVisible(true);
+    }
+
+    private void addRecentMenuItem(StoredKeyword keyword) {
+        MenuItem recentMenuItem = new MenuItem(recentMenu, SWT.PUSH);
+        final DecoratedKeyword decoratedKeyword = KeywordDecorationService.getDecoratedKeyword(keyword);
+        recentMenuItem.setText(decoratedKeyword.getLabel());
+        recentMenuItem.setToolTipText(decoratedKeyword.getTooltip());
+        recentMenuItem.setImage(decoratedKeyword.getImage());
+
+        recentMenuItem.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                AstTreeTableNode destination = treeTableInput.getSelectedNode();
+                treeTableInput.addNewAstObject(
+                        decoratedKeyword.newStep(treeTableInput.getParentNodeForNewMethodCall(destination)),
+                        destination, NodeAddType.Add);
+            }
+        });
+    }
+
+    private void registerEventBrokerListeners() {
+        IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
+        eventBroker.subscribe(EventConstants.TESTCASE_RECENT_KEYWORD_ADDED, new EventHandler() {
+
+            @Override
+            public void handleEvent(org.osgi.service.event.Event event) {
+                if (compositeManual == null || compositeManual.isDisposed()) {
+                    return;
+                }
+                setRecentKeywordItemState();
+            }
+        });
+    }
+
+    private void setRecentKeywordItemState() {
+        tltmRecent.setEnabled(!TestCasePreferenceDefaultValueInitializer.getRecentKeywords().isEmpty());
     }
 
     public void performMenuItemSelected(MenuItem menuItem) {
+        getTreeTable().applyEditorValue();
         NodeAddType addType = NodeAddType.Add;
         Object value = menuItem.getData(TreeTableMenuItemConstants.MENU_ITEM_ACTION_KEY);
         if (value instanceof AddAction) {
@@ -614,7 +691,6 @@ public class TestStepManualComposite {
                 case InsertBefore:
                     addType = NodeAddType.InserBefore;
                     break;
-
             }
         }
         switch (menuItem.getID()) {

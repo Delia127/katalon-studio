@@ -207,7 +207,6 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
                 }
                 return null;
             }
-            
         };
     }
 
