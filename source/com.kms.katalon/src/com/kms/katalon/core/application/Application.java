@@ -10,6 +10,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.osgi.framework.BundleException;
 
+import com.kms.katalon.activation.dialog.LinuxNotSupportedDialog;
 import com.kms.katalon.composer.components.application.ApplicationSingleton;
 import com.kms.katalon.console.addons.MacOSAddon;
 import com.kms.katalon.console.utils.ApplicationInfo;
@@ -97,6 +98,11 @@ public class Application implements IApplication {
     private int internalRunGUI() {
         Display display = PlatformUI.createDisplay();
         try {
+            if (Platform.OS_LINUX.equals(Platform.getOS())) {
+                LinuxNotSupportedDialog dialog = new LinuxNotSupportedDialog(display.getActiveShell());
+                dialog.open();
+                return PlatformUI.RETURN_OK;
+            }
             return PlatformUI.createAndRunWorkbench(display, new ApplicationWorkbenchAdvisor());
         } catch (Exception e) {
             LogUtil.logError(e);
