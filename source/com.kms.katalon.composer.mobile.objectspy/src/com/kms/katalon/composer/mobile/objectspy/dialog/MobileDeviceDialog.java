@@ -1,8 +1,7 @@
 package com.kms.katalon.composer.mobile.objectspy.dialog;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -11,16 +10,13 @@ import java.util.UUID;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
@@ -31,6 +27,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -45,31 +42,29 @@ public class MobileDeviceDialog extends Dialog {
 
     private Image currentScreenShot;
 
-    private Composite mainContainer;
+    private Composite swtAwtContainter;
 
-    private static final int DIALOG_WIDTH = 400;
+    public static final int DIALOG_WIDTH = 400;
 
-    private static final int DIALOG_HEIGHT = 600;
-
-    public static final Point DIALOG_SIZE = new Point(DIALOG_WIDTH + 9, DIALOG_HEIGHT + 57);
+    public static final int DIALOG_HEIGHT = 600;
 
     private double currentX = 0, currentY = 0, currentWidth = 0, currentHeight = 0;
 
-    double wRatio, hRatio;
+    private double hRatio;
 
-    private JScrollPane scrImage;
+    private JLabel scrImage;
 
     private ImageIcon icon;
-
-    private JPanel contextPanel;
 
     private java.awt.Frame frame;
 
     private boolean isDisposed;
 
     private Point initialLocation;
-    
+
     private MobileElementInspectorDialog mobileInspetorDialog;
+
+    private ScrolledComposite scrolledComposite;
 
     public MobileDeviceDialog(Shell parentShell, MobileElementInspectorDialog mobileInspectorDialog, Point location) {
         super(parentShell);
@@ -81,28 +76,42 @@ public class MobileDeviceDialog extends Dialog {
 
     @Override
     protected Control createDialogArea(Composite parent) {
-        mainContainer = new Composite(parent, SWT.EMBEDDED | SWT.INHERIT_NONE);
-        mainContainer.setBackground(ColorUtil.getBlackBackgroundColor());
+        Composite dialogArea = (Composite) super.createDialogArea(parent);
+        final GridLayout dialogAreaGridLayout = (GridLayout) dialogArea.getLayout();
+        dialogAreaGridLayout.marginWidth = 0;
+        dialogAreaGridLayout.marginHeight = 0;
+
+        scrolledComposite = new ScrolledComposite(dialogArea, SWT.H_SCROLL | SWT.V_SCROLL);
+        scrolledComposite.setExpandHorizontal(true);
+        scrolledComposite.setExpandVertical(true);
+
+        scrolledComposite.setLayout(new GridLayout());
+        scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+        Composite container = new Composite(scrolledComposite, SWT.NULL);
+        final GridLayout compositeGridLayout = new GridLayout();
+        compositeGridLayout.marginHeight = 0;
+        compositeGridLayout.marginWidth = 0;
+        container.setLayout(compositeGridLayout);
+        container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        scrolledComposite.setContent(container);
+
+        swtAwtContainter = new Composite(container, SWT.EMBEDDED | SWT.INHERIT_NONE);
+        swtAwtContainter.setBackground(ColorUtil.getBlackBackgroundColor());
+
         GridLayout layout = new GridLayout();
         layout.marginHeight = 0;
         layout.marginWidth = 0;
         layout.verticalSpacing = 0;
         layout.horizontalSpacing = 0;
-        mainContainer.setLayout(layout);
-        mainContainer.setSize(DIALOG_WIDTH, DIALOG_HEIGHT);
-        GridData gdata = new GridData(GridData.FILL_BOTH);
-        gdata.widthHint = DIALOG_WIDTH;
-        gdata.heightHint = DIALOG_HEIGHT;
-        mainContainer.setLayoutData(gdata);
+        swtAwtContainter.setLayout(new GridLayout());
+        swtAwtContainter.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-        frame = SWT_AWT.new_Frame(mainContainer);
+        frame = SWT_AWT.new_Frame(swtAwtContainter);
 
-        contextPanel = new JPanel();
-        JLabel defaultInfo = new JLabel(StringConstants.DIA_LBL_SCREEN);
-        contextPanel.add(defaultInfo, BorderLayout.CENTER);
-        contextPanel.setBackground(Color.decode("#ecf8fc"));
-        scrImage = new JScrollPane(contextPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrImage = new JLabel();
+        scrImage.setHorizontalAlignment(JLabel.LEFT);
+        scrImage.setVerticalAlignment(JLabel.TOP);
         scrImage.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -112,29 +121,61 @@ public class MobileDeviceDialog extends Dialog {
                 inspectElementAt(e.getX(), e.getY());
             }
         });
-        frame.add(new AlphaContainer(scrImage));
+        frame.add(scrImage);
         frame.pack();
+        swtAwtContainter.pack();
+        return dialogArea;
+    }
 
-        return mainContainer;
+    @Override
+    protected boolean isResizable() {
+        return true;
     }
 
     private void inspectElementAt(int x, int y) {
-        Double realX = x / wRatio;
+        Double realX = x / hRatio;
         Double realY = y / hRatio;
         mobileInspetorDialog.setSelectedElementByLocation(safeRoundDouble(realX), safeRoundDouble(realY));
     }
 
+    private boolean isElementOnScreen(final Double x, final Double y, final Double width, final Double height) {
+        Rectangle elementRect = new Rectangle(x.intValue(), y.intValue(), width.intValue(), height.intValue());
+        return elementRect.intersects(getCurrentViewportRect());
+    }
+
+    private void scrollToElement(final Double x, final Double y) {
+        Rectangle elementRect = new Rectangle(x.intValue(), y.intValue());
+        scrolledComposite.setOrigin(elementRect.x, elementRect.y);
+    }
+
+    private Rectangle getCurrentViewportRect() {
+        ScrollBar verticalBar = scrolledComposite.getVerticalBar();
+        ScrollBar horizontalBar = scrolledComposite.getHorizontalBar();
+        int viewPortY = (verticalBar.isVisible()) ? verticalBar.getSelection() : 0;
+        int viewPortX = (horizontalBar.isVisible()) ? horizontalBar.getSelection() : 0;
+        Point viewPortSize = scrolledComposite.getSize();
+        Rectangle viewPortRect = new Rectangle(viewPortX, viewPortY, viewPortSize.x, viewPortSize.y);
+        return viewPortRect;
+    }
+
     public void highlight(final double x, final double y, final double width, final double height) {
         // Scale the coordinator depend on the ratio between scaled image / source image
-        this.currentX = x * wRatio;
+        this.currentX = x * hRatio;
         this.currentY = y * hRatio;
-        this.currentWidth = width * wRatio;
+        this.currentWidth = width * hRatio;
         this.currentHeight = height * hRatio;
-
+        Display.getDefault().syncExec(new Runnable() {
+            @Override
+            public void run() {
+                if (!isElementOnScreen(currentX, currentY, currentWidth, currentHeight)) {
+                    scrollToElement(currentX, currentY);
+                }
+            }
+        });
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                JLabel c = (JLabel) scrImage.getViewport().getView();
+                JLabel c = scrImage;
                 JLabel label = new JLabel();
                 label.setOpaque(false);
                 label.setBorder(BorderFactory.createLineBorder(Color.green, 2));
@@ -174,7 +215,7 @@ public class MobileDeviceDialog extends Dialog {
 
     @Override
     protected Point getInitialSize() {
-        return DIALOG_SIZE;
+        return new Point(DIALOG_WIDTH, DIALOG_HEIGHT + 57);
     }
 
     @Override
@@ -185,7 +226,7 @@ public class MobileDeviceDialog extends Dialog {
 
     @Override
     protected void setShellStyle(int newShellStyle) {
-        super.setShellStyle(SWT.CLOSE | SWT.MODELESS | SWT.BORDER | SWT.TITLE);
+        super.setShellStyle(SWT.CLOSE | SWT.MODELESS | SWT.BORDER | SWT.TITLE | SWT.RESIZE);
         setBlockOnOpen(false);
     }
 
@@ -236,12 +277,9 @@ public class MobileDeviceDialog extends Dialog {
             Image img = imgDesc.createImage();
 
             // Calculate scaled ratio
-            wRatio = DIALOG_WIDTH / (double) img.getBounds().width;
-            hRatio = contextPanel.getHeight() / (double) img.getBounds().height;
-            // wRatio = (wRatio==0 ? theWidthRatio : theWidthRatio * wRatio);
-            // hRatio = (hRatio==0 ? theHeightRatio : theHeightRatio * hRatio);
+            hRatio = DIALOG_HEIGHT / (double) img.getBounds().height;
 
-            currentScreenShot = scaleImage(img, contextPanel.getWidth(), contextPanel.getHeight());
+            currentScreenShot = scaleImage(img, ((double) img.getBounds().width) * hRatio, DIALOG_HEIGHT);
 
             // Save scaled version
             String scaledImageFile = userTempDir + File.separator + UUID.randomUUID() + "_scaled2.png";
@@ -250,9 +288,16 @@ public class MobileDeviceDialog extends Dialog {
             loader.save(scaledImageFile, SWT.IMAGE_PNG);
 
             icon = new ImageIcon(scaledImageFile);
-            scrImage.setViewportView(new JLabel(icon));
+            scrImage.setIcon(icon);
             scrImage.revalidate();
             scrImage.repaint();
+
+            Display.getDefault().asyncExec(new Runnable() {
+                @Override
+                public void run() {
+                    scrolledComposite.setMinSize(icon.getIconWidth(), icon.getIconHeight());
+                }
+            });
         } catch (Exception ex) {
             LoggerSingleton.logError(ex);
         }
@@ -270,38 +315,6 @@ public class MobileDeviceDialog extends Dialog {
 
     public boolean isDisposed() {
         return isDisposed;
-    }
-
-    @SuppressWarnings("unused")
-    private class AlphaContainer extends JComponent {
-        private static final long serialVersionUID = -244003111111860211L;
-
-        private JComponent component;
-
-        public JComponent getComponent() {
-            return component;
-        }
-
-        public void setComponent(JComponent component) {
-            this.component = component;
-        }
-
-        public AlphaContainer(JComponent component) {
-            this.component = component;
-            setLayout(new BorderLayout());
-            Color whiteColor = new Color(255, 255, 255, 0);
-            component.setBackground(whiteColor);
-            setBackground(whiteColor);
-            setOpaque(false);
-            component.setOpaque(false);
-            add(component);
-        }
-
-        @Override
-        public void paintComponent(Graphics g) {
-            g.setColor(component.getBackground());
-            g.fillRect(0, 0, getWidth(), getHeight());
-        }
     }
 
     @Override
