@@ -2,6 +2,8 @@ package com.kms.katalon.core.keyword.internal
 
 import groovy.transform.CompileStatic
 
+import org.apache.commons.lang.StringUtils;
+
 import com.kms.katalon.core.exception.StepFailedException
 import com.kms.katalon.core.logging.ErrorCollector
 import com.kms.katalon.core.logging.KeywordLogger
@@ -10,7 +12,13 @@ import com.kms.katalon.core.util.internal.ExceptionsUtil
 
 
 public class KeywordMain {
+    private static final String EMPTY_REASON = "";
     private static KeywordLogger logger = KeywordLogger.getInstance();
+    
+    @CompileStatic
+    public static stepFailed(String message, FailureHandling flHandling) throws StepFailedException {
+        stepFailed(message, flHandling, EMPTY_REASON)
+    }
 
     @CompileStatic
     public static stepFailed(String message, FailureHandling flHandling, String reason, Map<String, String> attributes = null) throws StepFailedException {
@@ -32,12 +40,12 @@ public class KeywordMain {
     @CompileStatic
     protected static StringBuilder buildReasonMessage(String message, String reason) {
         StringBuilder failMessage = new StringBuilder(message);
-        if (reason != null) {
+        if (StringUtils.isNotEmpty(reason)) {
             failMessage.append(" (Root cause: ");
             failMessage.append(reason);
             failMessage.append(")");
         }
-        return failMessage
+        return failMessage;
     }
 
     @CompileStatic

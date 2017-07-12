@@ -227,7 +227,7 @@ public class WebUiCommonHelper extends KeywordHelper {
         }
     }
 
-    public static void selectOrDeselectOptionsByValue(Select select, String value, boolean isRegex, boolean isSelect,
+    public static boolean selectOrDeselectOptionsByValue(Select select, String value, boolean isRegex, boolean isSelect,
             TestObject to, String regularExpressionLog) {
         if (isSelect) {
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SELECTING_OPTS_ON_OBJ_X_W_VAL_Y,
@@ -237,15 +237,21 @@ public class WebUiCommonHelper extends KeywordHelper {
                     to.getObjectId(), value, regularExpressionLog));
         }
         if (isRegex) {
-            selectOrDeselectOptionsByValueByRegularExpression(select, value, isSelect, regularExpressionLog);
+            return selectOrDeselectOptionsByValueByRegularExpression(select, value, isSelect, regularExpressionLog);
         } else {
-            select.selectByValue(value);
+            if (isSelect) {
+                select.selectByValue(value);
+            } else {
+                select.deselectByValue(value);
+            }
+            return true;
         }
     }
 
-    private static void selectOrDeselectOptionsByValueByRegularExpression(Select select, String value,
+    private static boolean selectOrDeselectOptionsByValueByRegularExpression(Select select, String value,
             boolean isSelect, String regularExpressionLog) {
         List<WebElement> allOptions = select.getOptions();
+        boolean isMatched = false;
         for (int index = 0; index < allOptions.size(); index++) {
             String optionValue = allOptions.get(index).getAttribute("value");
             if (optionValue == null || !WebUiCommonHelper.match(optionValue, value, true)) {
@@ -260,10 +266,12 @@ public class WebUiCommonHelper extends KeywordHelper {
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_OPT_AT_IDX_X_W_VAL_Y_IS_SELECTED,
                         index, optionValue, regularExpressionLog));
             }
+            isMatched = true;
         }
+        return isMatched;
     }
 
-    public static void selectOrDeselectOptionsByLabel(Select select, String label, boolean isRegex, boolean isSelect,
+    public static boolean selectOrDeselectOptionsByLabel(Select select, String label, boolean isRegex, boolean isSelect,
             TestObject to, String regularExpressionLog) {
         if (isSelect) {
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SELECTING_OPTS_ON_OBJ_X_W_LBL_Y,
@@ -273,15 +281,21 @@ public class WebUiCommonHelper extends KeywordHelper {
                     to.getObjectId(), label, regularExpressionLog));
         }
         if (isRegex) {
-            selectOrDeselectOptionsByLabelWithRegularExpression(select, label, isSelect, regularExpressionLog);
+            return selectOrDeselectOptionsByLabelWithRegularExpression(select, label, isSelect, regularExpressionLog);
         } else {
-            select.selectByVisibleText(label);
+            if (isSelect) {
+                select.selectByVisibleText(label);
+            } else {
+                select.deselectByVisibleText(label);
+            }
+            return true;
         }
     }
 
-    private static void selectOrDeselectOptionsByLabelWithRegularExpression(Select select, String label, boolean isSelect,
+    private static boolean selectOrDeselectOptionsByLabelWithRegularExpression(Select select, String label, boolean isSelect,
             String regularExpressionLog) {
         List<WebElement> allOptions = select.getOptions();
+        boolean isMatched = false;
         for (int index = 0; index < allOptions.size(); index++) {
             String optionValue = allOptions.get(index).getText();
             if (optionValue == null || !WebUiCommonHelper.match(optionValue, label, true)) {
@@ -296,7 +310,9 @@ public class WebUiCommonHelper extends KeywordHelper {
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_OPT_AT_IDX_X_W_LBL_TXT_Y_IS_DESELECTED,
                         index, optionValue, regularExpressionLog));
             }
+            isMatched = true;
         }
+        return isMatched;
     }
 
     public static int getNumberOfOptionByLabel(Select select, String label, boolean isRegex, String objectId) {

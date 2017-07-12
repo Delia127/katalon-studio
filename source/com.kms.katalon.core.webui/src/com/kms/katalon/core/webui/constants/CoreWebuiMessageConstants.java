@@ -1001,6 +1001,9 @@ public class CoreWebuiMessageConstants extends NLS {
 
     public static String KW_MSG_VERIFY_ELEMENT_TEXT_FAILED;
 
+    // DeselectOptionByLabelKeyword, SelectOptionByLabelKeyword, DeselectOptionByValueKeyword, SelectOptionByValueKeyword
+    public static String KW_MSG_NO_OPTION_MATCHED;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, CoreWebuiMessageConstants.class);
