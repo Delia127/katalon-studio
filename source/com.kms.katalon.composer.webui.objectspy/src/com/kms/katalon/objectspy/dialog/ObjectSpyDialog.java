@@ -984,16 +984,33 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
 
     }
 
+    private List<HTMLPageElement> getCloneCapturedObjects(final List<HTMLPageElement> elements) {
+        List<HTMLPageElement> elementsClone = new ArrayList<>();
+        elements.stream().forEach(e -> {
+            elementsClone.add((HTMLPageElement) e.softClone());
+        });
+        return elementsClone;
+    }
+
     private void addElementToObjectRepository() throws Exception {
+        TreeViewer capturedTreeViewer = capturedObjectComposite.getElementTreeViewer();
         AddToObjectRepositoryDialog addToObjectRepositoryDialog = new AddToObjectRepositoryDialog(getParentShell(),
-                true, elements, capturedObjectComposite.getElementTreeViewer().getExpandedElements());
+                true, getCloneCapturedObjects(elements),
+                capturedTreeViewer.getExpandedElements());
         if (addToObjectRepositoryDialog.open() != Window.OK) {
             return;
         }
 
         Set<ITreeEntity> newSelectionOnExplorer = new HashSet<>();
         AddToObjectRepositoryDialogResult folderSelectionResult = addToObjectRepositoryDialog.getDialogResult();
-        for (HTMLPageElement pageElement : addToObjectRepositoryDialog.getHtmlElements()) {
+
+        List<HTMLPageElement> htmlElements = addToObjectRepositoryDialog.getHtmlElements();
+        for (HTMLElement checkedElement : htmlElements) {
+            if (!(checkedElement instanceof HTMLPageElement)) {
+                return;
+            }
+            HTMLPageElement pageElement = (HTMLPageElement) checkedElement;
+
             FolderTreeEntity pageElementTreeFolder = folderSelectionResult.createTreeFolderForPageElement(pageElement);
             newSelectionOnExplorer.add(pageElementTreeFolder);
             for (HTMLElement childElement : pageElement.getChildElements()) {
@@ -1001,9 +1018,28 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
             }
         }
 
+        selectSelectedElements(capturedTreeViewer, htmlElements);
+
         // Refresh tree explorer
         eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, folderSelectionResult.getSelectedParentFolder());
         eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEMS, newSelectionOnExplorer.toArray());
+    }
+
+    private void selectSelectedElements(TreeViewer capturedTreeViewer, List<HTMLPageElement> htmlElements) {
+        List<HTMLElement> selectedElements = new ArrayList<>();
+        htmlElements.forEach(page -> selectedElements.addAll(flatten(page)));
+        capturedTreeViewer.setSelection(new StructuredSelection(selectedElements));
+    }
+    
+    private List<HTMLElement> flatten(HTMLElement element) {
+        List<HTMLElement> elements = new ArrayList<>();
+        elements.add(element);
+        
+        if (element instanceof HTMLFrameElement) {
+            HTMLFrameElement frame = (HTMLFrameElement) element;
+            frame.getChildElements().forEach(child -> elements.addAll(flatten(child)));
+        }
+        return elements;
     }
 
     private Collection<ITreeEntity> addCheckedElements(HTMLElement element, FolderTreeEntity parentTreeFolder,
@@ -1415,7 +1451,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         String xpathExpression = new HighlightRequest(element).getData();
         currentInstantSocket.sendMessage(new AddonMessage(AddonCommand.HIGHLIGHT_OBJECT, xpathExpression));
     }
-    
+
     @Override
     public int open() {
         if (Platform.OS_WIN32.equals(Platform.getOS())) {

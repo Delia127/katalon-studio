@@ -180,4 +180,7 @@ public class HTMLElement {
         return matchedStatus;
     }
 
+    public HTMLElement softClone() {
+        return new HTMLElement(getName(), getType(), getAttributes(), null);
+    }
 }
