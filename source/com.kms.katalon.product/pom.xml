@@ -41,8 +41,12 @@
 
 		<product.mac64ZipFileSrc>${product.buildDirectory}/${product.id}-macosx.cocoa.x86_64.tar.gz</product.mac64ZipFileSrc>
 		<product.mac64ZipFileDest>${product.buildDirectory}/${product.name} MacOS.tar.gz</product.mac64ZipFileDest>
-		
 
+		<product.linux32ZipFileSrc>${product.buildDirectory}/${product.id}-linux.gtk.x86.tar.gz</product.linux32ZipFileSrc>
+		<product.linux32ZipFileDest>${product.buildDirectory}/${product.name} Linux 32.tar.gz</product.linux32ZipFileDest>
+
+		<product.linux64ZipFileSrc>${product.buildDirectory}/${product.id}-linux.gtk.x86_64.tar.gz</product.linux64ZipFileSrc>
+		<product.linux64ZipFileDest>${product.buildDirectory}/${product.name} Linux 64.tar.gz</product.linux64ZipFileDest>
 	</properties>
 
 	<build>
@@ -135,6 +139,7 @@
 					<formats>
 						<win32>zip</win32>
 						<macosx>tar.gz</macosx>
+						<linux>tar.gz</linux>
 					</formats>
 
 					<products>
@@ -294,7 +299,28 @@
 							<destinationFile>${product.mac64ZipFileDest}</destinationFile>
 						</configuration>
 					</execution>
-	
+					<execution>
+						<id>rename-linux32-zip-file</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>rename</goal>
+						</goals>
+						<configuration>
+							<sourceFile>${product.linux32ZipFileSrc}</sourceFile>
+							<destinationFile>${product.linux32ZipFileDest}</destinationFile>
+						</configuration>
+					</execution>
+					<execution>
+						<id>rename-linux64-zip-file</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>rename</goal>
+						</goals>
+						<configuration>
+							<sourceFile>${product.linux64ZipFileSrc}</sourceFile>
+							<destinationFile>${product.linux64ZipFileDest}</destinationFile>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 		</plugins>
