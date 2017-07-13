@@ -23,8 +23,14 @@ public class DropdownGroup {
 
     private ToolBar toolbar;
 
+    private Composite composite;
+
+    public Composite getComposite() {
+        return composite;
+    }
+
     public DropdownGroup(Composite parent, String groupLabel, Image groupImage) {
-        Composite composite = new Composite(parent, SWT.NONE);
+        composite = new Composite(parent, SWT.NONE);
         GridLayout layout = new GridLayout(2, false);
         layout.marginWidth = 0;
         layout.marginHeight = 0;
@@ -47,12 +53,12 @@ public class DropdownGroup {
         toolbar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
     }
 
-    public void addItem(String label, Image image, SelectionListener selectionListener) {
+    public ToolItem addItem(String label, Image image, SelectionListener selectionListener) {
         ToolItem item = new ToolItem(toolbar, SWT.PUSH);
         item.setText(label);
         item.setImage(image);
         if (selectionListener == null) {
-            return;
+            return item;
         }
         item.addSelectionListener(new SelectionAdapter() {
 
@@ -62,6 +68,7 @@ public class DropdownGroup {
                 parent.getShell().setVisible(false);
             }
         });
+        return item;
     }
 
     public Composite getParent() {

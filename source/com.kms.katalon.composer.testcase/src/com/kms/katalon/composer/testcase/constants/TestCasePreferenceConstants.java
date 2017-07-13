@@ -18,6 +18,8 @@ public interface TestCasePreferenceConstants extends PreferenceConstants {
     String TESTCASE_PART_DEFAULT_START_VIEW = "default.startView";
 
     String TESTCASE_RECENT_KEYWORDS = "recent.keywords";
+
+    String TESTCASE_RECENT_TEST_OBJECTS = "recent.testObjects";
     
     String MANUAL = "manual.";
 

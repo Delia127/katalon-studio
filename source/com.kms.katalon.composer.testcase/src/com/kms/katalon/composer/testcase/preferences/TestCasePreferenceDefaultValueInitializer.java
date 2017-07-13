@@ -27,6 +27,8 @@ import com.kms.katalon.core.keyword.internal.IKeywordContributor;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.custom.keyword.KeywordClass;
+import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class TestCasePreferenceDefaultValueInitializer extends AbstractPreferenceInitializer {
@@ -75,6 +77,11 @@ public class TestCasePreferenceDefaultValueInitializer extends AbstractPreferenc
         Type listType = new TypeToken<List<String>>() {}.getType();
         store.setDefault(TestCasePreferenceConstants.TESTCASE_RECENT_KEYWORDS,
                 JsonUtil.toJson(Collections.emptyList(), listType, false));
+
+        // Default recent test objects
+        Type mapType = new TypeToken<Map<String, RecentObjectStorage>>() {}.getType();
+        store.setDefault(TestCasePreferenceConstants.TESTCASE_RECENT_TEST_OBJECTS,
+                JsonUtil.toJson(Collections.emptyMap(), mapType, false));
     }
 
     public static boolean isSetGenerateVariableDefaultValue() {
@@ -168,5 +175,29 @@ public class TestCasePreferenceDefaultValueInitializer extends AbstractPreferenc
         if (getStore().needsSaving()) {
             getStore().save();
         }
+    }
+
+    public static RecentObjectStorage getRecentObjectStorage(ProjectEntity project) {
+        RecentObjectStorage recentObjectStorage = getRecentObjectStorages().get(project.getId());
+        if (recentObjectStorage == null) {
+            recentObjectStorage = new RecentObjectStorage();
+        }
+        return recentObjectStorage;
+    }
+
+    private static Map<String, RecentObjectStorage> getRecentObjectStorages() {
+        String recentObjectStoragesAsJSONString = getStore().getString(TestCasePreferenceConstants.TESTCASE_RECENT_TEST_OBJECTS);
+        Type mapType = new TypeToken<Map<String, RecentObjectStorage>>() {}.getType();
+        return JsonUtil.fromJson(recentObjectStoragesAsJSONString, mapType);
+    }
+    
+    public static void addRecentObject(ProjectEntity project, WebElementEntity testObject) {
+        RecentObjectStorage recentObjectStorage = getRecentObjectStorage(project);
+        recentObjectStorage.addRecentTestObject(testObject);
+
+        Map<String, RecentObjectStorage> map = getRecentObjectStorages();
+        map.put(project.getId(), recentObjectStorage);
+        Type mapType = new TypeToken<Map<String, RecentObjectStorage>>() {}.getType();
+        getStore().setValue(TestCasePreferenceConstants.TESTCASE_RECENT_TEST_OBJECTS, JsonUtil.toJson(map, mapType));
     }
 }

@@ -77,6 +77,10 @@ public class Dropdown {
     public boolean isDisposed() {
         return shell.isDisposed();
     }
+    
+    public void dispose() {
+        shell.dispose();
+    }
 
     public boolean isVisible() {
         return shell.isVisible();
