@@ -268,6 +268,15 @@ public class TestCaseExecutor {
                         variableName, e.getMessage()));
             }
         });
+        getBindedValues().entrySet().stream().filter(entry -> 
+            !variableBinding.hasVariable(entry.getKey())
+        ).forEach(entry -> {
+            String variableName = entry.getKey();
+            Object variableValue = entry.getValue();
+            variableBinding.setProperty(variableName, variableValue);
+            logVariableValue(variableName, variableValue, false,
+                    StringConstants.MAIN_LOG_INFO_VARIABLE_NAME_X_IS_SET_TO_Y);
+        });
         return variableBinding;
     }
 
