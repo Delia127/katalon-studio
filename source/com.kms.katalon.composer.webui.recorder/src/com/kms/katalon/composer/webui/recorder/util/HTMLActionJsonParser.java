@@ -9,13 +9,17 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.webui.recorder.action.HTMLAction;
 import com.kms.katalon.composer.webui.recorder.action.HTMLActionMapping;
+import com.kms.katalon.composer.webui.recorder.action.HTMLActionParamValueType;
 import com.kms.katalon.objectspy.element.HTMLElement;
 import com.kms.katalon.objectspy.util.HTMLElementUtil;
 
 public class HTMLActionJsonParser {
     public static class HTMLActionJson {
+        private static final int KEYCODE_ENTER = 13;
+
         public static final String ACTION_DATA_NEW_VALUE_KEY = "newValue";
 
         public static final String ACTION_DATA_OLD_VALUE_KEY = "oldValue";
@@ -27,8 +31,6 @@ public class HTMLActionJsonParser {
         public static final String ACTION_WINDOW_ID_KEY = "windowId";
 
         public static final String SWITCH_TO_WINDOW_ACTION_KEY = "switchToWindow";
-
-        public static final String SUBMIT_ACTION_KEY = "submit";
 
         public static final String DOUBLE_CLICK_ACTION_KEY = "doubleClick";
 
@@ -55,6 +57,8 @@ public class HTMLActionJsonParser {
         public static final String ACTION_NAME_KEY = "actionName";
 
         public static final String ACTION_KEY = "action";
+        
+        public static final String SEND_KEYS_ACTION_KEY = "sendKeys";
 
         private JsonObject actionObject;
         private String actionName;
@@ -176,8 +180,16 @@ public class HTMLActionJsonParser {
                 }
             case DOUBLE_CLICK_ACTION_KEY:
                 return new HTMLActionMapping(HTMLAction.DoubleClick, actionData, targetElement);
-            case SUBMIT_ACTION_KEY:
-                return new HTMLActionMapping(HTMLAction.Submit, actionData, targetElement);
+            case SEND_KEYS_ACTION_KEY:
+                int keyCode = Integer.parseInt(actionData);
+                // Only handle enter key for now
+                if (keyCode != KEYCODE_ENTER) {
+                    return null;
+                }
+                final HTMLActionMapping htmlActionMapping = new HTMLActionMapping(HTMLAction.SendKeys, actionData, targetElement);
+                htmlActionMapping.getData()[0] = HTMLActionParamValueType.newInstance(InputValueType.Keys,
+                        HTMLActionUtil.convertToExpressionWrapper("Keys.chord(Keys.ENTER)"));
+                return htmlActionMapping;
             case SWITCH_TO_WINDOW_ACTION_KEY:
                 return new HTMLActionMapping(HTMLAction.SwitchToWindow, actionData, targetElement);
             }
