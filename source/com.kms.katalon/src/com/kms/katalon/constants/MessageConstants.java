@@ -222,6 +222,8 @@ public class MessageConstants extends NLS {
     public static String TOOLITEM_DLG_DELETE;
 
     public static String TOOLITEM_DLG_CLEAR;
+    
+    public static String MSG_LINUX_GUI_NOT_SUPPORTED;
 
     static {
         // initialize resource bundle
