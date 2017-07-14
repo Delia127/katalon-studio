@@ -14,6 +14,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
@@ -111,8 +112,6 @@ public class MobileDeviceDialog extends Dialog {
 
         frame = SWT_AWT.new_Frame(swtAwtContainter);
         
-        JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
 
         scrImage = new JLabel();
         scrImage.setHorizontalAlignment(JLabel.LEFT);
@@ -126,8 +125,14 @@ public class MobileDeviceDialog extends Dialog {
                 inspectElementAt(e.getX(), e.getY());
             }
         });
-        frame.add(panel, BorderLayout.CENTER);
-        panel.add(scrImage, BorderLayout.CENTER);
+        if (Platform.getOS().equals(Platform.OS_MACOSX)) {
+            JPanel panel = new JPanel();
+            panel.setLayout(new BorderLayout());
+            frame.add(panel, BorderLayout.CENTER);
+            panel.add(scrImage, BorderLayout.CENTER);
+        } else {
+            frame.add(scrImage);
+        }
         frame.pack();
         swtAwtContainter.pack();
         return dialogArea;
