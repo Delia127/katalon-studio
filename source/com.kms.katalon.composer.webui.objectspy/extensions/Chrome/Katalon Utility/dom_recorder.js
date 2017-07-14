@@ -6,6 +6,7 @@ var rec_elementInfoDiv; // informational div to show xpath of current hovered el
 var rec_elementInfoDivText; // xpath text to show in rec_elementInfoDiv
 
 var rec_navigateActionRecorded = false; // flag to check if navigate action is captured
+var INPUT_TYPE_INPUT_EVENT = ['email', 'number', 'password', 'search', 'tel', 'text', 'url']; // input type that will be handled by input event
 
 function rec_setupEventListeners() {
 	document.onchange = rec_change;
@@ -181,8 +182,9 @@ function rec_change(e) {
 	}
 	var elementTagName = selectedElement.tagName.toLowerCase();
 	var elementTypeName = selectedElement.type.toLowerCase();
-	var isRecorded = ((elementTagName != 'input') || (elementTagName == 'input' && elementTypeName != 'radio' && elementTypeName != 'checkbox' 
-        && elementTypeName != 'text'));
+	var isRecorded = ((elementTagName !== 'input' && elementTagName !== 'textarea') 
+            || (elementTagName == 'input' && elementTypeName != 'radio' && elementTypeName != 'checkbox' 
+                && INPUT_TYPE_INPUT_EVENT.indexOf(elementTypeName) ==- -1));
     if (!isRecorded) {
         return;
     }
@@ -282,7 +284,10 @@ function rec_inputChanged(e) {
     }
     var elementTagName = selectedElement.tagName.toLowerCase();
     var elementTypeName = selectedElement.type.toLowerCase();
-    if (elementTagName !== 'input' || elementTypeName !== 'text') {
+    var isRecorded = (elementTagName === 'input' && 
+            (INPUT_TYPE_INPUT_EVENT.indexOf(elementTypeName) !== -1)) 
+            || (elementTagName === 'textarea');
+    if (!isRecorded) {
         return;
     }
     var action = {};

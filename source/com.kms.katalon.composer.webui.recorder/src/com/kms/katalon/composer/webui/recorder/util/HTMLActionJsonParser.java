@@ -172,6 +172,9 @@ public class HTMLActionJsonParser {
             case DESELECT_ACTION_KEY:
                 return new HTMLActionMapping(HTMLAction.Deselect, actionData, targetElement);
             case MOUSE_CLICK_ACTION_KEY:
+                if (actionData == null) {
+                    return null;
+                }
                 switch (actionData) {
                 case MOUSE_CLICK_ACTION_DATA_LEFT_CLICK:
                     return new HTMLActionMapping(HTMLAction.LeftClick, "", targetElement);

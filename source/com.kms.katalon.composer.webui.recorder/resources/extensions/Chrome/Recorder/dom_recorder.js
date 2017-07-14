@@ -3,6 +3,7 @@ var gHoverElement; // whatever element the mouse is over
 var infoDiv; // parent div to contains information
 var elementInfoDiv; // informational div to show xpath of current hovered element
 var elementInfoDivText; // xpath text to show in elementInfoDiv
+var INPUT_TYPE_INPUT_EVENT = ['email', 'number', 'password', 'search', 'tel', 'text', 'url']; // input type that will be handled by input event
 
 function setupDOMSelection() {
 	setupEventListeners();
@@ -166,8 +167,9 @@ function change(e) {
 	}
 	var elementTagName = selectedElement.tagName.toLowerCase();
 	var elementTypeName = selectedElement.type.toLowerCase();
-	var isRecorded = ((elementTagName != 'input') || (elementTagName == 'input' && elementTypeName != 'radio' && elementTypeName != 'checkbox' 
-	    && elementTypeName != 'text'));
+	var isRecorded = ((elementTagName !== 'input' && elementTagName !== 'textarea') 
+	        || (elementTagName == 'input' && elementTypeName != 'radio' && elementTypeName != 'checkbox' 
+	            && INPUT_TYPE_INPUT_EVENT.indexOf(elementTypeName) ==- -1));
 	if (!isRecorded) {
 		return;
 	}
@@ -263,7 +265,10 @@ function inputChanged(e) {
     }
     var elementTagName = selectedElement.tagName.toLowerCase();
     var elementTypeName = selectedElement.type.toLowerCase();
-    if (elementTagName !== 'input' || elementTypeName !== 'text') {
+    var isRecorded = (elementTagName === 'input' && 
+            (INPUT_TYPE_INPUT_EVENT.indexOf(elementTypeName) !== -1)) 
+            || (elementTagName === 'textarea');
+    if (!isRecorded) {
         return;
     }
     var action = {};
