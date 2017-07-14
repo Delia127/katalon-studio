@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.EditingSupport;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.composer.testsuite.editors.VariableTestDataLinkCellEditor;
@@ -77,6 +78,7 @@ public class VariableTestDataLinkColumnEditingSupport extends EditingSupport {
             variableLink.setTestDataLinkId(dataLinkTreeNode.getId());
             variableLink.setValue("");
             getViewer().update(element, null);
+            getViewer().setSelection(new StructuredSelection(variableLink));
             testDataView.setDirty(true);
         }
     }

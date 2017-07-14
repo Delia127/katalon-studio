@@ -368,7 +368,7 @@ public class TestSuitePartDataBindingView {
                             testCaseVariableTableViewer.update(variableLink, null);
                             setDirty(true);
                         });
-                ;
+                testCaseVariableTableViewer.setSelection(structuredSelection);
 
             }
         }, setTypeMenu, variableType.toString(), SWT.PUSH));
@@ -401,7 +401,7 @@ public class TestSuitePartDataBindingView {
                             testCaseVariableTableViewer.update(variableLink, null);
                             setDirty(true);
                         });
-                ;
+                testCaseVariableTableViewer.setSelection(structuredSelection);
 
             }
         }, setTestDataMenu, testCaseTestDataLink.getTestDataId(), SWT.PUSH));
