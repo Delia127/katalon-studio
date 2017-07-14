@@ -864,21 +864,18 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
         return childrenParts;
     }
 
-    public boolean isTestCaseEmpty() throws Exception {
+    public boolean isTestCaseEmpty() {
+        return (childTestCasePart.isTestCaseEmpty());
+    }
+
+    public void validateScriptErrors() throws Exception {
         try {
-            scriptNode = GroovyWrapperParser
+            GroovyWrapperParser
                     .parseGroovyScriptIntoNodeWrapper(groovyEditor.getViewer().getDocument().get());
-            childTestCasePart.loadASTNodesToTreeTable(scriptNode);
-            isScriptChanged = false;
         } catch (Exception e) {
-            isScriptChanged = true;
             GroovyEditorUtil.showProblems(groovyEditor);
             throw e;
         }
-        if (scriptNode == null) {
-            scriptNode = new ScriptNodeWrapper(testCase.getRelativePathForUI());
-        }
-        return (childTestCasePart.isTestCaseEmpty());
     }
 
     private void addTestObjectDropListener() {

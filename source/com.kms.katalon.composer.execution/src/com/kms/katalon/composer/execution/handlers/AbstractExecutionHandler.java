@@ -158,18 +158,19 @@ public abstract class AbstractExecutionHandler {
                     && selectedPart.getObject() instanceof TestCaseCompositePart) {
                 TestCaseCompositePart testCaseCompositePart = (TestCaseCompositePart) selectedPart.getObject();
                 try {
-                    if (testCaseCompositePart.isTestCaseEmpty()) {
-                        MessageDialog.openInformation(Display.getCurrent().getActiveShell(),
-                                StringConstants.HAND_TITLE_INFORMATION,
-                                StringConstants.HAND_INFO_MSG_NO_TEST_STEP_IN_TEST_CASE);
-                        return null;
-                    }
-                    return testCaseCompositePart.getOriginalTestCase();
+                    testCaseCompositePart.validateScriptErrors();
                 } catch (Exception e) {
                     MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
                             StringConstants.HAND_ERROR_MSG_ERROR_IN_SCRIPT);
                     return null;
                 }
+                if (testCaseCompositePart.isTestCaseEmpty()) {
+                    MessageDialog.openInformation(Display.getCurrent().getActiveShell(),
+                            StringConstants.HAND_TITLE_INFORMATION,
+                            StringConstants.HAND_INFO_MSG_NO_TEST_STEP_IN_TEST_CASE);
+                    return null;
+                }
+                return testCaseCompositePart.getOriginalTestCase();
             } else if (partElementId.startsWith(IdConstants.TESTSUITE_CONTENT_PART_ID_PREFIX)
                     && selectedPart.getObject() instanceof TestSuiteCompositePart) {
                 TestSuiteCompositePart testSuiteComposite = (TestSuiteCompositePart) selectedPart.getObject();
