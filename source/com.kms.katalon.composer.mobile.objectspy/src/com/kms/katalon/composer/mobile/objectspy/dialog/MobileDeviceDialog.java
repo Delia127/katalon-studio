@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.mobile.objectspy.dialog;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
@@ -11,6 +12,7 @@ import java.util.UUID;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -108,6 +110,9 @@ public class MobileDeviceDialog extends Dialog {
         swtAwtContainter.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         frame = SWT_AWT.new_Frame(swtAwtContainter);
+        
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
 
         scrImage = new JLabel();
         scrImage.setHorizontalAlignment(JLabel.LEFT);
@@ -121,7 +126,8 @@ public class MobileDeviceDialog extends Dialog {
                 inspectElementAt(e.getX(), e.getY());
             }
         });
-        frame.add(scrImage);
+        frame.add(panel, BorderLayout.CENTER);
+        panel.add(scrImage, BorderLayout.CENTER);
         frame.pack();
         swtAwtContainter.pack();
         return dialogArea;
@@ -291,13 +297,14 @@ public class MobileDeviceDialog extends Dialog {
             scrImage.setIcon(icon);
             scrImage.revalidate();
             scrImage.repaint();
-
-            Display.getDefault().asyncExec(new Runnable() {
+            
+            Display.getDefault().syncExec(new Runnable() {
                 @Override
                 public void run() {
                     scrolledComposite.setMinSize(icon.getIconWidth(), icon.getIconHeight());
                 }
             });
+            frame.pack();
         } catch (Exception ex) {
             LoggerSingleton.logError(ex);
         }
