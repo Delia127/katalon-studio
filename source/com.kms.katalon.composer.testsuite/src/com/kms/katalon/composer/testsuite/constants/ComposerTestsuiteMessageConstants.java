@@ -67,6 +67,10 @@ public class ComposerTestsuiteMessageConstants extends NLS {
 
     public static String HAND_ERROR_MSG_UNABLE_TO_RENAME_TEST_SUITE;
 
+    public static String LBL_SET_TEST_DATA;
+
+    public static String LBL_SET_TYPE;
+
     public static String LIS_TITLE_TEST_DATA_BROWSER;
 
     public static String LIS_ERROR_MSG_UNABLE_TO_ADD_TEST_DATA;
