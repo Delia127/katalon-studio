@@ -326,6 +326,9 @@ public class TestSuitePartDataBindingView {
         setTestDataToolItem.addSelectionListener(new ToolItemDropdownSelectionListener() {
             @Override
             public void widgetSelected(SelectionEvent e) {
+                if (!setTestDataToolItem.isEnabled()) {
+                    return;
+                }
                 Menu setTestDataMenu = new Menu(setTestDataToolItem.getParent().getShell());
                 setTestDataToolItem.setData(setTestDataMenu);
                 fillSetTestDataToolItemMenu(setTestDataMenu);
@@ -769,6 +772,9 @@ public class TestSuitePartDataBindingView {
                 return;
             }
             ToolItem toolItem = (ToolItem) item;
+            if (!toolItem.isEnabled()) {
+                return;
+            }
             if (toolItem.getData() instanceof Menu) {
                 Rectangle rect = toolItem.getBounds();
                 Point pt = toolItem.getParent().toDisplay(new Point(rect.x, rect.y));
