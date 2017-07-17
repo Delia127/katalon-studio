@@ -287,16 +287,33 @@ public class MobileDeviceDialog extends Dialog {
             scrImage.revalidate();
             scrImage.repaint();
             
-            Display.getDefault().syncExec(new Runnable() {
-                @Override
-                public void run() {
-                    scrolledComposite.setMinSize(icon.getIconWidth(), icon.getIconHeight());
-                }
-            });
-            frame.pack();
+            if (Platform.getOS().equals(Platform.OS_MACOSX)) {
+                refreshViewForMac();
+                return;
+            }
+            refreshView();
         } catch (Exception ex) {
             LoggerSingleton.logError(ex);
         }
+    }
+
+    private void refreshView() {
+        Display.getDefault().asyncExec(new Runnable() {
+            @Override
+            public void run() {
+                scrolledComposite.setMinSize(icon.getIconWidth(), icon.getIconHeight());
+            }
+        });
+    }
+
+    private void refreshViewForMac() {
+        Display.getDefault().syncExec(new Runnable() {
+            @Override
+            public void run() {
+                scrolledComposite.setMinSize(icon.getIconWidth(), icon.getIconHeight());
+            }
+        });
+        frame.pack();
     }
 
     @Override
