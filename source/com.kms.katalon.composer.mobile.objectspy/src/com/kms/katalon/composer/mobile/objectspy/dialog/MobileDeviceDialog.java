@@ -267,22 +267,6 @@ public class MobileDeviceDialog extends Dialog {
     public void refreshDialog(File imageFile, MobileElement root) {
         try {
             String userTempDir = System.getProperty("java.io.tmpdir");
-            if (root != null && root.getAttributes().containsKey(GUIObject.WIDTH)
-                    && root.getAttributes().containsKey(GUIObject.HEIGHT)) {
-                double appWidth = Double.parseDouble(root.getAttributes().get(GUIObject.WIDTH));
-                double appHeight = Double.parseDouble(root.getAttributes().get(GUIObject.HEIGHT));
-
-                ImageDescriptor imgDesc = ImageDescriptor.createFromURL(imageFile.toURI().toURL());
-                Image img = imgDesc.createImage();
-                currentScreenShot = scaleImage(img, appWidth, appHeight);
-
-                String scaledImageFilePath = userTempDir + File.separator + UUID.randomUUID() + "_scaled1.png";
-                ImageLoader imgLoader = new ImageLoader();
-                imgLoader.data = new ImageData[] { this.currentScreenShot.getImageData() };
-                imgLoader.save(scaledImageFilePath, SWT.IMAGE_PNG);
-
-                imageFile = new File(scaledImageFilePath);
-            }
 
             ImageDescriptor imgDesc = ImageDescriptor.createFromURL(imageFile.toURI().toURL());
             Image img = imgDesc.createImage();
