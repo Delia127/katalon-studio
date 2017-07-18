@@ -30,6 +30,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 
@@ -233,6 +235,14 @@ public class MobileDeviceDialog extends Dialog {
     protected void configureShell(Shell shell) {
         super.configureShell(shell);
         shell.setText(DIALOG_TITLE);
+        if (Platform.getOS().equals(Platform.OS_MACOSX)) {
+            shell.addListener(SWT.Resize, new Listener() {
+                @Override
+                public void handleEvent(Event event) {
+                    refreshViewForMac();
+                }
+            });
+        }
     }
 
     @Override
@@ -298,6 +308,9 @@ public class MobileDeviceDialog extends Dialog {
     }
 
     private void refreshView() {
+        if (scrolledComposite == null || icon == null) {
+            return;
+        }
         Display.getDefault().asyncExec(new Runnable() {
             @Override
             public void run() {
@@ -307,6 +320,9 @@ public class MobileDeviceDialog extends Dialog {
     }
 
     private void refreshViewForMac() {
+        if (scrolledComposite == null || icon == null || frame == null) {
+            return;
+        }
         Display.getDefault().syncExec(new Runnable() {
             @Override
             public void run() {
