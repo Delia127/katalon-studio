@@ -316,7 +316,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         txtStartUrl = new Text(toolbarRightSideComposite, SWT.BORDER);
         GridData gdTxtStartUrl = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
         gdTxtStartUrl.heightHint = 20;
-        gdTxtStartUrl.minimumWidth = 300;
+        gdTxtStartUrl.widthHint = 300;
         txtStartUrl.setLayoutData(gdTxtStartUrl);
         txtStartUrl.addKeyListener(new KeyAdapter() {
             @Override
