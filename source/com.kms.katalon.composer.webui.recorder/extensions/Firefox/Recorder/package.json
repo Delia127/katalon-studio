@@ -1,7 +1,7 @@
 {
   "name": "recorder",
   "title": "Recorder",
-  "version": "0.0.7",
+  "version": "0.0.11",
   "description": "HTML Element Recorder Firefox addon for Katalon",
   "author": "Katalon",
   "main": "./lib/main.js",
