@@ -56,8 +56,13 @@ public class ParameterTable extends TableViewer {
         this.editElement(property, 0);
     }
 
-    public void deleteRowByColumnValue(int columnIndex, String value) {
-        this.getInput().removeIf(i -> i.getName().equals(value));
+    public void addRows(List<WebElementPropertyEntity> properties) {
+        data.addAll(properties);
+        markDirty();
+    }
+
+    public boolean deleteRowByColumnValue(int columnIndex, String value) {
+        return this.getInput().removeIf(i -> i.getName().equals(value));
     }
 
     public void deleteSelections() {

@@ -200,6 +200,10 @@
 								<artifact>
 									<id>org.apache.lucene:lucene-core:6.3.0</id>
 								</artifact>
+								<!-- https://developers.google.com/api-client-library/java/google-oauth-java-client/ -->
+								<artifact>
+									<id>com.google.oauth-client:google-oauth-client:1.22.0</id>
+								</artifact>
 							</artifacts>
 						</configuration>
 					</execution>

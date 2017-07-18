@@ -1,13 +1,17 @@
 package com.kms.katalon.composer.webservice.parts;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -61,10 +65,12 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
@@ -102,8 +108,11 @@ import com.kms.katalon.constants.GlobalMessageConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ObjectRepositoryController;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.util.internal.Base64;
+import com.kms.katalon.core.webservice.common.PrivateKeyReader;
+import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
@@ -122,15 +131,59 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
 
     private static final int AUTH_LBL_WIDTH = 100;
 
-    private static final int AUTH_FIELD_WIDTH = 250;
+    private static final int AUTH_FIELD_WIDTH = 300;
 
     private static final String BASIC_AUTH_PREFIX_VALUE = ComposerWebserviceMessageConstants.BASIC_AUTH_PREFIX_VALUE;
 
-    private static final String HTTP_HEADER_AUTHORIZATION = "Authorization";
+    private static final String HTTP_HEADER_AUTHORIZATION = RequestHeaderConstants.AUTHORIZATION;
+
+    private static final String AUTH_META_PREFIX = RequestHeaderConstants.AUTH_META_PREFIX;
+
+    private static final String AUTHORIZATION_OAUTH_REALM = RequestHeaderConstants.AUTHORIZATION_OAUTH_REALM;
+
+    private static final String AUTHORIZATION_OAUTH_TOKEN_SECRET = RequestHeaderConstants.AUTHORIZATION_OAUTH_TOKEN_SECRET;
+
+    private static final String AUTHORIZATION_OAUTH_TOKEN = RequestHeaderConstants.AUTHORIZATION_OAUTH_TOKEN;
+
+    private static final String AUTHORIZATION_OAUTH_SIGNATURE_METHOD = RequestHeaderConstants.AUTHORIZATION_OAUTH_SIGNATURE_METHOD;
+
+    private static final String AUTHORIZATION_OAUTH_CONSUMER_SECRET = RequestHeaderConstants.AUTHORIZATION_OAUTH_CONSUMER_SECRET;
+
+    private static final String AUTHORIZATION_OAUTH_CONSUMER_KEY = RequestHeaderConstants.AUTHORIZATION_OAUTH_CONSUMER_KEY;
+
+    protected static final String AUTHORIZATION_TYPE = RequestHeaderConstants.AUTHORIZATION_TYPE;
 
     private static final String BASIC_AUTH = ComposerWebserviceMessageConstants.BASIC_AUTH;
 
     private static final String NO_AUTH = ComposerWebserviceMessageConstants.NO_AUTH;
+
+    private static final String LBL_SIGNATURE_METHOD = ComposerWebserviceMessageConstants.PA_LBL_SIGNATURE_METHOD;
+
+    private static final String TOOLTIP_CONSUMER_SECRET = ComposerWebserviceMessageConstants.PA_TOOLTIP_CONSUMER_SECRET;
+
+    private static final String TXT_IMPORT_CONSUMER_SECRET_FROM_FILE = ComposerWebserviceMessageConstants.PA_TXT_IMPORT_CONSUMER_SECRET_FROM_FILE;
+
+    private static final String TOOLTIP_IMPORT_CONSUMER_SECRET_FROM_FILE = ComposerWebserviceMessageConstants.PA_TOOLTIP_IMPORT_CONSUMER_SECRET_FROM_FILE;
+
+    private static final String WARNING_UNSUPORTED_PRIVATE_KEY_FILE = ComposerWebserviceMessageConstants.PA_WARNING_UNSUPORTED_PRIVATE_KEY_FILE;
+
+    private static final String LBL_CONSUMER_KEY = ComposerWebserviceMessageConstants.PA_LBL_CONSUMER_KEY;
+
+    private static final String LBL_CONSUMER_SECRET = ComposerWebserviceMessageConstants.PA_LBL_CONSUMER_SECRET;
+
+    private static final String LBL_TOKEN = ComposerWebserviceMessageConstants.PA_LBL_TOKEN;
+
+    private static final String LBL_TOKEN_SECRET = ComposerWebserviceMessageConstants.PA_LBL_TOKEN_SECRET;
+
+    private static final String LBL_REALM = ComposerWebserviceMessageConstants.PA_LBL_REALM;
+
+    private static final String TXT_MSG_OPTIONAL = ComposerWebserviceMessageConstants.PA_TXT_MSG_OPTIONAL;
+
+    private static final String RSA_SHA1 = RequestHeaderConstants.SIGNATURE_METHOD_RSA_SHA1;
+
+    private static final String HMAC_SHA1 = RequestHeaderConstants.SIGNATURE_METHOD_HMAC_SHA1;
+
+    protected static final String OAUTH_1_0 = RequestHeaderConstants.AUTHORIZATION_TYPE_OAUTH_1_0;
 
     private static final int MIN_PART_WIDTH = 400;
 
@@ -150,6 +203,12 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
     protected ScrolledComposite sComposite;
 
     protected Composite mainComposite;
+
+    protected Composite userComposite;
+
+    protected Composite oauthComposite;
+
+    protected Composite updateHeaderComposite;
 
     protected ParameterTable tblParams;
 
@@ -182,6 +241,22 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
     protected Text txtUsername;
 
     protected Text txtPassword;
+
+    protected Text txtConsumerKey;
+
+    protected Text txtConsumerSecret;
+
+    protected Text txtToken;
+
+    protected Text txtTokenSecret;
+
+    protected Text txtSignatureMethod;
+
+    protected Text txtRealm;
+
+    protected CCombo ccbOAuth1SignatureMethod;
+
+    protected List<WebElementPropertyEntity> oauth1Headers = new ArrayList<WebElementPropertyEntity>();
 
     @Inject
     protected MDirtyable dirtyable;
@@ -320,62 +395,70 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
         ccbAuthType.setLayoutData(gdCcbAuthType);
         ccbAuthType.add(NO_AUTH);
         ccbAuthType.add(BASIC_AUTH);
+        ccbAuthType.add(OAUTH_1_0);
 
-        Composite userComposite = new Composite(formComposite, SWT.NONE);
+        userComposite = new Composite(formComposite, SWT.NONE);
+        oauthComposite = new Composite(formComposite, SWT.NONE);
+        updateHeaderComposite = new Composite(formComposite, SWT.NONE);
+
+        createBasicAuthInput(userComposite);
+        createOAuth1Input(oauthComposite);
+        createUpdateHeaderButton(updateHeaderComposite);
+
         ccbAuthType.addSelectionListener(new SelectionAdapter() {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                setDirty();
-                // Show the username password composite below and add/remove the authorization info in headers
-                if (BASIC_AUTH.equals(ccbAuthType.getText())) {
-                    userComposite.setVisible(true);
-                    formComposite.layout();
-                    tblHeaders.addRow(createAuthHeaderElement());
-                    tblHeaders.refresh();
-                    return;
-                }
-
-                if (NO_AUTH.equals(ccbAuthType.getText())) {
-                    userComposite.setVisible(false);
-                    formComposite.layout();
-                    tblHeaders.deleteRowByColumnValue(0, HTTP_HEADER_AUTHORIZATION);
-                    tblHeaders.refresh();
-                }
+                renderAuthenticationUI(ccbAuthType.getText());
             }
         });
+    }
 
+    /**
+     * @param composite Composite with GridData layout
+     * @param isVisible
+     */
+    protected void setCompositeVisible(Composite composite, boolean isVisible) {
+        composite.setVisible(isVisible);
+        GridData gridData = (GridData) composite.getLayoutData();
+        gridData.exclude = !isVisible;
+        Composite parent = composite.getParent();
+        parent.layout(true, true);
+        parent.pack();
+    }
+
+    private void createBasicAuthInput(Composite parent) {
         GridLayout glUserComposite = new GridLayout(2, false);
         glUserComposite.marginWidth = 0;
         glUserComposite.marginHeight = 0;
-        userComposite.setLayout(glUserComposite);
-        userComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+        parent.setLayout(glUserComposite);
+        parent.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
 
-        Label lblUsername = new Label(userComposite, SWT.NONE);
+        Label lblUsername = new Label(parent, SWT.NONE);
         lblUsername.setText(ComposerWebserviceMessageConstants.LBL_USERNAME);
         GridData gdLblUsername = new GridData(SWT.LEFT, SWT.CENTER, false, false);
         gdLblUsername.widthHint = AUTH_LBL_WIDTH;
         lblUsername.setLayoutData(gdLblUsername);
 
-        txtUsername = new Text(userComposite, SWT.BORDER | SWT.SINGLE);
+        txtUsername = new Text(parent, SWT.BORDER | SWT.SINGLE);
         GridData gdTxtUsername = new GridData(SWT.FILL, SWT.CENTER, true, false);
         gdTxtUsername.widthHint = AUTH_FIELD_WIDTH;
         txtUsername.setLayoutData(gdTxtUsername);
 
-        Label lblPassword = new Label(userComposite, SWT.NONE);
+        Label lblPassword = new Label(parent, SWT.NONE);
         lblPassword.setText(ComposerWebserviceMessageConstants.LBL_PASSWORD);
         GridData gdLblPassword = new GridData(SWT.LEFT, SWT.CENTER, false, false);
         gdLblPassword.widthHint = AUTH_LBL_WIDTH;
         lblPassword.setLayoutData(gdLblPassword);
 
-        txtPassword = new Text(userComposite, SWT.BORDER | SWT.SINGLE);
+        txtPassword = new Text(parent, SWT.BORDER | SWT.SINGLE);
         GridData gdTxtPassword = new GridData(SWT.FILL, SWT.CENTER, true, false);
         gdTxtPassword.widthHint = AUTH_FIELD_WIDTH;
         txtPassword.setLayoutData(gdTxtPassword);
         txtPassword.setEchoChar(PASSWORD_CHAR_MASK);
 
-        new Label(userComposite, SWT.NONE);
-        final Button chkShowPassword = new Button(userComposite, SWT.CHECK);
+        new Label(parent, SWT.NONE);
+        final Button chkShowPassword = new Button(parent, SWT.CHECK);
         chkShowPassword.setText(ComposerWebserviceMessageConstants.CHK_SHOW_PASSWORD);
         chkShowPassword.addSelectionListener(new SelectionAdapter() {
 
@@ -387,17 +470,141 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
                 }
             }
         });
+    }
 
-        new Label(userComposite, SWT.NONE);
-        Button btnUpdateHeader = new Button(userComposite, SWT.FLAT);
+    private void createOAuth1Input(Composite parent) {
+        GridLayout gl = new GridLayout(2, false);
+        gl.marginWidth = 0;
+        gl.marginHeight = 0;
+        parent.setLayout(gl);
+        parent.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
+
+        txtConsumerKey = addAuthInput(LBL_CONSUMER_KEY, txtConsumerKey, parent, null);
+
+        Label lblConsumerSecret = new Label(parent, SWT.NONE);
+        lblConsumerSecret.setText(LBL_CONSUMER_SECRET);
+        GridData gdLblConsumerSecret = new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 2);
+        gdLblConsumerSecret.widthHint = AUTH_LBL_WIDTH;
+        lblConsumerSecret.setLayoutData(gdLblConsumerSecret);
+
+        txtConsumerSecret = new Text(parent, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
+        GridData gdTxtConsumerSecret = new GridData(SWT.FILL, SWT.CENTER, true, false);
+        gdTxtConsumerSecret.widthHint = AUTH_FIELD_WIDTH;
+        gdTxtConsumerSecret.heightHint = 80;
+        txtConsumerSecret.setLayoutData(gdTxtConsumerSecret);
+        txtConsumerSecret.setToolTipText(TOOLTIP_CONSUMER_SECRET);
+
+        Button btnLoadSecretFromFile = new Button(parent, SWT.FLAT);
+        btnLoadSecretFromFile.setText(TXT_IMPORT_CONSUMER_SECRET_FROM_FILE);
+        btnLoadSecretFromFile.setToolTipText(TOOLTIP_IMPORT_CONSUMER_SECRET_FROM_FILE);
+        btnLoadSecretFromFile.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Shell activeShell = Display.getCurrent().getActiveShell();
+                FileDialog dialog = new FileDialog(activeShell);
+                dialog.setFilterPath(ProjectController.getInstance().getCurrentProject().getFolderLocation());
+                String filePath = dialog.open();
+                if (StringUtils.isEmpty(filePath)) {
+                    return;
+                }
+                try {
+                    String fileContent = FileUtils.readFileToString(new File(filePath));
+                    if (txtConsumerSecret == null || fileContent == null) {
+                        return;
+                    }
+                    if (RSA_SHA1.equals(ccbOAuth1SignatureMethod.getText())
+                            && !(StringUtils.contains(fileContent, PrivateKeyReader.P1_BEGIN_MARKER)
+                                    || StringUtils.contains(fileContent, PrivateKeyReader.P8_BEGIN_MARKER))) {
+                        MessageDialog.openWarning(activeShell, StringConstants.WARN,
+                                WARNING_UNSUPORTED_PRIVATE_KEY_FILE);
+                        return;
+                    }
+                    txtConsumerSecret.setText(fileContent);
+                } catch (IOException ex) {
+                    LoggerSingleton.logError(ex);
+                }
+            }
+        });
+
+        Label lblSignatureMethod = new Label(parent, SWT.NONE);
+        lblSignatureMethod.setText(LBL_SIGNATURE_METHOD);
+        GridData gdLblSignatureMethod = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+        gdLblSignatureMethod.widthHint = AUTH_LBL_WIDTH;
+        lblSignatureMethod.setLayoutData(gdLblSignatureMethod);
+
+        ccbOAuth1SignatureMethod = new CCombo(parent, SWT.FLAT | SWT.READ_ONLY | SWT.BORDER);
+        GridData gdCcbSignatureMethod = new GridData(SWT.FILL, SWT.FILL, true, false);
+        gdCcbSignatureMethod.widthHint = AUTH_FIELD_WIDTH;
+        gdCcbSignatureMethod.heightHint = 20;
+        ccbOAuth1SignatureMethod.setLayoutData(gdCcbSignatureMethod);
+        ccbOAuth1SignatureMethod.add(HMAC_SHA1);
+        ccbOAuth1SignatureMethod.add(RSA_SHA1);
+        ccbOAuth1SignatureMethod.select(0);
+
+        txtToken = addAuthInput(LBL_TOKEN, txtToken, parent, null);
+        txtTokenSecret = addAuthInput(LBL_TOKEN_SECRET, txtTokenSecret, parent, null);
+        txtRealm = addAuthInput(LBL_REALM, txtRealm, parent, TXT_MSG_OPTIONAL);
+    }
+
+    private Text addAuthInput(String label, Text txtField, Composite parent, String placeholder) {
+        Label lbl = new Label(parent, SWT.NONE);
+        lbl.setText(label);
+        GridData gdLbl = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+        gdLbl.widthHint = AUTH_LBL_WIDTH;
+        lbl.setLayoutData(gdLbl);
+
+        txtField = new Text(parent, SWT.BORDER | SWT.SINGLE);
+        GridData gdTxt = new GridData(SWT.FILL, SWT.CENTER, true, false);
+        gdTxt.widthHint = AUTH_FIELD_WIDTH;
+        txtField.setLayoutData(gdTxt);
+        if (placeholder != null) {
+            txtField.setMessage(placeholder);
+            txtField.setToolTipText(placeholder);
+        }
+        return txtField;
+    }
+
+    private void createUpdateHeaderButton(Composite parent) {
+        GridLayout gl = new GridLayout(2, false);
+        gl.marginWidth = 0;
+        gl.marginHeight = 0;
+        parent.setLayout(gl);
+        parent.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
+
+        Label lbl = new Label(parent, SWT.NONE);
+        GridData gdLbl = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+        gdLbl.widthHint = AUTH_LBL_WIDTH;
+        lbl.setLayoutData(gdLbl);
+
+        Button btnUpdateHeader = new Button(parent, SWT.FLAT);
         btnUpdateHeader.setText(ComposerWebserviceMessageConstants.BTN_UPDATE_TO_HEADERS);
         btnUpdateHeader.addSelectionListener(new SelectionAdapter() {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
                 // Update authorization to header
-                tblHeaders.deleteRowByColumnValue(0, HTTP_HEADER_AUTHORIZATION);
-                tblHeaders.addRow(createAuthHeaderElement());
+                String authType = ccbAuthType.getText();
+                if (tblHeaders.deleteRowByColumnValue(0, HTTP_HEADER_AUTHORIZATION)) {
+                    tblHeaders.refresh();
+                    setDirty();
+                }
+
+                if (BASIC_AUTH.equals(authType)) {
+                    removeOAuth1Headers();
+                    tblHeaders.addRow(createBasicAuthHeaderElement());
+                    return;
+                }
+
+                if (OAUTH_1_0.equals(authType)) {
+                    createOAuth1Headers(txtConsumerKey.getText(), txtConsumerSecret.getText(), txtToken.getText(),
+                            txtTokenSecret.getText(), ccbOAuth1SignatureMethod.getText(), txtRealm.getText());
+                    return;
+                }
+
+                // No authorization
+                removeOAuth1Headers();
+                tblHeaders.refresh();
             }
         });
     }
@@ -782,23 +989,94 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
         EventUtil.post(EventConstants.PROPERTIES_ENTITY, null);
     }
 
-    private WebElementPropertyEntity createAuthHeaderElement() {
+    private WebElementPropertyEntity createBasicAuthHeaderElement() {
         return new WebElementPropertyEntity(HTTP_HEADER_AUTHORIZATION,
                 BASIC_AUTH_PREFIX_VALUE + Base64.basicEncode(txtUsername.getText(), txtPassword.getText()));
+    }
+
+    protected void populateOAuth1FromHeader() {
+        oauth1Headers.clear();
+        oauth1Headers.addAll(tblHeaders.getInput()
+                .stream()
+                .filter(header -> header.getName().startsWith(AUTH_META_PREFIX))
+                .collect(Collectors.toList()));
+        if (oauth1Headers.isEmpty()) {
+            return;
+        }
+        java.util.Optional<WebElementPropertyEntity> authType = oauth1Headers.stream()
+                .filter(header -> AUTHORIZATION_TYPE.equals(header.getName()) && OAUTH_1_0.equals(header.getValue()))
+                .findFirst();
+        if (!authType.isPresent()) {
+            // Not an OAuth 1.0 authorization
+            return;
+        }
+        int indexOfOAuth1 = Arrays.asList(ccbAuthType.getItems()).indexOf(OAUTH_1_0);
+        ccbAuthType.select(indexOfOAuth1);
+
+        oauth1Headers.forEach(header -> {
+            String name = header.getName();
+            String value = header.getValue();
+            if (StringUtils.equals(name, AUTHORIZATION_OAUTH_CONSUMER_KEY)) {
+                txtConsumerKey.setText(value);
+                return;
+            }
+            if (StringUtils.equals(name, AUTHORIZATION_OAUTH_CONSUMER_SECRET)) {
+                txtConsumerSecret.setText(value);
+                return;
+            }
+            if (StringUtils.equals(name, AUTHORIZATION_OAUTH_SIGNATURE_METHOD)) {
+                int index = Arrays.asList(ccbOAuth1SignatureMethod.getItems()).indexOf(value);
+                ccbOAuth1SignatureMethod.select(index);
+                return;
+            }
+            if (StringUtils.equals(name, AUTHORIZATION_OAUTH_TOKEN)) {
+                txtToken.setText(value);
+                return;
+            }
+            if (StringUtils.equals(name, AUTHORIZATION_OAUTH_TOKEN_SECRET)) {
+                txtTokenSecret.setText(value);
+                return;
+            }
+            if (StringUtils.equals(name, AUTHORIZATION_OAUTH_REALM)) {
+                txtRealm.setText(value);
+                return;
+            }
+        });
+    }
+
+    protected void createOAuth1Headers(String consumerKey, String consumerSecretOrPrivateKey, String token,
+            String tokenSecret, String signatureMethod, String realm) {
+        removeOAuth1Headers();
+        oauth1Headers.add(new WebElementPropertyEntity(AUTHORIZATION_TYPE, OAUTH_1_0));
+        oauth1Headers.add(new WebElementPropertyEntity(AUTHORIZATION_OAUTH_CONSUMER_KEY, consumerKey));
+        oauth1Headers
+                .add(new WebElementPropertyEntity(AUTHORIZATION_OAUTH_CONSUMER_SECRET, consumerSecretOrPrivateKey));
+        oauth1Headers.add(new WebElementPropertyEntity(AUTHORIZATION_OAUTH_SIGNATURE_METHOD, signatureMethod));
+        if (StringUtils.isNotBlank(token)) {
+            oauth1Headers.add(new WebElementPropertyEntity(AUTHORIZATION_OAUTH_TOKEN, token));
+        }
+        if (StringUtils.isNotBlank(tokenSecret)) {
+            oauth1Headers.add(new WebElementPropertyEntity(AUTHORIZATION_OAUTH_TOKEN_SECRET, tokenSecret));
+        }
+        if (StringUtils.isNotBlank(realm)) {
+            oauth1Headers.add(new WebElementPropertyEntity(AUTHORIZATION_OAUTH_REALM, realm));
+        }
+        tblHeaders.addRows(oauth1Headers);
+    }
+
+    protected void removeOAuth1Headers() {
+        tblHeaders.deleteRows(oauth1Headers);
+        oauth1Headers.clear();
     }
 
     protected void populateBasicAuthFromHeader() {
         java.util.Optional<WebElementPropertyEntity> authHeader = tblHeaders.getInput()
                 .stream()
-                .filter(i -> HTTP_HEADER_AUTHORIZATION.equalsIgnoreCase(i.getName()))
+                .filter(i -> HTTP_HEADER_AUTHORIZATION.equalsIgnoreCase(i.getName())
+                        && StringUtils.startsWithIgnoreCase(i.getValue(), BASIC_AUTH_PREFIX_VALUE))
                 .findFirst();
-        if (!authHeader.isPresent()
-                || !StringUtils.startsWithIgnoreCase(authHeader.get().getValue(), BASIC_AUTH_PREFIX_VALUE)) {
-            // No Auth: Hide Username and Password fields
-            ccbAuthType.select(0);
-            Composite userComposite = txtUsername.getParent();
-            userComposite.setVisible(false);
-            userComposite.getParent().layout();
+        if (!authHeader.isPresent()) {
+            // Not a basic authorization
             return;
         }
 
@@ -837,6 +1115,14 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
 
     protected boolean isInvalidURL(String url) {
         return StringUtils.isBlank(url) || !(new UrlValidator(UrlValidator.ALLOW_LOCAL_URLS).isValid(url));
+    }
+
+    protected void renderAuthenticationUI(String authType) {
+        setCompositeVisible(userComposite, BASIC_AUTH.equals(authType));
+        setCompositeVisible(oauthComposite, OAUTH_1_0.equals(authType));
+        if (StringUtils.isBlank(authType)) {
+            ccbAuthType.select(0);
+        }
     }
 
 }

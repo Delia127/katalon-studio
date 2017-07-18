@@ -36,13 +36,32 @@ import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.webservice.constants.CoreWebserviceMessageConstants;
+import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
 import com.kms.katalon.core.webservice.exception.WebServiceException;
 
 public class SoapClient extends BasicRequestor {
 
+    private static final String POST = RequestHeaderConstants.POST;
+
+    private static final String SSL = RequestHeaderConstants.SSL;
+
+    private static final String HTTPS = RequestHeaderConstants.HTTPS;
+
+    private static final String SOAP = RequestHeaderConstants.SOAP;
+
+    private static final String SOAP12 = RequestHeaderConstants.SOAP12;
+
+    private static final String SOAP_ACTION = RequestHeaderConstants.SOAP_ACTION;
+
+    private static final String CONTENT_TYPE = RequestHeaderConstants.CONTENT_TYPE;
+
+    private static final String TEXT_XML_CHARSET_UTF_8 = RequestHeaderConstants.CONTENT_TYPE_TEXT_XML_UTF_8;
+
+    private static final String APPLICATION_XML = RequestHeaderConstants.CONTENT_TYPE_APPLICATION_XML;
+
     private String serviceName;
 
-    private String protocol = "SOAP"; // Default is SOAP
+    private String protocol = SOAP; // Default is SOAP
 
     private String endPoint;
 
@@ -91,11 +110,11 @@ public class SoapClient extends BasicRequestor {
             }
 
             if (objBinding != null && objBinding instanceof SOAPBindingImpl) {
-                proc = "SOAP";
+                proc = SOAP;
                 endPoint = ((SOAPAddressImpl) port.getExtensibilityElements().get(0)).getLocationURI();
                 actionUri = ((SOAPOperation) operation.getExtensibilityElements().get(0)).getSoapActionURI();
             } else if (objBinding != null && objBinding instanceof SOAP12BindingImpl) {
-                proc = "SOAP12";
+                proc = SOAP12;
                 endPoint = ((SOAP12AddressImpl) port.getExtensibilityElements().get(0)).getLocationURI();
                 actionUri = ((SOAP12Operation) operation.getExtensibilityElements().get(0)).getSoapActionURI();
             } else if (objBinding != null && objBinding instanceof HTTPBindingImpl) {
@@ -111,7 +130,7 @@ public class SoapClient extends BasicRequestor {
     }
 
     private boolean isHttps(RequestObject request) {
-        return StringUtils.defaultString(request.getWsdlAddress()).toLowerCase().startsWith("https");
+        return StringUtils.defaultString(request.getWsdlAddress()).toLowerCase().startsWith(HTTPS);
     }
 
     @Override
@@ -119,8 +138,9 @@ public class SoapClient extends BasicRequestor {
             throws IOException, WSDLException, WebServiceException, GeneralSecurityException {
         this.requestObject = request;
         parseWsdl();
-        if (isHttps(request)) {
-            SSLContext sc = SSLContext.getInstance("SSL");
+        boolean isHttps = isHttps(request);
+        if (isHttps) {
+            SSLContext sc = SSLContext.getInstance(SSL);
             sc.init(null, getTrustManagers(), new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
         }
@@ -129,14 +149,15 @@ public class SoapClient extends BasicRequestor {
 
         URL oURL = new URL(endPoint);
         HttpURLConnection con = (HttpURLConnection) oURL.openConnection(getProxy());
-        if (isHttps(request)) {
+        if (isHttps) {
             ((HttpsURLConnection) con).setHostnameVerifier(getHostnameVerifier());
         }
-        con.setRequestMethod("POST");
+        con.setRequestMethod(POST);
         con.setDoOutput(true);
 
-        con.setRequestProperty("Content-type", "text/xml; charset=utf-8");
-        con.setRequestProperty("SOAPAction", actionUri);
+        con.setRequestProperty(CONTENT_TYPE, TEXT_XML_CHARSET_UTF_8);
+        con.setRequestProperty(SOAP_ACTION, actionUri);
+        setHttpConnectionHeaders(con, request);
 
         OutputStream reqStream = con.getOutputStream();
         reqStream.write(request.getSoapBody().getBytes());
@@ -145,7 +166,7 @@ public class SoapClient extends BasicRequestor {
         String responseText = IOUtils.getStringFromReader(new InputStreamReader(resStream));
 
         // SOAP is HTTP-XML protocol
-        responseObject.setContentType("application/xml");
+        responseObject.setContentType(APPLICATION_XML);
         responseObject.setResponseText(responseText);
         responseObject.setStatusCode(con.getResponseCode());
         return responseObject;

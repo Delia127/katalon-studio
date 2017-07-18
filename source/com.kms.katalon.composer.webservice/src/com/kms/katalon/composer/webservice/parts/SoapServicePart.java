@@ -4,9 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.wsdl.WSDLException;
 
@@ -69,6 +73,7 @@ import com.kms.katalon.constants.GlobalMessageConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.WebServiceController;
 import com.kms.katalon.core.testobject.ResponseObject;
+import com.kms.katalon.core.webservice.common.BasicRequestor;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
@@ -385,6 +390,8 @@ public class SoapServicePart extends WebServicePart {
         tblHeaders.refresh();
 
         populateBasicAuthFromHeader();
+        populateOAuth1FromHeader();
+        renderAuthenticationUI(ccbAuthType.getText());
 
         requestBody.setDocument(createXMLDocument(originalWsObject.getSoapBody()));
         dirtyable.setDirty(false);
@@ -444,11 +451,32 @@ public class SoapServicePart extends WebServicePart {
     }
 
     private String getAuthorizationHeaderValue() {
-        for (WebElementPropertyEntity header : httpHeaders) {
-            if (HttpHeaders.AUTHORIZATION.equals(header.getName())) {
-                return header.getValue();
+        Optional<WebElementPropertyEntity> definedAuthorization = httpHeaders.stream()
+                .filter(header -> HttpHeaders.AUTHORIZATION.equals(header.getName()))
+                .findFirst();
+        if (definedAuthorization.isPresent()) {
+            return definedAuthorization.get().getValue();
+        }
+
+        Map<String, String> map = oauth1Headers.stream()
+                .collect(Collectors.toMap(WebElementPropertyEntity::getName, WebElementPropertyEntity::getValue));
+        String authType = map.get(AUTHORIZATION_TYPE);
+        if (StringUtils.isBlank(authType)) {
+            return null;
+        }
+
+        if (OAUTH_1_0.equals(authType)) {
+            try {
+                String oauth1AuthorizationHeader = BasicRequestor
+                        .createOAuth1AuthorizationHeaderValue(wsApiControl.getRequestURL().trim(), map);
+                return StringUtils.isBlank(oauth1AuthorizationHeader) ? null : oauth1AuthorizationHeader;
+            } catch (GeneralSecurityException e) {
+                LoggerSingleton.logError(e);
+            } catch (IOException e) {
+                LoggerSingleton.logError(e);
             }
         }
+
         return null;
     }
 
