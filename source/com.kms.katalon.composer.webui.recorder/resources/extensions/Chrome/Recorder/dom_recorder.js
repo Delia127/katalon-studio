@@ -1,9 +1,9 @@
-var lastEvent;
 var gHoverElement; // whatever element the mouse is over
 
 var infoDiv; // parent div to contains information
 var elementInfoDiv; // informational div to show xpath of current hovered element
 var elementInfoDivText; // xpath text to show in elementInfoDiv
+var INPUT_TYPE_INPUT_EVENT = ['email', 'number', 'password', 'search', 'tel', 'text', 'url']; // input type that will be handled by input event
 
 function setupDOMSelection() {
 	setupEventListeners();
@@ -17,13 +17,10 @@ function setupEventListeners() {
 	document.onmouseout = mouseOut;
 	document.ondblclick = dblClick;
 	document.onkeydown = keyDown;
+	document.oninput = inputChanged;
 	window.onmousemove = mouseMoveWindow;
 	window.onmouseout = mouseOutWindow;
-	var forms = document.getElementsByTagName('form');
-	for (i = 0; i < forms.length; i++) {
-		forms[i].onsubmit = submit;
-	}
-
+	
 	var selects = document.getElementsByTagName('select');
 	for (i = 0; i < selects.length; i++) {
 		selects[i].onfocus = focus;
@@ -170,7 +167,9 @@ function change(e) {
 	}
 	var elementTagName = selectedElement.tagName.toLowerCase();
 	var elementTypeName = selectedElement.type.toLowerCase();
-	var isRecorded = ((elementTagName != 'input') || (elementTagName == 'input' && elementTypeName != 'radio' && elementTypeName != 'checkbox'));
+	var isRecorded = ((elementTagName !== 'input' && elementTagName !== 'textarea') 
+	        || (elementTagName == 'input' && elementTypeName != 'radio' && elementTypeName != 'checkbox' 
+	            && INPUT_TYPE_INPUT_EVENT.indexOf(elementTypeName) ==- -1));
 	if (!isRecorded) {
 		return;
 	}
@@ -228,18 +227,15 @@ function isElementMouseUpEventRecordable(selectedElement, clickType) {
 }
 
 function mouseUp(e) {
-	lastEvent = 'click';
 	var selectedElement = e ? e.target : window.event.srcElement;
 	var clickType = getMouseButton(e);
 	if (!isElementMouseUpEventRecordable(selectedElement, clickType)) {
 		return;
 	}
-	console.log("click recorded")
 	var action = {};
 	action["actionName"] = 'click';
 	action["actionData"] = clickType;
 	sendData(action, selectedElement);
-	console.log("click sent")
 }
 
 function dblClick(e) {
@@ -252,20 +248,33 @@ function dblClick(e) {
 
 function keyDown(e) {
 	var keycode = (e) ? e.which : window.event.keyCode;
+	var selectedElement = e ? e.target : window.event.srcElement;
+	// ENTER
 	if (keycode == 13) {
-		lastEvent = 'enter';
+	    var action = {};
+	    action["actionName"] = 'sendKeys';
+	    action["actionData"] = 13;
+	    sendData(action, selectedElement);
 	}
 }
 
-function submit() {
-	if (lastEvent != 'enter') {
-		return;
-	}
-	var selectedElement = this;
-	var action = {};
-	action["actionName"] = 'submit';
-	action["actionData"] = '';
-	sendData(action, selectedElement);
+function inputChanged(e) {
+    var selectedElement = e ? e.target : window.event.srcElement;
+    if (!selectedElement) {
+        return;
+    }
+    var elementTagName = selectedElement.tagName.toLowerCase();
+    var elementTypeName = selectedElement.type.toLowerCase();
+    var isRecorded = (elementTagName === 'input' && 
+            (INPUT_TYPE_INPUT_EVENT.indexOf(elementTypeName) !== -1)) 
+            || (elementTagName === 'textarea');
+    if (!isRecorded) {
+        return;
+    }
+    var action = {};
+    action["actionName"] = 'inputChange';
+    action["actionData"] = selectedElement.value;
+    sendData(action, selectedElement);
 }
 
 function sendData(action, element) {
@@ -299,7 +308,6 @@ function postData(url, object) {
 				}, 1);
 				return;
 			}
-			console.log("POST success");
 		});
 		return;
 	}
@@ -307,7 +315,7 @@ function postData(url, object) {
 		var data = 'element=' + encodeURIComponent(JSON.stringify(object));
 		var response = window.httpRequestExtension.postRequest(data, url);
 		if (response === '200') {
-			console.log("POST success");
+			// SUCCESS
 		} else {
 			console.log(response);
 		}
@@ -373,7 +381,7 @@ function startRecord() {
 	if (!detectChrome() && !detectIE() && !(typeof self === 'undefined')) {
 		self.on('message', function(message) {
 			if (message.kind == "postSuccess") {
-				console.log("POST recorded element successful")
+				// POST recorded element successful
 			} else if (message.kind == "postFail") {
 				alert(message.text);
 			}

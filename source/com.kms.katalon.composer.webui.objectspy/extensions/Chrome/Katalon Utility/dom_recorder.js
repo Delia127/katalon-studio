@@ -1,5 +1,4 @@
 //GLOBALS
-var rec_lastEvent;
 var rec_hoverElement; // whatever element the mouse is over
 
 var rec_infoDiv; // parent div to contains information
@@ -7,21 +6,18 @@ var rec_elementInfoDiv; // informational div to show xpath of current hovered el
 var rec_elementInfoDivText; // xpath text to show in rec_elementInfoDiv
 
 var rec_navigateActionRecorded = false; // flag to check if navigate action is captured
+var INPUT_TYPE_INPUT_EVENT = ['email', 'number', 'password', 'search', 'tel', 'text', 'url']; // input type that will be handled by input event
 
 function rec_setupEventListeners() {
 	document.onchange = rec_change;
-	document.onmouseup = rec_mouseUp;
-	document.onmouseover = rec_mouseOver;
-	document.onmouseout = rec_mouseOut;
-	document.ondblclick = rec_dblClick;
-	document.onkeydown = rec_keyDown;
-	window.onmousemove = rec_mouseMoveWindow;
-	window.onmouseout = rec_mouseOutWindow;
-	
-	var forms = document.getElementsByTagName('form');
-	for (i = 0; i < forms.length; i++) {
-		forms[i].onsubmit = rec_submit;
-	}
+    document.onmouseup = rec_mouseUp;
+    document.onmouseover = rec_mouseOver;
+    document.onmouseout = rec_mouseOut;
+    document.ondblclick = rec_dblClick;
+    document.onkeydown = rec_keyDown;
+    document.oninput = rec_inputChanged;
+    window.onmousemove = rec_mouseMoveWindow;
+    window.onmouseout = rec_mouseOutWindow;
 
 	var selects = document.getElementsByTagName('select');
 	for (i = 0; i < selects.length; i++) {
@@ -186,10 +182,12 @@ function rec_change(e) {
 	}
 	var elementTagName = selectedElement.tagName.toLowerCase();
 	var elementTypeName = selectedElement.type.toLowerCase();
-	var isRecorded = ((elementTagName != 'input') || (elementTagName == 'input' && elementTypeName != 'radio' && elementTypeName != 'checkbox'));
-	if (!isRecorded) {
-		return;
-	}
+	var isRecorded = ((elementTagName !== 'input' && elementTagName !== 'textarea') 
+            || (elementTagName == 'input' && elementTypeName != 'radio' && elementTypeName != 'checkbox' 
+                && INPUT_TYPE_INPUT_EVENT.indexOf(elementTypeName) ==- -1));
+    if (!isRecorded) {
+        return;
+    }
 	checkForNavigateAction();
 	var action = {};
 	action["actionName"] = 'inputChange';
@@ -245,7 +243,6 @@ function rec_isElementMouseUpEventRecordable(selectedElement, clickType) {
 }
 
 function rec_mouseUp(e) {
-	rec_lastEvent = 'click';
 	var selectedElement = e ? e.target : window.event.srcElement;
 	var clickType = rec_getMouseButton(e);
 	if (!rec_isElementMouseUpEventRecordable(selectedElement, clickType)) {
@@ -270,21 +267,33 @@ function rec_dblClick(e) {
 
 function rec_keyDown(e) {
 	var keycode = (e) ? e.which : window.event.keyCode;
+	// ENTER
 	if (keycode == 13) {
-		rec_lastEvent = 'enter';
+	    var selectedElement = e ? e.target : window.event.srcElement;
+	    var action = {};
+        action["actionName"] = 'sendKeys';
+        action["actionData"] = 13;
+        rec_sendData(action, selectedElement);
 	}
 }
 
-function rec_submit() {
-	if (rec_lastEvent != 'enter') {
-		return;
-	}
-	checkForNavigateAction();
-	var selectedElement = this;
-	var action = {};
-	action["actionName"] = 'submit';
-	action["actionData"] = '';
-	rec_sendData(action, selectedElement);
+function rec_inputChanged(e) {
+    var selectedElement = e ? e.target : window.event.srcElement;
+    if (!selectedElement) {
+        return;
+    }
+    var elementTagName = selectedElement.tagName.toLowerCase();
+    var elementTypeName = selectedElement.type.toLowerCase();
+    var isRecorded = (elementTagName === 'input' && 
+            (INPUT_TYPE_INPUT_EVENT.indexOf(elementTypeName) !== -1)) 
+            || (elementTagName === 'textarea');
+    if (!isRecorded) {
+        return;
+    }
+    var action = {};
+    action["actionName"] = 'inputChange';
+    action["actionData"] = selectedElement.value;
+    rec_sendData(action, selectedElement);
 }
 
 function rec_sendData(action, element) {

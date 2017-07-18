@@ -25,6 +25,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.openqa.selenium.Keys;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
@@ -32,7 +33,7 @@ import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
@@ -266,7 +267,9 @@ public class RecordHandler {
         monitor.subTask(StringConstants.JOB_GENERATE_STATEMENT_MESSAGE);
         List<StatementWrapper> resultStatementWrappers = new ArrayList<StatementWrapper>();
 
-        ASTNodeWrapper mainClassNode = testCasePart.getTreeTableInput().getMainClassNode();
+        ScriptNodeWrapper mainClassNode = testCasePart.getTreeTableInput().getMainClassNode();
+        
+        addAdditionalImports(mainClassNode);
         // add open browser keyword
         String webUiKwAliasName = HTMLActionUtil.getWebUiKeywordClass().getAliasName();
         MethodCallExpressionWrapper methodCallExpressionWrapper = new MethodCallExpressionWrapper(webUiKwAliasName,
@@ -299,6 +302,10 @@ public class RecordHandler {
         resultStatementWrappers.add(new ExpressionStatementWrapper(methodCallExpressionWrapper));
 
         return resultStatementWrappers;
+    }
+
+    private void addAdditionalImports(ScriptNodeWrapper mainClassNode) {
+        mainClassNode.addImport(Keys.class);
     }
 
     private List<HTMLActionMapping> addSwitchToWindowKeyword(List<HTMLActionMapping> recordedActions) {
