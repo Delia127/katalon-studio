@@ -240,7 +240,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
     }
 
     private int calculateDialogStartX(Rectangle displayBounds, Point dialogSize) {
-        int dialogsWidth = dialogSize.x + MobileDeviceDialog.DIALOG_SIZE.x;
+        int dialogsWidth = dialogSize.x + MobileDeviceDialog.DIALOG_WIDTH;
         final int screenRemainer = displayBounds.width - dialogsWidth;
         int startX = screenRemainer + (screenRemainer / 2) + displayBounds.x;
         return Math.max(startX, 0);
@@ -260,7 +260,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
 
     private Point calculateInitPositionForDeviceViewDialog() {
         Rectangle displayBounds = getShell().getMonitor().getBounds();
-        Point dialogSize = MobileDeviceDialog.DIALOG_SIZE;
+        Point dialogSize = new Point(MobileDeviceDialog.DIALOG_WIDTH, MobileDeviceDialog.DIALOG_HEIGHT);
         Rectangle objectSpyViewBounds = getShell().getBounds();
         int startX = getDeviceViewStartXIfPlaceLeft(objectSpyViewBounds, dialogSize);
         if (isOutOfBound(displayBounds, dialogSize, startX)) {

@@ -805,7 +805,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
     }
 
     private int calculateObjectSpyDialogStartX(Rectangle displayBounds, Point dialogSize) {
-        int dialogsWidth = dialogSize.x + MobileDeviceDialog.DIALOG_SIZE.x;
+        int dialogsWidth = dialogSize.x + MobileDeviceDialog.DIALOG_WIDTH;
         int startX = (displayBounds.width - dialogsWidth) / 2 + displayBounds.x;
         return Math.max(startX, 0);
     }
@@ -817,7 +817,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
 
     private Point calculateInitPositionForDeviceViewDialog() {
         Rectangle displayBounds = getShell().getMonitor().getBounds();
-        Point dialogSize = MobileDeviceDialog.DIALOG_SIZE;
+        Point dialogSize = new Point(MobileDeviceDialog.DIALOG_WIDTH, MobileDeviceDialog.DIALOG_HEIGHT);
         Rectangle objectSpyViewBounds = getShell().getBounds();
         int startX = getDeviceViewStartXIfPlaceRight(objectSpyViewBounds);
         if (isOutOfBound(displayBounds, dialogSize, startX)) {
