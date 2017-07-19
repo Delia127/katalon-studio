@@ -79,6 +79,12 @@ public class ComposerObjectRepositoryMessageConstants extends NLS {
 
     public static String DIA_TITLE_TEST_OBJECT_REFERENCES;
 
+    public static String GRP_HAVE_PARENT_OBJECT;
+
+    public static String RDO_NO_PARENT;
+
+    public static String RDO_SHADOW_ROOT_PARENT;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerObjectRepositoryMessageConstants.class);
