@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.testcase.model.InputValueEditorProvider;
+import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.util.AstInputValueTypeOptionsProvider;
 import com.kms.katalon.composer.webui.recorder.action.HTMLActionParamMapping;
 import com.kms.katalon.composer.webui.recorder.action.HTMLActionParamValueType;
@@ -79,6 +80,7 @@ public class HTMLActionValueTypeColumnSupport extends EditingSupport {
     private void collectAvaiableEditorProviders() {
         availableEditorProviders = new ArrayList<>();
         availableEditorProviders.addAll(Arrays.asList(AstInputValueTypeOptionsProvider.getInputValueTypeOptions(assignableType.getName())));
+        availableEditorProviders.add(InputValueType.Keys);
         if (additionalEditorProvider != null) {
             availableEditorProviders.add(additionalEditorProvider);
         }

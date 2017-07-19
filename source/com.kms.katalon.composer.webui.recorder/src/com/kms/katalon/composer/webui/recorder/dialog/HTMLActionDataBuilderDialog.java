@@ -35,15 +35,17 @@ import com.kms.katalon.objectspy.element.HTMLElement;
 
 public class HTMLActionDataBuilderDialog extends Dialog {
     private List<HTMLActionParamMapping> actionParamMappings;
-    
+
     private Table table;
+
     private TableViewer tableViewer;
+
     private HTMLActionMapping actionParamMapping;
 
     public HTMLActionDataBuilderDialog(Shell parentShell, HTMLActionMapping actionParamMappingManager) {
         super(parentShell);
         this.actionParamMapping = actionParamMappingManager;
-        
+
         createActionParamMappings(actionParamMappingManager);
     }
 
@@ -54,7 +56,7 @@ public class HTMLActionDataBuilderDialog extends Dialog {
         for (int i = 0; i < actionParams.length; i++) {
             if (!TestObject.class.isAssignableFrom(actionParams[i].getClazz())
                     && !FailureHandling.class.isAssignableFrom(actionParams[i].getClazz())) {
-                this.actionParamMappings.add(new HTMLActionParamMapping(actionParams[i], actionDatas[i]));
+                this.actionParamMappings.add(new HTMLActionParamMapping(actionParams[i], actionDatas[i].clone()));
             }
         }
     }
@@ -102,7 +104,7 @@ public class HTMLActionDataBuilderDialog extends Dialog {
         tableViewer.setInput(actionParamMappings);
         return container;
     }
-    
+
     private HTMLActionPropertyValueType getAditionalParamValueType() {
         HTMLElement targetElement = actionParamMapping.getTargetElement();
         return (targetElement != null) ? new HTMLActionPropertyValueType(targetElement) : null;
@@ -115,8 +117,8 @@ public class HTMLActionDataBuilderDialog extends Dialog {
         tableColumn.getColumn().setMoveable(true);
         tableColumn.getColumn().setText(headerText);
         tableColumn.setEditingSupport(editingSupport);
-        tableColumnLayout.setColumnData(tableColumn.getColumn(), new ColumnWeightData(weight, tableColumn.getColumn()
-                .getWidth()));
+        tableColumnLayout.setColumnData(tableColumn.getColumn(),
+                new ColumnWeightData(weight, tableColumn.getColumn().getWidth()));
     }
 
     public HTMLActionParamValueType[] getActionData() {
