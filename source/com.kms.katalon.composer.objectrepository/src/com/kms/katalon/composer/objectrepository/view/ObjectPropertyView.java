@@ -585,12 +585,14 @@ public class ObjectPropertyView implements EventHandler {
             }
         });
 
-        txtParentObject.addHyperlinkListener(new HyperlinkAdapter() {
+        final HyperlinkAdapter hyperLinkListener = new HyperlinkAdapter() {
             @Override
             public void linkActivated(HyperlinkEvent e) {
                 openParentTestObject(e.getLabel());
             }
-        });
+        };
+        txtParentObject.addHyperlinkListener(hyperLinkListener);
+        txtParentShadowRoot.addHyperlinkListener(hyperLinkListener);
     }
 
     private void setDirty(final boolean isDirty) {
