@@ -388,12 +388,12 @@ public class ObjectPropertyView implements EventHandler {
         Composite compositeSettingsLeft = new Composite(compositeSettingsDetails, SWT.NONE);
         compositeSettingsLeft.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
         compositeSettingsLeft.setLayout(new GridLayout(1, false));
-        
+
         Group haveParentGroup = new Group(compositeSettingsLeft, SWT.NONE);
         haveParentGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
         haveParentGroup.setLayout(new GridLayout(1, false));
         haveParentGroup.setText(ComposerObjectRepositoryMessageConstants.GRP_HAVE_PARENT_OBJECT);
-        
+
         createCompositeNoParentObject(haveParentGroup);
 
         createCompositeParentObject(haveParentGroup);
@@ -445,6 +445,7 @@ public class ObjectPropertyView implements EventHandler {
         compositeShadowRootParent.setLayout(glCompositeShadowRootParent);
 
         txtParentShadowRoot = new FormText(compositeShadowRootParent, SWT.BORDER);
+        txtParentShadowRoot.setWhitespaceNormalized(false);
         GridData gdTxtParentObject = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
         gdTxtParentObject.heightHint = 100;
         txtParentShadowRoot.setLayoutData(gdTxtParentObject);
@@ -487,6 +488,7 @@ public class ObjectPropertyView implements EventHandler {
         compositeParentObject.setLayout(glCompositeParentObject);
 
         txtParentObject = new FormText(compositeParentObject, SWT.BORDER);
+        txtParentObject.setWhitespaceNormalized(false);
         GridData gdTxtParentObject = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
         gdTxtParentObject.heightHint = 100;
         txtParentObject.setLayoutData(gdTxtParentObject);
@@ -1328,7 +1330,7 @@ public class ObjectPropertyView implements EventHandler {
 
     private class CheckUseParentShadowRootObjectOperation extends AbstractOperation {
         private boolean isParentShadowRoot = false;
-        
+
         private String parentObjectId = null;
 
         public CheckUseParentShadowRootObjectOperation() {
