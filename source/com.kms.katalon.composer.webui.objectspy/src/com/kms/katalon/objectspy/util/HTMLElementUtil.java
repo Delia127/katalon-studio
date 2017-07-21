@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -22,6 +23,7 @@ import com.google.gson.JsonPrimitive;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ObjectRepositoryController;
+import com.kms.katalon.core.webui.common.WebUiCommonHelper;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
@@ -67,6 +69,25 @@ public class HTMLElementUtil {
     private static final String ELEMENT_TAG_KEY = "tag";
 
     private static final String XPATH_KEY = "xpath";
+
+    private static final Set<String> COMMON_ATTRIBUTES;
+    static {
+        COMMON_ATTRIBUTES = new HashSet<>();
+        COMMON_ATTRIBUTES.add(ELEMENT_ID_KEY);
+        COMMON_ATTRIBUTES.add(ELEMENT_NAME_KEY);
+        COMMON_ATTRIBUTES.add("alt");
+        COMMON_ATTRIBUTES.add("checked");
+        COMMON_ATTRIBUTES.add("form");
+        COMMON_ATTRIBUTES.add("href");
+        COMMON_ATTRIBUTES.add("placeholder");
+        COMMON_ATTRIBUTES.add("selected");
+        COMMON_ATTRIBUTES.add("src");
+        COMMON_ATTRIBUTES.add("title");
+        COMMON_ATTRIBUTES.add("type");
+        COMMON_ATTRIBUTES.add(WebUiCommonHelper.WEB_ELEMENT_ATTRIBUTE_TEXT);
+        COMMON_ATTRIBUTES.add(WebUiCommonHelper.WEB_ELEMENT_ATTRIBUTE_LINK_TEXT);
+
+    }
 
     public static String generateHTMLElementName(String elementType, Map<String, String> attributes) {
         String content = attributes.get(ELEMENT_TEXT_KEY);
@@ -131,7 +152,7 @@ public class HTMLElementUtil {
     }
 
     public static String toValidFileName(String fileName) {
-        return fileName.replaceAll("[^A-Za-z-0-9_().\\- ]", "");
+        return fileName.trim().replaceAll("[^A-Za-z-0-9_().\\- ]", "");
     }
 
     private static HTMLFrameElement getParentElement(JsonObject elementJsonObject) throws UnsupportedEncodingException {
@@ -164,7 +185,7 @@ public class HTMLElementUtil {
             if (!isValidElementAttribute(entry)) {
                 continue;
             }
-            attributesMap.put(entry.getKey(), entry.getValue().getAsString().trim());
+            attributesMap.put(entry.getKey(), entry.getValue().getAsString());
         }
     }
 
@@ -227,16 +248,33 @@ public class HTMLElementUtil {
         newWebElement.setProject(parentFolder.getProject());
         newWebElement.setWebElementProperties(new ArrayList<WebElementPropertyEntity>());
 
-        newWebElement.getWebElementProperties().add(new WebElementPropertyEntity(ELEMENT_TAG_KEY, element.getType()));
+        final List<WebElementPropertyEntity> webElementProperties = newWebElement.getWebElementProperties();
+        webElementProperties.add(new WebElementPropertyEntity(ELEMENT_TAG_KEY, element.getType()));
 
+        boolean haveCommonAttribute = false;
+        WebElementPropertyEntity xpathProperty = null;
         for (Map.Entry<String, String> entry : element.getAttributes().entrySet()) {
             WebElementPropertyEntity webElementPropertyEntity = new WebElementPropertyEntity();
-            webElementPropertyEntity.setName(entry.getKey());
+            final String propertyKey = entry.getKey();
+            webElementPropertyEntity.setName(propertyKey);
             webElementPropertyEntity.setValue(entry.getValue());
-            if (entry.getKey().equals(XPATH_KEY)) {
-                webElementPropertyEntity.setIsSelected(true);
+            webElementProperties.add(webElementPropertyEntity);
+            if (propertyKey.equals(XPATH_KEY)) {
+                xpathProperty = webElementPropertyEntity;
             }
-            newWebElement.getWebElementProperties().add(webElementPropertyEntity);
+            if (!COMMON_ATTRIBUTES.contains(propertyKey)) {
+                continue;
+            }
+            haveCommonAttribute = true;
+            webElementPropertyEntity.setIsSelected(true);
+            String value = webElementPropertyEntity.getValue();
+            if (WebUiCommonHelper.WEB_ELEMENT_ATTRIBUTE_TEXT.equals(propertyKey) && StringUtils.isNotEmpty(value)) {
+                webElementPropertyEntity.setMatchCondition(MATCH_CONDITION.CONTAINS.getText());
+                webElementPropertyEntity.setValue(value.trim());
+            }
+        }
+        if (!haveCommonAttribute && xpathProperty != null) {
+            xpathProperty.setIsSelected(true);
         }
 
         if (refElement != null) {
@@ -244,7 +282,7 @@ public class HTMLElementUtil {
             webElementPropertyEntity.setName(WebElementEntity.ref_element);
             webElementPropertyEntity.setValue(refElement.getIdForDisplay());
             webElementPropertyEntity.setIsSelected(true);
-            newWebElement.getWebElementProperties().add(webElementPropertyEntity);
+            webElementProperties.add(webElementPropertyEntity);
         }
         return newWebElement;
     }
@@ -428,7 +466,8 @@ public class HTMLElementUtil {
                         try {
                             parentFrameElement = (HTMLFrameElement) createHTMLElementFromWebElement(
                                     ObjectRepositoryController.getInstance().getWebElementByDisplayPk(
-                                            property.getValue()), true, pageElement, elementsMap);
+                                            property.getValue()),
+                                    true, pageElement, elementsMap);
                         } catch (Exception e) {
                             // error reading web element, continue
                             LoggerSingleton.logError(e);

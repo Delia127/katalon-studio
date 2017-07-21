@@ -27,7 +27,7 @@ public class WebElementPropertyEntity implements Serializable {
 
     private String matchCondition = defaultMatchCondition;
 
-    private boolean isSelected;
+    private boolean isSelected = false;
 
     public WebElementPropertyEntity() {
     }

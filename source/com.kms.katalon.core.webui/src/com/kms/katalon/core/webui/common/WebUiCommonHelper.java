@@ -32,6 +32,7 @@ import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.core.webui.exception.WebElementNotFoundException;
 
 public class WebUiCommonHelper extends KeywordHelper {
+    private static final String XPATH_DOT = ".";
     private static final String CSS_LOCATOR_PROPERTY_NAME = "css";
     private static final String WEB_ELEMENT_TAG = "tag";
     private static final String XPATH_PREFIX = "//";
@@ -46,8 +47,8 @@ public class WebUiCommonHelper extends KeywordHelper {
     private static final String XPATH_CONDITION_TYPE_CONTAINS = "contains(%s,'%s')";
     private static final String CSS_METHOD_SUFFIX = "()";
     private static final String XPATH_GET_TEXT_METHOD = "text()";
-    private static final String WEB_ELEMENT_ATTRIBUTE_LINK_TEXT = "link_text";
-    private static final String WEB_ELEMENT_ATTRIBUTE_TEXT = "text";
+    public static final String WEB_ELEMENT_ATTRIBUTE_LINK_TEXT = "link_text";
+    public static final String WEB_ELEMENT_ATTRIBUTE_TEXT = "text";
     public static final String WEB_ELEMENT_XPATH = "xpath";
     private static KeywordLogger logger = KeywordLogger.getInstance();
 
@@ -510,6 +511,7 @@ public class WebUiCommonHelper extends KeywordHelper {
     public static String buildXpath(TestObjectProperty property) {
         String propertyName = property.getName();
         String propertyValue = property.getValue();
+        ConditionType conditionType = property.getCondition();
         if (propertyName.equals(WEB_ELEMENT_XPATH)) {
             return propertyValue;
         }
@@ -518,14 +520,17 @@ public class WebUiCommonHelper extends KeywordHelper {
         }
         StringBuilder expression = new StringBuilder();
         if (propertyName.equals(WEB_ELEMENT_ATTRIBUTE_TEXT) || propertyName.equals(WEB_ELEMENT_ATTRIBUTE_LINK_TEXT)) {
-            propertyName = XPATH_GET_TEXT_METHOD;
+            if (conditionType == ConditionType.EQUALS || conditionType == ConditionType.NOT_EQUAL) {
+                propertyName = XPATH_GET_TEXT_METHOD;
+            } else {
+                propertyName = XPATH_DOT;
+            }
         }
-        // If attribute, append '@' before attribute name, skip it if method
-        if (!propertyName.endsWith(CSS_METHOD_SUFFIX)) {
+        // If attribute, append '@' before attribute name, skip it if method or dot
+        if (!propertyName.endsWith(CSS_METHOD_SUFFIX) && !propertyName.equals(XPATH_DOT)) {
             propertyName = XPATH_ATTRIBUTE_PREFIX + propertyName;
         }
 
-        ConditionType conditionType = property.getCondition();
         switch (conditionType) {
         case CONTAINS:
             expression.append(String.format(XPATH_CONDITION_TYPE_CONTAINS, propertyName, propertyValue));
