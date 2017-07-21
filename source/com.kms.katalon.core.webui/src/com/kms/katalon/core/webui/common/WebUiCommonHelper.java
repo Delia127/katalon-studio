@@ -712,20 +712,59 @@ public class WebUiCommonHelper extends KeywordHelper {
         return documentRect.intersects(elementRect);
     }
 
-    public static List<WebElement> findWebElements(TestObject testObject, int timeOut) {
+    public static List<WebElement> findWebElements(TestObject testObject, int timeOut)
+            throws WebElementNotFoundException {
         timeOut = WebUiCommonHelper.checkTimeout(timeOut);
         try {
             WebDriver webDriver = DriverFactory.getWebDriver();
+            final boolean objectInsideShadowDom = testObject.getParentObject() != null
+                    && testObject.isParentObjectShadowRoot();
+            By defaultLocator = null;
+            String cssLocator = null;
+            final TestObject parentObject = testObject.getParentObject();
+            WebElement shadowRootElement = null;
+            if (objectInsideShadowDom) {
+                cssLocator = CssLocatorBuilder.buildCssSelectorLocator(testObject);
+                if (cssLocator == null) {
+                    throw new StepFailedException(
+                            MessageFormat.format(StringConstants.KW_EXC_WEB_ELEMENT_W_ID_DOES_NOT_HAVE_SATISFY_PROP,
+                                    testObject.getObjectId()));
+                }
+                logger.logInfo(
+                        MessageFormat.format(CoreWebuiMessageConstants.MSG_INFO_WEB_ELEMENT_HAVE_PARENT_SHADOW_ROOT,
+                                testObject.getObjectId(), testObject.getParentObject().getObjectId()));
+                shadowRootElement = findWebElement(parentObject, timeOut);
+                if (shadowRootElement == null) {
+                    return null;
+                }
+                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID,
+                        testObject.getObjectId(), cssLocator, timeOut));
+            } else {
+                defaultLocator = WebUiCommonHelper.buildLocator(testObject);
+                if (defaultLocator == null) {
+                    throw new StepFailedException(
+                            MessageFormat.format(StringConstants.KW_EXC_WEB_ELEMENT_W_ID_DOES_NOT_HAVE_SATISFY_PROP,
+                                    testObject.getObjectId()));
+                }
+                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID,
+                        testObject.getObjectId(), defaultLocator.toString(), timeOut));
+            }
 
             float timeCount = 0;
             long miliseconds = System.currentTimeMillis();
             while (timeCount < timeOut) {
                 try {
-                    List<WebElement> webElements = doFindElements(testObject, timeOut, webDriver);
+                    List<WebElement> webElements = null;
+                    if (objectInsideShadowDom) {
+                        webElements = doFindElementsInsideShadowDom(testObject, timeOut, webDriver, cssLocator,
+                                parentObject, shadowRootElement);
+                    } else {
+                        webElements = doFindElementsDefault(testObject, timeOut, webDriver, defaultLocator);
+                    }
                     if (webElements != null && webElements.size() > 0) {
                         return webElements;
                     }
-                } catch (NoSuchElementException | WebElementNotFoundException e) {
+                } catch (NoSuchElementException e) {
                     // not found element yet, moving on
                 }
                 timeCount += ((System.currentTimeMillis() - miliseconds) / 1000);
@@ -741,31 +780,8 @@ public class WebUiCommonHelper extends KeywordHelper {
         return Collections.emptyList();
     }
 
-    private static List<WebElement> doFindElements(TestObject testObject, int timeOut, WebDriver webDriver)
-            throws WebElementNotFoundException {
-        final boolean objectInsideShadowDom = testObject.getParentObject() != null
-                && testObject.isParentObjectShadowRoot();
-        if (objectInsideShadowDom) {
-            logger.logInfo(MessageFormat.format(CoreWebuiMessageConstants.MSG_INFO_WEB_ELEMENT_HAVE_PARENT_SHADOW_ROOT,
-                    testObject.getObjectId(), testObject.getParentObject().getObjectId()));
-        }
-        List<WebElement> webElements = null;
-        if (objectInsideShadowDom) {
-            webElements = doFindElementsInsideShadowDom(testObject, timeOut, webDriver);
-        } else {
-            webElements = doFindElementsDefault(testObject, timeOut, webDriver);
-        }
-        return webElements;
-    }
-
-    private static List<WebElement> doFindElementsDefault(TestObject testObject, int timeOut, WebDriver webDriver) {
-        By locator = WebUiCommonHelper.buildLocator(testObject);
-        if (locator == null) {
-            throw new StepFailedException(MessageFormat.format(
-                    StringConstants.KW_EXC_WEB_ELEMENT_W_ID_DOES_NOT_HAVE_SATISFY_PROP, testObject.getObjectId()));
-        }
-        logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID,
-                testObject.getObjectId(), locator.toString(), timeOut));
+    private static List<WebElement> doFindElementsDefault(TestObject testObject, int timeOut, WebDriver webDriver,
+            By locator) {
         List<WebElement> webElements = webDriver.findElements(locator);
         if (webElements != null && webElements.size() > 0) {
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID_SUCCESS,
@@ -776,34 +792,18 @@ public class WebUiCommonHelper extends KeywordHelper {
 
     @SuppressWarnings("unchecked")
     private static List<WebElement> doFindElementsInsideShadowDom(TestObject testObject, int timeOut,
-            WebDriver webDriver) throws WebElementNotFoundException {
-        final TestObject parentObject = testObject.getParentObject();
-        WebElement shadowRootElement = findWebElement(parentObject, timeOut);
-        if (shadowRootElement == null) {
-            return null;
-        }
+            WebDriver webDriver, final String cssLocator, final TestObject parentObject, WebElement shadowRootElement) {
         Object shadowRootElementSandbox = ((JavascriptExecutor) webDriver)
                 .executeScript("return arguments[0].shadowRoot;", shadowRootElement);
         if (shadowRootElementSandbox == null) {
             throw new StepFailedException(MessageFormat
                     .format(CoreWebuiMessageConstants.MSG_FAILED_WEB_ELEMENT_X_IS_NOT_SHADOW_ROOT, parentObject));
         }
-        final String cssLocator = CssLocatorBuilder.buildCssSelectorLocator(testObject);
-        if (cssLocator == null) {
-            throw new StepFailedException(MessageFormat.format(
-                    StringConstants.KW_EXC_WEB_ELEMENT_W_ID_DOES_NOT_HAVE_SATISFY_PROP, testObject.getObjectId()));
-        }
-        logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID,
-                testObject.getObjectId(), cssLocator, timeOut));
         List<WebElement> webElements = (List<WebElement>) ((JavascriptExecutor) webDriver)
                 .executeScript("return arguments[0].querySelectorAll('" + cssLocator + "');", shadowRootElementSandbox);
         if (webElements != null && webElements.size() > 0) {
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID_SUCCESS,
                     webElements.size(), testObject.getObjectId(), cssLocator, timeOut));
-        } else {
-            logger.logInfo(MessageFormat.format(
-                    CoreWebuiMessageConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_WITH_X_BY_Y_FAIL_TRY_AGAIN,
-                    testObject.getObjectId(), cssLocator));
         }
         return webElements;
     }
