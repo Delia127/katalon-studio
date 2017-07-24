@@ -5,34 +5,58 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.custom.StyleRange;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Event;
 
+import com.kms.katalon.composer.components.impl.providers.CellLayoutInfo;
+import com.kms.katalon.composer.components.impl.providers.DefaultCellLayoutInfo;
 import com.kms.katalon.composer.components.impl.providers.IEntityLabelProvider;
 import com.kms.katalon.composer.components.impl.providers.TypeCheckedStyleTreeCellLabelProvider;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.explorer.integration.IntegrationLabelDecorator;
+import com.kms.katalon.composer.explorer.integration.LabelDecoratorManager;
 import com.kms.katalon.composer.explorer.parts.ExplorerPart;
 
-public class EntityLabelProvider extends TypeCheckedStyleTreeCellLabelProvider<ITreeEntity> implements
-        IEntityLabelProvider {
+public class EntityLabelProvider extends TypeCheckedStyleTreeCellLabelProvider<ITreeEntity>
+        implements IEntityLabelProvider {
     private static final int FIRST_COLUMN_IDX = 0;
 
     private static final String COLON = ":";
 
     private static final String NAME_TAG = "name";
+    
+    private List<IntegrationLabelDecorator> decorators;
 
     public EntityLabelProvider() {
         super(FIRST_COLUMN_IDX);
+
+        decorators = LabelDecoratorManager.getInstance().getSortedDecorator();
+
+        cellLayoutInfo = new DefaultCellLayoutInfo() {
+            @Override
+            public int getSpace() {
+                return 2;
+            }
+
+            @Override
+            public int getLeftMargin() {
+                return Platform.OS_WIN32.equals(Platform.getOS()) ? 0 : 5;
+            }
+        };
     }
 
     private String searchString;
+
+    private CellLayoutInfo cellLayoutInfo;
 
     public void setSearchString(String searchString) {
         this.searchString = searchString;
@@ -153,5 +177,26 @@ public class EntityLabelProvider extends TypeCheckedStyleTreeCellLabelProvider<I
             return;
         }
         event.height = Math.max(event.height, image.getBounds().height + 6);
+    }
+
+    @Override
+    public CellLayoutInfo getCellLayoutInfo() {
+        return cellLayoutInfo;
+    }
+
+    protected int drawImage(Event event, ViewerCell cell, GC gc, Image image) {        
+        List<Image> overlayImages = getIntegrationImages((ITreeEntity) cell.getElement());
+        Image drawnImage = image;
+        if (!overlayImages.isEmpty()) {
+            drawnImage = overlayImages.get(0);
+        }
+
+        return super.drawImage(event, cell, gc, drawnImage);
+    }
+
+    private List<Image> getIntegrationImages(ITreeEntity treeEntity) {
+        return decorators.stream().filter(decorator -> {
+            return decorator.getOverlayImage(treeEntity) != null;
+        }).map(decorator -> decorator.getOverlayImage(treeEntity)).collect(Collectors.toList());
     }
 }

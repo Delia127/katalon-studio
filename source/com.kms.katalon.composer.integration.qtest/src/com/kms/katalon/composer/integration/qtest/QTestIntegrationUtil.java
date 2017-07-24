@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.qtest.model.QTestLogEvaluation;
@@ -245,9 +246,9 @@ public class QTestIntegrationUtil {
      * is not null.
      * 
      * @param entity
-     *            the entity that needs to be checked
+     * the entity that needs to be checked
      * @return <code>true</code> if the given {@link IntegratedFileEntity} can be downloaded or disintegrated.
-     *         Otherwise, <code>false</code>
+     * Otherwise, <code>false</code>
      * @throws Exception
      */
     public static boolean canBeDownloadedOrDisintegrated(IntegratedFileEntity entity, ProjectEntity projectEntity)
@@ -262,18 +263,10 @@ public class QTestIntegrationUtil {
                 if (testCaseRepo == null) {
                     return false;
                 }
-
-                if (testCaseRepo.getFolderId().equals(folderEntity.getIdForDisplay())) {
-                    isIntegrated = false;
-                }
             } else if (folderEntity.getFolderType() == FolderType.TESTSUITE) {
                 TestSuiteRepo testSuiteRepo = getTestSuiteRepo(entity, projectEntity);
                 if (testSuiteRepo == null) {
                     return false;
-                }
-
-                if (testSuiteRepo.getFolderId().equals(folderEntity.getIdForDisplay())) {
-                    isIntegrated = false;
                 }
             }
 
@@ -282,6 +275,9 @@ public class QTestIntegrationUtil {
             }
 
             for (FileEntity childEntity : FolderController.getInstance().getChildren(folderEntity)) {
+                if (!(childEntity instanceof IntegratedFileEntity)) {
+                    continue;
+                }
                 if (canBeDownloadedOrDisintegrated((IntegratedFileEntity) childEntity, projectEntity)) {
                     return true;
                 }
@@ -301,7 +297,7 @@ public class QTestIntegrationUtil {
      * Checks the given {@link IntegratedFileEntity} can be uploaded or not.
      * 
      * @param entity
-     *            the entity that needs to be checked
+     * the entity that needs to be checked
      * @return true if the given {@link IntegratedFileEntity} can be uploaded. Otherwise, false.
      * @throws Exception
      */
@@ -317,6 +313,8 @@ public class QTestIntegrationUtil {
                 if (getTestSuiteRepo(entity, projectEntity) == null) {
                     return false;
                 }
+            } else {
+                return false;
             }
 
             FolderEntity folderEntity = (FolderEntity) entity;
@@ -329,8 +327,8 @@ public class QTestIntegrationUtil {
             return false;
         } else if (entity instanceof TestCaseEntity) {
             if (isNotIntegrated && (getTestCaseRepo(entity, projectEntity) != null)) {
-                QTestModule module = QTestIntegrationFolderManager.getQTestModuleByFolderEntity(entity
-                        .getParentFolder());
+                QTestModule module = QTestIntegrationFolderManager
+                        .getQTestModuleByFolderEntity(entity.getParentFolder());
 
                 // Cannot upload test case under root module.
                 return (module == null || module.getParentId() > 0);
@@ -360,9 +358,9 @@ public class QTestIntegrationUtil {
      * Stores the given {@link IntegratedEntity} into the given {@link IntegratedFileEntity}.
      * 
      * @param entity
-     *            the previous {@link IntegratedFileEntity} needs to update
+     * the previous {@link IntegratedFileEntity} needs to update
      * @param newIntegrated
-     *            new qTest {@link IntegratedEntity}
+     * new qTest {@link IntegratedEntity}
      * @return new {@link IntegratedFileEntity} after the addition complete.
      */
     public static IntegratedFileEntity updateFileIntegratedEntity(IntegratedFileEntity entity,
@@ -391,11 +389,11 @@ public class QTestIntegrationUtil {
      * reportEntity.
      * 
      * @param reportEntity
-     *            the report that will be saved.
+     * the report that will be saved.
      * @param uploadedPreview
-     *            the preview test case result entity will be put into the report.
+     * the preview test case result entity will be put into the report.
      * @throws Exception
-     *             throws if the project file <code>.prj<code> is invalid format.
+     * throws if the project file <code>.prj<code> is invalid format.
      * @see {@link #updateFileIntegratedEntity(IntegratedFileEntity, IntegratedEntity)}
      */
     public static void saveReportEntity(ReportEntity reportEntity, QTestLogUploadedPreview uploadedPreview)
@@ -444,10 +442,10 @@ public class QTestIntegrationUtil {
      * Return a list of {@link QTestSuite} that each item can be uploaded to qTest of the give <code>testSuite</code>
      * 
      * @param testSuite
-     *            a {@link TestSuiteEntity}
+     * a {@link TestSuiteEntity}
      * @return an array list of {@link QTestSuite}
      * @throws QTestInvalidFormatException
-     *             thrown the given <code>testSuite</code> has invalid qTest integrated information.
+     * thrown the given <code>testSuite</code> has invalid qTest integrated information.
      */
     public static List<QTestSuite> getUnuploadedQTestSuites(TestSuiteEntity testSuite)
             throws QTestInvalidFormatException {
@@ -503,13 +501,15 @@ public class QTestIntegrationUtil {
      * Returns an instance of {@link QTestLogEvaluation} that represents state of an {@link TestCaseLogRecord}.
      * 
      * @param testCaseLogRecord
-     *            the {@link TestCaseLogRecord} that needs to evaluate.
+     * the {@link TestCaseLogRecord} that needs to evaluate.
      * @param qTestSuite
      * @param reportEntity
-     * @return <li> {@link QTestLogEvaluation#CANNOT_INTEGRATE} if the given testCaseLogRecord cannot be integrated.</li>
-     *         <li> {@link QTestLogEvaluation#INTEGRATED} if the given testCaseLogRecord is integrated.</li> <li>
-     *         {@link QTestLogEvaluation#CAN_INTEGRATE} if the given testCaseLogRecord can be integrated but have not
-     *         been integrated yet.</li>
+     * @return
+     * <li>{@link QTestLogEvaluation#CANNOT_INTEGRATE} if the given testCaseLogRecord cannot be integrated.</li>
+     * <li>{@link QTestLogEvaluation#INTEGRATED} if the given testCaseLogRecord is integrated.</li>
+     * <li>
+     * {@link QTestLogEvaluation#CAN_INTEGRATE} if the given testCaseLogRecord can be integrated but have not
+     * been integrated yet.</li>
      * @throws Exception
      */
     public static QTestLogEvaluation evaluateTestCaseLog(TestCaseLogRecord testCaseLogRecord, QTestSuite qTestSuite,
@@ -551,7 +551,8 @@ public class QTestIntegrationUtil {
      * @param testSuiteLogRecord
      * @return true if same. Otherwise, false.
      */
-    private static boolean isSameQTestProject(TestCaseLogRecord testCaseLogRecord, TestSuiteLogRecord testSuiteLogRecord) {
+    private static boolean isSameQTestProject(TestCaseLogRecord testCaseLogRecord,
+            TestSuiteLogRecord testSuiteLogRecord) {
         try {
             ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
             // Return QTestLogEvaluation.CANNOT_INTEGRATE if testCaseEntity and testSuiteEntity are not in the same
@@ -585,8 +586,8 @@ public class QTestIntegrationUtil {
      */
     public static QTestTestCase getQTestCase(TestCaseLogRecord testCaseLogRecord) {
         try {
-            TestCaseEntity testCaseEntity = TestCaseController.getInstance().getTestCaseByDisplayId(
-                    testCaseLogRecord.getId());
+            TestCaseEntity testCaseEntity = TestCaseController.getInstance()
+                    .getTestCaseByDisplayId(testCaseLogRecord.getId());
             if (testCaseEntity != null) {
                 return QTestIntegrationTestCaseManager
                         .getQTestTestCaseByIntegratedEntity(getIntegratedEntity(testCaseEntity));
@@ -707,8 +708,8 @@ public class QTestIntegrationUtil {
      * @param testSuiteEntity
      * @param projectEntity
      * @return list of {@link QTestRun} that each one has id that equals with a {@link QTestTestCase#getId()} in the
-     *         given <code>testSuiteEntity</code>, null if the given <code>testSuiteEntity</code> isn't integrated with
-     *         qTest.
+     * given <code>testSuiteEntity</code>, null if the given <code>testSuiteEntity</code> isn't integrated with
+     * qTest.
      * @throws Exception
      */
     public static List<QTestRun> getCurrentQTestRuns(TestSuiteEntity testSuiteEntity, ProjectEntity projectEntity)
@@ -746,5 +747,38 @@ public class QTestIntegrationUtil {
         String testSuiteId = ReportController.getInstance().getTestSuiteFolderId(folderEntity.getIdForDisplay());
         TestSuiteRepo testSuiteRepo = QTestIntegrationUtil.getTestSuiteRepo(testSuiteId, projectEntity);
         return testSuiteRepo != null;
+    }
+
+    public static boolean isTestSuiteIntegrated(TestSuiteEntity testSuiteEntity) throws QTestInvalidFormatException {
+        IntegratedEntity testSuiteIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(testSuiteEntity);
+
+        if (testSuiteIntegratedEntity == null) {
+            return false;
+        }
+
+        List<QTestSuite> qTestSuiteCollection = QTestIntegrationTestSuiteManager
+                .getQTestSuiteListByIntegratedEntity(testSuiteIntegratedEntity);
+        if (qTestSuiteCollection == null || qTestSuiteCollection.isEmpty()) {
+            return false;
+        }
+        return !qTestSuiteCollection.stream()
+                .filter(qTestSuite -> qTestSuite.getId() > 0)
+                .collect(Collectors.toList())
+                .isEmpty();
+    }
+    
+    public static boolean isIntegrated(IntegratedFileEntity integratedFileEntity, ProjectEntity currentProject)
+            throws Exception {
+        if (QTestIntegrationUtil.getTestCaseRepo(integratedFileEntity, currentProject) == null
+                && (QTestIntegrationUtil.getTestSuiteRepo(integratedFileEntity, currentProject) == null
+                        || !(integratedFileEntity instanceof TestSuiteEntity))) {
+            return false;
+        }
+
+        boolean integrated = QTestIntegrationUtil.getIntegratedEntity(integratedFileEntity) != null;
+        if (integrated && integratedFileEntity instanceof TestSuiteEntity) {
+            integrated = QTestIntegrationUtil.isTestSuiteIntegrated((TestSuiteEntity) integratedFileEntity);
+        }
+        return integrated;
     }
 }

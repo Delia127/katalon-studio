@@ -23,7 +23,6 @@ public class QTestSettingStore {
     public static final String SUBMIT_RESULT_TO_LATEST_VERSION = "submitResultToLatestVersion";
     public static final String ENABLE_INTEGRATION_PROPERTY = "enableIntegration";
     public static final String SEND_ATTACHMENTS_PROPERTY = "sendAttachments";
-    public static final String SEND_RESULT_PROPERTY = "sendResult";
     public static final String FIRST_TIME_USING = "firstTimeUsing";
     public static final String REPORT_FORMAT = "reportFormat";
     public static final String QTEST_VERSION_PROPERTY = "version";
@@ -190,47 +189,6 @@ public class QTestSettingStore {
                     getPropertyFile(projectDir));
         } catch (IOException | IllegalArgumentException e) {
             // Do nothing
-        }
-    }
-
-    public static void saveResultSendingType(List<QTestResultSendingType> types, String projectDir) {
-        try {
-            StringBuilder attachmentStringBuilder = new StringBuilder();
-            for (int index = 0; index < types.size(); index++) {
-                attachmentStringBuilder.append(types.get(index).name());
-                if (index != types.size() - 1) {
-                    attachmentStringBuilder.append(", ");
-                }
-            }
-            PropertySettingStoreUtil.addNewProperty(SEND_RESULT_PROPERTY, attachmentStringBuilder.toString(),
-                    getPropertyFile(projectDir));
-        } catch (IOException | IllegalArgumentException e) {
-            // Do nothing
-        }
-    }
-
-    public static List<QTestResultSendingType> getResultSendingTypes(String projectDir) {
-        try {
-            List<QTestResultSendingType> resultSendingTypes = new ArrayList<QTestResultSendingType>();
-            String sendingTypePropertyString = PropertySettingStoreUtil.getPropertyValue(SEND_RESULT_PROPERTY,
-                    getPropertyFile(projectDir));
-
-            // By default, select them all.
-            if (sendingTypePropertyString == null) {
-                return Arrays.asList(QTestResultSendingType.values());
-            }
-
-            if (sendingTypePropertyString.isEmpty()) {
-                return resultSendingTypes;
-            }
-
-            for (String sendingTypeName : sendingTypePropertyString.trim().split(",")) {
-                resultSendingTypes.add(QTestResultSendingType.valueOf(sendingTypeName.trim()));
-            }
-
-            return resultSendingTypes;
-        } catch (IOException | IllegalArgumentException e) {
-            return Collections.emptyList();
         }
     }
 

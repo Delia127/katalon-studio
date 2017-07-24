@@ -475,6 +475,12 @@ public interface IImageKeys {
 
     public static final String QTEST_INACTIVE_16 = "qTest_inactive_16.png"; //$NON-NLS-1$
 
+    public static final String QTEST_TEST_CASE_16 = "test_case_qtest_16.png"; //$NON-NLS-1$
+
+    public static final String QTEST_FOLDER_16 = "folder_qtest_16.png"; //$NON-NLS-1$
+
+    public static final String QTEST_TEST_SUITE_16 = "test_suite_qtest_16.png"; //$NON-NLS-1$
+
     public static final String QUIT_16 = "quit_16.png"; //$NON-NLS-1$
 
     public static final String SEARCH_16 = "search_16.png"; //$NON-NLS-1$

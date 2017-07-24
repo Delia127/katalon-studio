@@ -6,9 +6,11 @@ import java.util.List;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.e4.core.services.events.IEventBroker;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.util.StatusUtil;
+import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.model.TestCaseRepo;
@@ -45,8 +47,8 @@ public class DisintegrateTestCaseJob extends QTestJob {
                 if (fileEntity instanceof TestCaseEntity) {
                     TestCaseEntity testCaseEntity = (TestCaseEntity) fileEntity;
                     String testCaseId = testCaseEntity.getIdForDisplay();
-                    monitor.subTask(MessageFormat.format(StringConstants.JOB_SUB_TASK_DISINTEGRATE_TEST_CASE,
-                            testCaseId));
+                    monitor.subTask(
+                            MessageFormat.format(StringConstants.JOB_SUB_TASK_DISINTEGRATE_TEST_CASE, testCaseId));
 
                     IntegratedEntity testCaseIntegratedEntity = QTestIntegrationUtil
                             .getIntegratedEntity(testCaseEntity);
@@ -54,11 +56,10 @@ public class DisintegrateTestCaseJob extends QTestJob {
                     testCaseEntity.getIntegratedEntities().remove(testCaseIntegratedEntity);
 
                     TestCaseController.getInstance().updateTestCase(testCaseEntity);
-                    EventBrokerSingleton
-                            .getInstance()
-                            .getEventBroker()
-                            .post(EventConstants.TESTCASE_UPDATED,
-                                    new Object[] { testCaseEntity.getId(), testCaseEntity });
+                    getEventBroker().post(EventConstants.TESTCASE_UPDATED,
+                            new Object[] { testCaseEntity.getId(), testCaseEntity });
+                    getEventBroker().post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY,
+                            TreeEntityUtil.getTestCaseTreeEntity(testCaseEntity, projectEntity));
                 } else if (fileEntity instanceof FolderEntity) {
                     FolderEntity folderEntity = (FolderEntity) fileEntity;
                     if (folderEntity.getFolderType() != FolderType.TESTCASE) {
@@ -66,7 +67,8 @@ public class DisintegrateTestCaseJob extends QTestJob {
                     }
 
                     String folderId = folderEntity.getIdForDisplay();
-                    monitor.subTask(MessageFormat.format(StringConstants.JOB_SUB_TASK_DISINTEGRATE_TEST_CASE, folderId));
+                    monitor.subTask(
+                            MessageFormat.format(StringConstants.JOB_SUB_TASK_DISINTEGRATE_TEST_CASE, folderId));
                     IntegratedEntity folderIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(folderEntity);
 
                     if (folderIntegratedEntity != null) {
@@ -83,8 +85,8 @@ public class DisintegrateTestCaseJob extends QTestJob {
 
                     // Remove all descendant test cases or folders by removing qTest integrated entity in file system
                     // No need to remove qTest Test Case because their qTest Module has been removed.
-                    for (Object childTestCaseEntityObject : FolderController.getInstance().getAllDescentdantEntities(
-                            folderEntity)) {
+                    for (Object childTestCaseEntityObject : FolderController.getInstance()
+                            .getAllDescentdantEntities(folderEntity)) {
                         if (!(childTestCaseEntityObject instanceof IntegratedFileEntity)) {
                             continue;
                         }
@@ -98,11 +100,8 @@ public class DisintegrateTestCaseJob extends QTestJob {
                                 testCaseEntity.getIntegratedEntities().remove(testCaseIntegratedEntity);
 
                                 TestCaseController.getInstance().updateTestCase(testCaseEntity);
-                                EventBrokerSingleton
-                                        .getInstance()
-                                        .getEventBroker()
-                                        .post(EventConstants.TESTCASE_UPDATED,
-                                                new Object[] { testCaseEntity.getId(), testCaseEntity });
+                                getEventBroker().post(EventConstants.TESTCASE_UPDATED,
+                                        new Object[] { testCaseEntity.getId(), testCaseEntity });
                             }
                         } else {
                             FolderEntity childFolderEntity = (FolderEntity) childTestCaseEntityObject;
@@ -115,6 +114,10 @@ public class DisintegrateTestCaseJob extends QTestJob {
 
                             FolderController.getInstance().saveFolder(childFolderEntity);
                         }
+                        
+                        getEventBroker().post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY,
+                                TreeEntityUtil.createSelectedTreeEntityHierachy(folderEntity,
+                                        FolderController.getInstance().getTestCaseRoot(projectEntity)));
                     }
 
                 }
@@ -126,6 +129,10 @@ public class DisintegrateTestCaseJob extends QTestJob {
 
         }
         return Status.OK_STATUS;
+    }
+
+    private IEventBroker getEventBroker() {
+        return EventBrokerSingleton.getInstance().getEventBroker();
     }
 
     private void saveFolder(FolderEntity folderEntity, IntegratedEntity folderIntegratedEntity) throws Exception {
