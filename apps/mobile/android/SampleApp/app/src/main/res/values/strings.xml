@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">SampleApp</string>
+    <string name="web_viewer_name">WebViewer</string>
+    <string name="list_viewer_name">ListViewer</string>
+    <string name="action_settings">Settings</string>
+    <array name="resicon">
+        <item>@android:drawable/ic_dialog_alert</item>
+        <item>@android:drawable/ic_dialog_dialer</item>
+        <item>@android:drawable/ic_dialog_email</item>
+        <item>@android:drawable/ic_dialog_info</item>
+        <item>@android:drawable/ic_dialog_map</item>
+    </array>
+    <string name="title_activity_date_picker">DatePickerActivity</string>
+    <string name="title_activity_time_picker">TimePickerActivity</string>
+</resources>
