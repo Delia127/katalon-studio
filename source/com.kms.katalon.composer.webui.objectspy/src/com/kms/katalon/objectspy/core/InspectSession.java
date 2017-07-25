@@ -180,14 +180,7 @@ public class InspectSession implements Runnable {
             }
 
             if (webUiDriverType == WebUIDriverType.FIREFOX_DRIVER) {
-                final AddonSocketServer socketServer = AddonSocketServer.getInstance();
-                while (socketServer.getAddonSocketByBrowserName(webUiDriverType.toString()) == null && isRunFlag) {
-                    // wait for web socket to connect
-                    Thread.sleep(500);
-                }
-                final AddonSocket firefoxAddonSocket = socketServer
-                        .getAddonSocketByBrowserName(webUiDriverType.toString());
-                firefoxAddonSocket.sendMessage(new StartInspectAddonMessage());
+                handleForFirefoxAddon();
             }
             while (isRunFlag) {
                 try {
@@ -213,6 +206,17 @@ public class InspectSession implements Runnable {
         } finally {
             dispose();
         }
+    }
+
+    protected void handleForFirefoxAddon() throws InterruptedException {
+        final AddonSocketServer socketServer = AddonSocketServer.getInstance();
+        while (socketServer.getAddonSocketByBrowserName(webUiDriverType.toString()) == null && isRunFlag) {
+            // wait for web socket to connect
+            Thread.sleep(500);
+        }
+        final AddonSocket firefoxAddonSocket = socketServer
+                .getAddonSocketByBrowserName(webUiDriverType.toString());
+        firefoxAddonSocket.sendMessage(new StartInspectAddonMessage());
     }
 
     public boolean isDriverStarted() {

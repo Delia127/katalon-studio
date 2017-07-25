@@ -1,17 +1,18 @@
 package com.kms.katalon.composer.webui.recorder.core;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.eclipse.e4.core.services.log.Logger;
-import org.openqa.selenium.firefox.FirefoxProfile;
 
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
-import com.kms.katalon.core.webui.util.WebDriverPropertyUtil;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.objectspy.core.HTMLElementCaptureServer;
 import com.kms.katalon.objectspy.core.InspectSession;
-import com.kms.katalon.selenium.firefox.FirefoxWebExtension;
+import com.kms.katalon.objectspy.websocket.AddonCommand;
+import com.kms.katalon.objectspy.websocket.AddonSocket;
+import com.kms.katalon.objectspy.websocket.AddonSocketServer;
+import com.kms.katalon.objectspy.websocket.messages.AddonMessage;
+import com.kms.katalon.objectspy.websocket.messages.StartInspectAddonMessage;
 
 @SuppressWarnings("restriction")
 public class RecordSession extends InspectSession {
@@ -26,10 +27,6 @@ public class RecordSession extends InspectSession {
     private static final String RECORDER_APPLICATION_DATA_FOLDER = System.getProperty("user.home") + File.separator
             + "AppData" + File.separator + "Local" + File.separator + "KMS" + File.separator + "qAutomate"
             + File.separator + RECORDER_ADDON_NAME;
-
-    private static final String RECORDER_FIREFOX_SERVER_PORT_PREFERENCE_KEY = "extensions.@recorder.katalonServerPort";
-
-    private static final String RECORDER_FIREFOX_ON_OFF_PREFERENCE_KEY = "extensions.@recorder.katalonOnOffStatus";
 
     public RecordSession(HTMLElementCaptureServer server, WebUIDriverType webUiDriverType, ProjectEntity currentProject,
             Logger logger) throws Exception {
@@ -57,5 +54,17 @@ public class RecordSession extends InspectSession {
     @Override
     protected String getIEApplicationDataFolder() {
         return RECORDER_APPLICATION_DATA_FOLDER;
+    }
+    
+    @Override
+    protected void handleForFirefoxAddon() throws InterruptedException {
+        final AddonSocketServer socketServer = AddonSocketServer.getInstance();
+        while (socketServer.getAddonSocketByBrowserName(webUiDriverType.toString()) == null && isRunFlag) {
+            // wait for web socket to connect
+            Thread.sleep(500);
+        }
+        final AddonSocket firefoxAddonSocket = socketServer
+                .getAddonSocketByBrowserName(webUiDriverType.toString());
+        firefoxAddonSocket.sendMessage(new AddonMessage(AddonCommand.START_RECORD));
     }
 }
