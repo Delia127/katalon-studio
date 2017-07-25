@@ -19,8 +19,10 @@ public class CssLocatorBuilder {
         for (TestObjectProperty property : to.getActiveProperties()) {
             final String propertyName = property.getName();
             final String value = property.getValue();
+            final ConditionType conditionType = property.getCondition();
             if (WebUiCommonHelper.WEB_ELEMENT_TAG.equals(propertyName)
-                    || WebUiCommonHelper.WEB_ELEMENT_XPATH.equals(propertyName) || StringUtils.isEmpty(value)) {
+                    || WebUiCommonHelper.WEB_ELEMENT_XPATH.equals(propertyName) || StringUtils.isEmpty(value)
+                    || conditionType == ConditionType.MATCHES_REGEX || conditionType == ConditionType.NOT_MATCH_REGEX) {
                 continue;
             }
             cssBuilder.append(getPrefix(property));
