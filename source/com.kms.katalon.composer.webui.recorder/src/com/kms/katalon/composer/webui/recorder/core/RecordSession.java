@@ -12,7 +12,6 @@ import com.kms.katalon.objectspy.websocket.AddonCommand;
 import com.kms.katalon.objectspy.websocket.AddonSocket;
 import com.kms.katalon.objectspy.websocket.AddonSocketServer;
 import com.kms.katalon.objectspy.websocket.messages.AddonMessage;
-import com.kms.katalon.objectspy.websocket.messages.StartInspectAddonMessage;
 
 @SuppressWarnings("restriction")
 public class RecordSession extends InspectSession {
