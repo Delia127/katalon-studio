@@ -715,6 +715,7 @@ public class WebUiCommonHelper extends KeywordHelper {
     public static List<WebElement> findWebElements(TestObject testObject, int timeOut)
             throws WebElementNotFoundException {
         timeOut = WebUiCommonHelper.checkTimeout(timeOut);
+        boolean isSwitchToParentFrame = false;
         try {
             WebDriver webDriver = DriverFactory.getWebDriver();
             final boolean objectInsideShadowDom = testObject.getParentObject() != null
@@ -733,6 +734,7 @@ public class WebUiCommonHelper extends KeywordHelper {
                 logger.logInfo(
                         MessageFormat.format(CoreWebuiMessageConstants.MSG_INFO_WEB_ELEMENT_HAVE_PARENT_SHADOW_ROOT,
                                 testObject.getObjectId(), testObject.getParentObject().getObjectId()));
+                isSwitchToParentFrame = switchToParentFrame(parentObject);
                 shadowRootElement = findWebElement(parentObject, timeOut);
                 if (shadowRootElement == null) {
                     return null;
@@ -761,9 +763,7 @@ public class WebUiCommonHelper extends KeywordHelper {
                     } else {
                         webElements = doFindElementsDefault(testObject, timeOut, webDriver, defaultLocator);
                     }
-                    if (webElements != null && webElements.size() > 0) {
-                        return webElements;
-                    }
+                    return webElements;
                 } catch (NoSuchElementException e) {
                     // not found element yet, moving on
                 }
@@ -776,23 +776,30 @@ public class WebUiCommonHelper extends KeywordHelper {
             // timeOut, do nothing
         } catch (InterruptedException e) {
             // interrupted, do nothing
+        } finally {
+            if (isSwitchToParentFrame) {
+                switchToDefaultContent();
+            }
         }
         return Collections.emptyList();
     }
 
     private static List<WebElement> doFindElementsDefault(TestObject testObject, int timeOut, WebDriver webDriver,
-            By locator) {
+            By locator) throws WebElementNotFoundException {
         List<WebElement> webElements = webDriver.findElements(locator);
         if (webElements != null && webElements.size() > 0) {
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID_SUCCESS,
                     webElements.size(), testObject.getObjectId(), locator.toString(), timeOut));
+        } else {
+            throw new WebElementNotFoundException(testObject.getObjectId(), locator);
         }
         return webElements;
     }
 
     @SuppressWarnings("unchecked")
     private static List<WebElement> doFindElementsInsideShadowDom(TestObject testObject, int timeOut,
-            WebDriver webDriver, final String cssLocator, final TestObject parentObject, WebElement shadowRootElement) {
+            WebDriver webDriver, final String cssLocator, final TestObject parentObject, WebElement shadowRootElement)
+            throws WebElementNotFoundException {
         Object shadowRootElementSandbox = ((JavascriptExecutor) webDriver)
                 .executeScript("return arguments[0].shadowRoot;", shadowRootElement);
         if (shadowRootElementSandbox == null) {
@@ -804,6 +811,8 @@ public class WebUiCommonHelper extends KeywordHelper {
         if (webElements != null && webElements.size() > 0) {
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID_SUCCESS,
                     webElements.size(), testObject.getObjectId(), cssLocator, timeOut));
+        } else {
+            throw new WebElementNotFoundException(testObject.getObjectId(), cssLocator);
         }
         return webElements;
     }
@@ -812,9 +821,8 @@ public class WebUiCommonHelper extends KeywordHelper {
         List<WebElement> elements = findWebElements(testObject, timeOut);
         if (elements != null && elements.size() > 0) {
             return elements.get(0);
-        } else {
-            throw new WebElementNotFoundException(testObject.getObjectId(), buildLocator(testObject));
         }
+        return null;
     }
 
     /**
@@ -868,7 +876,6 @@ public class WebUiCommonHelper extends KeywordHelper {
         WebDriver webDriver = DriverFactory.getWebDriver();
         for (int i = parentObjects.size() - 1; i >= 0; i--) {
             TestObject currentParentObject = parentObjects.get(i);
-            logger.logInfo(String.valueOf(currentParentObject.isParentObjectShadowRoot()));
             if (!switchToParentFrame(timeOut, webDriver, currentParentObject)) {
                 return false;
             }
