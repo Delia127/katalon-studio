@@ -225,11 +225,11 @@ public class AppiumDriverManager {
     }
 
     private static boolean isAndroidDriverType(DriverType driverType) {
-        return StringUtils.equals(AppiumStringConstants.ANDROID, driverType.toString());
+        return driverType != null && StringUtils.equals(AppiumStringConstants.ANDROID, driverType.toString());
     }
 
     private static boolean isIOSDriverType(DriverType driverType) {
-        return StringUtils.equals(AppiumStringConstants.IOS, driverType.toString());
+        return driverType != null && StringUtils.equals(AppiumStringConstants.IOS, driverType.toString());
     }
 
     public static void startAppiumServerJS(int timeout, Map<String, String> environmentVariables)
