@@ -237,7 +237,8 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
                 @Override
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                     monitor.beginTask(ObjectspyMessageConstants.MSG_DLG_INIT_OBJECT_SPY, 1);
-                    AddonSocketServer.getInstance().start(AddonSocket.class);
+                    AddonSocketServer.getInstance().start(AddonSocket.class,
+                            UtilitiesAddonUtil.getInstantBrowsersPort());
                 }
             });
         } catch (InvocationTargetException e) {
@@ -1234,7 +1235,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         if (browser == WebUIDriverType.IE_DRIVER) {
             runInstantIE();
         }
-        currentInstantSocket = AddonSocketServer.getInstance().getAddonSocketByBrowserName(defaultBrowser.toString());
+        currentInstantSocket = AddonSocketServer.getInstance().getAddonSocketByBrowserName(browser.toString());
         if (currentInstantSocket == null) {
             return;
         }
@@ -1279,6 +1280,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
     }
 
     public void startServerWithPort(int port) throws Exception {
+        closeInstantSession();
         if (server != null && server.isStarted() && isCurrentServerPortUsable(port)) {
             return;
         }
@@ -1286,7 +1288,6 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
             server.stop();
         }
         try {
-            closeInstantSession();
             server = new HTMLElementCaptureServer(port, logger, this);
             server.start();
         } catch (BindException e) {
@@ -1378,6 +1379,10 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
             highlightObjectInInstantMode(element);
             return;
         }
+        if (defaultBrowser == WebUIDriverType.FIREFOX_DRIVER) {
+            highlightObjectForFirefox(element);
+            return;
+        }
         HighlightRequest request = new HighlightRequest(element);
 
         KatalonRequestHandler.getInstance().setRequest(request, new RequestFailedListener() {
@@ -1393,6 +1398,16 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         });
     }
 
+    private void highlightObjectForFirefox(HTMLElement element) {
+        final AddonSocket firefoxAddonSocket = AddonSocketServer.getInstance()
+                .getAddonSocketByBrowserName(WebUIDriverType.FIREFOX_DRIVER.toString());
+        if (firefoxAddonSocket == null) {
+            return;
+        }
+        String xpathExpression = new HighlightRequest(element).getData();
+        firefoxAddonSocket.sendMessage(new AddonMessage(AddonCommand.HIGHLIGHT_OBJECT, xpathExpression));
+    }
+
     private void highlightObjectInInstantMode(HTMLElement element) {
         if (currentInstantSocket == null) {
             return;
@@ -1400,7 +1415,7 @@ public class ObjectSpyDialog extends Dialog implements EventHandler {
         String xpathExpression = new HighlightRequest(element).getData();
         currentInstantSocket.sendMessage(new AddonMessage(AddonCommand.HIGHLIGHT_OBJECT, xpathExpression));
     }
-
+    
     @Override
     public int open() {
         if (Platform.OS_WIN32.equals(Platform.getOS())) {

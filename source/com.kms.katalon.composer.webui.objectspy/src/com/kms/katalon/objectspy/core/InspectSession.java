@@ -44,9 +44,15 @@ import com.kms.katalon.objectspy.exception.ExtensionNotFoundException;
 import com.kms.katalon.objectspy.preferences.ObjectSpyPreferences;
 import com.kms.katalon.objectspy.util.FileUtil;
 import com.kms.katalon.objectspy.websocket.AddonHotKeyData;
+import com.kms.katalon.objectspy.websocket.AddonSocket;
+import com.kms.katalon.objectspy.websocket.AddonSocketServer;
+import com.kms.katalon.objectspy.websocket.messages.StartInspectAddonMessage;
+import com.kms.katalon.selenium.firefox.FirefoxWebExtension;
 
 @SuppressWarnings("restriction")
 public class InspectSession implements Runnable {
+    private static final String FIREFOX_ADDON_UUID = "{932b2318-b453-4947-8d43-92ac9dcef9bf}";
+
     private static final String HTTP = "http";
 
     private static final String ABOUT_BLANK = "about:blank";
@@ -60,10 +66,6 @@ public class InspectSession implements Runnable {
             + "spy_loadDomMapHotKey = {2};\r\n";
 
     private static final String VARIABLE_INIT_FILE_FOR_CHROME = "chrome_variables_init.js";
-
-    private static final String FIREFOX_SERVER_PORT_PREFERENCE_KEY = "extensions.@objectspy.katalonServerPort";
-
-    private static final String FIREFOX_ON_OFF_PREFERENCE_KEY = "extensions.@objectspy.katalonOnOffStatus";
 
     private static final String SERVER_URL_FILE_NAME = "serverUrl.txt";
 
@@ -98,6 +100,8 @@ public class InspectSession implements Runnable {
     protected ProjectEntity currentProject;
 
     private String startUrl;
+
+    private boolean driverStarted = false;
 
     public InspectSession(HTMLElementCaptureServer server, WebUIDriverType webUiDriverType,
             ProjectEntity currentProject, Logger logger) {
@@ -166,12 +170,24 @@ public class InspectSession implements Runnable {
             Thread.sleep(5);
 
             driver = DriverFactory.openWebDriver(webUiDriverType, projectDir, options);
+            driverStarted = true;
             if (StringUtils.isNotEmpty(startUrl)) {
                 try {
                     driver.navigate().to(PathUtil.getUrl(startUrl, HTTP));
                 } catch (MalformedURLException | URISyntaxException | InvalidPathException e) {
                     // Invalid url, ignore this
                 }
+            }
+
+            if (webUiDriverType == WebUIDriverType.FIREFOX_DRIVER) {
+                final AddonSocketServer socketServer = AddonSocketServer.getInstance();
+                while (socketServer.getAddonSocketByBrowserName(webUiDriverType.toString()) == null && isRunFlag) {
+                    // wait for web socket to connect
+                    Thread.sleep(500);
+                }
+                final AddonSocket firefoxAddonSocket = socketServer
+                        .getAddonSocketByBrowserName(webUiDriverType.toString());
+                firefoxAddonSocket.sendMessage(new StartInspectAddonMessage());
             }
             while (isRunFlag) {
                 try {
@@ -197,6 +213,10 @@ public class InspectSession implements Runnable {
         } finally {
             dispose();
         }
+    }
+
+    public boolean isDriverStarted() {
+        return driverStarted;
     }
 
     private static void showErrorMessageDialog(String message) {
@@ -230,11 +250,10 @@ public class InspectSession implements Runnable {
 
     protected FirefoxProfile createFireFoxProfile() throws IOException {
         FirefoxProfile firefoxProfile = WebDriverPropertyUtil.createDefaultFirefoxProfile();
-        firefoxProfile.setPreference(FIREFOX_SERVER_PORT_PREFERENCE_KEY, String.valueOf(server.getServerPort()));
-        firefoxProfile.setPreference(FIREFOX_ON_OFF_PREFERENCE_KEY, true);
         File file = getFirefoxAddonFile();
         if (file != null) {
-            firefoxProfile.addExtension(file);
+            firefoxProfile.addExtension(file.getName(),
+                    new FirefoxWebExtension(file, FIREFOX_ADDON_UUID));
         }
         return firefoxProfile;
     }

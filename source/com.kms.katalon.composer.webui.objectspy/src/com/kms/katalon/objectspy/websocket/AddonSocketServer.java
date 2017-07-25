@@ -12,19 +12,19 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.objectspy.util.UtilitiesAddonUtil;
 
 public class AddonSocketServer {
     private static AddonSocketServer instance;
 
     private Server server;
 
-    private List<AddonSocket> activeSockets;
+    private List<AddonSocket> activeSockets = new ArrayList<>();
 
     private AddonSocketServer() {
         // hide constructor
-        activeSockets = new ArrayList<>();
     }
+
+    private ServerConnector firefoxConnetor;
 
     public static AddonSocketServer getInstance() {
         if (instance == null) {
@@ -33,15 +33,18 @@ public class AddonSocketServer {
         return instance;
     }
 
-    public void start(Class<?> socketClass) {
+    public void start(Class<?> socketClass, int port) {
         if (isRunning()) {
             return;
         }
         server = new Server();
         ServerConnector connector = new ServerConnector(server);
-        connector.setPort(UtilitiesAddonUtil.getInstantBrowsersPort());
+        connector.setPort(port);
+        firefoxConnetor = new ServerConnector(server);
+        firefoxConnetor.setPort(50001);
 
         server.addConnector(connector);
+        server.addConnector(firefoxConnetor);
 
         // Setup the basic application "context" for this application at "/"
         // This is also known as the handler tree (in jetty speak)
@@ -95,7 +98,8 @@ public class AddonSocketServer {
         }
         synchronized (activeSockets) {
             for (AddonSocket addonSocket : activeSockets) {
-                if (browserName.equals(addonSocket.getBrowserType().toString())) {
+                if (addonSocket.getBrowserType() != null
+                        && browserName.equals(addonSocket.getBrowserType().toString())) {
                     return addonSocket;
                 }
             }
