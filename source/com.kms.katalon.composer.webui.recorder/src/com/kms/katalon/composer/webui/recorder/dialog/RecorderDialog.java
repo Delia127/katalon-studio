@@ -243,7 +243,8 @@ public class RecorderDialog extends AbstractDialog implements EventHandler {
                 @Override
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                     monitor.beginTask(ComposerWebuiRecorderMessageConstants.MSG_DLG_INIT_RECORDER, 1);
-                    AddonSocketServer.getInstance().start(RecorderAddonSocket.class);
+                    AddonSocketServer.getInstance().start(RecorderAddonSocket.class,
+                            UtilitiesAddonUtil.getInstantBrowsersPort());
                 }
             });
         } catch (InvocationTargetException e) {

@@ -19,6 +19,7 @@ Require-Bundle: org.codehaus.groovy,
 Export-Package: com.kms.katalon.core.webui.common,
  com.kms.katalon.core.webui.constants,
  com.kms.katalon.core.webui.driver,
+ com.kms.katalon.core.webui.driver.firefox,
  com.kms.katalon.core.webui.keyword,
  com.kms.katalon.core.webui.util
 Bundle-ClassPath: .,
