@@ -22,6 +22,7 @@ import com.kms.katalon.core.keyword.internal.KeywordContributorCollection;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.execution.session.ExecutionSession;
 import com.kms.katalon.execution.session.ExecutionSessionSocketServer;
+import com.kms.katalon.execution.session.RemoteMobileExecutionSession;
 
 public class TestCaseMenuUtil {
     private static final int DEFAULT_MAX_EXISTING_SESSION_TITLE = 20;
@@ -196,7 +197,7 @@ public class TestCaseMenuUtil {
             executionSessionMenuItem.addSelectionListener(selectionListener);
             executionSessionMenuItem.setID(TreeTableMenuItemConstants.EXECUTE_FROM_TEST_STEP_MENU_ITEM_ID);
             executionSessionMenuItem.setData(executionSession);
-            executionSessionMenuItem.setImage(getImageForDriverType(executionSession.getDriverTypeName()));
+            executionSessionMenuItem.setImage(getImageForDriverType(executionSession));
         }
         executeFromTestStepMenuItem.setMenu(executeSessionMenu);
     }
@@ -209,7 +210,14 @@ public class TestCaseMenuUtil {
         return StringUtils.abbreviate(executionTitle, DEFAULT_MAX_EXISTING_SESSION_TITLE);
     }
 
-    private static Image getImageForDriverType(String driverTypeName) {
+    private static Image getImageForDriverType(ExecutionSession executionSession) {
+        String driverTypeName = executionSession.getDriverTypeName();
+        if (WebUIDriverType.KOBITON_WEB_DRIVER.toString().equals(driverTypeName)
+                || (executionSession instanceof RemoteMobileExecutionSession
+                        && ((RemoteMobileExecutionSession) executionSession).getRemoteType()
+                                .equals(WebUIDriverType.KOBITON_WEB_DRIVER.getName()))) {
+            return ImageManager.getImage(IImageKeys.KOBITON_16);
+        }
         if (WebUIDriverType.ANDROID_DRIVER.toString().equals(driverTypeName)) {
             return ImageManager.getImage(IImageKeys.ANDROID_16);
         }
@@ -230,9 +238,6 @@ public class TestCaseMenuUtil {
         }
         if (WebUIDriverType.IOS_DRIVER.toString().equals(driverTypeName)) {
             return ImageManager.getImage(IImageKeys.APPLE_16);
-        }
-        if (WebUIDriverType.KOBITON_WEB_DRIVER.toString().equals(driverTypeName)) {
-            return ImageManager.getImage(IImageKeys.KOBITON_16);
         }
         if (WebUIDriverType.SAFARI_DRIVER.toString().equals(driverTypeName)) {
             return ImageManager.getImage(IImageKeys.SAFARI_16);

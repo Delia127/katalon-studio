@@ -76,6 +76,13 @@ public class MobileDriverFactory {
     }
 
     /**
+     * @return the remote web driver type if running Mobile keyword on cloud services
+     */
+    public static String getRemoteWebDriverType() {
+        return RunConfiguration.getDriverSystemProperty(MOBILE_DRIVER_PROPERTY, "browserType");
+    }
+
+    /**
      * Get the platform of the current active driver
      * <p>
      * Possible values: iOS, Android
@@ -210,6 +217,7 @@ public class MobileDriverFactory {
             capabilities.merge(
                     convertPropertiesMaptoDesireCapabilities(driverPreferences, MobileDriverType.ANDROID_DRIVER));
             capabilities.setPlatform(Platform.ANDROID);
+            capabilities.setCapability("autoGrantPermissions", true);
             if (isUsingAndroid7OrBigger()) {
                 capabilities.setCapability(MobileCapabilityType.AUTOMATION_NAME, AppiumDriverManager.UIAUTOMATOR2);
             }
@@ -281,10 +289,16 @@ public class MobileDriverFactory {
             output.println(getMobileDriverType().toString());
             output.println(RunConfiguration.getLogFolderPath());
             DriverType executedDriver = getExecutedDriver();
-            if (executedDriver == MobileDriverType.ANDROID_DRIVER) {
-                output.println(getDeviceManufacturer() + " " + getDeviceModel() + " " + getDeviceOSVersion());
-            } else if (executedDriver == MobileDriverType.IOS_DRIVER) {
+            if (getRemoteWebDriverServerUrl() != null) {
+                output.println(getRemoteWebDriverType());
                 output.println(getDeviceName() + " " + getDeviceOSVersion());
+            } else {
+                output.println("");
+                if (executedDriver == MobileDriverType.ANDROID_DRIVER) {
+                    output.println(getDeviceManufacturer() + " " + getDeviceModel() + " " + getDeviceOSVersion());
+                } else if (executedDriver == MobileDriverType.IOS_DRIVER) {
+                    output.println(getDeviceName() + " " + getDeviceOSVersion());
+                }
             }
             output.flush();
         } catch (Exception e) {

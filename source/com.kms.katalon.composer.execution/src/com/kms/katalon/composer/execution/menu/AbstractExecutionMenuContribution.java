@@ -47,7 +47,7 @@ public abstract class AbstractExecutionMenuContribution {
         }
     }
 
-    private void aboutToShowWithExisting(List<MMenuElement> menuItems, List<ExecutionSession> exisingDrivers) {
+    protected void aboutToShowWithExisting(List<MMenuElement> menuItems, List<ExecutionSession> exisingDrivers) {
         MMenu executionMenu = createExecutionMenu();
 
         MHandledMenuItem defaultMenuItem = createDefaultMenuItem();

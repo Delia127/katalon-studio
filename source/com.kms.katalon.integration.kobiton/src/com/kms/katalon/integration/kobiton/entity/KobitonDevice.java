@@ -125,15 +125,14 @@ public class KobitonDevice {
         desireCapabilitiesMap.put(CAPABILITIES_SESSION_DESCRIPTION, "");
         return desireCapabilitiesMap;
     }
-    
+
     public Map<String, Object> getSystemPropertiesMap() {
         Map<String, Object> systemProperties = new HashMap<>();
         systemProperties.put(AppiumStringConstants.CONF_EXECUTED_DEVICE_NAME, capabilities.getDeviceName());
         systemProperties.put(AppiumStringConstants.CONF_EXECUTED_DEVICE_OS, capabilities.getPlatformName());
         systemProperties.put(AppiumStringConstants.CONF_EXECUTED_DEVICE_OS_VERSON, capabilities.getPlatformVersion());
         if (capabilities.getPlatformName().equals(PLATFORM_NAME_IOS)) {
-            systemProperties.put(AppiumDriverManager.EXECUTED_PLATFORM,
-                    MobileDriverType.IOS_DRIVER.getPropertyValue());
+            systemProperties.put(AppiumDriverManager.EXECUTED_PLATFORM, MobileDriverType.IOS_DRIVER.getPropertyValue());
         }
         if (capabilities.getPlatformName().equals(PLATFORM_NAME_ANDROID)) {
             systemProperties.put(AppiumDriverManager.EXECUTED_PLATFORM,
@@ -149,7 +148,11 @@ public class KobitonDevice {
     }
 
     public String getDisplayString() {
-        return (WordUtils.capitalize(StringUtils.defaultString(capabilities.getBrandName())) + " "
-                + capabilities.getDeviceName() + " " + capabilities.getPlatformVersion()).trim();
+        return (getDeviceDisplayName() + " " + capabilities.getPlatformVersion()).trim();
+    }
+
+    private String getDeviceDisplayName() {
+        return WordUtils.capitalize(StringUtils.defaultString(capabilities.getBrandName()))
+                + " " + capabilities.getDeviceName();
     }
 }

@@ -67,7 +67,8 @@ public class ExecutionSessionSocketServer implements Runnable {
     public List<ExecutionSession> getAllAvailableExecutionSessionByDriverTypeName(String driverTypeName) {
         List<ExecutionSession> executionSessions = new ArrayList<>();
         for (ExecutionSession executionSession : getAllExecutionSession()) {
-            if (driverTypeName.equals(executionSession.getDriverTypeName()) && executionSession.isAvailable()) {
+            if (driverTypeName.equals(executionSession.getDriverTypeName()) && executionSession.isAvailable()
+                    && !(executionSession instanceof RemoteMobileExecutionSession)) {
                 executionSessions.add(executionSession);
             }
         }
