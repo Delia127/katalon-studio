@@ -1,7 +1,6 @@
 package com.kms.katalon.dal.fileservice;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.file.Files;
@@ -28,7 +27,6 @@ import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
@@ -72,38 +70,39 @@ public final class EntityService {
 
     private void initializeJAXB() throws Exception {
         Map<String, Object> properties = new HashMap<String, Object>();
-        List<File> bindingFiles = new ArrayList<File>();
+        List<Object> bindingSources = new ArrayList<Object>();
         String path = this.getClass().getProtectionDomain().getCodeSource().getLocation().getFile();
         path = URLDecoder.decode(path, "utf-8");
-        File jarFile = new File(path);
-        if (jarFile.isFile()) {
-            JarFile jar = new JarFile(jarFile);
-            Enumeration<JarEntry> entries = jar.entries();
-            while (entries.hasMoreElements()) {
-                JarEntry jarEntry = entries.nextElement();
-                String name = jarEntry.getName();
-                if (name.startsWith(BIDING_FILES_LOCATION) && name.endsWith(".xml")) {
-                    String mappingFileName = name.replace(BIDING_FILES_LOCATION + "/", "");
-                    File tmpFile = new File(System.getProperty("java.io.tmpdir"), mappingFileName);
-                    FileOutputStream fos = new FileOutputStream(tmpFile);
-                    IOUtils.copy(jar.getInputStream(jarEntry), fos);
-                    bindingFiles.add(tmpFile);
-                    fos.flush();
-                    fos.close();
+        JarFile jar = null;
+        try {
+            File jarFile = new File(path);
+            if (jarFile.isFile()) {
+                jar = new JarFile(jarFile);
+                Enumeration<JarEntry> entries = jar.entries();
+                while (entries.hasMoreElements()) {
+                    JarEntry jarEntry = entries.nextElement();
+                    String name = jarEntry.getName();
+                    if (name.startsWith(BIDING_FILES_LOCATION) && name.endsWith(".xml")) {
+                        bindingSources.add(jar.getInputStream(jarEntry));
+                    }
+                }
+
+            } else { // Run with IDE
+                File mapping = new File(path, BIDING_FILES_LOCATION);
+                for (File xmlFile : mapping.listFiles(EntityFileServiceManager.fileFilter)) {
+                    bindingSources.add(xmlFile);
                 }
             }
-            jar.close();
-        } else { // Run with IDE
-            File mapping = new File(path, BIDING_FILES_LOCATION);
-            for (File xmlFile : mapping.listFiles(EntityFileServiceManager.fileFilter)) {
-                bindingFiles.add(xmlFile);
+            System.setProperty("javax.xml.bind.context.factory", JAXBContextFactory.class.getName());
+            properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, bindingSources);
+            jaxbContext = JAXBContext.newInstance(getEntityClasses(), properties);
+            marshaller = jaxbContext.createMarshaller();
+            unmarshaller = jaxbContext.createUnmarshaller();
+        } finally {
+            if (jar != null) {
+                jar.close();
             }
         }
-        System.setProperty("javax.xml.bind.context.factory", JAXBContextFactory.class.getName());
-        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, bindingFiles);
-        jaxbContext = JAXBContext.newInstance(getEntityClasses(), properties);
-        marshaller = jaxbContext.createMarshaller();
-        unmarshaller = jaxbContext.createUnmarshaller();
     }
 
     private Class[] getEntityClasses() {
@@ -116,8 +115,7 @@ public final class EntityService {
                 com.kms.katalon.entity.testdata.InternalDataColumnEntity.class,
                 com.kms.katalon.entity.testsuite.TestSuiteEntity.class,
                 com.kms.katalon.entity.variable.VariableEntity.class,
-                com.kms.katalon.entity.link.TestSuiteTestCaseLink.class,
-                com.kms.katalon.entity.link.VariableLink.class,
+                com.kms.katalon.entity.link.TestSuiteTestCaseLink.class, com.kms.katalon.entity.link.VariableLink.class,
                 com.kms.katalon.entity.repository.WebServiceRequestEntity.class,
                 com.kms.katalon.dal.fileservice.entity.GlobalVariableWrapper.class,
                 com.kms.katalon.entity.global.GlobalVariableEntity.class,
@@ -249,7 +247,7 @@ public final class EntityService {
         cache.put(entity.getLocation(), entity);
         return true;
     }
-    
+
     public boolean saveFolderMetadataEntity(FileEntity entity) throws Exception {
         String metaDataFileLocation = entity.getLocation() + File.separator + FolderEntity.getMetaDataFileExtension();
 
