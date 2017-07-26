@@ -207,6 +207,7 @@ public class MobileDriverFactory {
                 capabilities.setCapability(MobileCapabilityType.PLATFORM_VERSION, getDeviceOSVersion());
             }
         } else if (driverPreferences != null && osType == MobileDriverType.ANDROID_DRIVER) {
+            capabilities.setCapability("autoGrantPermissions", true);
             capabilities.merge(
                     convertPropertiesMaptoDesireCapabilities(driverPreferences, MobileDriverType.ANDROID_DRIVER));
             capabilities.setPlatform(Platform.ANDROID);

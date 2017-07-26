@@ -1,7 +1,6 @@
 package com.kms.katalon.composer.mobile.objectspy.dialog;
 
 import static com.kms.katalon.composer.mobile.objectspy.dialog.MobileDeviceDialog.safeRoundDouble;
-import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
@@ -39,10 +37,9 @@ import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -53,18 +50,15 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
@@ -81,10 +75,12 @@ import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
-import com.kms.katalon.composer.execution.util.MobileDeviceUIProvider;
+import com.kms.katalon.composer.mobile.objectspy.components.KobitonAppComposite;
+import com.kms.katalon.composer.mobile.objectspy.components.LocalAppComposite;
 import com.kms.katalon.composer.mobile.objectspy.constant.ImageConstants;
 import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
 import com.kms.katalon.composer.mobile.objectspy.element.CapturedMobileElementConverter;
+import com.kms.katalon.composer.mobile.objectspy.element.MobileDeviceType;
 import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.TreeMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.impl.CapturedMobileElement;
@@ -97,12 +93,12 @@ import com.kms.katalon.composer.mobile.objectspy.viewer.CapturedObjectTableViewe
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ObjectRepositoryController;
+import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.core.mobile.keyword.internal.GUIObject;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
-import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
 
-public class MobileObjectSpyDialog extends Dialog implements MobileElementInspectorDialog {
+public class MobileObjectSpyDialog extends Dialog implements MobileElementInspectorDialog, MobileAppDialog {
 
     public static final Point DIALOG_SIZE = new Point(800, 800);
 
@@ -110,11 +106,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
 
     private static final int DIALOG_MARGIN_OFFSET = 5;
 
-    private Text txtAppFile;
-
-    private Combo cbbDevices, cbbAppType;
-
-    private Button btnBrowse, btnRefreshDevice;
+    private Combo cbbAppType;
 
     private CheckboxTreeViewer allElementTreeViewer;
 
@@ -124,17 +116,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
 
     private boolean disposed;
 
-    private String ANDROID_FILTER_NAMES = "Android Application (*.apk)";
-
-    private String ANDROID_FILTER_EXTS = "*.apk";
-
-    private String IOS_FILTER_NAMES = "iOS Application (*.app, *.ipa)";
-
-    private String IOS_FILTER_EXTS = "*.app;*.ipa";
-
     private MobileInspectorController inspectorController;
-
-    private List<MobileDeviceInfo> deviceInfos = new ArrayList<>();
 
     private MobileDeviceDialog deviceView;
 
@@ -149,6 +131,14 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
     private MobileElementPropertiesComposite propertiesComposite;
 
     private MobileObjectSpyPreferencesHelper preferencesHelper;
+
+    private LocalAppComposite localAppComposite;
+
+    private KobitonAppComposite kobitonAppComposite;
+
+    private StackLayout stackLayout;
+
+    private Composite appsComposite;
 
     public boolean isCanceledBeforeOpening() {
         return canceledBeforeOpening;
@@ -466,88 +456,62 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         lblConfiguration.setFont(getFontBold(lblConfiguration));
         lblConfiguration.setText(StringConstants.DIA_LBL_CONFIGURATIONS);
 
-        // Device Name
-        Label lblDeviceName = new Label(settingComposite, SWT.NONE);
-        GridData gdDeviceName = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
-        gdDeviceName.widthHint = 100;
-        lblDeviceName.setLayoutData(gdDeviceName);
-        lblDeviceName.setText(StringConstants.DIA_LBL_DEVICE_NAME);
-
-        Composite devicesComposite = new Composite(settingComposite, SWT.NONE);
-        devicesComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
-        GridLayout glDevicesComposite = new GridLayout(2, false);
-        glDevicesComposite.marginHeight = 0;
-        glDevicesComposite.marginWidth = 0;
-        devicesComposite.setLayout(glDevicesComposite);
-
-        cbbDevices = new Combo(devicesComposite, SWT.READ_ONLY);
-        cbbDevices.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        cbbDevices.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                validateToEnableStartButton();
-            }
-        });
-
-        btnRefreshDevice = new Button(devicesComposite, SWT.FLAT);
-        btnRefreshDevice.setText(StringConstants.REFRESH);
-        btnRefreshDevice.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                updateDeviceNames();
-            }
-        });
-
         // Application Type
         Label typeLabel = new Label(settingComposite, SWT.NONE);
         typeLabel.setText(StringConstants.DIA_LBL_APP_TYPE);
 
         cbbAppType = new Combo(settingComposite, SWT.READ_ONLY);
         cbbAppType.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        cbbAppType.setItems(new String[] { StringConstants.DIA_APP_TYPE_NATIVE_APP });
+        cbbAppType.setItems(getAllDeviceTypeStringValues());
         cbbAppType.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                validateToEnableStartButton();
+                changeAppComposite();
+                refreshStartButtonState();
             }
         });
 
-        // Application File location
-        Label appFileLabel = new Label(settingComposite, SWT.NONE);
-        appFileLabel.setText(StringConstants.DIA_LBL_APP_FILE);
+        appsComposite = new Composite(settingComposite, SWT.NONE);
+        stackLayout = new StackLayout();
+        appsComposite.setLayout(stackLayout);
+        appsComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 
-        Composite appFileChooserComposite = new Composite(settingComposite, SWT.NONE);
-        appFileChooserComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        GridLayout glAppFileChooserComposite = new GridLayout(2, false);
-        glAppFileChooserComposite.marginHeight = 0;
-        glAppFileChooserComposite.marginWidth = 0;
-        appFileChooserComposite.setLayout(glAppFileChooserComposite);
-        txtAppFile = new Text(appFileChooserComposite, SWT.READ_ONLY | SWT.BORDER);
-        txtAppFile.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        txtAppFile.addModifyListener(new ModifyListener() {
-            @Override
-            public void modifyText(ModifyEvent e) {
-                validateToEnableStartButton();
-            }
-        });
+        localAppComposite = new LocalAppComposite(appsComposite, this, preferencesHelper, SWT.NONE);
+        kobitonAppComposite = new KobitonAppComposite(appsComposite, this, SWT.NONE);
 
-        btnBrowse = new Button(appFileChooserComposite, SWT.PUSH);
-        btnBrowse.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-        btnBrowse.setText(StringConstants.DIA_BTN_BROWSE);
-        btnBrowse.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                FileDialog dialog = new FileDialog(btnBrowse.getShell());
-                dialog.setFilterNames(getFilterNames());
-                dialog.setFilterExtensions(getFilterExtensions());
-                String absolutePath = dialog.open();
-                if (StringUtils.isEmpty(absolutePath)) {
-                    return;
-                }
-                preferencesHelper.setLastAppFile(absolutePath);
-                txtAppFile.setText(absolutePath);
-            }
-        });
+        changeAppCompositeToLocal();
+    }
+
+    private void changeAppComposite() {
+        MobileDeviceType mobileDeviceType = MobileDeviceType.fromDisplayName(cbbAppType.getText());
+        changeAppComposite(mobileDeviceType);
+    }
+
+    private void changeAppComposite(MobileDeviceType mobileDeviceType) {
+        if (mobileDeviceType == MobileDeviceType.Kobiton && stackLayout.topControl != kobitonAppComposite) {
+            changeAppCompositeToKobiton();
+        } else if (mobileDeviceType == MobileDeviceType.Local && stackLayout.topControl != localAppComposite) {
+            changeAppCompositeToLocal();
+        }
+        appsComposite.layout();
+    }
+
+    private void changeAppCompositeToLocal() {
+        stackLayout.topControl = localAppComposite;
+    }
+
+    private void changeAppCompositeToKobiton() {
+        stackLayout.topControl = kobitonAppComposite;
+        updateDeviceNames();
+        updateApps();
+    }
+
+    private String[] getAllDeviceTypeStringValues() {
+        return Arrays.asList(MobileDeviceType.values())
+                .stream()
+                .filter(deviceType -> deviceType.isSupported())
+                .map(deviceType -> deviceType.getDisplayName())
+                .toArray(String[]::new);
     }
 
     /* package */ void updateSelectedElement(CapturedMobileElement selectedElement) {
@@ -559,10 +523,17 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         }
     }
 
-    private void validateToEnableStartButton() {
-        boolean ableToStart = isNotBlank(txtAppFile.getText()) && cbbDevices.getSelectionIndex() >= 0
-                && cbbAppType.getSelectionIndex() >= 0;
-        btnStart.setEnabled(ableToStart);
+    @Override
+    public void refreshStartButtonState() {
+        if (cbbAppType.getSelectionIndex() < 0) {
+            btnStart.setEnabled(false);
+            return;
+        }
+        if (stackLayout.topControl == localAppComposite) {
+            btnStart.setEnabled(localAppComposite.isAbleToStart());
+        } else if (stackLayout.topControl == kobitonAppComposite) {
+            btnStart.setEnabled(kobitonAppComposite.isAbleToStart());
+        }
     }
 
     @Override
@@ -572,38 +543,20 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         updateDeviceNames();
 
         cbbAppType.select(0);
-        txtAppFile.setText(preferencesHelper.getLastAppFile());
-        validateToEnableStartButton();
+        refreshStartButtonState();
 
         capturedObjectsTableViewer.setCapturedElements(new ArrayList<CapturedMobileElement>());
     }
 
-    private void updateDeviceNames() {
+    @Override
+    public void updateDeviceNames() {
         try {
             ControlUtils.recursiveSetEnabled(container, false);
-            new ProgressMonitorDialogWithThread(Display.getDefault().getActiveShell()).run(true, true,
-                    new IRunnableWithProgress() {
-                @Override
-                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                    monitor.beginTask(StringConstants.DIA_JOB_TASK_LOADING_DEVICES, IProgressMonitor.UNKNOWN);
-
-                    final List<String> devices = getAllDevicesName();
-
-                    checkMonitorCanceled(monitor);
-
-                    UISynchronizeService.syncExec(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (!devices.isEmpty()) {
-                                cbbDevices.setItems(devices.toArray(new String[] {}));
-                                cbbDevices.select(Math.max(0, devices.indexOf(cbbDevices.getText())));
-                            }
-                        }
-                    });
-
-                    monitor.done();
-                }
-            });
+            if (stackLayout.topControl == localAppComposite) {
+                localAppComposite.updateLocalDevices();
+            } else if (stackLayout.topControl == kobitonAppComposite) {
+                kobitonAppComposite.updateKobitonDevices();
+            }
         } catch (InterruptedException ignored) {
             // User canceled
             canceledBeforeOpening = true;
@@ -615,7 +568,29 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
             canceledBeforeOpening = true;
         } finally {
             ControlUtils.recursiveSetEnabled(container, true);
-            validateToEnableStartButton();
+            refreshStartButtonState();
+        }
+    }
+
+    private void updateApps() {
+        try {
+            ControlUtils.recursiveSetEnabled(container, false);
+            if (stackLayout.topControl != kobitonAppComposite) {
+                return;
+            }
+            kobitonAppComposite.updateKobitonApps();
+        } catch (InterruptedException ignored) {
+            // User canceled
+            canceledBeforeOpening = true;
+        } catch (InvocationTargetException e) {
+            LoggerSingleton.logError(e);
+            Throwable targetException = e.getTargetException();
+            MultiStatusErrorDialog.showErrorDialog(targetException, StringConstants.DIA_ERROR_UNABLE_TO_COLLECT_DEVICES,
+                    targetException.getClass().getSimpleName());
+            canceledBeforeOpening = true;
+        } finally {
+            ControlUtils.recursiveSetEnabled(container, true);
+            refreshStartButtonState();
         }
     }
 
@@ -629,16 +604,6 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
                 close();
             }
         }
-    }
-
-    private List<String> getAllDevicesName() {
-        deviceInfos.clear();
-        deviceInfos.addAll(MobileDeviceUIProvider.getAllDevices());
-        List<String> devicesNameList = new ArrayList<String>();
-        for (MobileDeviceInfo deviceInfo : deviceInfos) {
-            devicesNameList.add(deviceInfo.getDisplayName());
-        }
-        return devicesNameList;
     }
 
     private Font getFontBold(Label label) {
@@ -692,15 +657,24 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
                 List<ITreeEntity> newTreeEntities = new ArrayList<>();
 
                 ObjectRepositoryController objectRepositoryController = ObjectRepositoryController.getInstance();
-                MobileDeviceInfo mobileDeviceInfo = getMobileDeviceInfo();
+                MobileDriverType currentMobileType = getCurrentMobileDriverType();
                 for (CapturedMobileElement mobileElement : capturedObjectsTableViewer.getAllCheckedElements()) {
-                    WebElementEntity testObject = converter.convert(mobileElement, folder, mobileDeviceInfo);
+                    WebElementEntity testObject = converter.convert(mobileElement, folder, currentMobileType);
                     objectRepositoryController.updateTestObject(testObject);
                     newTreeEntities.add(new WebElementTreeEntity(testObject, folderTreeEntity));
                 }
                 return newTreeEntities;
             }
         });
+    }
+
+    private MobileDriverType getCurrentMobileDriverType() {
+        if (stackLayout.topControl == localAppComposite) {
+            return MobileInspectorController.getMobileDriverType(localAppComposite.getSelectedMobileDeviceInfo());
+        } else if (stackLayout.topControl == kobitonAppComposite) {
+            return MobileInspectorController.getMobileDriverType(kobitonAppComposite.getSelectedKobitonDevice());
+        }
+        return null;
     }
 
     private void addStartStopToolbar(Composite contentComposite) {
@@ -734,7 +708,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
             @Override
             public void widgetSelected(SelectionEvent e) {
                 // Validate all required informations are filled
-                if (validateData()) {
+                if (validateAppSetting()) {
                     startObjectInspectorAction();
                 }
             }
@@ -884,7 +858,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
     }
 
     private void captureObjectAction() {
-        final String appName = FilenameUtils.getName(txtAppFile.getText());
+        final String appName = getAppName();
         final ProgressMonitorDialogWithThread dialog = new ProgressMonitorDialogWithThread(getShell());
 
         IRunnableWithProgress runnable = new IRunnableWithProgress() {
@@ -972,6 +946,15 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         }
     }
 
+    public String getAppName() {
+        if (stackLayout.topControl == localAppComposite) {
+            return localAppComposite.getAppName();
+        } else if (stackLayout.topControl == kobitonAppComposite) {
+            return kobitonAppComposite.getAppName();
+        }
+        return "";
+    }
+
     private void checkMonitorCanceled(IProgressMonitor monitor) throws InterruptedException {
         if (monitor.isCanceled()) {
             throw new InterruptedException(StringConstants.DIA_ERROR_MSG_OPERATION_CANCELED);
@@ -986,46 +969,27 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
 
         // Temporary disable Start button while launching app
         btnStart.setEnabled(false);
-
+        final ProgressMonitorDialogWithThread progressDlg = new ProgressMonitorDialogWithThread(getShell()) {
+            @Override
+            public void cancelPressed() {
+                super.cancelPressed();
+                finishedRun();
+                getProgressMonitor().done();
+                btnStart.setEnabled(true);
+                btnStop.setEnabled(false);
+                btnCapture.setEnabled(false);
+            }
+        };
         try {
-            final MobileDeviceInfo selectDeviceInfo = getMobileDeviceInfo();
-            if (selectDeviceInfo == null) {
+            if (stackLayout.topControl == localAppComposite
+                    && !localAppComposite.startLocalApp(inspectorController, progressDlg)) {
+                btnStart.setEnabled(true);
+                return;
+            } else if (stackLayout.topControl == kobitonAppComposite
+                    && !kobitonAppComposite.startKobitonApp(inspectorController, progressDlg)) {
+                btnStart.setEnabled(true);
                 return;
             }
-            final String appFile = txtAppFile.getText();
-
-            final ProgressMonitorDialogWithThread progressDlg = new ProgressMonitorDialogWithThread(getShell()) {
-                @Override
-                public void cancelPressed() {
-                    super.cancelPressed();
-                    finishedRun();
-                    getProgressMonitor().done();
-                    btnStart.setEnabled(true);
-                    btnStop.setEnabled(false);
-                    btnCapture.setEnabled(false);
-                }
-            };
-
-            IRunnableWithProgress processToRun = new IRunnableWithProgress() {
-                @Override
-                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                    monitor.beginTask(StringConstants.DIA_LBL_STATUS_APP_STARTING, IProgressMonitor.UNKNOWN);
-
-                    progressDlg.runAndWait(new Callable<Object>() {
-                        @Override
-                        public Object call() throws Exception {
-                            // Start application using MobileDriver
-                            inspectorController.startMobileApp(selectDeviceInfo, appFile, false);
-                            return null;
-                        }
-                    });
-                    checkMonitorCanceled(monitor);
-
-                    monitor.done();
-                }
-            };
-
-            progressDlg.run(true, true, processToRun);
 
             captureObjectAction();
             // If no exception, application has been successful started, enable more features
@@ -1066,8 +1030,10 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
             btnStop.setEnabled(false);
             btnCapture.setEnabled(false);
 
-            allElementTreeViewer.setInput(new Object[] {});
-            allElementTreeViewer.refresh();
+            if (allElementTreeViewer != null) {
+                allElementTreeViewer.setInput(new Object[] {});
+                allElementTreeViewer.refresh();
+            }
         }
 
         if (deviceView != null) {
@@ -1077,34 +1043,18 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         dispose();
     }
 
-    private boolean validateData() {
-        if (cbbDevices.getSelectionIndex() < 0) {
-            MessageDialog.openError(getShell(), StringConstants.ERROR_TITLE,
-                    StringConstants.DIA_ERROR_MSG_PLS_CONNECT_AND_SELECT_DEVICE);
-            return false;
-        }
-
+    private boolean validateAppSetting() {
         if (cbbAppType.getSelectionIndex() < 0) {
             MessageDialog.openError(getShell(), StringConstants.ERROR_TITLE,
                     StringConstants.DIA_ERROR_MSG_PLS_SELECT_APP_TYPE);
             return false;
         }
-
-        String appFilePath = txtAppFile.getText().trim();
-
-        if (appFilePath.equals("")) {
-            MessageDialog.openError(getShell(), StringConstants.ERROR_TITLE,
-                    StringConstants.DIA_ERROR_MSG_PLS_SELECT_APP_FILE);
-            return false;
+        if (stackLayout.topControl == localAppComposite) {
+            return localAppComposite.validateLocalAppSetting();
+        } else if (stackLayout.topControl == kobitonAppComposite) {
+            return kobitonAppComposite.validateKobitonAppSetting();
         }
-        File appFile = new File(appFilePath);
-
-        if (!appFile.exists()) {
-            MessageDialog.openWarning(getShell(), StringConstants.ERROR_TITLE,
-                    StringConstants.DIA_ERROR_MSG_APP_FILE_NOT_EXIST);
-            return false;
-        }
-        return true;
+        return false;
     }
 
     @Override
@@ -1130,33 +1080,11 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         return super.close();
     }
 
-    private String[] getFilterNames() {
-        if (StringUtils.equals(Platform.getOS(), Platform.OS_MACOSX)) {
-            return new String[] { ANDROID_FILTER_NAMES, IOS_FILTER_NAMES };
-        }
-        return new String[] { ANDROID_FILTER_NAMES };
-    }
-
-    private String[] getFilterExtensions() {
-        if (StringUtils.equals(Platform.getOS(), Platform.OS_MACOSX)) {
-            return new String[] { ANDROID_FILTER_EXTS, IOS_FILTER_EXTS };
-        }
-        return new String[] { ANDROID_FILTER_EXTS };
-    }
-
     @Override
     protected Point getInitialLocation(Point initialSize) {
         Rectangle displayBounds = getShell().getMonitor().getBounds();
         return new Point(calculateObjectSpyDialogStartX(displayBounds, initialSize),
                 calculateObjectSpyDialogStartY(displayBounds, initialSize));
-    }
-
-    private MobileDeviceInfo getMobileDeviceInfo() {
-        int selectedMobileDeviceIndex = cbbDevices.getSelectionIndex();
-        if (selectedMobileDeviceIndex < 0 || selectedMobileDeviceIndex >= deviceInfos.size()) {
-            return null;
-        }
-        return deviceInfos.get(selectedMobileDeviceIndex);
     }
 
     private void setDeviceView(MobileDeviceDialog deviceView) {

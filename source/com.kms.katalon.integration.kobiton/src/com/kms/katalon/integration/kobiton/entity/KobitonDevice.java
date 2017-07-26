@@ -35,9 +35,9 @@ public class KobitonDevice {
 
     private static final String BROWSER_SAFARI = "safari";
 
-    private static final String PLATFORM_NAME_ANDROID = "Android";
+    public static final String PLATFORM_NAME_ANDROID = "Android";
 
-    private static final String PLATFORM_NAME_IOS = "iOS";
+    public static final String PLATFORM_NAME_IOS = "iOS";
 
     private int id;
 
