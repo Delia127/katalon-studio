@@ -58,6 +58,8 @@ public class LocalAppComposite extends Composite {
     private Text txtAppFile;
 
     private List<MobileDeviceInfo> deviceInfos = new ArrayList<>();
+    
+    private MobileDeviceInfo selectedDevice = null;
 
     public LocalAppComposite(Composite parent, MobileAppDialog parentDialog,
             MobileObjectSpyPreferencesHelper preferencesHelper, int style) {
@@ -89,7 +91,7 @@ public class LocalAppComposite extends Composite {
         cbbDevices.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                parentDialog.refreshStartButtonState();
+                parentDialog.refreshButtonsState();
             }
         });
 
@@ -115,13 +117,13 @@ public class LocalAppComposite extends Composite {
 
         txtAppFile = new Text(appFileChooserComposite, SWT.READ_ONLY | SWT.BORDER);
         txtAppFile.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        txtAppFile.setText(preferencesHelper.getLastAppFile());
         txtAppFile.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {
-                parentDialog.refreshStartButtonState();
+                parentDialog.refreshButtonsState();
             }
         });
-        txtAppFile.setText(preferencesHelper.getLastAppFile());
 
         btnBrowse = new Button(appFileChooserComposite, SWT.PUSH);
         final GridData btnBrowserGridData = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
@@ -158,7 +160,7 @@ public class LocalAppComposite extends Composite {
     }
 
     public boolean isAbleToStart() {
-        return isNotBlank(txtAppFile.getText()) && cbbDevices.getSelectionIndex() >= 0;
+        return isNotBlank(getAppFile()) && cbbDevices.getSelectionIndex() >= 0;
     }
 
     public void updateLocalDevices() throws InvocationTargetException, InterruptedException {
@@ -208,15 +210,24 @@ public class LocalAppComposite extends Composite {
     }
     
     public String getAppName() {
-        return FilenameUtils.getName(txtAppFile.getText());
+        return FilenameUtils.getName(getAppFile());
+    }
+
+    public String getAppFile() {
+        return txtAppFile.getText();
     }
 
     public MobileDeviceInfo getSelectedMobileDeviceInfo() {
+        if (cbbDevices == null || cbbDevices.isDisposed()) {
+            return selectedDevice;
+        }
         int selectedMobileDeviceIndex = cbbDevices.getSelectionIndex();
         if (selectedMobileDeviceIndex < 0 || selectedMobileDeviceIndex >= deviceInfos.size()) {
-            return null;
+            selectedDevice = null;
+            return selectedDevice;
         }
-        return deviceInfos.get(selectedMobileDeviceIndex);
+        selectedDevice = deviceInfos.get(selectedMobileDeviceIndex);
+        return selectedDevice;
     }
 
     public boolean startLocalApp(MobileInspectorController inspectorController,
@@ -225,7 +236,7 @@ public class LocalAppComposite extends Composite {
         if (selectDeviceInfo == null) {
             return false;
         }
-        final String appFile = txtAppFile.getText();
+        final String appFile = getAppFile();
 
         IRunnableWithProgress processToRun = new IRunnableWithProgress() {
             @Override
@@ -257,7 +268,7 @@ public class LocalAppComposite extends Composite {
             return false;
         }
 
-        String appFilePath = txtAppFile.getText().trim();
+        String appFilePath = getAppFile().trim();
 
         if (appFilePath.equals("")) {
             MessageDialog.openError(getShell(), StringConstants.ERROR_TITLE,

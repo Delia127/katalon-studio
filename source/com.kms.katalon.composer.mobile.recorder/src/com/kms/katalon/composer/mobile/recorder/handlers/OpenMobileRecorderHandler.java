@@ -53,10 +53,10 @@ import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
-import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
 
 public class OpenMobileRecorderHandler {
     private MobileRecorderDialog recorderDialog;
@@ -119,7 +119,7 @@ public class OpenMobileRecorderHandler {
                 testCaseCompositePart = createNewTestCase();
             }
             exportRecordedActionsToScripts(recorderDialog.getRecordedActions(), recorderDialog.getTargetFolderEntity(),
-                    recorderDialog.getSelectDeviceInfo(), testCaseCompositePart);
+                    recorderDialog.getCurrentMobileDriverType(), testCaseCompositePart);
             return true;
         } catch (Exception e) {
             LoggerSingleton.logError(e);
@@ -159,7 +159,7 @@ public class OpenMobileRecorderHandler {
     }
 
     private void exportRecordedActionsToScripts(List<MobileActionMapping> recordedActions,
-            FolderTreeEntity targetFolderTreeEntity, MobileDeviceInfo mobileDeviceInfo,
+            FolderTreeEntity targetFolderTreeEntity, MobileDriverType mobileDriverType,
             TestCaseCompositePart testCaseCompositePart) {
         if (testCaseCompositePart == null) {
             return;
@@ -170,7 +170,7 @@ public class OpenMobileRecorderHandler {
                 try {
                     final TestCasePart testCasePart = testCaseCompositePart.getChildTestCasePart();
                     final List<StatementWrapper> generatedStatementWrappers = generateStatementWrappersFromRecordedActions(
-                            recordedActions, testCasePart, targetFolderTreeEntity, mobileDeviceInfo, monitor);
+                            recordedActions, testCasePart, targetFolderTreeEntity, mobileDriverType, monitor);
                     UISynchronizeService.syncExec(new Runnable() {
                         @Override
                         public void run() {
@@ -231,7 +231,7 @@ public class OpenMobileRecorderHandler {
     }
 
     private WebElementEntity addRecordedElement(MobileElement element, FolderEntity parentFolder,
-            MobileDeviceInfo deviceInfo, Map<MobileElement, WebElementEntity> entitySavedMap) throws Exception {
+            MobileDriverType mobileDriverType, Map<MobileElement, WebElementEntity> entitySavedMap) throws Exception {
         if (element == null) {
             return null;
         }
@@ -239,14 +239,14 @@ public class OpenMobileRecorderHandler {
             return entitySavedMap.get(element);
         }
         WebElementEntity importedElement = ObjectRepositoryController.getInstance().importWebElement(
-                new MobileElementConverter().convert(element, parentFolder, deviceInfo), parentFolder);
+                new MobileElementConverter().convert(element, parentFolder, mobileDriverType), parentFolder);
         entitySavedMap.put(element, importedElement);
         return importedElement;
     }
 
     private List<StatementWrapper> generateStatementWrappersFromRecordedActions(
             List<MobileActionMapping> recordedActions, TestCasePart testCasePart,
-            FolderTreeEntity folderSelectionResult, MobileDeviceInfo deviceInfo, IProgressMonitor monitor)
+            FolderTreeEntity folderSelectionResult, MobileDriverType mobileDriverType, IProgressMonitor monitor)
             throws Exception {
         Map<MobileElement, WebElementEntity> entitySavedMap = new HashMap<>();
         FolderEntity targetFolder = folderSelectionResult.getObject();
@@ -256,8 +256,8 @@ public class OpenMobileRecorderHandler {
         ASTNodeWrapper mainClassNode = testCasePart.getTreeTableInput().getMainClassNode();
         List<StatementWrapper> resultStatementWrappers = new ArrayList<StatementWrapper>();
         for (MobileActionMapping action : recordedActions) {
-            WebElementEntity createdTestObject = addRecordedElement(action.getTargetElement(), targetFolder, deviceInfo,
-                    entitySavedMap);
+            WebElementEntity createdTestObject = addRecordedElement(action.getTargetElement(), targetFolder,
+                    mobileDriverType, entitySavedMap);
             StatementWrapper generatedStatementWrapper = MobileActionUtil.generateMobileTestStep(action,
                     createdTestObject, mainClassNode);
             monitor.worked(1);

@@ -77,6 +77,7 @@ import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.mobile.objectspy.components.KobitonAppComposite;
 import com.kms.katalon.composer.mobile.objectspy.components.LocalAppComposite;
+import com.kms.katalon.composer.mobile.objectspy.constant.ComposerMobileObjectspyMessageConstants;
 import com.kms.katalon.composer.mobile.objectspy.constant.ImageConstants;
 import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
 import com.kms.katalon.composer.mobile.objectspy.element.CapturedMobileElementConverter;
@@ -467,7 +468,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
             @Override
             public void widgetSelected(SelectionEvent e) {
                 changeAppComposite();
-                refreshStartButtonState();
+                refreshButtonsState();
             }
         });
 
@@ -524,7 +525,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
     }
 
     @Override
-    public void refreshStartButtonState() {
+    public void refreshButtonsState() {
         if (cbbAppType.getSelectionIndex() < 0) {
             btnStart.setEnabled(false);
             return;
@@ -543,7 +544,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         updateDeviceNames();
 
         cbbAppType.select(0);
-        refreshStartButtonState();
+        refreshButtonsState();
 
         capturedObjectsTableViewer.setCapturedElements(new ArrayList<CapturedMobileElement>());
     }
@@ -568,7 +569,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
             canceledBeforeOpening = true;
         } finally {
             ControlUtils.recursiveSetEnabled(container, true);
-            refreshStartButtonState();
+            refreshButtonsState();
         }
     }
 
@@ -585,12 +586,13 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         } catch (InvocationTargetException e) {
             LoggerSingleton.logError(e);
             Throwable targetException = e.getTargetException();
-            MultiStatusErrorDialog.showErrorDialog(targetException, StringConstants.DIA_ERROR_UNABLE_TO_COLLECT_DEVICES,
+            MultiStatusErrorDialog.showErrorDialog(targetException,
+                    ComposerMobileObjectspyMessageConstants.ERR_MSG_CANNOT_COLLECT_APPS,
                     targetException.getClass().getSimpleName());
             canceledBeforeOpening = true;
         } finally {
             ControlUtils.recursiveSetEnabled(container, true);
-            refreshStartButtonState();
+            refreshButtonsState();
         }
     }
 

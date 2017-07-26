@@ -46,6 +46,8 @@ public class KobitonAppComposite extends Composite {
     private List<KobitonDevice> kobitonDevices = new ArrayList<>();
 
     private List<KobitonApplication> kobitonApps = new ArrayList<>();
+    
+    private KobitonDevice selectDevice = null;
 
     public KobitonAppComposite(Composite parent, MobileAppDialog parentDialog, int style) {
         super(parent, style);
@@ -74,7 +76,7 @@ public class KobitonAppComposite extends Composite {
         cbbKobitonDevices.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                parentDialog.refreshStartButtonState();
+                parentDialog.refreshButtonsState();
             }
         });
 
@@ -102,7 +104,7 @@ public class KobitonAppComposite extends Composite {
         cbbKobitonApps.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                parentDialog.refreshStartButtonState();
+                parentDialog.refreshButtonsState();
             }
         });
     }
@@ -156,11 +158,16 @@ public class KobitonAppComposite extends Composite {
     }
 
     public KobitonDevice getSelectedKobitonDevice() {
+        if (cbbKobitonDevices == null || cbbKobitonDevices.isDisposed()) {
+            return selectDevice;
+        }
         int selectedDeviceIndex = cbbKobitonDevices.getSelectionIndex();
         if (selectedDeviceIndex < 0 || selectedDeviceIndex >= kobitonDevices.size()) {
-            return null;
+            selectDevice = null;
+            return selectDevice;
         }
-        return kobitonDevices.get(selectedDeviceIndex);
+        selectDevice = kobitonDevices.get(selectedDeviceIndex);
+        return selectDevice;
     }
 
     public KobitonApplication getSelectedKobitonApplication() {

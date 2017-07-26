@@ -14,10 +14,8 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.InputDialog;
@@ -41,8 +39,7 @@ import org.eclipse.jface.window.ToolTip;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -54,18 +51,15 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
@@ -81,11 +75,14 @@ import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColumnViewerUtil;
-import com.kms.katalon.composer.execution.util.MobileDeviceUIProvider;
+import com.kms.katalon.composer.mobile.objectspy.components.KobitonAppComposite;
+import com.kms.katalon.composer.mobile.objectspy.components.LocalAppComposite;
 import com.kms.katalon.composer.mobile.objectspy.dialog.AddElementToObjectRepositoryDialog;
+import com.kms.katalon.composer.mobile.objectspy.dialog.MobileAppDialog;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileDeviceDialog;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileElementInspectorDialog;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileInspectorController;
+import com.kms.katalon.composer.mobile.objectspy.element.MobileDeviceType;
 import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.TreeMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.tree.MobileElementLabelProvider;
@@ -110,34 +107,20 @@ import com.kms.katalon.core.testobject.ConditionType;
 import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.core.testobject.TestObjectProperty;
 import com.kms.katalon.execution.mobile.constants.StringConstants;
-import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
+import com.kms.katalon.integration.kobiton.entity.KobitonApplication;
 
-public class MobileRecorderDialog extends AbstractDialog implements MobileElementInspectorDialog {
+public class MobileRecorderDialog extends AbstractDialog implements MobileElementInspectorDialog, MobileAppDialog {
     private static final int DIALOG_MARGIN_OFFSET = 5;
-
-    private static final String ANDROID_FILTER_NAMES = "Android Application (*.apk)";
-
-    private static final String ANDROID_FILTER_EXTS = "*.apk";
-
-    private static final String IOS_FILTER_NAMES = "iOS Application (*.app, *.ipa)";
-
-    private static final String IOS_FILTER_EXTS = "*.app;*.ipa";
 
     private List<MobileActionMapping> recordedActions = new ArrayList<>();
 
     private FolderTreeEntity targetFolderEntity;
 
-    private List<MobileDeviceInfo> deviceInfos = new ArrayList<>();
-
     private List<MobileActionButtonWrapper> actionButtons = new ArrayList<>();
 
-    private ToolItem btnStart, btnCapture, btnStop;
+    private ToolItem btnStart, btnCapture, btnStop, tltmDelete;
 
-    private Text txtAppFile;
-
-    private Combo cbbDevices, cbbAppType;
-
-    private Button btnBrowse, btnRefreshDevice;
+    private Combo cbbAppType;
 
     private TableViewer actionTableViewer;
 
@@ -155,30 +138,17 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
 
     private MobileReadonlyElementPropertiesComposite propertiesComposite;
 
-    private MobileDeviceInfo selectDeviceInfo;
+    private LocalAppComposite localAppComposite;
 
-    private ToolItem tltmDelete;
+    private KobitonAppComposite kobitonAppComposite;
+
+    private StackLayout stackLayout;
+
+    private Composite appsComposite;
 
     public MobileRecorderDialog(Shell parentShell) {
         super(parentShell);
         setShellStyle(SWT.SHELL_TRIM | SWT.RESIZE);
-    }
-
-    @Override
-    public int open() {
-        try {
-            updateDeviceNames();
-        } catch (InterruptedException ignored) {
-           return SWT.CANCEL;
-        } catch (InvocationTargetException e) {
-            LoggerSingleton.logError(e);
-            Throwable targetException = e.getTargetException();
-            MultiStatusErrorDialog.showErrorDialog(targetException,
-                    MobileRecoderMessagesConstants.MSG_ERR_CANNOT_COLLECT_DEVICES,
-                    targetException.getClass().getSimpleName());
-            return SWT.CANCEL;
-        }
-        return super.open();
     }
 
     @Override
@@ -191,15 +161,15 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         }
         return super.close();
     }
-    
+
     @Override
     public void create() {
         super.create();
         cbbAppType.select(0);
-        txtAppFile.setText(preferencesHelper.getLastAppFile());
+        updateDeviceNames();
         validateToEnableStartButton();
         targetElementChanged(null);
-        updateActionButtonsVisibility(null, getSelectDeviceInfo());
+        updateActionButtonsVisibility(null, getCurrentMobileDriverType());
         getButton(IDialogConstants.OK_ID).setEnabled(false);
     }
 
@@ -316,10 +286,6 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
 
     public List<MobileActionMapping> getRecordedActions() {
         return recordedActions;
-    }
-
-    public MobileDeviceInfo getSelectDeviceInfo() {
-        return selectDeviceInfo;
     }
 
     public FolderTreeEntity getTargetFolderEntity() {
@@ -541,18 +507,14 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                 .collect(Collectors.toList()));
     }
 
-    private boolean isMobileDriverTypeOf(MobileDriverType type, MobileDeviceInfo deviceInfo) {
-        return MobileInspectorController.getMobileDriverType(deviceInfo) == type;
-    }
-
-    private TestObject convertMobileElementToTestObject(MobileElement targetElement, MobileDeviceInfo deviceInfo) {
+    private TestObject convertMobileElementToTestObject(MobileElement targetElement, MobileDriverType driverType) {
         if (targetElement == null) {
             return null;
         }
         List<String> typicalProps = new ArrayList<>();
-        if (isMobileDriverTypeOf(MobileDriverType.ANDROID_DRIVER, deviceInfo)) {
+        if (driverType == MobileDriverType.ANDROID_DRIVER) {
             typicalProps.addAll(Arrays.asList(AndroidProperties.ANDROID_TYPICAL_PROPERTIES));
-        } else if (isMobileDriverTypeOf(MobileDriverType.IOS_DRIVER, deviceInfo)) {
+        } else if (driverType == MobileDriverType.IOS_DRIVER) {
             typicalProps.addAll(Arrays.asList(IOSProperties.IOS_TYPICAL_PROPERTIES));
         }
         TestObject testObject = new TestObject(targetElement.getName());
@@ -571,7 +533,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
     private MobileActionMapping performAction(MobileAction action, MobileElement targetElement)
             throws MobileRecordException {
         try {
-            TestObject testObject = convertMobileElementToTestObject(targetElement, getSelectDeviceInfo());
+            TestObject testObject = convertMobileElementToTestObject(targetElement, getCurrentMobileDriverType());
             final MobileActionMapping mobileActionMapping = new MobileActionMapping(action, targetElement);
             MobileActionHelper mobileActionHelper = new MobileActionHelper(inspectorController.getDriver());
 
@@ -672,16 +634,24 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
 
     private void targetElementChanged(MobileElement mobileElement) {
         propertiesComposite.setEditingElement(mobileElement);
-        updateActionButtonsVisibility(mobileElement, getSelectDeviceInfo());
+        updateActionButtonsVisibility(mobileElement, getCurrentMobileDriverType());
     }
 
-    private void updateActionButtonsVisibility(MobileElement mobileElement, MobileDeviceInfo deviceInfo) {
-        MobileDriverType mobileDriverType = MobileInspectorController.getMobileDriverType(deviceInfo);
+    public MobileDriverType getCurrentMobileDriverType() {
+        if (stackLayout.topControl == localAppComposite) {
+            return MobileInspectorController.getMobileDriverType(localAppComposite.getSelectedMobileDeviceInfo());
+        } else if (stackLayout.topControl == kobitonAppComposite) {
+            return MobileInspectorController.getMobileDriverType(kobitonAppComposite.getSelectedKobitonDevice());
+        }
+        return null;
+    }
+
+    public void updateActionButtonsVisibility(MobileElement mobileElement, MobileDriverType currentMobileDriverType) {
         actionButtons.stream().forEach(actionButton -> {
             MobileAction action = actionButton.getMobileAction();
-            actionButton.setEnabledButton(
-                    inspectorController.getDriver() != null && (!action.hasElement() || mobileElement != null)
-                            && (mobileDriverType != null && action.isDriverTypeSupported(mobileDriverType)));
+            actionButton.setEnabledButton(inspectorController.getDriver() != null
+                    && (!action.hasElement() || mobileElement != null)
+                    && (currentMobileDriverType != null && action.isDriverTypeSupported(currentMobileDriverType)));
         });
     }
 
@@ -708,167 +678,111 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         lblConfiguration.setFont(getFontBold(lblConfiguration));
         lblConfiguration.setText(MobileRecoderMessagesConstants.LBL_CONFIGURATIONS);
 
-        // Device Name
-        Label lblDeviceName = new Label(settingComposite, SWT.NONE);
-        GridData gdDeviceName = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
-        gdDeviceName.widthHint = 100;
-        lblDeviceName.setLayoutData(gdDeviceName);
-        lblDeviceName.setText(MobileRecoderMessagesConstants.LBL_DEVICE_NAME);
-
-        Composite devicesComposite = new Composite(settingComposite, SWT.NONE);
-        devicesComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
-        GridLayout glDevicesComposite = new GridLayout(2, false);
-        glDevicesComposite.marginHeight = 0;
-        glDevicesComposite.marginWidth = 0;
-        devicesComposite.setLayout(glDevicesComposite);
-
-        cbbDevices = new Combo(devicesComposite, SWT.READ_ONLY);
-        cbbDevices.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        cbbDevices.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                validateToEnableStartButton();
-                updateActionButtonsVisibility(propertiesComposite.getEditingElement(), getSelectDeviceInfo());
-            }
-        });
-        updateCbbDevices();
-
-        btnRefreshDevice = new Button(devicesComposite, SWT.FLAT);
-        btnRefreshDevice.setText(MobileRecorderStringConstants.REFRESH);
-        btnRefreshDevice.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                try {
-                    ControlUtils.recursiveSetEnabled(container, false);
-                    clearDeviceInfos();
-                    updateDeviceNames();
-                    updateActionButtonsVisibility(propertiesComposite.getEditingElement(), getSelectDeviceInfo());
-                } catch (InvocationTargetException exception) {
-                    Throwable targetException = exception.getTargetException();
-                    LoggerSingleton.logError(targetException);
-                    MultiStatusErrorDialog.showErrorDialog(targetException,
-                            MobileRecoderMessagesConstants.MSG_ERR_CANNOT_COLLECT_DEVICES,
-                            targetException.getClass().getSimpleName());
-                } catch (InterruptedException ignored) {
-                    // ignore this
-                } finally {
-                    ControlUtils.recursiveSetEnabled(container, true);
-                    validateToEnableStartButton();
-                }
-            }
-        });
-
         // Application Type
         Label typeLabel = new Label(settingComposite, SWT.NONE);
-        typeLabel.setText(MobileRecoderMessagesConstants.LBL_APP_TYPE);
+        typeLabel.setText("Device Type");
 
         cbbAppType = new Combo(settingComposite, SWT.READ_ONLY);
         cbbAppType.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        cbbAppType.setItems(new String[] { MobileRecoderMessagesConstants.CBB_ITEM_NATIVE_APPLICATION });
+        cbbAppType.setItems(getAllDeviceTypeStringValues());
         cbbAppType.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                validateToEnableStartButton();
-                updateActionButtonsVisibility(propertiesComposite.getEditingElement(), getSelectDeviceInfo());
+                changeAppComposite();
+                refreshButtonsState();
             }
         });
 
-        // Application File location
-        Label appFileLabel = new Label(settingComposite, SWT.NONE);
-        appFileLabel.setText(MobileRecoderMessagesConstants.LBL_APP_FILE);
+        appsComposite = new Composite(settingComposite, SWT.NONE);
+        stackLayout = new StackLayout();
+        appsComposite.setLayout(stackLayout);
+        appsComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 
-        Composite appFileChooserComposite = new Composite(settingComposite, SWT.NONE);
-        appFileChooserComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        GridLayout glAppFileChooserComposite = new GridLayout(2, false);
-        glAppFileChooserComposite.marginHeight = 0;
-        glAppFileChooserComposite.marginWidth = 0;
-        appFileChooserComposite.setLayout(glAppFileChooserComposite);
-        txtAppFile = new Text(appFileChooserComposite, SWT.READ_ONLY | SWT.BORDER);
-        txtAppFile.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        txtAppFile.addModifyListener(new ModifyListener() {
-            @Override
-            public void modifyText(ModifyEvent e) {
-                validateToEnableStartButton();
+        localAppComposite = new LocalAppComposite(appsComposite, this, preferencesHelper, SWT.NONE);
+        kobitonAppComposite = new KobitonAppComposite(appsComposite, this, SWT.NONE);
+
+        changeAppCompositeToLocal();
+    }
+
+    private String[] getAllDeviceTypeStringValues() {
+        return Arrays.asList(MobileDeviceType.values())
+                .stream()
+                .filter(deviceType -> deviceType.isSupported())
+                .map(deviceType -> deviceType.getDisplayName())
+                .toArray(String[]::new);
+    }
+
+    private void changeAppComposite() {
+        MobileDeviceType mobileDeviceType = MobileDeviceType.fromDisplayName(cbbAppType.getText());
+        changeAppComposite(mobileDeviceType);
+    }
+
+    private void changeAppComposite(MobileDeviceType mobileDeviceType) {
+        if (mobileDeviceType == MobileDeviceType.Kobiton && stackLayout.topControl != kobitonAppComposite) {
+            changeAppCompositeToKobiton();
+        } else if (mobileDeviceType == MobileDeviceType.Local && stackLayout.topControl != localAppComposite) {
+            changeAppCompositeToLocal();
+        }
+        appsComposite.layout();
+    }
+
+    private void changeAppCompositeToLocal() {
+        stackLayout.topControl = localAppComposite;
+    }
+
+    private void changeAppCompositeToKobiton() {
+        stackLayout.topControl = kobitonAppComposite;
+        updateDeviceNames();
+        updateApps();
+    }
+
+    private void updateApps() {
+        try {
+            ControlUtils.recursiveSetEnabled(container, false);
+            if (stackLayout.topControl != kobitonAppComposite) {
+                return;
             }
-        });
+            kobitonAppComposite.updateKobitonApps();
+        } catch (InterruptedException ignored) {
+            // User canceled
+        } catch (InvocationTargetException e) {
+            LoggerSingleton.logError(e);
+            Throwable targetException = e.getTargetException();
+            MultiStatusErrorDialog.showErrorDialog(targetException, "Unable to collect apps",
+                    targetException.getClass().getSimpleName());
+        } finally {
+            ControlUtils.recursiveSetEnabled(container, true);
+            refreshButtonsState();
+        }
+    }
 
-        btnBrowse = new Button(appFileChooserComposite, SWT.PUSH);
-        btnBrowse.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-        btnBrowse.setText(MobileRecorderStringConstants.BROWSE);
-        btnBrowse.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                FileDialog dialog = new FileDialog(btnBrowse.getShell());
-                dialog.setFilterNames(getFilterNames());
-                dialog.setFilterExtensions(getFilterExtensions());
-                String absolutePath = dialog.open();
-                if (StringUtils.isEmpty(absolutePath)) {
-                    return;
-                }
-                preferencesHelper.setLastAppFile(absolutePath);
-                txtAppFile.setText(absolutePath);
+    @Override
+    public void refreshButtonsState() {
+        validateToEnableStartButton();
+        updateActionButtonsVisibility(propertiesComposite.getEditingElement(), getCurrentMobileDriverType());
+    }
+
+    @Override
+    public void updateDeviceNames() {
+        try {
+            ControlUtils.recursiveSetEnabled(container, false);
+            if (stackLayout.topControl == localAppComposite) {
+                localAppComposite.updateLocalDevices();
+            } else if (stackLayout.topControl == kobitonAppComposite) {
+                kobitonAppComposite.updateKobitonDevices();
             }
-        });
-    }
-
-    private String[] getFilterNames() {
-        if (StringUtils.equals(Platform.getOS(), Platform.OS_MACOSX)) {
-            return new String[] { ANDROID_FILTER_NAMES, IOS_FILTER_NAMES };
+        } catch (InvocationTargetException exception) {
+            Throwable targetException = exception.getTargetException();
+            LoggerSingleton.logError(targetException);
+            MultiStatusErrorDialog.showErrorDialog(targetException,
+                    MobileRecoderMessagesConstants.MSG_ERR_CANNOT_COLLECT_DEVICES,
+                    targetException.getClass().getSimpleName());
+        } catch (InterruptedException ignored) {
+            // ignore this
+        } finally {
+            ControlUtils.recursiveSetEnabled(container, true);
+            validateToEnableStartButton();
         }
-        return new String[] { ANDROID_FILTER_NAMES };
-    }
-
-    private String[] getFilterExtensions() {
-        if (StringUtils.equals(Platform.getOS(), Platform.OS_MACOSX)) {
-            return new String[] { ANDROID_FILTER_EXTS, IOS_FILTER_EXTS };
-        }
-        return new String[] { ANDROID_FILTER_EXTS };
-    }
-
-    private List<String> getDeviceInfoNameList() {
-        List<String> devicesNameList = new ArrayList<String>();
-        for (MobileDeviceInfo deviceInfo : deviceInfos) {
-            devicesNameList.add(deviceInfo.getDisplayName());
-        }
-        return devicesNameList;
-    }
-
-    private void refreshDeviceInfos() {
-        deviceInfos.addAll(MobileDeviceUIProvider.getAllDevices());
-    }
-
-    private void clearDeviceInfos() {
-        deviceInfos.clear();
-    }
-
-    private void updateCbbDevices() {
-        final List<String> devices = getDeviceInfoNameList();
-        if (!devices.isEmpty() && cbbDevices != null && !cbbDevices.isDisposed()) {
-            cbbDevices.setItems(devices.toArray(new String[] {}));
-            cbbDevices.select(Math.max(0, devices.indexOf(cbbDevices.getText())));
-        }
-    }
-
-    private void updateDeviceNames() throws InvocationTargetException, InterruptedException {
-        new ProgressMonitorDialogWithThread(getShell()).run(true, true, new IRunnableWithProgress() {
-            @Override
-            public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                monitor.beginTask(MobileRecoderMessagesConstants.MSG_TASK_LOADING_DEVICES, IProgressMonitor.UNKNOWN);
-                
-                refreshDeviceInfos();
-
-                checkMonitorCanceled(monitor);
-
-                UISynchronizeService.syncExec(new Runnable() {
-                    @Override
-                    public void run() {
-                        updateCbbDevices();
-                    }
-                });
-
-                monitor.done();
-            }
-        });
     }
 
     private void openDeviceView() {
@@ -879,69 +793,40 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         deviceView.open();
     }
 
-    private MobileDeviceInfo getMobileDeviceInfo() {
-        int selectedMobileDeviceIndex = cbbDevices.getSelectionIndex();
-        if (selectedMobileDeviceIndex < 0 || selectedMobileDeviceIndex >= deviceInfos.size()) {
-            return null;
-        }
-        return deviceInfos.get(selectedMobileDeviceIndex);
-    }
-
     private void startObjectInspectorAction() {
-
         // Temporary disable Start button while launching app
         btnStart.setEnabled(false);
-
+        final ProgressMonitorDialogWithThread progressDlg = new ProgressMonitorDialogWithThread(getShell()) {
+            @Override
+            public void cancelPressed() {
+                super.cancelPressed();
+                finishedRun();
+                getProgressMonitor().done();
+                btnStart.setEnabled(true);
+                btnStop.setEnabled(false);
+                btnCapture.setEnabled(false);
+            }
+        };
         try {
-            selectDeviceInfo = getMobileDeviceInfo();
-            if (selectDeviceInfo == null) {
+            if (stackLayout.topControl == localAppComposite
+                    && !localAppComposite.startLocalApp(inspectorController, progressDlg)) {
+                btnStart.setEnabled(true);
+                return;
+            } else if (stackLayout.topControl == kobitonAppComposite
+                    && !kobitonAppComposite.startKobitonApp(inspectorController, progressDlg)) {
+                btnStart.setEnabled(true);
                 return;
             }
-            final String appFile = txtAppFile.getText();
-
-            final ProgressMonitorDialogWithThread progressDlg = new ProgressMonitorDialogWithThread(getShell()) {
-                @Override
-                public void cancelPressed() {
-                    super.cancelPressed();
-                    finishedRun();
-                    getProgressMonitor().done();
-                    btnStart.setEnabled(true);
-                    btnStop.setEnabled(false);
-                    btnCapture.setEnabled(false);
-                }
-            };
-
-            IRunnableWithProgress processToRun = new IRunnableWithProgress() {
-                @Override
-                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                    monitor.beginTask(MobileRecoderMessagesConstants.MSG_TASK_STARTING_APP, IProgressMonitor.UNKNOWN);
-
-                    progressDlg.runAndWait(new Callable<Object>() {
-                        @Override
-                        public Object call() throws Exception {
-                            // Start application using MobileDriver
-                            inspectorController.startMobileApp(selectDeviceInfo, appFile, false);
-                            return null;
-                        }
-                    });
-                    checkMonitorCanceled(monitor);
-
-                    monitor.done();
-                }
-            };
-
-            progressDlg.run(true, true, processToRun);
 
             captureObjectAction();
+
             // If no exception, application has been successful started, enable more features
             btnCapture.setEnabled(true);
             btnStop.setEnabled(true);
             getButton(IDialogConstants.OK_ID).setEnabled(true);
             recordedActions.clear();
             targetElementChanged(null);
-            MobileActionMapping startAppAction = new MobileActionMapping(MobileAction.StartApplication, null);
-            startAppAction.getData()[0].setValue(new ConstantExpressionWrapper(appFile));
-            recordedActions.add(startAppAction);
+            recordedActions.add(buildStartAppActionMapping());
             actionTableViewer.refresh();
         } catch (InvocationTargetException | InterruptedException ex) {
             // If user intentionally cancel the progress, don't need to show error message
@@ -960,8 +845,32 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         }
     }
 
+    public MobileActionMapping buildStartAppActionMapping() {
+        MobileActionMapping startAppAction = new MobileActionMapping(MobileAction.StartApplication, null);
+        String appValue = "";
+        if (stackLayout.topControl == localAppComposite) {
+            appValue = localAppComposite.getAppFile();
+        } else if (stackLayout.topControl == kobitonAppComposite) {
+            KobitonApplication kobitonApp = kobitonAppComposite.getSelectedKobitonApplication();
+            if (kobitonApp != null) {
+                appValue = kobitonApp.buildAutomationKey();
+            }
+        }
+        startAppAction.getData()[0].setValue(new ConstantExpressionWrapper(appValue));
+        return startAppAction;
+    }
+
+    public String getAppName() {
+        if (stackLayout.topControl == localAppComposite) {
+            return localAppComposite.getAppName();
+        } else if (stackLayout.topControl == kobitonAppComposite) {
+            return kobitonAppComposite.getAppName();
+        }
+        return "";
+    }
+
     private void captureObjectAction() {
-        final String appName = FilenameUtils.getName(txtAppFile.getText());
+        final String appName = getAppName();
         final ProgressMonitorDialogWithThread dialog = new ProgressMonitorDialogWithThread(getShell());
 
         IRunnableWithProgress runnable = new IRunnableWithProgress() {
@@ -1096,9 +1005,15 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
     }
 
     private void validateToEnableStartButton() {
-        boolean ableToStart = StringUtils.isNotBlank(txtAppFile.getText()) && cbbDevices.getSelectionIndex() >= 0
-                && cbbAppType.getSelectionIndex() >= 0;
-        btnStart.setEnabled(ableToStart);
+        if (cbbAppType.getSelectionIndex() < 0) {
+            btnStart.setEnabled(false);
+            return;
+        }
+        if (stackLayout.topControl == localAppComposite) {
+            btnStart.setEnabled(localAppComposite.isAbleToStart());
+        } else if (stackLayout.topControl == kobitonAppComposite) {
+            btnStart.setEnabled(kobitonAppComposite.isAbleToStart());
+        }
     }
 
     private void addStartStopToolbar(Composite contentComposite) {
@@ -1132,9 +1047,10 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
             @Override
             public void widgetSelected(SelectionEvent e) {
                 // Validate all required informations are filled
-                if (validateData()) {
+                if (validateAppSetting()) {
                     startObjectInspectorAction();
-                    updateActionButtonsVisibility(propertiesComposite.getEditingElement(), getSelectDeviceInfo());
+                    updateActionButtonsVisibility(propertiesComposite.getEditingElement(),
+                            getCurrentMobileDriverType());
                 }
             }
         });
@@ -1153,34 +1069,18 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         });
     }
 
-    private boolean validateData() {
-        if (cbbDevices.getSelectionIndex() < 0) {
-            MessageDialog.openError(getShell(), MobileRecorderStringConstants.ERROR,
-                    MobileRecoderMessagesConstants.MSG_ERR_NEED_A_DEVICE_CONNECTED);
-            return false;
-        }
-
+    private boolean validateAppSetting() {
         if (cbbAppType.getSelectionIndex() < 0) {
             MessageDialog.openError(getShell(), MobileRecorderStringConstants.ERROR,
                     MobileRecoderMessagesConstants.MSG_ERR_NEED_APPLICATION_TYPE_SELECTED);
             return false;
         }
-
-        String appFilePath = txtAppFile.getText().trim();
-
-        if (appFilePath.equals("")) {
-            MessageDialog.openError(getShell(), MobileRecorderStringConstants.ERROR,
-                    MobileRecoderMessagesConstants.MSG_ERR_NEED_APPLICATION_FILE_SELECTED);
-            return false;
+        if (stackLayout.topControl == localAppComposite) {
+            return localAppComposite.validateLocalAppSetting();
+        } else if (stackLayout.topControl == kobitonAppComposite) {
+            return kobitonAppComposite.validateKobitonAppSetting();
         }
-        File appFile = new File(appFilePath);
-
-        if (!appFile.exists()) {
-            MessageDialog.openWarning(getShell(), MobileRecorderStringConstants.ERROR,
-                    MobileRecoderMessagesConstants.MSG_ERR_CANNOT_FIND_APPLICATION_FILE);
-            return false;
-        }
-        return true;
+        return false;
     }
 
     private void createAllObjectsComposite(Composite parentComposite) {

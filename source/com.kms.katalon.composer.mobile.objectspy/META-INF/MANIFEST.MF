@@ -48,7 +48,8 @@ Require-Bundle: com.kms.katalon.entity;bundle-version="1.0.0",
  com.kms.katalon.execution.webui,
  com.kms.katalon.core.webui
 Bundle-ClassPath: .
-Export-Package: com.kms.katalon.composer.mobile.objectspy.dialog,
+Export-Package: com.kms.katalon.composer.mobile.objectspy.components,
+ com.kms.katalon.composer.mobile.objectspy.dialog,
  com.kms.katalon.composer.mobile.objectspy.element,
  com.kms.katalon.composer.mobile.objectspy.element.impl,
  com.kms.katalon.composer.mobile.objectspy.element.tree,
