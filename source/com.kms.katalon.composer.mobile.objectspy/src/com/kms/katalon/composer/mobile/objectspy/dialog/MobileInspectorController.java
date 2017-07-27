@@ -146,10 +146,13 @@ public class MobileInspectorController {
     }
 
     public static MobileDriverType getMobileDriverType(KobitonDevice kobitonDevice) {
-        if (kobitonDevice.getCapabilities().getPlatformName().equals(KobitonDevice.PLATFORM_NAME_IOS)) {
+        if (kobitonDevice == null || kobitonDevice.getCapabilities() == null) {
+            return null;
+        }
+        if (KobitonDevice.PLATFORM_NAME_IOS.equals(kobitonDevice.getCapabilities().getPlatformName())) {
             return MobileDriverType.IOS_DRIVER;
         }
-        if (kobitonDevice.getCapabilities().getPlatformName().equals(KobitonDevice.PLATFORM_NAME_ANDROID)) {
+        if (KobitonDevice.PLATFORM_NAME_ANDROID.equals(kobitonDevice.getCapabilities().getPlatformName())) {
             return MobileDriverType.ANDROID_DRIVER;
         }
         return null;

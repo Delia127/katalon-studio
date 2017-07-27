@@ -638,6 +638,9 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
     }
 
     public MobileDriverType getCurrentMobileDriverType() {
+        if (stackLayout == null) {
+            return null;
+        }
         if (stackLayout.topControl == localAppComposite) {
             return MobileInspectorController.getMobileDriverType(localAppComposite.getSelectedMobileDeviceInfo());
         } else if (stackLayout.topControl == kobitonAppComposite) {
