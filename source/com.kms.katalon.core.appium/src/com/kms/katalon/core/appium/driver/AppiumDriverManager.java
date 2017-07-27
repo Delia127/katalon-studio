@@ -275,9 +275,10 @@ public class AppiumDriverManager {
         ProcessBuilder pb = new ProcessBuilder(cmdList.toArray(new String[cmdList.size()]));
         pb.environment().putAll(environmentVariables);
 
-        Process appiumServerProcess = pb.start();
-        localStorageAppiumServer.set(appiumServerProcess);
-        AppiumOutputStreamHandler.create(appiumServerProcess).start();
+        final String appiumLogFilePath = RunConfiguration.getAppiumLogFilePath();
+        pb.redirectOutput(new File(appiumLogFilePath));
+        localStorageAppiumServer.set(pb.start());
+        new Thread(AppiumOutputStreamHandler.create(appiumLogFilePath, System.out)).start();
     }
     
 

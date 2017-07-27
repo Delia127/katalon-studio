@@ -1,30 +1,23 @@
 package com.kms.katalon.core.appium.driver;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.File;
 import java.io.PrintStream;
-import java.util.Arrays;
 
-import com.kms.katalon.core.configuration.RunConfiguration;
+import org.apache.commons.io.input.Tailer;
+import org.apache.commons.io.input.TailerListenerAdapter;
 
-public class AppiumOutputStreamHandler {
-
-    private Process appiumProcess;
-
-    private AppiumOutputStreamHandler(Process appiumProcess) {
-        this.appiumProcess = appiumProcess;
+public class AppiumOutputStreamHandler extends Tailer {
+    
+    private AppiumOutputStreamHandler(String appiumLogFilePath, PrintStream outStream) {
+        super(new File(appiumLogFilePath), new TailerListenerAdapter() {
+            @Override
+            public void handle(String line) {
+                outStream.println(line);
+            }
+        });
     }
 
-    public void start() {
-        try {
-            PrintStream filePrintStream = new PrintStream(new FileOutputStream(RunConfiguration.getAppiumLogFilePath(), true));
-
-            StreamHandler.create(appiumProcess.getInputStream(), Arrays.asList(filePrintStream, System.out)).start();
-            StreamHandler.create(appiumProcess.getErrorStream(), Arrays.asList(filePrintStream, System.err)).start();
-        } catch (FileNotFoundException ignored) {}
-    }
-
-    public static AppiumOutputStreamHandler create(Process appiumProcess) {
-        return new AppiumOutputStreamHandler(appiumProcess);
+    public static AppiumOutputStreamHandler create(String appiumLogFilePath, PrintStream outStream) {
+        return new AppiumOutputStreamHandler(appiumLogFilePath, outStream);
     }
 }
