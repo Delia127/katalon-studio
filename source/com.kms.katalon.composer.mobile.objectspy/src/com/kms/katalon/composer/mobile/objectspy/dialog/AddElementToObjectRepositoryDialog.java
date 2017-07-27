@@ -22,9 +22,9 @@ import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.explorer.providers.EntityLabelProvider;
 import com.kms.katalon.composer.explorer.providers.EntityProvider;
+import com.kms.katalon.composer.explorer.providers.FolderEntityTreeViewerFilter;
 import com.kms.katalon.composer.folder.handlers.NewFolderHandler;
 import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
-import com.kms.katalon.composer.mobile.objectspy.viewer.FolderEntityTreeViewerFilter;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 

@@ -1,7 +1,6 @@
 package com.kms.katalon.composer.integration.jira.report.provider;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.eclipse.jface.viewers.ViewerCell;
@@ -28,10 +27,6 @@ public class JiraIssueIDLabelProvider extends HyperLinkColumnLabelProvider<JiraI
         } catch (IOException | URISyntaxException ex) {
             LoggerSingleton.logError(ex);
         }
-    }
-
-    private URI getHTMLLink(JiraIssue jiraIssue) throws URISyntaxException, IOException {
-        return new URI(getHTMLIssueURLPrefix() + "/" + jiraIssue.getKey());
     }
 
     @Override

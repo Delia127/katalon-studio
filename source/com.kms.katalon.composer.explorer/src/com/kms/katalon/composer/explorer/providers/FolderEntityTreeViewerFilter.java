@@ -1,10 +1,8 @@
-package com.kms.katalon.composer.mobile.objectspy.viewer;
+package com.kms.katalon.composer.explorer.providers;
 
 import org.eclipse.jface.viewers.Viewer;
 
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
-import com.kms.katalon.composer.explorer.providers.EntityProvider;
-import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
 
 public class FolderEntityTreeViewerFilter extends EntityViewerFilter {
 

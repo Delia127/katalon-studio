@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.testcase.parts;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -57,7 +58,7 @@ public class TestCaseIntegrationPart {
 		toolBarComposite.setLayout(new GridLayout(1, false));
 		toolBarComposite.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true, 1, 1));
 
-		toolBar = new ToolBar(toolBarComposite, SWT.FLAT | SWT.RIGHT);
+		toolBar = new ToolBar(toolBarComposite, SWT.FLAT | SWT.VERTICAL);
 		toolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
 		container = new Composite(mainComposite, SWT.NONE);
@@ -78,13 +79,12 @@ public class TestCaseIntegrationPart {
 		clearToolbar();
 		integrationCompositeMap = new HashMap<String, AbstractTestCaseIntegrationView>();
 
-		for (Entry<String, TestCaseIntegrationViewBuilder> builderEntry : TestCaseIntegrationFactory.getInstance()
-				.getIntegrationViewMap().entrySet()) {
-			ToolItem item = new ToolItem(toolBar, SWT.CHECK);
-			item.setText(builderEntry.getKey());
-			integrationCompositeMap.put(builderEntry.getKey(),
-					builderEntry.getValue().getIntegrationView(parentTestCaseCompositePart.getTestCase(), mpart));
-		}
+        TestCaseIntegrationFactory.getInstance().getSortedViewBuilders().forEach(builderEntry -> {
+            ToolItem item = new ToolItem(toolBar, SWT.CHECK);
+            item.setText(builderEntry.getKey());
+            integrationCompositeMap.put(builderEntry.getKey(),
+                    builderEntry.getValue().getIntegrationView(parentTestCaseCompositePart.getTestCase(), mpart));
+        });
 
 		for (ToolItem item : toolBar.getItems()) {
 			item.addSelectionListener(new SelectionAdapter() {
@@ -122,6 +122,11 @@ public class TestCaseIntegrationPart {
 	
 
 	private void changeContainer(String key) {
+	    for (ToolItem item : toolBar.getItems()) {
+            if (!key.equals(item.getText())) {
+                item.setSelection(false);
+            }
+        }
 		clearContainer();
 		
 		integrationCompositeMap.get(key).createContainer(container);

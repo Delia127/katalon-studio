@@ -5,6 +5,8 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.composer.components.util.ImageUtil;
+import com.kms.katalon.composer.resources.constants.IImageKeys;
+import com.kms.katalon.composer.resources.image.ImageManager;
 
 public class ImageConstants extends com.kms.katalon.composer.components.impl.constants.ImageConstants {
     public static Bundle currentBundle = FrameworkUtil.getBundle(ImageConstants.class);
@@ -15,4 +17,6 @@ public class ImageConstants extends com.kms.katalon.composer.components.impl.con
 
     public static final Image IMG_ISSUE_HOVER_OUT = ImageUtil.loadImage(currentBundle,
             "resources/icons/bug_disabled_16.png");
+    
+    public static final Image IMG_16_WARNING = ImageManager.getImage(IImageKeys.WARNING_16);
 }

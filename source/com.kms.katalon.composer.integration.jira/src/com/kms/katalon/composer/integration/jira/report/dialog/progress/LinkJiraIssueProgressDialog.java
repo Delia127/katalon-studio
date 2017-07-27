@@ -28,8 +28,8 @@ public class LinkJiraIssueProgressDialog extends JiraIssueProgressDialog impleme
                 @Override
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                     try {
-                        monitor.beginTask(MessageFormat
-                                .format(ComposerJiraIntegrationMessageConstant.JOB_TASK_LINK_TO_JIRA_ISSUE, issueKey), 3);
+                        monitor.beginTask(MessageFormat.format(
+                                ComposerJiraIntegrationMessageConstant.JOB_TASK_LINK_TO_JIRA_ISSUE, issueKey), 3);
                         JiraIntegrationAuthenticationHandler handler = new JiraIntegrationAuthenticationHandler();
                         retrieveJiraIssue(handler, result);
                         checkCanceled(monitor);
@@ -39,7 +39,11 @@ public class LinkJiraIssueProgressDialog extends JiraIssueProgressDialog impleme
                         checkCanceled(monitor);
                         monitor.worked(1);
 
-                        uploadTestCaseLog(handler, result);
+                        uploadTestCaseLog(logRecord, result.getJiraIssue());
+                        checkCanceled(monitor);
+                        monitor.worked(1);
+                        
+                        linkWithTestCaseJiraIssue(logRecord, result.getJiraIssue());
                         checkCanceled(monitor);
                         monitor.worked(1);
                         result.setComplete(true);

@@ -6,4 +6,6 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 
 public interface TestCaseIntegrationViewBuilder {
 	public AbstractTestCaseIntegrationView getIntegrationView(TestCaseEntity testCase, MPart mpart);
+	
+	public int preferredOrder();
 }

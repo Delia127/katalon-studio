@@ -53,8 +53,6 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.util.ColorUtil;
@@ -661,7 +659,7 @@ public class ReportPartTestLogView {
         compositeTestCaseIntegrationToolbar.setLayout(new FillLayout(SWT.HORIZONTAL));
         compositeTestCaseIntegrationToolbar.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, true, 1, 1));
 
-        testCaseLogIntegrationToolbar = new ToolBar(compositeTestCaseIntegrationToolbar, SWT.FLAT | SWT.RIGHT);
+        testCaseLogIntegrationToolbar = new ToolBar(compositeTestCaseIntegrationToolbar, SWT.FLAT | SWT.VERTICAL);
 
         compositeTestCaseLogIntegration = new Composite(compositeTestCaseIntegration, SWT.NONE);
         compositeTestCaseLogIntegration.setLayout(new FillLayout(SWT.HORIZONTAL));
@@ -820,6 +818,11 @@ public class ReportPartTestLogView {
     }
 
     private void changeTestCaseIntegrationContainer(String productName) {
+        for (ToolItem item : testCaseLogIntegrationToolbar.getItems()) {
+            if (!productName.equals(item.getText())) {
+                item.setSelection(false);
+            }
+        }
         clearTestCaseIntegrationContainer();
 
         selectedReportTestCaseIntegrationView = parentPart.getIntegratingCompositeMap().get(productName);

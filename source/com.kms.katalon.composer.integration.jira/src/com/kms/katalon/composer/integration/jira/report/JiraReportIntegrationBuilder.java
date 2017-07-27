@@ -17,7 +17,7 @@ public class JiraReportIntegrationBuilder implements ReportTestCaseIntegrationVi
     @Override
     public TestCaseLogDetailsIntegrationView getIntegrationDetails(ReportEntity report,
             TestSuiteLogRecord testSuiteLogRecord) {
-        return null;
+        return new JiraReportTestLogView(report);
     }
 
     @Override

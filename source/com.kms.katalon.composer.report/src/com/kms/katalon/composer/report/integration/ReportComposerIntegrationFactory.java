@@ -42,4 +42,8 @@ public class ReportComposerIntegrationFactory {
         builders.sort((left, right) -> left.getPreferredOrder() - right.getPreferredOrder());
         return builders;
     }
+
+    public int getPreferredOrder(String productName) {
+        return getIntegrationViewMap().get(productName).getPreferredOrder();
+    }
 }

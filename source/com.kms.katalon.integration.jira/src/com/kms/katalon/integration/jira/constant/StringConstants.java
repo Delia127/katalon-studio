@@ -13,6 +13,8 @@ public class StringConstants {
 
     public static final String PREF_SUBMIT_ATTACH_SCREENSHOT = "submit.attachScreenshot";
 
+    public static final String PREF_SUBMIT_TEST_RESULT_AUTOMATICALLY = "submit.submitTestResultAutomatically";
+
     public static final String PREF_SUBMIT_USE_TEST_CASE_NAME_AS_SUMMARY = "submit.useTestCaseNameAsSummary";
 
     public static final String PREF_AUTH_SERVER_URL = "auth.serverUrl";
@@ -42,4 +44,6 @@ public class StringConstants {
     public static final String HREF_CREATE_SUB_TASK_ISSUE_PREFIX = "/secure/CreateSubTaskIssue";
     
     public static final String HREF_CREATE_SUB_TASK_ISSUE = HREF_CREATE_SUB_TASK_ISSUE_PREFIX + "!default.jspa";
+
+    public static final String KATALON_CUSTOM_FIELD_ID = "com.katalon.katalon-jira-plugin:com.katalon.jiraplugin.gherkin";
 }
