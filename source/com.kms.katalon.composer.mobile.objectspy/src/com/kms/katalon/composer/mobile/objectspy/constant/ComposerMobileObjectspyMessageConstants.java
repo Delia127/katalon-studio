@@ -43,6 +43,10 @@ public class ComposerMobileObjectspyMessageConstants extends NLS {
 
     public static String DIA_ERROR_MSG_HAVE_NOT_SUPPORT_MOBILE_WEB;
 
+    public static String DIA_ERROR_MSG_NO_KOBITON_APPS;
+
+    public static String DIA_ERROR_MSG_NO_KOBITON_DEVICES;
+
     public static String DIA_LBL_ALL_OBJECTS;
 
     public static String DIA_LBL_CAPTURED_OBJECTS;
@@ -56,6 +60,8 @@ public class ComposerMobileObjectspyMessageConstants extends NLS {
     public static String DIA_TOOLTIP_OBJECT_NAME;
 
     public static String DIA_JOB_TASK_LOADING_DEVICES;
+
+    public static String DIA_JOB_TASK_LOADING_KOBITON_APPS;
 
     public static String DIA_ERROR_UNABLE_TO_COLLECT_DEVICES;
 

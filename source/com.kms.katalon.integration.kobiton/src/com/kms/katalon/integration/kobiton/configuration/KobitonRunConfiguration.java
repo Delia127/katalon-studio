@@ -31,7 +31,7 @@ public class KobitonRunConfiguration extends RemoteWebRunConfiguration {
     }
 
     public void setApiKey(String apiKey) {
-        kobitonDriverConnetor.setToken(apiKey);
+        kobitonDriverConnetor.setApiKey(apiKey);
     }
 
     public String getUserName() {

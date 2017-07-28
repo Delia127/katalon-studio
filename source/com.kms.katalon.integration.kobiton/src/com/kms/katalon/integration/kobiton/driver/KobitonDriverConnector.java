@@ -54,7 +54,7 @@ public class KobitonDriverConnector extends RemoteWebDriverConnector {
         return apiKey;
     }
 
-    public void setToken(String apiKey) {
+    public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
     }
 

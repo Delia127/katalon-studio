@@ -41,6 +41,7 @@ import com.kms.katalon.core.mobile.keyword.internal.IOSProperties;
 import com.kms.katalon.core.mobile.keyword.internal.MobileDriverFactory;
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
 import com.kms.katalon.core.util.internal.ProcessUtil;
+import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.execution.configuration.IDriverConnector;
 import com.kms.katalon.execution.configuration.impl.DefaultExecutionSetting;
 import com.kms.katalon.execution.exception.ExecutionException;
@@ -51,6 +52,10 @@ import com.kms.katalon.execution.mobile.driver.AndroidDriverConnector;
 import com.kms.katalon.execution.mobile.driver.IosDriverConnector;
 import com.kms.katalon.execution.mobile.driver.MobileDriverConnector;
 import com.kms.katalon.execution.util.ExecutionUtil;
+import com.kms.katalon.integration.kobiton.driver.KobitonDriverConnector;
+import com.kms.katalon.integration.kobiton.entity.KobitonApplication;
+import com.kms.katalon.integration.kobiton.entity.KobitonDevice;
+import com.kms.katalon.integration.kobiton.preferences.KobitonPreferencesProvider;
 
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.ios.IOSDriver;
@@ -60,9 +65,9 @@ public class MobileInspectorController {
     private static final int SERVER_START_TIMEOUT = 60;
 
     private AppiumDriver<?> driver;
-    
+
     private Process appiumServerProcess;
-    
+
     private Process iosWebKitProcess;
 
     public MobileInspectorController() {
@@ -75,7 +80,7 @@ public class MobileInspectorController {
             return;
         }
         if (driver != null) {
-            driver.quit();
+            closeApp();
             Thread.sleep(2000);
         }
         String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
@@ -93,30 +98,69 @@ public class MobileInspectorController {
 
         mobileDriverConnector = (MobileDriverConnector) mobileDriverConnector.clone();
         mobileDriverConnector.setDevice(mobileDeviceInfo);
-
-        Map<String, IDriverConnector> driverConnectors = new HashMap<String, IDriverConnector>(1);
+        Map<String, IDriverConnector> driverConnectors = new HashMap<String, IDriverConnector>(2);
         driverConnectors.put(MobileDriverFactory.MOBILE_DRIVER_PROPERTY, mobileDriverConnector);
+
+        RunConfiguration.setAppiumLogFilePath(projectDir + File.separator + "appium.log");
+
         DefaultExecutionSetting generalExecutionSetting = new DefaultExecutionSetting();
         generalExecutionSetting.setTimeout(60);
 
-        RunConfiguration.setExecutionSetting(ExecutionUtil.getExecutionProperties(generalExecutionSetting,
-                driverConnectors));
-        RunConfiguration.setAppiumLogFilePath(projectDir + File.separator + "appium.log");
+        RunConfiguration
+                .setExecutionSetting(ExecutionUtil.getExecutionProperties(generalExecutionSetting, driverConnectors));
 
         AppiumDriverManager.startAppiumServerJS(SERVER_START_TIMEOUT,
                 getAdditionalEnvironmentVariables(mobileDriverType));
         driver = MobileDriverFactory.startMobileDriver(mobileDriverType, mobileDeviceInfo.getDeviceId(),
                 mobileDeviceInfo.getDeviceName(), appFile, uninstallAfterCloseApp);
-        
+
         appiumServerProcess = AppiumDriverManager.getAppiumSeverProcess();
         iosWebKitProcess = AppiumDriverManager.getIosWebKitProcess();
+    }
+
+    public void startMobileApp(KobitonDevice kobitonDevice, KobitonApplication kobitonApplication)
+            throws InterruptedException, IOException, AppiumStartException, MobileDriverInitializeException {
+        if (kobitonDevice == null || kobitonApplication == null) {
+            return;
+        }
+        if (driver != null) {
+            closeApp();
+            Thread.sleep(2000);
+        }
+        KobitonDriverConnector connector = new KobitonDriverConnector(
+                ProjectController.getInstance().getCurrentProject().getFolderLocation());
+        connector.setKobitonDevice(kobitonDevice);
+        connector.setApiKey(KobitonPreferencesProvider.getKobitonApiKey());
+        connector.setUserName(KobitonPreferencesProvider.getKobitonUserName());
+        Map<String, IDriverConnector> driverConnectors = new HashMap<String, IDriverConnector>(2);
+        driverConnectors.put(DriverFactory.MOBILE_DRIVER_PROPERTY, connector);
+        driverConnectors.put(DriverFactory.WEB_UI_DRIVER_PROPERTY, connector);
+
+        DefaultExecutionSetting generalExecutionSetting = new DefaultExecutionSetting();
+        generalExecutionSetting.setTimeout(60);
+
+        RunConfiguration
+                .setExecutionSetting(ExecutionUtil.getExecutionProperties(generalExecutionSetting, driverConnectors));
+        driver = MobileDriverFactory.startMobileDriver(getMobileDriverType(kobitonDevice), null,
+                kobitonDevice.getCapabilities().getDeviceName(), kobitonApplication.buildAutomationKey(), false);
+    }
+
+    public static MobileDriverType getMobileDriverType(KobitonDevice kobitonDevice) {
+        if (kobitonDevice.getCapabilities().getPlatformName().equals(KobitonDevice.PLATFORM_NAME_IOS)) {
+            return MobileDriverType.IOS_DRIVER;
+        }
+        if (kobitonDevice.getCapabilities().getPlatformName().equals(KobitonDevice.PLATFORM_NAME_ANDROID)) {
+            return MobileDriverType.ANDROID_DRIVER;
+        }
+        return null;
     }
 
     public AppiumDriver<?> getDriver() {
         return driver;
     }
 
-    private Map<String, String> getAdditionalEnvironmentVariables(MobileDriverType mobileDriverType) throws IOException {
+    private Map<String, String> getAdditionalEnvironmentVariables(MobileDriverType mobileDriverType)
+            throws IOException {
         if (mobileDriverType == MobileDriverType.ANDROID_DRIVER) {
             return AndroidDeviceInfo.getAndroidAdditionalEnvironmentVariables();
         }
@@ -203,11 +247,11 @@ public class MobileInspectorController {
                 is.setCharacterStream(new StringReader(pageSource));
                 Document doc = db.parse(is);
                 Element rootElement = doc.getDocumentElement();
-                
+
                 AndroidSnapshotMobileElement htmlMobileElementRootNode = new AndroidSnapshotMobileElement();
 
-                htmlMobileElementRootNode.getAttributes()
-                        .put(AndroidProperties.ANDROID_CLASS, rootElement.getTagName());
+                htmlMobileElementRootNode.getAttributes().put(AndroidProperties.ANDROID_CLASS,
+                        rootElement.getTagName());
                 htmlMobileElementRootNode.render(rootElement);
                 return htmlMobileElementRootNode;
             }
@@ -223,7 +267,8 @@ public class MobileInspectorController {
             return getXCUIObjectRoot();
         }
         @SuppressWarnings("unchecked")
-        Map<Object, Object> map = (Map<Object, Object>) driver.executeScript("UIATarget.localTarget().frontMostApp().getTree()");
+        Map<Object, Object> map = (Map<Object, Object>) driver
+                .executeScript("UIATarget.localTarget().frontMostApp().getTree()");
         JSONObject jsonObject = new JSONObject(map);
         IosSnapshotMobileElement htmlMobileElementRootNode = new IosSnapshotMobileElement();
         htmlMobileElementRootNode.render(jsonObject);
@@ -249,11 +294,10 @@ public class MobileInspectorController {
         if (appElement == null) {
             return null;
         }
-        
+
         IosXCUISnapshotMobileElement htmlMobileElementRootNode = new IosXCUISnapshotMobileElement();
 
-        htmlMobileElementRootNode.getAttributes()
-                .put(IOSProperties.IOS_TYPE, appElement.getTagName());
+        htmlMobileElementRootNode.getAttributes().put(IOSProperties.IOS_TYPE, appElement.getTagName());
         htmlMobileElementRootNode.render(appElement);
         return htmlMobileElementRootNode;
     }

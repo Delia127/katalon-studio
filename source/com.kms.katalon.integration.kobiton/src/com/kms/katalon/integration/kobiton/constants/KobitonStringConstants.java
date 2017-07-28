@@ -23,4 +23,5 @@ public class KobitonStringConstants {
 
     public static final String KOBITON_API_GET_FAVORITE_DEVICES = "/v1/devices/favorites";
 
+    public static final String KOBITON_API_GET_APPLICATION = "/v1/apps";
 }

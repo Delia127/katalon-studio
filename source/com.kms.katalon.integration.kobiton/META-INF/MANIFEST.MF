@@ -24,6 +24,7 @@ Require-Bundle: com.kms.katalon.core,
  com.kms.katalon.core.appium
 Export-Package: com.kms.katalon.integration.kobiton.configuration,
  com.kms.katalon.integration.kobiton.constants,
+ com.kms.katalon.integration.kobiton.driver,
  com.kms.katalon.integration.kobiton.entity,
  com.kms.katalon.integration.kobiton.exceptions,
  com.kms.katalon.integration.kobiton.preferences,
