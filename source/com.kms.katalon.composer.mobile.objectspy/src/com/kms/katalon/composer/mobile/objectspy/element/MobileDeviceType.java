@@ -1,7 +1,5 @@
 package com.kms.katalon.composer.mobile.objectspy.element;
 
-import com.kms.katalon.integration.kobiton.preferences.KobitonPreferencesProvider;
-
 public enum MobileDeviceType {
     Local("Local devices"), Kobiton("Kobiton devices");
 
@@ -36,9 +34,16 @@ public enum MobileDeviceType {
     }
 
     public boolean isSupported() {
-        if (this == MobileDeviceType.Kobiton) {
-            return KobitonPreferencesProvider.isKobitonIntegrationEnabled();
-        }
         return true;
+    }
+    
+    public static int indexOf(MobileDeviceType deviceType) {
+        final MobileDeviceType[] values = values();
+        for (int index = 0; index < values.length; index++) {
+            if (values[index] == deviceType) {
+                return index;
+            }
+        }
+        return 0;
     }
 }

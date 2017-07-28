@@ -5,6 +5,8 @@ import org.eclipse.osgi.util.NLS;
 public class ComposerMobileObjectspyMessageConstants extends NLS {
     private static final String BUNDLE_NAME = "com.kms.katalon.composer.mobile.objectspy.constant.composerMobileObjectspyMessages";
 
+    public static String BTN_GO_TO_SETTINGS;
+
     public static String DIA_DIALOG_TITLE_DEVICE_VIEW;
 
     public static String DIA_LBL_SCREEN;
@@ -76,6 +78,8 @@ public class ComposerMobileObjectspyMessageConstants extends NLS {
     public static String DIA_ERROR_MSG_OPERATION_CANCELED;
 
     public static String MENU_ADD_TO_MOBILE_OBJECT_SPY;
+
+    public static String MSG_NEED_KOBITON_INTEGRATION_FOR_MOBILE;
 
     public static String CELL_TOOLTIP_ACTIVE;
 
