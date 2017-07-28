@@ -146,10 +146,13 @@ public class MobileInspectorController {
     }
 
     public static MobileDriverType getMobileDriverType(KobitonDevice kobitonDevice) {
-        if (kobitonDevice.getCapabilities().getPlatformName().equals(KobitonDevice.PLATFORM_NAME_IOS)) {
+        if (kobitonDevice == null || kobitonDevice.getCapabilities() == null) {
+            return null;
+        }
+        if (KobitonDevice.PLATFORM_NAME_IOS.equals(kobitonDevice.getCapabilities().getPlatformName())) {
             return MobileDriverType.IOS_DRIVER;
         }
-        if (kobitonDevice.getCapabilities().getPlatformName().equals(KobitonDevice.PLATFORM_NAME_ANDROID)) {
+        if (KobitonDevice.PLATFORM_NAME_ANDROID.equals(kobitonDevice.getCapabilities().getPlatformName())) {
             return MobileDriverType.ANDROID_DRIVER;
         }
         return null;
@@ -261,12 +264,17 @@ public class MobileInspectorController {
         }
     }
 
-    private TreeMobileElement getIosObjectRoot()
-            throws java.util.concurrent.ExecutionException, ParserConfigurationException, SAXException, IOException {
-        if (AppiumDriverManager.getXCodeVersion() >= 8) {
+    @SuppressWarnings("unchecked")
+    private TreeMobileElement getIosObjectRoot() throws ParserConfigurationException, SAXException, IOException {
+        try {
+            if (AppiumDriverManager.getXCodeVersion() >= 8) {
+                return getXCUIObjectRoot();
+            }
+        } catch (java.util.concurrent.ExecutionException e) {
+            // No xcode found, return xcuitest by default
             return getXCUIObjectRoot();
         }
-        @SuppressWarnings("unchecked")
+
         Map<Object, Object> map = (Map<Object, Object>) driver
                 .executeScript("UIATarget.localTarget().frontMostApp().getTree()");
         JSONObject jsonObject = new JSONObject(map);

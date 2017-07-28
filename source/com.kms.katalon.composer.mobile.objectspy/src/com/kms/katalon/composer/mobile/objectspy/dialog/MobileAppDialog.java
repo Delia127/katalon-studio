@@ -6,5 +6,5 @@ package com.kms.katalon.composer.mobile.objectspy.dialog;
  */
 public interface MobileAppDialog {
     public void updateDeviceNames();
-    public void refreshStartButtonState();
+    public void refreshButtonsState();
 }
