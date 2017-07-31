@@ -88,6 +88,7 @@ import com.kms.katalon.composer.mobile.objectspy.element.TreeMobileElement;
 import com.kms.katalon.composer.mobile.objectspy.element.tree.MobileElementLabelProvider;
 import com.kms.katalon.composer.mobile.objectspy.element.tree.MobileElementTreeContentProvider;
 import com.kms.katalon.composer.mobile.objectspy.preferences.MobileObjectSpyPreferencesHelper;
+import com.kms.katalon.composer.mobile.objectspy.util.KobitonValidator;
 import com.kms.katalon.composer.mobile.objectspy.util.MobileActionHelper;
 import com.kms.katalon.composer.mobile.recorder.actions.MobileAction;
 import com.kms.katalon.composer.mobile.recorder.actions.MobileActionMapping;
@@ -734,6 +735,10 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
     }
 
     private void changeAppCompositeToKobiton() {
+        if (!KobitonValidator.validateKobitonIntergration()) {
+            cbbAppType.select(MobileDeviceType.indexOf(MobileDeviceType.Local));
+            return;
+        }
         stackLayout.topControl = kobitonAppComposite;
         updateDeviceNames();
         updateApps();

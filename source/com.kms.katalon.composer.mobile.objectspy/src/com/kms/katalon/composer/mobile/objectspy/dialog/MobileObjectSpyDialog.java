@@ -90,6 +90,7 @@ import com.kms.katalon.composer.mobile.objectspy.element.provider.SelectableElem
 import com.kms.katalon.composer.mobile.objectspy.element.tree.MobileElementLabelProvider;
 import com.kms.katalon.composer.mobile.objectspy.element.tree.MobileElementTreeContentProvider;
 import com.kms.katalon.composer.mobile.objectspy.preferences.MobileObjectSpyPreferencesHelper;
+import com.kms.katalon.composer.mobile.objectspy.util.KobitonValidator;
 import com.kms.katalon.composer.mobile.objectspy.viewer.CapturedObjectTableViewer;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
@@ -502,6 +503,10 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
     }
 
     private void changeAppCompositeToKobiton() {
+        if (!KobitonValidator.validateKobitonIntergration()) {
+            cbbAppType.select(MobileDeviceType.indexOf(MobileDeviceType.Local));
+            return;
+        }
         stackLayout.topControl = kobitonAppComposite;
         updateDeviceNames();
         updateApps();

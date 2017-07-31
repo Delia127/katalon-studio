@@ -6,19 +6,19 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
 public class WorkbenchUtilizer {
-    protected IWorkbench getActiveWorkbench() {
+    protected static IWorkbench getActiveWorkbench() {
         return PlatformUI.getWorkbench();
     }
 
-    protected IWorkbenchWindow getActiveWorkbenchWindow() {
+    protected static IWorkbenchWindow getActiveWorkbenchWindow() {
         return getActiveWorkbench().getActiveWorkbenchWindow();
     }
 
-    protected IEclipseContext getWorkbenchContext() {
+    protected static IEclipseContext getWorkbenchContext() {
         return getService(IEclipseContext.class);
     }
     
-    public <T> T getService(Class<? extends T> clazz) {
+    public static <T> T getService(Class<? extends T> clazz) {
         return getActiveWorkbench().getService(clazz);
     }
 }
