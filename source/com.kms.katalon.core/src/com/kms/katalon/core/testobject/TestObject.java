@@ -6,6 +6,8 @@ import java.util.List;
 public class TestObject {
 
     private TestObject parentObject; // Typically is parent Frame
+    
+    private boolean isParentObjectShadowRoot;
 
     private List<TestObjectProperty> properties;
 
@@ -169,6 +171,14 @@ public class TestObject {
      */
     public void setParentObject(TestObject parentObject) {
         this.parentObject = parentObject;
+    }
+
+    public boolean isParentObjectShadowRoot() {
+        return isParentObjectShadowRoot;
+    }
+
+    public void setParentObjectShadowRoot(boolean isParentObjectShadowRoot) {
+        this.isParentObjectShadowRoot = isParentObjectShadowRoot;
     }
 
     /**

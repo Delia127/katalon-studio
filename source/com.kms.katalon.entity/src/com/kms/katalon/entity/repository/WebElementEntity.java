@@ -18,6 +18,7 @@ public class WebElementEntity extends FileEntity {
     public static final String ref_element = "ref_element";
     public static final String defaultElementGUID = "00000000-0000-0000-0000-000000000000";
     public static final String DEFAULT_EMPTY_STRING = "";
+    public static final String REF_ELEMENT_IS_SHADOW_ROOT = "ref_element_is_shadow_root";
 
     private String elementGuidId;
 

@@ -37,6 +37,12 @@ public class WebElementPropertyEntity implements Serializable {
         this.value = value;
         this.isSelected = true;
     }
+    
+    public WebElementPropertyEntity(String name, String value, boolean isSelected) {
+        this.name = name;
+        this.value = value;
+        this.isSelected = isSelected;
+    }
 
     public WebElementPropertyEntity(String name, String type, String value, String matchCondition, boolean isSelected) {
         this.name = name;

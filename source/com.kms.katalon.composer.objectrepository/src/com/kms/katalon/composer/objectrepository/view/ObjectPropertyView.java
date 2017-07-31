@@ -4,6 +4,7 @@ import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 
 import javax.annotation.PreDestroy;
@@ -40,6 +41,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MenuItem;
@@ -112,7 +114,7 @@ public class ObjectPropertyView implements EventHandler {
 
     private Text txtImage;
 
-    private FormText txtParentObject;
+    private FormText txtParentObject, txtParentShadowRoot;
 
     private Button btnBrowseImage, chkUseRelative;
 
@@ -128,13 +130,16 @@ public class ObjectPropertyView implements EventHandler {
 
     private Composite compositeTable;
 
-    private Button btnBrowseParentObj, chkUseParentObject;
+    private Button btnBrowseParentObj, btnBrowseParentShadowRoot, rdoUseParentObject, rdoShadowRootParent, rdoNoParent;
 
-    private Composite compositeParentObject, compositeSettingsDetails, compositeSettings;
+    private Composite compositeParentObject, compositeNoParent, compositeShadowRootParent, compositeSettingsDetails,
+            compositeSettings;
 
     private ObjectViewToolItemListener toolItemListener;
 
-    private String parentObjectId;
+    private String parentObjectId = null;
+
+    private boolean isParentObjectShadowRoot = false;
 
     private TestObjectPart testObjectPart;
 
@@ -384,28 +389,16 @@ public class ObjectPropertyView implements EventHandler {
         compositeSettingsLeft.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
         compositeSettingsLeft.setLayout(new GridLayout(1, false));
 
-        chkUseParentObject = new Button(compositeSettingsLeft, SWT.CHECK);
-        chkUseParentObject.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        chkUseParentObject.setText(StringConstants.VIEW_LBL_USE_IFRAME);
+        Group haveParentGroup = new Group(compositeSettingsLeft, SWT.NONE);
+        haveParentGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        haveParentGroup.setLayout(new GridLayout(1, false));
+        haveParentGroup.setText(ComposerObjectRepositoryMessageConstants.GRP_HAVE_PARENT_OBJECT);
 
-        compositeParentObject = new Composite(compositeSettingsLeft, SWT.NONE);
-        compositeParentObject.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        GridLayout glSettingsLeft = new GridLayout(3, false);
-        glSettingsLeft.marginWidth = 0;
-        glSettingsLeft.marginHeight = 0;
-        compositeParentObject.setLayout(glSettingsLeft);
+        createCompositeNoParentObject(haveParentGroup);
 
-        Label lblParentObjectID = new Label(compositeParentObject, SWT.NONE);
-        lblParentObjectID.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, false, false, 1, 1));
-        lblParentObjectID.setText(StringConstants.DIA_FIELD_TEST_OBJECT_ID);
+        createCompositeParentObject(haveParentGroup);
 
-        txtParentObject = new FormText(compositeParentObject, SWT.BORDER);
-        GridData gdTxtParentObject = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
-        txtParentObject.setLayoutData(gdTxtParentObject);
-
-        btnBrowseParentObj = new Button(compositeParentObject, SWT.FLAT);
-        btnBrowseParentObj.setLayoutData(new GridData(SWT.TRAIL, SWT.FILL, false, false, 1, 1));
-        btnBrowseParentObj.setText(StringConstants.BROWSE);
+        createCompositeShadowRootParent(haveParentGroup);
 
         // Right column
         Composite compositeSettingsRight = new Composite(compositeSettingsDetails, SWT.NONE);
@@ -432,6 +425,79 @@ public class ObjectPropertyView implements EventHandler {
         btnBrowseImage.setToolTipText(StringConstants.VIEW_BTN_TIP_BROWSE);
     }
 
+    private void createCompositeShadowRootParent(Composite compositeSettingsLeft) {
+        Composite compositeUseShadowRoot = new Composite(compositeSettingsLeft, SWT.NONE);
+        compositeUseShadowRoot.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        GridLayout glCompositeUseShadowRoot = new GridLayout(2, false);
+        glCompositeUseShadowRoot.marginWidth = 0;
+        glCompositeUseShadowRoot.marginHeight = 0;
+        compositeUseShadowRoot.setLayout(glCompositeUseShadowRoot);
+
+        rdoShadowRootParent = new Button(compositeUseShadowRoot, SWT.RADIO);
+        rdoShadowRootParent.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+        rdoShadowRootParent.setText(ComposerObjectRepositoryMessageConstants.RDO_SHADOW_ROOT_PARENT);
+
+        compositeShadowRootParent = new Composite(compositeUseShadowRoot, SWT.NONE);
+        compositeShadowRootParent.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        GridLayout glCompositeShadowRootParent = new GridLayout(2, false);
+        glCompositeShadowRootParent.marginWidth = 0;
+        glCompositeShadowRootParent.marginHeight = 0;
+        compositeShadowRootParent.setLayout(glCompositeShadowRootParent);
+
+        txtParentShadowRoot = new FormText(compositeShadowRootParent, SWT.BORDER);
+        txtParentShadowRoot.setWhitespaceNormalized(false);
+        GridData gdTxtParentObject = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
+        gdTxtParentObject.heightHint = 100;
+        txtParentShadowRoot.setLayoutData(gdTxtParentObject);
+
+        btnBrowseParentShadowRoot = new Button(compositeShadowRootParent, SWT.FLAT);
+        btnBrowseParentShadowRoot.setLayoutData(new GridData(SWT.TRAIL, SWT.FILL, false, false, 1, 1));
+        btnBrowseParentShadowRoot.setText(StringConstants.BROWSE);
+    }
+
+    private void createCompositeNoParentObject(Composite parentComposite) {
+        compositeNoParent = new Composite(parentComposite, SWT.NONE);
+        compositeNoParent.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        GridLayout glSettingsLeft = new GridLayout(1, false);
+        glSettingsLeft.marginWidth = 0;
+        glSettingsLeft.marginHeight = 0;
+        compositeNoParent.setLayout(glSettingsLeft);
+
+        rdoNoParent = new Button(compositeNoParent, SWT.RADIO);
+        rdoNoParent.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+        rdoNoParent.setText(ComposerObjectRepositoryMessageConstants.RDO_NO_PARENT);
+    }
+
+    private void createCompositeParentObject(Composite parentComposite) {
+        Composite compositeUseParentIframe = new Composite(parentComposite, SWT.NONE);
+        compositeUseParentIframe.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        GridLayout glCompositeUseParentIframe = new GridLayout(2, false);
+        glCompositeUseParentIframe.marginWidth = 0;
+        glCompositeUseParentIframe.marginHeight = 0;
+        compositeUseParentIframe.setLayout(glCompositeUseParentIframe);
+
+        rdoUseParentObject = new Button(compositeUseParentIframe, SWT.RADIO);
+        rdoUseParentObject.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+        rdoUseParentObject.setText(StringConstants.VIEW_LBL_USE_IFRAME);
+
+        compositeParentObject = new Composite(compositeUseParentIframe, SWT.NONE);
+        compositeParentObject.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        GridLayout glCompositeParentObject = new GridLayout(2, false);
+        glCompositeParentObject.marginWidth = 0;
+        glCompositeParentObject.marginHeight = 0;
+        compositeParentObject.setLayout(glCompositeParentObject);
+
+        txtParentObject = new FormText(compositeParentObject, SWT.BORDER);
+        txtParentObject.setWhitespaceNormalized(false);
+        GridData gdTxtParentObject = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
+        gdTxtParentObject.heightHint = 100;
+        txtParentObject.setLayoutData(gdTxtParentObject);
+
+        btnBrowseParentObj = new Button(compositeParentObject, SWT.FLAT);
+        btnBrowseParentObj.setLayoutData(new GridData(SWT.TRAIL, SWT.FILL, false, false, 1, 1));
+        btnBrowseParentObj.setText(StringConstants.BROWSE);
+    }
+
     private void hookControlSelectListerners() {
         btnExpandIframeSetting.addListener(SWT.MouseDown, layoutParentObjectCompositeListener);
         lblSettings.addListener(SWT.MouseDown, layoutParentObjectCompositeListener);
@@ -442,7 +508,7 @@ public class ObjectPropertyView implements EventHandler {
             public void modifyText(ModifyEvent e) {
                 if (cloneTestObject != null) {
                     cloneTestObject.setImagePath(txtImage.getText());
-                    dirtyable.setDirty(true);
+                    setDirty(true);
                 }
             }
         });
@@ -465,7 +531,7 @@ public class ObjectPropertyView implements EventHandler {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 tableViewer.setSelectedAll();
-                dirtyable.setDirty(true);
+                setDirty(true);
             }
         });
 
@@ -490,30 +556,49 @@ public class ObjectPropertyView implements EventHandler {
             }
         });
 
-        chkUseParentObject.addSelectionListener(new SelectionAdapter() {
+        btnBrowseParentShadowRoot.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                performSelectParentObject();
+            }
+        });
+
+        rdoUseParentObject.addSelectionListener(new SelectionAdapter() {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
                 testObjectPart.executeOperation(new CheckUseParentObjectOperation());
-                dirtyable.setDirty(true);
             }
         });
 
-        txtParentObject.addHyperlinkListener(new HyperlinkAdapter() {
+        rdoNoParent.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                testObjectPart.executeOperation(new CheckNoParentObjectOperation());
+            }
+        });
+
+        rdoShadowRootParent.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                testObjectPart.executeOperation(new CheckUseParentShadowRootObjectOperation());
+            }
+        });
+
+        final HyperlinkAdapter hyperLinkListener = new HyperlinkAdapter() {
             @Override
             public void linkActivated(HyperlinkEvent e) {
                 openParentTestObject(e.getLabel());
             }
-        });
+        };
+        txtParentObject.addHyperlinkListener(hyperLinkListener);
+        txtParentShadowRoot.addHyperlinkListener(hyperLinkListener);
     }
 
-    private void enableParentObjectComposite(boolean enable) {
-        if (enable) {
-            setParentObjectLinkText(parentObjectId);
-        } else {
-            txtParentObject.setText(parentObjectId, false, false);
-        }
-        ControlUtils.recursiveSetEnabled(compositeParentObject, enable);
+    private void setDirty(final boolean isDirty) {
+        dirtyable.setDirty(isDirty);
     }
 
     private void performSelectParentObject() {
@@ -532,7 +617,7 @@ public class ObjectPropertyView implements EventHandler {
             dialog.setTitle(StringConstants.VIEW_TEST_OBJECT_BROWSE);
             dialog.setInput(TreeEntityUtil.getChildren(null, objectRepoRootFolder));
 
-            String currentParentObjectId = getParentObjectLinkText();
+            String currentParentObjectId = getParentObjectId();
             if (!StringUtils.isBlank(currentParentObjectId)) {
                 WebElementEntity currentParentWebElement = ObjectRepositoryController.getInstance()
                         .getWebElementByDisplayPk(currentParentObjectId);
@@ -550,7 +635,7 @@ public class ObjectPropertyView implements EventHandler {
                     WebElementEntity parentObject = (WebElementEntity) treeEntity.getObject();
                     String parentObjectId = parentObject.getIdForDisplay();
                     testObjectPart.executeOperation(new ChangeParentTestObjectOperation(parentObjectId));
-                    dirtyable.setDirty(true);
+                    setDirty(true);
                 }
             }
         } catch (Exception ex) {
@@ -613,22 +698,22 @@ public class ObjectPropertyView implements EventHandler {
             List<WebElementPropertyEntity> webElementProperties = new ArrayList<WebElementPropertyEntity>();
 
             WebElementPropertyEntity parentObjectProperty = null;
+            WebElementPropertyEntity isParentShadowRootProperty = null;
             for (WebElementPropertyEntity webElementProperty : cloneTestObject.getWebElementProperties()) {
                 if (WebElementEntity.ref_element.equals(webElementProperty.getName())) {
                     parentObjectProperty = webElementProperty;
+                } else if (WebElementEntity.REF_ELEMENT_IS_SHADOW_ROOT.equals(webElementProperty.getName())) {
+                    isParentShadowRootProperty = webElementProperty;
                 } else {
                     webElementProperties.add(webElementProperty);
                 }
             }
 
-            if (parentObjectProperty != null) {
-                chkUseParentObject.setSelection(parentObjectProperty.getIsSelected());
-                setParentObjectLinkText(parentObjectProperty.getValue());
-            } else {
-                chkUseParentObject.setSelection(false);
-                setParentObjectLinkText(StringUtils.EMPTY);
-            }
-            enableParentObjectComposite(chkUseParentObject.getSelection());
+            setParentObjectId(parentObjectProperty != null && parentObjectProperty.getIsSelected()
+                    ? parentObjectProperty.getValue() : null);
+            setParentObjectShadowRoot(isParentShadowRootProperty != null && isParentShadowRootProperty.getIsSelected());
+
+            refreshParentObjectComposites();
 
             tableViewer.setInput(webElementProperties);
             tableViewer.refresh();
@@ -637,6 +722,50 @@ public class ObjectPropertyView implements EventHandler {
             MessageDialog.openError(null, StringConstants.ERROR_TITLE,
                     StringConstants.VIEW_ERROR_MSG_FAILED_TO_LOAD_OBJ_REPOSITORY);
         }
+    }
+
+    private void refreshParentObjectComposites() {
+        refreshParentObjectComposite(rdoUseParentObject, ParentObjectType.PARENT_IFRAME, compositeParentObject);
+        refreshParentObjectComposite(rdoShadowRootParent, ParentObjectType.PARENT_SHADOW_ROOT,
+                compositeShadowRootParent);
+        refreshParentObjectComposite(rdoNoParent, ParentObjectType.NO_PARENT, null);
+
+        ParentObjectType currentParentObjectType = getParentObjectType();
+        switch (currentParentObjectType) {
+            case PARENT_IFRAME:
+                setLinkIdToFormText(getParentObjectId(), txtParentObject);
+                clearFormText(txtParentShadowRoot);
+                break;
+            case PARENT_SHADOW_ROOT:
+                clearFormText(txtParentObject);
+                setLinkIdToFormText(getParentObjectId(), txtParentShadowRoot);
+                break;
+            case NO_PARENT:
+                clearFormText(txtParentObject);
+                clearFormText(txtParentShadowRoot);
+            default:
+                break;
+        }
+    }
+
+    // private void enableParentObjectComposite(boolean enable) {
+    // if (enable) {
+    // setParentObjectId(parentObjectId);
+    // setLinkIdToFormText(parentObjectId, txtParentObject);
+    // } else {
+    // txtParentObject.setText(parentObjectId, false, false);
+    // }
+    // ControlUtils.recursiveSetEnabled(compositeParentObject, enable);
+    // }
+
+    private void refreshParentObjectComposite(Button rdoButton, ParentObjectType parentObjectType,
+            Composite composite) {
+        ParentObjectType currentParentObjectType = getParentObjectType();
+        rdoButton.setSelection(parentObjectType == currentParentObjectType);
+        if (composite == null) {
+            return;
+        }
+        ControlUtils.recursiveSetEnabled(composite, parentObjectType == currentParentObjectType);
     }
 
     private boolean verifyObjectProperties() {
@@ -670,15 +799,30 @@ public class ObjectPropertyView implements EventHandler {
         }
 
         // prepare properties
-        cloneTestObject.getWebElementProperties().clear();
-        cloneTestObject.getWebElementProperties().addAll(tableViewer.getInput());
+        final List<WebElementPropertyEntity> webElementProperties = cloneTestObject.getWebElementProperties();
+        webElementProperties.clear();
+        webElementProperties.addAll(tableViewer.getInput());
 
-        if (chkUseParentObject.getSelection() || !StringUtils.isBlank(getParentObjectLinkText())) {
-            WebElementPropertyEntity parentObjectProperty = new WebElementPropertyEntity();
-            parentObjectProperty.setName(WebElementEntity.ref_element);
-            parentObjectProperty.setValue(getParentObjectLinkText());
-            parentObjectProperty.setIsSelected(chkUseParentObject.getSelection());
-            cloneTestObject.getWebElementProperties().add(parentObjectProperty);
+        ParentObjectType parentObjectType = getParentObjectType();
+        switch (parentObjectType) {
+            case PARENT_IFRAME:
+                if (!StringUtils.isBlank(getParentObjectId())) {
+                    addElementProperty(webElementProperties, WebElementEntity.ref_element, getParentObjectId());
+                    removeElementProperty(webElementProperties, WebElementEntity.REF_ELEMENT_IS_SHADOW_ROOT);
+                }
+                break;
+            case PARENT_SHADOW_ROOT:
+                if (!StringUtils.isBlank(getParentObjectId())) {
+                    addElementProperty(webElementProperties, WebElementEntity.ref_element, getParentObjectId());
+                    addElementProperty(webElementProperties, WebElementEntity.REF_ELEMENT_IS_SHADOW_ROOT, "true");
+                }
+                break;
+            case NO_PARENT:
+                removeElementProperty(webElementProperties, WebElementEntity.ref_element);
+                removeElementProperty(webElementProperties, WebElementEntity.REF_ELEMENT_IS_SHADOW_ROOT);
+                break;
+            default:
+                break;
         }
 
         // back-up
@@ -711,6 +855,25 @@ public class ObjectPropertyView implements EventHandler {
             MultiStatusErrorDialog.showErrorDialog(ex, StringConstants.VIEW_ERROR_MSG_UNABLE_TO_SAVE_TEST_OBJ,
                     ex.toString());
         }
+    }
+
+    private void addElementProperty(final List<WebElementPropertyEntity> webElementProperties, String propertyName,
+            String propertyValue) {
+        Optional<WebElementPropertyEntity> elementProperty = webElementProperties.parallelStream()
+                .filter(webElementProperty -> webElementProperty.getName().equals(propertyName))
+                .findAny();
+        if (elementProperty.isPresent()) {
+            elementProperty.get().setIsSelected(true);
+            return;
+        }
+        webElementProperties.add(new WebElementPropertyEntity(propertyName, propertyValue, true));
+    }
+
+    private void removeElementProperty(final List<WebElementPropertyEntity> webElementProperties, String propertyName) {
+        webElementProperties.parallelStream()
+                .filter(webElementProperty -> webElementProperty.getName().equals(propertyName))
+                .findAny()
+                .ifPresent(elementProperty -> webElementProperties.remove(elementProperty));
     }
 
     private void copyObjectProperties(WebElementEntity src, WebElementEntity des) {
@@ -767,7 +930,7 @@ public class ObjectPropertyView implements EventHandler {
                     String oldTestObjectRelativeId = testObjectId.replace(projectFolderId + File.separator, "")
                             .replace(WebElementEntity.getWebElementFileExtension(), "")
                             .replace(File.separator, StringConstants.ENTITY_ID_SEPARATOR);
-                    if (oldTestObjectRelativeId.equals(getParentObjectLinkText())) {
+                    if (oldTestObjectRelativeId.equals(getParentObjectId())) {
                         loadTestObject();
                         dirtyable.setDirty(false);
                     }
@@ -939,17 +1102,44 @@ public class ObjectPropertyView implements EventHandler {
         return null;
     }
 
-    private boolean setParentObjectLinkText(String parentObjectId) {
-        if (parentObjectId == null) {
-            return false;
-        }
-        txtParentObject.setText("<form><p><a>" + parentObjectId + "</a></p></form>", true, false);
+    private void setParentObjectId(String parentObjectId) {
         this.parentObjectId = parentObjectId;
-        return true;
     }
 
-    private String getParentObjectLinkText() {
+    private void setLinkIdToFormText(String parentObjectId, final FormText txtInput) {
+        if (parentObjectId == null) {
+            return;
+        }
+        txtInput.setText("<form><p><a>" + parentObjectId + "</a></p></form>", true, false);
+    }
+
+    private void clearFormText(final FormText txtInput) {
+        if (txtInput == null || txtInput.isDisposed()) {
+            return;
+        }
+        txtInput.setText("", false, false);
+    }
+
+    private String getParentObjectId() {
         return parentObjectId;
+    }
+
+    private boolean isParentObjectShadowRoot() {
+        return isParentObjectShadowRoot;
+    }
+
+    private void setParentObjectShadowRoot(boolean isParentObjectShadowRoot) {
+        this.isParentObjectShadowRoot = isParentObjectShadowRoot;
+    }
+
+    private ParentObjectType getParentObjectType() {
+        if (getParentObjectId() != null && isParentObjectShadowRoot()) {
+            return ParentObjectType.PARENT_SHADOW_ROOT;
+        }
+        if (getParentObjectId() != null) {
+            return ParentObjectType.PARENT_IFRAME;
+        }
+        return ParentObjectType.NO_PARENT;
     }
 
     private class AddPropertyOperation extends AbstractOperation {
@@ -1058,32 +1248,123 @@ public class ObjectPropertyView implements EventHandler {
         }
     }
 
-    private class CheckUseParentObjectOperation extends AbstractOperation {
+    private class CheckNoParentObjectOperation extends AbstractOperation {
+        private String parentObjectId = null;
 
-        boolean value;
+        private boolean isParentShadowRoot = false;
 
-        public CheckUseParentObjectOperation() {
-            super(CheckUseParentObjectOperation.class.getName());
-            value = chkUseParentObject.getSelection();
+        public CheckNoParentObjectOperation() {
+            super(CheckNoParentObjectOperation.class.getName());
+            parentObjectId = getParentObjectId();
+            isParentShadowRoot = isParentObjectShadowRoot();
         }
 
         @Override
         public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-            enableParentObjectComposite(value);
+            setParentObjectId(null);
+            setParentObjectShadowRoot(false);
+            refreshParentObjectComposites();
+            setDirty(true);
             return Status.OK_STATUS;
         }
 
         @Override
         public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-            enableParentObjectComposite(value);
-            chkUseParentObject.setSelection(value);
+            setParentObjectId(null);
+            setParentObjectShadowRoot(false);
+            refreshParentObjectComposites();
+            setDirty(true);
             return Status.OK_STATUS;
         }
 
         @Override
         public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-            enableParentObjectComposite(!value);
-            chkUseParentObject.setSelection(!value);
+            setParentObjectId(parentObjectId);
+            setParentObjectShadowRoot(isParentShadowRoot);
+            refreshParentObjectComposites();
+            setDirty(true);
+            return Status.OK_STATUS;
+        }
+    }
+
+    private class CheckUseParentObjectOperation extends AbstractOperation {
+        private boolean isParentShadowRoot = false;
+
+        private String parentObjectId = null;
+
+        public CheckUseParentObjectOperation() {
+            super(CheckUseParentObjectOperation.class.getName());
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            ParentObjectType parentObjectType = getParentObjectType();
+            if (parentObjectType == ParentObjectType.PARENT_IFRAME) {
+                return Status.CANCEL_STATUS;
+            }
+            isParentShadowRoot = isParentObjectShadowRoot();
+            parentObjectId = getParentObjectId();
+            return redo(monitor, info);
+        }
+
+        @Override
+        public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            if (parentObjectId == null) {
+                setParentObjectId("");
+            }
+            setParentObjectShadowRoot(false);
+            refreshParentObjectComposites();
+            setDirty(true);
+            return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            setParentObjectId(parentObjectId);
+            setParentObjectShadowRoot(isParentShadowRoot);
+            refreshParentObjectComposites();
+            setDirty(true);
+            return Status.OK_STATUS;
+        }
+    }
+
+    private class CheckUseParentShadowRootObjectOperation extends AbstractOperation {
+        private boolean isParentShadowRoot = false;
+
+        private String parentObjectId = null;
+
+        public CheckUseParentShadowRootObjectOperation() {
+            super(CheckUseParentShadowRootObjectOperation.class.getName());
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            ParentObjectType parentObjectType = getParentObjectType();
+            if (parentObjectType == ParentObjectType.PARENT_SHADOW_ROOT) {
+                return Status.CANCEL_STATUS;
+            }
+            isParentShadowRoot = isParentObjectShadowRoot();
+            parentObjectId = getParentObjectId();
+            return redo(monitor, info);
+        }
+
+        @Override
+        public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            if (parentObjectId == null) {
+                setParentObjectId("");
+            }
+            setParentObjectShadowRoot(true);
+            refreshParentObjectComposites();
+            setDirty(true);
+            return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            setParentObjectShadowRoot(isParentShadowRoot);
+            setParentObjectId(parentObjectId);
+            refreshParentObjectComposites();
+            setDirty(true);
             return Status.OK_STATUS;
         }
     }
@@ -1147,32 +1428,29 @@ public class ObjectPropertyView implements EventHandler {
 
         public ChangeParentTestObjectOperation(String value) {
             super(ChangeParentTestObjectOperation.class.getName());
-            oldParentId = getParentObjectLinkText();
+            oldParentId = getParentObjectId();
             newParentId = value;
         }
 
         @Override
         public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-            if (setParentObjectLinkText(newParentId)) {
-                return Status.OK_STATUS;
-            }
-            return Status.CANCEL_STATUS;
+            setParentObjectId(newParentId);
+            refreshParentObjectComposites();
+            return Status.OK_STATUS;
         }
 
         @Override
         public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-            if (setParentObjectLinkText(newParentId)) {
-                return Status.OK_STATUS;
-            }
-            return Status.CANCEL_STATUS;
+            setParentObjectId(newParentId);
+            refreshParentObjectComposites();
+            return Status.OK_STATUS;
         }
 
         @Override
         public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-            if (setParentObjectLinkText(oldParentId)) {
-                return Status.OK_STATUS;
-            }
-            return Status.CANCEL_STATUS;
+            setParentObjectId(oldParentId);
+            refreshParentObjectComposites();
+            return Status.OK_STATUS;
         }
     }
 
@@ -1222,5 +1500,9 @@ public class ObjectPropertyView implements EventHandler {
             propertyEntities.add(row.getWebElementPropertyEntity());
         }
         return propertyEntities;
+    }
+
+    private enum ParentObjectType {
+        NO_PARENT, PARENT_IFRAME, PARENT_SHADOW_ROOT;
     }
 }

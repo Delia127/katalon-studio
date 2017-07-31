@@ -48,6 +48,8 @@ public class ObjectRepository {
     private static final String PROPERTY_IS_SELECTED = "isSelected";
 
     private static final String[] PARENT_FRAME_ATTRS = new String[] { "ref_element", "parent_frame" };
+    
+    private static final String PARENT_SHADOW_ROOT_ATTRIBUTE = "ref_element_is_shadow_root";
 
     /**
      * Returns test object id of a its relative id.
@@ -193,11 +195,13 @@ public class ObjectRepository {
             objectProperty.setCondition(propertyCondition);
             objectProperty.setValue(propertyValue);
             objectProperty.setActive(isPropertySelected);
-
+            
             // Check if this element is inside a frame
             if (Arrays.asList(PARENT_FRAME_ATTRS).contains(propertyName) && isPropertySelected) {
                 TestObject parentObject = findTestObject(propertyValue);
                 testObject.setParentObject(parentObject);
+            } else if (PARENT_SHADOW_ROOT_ATTRIBUTE.equals(propertyName)) {
+                testObject.setParentObjectShadowRoot(true);
             } else {
                 testObject.addProperty(objectProperty);
             }

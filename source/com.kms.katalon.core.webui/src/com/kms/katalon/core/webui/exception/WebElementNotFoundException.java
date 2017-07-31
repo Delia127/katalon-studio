@@ -12,4 +12,8 @@ public class WebElementNotFoundException extends Exception {
 	public WebElementNotFoundException(String objectId, By locator) {
 		super(MessageFormat.format(StringConstants.EXC_WEB_ELEMENT_NOT_FOUND, objectId, locator.toString()));
 	}
+	
+	public WebElementNotFoundException(String objectId, String locator) {
+        super(MessageFormat.format(StringConstants.EXC_WEB_ELEMENT_NOT_FOUND, objectId, locator));
+    }
 }

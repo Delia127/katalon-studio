@@ -171,6 +171,8 @@ public class CoreWebuiMessageConstants extends NLS {
 
     public static String KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID_SUCCESS;
 
+    public static String KW_LOG_INFO_FINDING_WEB_ELEMENT_WITH_X_BY_Y_FAIL_TRY_AGAIN;
+
     public static String KW_EXC_WEB_ELEMENT_W_ID_DOES_NOT_HAVE_SATISFY_PROP;
 
     public static String KW_LOG_PASSED_WEB_ELEMT_W_ID_IS_NOT_PRESENT_AFTER;
@@ -1003,6 +1005,10 @@ public class CoreWebuiMessageConstants extends NLS {
 
     // DeselectOptionByLabelKeyword, SelectOptionByLabelKeyword, DeselectOptionByValueKeyword, SelectOptionByValueKeyword
     public static String KW_MSG_NO_OPTION_MATCHED;
+
+    public static String MSG_FAILED_WEB_ELEMENT_X_IS_NOT_SHADOW_ROOT;
+
+    public static String MSG_INFO_WEB_ELEMENT_HAVE_PARENT_SHADOW_ROOT;
 
     static {
         // initialize resource bundle
