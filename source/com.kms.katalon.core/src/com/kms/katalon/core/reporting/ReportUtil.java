@@ -196,17 +196,20 @@ public class ReportUtil {
 
             TestStatus status = item.getStatus();
             TestStatusValue statusValue = status.getStatusValue();
-            tc.setStatus(statusValue.name());
+            String statusName = statusValue.name();
+            String message = StringUtils.removeStart(item.getMessage(),
+                    item.getName() + " " + statusName + " because (of) ");
+            tc.setStatus(statusName);
             if (TestStatusValue.ERROR == statusValue) {
                 JUnitError error = factory.createError();
-                error.setType(statusValue.name());
-                error.setMessage(status.getStackTrace());
+                error.setType(statusName);
+                error.setMessage(message);
                 tc.getError().add(error);
             }
             if (TestStatusValue.FAILED == statusValue) {
                 JUnitFailure failure = factory.createFailure();
-                failure.setType(statusValue.name());
-                failure.setMessage(status.getStackTrace());
+                failure.setType(statusName);
+                failure.setMessage(message);
                 tc.getFailure().add(failure);
             }
 
