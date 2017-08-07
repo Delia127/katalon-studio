@@ -9,6 +9,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 
@@ -16,6 +17,7 @@ import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.dialogs.SynchronizedConfirmationDialog;
 import com.kms.katalon.composer.components.impl.dialogs.YesNoAllOptions;
 import com.kms.katalon.composer.components.impl.util.StatusUtil;
+import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
@@ -165,8 +167,11 @@ public class UploadTestSuiteJob extends QTestJob {
             QTestIntegrationUtil.updateFileIntegratedEntity(testSuite,
                     QTestIntegrationTestSuiteManager.getIntegratedEntityByTestSuiteList(allQTestSuites));
             TestSuiteController.getInstance().updateTestSuite(testSuite);
-            EventBrokerSingleton.getInstance().getEventBroker()
+            getEventBroker()
                     .post(EventConstants.TEST_SUITE_UPDATED, new Object[] { testSuite.getId(), testSuite });
+            
+            getEventBroker().post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY,
+                    TreeEntityUtil.getTestSuiteTreeEntity(testSuite, projectEntity));
             monitor.worked(1);
 
             return Status.OK_STATUS;
@@ -181,6 +186,10 @@ public class UploadTestSuiteJob extends QTestJob {
             }
             monitor.done();
         }
+    }
+
+    private IEventBroker getEventBroker() {
+        return EventBrokerSingleton.getInstance().getEventBroker();
     }
 
     private int indexOf(QTestSuite qTestSuite, List<QTestSuite> qTestSuiteCollection) {

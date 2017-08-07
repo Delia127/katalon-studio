@@ -33,6 +33,7 @@ import com.kms.katalon.composer.components.impl.control.GifCLabel;
 import com.kms.katalon.composer.components.impl.wizard.AbstractWizardPage;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.integration.qtest.constant.ComposerIntegrationQtestMessageConstants;
 import com.kms.katalon.composer.integration.qtest.constant.ImageConstants;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.integration.qtest.QTestIntegrationAuthenticationManager;
@@ -45,7 +46,7 @@ import com.kms.katalon.integration.qtest.setting.QTestVersion;
 
 import org.eclipse.swt.widgets.Combo;
 
-public class AuthenticationWizardPage extends AbstractWizardPage {
+public class AuthenticationWizardPage extends AbstractWizardPage implements QTestWizardPage {
 
     // Fields
     private IQTestToken fToken;
@@ -285,7 +286,9 @@ public class AuthenticationWizardPage extends AbstractWizardPage {
 
                             return Status.OK_STATUS;
                         } catch (QTestAPIConnectionException ex) {
-                            setConnectedStatus(ex.getMessage(), false);
+                            setConnectedStatus(
+                                    ComposerIntegrationQtestMessageConstants.WZ_P_AUTHENTICATION_MGS_BAD_CREDENTIALS,
+                                    false);
                             return Status.OK_STATUS;
                         } catch (QTestException ex) {
                             setConnectedStatus(StringConstants.WZ_P_AUTHENTICATION_MGS_CONNECT_FAILED, false);
@@ -372,5 +375,15 @@ public class AuthenticationWizardPage extends AbstractWizardPage {
         lblStatusText = lblConnectedStatus.getText();
         isPasswordShowed = btnShowPassword.getSelection();
         return sharedData;
+    }
+
+    @Override
+    public String getStepIndexAsString() {
+        return "1";
+    }
+
+    @Override
+    public boolean isChild() {
+        return false;
     }
 }

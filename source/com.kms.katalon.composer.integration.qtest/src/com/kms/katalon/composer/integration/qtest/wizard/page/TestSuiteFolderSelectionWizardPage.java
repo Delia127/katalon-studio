@@ -30,17 +30,28 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 
-public class TestSuiteFolderSelectionWizardPage extends AbstractWizardPage {
+public class TestSuiteFolderSelectionWizardPage extends AbstractWizardPage implements QTestWizardPage {
 
     private TreeViewer treeViewer;
+
     private Composite folderBrowserComposite;
 
     public TestSuiteFolderSelectionWizardPage() {
     }
 
     @Override
+    public String getStepIndexAsString() {
+        return "3.3";
+    }
+
+    @Override
     public boolean canFlipToNextPage() {
         return treeViewer != null && treeViewer.getSelection() != null && !treeViewer.getSelection().isEmpty();
+    }
+
+    @Override
+    public boolean isChild() {
+        return true;
     }
 
     /**
@@ -82,11 +93,11 @@ public class TestSuiteFolderSelectionWizardPage extends AbstractWizardPage {
             treeViewer = dialog.createTreeViewer(folderBrowserComposite);
 
             Object selection = sharedData.get("testSuiteFolder");
-            if (selection != null) {
-                treeViewer.setSelection(new StructuredSelection(selection));
-            } else {
-                treeViewer.setSelection(StructuredSelection.EMPTY);
+            if (selection == null) {
+                selection = rootFolderTreeEntity;
             }
+            treeViewer.setSelection(new StructuredSelection(selection));
+            firePageChanged();
             folderBrowserComposite.layout(true, true);
         } catch (Exception e) {
             LoggerSingleton.logError(e);

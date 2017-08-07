@@ -100,7 +100,7 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_hQQH7xYMEeSUMbyEN2kbFQ" label="About" tooltip="" command="_hQQH5hYMEeSUMbyEN2kbFQ"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_dj8ScGgxEeatJ4Re1SnNtw" elementId="com.kms.katalon.handledmenuitem.welcome" label="Katalon Help" tooltip="" command="_jm89wGgxEeatJ4Re1SnNtw"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_iImwQGp9EeakEakFblwi9Q" elementId="com.kms.katalon.handledmenuitem.functionsintroduction" label="Quick Guide" tooltip="" command="_agaP0Gp9EeakEakFblwi9Q"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_YU7NEOxNEeal34fhcBE7BQ" elementId="com.kms.katalon.handledmenuitem.reportIssue" label="Report Issue" tooltip="" command="_blPuUOxNEeal34fhcBE7BQ"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_YU7NEOxNEeal34fhcBE7BQ" elementId="com.kms.katalon.handledmenuitem.reportIssue" toBeRendered="false" visible="false" label="Report Issue" tooltip="" command="_blPuUOxNEeal34fhcBE7BQ"/>
       </children>
     </mainMenu>
     <sharedElements xsi:type="basic:Part" xmi:id="_yewVQD8LEeSqW-o8jtXO1g" elementId="org.eclipse.ui.console.ConsoleView" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Console" iconURI="platform:/plugin/org.eclipse.ui.console/icons/full/cview16/console_view.png"/>

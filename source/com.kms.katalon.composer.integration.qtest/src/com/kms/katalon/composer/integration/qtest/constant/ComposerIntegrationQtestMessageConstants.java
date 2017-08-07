@@ -321,6 +321,8 @@ public class ComposerIntegrationQtestMessageConstants extends NLS {
 
     public static String WZ_P_AUTHENTICATION_MGS_CONNECT_FAILED;
 
+    public static String WZ_P_AUTHENTICATION_MGS_BAD_CREDENTIALS;
+
     public static String WZ_P_AUTHENTICATION_MGS_CONNECT_SUCCESSFUL;
 
     public static String WZ_P_PROJECT_TITLE;
@@ -351,11 +353,20 @@ public class ComposerIntegrationQtestMessageConstants extends NLS {
 
     public static String WZ_P_FINISH_INFO;
 
+    public static String WZ_P_TEST_STRUCTURE_MAPPING_TITLE;
+
     public static String HDL_LABEL_VALIDATING_REPORT;
 
     public static String HDL_TITLE_PROJECT_SETTINGS;
 
     public static String REPORT_MSG_UPLOAD_SUCCESFULLY;
+    
+    // QTestPreferenceMainPage
+    public static String DIA_LABEL_INCLUDE_ATTACH_IF_PASSES;
+
+    public static String DIA_LABEL_INCLUDE_ATTACH_IF_FAILS;
+
+    public static String CM_TEST_RESULT;
 
     static {
         // initialize resource bundle

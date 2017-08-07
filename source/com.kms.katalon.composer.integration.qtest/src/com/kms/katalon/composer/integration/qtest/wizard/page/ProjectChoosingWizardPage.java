@@ -36,15 +36,17 @@ import com.kms.katalon.integration.qtest.entity.QTestProject;
 import com.kms.katalon.integration.qtest.exception.QTestException;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
-public class ProjectChoosingWizardPage extends AbstractWizardPage {
-
+public class ProjectChoosingWizardPage extends AbstractWizardPage implements QTestWizardPage {
     // Control
     private Group grpQtestProjects;
 
     // Field
     private List<QTestProject> qTestProjects;
+
     private String fServerUrl;
+
     private IQTestToken fToken;
+
     private QTestProject selectedQTestProject;
 
     private Composite connectingComposite;
@@ -140,8 +142,7 @@ public class ProjectChoosingWizardPage extends AbstractWizardPage {
                 inputStream = ImageConstants.URL_16_LOADING.openStream();
                 connectingLabel.setGifImage(inputStream);
                 connectingComposite.layout(true, true);
-            } catch (IOException ex) {
-            } finally {
+            } catch (IOException ex) {} finally {
                 if (inputStream != null) {
                     closeQuietlyWithLog(inputStream);
                     inputStream = null;
@@ -194,8 +195,8 @@ public class ProjectChoosingWizardPage extends AbstractWizardPage {
                         fToken = token;
 
                         try {
-                            qTestProjects = QTestIntegrationProjectManager.getAllProject(new QTestCredentialImpl()
-                                    .setToken(fToken).setServerUrl(fServerUrl));
+                            qTestProjects = QTestIntegrationProjectManager
+                                    .getAllProject(new QTestCredentialImpl().setToken(fToken).setServerUrl(fServerUrl));
                         } catch (QTestException e) {
                             UISynchronizeService.syncExec(new Runnable() {
                                 @Override
@@ -236,4 +237,13 @@ public class ProjectChoosingWizardPage extends AbstractWizardPage {
         job.schedule();
     }
 
+    @Override
+    public String getStepIndexAsString() {
+        return "2";
+    }
+
+    @Override
+    public boolean isChild() {
+        return false;
+    }
 }

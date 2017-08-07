@@ -57,7 +57,6 @@ import com.kms.katalon.integration.qtest.exception.QTestUnauthorizedException;
 import com.kms.katalon.integration.qtest.helper.QTestAPIRequestHelper;
 import com.kms.katalon.integration.qtest.setting.QTestAttachmentSendingType;
 import com.kms.katalon.integration.qtest.setting.QTestReportFormatType;
-import com.kms.katalon.integration.qtest.setting.QTestResultSendingType;
 import com.kms.katalon.integration.qtest.setting.QTestSettingCredential;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 import com.kms.katalon.integration.qtest.util.DateUtil;
@@ -359,27 +358,8 @@ public class QTestIntegrationReportManager {
         return QTestSettingStore.getAttachmentSendingTypes(projectDir).contains(statusSendingType);
     }
 
-    public static boolean isAvailableForSendingResult(TestStatusValue status, String projectDir) {
-        QTestResultSendingType statusSendingType = null;
-        switch (status) {
-            case ERROR:
-                statusSendingType = QTestResultSendingType.SEND_IF_FAILS;
-                break;
-            case FAILED:
-                statusSendingType = QTestResultSendingType.SEND_IF_FAILS;
-                break;
-            case PASSED:
-                statusSendingType = QTestResultSendingType.SEND_IF_PASSES;
-                break;
-            default:
-                break;
-        }
-
-        if (statusSendingType == null) {
-            return false;
-        }
-
-        return QTestSettingStore.getResultSendingTypes(projectDir).contains(statusSendingType);
+    public static boolean isAvailableForSendingResult( String projectDir) {
+        return true;
     }
 
     /**

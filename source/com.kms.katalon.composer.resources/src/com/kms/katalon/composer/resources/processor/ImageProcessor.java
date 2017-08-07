@@ -49,6 +49,9 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.PROGRESS_16);
         ImageManager.registerImage(IImageKeys.QTEST_ACTIVE_16);
         ImageManager.registerImage(IImageKeys.QTEST_INACTIVE_16);
+        ImageManager.registerImage(IImageKeys.QTEST_TEST_CASE_16);
+        ImageManager.registerImage(IImageKeys.QTEST_FOLDER_16);
+        ImageManager.registerImage(IImageKeys.QTEST_TEST_SUITE_16);
         ImageManager.registerImage(IImageKeys.QUIT_16);
         ImageManager.registerImage(IImageKeys.SEARCH_16);
         ImageManager.registerImage(IImageKeys.TAB_INTEGRATION_16);

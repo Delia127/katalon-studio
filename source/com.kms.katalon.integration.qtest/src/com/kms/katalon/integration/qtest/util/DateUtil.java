@@ -28,4 +28,12 @@ public class DateUtil {
             return rawDateString;
         }
     }
+
+    public static Date parseDate(String date) throws ParseException {
+        return new SimpleDateFormat(DATE_FORMAT).parse(date);
+    }
+
+    public static String formatDate(Date date) {
+        return new SimpleDateFormat(DATE_FORMAT).format(date);
+    }
 }

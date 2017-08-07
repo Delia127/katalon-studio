@@ -9,7 +9,6 @@ import java.util.concurrent.Executors;
 import org.eclipse.core.filesystem.IFileInfo;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.ui.basic.MTrimmedWindow;
@@ -18,11 +17,7 @@ import org.eclipse.e4.ui.workbench.lifecycle.PostContextCreate;
 import org.eclipse.e4.ui.workbench.modeling.ISaveHandler;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.resource.FontDescriptor;
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.search.ui.NewSearchUI;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IWorkbenchCommandConstants;
@@ -45,13 +40,13 @@ import com.kms.katalon.composer.handlers.SearchHandler;
 import com.kms.katalon.composer.handlers.WorkbenchSaveHandler;
 import com.kms.katalon.composer.initializer.CommandBindingInitializer;
 import com.kms.katalon.composer.initializer.ContentAssistProposalInitializer;
+import com.kms.katalon.composer.initializer.DefaultTextFontInitializer;
 import com.kms.katalon.composer.initializer.ProblemViewImageInitializer;
 import com.kms.katalon.console.utils.VersionUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.PreferenceConstants;
-import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.usagetracking.UsageInfoCollector;
 import com.kms.katalon.util.ComposerActivationInfoCollector;
@@ -134,29 +129,11 @@ public class LifeCycleManager {
         new CommandBindingRemover().setup();
         new ContentAssistProposalInitializer().setup();
         new ProblemViewImageInitializer().setup();
+        new DefaultTextFontInitializer().setup();
     }
 
     private void setupPreferences() {
         setupResourcePlugin();
-        setupWorkbenchPlugin();
-    }
-
-    private void setupWorkbenchPlugin() {
-        ScopedPreferenceStore store = PreferenceStoreManager.getPreferenceStore(IdConstants.WORKBENCH_WINDOW_ID);
-
-        if (store.getBoolean(PreferenceConstants.PREF_FIRST_TIME_SETUP_COMPLETED)) {
-            return;
-        }
-
-        int fontSize = (Platform.OS_MACOSX.equals(Platform.getOS())) ? 15 : 11;
-        FontData defaultFont = FontDescriptor.createFrom(DF_TEXT_FONT, fontSize, SWT.NORMAL).getFontData()[0];
-        store.setValue(JFaceResources.TEXT_FONT, defaultFont.toString());
-        store.setValue(PreferenceConstants.PREF_FIRST_TIME_SETUP_COMPLETED, true);
-        try {
-            store.save();
-        } catch (IOException e) {
-            logError(e);
-        }
     }
 
     private void setupResourcePlugin() {

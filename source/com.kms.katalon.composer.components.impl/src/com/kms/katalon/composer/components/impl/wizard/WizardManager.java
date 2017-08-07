@@ -17,19 +17,17 @@ public class WizardManager {
     }
 
     public IWizardPage nextPage() {
-        if (currentIdx > getWizardPages().size() - 1) {
-            return null;
-        }
-        currentIdx++;
+        do {
+            currentIdx++;
+        } while (currentIdx <= getWizardPages().size() - 1 && getCurrentPage().autoFlip());
 
         return getCurrentPage();
     }
 
     public IWizardPage backPage() {
-        if (currentIdx <= 0) {
-            return null;
-        }
-        currentIdx--;
+        do {
+            currentIdx--;
+        } while (currentIdx >= 0 && getCurrentPage().autoFlip());
 
         return getCurrentPage();
     }
