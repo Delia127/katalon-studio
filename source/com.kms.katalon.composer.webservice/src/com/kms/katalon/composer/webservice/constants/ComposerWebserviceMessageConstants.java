@@ -107,6 +107,28 @@ public class ComposerWebserviceMessageConstants extends NLS {
 
     public static String DIA_LBL_SSL_CERT_BYPASS_OPT;
 
+    public static String PA_LBL_CONSUMER_KEY;
+
+    public static String PA_LBL_CONSUMER_SECRET;
+
+    public static String PA_LBL_SIGNATURE_METHOD;
+
+    public static String PA_LBL_TOKEN;
+
+    public static String PA_LBL_TOKEN_SECRET;
+
+    public static String PA_LBL_REALM;
+
+    public static String PA_TXT_MSG_OPTIONAL;
+
+    public static String PA_TOOLTIP_CONSUMER_SECRET;
+
+    public static String PA_TXT_IMPORT_CONSUMER_SECRET_FROM_FILE;
+
+    public static String PA_TOOLTIP_IMPORT_CONSUMER_SECRET_FROM_FILE;
+
+    public static String PA_WARNING_UNSUPORTED_PRIVATE_KEY_FILE;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerWebserviceMessageConstants.class);

@@ -626,6 +626,9 @@ public class WelcomePart {
     }
 
     private void refreshRecentProjectComposite() {
+        if (recentProjectDetails == null || recentProjectDetails.isDisposed()) {
+            return;
+        }
         clearCompositeChildren(recentProjectDetails);
         fillRecentProjectComposite(recentProjectDetails);
         refreshComposite(mainComposite);

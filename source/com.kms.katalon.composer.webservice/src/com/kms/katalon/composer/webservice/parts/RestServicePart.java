@@ -260,6 +260,8 @@ public class RestServicePart extends WebServicePart {
         tblHeaders.refresh();
 
         populateBasicAuthFromHeader();
+        populateOAuth1FromHeader();
+        renderAuthenticationUI(ccbAuthType.getText());
 
         requestBody.setDocument(createDocument(originalWsObject.getHttpBody()));
         tabBody.getControl().setEnabled(isBodySupported());
