@@ -10,6 +10,7 @@ import static com.kms.katalon.integration.jira.constant.StringConstants.PREF_SUB
 import static com.kms.katalon.integration.jira.constant.StringConstants.PREF_SUBMIT_JIRA_ISSUE_TYPE;
 import static com.kms.katalon.integration.jira.constant.StringConstants.PREF_SUBMIT_JIRA_PROJECT;
 import static com.kms.katalon.integration.jira.constant.StringConstants.PREF_SUBMIT_USE_TEST_CASE_NAME_AS_SUMMARY;
+import static com.kms.katalon.integration.jira.constant.StringConstants.PREF_SUBMIT_TEST_RESULT_AUTOMATICALLY;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -78,6 +79,14 @@ public class JiraIntegrationSettingStore extends BundleSettingStore {
 
     public void enableAttachScreenshot(boolean enabled) throws IOException {
         setProperty(PREF_SUBMIT_ATTACH_SCREENSHOT, enabled);
+    }
+
+    public boolean isSubmitTestResultAutomatically() throws IOException {
+        return getBoolean(PREF_SUBMIT_TEST_RESULT_AUTOMATICALLY, true);
+    }
+
+    public void enableSubmitTestResultAutomatically(boolean enabled) throws IOException {
+        setProperty(PREF_SUBMIT_TEST_RESULT_AUTOMATICALLY, enabled);
     }
 
     public boolean isAttachLogEnabled() throws IOException {

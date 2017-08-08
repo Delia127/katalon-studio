@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Jira
-Bundle-SymbolicName: com.kms.katalon.integration.jira
+Bundle-SymbolicName: com.kms.katalon.integration.jira;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: KMS
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
@@ -22,10 +22,15 @@ Require-Bundle: com.kms.katalon.core,
  com.kms.katalon.custom,
  com.kms.katalon.entity,
  org.apache.httpcomponents.httpmime,
- com.kms.katalon.controller
+ com.kms.katalon.controller,
+ com.kms.katalon.execution,
+ net.lingala.zip4j
 Export-Package: com.atlassian.jira.rest.client.api,
  com.atlassian.jira.rest.client.api.domain,
  com.kms.katalon.integration.jira,
  com.kms.katalon.integration.jira.entity,
  com.kms.katalon.integration.jira.issue,
- com.kms.katalon.integration.jira.setting
+ com.kms.katalon.integration.jira.report,
+ com.kms.katalon.integration.jira.setting,
+ com.kms.katalon.integration.jira.util,
+ org.joda.time

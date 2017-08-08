@@ -72,6 +72,14 @@ public class GroovyGuiUtil {
 
         return JavaCore.createCompilationUnitFrom(scriptFile);
     }
+    
+    public static void addContentToTestCase(TestCaseEntity testCase, String content) throws Exception {
+        ICompilationUnit unit = getGroovyScriptForTestCase(testCase);
+        if (unit == null) {
+            return;
+        }
+        FileUtils.writeStringToFile(unit.getResource().getLocation().toFile(), content, true);
+    }
 
     public static URLClassLoader getProjectClasLoader(ProjectEntity projectEntity) throws MalformedURLException,
             CoreException {

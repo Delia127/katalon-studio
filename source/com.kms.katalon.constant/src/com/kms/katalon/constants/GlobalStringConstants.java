@@ -182,6 +182,8 @@ public class GlobalStringConstants {
 
     public static final String DESCRIPTION = GlobalMessageConstants.DESCRIPTION;
 
+    public static final String SUMMARY = GlobalMessageConstants.SUMMARY;
+
     public static final String INFORMATION = GlobalMessageConstants.INFORMATION;
 
     public static final String COMMENT = GlobalMessageConstants.COMMENT;

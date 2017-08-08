@@ -1,49 +1,39 @@
 package com.kms.katalon.composer.integration.jira;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import com.kms.katalon.composer.integration.jira.constant.StringConstants;
 import com.kms.katalon.composer.report.lookup.LogRecordLookup;
-import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.logging.model.TestCaseLogRecord;
 import com.kms.katalon.entity.report.ReportEntity;
-import com.kms.katalon.integration.jira.JiraCredential;
+import com.kms.katalon.integration.jira.JiraComponent;
 import com.kms.katalon.integration.jira.JiraIntegrationException;
-import com.kms.katalon.integration.jira.JiraObjectToEntityConverter;
+import com.kms.katalon.integration.jira.entity.JiraIssue;
 import com.kms.katalon.integration.jira.entity.JiraIssueCollection;
-import com.kms.katalon.integration.jira.entity.JiraReport;
-import com.kms.katalon.integration.jira.setting.JiraIntegrationSettingStore;
 
-public interface JiraUIComponent {
-
-    default JiraIntegrationSettingStore getSettingStore() {
-        return new JiraIntegrationSettingStore(ProjectController.getInstance().getCurrentProject().getFolderLocation());
-    }
-
+public interface JiraUIComponent extends JiraComponent {
     default String getHTMLIssueURLPrefix() throws IOException {
         return getSettingStore().getServerUrl() + StringConstants.HREF_BROWSE_ISSUE;
     }
 
-    default JiraCredential getCredential() throws IOException {
-        return getSettingStore().getJiraCredential();
-    }
-
-    default JiraIssueCollection getJiraIssueCollection(TestCaseLogRecord logRecord, ReportEntity reportEntity) {
-        return JiraObjectToEntityConverter
-                .getOptionalJiraIssueCollection(reportEntity, getTestCaseLogRecordIndex(logRecord, reportEntity))
-                .map(jiraIssue -> jiraIssue)
-                .orElse(new JiraIssueCollection(logRecord.getId()));
+    default URI getHTMLLink(JiraIssue jiraIssue) throws URISyntaxException, IOException {
+        return new URI(getHTMLIssueURLPrefix() + "/" + jiraIssue.getKey());
     }
 
     default int getTestCaseLogRecordIndex(TestCaseLogRecord logRecord, ReportEntity reportEntity) {
         return LogRecordLookup.getInstance().getTestSuiteLogRecord(reportEntity).getChildIndex(logRecord);
     }
 
+    default JiraIssueCollection getJiraIssueCollection(TestCaseLogRecord logRecord, ReportEntity reportEntity) {
+        int index = getTestCaseLogRecordIndex(logRecord, reportEntity);
+        return getJiraIssueCollection(index, logRecord, reportEntity);
+    }
+
     default void updateJiraReport(TestCaseLogRecord logRecord, JiraIssueCollection jiraIssueCollection,
             ReportEntity reportEntity) throws JiraIntegrationException {
-        JiraReport jiraReport = JiraObjectToEntityConverter.getJiraReport(reportEntity);
-        jiraReport.getIssueCollectionMap().put(getTestCaseLogRecordIndex(logRecord, reportEntity),
-                jiraIssueCollection);
-        JiraObjectToEntityConverter.updateJiraReport(jiraReport, reportEntity);
+        int index = getTestCaseLogRecordIndex(logRecord, reportEntity);
+        updateJiraReport(index, logRecord, jiraIssueCollection, reportEntity);
     }
 }

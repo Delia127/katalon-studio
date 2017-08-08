@@ -33,25 +33,26 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.ssl.SSLContextBuilder;
 
-import com.kms.katalon.core.util.internal.JsonUtil;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.kms.katalon.integration.jira.JiraCredential;
 import com.kms.katalon.integration.jira.JiraIntegrationException;
 import com.kms.katalon.integration.jira.JiraInvalidURLException;
 import com.kms.katalon.integration.jira.constant.JiraIntegrationMessageConstants;
+import com.kms.katalon.integration.jira.entity.ImprovedIssue;
+import com.kms.katalon.integration.jira.util.ImprovedIssueDeserializer;
 import com.kms.katalon.logging.LogUtil;
 
 public class JiraIntegrationRequest {
 
-    protected <T> T getJiraObject(JiraCredential credential, String url, Class<T> clazz)
-            throws JiraIntegrationException {
+    public String getJiraResponse(JiraCredential credential, String url) throws JiraIntegrationException {
         try (CloseableHttpClient client = HttpClientBuilder.create().setSSLContext(getTrustedSSLContext()).build()) {
             HttpGet request = new HttpGet(url);
 
             addAuthenticationHeader(credential, request);
             request.setHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
 
-            String result = getResultFromRequest(client, request);
-            return JsonUtil.fromJson(result, clazz);
+            return getResultFromRequest(client, request);
         } catch (IllegalArgumentException e) {
             throw new JiraInvalidURLException(JiraIntegrationMessageConstants.MSG_INVALID_SERVER_URL);
         } catch (GeneralSecurityException e) {
@@ -64,9 +65,33 @@ public class JiraIntegrationRequest {
         return null;
     }
 
+    protected <T> T getJiraObject(JiraCredential credential, String url, Class<T> clazz)
+            throws JiraIntegrationException {
+        Gson gson = new GsonBuilder().registerTypeAdapter(ImprovedIssue.class, new ImprovedIssueDeserializer()).create();
+        return gson.fromJson(getJiraResponse(credential, url), clazz);
+    }
+
     public void sendPutRequest(JiraCredential credential, String url, String content) throws JiraIntegrationException {
         try (CloseableHttpClient httpClient = getClientBuilder()) {
-            HttpPut post = new HttpPut(url);
+            HttpPut put = new HttpPut(url);
+            addAuthenticationHeader(credential, put);
+            put.setHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
+            put.setEntity(new StringEntity(content));
+            getResultFromRequest(httpClient, put);
+        } catch (IllegalArgumentException e) {
+            throw new JiraInvalidURLException(JiraIntegrationMessageConstants.MSG_INVALID_SERVER_URL);
+        } catch (GeneralSecurityException e) {
+            LogUtil.logError(e);
+        } catch (JiraIntegrationException e) {
+            throw e;
+        } catch (IOException e) {
+            throw new JiraIntegrationException(e);
+        }
+    }
+
+    public void sendPostRequest(JiraCredential credential, String url, String content) throws JiraIntegrationException {
+        try (CloseableHttpClient httpClient = getClientBuilder()) {
+            HttpPost post = new HttpPost(url);
             addAuthenticationHeader(credential, post);
             post.setHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
             post.setEntity(new StringEntity(content));
@@ -82,7 +107,7 @@ public class JiraIntegrationRequest {
         }
     }
 
-    public void sendUploadRequest(JiraCredential credential, String url, String filePath)
+    public String sendUploadRequest(JiraCredential credential, String url, String filePath)
             throws JiraIntegrationException {
         try (CloseableHttpClient httpClient = getClientBuilder()) {
             HttpPost post = new HttpPost(url);
@@ -91,7 +116,7 @@ public class JiraIntegrationRequest {
                     .addPart("file", new FileBody(new File(filePath)))
                     .build();
             post.setEntity(fileEntity);
-            getResultFromRequest(httpClient, post);
+            return getResultFromRequest(httpClient, post);
         } catch (IllegalArgumentException e) {
             throw new JiraInvalidURLException(JiraIntegrationMessageConstants.MSG_INVALID_SERVER_URL);
         } catch (GeneralSecurityException e) {
@@ -101,6 +126,7 @@ public class JiraIntegrationRequest {
         } catch (IOException e) {
             throw new JiraIntegrationException(e);
         }
+        return StringUtils.EMPTY;
     }
 
     protected <T> T[] getJiraArrayObjects(JiraCredential credential, String url, Class<T[]> clazz)
@@ -144,6 +170,8 @@ public class JiraIntegrationRequest {
             throws JiraIntegrationException {
         try (CloseableHttpResponse response = client.execute(request)) {
             switch (response.getStatusLine().getStatusCode()) {
+                case HttpStatus.SC_CREATED:
+                case HttpStatus.SC_ACCEPTED:
                 case HttpStatus.SC_NO_CONTENT:
                     return StringUtils.EMPTY;
                 case HttpStatus.SC_OK:

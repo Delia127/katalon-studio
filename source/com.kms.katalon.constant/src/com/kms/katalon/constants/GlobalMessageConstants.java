@@ -115,6 +115,8 @@ public class GlobalMessageConstants extends NLS {
 
     public static String DESCRIPTION;
 
+    public static String SUMMARY;
+
     public static String INFORMATION;
 
     public static String COMMENT;

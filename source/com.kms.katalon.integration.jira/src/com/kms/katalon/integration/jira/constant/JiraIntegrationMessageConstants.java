@@ -11,11 +11,20 @@ public class JiraIntegrationMessageConstants extends NLS {
 
     private JiraIntegrationMessageConstants() {
     }
-    
+
     public static String MSG_INVALID_ACCOUNT;
+
     public static String MSG_INVALID_PERMISSION;
+
     public static String MSG_INVALID_REQUEST;
+
     public static String MSG_INVALID_SERVER_URL;
+
     public static String MSG_ERROR_LOG;
+
     public static String MSG_TEST_STEPS;
+
+    public static String MSG_SEND_TEST_RESULT;
+
+    public static String MSG_SEND_TEST_RESULT_SENT;
 }

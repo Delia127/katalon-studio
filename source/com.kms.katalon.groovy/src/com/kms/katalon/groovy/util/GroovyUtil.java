@@ -733,7 +733,10 @@ public class GroovyUtil {
             scriptFile.getLocation().toFile().createNewFile();
             scriptFile.refreshLocal(IResource.DEPTH_ZERO, null);
         }
-        scriptFile.setContents(new ByteArrayInputStream(updatedTestCase.getScriptContents()), true, false, null);
+        byte[] scriptContents = updatedTestCase.getScriptContents();
+        if (scriptContents != null) {
+            scriptFile.setContents(new ByteArrayInputStream(scriptContents), true, false, null);
+        }
     }
 
     public static void updateTestCaseFolderDeleted(FolderEntity folder, FolderEntity testCaseRootProject)

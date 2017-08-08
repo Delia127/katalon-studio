@@ -45,8 +45,10 @@ public class JiraTestCaseIssueLabelProvider extends HoveredImageColumnLabelProvi
         Shell activeShell = e.display.getActiveShell();
 
         ReportEntity reportEntity = getReportEntity();
+
+        int index = getTestCaseLogRecordIndex(logRecord, reportEntity);
         JiraLinkedIssuesDialog dialog = new JiraLinkedIssuesDialog(activeShell,
-                getJiraIssueCollection(logRecord, reportEntity), logRecord);
+                getJiraIssueCollection(index, logRecord, reportEntity), logRecord);
         if (dialog.open() != JiraLinkedIssuesDialog.OK || !dialog.isChanged()) {
             return;
         }
@@ -74,8 +76,8 @@ public class JiraTestCaseIssueLabelProvider extends HoveredImageColumnLabelProvi
 
     @Override
     protected Image getImage(TestCaseLogRecord logRecord) {
-        return getJiraIssueCollection(logRecord, view.getReportEntity()).getIssues().isEmpty() ? ImageConstants.IMG_ISSUE_HOVER_OUT
-                : getHoveredImage(logRecord);
+        return getJiraIssueCollection(logRecord, view.getReportEntity()).getIssues().isEmpty()
+                ? ImageConstants.IMG_ISSUE_HOVER_OUT : getHoveredImage(logRecord);
     }
 
     @Override

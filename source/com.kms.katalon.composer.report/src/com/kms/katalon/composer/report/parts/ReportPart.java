@@ -3,9 +3,10 @@ package com.kms.katalon.composer.report.parts;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -138,7 +139,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     private ReportPartTestLogView testLogView;
 
     // Fields
-    private Map<String, TestCaseLogDetailsIntegrationView> integratingCompositeMap;
+    private TreeMap<String, TestCaseLogDetailsIntegrationView> integratingCompositeMap;
 
     private int selectedTestCaseRecordIndex;
 
@@ -411,7 +412,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
             if (report == null) {
                 return;
             }
-            
+
             new ProgressMonitorDialog(shell).run(true, true, new IRunnableWithProgress() {
                 @Override
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
@@ -475,7 +476,17 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
             txtRunTime.setText(styleStringElapsed.getString());
             txtRunTime.setStyleRanges(styleStringElapsed.getStyleRanges());
 
-            integratingCompositeMap = new LinkedHashMap<String, TestCaseLogDetailsIntegrationView>();
+            integratingCompositeMap = new TreeMap<String, TestCaseLogDetailsIntegrationView>(new Comparator<String>() {
+                @Override
+                public int compare(String productA, String productB) {
+                    return reportIntegrationFactory().getPreferredOrder(productA)
+                            - reportIntegrationFactory().getPreferredOrder(productB);
+                }
+
+                private ReportComposerIntegrationFactory reportIntegrationFactory() {
+                    return ReportComposerIntegrationFactory.getInstance();
+                }
+            });
 
             for (Entry<String, ReportTestCaseIntegrationViewBuilder> builderEntry : ReportComposerIntegrationFactory
                     .getInstance().getIntegrationViewMap().entrySet()) {
