@@ -4,7 +4,9 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.gson.Gson;
+import org.joda.time.DateTime;
+
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -16,7 +18,9 @@ public class ImprovedIssueDeserializer implements JsonDeserializer<ImprovedIssue
     @Override
     public ImprovedIssue deserialize(JsonElement jsonElement, Type arg1, JsonDeserializationContext arg2)
             throws JsonParseException {
-        ImprovedIssue issue = new Gson().fromJson(jsonElement, ImprovedIssue.class);
+        ImprovedIssue issue = new GsonBuilder().registerTypeAdapter(DateTime.class, new JiraDateDeserializer())
+                .create()
+                .fromJson(jsonElement, ImprovedIssue.class);
 
         Map<String, Object> customFields = new HashMap<>(issue.getCustomFields());
 

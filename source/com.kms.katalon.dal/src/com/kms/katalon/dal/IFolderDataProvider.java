@@ -5,6 +5,7 @@ import java.util.List;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.testcase.TestCaseEntity;
 
 public interface IFolderDataProvider {
     public FolderEntity addNewFolder(FolderEntity parentFolder, String folderName) throws Exception;
@@ -12,6 +13,8 @@ public interface IFolderDataProvider {
     public FolderEntity getFolder(String folderValue) throws Exception;
 
     public List<FileEntity> getChildren(FolderEntity parentFolder) throws Exception;
+
+    public List<TestCaseEntity> getTestCaseChildren(FolderEntity parentFolder) throws Exception;
 
     public void updateFolderName(FolderEntity folder, String name) throws Exception;
 

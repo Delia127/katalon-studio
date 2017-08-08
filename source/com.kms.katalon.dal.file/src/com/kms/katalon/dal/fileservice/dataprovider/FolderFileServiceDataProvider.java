@@ -9,6 +9,7 @@ import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.testcase.TestCaseEntity;
 
 public class FolderFileServiceDataProvider implements IFolderDataProvider {
 
@@ -101,5 +102,10 @@ public class FolderFileServiceDataProvider implements IFolderDataProvider {
     @Override
     public String getAvailableFolderName(FolderEntity parentFolder, String name) throws Exception {
         return FolderFileServiceManager.getAvailableFolderName(parentFolder, name);
+    }
+
+    @Override
+    public List<TestCaseEntity> getTestCaseChildren(FolderEntity parentFolder) throws Exception {
+        return FolderFileServiceManager.getChildTestCasesOfFolder(parentFolder);
     }
 }

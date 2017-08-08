@@ -20,6 +20,15 @@ public class DeserializerUtil {
                 return primitive.getAsBoolean();
             }
         }
-        return js.getAsString();
+        if (js.isJsonNull()) {
+            return null;
+        }
+        if (js.isJsonObject()) {
+            return js.getAsJsonObject();
+        }
+        if (js.isJsonArray()) {
+            return js.getAsJsonArray();
+        }
+        return js.toString();
     }
 }
