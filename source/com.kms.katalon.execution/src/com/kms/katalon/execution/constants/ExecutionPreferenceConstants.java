@@ -31,4 +31,11 @@ public interface ExecutionPreferenceConstants {
 
     public static final String MAIL_CONFIG_ATTACHMENT = "mailConfig.attachment";
 
+    public static final String MAIL_CONFIG_HTML_TEMPLATE = "mailConfig.htmlTemplate";
+
+    public static final String MAIL_CONFIG_SUBJECT = "mailConfig.subject";
+
+    public static final String MAIL_CONFIG_CC = "mailConfig.cc";
+
+    public static final String MAIL_CONFIG_BCC = "mailConfig.bcc";
 }

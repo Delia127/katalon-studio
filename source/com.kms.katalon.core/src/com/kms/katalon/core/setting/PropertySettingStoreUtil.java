@@ -11,6 +11,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 public class PropertySettingStoreUtil {
     private static final String SETTING_ROOT_FOLDER_NAME = "settings";
 
@@ -26,7 +28,7 @@ public class PropertySettingStoreUtil {
 
     private static final String INTEGER_REGEX = "^(-)?\\d+$";
 
-    private static final String STRING_REGEX = "^\".+\"$";
+    private static final String STRING_REGEX = "^\".*\"$";
 
     private static final String PROPERTY_NAME_REGEX = "^[a-zA-Z0-9\\.\\-_@\\*]+$";
 
@@ -169,9 +171,9 @@ public class PropertySettingStoreUtil {
         } else if (rawValue.matches(INTEGER_REGEX)) {
             return Integer.valueOf(rawValue);
         } else if (rawValue.matches(STRING_REGEX)) {
-            return rawValue.substring(1, rawValue.length() - 1);
+            return StringEscapeUtils.unescapeJava(rawValue.substring(1, rawValue.length() - 1));
         } else {
-            return null;
+            return rawValue;
         }
     }
 
@@ -179,7 +181,7 @@ public class PropertySettingStoreUtil {
         if (value == null)
             return null;
         if (value instanceof String) {
-            return "\"" + value + "\"";
+            return "\"" + StringEscapeUtils.escapeJava((String) value) + "\"";
         } else {
             return String.valueOf(value);
         }
@@ -220,14 +222,14 @@ public class PropertySettingStoreUtil {
         }
         FileInputStream fis = null;
         try {
-        	fis = new FileInputStream(settingFile);
+            fis = new FileInputStream(settingFile);
             Properties settings = new Properties();
             settings.load(fis);
             return settings;
         } finally {
-        	if (fis != null) {
-            	fis.close();
-        	}
+            if (fis != null) {
+                fis.close();
+            }
         }
     }
 
@@ -238,12 +240,12 @@ public class PropertySettingStoreUtil {
         }
         FileOutputStream fos = null;
         try {
-        	fos = new FileOutputStream(settingFile);
+            fos = new FileOutputStream(settingFile);
             settings.store(fos, comment);
         } finally {
-        	if (fos != null) {
-        		fos.close();
-        	}
+            if (fos != null) {
+                fos.close();
+            }
         }
     }
 }

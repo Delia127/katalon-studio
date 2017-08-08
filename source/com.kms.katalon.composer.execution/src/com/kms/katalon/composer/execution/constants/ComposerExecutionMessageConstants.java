@@ -115,7 +115,7 @@ public class ComposerExecutionMessageConstants extends NLS {
 
     public static String PREF_LBL_SIGNATURE;
 
-    public static String PREF_LBL_SEND_ATTACHMENT;
+    public static String PREF_LBL_INCLUDE_ATTACHMENT;
 
     public static String PREF_GROUP_LBL_EXECUTION_MAIL;
 
@@ -263,6 +263,19 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String DIA_WARN_UNABLE_NAVIGATE_TEST_CASE_STEP;
     
     public static String MENU_ITEM_NAVIGATE_TEST_CASE_STEP;
+
+    //MailSettingsPage
+    public static String PREF_TXT_PH_RECIPIENTS;
+
+    public static String PREF_LBL_SUBJECT;
+
+    public static String PREF_LBL_CC;
+
+    public static String PREF_LBL_BCC;
+
+    public static String PREF_LBL_BODY;
+
+    public static String PREF_LNK_EDIT_TEMPLATE;
 
     static {
         // initialize resource bundle

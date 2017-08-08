@@ -10,7 +10,7 @@ import java.util.Map.Entry;
 import org.apache.commons.io.FileUtils;
 
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.internal.jasper.util.ResourceUtil;
+import com.kms.katalon.core.util.internal.JarUtil;
 
 public class JasperClasspathManager {
     private static JasperClasspathManager _instance;
@@ -71,8 +71,8 @@ public class JasperClasspathManager {
                 FileUtils.cleanDirectory(tempClasspathDir);
             }
             tempClasspathDir.mkdirs();
-            
-            for (File libFile : ResourceUtil.getFiles(getClass(), "resources/lib", tempClasspathDir)) {
+
+            for (File libFile : JarUtil.getFiles(getClass(), "resources/lib", tempClasspathDir)) {
                 classPathBuilder.append(libFile.getAbsolutePath()).append(";");
             }
 

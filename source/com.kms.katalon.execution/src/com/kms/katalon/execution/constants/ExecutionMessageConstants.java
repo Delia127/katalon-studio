@@ -106,6 +106,8 @@ public class ExecutionMessageConstants extends NLS {
     public static String LAU_MESSAGE_UNABLE_TO_EXECUTE_TEST_SUITE;
     
     public static String LAU_MESSAGE_EMPTY_TEST_SUITE;
+    
+    public static String PREF_DEFAULT_EMAIL_SUBJECT;
 
     static {
         // initialize resource bundle
