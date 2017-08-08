@@ -269,9 +269,7 @@ public class MailSettingsPage extends PreferencePageWithHelp {
         btnChkAttachment.setText(ComposerExecutionMessageConstants.PREF_LBL_INCLUDE_ATTACHMENT);
 
         btnSendTestEmail = new Button(postExecuteGroup, SWT.PUSH);
-        GridData layoutData = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 2, 1);
-        layoutData.widthHint = 90;
-        btnSendTestEmail.setLayoutData(layoutData);
+        btnSendTestEmail.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 2, 1));
         btnSendTestEmail.setText(ComposerExecutionMessageConstants.PREF_LBL_SEND_TEST_EMAIL);
 
     }
