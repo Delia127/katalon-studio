@@ -71,6 +71,8 @@ public class IssueSelectionDialog extends AbstractDialog {
     private FolderTreeEntity selectedFolder;
 
     private JiraImportedColumnLabelProvider importedIssueProvider;
+    
+    private Map<Long, JiraIssue> existedIssues;
 
     public IssueSelectionDialog(Shell parentShell, List<JiraIssue> issues) {
         super(parentShell);
@@ -104,7 +106,8 @@ public class IssueSelectionDialog extends AbstractDialog {
             protected IStatus run(IProgressMonitor monitor) {
                 UISynchronizeService.syncExec(() -> getButton(OK).setEnabled(false));
 
-                importedIssueProvider.setExistedIssues(getExistedJiraIssues());
+                existedIssues = getExistedJiraIssues();
+                importedIssueProvider.setExistedIssues(existedIssues);
 
                 UISynchronizeService.syncExec(() -> {
                     getButton(OK).setEnabled(!getSelectedIssues().isEmpty());
@@ -211,7 +214,7 @@ public class IssueSelectionDialog extends AbstractDialog {
 
     public List<JiraIssue> getSelectedIssues() {
         return issues.parallelStream()
-                .filter(issue -> !getExistedJiraIssues().containsKey(issue.getId()))
+                .filter(issue -> !existedIssues.containsKey(issue.getId()))
                 .collect(Collectors.toList());
     }
 
@@ -223,11 +226,9 @@ public class IssueSelectionDialog extends AbstractDialog {
         try {
             FolderEntity folder = selectedFolder.getObject();
             Map<Long, JiraIssue> existedIssues = new HashMap<>();
-            FolderController.getInstance().getChildren(folder).forEach(child -> {
-                if (!(child instanceof TestCaseEntity)) {
-                    return;
-                }
-                JiraIssue jiraIssue = JiraObjectToEntityConverter.getJiraIssue((TestCaseEntity) child);
+            List<TestCaseEntity> testCaseChildren = FolderController.getInstance().getTestCaseChildren(folder);
+            testCaseChildren.forEach(child -> {
+                JiraIssue jiraIssue = JiraObjectToEntityConverter.getJiraIssue(child);
                 if (jiraIssue != null) {
                     existedIssues.put(jiraIssue.getId(), jiraIssue);
                 }

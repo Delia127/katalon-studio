@@ -52,14 +52,7 @@ public class FolderController extends EntityController implements Serializable {
      * @return Returns list of test case entity
      */
     public List<TestCaseEntity> getTestCaseChildren(FolderEntity parentFolder) throws Exception {
-        List<FileEntity> childrenEntities = getDataProviderSetting().getFolderDataProvider().getChildren(parentFolder);
-        List<TestCaseEntity> childrentTestCases = new ArrayList<TestCaseEntity>();
-        for (FileEntity entity : childrenEntities) {
-            if (entity instanceof TestCaseEntity) {
-                childrentTestCases.add((TestCaseEntity) entity);
-            }
-        }
-        return childrentTestCases;
+        return getDataProviderSetting().getFolderDataProvider().getTestCaseChildren(parentFolder);
     }
 
     public List<Object> getAllDescentdantEntities(FolderEntity folder) throws Exception {
