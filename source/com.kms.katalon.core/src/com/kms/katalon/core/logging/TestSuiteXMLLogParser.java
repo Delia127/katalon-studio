@@ -280,9 +280,6 @@ public class TestSuiteXMLLogParser {
                 ? xmlLogRecord.getProperties().get(StringConstants.XML_LOG_ID_PROPERTY) : "");
         testSuiteLogRecord.setSource(xmlLogRecord.getProperties().containsKey(StringConstants.XML_LOG_SOURCE_PROPERTY)
                 ? xmlLogRecord.getProperties().get(StringConstants.XML_LOG_SOURCE_PROPERTY) : "");
-        testSuiteLogRecord
-                .setDeviceName(xmlLogRecord.getProperties().containsKey(StringConstants.XML_LOG_DEVICE_ID_PROPERTY)
-                        ? xmlLogRecord.getProperties().get(StringConstants.XML_LOG_DEVICE_ID_PROPERTY) : "");
         testSuiteLogRecord.setDevicePlatform(
                 xmlLogRecord.getProperties().containsKey(StringConstants.XML_LOG_DEVICE_PLATFORM_PROPERTY)
                         ? xmlLogRecord.getProperties().get(StringConstants.XML_LOG_DEVICE_PLATFORM_PROPERTY) : "");

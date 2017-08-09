@@ -19,6 +19,7 @@ public class EmailVariableBinding {
         binding.put("browser", testSuiteLogRecord.getBrowser());
         binding.put("suiteId", testSuiteLogRecord.getId());
         binding.put("suiteName", testSuiteLogRecord.getName());
+        binding.put("deviceId", testSuiteLogRecord.getDeviceId());
         binding.put("deviceName", testSuiteLogRecord.getDeviceName());
         binding.put("totalPassed", testSuiteLogRecord.getTotalPassedTestCases());
         binding.put("totalFailed", testSuiteLogRecord.getTotalFailedTestCases());
@@ -35,6 +36,7 @@ public class EmailVariableBinding {
         binding.put("suiteId", "Test Suites/Sample Suite");
         binding.put("suiteName", "Sample Suite");
         binding.put("deviceName", "My device");
+        binding.put("deviceId", "------");
         binding.put("totalPassed", 1);
         binding.put("totalFailed", 0);
         binding.put("totalError", 0);
