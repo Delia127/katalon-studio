@@ -16,15 +16,17 @@ public class KeywordClass {
     private String simpleName;
     private String labelName;
     private String aliasName;
+    private IKeywordContributor keywordContributor;
     private Class<?> type;
     private List<KeywordMethod> keywordMethods = new ArrayList<KeywordMethod>();
 
     public KeywordClass(IKeywordContributor keywordContributor) {
-        name = keywordContributor.getKeywordClass().getName();
-        simpleName = keywordContributor.getKeywordClass().getSimpleName();
-        labelName = keywordContributor.getLabelName();
-        aliasName = keywordContributor.getAliasName();
-        type = keywordContributor.getKeywordClass();
+        this.keywordContributor = keywordContributor;
+        this.name = keywordContributor.getKeywordClass().getName();
+        this.simpleName = keywordContributor.getKeywordClass().getSimpleName();
+        this.labelName = keywordContributor.getLabelName();
+        this.aliasName = keywordContributor.getAliasName();
+        this.type = keywordContributor.getKeywordClass();
         for (Method method : keywordContributor.getKeywordClass().getMethods()) {
             if (!isBuiltinMethod(method)) {
                 continue;
@@ -75,5 +77,9 @@ public class KeywordClass {
 
     public String getAliasName() {
         return aliasName;
+    }
+
+    public IKeywordContributor getKeywordContributor() {
+        return keywordContributor;
     }
 }

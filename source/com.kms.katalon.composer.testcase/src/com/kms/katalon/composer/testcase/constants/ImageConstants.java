@@ -21,6 +21,8 @@ public class ImageConstants extends com.kms.katalon.composer.components.impl.con
 
     public static final Image IMG_16_PROPERTIES = ImageManager.getImage(IImageKeys.PROPERTIES_16);
 
+    public static final Image IMG_16_RECENT = ImageManager.getImage(IImageKeys.RECENT_16);
+
     // TestCasePart
     public static final Image IMG_16_RECORD = ImageManager.getImage(IImageKeys.RECORD_16);
 
@@ -72,4 +74,13 @@ public class ImageConstants extends com.kms.katalon.composer.components.impl.con
     public static final Image IMG_16_CHECKBOX_CHECKED = ImageManager.getImage(IImageKeys.CHECKBOX_CHECKED_16);
 
     public static final Image IMG_16_CHECKBOX_UNCHECKED = ImageManager.getImage(IImageKeys.CHECKBOX_UNCHECKED_16);
+
+    // KeywordDecorationService
+    public static final Image IMG_16_WEB_UI = ImageManager.getImage(IImageKeys.SAMPLE_WEB_UI_16);
+
+    public static final Image IMG_16_MOBILE = ImageManager.getImage(IImageKeys.SAMPLE_MOBILE_16);
+
+    public static final Image IMG_16_WS = ImageManager.getImage(IImageKeys.SAMPLE_WEB_SERVICE_16);
+
+    public static final Image IMG_16_CUSTOM = ImageManager.getImage(IImageKeys.CUSTOM_EXECUTION_16);
 }

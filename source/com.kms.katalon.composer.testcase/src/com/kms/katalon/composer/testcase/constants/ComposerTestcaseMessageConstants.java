@@ -185,6 +185,8 @@ public class ComposerTestcaseMessageConstants extends NLS {
 
     public static String PA_BTN_TIP_MOVE_DOWN;
 
+    public static String PA_BTN_TIP_RECENT;
+
     public static String PA_COL_INDEX;
 
     public static String PA_COL_ITEM;

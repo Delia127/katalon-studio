@@ -83,6 +83,9 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.UNDO_16);
         ImageManager.registerImage(IImageKeys.REDO_16);
         ImageManager.registerImage(IImageKeys.HELP_16);
+        ImageManager.registerImage(IImageKeys.SAMPLE_WEB_UI_16);
+        ImageManager.registerImage(IImageKeys.SAMPLE_MOBILE_16);
+        ImageManager.registerImage(IImageKeys.SAMPLE_WEB_SERVICE_16);
     }
 
     private void registerSubToolbarImages() {
@@ -111,6 +114,7 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.TREE_16);
         ImageManager.registerImage(IImageKeys.WATCH_16);
         ImageManager.registerImage(IImageKeys.MAP_ALL_16);
+        ImageManager.registerImage(IImageKeys.RECENT_16);
 
         // Sub-toolbar disabled icons
         ImageManager.registerImage(IImageKeys.CLEAR_DISABLED_16);

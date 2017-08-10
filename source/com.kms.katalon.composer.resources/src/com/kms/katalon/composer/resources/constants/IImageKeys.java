@@ -366,6 +366,8 @@ public interface IImageKeys {
 
     public static final String WATCH_16 = "watch_16.png"; //$NON-NLS-1$
 
+    public static final String RECENT_16 = "recent_16.png"; //$NON-NLS-1$
+
     // Sub-toolbar disabled icons
     public static final String CLEAR_DISABLED_16 = "clear_disabled_16.png"; //$NON-NLS-1$
 
@@ -544,6 +546,12 @@ public interface IImageKeys {
     public static final String HELP_16 = "help_16.png"; //$NON-NLS-1$
 
     public static final String MAP_ALL_16 = "map_all_16.png"; //$NON-NLS-1$
+    
+    public static final String SAMPLE_WEB_UI_16 = "sample_web_ui_16.png"; //$NON-NLS-1$
+
+    public static final String SAMPLE_MOBILE_16 = "sample_mobile_16.png"; //$NON-NLS-1$
+    
+    public static final String SAMPLE_WEB_SERVICE_16 = "sample_web_service_16.png"; //$NON-NLS-1$
     // End Common
 
 }

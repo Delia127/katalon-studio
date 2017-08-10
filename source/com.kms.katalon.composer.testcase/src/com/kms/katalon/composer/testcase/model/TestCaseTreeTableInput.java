@@ -959,7 +959,7 @@ public class TestCaseTreeTableInput {
         addNewAstObject(customKeywordStatement, destinationNode, addType);
     }
 
-    private ASTNodeWrapper getParentNodeForNewMethodCall(AstTreeTableNode destinationNode) {
+    public ASTNodeWrapper getParentNodeForNewMethodCall(AstTreeTableNode destinationNode) {
         return destinationNode != null ? destinationNode.getASTObject() : mainClassNodeWrapper;
     }
 

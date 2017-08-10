@@ -105,6 +105,8 @@ public class ImageConstants {
 
     public static final Image IMG_16_MOVE_UP = ImageManager.getImage(IImageKeys.MOVE_UP_16);
 
+    public static final Image IMG_16_RECENT = ImageManager.getImage(IImageKeys.RECENT_16);
+
     // CheckpointTreeEntity
     public static final Image IMG_16_CHECKPOINT = ImageManager.getImage(IImageKeys.CHECKPOINT_16);
 
