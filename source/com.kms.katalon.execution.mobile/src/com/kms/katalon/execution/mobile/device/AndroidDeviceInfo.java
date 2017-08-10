@@ -1,12 +1,5 @@
 package com.kms.katalon.execution.mobile.device;
 
-import static org.eclipse.core.runtime.Platform.ARCH_X86_64;
-import static org.eclipse.core.runtime.Platform.OS_LINUX;
-import static org.eclipse.core.runtime.Platform.OS_MACOSX;
-import static org.eclipse.core.runtime.Platform.OS_WIN32;
-import static org.eclipse.core.runtime.Platform.getOS;
-import static org.eclipse.core.runtime.Platform.getOSArch;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -19,7 +12,6 @@ import org.osgi.framework.Bundle;
 
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.core.util.ConsoleCommandExecutor;
-import com.kms.katalon.execution.classpath.ClassPathResolver;
 import com.kms.katalon.execution.mobile.exception.AndroidSetupException;
 
 public class AndroidDeviceInfo extends MobileDeviceInfo {

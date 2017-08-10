@@ -249,4 +249,5 @@ public class EventConstants {
 
     public static final String KATALON_GENERATE_COMMAND = "KATALON/GENERATE_COMMAND";
 
+    public static final String SETTINGS_PAGE_CHANGE = "SETTINGS/PAGE_CHANGE";
 }

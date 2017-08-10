@@ -95,6 +95,12 @@
             class="com.kms.katalon.composer.execution.settings.MailSettingsPage"
             id="com.kms.katalon.composer.execution.mail"
             name="Email">
+      </page>
+      <page
+            category="com.kms.katalon.composer.execution.mail"
+            class="com.kms.katalon.composer.execution.settings.EmailTemplatePage"
+            id="com.kms.katalon.composer.execution.page.emailTemplate"
+            name="Template">
       </page>   
    </extension>
    <extension

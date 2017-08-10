@@ -3,6 +3,9 @@ package com.kms.katalon.composer.execution.constants;
 import com.kms.katalon.constants.GlobalStringConstants;
 
 public class StringConstants extends GlobalStringConstants {
+    
+    //MailSettingsPage
+    public static final String EMAIL_TEMPLATE_PAGE_ID = "com.kms.katalon.composer.execution.page.emailTemplate";
 
     // TestExecutionAddon
     public static final String KATALON_COMPOSER_EXECUTION_BUNDLE_URI = "bundleclass://com.kms.katalon.composer.execution/";
@@ -164,7 +167,7 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String PREF_LBL_SIGNATURE = ComposerExecutionMessageConstants.PREF_LBL_SIGNATURE;
 
-    public static final String PREF_LBL_SEND_ATTACHMENT = ComposerExecutionMessageConstants.PREF_LBL_SEND_ATTACHMENT;
+    public static final String PREF_LBL_INCLUDE_ATTACHMENT = ComposerExecutionMessageConstants.PREF_LBL_INCLUDE_ATTACHMENT;
 
     public static final String PREF_GROUP_LBL_EXECUTION_MAIL = ComposerExecutionMessageConstants.PREF_GROUP_LBL_EXECUTION_MAIL;
 

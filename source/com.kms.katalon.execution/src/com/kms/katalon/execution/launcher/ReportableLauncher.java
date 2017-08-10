@@ -41,6 +41,7 @@ import com.kms.katalon.execution.integration.ReportIntegrationContribution;
 import com.kms.katalon.execution.integration.ReportIntegrationFactory;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherStatus;
+import com.kms.katalon.execution.setting.EmailVariableBinding;
 import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.execution.util.MailUtil;
 import com.kms.katalon.logging.LogUtil;
@@ -73,7 +74,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 
             uploadReportToIntegratingProduct(suiteLogRecord);
 
-            sendReport();
+            sendReport(suiteLogRecord);
 
         } catch (Exception e) {
             writeError(MessageFormat.format(StringConstants.LAU_RPT_ERROR_TO_GENERATE_REPORT, e.getMessage()));
@@ -97,7 +98,8 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                 ReportableLauncher rerunLauncher = clone(newConfig);
                 rerunLauncher.getManager().addLauncher(rerunLauncher);
             } catch (Exception e) {
-                writeError(MessageFormat.format(StringConstants.MSG_RP_ERROR_TO_RERUN_TEST_SUITE, ExceptionUtils.getStackTrace(e)));
+                writeError(MessageFormat.format(StringConstants.MSG_RP_ERROR_TO_RERUN_TEST_SUITE,
+                        ExceptionUtils.getStackTrace(e)));
                 LogUtil.logError(e);
             }
         }
@@ -113,17 +115,18 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         }
     }
 
-    private void sendReport() {
+    private void sendReport(TestSuiteLogRecord testSuiteLogRecord) {
         try {
-            sendReportEmail();
+            sendReportEmail(testSuiteLogRecord);
         } catch (Exception e) {
-            writeError(MessageFormat.format(StringConstants.MSG_RP_ERROR_TO_EMAIL_REPORT, ExceptionUtils.getStackTrace(e)));
+            writeError(MessageFormat.format(StringConstants.MSG_RP_ERROR_TO_EMAIL_REPORT,
+                    ExceptionUtils.getStackTrace(e)));
             LogUtil.logError(e);
         }
     }
 
-    private void sendReportEmail() throws Exception {
-        
+    private void sendReportEmail(TestSuiteLogRecord testSuiteLogRecord) throws Exception {
+
         if (!(getExecutedEntity() instanceof TestSuiteExecutedEntity)) {
             return;
         }
@@ -142,15 +145,13 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 
         File csvFile = new File(testSuiteReportSourceFolder,
                 FilenameUtils.getBaseName(testSuiteReportSourceFolder.getName()) + ".csv");
-        
+
         List<String> csvReports = new ArrayList<String>();
 
         csvReports.add(csvFile.getAbsolutePath());
 
-        List<Object[]> suitesSummaryForEmail = collectSummaryData(csvReports);
-
         // Send report email
-        MailUtil.sendSummaryMail(emailConfig, csvFile, getReportFolder(), suitesSummaryForEmail);
+        MailUtil.sendSummaryMail(emailConfig, csvFile, getReportFolder(), new EmailVariableBinding(testSuiteLogRecord));
 
         writeLine(StringConstants.LAU_PRT_EMAIL_SENT);
     }

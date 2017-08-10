@@ -15,14 +15,19 @@ import org.eclipse.jface.preference.IPreferenceNode;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.preference.PreferenceManager;
 import org.eclipse.jface.preference.PreferenceNode;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.osgi.service.event.Event;
 
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
 import com.kms.katalon.composer.components.impl.providers.TypeCheckedStyleCellLabelProvider;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.project.constants.StringConstants;
@@ -56,6 +61,29 @@ public class SettingHandler {
                 treeViewer.setLabelProvider(new PreferenceLabelProvider());
                 return treeViewer;
             }
+
+            @Override
+            protected void addListeners(TreeViewer viewer) {
+                super.addListeners(viewer);
+                registerPageChangeListener();
+            }
+
+            private void registerPageChangeListener() {
+                EventBrokerSingleton.getInstance().getEventBroker().subscribe(EventConstants.SETTINGS_PAGE_CHANGE,
+                        new EventServiceAdapter() {
+
+                            @Override
+                            public void handleEvent(Event event) {
+                                String pageId = (String) getObject(event);
+                                getTreeViewer().setSelection(new StructuredSelection(findNodeMatching(pageId)));
+                            }
+                        });
+            }
+
+            @Override
+            protected Point getInitialSize() {
+                return new Point(900, 600);
+            }
         };
         dialog.setSelectedNode(StringConstants.PROJECT_INFORMATION_SETTINGS_PAGE_ID);
         dialog.create();
@@ -75,7 +103,6 @@ public class SettingHandler {
         });
         dialog.getTreeViewer().expandToLevel(2);
         dialog.getShell().setText(StringConstants.HAND_PROJ_SETTING);
-        dialog.getShell().setMinimumSize(800, 500);
         dialog.open();
     }
 
@@ -109,18 +136,22 @@ public class SettingHandler {
                 throw new MissingProjectSettingPageException(StringConstants.PROJECT_EXECUTION_SETTINGS_PAGE_ID);
             }
 
-            IPreferenceNode defaultExecutionSettings = executionSettings.findSubNode(StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_PAGE_ID);
+            IPreferenceNode defaultExecutionSettings = executionSettings
+                    .findSubNode(StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_PAGE_ID);
             if (defaultExecutionSettings == null) {
-                throw new MissingProjectSettingPageException(StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_PAGE_ID);
+                throw new MissingProjectSettingPageException(
+                        StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_PAGE_ID);
             }
 
-            IPreferenceNode mobileNode = defaultExecutionSettings.findSubNode(StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_MOBILE_PAGE_ID);
+            IPreferenceNode mobileNode = defaultExecutionSettings
+                    .findSubNode(StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_MOBILE_PAGE_ID);
             if (mobileNode == null) {
                 throw new MissingProjectSettingPageException(
                         StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_MOBILE_PAGE_ID);
             }
 
-            IPreferenceNode iOSNode = mobileNode.remove(StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_MOBILE_IOS_PAGE_ID);
+            IPreferenceNode iOSNode = mobileNode
+                    .remove(StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_MOBILE_IOS_PAGE_ID);
             if (iOSNode == null) {
                 throw new MissingProjectSettingPageException(
                         StringConstants.PROJECT_EXECUTION_SETTINGS_DEFAULT_MOBILE_IOS_PAGE_ID);

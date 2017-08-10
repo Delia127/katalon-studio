@@ -46,7 +46,7 @@ public class AppiumDriverManager {
     public static final String WDA_LOCAL_PORT = "wdaLocalPort";
 
     public static final String REAL_DEVICE_LOGGER = "realDeviceLogger";
-    
+
     public static final String UIAUTOMATOR2 = "uiautomator2";
 
     public static final String XCUI_TEST = "XCUITest";
@@ -280,7 +280,6 @@ public class AppiumDriverManager {
         localStorageAppiumServer.set(pb.start());
         new Thread(AppiumOutputStreamHandler.create(appiumLogFilePath, System.out)).start();
     }
-    
 
     private static File findNodeInCurrentFileSystem() {
         String nodeJSExec = System.getProperty(NODE_PATH);
@@ -419,33 +418,51 @@ public class AppiumDriverManager {
     @SuppressWarnings("rawtypes")
     public static AppiumDriver<?> createMobileDriver(DriverType driverType, DesiredCapabilities capabilities,
             URL appiumServerUrl) throws MobileDriverInitializeException {
-        int time = 0;
-        long currentMilis = System.currentTimeMillis();
-        int timeOut = RunConfiguration.getTimeOut();
-        while (time < timeOut) {
-            try {
-                AppiumDriver<?> driver = null;
-                if (isIOSDriverType(driverType)) {
-                    driver = new IOSDriver(appiumServerUrl, capabilities);
-                } else if (isAndroidDriverType(driverType)) {
-                    driver = new SwipeableAndroidDriver(appiumServerUrl, capabilities);
+        try {
+            int time = 0;
+            long currentMilis = System.currentTimeMillis();
+            int timeOut = RunConfiguration.getTimeOut();
+            while (time < timeOut) {
+                try {
+                    AppiumDriver<?> driver = null;
+                    if (isIOSDriverType(driverType)) {
+                        driver = new IOSDriver(appiumServerUrl, capabilities);
+                    } else if (isAndroidDriverType(driverType)) {
+                        driver = new SwipeableAndroidDriver(appiumServerUrl, capabilities);
+                    }
+                    if (driver == null) {
+                        throw new MobileDriverInitializeException(MessageFormat
+                                .format(AppiumStringConstants.CANNOT_START_MOBILE_DRIVER_INVALID_TYPE, driver));
+                    }
+                    localStorageAppiumDriver.set(driver);
+                    new AppiumRequestService(appiumServerUrl.toString()).logAppiumInfo();
+                    return driver;
+                } catch (UnreachableBrowserException e) {
+                    long newMilis = System.currentTimeMillis();
+                    time += ((newMilis - currentMilis) / 1000);
+                    currentMilis = newMilis;
+                    continue;
                 }
-                if (driver == null) {
-                    throw new MobileDriverInitializeException(MessageFormat
-                            .format(AppiumStringConstants.CANNOT_START_MOBILE_DRIVER_INVALID_TYPE, driver));
-                }
-                localStorageAppiumDriver.set(driver);
-                new AppiumRequestService(appiumServerUrl.toString()).logAppiumInfo();
-                return driver;
-            } catch (UnreachableBrowserException e) {
-                long newMilis = System.currentTimeMillis();
-                time += ((newMilis - currentMilis) / 1000);
-                currentMilis = newMilis;
-                continue;
             }
+            throw new MobileDriverInitializeException(
+                    MessageFormat.format(AppiumStringConstants.CANNOT_CONNECT_TO_APPIUM_AFTER_X, timeOut));
+        } finally {
+            logMobileRunData();
         }
-        throw new MobileDriverInitializeException(
-                MessageFormat.format(AppiumStringConstants.CANNOT_CONNECT_TO_APPIUM_AFTER_X, timeOut));
+    }
+
+    private static void logMobileRunData() {
+        KeywordLogger logger = KeywordLogger.getInstance();
+        if (logger != null) {
+            logger.logRunData(EXECUTED_DEVICE_ID, getDeviceId(StringConstants.CONF_PROPERTY_MOBILE_DRIVER));
+            logger.logRunData(EXECUTED_DEVICE_NAME, getDeviceName(StringConstants.CONF_PROPERTY_MOBILE_DRIVER));
+            logger.logRunData(EXECUTED_DEVICE_MODEL, getDeviceModel(StringConstants.CONF_PROPERTY_MOBILE_DRIVER));
+            logger.logRunData(EXECUTED_DEVICE_MANUFACTURER,
+                    getDeviceManufacturer(StringConstants.CONF_PROPERTY_MOBILE_DRIVER));
+            logger.logRunData(EXECUTED_DEVICE_OS, getDeviceOS(StringConstants.CONF_PROPERTY_MOBILE_DRIVER));
+            logger.logRunData(EXECUTED_DEVICE_OS_VERSON,
+                    getDeviceOSVersion(StringConstants.CONF_PROPERTY_MOBILE_DRIVER));
+        }
     }
 
     public static void closeDriver() {

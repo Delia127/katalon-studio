@@ -10,11 +10,10 @@ import java.util.Map;
 import org.apache.commons.io.FilenameUtils;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
+import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 
 public class TestSuiteLogRecord extends AbstractLogRecord {
-
-    private String deviceName;
 
     private String devicePlatform;
 
@@ -72,11 +71,13 @@ public class TestSuiteLogRecord extends AbstractLogRecord {
     }
 
     public String getDeviceName() {
-        return deviceName;
+        return (getRunData().containsKey(StringConstants.XML_LOG_DEVICE_NAME_PROPERTY))
+                ? getRunData().get(StringConstants.XML_LOG_DEVICE_NAME_PROPERTY) : "";
     }
 
-    public void setDeviceName(String deviceName) {
-        this.deviceName = deviceName;
+    public String getDeviceId() {
+        return (getRunData().containsKey(StringConstants.XML_LOG_DEVICE_ID_PROPERTY))
+                ? getRunData().get(StringConstants.XML_LOG_DEVICE_ID_PROPERTY) : "";
     }
 
     public String getDevicePlatform() {
