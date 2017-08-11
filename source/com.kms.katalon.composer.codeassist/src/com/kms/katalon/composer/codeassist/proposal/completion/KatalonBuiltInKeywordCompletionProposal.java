@@ -6,6 +6,7 @@ import org.codehaus.groovy.eclipse.codeassist.processors.GroovyCompletionProposa
 import org.codehaus.groovy.eclipse.codeassist.proposals.GroovyJavaFieldCompletionProposal;
 import org.codehaus.groovy.eclipse.codeassist.relevance.Relevance;
 import org.codehaus.groovy.eclipse.codeassist.requestor.ContentAssistContext;
+import org.codehaus.groovy.eclipse.codeassist.requestor.ContentAssistLocation;
 import org.eclipse.jdt.internal.ui.text.java.ProposalInfo;
 import org.eclipse.jdt.internal.ui.text.java.TypeProposalInfo;
 import org.eclipse.jdt.ui.text.java.IJavaCompletionProposal;
@@ -28,10 +29,14 @@ public class KatalonBuiltInKeywordCompletionProposal extends GroovyCompletionPro
         super(GroovyCompletionProposal.TYPE_REF, context.completionLocation);
         this.keywordClass = keywordClass;
         this.javaContext = javaContext;
-        setName(keywordClass.getAliasName().toCharArray());
         setRelevance(Relevance.HIGH.getRelavance());
 
         String aliasName = keywordClass.getAliasName();
+        if (context.location == ContentAssistLocation.IMPORT) {
+            aliasName = keywordClass.getName() + " as " + keywordClass.getAliasName();
+        }
+
+        setName(aliasName.toCharArray());
         setCompletion(aliasName.toCharArray());
 
         int completionLength = context.completionExpression.length();
@@ -64,7 +69,7 @@ public class KatalonBuiltInKeywordCompletionProposal extends GroovyCompletionPro
 
         @Override
         public StyledString getStyledDisplayString() {
-            return new StyledString(String.valueOf(getName())).append(
+            return new StyledString(keywordClass.getAliasName()).append(
                     KatalonContextUtil.getClassSignature(keywordClass))
                     .append(KatalonContextUtil.getKatalonSignature());
         }
