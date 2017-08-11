@@ -34,7 +34,7 @@ public class RecentObjectStorage {
     }
 
     private void addFirst(List<String> list, String s, int maxSize) {
-        if (!list.contains(s)) {
+        if (list.contains(s)) {
             list.remove(s);
         }
         list.add(0, s);

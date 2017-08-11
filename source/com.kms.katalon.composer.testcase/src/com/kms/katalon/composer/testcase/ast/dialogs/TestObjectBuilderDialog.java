@@ -84,6 +84,8 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 
 public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implements IAstDialogBuilder {
+    private static final int TOOL_ITEM_SIZE = 50;
+
     private static final InputValueType[] defaultInputValueTypes = { InputValueType.Variable,
             InputValueType.GlobalVariable };
 
@@ -269,6 +271,10 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         }
     }
 
+    private String getToolItemName(String rawName) {
+        return StringUtils.rightPad(StringUtils.substring(rawName, 0, TOOL_ITEM_SIZE), TOOL_ITEM_SIZE);
+    }
+
     private void createRecentTestObjectItem(DropdownGroup recentObjectDropdownGrp, String recentTestObjectId) {
         try {
             WebElementEntity testObject = ObjectRepositoryController.getInstance()
@@ -277,8 +283,8 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
             WebElementTreeEntity webElementTreeEntity = TreeEntityUtil.getWebElementTreeEntity(testObject,
                     getCurrentProject());
 
-            ToolItem toolItem = recentObjectDropdownGrp.addItem(testObject.getName(), webElementTreeEntity.getImage(),
-                    new SelectionAdapter() {
+            ToolItem toolItem = recentObjectDropdownGrp.addItem(getToolItemName(testObject.getName()),
+                    webElementTreeEntity.getImage(), new SelectionAdapter() {
                         @Override
                         public void widgetSelected(SelectionEvent e) {
                             try {
@@ -298,12 +304,14 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
             final FolderTreeEntity folderTreeEntity = TreeEntityUtil.getWebElementFolderTreeEntity(folder,
                     getCurrentProject());
 
-            ToolItem toolItem = recentFolderDropdownGrp.addItem(folder.getName(), folderTreeEntity.getImage(),
-                    new SelectionAdapter() {
+            ToolItem toolItem = recentFolderDropdownGrp.addItem(getToolItemName(folder.getName()),
+                    folderTreeEntity.getImage(), new SelectionAdapter() {
                         @Override
                         public void widgetSelected(SelectionEvent e) {
                             try {
-                                getTreeViewer().setSelection(new StructuredSelection(folderTreeEntity));
+                                TreeViewer treeViewer = getTreeViewer();
+                                treeViewer.setSelection(new StructuredSelection(folderTreeEntity));
+                                treeViewer.setExpandedState(folderTreeEntity, true);
                             } catch (Exception ignored) {}
                         }
                     });
