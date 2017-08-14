@@ -220,6 +220,6 @@ public class TestObject {
 
     @Override
     public String toString() {
-        return "TestObject - " + getObjectId();
+        return "TestObject - '" + getObjectId() + "'";
     }
 }
