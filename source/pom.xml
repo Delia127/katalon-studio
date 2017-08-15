@@ -87,7 +87,6 @@
 		<maven-resources-plugin.version>2.6</maven-resources-plugin.version>
 
 		<eclipse_repo_url>http://download.eclipse.org/eclipse/updates/4.6/</eclipse_repo_url>
-		<eclipse_orbit_repo_url>http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository/</eclipse_orbit_repo_url>
 		<egit_repo_url>http://download.eclipse.org/egit/updates-4.4.1/</egit_repo_url>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -109,12 +108,6 @@
 		<repository>
 			<id>eclipse_repo</id>
 			<url>${eclipse_repo_url}</url>
-			<layout>p2</layout>
-		</repository>
-
-		<repository>
-			<id>eclipse_orbit_repo</id>
-			<url>${eclipse_orbit_repo_url}</url>
 			<layout>p2</layout>
 		</repository>
 
