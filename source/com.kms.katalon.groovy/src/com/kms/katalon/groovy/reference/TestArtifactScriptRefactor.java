@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.CoreException;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.groovy.constant.GroovyConstants;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
 public class TestArtifactScriptRefactor {
@@ -147,7 +148,7 @@ public class TestArtifactScriptRefactor {
             return;
         }
 
-        try (InputStream is = IOUtils.toInputStream(scriptContent)) {
+        try (InputStream is = IOUtils.toInputStream(scriptContent, GroovyConstants.DF_CHARSET)) {
             scriptFile.setContents(is, true, true, null);
             scriptFile.refreshLocal(IResource.DEPTH_ZERO, null);
         }
@@ -155,7 +156,7 @@ public class TestArtifactScriptRefactor {
 
     private String getScriptContent(IFile scriptFile) throws IOException, CoreException {
         try (InputStream scriptFileStreamContent = scriptFile.getContents()) {
-            return IOUtils.toString(scriptFileStreamContent);
+            return IOUtils.toString(scriptFileStreamContent, GroovyConstants.DF_CHARSET);
         }
     }
 
