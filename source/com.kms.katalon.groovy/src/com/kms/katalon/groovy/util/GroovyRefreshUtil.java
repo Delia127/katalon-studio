@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.groovy.constant.GroovyConstants;
 
 public class GroovyRefreshUtil {
 
@@ -59,7 +60,7 @@ public class GroovyRefreshUtil {
         InputStream scriptFileStreamContent = scriptFile.getContents();
         InputStream newScriptFileInputStream = null;
         try {
-            String testCaseContent = IOUtils.toString(scriptFileStreamContent);
+            String testCaseContent = IOUtils.toString(scriptFileStreamContent, GroovyConstants.DF_CHARSET);
 
             scriptFileStreamContent.close();
             scriptFileStreamContent = null;
