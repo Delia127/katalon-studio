@@ -3,7 +3,9 @@ package com.kms.katalon.composer.components.impl.control;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.viewers.ViewerRow;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Widget;
@@ -29,6 +31,11 @@ public class CTableViewer extends TableViewer implements CustomColumnViewer {
     @Override
     public ViewerRow getViewerRowFromItem(Widget item) {
         return super.getViewerRowFromItem(item);
+    }
+
+    @Override
+    public ViewerCell getCell(Point point) {
+        return super.getCell(point);
     }
     
     public void showLastItem() {

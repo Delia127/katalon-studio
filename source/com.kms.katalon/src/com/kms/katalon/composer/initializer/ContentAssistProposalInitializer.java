@@ -15,6 +15,8 @@ import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class ContentAssistProposalInitializer implements ApplicationInitializer {
 
+    private static final String DEFAULT_PROPOSAL_CATEGORY = "org.eclipse.jdt.ui.defaultProposalCategory";
+
     private static final String GROOVY_CODEASSIST_PROPOSAL = "org.codehaus.groovy.eclipse.codeassist.category";
 
     private static final String JDT_PREF_ID = "org.eclipse.jdt.ui";
@@ -89,6 +91,7 @@ public class ContentAssistProposalInitializer implements ApplicationInitializer 
     private void disableGroovyProposal() {
         Set<String> proposals = new LinkedHashSet<>();
         proposals.add(GROOVY_CODEASSIST_PROPOSAL);
+        proposals.add(DEFAULT_PROPOSAL_CATEGORY);
         for (String p : jdtStore.getString(CONTENT_ASSIST_DISABLED_COMPUTERS).split(SEPARATOR)) {
             proposals.add(p);
         }
