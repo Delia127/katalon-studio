@@ -9,6 +9,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.LogRecord;
 
@@ -98,7 +99,11 @@ import com.kms.katalon.composer.execution.provider.LogRecordTreeViewerLabelProvi
 import com.kms.katalon.composer.execution.provider.LogTableViewer;
 import com.kms.katalon.composer.execution.provider.LogTreeViewerFilter;
 import com.kms.katalon.composer.execution.provider.LogViewerFilter;
+import com.kms.katalon.composer.execution.trace.ArtifactStyleRangeMatcher;
 import com.kms.katalon.composer.execution.trace.LogExceptionNavigator;
+import com.kms.katalon.composer.execution.trace.StyleRangeMatcher;
+import com.kms.katalon.composer.execution.trace.TestDataStyleRangeMatcher;
+import com.kms.katalon.composer.execution.trace.TestObjectStyleRangeMatcher;
 import com.kms.katalon.composer.execution.tree.ILogParentTreeNode;
 import com.kms.katalon.composer.execution.tree.ILogTreeNode;
 import com.kms.katalon.composer.execution.util.TestCaseEditorUtil;
@@ -120,7 +125,7 @@ import com.kms.katalon.execution.logging.LogExceptionFilter;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class LogViewerPart implements EventHandler, LauncherListener {
-    
+
     private static final int RIGHT_CLICK = 3;
 
     private static final int AFTER_STATUS_MENU_INDEX = 1;
@@ -175,6 +180,13 @@ public class LogViewerPart implements EventHandler, LauncherListener {
     private ScopedPreferenceStore preferenceStore;
 
     private LogLoadingJob loadingJob;
+
+    private static final List<StyleRangeMatcher> ARTIFACT_MATCHERS;
+
+    static {
+        ARTIFACT_MATCHERS = Arrays.asList(new TestObjectStyleRangeMatcher(),
+                new TestDataStyleRangeMatcher());
+    }
 
     private void initToolItemsStatus(MPart mpart) {
         for (MToolBarElement toolbarElement : mpart.getToolbar().getChildren()) {
@@ -553,7 +565,6 @@ public class LogViewerPart implements EventHandler, LauncherListener {
             LogLevel resultLevel = LogLevel.valueOf(logParentTreeNode.getResult().getLevel());
             if (resultLevel == LogLevel.FAILED || resultLevel == LogLevel.ERROR) {
                 StringBuilder messageBuilder = new StringBuilder(result.getMessage());
-
                 List<StyleRange> styleRanges = new ArrayList<StyleRange>();
                 if (result.getExceptions() != null) {
                     messageBuilder.append("\n");
@@ -590,13 +601,6 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                 txtMessage.setText(messageBuilder.toString());
                 if (styleRanges.size() > 0) {
                     txtMessage.setStyleRanges(styleRanges.toArray(new StyleRange[0]));
-
-                    while (txtMessage.getListeners(SWT.MouseDown).length > 1) {
-                        txtMessage.removeListener(SWT.MouseDown, txtMessage
-                                .getListeners(SWT.MouseDown)[txtMessage.getListeners(SWT.MouseDown).length - 1]);
-                    }
-
-                    txtMessage.addListener(SWT.MouseDown, mouseDownListener);
                 }
             } else {
                 txtMessage.setText(result.getMessage());
@@ -612,10 +616,25 @@ public class LogViewerPart implements EventHandler, LauncherListener {
         public void handleEvent(org.eclipse.swt.widgets.Event event) {
             try {
                 int offset = txtMessage.getOffsetAtLocation(new Point(event.x, event.y));
-                StyleRange style = txtMessage.getStyleRangeAtOffset(offset);
-                if (style != null && style.underline && style.underlineStyle == SWT.UNDERLINE_LINK) {
-                    XmlLogRecordException logException = (XmlLogRecordException) style.data;
+                StyleRange style = null;
+                for (StyleRange range : txtMessage.getStyleRanges()) {
+                    if (range.start <= offset && range.start + range.length >= offset) {
+                        style = range;
+                        break;
+                    }
+                }
+                if (style == null || !style.underline || style.underlineStyle != SWT.UNDERLINE_LINK) {
+                    return;
+                }
+                Object styleData = style.data;
+                if (styleData instanceof XmlLogRecordException) {
+                    XmlLogRecordException logException = (XmlLogRecordException) styleData;
                     navigateScriptByLogExpcetion(logException);
+                    return;
+                }
+                if (styleData instanceof ArtifactStyleRangeMatcher) {
+                    ArtifactStyleRangeMatcher matcher = (ArtifactStyleRangeMatcher) styleData;
+                    matcher.onClick(txtMessage.getText(), style);
                 }
             } catch (IllegalArgumentException e) {
                 // no character under event.x, event.y
@@ -650,6 +669,12 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                 txtMessage.setText(logTreeNode.getMessage());
                 txtName.setText(StringConstants.EMPTY);
             }
+            String message = txtMessage.getText();
+            ARTIFACT_MATCHERS.forEach(matcher -> {
+                matcher.getStyleRanges(message).forEach(styleRange -> {
+                    txtMessage.setStyleRange(styleRange);
+                });
+            });
         }
     }
 
@@ -719,6 +744,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
         txtMessage = new StyledText(compositeTreeNodeProperties, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI);
         txtMessage.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
         txtMessage.setEditable(false);
+        txtMessage.addListener(SWT.MouseDown, mouseDownListener);
         setWrapTxtMessage();
 
         scrolledComposite.setMinSize(compositeTreeNodeProperties.computeSize(SWT.DEFAULT, SWT.DEFAULT));
