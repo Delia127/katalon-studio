@@ -100,6 +100,7 @@ import com.kms.katalon.composer.execution.provider.LogTableViewer;
 import com.kms.katalon.composer.execution.provider.LogTreeViewerFilter;
 import com.kms.katalon.composer.execution.provider.LogViewerFilter;
 import com.kms.katalon.composer.execution.trace.ArtifactStyleRangeMatcher;
+import com.kms.katalon.composer.execution.trace.CheckpointStyleRangeMatcher;
 import com.kms.katalon.composer.execution.trace.LogExceptionNavigator;
 import com.kms.katalon.composer.execution.trace.StyleRangeMatcher;
 import com.kms.katalon.composer.execution.trace.TestDataStyleRangeMatcher;
@@ -185,7 +186,8 @@ public class LogViewerPart implements EventHandler, LauncherListener {
 
     static {
         ARTIFACT_MATCHERS = Arrays.asList(new TestObjectStyleRangeMatcher(),
-                new TestDataStyleRangeMatcher());
+                new TestDataStyleRangeMatcher(),
+                new CheckpointStyleRangeMatcher());
     }
 
     private void initToolItemsStatus(MPart mpart) {
