@@ -11,6 +11,14 @@ public interface LogEvaluator {
         return logDepth == runConfig.getExecutionSetting().getExecutedEntity().mainTestCaseDepth() + 1;
     }
 
+    default boolean isLogUnderMainTestStepLevel(IRunConfiguration runConfig, int logDepth) {
+        return logDepth == runConfig.getExecutionSetting().getExecutedEntity().mainTestCaseDepth() + 2;
+    }
+
+    default String getStepMessage(XmlLogRecord logRecord) {
+        return logRecord.getMessage().replaceFirst(StringConstants.LOG_START_KEYWORD + " : ", StringUtils.EMPTY);
+    }
+
     default boolean isEndTestCaseLog(XmlLogRecord logRecord) {
         return StringUtils.defaultString(logRecord.getMessage()).startsWith(StringConstants.LOG_END_TEST);
     }

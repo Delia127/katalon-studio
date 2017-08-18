@@ -27,6 +27,8 @@ public class VideoRecorderService implements LauncherListener, LogEvaluator {
     private int logDepth = 0;
 
     private int testCaseIndex = 0;
+    
+    private int mainStepIndex = 0;
 
     private VideoRecorder videoRecorder;
 
@@ -104,14 +106,18 @@ public class VideoRecorderService implements LauncherListener, LogEvaluator {
                     initVideoRecorder(logRecord);
                     startVideoRecording();
                     testCaseIndex++;
+                    mainStepIndex = 0;
                 }
 
-                if (isStartStep(logRecord)) {
+                if (isStartStep(logRecord) && isLogUnderMainTestStepLevel(runConfig, logDepth)) {
                     writeSub();
+                    mainStepIndex++;
 
                     actionStartTime = System.currentTimeMillis();
-                    currentActionDescription = (String) logRecord.getProperties()
+                    String description = (String) logRecord.getProperties()
                             .get(StringConstants.XML_LOG_DESCRIPTION_PROPERTY);
+                    currentActionDescription = StringUtils.isNotEmpty(description) ? description
+                            : getStepMessage(logRecord);
                 }
 
                 break;
@@ -159,7 +165,7 @@ public class VideoRecorderService implements LauncherListener, LogEvaluator {
                 return;
             }
             videoSubtitleWriter.writeSub(actionStartTime - videoStartTime, System.currentTimeMillis() - videoStartTime,
-                    currentActionDescription);
+                    String.format("%d. %s", mainStepIndex, currentActionDescription));
         } catch (IOException e) {
             LogUtil.logError(e);
         }

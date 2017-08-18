@@ -18,7 +18,7 @@ public class VideoRecorderSetting {
     public VideoRecorderSetting() {
         enable = false;
         videoFormat = VideoFileFormat.AVI;
-        videoQuality = VideoQuality.MEDIUM;
+        videoQuality = VideoQuality.LOW;
         allowedRecordIfPassed = false;
         allowedRecordIfFailed = true;
     }
