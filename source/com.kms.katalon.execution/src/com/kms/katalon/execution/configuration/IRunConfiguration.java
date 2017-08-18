@@ -27,4 +27,6 @@ public interface IRunConfiguration {
     public Map<String, String> getAdditionalEnvironmentVariables() throws IOException;
     
     public IRunConfiguration cloneConfig() throws IOException, ExecutionException;
+
+    boolean allowsRecording();
 }

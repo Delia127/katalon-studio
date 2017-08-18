@@ -44,6 +44,7 @@ import com.kms.katalon.execution.launcher.result.LauncherStatus;
 import com.kms.katalon.execution.setting.EmailVariableBinding;
 import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.execution.util.MailUtil;
+import com.kms.katalon.execution.video.VideoRecorderService;
 import com.kms.katalon.logging.LogUtil;
 
 public abstract class ReportableLauncher extends LoggableLauncher {
@@ -368,5 +369,13 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             LogUtil.logError(e);
             return null;
         }
+    }
+
+    @Override
+    protected void onStartExecutionComplete() {
+        if (runConfig.allowsRecording()) {
+            addListener(new VideoRecorderService(getRunConfig()));
+        }
+        super.onStartExecutionComplete();
     }
 }

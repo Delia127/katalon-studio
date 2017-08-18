@@ -9,12 +9,17 @@ import com.kms.katalon.execution.webui.driver.FirefoxDriverConnector;
 
 public class FirefoxRunConfiguration extends WebUiRunConfiguration {
     public FirefoxRunConfiguration(String projectDir) throws IOException {
-        super(projectDir, new FirefoxDriverConnector(projectDir + File.separator
-                + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME));
+        super(projectDir, new FirefoxDriverConnector(
+                projectDir + File.separator + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME));
     }
-    
+
     @Override
     public IRunConfiguration cloneConfig() throws IOException {
         return new FirefoxRunConfiguration(projectDir);
+    }
+
+    @Override
+    public boolean allowsRecording() {
+        return true;
     }
 }

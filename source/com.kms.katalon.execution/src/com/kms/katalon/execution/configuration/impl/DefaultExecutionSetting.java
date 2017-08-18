@@ -59,8 +59,10 @@ public class DefaultExecutionSetting implements IExecutionSetting {
     private Map<String, Object> getReportProperties() {
         Map<String, Object> reportProps = new HashMap<String, Object>();
         try {
-            reportProps.put(StringConstants.CONF_PROPERTY_SCREEN_CAPTURE_OPTION, new ExecutionSettingStore(
-                    getCurrentProject()).getScreenCaptureOption());
+            ExecutionSettingStore reportSettings = new ExecutionSettingStore(
+                    getCurrentProject());
+            reportProps.put(StringConstants.CONF_PROPERTY_SCREEN_CAPTURE_OPTION, reportSettings.getScreenCaptureOption());
+            reportProps.put(StringConstants.CONF_PROPERTY_VIDEO_RECORDER_OPTION, reportSettings.getVideoRecorderSetting());
         } catch (IOException e) {
             LogUtil.logError(e);
         }

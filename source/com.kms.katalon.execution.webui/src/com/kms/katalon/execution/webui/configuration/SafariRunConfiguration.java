@@ -9,12 +9,17 @@ import com.kms.katalon.execution.webui.driver.SafariDriverConnector;
 
 public class SafariRunConfiguration extends WebUiRunConfiguration {
     public SafariRunConfiguration(String projectDir) throws IOException {
-        super(projectDir, new SafariDriverConnector(projectDir + File.separator
-                + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME));
+        super(projectDir, new SafariDriverConnector(
+                projectDir + File.separator + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME));
     }
-    
+
     @Override
     public IRunConfiguration cloneConfig() throws IOException {
         return new SafariRunConfiguration(projectDir);
+    }
+
+    @Override
+    public boolean allowsRecording() {
+        return true;
     }
 }
