@@ -8,6 +8,7 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteCollectionTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.explorer.handlers.deletion.IDeleteEntityHandler;
 import com.kms.katalon.constants.EventConstants;
@@ -31,7 +32,7 @@ public class DeleteTestSuiteCollectionHandler implements IDeleteEntityHandler {
 
             TestSuiteCollectionEntity testSuiteCollection = (TestSuiteCollectionEntity) treeEntity.getObject();
 
-            EntityPartUtil.closePart(testSuiteCollection);
+            UISynchronizeService.syncExec(() -> EntityPartUtil.closePart(testSuiteCollection));
 
             TestSuiteCollectionController.getInstance().deleteTestSuiteCollection(testSuiteCollection);
 
