@@ -247,8 +247,6 @@ public class ComposerTestcaseMessageConstants extends NLS {
 
     public static String PREF_MANUAL_MSG_UNABLE_TO_UPDATE;
 
-    public static String TITLE_DLD_WARN_REFRESH_TEST_CASE_HAVE_UNSAVED_CHANGES;
-
     public static String TREE_ASSERT_STATEMENT;
 
     public static String TREE_BINARY_STATEMENT;
@@ -332,8 +330,6 @@ public class ComposerTestcaseMessageConstants extends NLS {
     public static String EDI_TITLE_TEST_DATA_BROWSER;
     
     public static String MENU_OPEN;
-
-    public static String MSG_DLD_WARN_REFRESH_TEST_CASE_HAVE_UNSAVED_CHANGES;
     
     public static String LABEL_PARAMETER_LIST;
 
