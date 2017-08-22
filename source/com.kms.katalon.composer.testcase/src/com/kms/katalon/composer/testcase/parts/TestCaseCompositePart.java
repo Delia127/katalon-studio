@@ -723,9 +723,8 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
     }
 
     private void refresh(TestCaseEntity testCase) throws Exception {
-        if (dirty.isDirty() && !MessageDialog.openConfirm(parentShell,
-                ComposerTestcaseMessageConstants.TITLE_DLD_WARN_REFRESH_TEST_CASE_HAVE_UNSAVED_CHANGES,
-                ComposerTestcaseMessageConstants.MSG_DLD_WARN_REFRESH_TEST_CASE_HAVE_UNSAVED_CHANGES)) {
+        if (dirty.isDirty()) {
+            // do not refresh the modifying test case(s)
             return;
         }
         changeOriginalTestCase(testCase);
