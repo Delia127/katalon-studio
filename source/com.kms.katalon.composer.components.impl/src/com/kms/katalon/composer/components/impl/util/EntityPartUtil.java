@@ -10,6 +10,8 @@ import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor;
 import org.eclipse.ui.part.FileEditorInput;
 
@@ -104,6 +106,10 @@ public class EntityPartUtil {
         MPartStack mStackPart = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
         MPart mPart = (MPart) modelService.find(partId, application);
         if (mPart != null) {
+            if (mPart.getToolbar() != null) {
+                // dispose the help icon
+                ((ToolBar) mPart.getToolbar().getWidget()).dispose();
+            }
             mStackPart.getChildren().remove(mPart);
         }
     }
