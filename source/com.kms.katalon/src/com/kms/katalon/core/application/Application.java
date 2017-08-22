@@ -106,11 +106,22 @@ public class Application implements IApplication {
             return PlatformUI.createAndRunWorkbench(display, new ApplicationWorkbenchAdvisor());
         } catch (Exception e) {
             LogUtil.logError(e);
+        } catch (Error e) {
+            LogUtil.logError(e);
+            return resolve();
         } finally {
             ApplicationSession.close();
             display.dispose();
         }
         return PlatformUI.RETURN_OK;
+    }
+
+    private int resolve() {
+        MetadataCorruptedResolver resolver = new MetadataCorruptedResolver();
+        if (!resolver.isMetaFolderCorrupted()) {
+            return PlatformUI.RETURN_UNSTARTABLE;
+        }
+        return resolver.resolve() ? PlatformUI.RETURN_RESTART : PlatformUI.RETURN_UNSTARTABLE;
     }
 
     public enum RunningModeParam {
