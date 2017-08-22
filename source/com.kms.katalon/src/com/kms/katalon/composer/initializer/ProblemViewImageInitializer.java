@@ -9,6 +9,7 @@ import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.internal.WorkbenchImages;
 import org.eclipse.ui.internal.ide.IDEInternalWorkbenchImages;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
@@ -82,8 +83,28 @@ public class ProblemViewImageInitializer implements ApplicationInitializer {
             if (image != null) {
                 return image;
             }
-            return JavaPluginImages.get(key);
+            image = JavaPluginImages.get(key);
+            if (image != null) {
+                return image;
+            }
+            return getWorkbenchImage(key);
         }
+        
+        private Image getWorkbenchImage(String symbolicName) {
+            Image image = WorkbenchImages.getImage(symbolicName);
+            if (image != null) {
+                return image;
+            }
+
+            //if there is a descriptor for it, add the image to the registry.
+            ImageDescriptor desc = WorkbenchImages.getImageDescriptor(symbolicName);
+            if (desc != null) {
+                WorkbenchImages.getImageRegistry().put(symbolicName, desc);
+                return WorkbenchImages.getImageRegistry().get(symbolicName);
+            }
+            return null;
+        }
+        
 
         @Override
         public ImageDescriptor getImageDescriptor(String symbolicName) {
@@ -91,7 +112,11 @@ public class ProblemViewImageInitializer implements ApplicationInitializer {
             if (imageDescriptor != null) {
                 return imageDescriptor;
             }
-            return JavaPluginImages.getDescriptor(symbolicName);
+            imageDescriptor = JavaPluginImages.getDescriptor(symbolicName);
+            if (imageDescriptor != null) {
+                return imageDescriptor;
+            }
+            return WorkbenchImages.getImageDescriptor(symbolicName);
         }
     }
 }
