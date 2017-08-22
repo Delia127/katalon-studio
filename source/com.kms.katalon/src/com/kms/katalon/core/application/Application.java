@@ -53,9 +53,7 @@ public class Application implements IApplication {
 
         switch (runningModeParam) {
             case CONSOLE:
-                // hide splash screen
-                context.applicationRunning();
-                return com.kms.katalon.console.application.Application.runConsole(appArgs);
+                return runConsole(context, appArgs);
             case SELFTEST:
                 return runSelfTest();
             case GUI:
@@ -65,6 +63,17 @@ public class Application implements IApplication {
                 return IApplication.EXIT_OK;
         }
 
+    }
+
+    private Object runConsole(IApplicationContext context, final String[] appArgs) {
+        try {
+            // hide splash screen
+            context.applicationRunning();
+            return com.kms.katalon.console.application.Application.runConsole(appArgs);
+        } catch (Error e) {
+            LogUtil.logError(e);
+            return resolve();
+        }
     }
 
     private void preRunInit() {
