@@ -1,24 +1,16 @@
 package com.kms.katalon.core.webservice.keyword;
 
-import groovy.transform.CompileStatic
-
-import java.text.MessageFormat
-import java.util.regex.Pattern
-
 import com.kms.katalon.core.annotation.Keyword
 import com.kms.katalon.core.exception.StepErrorException
 import com.kms.katalon.core.exception.StepFailedException
 import com.kms.katalon.core.keyword.BuiltinKeywords
 import com.kms.katalon.core.keyword.internal.KeywordExecutor
-import com.kms.katalon.core.keyword.internal.KeywordMain
-import com.kms.katalon.core.logging.KeywordLogger
 import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.RequestObject
 import com.kms.katalon.core.testobject.ResponseObject
-import com.kms.katalon.core.webservice.common.ServiceRequestFactory
 import com.kms.katalon.core.webservice.constants.StringConstants
-import com.kms.katalon.core.webservice.helper.WebServiceCommonHelper
-import com.kms.katalon.core.configuration.RunConfiguration
+
+import groovy.transform.CompileStatic
 
 @CompileStatic
 public class WSBuiltInKeywords extends BuiltinKeywords {
@@ -50,7 +42,7 @@ public class WSBuiltInKeywords extends BuiltinKeywords {
 
     /**
      * Verify number of expected elements (JSON/XML) in the response (output) of a web service call 
-     * @param response the object represents for a HTTP Response, user can get responded content type, data, header properties (sometime user may want to get cookie from response header)
+     * @param response the object represents for a HTTP Response, user can get responded content type, data, header properties (sometimes user may want to get cookie from response header)
      * @param locator an expression Katalon will use to go through and look for expected element(s), please refer to our user guide for how to write it   
      * @param count the expected number of element(s) should appear in the responded data (usually is JSON/XML)
      * @param flowControl
@@ -65,7 +57,7 @@ public class WSBuiltInKeywords extends BuiltinKeywords {
 
     /**
      * Verify number of expected elements (JSON/XML) in the response (output) of a web service call
-     * @param response the object represents for a HTTP Response, user can get responded content type, data, header properties (sometime user may want to get cookie from response header)
+     * @param response the object represents for a HTTP Response, user can get responded content type, data, header properties (sometimes user may want to get cookie from response header)
      * @param locator an expression Katalon will use to go through and look for expected element(s), please refer to our user guide for how to write it
      * @param count the expected number of element(s) should appear in the responded data (usually is JSON/XML)
      * @return true if your expectation is met, otherwise false
@@ -79,7 +71,7 @@ public class WSBuiltInKeywords extends BuiltinKeywords {
 
     /**
      * Verify that there is an element with expected property value appear in the returned data from a web service call
-     * @param response the object represents for a HTTP Response, user can get responded content type, data, header properties (sometime user may want to get cookie from response header)
+     * @param response the object represents for a HTTP Response, user can get responded content type, data, header properties (sometimes user may want to get cookie from response header)
      * @param locator an expression Katalon will use to go through and look for expected element(s), please refer to our user guide for how to write it
      * @param value the expected value of element you want to verify in the responded data (usually is JSON/XML)
      * @param flowControl
@@ -94,7 +86,7 @@ public class WSBuiltInKeywords extends BuiltinKeywords {
 
     /**
      * Verify that there is an element with expected property value appear in the returned data from a web service call
-     * @param response the object represents for a HTTP Response, user can get responded content type, data, header properties (sometime user may want to get cookie from response header)
+     * @param response the object represents for a HTTP Response, user can get responded content type, data, header properties (sometimes user may want to get cookie from response header)
      * @param locator an expression Katalon will use to go through and look for expected element(s), please refer to our user guide for how to write it
      * @param value the expected value of element you want to verify in the responded data (usually is JSON/XML)
      * @return true if your expectation is met, otherwise false
@@ -108,7 +100,7 @@ public class WSBuiltInKeywords extends BuiltinKeywords {
 
     /**
      * Verify that there is an element with expected text appear in the returned data from a web service call
-     * @param response the object represents for a HTTP Response, user can get responded content type, data, header properties (sometime user may want to get cookie from response header)
+     * @param response the object represents for a HTTP Response, user can get responded content type, data, header properties (sometimes user may want to get cookie from response header)
      * @param locator an expression Katalon will use to go through and look for expected element(s), please refer to our user guide for how to write it
      * @param text the expected text of element you want to verify in the responded data (usually is JSON/XML)
      * @param flowControl
@@ -124,7 +116,7 @@ public class WSBuiltInKeywords extends BuiltinKeywords {
 
     /**
      * Verify that there is an element with expected text appear in the returned data from a web service call
-     * @param response the object represents for a HTTP Response, user can get responded content type, data, header properties (sometime user may want to get cookie from response header)
+     * @param response the object represents for a HTTP Response, user can get responded content type, data, header properties (sometimes user may want to get cookie from response header)
      * @param locator an expression Katalon will use to go through and look for expected element(s), please refer to our user guide for how to write it
      * @param text the expected text of element you want to verify in the responded data (usually is JSON/XML)
      * @return true if your element text is found, otherwise false
@@ -139,7 +131,7 @@ public class WSBuiltInKeywords extends BuiltinKeywords {
 
     /**
      * Verify that an expected text appear in the returned data from a web service call
-     * @param response the object represents for a HTTP Response, user can get responded content type, data, header properties (sometime user may want to get cookie from response header)
+     * @param response the object represents for a HTTP Response, user can get responded content type, data, header properties (sometimes user may want to get cookie from response header)
      * @param string the text you want to look for
      * @param useRegex use regular expression or not
      * @param flowControl
@@ -154,7 +146,7 @@ public class WSBuiltInKeywords extends BuiltinKeywords {
 
     /**
      * Verify that an expected text appear in the returned data from a web service call
-     * @param response the object represents for a HTTP Response, user can get responded content type, data, header properties (sometime user may want to get cookie from response header)
+     * @param response the object represents for a HTTP Response, user can get responded content type, data, header properties (sometimes user may want to get cookie from response header)
      * @param string the text you want to look for
      * @param useRegex use regular expression or not
      * @return true if your text is found, otherwise false
@@ -164,5 +156,65 @@ public class WSBuiltInKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_TEXT)
     public static boolean containsString(ResponseObject response, String string, boolean useRegex) throws StepFailedException {
         return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB_SERVICE, "containsString", response, string, useRegex)
+    }
+
+    /**
+     * Verify status code in the returned data from a web service call
+     * 
+     * @param responseObject the object represents for a HTTP Response, user can get responded content type, data, header properties (sometimes user may want to get cookie from response header)
+     * @param expectedStatusCode the expected status code
+     * @param flowControl FailureHandling
+     * @return true if the response status code is the same as the expected status code, otherwise false
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyResponseStatusCode(ResponseObject responseObject, int expectedStatusCode, FailureHandling flowControl) throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB_SERVICE, "verifyResponseStatusCode", responseObject, expectedStatusCode, flowControl)
+    }
+
+    /**
+     * Verify status code in the returned data from a web service call
+     *
+     * @param responseObject the object represents for a HTTP Response, user can get responded content type, data, header properties (sometimes user may want to get cookie from response header)
+     * @param expectedStatusCode the expected status code
+     * @return true if the response status code is the same as the expected status code, otherwise false
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyResponseStatusCode(ResponseObject responseObject, int expectedStatusCode) throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB_SERVICE, "verifyResponseStatusCode", responseObject, expectedStatusCode)
+    }
+
+    /**
+     * Verify status code valid in a range of status codes in the returned data from a web service call
+     * 
+     * @param responseObject the object represents for a HTTP Response, user can get responded content type, data, header properties (sometimes user may want to get cookie from response header)
+     * @param fromStatusCode from status code
+     * @param toStatusCode to status code
+     * @param flowControl FailureHandling
+     * @return true if the response status code is in a range of the expected status code, otherwise false
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyResponseStatusCodeInRange(ResponseObject responseObject, int fromStatusCode, int toStatusCode, FailureHandling flowControl) throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB_SERVICE, "verifyResponseStatusCodeInRange", responseObject, fromStatusCode, toStatusCode, flowControl)
+    }
+
+    /**
+     * Verify status code valid in a range of status codes in the returned data from a web service call
+     *
+     * @param responseObject the object represents for a HTTP Response, user can get responded content type, data, header properties (sometimes user may want to get cookie from response header)
+     * @param fromStatusCode from status code
+     * @param toStatusCode to status code
+     * @return true if the response status code is in a range of the expected status code, otherwise false
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyResponseStatusCodeInRange(ResponseObject responseObject, int fromStatusCode, int toStatusCode) throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB_SERVICE, "verifyResponseStatusCodeInRange", responseObject, fromStatusCode, toStatusCode)
     }
 }

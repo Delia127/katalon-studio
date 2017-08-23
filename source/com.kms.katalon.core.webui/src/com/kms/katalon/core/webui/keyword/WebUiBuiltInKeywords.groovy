@@ -1,31 +1,8 @@
 package com.kms.katalon.core.webui.keyword;
 
-import groovy.transform.CompileStatic
 import org.openqa.selenium.WebDriverException
 import org.openqa.selenium.WebElement
-import java.text.MessageFormat
-import java.util.concurrent.TimeUnit
-import org.apache.commons.io.FileUtils
-import org.openqa.selenium.Alert
-import org.openqa.selenium.By
-import org.openqa.selenium.Dimension
-import org.openqa.selenium.JavascriptExecutor
-import org.openqa.selenium.NoSuchElementException
-import org.openqa.selenium.NoSuchWindowException
-import org.openqa.selenium.Platform;
-import org.openqa.selenium.Point
-import org.openqa.selenium.TimeoutException
-import org.openqa.selenium.WebDriver
-import org.openqa.selenium.chrome.ChromeDriver
-import org.openqa.selenium.interactions.Actions
-import org.openqa.selenium.support.ui.ExpectedCondition
-import org.openqa.selenium.support.ui.ExpectedConditions
-import org.openqa.selenium.support.ui.FluentWait
-import org.openqa.selenium.support.ui.Select
-import org.openqa.selenium.support.ui.Wait
-import org.openqa.selenium.support.ui.WebDriverWait
 
-import com.google.common.base.Function
 import com.kms.katalon.core.annotation.Keyword
 import com.kms.katalon.core.configuration.RunConfiguration
 import com.kms.katalon.core.exception.StepFailedException
@@ -36,6 +13,8 @@ import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.webui.constants.StringConstants
 import com.kms.katalon.core.webui.exception.WebElementNotFoundException
 import com.kms.katalon.core.webui.keyword.internal.WebUIAbstractKeyword
+
+import groovy.transform.CompileStatic
 
 @CompileStatic
 public class WebUiBuiltInKeywords extends BuiltinKeywords {
@@ -288,7 +267,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
     public static void maximizeWindow(FailureHandling flowControl) throws StepFailedException {
         KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "maximizeWindow", flowControl)
-	}
+    }
 
     /**
      * Resize current window to take up the entire screen
@@ -636,7 +615,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     public static void click(TestObject to) throws StepFailedException {
         KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "click", to)
     }
-    
+
     /**
      * Click on the given element with the relative position (x, y) from the top-left corner of that element
      * @param to
@@ -742,7 +721,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     public static void rightClick(TestObject to) throws StepFailedException {
         KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "rightClick", to)
     }
-    
+
     /**
      * Right click on the given element with the relative position (x, y) from the top-left corner of that element
      * @param to
@@ -757,7 +736,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     public static void rightClickOffset(TestObject to, int offsetX, int offsetY, FailureHandling flowControl) throws StepFailedException {
         KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "rightClickOffset", to, offsetX, offsetY, flowControl)
     }
-    
+
     /**
      * Right click on the given element with the relative position (x, y) from the top-left corner of that element
      * @param to
@@ -2948,7 +2927,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
     public static void scrollToElement(TestObject to, int timeOut, FailureHandling flowControl) throws StepFailedException {
-		KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "scrollToElement", to, timeOut, flowControl)
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "scrollToElement", to, timeOut, flowControl)
     }
 
     /**
@@ -2979,9 +2958,9 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
     @Deprecated
     public static boolean verifyElementVisibleInViewport(TestObject to, int timeOut, FailureHandling flowControl) {
-		return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "verifyElementVisibleInViewport", to, timeOut, flowControl)
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "verifyElementVisibleInViewport", to, timeOut, flowControl)
     }
-    
+
     /**
      * Deprecated. As of Katalon version 3.7.0.0, replaced by keyword com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords.verifyElementInViewport.
      * Verify if the web element is visible in current view port
@@ -2997,7 +2976,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     public static boolean verifyElementVisibleInViewport(TestObject to, int timeOut) {
         return verifyElementVisibleInViewport(to, timeOut, RunConfiguration.getDefaultFailureHandling());
     }
-    
+
     /**
      * Verify if the web element is visible in current view port
      * @param to
@@ -3010,7 +2989,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
     public static boolean verifyElementInViewport(TestObject to, int timeOut, FailureHandling flowControl) {
-		return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "verifyElementVisibleInViewport", to, timeOut, flowControl)
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "verifyElementVisibleInViewport", to, timeOut, flowControl)
     }
 
     /**
@@ -3028,10 +3007,10 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     public static boolean verifyElementInViewport(TestObject to, int timeOut) {
         return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "verifyElementVisibleInViewport", to, timeOut)
     }
-    
+
 
     /**
-	 * Deprecated. As of Katalon version 3.7.0.0, replaced by keyword com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords.verifyElementNotInViewport.
+     * Deprecated. As of Katalon version 3.7.0.0, replaced by keyword com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords.verifyElementNotInViewport.
      * Verify if the web element is NOT visible in current view port
      * @param to
      *      represent a web element
@@ -3062,8 +3041,8 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     public static boolean verifyElementNotVisibleInViewport(TestObject to, int timeOut) {
         return verifyElementNotInViewport(to, timeOut, RunConfiguration.getDefaultFailureHandling());
     }
-    
-    
+
+
     /**
      * Verify if the web element is NOT visible in current view port
      * @param to
@@ -3483,7 +3462,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     public static int getViewportTopPosition() {
         return (int) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "getViewportTopPosition")
     }
-    
+
     /**
      * Get CSS value of a web element
      * @param to
@@ -3497,7 +3476,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     public static String getCSSValue(TestObject to, String css) {
         return (String) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "getCSSValue", to, css)
     }
-    
+
     /**
      * Get CSS value of a web element
      * @param to
@@ -3511,7 +3490,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     public static String getCSSValue(TestObject to, String css, FailureHandling flowControl) {
         return (String) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "getCSSValue", to, css, flowControl)
     }
-    
+
     /**
      * Get left position of web element
      * @param to represent the web element
@@ -3524,7 +3503,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     public static int getElementLeftPosition(TestObject to, FailureHandling flowControl) throws StepFailedException {
         return (int) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "getElementLeftPosition", to, flowControl)
     }
-    
+
     /**
      * Get the left position of web element
      * @param to represent the web element
@@ -3536,7 +3515,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     public static int getElementLeftPosition(TestObject to) throws StepFailedException {
         return (int) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "getElementLeftPosition", to)
     }
-    
+
     /**
      * Get width of web element
      * @param to represent the web element
@@ -3549,7 +3528,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     public static int getElementWidth(TestObject to, FailureHandling flowControl) {
         return (int)KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "getElementWidth", to, flowControl)
     }
-    
+
     /**
      * Get width of web element
      * @param to represent the web element
@@ -3574,7 +3553,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     public static int getElementHeight(TestObject to, FailureHandling flowControl) {
         return (int) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "getElementHeight", to, flowControl)
     }
-    
+
     /**
      * Get height of web element
      * @param to represent the web element
@@ -3653,4 +3632,94 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
         return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "verifyElementText", to, expectedText)
     }
 
+    /**
+     * Get all links on current page
+     * 
+     * @since 4.8
+     * @param isIncludedExternalLinks If false, only target to links on the same HOST. Otherwise, target to all links.
+     * @param excludedLinks A list of excluded links (URLs)
+     * @param flowControl FailureHandling
+     * @return A list of links (URLs)
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static List getAllLinksOnCurrentPage(boolean isIncludedExternalLinks, List excludedLinks, FailureHandling flowControl) throws StepFailedException {
+        return (List) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "getAllLinksOnCurrentPage", isIncludedExternalLinks, excludedLinks, flowControl)
+    }
+
+    /**
+     * Get all links on current page
+     *
+     * @since 4.8
+     * @param isIncludedExternalLinks If false, only target to links on the same HOST. Otherwise, target to all links.
+     * @param excludedLinks A list of excluded links (URLs)
+     * @return A list of links (URLs)
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static List getAllLinksOnCurrentPage(boolean isIncludedExternalLinks, List excludedLinks) throws StepFailedException {
+        return (List) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "getAllLinksOnCurrentPage", isIncludedExternalLinks, excludedLinks)
+    }
+
+    /**
+     * Verify a list of links (URLs) are accessible
+     * 
+     * @since 4.8
+     * @param links A list of links (URLs)
+     * @param flowControl FailureHandling
+     * @return true if all provided links are accessible. Otherwise, false.
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyLinksAccessible(List links, FailureHandling flowControl) throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "verifyLinksAccessible", links, flowControl)
+    }
+
+    /**
+     * Verify a list of links (URLs) are accessible
+     *
+     * @since 4.8
+     * @param links A list of links (URLs)
+     * @return true if all provided links are accessible. Otherwise, false.
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyLinksAccessible(List links) throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "verifyLinksAccessible", links)
+    }
+
+    /**
+     * Verify all links (URLs) on the current page are accessible
+     * 
+     * @since 4.8
+     * @param isIncludedExternalLinks If false, only target to links on the same HOST. Otherwise, target to all links.
+     * @param excludedLinks A list of excluded links (URLs)
+     * @param flowControl FailureHandling
+     * @return true if all links on the current page are accessible. Otherwise, false.
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyAllLinksOnCurrentPageAccessible(boolean isIncludedExternalLinks, List excludedLinks, FailureHandling flowControl) throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "verifyAllLinksOnCurrentPageAccessible", isIncludedExternalLinks, excludedLinks, flowControl)
+    }
+
+    /**
+     * Verify all links (URLs) on the current page are accessible
+     *
+     * @since 4.8
+     * @param isIncludedExternalLinks If false, only target to links on the same HOST. Otherwise, target to all links.
+     * @param excludedLinks A list of excluded links (URLs)
+     * @return true if all links on the current page are accessible. Otherwise, false.
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyAllLinksOnCurrentPageAccessible(boolean isIncludedExternalLinks, List excludedLinks) throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "verifyAllLinksOnCurrentPageAccessible", isIncludedExternalLinks, excludedLinks)
+    }
 }

@@ -1010,6 +1010,33 @@ public class CoreWebuiMessageConstants extends NLS {
 
     public static String MSG_INFO_WEB_ELEMENT_HAVE_PARENT_SHADOW_ROOT;
 
+    // VerifyAllLinksOnCurrentPageAccessibleKeyword
+    public static String KW_LOG_PASSED_ALL_LINKS_ON_PAGE_ARE_ACCESSIBLE;
+
+    public static String KW_LOG_FAILED_SOME_LINKS_ON_PAGE_ARE_INACCESSIBLE;
+
+    public static String KW_MSG_UNABLE_TO_VERIFY_ALL_LINKS_ON_PAGE_ARE_ACCESSIBLE;
+
+    // VerifyLinksAccessibleKeyword
+    public static String KW_LOG_PASSED_ALL_LINKS_ARE_ACCESSIBLE;
+
+    public static String KW_LOG_FAILED_FOUND_X_INACCESSIBLE_LINKS;
+
+    public static String KW_MSG_UNABLE_TO_VERIFY_LINKS_ARE_ACCESSIBLE;
+
+    // GetAllLinksOnCurrentPageKeyword
+    public static String KW_LOG_WARNING_NO_PAGE_OPEN;
+
+    public static String KW_LOG_PASSED_FOUND_X_UNIQUE_LINKS_ON_PAGE;
+
+    public static String KW_MSG_UNABLE_TO_GET_ALL_LINKS_ON_PAGE;
+
+    public static String KW_LOG_INFO_FINDING_ALL_LINKS_ON_PAGE;
+
+    public static String KW_LOG_INFO_FOUND_X_ELEMENTS;
+
+    public static String KW_LOG_ERROR_X_IS_AN_INVALID_URL;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, CoreWebuiMessageConstants.class);
