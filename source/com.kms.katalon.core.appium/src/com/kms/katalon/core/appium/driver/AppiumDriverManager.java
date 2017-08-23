@@ -167,7 +167,7 @@ public class AppiumDriverManager {
         KeywordLogger.getInstance().logInfo(MSG_START_IOS_WEBKIT_SUCCESS + freePort);
     }
 
-    private static boolean isAppiumServerStarted(int timeToWait) {
+    public static boolean isAppiumServerStarted(int timeToWait) {
         if (localStorageAppiumServer.get() == null) {
             return false;
         }

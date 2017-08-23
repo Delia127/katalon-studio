@@ -976,7 +976,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
 
         // Temporary disable Start button while launching app
         btnStart.setEnabled(false);
-        final ProgressMonitorDialogWithThread progressDlg = new ProgressMonitorDialogWithThread(getShell()) {
+        final AppiumMonitorDialog progressDlg = new AppiumMonitorDialog(getShell()) {
             @Override
             public void cancelPressed() {
                 super.cancelPressed();
@@ -988,6 +988,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
             }
         };
         try {
+            inspectorController.setStreamHandler(progressDlg);
             if (stackLayout.topControl == localAppComposite
                     && !localAppComposite.startLocalApp(inspectorController, progressDlg)) {
                 btnStart.setEnabled(true);

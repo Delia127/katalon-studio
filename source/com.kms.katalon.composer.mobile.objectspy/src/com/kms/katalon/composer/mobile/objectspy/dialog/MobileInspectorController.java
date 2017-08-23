@@ -12,6 +12,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.input.Tailer;
+import org.apache.commons.io.input.TailerListenerAdapter;
 import org.json.JSONObject;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -69,6 +71,10 @@ public class MobileInspectorController {
     private Process appiumServerProcess;
 
     private Process iosWebKitProcess;
+    
+    private AppiumStreamHandler streamHandler;
+    
+    private Thread appiumTailerThread;
 
     public MobileInspectorController() {
     }
@@ -101,7 +107,8 @@ public class MobileInspectorController {
         Map<String, IDriverConnector> driverConnectors = new HashMap<String, IDriverConnector>(2);
         driverConnectors.put(MobileDriverFactory.MOBILE_DRIVER_PROPERTY, mobileDriverConnector);
 
-        RunConfiguration.setAppiumLogFilePath(projectDir + File.separator + "appium.log");
+        String logFilePath = projectDir + File.separator + "appium.log";
+        RunConfiguration.setAppiumLogFilePath(logFilePath);
 
         DefaultExecutionSetting generalExecutionSetting = new DefaultExecutionSetting();
         generalExecutionSetting.setTimeout(60);
@@ -109,13 +116,37 @@ public class MobileInspectorController {
         RunConfiguration
                 .setExecutionSetting(ExecutionUtil.getExecutionProperties(generalExecutionSetting, driverConnectors));
 
+        if (!AppiumDriverManager.isAppiumServerStarted(1)) {
+            createAppiumLogTailer(logFilePath);
+        }
+        
         AppiumDriverManager.startAppiumServerJS(SERVER_START_TIMEOUT,
                 getAdditionalEnvironmentVariables(mobileDriverType));
         driver = MobileDriverFactory.startMobileDriver(mobileDriverType, mobileDeviceInfo.getDeviceId(),
-                mobileDeviceInfo.getDeviceName(), appFile, uninstallAfterCloseApp);
+                mobileDeviceInfo.getDeviceName(), appFile, uninstallAfterCloseApp);        
 
         appiumServerProcess = AppiumDriverManager.getAppiumSeverProcess();
+
         iosWebKitProcess = AppiumDriverManager.getIosWebKitProcess();
+    }
+
+    private void createAppiumLogTailer(String logFilePath) {
+        appiumTailerThread = new Thread(new Tailer(new File(logFilePath), new TailerListenerAdapter() {
+            @Override
+            public void handle(String line) {
+               if (streamHandler != null) {
+                   streamHandler.handleOutput(line);
+               }
+            }
+        }, 100L, true));
+        appiumTailerThread.start();
+    }
+    
+    private void closeAppiumTailerThread() {
+        if (appiumTailerThread != null && appiumTailerThread.isAlive()) {
+            appiumTailerThread.interrupt();
+        }
+        appiumTailerThread = null;
     }
 
     public void startMobileApp(KobitonDevice kobitonDevice, KobitonApplication kobitonApplication)
@@ -212,6 +243,7 @@ public class MobileInspectorController {
             if (iosWebKitProcess != null && iosWebKitProcess.isAlive()) {
                 ProcessUtil.terminateProcess(iosWebKitProcess);
             }
+            closeAppiumTailerThread();
             return true;
         } catch (Exception e) {
             LoggerSingleton.logError(e);
@@ -308,5 +340,13 @@ public class MobileInspectorController {
         htmlMobileElementRootNode.getAttributes().put(IOSProperties.IOS_TYPE, appElement.getTagName());
         htmlMobileElementRootNode.render(appElement);
         return htmlMobileElementRootNode;
+    }
+    
+    public AppiumStreamHandler getStreamHandler() {
+        return streamHandler;
+    }
+
+    public void setStreamHandler(AppiumStreamHandler streamHandler) {
+        this.streamHandler = streamHandler;
     }
 }
