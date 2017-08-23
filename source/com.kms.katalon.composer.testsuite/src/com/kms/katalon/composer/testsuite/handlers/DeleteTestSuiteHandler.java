@@ -3,6 +3,7 @@ package com.kms.katalon.composer.testsuite.handlers;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -10,6 +11,7 @@ import org.eclipse.swt.widgets.Shell;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.explorer.handlers.deletion.AbstractDeleteReferredEntityHandler;
 import com.kms.katalon.composer.testsuite.constants.StringConstants;
@@ -62,8 +64,8 @@ public class DeleteTestSuiteHandler extends AbstractDeleteReferredEntityHandler 
         if (!isDeleteReferenceConfirmed(testSuite)) {
             return false;
         }
-        // remove TestSuite part from its partStack if it exists
-        EntityPartUtil.closePart(testSuite);
+
+        UISynchronizeService.syncExec(() -> EntityPartUtil.closePart(testSuite));
 
         testSuiteController.deleteTestSuite(testSuite);
         return true;
