@@ -85,6 +85,7 @@ import com.kms.katalon.composer.report.integration.ReportComposerIntegrationFact
 import com.kms.katalon.composer.report.lookup.LogRecordLookup;
 import com.kms.katalon.composer.report.parts.integration.ReportTestCaseIntegrationViewBuilder;
 import com.kms.katalon.composer.report.parts.integration.TestCaseLogDetailsIntegrationView;
+import com.kms.katalon.composer.report.provider.HyperlinkTestCaseVideoLabelProvider;
 import com.kms.katalon.composer.report.provider.ReportPartTestCaseLabelProvider;
 import com.kms.katalon.composer.report.provider.ReportTestCaseTableViewer;
 import com.kms.katalon.composer.report.provider.ReportTestCaseTableViewerFilter;
@@ -650,6 +651,12 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         tblclmnTCName.setText("Name");
         tableViewerColumnName.setLabelProvider(new ReportPartTestCaseLabelProvider());
         tclCompositeTestCaseTableDetails.setColumnData(tblclmnTCName, new ColumnWeightData(80, 0));
+
+        TableViewerColumn tableViewerColumnVideo = new TableViewerColumn(testCaseTableViewer, SWT.NONE);
+        TableColumn tblclmnTCVideo= tableViewerColumnVideo.getColumn();
+        tblclmnTCVideo.setText("Video");
+        tableViewerColumnVideo.setLabelProvider(new HyperlinkTestCaseVideoLabelProvider(this));
+        tclCompositeTestCaseTableDetails.setColumnData(tblclmnTCVideo, new ColumnWeightData(0, 50));
 
         createIntegrationColumns(tclCompositeTestCaseTableDetails);
 

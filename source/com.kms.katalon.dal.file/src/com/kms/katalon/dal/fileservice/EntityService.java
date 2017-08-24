@@ -238,11 +238,9 @@ public final class EntityService {
             folder.mkdir();
         }
         File folderMetaFile = new File(metaDataFileLocation);
-        if (entity.getIntegratedEntities().size() > 0 || folderMetaFile.exists()) {
-            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            // Write to File
-            marshaller.marshal(entity, folderMetaFile);
-        }
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        // Write to File
+        marshaller.marshal(entity, folderMetaFile);
 
         cache.put(entity.getLocation(), entity);
         return true;

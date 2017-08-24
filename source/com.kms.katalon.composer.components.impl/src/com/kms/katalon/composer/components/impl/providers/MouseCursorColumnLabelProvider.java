@@ -74,8 +74,22 @@ public abstract class MouseCursorColumnLabelProvider <T> extends TypeCheckedStyl
             Point currentMouseLocation = new Point(e.x, e.y);
             ViewerCell cell = viewer.getCell(currentMouseLocation);
             Control table = getControl(viewer);
-            if (!isPlacedMouseHover(cell) || !shouldShowCursor(cell, currentMouseLocation)) {
+            if (cell == null) {
+                if (table.getCursor() != null) {
+                    table.getCursor().dispose();
+                }
                 table.setCursor(null);
+                return;
+            }
+            if (!isPlacedMouseHover(cell) || !shouldShowCursor(cell, currentMouseLocation)) {
+                int cellIndex = cell.getColumnIndex();
+                if (!(getViewer().getLabelProvider(cellIndex) instanceof MouseCursorColumnLabelProvider)
+                        || cellIndex == columnIndex) {
+                    if (table.getCursor() != null) {
+                        table.getCursor().dispose();
+                    }
+                    table.setCursor(null);
+                }
                 return;
             }
 

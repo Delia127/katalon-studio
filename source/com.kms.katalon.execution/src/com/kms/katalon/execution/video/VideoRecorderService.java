@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.helper.screenrecorder.VideoRecorder;
 import com.kms.katalon.core.helper.screenrecorder.VideoRecorderBuilder;
@@ -13,7 +14,9 @@ import com.kms.katalon.core.helper.screenrecorder.VideoRecorderException;
 import com.kms.katalon.core.helper.screenrecorder.VideoSubtitleWriter;
 import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.logging.XmlLogRecord;
+import com.kms.katalon.core.util.internal.PathUtil;
 import com.kms.katalon.entity.report.ReportEntity;
+import com.kms.katalon.entity.report.ReportTestCaseEntity;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.launcher.listener.LauncherEvent;
 import com.kms.katalon.execution.launcher.listener.LauncherListener;
@@ -27,7 +30,7 @@ public class VideoRecorderService implements LauncherListener, LogEvaluator {
     private int logDepth = 0;
 
     private int testCaseIndex = 0;
-    
+
     private int mainStepIndex = 0;
 
     private VideoRecorder videoRecorder;
@@ -46,9 +49,11 @@ public class VideoRecorderService implements LauncherListener, LogEvaluator {
 
     private String currentActionDescription = StringUtils.EMPTY;
 
-    public VideoRecorderService(IRunConfiguration runConfig) {
-        this.runConfig = runConfig;
+    private ReportEntity report;
 
+    public VideoRecorderService(IRunConfiguration runConfig, ReportEntity report) {
+        this.runConfig = runConfig;
+        this.report = report;
         getVideoSetting(runConfig);
     }
 
@@ -139,6 +144,7 @@ public class VideoRecorderService implements LauncherListener, LogEvaluator {
                             deleteVideo();
                     }
                     currentTestCaseResult = LogLevel.NOT_RUN;
+                    saveReport();
                 }
                 logDepth--;
                 break;
@@ -150,6 +156,14 @@ public class VideoRecorderService implements LauncherListener, LogEvaluator {
         }
     }
 
+    private void saveReport() {
+        try {
+            ReportController.getInstance().updateReport(report);
+        } catch (Exception e) {
+            LogUtil.printAndLogError(e);
+        }
+    }
+
     private void deleteVideo() {
         if (videoRecorder != null) {
             videoRecorder.delete();
@@ -157,6 +171,7 @@ public class VideoRecorderService implements LauncherListener, LogEvaluator {
         if (videoSubtitleWriter != null) {
             videoSubtitleWriter.delete();
         }
+        getCurrentReportItem().setVideoLocation(StringUtils.EMPTY);
     }
 
     private void writeSub() {
@@ -174,7 +189,8 @@ public class VideoRecorderService implements LauncherListener, LogEvaluator {
     protected void initVideoRecorder(XmlLogRecord logRecord) {
         try {
             String videoName = String.format("test_%d", testCaseIndex + 1);
-            String videoFolderName = new File(runConfig.getExecutionSetting().getFolderPath(),
+            String reportFolder = runConfig.getExecutionSetting().getFolderPath();
+            String videoFolderName = new File(reportFolder,
                     ReportEntity.VIDEO_RECORDED_FOLDER).getAbsolutePath();
             videoRecorder = VideoRecorderBuilder.get()
                     .setVideoConfig(videoSetting.toVideoConfiguration())
@@ -182,10 +198,17 @@ public class VideoRecorderService implements LauncherListener, LogEvaluator {
                     .setOutputVideoName(videoName)
                     .create();
 
+            getCurrentReportItem().setVideoLocation(
+                    PathUtil.absoluteToRelativePath(videoRecorder.getCurrentVideoLocation(), reportFolder));
+
             videoSubtitleWriter = new VideoSubtitleWriter(new File(videoFolderName, videoName).getAbsolutePath());
         } catch (VideoRecorderException e) {
             LogUtil.printAndLogError(e);
         }
+    }
+
+    private ReportTestCaseEntity getCurrentReportItem() {
+        return report.getReportTestCases().get(testCaseIndex);
     }
 
     protected void startVideoRecording() {

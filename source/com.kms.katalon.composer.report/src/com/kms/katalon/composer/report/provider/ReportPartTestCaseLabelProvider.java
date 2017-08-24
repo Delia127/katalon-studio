@@ -20,14 +20,17 @@ import com.kms.katalon.core.util.internal.DateUtil;
 
 public class ReportPartTestCaseLabelProvider extends StyledCellLabelProvider {
 
-    private static final int CLMN_TEST_CASE_ORDER = 0;
+    public static final int CLMN_TEST_CASE_ORDER = 0;
 
-    private static final int CLMN_TEST_CASE_NAME = 1;
+    public static final int CLMN_TEST_CASE_NAME = 1;
 
-    public static final int CLMN_TEST_CASE_INTEGRATION = 2;
+    public static final int CLMN_TEST_CASE_VIDEO = 2;
+
+    public static final int CLMN_TEST_CASE_INTEGRATION = 3;
 
     public Image getImage(Object element, int columnIndex) {
-        if (element == null || !(element instanceof ILogRecord)) return null;
+        if (element == null || !(element instanceof ILogRecord))
+            return null;
         switch (columnIndex) {
             case CLMN_TEST_CASE_NAME:
                 ILogRecord logRecord = (ILogRecord) element;
@@ -50,7 +53,8 @@ public class ReportPartTestCaseLabelProvider extends StyledCellLabelProvider {
 
     private int getOrder(ILogRecord[] testCaseLogRecords, ILogRecord testCaseLogRecord) {
         for (int index = 0; index < testCaseLogRecords.length; index++) {
-            if (testCaseLogRecord.equals(testCaseLogRecords[index])) return index + 1;
+            if (testCaseLogRecord.equals(testCaseLogRecords[index]))
+                return index + 1;
         }
         return 0;
     }
@@ -108,10 +112,6 @@ public class ReportPartTestCaseLabelProvider extends StyledCellLabelProvider {
 
     @Override
     public String getToolTipText(Object element) {
-        if (element == null) {
-            return null;
-        }
-        return getText((ILogRecord) element, CLMN_TEST_CASE_NAME).getString();
+        return null;
     }
-
 }
