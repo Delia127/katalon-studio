@@ -1,5 +1,7 @@
 package com.kms.katalon.core.helper.screenrecorder;
 
+import org.apache.commons.lang.StringUtils;
+
 public enum VideoQuality {
     LOW("LOW", 8), MEDIUM("MEDIUM", 16), HIGH("HIGH", 24);
 
@@ -19,6 +21,10 @@ public enum VideoQuality {
     @Override
     public String toString() {
         return getName();
+    }
+
+    public String getReadableName() {
+        return StringUtils.capitalize(getName().toLowerCase());
     }
 
     public int getDepth() {

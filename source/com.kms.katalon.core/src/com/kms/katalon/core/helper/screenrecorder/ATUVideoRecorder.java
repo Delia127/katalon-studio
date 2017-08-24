@@ -165,9 +165,6 @@ public class ATUVideoRecorder extends AbstractVideoRecorder {
             QuickTimeWriter movWriter = new QuickTimeWriter(videoFile);
             movWriter.addVideoTrack(QuickTimeWriter.VIDEO_ANIMATION, 1000L, videoWidth, videoHeight, videoDepth,
                     videoConfig.getQuicktimeSyncInterval());
-            if (videoDepth == 8) {
-                movWriter.setVideoColorTable(0, (IndexColorModel) videoImg.getColorModel());
-            }
             movieWriter = movWriter;
             return;
         }

@@ -43,7 +43,7 @@ public class ReportSettingPage extends PreferencePage {
 
         VIDEO_QUALITY_ITEMS = Arrays.asList(VideoQuality.values())
                 .stream()
-                .map(format -> format.toString())
+                .map(format -> format.getReadableName())
                 .collect(Collectors.toList())
                 .toArray(new String[0]);
     }
