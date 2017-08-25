@@ -225,6 +225,9 @@
 								<artifact>
 									<id>org.apache.commons:org.apache.commons.lang3:3.1.0</id>
 								</artifact>
+								<artifact>
+                                    <id>atu.testrecorder:screen-recorder:2.1</id>
+                                </artifact>
 							</artifacts>
 						</configuration>
 					</execution>

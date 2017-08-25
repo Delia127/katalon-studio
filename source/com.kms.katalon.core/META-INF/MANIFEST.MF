@@ -17,6 +17,7 @@ Export-Package: com.kms.katalon.core.annotation,
  com.kms.katalon.core.exception,
  com.kms.katalon.core.export,
  com.kms.katalon.core.helper,
+ com.kms.katalon.core.helper.screenrecorder,
  com.kms.katalon.core.helper.screenshot,
  com.kms.katalon.core.keyword,
  com.kms.katalon.core.keyword.internal,
@@ -52,7 +53,8 @@ Require-Bundle: net.sf.supercsv.super-csv,
  org.eclipse.osgi,
  com.kms.katalon.constant,
  org.eclipse.persistence.eclipselink,
- com.kms.katalon.selenium-standalone
+ com.kms.katalon.selenium-standalone,
+ atu.testrecorder.screen-recorder
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Import-Package: com.google.common.io,

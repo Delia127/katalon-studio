@@ -82,6 +82,18 @@ public class ComposerReportMessageConstants extends NLS {
     public static String BTN_SHOW_TEST_CASE_DETAILS;
 
     public static String BTN_HIDE_TEST_CASE_DETAILS;
+    
+    public static String PREF_TITLE_VIDEO_RECORDER;
+
+    public static String PREF_CHCK_ENABLE_VIDEO_RECORDER;
+
+    public static String PREF_CHCK_RECORD_IF_PASSED;
+
+    public static String PREF_CHCK_RECORD_IF_FAILED;
+
+    public static String PREF_LBL_VIDEO_FORMAT;
+
+    public static String PREF_LBL_VIDEO_QUALITY;
 
     static {
         // initialize resource bundle

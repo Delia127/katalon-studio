@@ -56,6 +56,7 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener, 
 
     private boolean launchRemoved;
 
+    @Override
     public ILaunch getLaunch() {
         return launch;
     }
@@ -110,6 +111,7 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener, 
 
     @Override
     protected void onStartExecutionComplete() {
+        super.onStartExecutionComplete();
         sendUpdateLogViewerEvent(getId());
         if (runConfig instanceof ExistingRunConfiguration) {
             pauseExecutionSession((ExistingRunConfiguration) runConfig);
@@ -136,6 +138,7 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener, 
         sendUpdateJobViewerEvent();
     }
 
+    @Override
     public void setObserved(boolean observed) {
         this.observed = observed;
     }
@@ -145,7 +148,9 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener, 
         return observed;
     }
 
+    @Override
     protected void postExecutionComplete() {
+        super.postExecutionComplete();
         sendUpdateJobViewerEvent();
 
         // update status of "Run" and "Stop" buttons
@@ -197,6 +202,7 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener, 
         }
     }
 
+    @Override
     protected void updateLastRun(Date startTime) throws Exception {
         super.updateLastRun(startTime);
 

@@ -1,6 +1,7 @@
 package com.kms.katalon.integration.jira.report;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,7 @@ import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.core.logging.model.TestCaseLogRecord;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.core.util.internal.PathUtil;
+import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.integration.jira.JiraComponent;
 import com.kms.katalon.integration.jira.JiraIntegrationAuthenticationHandler;
 import com.kms.katalon.integration.jira.JiraIntegrationException;
@@ -71,7 +73,15 @@ public class JiraReportService implements JiraComponent {
         handler.sendKatalonIntegrationProperty(getCredential(), issue, testResult);
     }
 
-    public File zipReportFolder(File folderToZip) throws ZipException {
+    public File zipReportFolder(File folderToZip) throws ZipException, IOException {
+        File filteredTempFolder = new File(getJiraZipTempFolder(), folderToZip.getName());
+        FileUtils.copyDirectory(folderToZip, filteredTempFolder, new FileFilter() {
+            @Override
+            public boolean accept(File file) {
+                return !file.getAbsolutePath()
+                        .startsWith(new File(folderToZip, ReportEntity.VIDEO_RECORDED_FOLDER).getAbsolutePath());
+            }
+        });
         File zipTempFile = new File(getJiraZipTempFolder(), folderToZip.getName() + ".zip");
         if (zipTempFile.exists()) {
             FileUtils.deleteQuietly(zipTempFile);
@@ -87,8 +97,9 @@ public class JiraReportService implements JiraComponent {
         parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
 
         // Add folder to the zip file
-
-        returnedZipFile.addFolder(folderToZip.getAbsolutePath(), parameters);
+        returnedZipFile.addFolder(filteredTempFolder.getAbsolutePath(), parameters);
+        
+        FileUtils.deleteDirectory(filteredTempFolder);
 
         return zipTempFile;
     }

@@ -18,6 +18,8 @@ public class ReportEntity extends IntegratedFileEntity {
 
     public static final String JUNIT_REPORT_NAME = "JUnit_Report.xml";
 
+    public static final String VIDEO_RECORDED_FOLDER = "videos";
+
     private String displayName;
 
     @Override

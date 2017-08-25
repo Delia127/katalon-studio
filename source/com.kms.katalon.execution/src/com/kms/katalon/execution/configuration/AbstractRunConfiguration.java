@@ -181,4 +181,9 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     public Map<String, String> getAdditionalEnvironmentVariables() throws IOException {
         return new HashMap<>();
     }
+    
+    @Override
+    public boolean allowsRecording() {
+        return false;
+    }
 }
