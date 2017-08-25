@@ -171,7 +171,8 @@ public class VideoRecorderService implements LauncherListener, LogEvaluator {
         if (videoSubtitleWriter != null) {
             videoSubtitleWriter.delete();
         }
-        getCurrentReportItem().setVideoLocation(StringUtils.EMPTY);
+
+        getCurrentReportItem(testCaseIndex - 1).setVideoLocation(StringUtils.EMPTY);
     }
 
     private void writeSub() {
@@ -198,7 +199,7 @@ public class VideoRecorderService implements LauncherListener, LogEvaluator {
                     .setOutputVideoName(videoName)
                     .create();
 
-            getCurrentReportItem().setVideoLocation(
+            getCurrentReportItem(testCaseIndex).setVideoLocation(
                     PathUtil.absoluteToRelativePath(videoRecorder.getCurrentVideoLocation(), reportFolder));
 
             videoSubtitleWriter = new VideoSubtitleWriter(new File(videoFolderName, videoName).getAbsolutePath());
@@ -207,7 +208,7 @@ public class VideoRecorderService implements LauncherListener, LogEvaluator {
         }
     }
 
-    private ReportTestCaseEntity getCurrentReportItem() {
+    private ReportTestCaseEntity getCurrentReportItem(int testCaseIndex) {
         return report.getReportTestCases().get(testCaseIndex);
     }
 
