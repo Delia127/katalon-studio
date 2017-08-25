@@ -383,9 +383,13 @@ public abstract class ReportableLauncher extends LoggableLauncher {
     
     @Override
     protected void onStartExecution() {
-        reportEntity = ExecutionUtil.newReportEntity(getId(), (TestSuiteExecutedEntity) getExecutedEntity());
-        if (runConfig.allowsRecording()) {
-            addListener(new VideoRecorderService(getRunConfig(), reportEntity));
+        IExecutedEntity executedEntity = getExecutedEntity();
+        if (executedEntity instanceof TestSuiteExecutedEntity) {
+            reportEntity = ExecutionUtil.newReportEntity(getId(), (TestSuiteExecutedEntity) executedEntity);
+            
+            if (runConfig.allowsRecording()) {
+                addListener(new VideoRecorderService(getRunConfig(), reportEntity));
+            }
         }
         super.onStartExecution();
     }
