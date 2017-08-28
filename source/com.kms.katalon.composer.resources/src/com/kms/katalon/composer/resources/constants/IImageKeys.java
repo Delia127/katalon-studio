@@ -552,6 +552,8 @@ public interface IImageKeys {
     public static final String SAMPLE_MOBILE_16 = "sample_mobile_16.png"; //$NON-NLS-1$
     
     public static final String SAMPLE_WEB_SERVICE_16 = "sample_web_service_16.png"; //$NON-NLS-1$
+    
+    public static final String VIDEO_16 = "video_16.png"; //$NON-NLS-1$
     // End Common
 
 }

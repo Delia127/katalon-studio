@@ -32,4 +32,6 @@ public class ImageConstants {
 
     public static final Image IMG_16_INTEGRATION = ImageManager.getImage(IImageKeys.TAB_INTEGRATION_16);
 
+    public static final Image IMG_16_VIDEO = ImageManager.getImage(IImageKeys.VIDEO_16);
+
 }

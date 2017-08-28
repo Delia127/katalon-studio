@@ -48,6 +48,8 @@ import com.kms.katalon.execution.video.VideoRecorderService;
 import com.kms.katalon.logging.LogUtil;
 
 public abstract class ReportableLauncher extends LoggableLauncher {
+    private ReportEntity reportEntity;
+
     public ReportableLauncher(LauncherManager manager, IRunConfiguration runConfig) {
         super(manager, runConfig);
     }
@@ -364,7 +366,10 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 
     public ReportEntity getReportEntity() {
         try {
-            return ReportController.getInstance().getReportEntity(getTestSuite(), getId());
+            if (reportEntity == null) {
+                reportEntity = ReportController.getInstance().getReportEntity(getTestSuite(), getId());
+            }
+            return reportEntity;
         } catch (Exception e) {
             LogUtil.logError(e);
             return null;
@@ -373,9 +378,19 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 
     @Override
     protected void onStartExecutionComplete() {
-        if (runConfig.allowsRecording()) {
-            addListener(new VideoRecorderService(getRunConfig()));
-        }
         super.onStartExecutionComplete();
+    }
+    
+    @Override
+    protected void onStartExecution() {
+        IExecutedEntity executedEntity = getExecutedEntity();
+        if (executedEntity instanceof TestSuiteExecutedEntity) {
+            reportEntity = ExecutionUtil.newReportEntity(getId(), (TestSuiteExecutedEntity) executedEntity);
+            
+            if (runConfig.allowsRecording()) {
+                addListener(new VideoRecorderService(getRunConfig(), reportEntity));
+            }
+        }
+        super.onStartExecution();
     }
 }

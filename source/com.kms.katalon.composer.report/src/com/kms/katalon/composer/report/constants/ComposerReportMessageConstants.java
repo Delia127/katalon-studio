@@ -95,6 +95,8 @@ public class ComposerReportMessageConstants extends NLS {
 
     public static String PREF_LBL_VIDEO_QUALITY;
 
+    public static String PROVIDER_TOOLTIP_OPEN_RECORDED_VIDEO;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerReportMessageConstants.class);
