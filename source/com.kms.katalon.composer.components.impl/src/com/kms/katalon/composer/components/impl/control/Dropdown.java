@@ -90,6 +90,7 @@ public class Dropdown {
         shell.setVisible(isVisible);
         if (isVisible) {
             shell.setActive();
+            shell.forceFocus();
         }
     }
 

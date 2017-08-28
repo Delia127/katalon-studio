@@ -272,7 +272,7 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
     }
 
     private String getToolItemName(String rawName) {
-        return StringUtils.rightPad(StringUtils.substring(rawName, 0, TOOL_ITEM_SIZE), TOOL_ITEM_SIZE);
+        return StringUtils.substring(rawName, 0, TOOL_ITEM_SIZE);
     }
 
     private void createRecentTestObjectItem(DropdownGroup recentObjectDropdownGrp, String recentTestObjectId) {
