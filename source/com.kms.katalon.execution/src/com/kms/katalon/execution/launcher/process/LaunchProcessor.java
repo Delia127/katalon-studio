@@ -8,25 +8,31 @@ import java.util.Map;
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jdt.launching.JavaRuntime;
 
 import com.kms.katalon.execution.launcher.ILaunchProcessor;
 
 public class LaunchProcessor implements ILaunchProcessor {
 
+    private static final String[] CANDIDATES_JAVA_FILES = { "java", "java.exe" };
+
+    private static final String[] CANDIDATE_JAVA_LOCATIONS = { "bin" + File.separatorChar,
+            "jre" + File.separatorChar + "bin" + File.separatorChar };
+
     private static final String STARTER_CLASS = "org.codehaus.groovy.tools.GroovyStarter";
 
     private static final String MAIN_CLASS = "groovy.ui.GroovyMain";
-    
+
     private static final String GROOVY_BUNDLE_NAME = "org.codehaus.groovy";
 
     private String[] fClasspaths;
-    
+
     private Map<String, String> environmentVariables;
 
     public LaunchProcessor(String[] classPaths) {
         this(classPaths, new HashMap<String, String>());
     }
-    
+
     public LaunchProcessor(String[] classPaths, Map<String, String> environmentVariables) {
         fClasspaths = classPaths;
         this.environmentVariables = environmentVariables;
@@ -34,11 +40,25 @@ public class LaunchProcessor implements ILaunchProcessor {
 
     @Override
     public Process execute(File scripFile) throws IOException {
-        ProcessBuilder pb = new ProcessBuilder("java", "-cp", File.pathSeparator +
-                FilenameUtils.separatorsToSystem(getGroovyLibs()) + File.pathSeparator + getClasspaths(), STARTER_CLASS,
-                "--main", MAIN_CLASS, FilenameUtils.separatorsToSystem(scripFile.getAbsolutePath()));
+        ProcessBuilder pb = new ProcessBuilder(getInstalledJRE(), "-cp",
+                File.pathSeparator + FilenameUtils.separatorsToSystem(getGroovyLibs()) + File.pathSeparator
+                        + getClasspaths(),
+                STARTER_CLASS, "--main", MAIN_CLASS, FilenameUtils.separatorsToSystem(scripFile.getAbsolutePath()));
         pb.environment().putAll(getEnviromentVariables());
         return pb.start();
+    }
+
+    private String getInstalledJRE() {
+        File vmInstallLocation = JavaRuntime.getDefaultVMInstall().getInstallLocation();
+        for (int i = 0; i < CANDIDATES_JAVA_FILES.length; i++) {
+            for (int j = 0; j < CANDIDATE_JAVA_LOCATIONS.length; j++) {
+                File javaFile = new File(vmInstallLocation, CANDIDATE_JAVA_LOCATIONS[j] + CANDIDATES_JAVA_FILES[i]);
+                if (javaFile.isFile()) {
+                    return javaFile.getAbsolutePath();
+                }
+            }
+        }
+        return "java";
     }
 
     @Override

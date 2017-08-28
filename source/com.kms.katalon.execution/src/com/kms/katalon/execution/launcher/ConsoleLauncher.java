@@ -7,6 +7,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.logging.XmlLogRecord;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
+import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.process.ConsoleProcess;
@@ -27,6 +28,9 @@ public class ConsoleLauncher extends ReportableLauncher implements IConsoleLaunc
     protected ILaunchProcess launch() throws ExecutionException {
         try {
             Process systemProcess = executeProcess();
+            if (systemProcess == null) {
+                throw new ExecutionException(ExecutionMessageConstants.CONSOLE_CANNOT_START_EXECUTION);    
+            }
             return new ConsoleProcess(systemProcess);
         } catch (IOException ex) {
             throw new ExecutionException(ex);
@@ -34,10 +38,9 @@ public class ConsoleLauncher extends ReportableLauncher implements IConsoleLaunc
     }
 
     protected Process executeProcess() throws IOException {
-        Process systemProcess = new LaunchProcessor(ClassPathResolver.getClassPaths(ProjectController.getInstance()
+        return new LaunchProcessor(ClassPathResolver.getClassPaths(ProjectController.getInstance()
                 .getCurrentProject()), runConfig.getAdditionalEnvironmentVariables()).execute(getRunConfig()
                 .getExecutionSetting().getScriptFile());
-        return systemProcess;
     }
 
     @Override
