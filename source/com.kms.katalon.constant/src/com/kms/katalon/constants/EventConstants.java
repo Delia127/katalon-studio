@@ -108,6 +108,8 @@ public class EventConstants {
 
     public static final String TESTCASE_RECENT_KEYWORD_ADDED = "TESTCASE/RECENT_KEYWORD_ADDED";
 
+    public static final String TESTCASE_RECENT_OBJECT_ADDED = "TESTCASE/RECENT_OBJECT_ADDED";
+
     // TestRun Events
     public static final String TEST_SUITE_COLLECTION_NEW = "TEST_SUITE_COLLECTION/NEW";
 

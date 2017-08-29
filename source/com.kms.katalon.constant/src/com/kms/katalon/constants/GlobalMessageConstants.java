@@ -197,6 +197,10 @@ public class GlobalMessageConstants extends NLS {
 
     public static String MODIFIED_DATE;
 
+    public static String RECENT;
+    
+    public static String OBJECT_FOLDER;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, GlobalMessageConstants.class);
