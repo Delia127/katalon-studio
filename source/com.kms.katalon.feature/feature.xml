@@ -322,7 +322,6 @@
       <import plugin="org.eclipse.core.net" version="1.2.200" match="greaterOrEqual"/>
       <import plugin="com.kms.katalon.composer.webui"/>
       <import plugin="com.kms.katalon.support.testing.katserver" version="1.0.0" match="greaterOrEqual"/>
-      <import plugin="com.kms.katalon.jbrowser"/>
       <import plugin="org.codehaus.groovy" version="1.8.9" match="greaterOrEqual"/>
    </requires>
 
@@ -2082,13 +2081,6 @@
          download-size="0"
          install-size="0"
          version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="com.kms.katalon.jbrowser"
-         download-size="0"
-         install-size="0"
-         version="1.0.0.qualifier"
          unpack="false"/>
 
    <plugin

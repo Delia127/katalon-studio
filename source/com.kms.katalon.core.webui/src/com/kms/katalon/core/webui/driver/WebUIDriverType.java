@@ -15,7 +15,7 @@ public enum WebUIDriverType implements DriverType {
     REMOTE_FIREFOX_DRIVER("Remote Firefox"),
     REMOTE_CHROME_DRIVER("Remote Chrome"),
     KOBITON_WEB_DRIVER("Kobiton Device"),
-    HEADLESS_DRIVER("Headless");
+    HEADLESS_DRIVER("Chrome (headless)");
 
     private final String driverName;
 

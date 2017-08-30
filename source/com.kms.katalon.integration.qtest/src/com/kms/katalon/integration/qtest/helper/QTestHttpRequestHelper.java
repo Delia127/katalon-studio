@@ -4,12 +4,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
@@ -68,7 +68,7 @@ public class QTestHttpRequestHelper {
 
             HttpPost post = new HttpPost(credential.getServerUrl() + url);
 
-            String authEncoded = new Base64().encodeAsString(("katalon-user :").getBytes());
+            String authEncoded = Base64.getEncoder().encodeToString(("katalon-user :").getBytes());
             post.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + authEncoded);
             post.setHeader(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_FORM_URLENCODED.toString());
 

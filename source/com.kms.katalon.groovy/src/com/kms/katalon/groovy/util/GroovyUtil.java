@@ -60,7 +60,6 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.groovy.constant.GroovyConstants;
-import com.kms.katalon.jbrowser.JBrowserTempClass;
 import com.kms.katalon.selenium.TempClass;
 
 import groovy.lang.GroovyClassLoader;
@@ -301,7 +300,6 @@ public class GroovyUtil {
         addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle(IdConstants.KATALON_CORE_BUNDLE_ID));
 
         addClassPathOfCoreBundleToJavaProject(entries, FrameworkUtil.getBundle(TempClass.class));
-        addClassPathOfCoreBundleToJavaProject(entries, FrameworkUtil.getBundle(JBrowserTempClass.class));
         addClassPathOfCoreBundleToJavaProject(entries, FrameworkUtil.getBundle(AppiumDriverManager.class));
         for (IKeywordContributor contributor : KeywordContributorCollection.getKeywordContributors()) {
             Bundle coreBundle = FrameworkUtil.getBundle(contributor.getClass());

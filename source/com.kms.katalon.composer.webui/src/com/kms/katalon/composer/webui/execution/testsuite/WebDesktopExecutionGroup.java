@@ -41,6 +41,8 @@ public class WebDesktopExecutionGroup implements TestExecutionGroup {
             providers = new ArrayList<>();
             providers.add(TestExecutionDriverEntry.from(getName(), WebUIDriverType.CHROME_DRIVER,
                     ImageConstants.IMG_URL_16_CHROME));
+            providers.add(TestExecutionDriverEntry.from(getName(), WebUIDriverType.HEADLESS_DRIVER,
+                    ImageConstants.IMG_URL_16_HEADLESS));
             providers.add(TestExecutionDriverEntry.from(getName(), WebUIDriverType.FIREFOX_DRIVER,
                     ImageConstants.IMG_URL_16_FIREFOX));
             providers.add(TestExecutionDriverEntry.from(getName(), WebUIDriverType.IE_DRIVER, 
@@ -50,8 +52,6 @@ public class WebDesktopExecutionGroup implements TestExecutionGroup {
             providers.add(TestExecutionDriverEntry.from(getName(), WebUIDriverType.EDGE_DRIVER, 
                     ImageConstants.IMG_URL_16_EDGE));
             providers.add(new RemoteExecutionDriverEntry(getName()));
-            providers.add(TestExecutionDriverEntry.from(getName(), WebUIDriverType.HEADLESS_DRIVER,
-                    ImageConstants.IMG_URL_16_HEADLESS));
         }
         return providers;
     }
