@@ -285,7 +285,7 @@ public class TestCaseRepoDialog extends Dialog {
         try {
             String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
             QTestModule moduleRoot = QTestIntegrationFolderManager.getModuleRoot(
-                    QTestSettingCredential.getCredential(projectDir), qTestProject.getId());
+                    QTestSettingCredential.getCredential(projectDir), qTestProject);
             TestCaseRootSelectionDialog testCaseRootSelectionDialog = new TestCaseRootSelectionDialog(Display
                     .getDefault().getActiveShell(), moduleRoot, true);
             testCaseRootSelectionDialog.setProjectDir(projectDir);

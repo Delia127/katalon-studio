@@ -101,7 +101,7 @@ public class DownloadTestCaseJob extends QTestJob {
                 // users have not specified root folder of test case on qTest,
                 // let them choose one.
                 QTestModule moduleRoot = QTestIntegrationFolderManager.getModuleRoot(
-                        QTestSettingCredential.getCredential(projectDir), qTestProject.getId());
+                        QTestSettingCredential.getCredential(projectDir), qTestProject);
                 QTestIntegrationFolderManager.updateModule(credential, qTestProject.getId(), moduleRoot, true);
 
                 performTestCaseRootSelection(moduleRoot);

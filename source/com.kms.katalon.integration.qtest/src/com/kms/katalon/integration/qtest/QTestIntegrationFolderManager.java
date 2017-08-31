@@ -189,28 +189,12 @@ public class QTestIntegrationFolderManager {
      * @param projectId
      * @return
      * @throws QTestException
-     *             thrown if system cannot send request or the response message is not a JSON string
+     * thrown if system cannot send request or the response message is not a JSON string
      * @throws IOException
      */
-    public static QTestModule getModuleRoot(IQTestCredential credential, long projectId) throws QTestException,
-            IOException {
-        if (credential.getToken() == null) {
-            throw new QTestUnauthorizedException(QTestMessageConstants.QTEST_EXC_INVALID_TOKEN);
-        }
-        String url = "/p/" + Long.toString(projectId) + "/portal/project/testdesign/rootmodulelazy/get";
-
-        String response = QTestHttpRequestHelper.sendGetRequest(credential, url);
-
-        try {
-            JsonObject reponseJsonObject = new JsonObject(response);
-
-            long moduleId = reponseJsonObject.getLong("objId");
-            String moduleName = reponseJsonObject.getString(QTestEntity.NAME_FIELD);
-
-            return new QTestModule(moduleId, moduleName, 0);
-        } catch (JsonException ex) {
-            throw QTestInvalidFormatException.createInvalidJsonFormatException(response);
-        }
+    public static QTestModule getModuleRoot(IQTestCredential credential, QTestProject qTestProject)
+            throws QTestException, IOException {
+        return new QTestModule(0, qTestProject.getName(), 0);
     }
 
     /**
@@ -221,7 +205,7 @@ public class QTestIntegrationFolderManager {
      * @param qTestParentModule
      * @return the updated {@link QTestModule}
      * @throws QTestException
-     *             thrown if system cannot send request or the response message is not a JSON string
+     * thrown if system cannot send request or the response message is not a JSON string
      */
     public static QTestModule updateModuleViaAPI(IQTestCredential credential, long projectId,
             QTestModule qTestParentModule) throws QTestException {
@@ -231,8 +215,12 @@ public class QTestIntegrationFolderManager {
             throw new QTestUnauthorizedException(QTestMessageConstants.QTEST_EXC_INVALID_TOKEN);
         }
 
-        String url = serverUrl + "/api/v3/projects/" + Long.toString(projectId) + "/modules?parentId="
-                + Long.toString(qTestParentModule.getId()) + "&expand=descendants";
+        String parentIdPrefix = "";
+        if (qTestParentModule.getId() > 0) {
+            parentIdPrefix = "parentId=" + Long.toString(qTestParentModule.getId()) + "&";
+        }
+        String url = serverUrl + "/api/v3/projects/" + Long.toString(projectId) + "/modules?" + parentIdPrefix
+                + "expand=descendants";
 
         String result = QTestAPIRequestHelper.sendGetRequestViaAPI(url, credential.getToken());
         try {
