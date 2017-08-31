@@ -113,7 +113,8 @@ public class FolderFileServiceManager {
 
     public static FolderEntity getReportRoot(ProjectEntity project) throws Exception {
         if (project != null) {
-            FolderEntity folder = getFolder(FileServiceConstant.getReportRootFolderLocation(project.getFolderLocation()));
+            FolderEntity folder = getFolder(FileServiceConstant.getReportRootFolderLocation(project.getFolderLocation()),
+                    project);
             if (folder != null) {
                 folder.setProject(project);
                 return folder;
@@ -181,6 +182,10 @@ public class FolderFileServiceManager {
         return null;
     }
 
+    public static FolderEntity getFolder(String path, ProjectEntity project) throws Exception {
+        return EntityFileServiceManager.getFolder(new File(path));
+    }
+    
     public static List<FileEntity> getChildren(FolderEntity folder) throws Exception {
         return EntityFileServiceManager.getChildren(folder, FileEntity.class);
     }
