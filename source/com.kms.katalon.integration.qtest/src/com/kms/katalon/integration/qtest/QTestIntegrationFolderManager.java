@@ -233,6 +233,75 @@ public class QTestIntegrationFolderManager {
             throw QTestInvalidFormatException.createInvalidJsonFormatException(result);
         }
     }
+    
+    private static List<QTestModule> getModules(IQTestCredential credential, QTestModule qTestParentModule, long projectId)
+            throws QTestException {
+        String serverUrl = credential.getServerUrl();
+
+        if (!QTestIntegrationAuthenticationManager.validateToken(credential.getToken().getAccessTokenHeader())) {
+            throw new QTestUnauthorizedException(QTestMessageConstants.QTEST_EXC_INVALID_TOKEN);
+        }
+
+        String parentIdPrefix = "";
+        if (qTestParentModule.getId() > 0) {
+            parentIdPrefix = "parentId=" + Long.toString(qTestParentModule.getId()) + "&";
+        }
+        String url = serverUrl + "/api/v3/projects/" + Long.toString(projectId) + "/modules?" + parentIdPrefix
+                + "expand=descendants";
+
+        String result = QTestAPIRequestHelper.sendGetRequestViaAPI(url, credential.getToken());
+        try {
+            List<QTestModule> modules = new ArrayList<>();
+            JsonArray childrenJsonArray = new JsonArray(result);
+
+            for (int index = 0; index < childrenJsonArray.length(); index++) {
+                JsonObject childJsonObject = childrenJsonArray.getJsonObject(index);
+
+                QTestModule qTestCase = new QTestModule(childJsonObject.getLong(QTestEntity.ID_FIELD),
+                        childJsonObject.getString(QTestEntity.NAME_FIELD), qTestParentModule.getId());
+
+                modules.add(qTestCase);
+            }
+            return modules;
+        } catch (JsonException ex) {
+            throw QTestInvalidFormatException.createInvalidJsonFormatException(result);
+        }
+    }
+    
+    private static List<QTestTestCase> getTestCases(IQTestCredential credential, QTestModule qTestParentModule, long projectId)
+            throws QTestException {
+        String serverUrl = credential.getServerUrl();
+
+        if (!QTestIntegrationAuthenticationManager.validateToken(credential.getToken().getAccessTokenHeader())) {
+            throw new QTestUnauthorizedException(QTestMessageConstants.QTEST_EXC_INVALID_TOKEN);
+        }
+
+        String parentIdPrefix = "";
+        if (qTestParentModule.getId() > 0) {
+            parentIdPrefix = "parentId=" + Long.toString(qTestParentModule.getId()) + "&";
+        }
+        String url = serverUrl + "/api/v3/projects/" + Long.toString(projectId) + "/test-cases?" + parentIdPrefix
+                + "expand=descendants";
+
+        String result = QTestAPIRequestHelper.sendGetRequestViaAPI(url, credential.getToken());
+        try {
+            List<QTestTestCase> testCases = new ArrayList<>();
+            JsonArray childrenJsonArray = new JsonArray(result);
+
+            for (int index = 0; index < childrenJsonArray.length(); index++) {
+                JsonObject childJsonObject = childrenJsonArray.getJsonObject(index);
+
+                QTestTestCase qTestCase = new QTestTestCase(childJsonObject.getLong(QTestEntity.ID_FIELD),
+                        childJsonObject.getString(QTestEntity.NAME_FIELD), qTestParentModule.getId(),
+                        childJsonObject.getString(QTestEntity.PID_FIELD));
+
+                testCases.add(qTestCase);
+            }
+            return testCases;
+        } catch (JsonException ex) {
+            throw QTestInvalidFormatException.createInvalidJsonFormatException(result);
+        }
+    }
 
     /**
      * Supporting method of {@link #updateModuleViaAPI(String, long, QTestModule)}
@@ -266,51 +335,15 @@ public class QTestIntegrationFolderManager {
     public static QTestModule updateModule(IQTestCredential credential, long projectId, QTestModule qTestParentModule,
             boolean updateChildren) throws QTestException, IOException {
 
-        String url = "/p/" + Long.toString(projectId) + "/portal/project/testdesign/children/get/"
-                + Long.toString(qTestParentModule.getId()) + "/1";
-
-        String response = QTestHttpRequestHelper.sendGetRequest(credential, url);
-
-        try {
-            JsonArray childrenJsonArray = new JsonArray(response);
-
-            for (int index = 0; index < childrenJsonArray.length(); index++) {
-                JsonObject childJsonObject = childrenJsonArray.getJsonObject(index);
-
-                // get test case's info from childJsonObject
-                long objId = childJsonObject.getLong("objId");
-                String objName = childJsonObject.getString("name");
-
-                // In this case, test case's pid has only number format so we
-                // have
-                // to add TC prefix
-                String objPid = childJsonObject.getString("idPrefix") + "-" + childJsonObject.getString("pid");
-                int type = childJsonObject.getInt("type");
-
-                if (type == QTestTestCase.getType()) {
-                    QTestTestCase qTestChildTestCase = new QTestTestCase(objId, objName, qTestParentModule.getId(),
-                            objPid);
-
-                    qTestParentModule.getChildTestCases().add(qTestChildTestCase);
-                } else {
-                    QTestModule qTestChildModule = new QTestModule(objId, objName, qTestParentModule.getId());
-                    qTestChildModule.setGid(objPid);
-
-                    qTestParentModule.getChildModules().add(qTestChildModule);
-                }
+        qTestParentModule.setChildTestCases(getTestCases(credential, qTestParentModule, projectId));
+        qTestParentModule.setChildModules(getModules(credential, qTestParentModule, projectId));
+        // update children of child modules recursively if updateModule flag
+        // is true
+        if (updateChildren) {
+            for (QTestModule qTestChildModule : qTestParentModule.getChildModules()) {
+                updateModule(credential, projectId, qTestChildModule, updateChildren);
             }
-
-            // update children of child modules recursively if updateModule flag
-            // is true
-            if (updateChildren) {
-                for (QTestModule qTestChildModule : qTestParentModule.getChildModules()) {
-                    updateModule(credential, projectId, qTestChildModule, updateChildren);
-                }
-            }
-
-            return qTestParentModule;
-        } catch (JsonException ex) {
-            throw QTestInvalidFormatException.createInvalidJsonFormatException(response);
         }
+        return qTestParentModule;
     }
 }
