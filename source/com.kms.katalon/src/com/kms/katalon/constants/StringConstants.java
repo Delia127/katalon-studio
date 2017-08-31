@@ -41,7 +41,7 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String PA_LBL_FAQ_DESCRIPTION = MessageConstants.PA_LBL_FAQ_DESCRIPTION;
 
-    public static final String PA_URL_FAQ = MessageConstants.PA_URL_FAQ;
+    public static final String PA_LBL_FAQ_URL = MessageConstants.PA_URL_FAQ;
 
     public static final String PA_LBL_GETTING_STARTED = MessageConstants.PA_LBL_GETTING_STARTED;
 
@@ -51,13 +51,13 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String PA_URL_GETTING_STARTED = MessageConstants.PA_URL_GETTING_STARTED;
 
-    public static final String PA_LBL_ARTICLES = MessageConstants.PA_LBL_ARTICLES;
+    public static final String PA_LBL_USER_GUIDE = MessageConstants.PA_LBL_USER_GUIDE;
 
     public static final String PA_TOOLTIP_ARTICLES = MessageConstants.PA_TOOLTIP_ARTICLES;
 
     public static final String PA_LBL_ARTICLES_DESCRIPTION = MessageConstants.PA_LBL_ARTICLES_DESCRIPTION;
 
-    public static final String PA_URL_ARTICLES_STARTED = MessageConstants.PA_URL_ARTICLES_STARTED;
+    public static final String PA_LBL_USER_GUIDE_URL = MessageConstants.PA_URL_USER_GUIDE;
 
     public static final String PA_LBL_RECENT_PROJECT = MessageConstants.PA_LBL_RECENT_PROJECT;
 

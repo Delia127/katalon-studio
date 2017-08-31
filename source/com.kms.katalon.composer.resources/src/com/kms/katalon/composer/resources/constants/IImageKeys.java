@@ -17,35 +17,49 @@ public interface IImageKeys {
     // End Intro
 
     // Welcome
-    public static final String START_PAGE_BACKGROUND = "welcome/start_page_background.png"; //$NON-NLS-1$
+    public static final String FAQ_34 = "welcome/faqs_34.png"; //$NON-NLS-1$
 
-    public static final String FAQ_100 = "welcome/faqs_100.png"; //$NON-NLS-1$
+    public static final String USER_GUIDE_34 = "welcome/user_guide_34.png"; //$NON-NLS-1$
 
-    public static final String GETTING_STARTED_100 = "welcome/getting_started_100.png"; //$NON-NLS-1$
+    public static final String TUTORIAL_34 = "welcome/tutorial_34.png"; //$NON-NLS-1$
 
-    public static final String HOW_TO_ARTICLES_100 = "welcome/how_to_articles_100.png"; //$NON-NLS-1$
+    public static final String KATALON_LOGO_202 = "welcome/logo_202.png"; //$NON-NLS-1$
 
-    public static final String NEW_PROJECT_32 = "welcome/new_project_32.png"; //$NON-NLS-1$
+    public static final String RECENT_PROJECT_FILE_29 = "welcome/recent_project_file_29.png"; //$NON-NLS-1$
 
-    public static final String OPEN_PROJECT_32 = "welcome/open_project_32.png"; //$NON-NLS-1$
+    public static final String SAMPLE_WEB_UI_PROJECT_72 = "welcome/sample_web_ui_72.png"; //$NON-NLS-1$
 
-    public static final String RECENT_PROJECT_32 = "welcome/recent_project_32.png"; //$NON-NLS-1$
+    public static final String SAMPLE_MOBILE_PROJECT_72 = "welcome/sample_mobile_72.png"; //$NON-NLS-1$
 
-    public static final String KATALON_LOGO_67 = "welcome/katalon_logo_67.png"; //$NON-NLS-1$
+    public static final String SAMPLE_WEB_SERVICES_PROJECT_72 = "welcome/sample_web_services_72.png"; //$NON-NLS-1$
 
-    public static final String RECENT_PROJECT_FILE_16 = "welcome/recent_project_file_16.png"; //$NON-NLS-1$
-    
-    public static final String SAMPLE_WEB_UI_PROJECT_100 = "welcome/sample_web_ui_100.png"; //$NON-NLS-1$
-    
-    public static final String SAMPLE_MOBILE_PROJECT_100 = "welcome/sample_mobile_100.png"; //$NON-NLS-1$
-    
-    public static final String SAMPLE_WEB_SERVICES_PROJECT_100 = "welcome/sample_web_services_100.png"; //$NON-NLS-1$
-    
+    public static final String SAMPLE_MORE_72 = "welcome/more_72.png"; //$NON-NLS-1$
+
     public static final String SCREEN_SHOT_LOG_VIEWER = "welcome/log_viewer.png"; //$NON-NLS-1$
-    
+
     public static final String SCREEN_SHOT_RECORD = "welcome/record.png"; //$NON-NLS-1$
-    
+
     public static final String SCREEN_SHOT_RUN = "welcome/run.png"; //$NON-NLS-1$
+
+    public static final String GRADIENT_LINE_SEPARATOR = "welcome/gradient_line_separator.png"; //$NON-NLS-1$
+
+    public static final String STEP_1_36 = "welcome/step_1_36.png"; //$NON-NLS-1$
+
+    public static final String STEP_2_36 = "welcome/step_2_36.png"; //$NON-NLS-1$
+
+    public static final String STEP_3_36 = "welcome/step_3_36.png"; //$NON-NLS-1$
+
+    public static final String TAB_FIRST_INACTIVE = "welcome/tab_first_inactive.png"; //$NON-NLS-1$
+
+    public static final String TAB_FIRST_ACTIVE = "welcome/tab_first_active.png"; //$NON-NLS-1$
+
+    public static final String TAB_MIDDLE_INACTIVE = "welcome/tab_middle_inactive.png"; //$NON-NLS-1$
+
+    public static final String TAB_MIDDLE_ACTIVE = "welcome/tab_middle_active.png"; //$NON-NLS-1$
+
+    public static final String TAB_LAST_INACTIVE = "welcome/tab_last_inactive.png"; //$NON-NLS-1$
+
+    public static final String TAB_LAST_ACTIVE = "welcome/tab_last_active.png"; //$NON-NLS-1$
     // End Welcome
 
     // For Dialog
@@ -128,7 +142,7 @@ public interface IImageKeys {
     public static final String GIT_24 = "toolbar/git_24.png"; //$NON-NLS-1$
 
     public static final String MOBILE_OBJECT_SPY_24 = "toolbar/mobile_object_spy_24.png"; //$NON-NLS-1$
-    
+
     public static final String MOBILE_RECORD_24 = "toolbar/mobile_record_24.png"; //$NON-NLS-1$
 
     public static final String NEW_24 = "toolbar/new_24.png"; //$NON-NLS-1$
@@ -181,7 +195,7 @@ public interface IImageKeys {
     public static final String GIT_DISABLED_24 = "toolbar/git_disabled_24.png"; //$NON-NLS-1$
 
     public static final String MOBILE_OBJECT_SPY_DISABLED_24 = "toolbar/mobile_object_spy_disabled_24.png"; //$NON-NLS-1$
-    
+
     public static final String MOBILE_RECORD_DISABLED_24 = "toolbar/mobile_record_disabled_24.png"; //$NON-NLS-1$
 
     public static final String NEW_DISABLED_24 = "toolbar/new_disabled_24.png"; //$NON-NLS-1$
@@ -542,17 +556,17 @@ public interface IImageKeys {
     public static final String UNDO_16 = "undo_16.png"; //$NON-NLS-1$
 
     public static final String REDO_16 = "redo_16.png"; //$NON-NLS-1$
-    
+
     public static final String HELP_16 = "help_16.png"; //$NON-NLS-1$
 
     public static final String MAP_ALL_16 = "map_all_16.png"; //$NON-NLS-1$
-    
+
     public static final String SAMPLE_WEB_UI_16 = "sample_web_ui_16.png"; //$NON-NLS-1$
 
     public static final String SAMPLE_MOBILE_16 = "sample_mobile_16.png"; //$NON-NLS-1$
-    
+
     public static final String SAMPLE_WEB_SERVICE_16 = "sample_web_service_16.png"; //$NON-NLS-1$
-    
+
     public static final String VIDEO_16 = "video_16.png"; //$NON-NLS-1$
     // End Common
 

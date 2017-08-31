@@ -57,7 +57,7 @@ public class MessageConstants extends NLS {
 
     public static String PA_URL_GETTING_STARTED;
 
-    public static String PA_LBL_ARTICLES;
+    public static String PA_LBL_USER_GUIDE;
 
     public static String PA_LBL_ARTICLES_DESCRIPTION;
 
@@ -69,7 +69,7 @@ public class MessageConstants extends NLS {
 
     public static String PA_TOOLTIP_ARTICLES;
 
-    public static String PA_URL_ARTICLES_STARTED;
+    public static String PA_URL_USER_GUIDE;
 
     public static String PA_LBL_RECENT_PROJECT;
 
@@ -222,8 +222,28 @@ public class MessageConstants extends NLS {
     public static String TOOLITEM_DLG_DELETE;
 
     public static String TOOLITEM_DLG_CLEAR;
-    
+
     public static String MSG_LINUX_GUI_NOT_SUPPORTED;
+
+    public static String LBL_MORE_PROJECT;
+
+    public static String LBL_MORE_PROJECT_TOOLTIP;
+
+    public static String LBL_MORE_PROJECT_URL;
+
+    public static String MSG_NO_RECENT_PROJECT;
+
+    public static String TAB_LBL_RECENTS;
+
+    public static String TAB_LBL_SAMPLE_PROJECTS;
+
+    public static String TAB_LBL_GETTING_STARTED;
+
+    public static String RELEASE_NOTE_URL;
+
+    public static String PA_LBL_TUTORIALS;
+
+    public static String PA_LBL_TUTORIALS_URL;
 
     static {
         // initialize resource bundle

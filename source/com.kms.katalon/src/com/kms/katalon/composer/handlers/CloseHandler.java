@@ -9,19 +9,17 @@ import org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor;
 import com.kms.katalon.composer.components.impl.handler.AbstractHandler;
 import com.kms.katalon.composer.parts.MultipleTabsCompositePart;
 
+/**
+ * Handle close action when user hit Ctrl(Command) + W<br>
+ * This should prevent the unwanted close action on unclosable part
+ */
 @SuppressWarnings("restriction")
 public class CloseHandler extends AbstractHandler {
 
     @Override
     public boolean canExecute() {
         MPart part = partService.getActivePart();
-
-        if (getCompositeParentPart(part, partService) != null) {
-            return true;
-        } else if (part != null) {
-            return true;
-        }
-        return false;
+        return getCompositeParentPart(part, partService) != null || (part != null && part.isCloseable());
     }
 
     private MPart getCompositeParentPart(MPart part, EPartService partService) {
