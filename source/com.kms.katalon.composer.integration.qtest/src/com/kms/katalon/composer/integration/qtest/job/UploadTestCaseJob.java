@@ -196,7 +196,7 @@ public class UploadTestCaseJob extends QTestJob {
             qTestTestCase = createNewQTestCase(qTestProject, qTestParentModule, testCaseEntity);
         }
 
-        if (qTestTestCase.getVersionId() == 0) {
+        if (qTestTestCase.getVersionId() <= 0) {
             qTestTestCase.setVersionId(QTestIntegrationTestCaseManager.getTestCaseVersionId(credential,
                     qTestProject.getId(), qTestTestCase.getId()));
         }
