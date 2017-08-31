@@ -7,11 +7,17 @@ import java.net.PasswordAuthentication;
 import java.net.Proxy;
 import java.net.ProxySelector;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.github.markusbernhardt.proxy.ProxySearch;
+import com.github.markusbernhardt.proxy.ProxySearch.Strategy;
+import com.github.markusbernhardt.proxy.util.PlatformUtil;
+import com.github.markusbernhardt.proxy.util.PlatformUtil.Platform;
 import com.kms.katalon.console.constants.ConsoleMessageConstants;
 import com.kms.katalon.console.constants.ConsoleStringConstants;
 import com.kms.katalon.core.network.ProxyInformation;
@@ -19,7 +25,7 @@ import com.kms.katalon.logging.LogUtil;
 
 public class ProxyUtil {
     private static final String USE_SYSTEM_PROXY_PROP = "java.net.useSystemProxies";
-    
+
     public static void saveProxyInformation(ProxyInformation proxyInfo) {
         ApplicationInfo.setAppProperty(ConsoleStringConstants.PROXY_OPTION, proxyInfo.getProxyOption(), false);
         ApplicationInfo.setAppProperty(ConsoleStringConstants.PROXY_SERVER_TYPE, proxyInfo.getProxyServerType(), false);
@@ -79,10 +85,70 @@ public class ProxyUtil {
                 };
             });
         }
-        
+
         return proxy;
     }
-    
+
+    public static Proxy getRetryProxy() throws URISyntaxException {
+        ProxyInformation proxyInfo = ProxyUtil.getProxyInformation();
+        if (StringUtils.isNotEmpty(proxyInfo.getUsername()) && StringUtils.isNotEmpty(proxyInfo.getPassword())) {
+            Authenticator.setDefault(new Authenticator() {
+                protected java.net.PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(proxyInfo.getUsername(), proxyInfo.getPassword().toCharArray());
+                };
+            });
+        }
+
+        ProxySelector proxySelector = getProxySearch().getProxySelector();
+        Proxy proxy = Proxy.NO_PROXY;
+        if (proxySelector != null) {
+            proxy = getProxy(proxySelector);
+        }
+
+        if (!Proxy.NO_PROXY.equals(proxy)) {
+            LogUtil.printOutputLine(
+                    MessageFormat.format(ConsoleMessageConstants.PROXY_FOUND, proxy.toString()));
+        } else {
+            LogUtil.printOutputLine(ConsoleMessageConstants.NO_PROXY_FOUND);
+        }
+        return proxy;
+    }
+
+    private static ProxySearch getProxySearch() {
+        ProxySearch proxySearch = ProxySearch.getDefaultProxySearch();
+        if (PlatformUtil.getCurrentPlattform() == Platform.WIN) {
+            proxySearch.addStrategy(Strategy.IE);
+            proxySearch.addStrategy(Strategy.FIREFOX);
+        } else if (PlatformUtil.getCurrentPlattform() == Platform.LINUX) {
+            proxySearch.addStrategy(Strategy.GNOME);
+            proxySearch.addStrategy(Strategy.KDE);
+            proxySearch.addStrategy(Strategy.FIREFOX);
+        }
+        return proxySearch;
+    }
+
+    private static Proxy getProxy(ProxySelector proxySelector) throws URISyntaxException {
+        Proxy proxy = Proxy.NO_PROXY;
+        List<Proxy> proxies = proxySelector.select(new URI(ServerAPICommunicationUtil.getAPIUrl()));
+        if (proxySelector != null) {
+            if (proxies != null) {
+                loop: for (Proxy p : proxies) {
+                    switch (p.type()) {
+                        case HTTP:
+                            proxy = p;
+                            break loop;
+                        case DIRECT:
+                            proxy = p;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+        return proxy;
+    }
+
     public static Proxy getSystemProxyFor(String url) {
         try {
             System.setProperty(USE_SYSTEM_PROXY_PROP, "true");

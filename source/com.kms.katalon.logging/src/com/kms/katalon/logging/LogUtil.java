@@ -56,6 +56,11 @@ public class LogUtil {
         writeError(LogMode.LOG, t, "");
     }
 
+    public static void printAndLogError(final Throwable t, final String message) {
+        writeError(LogMode.CONSOLE, t, message);
+        writeError(LogMode.LOG, t, message);
+    }
+
     public static void logError(final Throwable t, final String message) {
         writeError(LogMode.LOG, t, message);
     }

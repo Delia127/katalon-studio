@@ -53,7 +53,6 @@ import com.kms.katalon.util.ComposerActivationInfoCollector;
 
 @SuppressWarnings("restriction")
 public class LifeCycleManager {
-    private static final String DF_TEXT_FONT = "Courier New";
 
     private void startUpGUIMode() throws Exception {
         refreshAllProjects();
