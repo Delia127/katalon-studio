@@ -26,6 +26,16 @@ public class ConsoleMessageConstants extends NLS {
     public static String USE_SYSTEM_PROXY;
     
     public static String PROXY_SERVER_TYPE_NOT_VALID_MESSAGE;
+    
+    public static String REQUEST_FAILED_AND_RETRY;
+
+    public static String REQUEST_FAILED;
+
+    public static String REQUEST_COMPLETED;
+
+    public static String PROXY_FOUND;
+
+    public static String NO_PROXY_FOUND;
 
     static {
         // initialize resource bundle
