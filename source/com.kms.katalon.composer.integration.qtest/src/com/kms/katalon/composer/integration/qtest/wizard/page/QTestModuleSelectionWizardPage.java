@@ -153,7 +153,7 @@ public class QTestModuleSelectionWizardPage extends AbstractWizardPage implement
                         });
 
                         moduleRoot = QTestIntegrationFolderManager
-                                .getModuleRoot(SetupWizardDialog.getCredential(sharedData), qTestProject.getId());
+                                .getModuleRoot(SetupWizardDialog.getCredential(sharedData), qTestProject);
 
                         moduleRoot = QTestIntegrationFolderManager.updateModuleViaAPI(
                                 SetupWizardDialog.getCredential(sharedData), qTestProject.getId(), moduleRoot);

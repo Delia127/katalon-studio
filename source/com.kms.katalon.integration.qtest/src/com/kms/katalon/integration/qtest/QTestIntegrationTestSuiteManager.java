@@ -580,33 +580,11 @@ public class QTestIntegrationTestSuiteManager {
      */
     public static QTestReleaseRoot getTestSuiteIdRootOnQTest(IQTestCredential credential, QTestProject qTestProject)
             throws QTestException {
-
-        if (qTestProject == null) {
-            throw new QTestUnauthorizedException(QTestMessageConstants.QTEST_PROJECT_NOT_FOUND);
-        }
-
-        String url = "/p/" + Long.toString(qTestProject.getId()) + "/portal/project/testdesign/rootmodulelazy/get";
-
-        QTestIntegrationAuthenticationManager.authenticate(credential.getUsername(), credential.getPassword());
-
-        String result = QTestHttpRequestHelper.sendGetRequest(credential, url);
-        try {
-            if (result != null && !result.isEmpty()) {
-
-                JsonObject data = new JsonObject(result);
-                long objId = data.getLong(QTestEntity.OBJECT_ID_FIELD);
-                String name = data.getString(QTestEntity.NAME_FIELD);
-                QTestReleaseRoot testSuiteParentRoot = new QTestReleaseRoot();
-                testSuiteParentRoot.setId(objId);
-                testSuiteParentRoot.setName(name);
-                testSuiteParentRoot.setChildren(getReleases(qTestProject, credential));
-                return testSuiteParentRoot;
-            } else {
-                return null;
-            }
-        } catch (JsonException ex) {
-            throw QTestInvalidFormatException.createInvalidJsonFormatException(result);
-        }
+        QTestReleaseRoot testSuiteParentRoot = new QTestReleaseRoot();
+        testSuiteParentRoot.setId(0);
+        testSuiteParentRoot.setName(qTestProject.getName());
+        testSuiteParentRoot.setChildren(getReleases(qTestProject, credential));
+        return testSuiteParentRoot;
     }
 
     /**
