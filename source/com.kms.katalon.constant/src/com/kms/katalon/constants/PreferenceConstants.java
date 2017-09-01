@@ -13,6 +13,8 @@ public interface PreferenceConstants {
 
     public static final String GENERAL_ONLINE_HELP_CONTENT = "general.onlineHelpContent";
 
+    public static final String GENERAL_LAST_HELP_SELECTED_TAB = "general.lastHelpSelectedTab";
+
     // Composer WebUi
     public static final String WEBUI_QUALIFIER = "com.kms.katalon.composer.webui";
 

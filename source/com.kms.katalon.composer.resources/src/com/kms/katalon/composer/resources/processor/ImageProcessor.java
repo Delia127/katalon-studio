@@ -299,21 +299,28 @@ public class ImageProcessor {
     }
 
     private void registerWelcomeImages() {
-        ImageManager.registerImage(IImageKeys.START_PAGE_BACKGROUND);
-        ImageManager.registerImage(IImageKeys.FAQ_100);
-        ImageManager.registerImage(IImageKeys.GETTING_STARTED_100);
-        ImageManager.registerImage(IImageKeys.HOW_TO_ARTICLES_100);
-        ImageManager.registerImage(IImageKeys.NEW_PROJECT_32);
-        ImageManager.registerImage(IImageKeys.OPEN_PROJECT_32);
-        ImageManager.registerImage(IImageKeys.RECENT_PROJECT_32);
-        ImageManager.registerImage(IImageKeys.KATALON_LOGO_67);
-        ImageManager.registerImage(IImageKeys.RECENT_PROJECT_FILE_16);
-        ImageManager.registerImage(IImageKeys.SAMPLE_WEB_UI_PROJECT_100);
-        ImageManager.registerImage(IImageKeys.SAMPLE_MOBILE_PROJECT_100);
-        ImageManager.registerImage(IImageKeys.SAMPLE_WEB_SERVICES_PROJECT_100);
+        ImageManager.registerImage(IImageKeys.FAQ_34);
+        ImageManager.registerImage(IImageKeys.USER_GUIDE_34);
+        ImageManager.registerImage(IImageKeys.TUTORIAL_34);
+        ImageManager.registerImage(IImageKeys.KATALON_LOGO_202);
+        ImageManager.registerImage(IImageKeys.RECENT_PROJECT_FILE_29);
+        ImageManager.registerImage(IImageKeys.SAMPLE_WEB_UI_PROJECT_72);
+        ImageManager.registerImage(IImageKeys.SAMPLE_MOBILE_PROJECT_72);
+        ImageManager.registerImage(IImageKeys.SAMPLE_WEB_SERVICES_PROJECT_72);
+        ImageManager.registerImage(IImageKeys.SAMPLE_MORE_72);
         ImageManager.registerImage(IImageKeys.SCREEN_SHOT_LOG_VIEWER);
         ImageManager.registerImage(IImageKeys.SCREEN_SHOT_RECORD);
         ImageManager.registerImage(IImageKeys.SCREEN_SHOT_RUN);
+        ImageManager.registerImage(IImageKeys.GRADIENT_LINE_SEPARATOR);
+        ImageManager.registerImage(IImageKeys.STEP_1_36);
+        ImageManager.registerImage(IImageKeys.STEP_2_36);
+        ImageManager.registerImage(IImageKeys.STEP_3_36);
+        ImageManager.registerImage(IImageKeys.TAB_FIRST_INACTIVE);
+        ImageManager.registerImage(IImageKeys.TAB_FIRST_ACTIVE);
+        ImageManager.registerImage(IImageKeys.TAB_MIDDLE_INACTIVE);
+        ImageManager.registerImage(IImageKeys.TAB_MIDDLE_ACTIVE);
+        ImageManager.registerImage(IImageKeys.TAB_LAST_INACTIVE);
+        ImageManager.registerImage(IImageKeys.TAB_LAST_ACTIVE);
     }
 
     private void registerIntroImages() {

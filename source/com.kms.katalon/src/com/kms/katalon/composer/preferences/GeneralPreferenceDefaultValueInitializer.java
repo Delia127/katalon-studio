@@ -16,6 +16,7 @@ public class GeneralPreferenceDefaultValueInitializer extends AbstractPreference
                 AUTO_RESTORE_PREVIOUS_SESSION);
         prefStore.setDefault(PreferenceConstants.GENERAL_AUTO_CHECK_NEW_VERSION, true);
         prefStore.setDefault(PreferenceConstants.GENERAL_SHOW_HELP_AT_START_UP, true);
+        prefStore.setDefault(PreferenceConstants.GENERAL_LAST_HELP_SELECTED_TAB, 1);
     }
 
 }
