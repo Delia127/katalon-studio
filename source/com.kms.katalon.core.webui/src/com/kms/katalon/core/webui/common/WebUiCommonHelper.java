@@ -761,9 +761,12 @@ public class WebUiCommonHelper extends KeywordHelper {
                         webElements = doFindElementsInsideShadowDom(testObject, timeOut, webDriver, cssLocator,
                                 parentObject, shadowRootElement);
                     } else {
-                        webElements = doFindElementsDefault(testObject, timeOut, webDriver, defaultLocator);
-                    }
-                    return webElements;
+                        webElements = webDriver.findElements(defaultLocator);
+						   if (webElements != null && webElements.size() > 0) {
+							   logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID_SUCCESS, webElements.size(), testObject.getObjectId(), defaultLocator.toString(), timeOut));
+							   	return webElements;
+							   }
+					}
                 } catch (NoSuchElementException e) {
                     // not found element yet, moving on
                 }
@@ -790,8 +793,6 @@ public class WebUiCommonHelper extends KeywordHelper {
         if (webElements != null && webElements.size() > 0) {
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID_SUCCESS,
                     webElements.size(), testObject.getObjectId(), locator.toString(), timeOut));
-        } else {
-            throw new WebElementNotFoundException(testObject.getObjectId(), locator);
         }
         return webElements;
     }
@@ -811,8 +812,6 @@ public class WebUiCommonHelper extends KeywordHelper {
         if (webElements != null && webElements.size() > 0) {
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID_SUCCESS,
                     webElements.size(), testObject.getObjectId(), cssLocator, timeOut));
-        } else {
-            throw new WebElementNotFoundException(testObject.getObjectId(), cssLocator);
         }
         return webElements;
     }
@@ -822,7 +821,9 @@ public class WebUiCommonHelper extends KeywordHelper {
         if (elements != null && elements.size() > 0) {
             return elements.get(0);
         }
-        return null;
+        else {
+            throw new WebElementNotFoundException(testObject.getObjectId(), buildLocator(testObject));
+        }
     }
 
     /**
