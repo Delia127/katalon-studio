@@ -48,7 +48,8 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     /**
      * Start up an application
      * @param appFile
-     *      absolute path of the application install file
+     *      path of the application install file. It can be absolute or relative path.
+     *      </br>The base dir of reletive path is project location. 
      * @param uninstallAfterCloseApp
      *      true if uninstalling the application automatically after run completed; otherwise, false
      * @param flowControl
@@ -63,7 +64,8 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     /**
      * Start up an application
      * @param appFile
-     *      absolute path of the application install file
+     *      path of the application install file. It can be absolute or relative path.
+     *      </br>The base dir of reletive path is project location.
      * @param uninstallAfterCloseApp
      *      true if uninstalling the application automatically after run completed; otherwise, false
      * @throws StepFailedException
