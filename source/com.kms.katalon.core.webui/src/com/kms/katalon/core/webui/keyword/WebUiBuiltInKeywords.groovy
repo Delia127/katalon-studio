@@ -3722,4 +3722,38 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     public static boolean verifyAllLinksOnCurrentPageAccessible(boolean isIncludedExternalLinks, List excludedLinks) throws StepFailedException {
         return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "verifyAllLinksOnCurrentPageAccessible", isIncludedExternalLinks, excludedLinks)
     }
+
+
+    /**
+     * Executes JavaScript in the context of the currently selected frame or window. 
+     * The script fragment provided will be executed as the body of an anonymous function.
+     * 
+     * @since 4.9
+     * @param script The JavaScript to execute.
+     * @param arguments The arguments to the script. May be empty or null.
+     * @return One of Boolean, Long, Double, String, List or WebElement. Or null.
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static Object executeJavascript(String script, List arguments) throws StepFailedException {
+        return (Object) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "executeJavascript", script, arguments)
+    }
+
+    /**
+     * Executes JavaScript in the context of the currently selected frame or window.
+     * The script fragment provided will be executed as the body of an anonymous function.
+     *
+     * @since 4.9
+     * @param script The JavaScript to execute.
+     * @param arguments The arguments to the script. May be empty or null.
+     * @param flowControl FailureHandling.
+     * @return One of Boolean, Long, Double, String, List or WebElement. Or null.
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
+    public static Object executeJavascript(String script, List arguments, FailureHandling flowControl) throws StepFailedException {
+        return (Object) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "executeJavascript", script, arguments, flowControl)
+    }
 }

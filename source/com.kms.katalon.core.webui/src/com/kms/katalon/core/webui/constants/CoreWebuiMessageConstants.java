@@ -1037,6 +1037,13 @@ public class CoreWebuiMessageConstants extends NLS {
 
     public static String KW_LOG_ERROR_X_IS_AN_INVALID_URL;
 
+    // ExecuteJavascriptKeyword
+    public static String KW_MSG_WEBDRIVER_DOES_NOT_SUPPORT_JS;
+
+    public static String KW_MSG_UNABLE_TO_EXECUTE_JS;
+
+    public static String KW_LOG_PASSED_EXECUTE_JS_SUCESSFULLY;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, CoreWebuiMessageConstants.class);
