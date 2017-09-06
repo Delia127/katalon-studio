@@ -37,6 +37,9 @@ class CustomKeywordTemplate {
     
     private static final String tpl =
     '''
+/**
+ * This class is generated automatically by Katalon Studio and should not be modified or deleted.
+ */
 <% importClassNames.each {%>
 import <%= it %>
 <% } %>
@@ -73,9 +76,10 @@ def static "<%= key %>.<%= it.getName() %>"(<% it.getParameters().eachWithIndex 
         methodNodesMap.each { key, methodNodes ->
             methodNodes.each  { methodNode ->
                 methodNode.getParameters().each { param ->
-                    String className = resolveClassName(param.getType(), true)
-                    if (canBeImported(className)) {
-                        importClassNames.add(getFullClassName(param.getType()))
+                    ClassNode paramType = param.getType()
+                    String className = resolveClassName(paramType, true)
+                    if (canBeImported(paramType, className)) {
+                        importClassNames.add(getFullClassName(paramType))
                         shortClassNameLookup.put(className, ClassUtils.getShortCanonicalName(className))
                     }
                 }
@@ -84,7 +88,10 @@ def static "<%= key %>.<%= it.getName() %>"(<% it.getParameters().eachWithIndex 
         return importClassNames as String[]
     }
 
-    private static boolean canBeImported(String className) {
+    private static boolean canBeImported(ClassNode paramType, String className) {
+        if (paramType.isArray()) {
+            return canBeImported(paramType.getComponentType(), className)
+        }
         return StringUtils.isNotEmpty(className) && className.contains(DOT);
     }
 
@@ -129,6 +136,9 @@ def static "<%= key %>.<%= it.getName() %>"(<% it.getParameters().eachWithIndex 
     }
 
     private static String getFullClassName(ClassNode classNode) {
+        if (classNode.isArray()) {
+            return getFullClassName(classNode.getComponentType())
+        }
         return getPackageNamePlusDot(classNode) + classNode.getNameWithoutPackage().replace('$', '.')
     }
 
