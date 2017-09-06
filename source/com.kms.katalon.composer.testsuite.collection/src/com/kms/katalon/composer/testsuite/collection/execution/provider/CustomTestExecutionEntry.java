@@ -7,6 +7,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
 
+import com.kms.katalon.composer.testsuite.collection.util.MapUtil;
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 import com.kms.katalon.execution.collector.RunConfigurationCollector;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
@@ -76,5 +77,10 @@ public class CustomTestExecutionEntry extends TestExecutionEntryItem {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(getName()).toHashCode();
+    }
+
+    @Override
+    public String displayRunConfigurationData(Map<String, String> runConfigurationData) {
+        return  MapUtil.buildStringForMap(runConfigurationData);
     }
 }
