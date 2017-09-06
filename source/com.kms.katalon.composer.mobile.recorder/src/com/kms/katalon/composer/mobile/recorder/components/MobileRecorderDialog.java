@@ -78,6 +78,7 @@ import com.kms.katalon.composer.components.util.ColumnViewerUtil;
 import com.kms.katalon.composer.mobile.objectspy.components.KobitonAppComposite;
 import com.kms.katalon.composer.mobile.objectspy.components.LocalAppComposite;
 import com.kms.katalon.composer.mobile.objectspy.dialog.AddElementToObjectRepositoryDialog;
+import com.kms.katalon.composer.mobile.objectspy.dialog.AppiumMonitorDialog;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileAppDialog;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileDeviceDialog;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileElementInspectorDialog;
@@ -804,7 +805,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
     private void startObjectInspectorAction() {
         // Temporary disable Start button while launching app
         btnStart.setEnabled(false);
-        final ProgressMonitorDialogWithThread progressDlg = new ProgressMonitorDialogWithThread(getShell()) {
+        final AppiumMonitorDialog progressDlg = new AppiumMonitorDialog(getShell()) {
             @Override
             public void cancelPressed() {
                 super.cancelPressed();
@@ -815,6 +816,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                 btnCapture.setEnabled(false);
             }
         };
+        inspectorController.setStreamHandler(progressDlg);
         try {
             if (stackLayout.topControl == localAppComposite
                     && !localAppComposite.startLocalApp(inspectorController, progressDlg)) {
@@ -825,7 +827,6 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                 btnStart.setEnabled(true);
                 return;
             }
-
             captureObjectAction();
 
             // If no exception, application has been successful started, enable more features
@@ -850,6 +851,8 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
             btnStart.setEnabled(true);
             btnStop.setEnabled(false);
             btnCapture.setEnabled(false);
+        } finally {
+            inspectorController.setStreamHandler(null);
         }
     }
 
