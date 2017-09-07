@@ -205,6 +205,9 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
                 if (partObject instanceof TestCaseIntegrationPart) {
                     return DocumentationMessageConstants.TEST_CASE_INTEGRATION;
                 }
+                if (partObject instanceof TestCasePropertiesPart) {
+                    return DocumentationMessageConstants.TEST_CASE_PROPERTIES;
+                }
                 return null;
             }
         };
