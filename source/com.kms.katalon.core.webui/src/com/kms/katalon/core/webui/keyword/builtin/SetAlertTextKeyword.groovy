@@ -49,6 +49,7 @@ import com.kms.katalon.core.webui.exception.WebElementNotFoundException
 import com.kms.katalon.core.webui.keyword.internal.WebUIAbstractKeyword
 import com.kms.katalon.core.webui.keyword.internal.WebUIKeywordMain
 import com.kms.katalon.core.webui.util.FileUtil
+import com.kms.katalon.selenium.util.SeleniumKeysUtil;
 
 @Action(value = "setAlertText")
 public class SetAlertTextKeyword extends WebUIAbstractKeyword {
@@ -76,9 +77,10 @@ public class SetAlertTextKeyword extends WebUIAbstractKeyword {
             }
             Alert alert = DriverFactory.getAlert()
             if (alert != null) {
-                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SETTING_ALERT_TXT, text))
+                String readableText = SeleniumKeysUtil.getReadableText(text)
+                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SETTING_ALERT_TXT, readableText))
                 alert.sendKeys(text)
-                logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SET_ALERT_TXT_SUCCESSFULLY, text))
+                logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SET_ALERT_TXT_SUCCESSFULLY, readableText))
             } else {
                 WebUIKeywordMain.stepFailed(StringConstants.KW_MSG_NO_ALERT_FOUND, flowControl, null, true)
             }
