@@ -13,7 +13,8 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testcase.TestCaseBinding
 import com.kms.katalon.entity.testcase.TestCaseEntity
 import com.kms.katalon.execution.configuration.IRunConfiguration
-import com.kms.katalon.execution.util.ExecutionUtil;
+import com.kms.katalon.execution.util.ExecutionUtil
+import com.kms.katalon.groovy.constant.GroovyConstants;
 import com.kms.katalon.groovy.util.GroovyStringUtil;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
@@ -79,7 +80,7 @@ try {
         def engine = new GStringTemplateEngine()
         Writable tempTestCaseContentWritable = engine.createTemplate(tpl).make(binding)
         if (file.canWrite()) {
-            file.write(tempTestCaseContentWritable.toString());
+            file.write(tempTestCaseContentWritable.toString(), GroovyConstants.DF_CHARSET);
         }
     }
 }
