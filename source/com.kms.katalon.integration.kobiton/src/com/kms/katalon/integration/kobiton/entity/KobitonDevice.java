@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.text.WordUtils;
 import org.openqa.selenium.ScreenOrientation;
 
@@ -152,7 +154,35 @@ public class KobitonDevice {
     }
 
     private String getDeviceDisplayName() {
-        return WordUtils.capitalize(StringUtils.defaultString(capabilities.getBrandName()))
-                + " " + capabilities.getDeviceName();
+        return WordUtils.capitalize(StringUtils.defaultString(capabilities.getBrandName())) + " "
+                + capabilities.getDeviceName();
     }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(id)
+                .append(udid)
+                .append(isBooked)
+                .append(orientation)
+                .append(captureSreenShots)
+                .toHashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        KobitonDevice other = (KobitonDevice) obj;
+        return new EqualsBuilder().append(this.id, other.id)
+                .append(this.udid, other.udid)
+                .append(this.isBooked, other.isBooked)
+                .append(this.orientation, other.orientation)
+                .append(this.captureSreenShots, other.captureSreenShots)
+                .isEquals();
+    }
+
 }

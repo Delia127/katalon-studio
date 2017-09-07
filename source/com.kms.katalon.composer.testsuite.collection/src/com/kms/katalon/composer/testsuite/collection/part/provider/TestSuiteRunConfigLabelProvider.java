@@ -14,7 +14,6 @@ import com.kms.katalon.composer.testsuite.collection.constant.ComposerTestsuiteC
 import com.kms.katalon.composer.testsuite.collection.constant.ImageConstants;
 import com.kms.katalon.composer.testsuite.collection.execution.collector.TestExecutionGroupCollector;
 import com.kms.katalon.composer.testsuite.collection.execution.provider.TestExecutionConfigurationProvider;
-import com.kms.katalon.composer.testsuite.collection.util.MapUtil;
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 import com.kms.katalon.entity.testsuite.TestSuiteRunConfiguration;
 
@@ -83,7 +82,8 @@ public class TestSuiteRunConfigLabelProvider extends TypeCheckStyleCellTableLabe
                 return element.getTestSuiteEntity() != null ? element.getTestSuiteEntity().getIdForDisplay()
                         : StringUtils.EMPTY;
             case RUN_WITH_DATA_COLUMN_IDX:
-                return MapUtil.buildStringForMap(element.getConfiguration().getRunConfigurationData());
+                return getOriginalConfigProvider(element)
+                        .displayRunConfigurationData(element.getConfiguration().getRunConfigurationData());
             case RUN_WITH_COLUMN_IDX:
                 RunConfigurationDescription configuration = element.getConfiguration();
                 return configuration != null ? configuration.getRunConfigurationId() : StringUtils.EMPTY;

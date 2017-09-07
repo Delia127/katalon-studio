@@ -12,8 +12,6 @@ public class MobileTestExecutionGroup implements TestExecutionGroup {
 
     private static final String GROUP_NAME = "Mobile";
 
-    private List<TestExecutionItem> providers;
-
     @Override
     public String getName() {
         return GROUP_NAME;
@@ -35,11 +33,10 @@ public class MobileTestExecutionGroup implements TestExecutionGroup {
     }
 
     private List<TestExecutionItem> getProviders() {
-        if (providers == null) {
-            providers = new ArrayList<>();
-            providers.add(new AndroidTestExecutionDriverEntry(getName()));
-            providers.add(new IosTestExecutionDriverEntry(getName()));
-        }
+        List<TestExecutionItem> providers = new ArrayList<>();
+        providers.add(new AndroidTestExecutionDriverEntry(getName()));
+        providers.add(new IosTestExecutionDriverEntry(getName()));
+        providers.addAll(MobileExecutionIntegrationCollector.getInstance().getSortedExecutionEntries(getName()));
         return providers;
     }
 

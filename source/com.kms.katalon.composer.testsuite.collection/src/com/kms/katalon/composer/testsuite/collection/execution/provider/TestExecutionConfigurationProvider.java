@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.testsuite.collection.execution.provider;
 
+import java.util.Map;
+
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
 
@@ -17,4 +19,6 @@ public interface TestExecutionConfigurationProvider extends TestExecutionItem {
      * @return an instance of CellEditor
      */
     CellEditor getRunConfigurationDataCellEditor(ColumnViewer parent);
+    
+    String displayRunConfigurationData(Map<String, String> runConfigurationData);
 }

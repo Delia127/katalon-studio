@@ -6,6 +6,7 @@ import java.util.Map;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
 
+import com.kms.katalon.composer.testsuite.collection.util.MapUtil;
 import com.kms.katalon.core.driver.DriverType;
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 import com.kms.katalon.execution.collector.RunConfigurationCollector;
@@ -62,5 +63,10 @@ public class TestExecutionDriverEntry extends TestExecutionEntryItem {
     @Override
     public CellEditor getRunConfigurationDataCellEditor(ColumnViewer parent) {
         return null;
+    }
+
+    @Override
+    public String displayRunConfigurationData(Map<String, String> runConfigurationData) {
+        return  MapUtil.buildStringForMap(runConfigurationData);
     }
 }

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.IMessageProvider;
@@ -46,6 +47,11 @@ public class KobitonDeviceDialog extends TitleAreaDialog {
 
     public KobitonDeviceDialog(Shell shell) {
         super(shell);
+    }
+
+    public KobitonDeviceDialog(Shell shell, KobitonDevice selectedDevice) {
+        super(shell);
+        this.selectedDevice = selectedDevice;
     }
 
     @Override
@@ -109,10 +115,21 @@ public class KobitonDeviceDialog extends TitleAreaDialog {
         // Show full names of device list to show them on combo-box
         cbbDevices.setItems(getDeviceFullNames());
 
-        if (devicesList.size() > 0) {
-            cbbDevices.select(0);
-            selectedDevice = devicesList.get(0);
+        if (devicesList.size() == 0) {
+            selectedDevice = null;
+            return;
         }
+        int index = 0;
+        if (selectedDevice != null) {
+            Optional<KobitonDevice> deviceOpt = devicesList.stream()
+                    .filter(device -> device.getId() == selectedDevice.getId())
+                    .findFirst();
+            if (deviceOpt.isPresent()) {
+                index = devicesList.indexOf(deviceOpt.get());
+            }
+        }
+        selectedDevice = devicesList.get(index);
+        cbbDevices.select(index);
     }
 
     @Override
@@ -124,26 +141,31 @@ public class KobitonDeviceDialog extends TitleAreaDialog {
     private void loadDeviceList() {
         devicesList.clear();
         try {
-            new ProgressMonitorDialog(Display.getCurrent().getActiveShell()).run(true, false, new IRunnableWithProgress() {
-                @Override
-                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                    try {
-                        monitor.beginTask(ComposerIntegrationKobitonMessageConstants.JOB_LOADING_DEVICE_LIST, 1);
-                        devicesList.addAll(KobitonApiProvider.getKobitonFavoriteDevices(KobitonPreferencesProvider.getKobitonToken()));
-                        Collections.sort(devicesList, new Comparator<KobitonDevice>() {
-                            @Override
-                            public int compare(KobitonDevice device_1, KobitonDevice device_2) {
-                                return device_1.getDisplayString().compareToIgnoreCase(device_2.getDisplayString());
+            new ProgressMonitorDialog(Display.getCurrent().getActiveShell()).run(true, false,
+                    new IRunnableWithProgress() {
+                        @Override
+                        public void run(IProgressMonitor monitor)
+                                throws InvocationTargetException, InterruptedException {
+                            try {
+                                monitor.beginTask(ComposerIntegrationKobitonMessageConstants.JOB_LOADING_DEVICE_LIST,
+                                        1);
+                                devicesList.addAll(KobitonApiProvider
+                                        .getKobitonFavoriteDevices(KobitonPreferencesProvider.getKobitonToken()));
+                                Collections.sort(devicesList, new Comparator<KobitonDevice>() {
+                                    @Override
+                                    public int compare(KobitonDevice device_1, KobitonDevice device_2) {
+                                        return device_1.getDisplayString()
+                                                .compareToIgnoreCase(device_2.getDisplayString());
+                                    }
+                                });
+                                monitor.worked(1);
+                            } catch (URISyntaxException | IOException | KobitonApiException e) {
+                                throw new InvocationTargetException(e);
+                            } finally {
+                                monitor.done();
                             }
-                        });
-                        monitor.worked(1);
-                    } catch (URISyntaxException | IOException | KobitonApiException e) {
-                        throw new InvocationTargetException(e);
-                    } finally {
-                        monitor.done();
-                    }
-                }
-            });
+                        }
+                    });
 
         } catch (InvocationTargetException exception) {
             final Throwable cause = exception.getCause();
