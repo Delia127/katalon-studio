@@ -14,7 +14,6 @@ Require-Bundle: org.codehaus.groovy,
  org.apache.commons.lang,
  org.apache.commons.lang3,
  org.eclipse.osgi,
- com.kms.katalon.jbrowser,
  com.google.gson
 Export-Package: com.kms.katalon.core.webui.common,
  com.kms.katalon.core.webui.constants,

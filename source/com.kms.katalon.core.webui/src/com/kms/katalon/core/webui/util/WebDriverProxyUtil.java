@@ -8,7 +8,6 @@ import org.openqa.selenium.Proxy;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.network.ProxyOption;
 import com.kms.katalon.core.network.ProxyServerType;
-import com.machinepublishers.jbrowserdriver.ProxyConfig;
 
 public class WebDriverProxyUtil {
 
@@ -72,25 +71,5 @@ public class WebDriverProxyUtil {
         return proxyInformation != null
                 && ProxyOption.valueOf(proxyInformation.getProxyOption()) == ProxyOption.MANUAL_CONFIG
                 && ProxyServerType.valueOf(proxyInformation.getProxyServerType()) == ProxyServerType.SOCKS;
-    }
-
-    /**
-     * Returns {@link proxyInformation} to construct a JBrowserDriver.
-     */
-    public static ProxyConfig getProxyConfigForJBrowser(ProxyInformation proxyInformation) {
-        if (proxyInformation == null) {
-            return new ProxyConfig();
-        }
-        switch (ProxyOption.valueOf(proxyInformation.getProxyOption())) {
-            case MANUAL_CONFIG:
-                ProxyConfig.Type proxyConfigType = ProxyServerType
-                        .valueOf(proxyInformation.getProxyServerType()) == ProxyServerType.SOCKS
-                                ? ProxyConfig.Type.SOCKS : ProxyConfig.Type.HTTP;
-                return new ProxyConfig(proxyConfigType, proxyInformation.getProxyServerAddress(),
-                        proxyInformation.getProxyServerPort(), proxyInformation.getUsername(),
-                        proxyInformation.getPassword());
-            default:
-                return new ProxyConfig();
-        }
     }
 }

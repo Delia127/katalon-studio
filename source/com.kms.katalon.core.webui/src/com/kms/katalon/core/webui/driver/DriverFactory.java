@@ -15,7 +15,6 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.Alert;
-import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.NoSuchWindowException;
 import org.openqa.selenium.WebDriver;
@@ -58,15 +57,12 @@ import com.kms.katalon.core.webui.exception.BrowserNotOpenedException;
 import com.kms.katalon.core.webui.util.FirefoxExecutable;
 import com.kms.katalon.core.webui.util.WebDriverPropertyUtil;
 import com.kms.katalon.core.webui.util.WebDriverProxyUtil;
-import com.kms.katalon.jbrowser.CJBrowserDriver;
 import com.kms.katalon.selenium.driver.CChromeDriver;
 import com.kms.katalon.selenium.driver.CEdgeDriver;
 import com.kms.katalon.selenium.driver.CFirefoxDriver;
 import com.kms.katalon.selenium.driver.CInternetExplorerDriver;
 import com.kms.katalon.selenium.driver.CRemoteWebDriver;
 import com.kms.katalon.selenium.driver.CSafariDriver;
-import com.machinepublishers.jbrowserdriver.JBrowserDriver;
-import com.machinepublishers.jbrowserdriver.Settings;
 
 import io.appium.java_client.ios.IOSDriver;
 
@@ -135,8 +131,6 @@ public class DriverFactory {
     public static final String DEFAULT_DEBUG_HOST = "localhost";
 
     private static final int REMOTE_BROWSER_CONNECT_TIMEOUT = 60000;
-
-    private static final String HEADLESS_BROWSER_NAME = "JBrowser (headless)";
 
     private static final ThreadLocal<WebDriver> localWebServerStorage = new ThreadLocal<WebDriver>() {
         @Override
@@ -246,7 +240,7 @@ public class DriverFactory {
                 webDriver = createNewRemoteChromeDriver(desireCapibilities);
                 break;
             case HEADLESS_DRIVER:
-                webDriver = createNewJBrowserDriver(desireCapibilities);
+                webDriver = createHeadlessChromeDriver(desireCapibilities);
                 break;
             default:
                 throw new StepFailedException(
@@ -260,25 +254,36 @@ public class DriverFactory {
         return new CSafariDriver(desireCapibilities, getActionDelay());
     }
 
-    private static JBrowserDriver createNewJBrowserDriver(DesiredCapabilities desireCapibilities) {
-        Capabilities jBrowserCapbilities = Settings.builder()
-                .proxy(WebDriverProxyUtil.getProxyConfigForJBrowser(RunConfiguration.getProxyInformation()))
-                .buildCapabilities();
-        return new CJBrowserDriver(new DesiredCapabilities(desireCapibilities, jBrowserCapbilities), getActionDelay());
+    private static WebDriver createNewChromeDriver(DesiredCapabilities desireCapibilities) {
+        return new CChromeDriver(addCapbilitiesForChrome(desireCapibilities), getActionDelay());
     }
 
-    private static WebDriver createNewChromeDriver(DesiredCapabilities desireCapibilities) {
+    private static DesiredCapabilities addCapbilitiesForChrome(DesiredCapabilities desireCapibilities) {
         System.setProperty(CHROME_DRIVER_PATH_PROPERTY_KEY, getChromeDriverPath());
+        Object chromeOptionObj = desireCapibilities.getCapability(ChromeOptions.CAPABILITY);
+        ChromeOptions chromeOptions = chromeOptionObj instanceof ChromeOptions ? (ChromeOptions) chromeOptionObj
+                : new ChromeOptions();
+
         ProxyInformation proxyInformation = RunConfiguration.getProxyInformation();
         if (WebDriverProxyUtil.isManualSocks(proxyInformation)) {
-            ChromeOptions chromeOptions = new ChromeOptions();
             chromeOptions
                     .addArguments("--proxy-server=socks5://" + WebDriverProxyUtil.getProxyString(proxyInformation));
-            desireCapibilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
         } else {
             desireCapibilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
         }
-        return new CChromeDriver(desireCapibilities, getActionDelay());
+        desireCapibilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
+        return desireCapibilities;
+    }
+
+    private static WebDriver createHeadlessChromeDriver(DesiredCapabilities desireCapibilities) {
+        DesiredCapabilities chromeCapbilities = addCapbilitiesForChrome(desireCapibilities);
+        Object chromeOptionObj = chromeCapbilities != null ? 
+                chromeCapbilities.getCapability(ChromeOptions.CAPABILITY) : null;
+        ChromeOptions chromeOptions = chromeOptionObj instanceof ChromeOptions ? (ChromeOptions) chromeOptionObj
+                : new ChromeOptions();
+        chromeOptions.addArguments("--headless", "--disable-gpu");
+        chromeCapbilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
+        return new CChromeDriver(chromeCapbilities, getActionDelay());
     }
 
     private static Map<String, Object> getDefaultProxy() {
@@ -456,10 +461,6 @@ public class DriverFactory {
     }
 
     private static String getBrowserVersion(WebDriver webDriver) {
-        if (webDriver instanceof JBrowserDriver) {
-            return HEADLESS_BROWSER_NAME;
-        }
-
         try {
             return WebUiCommonHelper.getBrowserAndVersion(webDriver);
         } catch (Exception e) {

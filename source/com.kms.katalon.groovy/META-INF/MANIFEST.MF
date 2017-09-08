@@ -17,8 +17,7 @@ Require-Bundle: org.eclipse.core.resources,
  com.kms.katalon.custom,
  com.kms.katalon.core,
  com.kms.katalon.selenium-standalone,
- com.kms.katalon.core.appium,
- com.kms.katalon.jbrowser
+ com.kms.katalon.core.appium
 Export-Package: com.kms.katalon.groovy.constant,
  com.kms.katalon.groovy.reference,
  com.kms.katalon.groovy.util
