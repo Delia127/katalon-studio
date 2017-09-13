@@ -40,7 +40,11 @@ public class SeleniumKeysUtil {
         }
         StringBuilder readableText = new StringBuilder();
         lstKeys.forEach(keys -> {
-            readableText.append(String.format("%s + ", keys.name()));
+            String keyName = keys.name();
+            if (keys == Keys.META) {
+                keyName = Keys.COMMAND.name();
+            }
+            readableText.append(String.format("%s + ", keyName));
         });
         readableText.append(normalText.toString());
         return readableText.toString();
