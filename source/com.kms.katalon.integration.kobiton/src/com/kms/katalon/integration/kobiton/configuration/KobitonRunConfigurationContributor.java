@@ -79,7 +79,7 @@ public class KobitonRunConfigurationContributor extends WebUIRunConfigurationCon
 
             @Override
             public boolean isRequired() {
-                return true;
+                return false;
             }
         });
     }
