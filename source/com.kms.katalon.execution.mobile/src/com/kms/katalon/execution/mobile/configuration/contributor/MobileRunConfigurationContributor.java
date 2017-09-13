@@ -4,10 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.kms.katalon.core.appium.constants.AppiumStringConstants;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
@@ -27,6 +29,7 @@ import com.kms.katalon.execution.mobile.util.MobileExecutionUtil;
 
 public abstract class MobileRunConfigurationContributor implements IRunConfigurationContributor {
     public static final String DEVICE_ID_CONFIGURATION_KEY = "deviceId";
+
     public static final String DEVICE_NAME_CONFIGURATION_KEY = "deviceName";
 
     private String deviceName;
@@ -44,11 +47,11 @@ public abstract class MobileRunConfigurationContributor implements IRunConfigura
     }
 
     @Override
-    public IRunConfiguration getRunConfiguration(String projectDir) throws IOException, ExecutionException,
-            InterruptedException {
+    public IRunConfiguration getRunConfiguration(String projectDir)
+            throws IOException, ExecutionException, InterruptedException {
         MobileExecutionUtil.detectInstalledAppiumAndNodeJs();
-        deviceName = StringUtils.isNotBlank(deviceName) ? deviceName : getDefaultDeviceId(projectDir,
-                getMobileDriverType());
+        deviceName = StringUtils.isNotBlank(deviceName) ? deviceName
+                : getDefaultDeviceId(projectDir, getMobileDriverType());
         if (StringUtils.isBlank(deviceName)) {
             throw new ExecutionException(StringConstants.MOBILE_ERR_NO_DEVICE_NAME_AVAILABLE);
         }
@@ -59,8 +62,8 @@ public abstract class MobileRunConfigurationContributor implements IRunConfigura
             throw new ExecutionException(e.getMessage());
         }
         if (device == null) {
-            throw new ExecutionException(MessageFormat.format(
-                    StringConstants.MOBILE_ERR_CANNOT_FIND_DEVICE_WITH_NAME_X, deviceName));
+            throw new ExecutionException(
+                    MessageFormat.format(StringConstants.MOBILE_ERR_CANNOT_FIND_DEVICE_WITH_NAME_X, deviceName));
         }
         MobileRunConfiguration runConfiguration = getMobileRunConfiguration(projectDir);
         runConfiguration.setDevice(device);
@@ -69,12 +72,17 @@ public abstract class MobileRunConfigurationContributor implements IRunConfigura
 
     @Override
     public IRunConfiguration getRunConfiguration(String projectDir,
-            RunConfigurationDescription runConfigurationDescription) throws IOException, ExecutionException,
-            InterruptedException {
-        if (runConfigurationDescription != null && runConfigurationDescription.getRunConfigurationData() != null) {
-            deviceName = runConfigurationDescription.getRunConfigurationData().get(DEVICE_ID_CONFIGURATION_KEY);
-        }
+            RunConfigurationDescription runConfigurationDescription)
+            throws IOException, ExecutionException, InterruptedException {
+        deviceName = getDeviceId(runConfigurationDescription);
         return getRunConfiguration(projectDir);
+    }
+
+    private String getDeviceId(RunConfigurationDescription runConfigurationDescription) {
+        if (runConfigurationDescription != null && runConfigurationDescription.getRunConfigurationData() != null) {
+            return runConfigurationDescription.getRunConfigurationData().get(DEVICE_ID_CONFIGURATION_KEY);
+        }
+        return StringUtils.EMPTY;
     }
 
     protected abstract MobileRunConfiguration getMobileRunConfiguration(String projectDir) throws IOException;
@@ -102,16 +110,33 @@ public abstract class MobileRunConfigurationContributor implements IRunConfigura
         String deviceId = null;
         switch (platform) {
             case ANDROID_DRIVER: {
-                deviceId = new AndroidDriverConnector(projectDir + File.separator
-                        + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME).getDefaultDeviceId();
+                deviceId = new AndroidDriverConnector(
+                        projectDir + File.separator + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME)
+                                .getDefaultDeviceId();
                 break;
             }
             case IOS_DRIVER: {
-                deviceId = new IosDriverConnector(projectDir + File.separator
-                        + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME).getDefaultDeviceId();
+                deviceId = new IosDriverConnector(
+                        projectDir + File.separator + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME)
+                                .getDefaultDeviceId();
                 break;
             }
         }
         return deviceId;
+    }
+
+    @Override
+    public List<ConsoleOption<?>> getConsoleOptions(RunConfigurationDescription description) {
+        return Arrays.asList(new StringConsoleOption() {
+            @Override
+            public String getOption() {
+                return AppiumStringConstants.CONF_EXECUTED_DEVICE_ID;
+            }
+            
+            @Override
+            public String getValue() {
+                return getDeviceId(description);
+            } 
+        });
     }
 }

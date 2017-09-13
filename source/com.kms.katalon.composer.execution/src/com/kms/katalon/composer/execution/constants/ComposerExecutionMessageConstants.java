@@ -285,6 +285,16 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String WARN_CHECK_POINT_NOT_FOUND;
 
     public static String WARN_TEST_CASE_NOT_FOUND;
+    
+    // RunConfigurationSelectionDialog
+    public static String DIA_TITLE_RUN_CONFIG_SELECTION;
+    
+    // GenerateCommandDialog
+    public static String DIA_LBL_RUN_WITH;
+
+    public static String DIA_LBL_RUN_CONFIGURATION;
+    
+    public static String DIA_MSG_CONFIGURATION_IS_REQUIRED;
 
     static {
         // initialize resource bundle

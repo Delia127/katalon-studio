@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.testsuite.collection.execution.provider;
+package com.kms.katalon.composer.execution.collection.provider;
 
 
 public interface TestExecutionGroup extends TestExecutionItem {

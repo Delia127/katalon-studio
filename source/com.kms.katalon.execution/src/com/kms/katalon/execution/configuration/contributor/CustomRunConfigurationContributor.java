@@ -48,4 +48,9 @@ public class CustomRunConfigurationContributor implements IRunConfigurationContr
     public void setArgumentValue(ConsoleOption<?> consoleOption, String argumentValue) throws Exception {
         // Do nothing
     }
+
+    @Override
+    public List<ConsoleOption<?>> getConsoleOptions(RunConfigurationDescription description) {
+        return Collections.emptyList();
+    }
 }

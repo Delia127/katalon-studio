@@ -26,9 +26,6 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String HDL_MSG_UNABLE_TO_CREATE_TEST_SUITE_COLLECTION = ComposerTestsuiteCollectionMessageConstants.HDL_MSG_UNABLE_TO_CREATE_TEST_SUITE_COLLECTION;
 
-    // RunConfigurationSelectionDialog
-    public static final String DIA_TITLE_RUN_CONFIG_SELECTION = ComposerTestsuiteCollectionMessageConstants.DIA_TITLE_RUN_CONFIG_SELECTION;
-
     // TestSuiteCollectionPropertiesDialog
     public static final String DIA_TITLE_TEST_COLLECTION_SUITE_PROPERTIES = ComposerTestsuiteCollectionMessageConstants.DIA_TITLE_TEST_COLLECTION_SUITE_PROPERTIES;
 

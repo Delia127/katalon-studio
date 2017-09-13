@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.testsuite.collection.execution.collector;
+package com.kms.katalon.composer.execution.collection.collector;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,10 +11,10 @@ import java.util.Map.Entry;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import com.kms.katalon.composer.testsuite.collection.execution.provider.CustomTestExecutionGroup;
-import com.kms.katalon.composer.testsuite.collection.execution.provider.TestExecutionConfigurationProvider;
-import com.kms.katalon.composer.testsuite.collection.execution.provider.TestExecutionGroup;
-import com.kms.katalon.composer.testsuite.collection.execution.provider.TestExecutionItem;
+import com.kms.katalon.composer.execution.collection.provider.CustomTestExecutionGroup;
+import com.kms.katalon.composer.execution.collection.provider.TestExecutionConfigurationProvider;
+import com.kms.katalon.composer.execution.collection.provider.TestExecutionGroup;
+import com.kms.katalon.composer.execution.collection.provider.TestExecutionItem;
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
 import com.kms.katalon.execution.util.ExecutionUtil;
@@ -94,7 +94,7 @@ public class TestExecutionGroupCollector {
                 }
                 TestExecutionConfigurationProvider executionProvider = (TestExecutionConfigurationProvider) item;
                 if (ObjectUtils.equals(executionProvider.getRunConfigurationContributor(), defaultRunConfiguration)) {
-                    return executionProvider.toConfigurationEntity();
+                    return executionProvider.toConfigurationEntity(null);
                 }
             }
         }

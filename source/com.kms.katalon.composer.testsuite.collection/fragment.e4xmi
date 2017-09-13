@@ -15,7 +15,7 @@
     </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_w0gHgBKaEeaBC_8l6YNNlg" featurename="addons" parentElementId="com.kms.katalon.composer.application">
-    <elements xsi:type="application:Addon" xmi:id="_yHXdkBKaEeaBC_8l6YNNlg" elementId="com.kms.katalon.composer.testrun.addon.rootCatcher" contributionURI="bundleclass://com.kms.katalon.composer.testsuite.collection/com.kms.katalon.composer.testsuite.collection.addon.TestSuiteCollectionDependencyInjectionAddon"/>
+    <elements xsi:type="application:Addon" xmi:id="_5hRtYJaoEeepvdgZQhYc4Q" elementId="com.kms.katalon.composer.testsuite.collection.addon.injection" contributionURI="bundleclass://com.kms.katalon.composer.testsuite.collection/com.kms.katalon.composer.testsuite.collection.addon.TestSuiteCollectionDependencyInjectionAddon"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_1qDbMCPzEeatKfnEt6puiw" featurename="children" parentElementId="com.kms.katalon.menu.submenu.new" positionInList="before:com.kms.katalon.menu.submenu.new.testobject">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_4x4u0CPzEeatKfnEt6puiw" elementId="com.kms.katalon.composer.testsuite.collection.handledmenuitem.new" label="Test Suite Collection" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/test_suite_collection_16.png" command="_Ov8x8BJ3EeaBC_8l6YNNlg"/>

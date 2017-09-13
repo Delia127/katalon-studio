@@ -33,8 +33,6 @@ public class ComposerTestsuiteCollectionMessageConstants extends NLS {
 
     public static String HDL_MSG_UNABLE_TO_CREATE_TEST_SUITE_COLLECTION;
 
-    public static String DIA_TITLE_RUN_CONFIG_SELECTION;
-
     public static String DIA_TITLE_TEST_COLLECTION_SUITE_PROPERTIES;
 
     public static String PA_LBL_LAST_UPDATED;

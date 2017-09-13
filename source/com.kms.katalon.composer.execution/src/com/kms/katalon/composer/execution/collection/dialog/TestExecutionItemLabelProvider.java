@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.testsuite.collection.part.provider;
+package com.kms.katalon.composer.execution.collection.dialog;
 
 import java.net.MalformedURLException;
 
@@ -7,7 +7,7 @@ import org.eclipse.swt.graphics.Image;
 import com.kms.katalon.composer.components.impl.providers.TypeCheckedLabelProvider;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ImageUtil;
-import com.kms.katalon.composer.testsuite.collection.execution.provider.TestExecutionItem;
+import com.kms.katalon.composer.execution.collection.provider.TestExecutionItem;
 
 public class TestExecutionItemLabelProvider extends TypeCheckedLabelProvider<TestExecutionItem> {
 

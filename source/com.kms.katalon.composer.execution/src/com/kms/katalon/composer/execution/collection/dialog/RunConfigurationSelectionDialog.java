@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.testsuite.collection.part.dialog;
+package com.kms.katalon.composer.execution.collection.dialog;
 
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -17,13 +17,11 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TreeColumn;
 
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
-import com.kms.katalon.composer.testsuite.collection.constant.StringConstants;
-import com.kms.katalon.composer.testsuite.collection.execution.collector.TestExecutionGroupCollector;
-import com.kms.katalon.composer.testsuite.collection.execution.provider.TestExecutionConfigurationProvider;
-import com.kms.katalon.composer.testsuite.collection.execution.provider.TestExecutionEntryItem;
-import com.kms.katalon.composer.testsuite.collection.execution.provider.TestExecutionGroup;
-import com.kms.katalon.composer.testsuite.collection.part.provider.TestExecutionItemLabelProvider;
-import com.kms.katalon.composer.testsuite.collection.part.provider.TestExecutionItemTreeContentProvider;
+import com.kms.katalon.composer.execution.collection.collector.TestExecutionGroupCollector;
+import com.kms.katalon.composer.execution.collection.provider.TestExecutionConfigurationProvider;
+import com.kms.katalon.composer.execution.collection.provider.TestExecutionEntryItem;
+import com.kms.katalon.composer.execution.collection.provider.TestExecutionGroup;
+import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageConstants;
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 
 public class RunConfigurationSelectionDialog extends AbstractDialog {
@@ -54,7 +52,8 @@ public class RunConfigurationSelectionDialog extends AbstractDialog {
                     return;
                 }
                 getButton(OK).setEnabled(true);
-                testRunConfigurationEntry = ((TestExecutionEntryItem) selection.getFirstElement()).toConfigurationEntity();
+                testRunConfigurationEntry = ((TestExecutionEntryItem) selection.getFirstElement())
+                        .toConfigurationEntity(testRunConfigurationEntry);
             }
         });
 
@@ -78,16 +77,17 @@ public class RunConfigurationSelectionDialog extends AbstractDialog {
         if (testRunConfigurationEntry == null) {
             return;
         }
-        TestExecutionGroup group = TestExecutionGroupCollector.getInstance().getGroup(testRunConfigurationEntry.getGroupName());
-        TestExecutionConfigurationProvider executionProvider = TestExecutionGroupCollector.getInstance().getExecutionProvider(
-                testRunConfigurationEntry);
+        TestExecutionGroup group = TestExecutionGroupCollector.getInstance()
+                .getGroup(testRunConfigurationEntry.getGroupName());
+        TestExecutionConfigurationProvider executionProvider = TestExecutionGroupCollector.getInstance()
+                .getExecutionProvider(testRunConfigurationEntry);
         if (group == null || executionProvider == null) {
             return;
         }
         TreePath treePath = new TreePath(new Object[] { group, executionProvider });
         treeViewer.setSelection(new TreeSelection(treePath));
     }
-    
+
     @Override
     protected Point getInitialSize() {
         return new Point(400, 400);
@@ -106,7 +106,7 @@ public class RunConfigurationSelectionDialog extends AbstractDialog {
     }
 
     public String getDialogTitle() {
-        return StringConstants.DIA_TITLE_RUN_CONFIG_SELECTION;
+        return ComposerExecutionMessageConstants.DIA_TITLE_RUN_CONFIG_SELECTION;
     }
 
     public RunConfigurationDescription getSelectedConfiguration() {

@@ -61,4 +61,9 @@ public class ImageConstants {
 
     public static final Image IMG_24_REMOVE = ImageManager.getImage(IImageKeys.DELETE_16);
 
+    public static final String IMG_URL_16_CUSTOM = ImageManager.getImageURLString(IImageKeys.CUSTOM_EXECUTION_16);
+    
+    // GenerateCommandDialog
+    public static final Image IMG_16_EDIT = ImageManager.getImage(IImageKeys.EDIT_16);
+
 }
