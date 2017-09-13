@@ -110,6 +110,9 @@ public class ExecutionMessageConstants extends NLS {
     public static String PREF_DEFAULT_EMAIL_SUBJECT;
 
     public static String CONSOLE_CANNOT_START_EXECUTION;
+    
+    // ConsoleOptionBuilder
+    public static String CONSOLE_RUN_CONFIGURATION_NOT_FOUND;
 
     static {
         // initialize resource bundle

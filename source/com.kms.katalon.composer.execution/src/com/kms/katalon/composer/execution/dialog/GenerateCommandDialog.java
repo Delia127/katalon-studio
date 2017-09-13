@@ -703,7 +703,7 @@ public class GenerateCommandDialog extends AbstractDialog {
         }
 
         if (isTestSuite(txtTestSuite.getText())) {
-            commandBuilder.append(ConsoleOptionBuilder.from(runConfigDescription));
+            commandBuilder.append(" ").append(ConsoleOptionBuilder.from(runConfigDescription));
         }
 
         return commandBuilder.toString();
