@@ -1,6 +1,8 @@
 package com.kms.katalon.execution.console;
 
 import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 import com.kms.katalon.execution.collector.RunConfigurationCollector;
@@ -9,8 +11,7 @@ import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.exception.ExecutionException;
 
 public class ConsoleOptionBuilder {
-
-    public static String from(RunConfigurationDescription description) throws ExecutionException {
+    public static Map<String, String> argsMap(RunConfigurationDescription description) throws ExecutionException {
         IRunConfigurationContributor contributor = RunConfigurationCollector.getInstance()
                 .getRunContributor(description.getRunConfigurationId());
         if (contributor == null) {
@@ -18,11 +19,11 @@ public class ConsoleOptionBuilder {
                     MessageFormat.format(ExecutionMessageConstants.CONSOLE_RUN_CONFIGURATION_NOT_FOUND,
                             description.getRunConfigurationId()));
         }
-        StringBuilder consoleOptionBuider = new StringBuilder();
-        consoleOptionBuider.append(String.format("-%s=\"%s\"", "browserType", contributor.getId()));
+        Map<String, String> argsMap = new HashMap<>();
+        argsMap.put("browserType", contributor.getId());
         contributor.getConsoleOptions(description).forEach(opt -> {
-            consoleOptionBuider.append(String.format(" -%s=\"%s\"", opt.getOption(), String.valueOf(opt.getValue())));
+            argsMap.put(opt.getOption(), "\"" + String.valueOf(opt.getValue()) + "\"");
         });
-        return consoleOptionBuider.toString();
+        return argsMap;
     }
 }

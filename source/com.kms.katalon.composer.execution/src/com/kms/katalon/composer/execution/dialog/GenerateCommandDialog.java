@@ -72,6 +72,7 @@ import com.kms.katalon.execution.console.ConsoleMain;
 import com.kms.katalon.execution.console.ConsoleOptionBuilder;
 import com.kms.katalon.execution.console.entity.OsgiConsoleOptionContributor;
 import com.kms.katalon.execution.entity.DefaultRerunSetting;
+import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
@@ -678,7 +679,7 @@ public class GenerateCommandDialog extends AbstractDialog {
         }
     }
 
-    private String generateCommand() throws Exception {
+    private String generateCommand() throws ExecutionException {
         Map<String, String> consoleAgrsMap = getUserConsoleAgrsMap(GenerateCommandMode.CONSOLE_COMMAND);
         StringBuilder commandBuilder = new StringBuilder();
 
@@ -701,15 +702,11 @@ public class GenerateCommandDialog extends AbstractDialog {
                 commandBuilder.append(value);
             }
         }
-
-        if (isTestSuite(txtTestSuite.getText())) {
-            commandBuilder.append(" ").append(ConsoleOptionBuilder.from(runConfigDescription));
-        }
-
         return commandBuilder.toString();
     }
 
-    private Map<String, String> getUserConsoleAgrsMap(GenerateCommandMode generateCommandMode) {
+    private Map<String, String> getUserConsoleAgrsMap(GenerateCommandMode generateCommandMode)
+            throws ExecutionException {
         Map<String, String> args = new LinkedHashMap<String, String>();
         if (generateCommandMode == GenerateCommandMode.CONSOLE_COMMAND) {
             args.put(ARG_RUN_MODE, Application.RUN_MODE_OPTION_CONSOLE);
@@ -740,9 +737,7 @@ public class GenerateCommandDialog extends AbstractDialog {
         if (isTestSuite(entityId)) {
             args.put(ARG_TEST_SUITE_PATH, getArgumentValueToSave(entityId, generateCommandMode));
 
-            // String browserType = browserTypeIs(BROWSER_TYPE_CUSTOM) ? comboCustomExecution.getText()
-            // : comboBrowser.getText();
-            // args.put(ARG_BROWSER_TYPE, getArgumentValueToSave(browserType, generateCommandMode));
+            args.putAll(ConsoleOptionBuilder.argsMap(runConfigDescription));
         } else {
             args.put(ARG_TEST_SUITE_COLLECTION_PATH, getArgumentValueToSave(entityId, generateCommandMode));
             return args;
