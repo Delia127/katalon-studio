@@ -16,5 +16,5 @@
 		  + Open Firefox and enter "about:debugging" in url bar
 		  + Check "Enable add-on debugging"
 		  + Load Katalon Utility addon
-		- Build the extension by submiting at https://addons.mozilla.org/en-US/developers/addons with account: katalon-service@kms-technology.com/6UlRK0vykEDoXEOZvwwy
+		- Build the extension by submiting at https://addons.mozilla.org/en-US/developers/addons with account: katalon-service@kms-technology.com/pFkNPmSXglelflShDGox
 		- After signing completed, downloaded the signed xpi file and replace the xpi file in the <recorder project location>\resources\extensions\Firefox folder.
