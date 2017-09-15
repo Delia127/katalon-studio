@@ -41,7 +41,7 @@ public class SeleniumKeysUtil {
         StringBuilder readableText = new StringBuilder();
         lstKeys.forEach(keys -> {
             String keyName = keys.name();
-            if (keys == Keys.META) {
+            if (keys == Keys.META && System.getProperty("os.name").toLowerCase().contains("mac")) {
                 keyName = Keys.COMMAND.name();
             }
             readableText.append(String.format("%s + ", keyName));
