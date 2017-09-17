@@ -36,11 +36,6 @@ public abstract class MobileRunConfigurationContributor implements IRunConfigura
         public String getOption() {
             return com.kms.katalon.core.appium.constants.AppiumStringConstants.CONF_EXECUTED_DEVICE_ID;
         }
-
-        @Override
-        public boolean isRequired() {
-            return false;
-        };
     };
 
     @Override
