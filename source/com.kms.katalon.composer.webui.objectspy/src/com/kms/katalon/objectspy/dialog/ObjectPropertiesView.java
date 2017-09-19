@@ -5,12 +5,13 @@ import static com.kms.katalon.composer.components.impl.util.ControlUtils.isReady
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -49,24 +50,23 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
-import org.osgi.service.event.Event;
-import org.osgi.service.event.EventHandler;
 
-import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.dialogs.AddTestObjectPropertyDialog;
 import com.kms.katalon.composer.components.impl.editors.StringComboBoxCellEditor;
+import com.kms.katalon.composer.components.impl.listener.EventListener;
+import com.kms.katalon.composer.components.impl.listener.EventManager;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.objectspy.constants.ImageConstants;
-import com.kms.katalon.objectspy.constants.ObjectSpyEventConstants;
 import com.kms.katalon.objectspy.constants.ObjectspyMessageConstants;
 import com.kms.katalon.objectspy.constants.StringConstants;
 import com.kms.katalon.objectspy.element.WebElement;
 import com.kms.katalon.objectspy.element.WebPage;
 
-public class ObjectPropertiesView extends Composite implements EventHandler {
+public class ObjectPropertiesView extends Composite
+        implements EventListener<ObjectSpyEvent>, EventManager<ObjectSpyEvent> {
 
     private static final String WARN_MSG_OBJECT_PROPERTY_NAME_IS_EXISTED = ObjectspyMessageConstants.WARN_MSG_OBJECT_PROPERTY_NAME_IS_EXISTED;
 
@@ -106,13 +106,13 @@ public class ObjectPropertiesView extends Composite implements EventHandler {
 
     private Shell shell;
 
-    private IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
-
     private Map<SelectorMethod, Button> selectorButtons = new HashMap<>();
 
     private Composite tableAndButtonsComposite;
 
     private int lastHeight = -1;
+
+    private Map<ObjectSpyEvent, Set<EventListener<ObjectSpyEvent>>> eventListeners = new HashMap<>();
 
     public ObjectPropertiesView(Composite parent, int style) {
         super(parent, style);
@@ -159,20 +159,21 @@ public class ObjectPropertiesView extends Composite implements EventHandler {
         }
         this.setLayoutData(gdView);
         tableAndButtonsComposite.getParent().getParent().layout(true, true);
-        // eventBroker.post(ObjectSpyEventConstants.DIALOG_SIZE_CHANGED, null);
+
+        invoke(ObjectSpyEvent.REQUEST_DIALOG_RESIZE, null);
     }
 
     public WebElement getWebElement() {
         return webElement;
     }
 
-    public void setWebElement(WebElement webElement) {
+    private void setWebElement(WebElement webElement) {
         this.webElement = webElement;
         enableControls();
         txtName.setText(webElement != null ? webElement.getName() : StringUtils.EMPTY);
         populateSelectionMethod();
         updateWebObjectProperties();
-        eventBroker.post(ObjectSpyEventConstants.SELECTED_OBJECT_CHANGED, this.webElement);
+        sendPropertiesChangedEvent();
     }
 
     private void setLayoutAndLayoutData() {
@@ -623,7 +624,7 @@ public class ObjectPropertiesView extends Composite implements EventHandler {
     }
 
     private void sendPropertiesChangedEvent() {
-        eventBroker.post(ObjectSpyEventConstants.OBJECT_PROPERTIES_CHANGED, webElement);
+        invoke(ObjectSpyEvent.ELEMENT_PROPERTIES_CHANGED, webElement);
     }
 
     public void setRefreshCapturedObjectsTree(Runnable refreshTreeRunnable) {
@@ -672,7 +673,6 @@ public class ObjectPropertiesView extends Composite implements EventHandler {
     }
 
     private WebElementPropertyEntity openAddPropertyDialog() {
-        // shell.setSize(0, 0);
         AddTestObjectPropertyDialog dialog = new AddTestObjectPropertyDialog(shell);
 
         if (dialog.open() != Window.OK) {
@@ -725,14 +725,13 @@ public class ObjectPropertiesView extends Composite implements EventHandler {
     }
 
     protected void updateWebObjectProperties() {
-
         tProperty.removeAll();
         List<WebElementPropertyEntity> properties = webElement == null ? Collections.emptyList() : getProperties();
         tvProperty.setInput(properties);
-        if (webElement != null && webElement.getSelectorMethod() == SelectorMethod.BASIC) {
+        if (webElement == null) {
             displayPropertiesTableComposite(true);
         } else {
-            displayPropertiesTableComposite(false);
+            displayPropertiesTableComposite(webElement.getSelectorMethod() == SelectorMethod.BASIC);
         }
         cSelected.setText(getCheckboxIcon(isAllPropetyEnabled()));
         boolean hasProperty = !properties.isEmpty();
@@ -757,12 +756,6 @@ public class ObjectPropertiesView extends Composite implements EventHandler {
     }
 
     @Override
-    public void handleEvent(Event event) {
-        // TODO Handle subscribed events
-
-    }
-
-    @Override
     public void dispose() {
         unsubscribeEvents();
         super.dispose();
@@ -776,5 +769,33 @@ public class ObjectPropertiesView extends Composite implements EventHandler {
     private boolean hasPropertySelected() {
         StructuredSelection selection = (StructuredSelection) tvProperty.getSelection();
         return selection != null && selection.getFirstElement() != null;
+    }
+
+    @Override
+    public void handleEvent(ObjectSpyEvent event, Object object) {
+        switch (event) {
+            case SELECTED_ELEMENT_CHANGED:
+                setWebElement((WebElement) object);
+                return;
+            default:
+                return;
+        }
+    }
+
+    @Override
+    public Iterable<EventListener<ObjectSpyEvent>> getListeners(ObjectSpyEvent event) {
+        return eventListeners.get(event);
+    }
+
+    @Override
+    public void addListener(EventListener<ObjectSpyEvent> listener, Iterable<ObjectSpyEvent> events) {
+        events.forEach(e -> {
+            Set<EventListener<ObjectSpyEvent>> listenerOnEvent = eventListeners.get(e);
+            if (listenerOnEvent == null) {
+                listenerOnEvent = new HashSet<>();
+            }
+            listenerOnEvent.add(listener);
+            eventListeners.put(e, listenerOnEvent);
+        });
     }
 }

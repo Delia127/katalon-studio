@@ -115,6 +115,7 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.TERMINATE_16);
         ImageManager.registerImage(IImageKeys.TREE_16);
         ImageManager.registerImage(IImageKeys.WATCH_16);
+        ImageManager.registerImage(IImageKeys.UNWATCH_16);
         ImageManager.registerImage(IImageKeys.MAP_ALL_16);
         ImageManager.registerImage(IImageKeys.RECENT_16);
 

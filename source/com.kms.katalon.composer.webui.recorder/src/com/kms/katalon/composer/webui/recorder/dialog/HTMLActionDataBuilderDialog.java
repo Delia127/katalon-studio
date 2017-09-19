@@ -31,7 +31,7 @@ import com.kms.katalon.composer.webui.recorder.dialog.provider.HTMLActionValueTy
 import com.kms.katalon.composer.webui.recorder.type.HTMLActionPropertyValueType;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testobject.TestObject;
-import com.kms.katalon.objectspy.element.HTMLElement;
+import com.kms.katalon.objectspy.element.WebElement;
 
 public class HTMLActionDataBuilderDialog extends Dialog {
     private List<HTMLActionParamMapping> actionParamMappings;
@@ -106,7 +106,7 @@ public class HTMLActionDataBuilderDialog extends Dialog {
     }
 
     private HTMLActionPropertyValueType getAditionalParamValueType() {
-        HTMLElement targetElement = actionParamMapping.getTargetElement();
+        WebElement targetElement = actionParamMapping.getTargetElement();
         return (targetElement != null) ? new HTMLActionPropertyValueType(targetElement) : null;
     }
 

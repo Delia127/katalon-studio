@@ -12,7 +12,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -26,11 +25,9 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.osgi.framework.FrameworkUtil;
-import org.osgi.service.event.Event;
 
-import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.control.GifCLabel;
-import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
+import com.kms.katalon.composer.components.impl.listener.EventListener;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
@@ -38,7 +35,6 @@ import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.core.webui.common.WebUiCommonHelper;
 import com.kms.katalon.objectspy.constants.ImageConstants;
-import com.kms.katalon.objectspy.constants.ObjectSpyEventConstants;
 import com.kms.katalon.objectspy.constants.ObjectspyMessageConstants;
 import com.kms.katalon.objectspy.core.InspectSession;
 import com.kms.katalon.objectspy.element.WebElement;
@@ -51,7 +47,7 @@ import com.kms.katalon.objectspy.websocket.AddonCommand;
 import com.kms.katalon.objectspy.websocket.AddonSocket;
 import com.kms.katalon.objectspy.websocket.messages.AddonMessage;
 
-public class ObjectVerifyAndHighlightView {
+public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEvent> {
 
     private static final String HIGHLIGHT_JS_PATH = "/resources/js/highlight.js";
 
@@ -64,8 +60,6 @@ public class ObjectVerifyAndHighlightView {
     private GifCLabel connectingLabel;
 
     private InputStream inputStream;
-
-    private IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
 
     private Label lblConnecting;
 
@@ -125,59 +119,11 @@ public class ObjectVerifyAndHighlightView {
         btnVerifyAndHighlight.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
         btnVerifyAndHighlight.setText(ObjectspyMessageConstants.DIA_LBL_VERIFY_AND_HIGHLIGHT);
 
-        registerEventListeners();
-
         registerControlModifyListeners();
 
         onElementChanged();
 
         return composite;
-    }
-
-    private void registerEventListeners() {
-        EventServiceAdapter webElementChangedEventHandler = new EventServiceAdapter() {
-
-            @Override
-            public void handleEvent(Event event) {
-                webElement = (WebElement) getObject(event);
-
-                if (webElement instanceof WebPage) {
-                    webElement = null;
-                }
-                onElementChanged();
-            }
-        };
-        eventBroker.subscribe(ObjectSpyEventConstants.SELECTED_OBJECT_CHANGED, webElementChangedEventHandler);
-        eventBroker.subscribe(ObjectSpyEventConstants.OBJECT_PROPERTIES_CHANGED, webElementChangedEventHandler);
-
-        eventBroker.subscribe(ObjectSpyEventConstants.SELECTOR_VALUE_CHANGED, new EventServiceAdapter() {
-
-            @Override
-            public void handleEvent(Event event) {
-                changeBtnVerifyAndHighlightState();
-            }
-
-        });
-
-        eventBroker.subscribe(ObjectSpyEventConstants.SESSION_STARTED, new EventServiceAdapter() {
-
-            @Override
-            public void handleEvent(Event event) {
-                seleniumSession = (InspectSession) getObject(event);
-                activeBrowserSession = null;
-                onElementChanged();
-            }
-        });
-
-        eventBroker.subscribe(ObjectSpyEventConstants.ADDON_STARTED, new EventServiceAdapter() {
-
-            @Override
-            public void handleEvent(Event event) {
-                activeBrowserSession = (AddonSocket) getObject(event);
-                seleniumSession = null;
-                onElementChanged();
-            }
-        });
     }
 
     private void registerControlModifyListeners() {
@@ -401,5 +347,33 @@ public class ObjectVerifyAndHighlightView {
 
             connectingComposite.getParent().layout(true, true);
         });
+    }
+
+    @Override
+    public void handleEvent(ObjectSpyEvent event, Object object) {
+        switch (event) {
+            case SELENIUM_SESSION_STARTED:
+                seleniumSession = (InspectSession) object;
+                activeBrowserSession = null;
+                onElementChanged();
+                return;
+            case ADDON_SESSION_STARTED:
+                activeBrowserSession = (AddonSocket) object;
+                seleniumSession = null;
+                onElementChanged();
+                break;
+            case ELEMENT_PROPERTIES_CHANGED:
+            case SELECTED_ELEMENT_CHANGED:
+            case SELECTOR_HAS_CHANGED:
+                webElement = (WebElement) object;
+
+                if (webElement instanceof WebPage) {
+                    webElement = null;
+                }
+                onElementChanged();
+                return;
+            default:
+                return;
+        }
     }
 }

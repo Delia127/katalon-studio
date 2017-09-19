@@ -1,6 +1,10 @@
 package com.kms.katalon.objectspy.dialog;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -16,9 +20,9 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ToolTip;
-import org.osgi.service.event.Event;
-import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.composer.components.impl.listener.EventListener;
+import com.kms.katalon.composer.components.impl.listener.EventManager;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.objectspy.constants.ImageConstants;
 import com.kms.katalon.objectspy.constants.StringConstants;
@@ -27,15 +31,17 @@ import com.kms.katalon.objectspy.element.WebPage;
 import com.kms.katalon.objectspy.element.tree.WebElementLabelProvider;
 import com.kms.katalon.objectspy.element.tree.WebElementTreeContentProvider;
 
-public class CapturedObjectsView extends Composite implements EventHandler {
+public class CapturedObjectsView extends Composite implements EventManager<ObjectSpyEvent> {
 
     private TreeViewer treeViewer;
 
     private WebElement selectedObject;
-    
+
     private Label lblInfo;
-    
+
     private ToolTip infoTooltip;
+
+    private Map<ObjectSpyEvent, Set<EventListener<ObjectSpyEvent>>> eventListeners = new HashMap<>();
 
     public CapturedObjectsView(Composite parent, int style) {
         super(parent, style);
@@ -66,18 +72,18 @@ public class CapturedObjectsView extends Composite implements EventHandler {
         glCapturedObjectsComposite.marginWidth = 0;
         glCapturedObjectsComposite.marginHeight = 0;
         capturedObjectsComposite.setLayout(glCapturedObjectsComposite);
-        
+
         Label lblCapturedObjects = new Label(capturedObjectsComposite, SWT.NONE);
         lblCapturedObjects.setFont(ControlUtils.getFontBold(lblCapturedObjects));
         lblCapturedObjects.setText(StringConstants.DIA_LBL_CAPTURED_OBJECTS);
-        
+
         lblInfo = new Label(capturedObjectsComposite, SWT.NONE);
-        
+
         GridData gdLblInfo = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
         gdLblInfo.heightHint = 16;
         lblInfo.setLayoutData(gdLblInfo);
         lblInfo.setImage(ImageConstants.IMG_16_HELP);
-        
+
         infoTooltip = new ToolTip(this.getShell(), SWT.BALLOON);
         infoTooltip.setMessage(StringConstants.TOOLTIP_CAPTURED_OBJECTS_HELP);
 
@@ -88,7 +94,6 @@ public class CapturedObjectsView extends Composite implements EventHandler {
         treeViewer.setLabelProvider(new WebElementLabelProvider());
     }
 
-    
     private void addControlListeners() {
         treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
             @Override
@@ -103,12 +108,10 @@ public class CapturedObjectsView extends Composite implements EventHandler {
                     return;
                 }
 
-                selectedObject = (WebElement) selection;
-                // TODO Send event about selection has changed
+                invoke(ObjectSpyEvent.SELECTED_ELEMENT_CHANGED, selection);
             }
         });
-        
-        
+
         lblInfo.addMouseTrackListener(new MouseTrackAdapter() {
             @Override
             public void mouseEnter(MouseEvent e) {
@@ -116,7 +119,7 @@ public class CapturedObjectsView extends Composite implements EventHandler {
                 infoTooltip.setLocation(location.x, location.y - e.y + lblInfo.getSize().y);
                 infoTooltip.setVisible(true);
             }
-            
+
             @Override
             public void mouseExit(MouseEvent e) {
                 infoTooltip.setVisible(false);
@@ -171,12 +174,6 @@ public class CapturedObjectsView extends Composite implements EventHandler {
     }
 
     @Override
-    public void handleEvent(Event event) {
-        // TODO Handle subscribed events
-
-    }
-
-    @Override
     public void dispose() {
         unsubscribeEvents();
         super.dispose();
@@ -185,6 +182,23 @@ public class CapturedObjectsView extends Composite implements EventHandler {
     @Override
     protected void checkSubclass() {
         // Disable the check that prevents subclassing of SWT components
+    }
+
+    @Override
+    public Iterable<EventListener<ObjectSpyEvent>> getListeners(ObjectSpyEvent event) {
+        return eventListeners.get(event);
+    }
+
+    @Override
+    public void addListener(EventListener<ObjectSpyEvent> listener, Iterable<ObjectSpyEvent> events) {
+        events.forEach(e -> {
+            Set<EventListener<ObjectSpyEvent>> listenerOnEvent = eventListeners.get(e);
+            if (listenerOnEvent == null) {
+                listenerOnEvent = new HashSet<>();
+            }
+            listenerOnEvent.add(listener);
+            eventListeners.put(e, listenerOnEvent);
+        });
     }
 
 }

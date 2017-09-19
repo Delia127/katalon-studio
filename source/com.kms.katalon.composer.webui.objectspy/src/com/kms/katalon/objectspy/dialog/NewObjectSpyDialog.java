@@ -2,6 +2,7 @@ package com.kms.katalon.objectspy.dialog;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,9 +21,7 @@ import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -44,6 +43,7 @@ import org.osgi.service.event.EventHandler;
 import org.w3c.dom.Document;
 
 import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
+import com.kms.katalon.composer.components.impl.listener.EventListener;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
@@ -56,7 +56,6 @@ import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.objectspy.constants.ImageConstants;
-import com.kms.katalon.objectspy.constants.ObjectSpyEventConstants;
 import com.kms.katalon.objectspy.constants.ObjectSpyPreferenceConstants;
 import com.kms.katalon.objectspy.constants.ObjectspyMessageConstants;
 import com.kms.katalon.objectspy.constants.StringConstants;
@@ -77,7 +76,8 @@ import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 @SuppressWarnings("restriction")
-public class NewObjectSpyDialog extends Dialog implements EventHandler, HTMLElementCollector {
+public class NewObjectSpyDialog extends Dialog
+        implements EventHandler, HTMLElementCollector, EventListener<ObjectSpyEvent> {
 
     private static final String DIA_BOUNDS_SET = "DIALOG_BOUNDS_SET";
 
@@ -115,6 +115,10 @@ public class NewObjectSpyDialog extends Dialog implements EventHandler, HTMLElem
 
     private ObjectVerifyAndHighlightView verifyView;
 
+    private ObjectSpySelectorEditor selectorEditor;
+
+    private Composite bodyComposite;
+
     /**
      * Create the dialog.
      * 
@@ -136,7 +140,6 @@ public class NewObjectSpyDialog extends Dialog implements EventHandler, HTMLElem
         this.logger = logger;
         this.eventBroker = eventBroker;
         eventBroker.subscribe(EventConstants.OBJECT_SPY_HTML_ELEMENT_CAPTURED, this);
-        eventBroker.subscribe(ObjectSpyEventConstants.DIALOG_SIZE_CHANGED, this);
         isDisposed = false;
         pages = new ArrayList<>();
         startSocketServer();
@@ -166,33 +169,63 @@ public class NewObjectSpyDialog extends Dialog implements EventHandler, HTMLElem
      */
     @Override
     protected Control createDialogArea(Composite parent) {
-        Composite bodyComposite = new Composite(parent, SWT.NONE);
+        bodyComposite = new Composite(parent, SWT.NONE);
         bodyComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         bodyComposite.setLayout(new GridLayout(1, false));
 
         Composite toolbarComposite = new Composite(bodyComposite, SWT.NONE);
         toolbarComposite.setLayout(new GridLayout());
         toolbarComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
-        addStartBrowserToolbar(toolbarComposite);
+
+        urlView = new ObjectSpyUrlView(this);
+        urlView.addStartBrowserToolbar(toolbarComposite);
+
         addElementTreeToolbar(toolbarComposite);
 
         createCapturedObjectsAndPropertiesView(bodyComposite);
 
-        ObjectSpySelectorEditor selectorEditor = new ObjectSpySelectorEditor();
+        selectorEditor = new ObjectSpySelectorEditor();
         selectorEditor.createObjectSelectorEditor(bodyComposite);
 
         Composite bottomComposite = new Composite(bodyComposite, SWT.NONE);
         GridLayout bottomLayout = new GridLayout(2, false);
+        bottomLayout.marginHeight = 0;
+        bottomLayout.marginWidth = 0;
         bottomComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         bottomComposite.setLayout(bottomLayout);
 
-        new HelpCompositeForDialog(bottomComposite, DocumentationMessageConstants.DIALOG_OBJECT_SPY_WEB_UI);
+        new HelpCompositeForDialog(bottomComposite, DocumentationMessageConstants.DIALOG_OBJECT_SPY_WEB_UI) {
+
+            @Override
+            protected GridLayout createLayout() {
+                GridLayout layout = new GridLayout();
+                layout.marginHeight = 0;
+                layout.marginBottom = 5;
+                layout.marginWidth = 0;
+                return layout;
+            }
+        };
 
         verifyView = new ObjectVerifyAndHighlightView();
         verifyView.createVerifyAndHighlightView(bottomComposite, GridData.FILL_HORIZONTAL);
 
         addControlListeners();
+
+        registerObjectSpyEventListeners();
         return bodyComposite;
+    }
+
+    private void registerObjectSpyEventListeners() {
+        urlView.addListener(verifyView,
+                Arrays.asList(ObjectSpyEvent.ADDON_SESSION_STARTED, ObjectSpyEvent.SELENIUM_SESSION_STARTED));
+
+        capturedObjectsView.addListener(objectPropertiesView, Arrays.asList(ObjectSpyEvent.SELECTED_ELEMENT_CHANGED));
+        capturedObjectsView.addListener(this, Arrays.asList(ObjectSpyEvent.SELECTED_ELEMENT_CHANGED));
+
+        selectorEditor.addListener(verifyView, Arrays.asList(ObjectSpyEvent.SELECTOR_HAS_CHANGED));
+        objectPropertiesView.addListener(selectorEditor, Arrays.asList(ObjectSpyEvent.ELEMENT_PROPERTIES_CHANGED));
+        objectPropertiesView.addListener(verifyView, Arrays.asList(ObjectSpyEvent.ELEMENT_PROPERTIES_CHANGED));
+        objectPropertiesView.addListener(this, Arrays.asList(ObjectSpyEvent.REQUEST_DIALOG_RESIZE));
     }
 
     private void createCapturedObjectsAndPropertiesView(Composite bodyComposite) {
@@ -286,6 +319,7 @@ public class NewObjectSpyDialog extends Dialog implements EventHandler, HTMLElem
                     parent.getChildren().remove(webElement);
                 }
                 capturedObjectsView.refreshTree(null);
+                objectPropertiesView.refreshTable(null);
             }
         });
 
@@ -302,28 +336,6 @@ public class NewObjectSpyDialog extends Dialog implements EventHandler, HTMLElem
             }
         });
 
-        capturedObjectsView.getTreeViewer().addSelectionChangedListener(new ISelectionChangedListener() {
-            @Override
-            public void selectionChanged(SelectionChangedEvent event) {
-                if (!(event.getSelection() instanceof TreeSelection)) {
-                    return;
-                }
-
-                TreeSelection treeSelection = (TreeSelection) event.getSelection();
-                Object selection = treeSelection.getFirstElement();
-
-                addElementToolItem.setEnabled(selection instanceof WebElement);
-                addFrameElementToolItem.setEnabled(selection instanceof WebElement);
-                removeElementToolItem.setEnabled(selection instanceof WebElement);
-
-                if (!(selection instanceof WebElement)) {
-                    return;
-                }
-
-                objectPropertiesView.setWebElement((WebElement) selection);
-            }
-        });
-
         objectPropertiesView.setRefreshCapturedObjectsTree(new Runnable() {
 
             @Override
@@ -331,11 +343,6 @@ public class NewObjectSpyDialog extends Dialog implements EventHandler, HTMLElem
                 capturedObjectsView.refreshTree(null);
             }
         });
-    }
-
-    public void addStartBrowserToolbar(Composite toolbarComposite) {
-        urlView = new ObjectSpyUrlView(this);
-        urlView.addStartBrowserToolbar(toolbarComposite);
     }
 
     @Override
@@ -599,10 +606,10 @@ public class NewObjectSpyDialog extends Dialog implements EventHandler, HTMLElem
             addNewElement((WebElement) dataObject);
             return;
         }
-        if (event.getTopic() == ObjectSpyEventConstants.DIALOG_SIZE_CHANGED) {
-            Shell shell = getShell();
-            shell.setSize(shell.getSize().x, getInitialSize().y);
-        }
+        // if (event.getTopic() == ObjectSpyEventConstants.DIALOG_SIZE_CHANGED) {
+        // Shell shell = getShell();
+        // shell.setSize(shell.getSize().x, getInitialSize().y);
+        // }
     }
 
     private WebPage findPage(WebElement webElement) {
@@ -691,6 +698,24 @@ public class NewObjectSpyDialog extends Dialog implements EventHandler, HTMLElem
     @Override
     protected IDialogSettings getDialogBoundsSettings() {
         return UIUtils.getDialogBoundSettings(getClass());
+    }
+
+    @Override
+    public void handleEvent(ObjectSpyEvent event, Object object) {
+        switch (event) {
+            case SELECTED_ELEMENT_CHANGED:
+                addElementToolItem.setEnabled(object instanceof WebElement);
+                addFrameElementToolItem.setEnabled(object instanceof WebElement);
+                removeElementToolItem.setEnabled(object instanceof WebElement);
+                return;
+            case REQUEST_DIALOG_RESIZE:
+                Shell shell = getShell();
+                shell.setSize(shell.getSize().x, getInitialSize().y);
+                return;
+            default:
+                break;
+        }
+
     }
 
 }
