@@ -25,7 +25,7 @@ import com.kms.katalon.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 
 public class ExecutionPreferencePage extends PreferencePageWithHelp {
-    private Button chckNotifyMe, chckOpenReport, chckQuitDriversTestCase, chckQuitDriversTestSuite;
+    private Button chckOpenReport, chckQuitDriversTestCase, chckQuitDriversTestSuite;
 
     private Text txtDefaultTimeout;
 
@@ -80,9 +80,6 @@ public class ExecutionPreferencePage extends PreferencePageWithHelp {
         grpAfterExecuting.setLayout(glGrpAfterExecuting);
         grpAfterExecuting.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 
-        chckNotifyMe = new Button(grpAfterExecuting, SWT.CHECK);
-        chckNotifyMe.setText(StringConstants.PREF_CHKBOX_NOTIFY_ME_AFTER_EXE_COMPLETELY);
-
         chckOpenReport = new Button(grpAfterExecuting, SWT.CHECK);
         chckOpenReport.setText(StringConstants.PREF_CHKBOX_OPEN_RPT_AFTER_EXE_COMPLETELY);
 
@@ -117,8 +114,6 @@ public class ExecutionPreferencePage extends PreferencePageWithHelp {
     }
 
     private void initialize() {
-        chckNotifyMe.setSelection(getPreferenceStore().getBoolean(
-                ExecutionPreferenceConstants.EXECUTION_NOTIFY_AFTER_EXECUTING));
         chckOpenReport.setSelection(getPreferenceStore().getBoolean(
                 ExecutionPreferenceConstants.EXECUTION_OPEN_REPORT_AFTER_EXECUTING));
         chckQuitDriversTestCase.setSelection(getPreferenceStore().getBoolean(
@@ -163,8 +158,6 @@ public class ExecutionPreferencePage extends PreferencePageWithHelp {
             return;
         }
 
-        chckNotifyMe.setSelection(getPreferenceStore().getDefaultBoolean(
-                ExecutionPreferenceConstants.EXECUTION_NOTIFY_AFTER_EXECUTING));
         chckOpenReport.setSelection(getPreferenceStore().getDefaultBoolean(
                 ExecutionPreferenceConstants.EXECUTION_OPEN_REPORT_AFTER_EXECUTING));
         chckQuitDriversTestCase.setSelection(getPreferenceStore().getDefaultBoolean(
@@ -200,11 +193,6 @@ public class ExecutionPreferencePage extends PreferencePageWithHelp {
     protected void performApply() {
         if (fieldEditorParent == null) {
             return;
-        }
-
-        if (chckNotifyMe != null) {
-            getPreferenceStore().setValue(ExecutionPreferenceConstants.EXECUTION_NOTIFY_AFTER_EXECUTING,
-                    chckNotifyMe.getSelection());
         }
 
         if (chckOpenReport != null) {
