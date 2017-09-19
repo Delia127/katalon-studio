@@ -2,6 +2,7 @@ package com.kms.katalon.objectspy.element;
 
 import java.text.MessageFormat;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -11,7 +12,10 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.w3c.dom.Element;
 
-public class HTMLElement {
+import com.kms.katalon.core.testobject.SelectorCollector;
+import com.kms.katalon.core.testobject.SelectorMethod;
+
+public class HTMLElement implements SelectorCollector, XPathProvider {
     private static final String AND_OPERATOR = " and ";
     private static final String TEXT_METHOD = "text";
     private static final String CSS_SELECTOR = "css";
@@ -19,6 +23,10 @@ public class HTMLElement {
     private static final String XPATH_FIND_BY_ATTRIBUTE = "@{0}=''{1}''";
     private static final String XPATH_FIND_BY_TEXT = TEXT_METHOD + "()=''{0}''";
     private static final String XPATH_EXPRESSION = "//{0}[{1}]";
+    
+    private SelectorMethod selectorMethod = SelectorMethod.BASIC;
+    
+    private Map<SelectorMethod, String> selectorCollection = new HashMap<>();
 
     public enum HTMLStatus {
 		NotVerified, Exists, Missing, Changed, Multiple, Invalid
@@ -182,5 +190,30 @@ public class HTMLElement {
 
     public HTMLElement softClone() {
         return new HTMLElement(getName(), getType(), getAttributes(), null);
+    }
+
+    @Override
+    public SelectorMethod getSelectorMethod() {
+        return selectorMethod;
+    }
+
+    @Override
+    public void setSelectorMethod(SelectorMethod selectorMethod) {
+        this.selectorMethod = selectorMethod;
+    }
+
+    @Override
+    public void setSelectorValue(SelectorMethod selectorMethod, String selectorValue) {
+        selectorCollection.put(selectorMethod, selectorValue);
+    }
+
+    @Override
+    public Map<SelectorMethod, String> getSelectorCollection() {
+        return selectorCollection;
+    }
+
+    @Override
+    public HTMLElement getParent() {
+        return parentElement;
     }
 }

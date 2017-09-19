@@ -12,7 +12,6 @@ import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
-import com.kms.katalon.objectspy.dialog.ObjectSpyDialog;
 import com.kms.katalon.objectspy.filter.CrossOriginFilter;
 
 @SuppressWarnings("restriction")
@@ -23,7 +22,7 @@ public class HTMLElementCaptureServer {
 
     protected ServletContextHandler context;
 
-    public HTMLElementCaptureServer(Logger logger, ObjectSpyDialog objectSpyDialog) {
+    public HTMLElementCaptureServer(Logger logger, HTMLElementCollector objectSpyDialog) {
         this(0, logger, objectSpyDialog);
         isUsingDynamicPort = true;
     }
@@ -40,12 +39,12 @@ public class HTMLElementCaptureServer {
         server.setHandler(context);
     }
 
-    public HTMLElementCaptureServer(int port, Logger logger, ObjectSpyDialog objectSpyDialog) {
+    public HTMLElementCaptureServer(int port, Logger logger, HTMLElementCollector objectSpyDialog) {
         this(port, logger);
         addServlets(logger, objectSpyDialog, context);
     }
 
-    protected void addServlets(Logger logger, ObjectSpyDialog objectSpyDialog, ServletContextHandler context) {
+    protected void addServlets(Logger logger, HTMLElementCollector objectSpyDialog, ServletContextHandler context) {
         context.addServlet(new ServletHolder(new HTMLElementServlet(logger, objectSpyDialog)), "/*");
     }
 

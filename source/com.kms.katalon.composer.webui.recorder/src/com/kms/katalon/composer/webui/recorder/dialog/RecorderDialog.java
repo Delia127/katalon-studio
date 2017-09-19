@@ -132,7 +132,7 @@ import com.kms.katalon.objectspy.constants.ObjectspyMessageConstants;
 import com.kms.katalon.objectspy.dialog.AddToObjectRepositoryDialog;
 import com.kms.katalon.objectspy.dialog.AddToObjectRepositoryDialog.AddToObjectRepositoryDialogResult;
 import com.kms.katalon.objectspy.dialog.GoToAddonStoreMessageDialog;
-import com.kms.katalon.objectspy.dialog.ObjectSpyDialog;
+import com.kms.katalon.objectspy.dialog.ObjectSpyUrlView;
 import com.kms.katalon.objectspy.element.HTMLElement;
 import com.kms.katalon.objectspy.element.HTMLFrameElement;
 import com.kms.katalon.objectspy.element.HTMLPageElement;
@@ -328,8 +328,8 @@ public class RecorderDialog extends AbstractDialog implements EventHandler {
     }
 
     private void checkIEAddon() throws IllegalAccessException, InvocationTargetException, IEAddonNotInstalledException {
-        if (checkRegistryKey(ObjectSpyDialog.IE_WINDOWS_32BIT_BHO_REGISTRY_KEY)
-                || checkRegistryKey(ObjectSpyDialog.IE_WINDOWS_BHO_REGISTRY_KEY)) {
+        if (checkRegistryKey(ObjectSpyUrlView.IE_WINDOWS_32BIT_BHO_REGISTRY_KEY)
+                || checkRegistryKey(ObjectSpyUrlView.IE_WINDOWS_BHO_REGISTRY_KEY)) {
             return;
         }
         throw new IEAddonNotInstalledException(RecordSession.RECORDER_ADDON_NAME);
@@ -1402,7 +1402,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler {
 
                     private String getAddonUrl(final WebUIDriverType webUIDriverType) {
                         if (webUIDriverType == WebUIDriverType.CHROME_DRIVER) {
-                            return ObjectSpyDialog.OBJECT_SPY_CHROME_ADDON_URL;
+                            return ObjectSpyUrlView.OBJECT_SPY_CHROME_ADDON_URL;
                         }
                         if (webUIDriverType == WebUIDriverType.FIREFOX_DRIVER) {
                             return RECORDER_FIREFOX_ADDON_URL;

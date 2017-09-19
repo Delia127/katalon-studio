@@ -344,4 +344,7 @@ public class InspectSession implements Runnable {
         return IE_ADDON_BHO_KEY;
     }
 
+    public WebDriver getWebDriver() {
+        return driver;
+    }
 }

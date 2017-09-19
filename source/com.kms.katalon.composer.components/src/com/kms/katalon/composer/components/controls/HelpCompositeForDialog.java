@@ -19,7 +19,7 @@ public class HelpCompositeForDialog extends HelpComposite {
         GridLayout layout = new GridLayout();
         layout.marginHeight = 0;
         layout.marginBottom = 5;
-        layout.marginWidth = 5;
+        layout.marginWidth = 0;
         return layout;
     }
 

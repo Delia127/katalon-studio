@@ -14,7 +14,7 @@ import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 public class ObjectSpyPreferenceDefaultValueInitializer extends AbstractPreferenceInitializer {
     private static final String DEMOAUT_KATALON = "http://demoaut.katalon.com/";
 
-    public static final String WEBUI_OBJECTSPY_DEFAULT_BROWSER = WebUIDriverType.FIREFOX_DRIVER.toString();
+    public static final String WEBUI_OBJECTSPY_DEFAULT_BROWSER = WebUIDriverType.CHROME_DRIVER.toString();
 
     public static final String[] SUPPORTED_BROWSERS = new String[] { WebUIDriverType.CHROME_DRIVER.toString(),
             WebUIDriverType.FIREFOX_DRIVER.toString(), WebUIDriverType.IE_DRIVER.toString() };
@@ -27,6 +27,7 @@ public class ObjectSpyPreferenceDefaultValueInitializer extends AbstractPreferen
         store.setDefault(ObjectSpyPreferenceConstants.WEBUI_DIA_CREATE_FOLDER_AS_PAGE_NAME, true);
         store.setDefault(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_DEFAULT_BROWSER, WEBUI_OBJECTSPY_DEFAULT_BROWSER);
         store.setDefault(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_DEFAULT_STARTING_URL, DEMOAUT_KATALON);
+        store.setDefault(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_PIN_WINDOW, true);
 
         Gson gson = new Gson();
         store.setDefault(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_HK_CAPTURE_OBJECT,

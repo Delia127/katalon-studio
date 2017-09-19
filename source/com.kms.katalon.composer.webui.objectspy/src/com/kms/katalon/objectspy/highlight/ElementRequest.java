@@ -2,13 +2,12 @@ package com.kms.katalon.objectspy.highlight;
 
 import com.kms.katalon.objectspy.core.KatalonRequest;
 import com.kms.katalon.objectspy.core.MessageConstant;
-import com.kms.katalon.objectspy.element.HTMLElement;
-import com.kms.katalon.objectspy.element.HTMLPageElement;
+import com.kms.katalon.objectspy.element.XPathProvider;
 
 public abstract class ElementRequest extends KatalonRequest{
-    private HTMLElement element;
+    private XPathProvider element;
 
-    public ElementRequest(String request, HTMLElement element) {
+    public ElementRequest(String request, XPathProvider element) {
         super(request);
         this.element = element;
     }
@@ -16,14 +15,14 @@ public abstract class ElementRequest extends KatalonRequest{
     protected String createXPathExpression() {
         StringBuilder xPath = new StringBuilder();
         
-        if (element.getParentElement() == null) {
+        if (element.getParent() == null) {
             xPath.append(element.getXpath());
         }
         else {
-            HTMLElement parent = element;
-            while (parent != null && !(parent instanceof HTMLPageElement)) {
+            XPathProvider parent = element;
+            while (parent != null && !(parent.getParent() == null)) {
                 xPath.insert(0, parent.getXpath()).insert(0, MessageConstant.XPATH_SEPARATOR);
-                parent = parent.getParentElement();
+                parent = parent.getParent();
             }
             xPath.delete(0, MessageConstant.XPATH_SEPARATOR.length());
         }
@@ -31,7 +30,7 @@ public abstract class ElementRequest extends KatalonRequest{
         return xPath.toString();
     }
     
-    public HTMLElement getElement() {
+    public XPathProvider getElement() {
         return element;
     }
 }

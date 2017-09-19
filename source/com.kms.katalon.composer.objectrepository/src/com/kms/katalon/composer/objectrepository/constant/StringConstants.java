@@ -39,11 +39,8 @@ public class StringConstants extends GlobalStringConstants {
 
     // AddPropertyDialog
     public static final String VIEW_LBL_NAME = NAME;
-    public static final String VIEW_LBL_MATCH_COND = ComposerObjectRepositoryMessageConstants.VIEW_LBL_MATCH_COND;
     public static final String VIEW_LBL_VALUE = VALUE;
-    public static final String VIEW_LBL_ADD_PROPERTY = ComposerObjectRepositoryMessageConstants.VIEW_LBL_ADD_PROPERTY;
     public static final String WARN_TITLE = WARN;
-    public static final String VIEW_WARN_MSG_PROPERTY_CANNOT_BE_BLANK = ComposerObjectRepositoryMessageConstants.VIEW_WARN_MSG_PROPERTY_CANNOT_BE_BLANK;
 
     // ObjectPropertyView
     public static final String VIEW_TEST_OBJECT_BROWSE = ComposerObjectRepositoryMessageConstants.VIEW_TEST_OBJECT_BROWSE;

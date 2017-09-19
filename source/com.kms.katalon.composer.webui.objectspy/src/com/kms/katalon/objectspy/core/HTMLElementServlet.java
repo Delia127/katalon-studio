@@ -13,9 +13,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.eclipse.e4.core.services.log.Logger;
 import org.w3c.dom.Document;
 
-import com.kms.katalon.objectspy.dialog.ObjectSpyDialog;
 import com.kms.katalon.objectspy.element.HTMLRawElement;
 import com.kms.katalon.objectspy.util.HTMLElementUtil;
+import com.kms.katalon.objectspy.util.WebElementUtils;
 
 @SuppressWarnings("restriction")
 public class HTMLElementServlet extends HttpServlet {
@@ -35,21 +35,22 @@ public class HTMLElementServlet extends HttpServlet {
 
     private Logger logger;
 
-    private ObjectSpyDialog objectSpyDialog;
+    private HTMLElementCollector objectSpyDialog;
 
-    public HTMLElementServlet(Logger logger, ObjectSpyDialog objectSpyDialog) {
+    public HTMLElementServlet(Logger logger, HTMLElementCollector objectSpyDialog) {
         this.logger = logger;
         this.objectSpyDialog = objectSpyDialog;
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         response.setStatus(HttpServletResponse.SC_OK);
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-            IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         StringBuilder sb = new StringBuilder();
         BufferedReader reader = request.getReader();
         try {
@@ -110,7 +111,10 @@ public class HTMLElementServlet extends HttpServlet {
         response.setContentType(TEXT_HTML);
         response.addHeader(ACCESS_CONTROL_ALLOW_ORIGIN, WILD_CARD);
         try {
+            // TODO remove this when the new object spy complete
             objectSpyDialog.addNewElement(HTMLElementUtil.buildHTMLElement(value));
+            // This is used for new object spy
+            objectSpyDialog.addNewElement(WebElementUtils.buildWebElement(value));
             response.setStatus(HttpServletResponse.SC_OK);
         } catch (Exception e) {
             logger.error(e);

@@ -48,8 +48,16 @@ public class ObjectRepository {
     private static final String PROPERTY_IS_SELECTED = "isSelected";
 
     private static final String[] PARENT_FRAME_ATTRS = new String[] { "ref_element", "parent_frame" };
-    
+
     private static final String PARENT_SHADOW_ROOT_ATTRIBUTE = "ref_element_is_shadow_root";
+
+    private static final String PROPERTY_SELECTOR_METHOD = "selectorMethod";
+
+    private static final String PROPERTY_SELECTOR_COLLECTION = "selectorCollection";
+
+    private static final String PROPERTY_ENTRY = "entry";
+
+    private static final String PROPERTY_KEY = "key";
 
     /**
      * Returns test object id of a its relative id.
@@ -172,6 +180,7 @@ public class ObjectRepository {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private static TestObject findWebUIObject(String testObjectId, Element element) {
         TestObject testObject = new TestObject(testObjectId);
         // For image
@@ -179,6 +188,21 @@ public class ObjectRepository {
         boolean useRalativeImagePath = Boolean.parseBoolean(element.elementText("useRalativeImagePath"));
         testObject.setImagePath(imagePath);
         testObject.setUseRelativeImagePath(useRalativeImagePath);
+
+        String selectorMethod = element.elementText(PROPERTY_SELECTOR_METHOD);
+        if (selectorMethod != null) {
+            testObject.setSelectorMethod(SelectorMethod.valueOf(selectorMethod));
+        }
+
+        Element propertySelectorCollection = element.element(PROPERTY_SELECTOR_COLLECTION);
+        if (propertySelectorCollection != null) {
+            propertySelectorCollection.elements(PROPERTY_ENTRY).forEach(entry -> {
+                Element selectorMethodElement = ((Element) entry);
+                SelectorMethod entryKey = SelectorMethod.valueOf(selectorMethodElement.elementText(PROPERTY_KEY));
+                String entryValue = selectorMethodElement.elementText(PROPERTY_VALUE);
+                testObject.setSelectorValue(entryKey, entryValue);
+            });
+        }
 
         for (Object propertyElementObject : element.elements(WEB_ELEMENT_PROPERTY_NODE_NAME)) {
             TestObjectProperty objectProperty = new TestObjectProperty();
@@ -195,7 +219,7 @@ public class ObjectRepository {
             objectProperty.setCondition(propertyCondition);
             objectProperty.setValue(propertyValue);
             objectProperty.setActive(isPropertySelected);
-            
+
             // Check if this element is inside a frame
             if (Arrays.asList(PARENT_FRAME_ATTRS).contains(propertyName) && isPropertySelected) {
                 TestObject parentObject = findTestObject(propertyValue);
