@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
@@ -17,6 +18,12 @@ public class SystemLogger extends PrintStream {
 
     SystemLogger(OutputStream os, LogMode defaultMode) {
         super(os, true);
+        logMode = defaultMode;
+        locked = false;
+    }
+
+    SystemLogger(OutputStream os, LogMode defaultMode, String encode) throws UnsupportedEncodingException {
+        super(os, true, encode);
         logMode = defaultMode;
         locked = false;
     }
@@ -52,13 +59,13 @@ public class SystemLogger extends PrintStream {
     public synchronized void write(byte buf[], int off, int len) {
         try {
             switch (logMode) {
-            case CONSOLE:
-                super.write(buf, off, len);
-                break;
-            case LOG:
-                File logFile = getLogFile();
-                FileUtils.writeByteArrayToFile(logFile, ArrayUtils.subarray(buf, off, len), true);
-                break;
+                case CONSOLE:
+                    super.write(buf, off, len);
+                    break;
+                case LOG:
+                    File logFile = getLogFile();
+                    FileUtils.writeByteArrayToFile(logFile, ArrayUtils.subarray(buf, off, len), true);
+                    break;
             }
         } catch (IOException e) {
             super.write(buf, off, len);
