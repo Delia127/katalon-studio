@@ -3751,7 +3751,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      * @throws StepFailedException
      */
     @CompileStatic
-    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
     public static Object executeJavascript(String script, List arguments) throws StepFailedException {
         return (Object) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "executeJavascript", script, arguments)
     }
