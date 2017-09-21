@@ -20,7 +20,7 @@ public class ConsoleOptionBuilder {
                             description.getRunConfigurationId()));
         }
         Map<String, String> argsMap = new HashMap<>();
-        argsMap.put("browserType", contributor.getId());
+        argsMap.put("browserType", "\"" +  contributor.getId() + "\"");
         contributor.getConsoleOptions(description).forEach(opt -> {
             argsMap.put(opt.getOption(), "\"" + String.valueOf(opt.getValue()) + "\"");
         });
