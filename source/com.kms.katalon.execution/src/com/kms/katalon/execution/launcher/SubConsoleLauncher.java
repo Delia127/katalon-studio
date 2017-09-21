@@ -45,4 +45,9 @@ public class SubConsoleLauncher extends ConsoleLauncher implements SubLauncher {
         }
         return name;
     }
+    
+    @Override
+    public ReportableLauncher clone(IRunConfiguration runConfig) {
+        return new SubConsoleLauncher(getManager(), runConfig, getRunConfigurationDescription());
+    }
 }
