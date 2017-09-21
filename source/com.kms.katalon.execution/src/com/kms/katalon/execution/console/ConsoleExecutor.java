@@ -74,7 +74,7 @@ public class ConsoleExecutor {
                 validateRequiredArgument(consoleOption, optionSet);
                 String optionName = consoleOption.getOption();
                 if (optionSet.has(optionName) && consoleOption.hasArgument()) {
-                    contributor.setArgumentValue(consoleOption, (String) optionSet.valueOf(optionName));
+                    contributor.setArgumentValue(consoleOption, String.valueOf(optionSet.valueOf(optionName)));
                 }
             }
         }
