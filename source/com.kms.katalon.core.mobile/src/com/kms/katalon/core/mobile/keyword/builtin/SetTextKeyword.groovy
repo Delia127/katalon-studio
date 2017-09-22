@@ -43,6 +43,7 @@ import com.kms.katalon.core.mobile.helper.MobileElementCommonHelper
 import com.kms.katalon.core.mobile.helper.MobileGestureCommonHelper
 import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
+import com.kms.katalon.selenium.util.SeleniumKeysUtil;
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
 
@@ -77,7 +78,8 @@ public class SetTextKeyword extends MobileAbstractKeyword {
             }
             element.clear()
             element.sendKeys(text.toString())
-            logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_TEXT_HAS_BEEN_SET_TO_ELEMENT, [text, to.getObjectId()] as Object[]))
+            String readableText = SeleniumKeysUtil.getReadableText(text)
+            logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_TEXT_HAS_BEEN_SET_TO_ELEMENT, [readableText, to.getObjectId()] as Object[]))
         }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_SET_ELEMENT_TEXT, to.getObjectId()) : StringConstants.KW_MSG_FAILED_TO_SET_ELEMENT_TEXT)
     }
 }

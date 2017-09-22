@@ -19,6 +19,7 @@ import com.kms.katalon.core.mobile.constants.StringConstants
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
 import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
+import com.kms.katalon.selenium.util.SeleniumKeysUtil
 
 @Action(value = "sendKeys")
 public class SendKeysKeyword extends MobileAbstractKeyword {
@@ -39,6 +40,7 @@ public class SendKeysKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public void sendKeys(TestObject to, String strokeKeys, FailureHandling flowControl) throws StepFailedException {
+        String readableText = SeleniumKeysUtil.getReadableText(strokeKeys)
         KeywordMain.runKeyword({
             KeywordHelper.checkTestObjectParameter(to)
             int timeout = KeywordHelper.checkTimeout(RunConfiguration.getTimeOut())
@@ -48,10 +50,10 @@ public class SendKeysKeyword extends MobileAbstractKeyword {
             }
             element.sendKeys(strokeKeys);
             logger.logPassed(MessageFormat.format(CoreMobileMessageConstants.KW_LOG_SEND_KEYS_X_ON_ELEMENT_Y_SUCCESSFULLY,
-                    StringUtils.defaultString(strokeKeys)
+                    StringUtils.defaultString(readableText)
                     , StringUtils.defaultString(to.getObjectId())))
         }, flowControl, MessageFormat.format(CoreMobileMessageConstants.KW_MSG_CANNOT_SEND_KEYS_X_ON_ELEMENT_Y,
-        StringUtils.defaultString(strokeKeys)
+        StringUtils.defaultString(readableText)
         , StringUtils.defaultString(to.getObjectId())))
     }
 }
