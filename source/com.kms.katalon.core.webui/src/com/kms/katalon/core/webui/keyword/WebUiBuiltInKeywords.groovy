@@ -3721,5 +3721,38 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
     public static boolean verifyAllLinksOnCurrentPageAccessible(boolean isIncludedExternalLinks, List excludedLinks) throws StepFailedException {
         return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "verifyAllLinksOnCurrentPageAccessible", isIncludedExternalLinks, excludedLinks)
+    }    
+    
+    /**
+     * Execute JavaScript on the currently selected frame or window.</br>
+     * The provided script fragment will be executed as the body of an anonymous function.
+     *
+     * @since 4.9
+     * @param script The JavaScript to execute.
+     * @param arguments The arguments to the script. May be empty or null.
+     * @param flowControl FailureHandling.
+     * @return Boolean, Long, Double, String, List, WebElement, or null.
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
+    public static Object executeJavascript(String script, List arguments, FailureHandling flowControl) throws StepFailedException {
+        return (Object) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "executeJavascript", script, arguments, flowControl)
+    }
+
+    /**
+     * Execute JavaScript on the currently selected frame or window.</br>
+     * The provided script fragment will be executed as the body of an anonymous function.
+     * 
+     * @since 4.9
+     * @param script The JavaScript to execute.
+     * @param arguments The arguments to the script. May be empty or null.
+     * @return Boolean, Long, Double, String, List, WebElement, or null.
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
+    public static Object executeJavascript(String script, List arguments) throws StepFailedException {
+        return (Object) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "executeJavascript", script, arguments)
     }
 }

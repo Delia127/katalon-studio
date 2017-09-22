@@ -1,16 +1,20 @@
 package com.kms.katalon.core.webui.keyword.internal;
 
+import groovy.transform.CompileStatic
+
+import org.openqa.selenium.WebDriver
+import org.openqa.selenium.WebElement
+
 import com.kms.katalon.core.configuration.RunConfiguration
 import com.kms.katalon.core.exception.StepFailedException
 import com.kms.katalon.core.keyword.internal.AbstractKeyword
 import com.kms.katalon.core.keyword.internal.SupportLevel
-import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.testobject.TestObject
-import com.kms.katalon.core.webui.common.ScreenUtil;
-import com.kms.katalon.core.webui.exception.WebElementNotFoundException
-import org.openqa.selenium.WebElement
+import com.kms.katalon.core.webui.common.ScreenUtil
 import com.kms.katalon.core.webui.common.WebUiCommonHelper
-import groovy.transform.CompileStatic
+import com.kms.katalon.core.webui.constants.CoreWebuiMessageConstants;
+import com.kms.katalon.core.webui.driver.DriverFactory
+import com.kms.katalon.core.webui.exception.WebElementNotFoundException
 
 public abstract class WebUIAbstractKeyword extends AbstractKeyword {
 	protected static ScreenUtil screenUtil = new ScreenUtil();
@@ -28,5 +32,13 @@ public abstract class WebUIAbstractKeyword extends AbstractKeyword {
     @CompileStatic
     public static List<WebElement> findWebElements(TestObject to, int timeOut) throws WebElementNotFoundException {
         return WebUiCommonHelper.findWebElements(to, timeOut);
+    }
+    
+    protected WebDriver getWebDriver() {       
+        WebDriver webDriver = DriverFactory.getWebDriver()
+        if (webDriver == null) {
+            throw new StepFailedException(CoreWebuiMessageConstants.EXC_BROWSER_IS_NOT_OPENED)
+        }
+        return webDriver
     }
 }
