@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.testsuite.collection.handler;
+package com.kms.katalon.composer.execution.collection.handler;
 
 import javax.inject.Inject;
 
@@ -9,13 +9,13 @@ import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.SafeRunner;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.testsuite.collection.execution.collector.TestExecutionGroupCollector;
-import com.kms.katalon.composer.testsuite.collection.execution.provider.TestExecutionGroup;
+import com.kms.katalon.composer.execution.collection.collector.TestExecutionGroupCollector;
+import com.kms.katalon.composer.execution.collection.provider.TestExecutionGroup;
 
 public class CollectTestSuiteExecutionContribution {
     private static final String ATTRIBUTE_NAME = "item";
 
-    private static final String CONTRIBUTOR_ID = "com.kms.katalon.composer.testsuite.collection.testSuiteExecutionItem";
+    private static final String CONTRIBUTOR_ID = "com.kms.katalon.composer.execution.tetSuiteExecutionItem";
 
     @Inject
     public void execute(IExtensionRegistry registry) {

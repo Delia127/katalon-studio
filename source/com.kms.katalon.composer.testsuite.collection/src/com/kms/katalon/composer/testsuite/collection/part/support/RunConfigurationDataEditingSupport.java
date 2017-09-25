@@ -4,11 +4,12 @@ import java.util.Map;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.swt.widgets.Composite;
 
-import com.kms.katalon.composer.testsuite.collection.execution.collector.TestExecutionGroupCollector;
-import com.kms.katalon.composer.testsuite.collection.execution.provider.TestExecutionConfigurationProvider;
+import com.kms.katalon.composer.execution.collection.collector.TestExecutionGroupCollector;
+import com.kms.katalon.composer.execution.collection.provider.TestExecutionConfigurationProvider;
+import com.kms.katalon.composer.execution.util.MapUtil;
 import com.kms.katalon.composer.testsuite.collection.part.provider.TableViewerProvider;
-import com.kms.katalon.composer.testsuite.collection.util.MapUtil;
 import com.kms.katalon.entity.testsuite.TestSuiteRunConfiguration;
 
 public class RunConfigurationDataEditingSupport extends EditingSupportWithTableProvider {
@@ -24,7 +25,7 @@ public class RunConfigurationDataEditingSupport extends EditingSupportWithTableP
         if (executionProvider == null) {
             return null;
         }
-        return executionProvider.getRunConfigurationDataCellEditor(getViewer());
+        return executionProvider.getRunConfigurationDataCellEditor((Composite) getViewer().getControl());
     }
 
     @Override

@@ -7,7 +7,6 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 
 import com.kms.katalon.composer.components.impl.transfer.TreeEntityTransfer;
 import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
-import com.kms.katalon.composer.testsuite.collection.handler.CollectTestSuiteExecutionContribution;
 import com.kms.katalon.composer.testsuite.collection.handler.OpenTestSuiteCollectionHandler;
 import com.kms.katalon.composer.testsuite.collection.handler.RenameTestSuiteCollectionHandler;
 
@@ -16,7 +15,6 @@ public class TestSuiteCollectionDependencyInjectionAddon {
     public void initHandlers(IEclipseContext context) {
         ContextInjectionFactory.make(OpenTestSuiteCollectionHandler.class, context);
         ContextInjectionFactory.make(RenameTestSuiteCollectionHandler.class, context);
-        ContextInjectionFactory.make(CollectTestSuiteExecutionContribution.class, context);
         TransferTypeCollection.getInstance().addTreeEntityTransferType(TreeEntityTransfer.getInstance());
     }
 }

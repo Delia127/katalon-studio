@@ -1,17 +1,17 @@
 package com.kms.katalon.composer.webui.execution.testsuite;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.DialogCellEditor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
-import com.kms.katalon.composer.testsuite.collection.execution.provider.TestExecutionDriverEntry;
-import com.kms.katalon.composer.testsuite.collection.util.MapUtil;
+import com.kms.katalon.composer.execution.collection.provider.TestExecutionDriverEntry;
+import com.kms.katalon.composer.execution.util.MapUtil;
 import com.kms.katalon.composer.webui.component.dialogs.RemoteExecutionInputDialog;
 import com.kms.katalon.composer.webui.constants.ImageConstants;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
@@ -24,8 +24,8 @@ public class RemoteExecutionDriverEntry extends TestExecutionDriverEntry {
     }
 
     @Override
-    public CellEditor getRunConfigurationDataCellEditor(ColumnViewer parent) {
-        return new DialogCellEditor((Composite) parent.getControl()) {
+    public CellEditor getRunConfigurationDataCellEditor(Composite parent) {
+        return new DialogCellEditor(parent) {
             @Override
             protected void updateContents(Object value) {
                 Map<String, String> newValueMap = MapUtil.convertObjectToStringMap(value);
@@ -39,23 +39,33 @@ public class RemoteExecutionDriverEntry extends TestExecutionDriverEntry {
             @Override
             protected Object openDialogBox(Control cellEditorWindow) {
                 Map<String, String> newValueMap = MapUtil.convertObjectToStringMap(getValue());
-                String remoteDriverTypeData = newValueMap
-                        .get(RemoteWebRunConfigurationContributor.REMOTE_CONFIGURATION_TYPE_KEY);
-                RemoteExecutionInputDialog dialog = new RemoteExecutionInputDialog(
-                        Display.getCurrent().getActiveShell(),
-                        newValueMap.get(RemoteWebRunConfigurationContributor.REMOTE_CONFIGURATION_KEY),
-                        remoteDriverTypeData != null ? RemoteWebDriverConnectorType.valueOf(remoteDriverTypeData)
-                                : null);
-                int returnValue = dialog.open();
-                if (returnValue != Dialog.OK) {
-                    return newValueMap;
-                }
-                newValueMap.put(RemoteWebRunConfigurationContributor.REMOTE_CONFIGURATION_KEY,
-                        dialog.getRemoteServerUrl());
-                newValueMap.put(RemoteWebRunConfigurationContributor.REMOTE_CONFIGURATION_TYPE_KEY,
-                        dialog.getRemoveDriverType().toString());
-                return newValueMap;
+                return changeRunConfigurationData(cellEditorWindow.getShell(), newValueMap);
             }
         };
+    }
+
+    @Override
+    public Map<String, String> changeRunConfigurationData(Shell shell, Map<String, String> runConfigurationData) {
+        String remoteWebDriverUrl = runConfigurationData
+                .get(RemoteWebRunConfigurationContributor.REMOTE_CONFIGURATION_KEY);
+        String remoteWebDriverTypeName = runConfigurationData
+                .get(RemoteWebRunConfigurationContributor.REMOTE_CONFIGURATION_TYPE_KEY);
+        Map<String, String> newValueMap = new HashMap<>();
+        newValueMap.put(RemoteWebRunConfigurationContributor.REMOTE_CONFIGURATION_KEY, remoteWebDriverUrl);
+        newValueMap.put(RemoteWebRunConfigurationContributor.REMOTE_CONFIGURATION_TYPE_KEY, remoteWebDriverTypeName);
+        RemoteExecutionInputDialog dialog = new RemoteExecutionInputDialog(shell, remoteWebDriverUrl,
+                remoteWebDriverTypeName != null ? RemoteWebDriverConnectorType.valueOf(remoteWebDriverTypeName) : null);
+        int returnValue = dialog.open();
+        if (returnValue == Dialog.OK) {
+            newValueMap.put(RemoteWebRunConfigurationContributor.REMOTE_CONFIGURATION_KEY, dialog.getRemoteServerUrl());
+            newValueMap.put(RemoteWebRunConfigurationContributor.REMOTE_CONFIGURATION_TYPE_KEY,
+                    dialog.getRemoveDriverType().toString());
+        }
+        return newValueMap;
+    }
+
+    @Override
+    public boolean requiresExtraConfiguration() {
+        return true;
     }
 }

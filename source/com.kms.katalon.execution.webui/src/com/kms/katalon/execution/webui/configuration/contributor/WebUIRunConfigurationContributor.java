@@ -23,8 +23,13 @@ public abstract class WebUIRunConfigurationContributor implements IRunConfigurat
 
     @Override
     public IRunConfiguration getRunConfiguration(String projectDir,
-            RunConfigurationDescription runConfigurationDescription) throws IOException, ExecutionException,
-            InterruptedException {
+            RunConfigurationDescription runConfigurationDescription)
+            throws IOException, ExecutionException, InterruptedException {
         return getRunConfiguration(projectDir);
+    }
+
+    @Override
+    public List<ConsoleOption<?>> getConsoleOptions(RunConfigurationDescription description) {
+        return Collections.emptyList();
     }
 }

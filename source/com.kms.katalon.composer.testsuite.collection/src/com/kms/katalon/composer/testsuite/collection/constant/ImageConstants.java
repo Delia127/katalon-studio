@@ -31,6 +31,4 @@ public class ImageConstants {
 
     public static final Image IMG_16_ARROW_RIGHT = ImageManager.getImage(IImageKeys.CHEVRON_RIGHT_16);
 
-    public static final String IMG_URL_16_CUSTOM = ImageManager.getImageURLString(IImageKeys.CUSTOM_EXECUTION_16);
-
 }

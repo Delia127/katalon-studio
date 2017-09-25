@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.testsuite.collection.part.provider;
 
 import java.net.MalformedURLException;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.graphics.Image;
@@ -8,12 +9,12 @@ import org.eclipse.swt.graphics.Image;
 import com.kms.katalon.composer.components.impl.providers.TypeCheckStyleCellTableLabelProvider;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ImageUtil;
+import com.kms.katalon.composer.execution.collection.collector.TestExecutionGroupCollector;
+import com.kms.katalon.composer.execution.collection.provider.TestExecutionConfigurationProvider;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.testsuite.collection.constant.ComposerTestsuiteCollectionMessageConstants;
 import com.kms.katalon.composer.testsuite.collection.constant.ImageConstants;
-import com.kms.katalon.composer.testsuite.collection.execution.collector.TestExecutionGroupCollector;
-import com.kms.katalon.composer.testsuite.collection.execution.provider.TestExecutionConfigurationProvider;
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 import com.kms.katalon.entity.testsuite.TestSuiteRunConfiguration;
 
@@ -75,6 +76,10 @@ public class TestSuiteRunConfigLabelProvider extends TypeCheckStyleCellTableLabe
 
     @Override
     protected String getText(TestSuiteRunConfiguration element) {
+        RunConfigurationDescription runConfiguration = element.getConfiguration();
+        if (runConfiguration == null) {
+            return StringUtils.EMPTY;
+        }
         switch (columnIndex) {
             case NO_COLUMN_IDX:
                 return Integer.toString(provider.getTableItems().indexOf(element) + 1);
@@ -82,10 +87,11 @@ public class TestSuiteRunConfigLabelProvider extends TypeCheckStyleCellTableLabe
                 return element.getTestSuiteEntity() != null ? element.getTestSuiteEntity().getIdForDisplay()
                         : StringUtils.EMPTY;
             case RUN_WITH_DATA_COLUMN_IDX:
-                return getOriginalConfigProvider(element)
-                        .displayRunConfigurationData(element.getConfiguration().getRunConfigurationData());
+                Map<String, String> configurationData = runConfiguration.getRunConfigurationData();
+                return configurationData != null ? getOriginalConfigProvider(element)
+                        .displayRunConfigurationData(configurationData) : StringUtils.EMPTY;
             case RUN_WITH_COLUMN_IDX:
-                RunConfigurationDescription configuration = element.getConfiguration();
+                RunConfigurationDescription configuration = runConfiguration;
                 return configuration != null ? configuration.getRunConfigurationId() : StringUtils.EMPTY;
             case RUN_COLUMN_IDX:
             default:

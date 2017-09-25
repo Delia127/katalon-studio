@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.testsuite.collection.execution.provider;
+package com.kms.katalon.composer.execution.collection.provider;
 
 
 public abstract class TestExecutionEntryItem implements TestExecutionConfigurationProvider {

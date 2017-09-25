@@ -40,7 +40,4 @@ Import-Package: javax.annotation;version="1.2.0"
 Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: KMS
-Export-Package: com.kms.katalon.composer.testsuite.collection.execution.collector,
- com.kms.katalon.composer.testsuite.collection.execution.provider,
- com.kms.katalon.composer.testsuite.collection.util
 

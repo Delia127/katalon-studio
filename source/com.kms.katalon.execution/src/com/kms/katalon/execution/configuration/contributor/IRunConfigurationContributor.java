@@ -1,9 +1,11 @@
 package com.kms.katalon.execution.configuration.contributor;
 
 import java.io.IOException;
+import java.util.List;
 
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
+import com.kms.katalon.execution.console.entity.ConsoleOption;
 import com.kms.katalon.execution.console.entity.ConsoleOptionContributor;
 import com.kms.katalon.execution.exception.ExecutionException;
 
@@ -47,4 +49,6 @@ public interface IRunConfigurationContributor extends ConsoleOptionContributor {
     public IRunConfiguration getRunConfiguration(String projectDir,
             RunConfigurationDescription runConfigurationDescription) throws IOException, ExecutionException,
             InterruptedException;
+
+    public List<ConsoleOption<?>> getConsoleOptions(RunConfigurationDescription description);
 }

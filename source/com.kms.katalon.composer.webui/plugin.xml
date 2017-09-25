@@ -119,7 +119,7 @@
      </client>
   </extension>
   <extension
-        point="com.kms.katalon.composer.testsuite.collection.testSuiteExecutionItem">
+        point="com.kms.katalon.composer.execution.tetSuiteExecutionItem">
      <client
            item="com.kms.katalon.composer.webui.execution.testsuite.WebDesktopExecutionGroup">
      </client>

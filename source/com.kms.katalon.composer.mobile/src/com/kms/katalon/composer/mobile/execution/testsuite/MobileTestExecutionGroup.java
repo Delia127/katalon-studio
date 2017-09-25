@@ -3,10 +3,10 @@ package com.kms.katalon.composer.mobile.execution.testsuite;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.kms.katalon.composer.execution.collection.provider.TestExecutionConfigurationProvider;
+import com.kms.katalon.composer.execution.collection.provider.TestExecutionGroup;
+import com.kms.katalon.composer.execution.collection.provider.TestExecutionItem;
 import com.kms.katalon.composer.mobile.constants.ImageConstants;
-import com.kms.katalon.composer.testsuite.collection.execution.provider.TestExecutionConfigurationProvider;
-import com.kms.katalon.composer.testsuite.collection.execution.provider.TestExecutionGroup;
-import com.kms.katalon.composer.testsuite.collection.execution.provider.TestExecutionItem;
 
 public class MobileTestExecutionGroup implements TestExecutionGroup {
 
