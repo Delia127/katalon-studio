@@ -1,5 +1,7 @@
 package com.kms.katalon.execution.logging;
 
+import static com.kms.katalon.core.constants.StringConstants.DF_CHARSET;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,7 +29,7 @@ public class LaunchOutputStreamHandler extends Thread implements IOutputStream {
         InputStreamReader isr = null;
         BufferedReader br = null;
         try {
-            isr = new InputStreamReader(is);
+            isr = new InputStreamReader(is, DF_CHARSET);
             br = new BufferedReader(isr);
             String line = null;
             while ((line = br.readLine()) != null) {

@@ -2,6 +2,8 @@ package com.kms.katalon.logging;
 
 import java.io.UnsupportedEncodingException;
 
+import com.kms.katalon.logging.constant.LoggingMessageConstants;
+
 public class LogManager {
     private static final String UTF_8 = "utf-8";
 
@@ -31,6 +33,7 @@ public class LogManager {
                 outputLogger = new SystemLogger(System.out, LogMode.CONSOLE, UTF_8);
             } catch (UnsupportedEncodingException e) {
                 outputLogger = new SystemLogger(System.out, LogMode.CONSOLE);
+                outputLogger.println(LoggingMessageConstants.MSG_WARNING_SYSTEM_NOT_SUPPORT_UTF8);
             }
         }
         return outputLogger;

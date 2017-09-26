@@ -1,5 +1,7 @@
 package com.kms.katalon.core.main;
 
+import static com.kms.katalon.core.constants.StringConstants.DF_CHARSET;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -160,7 +162,8 @@ public class ScriptEngine extends GroovyScriptEngine {
 
     private GroovyCodeSource getGroovyCodeSource(final File file) {
         try {
-            return getGroovyCodeSource(FileUtils.readFileToString(file), file.toURI().toURL().toExternalForm());
+            return getGroovyCodeSource(FileUtils.readFileToString(file, DF_CHARSET),
+                    file.toURI().toURL().toExternalForm());
         } catch (IOException e) {
             return null;
         }

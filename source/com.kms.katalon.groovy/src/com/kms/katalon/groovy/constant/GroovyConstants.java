@@ -20,7 +20,7 @@ import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.custom.parser.GlobalVariableParser;
 
 public class GroovyConstants {
-    public static final String DF_CHARSET = "utf-8";
+    public static final String DF_CHARSET = "UTF-8";
 
     public static final String GROOVY_FILE_EXTENSION = ".groovy";
 

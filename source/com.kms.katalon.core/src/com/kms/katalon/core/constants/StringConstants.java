@@ -3,6 +3,8 @@ package com.kms.katalon.core.constants;
 import java.io.File;
 
 public class StringConstants {
+    public static final String DF_CHARSET = "UTF-8";
+
     public static final String ID_SEPARATOR = "/";
 
     // KeywordLogger

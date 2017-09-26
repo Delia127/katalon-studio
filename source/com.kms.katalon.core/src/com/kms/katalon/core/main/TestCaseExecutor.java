@@ -1,5 +1,7 @@
 package com.kms.katalon.core.main;
 
+import static com.kms.katalon.core.constants.StringConstants.DF_CHARSET;
+
 import java.io.File;
 import java.io.IOException;
 import java.security.AccessController;
@@ -210,14 +212,14 @@ public class TestCaseExecutor {
 
     private Object runScript(File scriptFile)
             throws ResourceException, ScriptException, IOException, ClassNotFoundException {
-        return engine.runScriptAsRawText(FileUtils.readFileToString(scriptFile),
+        return engine.runScriptAsRawText(FileUtils.readFileToString(scriptFile, DF_CHARSET),
                 scriptFile.toURI().toURL().toExternalForm(), variableBinding);
     }
 
     protected void runMethod(File scriptFile, String methodName)
             throws ResourceException, ScriptException, ClassNotFoundException, IOException {
         engine.changeConfigForExecutingScript();
-        engine.runScriptMethodAsRawText(FileUtils.readFileToString(scriptFile),
+        engine.runScriptMethodAsRawText(FileUtils.readFileToString(scriptFile, DF_CHARSET),
                 scriptFile.toURI().toURL().toExternalForm(), methodName, variableBinding);
     }
 
