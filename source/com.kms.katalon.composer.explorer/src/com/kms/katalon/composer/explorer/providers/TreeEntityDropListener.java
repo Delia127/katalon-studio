@@ -130,17 +130,6 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
             eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, treeEntity.getParent());
         }
     }
-    
-//    private boolean isSuperiorFolder(FolderEntity fe1, FolderEntity fe2) throws Exception {
-//        FolderEntity parent = fe2.getParentFolder();
-//        while (parent != null) {
-//            if (parent.equals(fe1)) {
-//                return true;
-//            }
-//            parent = parent.getParentFolder();
-//        }
-//        return false;
-//    }
 
     /**
      * To ensure that the specific entity can move in their region only.
