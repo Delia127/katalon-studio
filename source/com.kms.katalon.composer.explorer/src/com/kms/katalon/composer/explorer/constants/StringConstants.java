@@ -46,6 +46,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String LIS_ERROR_MSG_CANNOT_MOVE_THE_SELECTION = ComposerExplorerMessageConstants.LIS_ERROR_MSG_CANNOT_MOVE_THE_SELECTION;
 
     public static final String LIS_ERROR_MSG_CANNOT_MOVE_INTO_DIFF_REGION = ComposerExplorerMessageConstants.LIS_ERROR_MSG_CANNOT_MOVE_INTO_DIFF_REGION;
+    
+    public static final String LIS_ERROR_MSG_CANNOT_MOVE_TO_SUBFOLDER = ComposerExplorerMessageConstants.LIS_ERROR_MSG_CANNOT_MOVE_TO_SUBFOLDER;
 
     // EntityTooltip
     public static final String TOOLTIP_MESSAGE_PROPERTIES_ENTITY = ComposerExplorerMessageConstants.TOOLTIP_MESSAGE_PROPERTIES_ENTITY;

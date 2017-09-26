@@ -85,6 +85,10 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
 
         for (ITreeEntity treeEntity : treeEntities) {
             validateMovingAcrossArea(treeEntity, targetFolder);
+            
+            if (treeEntity instanceof FolderTreeEntity) {
+                validateMovingToSubFolder((FolderEntity) treeEntity.getObject(), targetFolder);
+            }
 
             // Prevent inside-duplicated itself
             if (targetFolder.equals(treeEntity.getObject())) continue;
@@ -126,6 +130,17 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
             eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, treeEntity.getParent());
         }
     }
+    
+//    private boolean isSuperiorFolder(FolderEntity fe1, FolderEntity fe2) throws Exception {
+//        FolderEntity parent = fe2.getParentFolder();
+//        while (parent != null) {
+//            if (parent.equals(fe1)) {
+//                return true;
+//            }
+//            parent = parent.getParentFolder();
+//        }
+//        return false;
+//    }
 
     /**
      * To ensure that the specific entity can move in their region only.
@@ -144,7 +159,18 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
                     treeEntity.getCopyTag(), targetFolder.getFolderType().toString()));
         }
     }
-
+    
+    private void validateMovingToSubFolder(FolderEntity folderEntity, FolderEntity targetFolder) throws Exception {
+        FolderEntity parent = targetFolder.getParentFolder();
+        while (parent != null) {
+            if (parent.equals(folderEntity)) {
+                throw new Exception(MessageFormat.format(StringConstants.LIS_ERROR_MSG_CANNOT_MOVE_TO_SUBFOLDER,
+                        folderEntity.getName(), targetFolder.getName()));
+            }
+            parent = parent.getParentFolder();
+        }
+    }
+    
     @Override
     public void dragOver(DropTargetEvent event) {
         event.feedback = DND.FEEDBACK_EXPAND | DND.FEEDBACK_SELECT;
