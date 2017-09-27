@@ -85,6 +85,10 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
 
         for (ITreeEntity treeEntity : treeEntities) {
             validateMovingAcrossArea(treeEntity, targetFolder);
+            
+            if (treeEntity instanceof FolderTreeEntity) {
+                validateMovingToSubFolder((FolderEntity) treeEntity.getObject(), targetFolder);
+            }
 
             // Prevent inside-duplicated itself
             if (targetFolder.equals(treeEntity.getObject())) continue;
@@ -144,7 +148,18 @@ public class TreeEntityDropListener extends TreeDropTargetEffect {
                     treeEntity.getCopyTag(), targetFolder.getFolderType().toString()));
         }
     }
-
+    
+    private void validateMovingToSubFolder(FolderEntity folderEntity, FolderEntity targetFolder) throws Exception {
+        FolderEntity parent = targetFolder.getParentFolder();
+        while (parent != null) {
+            if (parent.equals(folderEntity)) {
+                throw new Exception(MessageFormat.format(StringConstants.LIS_ERROR_MSG_CANNOT_MOVE_TO_SUBFOLDER,
+                        folderEntity.getName(), targetFolder.getName()));
+            }
+            parent = parent.getParentFolder();
+        }
+    }
+    
     @Override
     public void dragOver(DropTargetEvent event) {
         event.feedback = DND.FEEDBACK_EXPAND | DND.FEEDBACK_SELECT;
