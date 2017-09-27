@@ -1,5 +1,7 @@
 package com.kms.katalon.core.main;
 
+import static com.kms.katalon.core.constants.StringConstants.DF_CHARSET;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,7 +40,7 @@ public class TestCaseMethodNodeCollector {
 
     TestCaseMethodNodeCollector(TestCase testCase) throws IOException {
         classNode = getMainClassNode(new AstBuilder().buildFromString(CompilePhase.CONVERSION, false,
-                FileUtils.readFileToString(new File(testCase.getGroovyScriptPath()))));
+                FileUtils.readFileToString(new File(testCase.getGroovyScriptPath()), DF_CHARSET)));
         if (classNode == null) {
             throw new IllegalArgumentException("No main method for test case: " + testCase.getTestCaseId());
         }

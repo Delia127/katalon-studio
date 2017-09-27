@@ -1,5 +1,7 @@
 package com.kms.katalon.core.logging;
 
+import static com.kms.katalon.core.constants.StringConstants.DF_CHARSET;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -90,17 +92,19 @@ public class KeywordLogger {
         if (logger.getHandlers().length == 0 && StringUtils.isNotEmpty(logFolder)) {
             try {                
                 SystemConsoleHandler consoleHandler = new SystemConsoleHandler();
+                consoleHandler.setEncoding(DF_CHARSET);
                 logger.addHandler(consoleHandler);
                 
                 // Split log into 100 files, every file is maximum 10MB                
                 FileHandler fileHandler = new FileHandler(logFolder + File.separator + "execution%g.log",
                         MAXIMUM_LOG_FILE_SIZE, MAXIMUM_LOG_FILES, true);
 
-                fileHandler.setEncoding("UTF-8");
+                fileHandler.setEncoding(DF_CHARSET);
                 fileHandler.setFormatter(new CustomXmlFormatter());
                 logger.addHandler(fileHandler);
 
                 SocketHandler socketHandler = new SystemSocketHandler(StringConstants.DF_LOCAL_HOST_ADDRESS, getPort());
+                socketHandler.setEncoding(DF_CHARSET);
                 socketHandler.setFormatter(new CustomSocketLogFomatter());
                 logger.addHandler(socketHandler);
 			} catch (SecurityException e) {
