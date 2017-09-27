@@ -91,7 +91,7 @@ public class PlatformUtil {
         }
         try {
             Process process = Runtime.getRuntime()
-                    .exec("reg query \"HKLM\\SOFTWARE\\RegisteredApplications\" /v \"" + browserName + "\"");
+                    .exec("reg query \"HKLM\\SOFTWARE\\RegisteredApplications\" /v \"" + browserName + "*\"");
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
             Optional<String> output = stdInput.lines()
                     .filter(line -> isNotEmpty(line))
