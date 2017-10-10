@@ -37,9 +37,8 @@
     <elements xsi:type="commands:Handler" xmi:id="_u01XsEBXEee1vqj3mySoiQ" elementId="com.kms.katalon.composer.project.handler.new.mobile" contributionURI="bundleclass://com.kms.katalon.composer.project/com.kms.katalon.composer.project.handlers.NewSampleProjectHandler" command="_i3LSsEAyEee1vqj3mySoiQ"/>
     <elements xsi:type="commands:Handler" xmi:id="_xYj4sEBXEee1vqj3mySoiQ" elementId="com.kms.katalon.composer.project.handler.new.webservice" contributionURI="bundleclass://com.kms.katalon.composer.project/com.kms.katalon.composer.project.handlers.NewSampleProjectHandler" command="_mcEVwEAyEee1vqj3mySoiQ"/>
   </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_cyjp0Bx1EeShZZ1PXPrY1w" featurename="children" parentElementId="com.kms.katalon.composer.menu.file" positionInList="index:3">
-    <elements xsi:type="menu:HandledMenuItem" xmi:id="_cyjp0hx1EeShZZ1PXPrY1w" elementId="com.kms.katalon.menu.submenu.project.open" label="Open Project" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/open_project_16.png" tooltip="" command="_hWtc0Bv5EeSWv6Y47Htaiw"/>
-    <elements xsi:type="menu:HandledMenuItem" xmi:id="_8pdzkAmfEeWmsZWUQ_5cNA" elementId="com.kms.katalon.menu.submenu.project.clean" label="Clean..." iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/clean_project_16.png" tooltip="" command="_NI-S8AmgEeWmsZWUQ_5cNA"/>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_cyjp0Bx1EeShZZ1PXPrY1w" featurename="children" parentElementId="com.kms.katalon.composer.menu.file" positionInList="index:5">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_8pdzkAmfEeWmsZWUQ_5cNA" elementId="com.kms.katalon.menu.submenu.project.clean" label="Clean up..." iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/clean_project_16.png" tooltip="" command="_NI-S8AmgEeWmsZWUQ_5cNA"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_4J8jACaMEeSEdPS-LRT4TQ" featurename="children" parentElementId="com.kms.katalon.composer.menu.file" positionInList="before:com.kms.katalon.composer.menu.file.quit">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_oVkgwCaLEeSEdPS-LRT4TQ" elementId="com.kms.katalon.composer.project.dynamicmenucontribution.recentprojects" label="Recent Projects" contributionURI="bundleclass://com.kms.katalon.composer.project/com.kms.katalon.composer.project.menu.RecentProjectsMenuContribution"/>
@@ -65,5 +64,8 @@
       <children xsi:type="menu:HandledMenuItem" xmi:id="_qs16gEBKEee1vqj3mySoiQ" elementId="com.kms.katalon.composer.project.handledmenuitem.new.mobile" label="Sample Mobile Testing Project" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/sample_mobile_16.png" command="_i3LSsEAyEee1vqj3mySoiQ"/>
       <children xsi:type="menu:HandledMenuItem" xmi:id="_wui-QEBKEee1vqj3mySoiQ" elementId="com.kms.katalon.composer.project.handledmenuitem.new.webservice" label="Sample Web Services Testing Project" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/sample_web_service_16.png" command="_mcEVwEAyEee1vqj3mySoiQ"/>
     </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_twvHgKmAEeeKpbJK4Cc3kQ" featurename="children" parentElementId="com.kms.katalon.composer.menu.file" positionInList="index:2">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_ACMssKmBEeeKpbJK4Cc3kQ" elementId="com.kms.katalon.menu.submenu.project.open" label="Open Project" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/open_project_16.png" command="_hWtc0Bv5EeSWv6Y47Htaiw"/>
   </fragments>
 </fragment:ModelFragments>

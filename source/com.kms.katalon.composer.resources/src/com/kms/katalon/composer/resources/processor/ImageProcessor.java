@@ -87,6 +87,7 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.SAMPLE_MOBILE_16);
         ImageManager.registerImage(IImageKeys.SAMPLE_WEB_SERVICE_16);
         ImageManager.registerImage(IImageKeys.VIDEO_16);
+        ImageManager.registerImage(IImageKeys.IMPORT_16);
     }
 
     private void registerSubToolbarImages() {

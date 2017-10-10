@@ -245,6 +245,12 @@ public class MessageConstants extends NLS {
 
     public static String PA_LBL_TUTORIALS_URL;
 
+    public static String HAND_IMPORT_SETTINGS_MSG;
+    
+    public static String HAND_IMPORT_SETTINGS_MSG_ERROR;
+    
+    public static String HAND_IMPORT_SETTINGS_MSG_SUCCESSFULL;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, MessageConstants.class);
