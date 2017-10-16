@@ -141,8 +141,6 @@ public class QSearchQueryBuilder {
         TestArtifactScriptRefactor scriptReference = null;
         if (entity instanceof FolderEntity) {
             scriptReference = TestArtifactScriptRefactor.createForFolderEntity((FolderEntity) entity);
-        } else if (entity instanceof WebElementEntity) {
-            scriptReference = TestArtifactScriptRefactor.createForTestObjectEntity(((WebElementEntity) entity).getId());
         } else {
             scriptReference = new TestArtifactScriptRefactor(entity.getParentFolder().getFolderType(),
                     entity.getIdForDisplay(), true, true, true);
