@@ -91,6 +91,8 @@ public class ComposerWebuiRecorderMessageConstants extends NLS {
 
     public static String DIA_MSG_CANNOT_START_BROWSER;
 
+    public static String DIA_TOOLTIP_SHOW_HIDE_CAPTURED_OBJECTS;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerWebuiRecorderMessageConstants.class);

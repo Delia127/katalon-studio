@@ -380,6 +380,8 @@ public interface IImageKeys {
 
     public static final String WATCH_16 = "watch_16.png"; //$NON-NLS-1$
 
+    public static final String UNWATCH_16 = "unwatch_16.png"; //$NON-NLS-1$
+
     public static final String RECENT_16 = "recent_16.png"; //$NON-NLS-1$
 
     // Sub-toolbar disabled icons

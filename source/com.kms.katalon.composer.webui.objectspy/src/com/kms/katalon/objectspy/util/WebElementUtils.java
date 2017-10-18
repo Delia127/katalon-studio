@@ -390,6 +390,24 @@ public class WebElementUtils {
             element.setSelectorValue(SelectorMethod.valueOf(selectorMethod.name()), entry.getValue());
         });
 
+        element.setSelectorMethod(SelectorMethod.valueOf(webElementEntity.getSelectorMethod().name()));
+        webElementEntity.getSelectorCollection().entrySet().forEach(entry -> {
+            WebElementSelectorMethod selectorMethod = entry.getKey();
+            if (WebElementSelectorMethod.BASIC == selectorMethod) {
+                return;
+            }
+            element.setSelectorValue(SelectorMethod.valueOf(selectorMethod.name()), entry.getValue());
+        });
+
+        element.setSelectorMethod(SelectorMethod.valueOf(webElementEntity.getSelectorMethod().name()));
+        webElementEntity.getSelectorCollection().entrySet().forEach(entry -> {
+            WebElementSelectorMethod selectorMethod = entry.getKey();
+            if (WebElementSelectorMethod.BASIC == selectorMethod) {
+                return;
+            }
+            element.setSelectorValue(SelectorMethod.valueOf(selectorMethod.name()), entry.getValue());
+        });
+
         elementsMap.put(entityId, element);
         return element;
     }

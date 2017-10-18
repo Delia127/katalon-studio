@@ -1,7 +1,11 @@
 package com.kms.katalon.objectspy.dialog;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.ModifyEvent;
@@ -12,31 +16,28 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.osgi.service.event.Event;
 
-import com.kms.katalon.composer.components.event.EventBrokerSingleton;
-import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
+import com.kms.katalon.composer.components.impl.listener.EventListener;
+import com.kms.katalon.composer.components.impl.listener.EventManager;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.core.webui.common.WebUiCommonHelper;
-import com.kms.katalon.objectspy.constants.ObjectSpyEventConstants;
 import com.kms.katalon.objectspy.constants.ObjectspyMessageConstants;
-import com.kms.katalon.objectspy.element.HTMLElement;
 import com.kms.katalon.objectspy.element.WebElement;
 import com.kms.katalon.objectspy.element.WebPage;
 import com.kms.katalon.objectspy.util.WebElementUtils;
 
-public class ObjectSpySelectorEditor {
+public class ObjectSpySelectorEditor implements EventListener<ObjectSpyEvent>, EventManager<ObjectSpyEvent> {
 
     private static final int EDITOR_LINE_HEIGHT = 4;
 
     private StyledText txtSelector;
 
-    private IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
-
     private WebElement webElement;
+
+    private Map<ObjectSpyEvent, Set<EventListener<ObjectSpyEvent>>> eventListeners = new HashMap<>();
 
     /**
      * @wbp.parser.entryPoint
@@ -63,16 +64,9 @@ public class ObjectSpySelectorEditor {
         gdTxtSelector.heightHint = EDITOR_LINE_HEIGHT * fm.getHeight();
         txtSelector.setLayoutData(gdTxtSelector);
 
-        registerEventListeners();
-
         registerControlListeners();
 
         return composite;
-    }
-
-    private void registerEventListeners() {
-        eventBroker.subscribe(ObjectSpyEventConstants.OBJECT_PROPERTIES_CHANGED, objectSpyEventHandler);
-        eventBroker.subscribe(ObjectSpyEventConstants.SELECTED_OBJECT_CHANGED, objectSpyEventHandler);
     }
 
     private void registerControlListeners() {
@@ -84,20 +78,9 @@ public class ObjectSpySelectorEditor {
                     return;
                 }
                 webElement.setSelectorValue(webElement.getSelectorMethod(), txtSelector.getText());
-                eventBroker.post(ObjectSpyEventConstants.SELECTOR_VALUE_CHANGED, webElement);
+                invoke(ObjectSpyEvent.SELECTOR_HAS_CHANGED, webElement);
             }
         });
-    }
-
-    @SuppressWarnings("unused")
-    private void onHTMLElementChangeMethod(HTMLElement htmlElement) {
-        if (htmlElement.getSelectorMethod() == SelectorMethod.BASIC) {
-            changeEditorStatus(htmlElement.getXpath(), false);
-            return;
-        }
-        String selectorValue = htmlElement.getSelectorCollection().getOrDefault(htmlElement.getSelectorMethod(),
-                StringUtils.EMPTY);
-        changeEditorStatus(selectorValue, true);
     }
 
     private void changeEditorStatus(String text, boolean editable) {
@@ -137,21 +120,36 @@ public class ObjectSpySelectorEditor {
         return txtSelector.getText();
     }
 
-    private EventServiceAdapter objectSpyEventHandler = new EventServiceAdapter() {
+    @Override
+    public void handleEvent(ObjectSpyEvent event, Object object) {
+        switch (event) {
+            case ELEMENT_PROPERTIES_CHANGED:
+                webElement = (WebElement) object;
 
-        @Override
-        public void handleEvent(Event event) {
-            switch (event.getTopic()) {
-                case ObjectSpyEventConstants.OBJECT_PROPERTIES_CHANGED:
-                case ObjectSpyEventConstants.SELECTED_OBJECT_CHANGED:
-                    webElement = (WebElement) getObject(event);
-
-                    if (webElement instanceof WebPage) {
-                        webElement = null;
-                    }
-                    onWebElementChanged();
-                    return;
-            }
+                if (webElement instanceof WebPage) {
+                    webElement = null;
+                }
+                onWebElementChanged();
+                return;
+            default:
+                return;
         }
-    };
+    }
+
+    @Override
+    public Iterable<EventListener<ObjectSpyEvent>> getListeners(ObjectSpyEvent event) {
+        return eventListeners.get(event);
+    }
+
+    @Override
+    public void addListener(EventListener<ObjectSpyEvent> listener, Iterable<ObjectSpyEvent> events) {
+        events.forEach(e -> {
+            Set<EventListener<ObjectSpyEvent>> listenerOnEvent = eventListeners.get(e);
+            if (listenerOnEvent == null) {
+                listenerOnEvent = new HashSet<>();
+            }
+            listenerOnEvent.add(listener);
+            eventListeners.put(e, listenerOnEvent);
+        });
+    }
 }

@@ -35,8 +35,8 @@ import com.kms.katalon.custom.keyword.KeywordMethod;
 import com.kms.katalon.custom.keyword.KeywordParameter;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.groovy.util.GroovyStringUtil;
-import com.kms.katalon.objectspy.element.HTMLElement;
-import com.kms.katalon.objectspy.element.HTMLPageElement;
+import com.kms.katalon.objectspy.element.WebElement;
+import com.kms.katalon.objectspy.element.WebPage;
 import com.kms.katalon.objectspy.util.HTMLElementUtil;
 
 public class HTMLActionUtil {
@@ -155,12 +155,12 @@ public class HTMLActionUtil {
     }
 
     public static String getPageTitleForAction(HTMLActionMapping actionMapping) {
-        HTMLElement element = actionMapping.getTargetElement();
-        while (!(element == null) && !(element instanceof HTMLPageElement)) {
-            element = element.getParentElement();
+        WebElement element = actionMapping.getTargetElement();
+        while (!(element == null) && !(element instanceof WebPage)) {
+            element = element.getParent();
         }
         if (element != null) {
-            return ((HTMLPageElement) element).getAttributes().get(HTMLElementUtil.PAGE_TITLE_KEY);
+            return ((WebPage) element).getProperty(HTMLElementUtil.PAGE_TITLE_KEY).getValue();
         }
         return null;
     }
