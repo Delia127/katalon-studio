@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -12,6 +15,8 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringEscapeUtils;
+
+import com.kms.katalon.core.constants.StringConstants;
 
 public class PropertySettingStoreUtil {
     private static final String SETTING_ROOT_FOLDER_NAME = "settings";
@@ -38,13 +43,13 @@ public class PropertySettingStoreUtil {
         try {
             fileInput = new FileInputStream(propertyFile);
             LinkedProperties properties = new LinkedProperties();
-            properties.load(fileInput);
+            properties.load(new InputStreamReader(fileInput, Charset.forName(StringConstants.DF_CHARSET)));
             fileInput.close();
             fileInput = null;
 
             properties.put(key, value);
             fileOutput = new FileOutputStream(propertyFile);
-            properties.store(fileOutput, null);
+            properties.store(new OutputStreamWriter(fileOutput, Charset.forName(StringConstants.DF_CHARSET)), null);
             fileOutput.close();
             fileOutput = null;
         } finally {
@@ -64,13 +69,13 @@ public class PropertySettingStoreUtil {
         try {
             fileInput = new FileInputStream(propertyFile);
             Properties properties = new LinkedProperties();
-            properties.load(fileInput);
+            properties.load(new InputStreamReader(fileInput, Charset.forName(StringConstants.DF_CHARSET)));
             fileInput.close();
             fileInput = null;
 
             properties.clear();
             fileOutput = new FileOutputStream(propertyFile);
-            properties.store(fileOutput, null);
+            properties.store(new OutputStreamWriter(fileOutput, Charset.forName(StringConstants.DF_CHARSET)), null);
             fileOutput.close();
             fileOutput = null;
         } finally {
@@ -90,7 +95,7 @@ public class PropertySettingStoreUtil {
         try {
             fileInput = new FileInputStream(propertyFile);
             LinkedProperties properties = new LinkedProperties();
-            properties.load(fileInput);
+            properties.load(new InputStreamReader(fileInput, Charset.forName(StringConstants.DF_CHARSET)));
             fileInput.close();
             fileInput = null;
 
@@ -105,7 +110,7 @@ public class PropertySettingStoreUtil {
             }
 
             fileOutput = new FileOutputStream(propertyFile);
-            properties.store(fileOutput, null);
+            properties.store(new OutputStreamWriter(fileOutput, Charset.forName(StringConstants.DF_CHARSET)), null);
             fileOutput.close();
             fileOutput = null;
         } finally {
@@ -126,7 +131,7 @@ public class PropertySettingStoreUtil {
         FileInputStream fileInput = new FileInputStream(propertyFile);
         try {
             Properties properties = new LinkedProperties();
-            properties.load(fileInput);
+            properties.load(new InputStreamReader(fileInput, Charset.forName(StringConstants.DF_CHARSET)));
             return properties.getProperty(key);
         } finally {
             fileInput.close();
@@ -140,7 +145,7 @@ public class PropertySettingStoreUtil {
         FileInputStream fileInput = new FileInputStream(propertyFile);
         try {
             LinkedProperties properties = new LinkedProperties();
-            properties.load(fileInput);
+            properties.load(new InputStreamReader(fileInput, Charset.forName(StringConstants.DF_CHARSET)));
             Map<String, String> mapProperties = new LinkedHashMap<String, String>();
 
             Iterator<Object> orderedKeys = properties.orderedKeys().iterator();
@@ -224,7 +229,7 @@ public class PropertySettingStoreUtil {
         try {
             fis = new FileInputStream(settingFile);
             Properties settings = new Properties();
-            settings.load(fis);
+            settings.load(new InputStreamReader(fis, Charset.forName(StringConstants.DF_CHARSET)));
             return settings;
         } finally {
             if (fis != null) {
@@ -241,7 +246,7 @@ public class PropertySettingStoreUtil {
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(settingFile);
-            settings.store(fos, comment);
+            settings.store(new OutputStreamWriter(fos, Charset.forName(StringConstants.DF_CHARSET)), comment);
         } finally {
             if (fos != null) {
                 fos.close();
