@@ -57,10 +57,11 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.objectspy.dialog.AddToObjectRepositoryDialog.AddToObjectRepositoryDialogResult;
-import com.kms.katalon.objectspy.element.HTMLElement;
-import com.kms.katalon.objectspy.element.HTMLFrameElement;
-import com.kms.katalon.objectspy.element.HTMLPageElement;
-import com.kms.katalon.objectspy.util.HTMLElementUtil;
+import com.kms.katalon.objectspy.dialog.SaveToObjectRepositoryDialog.SaveToObjectRepositoryDialogResult;
+import com.kms.katalon.objectspy.element.WebElement;
+import com.kms.katalon.objectspy.element.WebFrame;
+import com.kms.katalon.objectspy.element.WebPage;
+import com.kms.katalon.objectspy.util.WebElementUtils;
 
 public class RecordHandler {
 
@@ -73,7 +74,7 @@ public class RecordHandler {
     @Inject
     private IEventBroker eventBroker;
 
-    private Map<HTMLElement, FileEntity> entitySavedMap;
+    private Map<WebElement, FileEntity> entitySavedMap;
 
     @Inject
     private UISynchronize sync;
@@ -111,9 +112,9 @@ public class RecordHandler {
             if (responseCode != Window.OK) {
                 return;
             }
-            final AddToObjectRepositoryDialogResult folderSelectionResult = recordDialog.getTargetFolderTreeEntity();
+            final SaveToObjectRepositoryDialogResult folderSelectionResult = recordDialog.getTargetFolderTreeEntity();
             final List<HTMLActionMapping> recordedActions = recordDialog.getActions();
-            final List<HTMLPageElement> recordedElements = recordDialog.getElements();
+            final List<WebPage> recordedElements = recordDialog.getElements();
             if (testCaseCompositePart == null) {
                 testCaseCompositePart = createNewTestCase();
             }
@@ -138,8 +139,8 @@ public class RecordHandler {
     }
 
     private void doGenerateTestScripts(final TestCaseCompositePart testCaseCompositePart,
-            final AddToObjectRepositoryDialogResult folderSelectionResult,
-            final List<HTMLActionMapping> recordedActions, final List<HTMLPageElement> recordedElements) {
+            final SaveToObjectRepositoryDialogResult folderSelectionResult,
+            final List<HTMLActionMapping> recordedActions, final List<WebPage> recordedElements) {
         if (testCaseCompositePart == null) {
             return;
         }
@@ -233,25 +234,25 @@ public class RecordHandler {
         return true;
     }
 
-    private void addRecordedElement(HTMLElement element, FolderEntity parentFolder, WebElementEntity refElement)
+    private void addRecordedElement(WebElement element, FolderEntity parentFolder, WebElementEntity refElement)
             throws Exception {
         WebElementEntity importedElement = ObjectRepositoryController.getInstance().importWebElement(
-                HTMLElementUtil.convertElementToWebElementEntity(element, refElement, parentFolder), parentFolder);
+                WebElementUtils.convertWebElementToTestObject(element, refElement, parentFolder), parentFolder);
         entitySavedMap.put(element, importedElement);
-        if (element instanceof HTMLFrameElement) {
-            for (HTMLElement childElement : ((HTMLFrameElement) element).getChildElements()) {
+        if (element instanceof WebFrame) {
+            for (WebElement childElement : ((WebFrame) element).getChildren()) {
                 addRecordedElement(childElement, parentFolder, importedElement);
             }
         }
     }
 
-    private void addRecordedElements(List<HTMLPageElement> recordedElements,
-            AddToObjectRepositoryDialogResult folderSelectionResult, IProgressMonitor monitor) throws Exception {
+    private void addRecordedElements(List<WebPage> recordedElements,
+            SaveToObjectRepositoryDialogResult folderSelectionResult, IProgressMonitor monitor) throws Exception {
         entitySavedMap = new HashMap<>();
-        for (HTMLPageElement pageElement : recordedElements) {
-            FolderEntity importedFolder = folderSelectionResult.createFolderForPageElement(pageElement);
+        for (WebElement pageElement : recordedElements) {
+            FolderEntity importedFolder = folderSelectionResult.createFolderForPageElement((WebPage) pageElement);
             entitySavedMap.put(pageElement, importedFolder);
-            for (HTMLElement childElement : pageElement.getChildElements()) {
+            for (WebElement childElement : ((WebFrame) pageElement).getChildren()) {
                 addRecordedElement(childElement, importedFolder, null);
             }
             monitor.worked(1);
@@ -259,8 +260,8 @@ public class RecordHandler {
     }
 
     private List<StatementWrapper> generateStatementWrappersFromRecordedActions(List<HTMLActionMapping> recordedActions,
-            List<HTMLPageElement> recordedElements, TestCasePart testCasePart,
-            AddToObjectRepositoryDialogResult folderSelectionResult, IProgressMonitor monitor) throws Exception {
+            List<WebPage> recordedElements, TestCasePart testCasePart,
+            SaveToObjectRepositoryDialogResult folderSelectionResult, IProgressMonitor monitor) throws Exception {
         monitor.subTask(StringConstants.JOB_ADDING_OBJECT);
         addRecordedElements(recordedElements, folderSelectionResult, monitor);
 

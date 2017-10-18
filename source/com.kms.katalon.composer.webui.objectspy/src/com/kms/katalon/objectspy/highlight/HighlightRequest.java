@@ -4,7 +4,7 @@ import java.text.MessageFormat;
 
 import com.kms.katalon.objectspy.core.MessageConstant;
 import com.kms.katalon.objectspy.core.RequestType;
-import com.kms.katalon.objectspy.element.HTMLElement;
+import com.kms.katalon.objectspy.element.XPathProvider;
 
 public class HighlightRequest extends ElementRequest {
     private boolean found = false;
@@ -12,7 +12,7 @@ public class HighlightRequest extends ElementRequest {
     private int clientId = -1;
     
 
-    public HighlightRequest(HTMLElement element) {
+    public HighlightRequest(XPathProvider element) {
         super(RequestType.HIGHLIGHT_TEST_OBJECT, element);
         setRequestData(createXPathExpression());
     }

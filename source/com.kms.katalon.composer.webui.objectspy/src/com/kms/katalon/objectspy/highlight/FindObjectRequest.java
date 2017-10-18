@@ -4,11 +4,11 @@ import java.text.MessageFormat;
 
 import com.kms.katalon.objectspy.core.MessageConstant;
 import com.kms.katalon.objectspy.core.RequestType;
-import com.kms.katalon.objectspy.element.HTMLElement;
+import com.kms.katalon.objectspy.element.XPathProvider;
 
 public class FindObjectRequest extends ElementRequest {
     
-    public FindObjectRequest(HTMLElement element) {
+    public FindObjectRequest(XPathProvider element) {
         super(RequestType.HIGHLIGHT_TEST_OBJECT, element);
         setRequestData(createXPathExpression());
     }

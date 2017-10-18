@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.objectrepository.view;
+package com.kms.katalon.composer.components.impl.dialogs;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -15,12 +15,13 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.adapter.CComboContentAdapter;
+import com.kms.katalon.composer.components.impl.constants.ComposerComponentsImplMessageConstants;
+import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.PlatformUtil;
-import com.kms.katalon.composer.objectrepository.constant.StringConstants;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 
-public class AddPropertyDialog extends Dialog {
+public class AddTestObjectPropertyDialog extends Dialog {
 
     private String name;
 
@@ -36,7 +37,7 @@ public class AddPropertyDialog extends Dialog {
 
     private static final String[] commonNames = { "class", "css", "id", "name", "title", "xpath" };
 
-    public AddPropertyDialog(Shell parentShell) {
+    public AddTestObjectPropertyDialog(Shell parentShell) {
         super(parentShell);
     }
 
@@ -52,7 +53,7 @@ public class AddPropertyDialog extends Dialog {
         container.setLayout(gl_container);
 
         Label lblName = new Label(container, SWT.NONE);
-        lblName.setText(StringConstants.VIEW_LBL_NAME);
+        lblName.setText(StringConstants.NAME);
 
         ccbName = new CCombo(container, SWT.BORDER | SWT.FLAT);
         ccbName.setLayoutData(platformGridData(new GridData(SWT.FILL, SWT.CENTER, true, false)));
@@ -60,7 +61,7 @@ public class AddPropertyDialog extends Dialog {
         new AutoCompleteField(ccbName, new CComboContentAdapter(), commonNames);
 
         Label lblCondition = new Label(container, SWT.NONE);
-        lblCondition.setText(StringConstants.VIEW_LBL_MATCH_COND);
+        lblCondition.setText(ComposerComponentsImplMessageConstants.VIEW_LBL_MATCH_COND);
 
         ccbConditions = new CCombo(container, SWT.BORDER | SWT.READ_ONLY);
         ccbConditions.setLayoutData(platformGridData(new GridData(SWT.FILL, SWT.CENTER, true, false)));
@@ -69,7 +70,7 @@ public class AddPropertyDialog extends Dialog {
 
         Label lblValue = new Label(container, SWT.NONE);
         lblValue.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-        lblValue.setText(StringConstants.VIEW_LBL_VALUE);
+        lblValue.setText(StringConstants.VALUE);
 
         txtValue = new Text(container, SWT.BORDER);
         txtValue.setLayoutData(platformGridData(new GridData(SWT.FILL, SWT.CENTER, true, false)));
@@ -90,12 +91,16 @@ public class AddPropertyDialog extends Dialog {
     @Override
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
-        newShell.setText(StringConstants.VIEW_LBL_ADD_PROPERTY);
+        newShell.setText(ComposerComponentsImplMessageConstants.VIEW_LBL_ADD_PROPERTY);
     }
 
     @Override
     protected Point getInitialSize() {
         return new Point(450, 180);
+    }
+
+    public Point getSize() {
+        return getInitialSize();
     }
 
     @Override
@@ -104,8 +109,8 @@ public class AddPropertyDialog extends Dialog {
         value = txtValue.getText();
         condition = ccbConditions.getItem(ccbConditions.getSelectionIndex());
         if (name.trim().isEmpty()) {
-            MessageDialog.openWarning(getParentShell(), StringConstants.WARN_TITLE,
-                    StringConstants.VIEW_WARN_MSG_PROPERTY_CANNOT_BE_BLANK);
+            MessageDialog.openWarning(getParentShell(), StringConstants.WARN,
+                    ComposerComponentsImplMessageConstants.VIEW_WARN_MSG_PROPERTY_CANNOT_BE_BLANK);
         } else {
             super.okPressed();
         }

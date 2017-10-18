@@ -1,0 +1,10 @@
+package com.kms.katalon.objectspy.dialog;
+
+public enum ObjectSpyEvent {
+    SELECTOR_HAS_CHANGED,
+    SELECTED_ELEMENT_CHANGED,
+    ELEMENT_PROPERTIES_CHANGED,
+    SELENIUM_SESSION_STARTED,
+    ADDON_SESSION_STARTED,
+    REQUEST_DIALOG_RESIZE;
+}

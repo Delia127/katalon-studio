@@ -3,6 +3,7 @@ package com.kms.katalon.composer.objectrepository.view;
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Callable;
@@ -28,8 +29,11 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
@@ -37,6 +41,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -61,6 +66,7 @@ import org.osgi.service.event.EventHandler;
 import com.kms.katalon.composer.components.impl.control.CMenu;
 import com.kms.katalon.composer.components.impl.control.HotkeyActiveListener;
 import com.kms.katalon.composer.components.impl.control.ImageButton;
+import com.kms.katalon.composer.components.impl.dialogs.AddTestObjectPropertyDialog;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.dialogs.TreeEntitySelectionDialog;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
@@ -87,14 +93,30 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.testobject.ConditionType;
+import com.kms.katalon.core.testobject.SelectorMethod;
+import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.core.util.internal.PathUtil;
+import com.kms.katalon.core.webui.common.WebUiCommonHelper;
 import com.kms.katalon.entity.dal.exception.DuplicatedFileNameException;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
+import com.kms.katalon.entity.repository.WebElementSelectorMethod;
+import com.kms.katalon.objectspy.constants.ObjectspyMessageConstants;
 
 public class ObjectPropertyView implements EventHandler {
+
+    private static final String RADIO_LBL_BASIC = ObjectspyMessageConstants.DIA_RADIO_LABEL_BASIC;
+
+    private static final String RADIO_LBL_CSS = ObjectspyMessageConstants.DIA_RADIO_LABEL_CSS;
+
+    private static final String RADIO_LBL_XPATH = ObjectspyMessageConstants.DIA_RADIO_LABEL_XPATH;
+
+    private static final String LBL_SELECTION_METHOD = ObjectspyMessageConstants.DIA_LBL_OBJECT_SELECTION_METHOD;
+
+    private static final String LBL_SELECTOR_EDITOR = ObjectspyMessageConstants.LBL_DLG_SELECTOR_EDITOR;
 
     private static final String HK_ADD = "M1+N";
 
@@ -132,8 +154,7 @@ public class ObjectPropertyView implements EventHandler {
 
     private Button btnBrowseParentObj, btnBrowseParentShadowRoot, rdoUseParentObject, rdoShadowRootParent, rdoNoParent;
 
-    private Composite compositeParentObject, compositeNoParent, compositeShadowRootParent, compositeSettingsDetails,
-            compositeSettings;
+    private Composite compositeParentObject, compositeShadowRootParent, compositeSettingsDetails, compositeSettings;
 
     private ObjectViewToolItemListener toolItemListener;
 
@@ -142,6 +163,10 @@ public class ObjectPropertyView implements EventHandler {
     private boolean isParentObjectShadowRoot = false;
 
     private TestObjectPart testObjectPart;
+
+    private StyledText txtSelectorEditor;
+
+    private Button radioBasic, radioXpath, radioCss;
 
     private Listener layoutParentObjectCompositeListener = new Listener() {
 
@@ -183,17 +208,8 @@ public class ObjectPropertyView implements EventHandler {
         });
     }
 
-    private void createTableToolbar() {
-        Composite compositeTableHeader = new Composite(compositeTable, SWT.NONE);
-        compositeTableHeader.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        FillLayout fl_compositeTableHeader = new FillLayout(SWT.HORIZONTAL);
-        fl_compositeTableHeader.marginWidth = 5;
-        compositeTableHeader.setLayout(fl_compositeTableHeader);
-
-        Label lblObjectProperties = new Label(compositeTableHeader, SWT.NONE);
-        lblObjectProperties.setText(StringConstants.VIEW_LBL_OBJ_PROPERTIES);
-        ControlUtils.setFontToBeBold(lblObjectProperties);
-        Composite compositeTableToolBar = new Composite(compositeTable, SWT.NONE);
+    private void createTableToolbar(Composite parent) {
+        Composite compositeTableToolBar = new Composite(parent, SWT.NONE);
         compositeTableToolBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         compositeTableToolBar.setLayout(new FillLayout(SWT.HORIZONTAL));
 
@@ -215,8 +231,53 @@ public class ObjectPropertyView implements EventHandler {
         toolItemClear.setImage(ImageConstants.IMG_16_CLEAR);
     }
 
-    private void createTableDetails() {
-        Composite compositeTableDetails = new Composite(compositeTable, SWT.NONE);
+    private void createSelectionMethodComposite(Composite parent) {
+        Composite selectionMethodComposite = new Composite(parent, SWT.NONE);
+        selectionMethodComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        GridLayout glSelectionMethodComp = new GridLayout(3, false);
+        glSelectionMethodComp.marginHeight = 0;
+        glSelectionMethodComp.marginWidth = 0;
+        selectionMethodComposite.setLayout(glSelectionMethodComp);
+
+        Label lblSelectionMethod = new Label(selectionMethodComposite, SWT.NONE);
+        lblSelectionMethod.setText(LBL_SELECTION_METHOD);
+        lblSelectionMethod.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+
+        Label lblSelectionMethodHelp = new Label(selectionMethodComposite, SWT.NONE);
+        lblSelectionMethodHelp.setImage(ImageConstants.IMG_16_HELP);
+        lblSelectionMethodHelp.setCursor(Display.getDefault().getSystemCursor(SWT.CURSOR_HAND));
+        lblSelectionMethodHelp.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+        lblSelectionMethodHelp.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseUp(MouseEvent e) {
+                Program.launch(ComposerObjectRepositoryMessageConstants.VIEW_HELP_SELECTION_METHOD_DOC_URL);
+            }
+        });
+
+        Composite radioSelectionComposite = new Composite(selectionMethodComposite, SWT.NONE);
+        radioSelectionComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        GridLayout glRadioSelection = new GridLayout(3, false);
+        glRadioSelection.marginHeight = 0;
+        glRadioSelection.marginWidth = 0;
+        glRadioSelection.marginLeft = 10;
+        radioSelectionComposite.setLayout(glRadioSelection);
+
+        radioBasic = new Button(radioSelectionComposite, SWT.RADIO);
+        radioBasic.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+        radioBasic.setText(RADIO_LBL_BASIC);
+
+        radioCss = new Button(radioSelectionComposite, SWT.RADIO);
+        radioCss.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+        radioCss.setText(RADIO_LBL_CSS);
+
+        radioXpath = new Button(radioSelectionComposite, SWT.RADIO);
+        radioXpath.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+        radioXpath.setText(RADIO_LBL_XPATH);
+    }
+
+    private void createTableDetails(Composite parent) {
+        Composite compositeTableDetails = new Composite(parent, SWT.NONE);
         compositeTableDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         GridLayout glCompositeTableDetails = new GridLayout(1, false);
         glCompositeTableDetails.marginWidth = 0;
@@ -229,9 +290,8 @@ public class ObjectPropertyView implements EventHandler {
         Table table = tableViewer.getTable();
         table.setHeaderVisible(true);
         table.setLinesVisible(true);
-        GridData gridDataTable = new GridData(GridData.FILL_BOTH);
-        gridDataTable.horizontalSpan = 3;
-        gridDataTable.heightHint = 150;
+        GridData gridDataTable = new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1);
+        gridDataTable.minimumHeight = 150;
         table.setLayoutData(gridDataTable);
 
         TableViewerColumn treeViewerColumnName = new TableViewerColumn(tableViewer, SWT.NONE);
@@ -334,18 +394,52 @@ public class ObjectPropertyView implements EventHandler {
 
         createSettingsComposite(compositeObjectDetails);
 
-        compositeTable = new Composite(compositeObjectDetails, SWT.NONE);
-        compositeTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        GridLayout glCompositeTable = new GridLayout(1, false);
+        createObjectPropertiesComposite(compositeObjectDetails);
+    }
+
+    private void createObjectPropertiesComposite(Composite parent) {
+        Composite compositeTableHeader = new Composite(parent, SWT.NONE);
+        compositeTableHeader.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        compositeTableHeader.setLayout(new FillLayout(SWT.HORIZONTAL));
+
+        Label lblObjectProperties = new Label(compositeTableHeader, SWT.NONE);
+        lblObjectProperties.setText(StringConstants.VIEW_LBL_OBJ_PROPERTIES);
+        ControlUtils.setFontToBeBold(lblObjectProperties);
+
+        createSelectionMethodComposite(parent);
+
+        compositeTable = new Composite(parent, SWT.NONE);
+        compositeTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        GridLayout glCompositeTable = new GridLayout();
         glCompositeTable.marginWidth = 0;
         glCompositeTable.marginHeight = 0;
         compositeTable.setLayout(glCompositeTable);
 
-        createTableToolbar();
+        createTableToolbar(compositeTable);
 
-        createTableDetails();
+        createTableDetails(compositeTable);
 
         createTableMenu();
+
+        createSelectorEditor(parent);
+    }
+
+    private void createSelectorEditor(Composite parent) {
+        Composite c = new Composite(parent, SWT.NONE);
+        c.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        GridLayout layout = new GridLayout();
+        layout.marginHeight = 0;
+        layout.marginWidth = 0;
+        c.setLayout(layout);
+
+        Label lblSelectorEditor = new Label(c, SWT.NONE);
+        lblSelectorEditor.setText(LBL_SELECTOR_EDITOR);
+        lblSelectorEditor.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+
+        txtSelectorEditor = new StyledText(c, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
+        GridData gdSelectorEditor = new GridData(SWT.FILL, SWT.FILL, true, true);
+        gdSelectorEditor.minimumHeight = 80;
+        txtSelectorEditor.setLayoutData(gdSelectorEditor);
     }
 
     private void createSettingsComposite(Composite parent) {
@@ -391,7 +485,7 @@ public class ObjectPropertyView implements EventHandler {
 
         Group haveParentGroup = new Group(compositeSettingsLeft, SWT.NONE);
         haveParentGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        haveParentGroup.setLayout(new GridLayout(1, false));
+        haveParentGroup.setLayout(new GridLayout(2, false));
         haveParentGroup.setText(ComposerObjectRepositoryMessageConstants.GRP_HAVE_PARENT_OBJECT);
 
         createCompositeNoParentObject(haveParentGroup);
@@ -414,87 +508,66 @@ public class ObjectPropertyView implements EventHandler {
         lblImage.setText(StringConstants.VIEW_LBL_IMAGE);
 
         txtImage = new Text(compositeSettingsRight, SWT.BORDER | SWT.READ_ONLY);
-        GridData gdTxtImage = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
-        gdTxtImage.heightHint = ControlUtils.DF_CONTROL_HEIGHT;
-        txtImage.setLayoutData(gdTxtImage);
+        txtImage.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
         txtImage.setEditable(false);
 
         btnBrowseImage = new Button(compositeSettingsRight, SWT.FLAT);
-        btnBrowseImage.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false, 1, 1));
+        btnBrowseImage.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
         btnBrowseImage.setText(StringConstants.VIEW_BTN_BROWSE);
         btnBrowseImage.setToolTipText(StringConstants.VIEW_BTN_TIP_BROWSE);
     }
 
     private void createCompositeShadowRootParent(Composite compositeSettingsLeft) {
-        Composite compositeUseShadowRoot = new Composite(compositeSettingsLeft, SWT.NONE);
-        compositeUseShadowRoot.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        GridLayout glCompositeUseShadowRoot = new GridLayout(2, false);
-        glCompositeUseShadowRoot.marginWidth = 0;
-        glCompositeUseShadowRoot.marginHeight = 0;
-        compositeUseShadowRoot.setLayout(glCompositeUseShadowRoot);
-
-        rdoShadowRootParent = new Button(compositeUseShadowRoot, SWT.RADIO);
+        rdoShadowRootParent = new Button(compositeSettingsLeft, SWT.RADIO);
         rdoShadowRootParent.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
         rdoShadowRootParent.setText(ComposerObjectRepositoryMessageConstants.RDO_SHADOW_ROOT_PARENT);
 
-        compositeShadowRootParent = new Composite(compositeUseShadowRoot, SWT.NONE);
+        compositeShadowRootParent = new Composite(compositeSettingsLeft, SWT.NONE);
+        GridLayout glCompositeParentObject = new GridLayout(2, false);
+        glCompositeParentObject.marginHeight = 0;
+        glCompositeParentObject.marginWidth = 0;
+        compositeShadowRootParent.setLayout(glCompositeParentObject);
         compositeShadowRootParent.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        GridLayout glCompositeShadowRootParent = new GridLayout(2, false);
-        glCompositeShadowRootParent.marginWidth = 0;
-        glCompositeShadowRootParent.marginHeight = 0;
-        compositeShadowRootParent.setLayout(glCompositeShadowRootParent);
 
         txtParentShadowRoot = new FormText(compositeShadowRootParent, SWT.BORDER);
         txtParentShadowRoot.setWhitespaceNormalized(false);
         GridData gdTxtParentObject = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
-        gdTxtParentObject.heightHint = 100;
+        gdTxtParentObject.heightHint = 20;
         txtParentShadowRoot.setLayoutData(gdTxtParentObject);
 
         btnBrowseParentShadowRoot = new Button(compositeShadowRootParent, SWT.FLAT);
-        btnBrowseParentShadowRoot.setLayoutData(new GridData(SWT.TRAIL, SWT.FILL, false, false, 1, 1));
+        btnBrowseParentShadowRoot.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
         btnBrowseParentShadowRoot.setText(StringConstants.BROWSE);
     }
 
     private void createCompositeNoParentObject(Composite parentComposite) {
-        compositeNoParent = new Composite(parentComposite, SWT.NONE);
-        compositeNoParent.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        GridLayout glSettingsLeft = new GridLayout(1, false);
-        glSettingsLeft.marginWidth = 0;
-        glSettingsLeft.marginHeight = 0;
-        compositeNoParent.setLayout(glSettingsLeft);
-
-        rdoNoParent = new Button(compositeNoParent, SWT.RADIO);
-        rdoNoParent.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+        rdoNoParent = new Button(parentComposite, SWT.RADIO);
+        GridData layoutData = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
+        layoutData.heightHint = 20;
+        rdoNoParent.setLayoutData(layoutData);
         rdoNoParent.setText(ComposerObjectRepositoryMessageConstants.RDO_NO_PARENT);
     }
 
     private void createCompositeParentObject(Composite parentComposite) {
-        Composite compositeUseParentIframe = new Composite(parentComposite, SWT.NONE);
-        compositeUseParentIframe.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        GridLayout glCompositeUseParentIframe = new GridLayout(2, false);
-        glCompositeUseParentIframe.marginWidth = 0;
-        glCompositeUseParentIframe.marginHeight = 0;
-        compositeUseParentIframe.setLayout(glCompositeUseParentIframe);
-
-        rdoUseParentObject = new Button(compositeUseParentIframe, SWT.RADIO);
+        rdoUseParentObject = new Button(parentComposite, SWT.RADIO);
         rdoUseParentObject.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
         rdoUseParentObject.setText(StringConstants.VIEW_LBL_USE_IFRAME);
 
-        compositeParentObject = new Composite(compositeUseParentIframe, SWT.NONE);
-        compositeParentObject.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        compositeParentObject = new Composite(parentComposite, SWT.NONE);
         GridLayout glCompositeParentObject = new GridLayout(2, false);
-        glCompositeParentObject.marginWidth = 0;
         glCompositeParentObject.marginHeight = 0;
+        glCompositeParentObject.marginWidth = 0;
         compositeParentObject.setLayout(glCompositeParentObject);
+        compositeParentObject.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 
         txtParentObject = new FormText(compositeParentObject, SWT.BORDER);
         txtParentObject.setWhitespaceNormalized(false);
         GridData gdTxtParentObject = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
-        gdTxtParentObject.heightHint = 100;
+        gdTxtParentObject.heightHint = 20;
         txtParentObject.setLayoutData(gdTxtParentObject);
 
         btnBrowseParentObj = new Button(compositeParentObject, SWT.FLAT);
-        btnBrowseParentObj.setLayoutData(new GridData(SWT.TRAIL, SWT.FILL, false, false, 1, 1));
+        btnBrowseParentObj.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, 1, 1));
         btnBrowseParentObj.setText(StringConstants.BROWSE);
     }
 
@@ -531,6 +604,7 @@ public class ObjectPropertyView implements EventHandler {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 tableViewer.setSelectedAll();
+                onWebElementPropertyChanged();
                 setDirty(true);
             }
         });
@@ -595,6 +669,66 @@ public class ObjectPropertyView implements EventHandler {
         };
         txtParentObject.addHyperlinkListener(hyperLinkListener);
         txtParentShadowRoot.addHyperlinkListener(hyperLinkListener);
+
+        radioBasic.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                testObjectPart.executeOperation(new ChangeSelectorMethodOperation(WebElementSelectorMethod.BASIC));
+                setDirty(true);
+            }
+        });
+        radioCss.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                testObjectPart.executeOperation(new ChangeSelectorMethodOperation(WebElementSelectorMethod.CSS));
+                setDirty(true);
+            }
+        });
+        radioXpath.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                testObjectPart.executeOperation(new ChangeSelectorMethodOperation(WebElementSelectorMethod.XPATH));
+                setDirty(true);
+            }
+        });
+
+        txtSelectorEditor.addModifyListener(new ModifyListener() {
+
+            @Override
+            public void modifyText(ModifyEvent e) {
+                String selector = ((StyledText) e.getSource()).getText();
+                getCloneTestObject().setSelectorValue(getCloneTestObject().getSelectorMethod(), selector);
+                setDirty(true);
+            }
+        });
+    }
+
+    private void onWebElementPropertyChanged() {
+        if (txtSelectorEditor.isDisposed()) {
+            return;
+        }
+        if (cloneTestObject == null) {
+            txtSelectorEditor.setEnabled(false);
+            txtSelectorEditor.setText(StringUtils.EMPTY);
+            return;
+        }
+        WebElementSelectorMethod selectorMethod = cloneTestObject.getSelectorMethod();
+        switch (selectorMethod) {
+            case BASIC:
+                TestObject testObject = buildTestObject(cloneTestObject);
+                txtSelectorEditor.setText(WebUiCommonHelper.getSelectorValue(testObject));
+                txtSelectorEditor.setEditable(false);
+                txtSelectorEditor.setBackground(ColorUtil.getDisabledItemBackgroundColor());
+                return;
+            default:
+                txtSelectorEditor.setText(
+                        cloneTestObject.getSelectorCollection().getOrDefault(selectorMethod, StringConstants.EMPTY));
+                txtSelectorEditor.setEditable(true);
+                txtSelectorEditor.setBackground(null);
+        }
     }
 
     private void setDirty(final boolean isDirty) {
@@ -717,6 +851,8 @@ public class ObjectPropertyView implements EventHandler {
 
             tableViewer.setInput(webElementProperties);
             tableViewer.refresh();
+
+            refreshLocatorMethod();
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(null, StringConstants.ERROR_TITLE,
@@ -748,15 +884,16 @@ public class ObjectPropertyView implements EventHandler {
         }
     }
 
-    // private void enableParentObjectComposite(boolean enable) {
-    // if (enable) {
-    // setParentObjectId(parentObjectId);
-    // setLinkIdToFormText(parentObjectId, txtParentObject);
-    // } else {
-    // txtParentObject.setText(parentObjectId, false, false);
-    // }
-    // ControlUtils.recursiveSetEnabled(compositeParentObject, enable);
-    // }
+    private void refreshLocatorMethod() {
+        WebElementSelectorMethod selectorMethod = cloneTestObject.getSelectorMethod();
+        boolean isBasicMethod = selectorMethod == WebElementSelectorMethod.BASIC;
+        radioBasic.setSelection(isBasicMethod);
+        radioCss.setSelection(selectorMethod == WebElementSelectorMethod.CSS);
+        radioXpath.setSelection(selectorMethod == WebElementSelectorMethod.XPATH);
+
+        onWebElementPropertyChanged();
+        showTableComposite(isBasicMethod);
+    }
 
     private void refreshParentObjectComposite(Button rdoButton, ParentObjectType parentObjectType,
             Composite composite) {
@@ -769,6 +906,9 @@ public class ObjectPropertyView implements EventHandler {
     }
 
     private boolean verifyObjectProperties() {
+        if (tableViewer.getInput() == null) {
+            return false;
+        }
         for (int i = 0; i < tableViewer.getInput().size() - 1; i++) {
             if (!(tableViewer.getInput().get(i) instanceof WebElementPropertyEntity)) {
                 continue;
@@ -888,6 +1028,13 @@ public class ObjectPropertyView implements EventHandler {
 
         des.setImagePath(src.getImagePath());
         des.setUseRalativeImagePath(src.getUseRalativeImagePath());
+
+        des.setSelectorMethod(src.getSelectorMethod());
+        des.setSelectorCollection(new HashMap<>(src.getSelectorCollection()));
+    }
+
+    private WebElementEntity getCloneTestObject() {
+        return cloneTestObject;
     }
 
     @PreDestroy
@@ -903,6 +1050,7 @@ public class ObjectPropertyView implements EventHandler {
             case ObjectEventConstants.OBJECT_UPDATE_DIRTY: {
                 if (object != null && object instanceof TableViewer) {
                     if (object.equals(tableViewer)) {
+                        onWebElementPropertyChanged();
                         dirtyable.setDirty(true);
                     }
                 }
@@ -927,8 +1075,9 @@ public class ObjectPropertyView implements EventHandler {
                     Object[] objects = (Object[]) object;
                     String testObjectId = (String) objects[0];
                     String projectFolderId = ProjectController.getInstance().getCurrentProject().getFolderLocation();
-                    String oldTestObjectRelativeId = testObjectId.replace(projectFolderId + File.separator, "")
-                            .replace(WebElementEntity.getWebElementFileExtension(), "")
+                    String oldTestObjectRelativeId = testObjectId
+                            .replace(projectFolderId + File.separator, StringConstants.EMPTY)
+                            .replace(WebElementEntity.getWebElementFileExtension(), StringConstants.EMPTY)
                             .replace(File.separator, StringConstants.ENTITY_ID_SEPARATOR);
                     if (oldTestObjectRelativeId.equals(getParentObjectId())) {
                         loadTestObject();
@@ -943,6 +1092,7 @@ public class ObjectPropertyView implements EventHandler {
 
     private class ObjectViewToolItemListener extends SelectionAdapter implements HotkeyActiveListener {
 
+        @SuppressWarnings("unchecked")
         @Override
         public void executeAction(String actionId) {
             if (actionId == null) {
@@ -980,8 +1130,8 @@ public class ObjectPropertyView implements EventHandler {
         Shell shell = new Shell(Display.getCurrent());
         Point pt = tableViewer.getControl().toDisplay(1, 1);
         shell.setSize(0, 0);
-        AddPropertyDialog dialog = new AddPropertyDialog(shell);
-        shell.setLocation(pt.x + dialog.getInitialSize().x / 2 - 65, pt.y + dialog.getInitialSize().y / 2 + 20);
+        AddTestObjectPropertyDialog dialog = new AddTestObjectPropertyDialog(shell);
+        shell.setLocation(pt.x + dialog.getSize().x / 2 - 65, pt.y + dialog.getSize().y / 2 + 20);
 
         int code = dialog.open();
         if (code == Window.OK) {
@@ -1494,12 +1644,73 @@ public class ObjectPropertyView implements EventHandler {
         }
     }
 
+    private class ChangeSelectorMethodOperation extends AbstractOperation {
+
+        WebElementSelectorMethod oldMethod, newMethod;
+
+        public ChangeSelectorMethodOperation(WebElementSelectorMethod method) {
+            super(ChangeSelectorMethodOperation.class.getName());
+            oldMethod = getCloneTestObject() == null ? null : getCloneTestObject().getSelectorMethod();
+            newMethod = method;
+        }
+
+        @Override
+        public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            return redo(monitor, info);
+        }
+
+        @Override
+        public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            getCloneTestObject().setSelectorMethod(newMethod);
+            refreshLocatorMethod();
+            return Status.OK_STATUS;
+        }
+
+        @Override
+        public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+            getCloneTestObject().setSelectorMethod(oldMethod);
+            refreshLocatorMethod();
+            return Status.OK_STATUS;
+        }
+    }
+
     private List<WebElementPropertyEntity> getPropertyListFromRows(List<ObjectPropertyTableRow> objectPropertyRows) {
         List<WebElementPropertyEntity> propertyEntities = new ArrayList<>();
         for (ObjectPropertyTableRow row : objectPropertyRows) {
             propertyEntities.add(row.getWebElementPropertyEntity());
         }
         return propertyEntities;
+    }
+
+    private TestObject buildTestObject(WebElementEntity webElement) {
+        TestObject testObject = new TestObject();
+        String parentFrameId = webElement.getPropertyValue(WebElementEntity.ref_element);
+        if (!parentFrameId.isEmpty()) {
+            try {
+                WebElementEntity parentEntity = ObjectRepositoryController.getInstance()
+                        .getWebElementByDisplayPk(parentFrameId);
+                TestObject parent = buildTestObject(parentEntity);
+                testObject.setParentObject(parent);
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+            }
+        }
+        webElement.getWebElementProperties().forEach(prop -> {
+            testObject.addProperty(prop.getName(), ConditionType.fromValue(prop.getMatchCondition()), prop.getValue(),
+                    prop.getIsSelected());
+        });
+        testObject.setSelectorMethod(SelectorMethod.valueOf(webElement.getSelectorMethod().name()));
+        webElement.getSelectorCollection().entrySet().forEach(entry -> {
+            testObject.setSelectorValue(SelectorMethod.valueOf(entry.getKey().name()), entry.getValue());
+        });
+
+        return testObject;
+    }
+
+    private void showTableComposite(boolean isVisible) {
+        compositeTable.setVisible(isVisible);
+        ((GridData) compositeTable.getLayoutData()).exclude = !isVisible;
+        compositeTable.getParent().layout();
     }
 
     private enum ParentObjectType {

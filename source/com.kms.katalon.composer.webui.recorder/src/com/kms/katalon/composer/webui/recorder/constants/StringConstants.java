@@ -22,6 +22,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_COL_NAME = NAME;
     public static final String DIA_COL_VALUE = VALUE;
     public static final String DIA_TITLE_CAPTURED_OBJECTS = ComposerWebuiRecorderMessageConstants.DIA_TITLE_CAPTURED_OBJECTS;
+    public static final String DIA_TOOLTIP_SHOW_HIDE_CAPTURED_OBJECTS = ComposerWebuiRecorderMessageConstants.DIA_TOOLTIP_SHOW_HIDE_CAPTURED_OBJECTS;
     public static final String DIA_MESSAGE_SELECT_ELEMENT = ComposerWebuiRecorderMessageConstants.DIA_MESSAGE_SELECT_ELEMENT;
     public static final String DIA_ERROR_MESSAGE_SELECT_ELEMENT = ComposerWebuiRecorderMessageConstants.DIA_ERROR_MESSAGE_SELECT_ELEMENT;
     public static final String JOB_GENERATE_SCRIPT_MESSAGE = ComposerWebuiRecorderMessageConstants.JOB_GENERATE_SCRIPT_MESSAGE;

@@ -11,15 +11,16 @@ public class HelpCompositeForDialog extends HelpComposite {
         super(parent, documentationUrl);
     }
     
+    @Override
     protected GridData createGridData() {
         return new GridData(SWT.LEFT, SWT.CENTER, true, false);
     }
 
+    @Override
     protected GridLayout createLayout() {
         GridLayout layout = new GridLayout();
         layout.marginHeight = 0;
         layout.marginBottom = 5;
-        layout.marginWidth = 5;
         return layout;
     }
 

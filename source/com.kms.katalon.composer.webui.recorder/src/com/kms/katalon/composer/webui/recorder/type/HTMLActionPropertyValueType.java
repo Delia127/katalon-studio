@@ -2,7 +2,6 @@ package com.kms.katalon.composer.webui.recorder.type;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
 
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
@@ -13,22 +12,20 @@ import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
 import com.kms.katalon.composer.testcase.model.InputValueEditorProvider;
 import com.kms.katalon.composer.webui.recorder.util.HTMLActionUtil;
 import com.kms.katalon.groovy.util.GroovyStringUtil;
-import com.kms.katalon.objectspy.element.HTMLElement;
+import com.kms.katalon.objectspy.element.WebElement;
 
 public class HTMLActionPropertyValueType implements InputValueEditorProvider {
 
-    private HTMLElement htmlElement;
+    private WebElement htmlElement;
 
     private List<String> htmlPropertyNames;
 
-    public HTMLActionPropertyValueType(HTMLElement htmlElement) {
-        this.htmlElement = htmlElement;
+    public HTMLActionPropertyValueType(WebElement webElement) {
+        this.htmlElement = webElement;
         htmlPropertyNames = new ArrayList<String>();
 
-        if (htmlElement != null && htmlElement.getAttributes() != null && !htmlElement.getAttributes().isEmpty()) {
-            for (Entry<String, String> entry : htmlElement.getAttributes().entrySet()) {
-                htmlPropertyNames.add(entry.getKey());
-            }
+        if (webElement != null && webElement.getProperties() != null && !webElement.getProperties().isEmpty()) {
+            webElement.getProperties().forEach(prop -> htmlPropertyNames.add(prop.getName()));
         }
     }
 

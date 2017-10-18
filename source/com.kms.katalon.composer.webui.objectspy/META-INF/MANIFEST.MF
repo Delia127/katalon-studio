@@ -44,7 +44,8 @@ Require-Bundle: com.kms.katalon.core;bundle-version="1.0.0",
  org.eclipse.jetty.websocket.common,
  org.eclipse.jetty.websocket.client,
  org.eclipse.jetty.http,
- com.kms.katalon.selenium-standalone
+ com.kms.katalon.selenium-standalone,
+ org.eclipse.egit.ui
 Export-Package: com.kms.katalon.objectspy.components,
  com.kms.katalon.objectspy.constants,
  com.kms.katalon.objectspy.core,

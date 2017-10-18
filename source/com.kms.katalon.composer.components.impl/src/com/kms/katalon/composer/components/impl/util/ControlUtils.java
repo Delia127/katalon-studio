@@ -228,10 +228,13 @@ public class ControlUtils {
         menuItem.setData(fileEntity);
         menuItem.addSelectionListener(selectionAdapter);
     }
-    
+
     private static String getFileEntityMenuItemLabel(FileEntity entity) {
         return ComposerComponentsImplMessageConstants.MENU_OPEN + " " + entity.getName();
     }
 
+    public static boolean isReady(Control control) {
+        return control != null && !control.isDisposed();
+    }
 
 }

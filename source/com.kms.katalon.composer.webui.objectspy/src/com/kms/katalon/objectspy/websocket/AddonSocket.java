@@ -15,6 +15,7 @@ import javax.websocket.server.ServerEndpoint;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.w3c.dom.Document;
 
 import com.google.gson.Gson;
@@ -27,6 +28,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.objectspy.element.HTMLRawElement;
 import com.kms.katalon.objectspy.util.HTMLElementUtil;
+import com.kms.katalon.objectspy.util.WebElementUtils;
 import com.kms.katalon.objectspy.websocket.messages.AddonMessage;
 import com.kms.katalon.objectspy.websocket.messages.BrowserInfoMessageData;
 
@@ -175,8 +177,13 @@ public class AddonSocket {
 
     private void addNewElement(String value) {
         try {
-            EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.OBJECT_SPY_HTML_ELEMENT_CAPTURED,
-                    HTMLElementUtil.buildHTMLElement(value));
+            // TODO remove this when the new Object spy complete
+            IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
+            eventBroker.post(EventConstants.OBJECT_SPY_HTML_ELEMENT_CAPTURED, HTMLElementUtil.buildHTMLElement(value));
+
+            // For new object spy
+            // Note that, the web socket is used for Firefox plugin only
+            eventBroker.post(EventConstants.OBJECT_SPY_HTML_ELEMENT_CAPTURED, WebElementUtils.buildWebElement(value));
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }

@@ -24,6 +24,7 @@ import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.helper.KeywordHelper;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.testobject.ConditionType;
+import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.core.testobject.TestObjectProperty;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
@@ -67,7 +68,6 @@ public class WebUiCommonHelper extends KeywordHelper {
 
     public static final String WEB_ELEMENT_ATTRIBUTE_TEXT = "text";
 
-
     public static final String WEB_ELEMENT_XPATH = "xpath";
 
     private static KeywordLogger logger = KeywordLogger.getInstance();
@@ -103,10 +103,10 @@ public class WebUiCommonHelper extends KeywordHelper {
         return isContained;
     }
 
-    public static boolean switchToWindowUsingTitle(WebDriver webDriver, String title)
+    public static boolean switchToWindowUsingTitle(WebDriver webDriver, String title, int timeOutInSeconds)
             throws WebDriverException, InterruptedException {
         float timeCount = 0;
-        while (timeCount < RunConfiguration.getTimeOut()) {
+        while (timeCount < timeOutInSeconds) {
             Set<String> availableWindows = webDriver.getWindowHandles();
             for (String windowId : availableWindows) {
                 webDriver = webDriver.switchTo().window(windowId);
@@ -496,11 +496,36 @@ public class WebUiCommonHelper extends KeywordHelper {
     }
 
     public static By buildLocator(TestObject to) {
-        String cssLocatorValue = findActiveEqualsObjectProperty(to, CSS_LOCATOR_PROPERTY_NAME);
-        if (cssLocatorValue != null) {
-            return By.cssSelector(cssLocatorValue);
+        SelectorMethod selectorMethod = to.getSelectorMethod();
+        switch (selectorMethod) {
+            case BASIC:
+                // Legacy locator
+                String cssLocatorValue = findActiveEqualsObjectProperty(to, CSS_LOCATOR_PROPERTY_NAME);
+                if (cssLocatorValue != null) {
+                    return By.cssSelector(cssLocatorValue);
+                }
+                return buildXpath(to);
+            case CSS:
+                return By.cssSelector(to.getSelectorCollection().get(selectorMethod));
+            case XPATH:
+                return By.xpath(to.getSelectorCollection().get(selectorMethod));
+            default:
+                return null;
         }
-        return buildXpath(to);
+    }
+
+    public static String getSelectorValue(TestObject to) {
+        SelectorMethod selectorMethod = to.getSelectorMethod();
+        switch (selectorMethod) {
+            case BASIC:
+                String cssLocatorValue = findActiveEqualsObjectProperty(to, CSS_LOCATOR_PROPERTY_NAME);
+                if (cssLocatorValue != null) {
+                    return cssLocatorValue;
+                }
+                return getXpathSelectorValue(getListXpathProperties(to));
+            default:
+                return to.getSelectorCollection().get(selectorMethod);
+        }
     }
 
     public static String findActiveEqualsObjectProperty(TestObject to, String propertyName) {
@@ -513,6 +538,10 @@ public class WebUiCommonHelper extends KeywordHelper {
     }
 
     private static By buildXpath(TestObject to) {
+        return intersectXpathList(getListXpathProperties(to));
+    }
+
+    private static List<String> getListXpathProperties(TestObject to) {
         List<String> xpathList = new ArrayList<String>();
         for (TestObjectProperty property : to.getActiveProperties()) {
             String xpath = buildXpath(property);
@@ -520,10 +549,18 @@ public class WebUiCommonHelper extends KeywordHelper {
                 xpathList.add(xpath);
             }
         }
-        return intersectXpathList(xpathList);
+        return xpathList;
     }
 
     private static By intersectXpathList(List<String> xpathList) {
+        String xpathString = getXpathSelectorValue(xpathList);
+        if (!xpathString.toString().isEmpty()) {
+            return By.xpath(xpathString.toString());
+        }
+        return null;
+    }
+
+    private static String getXpathSelectorValue(List<String> xpathList) {
         StringBuilder xpathString = new StringBuilder();
         for (String xpath : xpathList) {
             if (xpathString.toString().isEmpty()) {
@@ -533,10 +570,7 @@ public class WebUiCommonHelper extends KeywordHelper {
                 xpathString = new StringBuilder(String.format(XPATH_INTESECTION_FORMULA, existingXpath, xpath, xpath));
             }
         }
-        if (!xpathString.toString().isEmpty()) {
-            return By.xpath(xpathString.toString());
-        }
-        return null;
+        return xpathString.toString();
     }
 
     public static String buildXpath(TestObjectProperty property) {
@@ -762,11 +796,13 @@ public class WebUiCommonHelper extends KeywordHelper {
                                 parentObject, shadowRootElement);
                     } else {
                         webElements = webDriver.findElements(defaultLocator);
-						   if (webElements != null && webElements.size() > 0) {
-							   logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID_SUCCESS, webElements.size(), testObject.getObjectId(), defaultLocator.toString(), timeOut));
-							   	return webElements;
-							   }
-					}
+                        if (webElements != null && webElements.size() > 0) {
+                            logger.logInfo(MessageFormat.format(
+                                    StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID_SUCCESS, webElements.size(),
+                                    testObject.getObjectId(), defaultLocator.toString(), timeOut));
+                            return webElements;
+                        }
+                    }
                 } catch (NoSuchElementException e) {
                     // not found element yet, moving on
                 }
@@ -787,6 +823,7 @@ public class WebUiCommonHelper extends KeywordHelper {
         return Collections.emptyList();
     }
 
+    @SuppressWarnings("unused")
     private static List<WebElement> doFindElementsDefault(TestObject testObject, int timeOut, WebDriver webDriver,
             By locator) throws WebElementNotFoundException {
         List<WebElement> webElements = webDriver.findElements(locator);
@@ -820,8 +857,7 @@ public class WebUiCommonHelper extends KeywordHelper {
         List<WebElement> elements = findWebElements(testObject, timeOut);
         if (elements != null && elements.size() > 0) {
             return elements.get(0);
-        }
-        else {
+        } else {
             throw new WebElementNotFoundException(testObject.getObjectId(), buildLocator(testObject));
         }
     }

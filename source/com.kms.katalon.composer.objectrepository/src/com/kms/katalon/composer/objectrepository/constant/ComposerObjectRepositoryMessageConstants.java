@@ -37,12 +37,6 @@ public class ComposerObjectRepositoryMessageConstants extends NLS {
 
     public static String PA_CONFIRM_MSG_RELOAD_FILE;
 
-    public static String VIEW_LBL_MATCH_COND;
-
-    public static String VIEW_LBL_ADD_PROPERTY;
-
-    public static String VIEW_WARN_MSG_PROPERTY_CANNOT_BE_BLANK;
-
     public static String VIEW_TEST_OBJECT_BROWSE;
 
     public static String VIEW_COL_MATCH_COND;
@@ -84,6 +78,8 @@ public class ComposerObjectRepositoryMessageConstants extends NLS {
     public static String RDO_NO_PARENT;
 
     public static String RDO_SHADOW_ROOT_PARENT;
+
+    public static String VIEW_HELP_SELECTION_METHOD_DOC_URL;
 
     static {
         // initialize resource bundle
