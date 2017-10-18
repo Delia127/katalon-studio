@@ -90,6 +90,9 @@ public class DocumentationMessageConstants extends NLS {
     public static String TEST_SUITE_COLLECTION;
 
     public static String TEST_SUITE_MAIN;
+    
+    public static String SETTINGS_KATALON_ANALYTICS;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, DocumentationMessageConstants.class);

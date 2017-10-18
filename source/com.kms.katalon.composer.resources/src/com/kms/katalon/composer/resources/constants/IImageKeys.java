@@ -482,6 +482,8 @@ public interface IImageKeys {
     public static final String KEYWORD_WIKI_16 = "keyword_wiki_16.png"; //$NON-NLS-1$
 
     public static final String KOBITON_16 = "kobiton_16.png"; //$NON-NLS-1$
+    
+    public static final String KATALON_ANALYTICS_16 = "katalon_analytics_16.png"; //$NON-NLS-1$
 
     public static final String NEW_PROJECT_16 = "new_project_16.png"; //$NON-NLS-1$
 

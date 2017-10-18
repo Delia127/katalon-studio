@@ -83,6 +83,8 @@ public class ComposerReportMessageConstants extends NLS {
 
     public static String BTN_HIDE_TEST_CASE_DETAILS;
     
+    public static String BTN_KATALON_ANALYTICS;
+    
     public static String PREF_TITLE_VIDEO_RECORDER;
 
     public static String PREF_CHCK_ENABLE_VIDEO_RECORDER;
@@ -96,6 +98,14 @@ public class ComposerReportMessageConstants extends NLS {
     public static String PREF_LBL_VIDEO_QUALITY;
 
     public static String PROVIDER_TOOLTIP_OPEN_RECORDED_VIDEO;
+    
+    public static String REPORT_ERROR_MSG_UNABLE_TO_UPLOAD_REPORT;
+    
+    public static String REPORT_MSG_UPLOADING_TO_ANALYTICS;
+    
+    public static String REPORT_MSG_UPLOADING_TO_ANALYTICS_SENDING;
+    
+    public static String REPORT_MSG_UPLOADING_TO_ANALYTICS_SUCCESSFULLY;
 
     static {
         // initialize resource bundle

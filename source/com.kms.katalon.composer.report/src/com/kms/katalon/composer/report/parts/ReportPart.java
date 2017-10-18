@@ -52,6 +52,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -63,6 +64,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -73,6 +75,7 @@ import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -104,6 +107,8 @@ import com.kms.katalon.core.util.internal.DateUtil;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.util.ExecutionUtil;
+import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
+import com.kms.katalon.integration.analytics.report.AnalyticsReportService;
 
 public class ReportPart implements EventHandler, IComposerPartEvent {
 
@@ -134,6 +139,8 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
             btnFilterTestCaseIncomplete;
 
     private ToolItem btnShowHideTestCaseDetails;
+    
+    private ToolItem btnUploadToAnalytics;
 
     private TableViewer runDataTable, executionSettingTable;
 
@@ -159,6 +166,8 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     private SashForm sashFormSummary;
 
     private Composite compositeTestCaseFilterSelection;
+    
+    private AnalyticsReportService analyticsReportService = new AnalyticsReportService();
 
     private final class MapDataKeyLabelProvider extends ColumnLabelProvider {
         @Override
@@ -575,6 +584,9 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         spacer.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
         ToolBar tbShowHideDetails = new ToolBar(compositeTestCaseFilterSelection, SWT.FLAT | SWT.RIGHT);
+        
+        createKatalonAnalyticsMenu(tbShowHideDetails);
+        
         btnShowHideTestCaseDetails = new ToolItem(tbShowHideDetails, SWT.NONE);
         btnShowHideTestCaseDetails.setText(BTN_SHOW_TEST_CASE_DETAILS);
         btnShowHideTestCaseDetails.setImage(ImageManager.getImage(IImageKeys.MOVE_LEFT_16));
@@ -603,6 +615,56 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         updateStatusSearchLabel();
     }
 
+    private void createKatalonAnalyticsMenu(ToolBar toolBar) {
+        btnUploadToAnalytics = new ToolItem(toolBar, SWT.DROP_DOWN);
+        btnUploadToAnalytics.setText(ComposerReportMessageConstants.BTN_KATALON_ANALYTICS);
+        btnUploadToAnalytics.setImage(ImageManager.getImage(IImageKeys.KATALON_ANALYTICS_16));
+        btnUploadToAnalytics.setEnabled(analyticsReportService.isIntegrationEnabled());
+        
+        Menu uploadMenu = new Menu(btnUploadToAnalytics.getParent().getShell());
+        MenuItem newMenuItem = new MenuItem(uploadMenu, SWT.PUSH);
+        newMenuItem.setText("Upload");
+        newMenuItem.setID(0);
+        newMenuItem.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                try {
+                    new ProgressMonitorDialog(shell).run(true, true, new IRunnableWithProgress() {
+                        @Override
+                        public void run(IProgressMonitor monitor) {
+                            try {
+                                monitor.beginTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS, 2);
+                                monitor.subTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS_SENDING);
+                                analyticsReportService.upload(testSuiteLogRecord.getLogFolder());
+                                monitor.worked(1);
+                                monitor.subTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS_SUCCESSFULLY);
+                                monitor.worked(2);
+                            } catch (AnalyticsApiExeception ex) {
+                                LoggerSingleton.logError(ex);
+                                MultiStatusErrorDialog.showErrorDialog(ex, ComposerReportMessageConstants.REPORT_ERROR_MSG_UNABLE_TO_UPLOAD_REPORT, ex.getMessage());
+                            }
+                        }
+                    });
+                } catch (InvocationTargetException | InterruptedException ex) {
+                    LoggerSingleton.logError(ex);
+                    MultiStatusErrorDialog.showErrorDialog(ex, ComposerReportMessageConstants.REPORT_ERROR_MSG_UNABLE_TO_UPLOAD_REPORT, ex.getMessage());
+                }
+            }
+        });
+        
+        btnUploadToAnalytics.setData(uploadMenu);
+        btnUploadToAnalytics.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Rectangle rect = btnUploadToAnalytics.getBounds();
+                Point pt = btnUploadToAnalytics.getParent().toDisplay(new Point(rect.x, rect.y));
+                uploadMenu.setLocation(pt.x, pt.y + rect.height);
+                uploadMenu.setVisible(true);
+                uploadMenu.setVisible(true);
+            }
+        });
+    }
+    
     private void filterTestLogBySearchedText() {
         if (txtTestCaseSearch.getText().isEmpty()) {
             isSearching = false;

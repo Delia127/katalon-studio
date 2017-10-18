@@ -24,6 +24,7 @@
 		<module>com.kms.katalon.composer.folder</module>
 		<module>com.kms.katalon.composer.global</module>
 		<module>com.kms.katalon.composer.import</module>
+		<module>com.kms.katalon.composer.integration.analytics</module>
 		<module>com.kms.katalon.composer.integration.qtest</module>
 		<module>com.kms.katalon.composer.integration.jira</module>
 		<module>com.kms.katalon.composer.integration.slack</module>
@@ -66,6 +67,7 @@
 		<module>com.kms.katalon.execution</module>
 		<module>com.kms.katalon.feature</module>
 		<module>com.kms.katalon.groovy</module>
+		<module>com.kms.katalon.integration.analytics</module>
 		<module>com.kms.katalon.integration.qtest</module>
 		<module>com.kms.katalon.integration.kobiton</module>
 		<module>com.kms.katalon.integration.jira</module>
