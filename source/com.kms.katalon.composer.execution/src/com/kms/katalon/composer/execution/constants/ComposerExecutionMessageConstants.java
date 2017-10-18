@@ -277,6 +277,8 @@ public class ComposerExecutionMessageConstants extends NLS {
 
     public static String PREF_LNK_EDIT_TEMPLATE;
     
+    public static String PREF_LBL_REPORT_FORMAT;
+    
     // StyleRangeMatcher
     public static String WARN_TEST_OBEJCT_NOT_FOUND;
 

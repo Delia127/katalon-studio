@@ -38,4 +38,6 @@ public interface ExecutionPreferenceConstants {
     public static final String MAIL_CONFIG_CC = "mailConfig.cc";
 
     public static final String MAIL_CONFIG_BCC = "mailConfig.bcc";
+
+    public static final String MAIL_CONFIG_REPORT_FORMAT = "mailConfig.reportFormat";
 }

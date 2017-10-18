@@ -10,6 +10,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
+import com.kms.katalon.core.setting.ReportFormatType;
 import com.kms.katalon.integration.qtest.credential.IQTestCredential;
 import com.kms.katalon.integration.qtest.credential.IQTestToken;
 
@@ -217,15 +218,15 @@ public class QTestSettingStore {
         }
     }
 
-    public static List<QTestReportFormatType> getFormatReportTypes(String projectDir) {
+    public static List<ReportFormatType> getFormatReportTypes(String projectDir) {
         try {
-            List<QTestReportFormatType> reportFormatTypes = new ArrayList<QTestReportFormatType>();
+            List<ReportFormatType> reportFormatTypes = new ArrayList<ReportFormatType>();
             String formatPropertyString = PropertySettingStoreUtil.getPropertyValue(REPORT_FORMAT,
                     getPropertyFile(projectDir));
 
             // By default, select them all.
             if (formatPropertyString == null) {
-                return Arrays.asList(QTestReportFormatType.HTML, QTestReportFormatType.LOG);
+                return Arrays.asList(ReportFormatType.HTML, ReportFormatType.LOG);
             }
 
             if (formatPropertyString.isEmpty()) {
@@ -233,7 +234,7 @@ public class QTestSettingStore {
             }
 
             for (String sendingTypeName : formatPropertyString.trim().split(",")) {
-                reportFormatTypes.add(QTestReportFormatType.valueOf(sendingTypeName.trim()));
+                reportFormatTypes.add(ReportFormatType.valueOf(sendingTypeName.trim()));
             }
 
             return reportFormatTypes;
@@ -242,7 +243,7 @@ public class QTestSettingStore {
         }
     }
 
-    public static void saveFormatReportTypes(List<QTestReportFormatType> types, String projectDir) {
+    public static void saveFormatReportTypes(List<ReportFormatType> types, String projectDir) {
         try {
             StringBuilder attachmentStringBuilder = new StringBuilder();
             for (int index = 0; index < types.size(); index++) {
