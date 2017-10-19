@@ -60,6 +60,7 @@ import com.kms.katalon.composer.resources.util.ImageUtil;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.controller.TestSuiteCollectionController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.core.application.Application;
 import com.kms.katalon.core.util.internal.JsonUtil;
@@ -357,7 +358,6 @@ public class GenerateCommandDialog extends AbstractDialog {
 
         loadLastWorkingData();
         updatePlatformLayout();
-        setGenerateCommandButtonStates();
     }
 
     private void loadLastWorkingData() {
@@ -379,16 +379,6 @@ public class GenerateCommandDialog extends AbstractDialog {
                         prefs.getInt(GenerateCommandPreferenceConstants.GEN_COMMAND_UPDATE_STATUS_TIME_INTERVAL)));
             }
 
-            if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_SUITE_ID)) {
-                String prefSuiteId = prefs.getString(GenerateCommandPreferenceConstants.GEN_COMMAND_SUITE_ID);
-                TestSuiteEntity testSuite = TestSuiteController.getInstance().getTestSuiteByDisplayId(prefSuiteId,
-                        project);
-                if (testSuite == null) {
-                    return;
-                }
-                changeSuiteArtifact(testSuite);
-            }
-
             if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY)) {
                 txtRetry.setText(String.valueOf(prefs.getInt(GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY)));
                 enableRetryFailedTestCase();
@@ -399,10 +389,23 @@ public class GenerateCommandDialog extends AbstractDialog {
                         prefs.getBoolean(GenerateCommandPreferenceConstants.GEN_COMMAND_RETRY_FOR_FAILED_TEST_CASES));
             }
 
+            if (!prefs.isDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_SUITE_ID)) {
+                String prefSuiteId = prefs.getString(GenerateCommandPreferenceConstants.GEN_COMMAND_SUITE_ID);
+                changeSuiteArtifact(getSelectedTestSuite(prefSuiteId));
+            }
+
             onRunConfigurationChanged(getStoredConfigurationDescription());
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
+    }
+
+    private FileEntity getSelectedTestSuite(String prefSuiteId) throws Exception {
+        if (isTestSuite(prefSuiteId)) {
+            return TestSuiteController.getInstance().getTestSuiteByDisplayId(prefSuiteId,
+                project);
+        } 
+        return TestSuiteCollectionController.getInstance().getTestSuiteCollection(prefSuiteId);
     }
 
     private void enableRetryFailedTestCase() {
@@ -436,6 +439,7 @@ public class GenerateCommandDialog extends AbstractDialog {
                     ITreeEntity tsTreeEntity = (ITreeEntity) result;
                     FileEntity fileEntity = (FileEntity) tsTreeEntity.getObject();
                     changeSuiteArtifact(fileEntity);
+                    onRunConfigurationChanged(GenerateCommandDialog.this.runConfigDescription);
                 } catch (Exception e) {
                     logError(e);
                 }
@@ -515,28 +519,34 @@ public class GenerateCommandDialog extends AbstractDialog {
     }
 
     private void onRunConfigurationDataChanged() {
-        updateRunConfigurationDataLabel();
-        setGenerateCommandButtonStates();
+        try {
+            updateRunConfigurationDataLabel();
+        } finally {
+            setGenerateCommandButtonStates();
+        }
     }
 
     private void setGenerateCommandButtonStates() {
-        getButton(GENERATE_COMMAND_ID).setEnabled(isValidInput());
-        getButton(GENERATE_PROPERTY_ID).setEnabled(isValidInput());
+        boolean isValidInput = isValidInput();
+        getButton(GENERATE_COMMAND_ID).setEnabled(isValidInput);
+        getButton(GENERATE_PROPERTY_ID).setEnabled(isValidInput);
     }
 
     private void onRunConfigurationChanged(RunConfigurationDescription configurationDescription) {
-        this.testExecutionItem = getSelectedExecutionItem(configurationDescription);
-        if (testExecutionItem == null) {
-            this.runConfigDescription = null;
-            return;
+        try {
+            this.testExecutionItem = getSelectedExecutionItem(configurationDescription);
+            if (testExecutionItem == null) {
+                this.runConfigDescription = null;
+                return;
+            }
+            this.runConfigDescription = configurationDescription;
+
+            updateRunConfigurationLabel();
+            updateRunConfigurationDataLabel();
+            updateConfigurationDataCompositeLayout();
+        } finally {
+            setGenerateCommandButtonStates();
         }
-        this.runConfigDescription = configurationDescription;
-
-        updateRunConfigurationLabel();
-        updateRunConfigurationDataLabel();
-        updateConfigurationDataCompositeLayout();
-
-        setGenerateCommandButtonStates();
     }
 
     private void resetLabel(CLabel label, String defautText) {
@@ -593,6 +603,9 @@ public class GenerateCommandDialog extends AbstractDialog {
     }
 
     private TestExecutionEntryItem getSelectedExecutionItem(RunConfigurationDescription runConfigurationDescription) {
+        if (runConfigurationDescription == null) {
+            return null;
+        }
         String runConfigurationId = runConfigurationDescription.getRunConfigurationId();
         TestExecutionGroup group = TestExecutionGroupCollector.getInstance()
                 .getGroup(runConfigurationDescription.getGroupName());
@@ -856,11 +869,14 @@ public class GenerateCommandDialog extends AbstractDialog {
         }
     }
 
-    private void changeSuiteArtifact(FileEntity fileEntity) {
-        txtTestSuite.setText(fileEntity.getIdForDisplay());
+    private void changeSuiteArtifact(FileEntity testSuite) {
+        if (testSuite == null) {
+            return;
+        }
+        txtTestSuite.setText(testSuite.getIdForDisplay());
         boolean isTestSuite = false;
-        if (fileEntity instanceof TestSuiteEntity) {
-            TestSuiteEntity testSuiteEntity = (TestSuiteEntity) fileEntity;
+        if (testSuite instanceof TestSuiteEntity) {
+            TestSuiteEntity testSuiteEntity = (TestSuiteEntity) testSuite;
             txtRetry.setText(Integer.toString(testSuiteEntity.getNumberOfRerun()));
             chkRetryFailedTestCase.setSelection(testSuiteEntity.isRerunFailedTestCasesOnly());
             isTestSuite = true;
