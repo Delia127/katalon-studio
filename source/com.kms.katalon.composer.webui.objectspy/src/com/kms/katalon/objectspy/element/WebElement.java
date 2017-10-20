@@ -92,6 +92,10 @@ public class WebElement implements XPathProvider {
             parent.addChild(this);
         }
     }
+    
+    public void setParentOnly(WebFrame parent) {
+        this.parent = parent;
+    }
 
     public List<WebElementPropertyEntity> getProperties() {
         return properties;
