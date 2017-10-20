@@ -309,16 +309,32 @@ public class NewObjectSpyDialog extends Dialog
                 IStructuredSelection selection = capturedObjectsView.getSelection();
                 @SuppressWarnings("rawtypes")
                 Iterator iterator = selection.iterator();
+                List<WebElement> removedElements = new ArrayList<>();
                 while (iterator.hasNext()) {
                     WebElement webElement = (WebElement) iterator.next();
                     WebFrame parent = webElement.getParent();
+                    removedElements.add(webElement);
                     if (webElement.getParent() == null) {
                         pages.remove(webElement);
                         continue;
                     }
-                    parent.getChildren().remove(webElement);
+                    
+                    int index = -1;
+                    List<WebElement> children = parent.getChildren();
+                    for (int i = 0; i < children.size(); i++) {
+                        WebElement child = children.get(i);
+                        if (child == webElement) {
+                            index = i;
+                            break;
+                        }
+                    }
+                    if (index >= 0) {
+                        children.remove(index);
+                    }
                 }
-                capturedObjectsView.refreshTree(null);
+                
+                removeElements(removedElements.toArray());
+                
                 objectPropertiesView.refreshTable(null);
             }
         });
@@ -343,6 +359,17 @@ public class NewObjectSpyDialog extends Dialog
                 capturedObjectsView.refreshTree(null);
             }
         });
+    }
+    
+    private void removeElements(Object[] removedElements) {
+        TreeViewer treeViewer = capturedObjectsView.getTreeViewer();
+        treeViewer.getControl().setRedraw(false);
+        Object[] expandedElements = treeViewer.getExpandedElements();
+        treeViewer.remove(removedElements);
+        for (Object element : expandedElements) {
+            treeViewer.setExpandedState(element, true);
+        }
+        treeViewer.getControl().setRedraw(true);
     }
 
     @Override
@@ -640,7 +667,8 @@ public class NewObjectSpyDialog extends Dialog
         newFrame.getChildren().forEach(newChild -> {
             int index = indexOf(oldChildren, newChild);
             if (index < 0) {
-                oldFrame.addChild(newChild);
+//                oldFrame.addChild(newChild);
+                newChild.setParent(oldFrame);
                 return;
             }
 
@@ -652,6 +680,7 @@ public class NewObjectSpyDialog extends Dialog
             WebElement mergedChildFrame = merge(oldChildFrame, (WebFrame) newChild);
             oldChildren.remove(index);
             oldChildren.add(index, mergedChildFrame);
+            mergedChildFrame.setParentOnly(oldFrame);
         });
         return oldFrame;
     }
