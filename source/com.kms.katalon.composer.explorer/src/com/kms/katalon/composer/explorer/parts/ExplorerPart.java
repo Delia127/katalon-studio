@@ -41,6 +41,7 @@ import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
@@ -83,7 +84,6 @@ import com.kms.katalon.composer.explorer.constants.ExplorerPreferenceConstants;
 import com.kms.katalon.composer.explorer.constants.ImageConstants;
 import com.kms.katalon.composer.explorer.constants.StringConstants;
 import com.kms.katalon.composer.explorer.custom.AdvancedSearchDialog;
-import com.kms.katalon.composer.explorer.custom.EntityTooltip;
 import com.kms.katalon.composer.explorer.custom.SearchDropDownBox;
 import com.kms.katalon.composer.explorer.handlers.CopyHandler;
 import com.kms.katalon.composer.explorer.handlers.CutHandler;
@@ -267,7 +267,7 @@ public class ExplorerPart {
     }
 
     private void createExplorerTreeViewerIfDisposed() {
-        if (!treeViewer.getTree().isDisposed()) {
+        if (treeViewer != null && !treeViewer.getTree().isDisposed()) {
             return;
         }
 
@@ -621,28 +621,35 @@ public class ExplorerPart {
         createExplorerTreeViewerIfDisposed();
         getViewer().getControl().setRedraw(false);
 
-        ISelection selection = getViewer().getSelection();
+        try {
+            ISelection selection = getViewer().getSelection();
+            if (object == null) {
+                // TreePath[] expandedTreePaths = getViewer().getExpandedTreePaths(); // This is a heavy way to get the
+                // expanded items
+                Object[] visibleExpandedElements = getViewer().getVisibleExpandedElements();
 
-        if (object == null) {
-            // TreePath[] expandedTreePaths = getViewer().getExpandedTreePaths(); // This is a heavy way to get the
-            // expanded items
-            Object[] visibleExpandedElements = getViewer().getVisibleExpandedElements();
+                getViewer().collapseAll();
+
+                getViewer().refresh();
+
+                createExplorerTreeViewerIfDisposed();
+                getViewer().setExpandedElements(visibleExpandedElements);
+                // getViewer().setExpandedTreePaths(expandedTreePaths);
+            } else {
+                getViewer().refresh(object);
+            }
 
             createExplorerTreeViewerIfDisposed();
-            getViewer().collapseAll();
-
+            if (selection != null && TreeSelection.EMPTY.equals(selection)) {
+                getViewer().setSelection(selection);
+            }
+        } catch (SWTException e) {
+            LoggerSingleton.logError(e);
             createExplorerTreeViewerIfDisposed();
-            getViewer().refresh();
-
-            createExplorerTreeViewerIfDisposed();
-            getViewer().setExpandedElements(visibleExpandedElements);
-            // getViewer().setExpandedTreePaths(expandedTreePaths);
-        } else {
-            getViewer().refresh(object);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
         }
 
-        createExplorerTreeViewerIfDisposed();
-        getViewer().setSelection(selection);
         getViewer().getControl().setRedraw(true);
     }
 
