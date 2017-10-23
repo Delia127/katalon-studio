@@ -2,10 +2,10 @@ package com.kms.katalon.core.mobile.keyword.builtin
 
 import groovy.transform.CompileStatic
 
+import java.nio.file.InvalidPathException
 import java.text.MessageFormat
 
 import org.apache.commons.lang3.StringUtils
-import org.codehaus.groovy.transform.tailrec.VariableReplacedListener.*
 
 import com.google.common.base.Preconditions
 import com.kms.katalon.core.annotation.internal.Action
@@ -43,10 +43,20 @@ public class StartApplicationKeyword extends MobileAbstractKeyword {
     public void startApplication(String appFile, boolean uninstallAfterCloseApp, FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
             Preconditions.checkArgument(StringUtils.isNotEmpty(appFile), CoreMobileMessageConstants.KW_MSG_APP_FILE_MISSING);
-            String applicationFileAbs = PathUtil.relativeToAbsolutePath(appFile, RunConfiguration.getProjectDir())            
+            String applicationFileAbs = getAbsolutePath(appFile)
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_STARTING_APP_AT, StringUtils.defaultString(applicationFileAbs)))
             MobileDriverFactory.startMobileDriver(applicationFileAbs, uninstallAfterCloseApp)
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_START_APP_AT,  StringUtils.defaultString(applicationFileAbs)))
         }, flowControl, MessageFormat.format(StringConstants.KW_MSG_UNABLE_TO_START_APP_AT, StringUtils.defaultString(appFile)))
     }
+    
+    private String getAbsolutePath(String filePath) {
+        try {
+            String absFilePath = PathUtil.relativeToAbsolutePath(filePath, RunConfiguration.getProjectDir())
+            File absFile = new File(absFilePath)
+            return absFile.isFile() && absFile.exists() ? absFilePath : filePath
+        } catch (InvalidPathException e) {
+            return filePath
+        }
+    }    
 }
