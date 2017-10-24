@@ -126,6 +126,7 @@ import com.kms.katalon.composer.webui.recorder.util.HTMLActionUtil;
 import com.kms.katalon.composer.webui.recorder.websocket.RecorderAddonSocket;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.constants.GlobalMessageConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
@@ -241,9 +242,14 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
      */
     public RecorderDialog(Shell parentShell, Logger logger, IEventBroker eventBroker) {
         super(parentShell);
-        setDialogTitle(StringConstants.DIA_TITLE_RECORD);
-        setShellStyle(SWT.SHELL_TRIM | SWT.APPLICATION_MODAL);
+        setDialogTitle(GlobalMessageConstants.WEB_RECORDER);
         store = PreferenceStoreManager.getPreferenceStore(RecorderPreferenceConstants.WEBUI_RECORDER_QUALIFIER);
+        boolean onTop = store.getBoolean(RecorderPreferenceConstants.WEBUI_RECORDER_PIN_WINDOW);
+        if (onTop) {
+            setShellStyle(SWT.SHELL_TRIM | SWT.ON_TOP | SWT.CENTER);
+        } else {
+            setShellStyle(SWT.SHELL_TRIM | SWT.CENTER);
+        }
         this.logger = logger;
         elements = new ArrayList<>();
         recordedActions = new ArrayList<HTMLActionMapping>();

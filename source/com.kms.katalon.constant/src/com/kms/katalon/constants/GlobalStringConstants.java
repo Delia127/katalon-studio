@@ -165,6 +165,8 @@ public class GlobalStringConstants {
 
     public static final String OBJECT_SPY = GlobalMessageConstants.OBJECT_SPY;
 
+    public static final String WEB_RECORDER = GlobalMessageConstants.WEB_RECORDER;
+
     public static final String RUN = GlobalMessageConstants.RUN;
 
     public static final String STOP = GlobalMessageConstants.STOP;
