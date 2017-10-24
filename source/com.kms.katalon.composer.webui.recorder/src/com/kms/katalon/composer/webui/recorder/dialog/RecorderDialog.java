@@ -907,7 +907,6 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 }
                 tltmCapturedObjects.setImage(image);
                 hSashForm.setWeights(sashFormWeights);
-                updateDialogSize();
             }
         });
     }
@@ -1110,8 +1109,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                         actionMapping.getData() instanceof Object[] ? Arrays.toString(actionMapping.getData()) : "") { //$NON-NLS-1$
                     @Override
                     protected Object openDialogBox(Control cellEditorWindow) {
-                        HTMLActionDataBuilderDialog dialog = new HTMLActionDataBuilderDialog(getShell(),
-                                actionMapping);
+                        HTMLActionDataBuilderDialog dialog = new HTMLActionDataBuilderDialog(getShell(), actionMapping);
                         int returnCode = dialog.open();
                         if (returnCode == Window.OK) {
                             return dialog.getActionData();
@@ -1751,13 +1749,5 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             listenerOnEvent.add(listener);
             eventListeners.put(e, listenerOnEvent);
         });
-    }
-
-    private void updateDialogSize() {
-        Shell shell = getShell();
-        int shellHeight = shell.getSize().y;
-        Point newShellSize = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-        newShellSize.y = shellHeight;
-        shell.setSize(newShellSize);
     }
 }
