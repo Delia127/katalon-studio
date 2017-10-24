@@ -205,6 +205,11 @@ public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEven
             private void highlightElements(WebDriver webDriver, List<org.openqa.selenium.WebElement> webElements) {
                 if (webDriver instanceof JavascriptExecutor) {
                     JavascriptExecutor jsExecutor = (JavascriptExecutor) webDriver;
+                    
+                    //scroll to first element
+                    org.openqa.selenium.WebElement firstElement = webElements.get(0);
+                    jsExecutor.executeScript("arguments[0].scrollIntoView(true);", firstElement);
+                    
                     // highlight all elements
                     String highlightJS = getHighlightJS();
                     webElements.parallelStream().forEach(element -> {
