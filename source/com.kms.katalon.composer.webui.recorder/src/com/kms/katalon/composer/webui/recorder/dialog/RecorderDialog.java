@@ -1110,7 +1110,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                         actionMapping.getData() instanceof Object[] ? Arrays.toString(actionMapping.getData()) : "") { //$NON-NLS-1$
                     @Override
                     protected Object openDialogBox(Control cellEditorWindow) {
-                        HTMLActionDataBuilderDialog dialog = new HTMLActionDataBuilderDialog(getParentShell(),
+                        HTMLActionDataBuilderDialog dialog = new HTMLActionDataBuilderDialog(getShell(),
                                 actionMapping);
                         int returnCode = dialog.open();
                         if (returnCode == Window.OK) {
@@ -1173,7 +1173,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                         htmlElement != null ? htmlElement.getName() : StringConstants.NULL) {
                     @Override
                     protected Object openDialogBox(Control cellEditorWindow) {
-                        ElementTreeSelectionDialog treeDialog = new ElementTreeSelectionDialog(getParentShell(),
+                        ElementTreeSelectionDialog treeDialog = new ElementTreeSelectionDialog(getShell(),
                                 new WebElementLabelProvider(), new WebElementTreeContentProvider());
                         treeDialog.setInput(elements);
                         treeDialog.setInitialSelection(getValue());
