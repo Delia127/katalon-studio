@@ -9,21 +9,6 @@
       </fragment>
    </extension>
    
-   <extension
-         point="com.kms.katalon.preferences.PreferencePages">
-      <page
-            class="com.kms.katalon.composer.webui.execution.preferences.WebUiExecutionPreferencePage"
-            id="com.kms.katalon.composer.webui"
-            category="com.kms.katalon.composer.execution"
-            name="Web UI">
-      </page>
-   </extension>
-   <extension
-         point="org.eclipse.core.runtime.preferences">
-      <initializer
-            class="com.kms.katalon.composer.webui.execution.preferences.WebUIExecutionPreferenceDefaultValueInitializer">
-      </initializer>
-   </extension>
    
    <extension
          point="com.kms.katalon.preferences.ProjectSettingPages">

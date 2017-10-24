@@ -2,16 +2,6 @@ package com.kms.katalon.execution.constants;
 
 public interface ExecutionPreferenceConstants {
     public static final String EXECUTION_QUALIFIER = "com.kms.katalon.execution";
-
-    public static final String EXECUTION_DEFAULT_CONFIGURATION = "execution.defaultExecutionConfiguration";
-
-    public static final String EXECUTION_DEFAULT_TIMEOUT = "execution.defaultTimeout";
-
-    public static final String EXECUTION_OPEN_REPORT_AFTER_EXECUTING = "execution.openReportAfterExecuting";
-    
-    public static final String EXECUTION_QUIT_DRIVERS_AFTER_EXECUTING_TEST_CASE = "execution.quitDriversAfterExecutingTestCase";
-    
-    public static final String EXECUTION_QUIT_DRIVERS_AFTER_EXECUTING_TEST_SUITE = "execution.quitDriversAfterExecutingTestSuite";
     
     public static final String EXECUTION_NOTIFY_AFTER_EXECUTING = "execution.notifyAfterExecuting";
 

@@ -18,7 +18,5 @@ public interface PreferenceConstants {
     // Composer WebUi
     public static final String WEBUI_QUALIFIER = "com.kms.katalon.composer.webui";
 
-    public static final String WEBUI_EXECUTION_WAIT_FOR_IE_HANGING = "execution.waitForIEHanging";
-
     public static final String PREF_FIRST_TIME_SETUP_COMPLETED = "firstTimeSetupCompleted";
 }
