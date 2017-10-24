@@ -23,6 +23,7 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.openqa.selenium.Keys;
@@ -56,7 +57,6 @@ import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
-import com.kms.katalon.objectspy.dialog.AddToObjectRepositoryDialog.AddToObjectRepositoryDialogResult;
 import com.kms.katalon.objectspy.dialog.SaveToObjectRepositoryDialog.SaveToObjectRepositoryDialogResult;
 import com.kms.katalon.objectspy.element.WebElement;
 import com.kms.katalon.objectspy.element.WebFrame;
@@ -100,13 +100,14 @@ public class RecordHandler {
 
     @Execute
     public void execute() {
+        Shell shell = null;
         try {
-            Shell activeShell = Display.getCurrent().getActiveShell();
             TestCaseCompositePart testCaseCompositePart = getSelectedTestCasePart();
             if (testCaseCompositePart != null && !verifyTestCase(testCaseCompositePart)) {
                 return;
             }
-            final RecorderDialog recordDialog = new RecorderDialog(activeShell,
+            shell = getShell(Display.getCurrent().getActiveShell());
+            final RecorderDialog recordDialog = new RecorderDialog(shell,
                     LoggerSingleton.getInstance().getLogger(), eventBroker);
             int responseCode = recordDialog.open();
             if (responseCode != Window.OK) {
@@ -123,7 +124,18 @@ public class RecordHandler {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
                     StringConstants.HAND_ERROR_MSG_CANNOT_GEN_TEST_STEPS);
             LoggerSingleton.logError(e);
+        } finally {
+             if (shell != null && !shell.isDisposed()) {
+                 shell.dispose();
+             }
         }
+    }
+    
+    private Shell getShell(Shell activeShell) {
+        Shell shell = new Shell();
+        Rectangle activeShellSize = activeShell.getBounds();
+        shell.setLocation((activeShellSize.width - shell.getBounds().width) / 2, (activeShellSize.height - shell.getBounds().height) / 2);
+        return shell;
     }
 
     private TestCaseCompositePart createNewTestCase() throws Exception {

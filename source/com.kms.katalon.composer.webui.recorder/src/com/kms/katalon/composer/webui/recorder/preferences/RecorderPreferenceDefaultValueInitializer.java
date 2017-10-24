@@ -25,5 +25,6 @@ public class RecorderPreferenceDefaultValueInitializer extends AbstractPreferenc
         ScopedPreferenceStore store = getPreferenceStore(RecorderPreferenceConstants.WEBUI_RECORDER_QUALIFIER);
         store.setDefault(RecorderPreferenceConstants.WEBUI_RECORDER_DEFAULT_BROWSER, WEBUI_RECORDER_DEFAULT_BROWSER);
         store.setDefault(RecorderPreferenceConstants.WEBUI_RECORDER_DEFAULT_URL, WEBUI_RECORDER_DEFAULT_URL);
+        store.setDefault(RecorderPreferenceConstants.WEBUI_RECORDER_PIN_WINDOW, true);
     }
 }

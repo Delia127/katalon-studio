@@ -99,6 +99,8 @@ public class GlobalMessageConstants extends NLS {
 
     public static String OBJECT_SPY;
 
+    public static String WEB_RECORDER;
+
     public static String RUN;
 
     public static String STOP;
