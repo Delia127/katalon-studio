@@ -3727,7 +3727,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      * Execute JavaScript on the currently selected frame or window.</br>
      * The provided script fragment will be executed as the body of an anonymous function.
      *
-     * @since 4.9
+     * @since 5.0
      * @param script The JavaScript to execute.
      * @param arguments The arguments to the script. May be empty or null.
      * @param flowControl FailureHandling.
@@ -3736,7 +3736,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
-    public static Object executeJavascript(String script, List arguments, FailureHandling flowControl) throws StepFailedException {
+    public static Object executeJavaScript(String script, List arguments, FailureHandling flowControl) throws StepFailedException {
         return (Object) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "executeJavascript", script, arguments, flowControl)
     }
 
@@ -3744,7 +3744,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      * Execute JavaScript on the currently selected frame or window.</br>
      * The provided script fragment will be executed as the body of an anonymous function.
      * 
-     * @since 4.9
+     * @since 5.0
      * @param script The JavaScript to execute.
      * @param arguments The arguments to the script. May be empty or null.
      * @return Boolean, Long, Double, String, List, WebElement, or null.
@@ -3752,7 +3752,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_WINDOW)
-    public static Object executeJavascript(String script, List arguments) throws StepFailedException {
-        return (Object) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "executeJavascript", script, arguments)
+    public static Object executeJavaScript(String script, List arguments) throws StepFailedException {
+        return (Object) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "executeJavaScript", script, arguments)
     }
 }

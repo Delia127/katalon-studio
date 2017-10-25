@@ -16,8 +16,8 @@ import com.kms.katalon.core.webui.constants.CoreWebuiMessageConstants
 import com.kms.katalon.core.webui.keyword.internal.WebUIAbstractKeyword
 import com.kms.katalon.core.webui.keyword.internal.WebUIKeywordMain
 
-@Action(value = "executeJavascript")
-public class ExecuteJavascriptKeyword extends WebUIAbstractKeyword {
+@Action(value = "executeJavaScript")
+public class ExecuteJavaScriptKeyword extends WebUIAbstractKeyword {
 
     @CompileStatic
     @Override
