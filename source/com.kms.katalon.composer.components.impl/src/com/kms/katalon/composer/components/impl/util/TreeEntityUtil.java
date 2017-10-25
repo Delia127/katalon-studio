@@ -209,6 +209,9 @@ public class TreeEntityUtil {
         if ("waitForJQueryLoad".equals(keywordMethodName)) {
             return "Wait For jQuery Load";
         }
+        if ("executeJavaScript".equals(keywordMethodName)) {
+            return "Execute JavaScript";
+        }
         return StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(StringUtils.capitalize(keywordMethodName)),
                 " ");
     }
