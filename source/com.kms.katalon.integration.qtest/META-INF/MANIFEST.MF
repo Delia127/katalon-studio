@@ -5,11 +5,11 @@ Bundle-SymbolicName: com.kms.katalon.integration.qtest;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: KMS
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Require-Bundle: com.kms.katalon.entity;bundle-version="1.0.0",
+Require-Bundle: com.kms.katalon.entity,
  org.qas.qtest.sdk-java,
  com.fasterxml.jackson.core.jackson-core,
- com.kms.katalon.core;bundle-version="1.0.0",
- com.kms.katalon.custom;bundle-version="1.0.0",
+ com.kms.katalon.core,
+ com.kms.katalon.custom,
  org.apache.commons.logging,
  org.jsoup,
  org.apache.httpcomponents.httpclient,
@@ -18,10 +18,12 @@ Require-Bundle: com.kms.katalon.entity;bundle-version="1.0.0",
  org.apache.commons.io,
  com.kms.katalon.constant,
  org.apache.commons.lang,
- com.kms.katalon.jasper;bundle-version="1.0.0",
+ com.kms.katalon.jasper,
  org.apache.httpcomponents.httpmime,
  org.eclipse.osgi,
- com.kms.katalon.logging
+ com.kms.katalon.logging,
+ com.fasterxml.jackson.core.jackson-annotations,
+ com.fasterxml.jackson.core.jackson-databind
 Export-Package: com.kms.katalon.integration.qtest,
  com.kms.katalon.integration.qtest.constants,
  com.kms.katalon.integration.qtest.credential,
