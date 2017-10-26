@@ -99,7 +99,7 @@
 									<id>org.eclipse.persistence:javax.persistence:2.1.0-RC1</id>
 								</artifact>
 								<artifact>
-									<id>org.qas.qtest:qtest-sdk-java:1.2.1</id>
+									<id>org.qas.qtest:qtest-sdk-java:1.4.5</id>
 								</artifact>
 								<artifact>
 									<id>net.sf.supercsv:super-csv:2.1.0</id>
@@ -131,6 +131,12 @@
 								</artifact>
 								<artifact>
 									<id>com.fasterxml.jackson.core:jackson-core:2.4.1</id>
+								</artifact>
+								<artifact>
+									<id>com.fasterxml.jackson.core:jackson-annotations:2.4.1</id>
+								</artifact>
+								<artifact>
+									<id>com.fasterxml.jackson.core:jackson-databind:2.4.1</id>
 								</artifact>
 								<artifact>
 									<id>org.jsoup:jsoup:1.7.2</id>
