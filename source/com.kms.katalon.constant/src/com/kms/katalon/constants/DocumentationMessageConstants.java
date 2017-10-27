@@ -16,6 +16,8 @@ public class DocumentationMessageConstants extends NLS {
     public static String DIALOG_GENERATE_COMMAND;
 
     public static String DIALOG_OBJECT_SPY_WEB_UI;
+    
+    public static String DIALOG_OBJECT_SPY_WEB_UI_SELECTION_METHOD;
 
     public static String DIALOG_OBJECT_SPY_MOBILE;
 

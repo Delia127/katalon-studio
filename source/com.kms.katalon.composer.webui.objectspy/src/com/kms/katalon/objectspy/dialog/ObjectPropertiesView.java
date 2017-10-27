@@ -142,6 +142,7 @@ public class ObjectPropertiesView extends Composite
 
         subscribeEvents();
     }
+    
 
     private void displayPropertiesTableComposite(boolean visible) {
         GridData gdPropertiesComposite = (GridData) tableAndButtonsComposite.getLayoutData();
@@ -611,7 +612,7 @@ public class ObjectPropertiesView extends Composite
 
             @Override
             public void mouseUp(MouseEvent e) {
-                Program.launch(DocumentationMessageConstants.DIALOG_OBJECT_SPY_WEB_UI);
+                Program.launch(DocumentationMessageConstants.DIALOG_OBJECT_SPY_WEB_UI_SELECTION_METHOD);
             }
         });
 
