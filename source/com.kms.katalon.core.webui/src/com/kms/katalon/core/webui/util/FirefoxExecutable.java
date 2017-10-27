@@ -16,15 +16,10 @@ import org.openqa.selenium.os.WindowsUtils;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 import com.google.common.collect.ImmutableList;
-import com.kms.katalon.core.configuration.RunConfiguration;
-import com.kms.katalon.core.webui.constants.StringConstants;
-import com.kms.katalon.core.webui.driver.DriverFactory;
 
 // This class duplicated codes from org.openqa.selenium.firefox.internal.Executable as it is internal.
 // Should not be re-factored.
 public class FirefoxExecutable {
-    private static final int FORTY_SEVEN = 47;
-
     private static final String VERSION_SEPARATOR_REGEX = "\\.";
 
     private static final String MOZILLA_FIREFOX_VERSION_STRING_PREFIX = "Mozilla Firefox";
@@ -32,32 +27,28 @@ public class FirefoxExecutable {
     private static final File SYSTEM_BINARY = locateFirefoxBinaryFromSystemProperty();
 
     private static final File PLATFORM_BINARY = locateFirefoxBinaryFromPlatform();
-    
-    public static final String GECKO_DRIVER_PATH_PROPERTY = StringConstants.CONF_PROPERTY_GECKO_DRIVER_PATH;
 
     private FirefoxExecutable() {
     }
 
-    private static String getGeckoDriverPath() {
-        return RunConfiguration.getDriverSystemProperty(DriverFactory.WEB_UI_DRIVER_PROPERTY, GECKO_DRIVER_PATH_PROPERTY);
-    }
-
-    public static boolean isUsingFirefox47AndAbove(DesiredCapabilities desiredCapabilities) {
+    public static int getFirefoxVersion(DesiredCapabilities desiredCapabilities) {
         File defaultFirefoxBinary = FirefoxExecutable.getFirefoxBinaryFile(getFirefoxBinary(desiredCapabilities));
         try {
-            String firefoxVersionString = ConsoleCommandExecutor.runConsoleCommandAndCollectFirstResult(new String[] {
-                    defaultFirefoxBinary.getAbsolutePath(), "-v", "|", "more" });
-            if (firefoxVersionString == null || !firefoxVersionString.startsWith(MOZILLA_FIREFOX_VERSION_STRING_PREFIX)) {
-                return false;
+            String firefoxVersionString = ConsoleCommandExecutor.runConsoleCommandAndCollectFirstResult(
+                    new String[] { defaultFirefoxBinary.getAbsolutePath(), "-v", "|", "more" });
+            if (firefoxVersionString == null
+                    || !firefoxVersionString.startsWith(MOZILLA_FIREFOX_VERSION_STRING_PREFIX)) {
+                return 0;
             }
-            firefoxVersionString = firefoxVersionString.substring(MOZILLA_FIREFOX_VERSION_STRING_PREFIX.length()).trim();
+            firefoxVersionString = firefoxVersionString.substring(MOZILLA_FIREFOX_VERSION_STRING_PREFIX.length())
+                    .trim();
             String firefoxVersionMajor = firefoxVersionString.split(VERSION_SEPARATOR_REGEX)[0];
             Number firefoxVersion = NumberUtils.createNumber(firefoxVersionMajor);
-            return firefoxVersion.intValue() >= FORTY_SEVEN;
+            return firefoxVersion.intValue();
         } catch (IOException | InterruptedException | NumberFormatException e) {
             // Exception happened, ignore
         }
-        return false;
+        return 0;
     }
 
     private static String getFirefoxBinary(DesiredCapabilities desiredCapabilities) {

@@ -5,13 +5,14 @@ import java.util.Map;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.ie.InternetExplorerDriverService;
+import org.openqa.selenium.ie.InternetExplorerOptions;
 import org.openqa.selenium.remote.Response;
 
 public class CInternetExplorerDriver extends InternetExplorerDriver implements IDelayableDriver {
     private int actionDelayInMiliseconds;
 
     public CInternetExplorerDriver(InternetExplorerDriverService service, Capabilities capabilities, int actionDelay) {
-        super(service, capabilities);
+        super(service, new InternetExplorerOptions(capabilities));
         this.actionDelayInMiliseconds = actionDelay * 1000;
     }
 

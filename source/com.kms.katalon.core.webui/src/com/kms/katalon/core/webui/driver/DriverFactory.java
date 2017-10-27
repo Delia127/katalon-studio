@@ -56,6 +56,7 @@ import com.kms.katalon.core.webui.common.WebUiCommonHelper;
 import com.kms.katalon.core.webui.constants.CoreWebuiMessageConstants;
 import com.kms.katalon.core.webui.constants.StringConstants;
 import com.kms.katalon.core.webui.driver.firefox.CFirefoxDriver47;
+import com.kms.katalon.core.webui.driver.firefox.CGeckoDriver;
 import com.kms.katalon.core.webui.driver.ie.InternetExploreDriverServiceBuilder;
 import com.kms.katalon.core.webui.exception.BrowserNotOpenedException;
 import com.kms.katalon.core.webui.util.FirefoxExecutable;
@@ -71,6 +72,10 @@ import com.kms.katalon.selenium.driver.CSafariDriver;
 import io.appium.java_client.ios.IOSDriver;
 
 public class DriverFactory {
+
+    private static final int USING_MARIONETTEE_VERSION = 47;
+
+    private static final int USING_GECKO_VERSION = 57;
 
     private static final String CAP_IE_USE_PER_PROCESS_PROXY = "ie.usePerProcessProxy";
 
@@ -383,12 +388,18 @@ public class DriverFactory {
         return new CInternetExplorerDriver(ieDriverService, desireCapibilities, getActionDelay());
     }
 
-    private static WebDriver createNewFirefoxDriver(DesiredCapabilities desireCapibilities) {
-        desireCapibilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
-        if (FirefoxExecutable.isUsingFirefox47AndAbove(desireCapibilities)) {
-            return CFirefoxDriver47.from(desireCapibilities, getActionDelay());
+    private static WebDriver createNewFirefoxDriver(DesiredCapabilities desiredCapabilities) {
+        int actionDelay = getActionDelay();
+        int firefoxMajorVersion = FirefoxExecutable.getFirefoxVersion(desiredCapabilities);
+
+        desiredCapabilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
+        if (firefoxMajorVersion >= USING_GECKO_VERSION) {
+            return CGeckoDriver.from(desiredCapabilities, actionDelay);
         }
-        return new CFirefoxDriver(desireCapibilities, getActionDelay());
+        if (firefoxMajorVersion >= USING_MARIONETTEE_VERSION) {
+            return CFirefoxDriver47.from(desiredCapabilities, actionDelay);
+        }
+        return new CFirefoxDriver(desiredCapabilities, actionDelay);
     }
 
     private static void saveWebDriverSessionData(WebDriver webDriver) {
@@ -755,6 +766,16 @@ public class DriverFactory {
      */
     public static String getChromeDriverPath() {
         return RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY, CHROME_DRIVER_PATH_PROPERTY);
+    }
+
+    /**
+     * Get the absolute path of the current GeckoDriver
+     * 
+     * @return the absolute path of the current GeckoDriver
+     */
+    public static String getGeckoDriverPath() {
+        return RunConfiguration.getDriverSystemProperty(WEB_UI_DRIVER_PROPERTY,
+                StringConstants.CONF_PROPERTY_GECKO_DRIVER_PATH);
     }
 
     private static int getWaitForIEHanging() {
