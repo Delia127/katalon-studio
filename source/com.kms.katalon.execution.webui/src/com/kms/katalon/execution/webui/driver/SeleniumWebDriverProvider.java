@@ -137,17 +137,22 @@ public class SeleniumWebDriverProvider {
 
     public static String getGeckoDriverPath() throws IOException {
         switch (getOS()) {
-            case OS_WIN32:
+            case OS_WIN32: {
                 return getDriverDirectory().getAbsolutePath() + File.separator + "firefox_win64" + File.separator
-                        + "wires.exe";
-            case OS_LINUX:
-                return getDriverDirectory().getAbsolutePath() + File.separator + "firefox_linux64" + File.separator
-                        + "wires";
-            case OS_MACOSX:
-                String geckoDriverPath = getDriverDirectory().getAbsolutePath() + File.separator + "firefox_mac"
-                        + File.separator + "wires";
+                        + "geckodriver.exe";
+            }
+            case OS_LINUX: {
+                String geckoDriverPath = getDriverDirectory().getAbsolutePath() + File.separator + "firefox_linux64" + File.separator
+                        + "geckodriver";
                 makeFileExecutable(geckoDriverPath);
                 return geckoDriverPath;
+            }
+            case OS_MACOSX: {
+                String geckoDriverPath = getDriverDirectory().getAbsolutePath() + File.separator + "firefox_mac"
+                        + File.separator + "geckodriver";
+                makeFileExecutable(geckoDriverPath);
+                return geckoDriverPath;
+            }
         }
         return "";
     }
