@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -1152,7 +1153,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 if (value instanceof WebElement) {
                     HTMLActionMapping actionMapping = (HTMLActionMapping) element;
                     WebElement newElement = (WebElement) value;
-                    if (!newElement.equals(actionMapping.getTargetElement())) {
+                    if (!(newElement.equals(actionMapping.getTargetElement()))) {
                         actionMapping.setTargetElement(newElement);
                         actionTableViewer.refresh(actionMapping);
                     }
@@ -1178,6 +1179,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                         treeDialog.setAllowMultiple(false);
                         treeDialog.setTitle(StringConstants.DIA_TITLE_CAPTURED_OBJECTS);
                         treeDialog.setMessage(StringConstants.DIA_MESSAGE_SELECT_ELEMENT);
+                 
                         treeDialog.setValidator(new ISelectionStatusValidator() {
 
                             @Override
@@ -1677,24 +1679,68 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     private void addNewElement(WebFrame parentElement, WebElement newElement, WebPage pageElement,
             HTMLActionMapping newAction) {
-        if (parentElement.getChildren().contains(newElement)) {
+        if (indexOf(parentElement.getChildren(), newElement) >= 0) {
             if (newElement instanceof WebFrame) {
                 WebFrame frameElement = (WebFrame) newElement;
                 WebFrame existingFrameElement = (WebFrame) (parentElement.getChildren()
-                        .get(parentElement.getChildren().indexOf(newElement)));
+                        .get(indexOf(parentElement.getChildren(), newElement)));
                 addNewElement(existingFrameElement, frameElement.getChildren().get(0), pageElement, newAction);
             } else {
                 for (WebElement element : parentElement.getChildren()) {
-                    if (element.equals(newElement)) {
+                    if (isEquals(element, newElement)) {
                         newAction.setTargetElement(element);
                         break;
                     }
                 }
             }
         } else {
+            newElement.setName(getNewElementDisplayName(parentElement, newElement));
             newElement.setParent(parentElement);
             return;
         }
+    }
+    
+    private String getNewElementDisplayName(WebFrame parentElement, WebElement newElement) {
+        String currentName = newElement.getName();
+        List<WebElement> sameLevelElements = parentElement.getChildren();
+        int maxPostfixNumber = 0;
+        int count = 0;
+        for (WebElement element : sameLevelElements) {
+            String elementName = element.getName();
+            if (elementName.startsWith(currentName)) {
+                count++;
+                int underscoreIndex = currentName.length();
+                if (underscoreIndex >= 0 && elementName.length() > underscoreIndex + 1) {
+                    try {
+                        int postfixNumber = Integer.parseInt(elementName.substring(underscoreIndex + 1));
+                        if (postfixNumber > maxPostfixNumber) {
+                            maxPostfixNumber = postfixNumber;
+                        }
+                    } catch (NumberFormatException e) {
+                        //ignore
+                    }
+                }
+            }
+        }
+        return currentName + (count > 0 ? "_" + (++maxPostfixNumber) : "");
+    }
+    
+    private int indexOf(List<WebElement> elements, WebElement frame) {
+        for (int index = 0; index < elements.size(); index++) {
+            if (isEquals(frame, elements.get(index))) {
+                return index;
+            }
+        }
+        return -1;
+    }
+    
+    private boolean isEquals(WebElement elm1, WebElement elm2) {
+        return new EqualsBuilder()
+                .append(elm1.getType(), elm2.getType())
+                .append(elm1.getTag(), elm2.getTag())
+                .append(elm1.hasProperty(), elm2.hasProperty())
+                .append(elm1.getXpath(), elm2.getXpath())
+                .isEquals();
     }
 
     public List<HTMLActionMapping> getActions() {
