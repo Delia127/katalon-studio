@@ -45,6 +45,7 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 
 @Action(value = "verifyIsPortrait")
 public class VerifyIsPortraitKeyword extends MobileAbstractKeyword {
@@ -73,7 +74,7 @@ public class VerifyIsPortraitKeyword extends MobileAbstractKeyword {
                     logger.logPassed(StringConstants.KW_LOG_PASSED_VERIFY_PORTRAIT)
                     return true
                 } else {
-                    KeywordMain.stepFailed(StringConstants.KW_LOG_FAILED_VERIFY_PORTRAIT, flowControl, null)
+                    MobileKeywordMain.stepFailed(StringConstants.KW_LOG_FAILED_VERIFY_PORTRAIT, flowControl, null, true)
                     return false
                 }
             } finally {

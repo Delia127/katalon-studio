@@ -45,6 +45,7 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 
 @Action(value = "tap")
 public class TapKeyword extends MobileAbstractKeyword {
@@ -71,7 +72,7 @@ public class TapKeyword extends MobileAbstractKeyword {
             timeout = KeywordHelper.checkTimeout(timeout)
             WebElement element = findElement(to, timeout * 1000)
             if (element == null){
-                KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_OBJ_NOT_FOUND, to.getObjectId()), flowControl, null)
+                MobileKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_OBJ_NOT_FOUND, to.getObjectId()), flowControl, null, true)
                 return
             }
             ((MobileElement) element).tap(1, 1)

@@ -45,6 +45,7 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 
 @Action(value = "verifyElementExist")
 public class VerifyElementExistKeyword extends MobileAbstractKeyword {
@@ -74,7 +75,7 @@ public class VerifyElementExistKeyword extends MobileAbstractKeyword {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_ELEMENT_X_EXISTED, to.getObjectId()))
                 return true
             } else {
-                KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_ELEMENT_X_EXISTED, to.getObjectId()), flowControl, null)
+                MobileKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_ELEMENT_X_EXISTED, to.getObjectId()), flowControl, null, true)
                 return false
             }
         }, flowControl, to != null ?  MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_X_EXIST, to.getObjectId()) : StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_EXIST)

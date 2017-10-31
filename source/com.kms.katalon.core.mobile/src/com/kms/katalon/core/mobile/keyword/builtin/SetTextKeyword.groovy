@@ -46,6 +46,7 @@ import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.selenium.util.SeleniumKeysUtil;
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 
 @Action(value = "setText")
 public class SetTextKeyword extends MobileAbstractKeyword {
@@ -73,7 +74,7 @@ public class SetTextKeyword extends MobileAbstractKeyword {
             timeout = KeywordHelper.checkTimeout(timeout)
             WebElement element = findElement(to, timeout * 1000)
             if (element == null) {
-                KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_OBJ_NOT_FOUND, to.getObjectId()), flowControl, null)
+                MobileKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_OBJ_NOT_FOUND, to.getObjectId()), flowControl, null, true)
                 return
             }
             element.clear()

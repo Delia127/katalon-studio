@@ -45,6 +45,7 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 
 @Action(value = "verifyElementNotVisible")
 public class VerifyElementNotVisibleKeyword extends MobileAbstractKeyword {
@@ -72,7 +73,7 @@ public class VerifyElementNotVisibleKeyword extends MobileAbstractKeyword {
             WebElement element = findElement(to, timeout * 1000)
             if (element != null) {
                 if (element.isDisplayed()) {
-                    KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_ELEMENT_X_NOT_VISIBLE, to.getObjectId()), flowControl, null)
+                    MobileKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_ELEMENT_X_NOT_VISIBLE, to.getObjectId()), flowControl, null, true)
                     return false
                 } else {
                     logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_ELEMENT_X_NOT_VISIBLE, to.getObjectId()))

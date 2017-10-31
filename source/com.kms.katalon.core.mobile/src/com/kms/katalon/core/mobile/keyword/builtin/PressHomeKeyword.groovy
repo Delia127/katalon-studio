@@ -45,6 +45,7 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 
 @Action(value = "pressHome")
 public class PressHomeKeyword extends MobileAbstractKeyword {
@@ -72,7 +73,7 @@ public class PressHomeKeyword extends MobileAbstractKeyword {
                     internalSwitchToNativeContext(driver)
                     ((AndroidDriver)driver).pressKeyCode(AndroidKeyCode.HOME)
                 } else {
-                    KeywordMain.stepFailed(StringConstants.KW_MSG_UNSUPPORT_ACT_FOR_THIS_DEVICE, flowControl, null)
+                    MobileKeywordMain.stepFailed(StringConstants.KW_MSG_UNSUPPORT_ACT_FOR_THIS_DEVICE, flowControl, null, true)
                     return
                 }
                 logger.logPassed(StringConstants.KW_LOG_PASSED_HOME_BTN_PRESSED)

@@ -45,6 +45,7 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 
 @Action(value = "verifyElementNotHasAttribute")
 public class VerifyElementNotHasAttributeKeyword extends MobileAbstractKeyword {
@@ -85,7 +86,7 @@ public class VerifyElementNotHasAttributeKeyword extends MobileAbstractKeyword {
                 KeywordLogger.getInstance().logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_OBJ_X_NOT_HAS_ATTRIBUTE_Y, [to.getObjectId(), attributeName] as Object[]))
                 return true
             }  else {
-                KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_OBJ_X_NOT_HAS_ATTRIBUTE_Y, [to.getObjectId(), attributeName] as Object[]), flowControl, null)
+                MobileKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_OBJ_X_NOT_HAS_ATTRIBUTE_Y, [to.getObjectId(), attributeName] as Object[]), flowControl, null, true)
                 return false
             }
         }, flowControl, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_NOT_HAS_ATTRIBUTE_Y, [to.getObjectId(), attributeName] as Object[]) : StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_NOT_HAS_ATTRIBUTE)

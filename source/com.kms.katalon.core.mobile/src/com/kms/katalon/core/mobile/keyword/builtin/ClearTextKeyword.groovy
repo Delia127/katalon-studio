@@ -45,6 +45,7 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 
 @Action(value = "clearText")
 public class ClearTextKeyword extends MobileAbstractKeyword {
@@ -72,7 +73,7 @@ public class ClearTextKeyword extends MobileAbstractKeyword {
             timeout = KeywordHelper.checkTimeout(timeout)
             WebElement element = findElement(to, timeout * 1000)
             if (element == null) {
-                KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_ELEMENT_X_EXISTED, to.getObjectId()), flowControl, null)
+                MobileKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_ELEMENT_X_EXISTED, to.getObjectId()), flowControl, null, true)
                 return
             }
             element.clear()
