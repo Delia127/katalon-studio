@@ -10,7 +10,6 @@ import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -102,12 +101,9 @@ import com.kms.katalon.composer.components.impl.control.DropdownToolItemSelectio
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.impl.listener.EventListener;
 import com.kms.katalon.composer.components.impl.listener.EventManager;
-import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
-import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
-import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.components.util.ColumnViewerUtil;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
@@ -128,11 +124,8 @@ import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.GlobalMessageConstants;
 import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
-import com.kms.katalon.entity.folder.FolderEntity;
-import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
 import com.kms.katalon.objectspy.constants.ObjectspyMessageConstants;
 import com.kms.katalon.objectspy.dialog.CapturedObjectsView;
@@ -152,7 +145,6 @@ import com.kms.katalon.objectspy.element.tree.WebElementTreeContentProvider;
 import com.kms.katalon.objectspy.exception.IEAddonNotInstalledException;
 import com.kms.katalon.objectspy.util.BrowserUtil;
 import com.kms.katalon.objectspy.util.UtilitiesAddonUtil;
-import com.kms.katalon.objectspy.util.WebElementUtils;
 import com.kms.katalon.objectspy.util.Win32Helper;
 import com.kms.katalon.objectspy.util.WinRegistry;
 import com.kms.katalon.objectspy.websocket.AddonCommand;
@@ -1551,46 +1543,8 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         if (addToObjectRepositoryDialog.open() != Window.OK) {
             return false;
         }
-
-        Set<ITreeEntity> newSelectionOnExplorer = new HashSet<>();
         targetFolderSelectionResult = addToObjectRepositoryDialog.getDialogResult();
-
-        List<WebPage> htmlElements = addToObjectRepositoryDialog.getWebPages();
-        for (WebElement checkedElement : htmlElements) {
-            if (!(checkedElement instanceof WebPage)) {
-                continue;
-            }
-            WebPage pageElement = (WebPage) checkedElement;
-
-            FolderTreeEntity pageElementTreeFolder = targetFolderSelectionResult
-                    .createTreeFolderForPageElement(pageElement);
-            newSelectionOnExplorer.add(pageElementTreeFolder);
-            for (WebElement childElement : pageElement.getChildren()) {
-                newSelectionOnExplorer.addAll(addCheckedElements(childElement, pageElementTreeFolder, null));
-            }
-        }
-
-        // Refresh tree explorer
-        eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY,
-                targetFolderSelectionResult.getSelectedParentFolder());
-        eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEMS, newSelectionOnExplorer.toArray());
         return true;
-    }
-
-    private Collection<ITreeEntity> addCheckedElements(WebElement element, FolderTreeEntity parentTreeFolder,
-            WebElementEntity refElement) throws Exception {
-        FolderEntity parentFolder = parentTreeFolder.getObject();
-        WebElementEntity importedElement = ObjectRepositoryController.getInstance().importWebElement(
-                WebElementUtils.convertWebElementToTestObject(element, refElement, parentFolder), parentFolder);
-
-        List<ITreeEntity> newTreeWebElements = new ArrayList<>();
-        newTreeWebElements.add(new WebElementTreeEntity(importedElement, parentTreeFolder));
-        if (element instanceof WebFrame) {
-            for (WebElement childElement : ((WebFrame) element).getChildren()) {
-                newTreeWebElements.addAll(addCheckedElements(childElement, parentTreeFolder, importedElement));
-            }
-        }
-        return newTreeWebElements;
     }
 
     @Override
