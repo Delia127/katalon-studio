@@ -21,6 +21,7 @@ import org.eclipse.core.internal.resources.ModelObjectWriter;
 import org.eclipse.core.internal.resources.Project;
 import org.eclipse.core.internal.resources.ProjectDescription;
 import org.eclipse.core.resources.FileInfoMatcherDescription;
+import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -505,6 +506,9 @@ public class GroovyUtil {
 
         IProjectDescription projectDescription = groovyProject.getDescription();
         projectDescription.setNatureIds(new String[] { GROOVY_NATURE, JavaCore.NATURE_ID });
+        org.eclipse.core.resources.ICommand[] commands = new ICommand[] { projectDescription.newCommand()};
+        commands[0].setBuilderName(org.eclipse.jdt.core.JavaCore.BUILDER_ID);
+        projectDescription.setBuildSpec(commands);
         groovyProject.setDescription(projectDescription, monitor);
         groovyProject.refreshLocal(IResource.DEPTH_ZERO, monitor);
     }
