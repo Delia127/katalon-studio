@@ -1532,7 +1532,9 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     protected void okPressed() {
         Shell shell = getShell();
         try {
-            addElementToObjectRepository(shell);
+            if (!addElementToObjectRepository(shell)) {
+                return;
+            }
 
             super.okPressed();
             dispose();
@@ -1542,12 +1544,12 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         }
     }
 
-    private void addElementToObjectRepository(Shell shell) throws Exception {
+    private boolean addElementToObjectRepository(Shell shell) throws Exception {
         TreeViewer capturedTreeViewer = capturedObjectComposite.getTreeViewer();
         SaveToObjectRepositoryDialog addToObjectRepositoryDialog = new SaveToObjectRepositoryDialog(shell, true,
                 getCloneCapturedObjects(elements), capturedTreeViewer.getExpandedElements());
         if (addToObjectRepositoryDialog.open() != Window.OK) {
-            return;
+            return false;
         }
 
         Set<ITreeEntity> newSelectionOnExplorer = new HashSet<>();
@@ -1556,7 +1558,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         List<WebPage> htmlElements = addToObjectRepositoryDialog.getWebPages();
         for (WebElement checkedElement : htmlElements) {
             if (!(checkedElement instanceof WebPage)) {
-                return;
+                continue;
             }
             WebPage pageElement = (WebPage) checkedElement;
 
@@ -1572,7 +1574,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY,
                 targetFolderSelectionResult.getSelectedParentFolder());
         eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEMS, newSelectionOnExplorer.toArray());
-
+        return true;
     }
 
     private Collection<ITreeEntity> addCheckedElements(WebElement element, FolderTreeEntity parentTreeFolder,
