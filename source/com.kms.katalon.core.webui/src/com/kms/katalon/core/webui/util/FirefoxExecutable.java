@@ -11,13 +11,9 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.GeckoDriverService;
-import org.openqa.selenium.firefox.MarionetteDriver;
-import org.openqa.selenium.net.PortProber;
-import org.openqa.selenium.os.CommandLine;
+import org.openqa.selenium.os.ExecutableFinder;
 import org.openqa.selenium.os.WindowsUtils;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.service.DriverService.Builder;
 
 import com.google.common.collect.ImmutableList;
 import com.kms.katalon.core.configuration.RunConfiguration;
@@ -44,26 +40,6 @@ public class FirefoxExecutable {
 
     private static String getGeckoDriverPath() {
         return RunConfiguration.getDriverSystemProperty(DriverFactory.WEB_UI_DRIVER_PROPERTY, GECKO_DRIVER_PATH_PROPERTY);
-    }
-    
-    public static MarionetteDriver startGeckoDriver(DesiredCapabilities desiredCapabilities) {
-        final String pathToDriver = getGeckoDriverPath();
-        final int marionettePort = PortProber.findFreePort();
-        final int webDriverPort = PortProber.findFreePort();
-        Builder<GeckoDriverService, GeckoDriverService.Builder> builder = new GeckoDriverService.Builder() {
-            @Override
-            protected ImmutableList<String> createArgs() {
-                ImmutableList.Builder<String> argsBuilder = ImmutableList.builder();
-                argsBuilder.addAll(super.createArgs());
-                argsBuilder.add(String.format("--marionette-port=%d", marionettePort));
-                return argsBuilder.build();
-            }
-        };
-        builder.usingPort(webDriverPort);
-        builder.usingDriverExecutable(new File(pathToDriver));
-       
-        GeckoDriverService driverService = builder.build();
-        return new MarionetteDriver(driverService, desiredCapabilities);
     }
 
     public static boolean isUsingFirefox47AndAbove(DesiredCapabilities desiredCapabilities) {
@@ -171,14 +147,15 @@ public class FirefoxExecutable {
             return binary;
         }
 
+        ExecutableFinder binaryFinder = new ExecutableFinder();
         if (current.is(UNIX)) {
-            String systemFirefox = CommandLine.find("firefox-bin");
+            String systemFirefox = binaryFinder.find("firefox-bin");
             if (systemFirefox != null) {
                 return new File(systemFirefox);
             }
         }
 
-        String systemFirefox = CommandLine.find("firefox");
+        String systemFirefox = binaryFinder.find("firefox");
         if (systemFirefox != null) {
             return new File(systemFirefox);
         }

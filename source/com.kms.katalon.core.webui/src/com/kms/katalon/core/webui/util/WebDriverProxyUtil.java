@@ -72,4 +72,9 @@ public class WebDriverProxyUtil {
                 && ProxyOption.valueOf(proxyInformation.getProxyOption()) == ProxyOption.MANUAL_CONFIG
                 && ProxyServerType.valueOf(proxyInformation.getProxyServerType()) == ProxyServerType.SOCKS;
     }
+
+    public static boolean isNoProxy(ProxyInformation proxyInformation) {
+        return proxyInformation != null
+                && ProxyOption.valueOf(proxyInformation.getProxyOption()) == ProxyOption.NO_PROXY;
+    }
 }

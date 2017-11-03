@@ -24,11 +24,11 @@ public class ExistingIosDriver extends IOSDriver implements IExistingRemoteWebDr
     }
 
     @Override
-    protected void startSession(Capabilities desiredCapabilities, Capabilities requiredCapabilities) {
+    protected void startSession(Capabilities desiredCapabilities) {
         if (this.oldSessionId == null) {
             return;
         }
-        super.startSession(desiredCapabilities, requiredCapabilities);
+        super.startSession(desiredCapabilities);
     }
     
     @Override

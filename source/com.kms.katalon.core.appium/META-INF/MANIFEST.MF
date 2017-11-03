@@ -14,7 +14,8 @@ Require-Bundle: com.kms.katalon.selenium-standalone,
  org.apache.httpcomponents.httpclient,
  org.apache.commons.io,
  com.google.gson,
- org.eclipse.osgi
+ org.eclipse.osgi,
+ com.google.guava
 Export-Package: com.kms.katalon.core.appium.constants,
  com.kms.katalon.core.appium.driver,
  com.kms.katalon.core.appium.exception

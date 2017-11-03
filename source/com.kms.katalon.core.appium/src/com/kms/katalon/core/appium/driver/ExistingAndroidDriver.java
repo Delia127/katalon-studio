@@ -22,11 +22,11 @@ public class ExistingAndroidDriver extends SwipeableAndroidDriver implements IEx
     }
 
     @Override
-    protected void startSession(Capabilities desiredCapabilities, Capabilities requiredCapabilities) {
+    protected void startSession(Capabilities desiredCapabilities) {
         if (this.oldSessionId == null) {
             return;
         }
-        super.startSession(desiredCapabilities, requiredCapabilities);
+        super.startSession(desiredCapabilities);
     }
     
     @Override
