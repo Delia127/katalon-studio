@@ -110,12 +110,15 @@ public class EventConstants {
 
     public static final String TESTCASE_RECENT_OBJECT_ADDED = "TESTCASE/RECENT_OBJECT_ADDED";
 
-    // TestRun Events
+    // Test Suite Collection Events
     public static final String TEST_SUITE_COLLECTION_NEW = "TEST_SUITE_COLLECTION/NEW";
 
     public static final String TEST_SUITE_COLLECTION_OPEN = "TEST_SUITE_COLLECTION/OPEN";
 
     public static final String TEST_SUITE_COLLECTION_UPDATED = "TEST_SUITE_COLLECTION/UPDATED";
+
+    // Test Listener Events
+    public static final String TEST_LISTENER_NEW = "TEST_LISTENER/NEW";
 
     // TestSuite Events
     public static final String TEST_SUITE = "TESTSUITE/*";

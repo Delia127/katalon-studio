@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_Zb-owLfBEeeNqrcKxBZk8Q">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_j0W4MLfJEeeNqrcKxBZk8Q" featurename="commands" parentElementId="com.kms.katalon.composer.application">
+    <elements xsi:type="commands:Command" xmi:id="_oiyWMLfJEeeNqrcKxBZk8Q" elementId="com.kms.katalon.composer.testlistener.command.new" commandName="New Test Listener"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_e74GULfJEeeNqrcKxBZk8Q" featurename="handlers" parentElementId="com.kms.katalon.composer.application">
+    <elements xsi:type="commands:Handler" xmi:id="_iWa6kLfJEeeNqrcKxBZk8Q" elementId="com.kms.katalon.composer.testlistener.handler.0" contributionURI="bundleclass://com.kms.katalon.composer.testlistener/com.kms.katalon.composer.testlistener.handler.NewTestListenerHandler" command="_oiyWMLfJEeeNqrcKxBZk8Q"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_Fgc5ALfCEeeNqrcKxBZk8Q" featurename="children" parentElementId="com.kms.katalon.composer.explorer.popupmenu.new">
+    <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_hJbGgLfKEeeNqrcKxBZk8Q" elementId="com.kms.katalon.composer.testlistener.dynamicmenucontribution.new" contributionURI="bundleclass://com.kms.katalon.composer.testlistener/com.kms.katalon.composer.testlistener.menu.NewTestListenerPopupMenuContribution"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_yH1IULiOEeeI26WUMeE6_Q" featurename="addons" parentElementId="com.kms.katalon.composer.application">
+    <elements xsi:type="application:Addon" xmi:id="_zaQZgLiOEeeI26WUMeE6_Q" elementId="com.kms.katalon.composer.testlistener.addon.dependencyInjection" contributionURI="bundleclass://com.kms.katalon.composer.testlistener/com.kms.katalon.composer.testlistener.addon.TestListenerDependencyInjectionAddon"/>
+  </fragments>
+</fragment:ModelFragments>

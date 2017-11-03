@@ -186,6 +186,11 @@ public class GroovyUtil {
             boolean isNew, IProgressMonitor monitor) throws CoreException, IOException, BundleException {
         IProject groovyProject = getGroovyProject(projectEntity);
         groovyProject.refreshLocal(IResource.DEPTH_ONE, monitor);
+        
+        IFolder listenerSourceFolder = groovyProject.getFolder("Test Listeners");
+        if (!listenerSourceFolder.exists()) {
+            listenerSourceFolder.create(true, true, null);
+        }
 
         IFolder keywordSourceFolder = groovyProject.getFolder(KEYWORD_SOURCE_FOLDER_NAME);
         if (!keywordSourceFolder.exists()) {
@@ -215,6 +220,11 @@ public class GroovyUtil {
         IFolder outputParentFolder = groovyProject.getFolder(OUTPUT_FOLDER_NAME);
         if (!outputParentFolder.exists()) {
             outputParentFolder.create(true, true, null);
+        }
+        
+        IFolder outputListenerFolder = outputParentFolder.getFolder("listener");
+        if (!outputListenerFolder.exists()) {
+            outputListenerFolder.create(true, true, null);
         }
 
         IFolder outputKeywordFolder = outputParentFolder.getFolder(KEYWORD_OUTPUT_FOLDER_NAME);
@@ -250,8 +260,10 @@ public class GroovyUtil {
         entries.add(JavaCore.newSourceEntry(keywordPackageRoot.getPath(), new Path[] {}, new Path[] {},
                 outputKeywordFolder.getFullPath()));
 
-        // initTestCaseFolder(javaProject, testCaseRootFolder,
-        // testCaseSourceFolder, outputTestCaseFolder, entries);
+        // add source and output folder to classpath
+        IPackageFragmentRoot listenerPackageRoot = javaProject.getPackageFragmentRoot(listenerSourceFolder);
+        entries.add(JavaCore.newSourceEntry(listenerPackageRoot.getPath(), new Path[] {}, new Path[] {},
+                outputListenerFolder.getFullPath()));
 
         IPackageFragmentRoot keywordLibPackageRoot = javaProject.getPackageFragmentRoot(keywordLibFolder);
         entries.add(JavaCore.newSourceEntry(keywordLibPackageRoot.getPath(), new Path[] {}, new Path[] {},

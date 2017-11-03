@@ -106,7 +106,8 @@ public class ReportPartTestStepLabelProvider extends StyledCellLabelProvider {
             } else {
                 String testStepName = ((ILogRecord) element).getName();
                 if (logRecord instanceof TestStepLogRecord) {
-                    return ((TestStepLogRecord) logRecord).getIndexString() + ". " + testStepName;
+                    String indexString = ((TestStepLogRecord) logRecord).getIndexString();
+                    return (StringUtils.isNotEmpty(indexString) ? indexString + "." : "") + " " + testStepName;
                 } else {
                     return testStepName;
                 }

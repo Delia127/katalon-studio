@@ -95,7 +95,7 @@ public class ClosureBuilderDialog extends Dialog implements IAstDialogBuilder, I
         childComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
         testStepManualComposite = new TestStepManualComposite(this, childComposite);
-        ScriptNodeWrapper scriptNodeWrapper = new ScriptNodeWrapper(tempClosure.getScriptClass().getTestCaseId());
+        ScriptNodeWrapper scriptNodeWrapper = new ScriptNodeWrapper();
         scriptNodeWrapper.setMainBlock(tempClosure.getBlock());
         try {
             testStepManualComposite.loadASTNodesToTreeTable(scriptNodeWrapper);

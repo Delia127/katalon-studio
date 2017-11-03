@@ -94,12 +94,13 @@ public class TestStepLogRecord extends AbstractLogRecord {
     public String getIndexString() {
         int stepIndex = index;
         if (stepIndex == -1 && parentLogRecord != null) {
-            for (int i = 0; i < parentLogRecord.getChildRecords().length; i++) {
-                if (parentLogRecord.getChildRecords()[i] == this) {
-                    stepIndex = i + 1;
-                    break;
-                }
-            }
+            return "";
+//            for (int i = 0; i < parentLogRecord.getChildRecords().length; i++) {
+//                if (parentLogRecord.getChildRecords()[i] == this) {
+//                    stepIndex = i + 1;
+//                    break;
+//                }
+//            }
         }
         if (parentLogRecord == null || !(parentLogRecord instanceof TestStepLogRecord)) {
             return String.valueOf(stepIndex);

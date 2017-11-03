@@ -24,6 +24,9 @@ public interface LogEvaluator {
     }
 
     default boolean isStartTestCaseLog(XmlLogRecord logRecord) {
+        if (logRecord == null) {
+            return false;
+        }
         return StringUtils.defaultString(logRecord.getMessage()).startsWith(StringConstants.LOG_START_TEST);
     }
     

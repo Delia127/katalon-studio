@@ -38,23 +38,35 @@ import org.eclipse.ui.part.FileEditorInput;
 @SuppressWarnings("restriction")
 public class GroovyEditorUtil {
 
-	private static final String GROOVY_EDITOR_URI = "org.codehaus.groovy.eclipse.editor.GroovyEditor";
+    private static final String GROOVY_EDITOR_URI = "org.codehaus.groovy.eclipse.editor.GroovyEditor";
 
     public static MPart createTestCaseEditorPart(IFile scriptFile, MPartStack parentPartStack, String testCaseEditorId,
-            EPartService partService, int index) throws Exception {
-        MPart editor = partService.createPart(CompatibilityEditor.MODEL_ELEMENT_ID);
+            EPartService partService, int index) {
+        MPart editor = createEditorPart(scriptFile, partService);
+
         editor.setElementId(testCaseEditorId);
+
+        parentPartStack.getChildren().add(index, editor);
+        return editor;
+    }
+
+    public static MPart createEditorPart(IFile scriptFile, EPartService partService) {
+        MPart editor = partService.createPart(CompatibilityEditor.MODEL_ELEMENT_ID);
 
         IEditorInput input = new FileEditorInput(scriptFile);
         editor.getTags().add(GROOVY_EDITOR_URI);
         createEditorReferenceForPart(editor, input, GROOVY_EDITOR_URI, null);
         updateActiveEditorSources(editor);
-        EditorDescriptor descriptor = (EditorDescriptor) PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-                .getActivePage().getWorkbenchWindow().getWorkbench().getEditorRegistry().findEditor(GROOVY_EDITOR_URI);
+        EditorDescriptor descriptor = (EditorDescriptor) PlatformUI.getWorkbench()
+                .getActiveWorkbenchWindow()
+                .getActivePage()
+                .getWorkbenchWindow()
+                .getWorkbench()
+                .getEditorRegistry()
+                .findEditor(GROOVY_EDITOR_URI);
         recordEditor(input, descriptor);
 
         editor.getTags().add(IPresentationEngine.NO_MOVE);
-        parentPartStack.getChildren().add(index, editor);
         return editor;
     }
 
@@ -84,9 +96,9 @@ public class GroovyEditorUtil {
             ICompilationUnit unit = (ICompilationUnit) groovyEditor.getGroovyCompilationUnit();
             try {
                 if (!unit.isWorkingCopy()) {
-                   unit.becomeWorkingCopy(null);
+                    unit.becomeWorkingCopy(null);
                 }
-                
+
                 unit.commitWorkingCopy(true, null);
             } catch (JavaModelException e) {
                 // User typing error, don't care about it.
@@ -97,12 +109,12 @@ public class GroovyEditorUtil {
         }
         editor.doSave(new NullProgressMonitor());
     }
-    
+
     public static boolean isGroovyEditorPart(MPart part) {
         IEditorPart editor = getEditor(part);
         return editor instanceof GroovyEditor;
     }
-    
+
     private static void updateActiveEditorSources(MPart part) {
         IEditorPart editor = getEditor(part);
         WorkbenchPage page = (WorkbenchPage) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
@@ -135,7 +147,8 @@ public class GroovyEditorUtil {
             resource = editor.getGroovyCompilationUnit().getResource();
             clearEditorProblems(editor);
             String testScriptContent = editor.getGroovyCompilationUnit().getSource();
-            if (testScriptContent == null || testScriptContent.isEmpty()) return;
+            if (testScriptContent == null || testScriptContent.isEmpty())
+                return;
             new AstBuilder().buildFromString(CompilePhase.CONVERSION, testScriptContent);
         } catch (MultipleCompilationErrorsException ex) {
             try {
