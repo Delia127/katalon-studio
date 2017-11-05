@@ -5,7 +5,6 @@ import static org.apache.commons.lang.StringUtils.split;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -19,11 +18,15 @@ import org.apache.commons.mail.EmailAttachment;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 
+import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
+import com.kms.katalon.core.setting.ReportFormatType;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.entity.EmailConfig;
 import com.kms.katalon.execution.setting.EmailSettingStore;
 import com.kms.katalon.execution.setting.EmailVariableBinding;
 import com.kms.katalon.groovy.util.GroovyStringUtil;
+import com.kms.katalon.jasper.pdf.TestSuitePdfGenerator;
 import com.kms.katalon.logging.LogUtil;
 
 import net.lingala.zip4j.core.ZipFile;
@@ -31,7 +34,11 @@ import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
 
 public class MailUtil {
+    private static final long EMAIL_WARNING_SIZE = 10 * 1024 * 1024L;
+
     private static final int EMAIL_TIMEOUT = 600000;
+
+    public static final String EMAIL_SEPARATOR = ";";
 
     public enum MailSecurityProtocolType {
         None, SSL, TLS;
@@ -45,8 +52,6 @@ public class MailUtil {
             return stringValues;
         }
     }
-
-    public static final String EMAIL_SEPARATOR = ";";
 
     public static String[][] getMailSecurityProtocolTypeArrayValues() {
         MailSecurityProtocolType[] allSecurityProtocolTypes = MailSecurityProtocolType.values();
@@ -72,7 +77,7 @@ public class MailUtil {
         email.setHostName(conf.getHost());
         email.setFrom(conf.getFrom(), "");
         email.setSubject(conf.getSubject());
-        
+
         String cc = conf.getCc();
         if (StringUtils.isNotEmpty(cc)) {
             email.addCc(StringUtils.split(cc, EMAIL_SEPARATOR));
@@ -101,64 +106,70 @@ public class MailUtil {
         return email;
     }
 
-    public static void sendSummaryMail(EmailConfig conf, File csvFile, File logFolder,
+    public static void sendSummaryMail(EmailConfig conf, TestSuiteLogRecord suiteLogRecord,
             EmailVariableBinding variableBinding) throws Exception {
         if (conf == null || !conf.canSend()) {
             return;
         }
 
         HtmlEmail email = initEmail(conf);
-
+        EmailAttachment attachment = null;
         if (conf.isSendAttachmentEnable()) {
-            // Attachment
-            if (csvFile != null && csvFile.exists()) {
-                attachSummary(email, csvFile);
-            }
-            if (logFolder != null && logFolder.exists()) {
-                attach(email, logFolder);
-            }
+            attachment = attach(conf.getAttachmentOptions(), suiteLogRecord);
+            email.attach(attachment);
         }
-        // Define the base URL to resolve relative resource locations
-        URL url = new URL("http://katalon.kms-technology.com");
-        // email.setDataSourceResolver(new DataSourceUrlResolver(url));
 
         // Set HTML formatted message
         email.setHtmlMsg("<html>" + GroovyStringUtil.evaluate(conf.getHtmlMessage(), variableBinding.getVariables())
                 + "</html>");
 
-        email.send();
+        try {
+            email.send();
+        } finally {
+            if (attachment != null) {
+                File zipFile = new File(attachment.getURL().toURI());
+                FileUtils.forceDelete(zipFile);
+            }
+        }
     }
 
-    private static void attach(HtmlEmail email, File folder) throws Exception {
+    private static EmailAttachment attach(List<ReportFormatType> attachmentOptions, TestSuiteLogRecord suiteLogRecord)
+            throws Exception {
+        File logFolder = new File(suiteLogRecord.getLogFolder());
         // Zip html report with its dependencies
-        File tmpReportDir = new File(System.getProperty("java.io.tmpdir"), folder.getName());
+        File tmpReportDir = new File(System.getProperty("java.io.tmpdir"), logFolder.getName());
         if (tmpReportDir.exists()) {
             tmpReportDir.delete();
         }
         tmpReportDir.mkdir();
-        for (File f : folder.listFiles()) {
-            if (f.getName().endsWith(".html") || f.getName().endsWith(".csv")) {
+        for (File f : logFolder.listFiles()) {
+            String fileName = f.getName();
+            if (fileName.endsWith(".html") && attachmentOptions.contains(ReportFormatType.HTML)
+                    || fileName.endsWith(".csv") && attachmentOptions.contains(ReportFormatType.CSV)
+                    || (fileName.endsWith(".log") || fileName.endsWith(".meta")
+                            || fileName.endsWith("execution.properties"))
+                            && attachmentOptions.contains(ReportFormatType.LOG)) {
                 FileUtils.copyFileToDirectory(f, tmpReportDir);
             }
         }
+
+        if (attachmentOptions.contains(ReportFormatType.PDF)) {
+            TestSuitePdfGenerator generator = new TestSuitePdfGenerator(suiteLogRecord);
+            generator.exportToPDF(new File(tmpReportDir, logFolder.getName() + ".pdf").getAbsolutePath());
+        }
+
         File zipFile = zip(tmpReportDir.getAbsolutePath(), tmpReportDir.getName());
+
+        if (zipFile.length() > EMAIL_WARNING_SIZE) {
+            LogUtil.printOutputLine(ExecutionMessageConstants.MSG_EMAIL_ATTACHMENT_EXCEEDS_SIZE);
+        }
         // Create the attachment
         EmailAttachment attachment = new EmailAttachment();
         attachment.setName(zipFile.getName());
         attachment.setURL(zipFile.toURI().toURL());
         attachment.setDisposition(EmailAttachment.ATTACHMENT);
-        // add the attachment
-        email.attach(attachment);
-    }
 
-    private static void attachSummary(HtmlEmail email, File file) throws Exception {
-        // Create the attachment
-        EmailAttachment attachment = new EmailAttachment();
-        attachment.setName(file.getName());
-        attachment.setURL(file.toURI().toURL());
-        attachment.setDisposition(EmailAttachment.ATTACHMENT);
-        // add the attachment
-        email.attach(attachment);
+        return attachment;
     }
 
     private static File zip(String directory, String zipName) throws Exception {
@@ -217,6 +228,7 @@ public class MailUtil {
             conf.addRecipients(splitRecipientsString(store.getRecipients()));
             conf.setSubject(store.getEmailSubject());
             conf.setHtmlMessage(store.getEmailHTMLTemplate());
+            conf.setAttachmentOptions(store.getReportFormatOptions());
             return conf;
         } catch (IOException | URISyntaxException e) {
             LogUtil.logError(e);

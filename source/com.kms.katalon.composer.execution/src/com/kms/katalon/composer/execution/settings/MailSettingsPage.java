@@ -5,8 +5,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -35,12 +37,14 @@ import org.eclipse.swt.widgets.Text;
 import com.kms.katalon.composer.components.dialogs.MessageDialogWithLink;
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.setting.ReportFormatType;
 import com.kms.katalon.execution.entity.EmailConfig;
 import com.kms.katalon.execution.setting.EmailSettingStore;
 import com.kms.katalon.execution.util.MailUtil;
@@ -71,11 +75,18 @@ public class MailSettingsPage extends PreferencePageWithHelp {
 
     private EmailConfigValidator validator;
 
+    private Group grpReportFormatOptions;
+
+    private Composite attachmentOptionsComposite;
+    
+    private Map<ReportFormatType, Button> formatOptionCheckboxes;
+
     public MailSettingsPage() {
         super();
         noDefaultButton();
         store = new EmailSettingStore(ProjectController.getInstance().getCurrentProject());
         validator = new EmailConfigValidator();
+        formatOptionCheckboxes = new HashMap<>();
     }
 
     public EmailSettingStore getSettingStore() {
@@ -89,6 +100,10 @@ public class MailSettingsPage extends PreferencePageWithHelp {
         createServerGroup(container);
 
         createPostExecuteGroup(container);
+        
+        createReportFormatGroup(container);
+        
+        createSendTestEmailButton(container);
 
         registerControlListers();
 
@@ -106,11 +121,16 @@ public class MailSettingsPage extends PreferencePageWithHelp {
             txtPassword.setText(settingStore.getPassword());
             comboProtocol.setText(settingStore.getProtocol());
             btnChkAttachment.setSelection(settingStore.isAddAttachment());
+            updateReportFormatOptionsStatus();
 
             txtRecipients.setText(settingStore.getRecipients());
             txtCc.setText(settingStore.getEmailCc());
             txtBcc.setText(settingStore.getEmailBcc());
-            txtSubject.setText(settingStore.getEmailSubject());
+            txtSubject.setText(settingStore.getEmailSubject());            
+            
+            settingStore.getReportFormatOptions().forEach(format -> {
+                formatOptionCheckboxes.get(format).setSelection(true);
+            });
         } catch (IOException e) {
             LoggerSingleton.logError(e);
         }
@@ -139,6 +159,7 @@ public class MailSettingsPage extends PreferencePageWithHelp {
                 emailConfig.setSubject(txtSubject.getText());
                 emailConfig.setCc(txtCc.getText());
                 emailConfig.setBcc(txtBcc.getText());
+                emailConfig.setAttachmentOptions(getSelectedAttachmentOptions());
                 try {
                     emailConfig.setHtmlMessage(getSettingStore().getEmailHTMLTemplate());
                 } catch (IOException | URISyntaxException ex) {
@@ -203,6 +224,24 @@ public class MailSettingsPage extends PreferencePageWithHelp {
             }
         });
 
+        btnChkAttachment.addSelectionListener(new SelectionAdapter() {            
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                updateReportFormatOptionsStatus();
+            }
+        });
+    }
+    
+    private List<ReportFormatType> getSelectedAttachmentOptions() {
+        return formatOptionCheckboxes.entrySet()
+                .stream()
+                .filter(e -> e.getValue().getSelection())
+                .map(e -> e.getKey())
+                .collect(Collectors.toList());
+    }
+
+    private void updateReportFormatOptionsStatus() {
+        ControlUtils.recursiveSetEnabled(attachmentOptionsComposite, btnChkAttachment.getSelection());
     }
 
     private void setValidationAndEnableSendEmail(String property, boolean validated) {
@@ -232,6 +271,7 @@ public class MailSettingsPage extends PreferencePageWithHelp {
             settingStore.setEmailCc(txtCc.getText());
             settingStore.setEmailBcc(txtBcc.getText());
             settingStore.setRecipients(txtRecipients.getText());
+            settingStore.setReportFormatOptions(getSelectedAttachmentOptions());
             return super.performOk();
         } catch (IOException e) {
             LoggerSingleton.logError(e);
@@ -263,16 +303,47 @@ public class MailSettingsPage extends PreferencePageWithHelp {
         lnkEditTemplate = new Link(postExecuteGroup, SWT.NONE);
         lnkEditTemplate.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
         lnkEditTemplate.setText(String.format("<a>%s</a>", ComposerExecutionMessageConstants.PREF_LNK_EDIT_TEMPLATE));
+    }
+    
+    private void createReportFormatGroup(Composite container) {
+        grpReportFormatOptions = new Group(container, SWT.NONE);
+        grpReportFormatOptions.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        grpReportFormatOptions.setText(ComposerExecutionMessageConstants.PREF_LBL_REPORT_FORMAT);
 
-        btnChkAttachment = new Button(postExecuteGroup, SWT.CHECK);
-        btnChkAttachment.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+        GridLayout reportFormatLayout = new GridLayout(1, true);
+        reportFormatLayout.marginLeft = 0;
+        reportFormatLayout.marginRight = 0;
+        reportFormatLayout.marginHeight = 5;
+        grpReportFormatOptions.setLayout(reportFormatLayout);
+
+        btnChkAttachment = new Button(grpReportFormatOptions, SWT.CHECK);
+        btnChkAttachment.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         btnChkAttachment.setText(ComposerExecutionMessageConstants.PREF_LBL_INCLUDE_ATTACHMENT);
 
-        btnSendTestEmail = new Button(postExecuteGroup, SWT.PUSH);
-        btnSendTestEmail.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 2, 1));
-        btnSendTestEmail.setText(ComposerExecutionMessageConstants.PREF_LBL_SEND_TEST_EMAIL);
+        attachmentOptionsComposite = new Composite(grpReportFormatOptions, SWT.NONE);
+        attachmentOptionsComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));        
+        GridLayout attachmentsLayout = new GridLayout(1, true);        
+        attachmentsLayout.marginLeft = 15;
+        attachmentsLayout.marginRight = 0;
+        attachmentsLayout.marginHeight = 0;
+        attachmentOptionsComposite.setLayout(attachmentsLayout);
 
+        for (ReportFormatType formatType : ReportFormatType.values()) {
+            Button btnFormmatingType = new Button(attachmentOptionsComposite, SWT.CHECK);
+            btnFormmatingType.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+            btnFormmatingType.setText(formatType.toString());
+            btnFormmatingType.setData(formatType);
+            
+            formatOptionCheckboxes.put(formatType, btnFormmatingType);
+        }
     }
+    
+    private void createSendTestEmailButton(Composite parent) {
+        btnSendTestEmail = new Button(parent, SWT.PUSH);
+        btnSendTestEmail.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+        btnSendTestEmail.setText(ComposerExecutionMessageConstants.PREF_LBL_SEND_TEST_EMAIL);
+    }
+    
 
     private void createServerGroup(Composite container) {
         Group serverGroup = createGroup(container, StringConstants.PREF_GROUP_LBL_MAIL_SERVER, 4, 1,

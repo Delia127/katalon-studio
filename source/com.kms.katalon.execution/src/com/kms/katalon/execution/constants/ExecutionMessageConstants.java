@@ -114,6 +114,9 @@ public class ExecutionMessageConstants extends NLS {
     // ConsoleOptionBuilder
     public static String CONSOLE_RUN_CONFIGURATION_NOT_FOUND;
 
+    //MailUtil
+    public static String MSG_EMAIL_ATTACHMENT_EXCEEDS_SIZE;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ExecutionMessageConstants.class);

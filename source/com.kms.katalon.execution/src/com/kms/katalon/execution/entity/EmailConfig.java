@@ -1,9 +1,11 @@
 package com.kms.katalon.execution.entity;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.kms.katalon.core.setting.ReportFormatType;
 import com.kms.katalon.execution.util.MailUtil;
 import com.kms.katalon.execution.util.MailUtil.MailSecurityProtocolType;
 
@@ -34,6 +36,8 @@ public class EmailConfig {
     private String bcc = "";
 
     private boolean sendAttachment = false;
+    
+    private List<ReportFormatType> attachmentOptions;
 
     public void setSendAttachment(boolean sendAttachment) {
         this.sendAttachment = sendAttachment;
@@ -149,5 +153,16 @@ public class EmailConfig {
 
     public void setBcc(String bcc) {
         this.bcc = bcc;
+    }
+
+    public List<ReportFormatType> getAttachmentOptions() {
+        if (attachmentOptions == null) {
+            attachmentOptions = new ArrayList<>();
+        }
+        return attachmentOptions;
+    }
+
+    public void setAttachmentOptions(List<ReportFormatType> attachmentOptions) {
+        this.attachmentOptions = attachmentOptions;
     }
 }

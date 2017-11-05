@@ -35,6 +35,7 @@ import com.kms.katalon.core.logging.model.TestCaseLogRecord;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.core.reporting.ReportUtil;
+import com.kms.katalon.core.setting.ReportFormatType;
 import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.integration.IntegratedType;
 import com.kms.katalon.integration.qtest.constants.QTestMessageConstants;
@@ -56,7 +57,6 @@ import com.kms.katalon.integration.qtest.exception.QTestInvalidFormatException;
 import com.kms.katalon.integration.qtest.exception.QTestUnauthorizedException;
 import com.kms.katalon.integration.qtest.helper.QTestAPIRequestHelper;
 import com.kms.katalon.integration.qtest.setting.QTestAttachmentSendingType;
-import com.kms.katalon.integration.qtest.setting.QTestReportFormatType;
 import com.kms.katalon.integration.qtest.setting.QTestSettingCredential;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 import com.kms.katalon.integration.qtest.util.DateUtil;
@@ -218,15 +218,15 @@ public class QTestIntegrationReportManager {
 
             logTempFolder.mkdirs();
 
-            for (QTestReportFormatType formatType : QTestSettingStore.getFormatReportTypes(projectDir)) {
-                if (formatType == QTestReportFormatType.LOG) {
+            for (ReportFormatType formatType : QTestSettingStore.getFormatReportTypes(projectDir)) {
+                if (formatType == ReportFormatType.LOG) {
                     for (File reportEntry : logFolder.listFiles()) {
                         if (!isValidFileToAttach(reportEntry, projectDir)) {
                             continue;
                         }
-                        QTestReportFormatType format = QTestReportFormatType
+                        ReportFormatType format = ReportFormatType
                                 .getTypeByExtension(FilenameUtils.getExtension(reportEntry.getAbsolutePath()));
-                        if (format == QTestReportFormatType.LOG) {
+                        if (format == ReportFormatType.LOG) {
                             // Extract log for this test case
                             if (!extractTestCaseLog(testSuiteLogRecord, testCaseLogRecord, logTempFolder)) {
                                 moveReportFile(reportEntry, new File(logTempFolder, reportEntry.getName()));
@@ -279,7 +279,7 @@ public class QTestIntegrationReportManager {
         FileUtils.copyFile(sourceReportFile, destReportFile);
     }
 
-    private static void generateReportFile(QTestReportFormatType format, File destReportFile,
+    private static void generateReportFile(ReportFormatType format, File destReportFile,
             TestCaseLogRecord testCaseLogRecord, TestSuiteLogRecord testSuiteLR)
             throws IOException, JasperReportException, URISyntaxException {
         switch (format) {
@@ -305,11 +305,11 @@ public class QTestIntegrationReportManager {
     private static boolean isValidFileToAttach(File file, String projectDir) {
         String fileExt = FilenameUtils.getExtension(file.getAbsolutePath());
         return QTestSettingStore.getFormatReportTypes(projectDir)
-                .contains(QTestReportFormatType.getTypeByExtension(fileExt));
+                .contains(ReportFormatType.getTypeByExtension(fileExt));
     }
 
     private static JsonObject getAttachmentJsonObject(String filePath) throws QTestException, IOException {
-        QTestReportFormatType format = QTestReportFormatType.getTypeByExtension(FilenameUtils.getExtension(filePath));
+        ReportFormatType format = ReportFormatType.getTypeByExtension(FilenameUtils.getExtension(filePath));
         String contentType = "";
         if (format == null) {
             contentType = "application/octet-stream";

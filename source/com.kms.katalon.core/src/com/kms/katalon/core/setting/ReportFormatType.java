@@ -1,11 +1,11 @@
-package com.kms.katalon.integration.qtest.setting;
+package com.kms.katalon.core.setting;
 
-public enum QTestReportFormatType {
+public enum ReportFormatType {
     HTML("HTML file"), CSV("CSV file"), PDF("PDF file"), LOG("Log files");
 
     private final String text;
 
-    private QTestReportFormatType(final String text) {
+    private ReportFormatType(final String text) {
         this.text = text;
     }
 
@@ -28,8 +28,8 @@ public enum QTestReportFormatType {
         return "";
     }
     
-    public static QTestReportFormatType getTypeByExtension(String ext) {
-        for (QTestReportFormatType formatType : values()) {
+    public static ReportFormatType getTypeByExtension(String ext) {
+        for (ReportFormatType formatType : values()) {
             if (formatType.getFileExtension().equalsIgnoreCase(ext)) {
                 return formatType;
             }
