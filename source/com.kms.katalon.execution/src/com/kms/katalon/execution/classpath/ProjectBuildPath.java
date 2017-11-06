@@ -15,6 +15,7 @@ import com.kms.katalon.core.appium.driver.AppiumDriverManager;
 import com.kms.katalon.core.keyword.internal.IKeywordContributor;
 import com.kms.katalon.core.keyword.internal.KeywordContributorCollection;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.selenium.TempClass;
 
 public class ProjectBuildPath {
     private static final String EXTERNAL_DRIVERS_FOLDER = "Drivers";
@@ -74,6 +75,7 @@ public class ProjectBuildPath {
             bundlePaths.add(new BundleBuildPath(FrameworkUtil.getBundle(contributor.getClass())));
         }
         bundlePaths.add(new BundleBuildPath(FrameworkUtil.getBundle(AppiumDriverManager.class)));
+        bundlePaths.add(new BundleBuildPath(FrameworkUtil.getBundle(TempClass.class)));
         return bundlePaths;
     }
     
