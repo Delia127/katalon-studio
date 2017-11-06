@@ -5,12 +5,13 @@ import java.util.Map;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.remote.Response;
 import org.openqa.selenium.safari.SafariDriver;
+import org.openqa.selenium.safari.SafariOptions;
 
 public class CSafariDriver extends SafariDriver implements IDelayableDriver {
     private int actionDelayInMiliseconds;
 
     public CSafariDriver(Capabilities capabilities, int actionDelay) {
-        super(capabilities);
+        super(SafariOptions.fromCapabilities(capabilities));
         this.actionDelayInMiliseconds = actionDelay * 1000;
     }
 

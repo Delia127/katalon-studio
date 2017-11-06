@@ -38,6 +38,11 @@ public class AstCustomKeywordTreeTableNode extends AstAbstractKeywordTreeTableNo
     }
 
     @Override
+    public String getInputTooltipText() {
+        return super.getInputTooltipText();
+    }
+
+    @Override
     public String getItemText() {
         return KeywordController.getInstance().getRawCustomKeywordName(methodCall.getMethodAsString());
     }

@@ -117,7 +117,10 @@
 									<id>org.apache.xmlbeans:xmlbeans:2.6.0</id>
 								</artifact>
 								<artifact>
-									<id>com.google.code.gson:gson:2.3.1</id>
+									<id>com.google:gson:2.8.0</id>
+								</artifact>
+								<artifact>
+									<id>com.google:guava:23.0</id>
 								</artifact>
 								<artifact>
 									<id>wsdl4j:wsdl4j:1.6.2</id>

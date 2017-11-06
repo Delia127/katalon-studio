@@ -2250,6 +2250,14 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
+         
+
+   <plugin
+         id="com.fasterxml.jackson.core.jackson-databind"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
          id="com.fasterxml.jackson.core.jackson-annotations"
@@ -2257,9 +2265,16 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
+         
+	<plugin
+         id="com.google.guava"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
-   <plugin
-         id="com.fasterxml.jackson.core.jackson-databind"
+	<plugin
+         id="org.apache.jasper.glassfish"
          download-size="0"
          install-size="0"
          version="0.0.0"

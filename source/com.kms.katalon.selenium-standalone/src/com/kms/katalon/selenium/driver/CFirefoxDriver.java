@@ -4,13 +4,14 @@ import java.util.Map;
 
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.Response;
 
 public class CFirefoxDriver extends FirefoxDriver implements IDelayableDriver {
     private int actionDelayInMiliseconds;
 
     public CFirefoxDriver(Capabilities capabilities, int actionDelay) {
-        super(capabilities);
+        super(new FirefoxOptions(capabilities));
         this.actionDelayInMiliseconds = actionDelay * 1000;
     }
 
