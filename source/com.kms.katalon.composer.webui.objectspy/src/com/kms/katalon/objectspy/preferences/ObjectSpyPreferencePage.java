@@ -1,7 +1,6 @@
 package com.kms.katalon.objectspy.preferences;
 
 import static com.kms.katalon.objectspy.constants.ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_HK_CAPTURE_OBJECT;
-import static com.kms.katalon.objectspy.constants.ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_HK_LOAD_DOM_MAP;
 import static com.kms.katalon.objectspy.constants.ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_PIN_WINDOW;
 
 import java.io.IOException;
@@ -34,11 +33,11 @@ public class ObjectSpyPreferencePage extends PreferencePageWithHelp {
 
     private ScopedPreferenceStore preferenceStore;
 
-    private Text txtCaptureObject, txtLoadDOMMap;
+    private Text txtCaptureObject;
     
     private Button chckPinWindow;
 
-    private AddonHotKeyConfig hotKeyCaptureObject, hotKeyLoadDomMap;
+    private AddonHotKeyConfig hotKeyCaptureObject;
 
     private List<Integer> acceptTableKeycodes;
 
@@ -94,20 +93,11 @@ public class ObjectSpyPreferencePage extends PreferencePageWithHelp {
 
         txtCaptureObject = new Text(grpHotKeys, SWT.BORDER);
         txtCaptureObject.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-
-        Label lblLoadDOMMap = new Label(grpHotKeys, SWT.NONE);
-        lblLoadDOMMap.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-        lblLoadDOMMap.setText(ObjectspyMessageConstants.PREF_LBL_LOAD_DOM_MAP);
-
-        txtLoadDOMMap = new Text(grpHotKeys, SWT.BORDER);
-        txtLoadDOMMap.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
     }
 
     private void addControlModifyListeners() {
         txtCaptureObject.addKeyListener(
                 new KeyCaptureAdapter(txtCaptureObject, hotKeyCaptureObject, acceptTableKeycodes, this));
-
-        txtLoadDOMMap.addKeyListener(new KeyCaptureAdapter(txtLoadDOMMap, hotKeyLoadDomMap, acceptTableKeycodes, this));
     }
 
     private static class KeyCaptureAdapter extends org.eclipse.swt.events.KeyAdapter {
@@ -157,14 +147,9 @@ public class ObjectSpyPreferencePage extends PreferencePageWithHelp {
         Gson gson = new Gson();
         hotKeyCaptureObject = gson.fromJson(preferenceStore.getString(WEBUI_OBJECTSPY_HK_CAPTURE_OBJECT),
                 AddonHotKeyConfig.class);
-        hotKeyLoadDomMap = gson.fromJson(preferenceStore.getString(WEBUI_OBJECTSPY_HK_LOAD_DOM_MAP),
-                AddonHotKeyConfig.class);
 
         txtCaptureObject.setText(
                 KeyStroke.getInstance(hotKeyCaptureObject.getModifiers(), hotKeyCaptureObject.getKeyCode()).format());
-
-        txtLoadDOMMap.setText(
-                KeyStroke.getInstance(hotKeyLoadDomMap.getModifiers(), hotKeyLoadDomMap.getKeyCode()).format());
         
         chckPinWindow.setSelection(preferenceStore.getBoolean(WEBUI_OBJECTSPY_PIN_WINDOW));
     }
@@ -184,16 +169,9 @@ public class ObjectSpyPreferencePage extends PreferencePageWithHelp {
         if (!isInitialized()) {
             return true;
         }
-        
-        if (hotKeyCaptureObject.equals(hotKeyLoadDomMap)) {
-            setErrorMessage(ObjectspyMessageConstants.ERR_MSG_DUPLICATED_HOTKEYS);
-            return false;
-        }
 
         Gson gson = new Gson();
         preferenceStore.setValue(WEBUI_OBJECTSPY_HK_CAPTURE_OBJECT, gson.toJson(hotKeyCaptureObject));
-
-        preferenceStore.setValue(WEBUI_OBJECTSPY_HK_LOAD_DOM_MAP, gson.toJson(hotKeyLoadDomMap));
         
         preferenceStore.setValue(WEBUI_OBJECTSPY_PIN_WINDOW, chckPinWindow.getSelection());
         
@@ -215,15 +193,10 @@ public class ObjectSpyPreferencePage extends PreferencePageWithHelp {
         Gson gson = new Gson();
         hotKeyCaptureObject = gson.fromJson(preferenceStore.getDefaultString(WEBUI_OBJECTSPY_HK_CAPTURE_OBJECT),
                 AddonHotKeyConfig.class);
-        hotKeyLoadDomMap = gson.fromJson(preferenceStore.getDefaultString(WEBUI_OBJECTSPY_HK_LOAD_DOM_MAP),
-                AddonHotKeyConfig.class);
 
         // set input for Hotkeys group
         txtCaptureObject.setText(
                 KeyStroke.getInstance(hotKeyCaptureObject.getModifiers(), hotKeyCaptureObject.getKeyCode()).format());
-
-        txtLoadDOMMap.setText(
-                KeyStroke.getInstance(hotKeyLoadDomMap.getModifiers(), hotKeyLoadDomMap.getKeyCode()).format());
         
         chckPinWindow.setSelection(preferenceStore.getDefaultBoolean(WEBUI_OBJECTSPY_PIN_WINDOW));
     }
