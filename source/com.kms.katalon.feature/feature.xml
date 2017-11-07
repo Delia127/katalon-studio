@@ -260,7 +260,7 @@
       <import plugin="org.eclipse.jdt.debug.ui" version="3.3.0" match="compatible"/>
       <import plugin="org.eclipse.jdt.junit.runtime" version="3.4.100" match="compatible"/>
       <import plugin="org.eclipse.jdt.junit.core" version="3.6.0" match="compatible"/>
-      <import plugin="org.junit" version="3.8.2" match="greaterOrEqual"/>
+      <import plugin="org.junit" version="4.12.0" match="compatible"/>
       <import plugin="org.eclipse.core.resources" version="3.8.100" match="compatible"/>
       <import plugin="org.eclipse.equinox.simpleconfigurator.manipulator" version="2.0.0" match="compatible"/>
       <import plugin="org.eclipse.equinox.frameworkadmin" version="2.0.0" match="compatible"/>
@@ -1173,7 +1173,7 @@
          id="org.junit"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="4.12.0"/>
 
    <plugin
          id="org.eclipse.update.configurator"
@@ -2250,7 +2250,6 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-         
 
    <plugin
          id="com.fasterxml.jackson.core.jackson-databind"
@@ -2265,16 +2264,30 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-         
-	<plugin
+
+   <plugin
          id="com.google.guava"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
-	<plugin
+   <plugin
          id="org.apache.jasper.glassfish"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.beanshell.bsh"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.ant.launcher"
          download-size="0"
          install-size="0"
          version="0.0.0"
