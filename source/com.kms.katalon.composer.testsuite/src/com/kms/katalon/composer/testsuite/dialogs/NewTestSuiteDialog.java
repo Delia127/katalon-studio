@@ -12,6 +12,7 @@ import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.constants.ExecutionPreferenceConstants;
+import com.kms.katalon.execution.setting.ExecutionDefaultSettingStore;
 
 public class NewTestSuiteDialog extends CommonNewEntityDialog<TestSuiteEntity> {
 
@@ -34,7 +35,7 @@ public class NewTestSuiteDialog extends CommonNewEntityDialog<TestSuiteEntity> {
     protected void setEntityProperties() {
         super.setEntityProperties();
         IPreferenceStore store = getPreferenceStore(ExecutionPreferenceConstants.EXECUTION_QUALIFIER);
-        entity.setPageLoadTimeout((short) store.getInt(ExecutionPreferenceConstants.EXECUTION_DEFAULT_TIMEOUT));
+        entity.setPageLoadTimeout((short) ExecutionDefaultSettingStore.getStore().getElementTimeout());
         entity.setMailRecipient(store.getString(ExecutionPreferenceConstants.MAIL_CONFIG_REPORT_RECIPIENTS));
     }
 
