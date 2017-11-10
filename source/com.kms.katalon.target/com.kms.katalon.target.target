@@ -155,9 +155,9 @@
 <plugin id="com.google.inject.multibindings"/>
 <plugin id="com.google.oauth-client.google-oauth-client"/>
 <plugin id="com.googlecode.json-simple"/>
-<plugin id="com.gradleware.tooling.client" version="0.16.0.v20160831165132"/>
-<plugin id="com.gradleware.tooling.model" version="0.16.0.v20160831165132"/>
-<plugin id="com.gradleware.tooling.utils" version="0.16.0.v20160831165132"/>
+<plugin id="com.gradleware.tooling.client"/>
+<plugin id="com.gradleware.tooling.model"/>
+<plugin id="com.gradleware.tooling.utils"/>
 <plugin id="com.ibm.icu"/>
 <plugin id="com.ibm.icu.source"/>
 <plugin id="com.jcraft.jsch" version="0.1.53.v201508180515"/>
@@ -191,14 +191,14 @@
 <plugin id="javax.naming.jndi"/>
 <plugin id="javax.persistence"/>
 <plugin id="javax.persistence.api"/>
-<plugin id="javax.servlet" version="3.1.0.v201410161800"/>
 <plugin id="javax.servlet" version="3.0.0.v201112011016"/>
+<plugin id="javax.servlet" version="3.1.0.v201410161800"/>
 <plugin id="javax.servlet-api"/>
 <plugin id="javax.servlet.jsp"/>
 <plugin id="javax.servlet.jsp.source"/>
 <plugin id="javax.servlet.source"/>
-<plugin id="javax.websocket-api" version="1.1.0.201606171313"/>
-<plugin id="javax.websocket-api" version="1.0"/>
+<plugin id="javax.websocket-api"/>
+<plugin id="javax.websocket-api"/>
 <plugin id="javax.ws.rs"/>
 <plugin id="javax.xml"/>
 <plugin id="javax.xml.jaxp-api"/>
@@ -223,21 +223,21 @@
 <plugin id="org.apache.commons.beanutils"/>
 <plugin id="org.apache.commons.cli"/>
 <plugin id="org.apache.commons.codec" version="1.7.0"/>
-<plugin id="org.apache.commons.collections" version="3.2.2"/>
-<plugin id="org.apache.commons.collections" version="3.2.2.v201511171945"/>
+<plugin id="org.apache.commons.collections"/>
+<plugin id="org.apache.commons.collections"/>
 <plugin id="org.apache.commons.compress"/>
 <plugin id="org.apache.commons.dbutils"/>
 <plugin id="org.apache.commons.digester"/>
 <plugin id="org.apache.commons.email"/>
-<plugin id="org.apache.commons.io" version="2.4.0"/>
 <plugin id="org.apache.commons.io" version="2.2.0.v201405211200"/>
+<plugin id="org.apache.commons.io" version="2.4.0"/>
 <plugin id="org.apache.commons.jxpath"/>
 <plugin id="org.apache.commons.jxpath.source"/>
-<plugin id="org.apache.commons.lang" version="2.6"/>
 <plugin id="org.apache.commons.lang" version="2.6.0.v201404270220"/>
+<plugin id="org.apache.commons.lang" version="2.6"/>
 <plugin id="org.apache.commons.lang3" version="3.1.0.v201403281430"/>
-<plugin id="org.apache.commons.logging" version="1.1.1.v201101211721"/>
 <plugin id="org.apache.commons.logging" version="1.2.0"/>
+<plugin id="org.apache.commons.logging" version="1.1.1.v201101211721"/>
 <plugin id="org.apache.commons.logging.source"/>
 <plugin id="org.apache.commons.math"/>
 <plugin id="org.apache.commons.pool"/>
@@ -273,30 +273,30 @@
 <plugin id="org.apache.xmlbeans"/>
 <plugin id="org.apache.xmlrpc"/>
 <plugin id="org.beanshell.bsh"/>
-<plugin id="org.codehaus.groovy" version="2.1.9.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy" version="2.4.7.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy" version="2.3.11.xx-201611170128-e46"/>
+<plugin id="org.codehaus.groovy" version="1.8.9.xx-201611170128-e46"/>
+<plugin id="org.codehaus.groovy" version="2.1.9.xx-201611170128-e46"/>
+<plugin id="org.codehaus.groovy" version="2.0.8.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy" version="2.4.3.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy" version="2.3.10.xx-201608111517-e46"/>
-<plugin id="org.codehaus.groovy" version="2.0.8.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy" version="2.2.2.xx-201611170128-e46"/>
-<plugin id="org.codehaus.groovy" version="1.8.9.xx-201611170128-e46"/>
-<plugin id="org.codehaus.groovy.eclipse" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse" version="2.9.2.xx-201608111517-e46"/>
-<plugin id="org.codehaus.groovy.eclipse.ant" version="2.9.2.xx-201608111517-e46"/>
+<plugin id="org.codehaus.groovy.eclipse" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.ant" version="2.9.2.xx-201611170128-e46"/>
-<plugin id="org.codehaus.groovy.eclipse.astviews" version="2.9.2.xx-201611170128-e46"/>
+<plugin id="org.codehaus.groovy.eclipse.ant" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.astviews" version="2.9.2.xx-201608111517-e46"/>
-<plugin id="org.codehaus.groovy.eclipse.codeassist.completion" version="2.9.2.xx-201608111517-e46"/>
+<plugin id="org.codehaus.groovy.eclipse.astviews" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.codeassist.completion" version="2.9.2.xx-201611170128-e46"/>
+<plugin id="org.codehaus.groovy.eclipse.codeassist.completion" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.codebrowsing" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.codebrowsing" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.compilerResolver" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.compilerResolver" version="2.9.2.xx-201608111517-e46"/>
-<plugin id="org.codehaus.groovy.eclipse.core" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.core" version="2.9.2.xx-201611170128-e46"/>
-<plugin id="org.codehaus.groovy.eclipse.dsl" version="2.9.2.xx-201608111517-e46"/>
+<plugin id="org.codehaus.groovy.eclipse.core" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.dsl" version="2.9.2.xx-201611170128-e46"/>
+<plugin id="org.codehaus.groovy.eclipse.dsl" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.quickfix" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.quickfix" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.refactoring" version="2.9.2.xx-201608111517-e46"/>
@@ -317,10 +317,10 @@
 <plugin id="org.eclipse.ant.core.source"/>
 <plugin id="org.eclipse.ant.launching"/>
 <plugin id="org.eclipse.ant.ui"/>
-<plugin id="org.eclipse.buildship.branding" version="1.0.21.v20161010-1640"/>
-<plugin id="org.eclipse.buildship.core" version="1.0.21.v20161010-1640"/>
-<plugin id="org.eclipse.buildship.stsmigration" version="1.0.21.v20161010-1640"/>
-<plugin id="org.eclipse.buildship.ui" version="1.0.21.v20161010-1640"/>
+<plugin id="org.eclipse.buildship.branding"/>
+<plugin id="org.eclipse.buildship.core"/>
+<plugin id="org.eclipse.buildship.stsmigration"/>
+<plugin id="org.eclipse.buildship.ui"/>
 <plugin id="org.eclipse.compare"/>
 <plugin id="org.eclipse.compare.core"/>
 <plugin id="org.eclipse.compare.core.source"/>
@@ -380,10 +380,10 @@
 <plugin id="org.eclipse.e4.emf.xpath"/>
 <plugin id="org.eclipse.e4.emf.xpath.source"/>
 <plugin id="org.eclipse.e4.tools"/>
-<plugin id="org.eclipse.e4.tools.bundle.spy" version="0.18.0.v20170601-1400"/>
+<plugin id="org.eclipse.e4.tools.bundle.spy"/>
 <plugin id="org.eclipse.e4.tools.compat"/>
-<plugin id="org.eclipse.e4.tools.context.spy" version="0.17.0.v20170601-1400"/>
-<plugin id="org.eclipse.e4.tools.css.spy" version="0.18.0.v20170601-1400"/>
+<plugin id="org.eclipse.e4.tools.context.spy"/>
+<plugin id="org.eclipse.e4.tools.css.spy"/>
 <plugin id="org.eclipse.e4.tools.emf.editor3x"/>
 <plugin id="org.eclipse.e4.tools.emf.ui"/>
 <plugin id="org.eclipse.e4.tools.event.spy"/>
@@ -391,7 +391,7 @@
 <plugin id="org.eclipse.e4.tools.model.spy"/>
 <plugin id="org.eclipse.e4.tools.preference.spy"/>
 <plugin id="org.eclipse.e4.tools.services"/>
-<plugin id="org.eclipse.e4.tools.spy" version="0.18.0.v20170601-0901"/>
+<plugin id="org.eclipse.e4.tools.spy"/>
 <plugin id="org.eclipse.e4.ui.bindings"/>
 <plugin id="org.eclipse.e4.ui.bindings.source"/>
 <plugin id="org.eclipse.e4.ui.css.core"/>
@@ -414,6 +414,7 @@
 <plugin id="org.eclipse.e4.ui.workbench.addons.swt"/>
 <plugin id="org.eclipse.e4.ui.workbench.addons.swt.source"/>
 <plugin id="org.eclipse.e4.ui.workbench.renderers.swt"/>
+<plugin id="org.eclipse.e4.ui.workbench.renderers.swt.cocoa"/>
 <plugin id="org.eclipse.e4.ui.workbench.renderers.swt.source"/>
 <plugin id="org.eclipse.e4.ui.workbench.source"/>
 <plugin id="org.eclipse.e4.ui.workbench.swt"/>
@@ -570,15 +571,15 @@
 <plugin id="org.eclipse.help.webapp"/>
 <plugin id="org.eclipse.help.webapp.source"/>
 <plugin id="org.eclipse.jdt"/>
-<plugin id="org.eclipse.jdt.annotation" version="1.1.100.v20160418-1457"/>
 <plugin id="org.eclipse.jdt.annotation" version="2.1.0.v20160418-1457"/>
+<plugin id="org.eclipse.jdt.annotation" version="1.1.100.v20160418-1457"/>
 <plugin id="org.eclipse.jdt.apt.core"/>
 <plugin id="org.eclipse.jdt.apt.pluggable.core"/>
 <plugin id="org.eclipse.jdt.apt.ui"/>
 <plugin id="org.eclipse.jdt.compiler.apt"/>
 <plugin id="org.eclipse.jdt.compiler.tool"/>
-<plugin id="org.eclipse.jdt.core" version="3.12.0.xx-201608111517-e46"/>
 <plugin id="org.eclipse.jdt.core" version="3.12.0.xx-201611170128-e46"/>
+<plugin id="org.eclipse.jdt.core" version="3.12.0.xx-201608111517-e46"/>
 <plugin id="org.eclipse.jdt.core.manipulation"/>
 <plugin id="org.eclipse.jdt.debug"/>
 <plugin id="org.eclipse.jdt.debug.ui"/>
@@ -637,7 +638,7 @@
 <plugin id="org.eclipse.jsch.core.source"/>
 <plugin id="org.eclipse.jsch.ui"/>
 <plugin id="org.eclipse.jsch.ui.source"/>
-<plugin id="org.eclipse.json" version="1.0.1.v201612232230"/>
+<plugin id="org.eclipse.json"/>
 <plugin id="org.eclipse.ltk.core.refactoring"/>
 <plugin id="org.eclipse.ltk.core.refactoring.source"/>
 <plugin id="org.eclipse.ltk.ui.refactoring"/>
@@ -670,14 +671,14 @@
 <plugin id="org.eclipse.mylyn.builds.core"/>
 <plugin id="org.eclipse.mylyn.builds.ui"/>
 <plugin id="org.eclipse.mylyn.commons.core"/>
-<plugin id="org.eclipse.mylyn.commons.identity.core" version="1.13.0.v20160630-1702"/>
-<plugin id="org.eclipse.mylyn.commons.net" version="3.21.0.v20160630-1702"/>
+<plugin id="org.eclipse.mylyn.commons.identity.core"/>
+<plugin id="org.eclipse.mylyn.commons.net"/>
 <plugin id="org.eclipse.mylyn.commons.notifications.core"/>
 <plugin id="org.eclipse.mylyn.commons.notifications.feed"/>
 <plugin id="org.eclipse.mylyn.commons.notifications.ui"/>
-<plugin id="org.eclipse.mylyn.commons.repositories.core" version="1.13.0.v20160630-1702"/>
+<plugin id="org.eclipse.mylyn.commons.repositories.core"/>
 <plugin id="org.eclipse.mylyn.commons.repositories.http.core"/>
-<plugin id="org.eclipse.mylyn.commons.repositories.ui" version="1.13.0.v20160630-1702"/>
+<plugin id="org.eclipse.mylyn.commons.repositories.ui"/>
 <plugin id="org.eclipse.mylyn.commons.screenshots"/>
 <plugin id="org.eclipse.mylyn.commons.ui"/>
 <plugin id="org.eclipse.mylyn.commons.workbench"/>
@@ -686,8 +687,8 @@
 <plugin id="org.eclipse.mylyn.context.tasks.ui"/>
 <plugin id="org.eclipse.mylyn.context.ui"/>
 <plugin id="org.eclipse.mylyn.debug.ui"/>
-<plugin id="org.eclipse.mylyn.discovery.core" version="3.21.0.v20160729-1739"/>
-<plugin id="org.eclipse.mylyn.discovery.ui" version="3.21.0.v20160630-1702"/>
+<plugin id="org.eclipse.mylyn.discovery.core"/>
+<plugin id="org.eclipse.mylyn.discovery.ui"/>
 <plugin id="org.eclipse.mylyn.gerrit.core"/>
 <plugin id="org.eclipse.mylyn.gerrit.ui"/>
 <plugin id="org.eclipse.mylyn.git.core"/>
@@ -699,8 +700,8 @@
 <plugin id="org.eclipse.mylyn.ide.ui"/>
 <plugin id="org.eclipse.mylyn.java.tasks"/>
 <plugin id="org.eclipse.mylyn.java.ui"/>
-<plugin id="org.eclipse.mylyn.monitor.core" version="3.21.0.v20160630-1702"/>
-<plugin id="org.eclipse.mylyn.monitor.ui" version="3.21.0.v20160630-1702"/>
+<plugin id="org.eclipse.mylyn.monitor.core"/>
+<plugin id="org.eclipse.mylyn.monitor.ui"/>
 <plugin id="org.eclipse.mylyn.pde.ui"/>
 <plugin id="org.eclipse.mylyn.resources.ui"/>
 <plugin id="org.eclipse.mylyn.reviews.core"/>
@@ -810,52 +811,53 @@
 <plugin id="org.eclipse.rap.tools.templates"/>
 <plugin id="org.eclipse.rap.tools.templates.source"/>
 <plugin id="org.eclipse.rcp"/>
-<plugin id="org.eclipse.recommenders.apidocs" version="2.4.6.v20170307-1041"/>
-<plugin id="org.eclipse.recommenders.apidocs.rcp" version="2.4.6.v20170307-1041"/>
-<plugin id="org.eclipse.recommenders.calls" version="2.4.6.v20170307-1041"/>
-<plugin id="org.eclipse.recommenders.calls.rcp" version="2.4.6.v20170307-1041"/>
-<plugin id="org.eclipse.recommenders.chain.rcp" version="2.4.6.v20170307-1041"/>
-<plugin id="org.eclipse.recommenders.completion.rcp" version="2.4.6.v20170307-1041"/>
-<plugin id="org.eclipse.recommenders.constructors" version="2.4.6.v20170307-1041"/>
-<plugin id="org.eclipse.recommenders.constructors.rcp" version="2.4.6.v20170307-1041"/>
-<plugin id="org.eclipse.recommenders.coordinates" version="2.4.6.v20170307-1041"/>
-<plugin id="org.eclipse.recommenders.coordinates.rcp" version="2.4.6.v20170307-1041"/>
-<plugin id="org.eclipse.recommenders.injection" version="2.4.6.v20170307-1041"/>
-<plugin id="org.eclipse.recommenders.jayes" version="2.4.6.v20170307-1041"/>
-<plugin id="org.eclipse.recommenders.jayes.io" version="2.4.6.v20170307-1041"/>
-<plugin id="org.eclipse.recommenders.jdt" version="2.4.6.v20170307-1041"/>
-<plugin id="org.eclipse.recommenders.models" version="2.4.6.v20170307-1041"/>
-<plugin id="org.eclipse.recommenders.models.rcp" version="2.4.6.v20170307-1041"/>
-<plugin id="org.eclipse.recommenders.mylyn.rcp" version="2.4.6.v20170307-1041"/>
-<plugin id="org.eclipse.recommenders.net" version="2.4.6.v20170307-1041"/>
-<plugin id="org.eclipse.recommenders.overrides" version="2.4.6.v20170307-1041"/>
-<plugin id="org.eclipse.recommenders.overrides.rcp" version="2.4.6.v20170307-1041"/>
-<plugin id="org.eclipse.recommenders.rcp" version="2.4.6.v20170307-1041"/>
-<plugin id="org.eclipse.recommenders.snipmatch" version="2.4.6.v20170307-1041"/>
-<plugin id="org.eclipse.recommenders.snipmatch.rcp" version="2.4.6.v20170307-1041"/>
-<plugin id="org.eclipse.recommenders.subwords.rcp" version="2.4.6.v20170307-1041"/>
-<plugin id="org.eclipse.recommenders.types.rcp" version="2.4.6.v20170307-1041"/>
-<plugin id="org.eclipse.recommenders.utils" version="2.4.6.v20170307-1041"/>
-<plugin id="org.eclipse.recommenders.utils.rcp" version="2.4.6.v20170307-1041"/>
+<plugin id="org.eclipse.recommenders.apidocs"/>
+<plugin id="org.eclipse.recommenders.apidocs.rcp"/>
+<plugin id="org.eclipse.recommenders.calls"/>
+<plugin id="org.eclipse.recommenders.calls.rcp"/>
+<plugin id="org.eclipse.recommenders.chain.rcp"/>
+<plugin id="org.eclipse.recommenders.completion.rcp"/>
+<plugin id="org.eclipse.recommenders.constructors"/>
+<plugin id="org.eclipse.recommenders.constructors.rcp"/>
+<plugin id="org.eclipse.recommenders.coordinates"/>
+<plugin id="org.eclipse.recommenders.coordinates.rcp"/>
+<plugin id="org.eclipse.recommenders.injection"/>
+<plugin id="org.eclipse.recommenders.jayes"/>
+<plugin id="org.eclipse.recommenders.jayes.io"/>
+<plugin id="org.eclipse.recommenders.jdt"/>
+<plugin id="org.eclipse.recommenders.models"/>
+<plugin id="org.eclipse.recommenders.models.rcp"/>
+<plugin id="org.eclipse.recommenders.mylyn.rcp"/>
+<plugin id="org.eclipse.recommenders.net"/>
+<plugin id="org.eclipse.recommenders.overrides"/>
+<plugin id="org.eclipse.recommenders.overrides.rcp"/>
+<plugin id="org.eclipse.recommenders.rcp"/>
+<plugin id="org.eclipse.recommenders.snipmatch"/>
+<plugin id="org.eclipse.recommenders.snipmatch.rcp"/>
+<plugin id="org.eclipse.recommenders.subwords.rcp"/>
+<plugin id="org.eclipse.recommenders.types.rcp"/>
+<plugin id="org.eclipse.recommenders.utils"/>
+<plugin id="org.eclipse.recommenders.utils.rcp"/>
 <plugin id="org.eclipse.search"/>
 <plugin id="org.eclipse.search.source"/>
 <plugin id="org.eclipse.swt"/>
+<plugin id="org.eclipse.swt.cocoa.macosx.x86_64"/>
 <plugin id="org.eclipse.swt.win32.win32.x86_64"/>
 <plugin id="org.eclipse.swt.win32.win32.x86_64.source"/>
-<plugin id="org.eclipse.swtbot.e4.finder" version="2.5.0.201609021837"/>
-<plugin id="org.eclipse.swtbot.eclipse.core" version="2.5.0.201609021837"/>
-<plugin id="org.eclipse.swtbot.eclipse.finder" version="2.5.0.201609021837"/>
-<plugin id="org.eclipse.swtbot.eclipse.gef.finder" version="2.5.0.201609021837"/>
-<plugin id="org.eclipse.swtbot.eclipse.spy" version="2.5.0.201609021837"/>
-<plugin id="org.eclipse.swtbot.eclipse.ui" version="2.5.0.201609021837"/>
-<plugin id="org.eclipse.swtbot.forms.finder" version="2.5.0.201609021837"/>
-<plugin id="org.eclipse.swtbot.generator" version="2.5.0.201609021837"/>
-<plugin id="org.eclipse.swtbot.generator.jdt" version="2.5.0.201609021837"/>
-<plugin id="org.eclipse.swtbot.generator.rules.workbench" version="2.5.0.201609021837"/>
-<plugin id="org.eclipse.swtbot.generator.ui" version="2.5.0.201609021837"/>
-<plugin id="org.eclipse.swtbot.go" version="2.5.0.201609021837"/>
-<plugin id="org.eclipse.swtbot.junit4_x" version="2.5.0.201609021837"/>
-<plugin id="org.eclipse.swtbot.swt.finder" version="2.5.0.201609021837"/>
+<plugin id="org.eclipse.swtbot.e4.finder"/>
+<plugin id="org.eclipse.swtbot.eclipse.core"/>
+<plugin id="org.eclipse.swtbot.eclipse.finder"/>
+<plugin id="org.eclipse.swtbot.eclipse.gef.finder"/>
+<plugin id="org.eclipse.swtbot.eclipse.spy"/>
+<plugin id="org.eclipse.swtbot.eclipse.ui"/>
+<plugin id="org.eclipse.swtbot.forms.finder"/>
+<plugin id="org.eclipse.swtbot.generator"/>
+<plugin id="org.eclipse.swtbot.generator.jdt"/>
+<plugin id="org.eclipse.swtbot.generator.rules.workbench"/>
+<plugin id="org.eclipse.swtbot.generator.ui"/>
+<plugin id="org.eclipse.swtbot.go"/>
+<plugin id="org.eclipse.swtbot.junit4_x"/>
+<plugin id="org.eclipse.swtbot.swt.finder"/>
 <plugin id="org.eclipse.team.core"/>
 <plugin id="org.eclipse.team.core.source"/>
 <plugin id="org.eclipse.team.ui"/>
@@ -947,13 +949,13 @@
 <plugin id="org.eclipse.wb.swt.widgets.baseline"/>
 <plugin id="org.eclipse.wb.xwt"/>
 <plugin id="org.eclipse.wst.common.core"/>
-<plugin id="org.eclipse.wst.common.emf" version="1.2.500.v201701191735"/>
+<plugin id="org.eclipse.wst.common.emf"/>
 <plugin id="org.eclipse.wst.common.emfworkbench.integration"/>
 <plugin id="org.eclipse.wst.common.environment"/>
 <plugin id="org.eclipse.wst.common.frameworks"/>
 <plugin id="org.eclipse.wst.common.frameworks.ui"/>
 <plugin id="org.eclipse.wst.common.infopop"/>
-<plugin id="org.eclipse.wst.common.modulecore" version="1.2.500.v201701032135"/>
+<plugin id="org.eclipse.wst.common.modulecore"/>
 <plugin id="org.eclipse.wst.common.modulecore.ui"/>
 <plugin id="org.eclipse.wst.common.project.facet.core"/>
 <plugin id="org.eclipse.wst.common.project.facet.ui"/>
@@ -961,58 +963,58 @@
 <plugin id="org.eclipse.wst.common.ui"/>
 <plugin id="org.eclipse.wst.common.uriresolver"/>
 <plugin id="org.eclipse.wst.css.core"/>
-<plugin id="org.eclipse.wst.css.ui" version="1.0.1001.v201608060346"/>
+<plugin id="org.eclipse.wst.css.ui"/>
 <plugin id="org.eclipse.wst.doc.user"/>
 <plugin id="org.eclipse.wst.dtd.core"/>
 <plugin id="org.eclipse.wst.dtd.ui"/>
 <plugin id="org.eclipse.wst.dtd.ui.infopop"/>
 <plugin id="org.eclipse.wst.dtdeditor.doc.user"/>
-<plugin id="org.eclipse.wst.html.core" version="1.2.1.v201608061844"/>
-<plugin id="org.eclipse.wst.html.ui" version="1.0.1101.v201608060430"/>
+<plugin id="org.eclipse.wst.html.core"/>
+<plugin id="org.eclipse.wst.html.ui"/>
 <plugin id="org.eclipse.wst.html.ui.infopop"/>
 <plugin id="org.eclipse.wst.internet.cache"/>
 <plugin id="org.eclipse.wst.internet.monitor.core"/>
 <plugin id="org.eclipse.wst.internet.monitor.ui"/>
-<plugin id="org.eclipse.wst.jsdt.core" version="2.0.200.v201612211424"/>
-<plugin id="org.eclipse.wst.jsdt.debug.core" version="3.2.200.v201610211901"/>
+<plugin id="org.eclipse.wst.jsdt.core"/>
+<plugin id="org.eclipse.wst.jsdt.debug.core"/>
 <plugin id="org.eclipse.wst.jsdt.debug.crossfire"/>
 <plugin id="org.eclipse.wst.jsdt.debug.rhino"/>
 <plugin id="org.eclipse.wst.jsdt.debug.rhino.debugger"/>
 <plugin id="org.eclipse.wst.jsdt.debug.transport"/>
 <plugin id="org.eclipse.wst.jsdt.debug.ui"/>
-<plugin id="org.eclipse.wst.jsdt.doc" version="2.0.200.v201610220243"/>
-<plugin id="org.eclipse.wst.jsdt.js.bower" version="1.0.200.v201610220243"/>
+<plugin id="org.eclipse.wst.jsdt.doc"/>
+<plugin id="org.eclipse.wst.jsdt.js.bower"/>
 <plugin id="org.eclipse.wst.jsdt.js.cli"/>
-<plugin id="org.eclipse.wst.jsdt.js.common" version="1.0.200.v201610211901"/>
-<plugin id="org.eclipse.wst.jsdt.js.grunt" version="1.0.200.v201610211901"/>
-<plugin id="org.eclipse.wst.jsdt.js.gulp" version="1.0.200.v201610211901"/>
-<plugin id="org.eclipse.wst.jsdt.js.node" version="1.0.200.v201610211901"/>
+<plugin id="org.eclipse.wst.jsdt.js.common"/>
+<plugin id="org.eclipse.wst.jsdt.js.grunt"/>
+<plugin id="org.eclipse.wst.jsdt.js.gulp"/>
+<plugin id="org.eclipse.wst.jsdt.js.node"/>
 <plugin id="org.eclipse.wst.jsdt.js.node.common"/>
-<plugin id="org.eclipse.wst.jsdt.js.npm" version="1.0.200.v201610211901"/>
+<plugin id="org.eclipse.wst.jsdt.js.npm"/>
 <plugin id="org.eclipse.wst.jsdt.manipulation"/>
-<plugin id="org.eclipse.wst.jsdt.nashorn.extension" version="1.0.2.v201610280128"/>
+<plugin id="org.eclipse.wst.jsdt.nashorn.extension"/>
 <plugin id="org.eclipse.wst.jsdt.support.firefox"/>
 <plugin id="org.eclipse.wst.jsdt.support.ie"/>
-<plugin id="org.eclipse.wst.jsdt.ui" version="2.0.200.v201612151739"/>
+<plugin id="org.eclipse.wst.jsdt.ui"/>
 <plugin id="org.eclipse.wst.jsdt.web.core"/>
 <plugin id="org.eclipse.wst.jsdt.web.ui"/>
 <plugin id="org.eclipse.wst.json.bower.core"/>
 <plugin id="org.eclipse.wst.json.bower.ui"/>
-<plugin id="org.eclipse.wst.json.core" version="1.0.2.v201612232230"/>
+<plugin id="org.eclipse.wst.json.core"/>
 <plugin id="org.eclipse.wst.json.eslint.core"/>
 <plugin id="org.eclipse.wst.json.eslint.ui"/>
 <plugin id="org.eclipse.wst.json.jshint.core"/>
 <plugin id="org.eclipse.wst.json.jshint.ui"/>
 <plugin id="org.eclipse.wst.json.npm.core"/>
 <plugin id="org.eclipse.wst.json.npm.ui"/>
-<plugin id="org.eclipse.wst.json.schemaprocessor" version="1.0.100.v201612232230"/>
-<plugin id="org.eclipse.wst.json.ui" version="1.0.1.v201612232230"/>
-<plugin id="org.eclipse.wst.server.core" version="1.9.0.v201610211907"/>
+<plugin id="org.eclipse.wst.json.schemaprocessor"/>
+<plugin id="org.eclipse.wst.json.ui"/>
+<plugin id="org.eclipse.wst.server.core"/>
 <plugin id="org.eclipse.wst.server.discovery"/>
-<plugin id="org.eclipse.wst.server.ui" version="1.5.307.v201611072017"/>
+<plugin id="org.eclipse.wst.server.ui"/>
 <plugin id="org.eclipse.wst.server.ui.doc.user"/>
 <plugin id="org.eclipse.wst.server.ui.infopop"/>
-<plugin id="org.eclipse.wst.sse.core" version="1.1.1000.v201608061842"/>
+<plugin id="org.eclipse.wst.sse.core"/>
 <plugin id="org.eclipse.wst.sse.doc.user"/>
 <plugin id="org.eclipse.wst.sse.ui"/>
 <plugin id="org.eclipse.wst.sse.ui.infopop"/>
@@ -1024,7 +1026,7 @@
 <plugin id="org.eclipse.wst.web.ui"/>
 <plugin id="org.eclipse.wst.web.ui.infopop"/>
 <plugin id="org.eclipse.wst.webtools.doc.user"/>
-<plugin id="org.eclipse.wst.xml.core" version="1.1.1001.v201702270442"/>
+<plugin id="org.eclipse.wst.xml.core"/>
 <plugin id="org.eclipse.wst.xml.ui"/>
 <plugin id="org.eclipse.wst.xml.ui.infopop"/>
 <plugin id="org.eclipse.wst.xmleditor.doc.user"/>
@@ -1034,7 +1036,7 @@
 <plugin id="org.eclipse.xsd"/>
 <plugin id="org.eclipse.xsd.edit"/>
 <plugin id="org.everit.osgi.bundles.javax.sql"/>
-<plugin id="org.gradle.toolingapi" version="2.14.1.v20160831165132"/>
+<plugin id="org.gradle.toolingapi"/>
 <plugin id="org.hamcrest.core"/>
 <plugin id="org.hamcrest.library"/>
 <plugin id="org.hibernate.common.hibernate-commons-annotations"/>
@@ -1051,12 +1053,12 @@
 <plugin id="org.junit" version="4.12.0"/>
 <plugin id="org.kohsuke.args4j"/>
 <plugin id="org.mozilla.javascript"/>
-<plugin id="org.objectweb.asm" version="5.0.1.v201404251740"/>
 <plugin id="org.objectweb.asm" version="5.0.1"/>
+<plugin id="org.objectweb.asm" version="5.0.1.v201404251740"/>
 <plugin id="org.objectweb.asm.all.debug"/>
 <plugin id="org.objectweb.asm.commons"/>
-<plugin id="org.objectweb.asm.tree" version="5.0.1"/>
 <plugin id="org.objectweb.asm.tree" version="5.0.1.v201404251740"/>
+<plugin id="org.objectweb.asm.tree" version="5.0.1"/>
 <plugin id="org.postgresql.jdbc41"/>
 <plugin id="org.qas.qtest.sdk-java"/>
 <plugin id="org.sat4j.core"/>
