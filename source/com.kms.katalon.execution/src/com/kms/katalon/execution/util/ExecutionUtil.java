@@ -1,7 +1,5 @@
 package com.kms.katalon.execution.util;
 
-import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -36,15 +34,14 @@ import com.kms.katalon.execution.configuration.IDriverConnector;
 import com.kms.katalon.execution.configuration.IExecutionSetting;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
-import com.kms.katalon.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.execution.entity.DefaultRerunSetting;
 import com.kms.katalon.execution.entity.IExecutedEntity;
 import com.kms.katalon.execution.entity.TestCaseExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.launcher.result.ILauncherResult;
+import com.kms.katalon.execution.setting.ExecutionDefaultSettingStore;
 import com.kms.katalon.groovy.util.GroovyStringUtil;
 import com.kms.katalon.logging.LogUtil;
-import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class ExecutionUtil {
     private static final String BIT = "bit";
@@ -75,13 +72,12 @@ public class ExecutionUtil {
         return System.getProperty(OS_NAME_PROPERTY) + " " + System.getProperty(OS_ARCHITECTURE_PROPERTY) + BIT;
     }
 
-    private static ScopedPreferenceStore getStore() {
-        return getPreferenceStore(ExecutionPreferenceConstants.EXECUTION_QUALIFIER);
+    private static ExecutionDefaultSettingStore getStore() {
+        return ExecutionDefaultSettingStore.getStore();
     }
 
     public static IRunConfigurationContributor getDefaultExecutionConfiguration() {
-        String selectedRunConfiguration = getStore()
-                .getString(ExecutionPreferenceConstants.EXECUTION_DEFAULT_CONFIGURATION);
+        String selectedRunConfiguration = getStore().getExecutionConfiguration();
         IRunConfigurationContributor[] allBuiltinRunConfigurationContributor = RunConfigurationCollector.getInstance()
                 .getAllBuiltinRunConfigurationContributors();
         for (IRunConfigurationContributor runConfigurationContributor : allBuiltinRunConfigurationContributor) {
@@ -93,19 +89,19 @@ public class ExecutionUtil {
     }
 
     public static int getDefaultImplicitTimeout() {
-        return getStore().getInt(ExecutionPreferenceConstants.EXECUTION_DEFAULT_TIMEOUT);
+        return getStore().getElementTimeout();
     }
 
     public static boolean openReportAfterExecuting() {
-        return getStore().getBoolean(ExecutionPreferenceConstants.EXECUTION_OPEN_REPORT_AFTER_EXECUTING);
+        return getStore().isPostExecOpenReport();
     }
 
     public static boolean isQuitDriversAfterExecutingTestCase() {
-        return getStore().getBoolean(ExecutionPreferenceConstants.EXECUTION_QUIT_DRIVERS_AFTER_EXECUTING_TEST_CASE);
+        return getStore().isPostTestCaseExecQuitDriver();
     }
 
     public static boolean isQuitDriversAfterExecutingTestSuite() {
-        return getStore().getBoolean(ExecutionPreferenceConstants.EXECUTION_QUIT_DRIVERS_AFTER_EXECUTING_TEST_SUITE);
+        return getStore().isPostTestSuiteExecQuitDriver();
     }
 
     public static Map<String, Object> escapeGroovy(Map<String, Object> propertiesMap) {
@@ -267,10 +263,10 @@ public class ExecutionUtil {
 
     public static ReportEntity newReportEntity(String id, TestSuiteExecutedEntity executedEntity) {
         try {
-            TestSuiteEntity testSuite = TestSuiteController.getInstance().getTestSuiteByDisplayId(executedEntity.getSourceId(),
-                    ProjectController.getInstance().getCurrentProject());
+            TestSuiteEntity testSuite = TestSuiteController.getInstance().getTestSuiteByDisplayId(
+                    executedEntity.getSourceId(), ProjectController.getInstance().getCurrentProject());
             ReportEntity report = ReportController.getInstance().getReportEntity(testSuite, id);
-            
+
             List<ReportTestCaseEntity> reportTestCases = new ArrayList<>();
             executedEntity.getExecutedItems().forEach(item -> {
                 TestCaseExecutedEntity testCaseExecuted = (TestCaseExecutedEntity) item;

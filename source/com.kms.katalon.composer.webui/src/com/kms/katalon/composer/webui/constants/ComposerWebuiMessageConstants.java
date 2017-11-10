@@ -33,6 +33,8 @@ public class ComposerWebuiMessageConstants extends NLS {
 
     public static String PREF_LBL_DEFAULT_PAGE_LOAD_TIMEOUT;
 
+    public static String PREF_LBL_CUSTOM_PAGE_LOAD_TIMEOUT;
+
     public static String PREF_LBL_ENABLE_DEFAULT_PAGE_LOAD_TIMEOUT;
 
     public static String PREF_LBL_IGNORE_DEFAULT_PAGE_LOAD_TIMEOUT_EXCEPTION;

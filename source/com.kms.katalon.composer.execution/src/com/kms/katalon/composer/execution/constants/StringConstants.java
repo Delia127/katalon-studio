@@ -136,8 +136,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String TRACE_WARN_MSG_UNABLE_TO_OPEN_KEYWORD_FILE = ComposerExecutionMessageConstants.TRACE_WARN_MSG_UNABLE_TO_OPEN_KEYWORD_FILE;
 
     // ExecutionPreferencePage
-    public static final String PREF_GRP_DEFAULT_EXECUTION_CONFIG = ComposerExecutionMessageConstants.PREF_GRP_DEFAULT_EXECUTION_CONFIG;
-
     public static final String PREF_LBL_DEFAULT_IMPLICIT_TIMEOUT = ComposerExecutionMessageConstants.PREF_LBL_DEFAULT_IMPLICIT_TIMEOUT;
 
     public static final String PREF_GRP_POST_EXECUTION_OPTIONS = ComposerExecutionMessageConstants.PREF_GRP_POST_EXECUTION_OPTIONS;

@@ -1,7 +1,5 @@
 package com.kms.katalon.composer.execution.menu;
 
-import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,7 +10,7 @@ import org.eclipse.e4.ui.model.application.ui.menu.MHandledMenuItem;
 import org.eclipse.e4.ui.model.application.ui.menu.impl.HandledMenuItemImpl;
 import org.eclipse.emf.common.util.EList;
 
-import com.kms.katalon.execution.constants.ExecutionPreferenceConstants;
+import com.kms.katalon.execution.setting.ExecutionDefaultSettingStore;
 
 @SuppressWarnings("restriction")
 public class ExecutionHandledMenuItem extends HandledMenuItemImpl {
@@ -42,8 +40,7 @@ public class ExecutionHandledMenuItem extends HandledMenuItemImpl {
     }
 
     public boolean isDefault() {
-        String defaultItemLabel = getPreferenceStore(ExecutionPreferenceConstants.EXECUTION_QUALIFIER)
-                .getString(ExecutionPreferenceConstants.EXECUTION_DEFAULT_CONFIGURATION);
+        String defaultItemLabel = ExecutionDefaultSettingStore.getStore().getExecutionConfiguration();
         return getDefaultLabel().equals(defaultItemLabel);
     }
 
