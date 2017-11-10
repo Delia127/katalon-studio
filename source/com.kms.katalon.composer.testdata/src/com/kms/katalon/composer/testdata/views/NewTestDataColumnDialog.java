@@ -57,7 +57,7 @@ public class NewTestDataColumnDialog extends Dialog {
         gridLayout.marginWidth = 0;
 
         Composite container = new Composite(area, SWT.NONE);
-        container.setLayoutData(new GridData(GridData.FILL_BOTH));
+        container.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, true));
         GridLayout gl_container = new GridLayout(2, false);
         gl_container.horizontalSpacing = 15;
         container.setLayout(gl_container);
@@ -66,8 +66,10 @@ public class NewTestDataColumnDialog extends Dialog {
         theLabel.setText(StringConstants.VIEW_COL_COL_NAME);
 
         txtName = new Text(container, SWT.BORDER);
-        txtName.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        txtName.setSize(200, SWT.DEFAULT);
+        GridData gdTxtName = new GridData(SWT.FILL, SWT.TOP, true, true);
+        gdTxtName.minimumWidth = 300;
+        txtName.setLayoutData(gdTxtName);
+     
 
         controlDecoration = new ControlDecoration(txtName, SWT.LEFT | SWT.TOP);
         Image imgNotification = FieldDecorationRegistry.getDefault().getFieldDecoration(FieldDecorationRegistry.DEC_WARNING)
@@ -86,11 +88,6 @@ public class NewTestDataColumnDialog extends Dialog {
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
         newShell.setText(StringConstants.VIEW_SHELL_DATA_COL_DEFINITION);
-    }
-
-    @Override
-    protected Point getInitialSize() {
-        return new Point(450, 150);
     }
 
     @Override
@@ -165,5 +162,10 @@ public class NewTestDataColumnDialog extends Dialog {
     private void setCurrentNames(String[] currentNames) {
         this.currentNames = currentNames;
         Arrays.sort(currentNames);
+    }
+    
+    @Override
+    protected boolean isResizable() {
+        return true;
     }
 }
