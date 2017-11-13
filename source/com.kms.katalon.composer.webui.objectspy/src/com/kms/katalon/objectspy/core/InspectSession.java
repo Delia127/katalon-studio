@@ -1,16 +1,23 @@
 package com.kms.katalon.objectspy.core;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.file.InvalidPathException;
 import java.text.MessageFormat;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -84,6 +91,9 @@ public class InspectSession implements Runnable {
 
     protected static final String FIREFOX_ADDON_RELATIVE_PATH = File.separator + "Firefox" + File.separator
             + "objectspy.xpi";
+
+    protected static final String FIREFOX_ADDON_FOLDER_RELATIVE_PATH = File.separator + "Firefox" + File.separator
+            + "objectspy";
 
     protected String projectDir;
 
@@ -214,8 +224,7 @@ public class InspectSession implements Runnable {
             // wait for web socket to connect
             Thread.sleep(500);
         }
-        final AddonSocket firefoxAddonSocket = socketServer
-                .getAddonSocketByBrowserName(webUiDriverType.toString());
+        final AddonSocket firefoxAddonSocket = socketServer.getAddonSocketByBrowserName(webUiDriverType.toString());
         firefoxAddonSocket.sendMessage(new StartInspectAddonMessage());
     }
 
@@ -256,8 +265,7 @@ public class InspectSession implements Runnable {
         FirefoxProfile firefoxProfile = WebDriverPropertyUtil.createDefaultFirefoxProfile();
         File file = getFirefoxAddonFile();
         if (file != null) {
-            firefoxProfile.addExtension(file.getName(),
-                    new FirefoxWebExtension(file, FIREFOX_ADDON_UUID));
+            firefoxProfile.addExtension(file.getName(), new FirefoxWebExtension(file, FIREFOX_ADDON_UUID));
         }
         return firefoxProfile;
     }
@@ -289,7 +297,7 @@ public class InspectSession implements Runnable {
 
     protected File getChromeExtensionFile() throws IOException {
         File chromeExtension = null;
-        File extensionFolder = FileUtil.getExtensionsDirectory(FrameworkUtil.getBundle(this.getClass()));
+        File extensionFolder = FileUtil.getExtensionsDirectory(FrameworkUtil.getBundle(InspectSession.class));
         if (extensionFolder.exists() && extensionFolder.isDirectory()) {
             chromeExtension = new File(extensionFolder.getAbsolutePath() + getChromeExtensionPath());
         }
@@ -297,12 +305,18 @@ public class InspectSession implements Runnable {
     }
 
     protected File getFirefoxAddonFile() throws IOException {
-        File firefoxAddon = null;
-        File extensionFolder = FileUtil.getExtensionsDirectory(FrameworkUtil.getBundle(this.getClass()));
+        File extensionFolder = FileUtil.getExtensionsDirectory(FrameworkUtil.getBundle(InspectSession.class));
         if (extensionFolder.exists() && extensionFolder.isDirectory()) {
-            firefoxAddon = new File(extensionFolder.getAbsolutePath() + getFirefoxExtensionPath());
+            File firefoxExtensionFolder = FileUtil.getExtensionBuildFolder();
+            File firefoxAddonExtracted = new File(firefoxExtensionFolder, FIREFOX_ADDON_FOLDER_RELATIVE_PATH);
+            if (firefoxAddonExtracted.exists()) {
+                return firefoxAddonExtracted;
+            }
+            File firefoxAddon = new File(extensionFolder.getAbsolutePath() + getFirefoxExtensionPath());
+            processZipFileInputStream(firefoxAddon, firefoxAddonExtracted.getAbsolutePath());
+            return firefoxAddonExtracted;
         }
-        return firefoxAddon;
+        return null;
     }
 
     public void stop() {
@@ -346,5 +360,28 @@ public class InspectSession implements Runnable {
 
     public WebDriver getWebDriver() {
         return driver;
+    }
+
+    private void processZipFileInputStream(File file, String location) throws IOException {
+        ZipFile zipFile = new ZipFile(file);
+        try {
+          Enumeration<? extends ZipEntry> entries = zipFile.entries();
+          while (entries.hasMoreElements()) {
+            ZipEntry entry = entries.nextElement();
+            File entryDestination = new File(location,  entry.getName());
+            if (entry.isDirectory()) {
+                entryDestination.mkdirs();
+            } else {
+                entryDestination.getParentFile().mkdirs();
+                InputStream in = zipFile.getInputStream(entry);
+                OutputStream out = new FileOutputStream(entryDestination);
+                IOUtils.copy(in, out);
+                IOUtils.closeQuietly(in);
+                out.close();
+            }
+          }
+        } finally {
+          zipFile.close();
+        }
     }
 }
