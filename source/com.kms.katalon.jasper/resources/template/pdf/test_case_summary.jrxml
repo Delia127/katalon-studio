@@ -36,7 +36,7 @@
 				<textElement>
 					<font fontName="DejaVu Sans" size="9"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{testCaseRecord}.getDescription()]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{testCaseRecord}.getDescription().replace("\\n", "\n")]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement style="statusStyleWithoutBackGround" positionType="Float" x="110" y="113" width="360" height="20" uuid="07fdfc36-be6e-43ba-8637-87843a974891"/>
