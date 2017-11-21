@@ -4,6 +4,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ClassNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
@@ -110,7 +112,7 @@ public class HTMLActionUtil {
                         || String.valueOf(actionMapping.getData()[0].getValue()).equals(ABOUT_BLANK)))) {
             return false;
         }
-        if (actionMapping.getAction().getName().equals(HTMLActionJson.DOUBLE_CLICK_ACTION_KEY)
+        if (actionMapping.getAction() == HTMLAction.DoubleClick
                 && existingActionMappings.size() >= 2) {
             checkAndUpdateDoubleClick(actionMapping, existingActionMappings);
         }
@@ -124,10 +126,10 @@ public class HTMLActionUtil {
             List<HTMLActionMapping> existingActionMappings) {
         HTMLActionMapping actionOffset_1 = existingActionMappings.get(existingActionMappings.size() - 1);
         HTMLActionMapping actionOffset_2 = existingActionMappings.get(existingActionMappings.size() - 2);
-        if (actionOffset_1.getAction().getName().equals(HTMLActionJson.MOUSE_CLICK_ACTION_KEY)
-                && actionOffset_2.getAction().getName().equals(HTMLActionJson.MOUSE_CLICK_ACTION_KEY)
-                && actionOffset_1.getTargetElement().equals(actionMapping.getTargetElement())
-                && actionOffset_2.getTargetElement().equals(actionMapping.getTargetElement())) {
+        if (actionOffset_1.getAction() == HTMLAction.LeftClick
+                && actionOffset_2.getAction() == HTMLAction.LeftClick
+                && areElementsEqual(actionOffset_1.getTargetElement(), actionMapping.getTargetElement())
+                && areElementsEqual(actionOffset_2.getTargetElement(), actionMapping.getTargetElement())) {
             existingActionMappings.remove(actionOffset_1);
             existingActionMappings.remove(actionOffset_2);
         }
@@ -140,11 +142,20 @@ public class HTMLActionUtil {
         }
         HTMLActionMapping lastAction = existingActionMappings.get(existingActionMappings.size() - 1);
         if (lastAction.getAction() != HTMLAction.SetText
-                || !lastAction.getTargetElement().equals(actionMapping.getTargetElement())) {
+                || !areElementsEqual(lastAction.getTargetElement(), actionMapping.getTargetElement())) {
             return true;
         }
         existingActionMappings.remove(lastAction);
         return true;
+    }
+    
+    private static boolean areElementsEqual(WebElement elm1, WebElement elm2) {
+        return new EqualsBuilder()
+                .append(elm1.getType(), elm2.getType())
+                .append(elm1.getTag(), elm2.getTag())
+                .append(elm1.hasProperty(), elm2.hasProperty())
+                .append(elm1.getXpath(), elm2.getXpath())
+                .isEquals();
     }
 
     public static HTMLActionMapping createNewSwitchToWindowAction(String windowTitle) {
