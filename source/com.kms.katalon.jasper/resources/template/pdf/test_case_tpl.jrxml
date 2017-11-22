@@ -1,8 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="User Overview" pageWidth="595" pageHeight="841" columnWidth="515" leftMargin="40" rightMargin="40" topMargin="49" bottomMargin="49" uuid="b1198982-d169-4d1d-a5ed-34f58ab36656">
+<!-- Created with Jaspersoft Studio version 6.4.3.final using JasperReports Library version 6.4.3  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="User Overview" pageWidth="595" pageHeight="841" columnWidth="545" leftMargin="25" rightMargin="25" topMargin="25" bottomMargin="25" uuid="b1198982-d169-4d1d-a5ed-34f58ab36656">
 	<property name="ireport.zoom" value="1.7715610000000037"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
 	<style name="Sans_Bold" fontName="DejaVu Sans" fontSize="8" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Sans_Normal" isDefault="true" fontName="DejaVu Sans" fontSize="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
 	<style name="Title" style="Sans_Bold" fontSize="12"/>
@@ -130,7 +140,7 @@
 			<conditionExpression><![CDATA[$F{status}.getStatusValue() == com.kms.katalon.core.logging.model.TestStatus.TestStatusValue.ERROR]]></conditionExpression>
 			<style mode="Opaque" forecolor="#FFCC00"/>
 		</conditionalStyle>
-        <conditionalStyle>
+		<conditionalStyle>
 			<conditionExpression><![CDATA[$F{status}.getStatusValue() == com.kms.katalon.core.logging.model.TestStatus.TestStatusValue.INCOMPLETE]]></conditionExpression>
 			<style mode="Opaque" forecolor="#996600"/>
 		</conditionalStyle>
@@ -215,7 +225,9 @@
 		<groupFooter>
 			<band height="1">
 				<break>
-					<reportElement x="0" y="0" width="515" height="1" uuid="e716bec3-ea01-403a-8ca5-98cb6d4fad65"/>
+					<reportElement x="0" y="0" width="545" height="1" uuid="e716bec3-ea01-403a-8ca5-98cb6d4fad65">
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
 				</break>
 			</band>
 		</groupFooter>
@@ -223,7 +235,9 @@
 	<detail>
 		<band height="52" splitType="Stretch">
 			<textField bookmarkLevel="1">
-				<reportElement x="0" y="1" width="515" height="1" uuid="8fb76036-028b-4774-85aa-a4428be56c33"/>
+				<reportElement x="0" y="1" width="545" height="1" uuid="8fb76036-028b-4774-85aa-a4428be56c33">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<textElement>
 					<font size="0"/>
 				</textElement>
@@ -231,18 +245,24 @@
 				<anchorNameExpression><![CDATA["TC #" + $V{REPORT_COUNT}]]></anchorNameExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" hyperlinkType="LocalAnchor">
-				<reportElement x="0" y="0" width="515" height="30" isPrintWhenDetailOverflows="true" uuid="53288a60-ee89-4a31-b571-e481a97a1902"/>
+				<reportElement x="0" y="0" width="545" height="30" isPrintWhenDetailOverflows="true" uuid="53288a60-ee89-4a31-b571-e481a97a1902">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="20" isBold="true"/>
+					<font size="16" isBold="true"/>
 					<paragraph leftIndent="50" rightIndent="50"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{name}.substring($F{name}.lastIndexOf("/") + 1, $F{name}.length())]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement positionType="Float" x="0" y="33" width="515" height="1" isPrintWhenDetailOverflows="true" uuid="211a5492-2146-4b9c-b2ca-c6681d95fae9"/>
+				<reportElement positionType="Float" x="0" y="33" width="545" height="1" isPrintWhenDetailOverflows="true" uuid="211a5492-2146-4b9c-b2ca-c6681d95fae9">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 			</line>
 			<subreport runToBottom="false">
-				<reportElement positionType="Float" x="0" y="44" width="515" height="0" uuid="45e50248-45bc-44da-9a74-762c2ebc4b9b"/>
+				<reportElement positionType="Float" x="0" y="44" width="545" height="0" uuid="45e50248-45bc-44da-9a74-762c2ebc4b9b">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<subreportParameter name="testCaseRecord">
 					<subreportParameterExpression><![CDATA[$F{_THIS}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -250,7 +270,9 @@
 				<subreportExpression><![CDATA[net.sf.jasperreports.engine.JasperCompileManager.compileReport(com.kms.katalon.internal.jasper.util.ResourceUtil.getResourceAsInputStream(com.kms.katalon.jasper.pdf.AbstractPdfReportGenerator.class, $P{TEST_CASE_SUMMARY_TPL}))]]></subreportExpression>
 			</subreport>
 			<componentElement>
-				<reportElement key="table" positionType="Float" mode="Opaque" x="0" y="52" width="515" height="0" uuid="ff677573-e66a-449f-9f1e-c4559d45f428"/>
+				<reportElement key="table" positionType="Float" mode="Opaque" x="0" y="52" width="545" height="0" uuid="ff677573-e66a-449f-9f1e-c4559d45f428">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
 					<datasetRun subDataset="stepDataset" uuid="b754d7cb-cd0f-4621-babb-62aae5c20167">
 						<datasetParameter name="LOG_FOLDER">
@@ -276,15 +298,15 @@
 									<bottomPen lineWidth="0.0"/>
 									<rightPen lineWidth="0.0"/>
 								</box>
-								<textElement verticalAlignment="Middle">
-									<font size="12" isBold="true"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font size="10" isBold="true"/>
 									<paragraph leftIndent="5"/>
 								</textElement>
 								<text><![CDATA[#]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:detailCell style="table 4_TD" height="61" rowSpan="1">
-							<box>
+							<box padding="2">
 								<pen lineWidth="0.0"/>
 								<topPen lineWidth="0.0"/>
 								<leftPen lineWidth="0.0"/>
@@ -292,15 +314,15 @@
 								<rightPen lineWidth="0.0"/>
 							</box>
 							<textField>
-								<reportElement style="table 4_TD" mode="Opaque" x="0" y="1" width="30" height="20" isPrintWhenDetailOverflows="true" uuid="a52b54ef-f545-464f-859d-afd2f2c041fd"/>
-								<box>
+								<reportElement style="table 4_TD" mode="Opaque" x="0" y="0" width="26" height="57" isPrintWhenDetailOverflows="true" uuid="a52b54ef-f545-464f-859d-afd2f2c041fd"/>
+								<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0">
 									<pen lineWidth="0.0"/>
 									<topPen lineWidth="0.0"/>
 									<leftPen lineWidth="0.0"/>
 									<bottomPen lineWidth="0.0"/>
 									<rightPen lineWidth="0.0"/>
 								</box>
-								<textElement verticalAlignment="Middle">
+								<textElement textAlignment="Center" verticalAlignment="Top">
 									<font size="9"/>
 									<paragraph leftIndent="5"/>
 								</textElement>
@@ -308,7 +330,7 @@
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="345" uuid="5dca9ee5-b42d-45f7-bf0e-bab4f6fdddef">
+					<jr:column width="372" uuid="5dca9ee5-b42d-45f7-bf0e-bab4f6fdddef">
 						<jr:columnHeader style="table_TH" height="20" rowSpan="1">
 							<box>
 								<pen lineWidth="0.0"/>
@@ -318,7 +340,7 @@
 								<rightPen lineWidth="0.0"/>
 							</box>
 							<staticText>
-								<reportElement style="table_TH" mode="Opaque" x="0" y="0" width="290" height="20" isPrintWhenDetailOverflows="true" uuid="eee8b6b1-754c-449a-93da-810a64b7b2b2"/>
+								<reportElement style="table_TH" mode="Opaque" x="0" y="0" width="372" height="20" isPrintWhenDetailOverflows="true" uuid="eee8b6b1-754c-449a-93da-810a64b7b2b2"/>
 								<box>
 									<pen lineWidth="0.0"/>
 									<topPen lineWidth="0.0"/>
@@ -327,13 +349,13 @@
 									<rightPen lineWidth="0.0"/>
 								</box>
 								<textElement verticalAlignment="Middle">
-									<font size="12" isBold="true"/>
+									<font size="10" isBold="true"/>
 								</textElement>
 								<text><![CDATA[Description]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:detailCell style="table 4_TD" height="61" rowSpan="1">
-							<box>
+							<box padding="2">
 								<pen lineWidth="0.0"/>
 								<topPen lineWidth="0.0"/>
 								<leftPen lineWidth="0.0"/>
@@ -341,7 +363,9 @@
 								<rightPen lineWidth="0.0"/>
 							</box>
 							<textField isStretchWithOverflow="true">
-								<reportElement style="table 4_TD" mode="Opaque" x="0" y="1" width="345" height="20" isPrintWhenDetailOverflows="true" forecolor="#000000" uuid="0c47f9bd-eba9-4734-8110-7929aa8833b6"/>
+								<reportElement style="table 4_TD" mode="Opaque" x="0" y="0" width="368" height="29" isPrintWhenDetailOverflows="true" forecolor="#000000" uuid="0c47f9bd-eba9-4734-8110-7929aa8833b6">
+									<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+								</reportElement>
 								<box>
 									<pen lineWidth="0.0"/>
 									<topPen lineWidth="0.0"/>
@@ -349,20 +373,16 @@
 									<bottomPen lineWidth="0.0"/>
 									<rightPen lineWidth="0.0"/>
 								</box>
-								<textElement verticalAlignment="Middle">
+								<textElement verticalAlignment="Top" markup="styled">
 									<font size="9"/>
-									<paragraph rightIndent="5"/>
+									<paragraph rightIndent="0"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{description}.isEmpty() ? $F{name} : $F{description}]]></textFieldExpression>
-							</textField>
-							<textField isStretchWithOverflow="true">
-								<reportElement x="0" y="30" width="290" height="0" forecolor="#0099FF" uuid="eacee754-43bf-465e-a688-32a4f7636281">
-									<printWhenExpression><![CDATA[!$F{message}.isEmpty()]]></printWhenExpression>
-								</reportElement>
-								<textFieldExpression><![CDATA[$F{message}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[($F{description}.isEmpty() ? $F{name} : $F{description}) + System.lineSeparator() + System.lineSeparator() + "<style forecolor='#0099FF'>" + $F{message} + "</style>"]]></textFieldExpression>
 							</textField>
 							<componentElement>
-								<reportElement positionType="Float" x="0" y="41" width="345" height="20" isPrintWhenDetailOverflows="true" uuid="10a8087c-9be8-4be2-af7a-e4f7104f802e">
+								<reportElement positionType="Float" x="0" y="29" width="368" height="28" isPrintWhenDetailOverflows="true" uuid="10a8087c-9be8-4be2-af7a-e4f7104f802e">
+									<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+									<property name="com.jaspersoft.studio.unit.CONTENTS.height" value="px"/>
 									<printWhenExpression><![CDATA[((String[]) $F{attachments}).length > 0]]></printWhenExpression>
 								</reportElement>
 								<jr:list printOrder="Vertical">
@@ -372,9 +392,9 @@
 										</datasetParameter>
 										<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanArrayDataSource((Object[]) $F{attachments})]]></dataSourceExpression>
 									</datasetRun>
-									<jr:listContents height="20" width="345">
+									<jr:listContents height="28" width="368">
 										<image scaleImage="RealSize" hAlign="Center">
-											<reportElement x="0" y="0" width="290" height="0" isPrintWhenDetailOverflows="true" uuid="a9247211-a6a1-444a-9eaa-5987ca97180b"/>
+											<reportElement x="0" y="0" width="368" height="28" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="a9247211-a6a1-444a-9eaa-5987ca97180b"/>
 											<imageExpression><![CDATA[(new File($F{_THIS}).isAbsolute()) ? ($F{_THIS}) : ($P{LOG_FOLDER} + java.io.File.separator + $F{_THIS})]]></imageExpression>
 										</image>
 									</jr:listContents>
@@ -400,14 +420,14 @@
 									<bottomPen lineWidth="0.0"/>
 									<rightPen lineWidth="0.0"/>
 								</box>
-								<textElement verticalAlignment="Middle">
-									<font size="12" isBold="true"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font size="10" isBold="true"/>
 								</textElement>
 								<text><![CDATA[Elapsed]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:detailCell style="table 4_TD" height="61" rowSpan="1">
-							<box>
+							<box padding="2">
 								<pen lineWidth="0.0"/>
 								<topPen lineWidth="0.0"/>
 								<leftPen lineWidth="0.0"/>
@@ -415,7 +435,7 @@
 								<rightPen lineWidth="0.0"/>
 							</box>
 							<textField>
-								<reportElement style="table 4_TD" mode="Opaque" x="0" y="1" width="70" height="20" isPrintWhenDetailOverflows="true" uuid="8ed12b35-822f-49ad-b01c-7347d6e5a781"/>
+								<reportElement style="table 4_TD" mode="Opaque" x="0" y="0" width="66" height="57" isPrintWhenDetailOverflows="true" uuid="8ed12b35-822f-49ad-b01c-7347d6e5a781"/>
 								<box>
 									<pen lineWidth="0.0"/>
 									<topPen lineWidth="0.0"/>
@@ -423,14 +443,14 @@
 									<bottomPen lineWidth="0.0"/>
 									<rightPen lineWidth="0.0"/>
 								</box>
-								<textElement verticalAlignment="Middle">
+								<textElement textAlignment="Center" verticalAlignment="Top">
 									<font size="9"/>
 								</textElement>
 								<textFieldExpression><![CDATA[com.kms.katalon.core.util.internal.DateUtil.getElapsedTime($F{startTime}, $F{endTime})]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="70" uuid="af002439-0def-46a4-9533-41c4ffa8d59e">
+					<jr:column width="73" uuid="af002439-0def-46a4-9533-41c4ffa8d59e">
 						<jr:columnHeader style="table_TH" height="20" rowSpan="1">
 							<box>
 								<pen lineWidth="0.0"/>
@@ -440,7 +460,7 @@
 								<rightPen lineWidth="0.0"/>
 							</box>
 							<staticText>
-								<reportElement style="table_TH" mode="Opaque" x="0" y="0" width="70" height="20" isPrintWhenDetailOverflows="true" uuid="4a38ad03-8b39-4221-8b2d-6458b9111ca4"/>
+								<reportElement style="table_TH" mode="Opaque" x="0" y="0" width="73" height="20" isPrintWhenDetailOverflows="true" uuid="4a38ad03-8b39-4221-8b2d-6458b9111ca4"/>
 								<box>
 									<pen lineWidth="0.0"/>
 									<topPen lineWidth="0.0"/>
@@ -448,14 +468,14 @@
 									<bottomPen lineWidth="0.0"/>
 									<rightPen lineWidth="0.0"/>
 								</box>
-								<textElement verticalAlignment="Middle">
-									<font size="12" isBold="true"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font size="10" isBold="true"/>
 								</textElement>
 								<text><![CDATA[Status]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:detailCell style="table 4_TD" height="61" rowSpan="1">
-							<box>
+							<box padding="2">
 								<pen lineWidth="0.0"/>
 								<topPen lineWidth="0.0"/>
 								<leftPen lineWidth="0.0"/>
@@ -463,7 +483,7 @@
 								<rightPen lineWidth="0.0"/>
 							</box>
 							<textField>
-								<reportElement style="statusStyle" mode="Opaque" x="0" y="1" width="70" height="20" isPrintWhenDetailOverflows="true" uuid="70579571-f0c1-4596-80a9-2a6d36fefda5"/>
+								<reportElement style="statusStyle" mode="Opaque" x="0" y="0" width="69" height="57" isPrintWhenDetailOverflows="true" uuid="70579571-f0c1-4596-80a9-2a6d36fefda5"/>
 								<box>
 									<pen lineWidth="0.0"/>
 									<topPen lineWidth="0.0"/>
@@ -471,7 +491,7 @@
 									<bottomPen lineWidth="0.0"/>
 									<rightPen lineWidth="0.0"/>
 								</box>
-								<textElement verticalAlignment="Middle">
+								<textElement textAlignment="Center" verticalAlignment="Top">
 									<font size="9"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{status}.getStatusValue().toString()]]></textFieldExpression>
