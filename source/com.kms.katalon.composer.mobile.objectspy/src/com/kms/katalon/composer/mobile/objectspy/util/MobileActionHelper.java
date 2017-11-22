@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.mobile.objectspy.util;
 
 import java.text.MessageFormat;
+import java.time.Duration;
 import java.util.Date;
 
 import org.openqa.selenium.Dimension;
@@ -18,7 +19,6 @@ import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testobject.TestObject;
 
 import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.MobileElement;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.AndroidKeyCode;
@@ -65,8 +65,10 @@ public class MobileActionHelper {
                         ta.move(screenSize.width / 2, (int) ((screenSize.height / 2) * 0.5)).perform();
                         ta.release().perform();
                     } else {
-                        driver.swipe(screenSize.width / 2, screenSize.height / 2, screenSize.width / 2,
-                                (int) ((screenSize.height / 2) * 0.5), 500);
+                        TouchAction swipe = new TouchAction(driver).press(screenSize.width / 2, screenSize.height / 2)
+                                .waitAction(Duration.ofMillis(500))
+                                .moveTo(screenSize.width / 2, (int) ((screenSize.height / 2) * 0.5)).release();
+                        swipe.perform();
                     }
                 } catch (Exception e) {
                     // Ignore exception while finding elements
@@ -86,7 +88,8 @@ public class MobileActionHelper {
                     flowControl, null);
             return;
         }
-        ((MobileElement) element).tap(1, 1);
+        TouchAction tap = new TouchAction(driver).tap(element, 1, 1);
+        tap.perform();
     }
 
     public void tapAndHold(TestObject to) throws Exception {

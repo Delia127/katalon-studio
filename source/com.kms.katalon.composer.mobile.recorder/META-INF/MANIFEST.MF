@@ -35,7 +35,6 @@ Require-Bundle: com.kms.katalon.composer.mobile,
  org.eclipse.core.runtime,
  com.kms.katalon.composer.execution,
  com.kms.katalon.core,
- io.appium.java-client,
  com.kms.katalon.integration.kobiton
 Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

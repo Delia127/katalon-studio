@@ -304,4 +304,5 @@ Require-Bundle: org.eclipse.osgi,
  org.hamcrest.core,
  org.apache.ant,
  org.beanshell.bsh,
- org.apache.ant.launcher
+ org.apache.ant.launcher,
+ org.eclipse.core.runtime

@@ -2,10 +2,12 @@ package com.kms.katalon.core.mobile.keyword.builtin
 
 import groovy.transform.CompileStatic
 import io.appium.java_client.AppiumDriver
+import io.appium.java_client.MobileBy
 import io.appium.java_client.MobileElement
-import io.appium.java_client.NetworkConnectionSetting
+import io.appium.java_client.TouchAction
 import io.appium.java_client.android.AndroidDriver
 import io.appium.java_client.android.AndroidKeyCode
+import io.appium.java_client.functions.ExpectedCondition
 import io.appium.java_client.ios.IOSDriver
 import io.appium.java_client.remote.HideKeyboardStrategy
 
@@ -23,7 +25,9 @@ import org.openqa.selenium.TimeoutException
 import org.openqa.selenium.WebDriverException
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.interactions.touch.TouchActions
+import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.FluentWait
+import org.openqa.selenium.support.ui.WebDriverWait
 
 import com.google.common.base.Function
 import com.kms.katalon.core.annotation.Keyword
@@ -36,6 +40,7 @@ import com.kms.katalon.core.keyword.internal.KeywordExecutor
 import com.kms.katalon.core.keyword.internal.KeywordMain
 import com.kms.katalon.core.keyword.internal.SupportLevel
 import com.kms.katalon.core.logging.KeywordLogger
+import com.kms.katalon.core.mobile.constants.CoreMobileMessageConstants
 import com.kms.katalon.core.mobile.constants.StringConstants
 import com.kms.katalon.core.mobile.helper.MobileCommonHelper
 import com.kms.katalon.core.mobile.helper.MobileDeviceCommonHelper
@@ -74,11 +79,29 @@ public class ScrollToTextKeyword extends MobileAbstractKeyword {
             String context = driver.getContext()
             try {
                 internalSwitchToNativeContext(driver)
-                driver.scrollToExact(text)
-                logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SCROLL_TO_TEXT_X, text))
+
+                Thread.sleep(500L)
+
+                WebElement element = null
+
+                if (driver instanceof AndroidDriver) {
+                    String uiSelector = String.format("new UiSelector().textContains(\"%s\")", text)
+                    String uiScrollable = String.format("new UiScrollable(new UiSelector().scrollable(true).instance(0)).scrollIntoView(%s)", uiSelector)
+                    element = driver.findElementByAndroidUIAutomator(uiScrollable)
+                } else if (driver instanceof IOSDriver) {
+                    String uiLocator = String.format(".tableViews()[0].scrollToElementWithPredicate(\"name CONTAINS '%s'\")", text)
+                    element = driver.findElementByIosUIAutomation(uiLocator)
+                }
+                if (element != null) {
+                    logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SCROLL_TO_TEXT_X, text))
+                } else {
+                    KeywordMain.stepFailed(MessageFormat.format(CoreMobileMessageConstants.KW_MSG_TEXT_NOT_FOUND, text), flowControl)
+                }
             } finally {
                 driver.context(context)
             }
         }, flowControl, MessageFormat.format(StringConstants.KW_MSG_UNABLE_SCROLL_TO_TEXT_X, text))
     }
+
+    private Fiz
 }
