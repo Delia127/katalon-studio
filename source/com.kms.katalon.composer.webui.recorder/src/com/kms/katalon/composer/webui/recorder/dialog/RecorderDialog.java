@@ -1358,7 +1358,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                             return true;
                         }
                         MessageDialogWithToggle messageDialogWithToggle = new GoToAddonStoreMessageDialog(
-                                getParentShell(), StringConstants.HAND_ACTIVE_BROWSERS_DIA_TITLE,
+                                getShell(), StringConstants.HAND_ACTIVE_BROWSERS_DIA_TITLE,
                                 MessageFormat.format(StringConstants.HAND_ACTIVE_BROWSERS_DIA_MESSAGE,
                                         webUIDriverType.toString()),
                                 StringConstants.HAND_ACTIVE_BROWSERS_DIA_TOOGLE_MESSAGE) {
