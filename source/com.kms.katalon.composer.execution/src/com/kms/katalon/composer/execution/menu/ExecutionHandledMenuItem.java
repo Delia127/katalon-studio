@@ -40,7 +40,11 @@ public class ExecutionHandledMenuItem extends HandledMenuItemImpl {
     }
 
     public boolean isDefault() {
-        String defaultItemLabel = ExecutionDefaultSettingStore.getStore().getExecutionConfiguration();
+        ExecutionDefaultSettingStore store = ExecutionDefaultSettingStore.getStore();
+        if (store == null) {
+            return false;
+        }
+        String defaultItemLabel = store.getExecutionConfiguration();
         return getDefaultLabel().equals(defaultItemLabel);
     }
 
