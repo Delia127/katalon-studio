@@ -175,5 +175,6 @@ public class WebDriverPropertyUtil {
         }
         argsEntry.addAll(Arrays.asList(args));
         chromeOptions.put(CHROME_ARGUMENT_PROPERTY_KEY, argsEntry);
+        caps.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
     }
 }
