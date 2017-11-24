@@ -3,7 +3,9 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Mobile Execution
 Bundle-SymbolicName: com.kms.katalon.execution.mobile;singleton:=true
 Bundle-Version: 1.0.0.qualifier
-Bundle-ClassPath: .
+Bundle-ClassPath: .,
+ resources/lib/EnvironmentVariables_0.0.1.201606022314.jar,
+ resources/lib/jna-3.0.9.jar
 Bundle-Vendor: KMS
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: com.kms.katalon.preferences.internal,

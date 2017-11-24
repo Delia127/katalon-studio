@@ -388,7 +388,8 @@ public class CoreMobileMessageConstants extends NLS {
     // ScrollToTextKeyword
     public static String KW_MSG_TEXT_NOT_FOUND;
     
-
+    public static String KW_LOG_TEXT_FOUND_IN_ELEMENTS;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, CoreMobileMessageConstants.class);

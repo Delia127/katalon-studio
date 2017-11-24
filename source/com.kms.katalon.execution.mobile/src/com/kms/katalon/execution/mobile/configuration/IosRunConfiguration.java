@@ -2,12 +2,14 @@ package com.kms.katalon.execution.mobile.configuration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Map;
 
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.mobile.device.IosDeviceInfo;
 import com.kms.katalon.execution.mobile.driver.IosDriverConnector;
+import com.kms.katalon.logging.LogUtil;
 
 public class IosRunConfiguration extends MobileRunConfiguration {
     public IosRunConfiguration(String projectDir) throws IOException {
@@ -22,6 +24,11 @@ public class IosRunConfiguration extends MobileRunConfiguration {
     
     @Override
     public Map<String, String> getAdditionalEnvironmentVariables() throws IOException {
-        return IosDeviceInfo.getIosAdditionalEnvironmentVariables();
+        try {
+            return IosDeviceInfo.getIosAdditionalEnvironmentVariables();
+        } catch (InterruptedException e) {
+            LogUtil.logError(e);
+            return Collections.emptyMap();
+        }
     }
 }

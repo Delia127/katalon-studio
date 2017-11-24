@@ -68,7 +68,6 @@ public class ScrollToTextKeyword extends MobileAbstractKeyword {
         scrollToText(text,flowControl)
     }
 
-    @CompileStatic
     public void scrollToText(String text, FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
             logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_TEXT)
@@ -89,8 +88,14 @@ public class ScrollToTextKeyword extends MobileAbstractKeyword {
                     String uiScrollable = String.format("new UiScrollable(new UiSelector().scrollable(true).instance(0)).scrollIntoView(%s)", uiSelector)
                     element = driver.findElementByAndroidUIAutomator(uiScrollable)
                 } else if (driver instanceof IOSDriver) {
-                    String uiLocator = String.format(".tableViews()[0].scrollToElementWithPredicate(\"name CONTAINS '%s'\")", text)
-                    element = driver.findElementByIosUIAutomation(uiLocator)
+                    List<MobileElement> elements = ((IOSDriver) driver).findElements(MobileBy
+                        .xpath("//*[contains(@label, '" + text + "') or contains(@text, '" + text + "')]"));
+                    if (elements != null && !elements.isEmpty()) {
+                        logger.logInfo(MessageFormat.format(CoreMobileMessageConstants.KW_LOG_TEXT_FOUND_IN_ELEMENTS, text, elements.size()))
+                        element = elements.get(0)
+                        TouchAction action = new TouchAction(driver).press(0, 0).moveTo(element).release()
+                        action.perform()
+                    }
                 }
                 if (element != null) {
                     logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SCROLL_TO_TEXT_X, text))
