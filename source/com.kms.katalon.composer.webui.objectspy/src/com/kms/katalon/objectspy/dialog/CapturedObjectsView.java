@@ -178,7 +178,7 @@ public class CapturedObjectsView extends Composite implements EventHandler, Even
     }
 
     private void unsubscribeEvents() {
-        // TODO Unsubscribe events
+        eventBroker.unsubscribe(this);
 
     }
 
