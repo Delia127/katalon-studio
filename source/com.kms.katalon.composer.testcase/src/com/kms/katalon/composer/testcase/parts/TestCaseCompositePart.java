@@ -867,7 +867,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
 
     public boolean isTestCaseEmpty() {
         return GroovyWrapperParser
-                .parseGroovyScriptAndGetFirstExpression(groovyEditor.getViewer().getDocument().get()) == null;
+                .parseGroovyScriptAndGetFirstStatement(groovyEditor.getViewer().getDocument().get()) == null;
     }
 
     public void validateScriptErrors() throws Exception {
