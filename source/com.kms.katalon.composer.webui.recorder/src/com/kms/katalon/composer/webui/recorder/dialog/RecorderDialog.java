@@ -228,6 +228,8 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     private SashForm hSashForm;
 
+    private boolean disposed;
+
     /**
      * Create the dialog.
      * 
@@ -247,6 +249,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         elements = new ArrayList<>();
         recordedActions = new ArrayList<HTMLActionMapping>();
         isPausing = false;
+        disposed = false;
         this.eventBroker = eventBroker;
         eventBroker.subscribe(EventConstants.RECORDER_HTML_ACTION_CAPTURED, this);
         startSocketServer();
@@ -1355,7 +1358,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                             return true;
                         }
                         MessageDialogWithToggle messageDialogWithToggle = new GoToAddonStoreMessageDialog(
-                                getParentShell(), StringConstants.HAND_ACTIVE_BROWSERS_DIA_TITLE,
+                                getShell(), StringConstants.HAND_ACTIVE_BROWSERS_DIA_TITLE,
                                 MessageFormat.format(StringConstants.HAND_ACTIVE_BROWSERS_DIA_MESSAGE,
                                         webUIDriverType.toString()),
                                 StringConstants.HAND_ACTIVE_BROWSERS_DIA_TOOGLE_MESSAGE) {
@@ -1552,6 +1555,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     @Override
     public boolean close() {
         updateStore();
+        disposed = true;
         return super.close();
     }
 
@@ -1709,6 +1713,10 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     public SaveToObjectRepositoryDialogResult getTargetFolderTreeEntity() {
         return targetFolderSelectionResult;
+    }
+
+    public boolean isDisposed() {
+        return disposed;
     }
 
     @Override
