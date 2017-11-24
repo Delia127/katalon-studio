@@ -269,29 +269,20 @@ public class DriverFactory {
 
     private static DesiredCapabilities addCapbilitiesForChrome(DesiredCapabilities desireCapibilities) {
         System.setProperty(CHROME_DRIVER_PATH_PROPERTY_KEY, getChromeDriverPath());
-        Object chromeOptionObj = desireCapibilities.getCapability(ChromeOptions.CAPABILITY);
-        ChromeOptions chromeOptions = chromeOptionObj instanceof ChromeOptions ? (ChromeOptions) chromeOptionObj
-                : new ChromeOptions();
 
         ProxyInformation proxyInformation = RunConfiguration.getProxyInformation();
         if (WebDriverProxyUtil.isManualSocks(proxyInformation)) {
-            chromeOptions
-                    .addArguments("--proxy-server=socks5://" + WebDriverProxyUtil.getProxyString(proxyInformation));
+            WebDriverPropertyUtil.addArgumentsForChrome(desireCapibilities, "--proxy-server=socks5://" + WebDriverProxyUtil.getProxyString(proxyInformation));
         } else {
             desireCapibilities.setCapability(CapabilityType.PROXY, getDefaultProxy());
         }
-        desireCapibilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
+        
         return desireCapibilities;
     }
 
     private static WebDriver createHeadlessChromeDriver(DesiredCapabilities desireCapibilities) {
         DesiredCapabilities chromeCapbilities = addCapbilitiesForChrome(desireCapibilities);
-        Object chromeOptionObj = chromeCapbilities != null ? chromeCapbilities.getCapability(ChromeOptions.CAPABILITY)
-                : null;
-        ChromeOptions chromeOptions = chromeOptionObj instanceof ChromeOptions ? (ChromeOptions) chromeOptionObj
-                : new ChromeOptions();
-        chromeOptions.addArguments("--headless", "--disable-gpu");
-        chromeCapbilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
+        WebDriverPropertyUtil.addArgumentsForChrome(desireCapibilities, "--headless", "disable-gpu");
         return new CChromeDriver(chromeCapbilities, getActionDelay());
     }
 
