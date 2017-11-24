@@ -67,7 +67,6 @@ Require-Bundle: org.eclipse.e4.core.contexts,
  org.eclipse.jface,
  com.kms.katalon.core.webui,
  com.kms.katalon.selenium-standalone,
- io.appium.java-client,
  com.kms.katalon.core.mobile,
  org.apache.commons.lang3,
  org.eclipse.jdt.launching
