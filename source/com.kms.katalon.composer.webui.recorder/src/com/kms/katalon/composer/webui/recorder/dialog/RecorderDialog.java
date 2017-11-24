@@ -521,7 +521,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     }
 
     private void createLeftPanel(Composite parent) {
-        capturedObjectComposite = new CapturedObjectsView(parent, SWT.NONE);
+        capturedObjectComposite = new CapturedObjectsView(parent, SWT.NONE, eventBroker);
         Sash sash = new Sash(parent, SWT.HORIZONTAL);
         GridData layoutData = new GridData(SWT.FILL, SWT.TOP, true, false);
         sash.setLayoutData(layoutData);
@@ -558,7 +558,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         capturedObjectComposite.setInput(elements);
 
         capturedObjectComposite.addListener(objectPropertiesView,
-                Arrays.asList(ObjectSpyEvent.SELECTED_ELEMENT_CHANGED));
+                Arrays.asList(ObjectSpyEvent.SELECTED_ELEMENT_CHANGED, ObjectSpyEvent.ACTION_SELECTION_CHANGED));
         // capturedObjectComposite.addListener(this, Arrays.asList(ObjectSpyEvent.SELECTED_ELEMENT_CHANGED));
 
         selectorEditor.addListener(verifyView, Arrays.asList(ObjectSpyEvent.SELECTOR_HAS_CHANGED));
@@ -1211,6 +1211,10 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
                 tltmDelete.setEnabled(isAnyTableItemSelected());
+                StructuredSelection selection = (StructuredSelection) event.getSelection();
+                HTMLActionMapping actionMapping = (HTMLActionMapping) selection.getFirstElement();
+                WebElement element = actionMapping.getTargetElement();
+                eventBroker.send(EventConstants.RECORDER_ACTION_SELECTED, element);
             }
         });
     }
