@@ -1213,8 +1213,12 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 tltmDelete.setEnabled(isAnyTableItemSelected());
                 StructuredSelection selection = (StructuredSelection) event.getSelection();
                 HTMLActionMapping actionMapping = (HTMLActionMapping) selection.getFirstElement();
-                WebElement element = actionMapping.getTargetElement();
-                eventBroker.send(EventConstants.RECORDER_ACTION_SELECTED, element);
+                if (actionMapping != null) {
+                    WebElement element = actionMapping.getTargetElement();
+                    if (element != null) {
+                        eventBroker.send(EventConstants.RECORDER_ACTION_SELECTED, element);
+                    }
+                }
             }
         });
     }
