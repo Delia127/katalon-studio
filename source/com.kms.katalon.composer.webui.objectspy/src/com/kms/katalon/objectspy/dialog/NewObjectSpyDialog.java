@@ -229,7 +229,7 @@ public class NewObjectSpyDialog extends Dialog
     }
 
     private void createCapturedObjectsAndPropertiesView(Composite bodyComposite) {
-        capturedObjectsView = new CapturedObjectsView(bodyComposite, SWT.NONE);
+        capturedObjectsView = new CapturedObjectsView(bodyComposite, SWT.NONE, eventBroker);
         Sash sash = new Sash(bodyComposite, SWT.HORIZONTAL);
         GridData layoutData = new GridData(SWT.FILL, SWT.TOP, true, false);
         sash.setLayoutData(layoutData);

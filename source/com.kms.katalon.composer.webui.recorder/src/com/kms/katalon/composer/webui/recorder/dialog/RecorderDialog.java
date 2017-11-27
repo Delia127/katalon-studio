@@ -524,7 +524,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     }
 
     private void createLeftPanel(Composite parent) {
-        capturedObjectComposite = new CapturedObjectsView(parent, SWT.NONE);
+        capturedObjectComposite = new CapturedObjectsView(parent, SWT.NONE, eventBroker);
         Sash sash = new Sash(parent, SWT.HORIZONTAL);
         GridData layoutData = new GridData(SWT.FILL, SWT.TOP, true, false);
         sash.setLayoutData(layoutData);
@@ -1214,6 +1214,14 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
                 tltmDelete.setEnabled(isAnyTableItemSelected());
+                StructuredSelection selection = (StructuredSelection) event.getSelection();
+                HTMLActionMapping actionMapping = (HTMLActionMapping) selection.getFirstElement();
+                if (actionMapping != null) {
+                    WebElement element = actionMapping.getTargetElement();
+                    if (element != null) {
+                        eventBroker.send(EventConstants.RECORDER_ACTION_SELECTED, element);
+                    }
+                }
             }
         });
     }
@@ -1661,28 +1669,30 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     }
     
     private String getNewElementDisplayName(WebFrame parentElement, WebElement newElement) {
-        String currentName = newElement.getName();
+        String newElementName = newElement.getName();
         List<WebElement> sameLevelElements = parentElement.getChildren();
         int maxPostfixNumber = 0;
         int count = 0;
         for (WebElement element : sameLevelElements) {
             String elementName = element.getName();
-            if (elementName.startsWith(currentName)) {
+            if (elementName.equals(newElementName)) {
                 count++;
-                int underscoreIndex = currentName.length();
-                if (underscoreIndex >= 0 && elementName.length() > underscoreIndex + 1) {
+            } else if (elementName.startsWith(newElementName)) {
+                int expectedUnderscoreIndex = newElementName.length();
+                if (elementName.length() > expectedUnderscoreIndex + 1 && elementName.charAt(expectedUnderscoreIndex) == '_') {
                     try {
-                        int postfixNumber = Integer.parseInt(elementName.substring(underscoreIndex + 1));
+                        int postfixNumber = Integer.parseInt(elementName.substring(expectedUnderscoreIndex + 1));
                         if (postfixNumber > maxPostfixNumber) {
                             maxPostfixNumber = postfixNumber;
                         }
+                        count++;
                     } catch (NumberFormatException e) {
                         //ignore
                     }
                 }
             }
         }
-        return currentName + (count > 0 ? "_" + (++maxPostfixNumber) : "");
+        return newElementName + (count > 0 ? "_" + (++maxPostfixNumber) : "");
     }
     
     private int indexOf(List<WebElement> elements, WebElement frame) {
