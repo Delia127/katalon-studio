@@ -178,7 +178,7 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     }
 
     @Override
-    public Map<String, String> getAdditionalEnvironmentVariables() throws IOException {
+    public Map<String, String> getAdditionalEnvironmentVariables() throws IOException, ExecutionException {
         return new HashMap<>();
     }
     

@@ -37,7 +37,7 @@ public class ConsoleLauncher extends ReportableLauncher implements IConsoleLaunc
         }
     }
 
-    protected Process executeProcess() throws IOException {
+    protected Process executeProcess() throws IOException, ExecutionException {
         return new LaunchProcessor(ClassPathResolver.getClassPaths(ProjectController.getInstance()
                 .getCurrentProject()), runConfig.getAdditionalEnvironmentVariables()).execute(getRunConfig()
                 .getExecutionSetting().getScriptFile());

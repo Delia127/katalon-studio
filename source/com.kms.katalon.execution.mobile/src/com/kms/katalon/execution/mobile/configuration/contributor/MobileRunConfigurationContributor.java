@@ -21,6 +21,8 @@ import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.mobile.configuration.MobileRunConfiguration;
 import com.kms.katalon.execution.mobile.configuration.providers.MobileDeviceProvider;
 import com.kms.katalon.execution.mobile.constants.StringConstants;
+import com.kms.katalon.execution.mobile.device.AndroidSDKDownloadManager;
+import com.kms.katalon.execution.mobile.device.AndroidSDKManager;
 import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
 import com.kms.katalon.execution.mobile.driver.AndroidDriverConnector;
 import com.kms.katalon.execution.mobile.driver.IosDriverConnector;
@@ -50,6 +52,11 @@ public abstract class MobileRunConfigurationContributor implements IRunConfigura
     public IRunConfiguration getRunConfiguration(String projectDir)
             throws IOException, ExecutionException, InterruptedException {
         MobileExecutionUtil.detectInstalledAppiumAndNodeJs();
+        AndroidSDKManager sdkManager = new AndroidSDKManager();
+        if (!sdkManager.checkSDKExists()) {
+            AndroidSDKDownloadManager downloadManager = new AndroidSDKDownloadManager(sdkManager.getSDKLocator());
+            downloadManager.downloadAndInstall();
+        }
         deviceName = StringUtils.isNotBlank(deviceName) ? deviceName
                 : getDefaultDeviceId(projectDir, getMobileDriverType());
         if (StringUtils.isBlank(deviceName)) {

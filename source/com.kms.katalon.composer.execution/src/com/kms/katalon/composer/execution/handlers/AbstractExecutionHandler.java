@@ -204,11 +204,13 @@ public abstract class AbstractExecutionHandler {
     public void execute(LaunchMode launchMode) throws Exception {
         String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
 
-        IRunConfiguration runConfiguration = getRunConfigurationForExecution(projectDir);
-        if (runConfiguration == null) {
-            return;
-        }
-        execute(launchMode, runConfiguration);
+        try {
+            IRunConfiguration runConfiguration = getRunConfigurationForExecution(projectDir);
+            if (runConfiguration == null) {
+                return;
+            }
+            execute(launchMode, runConfiguration);
+        } catch (InterruptedException ignored) {}
     }
 
     protected void execute(LaunchMode launchMode, IRunConfiguration runConfiguration) throws Exception {

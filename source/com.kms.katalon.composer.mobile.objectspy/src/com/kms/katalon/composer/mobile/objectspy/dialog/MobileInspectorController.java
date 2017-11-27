@@ -53,6 +53,7 @@ import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
 import com.kms.katalon.execution.mobile.driver.AndroidDriverConnector;
 import com.kms.katalon.execution.mobile.driver.IosDriverConnector;
 import com.kms.katalon.execution.mobile.driver.MobileDriverConnector;
+import com.kms.katalon.execution.mobile.exception.AndroidSetupException;
 import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.integration.kobiton.driver.KobitonDriverConnector;
 import com.kms.katalon.integration.kobiton.entity.KobitonApplication;
@@ -196,7 +197,7 @@ public class MobileInspectorController {
     }
 
     private Map<String, String> getAdditionalEnvironmentVariables(MobileDriverType mobileDriverType)
-            throws IOException, InterruptedException {
+            throws IOException, InterruptedException, AndroidSetupException {
         if (mobileDriverType == MobileDriverType.ANDROID_DRIVER) {
             return AndroidDeviceInfo.getAndroidAdditionalEnvironmentVariables();
         }

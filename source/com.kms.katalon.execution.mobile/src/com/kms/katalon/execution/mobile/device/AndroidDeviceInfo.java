@@ -12,6 +12,7 @@ import org.osgi.framework.Bundle;
 
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.core.util.ConsoleCommandExecutor;
+import com.kms.katalon.execution.mobile.exception.AndroidSDKNotFoundException;
 import com.kms.katalon.execution.mobile.exception.AndroidSetupException;
 
 public class AndroidDeviceInfo extends MobileDeviceInfo {
@@ -39,9 +40,6 @@ public class AndroidDeviceInfo extends MobileDeviceInfo {
     private static final String ANDROID_EMULATOR_PREFIX = "emulator-";
 
     private static final String ANDROID_HOME_ENVIRONMENT_VARIABLE_NAME = "ANDROID_HOME";
-
-    private static final String ANDROID_SDK_FOLDER_RELATIVE_PATH = "resources" + File.separator + "tools"
-            + File.separator + "android_sdk";
 
     private static final String ADB = "adb";
 
@@ -110,12 +108,16 @@ public class AndroidDeviceInfo extends MobileDeviceInfo {
         return ConsoleCommandExecutor.runConsoleCommandAndCollectFirstResult(getManuFacturerCommand);
     }
 
-    public static File getAndroidSDKDirectory() throws IOException {
-        return getResourceFolder(ANDROID_SDK_FOLDER_RELATIVE_PATH);
+    public static File getAndroidSDKDirectory() throws IOException, AndroidSetupException {
+        AndroidSDKManager androidSDKManager = new AndroidSDKManager();
+        if (!androidSDKManager.checkSDKExists()) {
+            throw new AndroidSDKNotFoundException();
+        }
+        return androidSDKManager.getSDKFolder();
     }
 
-    public static String getAndroidSDKDirectoryAsString() throws IOException {
-        return getResourceFolder(ANDROID_SDK_FOLDER_RELATIVE_PATH).getAbsolutePath();
+    public static String getAndroidSDKDirectoryAsString() throws IOException, AndroidSetupException {
+        return getAndroidSDKDirectory().getAbsolutePath();
     }
 
     public static String getADBPath() throws IOException, AndroidSetupException {
@@ -128,7 +130,7 @@ public class AndroidDeviceInfo extends MobileDeviceInfo {
 
     public static void makeAllAndroidSDKBinaryExecutable()
             throws IOException, InterruptedException, AndroidSetupException {
-        if (!Platform.OS_MACOSX.equals(Platform.getOS())) {
+        if (Platform.OS_WIN32.equals(Platform.getOS())) {
             return;
         }
 
@@ -186,7 +188,8 @@ public class AndroidDeviceInfo extends MobileDeviceInfo {
         return deviceOSVersion;
     }
 
-    public static Map<String, String> getAndroidAdditionalEnvironmentVariables() throws IOException {
+    public static Map<String, String> getAndroidAdditionalEnvironmentVariables()
+            throws IOException, AndroidSetupException {
         String androidSDKFolder = getAndroidSDKDirectoryAsString();
         if (StringUtils.isEmpty(androidSDKFolder)) {
             return new HashMap<String, String>();
