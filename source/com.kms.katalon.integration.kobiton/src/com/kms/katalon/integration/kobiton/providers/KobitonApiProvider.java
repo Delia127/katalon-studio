@@ -6,6 +6,7 @@ import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
@@ -108,7 +109,10 @@ public class KobitonApiProvider {
                 .create()
                 .fromJson(responseString, new TypeToken<Map<String, List<KobitonDevice>>>() {}.getType());
 
-        return allDevices.getOrDefault("favoriteDevices", Collections.emptyList());
+        return allDevices.getOrDefault("favoriteDevices", Collections.emptyList())
+                .stream()
+                .filter(d -> !d.isHidden() && d.isOnline() && d.isFavorite() && d.isCloud())
+                .collect(Collectors.toList());
     }
 
     public static List<KobitonApplication> getKobitionApplications(String token)
