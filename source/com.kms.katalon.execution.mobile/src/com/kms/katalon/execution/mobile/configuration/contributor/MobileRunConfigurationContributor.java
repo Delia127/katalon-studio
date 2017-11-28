@@ -51,16 +51,17 @@ public abstract class MobileRunConfigurationContributor implements IRunConfigura
     @Override
     public IRunConfiguration getRunConfiguration(String projectDir)
             throws IOException, ExecutionException, InterruptedException {
+        deviceName = StringUtils.isNotBlank(deviceName) ? deviceName
+                : getDefaultDeviceId(projectDir, getMobileDriverType());
+        if (StringUtils.isBlank(deviceName)) {
+            throw new ExecutionException(StringConstants.MOBILE_ERR_NO_DEVICE_NAME_AVAILABLE);
+        }
+
         MobileExecutionUtil.detectInstalledAppiumAndNodeJs();
         AndroidSDKManager sdkManager = new AndroidSDKManager();
         if (!sdkManager.checkSDKExists()) {
             AndroidSDKDownloadManager downloadManager = new AndroidSDKDownloadManager(sdkManager.getSDKLocator());
             downloadManager.downloadAndInstall();
-        }
-        deviceName = StringUtils.isNotBlank(deviceName) ? deviceName
-                : getDefaultDeviceId(projectDir, getMobileDriverType());
-        if (StringUtils.isBlank(deviceName)) {
-            throw new ExecutionException(StringConstants.MOBILE_ERR_NO_DEVICE_NAME_AVAILABLE);
         }
         MobileDeviceInfo device = null;
         try {
@@ -139,11 +140,11 @@ public abstract class MobileRunConfigurationContributor implements IRunConfigura
             public String getOption() {
                 return AppiumStringConstants.CONF_EXECUTED_DEVICE_ID;
             }
-            
+
             @Override
             public String getValue() {
                 return getDeviceId(description);
-            } 
+            }
         });
     }
 }

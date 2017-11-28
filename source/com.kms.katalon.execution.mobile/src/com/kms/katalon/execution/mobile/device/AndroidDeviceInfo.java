@@ -116,15 +116,11 @@ public class AndroidDeviceInfo extends MobileDeviceInfo {
         return androidSDKManager.getSDKFolder();
     }
 
-    public static String getAndroidSDKDirectoryAsString() throws IOException, AndroidSetupException {
-        return getAndroidSDKDirectory().getAbsolutePath();
-    }
-
     public static String getADBPath() throws IOException, AndroidSetupException {
         if (!StringUtils.isEmpty(adbPath)) {
             return adbPath;
         }
-        adbPath = getAndroidSDKDirectoryAsString() + File.separator + PLATFORM_TOOLS + File.separator + ADB;
+        adbPath = new File(getAndroidSDKDirectory(), PLATFORM_TOOLS + File.separator + ADB).getAbsolutePath();
         return adbPath;
     }
 
@@ -190,7 +186,7 @@ public class AndroidDeviceInfo extends MobileDeviceInfo {
 
     public static Map<String, String> getAndroidAdditionalEnvironmentVariables()
             throws IOException, AndroidSetupException {
-        String androidSDKFolder = getAndroidSDKDirectoryAsString();
+        String androidSDKFolder = getAndroidSDKDirectory().getAbsolutePath();
         if (StringUtils.isEmpty(androidSDKFolder)) {
             return new HashMap<String, String>();
         }
