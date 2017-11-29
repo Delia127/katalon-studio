@@ -5,13 +5,17 @@ import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPre
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.core.setting.BundleSettingStore;
+import com.kms.katalon.core.setting.ReportFormatType;
 import com.kms.katalon.core.util.internal.JarUtil;
+import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
@@ -151,5 +155,19 @@ public class EmailSettingStore extends BundleSettingStore {
 
     public void setEmailBcc(String bcc) throws IOException {
         setProperty(ExecutionPreferenceConstants.MAIL_CONFIG_CC, StringUtils.defaultString(bcc));
+    }
+
+    public List<ReportFormatType> getReportFormatOptions() throws IOException {
+        String reportFormatOptAsJson = getString(ExecutionPreferenceConstants.MAIL_CONFIG_REPORT_FORMAT,
+                StringUtils.EMPTY);
+        if (StringUtils.isEmpty(reportFormatOptAsJson)) {
+            return Arrays.asList(ReportFormatType.HTML, ReportFormatType.CSV);
+        }
+        return Arrays.asList(JsonUtil.fromJson(reportFormatOptAsJson, ReportFormatType[].class));
+    }
+
+    public void setReportFormatOptions(List<ReportFormatType> reportFormatOptions) throws IOException {
+        String reportFormatOptAsJson = JsonUtil.toJson(reportFormatOptions.toArray(new ReportFormatType[0]));
+        setProperty(ExecutionPreferenceConstants.MAIL_CONFIG_REPORT_FORMAT, reportFormatOptAsJson);
     }
 }

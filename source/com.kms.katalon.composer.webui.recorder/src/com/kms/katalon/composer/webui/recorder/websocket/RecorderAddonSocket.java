@@ -12,7 +12,9 @@ import com.kms.katalon.composer.webui.recorder.action.HTMLActionMapping;
 import com.kms.katalon.composer.webui.recorder.util.HTMLActionJsonParser;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.objectspy.util.HTMLElementUtil;
+import com.kms.katalon.objectspy.websocket.AddonCommand;
 import com.kms.katalon.objectspy.websocket.AddonSocket;
+import com.kms.katalon.objectspy.websocket.messages.AddonMessage;
 
 @ClientEndpoint
 @ServerEndpoint(value = "/")
@@ -39,5 +41,24 @@ public class RecorderAddonSocket extends AddonSocket {
         } catch (JsonSyntaxException | UnsupportedEncodingException e) {
             LoggerSingleton.logError(e);
         }
+    }
+    
+    @Override
+    public void sendMessage(AddonMessage message) {
+        if (message.getCommand().equals(AddonCommand.HIGHLIGHT_OBJECT)) {
+            super.sendMessage(new AddonMessage(AddonCommand.START_INSPECT, null));
+            try {
+                Thread.sleep(50L);
+            } catch (InterruptedException ignored) {}
+            super.sendMessage(message);
+            super.sendMessage(new AddonMessage(AddonCommand.START_RECORD, null));
+        } else {
+            super.sendMessage(message);
+        }
+    }
+    
+    @Override
+    public void onWebSocketError(Throwable cause) {
+        super.onWebSocketError(cause);
     }
 }

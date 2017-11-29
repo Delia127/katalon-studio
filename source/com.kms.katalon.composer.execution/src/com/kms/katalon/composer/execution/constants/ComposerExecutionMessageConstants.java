@@ -83,8 +83,6 @@ public class ComposerExecutionMessageConstants extends NLS {
 
     public static String TRACE_WARN_MSG_UNABLE_TO_OPEN_KEYWORD_FILE;
 
-    public static String PREF_GRP_DEFAULT_EXECUTION_CONFIG;
-
     public static String PREF_LBL_DEFAULT_IMPLICIT_TIMEOUT;
 
     public static String PREF_GRP_POST_EXECUTION_OPTIONS;
@@ -276,6 +274,8 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String PREF_LBL_BODY;
 
     public static String PREF_LNK_EDIT_TEMPLATE;
+    
+    public static String PREF_LBL_REPORT_FORMAT;
     
     // StyleRangeMatcher
     public static String WARN_TEST_OBEJCT_NOT_FOUND;

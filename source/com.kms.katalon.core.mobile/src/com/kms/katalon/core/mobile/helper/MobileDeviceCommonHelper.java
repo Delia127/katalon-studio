@@ -4,6 +4,8 @@ import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
 
+import java.time.Duration;
+
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.WebElement;
@@ -16,7 +18,7 @@ public class MobileDeviceCommonHelper {
             Dimension screenSize = driver.manage().window().getSize();
             WebElement element = driver.findElementByName("SlideToUnlock");
             // Wake up the screen
-            ((IOSDriver<?>) driver).lockDevice(0);
+            ((IOSDriver<?>) driver).lockDevice(Duration.ZERO);
             Point location = element.getLocation();
             MobileCommonHelper.swipe(driver, location.getX(), location.getY(), screenSize.width, location.getY());
         }

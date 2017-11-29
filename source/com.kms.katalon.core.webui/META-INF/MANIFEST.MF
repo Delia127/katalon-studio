@@ -10,11 +10,11 @@ Require-Bundle: org.codehaus.groovy,
  org.apache.commons.io,
  com.kms.katalon.selenium-standalone,
  com.kms.katalon.core.appium,
- io.appium.java-client,
  org.apache.commons.lang,
  org.apache.commons.lang3,
  org.eclipse.osgi,
- com.google.gson
+ com.google.gson,
+ com.google.guava
 Export-Package: com.kms.katalon.core.webui.common,
  com.kms.katalon.core.webui.constants,
  com.kms.katalon.core.webui.driver,

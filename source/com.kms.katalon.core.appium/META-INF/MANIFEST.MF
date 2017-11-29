@@ -5,16 +5,36 @@ Bundle-SymbolicName: com.kms.katalon.core.appium;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: KMS
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ClassPath: .
+Bundle-ClassPath: .,
+ resources/lib/java-client-5.0.4.jar
 Require-Bundle: com.kms.katalon.selenium-standalone,
- io.appium.java-client,
  com.kms.katalon.core,
  org.apache.commons.lang3,
  org.apache.httpcomponents.httpcore,
  org.apache.httpcomponents.httpclient,
  org.apache.commons.io,
  com.google.gson,
- org.eclipse.osgi
+ org.eclipse.osgi,
+ com.google.guava
 Export-Package: com.kms.katalon.core.appium.constants,
  com.kms.katalon.core.appium.driver,
- com.kms.katalon.core.appium.exception
+ com.kms.katalon.core.appium.exception,
+ io.appium.java_client,
+ io.appium.java_client.android,
+ io.appium.java_client.events,
+ io.appium.java_client.events.api,
+ io.appium.java_client.events.api.general,
+ io.appium.java_client.events.api.mobile,
+ io.appium.java_client.functions,
+ io.appium.java_client.internal,
+ io.appium.java_client.ios,
+ io.appium.java_client.pagefactory,
+ io.appium.java_client.pagefactory.bys,
+ io.appium.java_client.pagefactory.bys.builder,
+ io.appium.java_client.pagefactory.interceptors,
+ io.appium.java_client.pagefactory.locator,
+ io.appium.java_client.pagefactory.utils,
+ io.appium.java_client.remote,
+ io.appium.java_client.service.local,
+ io.appium.java_client.service.local.flags,
+ io.appium.java_client.windows

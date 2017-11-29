@@ -45,3 +45,11 @@
   Type command "mvn clean verify" and wait for Maven BUILD SUCCESS.
   Katalon builds for typical platforms (Windows, Mac, Linux) will be generated and packaged under com.kms.katalon.product\target\products
   
+### Embedded Katalon Object Spy and Recorder extensions (Since Release 5.1.0)
+- Location
+-- Chrome Object Spy location: /../com.kms.katalon.composer.webui.objectspy/resources/extensions/Chrome/Object Spy/
+-- Chrome Recorder location: /../com.kms.katalon.composer.webui.recorder/resources/extensions/Chrome/Recorder/
+-- Firefox Object Spy/Recorder location: /../com.kms.katalon.composer.webui.objectspy/resources/extensions/Firefox/objectspy/
+-- IE Object Spy location: /../com.kms.katalon.composer.webui.objectspy/resources/extensions/IE/Object Spy
+-- IE Recorder location: /../com.kms.katalon.composer.webui.recorder/extensions/IE/RecorderExtension
+- Source code to follow-up: [InspectSession](https://github.com/kms-technology/katalon/blob/Release-5.1.0/source/com.kms.katalon.composer.webui.objectspy/src/com/kms/katalon/objectspy/core/InspectSession.java) and [RecordSession](https://github.com/kms-technology/katalon/blob/Release-5.1.0/source/com.kms.katalon.composer.webui.recorder/src/com/kms/katalon/composer/webui/recorder/core/RecordSession.java)

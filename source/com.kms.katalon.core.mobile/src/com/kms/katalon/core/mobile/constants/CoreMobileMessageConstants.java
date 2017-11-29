@@ -384,7 +384,12 @@ public class CoreMobileMessageConstants extends NLS {
     public static String KW_MSG_CANNOT_SEND_KEYS_X_ON_ELEMENT_Y;
 
     public static String KW_LOG_SEND_KEYS_X_ON_ELEMENT_Y_SUCCESSFULLY;
-
+    
+    // ScrollToTextKeyword
+    public static String KW_MSG_TEXT_NOT_FOUND;
+    
+    public static String KW_LOG_TEXT_FOUND_IN_ELEMENTS;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, CoreMobileMessageConstants.class);

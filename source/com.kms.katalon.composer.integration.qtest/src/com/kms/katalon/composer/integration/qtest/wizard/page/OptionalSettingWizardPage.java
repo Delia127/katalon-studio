@@ -21,8 +21,8 @@ import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.wizard.AbstractWizardPage;
 import com.kms.katalon.composer.integration.qtest.constant.ComposerIntegrationQtestMessageConstants;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
+import com.kms.katalon.core.setting.ReportFormatType;
 import com.kms.katalon.integration.qtest.setting.QTestAttachmentSendingType;
-import com.kms.katalon.integration.qtest.setting.QTestReportFormatType;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 
 public class OptionalSettingWizardPage extends AbstractWizardPage implements QTestWizardPage {
@@ -119,7 +119,7 @@ public class OptionalSettingWizardPage extends AbstractWizardPage implements QTe
         attachmentOptionsLayout.marginHeight = 5;
         grpReportFormatOptions.setLayout(attachmentOptionsLayout);
 
-        for (QTestReportFormatType formatType : QTestReportFormatType.values()) {
+        for (ReportFormatType formatType : ReportFormatType.values()) {
             Button btnFormmatingType = new Button(grpReportFormatOptions, SWT.CHECK);
             btnFormmatingType.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
             btnFormmatingType.setText(formatType.toString());
@@ -158,7 +158,7 @@ public class OptionalSettingWizardPage extends AbstractWizardPage implements QTe
             }
         }
 
-        List<QTestReportFormatType> reportFormatType = (List<QTestReportFormatType>) sharedData
+        List<ReportFormatType> reportFormatType = (List<ReportFormatType>) sharedData
                 .get(QTestSettingStore.REPORT_FORMAT);
         if (reportFormatType != null) {
             for (Control chckButton : grpReportFormatOptions.getChildren()) {
@@ -218,12 +218,12 @@ public class OptionalSettingWizardPage extends AbstractWizardPage implements QTe
     }
 
     private void saveReportFormat(Map<String, Object> sharedData) {
-        List<QTestReportFormatType> selectedResultSendingType = new ArrayList<QTestReportFormatType>();
+        List<ReportFormatType> selectedResultSendingType = new ArrayList<ReportFormatType>();
         for (Control radioButtonControl : grpReportFormatOptions.getChildren()) {
             if (radioButtonControl instanceof Button) {
                 Button sendingTypeRadioButton = (Button) radioButtonControl;
                 if (sendingTypeRadioButton.getSelection()) {
-                    QTestReportFormatType resultSendingType = (QTestReportFormatType) sendingTypeRadioButton.getData();
+                    ReportFormatType resultSendingType = (ReportFormatType) sendingTypeRadioButton.getData();
                     selectedResultSendingType.add(resultSendingType);
                 }
             }

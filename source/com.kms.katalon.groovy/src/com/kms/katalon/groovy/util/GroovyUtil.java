@@ -313,7 +313,7 @@ public class GroovyUtil {
         addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle(IdConstants.KATALON_CORE_BUNDLE_ID));
 
         addClassPathOfCoreBundleToJavaProject(entries, FrameworkUtil.getBundle(TempClass.class));
-        addClassPathOfCoreBundleToJavaProject(entries, FrameworkUtil.getBundle(AppiumDriverManager.class));
+        addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle("com.kms.katalon.core.appium"));
         for (IKeywordContributor contributor : KeywordContributorCollection.getKeywordContributors()) {
             Bundle coreBundle = FrameworkUtil.getBundle(contributor.getClass());
             addClassPathOfCoreBundleToJavaProject(entries, coreBundle);

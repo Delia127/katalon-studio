@@ -161,11 +161,13 @@ public class RestfulClient extends BasicRequestor {
         StringBuffer sb = new StringBuffer();
 
         char[] buffer = new char[1024];
-        try (InputStream inputStream = (statusCode >= 400) ? conn.getErrorStream() : conn.getInputStream();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
-            int len = 0;
-            while ((len = reader.read(buffer)) != -1) {
-                sb.append(buffer, 0, len);
+        try (InputStream inputStream = (statusCode >= 400) ? conn.getInputStream() : conn.getInputStream()) {
+            if (inputStream != null) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                int len = 0;
+                while ((len = reader.read(buffer)) != -1) {
+                    sb.append(buffer, 0, len);
+                }
             }
         }
 

@@ -261,7 +261,7 @@ public class TestDataFactory {
 
         boolean usingGlobalDBSetting = Boolean.parseBoolean(testDataElement.element(NODE_GLOBAL_DB_SETTING).getText());
         if (usingGlobalDBSetting) {
-            DatabaseConnection dbConnection = new DatabaseSettings(getProjectDir()).getDatabaseConnection();
+            DatabaseConnection dbConnection = new DatabaseSettings(projectDir).getDatabaseConnection();
             if (dbConnection == null) {
                 throw new IllegalArgumentException(MessageFormat.format(
                         StringConstants.XML_ERROR_TEST_DATA_CONNECTION_IS_NULL,

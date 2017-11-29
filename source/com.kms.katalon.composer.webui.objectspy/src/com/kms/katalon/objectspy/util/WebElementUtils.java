@@ -5,6 +5,7 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -72,6 +73,13 @@ public class WebElementUtils {
 
     private static final String XPATH_KEY = "xpath";
 
+    private static final List<String> PRIORITY_PROPERTIES;
+
+    static {
+        PRIORITY_PROPERTIES = Arrays.asList(new String[] { "id", "name", "alt", "checked", "form", "href",
+                "placeholder", "selected", "src", "title", "type", "text", "linked_text" });
+    }
+
     public static String generateWebElementName(String elementType, List<WebElementPropertyEntity> properties) {
         Map<String, String> propsMap = properties.stream()
                 .filter(p -> ELEMENT_TEXT_KEY.equals(p.getName()) || ELEMENT_NAME_KEY.equals(p.getName())
@@ -123,7 +131,11 @@ public class WebElementUtils {
 
         String xpathString = getElementXpath(elementJsonObject);
         if (xpathString != null) {
-            properties.add(new WebElementPropertyEntity(XPATH_KEY, xpathString));
+            boolean hasPriorityProperty = properties.stream()
+                    .filter(p -> PRIORITY_PROPERTIES.contains(p.getName()))
+                    .findAny()
+                    .isPresent();
+            properties.add(new WebElementPropertyEntity(XPATH_KEY, xpathString, !hasPriorityProperty));
         }
 
         WebFrame parentElement = getParentElement(elementJsonObject);
@@ -172,7 +184,9 @@ public class WebElementUtils {
             if (!isValidElementAttribute(entry)) {
                 continue;
             }
-            properties.add(new WebElementPropertyEntity(entry.getKey(), entry.getValue().getAsString()));
+            String propertyName = entry.getKey();
+            properties.add(new WebElementPropertyEntity(propertyName, entry.getValue().getAsString(),
+                    PRIORITY_PROPERTIES.contains(propertyName)));
         }
     }
 

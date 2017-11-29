@@ -33,12 +33,12 @@ public class IosDeviceInfo extends MobileDeviceInfo {
     private static final String IOS_DEPLOY_FOLDER_RELATIVE_PATH = RELATIVE_PATH_TO_TOOLS_FOLDER + "ios-deploy";
 
     private static final String CARTHAGE_FOLDER_RELATIVE_PATH = RELATIVE_PATH_TO_TOOLS_FOLDER + "carthage"
-            + File.separator + "0.18.1" + File.separator + "bin";
-    
+            + File.separator + "0.18.1" + File.separator + "etc" + File.separator + "bash_completion.d";
+
     public static final String DEVICECONSOLE = "deviceconsole";
-    
+
     private static final String DEVICE_CONSOLE_FOLDER_RELATIVE_PATH = RELATIVE_PATH_TO_TOOLS_FOLDER + DEVICECONSOLE;
-    
+
     protected String deviceClass = "";
 
     protected String deviceName = "";
@@ -119,7 +119,7 @@ public class IosDeviceInfo extends MobileDeviceInfo {
     private static File getCarthageDirectory() throws IOException {
         return getResourceFolder(CARTHAGE_FOLDER_RELATIVE_PATH);
     }
-    
+
     public static File getDeviceConsoleExecutablePath() throws IOException {
         return new File(getResourceFolder(DEVICE_CONSOLE_FOLDER_RELATIVE_PATH), DEVICECONSOLE);
     }
@@ -128,7 +128,17 @@ public class IosDeviceInfo extends MobileDeviceInfo {
         return getIMobileDeviceDirectory().getAbsolutePath();
     }
 
-    public static Map<String, String> getIosAdditionalEnvironmentVariables() throws IOException {
+    @Override
+    protected Map<String, String> getEnvironmentVariables() throws IOException, InterruptedException {
+        return getIosAdditionalEnvironmentVariables();
+    }
+
+    public static Map<String, String> getIosAdditionalEnvironmentVariables() throws IOException, InterruptedException {
+        makeIosDeployExecutable();
+        makeDeviceConsoleExecutable();
+        makeAllIMobileDeviceBinaryExecutable();
+        makeAllFilesInFolderExecutable(getCarthageDirectory());
+
         Map<String, String> additionalEnvironmentVariables = new HashMap<String, String>();
         String iMobileDeviceDirectory = getIMobileDeviceDirectoryAsString();
         if (StringUtils.isEmpty(iMobileDeviceDirectory)) {
@@ -159,14 +169,14 @@ public class IosDeviceInfo extends MobileDeviceInfo {
             makeFileExecutable(file);
         }
     }
-    
+
     public static void makeIosDeployExecutable() throws IOException, InterruptedException {
         if (!Platform.OS_MACOSX.equals(Platform.getOS())) {
             return;
         }
         makeAllFilesInFolderExecutable(getIosDeployDirectory());
     }
-    
+
     public static void makeDeviceConsoleExecutable() throws IOException, InterruptedException {
         if (!Platform.OS_MACOSX.equals(Platform.getOS())) {
             return;

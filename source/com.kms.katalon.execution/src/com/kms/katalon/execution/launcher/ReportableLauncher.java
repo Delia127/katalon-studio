@@ -144,17 +144,8 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         writeLine(MessageFormat.format(StringConstants.LAU_PRT_SENDING_EMAIL_RPT_TO,
                 Arrays.toString(emailConfig.getTos())));
 
-        File testSuiteReportSourceFolder = new File(getRunConfig().getExecutionSetting().getFolderPath());
-
-        File csvFile = new File(testSuiteReportSourceFolder,
-                FilenameUtils.getBaseName(testSuiteReportSourceFolder.getName()) + ".csv");
-
-        List<String> csvReports = new ArrayList<String>();
-
-        csvReports.add(csvFile.getAbsolutePath());
-
         // Send report email
-        MailUtil.sendSummaryMail(emailConfig, csvFile, getReportFolder(), new EmailVariableBinding(testSuiteLogRecord));
+        MailUtil.sendSummaryMail(emailConfig, testSuiteLogRecord, new EmailVariableBinding(testSuiteLogRecord));
 
         writeLine(StringConstants.LAU_PRT_EMAIL_SENT);
     }

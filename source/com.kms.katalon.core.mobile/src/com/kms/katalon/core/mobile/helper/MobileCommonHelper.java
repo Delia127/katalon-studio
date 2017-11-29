@@ -1,9 +1,11 @@
 package com.kms.katalon.core.mobile.helper;
 
 import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
 
 import java.text.MessageFormat;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,17 +20,20 @@ import com.kms.katalon.core.mobile.keyword.internal.GUIObject;
 import com.kms.katalon.core.mobile.keyword.internal.MobileDriverFactory;
 
 public class MobileCommonHelper {
-    
+
     private static final String ATTRIBUTE_NAME_FOR_ANDROID_RESOURCE_ID = "resourceId";
 
     private static final String ATTRIBUTE_NAME_FOR_ANDROID_CONTENT_DESC = "name";
-    
+
     @SuppressWarnings("rawtypes")
-    public static void swipe(AppiumDriver driver, int startX, int startY, int endX, int endY){
-        driver.swipe(startX, startY, endX, endY, 500);
+    public static void swipe(AppiumDriver driver, int startX, int startY, int endX, int endY) {
+        TouchAction swipe = new TouchAction(driver).press(startX, startY)
+                .waitAction(Duration.ofMillis(500))
+                .moveTo(endX, endY);
+        swipe.perform();
     }
 
-    public static Map<String,String> deviceModels = new HashMap<String, String>();
+    public static Map<String, String> deviceModels = new HashMap<String, String>();
     static {
         deviceModels.put("iPhone3,1", "iPhone 4");
         deviceModels.put("iPhone3,3", "iPhone 4");
@@ -71,7 +76,7 @@ public class MobileCommonHelper {
 
     }
 
-    public static Map<String,String> airPlaneButtonCoords = new HashMap<String, String>();
+    public static Map<String, String> airPlaneButtonCoords = new HashMap<String, String>();
     static {
         airPlaneButtonCoords.put("iPhone 5s", "40;195");
         airPlaneButtonCoords.put("iPhone 5", "40;195");
@@ -123,13 +128,13 @@ public class MobileCommonHelper {
         KeywordLogger logger = KeywordLogger.getInstance();
         logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_X);
         if (x == null) {
-            throw new StepFailedException(MessageFormat.format(StringConstants.KW_MSG_FAILED_PARAM_X_CANNOT_BE_NULL,
-            "x"));
+            throw new StepFailedException(
+                    MessageFormat.format(StringConstants.KW_MSG_FAILED_PARAM_X_CANNOT_BE_NULL, "x"));
         }
         logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_Y);
         if (y == null) {
-            throw new StepFailedException(MessageFormat.format(StringConstants.KW_MSG_FAILED_PARAM_X_CANNOT_BE_NULL,
-            "y"));
+            throw new StepFailedException(
+                    MessageFormat.format(StringConstants.KW_MSG_FAILED_PARAM_X_CANNOT_BE_NULL, "y"));
         }
     }
 }

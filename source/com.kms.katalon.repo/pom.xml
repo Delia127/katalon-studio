@@ -117,14 +117,13 @@
 									<id>org.apache.xmlbeans:xmlbeans:2.6.0</id>
 								</artifact>
 								<artifact>
-									<id>com.google.code.gson:gson:2.3.1</id>
+									<id>com.google:gson:2.8.0</id>
+								</artifact>
+								<artifact>
+									<id>com.google:guava:23.0</id>
 								</artifact>
 								<artifact>
 									<id>wsdl4j:wsdl4j:1.6.2</id>
-								</artifact>
-								<artifact>
-									<id>io.appium:java-client:3.4.1</id>
-									<transitive>false</transitive>
 								</artifact>
 								<artifact>
 									<id>jaxen:jaxen:1.1.6</id>
@@ -233,6 +232,15 @@
 								</artifact>
 								<artifact>
                                     <id>atu.testrecorder:screen-recorder:2.1</id>
+                                </artifact>
+								<artifact>
+                                    <id>org.junit:junit:4.12</id>
+                                </artifact>
+								<artifact>
+                                    <id>org.beanshell:bsh:2.0b4</id>
+                                </artifact>
+								<artifact>
+                                    <id>org.apache.ant:ant-launcher:1.9.6</id>
                                 </artifact>
 							</artifacts>
 						</configuration>

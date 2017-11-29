@@ -79,6 +79,8 @@ public class RecordHandler {
     @Inject
     private UISynchronize sync;
 
+    private RecorderDialog recordDialog;
+
     @PostConstruct
     public void registerEventHandler() {
         eventBroker.subscribe(EventConstants.KATALON_RECORD, new EventHandler() {
@@ -106,9 +108,11 @@ public class RecordHandler {
             if (testCaseCompositePart != null && !verifyTestCase(testCaseCompositePart)) {
                 return;
             }
-            shell = getShell(Display.getCurrent().getActiveShell());
-            final RecorderDialog recordDialog = new RecorderDialog(shell,
-                    LoggerSingleton.getInstance().getLogger(), eventBroker);
+            if (recordDialog == null || recordDialog.isDisposed()) {
+                shell = getShell(Display.getCurrent().getActiveShell());
+                recordDialog = new RecorderDialog(shell, LoggerSingleton.getInstance().getLogger(), eventBroker);
+            }
+
             int responseCode = recordDialog.open();
             if (responseCode != Window.OK) {
                 return;

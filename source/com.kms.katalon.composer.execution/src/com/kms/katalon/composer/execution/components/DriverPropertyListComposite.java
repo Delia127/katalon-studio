@@ -141,15 +141,14 @@ public class DriverPropertyListComposite extends Composite {
                                 }
                             }
                             break;
-                        case Integer:
+                        case Number:
                             if (value instanceof String) {
                                 try {
-                                    inputList.set(elementIndex, Integer.valueOf(String.valueOf(value)));
+                                    inputList.set(elementIndex, Double.valueOf(String.valueOf(value)));
                                 } catch (NumberFormatException e) {
                                     // not a number, so not setting value
                                 }
                             }
-                            break;
                         case List:
                         case Dictionary:
                             DriverPropertyValueType newPropertyType = DriverPropertyValueType.fromValue(value);
@@ -178,7 +177,7 @@ public class DriverPropertyListComposite extends Composite {
                 case List:
                 case Dictionary:
                     return element;
-                case Integer:
+                case Number:
                 case String:
                     return String.valueOf(element);
                 }
@@ -196,7 +195,7 @@ public class DriverPropertyListComposite extends Composite {
                     return new ListPropertyValueCellEditor(tableViewer.getTable());
                 case Dictionary:
                     return new MapPropertyValueCellEditor(tableViewer.getTable());
-                case Integer:
+                case Number:
                 case String:
                     return new TextCellEditor(tableViewer.getTable());
                 }

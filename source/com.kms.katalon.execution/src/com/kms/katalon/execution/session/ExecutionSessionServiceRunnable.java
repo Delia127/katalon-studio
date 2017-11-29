@@ -47,8 +47,8 @@ public class ExecutionSessionServiceRunnable implements Runnable {
             }
             sessionServer.addExecutionSession(executionSession);
             executionSession.startWatcher();
-        } catch (Exception e) {
-            LogUtil.logError(e);
+        } catch (Throwable e) {
+            LogUtil.printAndLogError(e);
         } finally {
             if (this.clientSocket == null) {
                 return;

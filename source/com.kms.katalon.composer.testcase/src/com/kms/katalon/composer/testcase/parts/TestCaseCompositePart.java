@@ -863,10 +863,8 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
     }
 
     public boolean isTestCaseEmpty() {
-        if (getSelectedPart().equals(getChildManualPart())) {
-            return childTestCasePart.isTestCaseEmpty();
-        }
-        return false;
+        return GroovyWrapperParser
+                .parseGroovyScriptAndGetFirstStatement(groovyEditor.getViewer().getDocument().get()) == null;
     }
 
     public void validateScriptErrors() throws Exception {
