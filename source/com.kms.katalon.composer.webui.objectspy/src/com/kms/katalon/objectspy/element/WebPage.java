@@ -1,9 +1,5 @@
 package com.kms.katalon.objectspy.element;
 
-import java.util.List;
-
-import com.kms.katalon.entity.repository.WebElementPropertyEntity;
-
 public class WebPage extends WebFrame {
 
     public WebPage(String name) {
@@ -17,16 +13,6 @@ public class WebPage extends WebFrame {
 
     @Override
     public void setTag(String tag) {
-        // Do nothing
-    }
-
-    @Override
-    public void setProperties(List<WebElementPropertyEntity> properties) {
-        // Do nothing
-    }
-
-    @Override
-    public void addProperty(WebElementPropertyEntity property) {
         // Do nothing
     }
 
