@@ -53,8 +53,6 @@ import org.eclipse.swt.widgets.ToolItem;
 
 import com.kms.katalon.composer.components.impl.dialogs.AddTestObjectPropertyDialog;
 import com.kms.katalon.composer.components.impl.editors.StringComboBoxCellEditor;
-import com.kms.katalon.composer.components.impl.listener.EventListener;
-import com.kms.katalon.composer.components.impl.listener.EventManager;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.core.testobject.SelectorMethod;
@@ -64,6 +62,8 @@ import com.kms.katalon.objectspy.constants.ObjectspyMessageConstants;
 import com.kms.katalon.objectspy.constants.StringConstants;
 import com.kms.katalon.objectspy.element.WebElement;
 import com.kms.katalon.objectspy.element.WebPage;
+import com.kms.katalon.util.listener.EventListener;
+import com.kms.katalon.util.listener.EventManager;
 
 public class ObjectPropertiesView extends Composite
         implements EventListener<ObjectSpyEvent>, EventManager<ObjectSpyEvent> {
