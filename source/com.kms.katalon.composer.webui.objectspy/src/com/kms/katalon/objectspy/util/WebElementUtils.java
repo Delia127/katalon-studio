@@ -72,6 +72,8 @@ public class WebElementUtils {
     private static final String ELEMENT_TAG_KEY = "tag";
 
     private static final String XPATH_KEY = "xpath";
+    
+    private static final String PAGE_URL_KEY = "url";
 
     private static final List<String> PRIORITY_PROPERTIES;
 
@@ -226,8 +228,15 @@ public class WebElementUtils {
             return null;
         }
 
+        String pageUrlString = parentPageJsonObject.getAsJsonPrimitive(PAGE_URL_KEY).getAsString();
         String pageTitleString = parentPageJsonObject.getAsJsonPrimitive(PAGE_TITLE_KEY).getAsString();
-        return new WebPage(generateWebPageName(pageTitleString));
+        
+        List<WebElementPropertyEntity> properties = new ArrayList<>();
+        properties.add(new WebElementPropertyEntity(PAGE_URL_KEY, pageUrlString, PRIORITY_PROPERTIES.contains(PAGE_URL_KEY)));
+        properties.add(new WebElementPropertyEntity(PAGE_TITLE_KEY, pageTitleString, PRIORITY_PROPERTIES.contains(PAGE_TITLE_KEY)));
+        WebPage webPage = new WebPage(generateWebPageName(pageTitleString));
+        webPage.setProperties(properties);
+        return webPage;
     }
 
     private static String generateWebPageName(String pageTitleString) {
