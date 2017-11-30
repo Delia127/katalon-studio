@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
@@ -36,6 +37,7 @@ import com.kms.katalon.custom.keyword.KeywordClass;
 import com.kms.katalon.custom.keyword.KeywordMethod;
 import com.kms.katalon.custom.keyword.KeywordParameter;
 import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.groovy.util.GroovyStringUtil;
 import com.kms.katalon.objectspy.element.WebElement;
 import com.kms.katalon.objectspy.element.WebPage;
@@ -112,8 +114,7 @@ public class HTMLActionUtil {
                         || String.valueOf(actionMapping.getData()[0].getValue()).equals(ABOUT_BLANK)))) {
             return false;
         }
-        if (actionMapping.getAction() == HTMLAction.DoubleClick
-                && existingActionMappings.size() >= 2) {
+        if (actionMapping.getAction() == HTMLAction.DoubleClick && existingActionMappings.size() >= 2) {
             checkAndUpdateDoubleClick(actionMapping, existingActionMappings);
         }
         if (actionMapping.getAction() == HTMLAction.SetText) {
@@ -126,8 +127,7 @@ public class HTMLActionUtil {
             List<HTMLActionMapping> existingActionMappings) {
         HTMLActionMapping actionOffset_1 = existingActionMappings.get(existingActionMappings.size() - 1);
         HTMLActionMapping actionOffset_2 = existingActionMappings.get(existingActionMappings.size() - 2);
-        if (actionOffset_1.getAction() == HTMLAction.LeftClick
-                && actionOffset_2.getAction() == HTMLAction.LeftClick
+        if (actionOffset_1.getAction() == HTMLAction.LeftClick && actionOffset_2.getAction() == HTMLAction.LeftClick
                 && areElementsEqual(actionOffset_1.getTargetElement(), actionMapping.getTargetElement())
                 && areElementsEqual(actionOffset_2.getTargetElement(), actionMapping.getTargetElement())) {
             existingActionMappings.remove(actionOffset_1);
@@ -148,10 +148,9 @@ public class HTMLActionUtil {
         existingActionMappings.remove(lastAction);
         return true;
     }
-    
+
     private static boolean areElementsEqual(WebElement elm1, WebElement elm2) {
-        return new EqualsBuilder()
-                .append(elm1.getType(), elm2.getType())
+        return new EqualsBuilder().append(elm1.getType(), elm2.getType())
                 .append(elm1.getTag(), elm2.getTag())
                 .append(elm1.hasProperty(), elm2.hasProperty())
                 .append(elm1.getXpath(), elm2.getXpath())
@@ -171,9 +170,12 @@ public class HTMLActionUtil {
             element = element.getParent();
         }
         if (element != null) {
-            return ((WebPage) element).getProperty(HTMLElementUtil.PAGE_TITLE_KEY).getValue();
+            WebElementPropertyEntity pageTitle = element.getProperty(HTMLElementUtil.PAGE_TITLE_KEY);
+            if (pageTitle != null) {
+                return pageTitle.getValue();
+            }
         }
-        return null;
+        return StringUtils.EMPTY;
     }
 
     public static List<IHTMLAction> getAllHTMLActions() {
