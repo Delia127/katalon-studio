@@ -12,6 +12,8 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.composer.objectrepository.constant.ObjectEventConstants;
 import com.kms.katalon.composer.objectrepository.part.TestObjectPart;
@@ -24,17 +26,17 @@ public class PropertyValueEditingSupport extends EditingSupport {
     private IEventBroker eventBroker;
 
     private TestObjectPart testObjectPart;
-
+    
     public PropertyValueEditingSupport(TableViewer viewer, IEventBroker eventBroker, TestObjectPart testObjectPart) {
         super(viewer);
         this.viewer = viewer;
         this.eventBroker = eventBroker;
         this.testObjectPart = testObjectPart;
     }
-
+    
     @Override
     protected CellEditor getCellEditor(Object element) {
-        return new TextCellEditor(viewer.getTable());
+		return new MultilineTextCellEditor(viewer.getTable());
     }
 
     @Override
@@ -57,6 +59,21 @@ public class PropertyValueEditingSupport extends EditingSupport {
             testObjectPart.executeOperation(
                     new PropertyValueChangeOperation((WebElementPropertyEntity) element, (String) value));
         }
+    }
+    
+    private class MultilineTextCellEditor extends TextCellEditor {
+    	
+    	public MultilineTextCellEditor(Composite parent) {
+    		super(parent, SWT.WRAP | SWT.MULTI | SWT.V_SCROLL | SWT.BORDER);
+    	}
+    	
+    	@Override
+		public LayoutData getLayoutData() {
+	        LayoutData data = new LayoutData();
+	        data.minimumHeight = 100;
+	        data.verticalAlignment = SWT.TOP;
+	        return data;
+	    }
     }
 
     private class PropertyValueChangeOperation extends AbstractOperation {
