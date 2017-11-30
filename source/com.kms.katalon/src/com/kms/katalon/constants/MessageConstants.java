@@ -251,6 +251,8 @@ public class MessageConstants extends NLS {
     
     public static String HAND_IMPORT_SETTINGS_MSG_SUCCESSFULL;
     
+    public static String URL_KATALON_DISCUSSION_FORUM;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, MessageConstants.class);

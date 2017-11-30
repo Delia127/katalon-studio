@@ -3,9 +3,10 @@ package com.kms.katalon.composer.handlers;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.swt.program.Program;
 
 import com.kms.katalon.composer.components.impl.handler.AbstractHandler;
-import com.kms.katalon.zendesk.ZendeskSubmitTicketDialog;
+import com.kms.katalon.constants.MessageConstants;
 
 public class ReportIssueHandler extends AbstractHandler {
     @CanExecute
@@ -15,7 +16,6 @@ public class ReportIssueHandler extends AbstractHandler {
 
     @Execute
     public void execute() {
-        ZendeskSubmitTicketDialog dialog = new ZendeskSubmitTicketDialog(getActiveWorkbenchWindow().getShell());
-        dialog.open();
+        Program.launch(MessageConstants.URL_KATALON_DISCUSSION_FORUM);
     }
 }
