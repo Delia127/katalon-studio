@@ -83,6 +83,12 @@ public abstract class MobileDeviceInfo {
         ConsoleCommandExecutor
                 .runConsoleCommandAndCollectFirstResult(new String[] { CHMOD_COMMAND, X_FLAG, file.getAbsolutePath() });
     }
+    
+    protected static void makeFolderExecutable(File file, boolean recursive) throws IOException, InterruptedException {
+        ConsoleCommandExecutor
+                .runConsoleCommandAndCollectFirstResult(new String[] { CHMOD_COMMAND, 
+                        recursive ? "-R " : "" +  X_FLAG, file.getAbsolutePath() });
+    }
 
     public Map<String, String> getDeviceSystemProperties() {
         Map<String, String> systemProperties = new HashMap<String, String>();
