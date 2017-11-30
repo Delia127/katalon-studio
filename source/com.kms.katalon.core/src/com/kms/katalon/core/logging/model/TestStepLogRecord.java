@@ -95,17 +95,20 @@ public class TestStepLogRecord extends AbstractLogRecord {
         int stepIndex = index;
         if (stepIndex == -1 && parentLogRecord != null) {
             return "";
-//            for (int i = 0; i < parentLogRecord.getChildRecords().length; i++) {
-//                if (parentLogRecord.getChildRecords()[i] == this) {
-//                    stepIndex = i + 1;
-//                    break;
-//                }
-//            }
+            // for (int i = 0; i < parentLogRecord.getChildRecords().length; i++) {
+            // if (parentLogRecord.getChildRecords()[i] == this) {
+            // stepIndex = i + 1;
+            // break;
+            // }
+            // }
         }
         if (parentLogRecord == null || !(parentLogRecord instanceof TestStepLogRecord)) {
             return String.valueOf(stepIndex);
         } else {
-            return ((TestStepLogRecord) parentLogRecord).getIndexString() + "." + stepIndex;
+            String parentIndexString = ((TestStepLogRecord) parentLogRecord).getIndexString();
+            String parentIndexStringWithSeparator = StringUtils.isNotEmpty(parentIndexString) ? parentIndexString + "."
+                    : StringUtils.EMPTY ;
+            return parentIndexStringWithSeparator + Integer.toString(stepIndex);
         }
     }
 
