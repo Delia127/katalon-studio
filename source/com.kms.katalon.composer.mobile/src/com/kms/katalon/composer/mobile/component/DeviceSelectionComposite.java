@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.execution.util.MobileDeviceUIProvider;
 import com.kms.katalon.composer.mobile.constants.StringConstants;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.execution.mobile.configuration.providers.MobileDeviceProvider;
@@ -93,7 +94,9 @@ public class DeviceSelectionComposite extends Composite {
         switch (platForm) {
             case ANDROID_DRIVER:
                 try {
-                    devicesList.addAll(MobileDeviceProvider.getAndroidDevices());
+                    if (MobileDeviceUIProvider.checkAndroidSDKExist(getShell())) {
+                        devicesList.addAll(MobileDeviceProvider.getAndroidDevices());
+                    }
                 } catch (IOException | InterruptedException | MobileSetupException e) {
                     logException(e);
                 }

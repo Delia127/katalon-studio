@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
+import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.mobile.device.AndroidDeviceInfo;
 import com.kms.katalon.execution.mobile.driver.AndroidDriverConnector;
 
@@ -21,7 +22,7 @@ public class AndroidRunConfiguration extends MobileRunConfiguration {
     }
     
     @Override
-    public Map<String, String> getAdditionalEnvironmentVariables() throws IOException {
+    public Map<String, String> getAdditionalEnvironmentVariables() throws IOException, ExecutionException {
         return AndroidDeviceInfo.getAndroidAdditionalEnvironmentVariables();
     }
 }

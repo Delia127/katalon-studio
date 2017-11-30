@@ -27,7 +27,8 @@ Export-Package: com.kms.katalon.execution.classpath,
  com.kms.katalon.execution.preferences,
  com.kms.katalon.execution.session,
  com.kms.katalon.execution.setting,
- com.kms.katalon.execution.util
+ com.kms.katalon.execution.util,
+ com.kms.katalon.execution.video
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: com.google.common.base,
  javax.annotation;version="1.2.0",

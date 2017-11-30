@@ -1,23 +1,16 @@
 package com.kms.katalon.objectspy.core;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.file.InvalidPathException;
 import java.text.MessageFormat;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -37,6 +30,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.util.internal.PathUtil;
+import com.kms.katalon.core.util.internal.ZipUtil;
 import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.core.webui.util.WebDriverPropertyUtil;
@@ -313,7 +307,7 @@ public class InspectSession implements Runnable {
                 return firefoxAddonExtracted;
             }
             File firefoxAddon = new File(extensionFolder.getAbsolutePath() + getFirefoxExtensionPath());
-            processZipFileInputStream(firefoxAddon, firefoxAddonExtracted.getAbsolutePath());
+            ZipUtil.extract(firefoxAddon, firefoxAddonExtracted);
             return firefoxAddonExtracted;
         }
         return null;
@@ -360,28 +354,5 @@ public class InspectSession implements Runnable {
 
     public WebDriver getWebDriver() {
         return driver;
-    }
-
-    private void processZipFileInputStream(File file, String location) throws IOException {
-        ZipFile zipFile = new ZipFile(file);
-        try {
-          Enumeration<? extends ZipEntry> entries = zipFile.entries();
-          while (entries.hasMoreElements()) {
-            ZipEntry entry = entries.nextElement();
-            File entryDestination = new File(location,  entry.getName());
-            if (entry.isDirectory()) {
-                entryDestination.mkdirs();
-            } else {
-                entryDestination.getParentFile().mkdirs();
-                InputStream in = zipFile.getInputStream(entry);
-                OutputStream out = new FileOutputStream(entryDestination);
-                IOUtils.copy(in, out);
-                IOUtils.closeQuietly(in);
-                out.close();
-            }
-          }
-        } finally {
-          zipFile.close();
-        }
     }
 }

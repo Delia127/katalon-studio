@@ -81,7 +81,8 @@ Require-Bundle: org.eclipse.e4.core.di,
  com.kms.katalon.composer.resources,
  com.kms.katalon.dal,
  com.kms.katalon.console,
- org.apache.commons.lang3
+ org.apache.commons.lang3,
+ com.kms.katalon.util
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: com.google.common.base,

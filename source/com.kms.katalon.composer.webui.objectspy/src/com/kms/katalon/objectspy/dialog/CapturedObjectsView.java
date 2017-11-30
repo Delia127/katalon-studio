@@ -25,8 +25,6 @@ import org.eclipse.swt.widgets.ToolTip;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
-import com.kms.katalon.composer.components.impl.listener.EventListener;
-import com.kms.katalon.composer.components.impl.listener.EventManager;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.objectspy.constants.ImageConstants;
@@ -35,6 +33,8 @@ import com.kms.katalon.objectspy.element.WebElement;
 import com.kms.katalon.objectspy.element.WebPage;
 import com.kms.katalon.objectspy.element.tree.WebElementLabelProvider;
 import com.kms.katalon.objectspy.element.tree.WebElementTreeContentProvider;
+import com.kms.katalon.util.listener.EventListener;
+import com.kms.katalon.util.listener.EventManager;
 
 public class CapturedObjectsView extends Composite implements EventHandler, EventManager<ObjectSpyEvent> {
 

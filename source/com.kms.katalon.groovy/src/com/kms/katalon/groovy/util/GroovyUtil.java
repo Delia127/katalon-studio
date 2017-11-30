@@ -314,6 +314,8 @@ public class GroovyUtil {
 
         addClassPathOfCoreBundleToJavaProject(entries, FrameworkUtil.getBundle(TempClass.class));
         addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle("com.kms.katalon.core.appium"));
+        addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle("com.kms.katalon.constant"));
+        addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle("com.kms.katalon.util"));
         for (IKeywordContributor contributor : KeywordContributorCollection.getKeywordContributors()) {
             Bundle coreBundle = FrameworkUtil.getBundle(contributor.getClass());
             addClassPathOfCoreBundleToJavaProject(entries, coreBundle);
