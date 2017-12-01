@@ -383,8 +383,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
             return;
         }
 
-        IAction formatAction = new KatalonFormatAction(groovyEditor.getSite(), FormatKind.FORMAT,
-                testCase.getIdForDisplay());
+        IAction formatAction = new KatalonFormatAction(groovyEditor.getSite(), FormatKind.FORMAT);
         formatAction.setActionDefinitionId(IJavaEditorActionDefinitionIds.FORMAT);
         groovyEditor.setAction(StringConstants.PA_ACTION_FORMAT, formatAction);
     }
@@ -407,15 +406,13 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
             parsingFailed = false;
             Shell activeShell = Display.getCurrent().getActiveShell();
             final String scriptContent = groovyEditor.getViewer().getDocument().get();
-            final String testCaseRelativePath = testCase.getRelativePathForUI();
             new ProgressMonitorDialog(activeShell).run(true, false, new IRunnableWithProgress() {
                 @Override
                 public void run(IProgressMonitor monitor) {
                     // TODO: find a way to calculate progress for parsing groovy script
                     monitor.beginTask(StringConstants.PARSING_SCRIPT_PROGRESS_NAME, IProgressMonitor.UNKNOWN);
                     try {
-                        scriptNode = GroovyWrapperParser.parseGroovyScriptIntoNodeWrapper(scriptContent,
-                                testCaseRelativePath);
+                        scriptNode = GroovyWrapperParser.parseGroovyScriptIntoNodeWrapper(scriptContent);
                     } catch (GroovyParsingException exception) {
                         parsingFailed = true;
                     } catch (Exception e) {
@@ -436,7 +433,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
             }
 
             if (scriptNode == null) {
-                scriptNode = new ScriptNodeWrapper(testCase.getRelativePathForUI());
+                scriptNode = new ScriptNodeWrapper();
             }
 
             childTestCasePart.loadASTNodesToTreeTable(scriptNode);

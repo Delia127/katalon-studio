@@ -38,6 +38,8 @@ public interface IFolderDataProvider {
 
     public FolderEntity getCheckpointRoot(ProjectEntity project) throws Exception;
 
+    public FolderEntity getTestListenerRoot(ProjectEntity project) throws Exception;
+
     public void refreshFolder(FolderEntity folder) throws Exception;
 
     /*

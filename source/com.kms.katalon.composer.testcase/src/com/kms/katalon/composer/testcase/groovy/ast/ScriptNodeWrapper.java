@@ -16,15 +16,13 @@ public class ScriptNodeWrapper extends ClassNodeWrapper implements ASTHasBlock {
 
     private String testCaseId;
 
-    public ScriptNodeWrapper(String testCaseId) {
+    public ScriptNodeWrapper() {
         super(Script.class, null);
         mainBlock = new BlockStatementWrapper(this);
-        this.testCaseId = testCaseId;
     }
 
-    public ScriptNodeWrapper(String testCaseId, ClassNode scriptClass) {
+    public ScriptNodeWrapper(ClassNode scriptClass) {
         super(scriptClass, null);
-        this.testCaseId = testCaseId;
         mainBlock = getRunMethod().getBlock();
         List<CommentWrapper> commentWrappers = new ArrayList<CommentWrapper>();
         for (Comment comment : scriptClass.getModule().getContext().getComments()) {
@@ -36,7 +34,6 @@ public class ScriptNodeWrapper extends ClassNodeWrapper implements ASTHasBlock {
     public ScriptNodeWrapper(ScriptNodeWrapper scriptNodeWrapper) {
         super(scriptNodeWrapper, null);
         mainBlock = getRunMethod().getBlock();
-        this.testCaseId = scriptNodeWrapper.testCaseId;
     }
 
     @Override

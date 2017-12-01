@@ -100,6 +100,10 @@ public class FolderController extends EntityController implements Serializable {
     public FolderEntity getReportRoot(ProjectEntity project) throws Exception {
         return getDataProviderSetting().getFolderDataProvider().getReportRoot(project);
     }
+    
+    public FolderEntity getTestListenerRoot(ProjectEntity project) throws Exception {
+        return getDataProviderSetting().getFolderDataProvider().getTestListenerRoot(project);
+    }
 
     public FolderEntity getCheckpointRoot(ProjectEntity project) throws Exception {
         return getDataProviderSetting().getFolderDataProvider().getCheckpointRoot(project);

@@ -1287,11 +1287,6 @@ public class GroovyWrapperParser {
 
     public static ScriptNodeWrapper parseGroovyScriptIntoNodeWrapper(String scriptContent)
             throws GroovyParsingException {
-        return parseGroovyScriptIntoNodeWrapper(scriptContent, null);
-    }
-
-    public static ScriptNodeWrapper parseGroovyScriptIntoNodeWrapper(String scriptContent, String testCaseId)
-            throws GroovyParsingException {
         if (scriptContent == null) {
             return null;
         }
@@ -1303,7 +1298,7 @@ public class GroovyWrapperParser {
             List<ASTNode> resultNodes = new AstBuilder().buildFromString(CompilePhase.CONVERSION, false, scriptContent);
             for (ASTNode resultNode : resultNodes) {
                 if (resultNode instanceof ClassNode && ((ClassNode) resultNode).isScript()) {
-                    return new ScriptNodeWrapper(testCaseId, (ClassNode) resultNode);
+                    return new ScriptNodeWrapper((ClassNode) resultNode);
                 }
             }
         } catch (CompilationFailedException e) {
@@ -1336,7 +1331,7 @@ public class GroovyWrapperParser {
     public static ExpressionWrapper parseGroovyScriptAndGetFirstExpression(String scriptContent, String testCaseId) {
         ScriptNodeWrapper script;
         try {
-            script = parseGroovyScriptIntoNodeWrapper(scriptContent, testCaseId);
+            script = parseGroovyScriptIntoNodeWrapper(scriptContent);
         } catch (GroovyParsingException e) {
             LoggerSingleton.logError(e);
             return null;
