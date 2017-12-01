@@ -90,10 +90,14 @@ public class EntityFileServiceManager {
         if (folderMetaDataFile.exists()) {
             folderEntity = EntityService.getInstance().getEntityByPath(
                     folderMetaDataFile.getAbsolutePath());
-        } else {
-            folderEntity = new FolderEntity();
-            folderEntity.setName(folderFile.getName());
-        }
+            if (folderEntity instanceof FolderEntity) {
+                return folderEntity;
+            }
+        } 
+            
+        folderEntity = new FolderEntity();
+        folderEntity.setName(folderFile.getName());
+        
         return folderEntity;
     }
 

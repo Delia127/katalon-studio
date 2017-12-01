@@ -59,11 +59,15 @@ TestCaseMain.beforeStart()
 
 KeywordLogger.getInstance().startSuite('<%= testSuite.getName() %>', suiteProperties)
 
+TestCaseMain.invokeStartSuite('<%= testSuite.getIdForDisplay() %>')
+
 (0..<%= testCaseIds.size() - 1 %>).each {
     "<%= trigger %>"()
 }
 
 <%= isQuitDriversAfterRun ? "DriverCleanerCollector.getInstance().cleanDrivers()" : "" %>
+
+TestCaseMain.invokeEndSuite('<%= testSuite.getIdForDisplay() %>')
 
 KeywordLogger.getInstance().endSuite('<%= testSuite.getName() %>', null)
 '''

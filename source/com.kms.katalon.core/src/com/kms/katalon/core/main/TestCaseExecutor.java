@@ -18,12 +18,16 @@ import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.ast.MethodNode;
 import org.codehaus.groovy.control.CompilationFailedException;
 
+import com.kms.katalon.core.annotation.AfterTestCase;
+import com.kms.katalon.core.annotation.BeforeTestCase;
 import com.kms.katalon.core.annotation.SetUp;
 import com.kms.katalon.core.annotation.TearDown;
 import com.kms.katalon.core.annotation.TearDownIfError;
 import com.kms.katalon.core.annotation.TearDownIfFailed;
 import com.kms.katalon.core.annotation.TearDownIfPassed;
 import com.kms.katalon.core.constants.StringConstants;
+import com.kms.katalon.core.context.internal.InternalTestCaseContext;
+import com.kms.katalon.core.context.internal.TestContextEvaluator;
 import com.kms.katalon.core.driver.internal.DriverCleanerCollector;
 import com.kms.katalon.core.logging.ErrorCollector;
 import com.kms.katalon.core.logging.KeywordLogger;
@@ -62,18 +66,27 @@ public class TestCaseExecutor {
 
     private TestCaseBinding testCaseBinding;
 
+    private TestContextEvaluator contextEvaluator;
+
     private boolean doCleanUp;
 
+    private InternalTestCaseContext testCaseContext;
+
     public TestCaseExecutor(String testCaseId, TestCaseBinding testCaseBinding, ScriptEngine engine,
-            boolean doCleanUp) {
+            TestContextEvaluator contextEvaluator, boolean doCleanUp) {
         this.testCaseBinding = testCaseBinding;
         this.engine = engine;
         this.testCase = TestCaseFactory.findTestCase(testCaseId);
         this.doCleanUp = doCleanUp;
+        this.contextEvaluator = contextEvaluator;
+
+        this.testCaseContext = new InternalTestCaseContext();
+        testCaseContext.setTestCaseId(testCaseId);
     }
 
-    public TestCaseExecutor(String testCaseId, TestCaseBinding testCaseBinding, ScriptEngine engine) {
-        this(testCaseId, testCaseBinding, engine, false);
+    public TestCaseExecutor(String testCaseId, TestCaseBinding testCaseBinding, ScriptEngine engine,
+            TestContextEvaluator contextEvaluator) {
+        this(testCaseId, testCaseBinding, engine, contextEvaluator, false);
     }
 
     private void preExecution() {
@@ -151,25 +164,38 @@ public class TestCaseExecutor {
         errorCollector.getErrors().addAll(0, parentErrors);
     }
 
+    @SuppressWarnings("unchecked")
     public TestResult execute(FailureHandling flowControl) {
-        preExecution();
+        try {
+            preExecution();
 
-        logger.startTest(testCase.getTestCaseId(), getTestCaseProperties(testCaseBinding, testCase, flowControl),
-                keywordStack);
+            logger.startTest(testCase.getTestCaseId(), getTestCaseProperties(testCaseBinding, testCase, flowControl),
+                    keywordStack);
 
-        accessMainPhase();
+            if (!processScriptPreparationPhase()) {
+                return testCaseResult;
+            }
 
-        logger.endTest(testCase.getTestCaseId(), null);
+            testCaseContext.setTestCaseStatus(testCaseResult.getTestStatus().getStatusValue().name());
 
-        postExecution();
-        return testCaseResult;
+            testCaseContext.setTestCaseVariables(variableBinding.getVariables());
+
+            contextEvaluator.invokeListenerMethod(BeforeTestCase.class.getName(), new Object[] { testCaseContext });
+
+            accessMainPhase();
+            return testCaseResult;
+        } finally {
+            testCaseContext.setTestCaseStatus(testCaseResult.getTestStatus().getStatusValue().name());
+
+            contextEvaluator.invokeListenerMethod(AfterTestCase.class.getName(), new Object[] { testCaseContext });
+
+            logger.endTest(testCase.getTestCaseId(), null);
+
+            postExecution();
+        }
     }
 
     private void accessMainPhase() {
-        if (!processScriptPreparationPhase()) {
-            return;
-        }
-
         if (!processSetupPhase()) {
             return;
         }
@@ -235,6 +261,9 @@ public class TestCaseExecutor {
         return testProperties;
     }
 
+    /**
+     * Returns DEFAULT test case variables and their values.
+     */
     private Map<String, Object> getBindedValues() {
         Map<String, Object> bindedValues = testCaseBinding.getBindedValues();
         return bindedValues != null ? bindedValues : Collections.emptyMap();
