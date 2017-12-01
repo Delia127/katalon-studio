@@ -139,16 +139,8 @@ public class AndroidDeviceInfo extends MobileDeviceInfo {
         if (!(parentFolder.exists() && parentFolder.isDirectory())) {
             return;
         }
-        for (File file : parentFolder.listFiles()) {
-            if (file.isDirectory()) {
-                makeAllFileExecutable(file);
-                continue;
-            }
-            if (!file.isFile()) {
-                continue;
-            }
-            makeFileExecutable(file);
-        }
+        ConsoleCommandExecutor.runConsoleCommandAndCollectFirstResult(
+                new String[] { "chmod", "-R", "+x", parentFolder.getAbsolutePath() });
     }
 
     @Override
