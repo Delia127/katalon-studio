@@ -164,6 +164,7 @@ public class TestCaseExecutor {
         errorCollector.getErrors().addAll(0, parentErrors);
     }
 
+    @SuppressWarnings("unchecked")
     public TestResult execute(FailureHandling flowControl) {
         try {
             preExecution();
@@ -177,7 +178,7 @@ public class TestCaseExecutor {
 
             testCaseContext.setTestCaseStatus(testCaseResult.getTestStatus().getStatusValue().name());
 
-            testCaseContext.setTestCaseVariables(testCaseBinding.getBindedValues());
+            testCaseContext.setTestCaseVariables(variableBinding.getVariables());
 
             contextEvaluator.invokeListenerMethod(BeforeTestCase.class.getName(), new Object[] { testCaseContext });
 
@@ -260,6 +261,9 @@ public class TestCaseExecutor {
         return testProperties;
     }
 
+    /**
+     * Returns DEFAULT test case variables and their values.
+     */
     private Map<String, Object> getBindedValues() {
         Map<String, Object> bindedValues = testCaseBinding.getBindedValues();
         return bindedValues != null ? bindedValues : Collections.emptyMap();
