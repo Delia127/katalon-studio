@@ -96,6 +96,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIALOG_OFFLINE_TITLE = MessageConstants.DIALOG_OFFLINE_TITLE;
 
     public static final String BTN_CLOSE_TILE = MessageConstants.BTN_CLOSE_TILE;
+    
+    public static final String LINK_ACTIVATION_LINK = MessageConstants.LINK_ACTIVATION_LINK;
 
     public static final String LBL_ACTIVATE_CODE = MessageConstants.LBL_ACTIVATE_CODE;
 

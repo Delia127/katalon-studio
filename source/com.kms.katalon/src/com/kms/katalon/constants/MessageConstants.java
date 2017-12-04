@@ -118,6 +118,8 @@ public class MessageConstants extends NLS {
     public static String DIALOG_OFFLINE_TITLE;
 
     public static String BTN_CLOSE_TILE;
+    
+    public static String LINK_ACTIVATION_LINK;
 
     public static String LBL_ACTIVATE_CODE;
 

@@ -1,5 +1,8 @@
 package com.kms.katalon.activation.dialog;
 
+import java.awt.Desktop;
+import java.net.URI;
+
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.window.Window;
@@ -18,6 +21,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
@@ -26,6 +30,7 @@ import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.console.utils.ActivationInfoCollector;
 import com.kms.katalon.constants.ImageConstants;
 import com.kms.katalon.constants.StringConstants;
+import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.util.ComposerActivationInfoCollector;
 
 public class ActivationOfflineDialog extends Dialog {
@@ -58,9 +63,19 @@ public class ActivationOfflineDialog extends Dialog {
         glBody.marginHeight = 10;
         body.setLayout(glBody);
 
-        Label lblMessage = new Label(body, SWT.WRAP);
+        Link lblMessage = new Link(body, SWT.WRAP);
         lblMessage.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
         lblMessage.setText(StringConstants.LBL_ACTIVATE_OFFLINE_HELP);
+        lblMessage.addSelectionListener(new SelectionAdapter() {
+        	@Override
+        	public void widgetSelected(SelectionEvent e) {
+				try {
+					Desktop.getDesktop().browse(new URI(StringConstants.LINK_ACTIVATION_LINK));
+				} catch (Exception ex) {
+					LogUtil.logError(ex);
+				}
+        	}
+        });
 
         Label lblRequestCode = new Label(body, SWT.NONE);
         lblRequestCode.setText(StringConstants.ACTIVATION_REQUEST_CODE);
@@ -82,8 +97,7 @@ public class ActivationOfflineDialog extends Dialog {
             public void widgetSelected(SelectionEvent e) {
                 Clipboard cb = new Clipboard(Display.getCurrent());
                 cb.setContents(
-                        new Object[] {
-                                StringConstants.ACTIVATION_REQUEST_CODE + ": " + txtActivationRequest.getText() },
+                        new Object[] {txtActivationRequest.getText() },
                         new Transfer[] { TextTransfer.getInstance() });
             }
         });
