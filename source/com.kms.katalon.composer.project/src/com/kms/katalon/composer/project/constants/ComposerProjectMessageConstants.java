@@ -82,6 +82,8 @@ public class ComposerProjectMessageConstants extends NLS {
     public static String VIEW_TITLE_NEW_SAMPLE_MOBILE_PROJ;
 
     public static String VIEW_TITLE_NEW_SAMPLE_WS_PROJ;
+    
+    public static String HAND_IMPORT_SELENIUM_IDE;
 
     static {
         // initialize resource bundle
