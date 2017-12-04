@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
@@ -20,18 +22,21 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ToolTip;
+import org.osgi.service.event.Event;
+import org.osgi.service.event.EventHandler;
 
-import com.kms.katalon.composer.components.impl.listener.EventListener;
-import com.kms.katalon.composer.components.impl.listener.EventManager;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
+import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.objectspy.constants.ImageConstants;
 import com.kms.katalon.objectspy.constants.StringConstants;
 import com.kms.katalon.objectspy.element.WebElement;
 import com.kms.katalon.objectspy.element.WebPage;
 import com.kms.katalon.objectspy.element.tree.WebElementLabelProvider;
 import com.kms.katalon.objectspy.element.tree.WebElementTreeContentProvider;
+import com.kms.katalon.util.listener.EventListener;
+import com.kms.katalon.util.listener.EventManager;
 
-public class CapturedObjectsView extends Composite implements EventManager<ObjectSpyEvent> {
+public class CapturedObjectsView extends Composite implements EventHandler, EventManager<ObjectSpyEvent> {
 
     private TreeViewer treeViewer;
 
@@ -40,12 +45,16 @@ public class CapturedObjectsView extends Composite implements EventManager<Objec
     private Label lblInfo;
 
     private ToolTip infoTooltip;
+    
+    private IEventBroker eventBroker;
 
     private Map<ObjectSpyEvent, Set<EventListener<ObjectSpyEvent>>> eventListeners = new HashMap<>();
 
-    public CapturedObjectsView(Composite parent, int style) {
+    public CapturedObjectsView(Composite parent, int style, IEventBroker eventBroker) {
         super(parent, style);
 
+        this.eventBroker = eventBroker;
+        
         setLayoutAndLayoutData();
 
         createControls();
@@ -164,12 +173,12 @@ public class CapturedObjectsView extends Composite implements EventManager<Objec
     }
 
     private void subscribeEvents() {
-        // TODO Subscribe events
+        eventBroker.subscribe(EventConstants.RECORDER_ACTION_SELECTED, this);
 
     }
 
     private void unsubscribeEvents() {
-        // TODO Unsubscribe events
+        eventBroker.unsubscribe(this);
 
     }
 
@@ -199,6 +208,15 @@ public class CapturedObjectsView extends Composite implements EventManager<Objec
             listenerOnEvent.add(listener);
             eventListeners.put(e, listenerOnEvent);
         });
+    }
+
+    @Override
+    public void handleEvent(Event event) {
+        String eventType = event.getTopic();
+        if (eventType == EventConstants.RECORDER_ACTION_SELECTED) {
+            WebElement selectedElement = (WebElement) event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
+            treeViewer.setSelection(new StructuredSelection(selectedElement), true);
+        }
     }
 
 }

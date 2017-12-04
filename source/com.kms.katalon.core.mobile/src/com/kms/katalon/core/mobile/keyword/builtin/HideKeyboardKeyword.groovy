@@ -3,7 +3,6 @@ package com.kms.katalon.core.mobile.keyword.builtin
 import groovy.transform.CompileStatic
 import io.appium.java_client.AppiumDriver
 import io.appium.java_client.MobileElement
-import io.appium.java_client.NetworkConnectionSetting
 import io.appium.java_client.android.AndroidDriver
 import io.appium.java_client.android.AndroidKeyCode
 import io.appium.java_client.ios.IOSDriver
@@ -62,7 +61,6 @@ public class HideKeyboardKeyword extends MobileAbstractKeyword {
         hideKeyboard(flowControl)
     }
 
-    @CompileStatic
     public void hideKeyboard(FailureHandling flowControl) throws StepFailedException {
         KeywordMain.runKeyword({
             AppiumDriver<?> driver = getAnyAppiumDriver()

@@ -180,28 +180,37 @@ public class ObjectRepository {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private static TestObject findWebUIObject(String testObjectId, Element element) {
         TestObject testObject = new TestObject(testObjectId);
-        // For image
-        String imagePath = element.elementText("imagePath");
-        boolean useRalativeImagePath = Boolean.parseBoolean(element.elementText("useRalativeImagePath"));
-        testObject.setImagePath(imagePath);
-        testObject.setUseRelativeImagePath(useRalativeImagePath);
 
-        String selectorMethod = element.elementText(PROPERTY_SELECTOR_METHOD);
-        if (selectorMethod != null) {
-            testObject.setSelectorMethod(SelectorMethod.valueOf(selectorMethod));
+        // For image
+        Element imagePathElement = element.element("imagePath");
+        if (imagePathElement != null) {
+            String imagePath = imagePathElement.getText();
+            testObject.setImagePath(imagePath);
+        }
+        
+        Element relativeImagePathElement = element.element("useRalativeImagePath");
+        if (relativeImagePathElement != null) {
+            String useRelavitePathString = relativeImagePathElement.getText();
+            testObject.setUseRelativeImagePath(Boolean.parseBoolean(useRelavitePathString));
+        }
+
+        Element dfSelectorMethodElement = element.element(PROPERTY_SELECTOR_METHOD);
+        if (dfSelectorMethodElement != null) {
+            testObject.setSelectorMethod(SelectorMethod.valueOf(dfSelectorMethodElement.getText()));
         }
 
         Element propertySelectorCollection = element.element(PROPERTY_SELECTOR_COLLECTION);
         if (propertySelectorCollection != null) {
-            propertySelectorCollection.elements(PROPERTY_ENTRY).forEach(entry -> {
-                Element selectorMethodElement = ((Element) entry);
-                SelectorMethod entryKey = SelectorMethod.valueOf(selectorMethodElement.elementText(PROPERTY_KEY));
-                String entryValue = selectorMethodElement.elementText(PROPERTY_VALUE);
-                testObject.setSelectorValue(entryKey, entryValue);
-            });
+            List<?> selectorEntry = propertySelectorCollection.elements(PROPERTY_ENTRY);
+            if (selectorEntry != null) {selectorEntry.forEach(entry -> {
+                    Element selectorMethodElement = ((Element) entry);
+                    SelectorMethod entryKey = SelectorMethod.valueOf(selectorMethodElement.elementText(PROPERTY_KEY));
+                    String entryValue = selectorMethodElement.elementText(PROPERTY_VALUE);
+                    testObject.setSelectorValue(entryKey, entryValue);
+                });
+            }
         }
 
         for (Object propertyElementObject : element.elements(WEB_ELEMENT_PROPERTY_NODE_NAME)) {
@@ -219,6 +228,7 @@ public class ObjectRepository {
             objectProperty.setCondition(propertyCondition);
             objectProperty.setValue(propertyValue);
             objectProperty.setActive(isPropertySelected);
+
 
             // Check if this element is inside a frame
             if (Arrays.asList(PARENT_FRAME_ATTRS).contains(propertyName) && isPropertySelected) {

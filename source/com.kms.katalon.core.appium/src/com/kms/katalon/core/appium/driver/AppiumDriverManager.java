@@ -436,6 +436,11 @@ public class AppiumDriverManager {
                     }
                     localStorageAppiumDriver.set(driver);
                     new AppiumRequestService(appiumServerUrl.toString()).logAppiumInfo();
+
+                    int timeout = RunConfiguration.getTimeOut();
+                    if (timeout >= 0) {
+                        driver.manage().timeouts().implicitlyWait(timeout, TimeUnit.SECONDS);
+                    }
                     return driver;
                 } catch (UnreachableBrowserException e) {
                     long newMilis = System.currentTimeMillis();

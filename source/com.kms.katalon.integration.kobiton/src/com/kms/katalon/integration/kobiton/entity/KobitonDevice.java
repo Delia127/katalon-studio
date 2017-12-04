@@ -51,7 +51,15 @@ public class KobitonDevice {
 
     private ScreenOrientation orientation = ScreenOrientation.PORTRAIT;
 
-    private boolean captureSreenShots = true;
+    private boolean captureScreenShots = true;
+
+    private boolean isHidden;
+
+    private boolean isOnline;
+
+    private boolean isFavorite;
+
+    private boolean isCloud;
 
     public int getId() {
         return id;
@@ -93,12 +101,12 @@ public class KobitonDevice {
         this.orientation = orientation;
     }
 
-    public boolean isCaptureSreenShots() {
-        return captureSreenShots;
+    public boolean isCaptureScreenShots() {
+        return captureScreenShots;
     }
 
-    public void setCaptureSreenShots(boolean captureSreenShots) {
-        this.captureSreenShots = captureSreenShots;
+    public void setCaptureScreenShots(boolean captureScreenShots) {
+        this.captureScreenShots = captureScreenShots;
     }
 
     private String getBrowserName() {
@@ -145,8 +153,9 @@ public class KobitonDevice {
 
     @Override
     public String toString() {
-        return "KobitonDevice [id=" + id + ", uuid=" + udid + ", isBooked=" + isBooked + ", capabilities="
-                + capabilities + ", orientation=" + orientation + ", captureSreenShots=" + captureSreenShots + "]";
+        return "KobitonDevice [id=" + id + ", uuid=" + udid + ", isBooked=" + isBooked + ", isHidden=" + isHidden
+                + ", isOnline=" + isOnline + ", isFavorite=" + isFavorite + ", isCloud=" + isCloud + ", capabilities="
+                + capabilities + ", orientation=" + orientation + ", captureScreenShots=" + captureScreenShots + "]";
     }
 
     public String getDisplayString() {
@@ -158,13 +167,49 @@ public class KobitonDevice {
                 + capabilities.getDeviceName();
     }
 
+    public boolean isHidden() {
+        return isHidden;
+    }
+
+    public void setHidden(boolean isHidden) {
+        this.isHidden = isHidden;
+    }
+
+    public boolean isOnline() {
+        return isOnline;
+    }
+
+    public void setOnline(boolean isOnline) {
+        this.isOnline = isOnline;
+    }
+
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(boolean isFavorite) {
+        this.isFavorite = isFavorite;
+    }
+
+    public boolean isCloud() {
+        return isCloud;
+    }
+
+    public void setCloud(boolean isCloud) {
+        this.isCloud = isCloud;
+    }
+
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(id)
                 .append(udid)
                 .append(isBooked)
                 .append(orientation)
-                .append(captureSreenShots)
+                .append(captureScreenShots)
+                .append(isHidden)
+                .append(isOnline)
+                .append(isFavorite)
+                .append(isCloud)
                 .toHashCode();
     }
 
@@ -181,8 +226,11 @@ public class KobitonDevice {
                 .append(this.udid, other.udid)
                 .append(this.isBooked, other.isBooked)
                 .append(this.orientation, other.orientation)
-                .append(this.captureSreenShots, other.captureSreenShots)
+                .append(this.captureScreenShots, other.captureScreenShots)
+                .append(this.isHidden, this.isHidden)
+                .append(this.isOnline, other.isOnline)
+                .append(this.isFavorite, this.isFavorite)
+                .append(this.isCloud, this.isCloud)
                 .isEquals();
     }
-
 }

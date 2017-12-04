@@ -51,7 +51,7 @@ public class MessageProgressMonitorDialog extends ProgressMonitorDialogWithThrea
         progressIndicator.setLayoutData(gd);
 
         txtDetails = new StyledText(parent, SWT.BORDER | SWT.V_SCROLL| SWT.READ_ONLY | SWT.WRAP);
-        GridData gdText = new GridData(SWT.FILL, SWT.TOP, true, false);
+        GridData gdText = new GridData(SWT.FILL, SWT.FILL, true, true);
         gdText.heightHint = 100;
         gdText.horizontalSpan = 2;
         txtDetails.setLayoutData(gdText);

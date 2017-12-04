@@ -43,7 +43,6 @@ import org.osgi.service.event.EventHandler;
 import org.w3c.dom.Document;
 
 import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
-import com.kms.katalon.composer.components.impl.listener.EventListener;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
@@ -74,6 +73,7 @@ import com.kms.katalon.objectspy.websocket.AddonSocket;
 import com.kms.katalon.objectspy.websocket.AddonSocketServer;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
+import com.kms.katalon.util.listener.EventListener;
 
 @SuppressWarnings("restriction")
 public class NewObjectSpyDialog extends Dialog
@@ -229,7 +229,7 @@ public class NewObjectSpyDialog extends Dialog
     }
 
     private void createCapturedObjectsAndPropertiesView(Composite bodyComposite) {
-        capturedObjectsView = new CapturedObjectsView(bodyComposite, SWT.NONE);
+        capturedObjectsView = new CapturedObjectsView(bodyComposite, SWT.NONE, eventBroker);
         Sash sash = new Sash(bodyComposite, SWT.HORIZONTAL);
         GridData layoutData = new GridData(SWT.FILL, SWT.TOP, true, false);
         sash.setLayoutData(layoutData);

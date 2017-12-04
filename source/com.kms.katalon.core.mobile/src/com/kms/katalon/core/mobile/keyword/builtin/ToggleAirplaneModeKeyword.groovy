@@ -3,9 +3,10 @@ package com.kms.katalon.core.mobile.keyword.builtin
 import groovy.transform.CompileStatic
 import io.appium.java_client.AppiumDriver
 import io.appium.java_client.MobileElement
-import io.appium.java_client.NetworkConnectionSetting
+import io.appium.java_client.TouchAction
 import io.appium.java_client.android.AndroidDriver
 import io.appium.java_client.android.AndroidKeyCode
+import io.appium.java_client.android.Connection
 import io.appium.java_client.ios.IOSDriver
 import io.appium.java_client.remote.HideKeyboardStrategy
 
@@ -23,6 +24,7 @@ import org.openqa.selenium.TimeoutException
 import org.openqa.selenium.WebDriverException
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.interactions.touch.TouchActions
+import org.openqa.selenium.remote.mobile.RemoteNetworkConnection
 import org.openqa.selenium.support.ui.FluentWait
 
 import com.google.common.base.Function
@@ -78,7 +80,7 @@ public class ToggleAirplaneModeKeyword extends MobileAbstractKeyword {
                 }
                 if (driver instanceof AndroidDriver) {
                     AndroidDriver androidDriver = (AndroidDriver) driver
-                    androidDriver.setNetworkConnection(new NetworkConnectionSetting(isTurnOn, !isTurnOn, !isTurnOn))
+                    driver.setConnection(isTurnOn ? Connection.AIRPLANE : Connection.ALL);
                 } else {
                     String deviceModel = MobileDriverFactory.getDeviceModel()
                     //ResourceBundle resourceBundle = ResourceBundle.getBundle("resource")
@@ -96,7 +98,8 @@ public class ToggleAirplaneModeKeyword extends MobileAbstractKeyword {
                     Dimension size = driver.manage().window().getSize()
                     MobileCommonHelper.swipe(driver, 50, size.height, 50, size.height - 300)
                     Thread.sleep(500)
-                    driver.tap(1, x, y, 500)
+                    TouchAction tap = new TouchAction(driver).tap(x, y).release()
+                    tap.perform()
                     MobileCommonHelper.swipe(driver, 50, 1, 50, size.height)
                 }
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_TOGGLE_AIRPLANE_MODE, mode))
