@@ -28,6 +28,22 @@ public class WebUIKeywordMain {
         }
     }
     
+    @CompileStatic
+    public static runKeyword(Closure closure, Closure failedClosure, FailureHandling flowControl, boolean takeScreenShot, String errorMessage) {
+        try {
+            return closure.call();
+        } catch (Throwable e) {
+            if (isPageLoadTimeoutException(e) && DriverFactory.isEnablePageLoadTimeout() && DriverFactory.isIgnorePageLoadTimeoutException()) {
+                stepFailed(errorMessage, FailureHandling.OPTIONAL, ExceptionsUtil.getMessageForThrowable(e), takeScreenShot);
+                if (failedClosure != null) {
+                    return failedClosure
+                }
+                return
+            }
+            stepFailed(errorMessage, flowControl, ExceptionsUtil.getMessageForThrowable(e), takeScreenShot);
+        }
+    }
+    
     // Add this for keywords that need to return int, as Groovy cannot automatically convert null to int
     @CompileStatic
     public static int runKeywordAndReturnInt(Closure closure, FailureHandling flowControl, boolean takeScreenShot, String errorMessage) {
