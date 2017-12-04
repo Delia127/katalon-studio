@@ -4,6 +4,7 @@ import java.util.List;
 
 public class TestCase {
 	private String name;
+	private String baseUrl;
 	private List<Command> commands;
 	
 	public String getName() {
@@ -22,8 +23,16 @@ public class TestCase {
 		this.commands = commands;
 	}
 	
+	public String getBaseUrl() {
+		return baseUrl;
+	}
+	
+	public void setBaseUrl(String baseUrl) {
+		this.baseUrl = baseUrl;
+	}
+	
 	@Override
 	public String toString() {
-		return "TestCase [name=" + name + ", commands=" + commands + "]";
+		return "TestCase [name=" + name + ", baseUrl=" + baseUrl + ", commands=" + commands + "]";
 	}
 }
