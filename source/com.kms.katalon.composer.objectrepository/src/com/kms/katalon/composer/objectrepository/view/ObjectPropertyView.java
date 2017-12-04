@@ -1127,11 +1127,8 @@ public class ObjectPropertyView implements EventHandler {
 
     private WebElementPropertyEntity openAddPropertyDialog() {
         // set dialog's position is under btnAdd
-        Shell shell = new Shell(Display.getCurrent());
-        Point pt = tableViewer.getControl().toDisplay(1, 1);
-        shell.setSize(0, 0);
+        Shell shell = Display.getCurrent().getActiveShell();
         AddTestObjectPropertyDialog dialog = new AddTestObjectPropertyDialog(shell);
-        shell.setLocation(pt.x + dialog.getSize().x / 2 - 65, pt.y + dialog.getSize().y / 2 + 20);
 
         int code = dialog.open();
         if (code == Window.OK) {
