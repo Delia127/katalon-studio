@@ -36,7 +36,7 @@ public class PropertyValueEditingSupport extends EditingSupport {
     
     @Override
     protected CellEditor getCellEditor(Object element) {
-		return new MultilineTextCellEditor(viewer.getTable());
+        return new MultilineTextCellEditor(viewer.getTable());
     }
 
     @Override
@@ -60,20 +60,20 @@ public class PropertyValueEditingSupport extends EditingSupport {
                     new PropertyValueChangeOperation((WebElementPropertyEntity) element, (String) value));
         }
     }
-    
+
     private class MultilineTextCellEditor extends TextCellEditor {
-    	
-    	public MultilineTextCellEditor(Composite parent) {
-    		super(parent, SWT.WRAP | SWT.MULTI | SWT.V_SCROLL | SWT.BORDER);
-    	}
-    	
-    	@Override
-		public LayoutData getLayoutData() {
-	        LayoutData data = new LayoutData();
-	        data.minimumHeight = 100;
-	        data.verticalAlignment = SWT.TOP;
-	        return data;
-	    }
+
+        public MultilineTextCellEditor(Composite parent) {
+            super(parent, SWT.WRAP | SWT.MULTI | SWT.V_SCROLL | SWT.BORDER);
+        }
+
+        @Override
+        public LayoutData getLayoutData() {
+            LayoutData data = new LayoutData();
+            data.minimumHeight = 100;
+            data.verticalAlignment = SWT.TOP;
+            return data;
+        }
     }
 
     private class PropertyValueChangeOperation extends AbstractOperation {

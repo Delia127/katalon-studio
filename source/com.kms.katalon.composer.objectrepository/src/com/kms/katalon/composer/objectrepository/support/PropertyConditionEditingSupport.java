@@ -72,16 +72,16 @@ public class PropertyConditionEditingSupport extends EditingSupport {
     
     private class CustomComboBoxCellEditor extends ComboBoxCellEditor {
     	
-    	public CustomComboBoxCellEditor(Composite parent, String[] items, int style) {
-    		super(parent, items, style);
-    	}
-    	
-    	@Override
-    	public LayoutData getLayoutData() {
-    		LayoutData layoutData = super.getLayoutData();
-    		layoutData.minimumHeight = viewer.getTable().getItemHeight();
-    		return layoutData;
-    	}
+        public CustomComboBoxCellEditor(Composite parent, String[] items, int style) {
+            super(parent, items, style);
+        }
+    
+        @Override
+        public LayoutData getLayoutData() {
+            LayoutData layoutData = super.getLayoutData();
+            layoutData.minimumHeight = viewer.getTable().getItemHeight();
+            return layoutData;
+        }
     }
 
     private class PropertyConditionChangeOperation extends AbstractOperation {

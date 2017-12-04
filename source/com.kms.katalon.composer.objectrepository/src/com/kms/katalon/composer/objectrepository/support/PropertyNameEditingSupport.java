@@ -41,16 +41,16 @@ public class PropertyNameEditingSupport extends EditingSupport {
     
     private class CustomTextCellEditor extends TextCellEditor {
     	
-    	public CustomTextCellEditor(Composite parent) {
-    		super(parent);
-    	}
-    	
-    	@Override
-		public LayoutData getLayoutData() {
-    		LayoutData result = super.getLayoutData();
-    		result.minimumHeight = viewer.getTable().getItemHeight();
-    		return result;
-	    }
+        public CustomTextCellEditor(Composite parent) {
+            super(parent);
+        }
+
+        @Override
+        public LayoutData getLayoutData() {
+            LayoutData result = super.getLayoutData();
+            result.minimumHeight = viewer.getTable().getItemHeight();
+            return result;
+        }
     }
 
     @Override
