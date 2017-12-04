@@ -67,14 +67,14 @@ public class ActivationOfflineDialog extends Dialog {
         lblMessage.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
         lblMessage.setText(StringConstants.LBL_ACTIVATE_OFFLINE_HELP);
         lblMessage.addSelectionListener(new SelectionAdapter() {
-        	@Override
-        	public void widgetSelected(SelectionEvent e) {
-				try {
-					Desktop.getDesktop().browse(new URI(StringConstants.LINK_ACTIVATION_LINK));
-				} catch (Exception ex) {
-					LogUtil.logError(ex);
-				}
-        	}
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                try {
+                    Desktop.getDesktop().browse(new URI(StringConstants.LINK_ACTIVATION_LINK));
+                } catch (Exception ex) {
+                    LogUtil.logError(ex);
+                }
+            }
         });
 
         Label lblRequestCode = new Label(body, SWT.NONE);
