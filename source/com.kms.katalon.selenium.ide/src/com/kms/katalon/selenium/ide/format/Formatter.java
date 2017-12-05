@@ -33,7 +33,7 @@ public final class Formatter {
 	
 	public String formatCommand(Command command) {
 		StringBuffer buffer = new StringBuffer();
-		buffer.append("seleinum.");
+		buffer.append("selenium.");
 		buffer.append(command.getCommand());
 		buffer.append("(");
 		if (StringUtils.isNotBlank(command.getTarget())) {
@@ -58,16 +58,17 @@ public final class Formatter {
 
 	public String getHeader(TestCase testCase) {
 		StringBuffer buffer = new StringBuffer();
-		buffer.append("import com.thoughtworks.selenium.Selenium;\n" +
-						"import org.openqa.selenium.firefox.FirefoxDriver;\n" +
-						"import org.openqa.selenium.WebDriver;\n" +
-						"import com.thoughtworks.selenium.webdriven.WebDriverBackedSelenium;\n" +
-						"import static org.junit.Assert.*;\n" +
-						"import java.util.regex.Pattern;\n" +
-						"import static org.apache.commons.lang3.StringUtils.join;\n\n");
+		buffer.append(  "import com.kms.katalon.core.webui.driver.DriverFactory as DriverFactory\n\n" +
+						"import com.thoughtworks.selenium.Selenium\n" +
+						"import org.openqa.selenium.firefox.FirefoxDriver\n" +
+						"import org.openqa.selenium.WebDriver\n" +
+						"import com.thoughtworks.selenium.webdriven.WebDriverBackedSelenium\n" +
+						"import static org.junit.Assert.*\n" +
+						"import java.util.regex.Pattern\n" +
+						"import static org.apache.commons.lang3.StringUtils.join\n\n");
 		buffer.append("WebUI.openBrowser('"+ testCase.getBaseUrl() +"')\n");
 		buffer.append("driver = DriverFactory.getWebDriver()\n");
-		buffer.append("String baseUrl = \""+ testCase.getBaseUrl() +"/\"\n");
+		buffer.append("String baseUrl = \""+ testCase.getBaseUrl() +"\"\n");
 		buffer.append("selenium = new WebDriverBackedSelenium(driver, baseUrl)\n");
 		return buffer.toString();
 	}
