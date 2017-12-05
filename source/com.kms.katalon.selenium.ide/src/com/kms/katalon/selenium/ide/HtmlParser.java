@@ -61,15 +61,26 @@ public final class HtmlParser {
 	
 	public static Command parseCommand(String commandHtmlContent) {
 		Command command = null;
-		Pattern pattern = Pattern.compile("(<tr>.*?<td>)(.*?)(</td>.+?<td>)(.*?)(</td>.+?<td>)(.*?)(</td>.*?</tr>)");
+		Pattern pattern = Pattern.compile("(<tr>.*?<td>)(.*?)(</td>.+?<td>)(.*?)(<datalist>.*?</td>.+?<td>)(.*?)(</td>.*?</tr>)");
         Matcher matcher = pattern.matcher(commandHtmlContent);
-        while (matcher.find()) {
-        	command = new Command();
-        	command.setCommand(matcher.group(2));
-        	command.setTarget(matcher.group(4));
-        	command.setValue(matcher.group(6));
+        if (matcher.find()) {
+        	command = createCommand(matcher.group(2), matcher.group(4), matcher.group(6));
+        } else {
+        	pattern = Pattern.compile("(<tr>.*?<td>)(.*?)(</td>.+?<td>)(.*?)(</td>.+?<td>)(.*?)(</td>.*?</tr>)");
+        	matcher = pattern.matcher(commandHtmlContent);
+        	if (matcher.find()) {
+            	command = createCommand(matcher.group(2), matcher.group(4), matcher.group(6));
+            } 
         }
 		return command;
+	}
+	
+	private static Command createCommand(String command, String target, String value) {
+		Command ret = new Command();
+		ret.setCommand(command);
+		ret.setTarget(StringUtils.trim(target));
+		ret.setValue(StringUtils.trim(value));
+		return ret;
 	}
 	
 	public static String parseTitle(String htmlContent) {
