@@ -1,4 +1,4 @@
-package com.kms.katalon.selenium.ide.format;
+package com.kms.katalon.selenium.ide;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,6 +7,9 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.kms.katalon.selenium.ide.format.AssertFormatter;
+import com.kms.katalon.selenium.ide.format.DefaultFormatter;
+import com.kms.katalon.selenium.ide.format.Formatter;
 import com.kms.katalon.selenium.ide.model.Command;
 import com.kms.katalon.selenium.ide.model.TestCase;
 
@@ -25,7 +28,7 @@ public final class SeleniumIdeFormatter {
         return INSTANCE;
     }
 
-	public StringBuilder format(TestCase testCase) {
+	public String format(TestCase testCase) {
 		StringBuilder builder = new StringBuilder();
 		builder.append(getHeader(testCase));
 		
@@ -33,17 +36,21 @@ public final class SeleniumIdeFormatter {
 		commands.forEach(c -> builder.append(c));
 		
 		builder.append(getFooter(testCase));
-		return builder;
+		return builder.toString();
 	}
 	
 	public List<String> formatCommands(List<Command> commands) {
 		List<String> formattedCommands = new ArrayList<>();
 		commands.forEach(command -> {
-			Formatter formatter = getFormatter(command.getCommand());
-			String formatted = formatter.format(command);
+			String formatted = formatCommand(command);
 			formattedCommands.add(formatted);
 		});
 		return formattedCommands;				
+	}
+	
+	public String formatCommand(Command command) {
+		Formatter formatter = getFormatter(command.getCommand());
+		return formatter.format(command);
 	}
 
 	public String getHeader(TestCase testCase) {

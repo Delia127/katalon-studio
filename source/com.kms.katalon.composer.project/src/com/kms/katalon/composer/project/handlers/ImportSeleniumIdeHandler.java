@@ -38,8 +38,8 @@ import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
-import com.kms.katalon.selenium.ide.ImportSeleniumIdeService;
-import com.kms.katalon.selenium.ide.format.SeleniumIdeFormatter;
+import com.kms.katalon.selenium.ide.SeleniumIdeFormatter;
+import com.kms.katalon.selenium.ide.SeleniumIdeParser;
 import com.kms.katalon.selenium.ide.model.Command;
 import com.kms.katalon.selenium.ide.model.TestCase;
 import com.kms.katalon.selenium.ide.model.TestSuite;
@@ -75,7 +75,7 @@ public class ImportSeleniumIdeHandler {
 			if (selectedFile != null && selectedFile.length() > 0) {
 				File testSuiteFile = new File(selectedFile);
 				if (testSuiteFile != null && testSuiteFile.exists()) {
-					TestSuite testSuite = ImportSeleniumIdeService.getInstance().parseTestSuite(testSuiteFile);
+					TestSuite testSuite = SeleniumIdeParser.getInstance().parseTestSuite(testSuiteFile);
 					createTestSuite(testSuite);
 				}
 			}
@@ -147,7 +147,7 @@ public class ImportSeleniumIdeHandler {
         		testCaseEntity = tcController.saveNewTestCase(testCaseEntity);
         		eventBroker.send(EventConstants.TESTCASE_OPEN, testCaseEntity);
         		
-        		String scriptContent = SeleniumIdeFormatter.getInstance().format(testCase).toString();
+        		String scriptContent = SeleniumIdeFormatter.getInstance().format(testCase);
         		GroovyGuiUtil.addContentToTestCase(testCaseEntity, scriptContent);
         		
         		TestSuiteTestCaseLink testSuiteTestCaseLink = new TestSuiteTestCaseLink();
