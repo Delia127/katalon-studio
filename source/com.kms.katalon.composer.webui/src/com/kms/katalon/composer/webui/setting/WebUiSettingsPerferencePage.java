@@ -32,8 +32,6 @@ public class WebUiSettingsPerferencePage extends PreferencePage {
 
     public static final short TIMEOUT_MAX_VALUE = 9999;
 
-    private static final int LABEL_WIDTH = 250;
-
     private static final int INPUT_WIDTH = 60;
 
     private WebUiExecutionSettingStore store;
@@ -60,7 +58,6 @@ public class WebUiSettingsPerferencePage extends PreferencePage {
         Label lblActionDelay = new Label(container, SWT.NONE);
         lblActionDelay.setText(ComposerWebuiMessageConstants.LBL_ACTION_DELAY);
         GridData gdLblActionDelay = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gdLblActionDelay.widthHint = LABEL_WIDTH;
         lblActionDelay.setLayoutData(gdLblActionDelay);
 
         txtActionDelay = new Text(container, SWT.BORDER);
@@ -96,7 +93,6 @@ public class WebUiSettingsPerferencePage extends PreferencePage {
         radioUsePageLoadTimeout = new Button(compPageLoad, SWT.RADIO);
         radioUsePageLoadTimeout.setText(StringConstants.PREF_LBL_CUSTOM_PAGE_LOAD_TIMEOUT);
         GridData gdRadioPageLoadTimeout = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gdRadioPageLoadTimeout.widthHint = LABEL_WIDTH - 15;
         radioUsePageLoadTimeout.setLayoutData(gdRadioPageLoadTimeout);
 
         txtDefaultPageLoadTimeout = new Text(compPageLoad, SWT.BORDER);
