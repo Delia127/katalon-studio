@@ -3,6 +3,7 @@ package com.kms.katalon.selenium.ide;
 import java.io.File;
 
 import com.kms.katalon.selenium.ide.model.TestSuite;
+import com.kms.katalon.selenium.ide.util.HtmlParser;
 
 public final class ImportSeleniumIdeService {
 

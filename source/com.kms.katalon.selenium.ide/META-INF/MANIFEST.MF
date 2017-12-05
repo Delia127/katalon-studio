@@ -11,4 +11,5 @@ Export-Package: com.kms.katalon.selenium.ide,
  com.kms.katalon.selenium.ide.util
 Require-Bundle: com.google.guava;bundle-version="23.0.0",
  org.apache.commons.lang3;bundle-version="3.1.0",
- com.kms.katalon.logging;bundle-version="1.0.0"
+ com.kms.katalon.logging;bundle-version="1.0.0",
+ com.kms.katalon.selenium-standalone;bundle-version="1.0.0"

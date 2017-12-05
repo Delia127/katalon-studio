@@ -39,7 +39,7 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.selenium.ide.ImportSeleniumIdeService;
-import com.kms.katalon.selenium.ide.format.Formatter;
+import com.kms.katalon.selenium.ide.format.SeleniumIdeFormatter;
 import com.kms.katalon.selenium.ide.model.Command;
 import com.kms.katalon.selenium.ide.model.TestCase;
 import com.kms.katalon.selenium.ide.model.TestSuite;
@@ -147,14 +147,14 @@ public class ImportSeleniumIdeHandler {
         		testCaseEntity = tcController.saveNewTestCase(testCaseEntity);
         		eventBroker.send(EventConstants.TESTCASE_OPEN, testCaseEntity);
         		
-        		String scriptContent = Formatter.getInstance().format(testCase).toString();
+        		String scriptContent = SeleniumIdeFormatter.getInstance().format(testCase).toString();
         		GroovyGuiUtil.addContentToTestCase(testCaseEntity, scriptContent);
         		
         		TestSuiteTestCaseLink testSuiteTestCaseLink = new TestSuiteTestCaseLink();
         		testSuiteTestCaseLink.setTestCaseId(testCaseEntity.getIdForDisplay());
         		testSuiteTestCaseLinks.add(testSuiteTestCaseLink);
         		
-        		createTestObjects(testCase.getCommands());
+//        		createTestObjects(testCase.getCommands());
         	}
         	
         	TestSuiteController tsController = TestSuiteController.getInstance();
@@ -176,8 +176,8 @@ public class ImportSeleniumIdeHandler {
         if (!commands.isEmpty()) {
         	for (Command command: commands) {
         		if (StringUtils.isNotBlank(command.getTarget())) {
-//	        		WebElementEntity webElement = toController.newTestObjectWithoutSave(parentFolderEntity, command.getTarget());
-//	        		webElement = toController.saveNewTestObject(webElement);
+	        		WebElementEntity webElement = toController.newTestObjectWithoutSave(parentFolderEntity, command.getTarget());
+	        		webElement = toController.saveNewTestObject(webElement);
         		}
         	}
         }        

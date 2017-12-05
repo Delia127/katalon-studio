@@ -1,4 +1,4 @@
-package com.kms.katalon.selenium.ide;
+package com.kms.katalon.selenium.ide.util;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -13,7 +13,6 @@ import org.apache.commons.lang3.StringUtils;
 import com.kms.katalon.selenium.ide.model.Command;
 import com.kms.katalon.selenium.ide.model.TestCase;
 import com.kms.katalon.selenium.ide.model.TestSuite;
-import com.kms.katalon.selenium.ide.util.FileUtils;
 
 public final class HtmlParser {
 	
