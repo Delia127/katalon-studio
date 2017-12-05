@@ -79,7 +79,7 @@ public class AnalyticsApiProvider {
             String clientCredentials = OAUTH2_CLIENT_ID + ":" + OAUTH2_CLIENT_SECRET;
             httpPost.setHeader(HEADER_AUTHORIZATION,
                     HEADER_AUTHORIZATION_PREFIX + Base64.getEncoder().encodeToString(clientCredentials.getBytes()));
-            HttpResponse httpResponse = httpClient.execute(httpPost, httpClientProxyBuilder.getClientContext());
+            HttpResponse httpResponse = httpClient.execute(httpPost);
             String responseString = EntityUtils.toString(httpResponse.getEntity());
             Gson gson = new GsonBuilder().create();
             AnalyticsTokenInfo tokenInfo = gson.fromJson(responseString, AnalyticsTokenInfo.class);
@@ -101,7 +101,7 @@ public class AnalyticsApiProvider {
             uriBuilder.setParameter("sort", "name,asc");
             HttpGet httpGet = new HttpGet(uriBuilder.build().toASCIIString());
             httpGet.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
-            HttpResponse httpResponse = httpClient.execute(httpGet, httpClientProxyBuilder.getClientContext());
+            HttpResponse httpResponse = httpClient.execute(httpGet);
             String responseString = EntityUtils.toString(httpResponse.getEntity());
             Gson gson = new GsonBuilder().create();
             AnalyticsTeamPage teamPage = gson.fromJson(responseString, AnalyticsTeamPage.class);
@@ -124,7 +124,7 @@ public class AnalyticsApiProvider {
             }
             HttpGet httpGet = new HttpGet(uriBuilder.build().toASCIIString());
             httpGet.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
-            HttpResponse httpResponse = httpClient.execute(httpGet, httpClientProxyBuilder.getClientContext());
+            HttpResponse httpResponse = httpClient.execute(httpGet);
             String responseString = EntityUtils.toString(httpResponse.getEntity());
             Gson gson = new GsonBuilder().create();
             AnalyticsProjectPage projectPage = gson.fromJson(responseString, AnalyticsProjectPage.class);
@@ -156,7 +156,7 @@ public class AnalyticsApiProvider {
             StringEntity entity = new StringEntity(gson.toJson(map));
             httpPost.setEntity(entity);
 
-            HttpResponse httpResponse = httpClient.execute(httpPost, httpClientProxyBuilder.getClientContext());
+            HttpResponse httpResponse = httpClient.execute(httpPost);
             String responseString = EntityUtils.toString(httpResponse.getEntity());
             return gson.fromJson(responseString, AnalyticsProject.class);
         } catch (Exception e) {
@@ -189,7 +189,7 @@ public class AnalyticsApiProvider {
 
             HttpEntity entity = builder.build();
             httpPost.setEntity(entity);
-            httpClient.execute(httpPost, httpClientProxyBuilder.getClientContext());
+            httpClient.execute(httpPost);
 
         } catch (Exception e) {
             throw new AnalyticsApiExeception(e);
@@ -206,7 +206,7 @@ public class AnalyticsApiProvider {
             uriBuilder.setParameter("projectId", String.valueOf(projectId));
             HttpGet httpGet = new HttpGet(uriBuilder.build());
             httpGet.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + token);
-            HttpResponse httpResponse = httpClient.execute(httpGet, httpClientProxyBuilder.getClientContext());
+            HttpResponse httpResponse = httpClient.execute(httpGet);
             String responseString = EntityUtils.toString(httpResponse.getEntity());
             Gson gson = new GsonBuilder().create();
             return gson.fromJson(responseString, AnalyticsUploadInfo.class);
@@ -222,7 +222,7 @@ public class AnalyticsApiProvider {
             HttpEntity entity = new InputStreamEntity(content, file.length());
             HttpPut httpPut = new HttpPut(url);
             httpPut.setEntity(entity);
-            httpClient.execute(httpPut, httpClientProxyBuilder.getClientContext());
+            httpClient.execute(httpPut);
         } catch (Exception e) {
             throw new AnalyticsApiExeception(e);
         }
@@ -246,7 +246,7 @@ public class AnalyticsApiProvider {
             HttpPost httpPost = new HttpPost(uriBuilder.build());
             httpPost.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + token);
 
-            httpClient.execute(httpPost, httpClientProxyBuilder.getClientContext());
+            httpClient.execute(httpPost);
         } catch (Exception e) {
             throw new AnalyticsApiExeception(e);
         }
