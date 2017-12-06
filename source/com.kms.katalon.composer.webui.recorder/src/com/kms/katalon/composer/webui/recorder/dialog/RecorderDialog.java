@@ -252,6 +252,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         disposed = false;
         this.eventBroker = eventBroker;
         eventBroker.subscribe(EventConstants.RECORDER_HTML_ACTION_CAPTURED, this);
+        eventBroker.subscribe(EventConstants.RECORDER_ACTION_OBJECT_REORDERED, this);
         startSocketServer();
     }
 
@@ -1174,7 +1175,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                         treeDialog.setAllowMultiple(false);
                         treeDialog.setTitle(StringConstants.DIA_TITLE_CAPTURED_OBJECTS);
                         treeDialog.setMessage(StringConstants.DIA_MESSAGE_SELECT_ELEMENT);
-                 
+
                         treeDialog.setValidator(new ISelectionStatusValidator() {
 
                             @Override
@@ -1365,8 +1366,8 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                             showMessageForStartingInstantIE();
                             return true;
                         }
-                        MessageDialogWithToggle messageDialogWithToggle = new GoToAddonStoreMessageDialog(
-                                getShell(), StringConstants.HAND_ACTIVE_BROWSERS_DIA_TITLE,
+                        MessageDialogWithToggle messageDialogWithToggle = new GoToAddonStoreMessageDialog(getShell(),
+                                StringConstants.HAND_ACTIVE_BROWSERS_DIA_TITLE,
                                 MessageFormat.format(StringConstants.HAND_ACTIVE_BROWSERS_DIA_MESSAGE,
                                         webUIDriverType.toString()),
                                 StringConstants.HAND_ACTIVE_BROWSERS_DIA_TOOGLE_MESSAGE) {
@@ -1667,7 +1668,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             return;
         }
     }
-    
+
     private String getNewElementDisplayName(WebFrame parentElement, WebElement newElement) {
         String newElementName = newElement.getName();
         List<WebElement> sameLevelElements = parentElement.getChildren();
@@ -1679,7 +1680,8 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 count++;
             } else if (elementName.startsWith(newElementName)) {
                 int expectedUnderscoreIndex = newElementName.length();
-                if (elementName.length() > expectedUnderscoreIndex + 1 && elementName.charAt(expectedUnderscoreIndex) == '_') {
+                if (elementName.length() > expectedUnderscoreIndex + 1
+                        && elementName.charAt(expectedUnderscoreIndex) == '_') {
                     try {
                         int postfixNumber = Integer.parseInt(elementName.substring(expectedUnderscoreIndex + 1));
                         if (postfixNumber > maxPostfixNumber) {
@@ -1687,14 +1689,14 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                         }
                         count++;
                     } catch (NumberFormatException e) {
-                        //ignore
+                        // ignore
                     }
                 }
             }
         }
         return newElementName + (count > 0 ? "_" + (++maxPostfixNumber) : "");
     }
-    
+
     private int indexOf(List<WebElement> elements, WebElement frame) {
         for (int index = 0; index < elements.size(); index++) {
             if (isEquals(frame, elements.get(index))) {
@@ -1703,10 +1705,9 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         }
         return -1;
     }
-    
+
     private boolean isEquals(WebElement elm1, WebElement elm2) {
-        return new EqualsBuilder()
-                .append(elm1.getType(), elm2.getType())
+        return new EqualsBuilder().append(elm1.getType(), elm2.getType())
                 .append(elm1.getTag(), elm2.getTag())
                 .append(elm1.hasProperty(), elm2.hasProperty())
                 .append(elm1.getXpath(), elm2.getXpath())
@@ -1739,6 +1740,29 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 }
                 addNewActionMapping((HTMLActionMapping) dataObject);
                 return;
+            case EventConstants.RECORDER_ACTION_OBJECT_REORDERED:
+                if (!(dataObject instanceof WebElement[])) {
+                    return;
+                }
+
+                WebElement[] oldNewElement = (WebElement[]) dataObject;
+                if(oldNewElement.length != 2) {
+                    return;
+                }
+                replaceCapturedObjectInActionMapping(oldNewElement[0], oldNewElement[1]);
+                actionTableViewer.refresh();
+                return;
+        }
+    }
+
+    private void replaceCapturedObjectInActionMapping(WebElement oldElement, WebElement newElement) {
+        if (recordedActions == null || recordedActions.isEmpty()) {
+            return;
+        }
+        for (HTMLActionMapping action : recordedActions) {
+            if (oldElement.equals(action.getTargetElement())) {
+                action.setTargetElement(newElement);
+            }
         }
     }
 
