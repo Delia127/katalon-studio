@@ -1,8 +1,62 @@
 package com.kms.katalon.selenium.ide.format;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.kms.katalon.selenium.ide.model.Command;
+import com.kms.katalon.selenium.ide.util.ClazzUtils;
 
 public interface Formatter {
 
 	public String format(Command command);
+	
+	public default String valueOf(String param) {
+		if (StringUtils.isNotBlank(param)) {
+			param = param.replace("${", "");
+			param = param.replace("}", "");
+		}
+		return param;
+	}
+	
+	public default String getCleanCommandTail(String commandTail) {
+		String method = commandTail.replace("Not", "");
+		return method.replace("AndWait", "");
+	}
+	
+	public default String getWaitIfHas(String commandTail) {
+		if (commandTail.lastIndexOf("AndWait") != -1) {
+			return "\nselenium.waitForPageToLoad('30000')";
+		}
+		return null;
+	}
+	
+	public default String getParamName(String method, String target, String value) {
+		boolean hasParam = ClazzUtils.hasParam(getCleanCommandTail(method));
+		if (hasParam) {
+			return valueOf(value);
+		} 
+		return valueOf(target);
+	}
+	
+	public default String getParamMethod(String method, String target) {
+		boolean hasParam = ClazzUtils.hasParam(getCleanCommandTail(method));
+		if (hasParam) {
+			return "('" + valueOf(target) + "')";
+		} 
+		return "()";
+	}
+	
+	public default String getNormalMethod(String commandTail, String target) {
+		String methodName = getCleanCommandTail(commandTail);
+		String param = getParamMethod("get" + methodName, target);
+		boolean isArray = ClazzUtils.isArrayReturned(methodName);
+		String method = methodName + param;
+		return isArray ? "join(selenium.get" + method + ", ',')" : "selenium.get" + method;
+	}
+	
+	public default String getBoolMethod(String commandTail, String target) {
+		String methodName = getCleanCommandTail(commandTail);
+		String param = getParamMethod("is" + methodName + "Present", target);
+		return "selenium.is" + methodName + "Present" + param;
+	}
+	
 }

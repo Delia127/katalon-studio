@@ -7,9 +7,13 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.kms.katalon.selenium.ide.format.AssertFormatter;
 import com.kms.katalon.selenium.ide.format.DefaultFormatter;
+import com.kms.katalon.selenium.ide.format.EchoFormatter;
 import com.kms.katalon.selenium.ide.format.Formatter;
+import com.kms.katalon.selenium.ide.format.PauseFormatter;
+import com.kms.katalon.selenium.ide.format.StoreFormatter;
+import com.kms.katalon.selenium.ide.format.VerifyAndAssertFormatter;
+import com.kms.katalon.selenium.ide.format.WaitForFormatter;
 import com.kms.katalon.selenium.ide.model.Command;
 import com.kms.katalon.selenium.ide.model.TestCase;
 
@@ -20,7 +24,12 @@ public final class SeleniumIdeFormatter {
 	private final Map<String, Formatter> formatters = new HashMap<>();
 	
 	{
-		formatters.put("assert", new AssertFormatter());
+		formatters.put("assert", new VerifyAndAssertFormatter("assert"));
+		formatters.put("verify", new VerifyAndAssertFormatter("verify"));
+		formatters.put("store", new StoreFormatter());
+		formatters.put("waitFor", new WaitForFormatter());
+		formatters.put("echo", new EchoFormatter());
+		formatters.put("pause", new PauseFormatter());
 		formatters.put("default", new DefaultFormatter());
 	}
 	
@@ -50,7 +59,14 @@ public final class SeleniumIdeFormatter {
 	
 	public String formatCommand(Command command) {
 		Formatter formatter = getFormatter(command.getCommand());
-		return formatter.format(command);
+		if (formatter == null) {
+			return "// Error: command is not found";
+		}
+		String formatted = formatter.format(command);
+		if (StringUtils.isBlank(formatted)) {
+			return "// Error: command is not found";
+		}
+		return formatted;
 	}
 
 	public String getHeader(TestCase testCase) {
@@ -75,6 +91,9 @@ public final class SeleniumIdeFormatter {
 	}
 	
 	private Formatter getFormatter(String command) {
+		if (StringUtils.isBlank(command)) {
+			return null;
+		}
 		for (Map.Entry<String, Formatter> entry : formatters.entrySet()) {
 		    String key = entry.getKey();
 		    Formatter formatter = entry.getValue();

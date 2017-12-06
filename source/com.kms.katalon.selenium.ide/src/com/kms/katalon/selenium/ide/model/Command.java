@@ -5,6 +5,14 @@ public class Command {
 	private String target;
 	private String value;
 	
+	public Command(){}
+	
+	public Command(String command, String target, String value) {
+		this.command = command;
+		this.target = target;
+		this.value = value;
+	}
+	
 	public String getCommand() {
 		return command;
 	}
