@@ -1,7 +1,7 @@
 package com.kms.katalon.selenium.ide;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +21,7 @@ public final class SeleniumIdeFormatter {
 
 	private static final SeleniumIdeFormatter INSTANCE = new SeleniumIdeFormatter();
 	
-	private final Map<String, Formatter> formatters = new HashMap<>();
+	private final Map<String, Formatter> formatters = new LinkedHashMap<>();
 	
 	{
 		formatters.put("assert", new VerifyAndAssertFormatter("assert"));
@@ -71,7 +71,7 @@ public final class SeleniumIdeFormatter {
 		}
 		String formatted = formatter.format(command);
 		if (StringUtils.isBlank(formatted)) {
-			return String.format("Method %s is not found", command.getCommand());
+			return String.format("Method %s is not found\n", command.getCommand());
 		}
 		return formatted;
 	}

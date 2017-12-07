@@ -16,6 +16,15 @@ public final class ClazzUtils {
 		}
 	}
 	
+	public static int getParamCount(String methodName) {
+		try {
+			Method method = getMethodInClass(methodName, WebDriverBackedSelenium);
+			return method.getParameterCount();
+		} catch (Exception e) {
+			return 0;
+		}
+	}
+	
 	public static Object getReturnedType(String methodName) {
 		try {
 			Method method = getMethodInClass(methodName, WebDriverBackedSelenium);

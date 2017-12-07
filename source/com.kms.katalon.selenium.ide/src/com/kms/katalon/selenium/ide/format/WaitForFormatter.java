@@ -94,9 +94,4 @@ public class WaitForFormatter implements Formatter {
 				+ "}";
 	}
 	
-	public static void main(String[] args) {
-		WaitForFormatter store = new WaitForFormatter();
-		
-		System.out.println(store.format(new Command("waitForNotVisible", "aaa", "bbb")));
-	}
 }

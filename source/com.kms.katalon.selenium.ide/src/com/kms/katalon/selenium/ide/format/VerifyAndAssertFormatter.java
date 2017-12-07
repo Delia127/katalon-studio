@@ -101,27 +101,4 @@ public class VerifyAndAssertFormatter implements Formatter {
 		return StringUtils.EMPTY;
 	}
 
-	public static void main(String[] args) {
-//		VerifyAndAssertFormatter verify = new VerifyAndAssertFormatter("verify");
-//		System.out.println(verify.format(new Command("verifyAlert", "aaa", "bbb")));
-//		System.out.println(verify.format(new Command("verifyAlertPresent", "aaa", "bbb")));
-//		System.out.println(verify.format(new Command("verifyAlertNotPresent", "aaa", "bbb")));
-//		System.out.println(verify.format(new Command("verifyAllButtons", "aaa", "bbb")));
-//		System.out.println(verify.format(new Command("verifyAttributeFromAllWindows", "aaa", "bbb")));
-//		System.out.println(verify.format(new Command("verifyConfirmationNotPresent", "aaa", "bbb")));
-//		System.out.println(verify.format(new Command("verifyPrompt", "aaa", "bbb")));
-//		System.out.println(verify.format(new Command("verifyNotPrompt", "aaa", "bbb")));
-//		System.out.println(verify.format(new Command("verifyNotSelectOptions", "aaa", "bbb")));
-//		System.out.println(verify.format(new Command("verifyElementHeight", "aaa", "bbb")));
-//		System.out.println(verify.format(new Command("verifyNotSelectedLabels", "aaa", "bbb")));
-//		System.out.println(verify.format(new Command("verifyPromptNotPresent", "aaa", "bbb")));
-//		
-		VerifyAndAssertFormatter assert1 = new VerifyAndAssertFormatter("assert");
-		System.out.println(assert1.format(new Command("assertChecked", "aaa", "bbb")));
-		System.out.println(assert1.format(new Command("assertNotChecked", "aaa", "bbb")));
-		System.out.println(assert1.format(new Command("assertAlertPresent", "aaa", "bbb")));
-		System.out.println(assert1.format(new Command("assertEditable", "aaa", "bbb")));
-		System.out.println(assert1.format(new Command("assertNotEditable", "aaa", "bbb")));
-		
-	}
 }

@@ -92,16 +92,5 @@ public class StoreFormatter implements Formatter {
 		}
 		return StringUtils.EMPTY;
 	}
-	
-	public static void main(String[] args) {
-		StoreFormatter store = new StoreFormatter();
-		
-		System.out.println(store.format(new Command("storeChecked", "aaa", "bbb")));
-		System.out.println(store.format(new Command("storeAndWait", "aaa", "bbb")));
-		System.out.println(store.format(new Command("storeAttributeFromAllWindows", "aaa", "bbb")));
-		System.out.println(store.format(new Command("storePrompt", "aaa", "bbb")));
-		System.out.println(store.format(new Command("storeTextAndWait", "aaa", "bbb")));
-		System.out.println(store.format(new Command("storeElementHeight", "aaa", "bbb")));
-		System.out.println(store.format(new Command("storeElementPresent", "aaa", "bbb")));
-	}
+
 }
