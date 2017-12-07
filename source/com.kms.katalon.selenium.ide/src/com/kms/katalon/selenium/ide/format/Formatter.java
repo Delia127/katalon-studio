@@ -37,15 +37,19 @@ public interface Formatter {
 		return valueOf(target);
 	}
 	
-	public default String getParamMethod(String method, String target) {
-		boolean hasParam = ClazzUtils.hasParam(getCleanCommandTail(method));
+	public default String getParamMethod(String method, String target) throws Exception {
+		boolean hasMethod = ClazzUtils.hasMethod(method);
+		if (!hasMethod) {
+			throw new Exception("Method is not found");
+		}
+		boolean hasParam = ClazzUtils.hasParam(method);
 		if (hasParam) {
 			return "('" + valueOf(target) + "')";
 		} 
 		return "()";
 	}
 	
-	public default String getNormalMethod(String commandTail, String target) {
+	public default String getNormalMethod(String commandTail, String target) throws Exception {
 		String methodName = getCleanCommandTail(commandTail);
 		String param = getParamMethod("get" + methodName, target);
 		boolean isArray = ClazzUtils.isArrayReturned(methodName);
@@ -53,10 +57,15 @@ public interface Formatter {
 		return isArray ? "join(selenium.get" + method + ", ',')" : "selenium.get" + method;
 	}
 	
-	public default String getBoolMethod(String commandTail, String target) {
+	public default String getBoolMethod(String commandTail, String target) throws Exception {
 		String methodName = getCleanCommandTail(commandTail);
 		String param = getParamMethod("is" + methodName + "Present", target);
 		return "selenium.is" + methodName + "Present" + param;
 	}
 	
+	public default String getBoolCheckedMethod(String commandTail, String target) throws Exception {
+		String methodName = getCleanCommandTail(commandTail);
+		String param = getParamMethod("is" + methodName, target);
+		return "selenium.is" + methodName + param;
+	}
 }

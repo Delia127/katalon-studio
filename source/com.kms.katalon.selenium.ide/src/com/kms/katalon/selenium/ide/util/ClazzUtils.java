@@ -25,6 +25,15 @@ public final class ClazzUtils {
 		}
 	}
 	
+	public static boolean hasMethod(String methodName) {
+		try {
+			Method method = getMethodInClass(methodName, WebDriverBackedSelenium);
+			return method != null;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+	
 	public static boolean hasParam(String methodName) {
 		try {
 			Method method = getMethodInClass(methodName, WebDriverBackedSelenium);

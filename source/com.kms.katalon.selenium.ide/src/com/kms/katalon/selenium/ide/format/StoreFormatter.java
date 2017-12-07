@@ -14,25 +14,45 @@ public class StoreFormatter implements Formatter {
 	
 	@Override
 	public String format(Command command) {
-		String formatted = present(command);
-		if (StringUtils.isBlank(formatted)) {
-			formatted = normal(command);
+		String formatted = StringUtils.EMPTY;
+		try {
+			formatted = checked(command);
+			if (StringUtils.isBlank(formatted)) {
+				formatted = notChecked(command);
+			}
+			if (StringUtils.isBlank(formatted)) {
+				formatted = present(command);
+			}
+			if (StringUtils.isBlank(formatted)) {
+				formatted = normal(command);
+			}
+		} catch (Exception e) {
+			formatted = String.format("Method %s is not found", command.getCommand());
 		}
-		return formatted;
+		return formatted + "\n";
 	}
 	
-	public String normal(Command command) {
+	public String normal(Command command) throws Exception {
 		StringBuffer formatted = new StringBuffer();
 		Pattern pattern = Pattern.compile("(" + ACTION + ")(.*?)$");
         Matcher matcher = pattern.matcher(command.getCommand());
         if (matcher.find()) {
-        	String cleanedMethod = getCleanCommandTail(matcher.group(2));
-        	Object returnedType = ClazzUtils.getReturnedType("get" + cleanedMethod);
-        	String paramName = getParamName("get" + cleanedMethod, command.getTarget(), command.getValue());
-        	String method = getNormalMethod(cleanedMethod, command.getTarget());
-        	formatted.append(returnedType + " " + paramName + " = " + method);
+        	String commandTail = matcher.group(2);
+        	if (StringUtils.isNotBlank(commandTail)) {
+	        	String cleanedMethod = getCleanCommandTail(commandTail);
+		        	if (StringUtils.isNotBlank(cleanedMethod)) {
+		        	Object returnedType = ClazzUtils.getReturnedType("get" + cleanedMethod);
+		        	String paramName = getParamName("get" + cleanedMethod, command.getTarget(), command.getValue());
+		        	String method = getNormalMethod(cleanedMethod, command.getTarget());
+		        	formatted.append(returnedType + " " + paramName + " = " + method);
+	        	} else {
+	        		formatted.append("String" + " " + command.getValue() + " = " + command.getTarget());
+	        	}
+        	} else {
+        		formatted.append("String" + " " + command.getValue() + " = " + command.getTarget());
+        	}
         	
-        	String wait = getWaitIfHas(matcher.group(2));
+        	String wait = getWaitIfHas(command.getCommand());
         	if (StringUtils.isNotBlank(wait)) {
         		formatted.append(wait);
         	}
@@ -40,23 +60,44 @@ public class StoreFormatter implements Formatter {
 		return formatted.toString();
 	}
 	
-	public String present(Command command) {
+	public String present(Command command) throws Exception {
 		StringBuffer formatted = new StringBuffer();
 		Pattern pattern = Pattern.compile("(" + ACTION + ")(.*?)(Present)");
         Matcher matcher = pattern.matcher(command.getCommand());
         if (matcher.find()) {
-        	String paramName = getParamName("get" + matcher.group(2), command.getTarget(), command.getValue());
+        	String paramName = getParamName("is" + matcher.group(2) + "Present", command.getTarget(), command.getValue());
         	String method = getBoolMethod(matcher.group(2), command.getTarget());
         	formatted.append("boolean " + paramName + " = " + method);
         }
 		return formatted.toString();
 	}
 	
+	public String checked(Command command) throws Exception {
+		Pattern pattern = Pattern.compile("(" + ACTION + ")(Checked|Editable|Ordered|Visible|SomethingSelected)$");
+		Matcher matcher = pattern.matcher(command.getCommand());
+		if (matcher.find()) {
+			String paramName = getParamName("is" + matcher.group(2), command.getTarget(), command.getValue());
+			String method = getBoolCheckedMethod(matcher.group(2), command.getTarget());
+			return "boolean " + paramName + " = " + method;
+		}
+		return StringUtils.EMPTY;
+	}
+	
+	public String notChecked(Command command) throws Exception {
+		Pattern pattern = Pattern.compile("(" + ACTION + ")(Not)(Checked|Editable|Ordered|Visible|SomethingSelected)$");
+		Matcher matcher = pattern.matcher(command.getCommand());
+		if (matcher.find()) {
+			String method = getBoolCheckedMethod(matcher.group(3), command.getTarget());
+			return ACTION + "False(" + method + ")";
+		}
+		return StringUtils.EMPTY;
+	}
+	
 	public static void main(String[] args) {
 		StoreFormatter store = new StoreFormatter();
 		
-		System.out.println(store.format(new Command("storeAlert", "aaa", "bbb")));
-		System.out.println(store.format(new Command("storeAllButtons", "aaa", "bbb")));
+		System.out.println(store.format(new Command("storeChecked", "aaa", "bbb")));
+		System.out.println(store.format(new Command("storeAndWait", "aaa", "bbb")));
 		System.out.println(store.format(new Command("storeAttributeFromAllWindows", "aaa", "bbb")));
 		System.out.println(store.format(new Command("storePrompt", "aaa", "bbb")));
 		System.out.println(store.format(new Command("storeTextAndWait", "aaa", "bbb")));

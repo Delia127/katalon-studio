@@ -11,17 +11,28 @@ public class WaitForFormatter implements Formatter {
 	
 	@Override
 	public String format(Command command) {
-		String formatted = notPresent(command);
-		if (StringUtils.isBlank(formatted)) {
-			formatted = present(command);
+		String formatted = StringUtils.EMPTY;
+		try {
+			formatted = checked(command);
+			if (StringUtils.isBlank(formatted)) {
+				formatted = notChecked(command);
+			}
+			if (StringUtils.isBlank(formatted)) {
+				formatted = notPresent(command);
+			}
+			if (StringUtils.isBlank(formatted)) {
+				formatted = present(command);
+			}
+			if (StringUtils.isBlank(formatted)) {
+				formatted = normal(command);
+			}
+		} catch (Exception e) {
+			formatted = String.format("Method %s is not found", command.getCommand());
 		}
-		if (StringUtils.isBlank(formatted)) {
-			formatted = normal(command);
-		}
-		return formatted;
+		return formatted + "\n";
 	}
-
-	private String normal(Command command) {
+	
+	private String normal(Command command) throws Exception {
 		StringBuffer formatted = new StringBuffer();
 		Pattern pattern = Pattern.compile("(waitFor)(.*?)$");
 		Matcher matcher = pattern.matcher(command.getCommand());
@@ -33,7 +44,7 @@ public class WaitForFormatter implements Formatter {
 		return formatted.toString();
 	}
 
-	private String present(Command command) {
+	private String present(Command command) throws Exception {
 		StringBuffer formatted = new StringBuffer();
 		Pattern pattern = Pattern.compile("(waitFor)(.*?)(Present)");
 		Matcher matcher = pattern.matcher(command.getCommand());
@@ -44,7 +55,7 @@ public class WaitForFormatter implements Formatter {
 		return formatted.toString();
 	}
 
-	private String notPresent(Command command) {
+	private String notPresent(Command command) throws Exception {
 		StringBuffer formatted = new StringBuffer();
 		Pattern pattern = Pattern.compile("(waitFor)(.*?)(Not)(Present)");
 		Matcher matcher = pattern.matcher(command.getCommand());
@@ -54,22 +65,38 @@ public class WaitForFormatter implements Formatter {
 		}
 		return formatted.toString();
 	}
+	
+	public String checked(Command command) throws Exception {
+		Pattern pattern = Pattern.compile("(waitFor)(Checked|Editable|Ordered|Visible|SomethingSelected)$");
+		Matcher matcher = pattern.matcher(command.getCommand());
+		if (matcher.find()) {
+			String method = getBoolCheckedMethod(matcher.group(2), command.getTarget());
+			return returnPattern(method);
+		}
+		return StringUtils.EMPTY;
+	}
+	
+	public String notChecked(Command command) throws Exception {
+		Pattern pattern = Pattern.compile("(waitForNot)(Checked|Editable|Ordered|Visible|SomethingSelected)$");
+		Matcher matcher = pattern.matcher(command.getCommand());
+		if (matcher.find()) {
+			String method = getBoolCheckedMethod(matcher.group(2), command.getTarget());
+			return returnPattern("!" + method);
+		}
+		return StringUtils.EMPTY;
+	}
 
 	private String returnPattern(String condition) {
 		return "for (int second = 0;; second++) {\n"
 				+ "   if (second >= 60) fail(\"timeout\");\n"
 				+ "   try { if (" + condition + ") break; } catch (Exception e) {}\n"
 				+ "   Thread.sleep(1000);\n"
-				+ "}\n";
+				+ "}";
 	}
 	
 	public static void main(String[] args) {
 		WaitForFormatter store = new WaitForFormatter();
 		
-		System.out.println(store.format(new Command("waitForText", "aaa", "bbb")));
-		System.out.println(store.format(new Command("waitForSelectedIndexes", "aaa", "bbb")));	
-		System.out.println(store.format(new Command("waitForTextPresent", "aaa", "bbb")));
-		System.out.println(store.format(new Command("waitForTextNotPresent", "aaa", "bbb")));
-		System.out.println(store.format(new Command("waitForXpathCount", "aaa", "bbb")));
+		System.out.println(store.format(new Command("waitForNotVisible", "aaa", "bbb")));
 	}
 }
