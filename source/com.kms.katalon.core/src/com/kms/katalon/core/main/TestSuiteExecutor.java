@@ -38,7 +38,7 @@ import groovy.lang.Binding;
 
 public class TestSuiteExecutor {
 
-    private static final String TS_SCRIPTS_ROOT_FOLDER = "Scripts Test Suites";
+    private static final String TS_SCRIPTS_ROOT_FOLDER = "Test Scripts";
 
     private static final KeywordLogger LOG = KeywordLogger.getInstance();
 
@@ -233,7 +233,7 @@ public class TestSuiteExecutor {
         private File getTestSuiteScriptFile(String testSuiteId) {
             File rootFolder = new File(RunConfiguration.getProjectDir(), TS_SCRIPTS_ROOT_FOLDER);
 
-            File tsScriptFolder = new File(rootFolder, testSuiteId.replaceFirst("Test Suites", ""));
+            File tsScriptFolder = new File(rootFolder, testSuiteId);
 
             if (!tsScriptFolder.exists()) {
                 return null;

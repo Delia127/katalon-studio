@@ -70,7 +70,7 @@ public class FileServiceConstant {
                 + GlobalVariableWrapper.getGlobalVariableFileExtension();
     }
     
-    public static String getScriptTestSuiteFolder(String projectFolder) {
-        return projectFolder + File.separator + GlobalMessageConstants.ROOT_FOLDER_NAME_SCRIPTS_TEST_SUITE;
+    public static String getTestScriptFolder(String projectFolder) {
+        return projectFolder + File.separator + GlobalMessageConstants.ROOT_FOLDER_NAME_TEST_SCRIPTS;
     }
 }

@@ -84,10 +84,8 @@ public class TestSuiteFileServiceDataProvider implements ITestSuiteDataProvider 
     }
 
     private File getTestSuiteScriptFolder(TestSuiteEntity testSuite) {
-        String scripTSRootLoc = FileServiceConstant.getScriptTestSuiteFolder(testSuite.getProject().getFolderLocation());
-        File scriptTestSuiteFolder = new File(scripTSRootLoc, testSuite.getIdForDisplay().replaceFirst(
-                FileServiceConstant.TEST_SUITE_ROOT_FOLDER_NAME, ""));
-        return scriptTestSuiteFolder;
+        String scripTSRootLoc = FileServiceConstant.getTestScriptFolder(testSuite.getProject().getFolderLocation());
+        return new File(scripTSRootLoc, testSuite.getIdForDisplay());
     }
 
     @Override

@@ -25,13 +25,13 @@ import com.kms.katalon.core.annotation.TearDown
 import com.kms.katalon.core.annotation.TearDownTestCase
 
 /**
- * Some methods bellow are samples for using SetUp/TearDown in a test suite.
+ * Some methods below are samples for using SetUp/TearDown in a test suite.
  */
 
 /**
  * Setups test suite environment.
  */
-@SetUp(skipped = true) // Please change skipped to be false to active this method.
+@SetUp(skipped = true) // Please change skipped to be false to activate this method.
 def setUp() {
 	// Put your code here.
 }
@@ -39,7 +39,7 @@ def setUp() {
 /**
  * Cleans test suites environment.
  */
-@TearDown(skipped = true) // Please change skipped to be false to active this method.
+@TearDown(skipped = true) // Please change skipped to be false to activate this method.
 def tearDown() {
 	// Put your code here.
 }
@@ -47,7 +47,7 @@ def tearDown() {
 /**
  * Runs before every test case starts.
  */
-@SetupTestCase(skipped = true) // Please change skipped to be false to active this method.
+@SetupTestCase(skipped = true) // Please change skipped to be false to activate this method.
 def setupTestCase() {
 	// Put your code here.
 }
@@ -55,7 +55,7 @@ def setupTestCase() {
 /**
  * Runs after every test case ends.
  */
-@TearDownTestCase(skipped = true) // Please change skipped to be false to active this method.
+@TearDownTestCase(skipped = true) // Please change skipped to be false to activate this method.
 def tearDownTestCase() {
 	// Put your code here.
 }
