@@ -37,7 +37,6 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -217,7 +216,7 @@ public class ObjectPropertyView implements EventHandler {
 
         toolItemAdd = new ToolItem(tableToolbar, SWT.NONE);
         toolItemAdd.setText(StringConstants.VIEW_LBL_ADD);
-        toolItemAdd.setToolTipText(StringConstants.VIEW_LBL_ADD);
+        toolItemAdd.setToolTipText(ComposerObjectRepositoryMessageConstants.VIEW_ITEM_TIP_ADD_NEW_PROPERTY);
         toolItemAdd.setImage(ImageConstants.IMG_16_ADD);
 
         toolItemDelete = new ToolItem(tableToolbar, SWT.NONE);
