@@ -105,32 +105,32 @@ public class TestCaseMethodNodeCollector {
         return annotatedMethods;
     }
 
-    private TestCaseMethodNodeWrapper getWrapper(Class<?> clazz, boolean ignoredIfFailed, String startMessage) {
-        return new TestCaseMethodNodeWrapper(collectMethodWithAnnotation(clazz), ignoredIfFailed, startMessage);
+    private TestCaseMethodNodeWrapper getWrapper(Class<?> clazz, String actionType, boolean ignoredIfFailed,
+            String startMessage) {
+        return new TestCaseMethodNodeWrapper(collectMethodWithAnnotation(clazz), actionType, ignoredIfFailed,
+                startMessage);
     }
 
     private Map<String, TestCaseMethodNodeWrapper> collectSetupAndTeardownMethods() {
         Map<String, TestCaseMethodNodeWrapper> methodNodeCollection = new HashMap<String, TestCaseMethodNodeWrapper>();
 
-        methodNodeCollection.put(SetUp.class.getName(),
-                getWrapper(SetUp.class, false, StringConstants.MAIN_MSG_START_RUNNING_SETUP_METHODS_FOR_TC));
+        methodNodeCollection.put(SetUp.class.getName(), getWrapper(SetUp.class, StringConstants.LOG_SETUP_ACTION, false,
+                StringConstants.MAIN_MSG_START_RUNNING_SETUP_METHODS_FOR_TC));
 
         methodNodeCollection.put(TearDown.class.getName(),
-                getWrapper(TearDown.class, true, StringConstants.MAIN_MSG_START_RUNNING_TEAR_DOWN_METHODS_FOR_TC));
+                getWrapper(TearDown.class, StringConstants.LOG_TEAR_DOWN_ACTION, true,
+                        StringConstants.MAIN_MSG_START_RUNNING_TEAR_DOWN_METHODS_FOR_TC));
 
-        methodNodeCollection.put(
-                TearDownIfPassed.class.getName(),
-                getWrapper(TearDownIfPassed.class, true,
+        methodNodeCollection.put(TearDownIfPassed.class.getName(),
+                getWrapper(TearDownIfPassed.class, StringConstants.LOG_TEAR_DOWN_ACTION, true,
                         StringConstants.MAIN_MSG_START_RUNNING_TEAR_DOWN_METHODS_FOR_PASSED_TC));
 
-        methodNodeCollection.put(
-                TearDownIfFailed.class.getName(),
-                getWrapper(TearDownIfFailed.class, true,
+        methodNodeCollection.put(TearDownIfFailed.class.getName(),
+                getWrapper(TearDownIfFailed.class, StringConstants.LOG_TEAR_DOWN_ACTION, true,
                         StringConstants.MAIN_MSG_START_RUNNING_TEAR_DOWN_METHODS_FOR_FAILED_TC));
 
-        methodNodeCollection.put(
-                TearDownIfError.class.getName(),
-                getWrapper(TearDownIfError.class, true,
+        methodNodeCollection.put(TearDownIfError.class.getName(),
+                getWrapper(TearDownIfError.class, StringConstants.LOG_TEAR_DOWN_ACTION, true,
                         StringConstants.MAIN_MSG_START_RUNNING_TEAR_DOWN_METHODS_FOR_ERROR_TC));
 
         return methodNodeCollection;

@@ -21,10 +21,12 @@ import org.codehaus.groovy.control.CompilationFailedException;
 import com.kms.katalon.core.annotation.AfterTestCase;
 import com.kms.katalon.core.annotation.BeforeTestCase;
 import com.kms.katalon.core.annotation.SetUp;
+import com.kms.katalon.core.annotation.SetupTestCase;
 import com.kms.katalon.core.annotation.TearDown;
 import com.kms.katalon.core.annotation.TearDownIfError;
 import com.kms.katalon.core.annotation.TearDownIfFailed;
 import com.kms.katalon.core.annotation.TearDownIfPassed;
+import com.kms.katalon.core.annotation.TearDownTestCase;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.context.internal.InternalTestCaseContext;
 import com.kms.katalon.core.context.internal.TestContextEvaluator;
@@ -33,6 +35,7 @@ import com.kms.katalon.core.logging.ErrorCollector;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.logging.KeywordLogger.KeywordStackElement;
 import com.kms.katalon.core.logging.LogLevel;
+import com.kms.katalon.core.logging.model.TestStatus;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testcase.TestCase;
@@ -72,21 +75,27 @@ public class TestCaseExecutor {
 
     private InternalTestCaseContext testCaseContext;
 
-    public TestCaseExecutor(String testCaseId, TestCaseBinding testCaseBinding, ScriptEngine engine,
-            TestContextEvaluator contextEvaluator, boolean doCleanUp) {
+    private TestSuiteExecutor testSuiteExecutor;
+
+    public void setTestSuiteExecutor(TestSuiteExecutor testSuiteExecutor) {
+        this.testSuiteExecutor = testSuiteExecutor;
+    }
+
+    public TestCaseExecutor(TestCaseBinding testCaseBinding, ScriptEngine engine, TestContextEvaluator contextEvaluator,
+            boolean doCleanUp) {
         this.testCaseBinding = testCaseBinding;
         this.engine = engine;
-        this.testCase = TestCaseFactory.findTestCase(testCaseId);
+        this.testCase = TestCaseFactory.findTestCase(testCaseBinding.getTestCaseId());
         this.doCleanUp = doCleanUp;
         this.contextEvaluator = contextEvaluator;
 
         this.testCaseContext = new InternalTestCaseContext();
-        testCaseContext.setTestCaseId(testCaseId);
+        testCaseContext.setTestCaseId(testCaseBinding.getTestCaseId());
     }
 
-    public TestCaseExecutor(String testCaseId, TestCaseBinding testCaseBinding, ScriptEngine engine,
+    public TestCaseExecutor(TestCaseBinding testCaseBinding, ScriptEngine engine,
             TestContextEvaluator contextEvaluator) {
-        this(testCaseId, testCaseBinding, engine, contextEvaluator, false);
+        this(testCaseBinding, engine, contextEvaluator, false);
     }
 
     private void preExecution() {
@@ -182,7 +191,18 @@ public class TestCaseExecutor {
 
             contextEvaluator.invokeListenerMethod(BeforeTestCase.class.getName(), new Object[] { testCaseContext });
 
+            testCaseResult = invokeTestSuiteMethod(SetupTestCase.class.getName(), StringConstants.LOG_SETUP_ACTION,
+                    false, testCaseResult);
+            if (ErrorCollector.getCollector().containsErrors()) {
+                logger.logError(testCaseResult.getMessage());
+                return testCaseResult;
+            }
+
             accessMainPhase();
+
+            invokeTestSuiteMethod(TearDownTestCase.class.getName(), StringConstants.LOG_TEAR_DOWN_ACTION, true,
+                    testCaseResult);
+
             return testCaseResult;
         } finally {
             testCaseContext.setTestCaseStatus(testCaseResult.getTestStatus().getStatusValue().name());
@@ -193,6 +213,36 @@ public class TestCaseExecutor {
 
             postExecution();
         }
+    }
+
+    private TestResult invokeTestSuiteMethod(String methodName, String actionType, boolean ignoredIfFailed,
+            TestResult testCaseResult) {
+        if (testSuiteExecutor != null) {
+            ErrorCollector errorCollector = ErrorCollector.getCollector();
+            List<Throwable> coppiedError = errorCollector.getCoppiedErrors();
+            errorCollector.clearErrors();
+
+            testSuiteExecutor.invokeEachTestCaseMethod(methodName, actionType, ignoredIfFailed);
+
+            if (!ignoredIfFailed && errorCollector.containsErrors()) {
+                coppiedError.add(errorCollector.getFirstError());
+            }
+
+            errorCollector.clearErrors();
+            errorCollector.getErrors().addAll(coppiedError);
+
+            if (errorCollector.containsErrors() && ignoredIfFailed) {
+                Throwable firstError = errorCollector.getFirstError();
+                TestStatus testStatus = new TestStatus();
+                testStatus.setStatusValue(TestStatusValue.ERROR);
+                String errorMessage = ExceptionsUtil.getMessageForThrowable(firstError);
+                testStatus.setStackTrace(errorMessage);
+                testCaseResult.setTestStatus(testStatus);
+
+                return testCaseResult;
+            }
+        }
+        return testCaseResult;
     }
 
     private void accessMainPhase() {
@@ -343,18 +393,18 @@ public class TestCaseExecutor {
         logger.logInfo(methodNodeWrapper.getStartMessage());
         int count = 1;
         for (MethodNode method : methodList) {
-            runMethod(method.getName(), count++, methodNodeWrapper.isIgnoredIfFailed());
+            runMethod(method.getName(), methodNodeWrapper.getActionType(), count++, methodNodeWrapper.isIgnoredIfFailed());
         }
     }
 
-    private void runMethod(String methodName, int index, boolean ignoreIfFailed) {
+    private void runMethod(String methodName, String actionType, int index, boolean ignoreIfFailed) {
         Stack<KeywordStackElement> keywordStack = new Stack<KeywordStackElement>();
         Map<String, String> startKeywordAttributeMap = new HashMap<String, String>();
         startKeywordAttributeMap.put(StringConstants.XML_LOG_STEP_INDEX, String.valueOf(index));
         if (ignoreIfFailed) {
             startKeywordAttributeMap.put(StringConstants.XML_LOG_IS_IGNORED_IF_FAILED, String.valueOf(ignoreIfFailed));
         }
-        logger.startKeyword(methodName, startKeywordAttributeMap, keywordStack);
+        logger.startKeyword(methodName, actionType, startKeywordAttributeMap, keywordStack);
         try {
             runMethod(getScriptFile(), methodName);
             endAllUnfinishedKeywords(keywordStack);
@@ -370,7 +420,7 @@ public class TestCaseExecutor {
             logger.logError(message);
             errorCollector.addError(e);
         } finally {
-            logger.endKeyword(methodName, null, keywordStack);
+            logger.endKeyword(methodName, actionType, Collections.emptyMap(), keywordStack);
         }
     }
 

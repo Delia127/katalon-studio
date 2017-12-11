@@ -1,6 +1,12 @@
 package com.kms.katalon.dal.fileservice.dataprovider;
 
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+
 import com.kms.katalon.dal.ITestSuiteDataProvider;
+import com.kms.katalon.dal.exception.DALException;
+import com.kms.katalon.dal.fileservice.FileServiceConstant;
 import com.kms.katalon.dal.fileservice.manager.TestSuiteFileServiceManager;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
@@ -57,5 +63,43 @@ public class TestSuiteFileServiceDataProvider implements ITestSuiteDataProvider 
     @Override
     public String getAvailableTestSuiteName(FolderEntity parentFolder, String name) throws Exception {
         return TestSuiteFileServiceManager.getAvailableTestSuiteName(parentFolder, name);
+    }
+
+    @Override
+    public File getTestSuiteScriptFile(TestSuiteEntity testSuite) throws DALException {
+        File scriptTestSuiteFolder = getTestSuiteScriptFolder(testSuite);
+        if (scriptTestSuiteFolder.exists()) {
+            File[] scripts = scriptTestSuiteFolder.listFiles(new FilenameFilter() {
+                
+                @Override
+                public boolean accept(File dir, String name) {
+                    return new File(dir, name).isFile() && name.matches("Script\\d{13}\\.groovy");
+                }
+            });
+            if (scripts != null && scripts.length > 0) {
+                return scripts[0];
+            }
+        }
+        return null;
+    }
+
+    private File getTestSuiteScriptFolder(TestSuiteEntity testSuite) {
+        String scripTSRootLoc = FileServiceConstant.getScriptTestSuiteFolder(testSuite.getProject().getFolderLocation());
+        File scriptTestSuiteFolder = new File(scripTSRootLoc, testSuite.getIdForDisplay().replaceFirst(
+                FileServiceConstant.TEST_SUITE_ROOT_FOLDER_NAME, ""));
+        return scriptTestSuiteFolder;
+    }
+
+    @Override
+    public File newTestSuiteScriptFile(TestSuiteEntity testSuite) throws DALException {
+        File scriptTestSuiteFolder = getTestSuiteScriptFolder(testSuite);
+        scriptTestSuiteFolder.mkdirs();
+        File script = new File(scriptTestSuiteFolder, "Script" + System.currentTimeMillis() + ".groovy");
+        try {
+            script.createNewFile();
+        } catch (IOException e) {
+            throw new DALException(e);
+        }
+        return script;
     }
 }

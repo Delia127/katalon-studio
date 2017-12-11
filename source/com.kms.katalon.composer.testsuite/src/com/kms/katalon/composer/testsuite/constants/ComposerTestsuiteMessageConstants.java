@@ -80,6 +80,8 @@ public class ComposerTestsuiteMessageConstants extends NLS {
     public static String LIS_INFO_SELECT_A_TEST_CASE;
 
     public static String PA_TAB_MAIN;
+    
+    public static String PA_TAB_SCRIPT;
 
     public static String PA_TAB_INTEGRATION;
 

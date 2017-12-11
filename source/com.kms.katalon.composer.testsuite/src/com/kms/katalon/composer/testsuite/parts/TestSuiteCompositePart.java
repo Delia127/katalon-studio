@@ -28,6 +28,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
@@ -42,6 +43,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.parts.MultipleTabsCompositePart;
+import com.kms.katalon.composer.testsuite.constants.ComposerTestsuiteMessageConstants;
 import com.kms.katalon.composer.testsuite.constants.ImageConstants;
 import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.composer.testsuite.util.TestSuiteEntityUtil;
@@ -54,6 +56,7 @@ import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
+@SuppressWarnings("restriction")
 public class TestSuiteCompositePart implements EventHandler, MultipleTabsCompositePart, IComposerPartEvent {
     // compositePart has only one child is subPartStack.
     // Children of subPartStack: childTestSuiteGeneralPart &
@@ -75,11 +78,13 @@ public class TestSuiteCompositePart implements EventHandler, MultipleTabsComposi
 
     private static final int COMPOSITE_SIZE = 1;
 
-    private static final int SUB_PARTSTACK_SIZE = 2;
+    private static final int SUB_PARTSTACK_SIZE = 3;
 
     private static final int CHILD_TESTSUITE_MAIN_PART_INDEX = 0;
 
-    private static final int CHILD_TESTSUITE_INTEGRATION_PART_INDEX = 1;
+    private static final int CHILD_TESTSUITE_SCRIPT_PART_INDEX = 1;
+
+    private static final int CHILD_TESTSUITE_INTEGRATION_PART_INDEX = 2;
 
     public static final String MAIN_TAB_TITLE = StringConstants.PA_TAB_MAIN;
 
@@ -104,9 +109,11 @@ public class TestSuiteCompositePart implements EventHandler, MultipleTabsComposi
 
     @Inject
     private MDirtyable dirty;
-    
-    @Inject 
+
+    @Inject
     private EPartService partService;
+
+    private TestSuiteScriptPart scriptPart;
 
     public MDirtyable getDirty() {
         return dirty;
@@ -123,7 +130,7 @@ public class TestSuiteCompositePart implements EventHandler, MultipleTabsComposi
         dirty.setDirty(false);
         isInitialized = false;
         new HelpToolBarForCompositePart(compositePart, partService) {
-            
+
             @Override
             protected String getDocumentationUrlForPartObject(Object partObject) {
                 if (partObject instanceof TestSuitePart) {
@@ -142,22 +149,30 @@ public class TestSuiteCompositePart implements EventHandler, MultipleTabsComposi
 
     public void initComponent() {
         if (compositePart.getChildren().size() != COMPOSITE_SIZE
-                || !(compositePart.getChildren().get(0) instanceof MPartStack)) return;
+                || !(compositePart.getChildren().get(0) instanceof MPartStack))
+            return;
 
         subPartStack = (MPartStack) compositePart.getChildren().get(0);
         if (subPartStack.getChildren().size() == SUB_PARTSTACK_SIZE) {
             for (MStackElement stackElement : subPartStack.getChildren()) {
-                if (!(stackElement instanceof MPart)) continue;
+                if (!(stackElement instanceof MPart)) {
+                    continue;
+                }
 
-                if (((MPart) stackElement).getObject() instanceof TestSuitePart) {
-                    childTestSuiteMainPart = (TestSuitePart) ((MPart) stackElement).getObject();
-                } else if (((MPart) stackElement).getObject() instanceof TestSuiteIntegrationPart) {
-                    childTestSuiteIntegrationPart = (TestSuiteIntegrationPart) ((MPart) stackElement).getObject();
+                Object part = ((MPart) stackElement).getObject();
+                if (part instanceof TestSuitePart) {
+                    childTestSuiteMainPart = (TestSuitePart) part;
+                } else if (part instanceof TestSuiteIntegrationPart) {
+                    childTestSuiteIntegrationPart = (TestSuiteIntegrationPart) part;
+                } else if (part instanceof CompatibilityEditor) {
+                    scriptPart = new TestSuiteScriptPart(this, (CompatibilityEditor) part);
                 }
             }
         }
 
         initTabFolder();
+
+        scriptPart.initEditorAction();
     }
 
     private void initTabFolder() {
@@ -173,6 +188,11 @@ public class TestSuiteCompositePart implements EventHandler, MultipleTabsComposi
                 testSuiteMainPart.setText(MAIN_TAB_TITLE);
                 testSuiteMainPart.setImage(ImageConstants.IMG_16_MAIN);
                 testSuiteMainPart.setShowClose(false);
+
+                CTabItem testSuiteScriptPart = tabFolder.getItem(CHILD_TESTSUITE_SCRIPT_PART_INDEX);
+                testSuiteScriptPart.setText(ComposerTestsuiteMessageConstants.PA_TAB_SCRIPT);
+                testSuiteScriptPart.setImage(ImageConstants.IMG_16_SCRIPT);
+                testSuiteScriptPart.setShowClose(false);
 
                 CTabItem testSuiteIntegrationPart = tabFolder.getItem(CHILD_TESTSUITE_INTEGRATION_PART_INDEX);
                 testSuiteIntegrationPart.setText(INTEGRATION_TAB_TITLE);
@@ -209,6 +229,7 @@ public class TestSuiteCompositePart implements EventHandler, MultipleTabsComposi
         List<MPart> childrenParts = new ArrayList<MPart>();
         childrenParts.add(getChildMainPart());
         childrenParts.add(getChildIntegrationPart());
+        childrenParts.add(scriptPart.getMPart());
         return childrenParts;
     }
 
@@ -288,20 +309,22 @@ public class TestSuiteCompositePart implements EventHandler, MultipleTabsComposi
         TestSuiteEntityUtil.copyTestSuiteProperties(testSuite, originalTestSuite);
 
         try {
+            scriptPart.save();
+
             TestSuiteController.getInstance().updateTestSuite(originalTestSuite);
 
-            //Refresh on explorer
-            TestSuiteTreeEntity testSuiteTreeEntity = TreeEntityUtil.getTestSuiteTreeEntity(
-                    originalTestSuite, ProjectController.getInstance().getCurrentProject());
+            // Refresh on explorer
+            TestSuiteTreeEntity testSuiteTreeEntity = TreeEntityUtil.getTestSuiteTreeEntity(originalTestSuite,
+                    ProjectController.getInstance().getCurrentProject());
             eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, testSuiteTreeEntity);
 
             // Send event if Test Suite name has changed
             if (!StringUtils.equalsIgnoreCase(temp.getName(), originalTestSuite.getName())) {
-                eventBroker.post(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, new Object[] { oldIdForDisplay,
-                        originalTestSuite.getIdForDisplay() });
+                eventBroker.post(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM,
+                        new Object[] { oldIdForDisplay, originalTestSuite.getIdForDisplay() });
             }
 
-            //Notify to others that this test suite is changed
+            // Notify to others that this test suite is changed
             eventBroker.post(EventConstants.TEST_SUITE_UPDATED, new Object[] { testSuite.getId(), originalTestSuite });
             if (parent.isDisposed()) {
                 return;
@@ -328,10 +351,10 @@ public class TestSuiteCompositePart implements EventHandler, MultipleTabsComposi
                 MPartStack partStack = (MPartStack) compositePart.getChildren().get(0);
                 partStack.setElementId(newElementId + IdConstants.TEST_SUITE_SUB_PART_STACK_ID_SUFFIX);
 
-                childTestSuiteMainPart.getMPart().setElementId(
-                        newElementId + IdConstants.TEST_SUITE_MAIN_PART_ID_SUFFIX);
-                childTestSuiteIntegrationPart.getMPart().setElementId(
-                        newElementId + IdConstants.TEST_SUITE_INTEGRATION_PART_ID_SUFFIX);
+                childTestSuiteMainPart.getMPart()
+                        .setElementId(newElementId + IdConstants.TEST_SUITE_MAIN_PART_ID_SUFFIX);
+                childTestSuiteIntegrationPart.getMPart()
+                        .setElementId(newElementId + IdConstants.TEST_SUITE_INTEGRATION_PART_ID_SUFFIX);
             }
         }
         changeOriginalTestSuite(testSuite);
@@ -401,6 +424,7 @@ public class TestSuiteCompositePart implements EventHandler, MultipleTabsComposi
 
     private void interuptUIThreads() {
         childTestSuiteMainPart.interuptUIThreads();
+        scriptPart.interuptUIThreads();
     }
 
     public TestSuiteEntity getTestSuiteClone() {
@@ -414,15 +438,12 @@ public class TestSuiteCompositePart implements EventHandler, MultipleTabsComposi
     private void verifyTestSuiteChanged() {
         try {
             if (originalTestSuite != null) {
-                TestSuiteEntity testSuiteInFile = TestSuiteController.getInstance().getTestSuite(
-                        originalTestSuite.getId());
+                TestSuiteEntity testSuiteInFile = TestSuiteController.getInstance()
+                        .getTestSuite(originalTestSuite.getId());
                 if (testSuiteInFile != null) {
                     if (!testSuiteInFile.equals(originalTestSuite) && !isConfirmationDialogShowed) {
-                        if (MessageDialog.openConfirm(
-                                null,
-                                StringConstants.PA_CONFIRM_TITLE_FILE_CHANGED,
-                                MessageFormat.format(StringConstants.PA_CONFIRM_MSG_RELOAD_FILE,
-                                        originalTestSuite.getLocation()))) {
+                        if (MessageDialog.openConfirm(null, StringConstants.PA_CONFIRM_TITLE_FILE_CHANGED, MessageFormat
+                                .format(StringConstants.PA_CONFIRM_MSG_RELOAD_FILE, originalTestSuite.getLocation()))) {
                             updateTestSuitePart(testSuiteInFile);
                         }
                     }
@@ -450,9 +471,8 @@ public class TestSuiteCompositePart implements EventHandler, MultipleTabsComposi
     @Optional
     public void onSelect(@UIEventTopic(UIEvents.UILifeCycle.BRINGTOTOP) Event event) {
         MPart part = EventUtil.getPart(event);
-        if (part == null
-                || !StringUtils.startsWith(part.getElementId(),
-                        EntityPartUtil.getTestSuiteCompositePartId(originalTestSuite.getId()))) {
+        if (part == null || !StringUtils.startsWith(part.getElementId(),
+                EntityPartUtil.getTestSuiteCompositePartId(originalTestSuite.getId()))) {
             return;
         }
 
@@ -475,5 +495,4 @@ public class TestSuiteCompositePart implements EventHandler, MultipleTabsComposi
         originalTestSuite.setTag(updatedEntity.getTag());
         originalTestSuite.setDescription(updatedEntity.getDescription());
     }
-
 }

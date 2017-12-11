@@ -1,5 +1,8 @@
 package com.kms.katalon.dal;
 
+import java.io.File;
+
+import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
@@ -27,4 +30,8 @@ public interface ITestSuiteDataProvider {
     public TestSuiteTestCaseLink getTestCaseLink(TestSuiteEntity testSuite, String testCaseId);
 
     public String getAvailableTestSuiteName(FolderEntity parentFolder, String name) throws Exception;
+    
+    public File getTestSuiteScriptFile(TestSuiteEntity testSuite) throws DALException;
+    
+    public File newTestSuiteScriptFile(TestSuiteEntity testSuite) throws DALException;
 }

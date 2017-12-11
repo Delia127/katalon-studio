@@ -2,6 +2,8 @@ package com.kms.katalon.core.main;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.runtime.InvokerHelper;
@@ -69,28 +71,32 @@ public class TestCaseMain {
     public static TestResult runTestCase(String testCaseId, TestCaseBinding testCaseBinding,
             FailureHandling flowControl) throws InterruptedException {
         Thread.sleep(DELAY_TIME);
-        return new TestCaseExecutor(testCaseId, testCaseBinding, engine, contextEvaluator).execute(flowControl);
+        return new TestCaseExecutor(testCaseBinding, engine, contextEvaluator).execute(flowControl);
     }
 
     public static TestResult runTestCase(String testCaseId, TestCaseBinding testCaseBinding,
             FailureHandling flowControl, boolean doCleanUp) throws InterruptedException {
         Thread.sleep(DELAY_TIME);
-        return new TestCaseExecutor(testCaseId, testCaseBinding, engine, contextEvaluator, doCleanUp)
-                .execute(flowControl);
+        return new TestCaseExecutor(testCaseBinding, engine, contextEvaluator, doCleanUp).execute(flowControl);
     }
 
     public static TestResult runTestCaseRawScript(String testScript, String testCaseId, TestCaseBinding testCaseBinding,
             FailureHandling flowControl) throws InterruptedException {
         Thread.sleep(DELAY_TIME);
-        return new RawTestScriptExecutor(testScript, testCaseId, testCaseBinding, engine, contextEvaluator)
-                .execute(flowControl);
+        return new RawTestScriptExecutor(testScript, testCaseBinding, engine, contextEvaluator).execute(flowControl);
     }
 
     public static TestResult runTestCaseRawScript(String testScript, String testCaseId, TestCaseBinding testCaseBinding,
             FailureHandling flowControl, boolean doCleanUp) throws InterruptedException {
         Thread.sleep(DELAY_TIME);
-        return new RawTestScriptExecutor(testScript, testCaseId, testCaseBinding, engine, contextEvaluator, doCleanUp)
+        return new RawTestScriptExecutor(testScript, testCaseBinding, engine, contextEvaluator, doCleanUp)
                 .execute(flowControl);
+    }
+
+    public static void startTestSuite(String testSuiteId, Map<String, String> suiteProperties,
+            List<TestCaseBinding> testCaseBindings) {
+        TestSuiteExecutor testSuiteExecutor = new TestSuiteExecutor(testSuiteId, engine, contextEvaluator);
+        testSuiteExecutor.execute(suiteProperties, testCaseBindings);
     }
 
     public static void invokeStartSuite(String testSuiteId) {

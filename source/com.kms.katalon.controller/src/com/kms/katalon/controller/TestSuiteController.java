@@ -258,4 +258,12 @@ public class TestSuiteController extends EntityController {
         getDataProviderSetting().getTestSuiteCollectionDataProvider().removeTestSuiteCollectionReferences(testSuite,
                 testSuiteCollectionReferences);
     }
+    
+    public File getTestSuiteScriptFile(TestSuiteEntity testSuite) throws DALException {
+        return getDataProviderSetting().getTestSuiteDataProvider().getTestSuiteScriptFile(testSuite);
+    }
+    
+    public File newTestSuiteScriptFile(TestSuiteEntity testSuite) throws DALException {
+        return getDataProviderSetting().getTestSuiteDataProvider().newTestSuiteScriptFile(testSuite);
+    }
 }
