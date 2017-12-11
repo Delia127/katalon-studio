@@ -233,12 +233,13 @@ public class TestSuiteXMLLogParser {
         try {
             testStepLogRecord
                     .setIndex(Integer.valueOf(xmlLogRecord.getProperties().get(StringConstants.XML_LOG_STEP_INDEX)));
-            testStepLogRecord.setIgnoredIfFailed(
-                    Boolean.valueOf(xmlLogRecord.getProperties().get(StringConstants.XML_LOG_IS_IGNORED_IF_FAILED)));
         } catch (NumberFormatException e) {
             // error with log, set -1 to indicate error
             testStepLogRecord.setIndex(-1);
         }
+
+        testStepLogRecord.setIgnoredIfFailed(
+                Boolean.valueOf(xmlLogRecord.getProperties().get(StringConstants.XML_LOG_IS_IGNORED_IF_FAILED)));
         Object object = stack.peekLast();
         if (object instanceof TestCaseLogRecord || object instanceof TestStepLogRecord) {
             ((ILogRecord) object).addChildRecord(testStepLogRecord);

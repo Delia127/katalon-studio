@@ -12,6 +12,7 @@ import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.composer.objectrepository.constant.ObjectEventConstants;
 import com.kms.katalon.composer.objectrepository.part.TestObjectPart;
@@ -36,7 +37,7 @@ public class PropertyConditionEditingSupport extends EditingSupport {
     @Override
     protected CellEditor getCellEditor(Object element) {
         if (element != null && element instanceof WebElementPropertyEntity) {
-            return new ComboBoxCellEditor(viewer.getTable(), WebElementPropertyEntity.MATCH_CONDITION.getTextVlues(),
+            return new CustomComboBoxCellEditor(viewer.getTable(), WebElementPropertyEntity.MATCH_CONDITION.getTextVlues(),
                     SWT.NONE);
         } else {
             return null;
@@ -66,6 +67,20 @@ public class PropertyConditionEditingSupport extends EditingSupport {
             }
             testObjectPart.executeOperation(new PropertyConditionChangeOperation((WebElementPropertyEntity) element,
                     WebElementPropertyEntity.MATCH_CONDITION.values()[index].getText()));
+        }
+    }
+    
+    private class CustomComboBoxCellEditor extends ComboBoxCellEditor {
+    	
+        public CustomComboBoxCellEditor(Composite parent, String[] items, int style) {
+            super(parent, items, style);
+        }
+    
+        @Override
+        public LayoutData getLayoutData() {
+            LayoutData layoutData = super.getLayoutData();
+            layoutData.minimumHeight = viewer.getTable().getItemHeight();
+            return layoutData;
         }
     }
 

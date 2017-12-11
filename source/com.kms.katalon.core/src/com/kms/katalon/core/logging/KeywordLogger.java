@@ -5,6 +5,7 @@ import static com.kms.katalon.core.constants.StringConstants.DF_CHARSET;
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -179,6 +180,8 @@ public class KeywordLogger {
 
     public void startListenerKeyword(String name, Map<String, String> attributes,
             Stack<KeywordStackElement> keywordStack) {
+        Map<String, String> modifiedAttr = new HashMap<>(attributes != null ? attributes : Collections.emptyMap());
+        modifiedAttr.put(StringConstants.XML_LOG_IS_IGNORED_IF_FAILED, Boolean.toString(true));
         startKeyword(name, StringConstants.LOG_LISTENER_ACTION, attributes, keywordStack);
     }
 
