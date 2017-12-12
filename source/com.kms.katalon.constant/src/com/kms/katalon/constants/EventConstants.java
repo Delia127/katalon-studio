@@ -217,8 +217,10 @@ public class EventConstants {
 
     // Recorder Events
     public static final String RECORDER_HTML_ACTION_CAPTURED = "RECORDER/HTML_ACTION_CAPTURED";
-    
-    public static final String RECORDER_ACTION_SELECTED = "RECORDER/ACTION_SELECTED"; 
+
+    public static final String RECORDER_ACTION_SELECTED = "RECORDER/ACTION_SELECTED";
+
+    public static final String RECORDER_ACTION_OBJECT_REORDERED = "RECORDER/ACTION_OBJECT_REORDERED";
 
     // Global Variable Events
     public static final String GLOBAL_VARIABLE_REFRESH = "GLOBAL_VARIABLE/REFRESH";
