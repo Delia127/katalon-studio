@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -27,20 +26,17 @@ import com.kms.katalon.composer.project.constants.StringConstants;
 import com.kms.katalon.composer.util.groovy.GroovyGuiUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
-import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.selenium.ide.SeleniumIdeFormatter;
 import com.kms.katalon.selenium.ide.SeleniumIdeParser;
-import com.kms.katalon.selenium.ide.model.Command;
 import com.kms.katalon.selenium.ide.model.TestCase;
 import com.kms.katalon.selenium.ide.model.TestSuite;
 
@@ -55,8 +51,6 @@ public class ImportSeleniumIdeHandler {
 	private FolderTreeEntity testSuiteTreeRoot;
 	
 	private FolderTreeEntity testCaseTreeRoot;
-	
-	private FolderTreeEntity objectRepositoryTreeRoot;
 	
 	@CanExecute
 	public boolean canExecute() {
@@ -145,16 +139,15 @@ public class ImportSeleniumIdeHandler {
         	for (TestCase testCase : testCases) {
         		TestCaseEntity testCaseEntity = tcController.newTestCaseWithoutSave(parentFolderEntity, testCase.getName());
         		testCaseEntity = tcController.saveNewTestCase(testCaseEntity);
-        		eventBroker.send(EventConstants.TESTCASE_OPEN, testCaseEntity);
         		
         		String scriptContent = SeleniumIdeFormatter.getInstance().format(testCase);
         		GroovyGuiUtil.addContentToTestCase(testCaseEntity, scriptContent);
         		
+        		eventBroker.send(EventConstants.TESTCASE_OPEN, testCaseEntity);
+        		
         		TestSuiteTestCaseLink testSuiteTestCaseLink = new TestSuiteTestCaseLink();
         		testSuiteTestCaseLink.setTestCaseId(testCaseEntity.getIdForDisplay());
         		testSuiteTestCaseLinks.add(testSuiteTestCaseLink);
-        		
-//        		createTestObjects(testCase.getCommands());
         	}
         	
         	TestSuiteController tsController = TestSuiteController.getInstance();
@@ -164,26 +157,6 @@ public class ImportSeleniumIdeHandler {
         }
 	}
 	
-	private void createTestObjects(List<Command> commands) throws Exception {
-		Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
-        ITreeEntity parentTreeEntity = findParentTreeEntity(FolderType.WEBELEMENT, selectedObjects);
-        if (parentTreeEntity == null) {
-            parentTreeEntity = objectRepositoryTreeRoot;
-        }
-        FolderEntity parentFolderEntity = (FolderEntity) parentTreeEntity.getObject();
-        ObjectRepositoryController toController = ObjectRepositoryController.getInstance();
-        
-        if (!commands.isEmpty()) {
-        	for (Command command: commands) {
-        		if (StringUtils.isNotBlank(command.getTarget())) {
-	        		WebElementEntity webElement = toController.newTestObjectWithoutSave(parentFolderEntity, command.getTarget());
-	        		webElement = toController.saveNewTestObject(webElement);
-        		}
-        	}
-        }        
-	}
-	
-	@Inject
     @Optional
     private void catchTestSuiteFolderTreeEntitiesRoot(
             @UIEventTopic(EventConstants.EXPLORER_RELOAD_INPUT) List<Object> treeEntities) {
@@ -213,26 +186,6 @@ public class ImportSeleniumIdeHandler {
             LoggerSingleton.logError(e);
         }
     }
-	
-	@Inject
-	@Optional
-	private void catchObjectTreeEntitiesRoot(
-			@UIEventTopic(EventConstants.EXPLORER_RELOAD_INPUT) List<Object> treeEntities) {
-		try {
-			for (Object o : treeEntities) {
-				Object entityObject = ((ITreeEntity) o).getObject();
-				if (entityObject instanceof FolderEntity) {
-					FolderEntity folder = (FolderEntity) entityObject;
-					if (folder.getFolderType() == FolderType.WEBELEMENT) {
-						objectRepositoryTreeRoot = (FolderTreeEntity) o;
-						return;
-					}
-				}
-			}
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-		}
-	}
 	
 	private static FolderTreeEntity findTestCaseTreeRoot(List<Object> treeEntities) throws Exception {
         for (Object o : treeEntities) {

@@ -1,9 +1,12 @@
 package com.kms.katalon.selenium.ide.model;
 
+import java.util.List;
+
 public class Command {
 	private String command;
 	private String target;
 	private String value;
+	private List<String> options;
 	
 	public Command(){}
 	
@@ -37,8 +40,16 @@ public class Command {
 		this.value = value;
 	}
 	
+	public List<String> getOptions() {
+		return options;
+	}
+	
+	public void setOptions(List<String> options) {
+		this.options = options;
+	}
+	
 	@Override
 	public String toString() {
-		return "Command [command=" + this.command + ", target=" + target + ", value=" + value + "]";
+		return "Command [command=" + this.command + ", target=" + target + ", value=" + value + ", options=" + options + "]";
 	}
 }

@@ -384,7 +384,7 @@ public final class SeleniumIdeFormatter {
 		commands.add(new Command("storeAllWindowNames", "aaa", "bbb"));
 		commands.add(new Command("storeAllWindowTitles", "aaa", "bbb"));
 		commands.add(new Command("storeAndWait", "aaa", "bbb"));
-		commands.add(new Command("storeAttribute", "aaa", "bbb"));
+		commands.add(new Command("storeAttribute", "${aaa}", "bbb"));
 		commands.add(new Command("storeAttributeFromAllWindows", "aaa", "bbb"));
 		commands.add(new Command("storeBodyText", "aaa", "bbb"));
 		commands.add(new Command("storeChecked", "aaa", "bbb"));
@@ -396,7 +396,7 @@ public final class SeleniumIdeFormatter {
 		commands.add(new Command("storeCssCount", "aaa", "bbb"));
 		commands.add(new Command("storeCursorPosition", "aaa", "bbb"));
 		commands.add(new Command("storeEditable", "aaa", "bbb"));
-		commands.add(new Command("storeElementHeight", "aaa", "bbb"));
+		commands.add(new Command("storeElementHeight", "${aaa}", "bbb"));
 		commands.add(new Command("storeElementIndex", "aaa", "bbb"));
 		commands.add(new Command("storeElementPositionLeft", "aaa", "bbb"));
 		commands.add(new Command("storeElementPositionTop", "aaa", "bbb"));

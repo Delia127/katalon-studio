@@ -60,25 +60,37 @@ public final class HtmlParser {
 	
 	public static Command parseCommand(String commandHtmlContent) {
 		Command command = null;
-		Pattern pattern = Pattern.compile("(<tr>.*?<td>)(.*?)(</td>.+?<td>)(.*?)(<datalist>.*?</td>.+?<td>)(.*?)(</td>.*?</tr>)");
+		Pattern pattern = Pattern.compile("(<tr>.*?<td>)(.*?)(</td>.+?<td>)(.*?)(<datalist>)(.*?)(</datalist)(.*?</td>.+?<td>)(.*?)(</td>.*?</tr>)");
         Matcher matcher = pattern.matcher(commandHtmlContent);
         if (matcher.find()) {
-        	command = createCommand(matcher.group(2), matcher.group(4), matcher.group(6));
+        	List<String> options = parseOptions(matcher.group(6));
+        	command = createCommand(matcher.group(2), matcher.group(4), matcher.group(9), options);
         } else {
         	pattern = Pattern.compile("(<tr>.*?<td>)(.*?)(</td>.+?<td>)(.*?)(</td>.+?<td>)(.*?)(</td>.*?</tr>)");
         	matcher = pattern.matcher(commandHtmlContent);
         	if (matcher.find()) {
-            	command = createCommand(matcher.group(2), matcher.group(4), matcher.group(6));
+            	command = createCommand(matcher.group(2), matcher.group(4), matcher.group(6), new ArrayList<>());
             } 
         }
 		return command;
 	}
 	
-	private static Command createCommand(String command, String target, String value) {
+	private static List<String> parseOptions(String dataList) {
+		List<String> options = new ArrayList<>();
+		Pattern pattern = Pattern.compile("(.*?<option>)(.*?)(</option>.*?)");
+        Matcher matcher = pattern.matcher(dataList);
+        while (matcher.find()) {
+        	options.add(matcher.group(2));
+        }
+		return options;
+	}
+	
+	private static Command createCommand(String command, String target, String value, List<String> options) {
 		Command ret = new Command();
 		ret.setCommand(command);
 		ret.setTarget(StringUtils.trim(target));
 		ret.setValue(StringUtils.trim(value));
+		ret.setOptions(options);
 		return ret;
 	}
 	
@@ -120,6 +132,49 @@ public final class HtmlParser {
         	map.put(matcher.group(4), matcher.group(2));
         }
 		return map;
+	}
+	
+	public static boolean isSelector(String selector) {
+		Pattern pattern = Pattern.compile("(id|name|title|css|class|xpath)(=)(.*?)");
+        Matcher matcher = pattern.matcher(selector);
+        if (matcher.find()) {
+        	return matcher.groupCount() == 3;
+        }
+        return false;
+	}
+	
+	public static String[] paseSelector(String selector) {
+		String[] matches = new String[3];
+		Pattern pattern = Pattern.compile("(.*?)(=)(.*?)$");
+        Matcher matcher = pattern.matcher(selector);
+        if (matcher.find() && matcher.groupCount() == 3) {
+        	matches[0] = replaceSpecialChars(removeMarks(matcher.group(1)));
+        	matches[1] = removeMarks(matcher.group(2));
+        	matches[2] = removeMarks(matcher.group(3));
+        }
+        return matches;
+	}
+	
+	public static String replaceSpecialChars(String a) {
+		return a.replace("link", "text");
+	}
+	
+	public static String removeMarks(String value) {
+		return value.replace("'", "").replace("'", "");
+	}
+	
+	
+	public static String encodeSelector(String selector) {
+		if (StringUtils.isNotBlank(selector)) {
+			return FileUtils.encode(selector.replace("=", "_"));
+		}
+		return StringUtils.EMPTY;
+	}
+	
+	public static void main(String[] args) {
+		String file = "D:\\Untitled Test Suite111111.html";
+		TestCase testCase = HtmlParser.parseTestCase(file);
+		System.out.println(testCase);
 	}
 	
 }

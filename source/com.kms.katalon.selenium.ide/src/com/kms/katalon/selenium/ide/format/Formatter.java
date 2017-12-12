@@ -10,11 +10,25 @@ public interface Formatter {
 	public String format(Command command);
 	
 	public default String valueOf(String param) {
-		if (StringUtils.isNotBlank(param)) {
+		if (StringUtils.isNotBlank(param) && param.contains("{")) {
 			param = param.replace("${", "");
 			param = param.replace("}", "");
+			return param;
+		}
+		return stringValue(param);
+	}
+	
+	public default String paramOf(String param) {
+		if (StringUtils.isNotBlank(param) && param.contains("{")) {
+			param = param.replace("${", "");
+			param = param.replace("}", "");
+			return param;
 		}
 		return param;
+	}
+	
+	public default String stringValue(String value) {
+		return "'" + value + "'";
 	}
 	
 	public default String getCleanCommandTail(String commandTail) {
@@ -32,9 +46,9 @@ public interface Formatter {
 	public default String getParamName(String method, String target, String value) {
 		boolean hasParam = ClazzUtils.hasParam(getCleanCommandTail(method));
 		if (hasParam) {
-			return valueOf(value);
+			return paramOf(value);
 		} 
-		return valueOf(target);
+		return paramOf(target);
 	}
 	
 	public default String getParamMethod(String method, String target) throws Exception {
@@ -44,7 +58,7 @@ public interface Formatter {
 		}
 		boolean hasParam = ClazzUtils.hasParam(method);
 		if (hasParam) {
-			return "('" + valueOf(target) + "')";
+			return "(" + valueOf(target) + ")";
 		} 
 		return "()";
 	}

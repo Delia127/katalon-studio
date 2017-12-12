@@ -2,6 +2,8 @@ package com.kms.katalon.selenium.ide.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
@@ -19,7 +21,27 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class FileUtils {
+	
+	public static String encode(String name) {
+		try {
+			String ret = URLEncoder.encode(name, "UTF-8");
+			return ret.replaceAll("%2F", "_") // /
+					.replaceAll("%5B", "_") // [
+					.replaceAll("%5D", "_") // ] 
+					.replaceAll("%40", "_") // @
+					.replaceAll("%27", "_") // '
+					.replaceAll("%28", "_") // (
+					.replaceAll("%29", "_") // )
+					.replaceAll("%3D", "_") // =
+					.replaceAll("\\+", "_") // +
+					.replaceAll("%3A", "_"); // :;
+		} catch (UnsupportedEncodingException e) {
+			return StringUtils.EMPTY;
+		}
+	}
 
     public static Path createPath(String path) {
         FileSystem fileSystem = FileSystems.getDefault();
@@ -86,5 +108,13 @@ public class FileUtils {
         });
         return xmlContentBuilder;
     }
+    
+    public static void main(String[] args) throws UnsupportedEncodingException {
+    	String name = "http://katalon-test.s3.amazonaws.com/demo-aut/dist/html/form.html";
+    	String e = URLEncoder.encode( name, "UTF-8");
+    	String e2 = FileUtils.encode(name);
+    	System.out.println(e);
+    	System.out.println(e2);
+	}
 
 }

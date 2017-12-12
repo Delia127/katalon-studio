@@ -46,10 +46,10 @@ public class StoreFormatter implements Formatter {
 		        	String method = getNormalMethod(cleanedMethod, command.getTarget());
 		        	formatted.append(returnedType + " " + paramName + " = " + method);
 	        	} else {
-	        		formatted.append("String" + " " + command.getValue() + " = " + command.getTarget());
+	        		formatted.append("String" + " " + command.getValue() + " = " + valueOf(command.getTarget()));
 	        	}
         	} else {
-        		formatted.append("String" + " " + command.getValue() + " = " + command.getTarget());
+        		formatted.append("String" + " " + command.getValue() + " = " + valueOf(command.getTarget()));
         	}
         	
         	String wait = getWaitIfHas(command.getCommand());
