@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.di.annotations.CanExecute;
@@ -12,6 +13,7 @@ import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UIEventTopic;
+import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
@@ -59,9 +61,8 @@ public class ImportSeleniumIdeHandler {
 	}
 	
 	@Execute
-	public void execute() {
+	public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell) {
 		try {
-			Shell shell = Display.getCurrent().getActiveShell();
 			FileDialog fileDialog = new FileDialog(shell, SWT.SYSTEM_MODAL);
 			fileDialog.setText(StringConstants.HAND_IMPORT_SELENIUM_IDE);
 			fileDialog.setFilterPath(Platform.getLocation().toString());
@@ -105,24 +106,7 @@ public class ImportSeleniumIdeHandler {
         eventBroker.post(EventConstants.TEST_SUITE_OPEN, testSuiteEntity);
 	}
 	
-	public static ITreeEntity findParentTreeEntity(FolderType folderType, Object[] selectedObjects) throws Exception {
-        if (selectedObjects != null) {
-            for (Object entity : selectedObjects) {
-                if (entity instanceof ITreeEntity) {
-                    Object entityObject = ((ITreeEntity) entity).getObject();
-                    if (entityObject instanceof FolderEntity) {
-                        FolderEntity folder = (FolderEntity) entityObject;
-                        if (folder.getFolderType() == folderType) {
-                            return (ITreeEntity) entity;
-                        }
-                    } else if (entityObject instanceof TestCaseEntity) {
-                        return ((ITreeEntity) entity).getParent();
-                    }
-                }
-            }
-        }
-        return null;
-    }
+	
 
 	private void createTestCases(TestSuiteEntity testSuiteEntity, List<TestCase> testCases) throws Exception {
 		Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
@@ -157,6 +141,7 @@ public class ImportSeleniumIdeHandler {
         }
 	}
 	
+	@Inject
     @Optional
     private void catchTestSuiteFolderTreeEntitiesRoot(
             @UIEventTopic(EventConstants.EXPLORER_RELOAD_INPUT) List<Object> treeEntities) {
@@ -187,6 +172,15 @@ public class ImportSeleniumIdeHandler {
         }
     }
 	
+	@Inject
+    @Optional
+    private void execute(@UIEventTopic(EventConstants.TEST_SUITE_NEW) Object eventData) {
+        if (!canExecute()) {
+            return;
+        }
+        execute(Display.getCurrent().getActiveShell());
+    }
+	
 	private static FolderTreeEntity findTestCaseTreeRoot(List<Object> treeEntities) throws Exception {
         for (Object o : treeEntities) {
             Object entityObject = ((ITreeEntity) o).getObject();
@@ -196,6 +190,25 @@ public class ImportSeleniumIdeHandler {
             FolderEntity folder = (FolderEntity) entityObject;
             if (folder.getFolderType() == FolderType.TESTCASE) {
                 return (FolderTreeEntity) o;
+            }
+        }
+        return null;
+    }
+	
+	private static ITreeEntity findParentTreeEntity(FolderType folderType, Object[] selectedObjects) throws Exception {
+        if (selectedObjects != null) {
+            for (Object entity : selectedObjects) {
+                if (entity instanceof ITreeEntity) {
+                    Object entityObject = ((ITreeEntity) entity).getObject();
+                    if (entityObject instanceof FolderEntity) {
+                        FolderEntity folder = (FolderEntity) entityObject;
+                        if (folder.getFolderType() == folderType) {
+                            return (ITreeEntity) entity;
+                        }
+                    } else if (entityObject instanceof TestCaseEntity) {
+                        return ((ITreeEntity) entity).getParent();
+                    }
+                }
             }
         }
         return null;
