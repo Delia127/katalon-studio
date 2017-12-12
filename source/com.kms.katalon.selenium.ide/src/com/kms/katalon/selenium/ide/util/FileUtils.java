@@ -109,12 +109,4 @@ public class FileUtils {
         return xmlContentBuilder;
     }
     
-    public static void main(String[] args) throws UnsupportedEncodingException {
-    	String name = "http://katalon-test.s3.amazonaws.com/demo-aut/dist/html/form.html";
-    	String e = URLEncoder.encode( name, "UTF-8");
-    	String e2 = FileUtils.encode(name);
-    	System.out.println(e);
-    	System.out.println(e2);
-	}
-
 }

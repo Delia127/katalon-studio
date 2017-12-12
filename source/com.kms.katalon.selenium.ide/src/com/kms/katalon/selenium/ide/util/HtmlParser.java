@@ -171,10 +171,4 @@ public final class HtmlParser {
 		return StringUtils.EMPTY;
 	}
 	
-	public static void main(String[] args) {
-		String file = "D:\\Untitled Test Suite111111.html";
-		TestCase testCase = HtmlParser.parseTestCase(file);
-		System.out.println(testCase);
-	}
-	
 }
