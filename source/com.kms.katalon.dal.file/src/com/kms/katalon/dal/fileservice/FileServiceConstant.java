@@ -69,8 +69,4 @@ public class FileServiceConstant {
         return projectFolder + File.separator + GLOBAL_VARIABLE_FILE_NAME
                 + GlobalVariableWrapper.getGlobalVariableFileExtension();
     }
-    
-    public static String getTestScriptFolder(String projectFolder) {
-        return projectFolder + File.separator + GlobalMessageConstants.ROOT_FOLDER_NAME_TEST_SCRIPTS;
-    }
 }

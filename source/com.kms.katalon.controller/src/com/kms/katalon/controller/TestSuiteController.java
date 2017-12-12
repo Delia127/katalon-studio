@@ -100,6 +100,10 @@ public class TestSuiteController extends EntityController {
     public synchronized TestSuiteEntity updateTestSuite(TestSuiteEntity testSuite) throws Exception {
         return getDataProviderSetting().getTestSuiteDataProvider().updateTestSuite(testSuite);
     }
+    
+    public TestSuiteEntity renameTestSuite(String newName, TestSuiteEntity testSuite) throws Exception {
+        return getDataProviderSetting().getTestSuiteDataProvider().renameTestSuite(newName, testSuite);
+    }
 
     public TestSuiteEntity copyTestSuite(TestSuiteEntity testSuite, FolderEntity targetFolder) throws Exception {
         return getDataProviderSetting().getTestSuiteDataProvider().copyTestSuite(testSuite, targetFolder);

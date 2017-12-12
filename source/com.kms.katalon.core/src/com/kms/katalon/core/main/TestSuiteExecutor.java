@@ -3,7 +3,6 @@ package com.kms.katalon.core.main;
 import static com.kms.katalon.core.constants.StringConstants.DF_CHARSET;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Collections;
@@ -38,8 +37,6 @@ import groovy.lang.Binding;
 
 public class TestSuiteExecutor {
 
-    private static final String TS_SCRIPTS_ROOT_FOLDER = "Test Scripts";
-
     private static final KeywordLogger LOG = KeywordLogger.getInstance();
 
     private final String testSuiteId;
@@ -65,7 +62,7 @@ public class TestSuiteExecutor {
     public TestSuiteExecutor(String testSuiteId, ScriptEngine scriptEngine, TestContextEvaluator contextEvaluator) {
         this.testSuiteId = testSuiteId;
         this.scriptEngine = scriptEngine;
-        
+
         this.contextEvaluator = contextEvaluator;
         this.testSuiteContext = new InternalTestSuiteContext();
         testSuiteContext.setTestSuiteId(testSuiteId);
@@ -85,7 +82,7 @@ public class TestSuiteExecutor {
         testSuiteContext.setStatus(status);
 
         contextEvaluator.invokeListenerMethod(AfterTestSuite.class.getName(), new Object[] { testSuiteContext });
-        
+
         if (RunConfiguration.shouldTerminateDriverAfterTestSuite()) {
             DriverCleanerCollector.getInstance().cleanDrivers();
         }
@@ -210,7 +207,7 @@ public class TestSuiteExecutor {
 
         private ScriptCache(String testSuiteId) throws IOException {
             this.scriptFile = getTestSuiteScriptFile(testSuiteId);
-            if (this.scriptFile != null) {
+            if (this.scriptFile != null && this.scriptFile.exists()) {
                 scriptContent = FileUtils.readFileToString(scriptFile, DF_CHARSET);
                 className = scriptFile.toURI().toURL().toExternalForm();
 
@@ -231,25 +228,7 @@ public class TestSuiteExecutor {
         }
 
         private File getTestSuiteScriptFile(String testSuiteId) {
-            File rootFolder = new File(RunConfiguration.getProjectDir(), TS_SCRIPTS_ROOT_FOLDER);
-
-            File tsScriptFolder = new File(rootFolder, testSuiteId);
-
-            if (!tsScriptFolder.exists()) {
-                return null;
-            }
-
-            File[] scripts = tsScriptFolder.listFiles(new FilenameFilter() {
-
-                @Override
-                public boolean accept(File dir, String name) {
-                    return new File(dir, name).isFile() && name.matches("Script\\d{13}\\.groovy");
-                }
-            });
-            if (scripts != null && scripts.length > 0) {
-                return scripts[0];
-            }
-            return null;
+            return new File(RunConfiguration.getProjectDir(), testSuiteId + ".groovy");
         }
     }
 }

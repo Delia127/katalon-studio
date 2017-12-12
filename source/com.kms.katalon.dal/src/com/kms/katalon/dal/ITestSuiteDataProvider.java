@@ -16,6 +16,8 @@ public interface ITestSuiteDataProvider {
     public TestSuiteEntity getTestSuite(String testSuiteValue) throws Exception;
 
     public void deleteTestSuite(TestSuiteEntity testSuite) throws Exception;
+    
+    public TestSuiteEntity renameTestSuite(String newName, TestSuiteEntity testSuite) throws DALException;
 
     public TestSuiteEntity updateTestSuite(TestSuiteEntity testSuite) throws Exception;
 

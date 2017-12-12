@@ -49,8 +49,8 @@ public class RenameTestSuiteHandler {
         try {
             if (testSuiteTreeEntity.getObject() instanceof TestSuiteEntity) {
                 TestSuiteEntity testSuite = (TestSuiteEntity) testSuiteTreeEntity.getObject();
-                List<String> existingNames = FolderController.getInstance().getChildrenNames(
-                        testSuite.getParentFolder());
+                List<String> existingNames = FolderController.getInstance()
+                        .getChildrenNames(testSuite.getParentFolder());
                 RenameWizard renameWizard = new RenameWizard(testSuiteTreeEntity, existingNames);
                 CWizardDialog wizardDialog = new CWizardDialog(parentShell, renameWizard);
                 int code = wizardDialog.open();
@@ -61,15 +61,13 @@ public class RenameTestSuiteHandler {
                     try {
                         if (renameWizard.getNewNameValue() != null && !renameWizard.getNewNameValue().isEmpty()
                                 && !renameWizard.getNewNameValue().equals(oldName)) {
-                            testSuite.setName(renameWizard.getNewNameValue());
-                            TestSuiteController.getInstance().updateTestSuite(testSuite);
-                            String newIdForDisplay = testSuite.getIdForDisplay();
-                            eventBroker.post(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM, new Object[] {
-                                    oldIdForDisplay, newIdForDisplay });
+                            TestSuiteEntity newTestSuite = TestSuiteController.getInstance()
+                                    .renameTestSuite(renameWizard.getNewNameValue(), testSuite);
+                            String newIdForDisplay = newTestSuite.getIdForDisplay();
+                            eventBroker.post(EventConstants.EXPLORER_RENAMED_SELECTED_ITEM,
+                                    new Object[] { oldIdForDisplay, newIdForDisplay });
                         }
                     } catch (Exception ex) {
-                        // Restore old name
-                        testSuite.setName(oldName);
                         LoggerSingleton.logError(ex);
                         MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE,
                                 StringConstants.HAND_ERROR_MSG_UNABLE_TO_RENAME_TEST_SUITE);
