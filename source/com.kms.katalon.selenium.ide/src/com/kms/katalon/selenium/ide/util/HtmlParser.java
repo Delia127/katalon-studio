@@ -27,12 +27,14 @@ public final class HtmlParser {
 		testCaseFiles.forEach((key, value) -> {
 			String testCaseFilePath = parentFile.getAbsolutePath() + File.separator + value;
 			TestCase testCase = HtmlParser.parseTestCase(testCaseFilePath);
+			testCase.setFilePath(testCaseFilePath);
 			testCases.add(testCase);
 		});
 		
 		TestSuite testSuite = new TestSuite();
 		testSuite.setName(testSuiteName);
 		testSuite.setTestCases(testCases);
+		testSuite.setFilePath(file.getAbsolutePath());
 		
 		return testSuite;
 	}

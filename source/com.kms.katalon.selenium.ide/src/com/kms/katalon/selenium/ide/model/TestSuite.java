@@ -3,6 +3,7 @@ package com.kms.katalon.selenium.ide.model;
 import java.util.List;
 
 public class TestSuite {
+	private String filePath;
 	private String name;
 	private List<TestCase> testCases;
 	
@@ -20,6 +21,14 @@ public class TestSuite {
 	
 	public void setTestCases(List<TestCase> testCases) {
 		this.testCases = testCases;
+	}
+	
+	public String getFilePath() {
+		return filePath;
+	}
+	
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
 	}
 	
 	@Override

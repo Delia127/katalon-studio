@@ -26,6 +26,8 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.project.constants.StringConstants;
 import com.kms.katalon.composer.util.groovy.GroovyGuiUtil;
+import com.kms.katalon.console.constants.ConsoleStringConstants;
+import com.kms.katalon.console.utils.ApplicationInfo;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
@@ -124,6 +126,7 @@ public class ImportSeleniumIdeHandler {
         		TestCaseEntity testCaseEntity = tcController.newTestCaseWithoutSave(parentFolderEntity, testCase.getName());
         		testCaseEntity = tcController.saveNewTestCase(testCaseEntity);
         		
+        		SeleniumIdeFormatter.getInstance().setEmail(ApplicationInfo.getAppProperty(ConsoleStringConstants.ARG_EMAIL));
         		String scriptContent = SeleniumIdeFormatter.getInstance().format(testCase);
         		GroovyGuiUtil.addContentToTestCase(testCaseEntity, scriptContent);
         		

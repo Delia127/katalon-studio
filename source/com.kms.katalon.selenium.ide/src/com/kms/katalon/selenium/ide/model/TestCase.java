@@ -3,6 +3,7 @@ package com.kms.katalon.selenium.ide.model;
 import java.util.List;
 
 public class TestCase {
+	private String filePath;
 	private String name;
 	private String baseUrl;
 	private List<Command> commands;
@@ -29,6 +30,14 @@ public class TestCase {
 	
 	public void setBaseUrl(String baseUrl) {
 		this.baseUrl = baseUrl;
+	}
+	
+	public String getFilePath() {
+		return filePath;
+	}
+	
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
 	}
 	
 	@Override
