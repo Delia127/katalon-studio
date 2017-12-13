@@ -58,6 +58,9 @@ public class StringConstants extends GlobalStringConstants {
     // UpdateProjectHandler
     public static final String HAND_ERROR_MSG_UNABLE_TO_UPDATE_PROJ = ComposerProjectMessageConstants.HAND_ERROR_MSG_UNABLE_TO_UPDATE_PROJ;
 
+    // ImportSeleniumIdeHanlder
+    public static final String HAND_IMPORT_SELENIUM_IDE = ComposerProjectMessageConstants.HAND_IMPORT_SELENIUM_IDE;
+    
     // NewProjectDialog
     public static final String VIEW_TITLE_NEW_PROJ = ComposerProjectMessageConstants.VIEW_TITLE_NEW_PROJ;
 
