@@ -30,6 +30,7 @@ import com.kms.katalon.console.constants.ConsoleStringConstants;
 import com.kms.katalon.console.utils.ApplicationInfo;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.controller.TestSuiteController;
@@ -119,14 +120,17 @@ public class ImportSeleniumIdeHandler {
         FolderEntity parentFolderEntity = (FolderEntity) parentTreeEntity.getObject();
         TestCaseController tcController = TestCaseController.getInstance();
         
+        String importFolderName = "Import " + testSuiteEntity.getName();
+        FolderEntity importTestCaseFolder = FolderController.getInstance().addNewFolder(parentFolderEntity, importFolderName);        
+        SeleniumIdeFormatter.getInstance().setEmail(ApplicationInfo.getAppProperty(ConsoleStringConstants.ARG_EMAIL));
+        
         if (!testCases.isEmpty()) {
         	List<TestSuiteTestCaseLink> testSuiteTestCaseLinks = new ArrayList<>();
         	
         	for (TestCase testCase : testCases) {
-        		TestCaseEntity testCaseEntity = tcController.newTestCaseWithoutSave(parentFolderEntity, testCase.getName());
+        		TestCaseEntity testCaseEntity = tcController.newTestCaseWithoutSave(importTestCaseFolder, testCase.getName());
         		testCaseEntity = tcController.saveNewTestCase(testCaseEntity);
         		
-        		SeleniumIdeFormatter.getInstance().setEmail(ApplicationInfo.getAppProperty(ConsoleStringConstants.ARG_EMAIL));
         		String scriptContent = SeleniumIdeFormatter.getInstance().format(testCase);
         		GroovyGuiUtil.addContentToTestCase(testCaseEntity, scriptContent);
         		

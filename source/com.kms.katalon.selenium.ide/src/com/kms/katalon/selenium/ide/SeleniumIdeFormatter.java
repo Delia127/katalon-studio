@@ -124,8 +124,7 @@ public final class SeleniumIdeFormatter {
 	}
 	
 	private String encodeString(String filePath) {
-		return filePath.replace("\\", Matcher.quoteReplacement(File.separator))
-				.replace("/", Matcher.quoteReplacement(File.separator));
+		return filePath.replace("\\", Matcher.quoteReplacement(File.separator));
 	}
 	
 	private String getCurrentDateTime() {
