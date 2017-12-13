@@ -81,7 +81,7 @@ public final class SeleniumIdeFormatter {
 		if (formatter == null) {
 			return String.format("Method %s is not found", command.getCommand());
 		}
-		String comment = String.format("\n\"Generated from command: [%s | %s | %s]\"\n", 
+		String comment = String.format("\n\"%s | %s | %s\"\n", 
 				encodeString(command.getCommand()), 
 				encodeString(command.getTarget()), 
 				encodeString(command.getValue()));
@@ -99,6 +99,8 @@ public final class SeleniumIdeFormatter {
 						"import org.openqa.selenium.firefox.FirefoxDriver\n" +
 						"import org.openqa.selenium.WebDriver\n" +
 						"import com.thoughtworks.selenium.webdriven.WebDriverBackedSelenium\n" +
+						"import com.thoughtworks.selenium.webdriven.ElementFinder\n" +
+						"import com.thoughtworks.selenium.webdriven.JavascriptLibrary\n" +
 						"import static org.junit.Assert.*\n" +
 						"import java.util.regex.Pattern\n" +
 						"import static org.apache.commons.lang3.StringUtils.join\n\n");
@@ -112,6 +114,8 @@ public final class SeleniumIdeFormatter {
 		buffer.append("WebUI.openBrowser(baseUrl)\n\n");
 		buffer.append("driver = DriverFactory.getWebDriver()\n");
 		buffer.append("selenium = new WebDriverBackedSelenium(driver, baseUrl)\n");
+		buffer.append("javascriptLibrary = new JavascriptLibrary()\n");
+		buffer.append("elementFinder = new ElementFinder(javascriptLibrary)\n");
 		return buffer.toString();
 	}
 

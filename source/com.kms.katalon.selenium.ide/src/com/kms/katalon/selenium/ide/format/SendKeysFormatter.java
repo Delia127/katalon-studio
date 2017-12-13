@@ -9,7 +9,9 @@ public class SendKeysFormatter implements Formatter {
 	@Override
 	public String format(Command command) {
 		StringBuffer buffer = new StringBuffer();
-		buffer.append(String.format("driver.switchTo().alert().sendKeys(%s)", valueOf(command.getTarget())));
+		buffer.append(String.format("elementFinder.findElement(driver, %s).sendKeys(%s)", 
+				valueOf(command.getTarget()), 
+				valueOf(command.getValue())));
 		String wait = getWaitIfHas(command.getCommand());
 		if (StringUtils.isNotBlank(wait)) {
 			buffer.append(wait);
