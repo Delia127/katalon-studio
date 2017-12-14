@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.execution.settings;
 
+import static com.kms.katalon.core.constants.StringConstants.DF_CHARSET;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -54,10 +56,11 @@ public class EmailTemplatePage extends PreferencePageWithHelp {
                     String.format("template_%d.html", System.currentTimeMillis()));
 
             String tinyMCE = FileUtils
-                    .readFileToString(new File(settingStore.getTemplateFolder(), "tinymce_template.html"));
+                    .readFileToString(new File(settingStore.getTemplateFolder(), "tinymce_template.html"), DF_CHARSET);
             Map<String, Object> variables = new HashMap<>();
             variables.put("htmlTemplate", settingStore.getEmailHTMLTemplate());
-            FileUtils.write(templateFile, GroovyStringUtil.evaluate(tinyMCE, variables));
+            String newContent = GroovyStringUtil.evaluate(tinyMCE, variables);
+            FileUtils.write(templateFile, newContent, DF_CHARSET);
             browser.setUrl(templateFile.toURI().toURL().toString());
         } catch (IOException | URISyntaxException e) {
             LoggerSingleton.logError(e);
@@ -89,19 +92,19 @@ public class EmailTemplatePage extends PreferencePageWithHelp {
     protected void performDefaults() {
         try {
             String tinyMCE = FileUtils
-                    .readFileToString(new File(settingStore.getTemplateFolder(), "tinymce_template.html"));
+                    .readFileToString(new File(settingStore.getTemplateFolder(), "tinymce_template.html"), DF_CHARSET);
 
             Map<String, Object> variables = new HashMap<>();
             variables.put("htmlTemplate", settingStore.getDefaultEmailHTMLTemplate());
 
-            FileUtils.write(templateFile, GroovyStringUtil.evaluate(tinyMCE, variables));
+            FileUtils.write(templateFile, GroovyStringUtil.evaluate(tinyMCE, variables), DF_CHARSET);
             browser.setUrl(templateFile.toURI().toURL().toString());
         } catch (IOException | URISyntaxException e) {
             MultiStatusErrorDialog.showErrorDialog(e, StringConstants.ERROR_TITLE, e.getMessage());
             LoggerSingleton.logError(e);
         }
     }
-    
+
     @Override
     public boolean performOk() {
         if (!isControlCreated()) {
