@@ -29,6 +29,19 @@ public class ComposerMobileMessageConstants extends NLS {
 
     public static String WARNING_TITLE;
 
+    // AndroidDeviceSelectionDialog
+    public static String DIA_MSG_NO_DEVICES_CONNECTED;
+
+    public static String DIA_LNK_TROUBLESHOOT;
+
+    public static String DIA_LBL_TROUBLESHOOT;
+
+    public static String DIA_LBL_LOADING_DEVICES;
+
+    public static String DIA_TITLE_ANDROID_DEVICES;
+    
+    public static String DIA_TITLE_IOS_DEVICES;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerMobileMessageConstants.class);
