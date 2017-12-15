@@ -94,6 +94,27 @@ public final class SeleniumIdeFormatter {
 
 	public String getHeader(TestCase testCase) {
 		StringBuffer buffer = new StringBuffer();
+		buffer.append(  "import static com.kms.katalon.core.checkpoint.CheckpointFactory.findCheckpoint\n" +
+						"import static com.kms.katalon.core.testcase.TestCaseFactory.findTestCase\n" +
+						"import static com.kms.katalon.core.testdata.TestDataFactory.findTestData\n" +
+						"import static com.kms.katalon.core.testobject.ObjectRepository.findTestObject\n" +
+						"import com.kms.katalon.core.checkpoint.Checkpoint as Checkpoint\n" +
+						"import com.kms.katalon.core.checkpoint.CheckpointFactory as CheckpointFactory\n" +
+						"import com.kms.katalon.core.mobile.keyword.MobileBuiltInKeywords as MobileBuiltInKeywords\n" +
+						"import com.kms.katalon.core.mobile.keyword.MobileBuiltInKeywords as Mobile\n" +
+						"import com.kms.katalon.core.model.FailureHandling as FailureHandling\n" +
+						"import com.kms.katalon.core.testcase.TestCase as TestCase\n" +
+						"import com.kms.katalon.core.testcase.TestCaseFactory as TestCaseFactory\n" +
+						"import com.kms.katalon.core.testdata.TestData as TestData\n" +
+						"import com.kms.katalon.core.testdata.TestDataFactory as TestDataFactory\n" +
+						"import com.kms.katalon.core.testobject.ObjectRepository as ObjectRepository\n" +
+						"import com.kms.katalon.core.testobject.TestObject as TestObject\n" +
+						"import com.kms.katalon.core.webservice.keyword.WSBuiltInKeywords as WSBuiltInKeywords\n" +
+						"import com.kms.katalon.core.webservice.keyword.WSBuiltInKeywords as WS\n" +
+						"import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUiBuiltInKeywords\n" +
+						"import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI\n" +
+						"import internal.GlobalVariable as GlobalVariable\n");
+		
 		buffer.append(  "import com.kms.katalon.core.webui.driver.DriverFactory as DriverFactory\n\n" +
 						"import com.thoughtworks.selenium.Selenium\n" +
 						"import org.openqa.selenium.firefox.FirefoxDriver\n" +

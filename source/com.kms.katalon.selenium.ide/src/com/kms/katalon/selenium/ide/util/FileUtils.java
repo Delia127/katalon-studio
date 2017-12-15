@@ -27,7 +27,8 @@ public class FileUtils {
 	
 	public static String encode(String name) {
 		try {
-			String ret = URLEncoder.encode(name, "UTF-8");
+			String ret = name.trim().replaceAll("[^A-Za-z-0-9_().\\- ]", "_");
+			ret = URLEncoder.encode(ret, "UTF-8");
 			return ret.replaceAll("%2F", "_") // /
 					.replaceAll("%5B", "_") // [
 					.replaceAll("%5D", "_") // ] 

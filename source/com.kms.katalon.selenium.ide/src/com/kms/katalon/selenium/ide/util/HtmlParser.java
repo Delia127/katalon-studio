@@ -17,19 +17,30 @@ import com.kms.katalon.selenium.ide.model.TestSuite;
 public final class HtmlParser {
 	
 	public static TestSuite parseTestSuite(File file) {
+		String extension = com.google.common.io.Files.getFileExtension(file.getName());
 		File parentFile = file.getParentFile();
 		String testSuiteHtmlContent = FileUtils.readFileToString(file.toPath());
 		
 		String testSuiteName = HtmlParser.parseTitle(testSuiteHtmlContent);
 		
 		List<TestCase> testCases = new ArrayList<>();
-		Map<String, String> testCaseFiles = HtmlParser.parseTestCaseFiles(testSuiteHtmlContent);
-		testCaseFiles.forEach((key, value) -> {
-			String testCaseFilePath = parentFile.getAbsolutePath() + File.separator + value;
-			TestCase testCase = HtmlParser.parseTestCase(testCaseFilePath);
-			testCase.setFilePath(testCaseFilePath);
-			testCases.add(testCase);
-		});
+		
+		if (StringUtils.isBlank(extension)) {
+			Map<String, String> testCaseFiles = HtmlParser.parseTestCaseFiles(testSuiteHtmlContent);
+			testCaseFiles.forEach((key, value) -> {
+				String testCaseFilePath = parentFile.getAbsolutePath() + File.separator + value;
+				TestCase testCase = HtmlParser.parseTestCaseFromFile(testCaseFilePath);
+				testCase.setFilePath(testCaseFilePath);
+				testCases.add(testCase);
+			});
+		} else {
+			List<String> testCaseHtmlContents = parseTestCaseHtmlTableContents(testSuiteHtmlContent);
+			testCaseHtmlContents.forEach(htmlContent -> {
+				TestCase testCase = HtmlParser.parseTestCaseFromHtmlTableContent(htmlContent);
+				testCase.setFilePath(file.getAbsolutePath());
+				testCases.add(testCase);
+			});
+		}
 		
 		TestSuite testSuite = new TestSuite();
 		testSuite.setName(testSuiteName);
@@ -39,7 +50,7 @@ public final class HtmlParser {
 		return testSuite;
 	}
 
-	public static TestCase parseTestCase(final String testCaseFilePath) {
+	public static TestCase parseTestCaseFromFile(final String testCaseFilePath) {
 		String testCaseHtmlContent = FileUtils.readFileToString(new File(testCaseFilePath).toPath());
 		List<Command> commands = new ArrayList<>();
 		String testCaseBodyContent = parseTestCaseHtmlBodyContent(testCaseHtmlContent);
@@ -56,6 +67,31 @@ public final class HtmlParser {
         TestCase testCase = new TestCase();
         testCase.setName(parseTitle(testCaseHtmlContent));
         testCase.setBaseUrl(parseBaseUrl(testCaseHtmlContent));
+        testCase.setCommands(commands);
+        testCase.setFilePath(testCaseFilePath);
+		return testCase;
+	}
+	
+	public static TestCase parseTestCaseFromHtmlTableContent(final String htmlTableContent) {
+		String baseUrl = StringUtils.EMPTY;
+		List<Command> commands = new ArrayList<>();
+		String htmlBodyContent = parseTestCaseHtmlBodyContent(htmlTableContent);
+        if (StringUtils.isNotBlank(htmlBodyContent)) {
+        	Pattern pattern = Pattern.compile("(<tr>.*?</tr>)");
+        	Matcher matcher = pattern.matcher(htmlBodyContent);
+            while (matcher.find()) {
+            	Command command = parseCommand(matcher.group(1));
+            	if (StringUtils.isBlank(baseUrl) && "open".equalsIgnoreCase(command.getCommand())) {
+            		baseUrl = command.getTarget();
+            	}
+            	if (command != null) {
+            		commands.add(command);
+            	}
+            }
+        }
+        TestCase testCase = new TestCase();
+        testCase.setName(parseTitleFromHtmlTableContent(htmlTableContent));
+        testCase.setBaseUrl(baseUrl);
         testCase.setCommands(commands);
 		return testCase;
 	}
@@ -106,6 +142,12 @@ public final class HtmlParser {
 		return testSuite;		
 	}
 	
+	public static boolean hasBaseUrl(File file) {
+		String testSuiteHtmlContent = FileUtils.readFileToString(file.toPath());
+		String baseUrl = parseBaseUrl(testSuiteHtmlContent);
+		return StringUtils.isNotBlank(baseUrl);
+	}
+	
 	public static String parseBaseUrl(String htmlContent) {
 		String testSuite = StringUtils.EMPTY;
 		Pattern pattern = Pattern.compile("<link rel=\"selenium.base\" href=\"(.*?)\" />");
@@ -116,14 +158,34 @@ public final class HtmlParser {
 		return testSuite;		
 	}
 	
+	public static List<String> parseTestCaseHtmlTableContents(String htmlContent) {
+		List<String> testCases = new ArrayList<>();
+		Pattern pattern = Pattern.compile("(.*?)(<table.*?>)(.*?)(</table>)(.*?)");
+        Matcher matcher = pattern.matcher(htmlContent);
+        while (matcher.find()) {
+        	testCases.add(matcher.group(3));
+        }
+		return testCases;
+	}
+	
 	public static String parseTestCaseHtmlBodyContent(String htmlContent) {
 		String testCase = StringUtils.EMPTY;
 		Pattern pattern = Pattern.compile("(.*?<tbody>)(.*?)(</tbody>.*?)");
         Matcher matcher = pattern.matcher(htmlContent);
         if (matcher.find()) {
-        	testCase = matcher.group(0);
+        	testCase = matcher.group(2);
         }
 		return testCase;
+	}
+	
+	public static String parseTitleFromHtmlTableContent(String htmlContent) {
+		String title = StringUtils.EMPTY;
+		Pattern pattern = Pattern.compile("(.*?<thead>.*?<td.*?>)(.*?)(</td>.*?</thead>.*?)");
+        Matcher matcher = pattern.matcher(htmlContent);
+        if (matcher.find()) {
+        	title = matcher.group(2);
+        }
+		return title;
 	}
 	
 	public static Map<String, String> parseTestCaseFiles(String testSuiteHtmlContent) {
