@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.testsuite.parts;
 
+import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +10,7 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
@@ -20,6 +22,7 @@ import org.eclipse.e4.ui.model.application.ui.basic.MCompositePart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.model.application.ui.basic.MStackElement;
+import org.eclipse.e4.ui.workbench.IPresentationEngine;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
@@ -47,12 +50,15 @@ import com.kms.katalon.composer.testsuite.constants.ComposerTestsuiteMessageCons
 import com.kms.katalon.composer.testsuite.constants.ImageConstants;
 import com.kms.katalon.composer.testsuite.constants.StringConstants;
 import com.kms.katalon.composer.testsuite.util.TestSuiteEntityUtil;
+import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestSuiteController;
+import com.kms.katalon.core.util.internal.PathUtil;
+import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
@@ -343,6 +349,7 @@ public class TestSuiteCompositePart implements EventHandler, MultipleTabsComposi
 
     private void updateTestSuitePart(TestSuiteEntity testSuite) {
         // update mpart
+        int index = tabFolder.getSelectionIndex();
         String newElementId = EntityPartUtil.getTestSuiteCompositePartId(testSuite.getId());
         if (!newElementId.equals(compositePart.getElementId())) {
             compositePart.setLabel(testSuite.getName());
@@ -350,16 +357,42 @@ public class TestSuiteCompositePart implements EventHandler, MultipleTabsComposi
             if (compositePart.getChildren().size() == 1 && compositePart.getChildren().get(0) instanceof MPartStack) {
                 MPartStack partStack = (MPartStack) compositePart.getChildren().get(0);
                 partStack.setElementId(newElementId + IdConstants.TEST_SUITE_SUB_PART_STACK_ID_SUFFIX);
-
+                renewTestSuiteScriptPart(testSuite, newElementId, partStack);
                 childTestSuiteMainPart.getMPart()
                         .setElementId(newElementId + IdConstants.TEST_SUITE_MAIN_PART_ID_SUFFIX);
                 childTestSuiteIntegrationPart.getMPart()
                         .setElementId(newElementId + IdConstants.TEST_SUITE_INTEGRATION_PART_ID_SUFFIX);
             }
         }
+        tabFolder.setSelection(index);
         changeOriginalTestSuite(testSuite);
         setDirty(false);
         loadTestSuite();
+    }
+
+    private void renewTestSuiteScriptPart(TestSuiteEntity testSuite, String newElementId, MPartStack partStack) {
+        try {
+            File scriptFile = TestSuiteController.getInstance().getTestSuiteScriptFile(testSuite);
+            MPart testSuiteScriptPart = GroovyEditorUtil.createEditorPart(testSuite.getProject(), PathUtil
+                    .absoluteToRelativePath(scriptFile.getAbsolutePath(), testSuite.getProject().getFolderLocation()),
+                    partService);
+
+            testSuiteScriptPart.setElementId(newElementId + IdConstants.TEST_SUITE_SCRIPT_PART_ID_SUFFIX);
+            testSuiteScriptPart.getTags().add(IPresentationEngine.NO_MOVE);
+            testSuiteScriptPart.setLabel(ComposerTestsuiteMessageConstants.PA_TAB_SCRIPT);
+            partStack.getChildren().add(CHILD_TESTSUITE_SCRIPT_PART_INDEX, testSuiteScriptPart);
+            partService.activate(testSuiteScriptPart);
+            
+            CTabItem testSuiteScriptItem = tabFolder.getItem(CHILD_TESTSUITE_SCRIPT_PART_INDEX);
+            testSuiteScriptItem.setText(ComposerTestsuiteMessageConstants.PA_TAB_SCRIPT);
+            testSuiteScriptItem.setImage(ImageConstants.IMG_16_SCRIPT);
+            testSuiteScriptItem.setShowClose(false);
+
+            
+            this.scriptPart = new TestSuiteScriptPart(this,
+                    (CompatibilityEditor) testSuiteScriptPart.getObject());
+            this.scriptPart.initEditorAction();
+        } catch (CoreException | DALException ignored) {}
     }
 
     @Override

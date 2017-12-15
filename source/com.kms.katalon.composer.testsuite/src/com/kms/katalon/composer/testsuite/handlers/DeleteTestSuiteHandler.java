@@ -3,7 +3,6 @@ package com.kms.katalon.composer.testsuite.handlers;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
