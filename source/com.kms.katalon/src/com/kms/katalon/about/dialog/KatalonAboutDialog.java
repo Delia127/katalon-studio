@@ -266,7 +266,7 @@ public class KatalonAboutDialog extends TrayDialog {
 
         GC gc = new GC(parent);
         // arbitrary default
-        int topContainerHeightHint = 100;
+        int topContainerHeightHint = 130;
         try {
             // default height enough for 6 lines of text
             topContainerHeightHint = Math.max(topContainerHeightHint, gc
