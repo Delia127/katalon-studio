@@ -3755,4 +3755,34 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     public static Object executeJavaScript(String script, List arguments) throws StepFailedException {
         return (Object) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "executeJavaScript", script, arguments)
     }
+    
+    
+    /**
+     * Clear all text of the test object.
+     * 
+     * @since 5.3
+     * @param to represent a web element.
+     * @param flowControl FailureHandling
+     * @return true if text of object is clear. Otherwise, false.
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean clearText(TestObject to, FailureHandling flowControl) throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "clearText", to, flowControl)
+    }
+    
+    /**
+     * Clear all text of the test object.
+     * 
+     * @since 5.3
+     * @param to represent a web element.
+     * @return true if text of object is clear. Otherwise, false.
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean clearText(TestObject to) throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "clearText", to)
+    }
 }

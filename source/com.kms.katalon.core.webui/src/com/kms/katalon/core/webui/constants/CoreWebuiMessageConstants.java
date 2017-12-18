@@ -1043,6 +1043,11 @@ public class CoreWebuiMessageConstants extends NLS {
     public static String KW_MSG_UNABLE_TO_EXECUTE_JS;
 
     public static String KW_LOG_PASSED_EXECUTE_JS_SUCESSFULLY;
+    
+    // ClearTextKeyword
+    public static String KW_LOG_PASSED_OBJ_TXT_IS_CLEARED;
+
+    public static String KW_MSG_UNABLE_TO_CLEAR_OBJ_TEXT;
 
     static {
         // initialize resource bundle
