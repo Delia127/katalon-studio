@@ -37,6 +37,11 @@ public class IosSimulatorInfo extends IosDeviceInfo {
     public String getDeviceOSVersion() {
         return deviceOSVersion;
     }
+    
+    @Override
+    public boolean isEmulator() {
+        return true;
+    }
 
     public Map<String, String> getDeviceSystemProperties() {
         Map<String, String> systemProperties = new HashMap<String, String>();

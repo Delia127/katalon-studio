@@ -45,6 +45,8 @@ public abstract class MobileDeviceInfo {
     public abstract String getDeviceOS();
 
     public abstract String getDeviceOSVersion();
+    
+    public abstract boolean isEmulator();
 
     protected static File getResourceFolder(String resourceFolderRelativePath) throws IOException {
         File bundleFile = FileLocator.getBundleFile(Platform.getBundle(IdConstants.KATALON_MOBILE_BUNDLE_ID));

@@ -63,18 +63,22 @@ public class MobileDeviceUIProvider {
                     ComposerExecutionMessageConstants.DIA_MSG_ANDROID_SDK_MISSING)) {
                 return false;
             }
-            ProgressMonitorDialog dialog = new ProgressMonitorDialog(activeShell);
-            try {
-                dialog.run(true, false, new DownloadSDKProgress(sdkManager.getSDKLocator()));
-                return true;
-            } catch (InterruptedException e) {
-                return false;
-            } catch (InvocationTargetException e) {
-                LoggerSingleton.logError(e);
-                MessageDialogWithLink.openError(activeShell, "Error", e.getTargetException().getMessage());
-                return false;
-            }
+            return newDownloadSDKProgress(activeShell, sdkManager);
         }
         return true;
+    }
+
+    public static boolean newDownloadSDKProgress(Shell activeShell, AndroidSDKManager sdkManager) {
+        ProgressMonitorDialog dialog = new ProgressMonitorDialog(activeShell);
+        try {
+            dialog.run(true, false, new DownloadSDKProgress(sdkManager.getSDKLocator()));
+            return true;
+        } catch (InterruptedException e) {
+            return false;
+        } catch (InvocationTargetException e) {
+            LoggerSingleton.logError(e);
+            MessageDialogWithLink.openError(activeShell, "Error", e.getTargetException().getMessage());
+            return false;
+        }
     }
 }

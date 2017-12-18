@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
@@ -16,6 +18,7 @@ import com.kms.katalon.execution.mobile.exception.AndroidSDKNotFoundException;
 import com.kms.katalon.execution.mobile.exception.AndroidSetupException;
 
 public class AndroidDeviceInfo extends MobileDeviceInfo {
+
     private static final String BIN = "bin";
 
     private static final String UNIX_PATH_SEPARATOR = ":";
@@ -34,8 +37,6 @@ public class AndroidDeviceInfo extends MobileDeviceInfo {
     private static final String EMULATOR_SUFFIX = ")";
 
     private static final String FOR_ANDROID_VERSION = " - Android ";
-
-    private static final String EMULATOR_PREFIX = "Emulator (";
 
     private static final String ANDROID_EMULATOR_PREFIX = "emulator-";
 
@@ -71,10 +72,44 @@ public class AndroidDeviceInfo extends MobileDeviceInfo {
 
     private boolean isEmulator;
 
+    public boolean isEmulator() {
+        return isEmulator;
+    }
+
     public AndroidDeviceInfo(String deviceId) throws AndroidSetupException, IOException, InterruptedException {
         super(deviceId);
         isEmulator = deviceId.startsWith(ANDROID_EMULATOR_PREFIX);
         initDeviceProperties();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(deviceId)
+                .append(deviceManufacture)
+                .append(deviceModel)
+                .append(deviceModel)
+                .append(deviceOSVersion)
+                .append(deviceOs)
+                .append(isEmulator)
+                .toHashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        AndroidDeviceInfo other = (AndroidDeviceInfo) obj;
+        return new EqualsBuilder().append(this.deviceId, other.deviceId)
+                .append(this.deviceManufacture, other.deviceManufacture)
+                .append(this.deviceModel, other.deviceModel)
+                .append(this.deviceOSVersion, other.deviceOSVersion)
+                .append(this.deviceOs, other.deviceOs)
+                .append(this.isEmulator, this.isEmulator)
+                .isEquals();
     }
 
     protected void initDeviceProperties() throws IOException, InterruptedException, AndroidSetupException {
@@ -146,9 +181,11 @@ public class AndroidDeviceInfo extends MobileDeviceInfo {
     @Override
     public String getDisplayName() {
         if (isEmulator) {
-            return EMULATOR_PREFIX + getDeviceModel() + FOR_ANDROID_VERSION + getDeviceOSVersion() + EMULATOR_SUFFIX;
+            return getDeviceId() + " (" + getDeviceModel() + FOR_ANDROID_VERSION + getDeviceOSVersion()
+                    + EMULATOR_SUFFIX;
         }
-        return getDeviceManufacturer() + " " + getDeviceModel() + " " + getDeviceOSVersion();
+        return getDeviceManufacturer() + " " + getDeviceModel() + " (" + getDeviceOS() + " " + getDeviceOSVersion()
+                + ")";
     }
 
     @Override
