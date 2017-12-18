@@ -32,7 +32,7 @@ import com.kms.katalon.execution.mobile.util.MobileExecutionUtil;
 public abstract class MobileRunConfigurationContributor implements IRunConfigurationContributor {
     public static final String DEVICE_ID_CONFIGURATION_KEY = "deviceId";
 
-    public static final String DEVICE_NAME_CONFIGURATION_KEY = "deviceName";
+    public static final String DEVICE_DISPLAY_NAME_CONFIGURATION_KEY = "deviceName";
 
     private String deviceName;
 

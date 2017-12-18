@@ -73,7 +73,7 @@ public abstract class MobileTestExecutionDriverEntry extends TestExecutionDriver
 
         Map<String, String> newValueMap = new HashMap<>(runConfigurationData);
         MobileDeviceInfo device = deviceSelectionDialog.getDevice();
-        newValueMap.put(MobileRunConfigurationContributor.DEVICE_NAME_CONFIGURATION_KEY, device.getDeviceName());
+        newValueMap.put(MobileRunConfigurationContributor.DEVICE_DISPLAY_NAME_CONFIGURATION_KEY, device.getDisplayName());
         newValueMap.put(MobileRunConfigurationContributor.DEVICE_ID_CONFIGURATION_KEY, device.getDeviceId());
         return newValueMap;
     }
