@@ -43,12 +43,12 @@ public final class SeleniumIdeParser {
 		return HtmlParser.parseTestCaseFromFile(file.getAbsolutePath());
 	}
 	
-	public String parseTestObjectName(Command command) {
-		return FileUtils.encode(command.getTarget());
+	public String parseTestObjectName(String target) {
+		return FileUtils.encode(target);
 	}
 	
-	public String parseLocator(Command command) {
-		return TestObjectParser.parse(command);
+	public String parseLocator(String target) {
+		return TestObjectParser.parse(target);
 	}
 	
 }

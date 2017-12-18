@@ -2,9 +2,13 @@ package com.kms.katalon.composer.handlers;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -133,15 +137,15 @@ public class ImportSeleniumIdeHandler {
 	}
 
 	private void createTestCases(TestSuiteEntity testSuiteEntity, List<TestCase> testCases) throws Exception {
-		Map<String, List<WebElementEntity>> testObjectMap = new LinkedHashMap<>();
 		FolderEntity importTestCaseFolder = createImportTestCaseFolderEntity(testSuiteEntity.getName());
         if (!testCases.isEmpty()) {
+        	
+        	createTestObjects(testCases);
+        	
         	List<TestSuiteTestCaseLink> testSuiteTestCaseLinks = new ArrayList<>();
         	for (TestCase testCase : testCases) {
         		
         		TestCaseEntity testCaseEntity = createTestCaseEntity(testCase, importTestCaseFolder);
-        		List<WebElementEntity> testObjects = createTestObjects(testCase.getName(), testCase.getCommands());
-        		testObjectMap.put(testCase.getName(), testObjects);
         		
         		TestSuiteTestCaseLink testSuiteTestCaseLink = new TestSuiteTestCaseLink();
         		testSuiteTestCaseLink.setTestCaseId(testCaseEntity.getIdForDisplay());
@@ -153,6 +157,77 @@ public class ImportSeleniumIdeHandler {
         	tsController.updateTestSuite(testSuiteEntity);
         	eventBroker.send(EventConstants.TEST_SUITE_OPEN, testSuiteEntity);
         }
+	}
+	
+	private void createTestObjects(List<TestCase> testCases) throws Exception {
+		Map<String, Set<String>> testObjectNameMap = parseTestObjectNameMap(testCases);
+		Set<String> retains = retainAllTestObjects(testObjectNameMap);
+		
+		// test object common folder
+		if (retains.size() > 0) {
+			String commonFolderName = "Common";
+			FolderEntity commonFolderEntity = createImportTestObjectFolderEntity(commonFolderName);
+			for (String t : retains) {
+				createTestObject(commonFolderEntity, t);
+			}
+		}
+		
+		Iterator<Entry<String, Set<String>>> iterator = testObjectNameMap.entrySet().iterator();
+		while (iterator.hasNext()) {
+			Entry<String, Set<String>> entry = iterator.next();
+			String key = entry.getKey();
+			Set<String> value = entry.getValue();
+			
+			if (value.size() > 0) {
+				FolderEntity folderEntity = createImportTestObjectFolderEntity(key);
+				for (String l : value) {
+					boolean has = false;
+					for (String r : retains) {
+						if (l.equalsIgnoreCase(r)) {
+							has = true;
+							break;
+						}
+					}
+					
+					if (!has) {
+						createTestObject(folderEntity, l);
+					}
+				}
+			}
+		}
+	}
+	
+	private Set<String> retainAllTestObjects(Map<String, Set<String>> map) {
+		Set<String> ret = new HashSet<>();
+		if (map.size() > 1) {
+			Iterator<Entry<String, Set<String>>> iterator = map.entrySet().iterator();
+			while (iterator.hasNext()) {
+				Entry<String, Set<String>> entry = iterator.next();
+				Set<String> retains = retainTestObjects(entry, map);
+				ret.addAll(retains);
+			}
+		} 
+		return ret;
+	}
+	
+	private Set<String> retainTestObjects(Entry<String, Set<String>> item, Map<String, Set<String>> map) {
+		Set<String> ret = new HashSet<>();
+		Iterator<Entry<String, Set<String>>> iterator = map.entrySet().iterator();
+		while (iterator.hasNext()) {
+			Entry<String, Set<String>> entry = iterator.next();
+			if (entry.getKey().equalsIgnoreCase(item.getKey())) {
+				continue;
+			}
+			Set<String> value = entry.getValue();
+			
+			if (value != null) {
+				Set<String> origin = new HashSet<>(item.getValue());
+				origin.retainAll(value);
+				
+				ret.addAll(origin);
+			}
+		}
+		return ret;
 	}
 	
 	private FolderEntity createImportTestCaseFolderEntity(String name) throws Exception {
@@ -200,29 +275,36 @@ public class ImportSeleniumIdeHandler {
 		return testCaseEntity;
 	}
 	
-	private List<WebElementEntity> createTestObjects(String folderName, List<Command> commands) throws Exception {
-		List<WebElementEntity> webElements = new ArrayList<>();
-        FolderEntity parentFolderEntity = createImportTestObjectFolderEntity(folderName);
+	private Map<String, Set<String>> parseTestObjectNameMap(List<TestCase> testCases) {
+		Map<String, Set<String>> map = new HashMap<>();
+		for (TestCase testCase : testCases) {
+			Set<String> testObjects = new HashSet<>();
+			for (Command command: testCase.getCommands()) {
+				testObjects.add(command.getTarget());
+			}
+			map.put(testCase.getName(), testObjects);
+		}
+		return map;
+	}
+	
+	private WebElementEntity createTestObject(FolderEntity parentFolderEntity, String target) throws Exception {
+        
         ObjectRepositoryController toController = ObjectRepositoryController.getInstance();
         
-        if (!commands.isEmpty()) {
-        	for (Command command: commands) {
-        		String testObjectName = SeleniumIdeParser.getInstance().parseTestObjectName(command);
-        		String locator = SeleniumIdeParser.getInstance().parseLocator(command);
-        		
-        		if (StringUtils.isNotBlank(locator)) {
-    				WebElementEntity webElement = getWebElementByName(testObjectName, parentFolderEntity);
-    				if (webElement == null) {
-        				webElement = toController.newTestObjectWithoutSave(parentFolderEntity, testObjectName);
-        				webElement.setSelectorMethod(WebElementSelectorMethod.XPATH);
-        				webElement.setSelectorValue(WebElementSelectorMethod.XPATH, locator);
-        				webElement = toController.saveNewTestObject(webElement);
-        			} 
-    				webElements.add(webElement);
-        		}
-        	}
-        }
-        return webElements;
+		String testObjectName = SeleniumIdeParser.getInstance().parseTestObjectName(target);
+		String locator = SeleniumIdeParser.getInstance().parseLocator(target);
+		
+		WebElementEntity webElement = null;
+		if (StringUtils.isNotBlank(locator)) {
+			webElement = getWebElementByName(testObjectName, parentFolderEntity);
+			if (webElement == null) {
+				webElement = toController.newTestObjectWithoutSave(parentFolderEntity, testObjectName);
+				webElement.setSelectorMethod(WebElementSelectorMethod.XPATH);
+				webElement.setSelectorValue(WebElementSelectorMethod.XPATH, locator);
+				webElement = toController.saveNewTestObject(webElement);
+			} 
+		}
+		return webElement;
 	}
 	
 	private WebElementEntity getWebElementByName(String name, FolderEntity folderEntity) throws Exception {

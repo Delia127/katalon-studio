@@ -5,14 +5,10 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.kms.katalon.selenium.ide.model.Command;
-
 public class TestObjectParser {
 
-	public static String parse(Command command) {
-		if (command != null && 
-				StringUtils.isNotBlank(command.getTarget())) {
-			String target = command.getTarget();
+	public static String parse(String target) {
+		if (StringUtils.isNotBlank(target)) {
 			if (target.startsWith("link")) {
 				return formatLink(target);
 			}
