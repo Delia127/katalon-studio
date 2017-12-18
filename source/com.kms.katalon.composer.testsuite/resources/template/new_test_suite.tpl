@@ -29,7 +29,7 @@ import com.kms.katalon.core.annotation.TearDownTestCase
  */
 
 /**
- * Setups test suite environment.
+ * Setup test suite environment.
  */
 @SetUp(skipped = true) // Please change skipped to be false to activate this method.
 def setUp() {
@@ -37,7 +37,7 @@ def setUp() {
 }
 
 /**
- * Cleans test suites environment.
+ * Clean test suites environment.
  */
 @TearDown(skipped = true) // Please change skipped to be false to activate this method.
 def tearDown() {
@@ -45,7 +45,7 @@ def tearDown() {
 }
 
 /**
- * Runs before every test case starts.
+ * Run before every test case starts.
  */
 @SetupTestCase(skipped = true) // Please change skipped to be false to activate this method.
 def setupTestCase() {
@@ -53,7 +53,7 @@ def setupTestCase() {
 }
 
 /**
- * Runs after every test case ends.
+ * Run after every test case ends.
  */
 @TearDownTestCase(skipped = true) // Please change skipped to be false to activate this method.
 def tearDownTestCase() {
