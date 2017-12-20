@@ -242,6 +242,9 @@ public class TestCaseMenuUtil {
         if (WebUIDriverType.SAFARI_DRIVER.toString().equals(driverTypeName)) {
             return ImageManager.getImage(IImageKeys.SAFARI_16);
         }
+        if (WebUIDriverType.HEADLESS_DRIVER.toString().equals(driverTypeName)) {
+            return ImageManager.getImage(IImageKeys.TERMINAL_16);
+        }
         return null;
     }
 

@@ -104,6 +104,12 @@
      </client>
   </extension>
   <extension
+        point="com.kms.katalon.composer.execution.driverConnectorEditor">
+     <client
+           driver.connector.editor="com.kms.katalon.composer.webui.component.contributor.FirefoxHeadlessDriverEditorContributor">
+     </client>
+  </extension>
+  <extension
         point="com.kms.katalon.composer.execution.tetSuiteExecutionItem">
      <client
            item="com.kms.katalon.composer.webui.execution.testsuite.WebDesktopExecutionGroup">
