@@ -63,9 +63,8 @@ public class SpyObjectHandler {
     private void openDialogAndAddObject(Shell activeShell, Object[] selectedObjects) {
         try {
             if (objectSpyDialog == null || objectSpyDialog.isDisposed()) {
-                Shell parentShell = getShell(Display.getCurrent().getActiveShell());
-                objectSpyDialog = new NewObjectSpyDialog(parentShell, LoggerSingleton.getInstance().getLogger(),
-                        eventBroker);
+                Shell shell = getShell(activeShell);
+                objectSpyDialog = new NewObjectSpyDialog(shell, LoggerSingleton.getInstance().getLogger(), eventBroker);
                 objectSpyDialog.setBlockOnOpen(false);
             }
             objectSpyDialog.open();
@@ -83,7 +82,7 @@ public class SpyObjectHandler {
     }
 
     private Shell getShell(Shell activeShell) {
-        if (Platform.getOS().equals(Platform.OS_WIN32)) {
+        if (Platform.OS_WIN32.equals(Platform.getOS())) {
             return null;
         }
         Shell shell = new Shell();

@@ -103,17 +103,17 @@ public class RecordHandler {
 
     @Execute
     public void execute() {
+        Shell shell = null;
         try {
             TestCaseCompositePart testCaseCompositePart = getSelectedTestCasePart();
             if (testCaseCompositePart != null && !verifyTestCase(testCaseCompositePart)) {
                 return;
             }
             if (recordDialog == null || recordDialog.isDisposed()) {
-                Shell parentShell = getShell(Display.getCurrent().getActiveShell());
-                recordDialog = new RecorderDialog(parentShell, LoggerSingleton.getInstance().getLogger(), eventBroker);
+                shell = getShell(Display.getCurrent().getActiveShell());
+                recordDialog = new RecorderDialog(shell, LoggerSingleton.getInstance().getLogger(), eventBroker);
             }
 
-            recordDialog.setBlockOnOpen(true);
             int responseCode = recordDialog.open();
             if (responseCode != Window.OK) {
                 return;
@@ -129,11 +129,15 @@ public class RecordHandler {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
                     StringConstants.HAND_ERROR_MSG_CANNOT_GEN_TEST_STEPS);
             LoggerSingleton.logError(e);
+        } finally {
+             if (shell != null && !shell.isDisposed()) {
+                 shell.dispose();
+             }
         }
     }
     
     private Shell getShell(Shell activeShell) {
-        if (Platform.getOS().equals(Platform.OS_WIN32)) {
+        if (Platform.OS_WIN32.equals(Platform.getOS())) {
             return null;
         }
         Shell shell = new Shell();

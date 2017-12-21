@@ -286,11 +286,9 @@ public class KatalonAboutDialog extends TrayDialog {
             data.horizontalAlignment = GridData.FILL;
             data.verticalAlignment = GridData.BEGINNING;
             data.grabExcessHorizontalSpace = false;
-            data.horizontalIndent = 5;
-            data.verticalIndent = 5;
             imageLabel.setLayoutData(data);
             imageLabel.setImage(aboutImage);
-            topContainerHeightHint = Math.max(topContainerHeightHint, aboutImage.getBounds().height) + 10;
+            topContainerHeightHint = Math.max(topContainerHeightHint, aboutImage.getBounds().height);
         }
         
         GridData data = new GridData();

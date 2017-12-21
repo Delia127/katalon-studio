@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.egit.ui.UIUtils;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -42,7 +43,6 @@ import org.osgi.service.event.EventHandler;
 import org.w3c.dom.Document;
 
 import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
-import com.kms.katalon.composer.components.impl.dialogs.AbstractApplicationWindow;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
@@ -76,8 +76,8 @@ import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.util.listener.EventListener;
 
 @SuppressWarnings("restriction")
-public class NewObjectSpyDialog extends AbstractApplicationWindow
-                implements EventHandler, HTMLElementCollector, EventListener<ObjectSpyEvent> {
+public class NewObjectSpyDialog extends Dialog
+        implements EventHandler, HTMLElementCollector, EventListener<ObjectSpyEvent> {
 
     private static final String DIA_BOUNDS_SET = "DIALOG_BOUNDS_SET";
 
@@ -131,9 +131,9 @@ public class NewObjectSpyDialog extends AbstractApplicationWindow
         super(parentShell);
         boolean onTop = getPreferenceStore().getBoolean(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_PIN_WINDOW);
         if (onTop) {
-            setShellStyle(SWT.ON_TOP | SWT.CENTER | SWT.SHELL_TRIM);
+            setShellStyle(SWT.SHELL_TRIM | SWT.ON_TOP | SWT.CENTER);
         } else {
-            setShellStyle(SWT.CENTER | SWT.SHELL_TRIM);
+            setShellStyle(SWT.SHELL_TRIM | SWT.CENTER);
         }
 
         this.shell = getShell();
@@ -145,11 +145,6 @@ public class NewObjectSpyDialog extends AbstractApplicationWindow
         startSocketServer();
     }
 
-    @Override
-    public void create() {
-        super.create();
-    }
-
     private void startSocketServer() {
         try {
             new ProgressMonitorDialog(getParentShell()).run(true, false, new IRunnableWithProgress() {
@@ -157,7 +152,7 @@ public class NewObjectSpyDialog extends AbstractApplicationWindow
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                     monitor.beginTask(ObjectspyMessageConstants.MSG_DLG_INIT_OBJECT_SPY, 1);
                     AddonSocketServer.getInstance().start(AddonSocket.class,
-                                    UtilitiesAddonUtil.getInstantBrowsersPort());
+                            UtilitiesAddonUtil.getInstantBrowsersPort());
                 }
             });
         } catch (InvocationTargetException e) {
@@ -167,8 +162,13 @@ public class NewObjectSpyDialog extends AbstractApplicationWindow
         }
     }
 
+    /**
+     * Create contents of the dialog.
+     * 
+     * @param parent
+     */
     @Override
-    protected Control createContents(Composite parent) {
+    protected Control createDialogArea(Composite parent) {
         bodyComposite = new Composite(parent, SWT.NONE);
         bodyComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         bodyComposite.setLayout(new GridLayout(1, false));
@@ -217,7 +217,7 @@ public class NewObjectSpyDialog extends AbstractApplicationWindow
 
     private void registerObjectSpyEventListeners() {
         urlView.addListener(verifyView,
-                        Arrays.asList(ObjectSpyEvent.ADDON_SESSION_STARTED, ObjectSpyEvent.SELENIUM_SESSION_STARTED));
+                Arrays.asList(ObjectSpyEvent.ADDON_SESSION_STARTED, ObjectSpyEvent.SELENIUM_SESSION_STARTED));
 
         capturedObjectsView.addListener(objectPropertiesView, Arrays.asList(ObjectSpyEvent.SELECTED_ELEMENT_CHANGED));
         capturedObjectsView.addListener(this, Arrays.asList(ObjectSpyEvent.SELECTED_ELEMENT_CHANGED));
@@ -318,7 +318,7 @@ public class NewObjectSpyDialog extends AbstractApplicationWindow
                         pages.remove(webElement);
                         continue;
                     }
-
+                    
                     int index = -1;
                     List<WebElement> children = parent.getChildren();
                     for (int i = 0; i < children.size(); i++) {
@@ -332,9 +332,9 @@ public class NewObjectSpyDialog extends AbstractApplicationWindow
                         children.remove(index);
                     }
                 }
-
+                
                 removeElements(removedElements.toArray());
-
+                
                 objectPropertiesView.refreshTable(null);
             }
         });
@@ -360,7 +360,7 @@ public class NewObjectSpyDialog extends AbstractApplicationWindow
             }
         });
     }
-
+    
     private void removeElements(Object[] removedElements) {
         TreeViewer treeViewer = capturedObjectsView.getTreeViewer();
         treeViewer.getControl().setRedraw(false);
@@ -370,6 +370,11 @@ public class NewObjectSpyDialog extends AbstractApplicationWindow
             treeViewer.setExpandedState(element, true);
         }
         treeViewer.getControl().setRedraw(true);
+    }
+
+    @Override
+    protected Control createButtonBar(Composite parent) {
+        return parent;
     }
 
     private void refreshTree(TreeViewer treeViewer, Object object) {
@@ -452,7 +457,7 @@ public class NewObjectSpyDialog extends AbstractApplicationWindow
     private void addElementToObjectRepository(Shell parentShell) throws Exception {
         TreeViewer capturedTreeViewer = capturedObjectsView.getTreeViewer();
         SaveToObjectRepositoryDialog addToObjectRepositoryDialog = new SaveToObjectRepositoryDialog(parentShell, true,
-                        getCloneCapturedObjects(pages), capturedTreeViewer.getExpandedElements());
+                getCloneCapturedObjects(pages), capturedTreeViewer.getExpandedElements());
         if (addToObjectRepositoryDialog.open() != Window.OK) {
             return;
         }
@@ -498,10 +503,10 @@ public class NewObjectSpyDialog extends AbstractApplicationWindow
     }
 
     private Collection<ITreeEntity> addCheckedElements(WebElement element, FolderTreeEntity parentTreeFolder,
-                                                       WebElementEntity refElement) throws Exception {
+            WebElementEntity refElement) throws Exception {
         FolderEntity parentFolder = parentTreeFolder.getObject();
         WebElementEntity importedElement = ObjectRepositoryController.getInstance().importWebElement(
-                        WebElementUtils.convertWebElementToTestObject(element, refElement, parentFolder), parentFolder);
+                WebElementUtils.convertWebElementToTestObject(element, refElement, parentFolder), parentFolder);
 
         List<ITreeEntity> newTreeWebElements = new ArrayList<>();
         newTreeWebElements.add(new WebElementTreeEntity(importedElement, parentTreeFolder));
@@ -556,12 +561,12 @@ public class NewObjectSpyDialog extends AbstractApplicationWindow
                     pages.add(generatingPageElement);
                 }
                 WebElementUtils.createWebElementFromTestObject((WebElementEntity) selectedObject, false,
-                                generatingPageElement, generatingElementMap);
+                        generatingPageElement, generatingElementMap);
                 continue;
             }
             if (selectedObject instanceof FolderEntity) {
                 pages.addAll(WebElementUtils.createWebElementFromFolder((FolderEntity) selectedObject,
-                                generatingElementMap));
+                        generatingElementMap));
             }
         }
         TreeViewer elementTreeViewer = capturedObjectsView.getTreeViewer();
@@ -662,7 +667,7 @@ public class NewObjectSpyDialog extends AbstractApplicationWindow
         newFrame.getChildren().forEach(newChild -> {
             int index = indexOf(oldChildren, newChild);
             if (index < 0) {
-                // oldFrame.addChild(newChild);
+//                oldFrame.addChild(newChild);
                 newChild.setParent(oldFrame);
                 return;
             }

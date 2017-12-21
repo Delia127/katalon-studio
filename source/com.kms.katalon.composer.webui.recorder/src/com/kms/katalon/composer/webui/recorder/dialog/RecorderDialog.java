@@ -26,10 +26,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
-import org.eclipse.egit.ui.UIUtils;
 import org.eclipse.jdt.internal.ui.dialogs.StatusInfo;
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -74,7 +72,6 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -102,7 +99,7 @@ import com.kms.katalon.composer.components.impl.control.Dropdown;
 import com.kms.katalon.composer.components.impl.control.DropdownGroup;
 import com.kms.katalon.composer.components.impl.control.DropdownItemSelectionListener;
 import com.kms.katalon.composer.components.impl.control.DropdownToolItemSelectionListener;
-import com.kms.katalon.composer.components.impl.dialogs.AbstractApplicationWindow;
+import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
@@ -161,7 +158,7 @@ import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef.HWND;
 
 @SuppressWarnings("restriction")
-public class RecorderDialog extends AbstractApplicationWindow implements EventHandler, EventManager<ObjectSpyEvent> {
+public class RecorderDialog extends AbstractDialog implements EventHandler, EventManager<ObjectSpyEvent> {
     private static final String IE_WINDOW_CLASS = "IEFrame"; //$NON-NLS-1$
 
     private static final String relativePathToIEAddonSetup = File.separator + "extensions" + File.separator + "IE" //$NON-NLS-1$ //$NON-NLS-2$
@@ -240,12 +237,13 @@ public class RecorderDialog extends AbstractApplicationWindow implements EventHa
      */
     public RecorderDialog(Shell parentShell, Logger logger, IEventBroker eventBroker) {
         super(parentShell);
+        setDialogTitle(GlobalMessageConstants.WEB_RECORDER);
         store = PreferenceStoreManager.getPreferenceStore(RecorderPreferenceConstants.WEBUI_RECORDER_QUALIFIER);
         boolean onTop = store.getBoolean(RecorderPreferenceConstants.WEBUI_RECORDER_PIN_WINDOW);
         if (onTop) {
-            setShellStyle(SWT.ON_TOP | SWT.CENTER | SWT.SHELL_TRIM);
+            setShellStyle(SWT.SHELL_TRIM | SWT.ON_TOP | SWT.CENTER);
         } else {
-            setShellStyle(SWT.CENTER | SWT.SHELL_TRIM);
+            setShellStyle(SWT.SHELL_TRIM | SWT.CENTER);
         }
         this.logger = logger;
         elements = new ArrayList<>();
@@ -467,18 +465,6 @@ public class RecorderDialog extends AbstractApplicationWindow implements EventHa
     }
 
     @Override
-    protected Control createContents(Composite parent) {
-        Composite main = new Composite(parent, SWT.NONE);
-        main.setLayout(new GridLayout());
-
-        Control control = createDialogContainer(main);
-        control.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
-        createButtonBar(main);
-
-        return main;
-    }
-
     protected Control createDialogContainer(Composite parent) {
         Composite container = new Composite(parent, SWT.NONE);
         GridLayout glMain = new GridLayout();
@@ -531,12 +517,6 @@ public class RecorderDialog extends AbstractApplicationWindow implements EventHa
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
         newShell.setMinimumSize(MIN_DIALOG_SIZE);
-        newShell.setText(GlobalMessageConstants.WEB_RECORDER);
-    }
-
-    @Override
-    public void create() {
-        super.create();
     }
 
     private void initializeInput() {
@@ -1524,32 +1504,18 @@ public class RecorderDialog extends AbstractApplicationWindow implements EventHa
         }
     }
 
+    /**
+     * Create contents of the button bar.
+     * 
+     * @param parent
+     */
+    @Override
     protected void createButtonsForButtonBar(Composite parent) {
-        Button okButton = createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, false);
-        okButton.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                okPressed();
-            }
-        });
-        Button cancelButton = createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
-        cancelButton.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                cancelPressed();
-            }
-        });
+        createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, false);
+        createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
     }
 
-    private Button createButton(Composite parent, int okId, String okLabel, boolean b) {
-        Button button = new Button(parent, SWT.PUSH);
-        button.setText(okLabel);
-        GridData layoutData = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
-        button.setLayoutData(layoutData);
-        layoutData.widthHint = 80;
-        return button;
-    }
-
+    @Override
     protected Control createButtonBar(Composite parent) {
         Composite bottomComposite = new Composite(parent, SWT.NONE);
         GridLayout layout = new GridLayout(2, false);
@@ -1559,11 +1525,8 @@ public class RecorderDialog extends AbstractApplicationWindow implements EventHa
         bottomComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
         new HelpCompositeForDialog(bottomComposite, DocumentationMessageConstants.DIALOG_RECORDER_WEB_UI);
+        super.createButtonBar(bottomComposite);
 
-        Composite buttonComposite = new Composite(bottomComposite, SWT.NONE);
-        buttonComposite.setLayout(new GridLayout(2, true));
-        buttonComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
-        createButtonsForButtonBar(buttonComposite);
         return bottomComposite;
     }
 
@@ -1571,6 +1534,7 @@ public class RecorderDialog extends AbstractApplicationWindow implements EventHa
         return pages.stream().map(page -> page.softClone()).collect(Collectors.toList());
     }
 
+    @Override
     protected void okPressed() {
         Shell shell = getShell();
         try {
@@ -1578,9 +1542,8 @@ public class RecorderDialog extends AbstractApplicationWindow implements EventHa
                 return;
             }
 
+            super.okPressed();
             dispose();
-            setReturnCode(OK);
-            close();
         } catch (Exception exception) {
             logger.error(exception);
             MessageDialog.openError(shell, StringConstants.ERROR_TITLE, exception.getMessage());
@@ -1615,12 +1578,19 @@ public class RecorderDialog extends AbstractApplicationWindow implements EventHa
         }
     }
 
+    @Override
     protected void cancelPressed() {
+        super.cancelPressed();
         dispose();
-        setReturnCode(CANCEL);
-        close();
     }
 
+    /**
+     * Return the initial size of the dialog.
+     */
+    @Override
+    protected Point getInitialSize() {
+        return getShell().computeSize(SWT.DEFAULT, SWT.DEFAULT);
+    }
 
     @Override
     protected void handleShellCloseEvent() {
@@ -1776,7 +1746,7 @@ public class RecorderDialog extends AbstractApplicationWindow implements EventHa
                 }
 
                 WebElement[] oldNewElement = (WebElement[]) dataObject;
-                if (oldNewElement.length != 2) {
+                if(oldNewElement.length != 2) {
                     return;
                 }
                 replaceCapturedObjectInActionMapping(oldNewElement[0], oldNewElement[1]);
@@ -1796,6 +1766,16 @@ public class RecorderDialog extends AbstractApplicationWindow implements EventHa
         }
     }
 
+    @Override
+    protected void registerControlModifyListeners() {
+        // Do nothing for this
+    }
+
+    @Override
+    protected void setInput() {
+        // Do nothing for this
+    }
+
     private Map<ObjectSpyEvent, Set<EventListener<ObjectSpyEvent>>> eventListeners = new HashMap<>();
 
     @Override
@@ -1813,17 +1793,5 @@ public class RecorderDialog extends AbstractApplicationWindow implements EventHa
             listenerOnEvent.add(listener);
             eventListeners.put(e, listenerOnEvent);
         });
-    }
-
-    @Override
-    protected IDialogSettings getDialogBoundsSettings() {
-        return UIUtils.getDialogBoundSettings(getClass());
-    }
-    
-    protected void initializeBounds() {
-        Point size = getInitialSize();
-        Point location = getInitialLocation(size);
-        getShell().setBounds(getConstrainedShellBounds(new Rectangle(location.x,
-                location.y, size.x, size.y)));
     }
 }
