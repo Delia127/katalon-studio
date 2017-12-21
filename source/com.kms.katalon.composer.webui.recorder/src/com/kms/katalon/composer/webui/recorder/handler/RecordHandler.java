@@ -23,7 +23,6 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.openqa.selenium.Keys;
@@ -109,10 +108,10 @@ public class RecordHandler {
                 return;
             }
             if (recordDialog == null || recordDialog.isDisposed()) {
-                shell = getShell(Display.getCurrent().getActiveShell());
                 recordDialog = new RecorderDialog(shell, LoggerSingleton.getInstance().getLogger(), eventBroker);
             }
 
+            recordDialog.setBlockOnOpen(true);
             int responseCode = recordDialog.open();
             if (responseCode != Window.OK) {
                 return;
@@ -133,13 +132,6 @@ public class RecordHandler {
                  shell.dispose();
              }
         }
-    }
-    
-    private Shell getShell(Shell activeShell) {
-        Shell shell = new Shell();
-        Rectangle activeShellSize = activeShell.getBounds();
-        shell.setLocation((activeShellSize.width - shell.getBounds().width) / 2, (activeShellSize.height - shell.getBounds().height) / 2);
-        return shell;
     }
 
     private TestCaseCompositePart createNewTestCase() throws Exception {

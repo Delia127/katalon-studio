@@ -9,7 +9,6 @@ import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.event.Event;
@@ -62,8 +61,8 @@ public class SpyObjectHandler {
     private void openDialogAndAddObject(Shell activeShell, Object[] selectedObjects) {
         try {
             if (objectSpyDialog == null || objectSpyDialog.isDisposed()) {
-                Shell shell = getShell(activeShell);
-                objectSpyDialog = new NewObjectSpyDialog(shell, LoggerSingleton.getInstance().getLogger(),
+                Shell nullShell = null;
+                objectSpyDialog = new NewObjectSpyDialog(nullShell, LoggerSingleton.getInstance().getLogger(),
                         eventBroker);
                 objectSpyDialog.setBlockOnOpen(false);
             }
@@ -80,13 +79,7 @@ public class SpyObjectHandler {
             MessageDialog.openError(activeShell, StringConstants.ERROR_TITLE, e.getMessage());
         }
     }
-
-    private Shell getShell(Shell activeShell) {
-        Shell shell = new Shell();
-        Rectangle activeShellSize = activeShell.getBounds();
-        shell.setLocation((activeShellSize.width - shell.getBounds().width) / 2, (activeShellSize.height - shell.getBounds().height) / 2);
-        return shell;
-    }
+    
     
     @CanExecute
     private boolean canExecute() {

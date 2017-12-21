@@ -16,7 +16,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.egit.ui.UIUtils;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -25,15 +24,18 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Sash;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
@@ -76,8 +78,8 @@ import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.util.listener.EventListener;
 
 @SuppressWarnings("restriction")
-public class NewObjectSpyDialog extends Dialog
-        implements EventHandler, HTMLElementCollector, EventListener<ObjectSpyEvent> {
+public class NewObjectSpyDialog extends ApplicationWindow
+                implements EventHandler, HTMLElementCollector, EventListener<ObjectSpyEvent> {
 
     private static final String DIA_BOUNDS_SET = "DIALOG_BOUNDS_SET";
 
@@ -128,12 +130,12 @@ public class NewObjectSpyDialog extends Dialog
      * @throws Exception
      */
     public NewObjectSpyDialog(Shell parentShell, Logger logger, IEventBroker eventBroker) throws Exception {
-        super(parentShell);
+        super(null);
         boolean onTop = getPreferenceStore().getBoolean(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_PIN_WINDOW);
         if (onTop) {
-            setShellStyle(SWT.SHELL_TRIM | SWT.ON_TOP | SWT.CENTER);
+            setShellStyle(SWT.ON_TOP | SWT.CENTER | SWT.SHELL_TRIM);
         } else {
-            setShellStyle(SWT.SHELL_TRIM | SWT.CENTER);
+            setShellStyle(SWT.CENTER | SWT.SHELL_TRIM);
         }
 
         this.shell = getShell();
@@ -145,6 +147,16 @@ public class NewObjectSpyDialog extends Dialog
         startSocketServer();
     }
 
+    @Override
+    public void create() {
+        super.create();
+
+        Shell activeShell = Display.getCurrent().getActiveShell();
+        Shell shell = getShell();
+        Rectangle activeShellSize = activeShell.getBounds();
+        shell.setLocation(activeShellSize.width + activeShellSize.x - shell.getBounds().width - 50 , 50);
+    }
+
     private void startSocketServer() {
         try {
             new ProgressMonitorDialog(getParentShell()).run(true, false, new IRunnableWithProgress() {
@@ -152,7 +164,7 @@ public class NewObjectSpyDialog extends Dialog
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                     monitor.beginTask(ObjectspyMessageConstants.MSG_DLG_INIT_OBJECT_SPY, 1);
                     AddonSocketServer.getInstance().start(AddonSocket.class,
-                            UtilitiesAddonUtil.getInstantBrowsersPort());
+                                    UtilitiesAddonUtil.getInstantBrowsersPort());
                 }
             });
         } catch (InvocationTargetException e) {
@@ -162,13 +174,8 @@ public class NewObjectSpyDialog extends Dialog
         }
     }
 
-    /**
-     * Create contents of the dialog.
-     * 
-     * @param parent
-     */
     @Override
-    protected Control createDialogArea(Composite parent) {
+    protected Control createContents(Composite parent) {
         bodyComposite = new Composite(parent, SWT.NONE);
         bodyComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         bodyComposite.setLayout(new GridLayout(1, false));
@@ -217,7 +224,7 @@ public class NewObjectSpyDialog extends Dialog
 
     private void registerObjectSpyEventListeners() {
         urlView.addListener(verifyView,
-                Arrays.asList(ObjectSpyEvent.ADDON_SESSION_STARTED, ObjectSpyEvent.SELENIUM_SESSION_STARTED));
+                        Arrays.asList(ObjectSpyEvent.ADDON_SESSION_STARTED, ObjectSpyEvent.SELENIUM_SESSION_STARTED));
 
         capturedObjectsView.addListener(objectPropertiesView, Arrays.asList(ObjectSpyEvent.SELECTED_ELEMENT_CHANGED));
         capturedObjectsView.addListener(this, Arrays.asList(ObjectSpyEvent.SELECTED_ELEMENT_CHANGED));
@@ -318,7 +325,7 @@ public class NewObjectSpyDialog extends Dialog
                         pages.remove(webElement);
                         continue;
                     }
-                    
+
                     int index = -1;
                     List<WebElement> children = parent.getChildren();
                     for (int i = 0; i < children.size(); i++) {
@@ -332,9 +339,9 @@ public class NewObjectSpyDialog extends Dialog
                         children.remove(index);
                     }
                 }
-                
+
                 removeElements(removedElements.toArray());
-                
+
                 objectPropertiesView.refreshTable(null);
             }
         });
@@ -360,7 +367,7 @@ public class NewObjectSpyDialog extends Dialog
             }
         });
     }
-    
+
     private void removeElements(Object[] removedElements) {
         TreeViewer treeViewer = capturedObjectsView.getTreeViewer();
         treeViewer.getControl().setRedraw(false);
@@ -370,11 +377,6 @@ public class NewObjectSpyDialog extends Dialog
             treeViewer.setExpandedState(element, true);
         }
         treeViewer.getControl().setRedraw(true);
-    }
-
-    @Override
-    protected Control createButtonBar(Composite parent) {
-        return parent;
     }
 
     private void refreshTree(TreeViewer treeViewer, Object object) {
@@ -457,7 +459,7 @@ public class NewObjectSpyDialog extends Dialog
     private void addElementToObjectRepository(Shell parentShell) throws Exception {
         TreeViewer capturedTreeViewer = capturedObjectsView.getTreeViewer();
         SaveToObjectRepositoryDialog addToObjectRepositoryDialog = new SaveToObjectRepositoryDialog(parentShell, true,
-                getCloneCapturedObjects(pages), capturedTreeViewer.getExpandedElements());
+                        getCloneCapturedObjects(pages), capturedTreeViewer.getExpandedElements());
         if (addToObjectRepositoryDialog.open() != Window.OK) {
             return;
         }
@@ -503,10 +505,10 @@ public class NewObjectSpyDialog extends Dialog
     }
 
     private Collection<ITreeEntity> addCheckedElements(WebElement element, FolderTreeEntity parentTreeFolder,
-            WebElementEntity refElement) throws Exception {
+                                                       WebElementEntity refElement) throws Exception {
         FolderEntity parentFolder = parentTreeFolder.getObject();
         WebElementEntity importedElement = ObjectRepositoryController.getInstance().importWebElement(
-                WebElementUtils.convertWebElementToTestObject(element, refElement, parentFolder), parentFolder);
+                        WebElementUtils.convertWebElementToTestObject(element, refElement, parentFolder), parentFolder);
 
         List<ITreeEntity> newTreeWebElements = new ArrayList<>();
         newTreeWebElements.add(new WebElementTreeEntity(importedElement, parentTreeFolder));
@@ -561,12 +563,12 @@ public class NewObjectSpyDialog extends Dialog
                     pages.add(generatingPageElement);
                 }
                 WebElementUtils.createWebElementFromTestObject((WebElementEntity) selectedObject, false,
-                        generatingPageElement, generatingElementMap);
+                                generatingPageElement, generatingElementMap);
                 continue;
             }
             if (selectedObject instanceof FolderEntity) {
                 pages.addAll(WebElementUtils.createWebElementFromFolder((FolderEntity) selectedObject,
-                        generatingElementMap));
+                                generatingElementMap));
             }
         }
         TreeViewer elementTreeViewer = capturedObjectsView.getTreeViewer();
@@ -667,7 +669,7 @@ public class NewObjectSpyDialog extends Dialog
         newFrame.getChildren().forEach(newChild -> {
             int index = indexOf(oldChildren, newChild);
             if (index < 0) {
-//                oldFrame.addChild(newChild);
+                // oldFrame.addChild(newChild);
                 newChild.setParent(oldFrame);
                 return;
             }
@@ -724,7 +726,6 @@ public class NewObjectSpyDialog extends Dialog
         return PreferenceStoreManager.getPreferenceStore(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_QUALIFIER);
     }
 
-    @Override
     protected IDialogSettings getDialogBoundsSettings() {
         return UIUtils.getDialogBoundSettings(getClass());
     }
