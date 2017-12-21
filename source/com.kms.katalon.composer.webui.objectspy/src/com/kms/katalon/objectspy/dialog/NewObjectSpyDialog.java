@@ -24,18 +24,15 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Sash;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
@@ -45,6 +42,7 @@ import org.osgi.service.event.EventHandler;
 import org.w3c.dom.Document;
 
 import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
+import com.kms.katalon.composer.components.impl.dialogs.AbstractApplicationWindow;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
@@ -78,7 +76,7 @@ import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.util.listener.EventListener;
 
 @SuppressWarnings("restriction")
-public class NewObjectSpyDialog extends ApplicationWindow
+public class NewObjectSpyDialog extends AbstractApplicationWindow
                 implements EventHandler, HTMLElementCollector, EventListener<ObjectSpyEvent> {
 
     private static final String DIA_BOUNDS_SET = "DIALOG_BOUNDS_SET";
@@ -130,7 +128,7 @@ public class NewObjectSpyDialog extends ApplicationWindow
      * @throws Exception
      */
     public NewObjectSpyDialog(Shell parentShell, Logger logger, IEventBroker eventBroker) throws Exception {
-        super(null);
+        super(parentShell);
         boolean onTop = getPreferenceStore().getBoolean(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_PIN_WINDOW);
         if (onTop) {
             setShellStyle(SWT.ON_TOP | SWT.CENTER | SWT.SHELL_TRIM);
@@ -150,11 +148,6 @@ public class NewObjectSpyDialog extends ApplicationWindow
     @Override
     public void create() {
         super.create();
-
-        Shell activeShell = Display.getCurrent().getActiveShell();
-        Shell shell = getShell();
-        Rectangle activeShellSize = activeShell.getBounds();
-        shell.setLocation(activeShellSize.width + activeShellSize.x - shell.getBounds().width - 50 , 50);
     }
 
     private void startSocketServer() {
@@ -726,6 +719,7 @@ public class NewObjectSpyDialog extends ApplicationWindow
         return PreferenceStoreManager.getPreferenceStore(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_QUALIFIER);
     }
 
+    @Override
     protected IDialogSettings getDialogBoundsSettings() {
         return UIUtils.getDialogBoundSettings(getClass());
     }

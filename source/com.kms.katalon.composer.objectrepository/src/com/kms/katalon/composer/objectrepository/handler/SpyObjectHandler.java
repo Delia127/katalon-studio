@@ -4,11 +4,13 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.event.Event;
@@ -61,8 +63,8 @@ public class SpyObjectHandler {
     private void openDialogAndAddObject(Shell activeShell, Object[] selectedObjects) {
         try {
             if (objectSpyDialog == null || objectSpyDialog.isDisposed()) {
-                Shell nullShell = null;
-                objectSpyDialog = new NewObjectSpyDialog(nullShell, LoggerSingleton.getInstance().getLogger(),
+                Shell parentShell = getShell(Display.getCurrent().getActiveShell());
+                objectSpyDialog = new NewObjectSpyDialog(parentShell, LoggerSingleton.getInstance().getLogger(),
                         eventBroker);
                 objectSpyDialog.setBlockOnOpen(false);
             }
@@ -79,8 +81,18 @@ public class SpyObjectHandler {
             MessageDialog.openError(activeShell, StringConstants.ERROR_TITLE, e.getMessage());
         }
     }
-    
-    
+
+    private Shell getShell(Shell activeShell) {
+        if (Platform.getOS().equals(Platform.OS_WIN32)) {
+            return null;
+        }
+        Shell shell = new Shell();
+        Rectangle activeShellSize = activeShell.getBounds();
+        shell.setLocation((activeShellSize.width - shell.getBounds().width) / 2,
+                (activeShellSize.height - shell.getBounds().height) / 2);
+        return shell;
+    }
+
     @CanExecute
     private boolean canExecute() {
         return ProjectController.getInstance().getCurrentProject() != null;
