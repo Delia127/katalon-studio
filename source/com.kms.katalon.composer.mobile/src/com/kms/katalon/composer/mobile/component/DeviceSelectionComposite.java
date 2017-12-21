@@ -34,7 +34,11 @@ public class DeviceSelectionComposite extends Composite {
 
     public DeviceSelectionComposite(Composite parent, int style, MobileDriverType platform) {
         super(parent, style);
-        setLayoutData(new GridData(GridData.FILL_BOTH));
+        
+        GridData gdDeviceSelectionComposite = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+        gdDeviceSelectionComposite.widthHint = 400;
+        gdDeviceSelectionComposite.heightHint = SWT.DEFAULT;
+        setLayoutData(gdDeviceSelectionComposite);
         GridLayout glContainer = new GridLayout(2, false);
         glContainer.verticalSpacing = 10;
         setLayout(glContainer);
