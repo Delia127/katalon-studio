@@ -237,14 +237,8 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
      */
     public RecorderDialog(Shell parentShell, Logger logger, IEventBroker eventBroker) {
         super(parentShell);
-        setDialogTitle(GlobalMessageConstants.WEB_RECORDER);
         store = PreferenceStoreManager.getPreferenceStore(RecorderPreferenceConstants.WEBUI_RECORDER_QUALIFIER);
-        boolean onTop = store.getBoolean(RecorderPreferenceConstants.WEBUI_RECORDER_PIN_WINDOW);
-        if (onTop) {
-            setShellStyle(SWT.SHELL_TRIM | SWT.ON_TOP | SWT.CENTER);
-        } else {
-            setShellStyle(SWT.SHELL_TRIM | SWT.CENTER);
-        }
+        setDialogTitle(GlobalMessageConstants.WEB_RECORDER);
         this.logger = logger;
         elements = new ArrayList<>();
         recordedActions = new ArrayList<HTMLActionMapping>();
@@ -254,6 +248,16 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         eventBroker.subscribe(EventConstants.RECORDER_HTML_ACTION_CAPTURED, this);
         eventBroker.subscribe(EventConstants.RECORDER_ACTION_OBJECT_REORDERED, this);
         startSocketServer();
+    }
+    
+    @Override
+    protected int getShellStyle() {
+        boolean onTop = store.getBoolean(RecorderPreferenceConstants.WEBUI_RECORDER_PIN_WINDOW);
+        if (onTop) {
+            return SWT.SHELL_TRIM | SWT.ON_TOP | SWT.CENTER;
+        } else {
+            return SWT.SHELL_TRIM | SWT.CENTER;
+        }
     }
 
     private void startSocketServer() {
