@@ -140,6 +140,7 @@ public class NewObjectSpyDialog extends Dialog
         this.logger = logger;
         this.eventBroker = eventBroker;
         eventBroker.subscribe(EventConstants.OBJECT_SPY_HTML_ELEMENT_CAPTURED, this);
+        eventBroker.subscribe(EventConstants.WORKSPACE_CLOSED, this);
         isDisposed = false;
         pages = new ArrayList<>();
         startSocketServer();
@@ -626,17 +627,20 @@ public class NewObjectSpyDialog extends Dialog
     @Override
     public void handleEvent(Event event) {
         Object dataObject = EventUtil.getData(event);
-        if (EventConstants.OBJECT_SPY_HTML_ELEMENT_CAPTURED.equals(event.getTopic())) {
-            if (!(dataObject instanceof WebElement)) {
+        String topic = event.getTopic();
+        switch (topic) {
+            case EventConstants.OBJECT_SPY_HTML_ELEMENT_CAPTURED: {
+                if (!(dataObject instanceof WebElement)) {
+                    return;
+                }
+                addNewElement((WebElement) dataObject);
                 return;
             }
-            addNewElement((WebElement) dataObject);
-            return;
+            case EventConstants.WORKSPACE_CLOSED: {
+                cancelPressed();
+                return;
+            }
         }
-        // if (event.getTopic() == ObjectSpyEventConstants.DIALOG_SIZE_CHANGED) {
-        // Shell shell = getShell();
-        // shell.setSize(shell.getSize().x, getInitialSize().y);
-        // }
     }
 
     private WebPage findPage(WebElement webElement) {

@@ -6,6 +6,7 @@ public class EventConstants {
 
     // Workspace events
     public static final String WORKSPACE_CREATED = "WORKSPACE/CREATED";
+    public static final String WORKSPACE_CLOSED = "WORKSPACE/CLOSE";
 
     // Project Events
     public static final String PROJECT_ALL = "PROJECT/*";

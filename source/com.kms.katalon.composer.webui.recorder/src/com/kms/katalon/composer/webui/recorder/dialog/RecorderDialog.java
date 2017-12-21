@@ -247,6 +247,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         this.eventBroker = eventBroker;
         eventBroker.subscribe(EventConstants.RECORDER_HTML_ACTION_CAPTURED, this);
         eventBroker.subscribe(EventConstants.RECORDER_ACTION_OBJECT_REORDERED, this);
+        eventBroker.subscribe(EventConstants.WORKSPACE_CLOSED, this);
         startSocketServer();
     }
     
@@ -1755,6 +1756,9 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 }
                 replaceCapturedObjectInActionMapping(oldNewElement[0], oldNewElement[1]);
                 actionTableViewer.refresh();
+                return;
+            case EventConstants.WORKSPACE_CLOSED:
+                cancelPressed();
                 return;
         }
     }

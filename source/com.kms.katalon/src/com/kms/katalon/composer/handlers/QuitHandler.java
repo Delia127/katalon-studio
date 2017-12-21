@@ -10,6 +10,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.handler.AbstractHandler;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.PreferenceConstants;
@@ -45,6 +46,7 @@ public class QuitHandler extends AbstractHandler {
         if (confirm.getReturnCode() != Window.OK) {
             return false;
         }
+        EventBrokerSingleton.getInstance().getEventBroker().send(EventConstants.WORKSPACE_CLOSED, null);
         if (partService.saveAll(true)) {
             prefs.setValue(PreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION, confirm.getToggleState());
             eventBroker.send(EventConstants.PROJECT_CLOSE, null);
