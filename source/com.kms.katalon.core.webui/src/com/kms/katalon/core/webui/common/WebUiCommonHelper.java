@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
@@ -44,21 +45,21 @@ public class WebUiCommonHelper extends KeywordHelper {
 
     private static final String XPATH_ATTRIBUTE_PREFIX = "@";
 
-    private static final String XPATH_CONDITION_TYPE_NOT_MATCHES = "not(matches(%s,'%s'))";
+    private static final String XPATH_CONDITION_TYPE_NOT_MATCHES = "not(matches(%s, '%s'))";
 
-    private static final String XPATH_CONDITION_TYPE_MATCHES = "matches(%s,'%s')";
+    private static final String XPATH_CONDITION_TYPE_MATCHES = "matches(%s, '%s')";
 
-    private static final String XPATH_CONDITION_TYPE_ENDS_WITH = "ends-with(%s,'%s')";
+    private static final String XPATH_CONDITION_TYPE_ENDS_WITH = "ends-with(%s, %s)";
 
-    private static final String XPATH_CONDITION_TYPE_STARTS_WITH = "starts-with(%s,'%s')";
+    private static final String XPATH_CONDITION_TYPE_STARTS_WITH = "starts-with(%s, %s)";
 
-    private static final String XPATH_CONDITION_TYPE_NOT_EQUALS = "%s != '%s'";
+    private static final String XPATH_CONDITION_TYPE_NOT_EQUALS = "%s != %s";
 
-    private static final String XPATH_CONDITION_TYPE_NOT_CONTAINS = "not(contains(%s,'%s'))";
+    private static final String XPATH_CONDITION_TYPE_NOT_CONTAINS = "not(contains(%s, %s))";
 
-    private static final String XPATH_CONDITION_TYPE_EQUALS = "%s = '%s'";
+    private static final String XPATH_CONDITION_TYPE_EQUALS = "%s = %s";
 
-    private static final String XPATH_CONDITION_TYPE_CONTAINS = "contains(%s,'%s')";
+    private static final String XPATH_CONDITION_TYPE_CONTAINS = "contains(%s, %s)";
 
     private static final String CSS_METHOD_SUFFIX = "()";
 
@@ -598,28 +599,28 @@ public class WebUiCommonHelper extends KeywordHelper {
 
         switch (conditionType) {
             case CONTAINS:
-                expression.append(String.format(XPATH_CONDITION_TYPE_CONTAINS, propertyName, propertyValue));
+                expression.append(String.format(XPATH_CONDITION_TYPE_CONTAINS, propertyName, escapeSingleQuote(propertyValue)));
                 break;
             case ENDS_WITH:
-                expression.append(String.format(XPATH_CONDITION_TYPE_ENDS_WITH, propertyName, propertyValue));
+                expression.append(String.format(XPATH_CONDITION_TYPE_ENDS_WITH, propertyName, escapeSingleQuote(propertyValue)));
                 break;
             case EQUALS:
-                expression.append(String.format(XPATH_CONDITION_TYPE_EQUALS, propertyName, propertyValue));
+                expression.append(String.format(XPATH_CONDITION_TYPE_EQUALS, propertyName, escapeSingleQuote(propertyValue)));
                 break;
             case MATCHES_REGEX:
                 expression.append(String.format(XPATH_CONDITION_TYPE_MATCHES, propertyName, propertyValue));
                 break;
             case NOT_CONTAIN:
-                expression.append(String.format(XPATH_CONDITION_TYPE_NOT_CONTAINS, propertyName, propertyValue));
+                expression.append(String.format(XPATH_CONDITION_TYPE_NOT_CONTAINS, propertyName, escapeSingleQuote(propertyValue)));
                 break;
             case NOT_EQUAL:
-                expression.append(String.format(XPATH_CONDITION_TYPE_NOT_EQUALS, propertyName, propertyValue));
+                expression.append(String.format(XPATH_CONDITION_TYPE_NOT_EQUALS, propertyName, escapeSingleQuote(propertyValue)));
                 break;
             case NOT_MATCH_REGEX:
                 expression.append(String.format(XPATH_CONDITION_TYPE_NOT_MATCHES, propertyName, propertyValue));
                 break;
             case STARTS_WITH:
-                expression.append(String.format(XPATH_CONDITION_TYPE_STARTS_WITH, propertyName, propertyValue));
+                expression.append(String.format(XPATH_CONDITION_TYPE_STARTS_WITH, propertyName, escapeSingleQuote(propertyValue)));
                 break;
             default:
                 break;
@@ -633,6 +634,23 @@ public class WebUiCommonHelper extends KeywordHelper {
             return xpath.toString();
         }
         return null;
+    }
+
+    private static String escapeSingleQuote(String value) {
+        int countSingleQuote = StringUtils.countMatches(value, "'");
+        if (countSingleQuote == 0) {
+            return "'" + value + "'";
+        }
+        boolean hasEndQuote = StringUtils.endsWith(value, "'");
+        StringBuilder sb = new StringBuilder();
+        sb.append("concat('");
+        value = StringUtils.replace(value, "'", "', \"'\", '");
+        if (hasEndQuote) {
+            value = StringUtils.removeEnd(value, ", '");
+        }
+        sb.append(value);
+        sb.append(")");
+        return sb.toString();
     }
 
     public static String getBrowserAndVersion(WebDriver webDriver) {

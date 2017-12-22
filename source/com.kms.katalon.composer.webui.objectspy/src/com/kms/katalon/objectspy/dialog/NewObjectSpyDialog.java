@@ -40,7 +40,6 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
-import org.w3c.dom.Document;
 
 import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
@@ -60,8 +59,6 @@ import com.kms.katalon.objectspy.constants.ObjectspyMessageConstants;
 import com.kms.katalon.objectspy.constants.StringConstants;
 import com.kms.katalon.objectspy.core.HTMLElementCollector;
 import com.kms.katalon.objectspy.dialog.SaveToObjectRepositoryDialog.SaveToObjectRepositoryDialogResult;
-import com.kms.katalon.objectspy.element.HTMLElement;
-import com.kms.katalon.objectspy.element.HTMLRawElement;
 import com.kms.katalon.objectspy.element.WebElement;
 import com.kms.katalon.objectspy.element.WebElement.WebElementType;
 import com.kms.katalon.objectspy.element.WebFrame;
@@ -712,16 +709,6 @@ public class NewObjectSpyDialog extends Dialog
                 setExpandForParentElement(pageOfElement, capturedElementTreeViewer);
             }
         });
-    }
-
-    @Override
-    public void addNewElement(HTMLElement newElement) {
-        // Do nothing. This method will be removed, once the new object spy complete
-    }
-
-    @Override
-    public void setHTMLDOMDocument(HTMLRawElement bodyElement, Document document) {
-        // Do nothing. This method will be removed, once the new object spy complete
     }
 
     private ScopedPreferenceStore getPreferenceStore() {
