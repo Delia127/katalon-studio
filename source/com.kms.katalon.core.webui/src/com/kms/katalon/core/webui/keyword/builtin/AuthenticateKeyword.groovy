@@ -88,15 +88,22 @@ public class AuthenticateKeyword extends WebUIAbstractKeyword {
                         }
                     }    
                     navigatedThread.start()
-                    Thread.sleep(timeout * 1000)
+                    
+                    long startPolling = System.currentTimeMillis();
+                    while((System.currentTimeMillis() - startPolling)/1000 < timeout) {
+
+                        if (usernamePasswordURL.equals(currentUrl)) {
+                            logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_NAVIAGTED_TO_AUTHENTICATED_PAGE, [userName, password] as Object[]))
+                            return
+                        }
+
+                        Thread.sleep(50);
+                    }
                 }
                 
-                if (usernamePasswordURL.equals(currentUrl)) {
-                    logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_NAVIAGTED_TO_AUTHENTICATED_PAGE, [userName, password] as Object[]))
-                } else {
-                    WebUIKeywordMain.stepFailed(StringConstants.KW_MSG_CANNOT_NAV_TO_AUTHENTICATED_PAGE, flowControl, null, false)
-                }
-        } finally {
+                WebUIKeywordMain.stepFailed(StringConstants.KW_MSG_CANNOT_NAV_TO_AUTHENTICATED_PAGE, flowControl, null, false)
+       
+     } finally {
              if (navigatedThread != null && navigatedThread.isAlive()) {
                  navigatedThread.interrupt()
              }
@@ -118,7 +125,7 @@ public class AuthenticateKeyword extends WebUIAbstractKeyword {
          getAuthenticatedUrl.append(url.getHost())
          getAuthenticatedUrl.append(url.getPath())
          
-         return getAuthenticatedUrl
+         return getAuthenticatedUrl.toString()
      }
     
 }
