@@ -53,6 +53,7 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkUtil;
 
+import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.core.appium.driver.AppiumDriverManager;
 import com.kms.katalon.core.keyword.internal.IKeywordContributor;
@@ -801,8 +802,8 @@ public class GroovyUtil {
         if (!scriptFile.exists()) {
             return;
         }
-        try (StringReader stringReader = new StringReader(FileUtils.readFileToString(scriptFile))) {
-            testCase.setScriptContents(IOUtils.toByteArray(stringReader));
+        try (StringReader stringReader = new StringReader(FileUtils.readFileToString(scriptFile, GlobalStringConstants.DF_CHARSET))) {
+            testCase.setScriptContents(IOUtils.toByteArray(stringReader, GlobalStringConstants.DF_CHARSET));
         }
     }
 
