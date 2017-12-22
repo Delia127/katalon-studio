@@ -54,15 +54,11 @@ public class TestCasePreferencePage extends PreferencePageWithHelp {
 
     private ListViewer listViewerKwType, listViewerKwName;
 
-//    private Combo comboDefaultFailureHandling;
-
     private Combo comboKeywordType;
 
     private IKeywordContributor[] contributors;
 
     private Composite fieldEditorParent;
-
-    private static final String[] DF_FAILURE_HANDLING_VALUES = FailureHandling.valueStrings();
 
     private Map<String, String> defaultKeywords;
 
@@ -120,12 +116,6 @@ public class TestCasePreferencePage extends PreferencePageWithHelp {
         Composite compositeDefaultFailureHandling = new Composite(fieldEditorParent, SWT.NONE);
         compositeDefaultFailureHandling.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
         compositeDefaultFailureHandling.setLayout(new GridLayout(2, false));
-
-//        Label lblDefaultFailureHandling = new Label(compositeDefaultFailureHandling, SWT.NONE);
-//        lblDefaultFailureHandling.setText(StringConstants.PREF_LBL_DEFAULT_FAILURE_HANDLING);
-//
-//        comboDefaultFailureHandling = new Combo(compositeDefaultFailureHandling, SWT.READ_ONLY);
-//        comboDefaultFailureHandling.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
 
         Composite compositeDefaultKeywordType = new Composite(fieldEditorParent, SWT.NONE);
         compositeDefaultKeywordType.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
@@ -315,7 +305,6 @@ public class TestCasePreferencePage extends PreferencePageWithHelp {
             initTestCaseCallingValue(isDefault);
             initDefaultKeywordType(isDefault);
             initDefaultKeywordValue(isDefault);
-//            initDefaultFailureHandlingValue(isDefault);
             initDefaultTestCaseView(isDefault);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
@@ -351,31 +340,6 @@ public class TestCasePreferencePage extends PreferencePageWithHelp {
         comboKeywordType.setItems(keywordTypeStringArray);
         comboKeywordType.setText(keywordTypeStringArray[selectedIndex]);
     }
-
-//    private void initDefaultFailureHandlingValue(boolean isDefault) {
-//        comboDefaultFailureHandling.setItems(getFailureHandlingKeys(DF_FAILURE_HANDLING_VALUES));
-//        String cbbDfFailureHandlingText = getPreferenceStore().getString(
-//                TestCasePreferenceConstants.TESTCASE_DEFAULT_FAILURE_HANDLING);
-//        if (isDefault) {
-//            cbbDfFailureHandlingText = getPreferenceStore().getDefaultString(
-//                    TestCasePreferenceConstants.TESTCASE_DEFAULT_FAILURE_HANDLING);
-//        }
-//
-//        comboDefaultFailureHandling.setText(getFailureHandlingKey(cbbDfFailureHandlingText));
-//    }
-
-//    private String[] getFailureHandlingKeys(String[] values) {
-//        String[] keys = new String[values.length];
-//        for (int i = 0; i < values.length; i++) {
-//            keys[i] = getFailureHandlingKey(values[i]);
-//            comboDefaultFailureHandling.setData(keys[i], values[i]);
-//        }
-//        return keys;
-//    }
-
-//    private String getFailureHandlingKey(String failureHandlingValue) {
-//        return WordUtils.capitalizeFully(failureHandlingValue.replaceAll("_", " "));
-//    }
 
     private void initDefaultKeywordValue(boolean isDefault) throws Exception {
         if (contributors.length <= 0)
@@ -518,10 +482,6 @@ public class TestCasePreferencePage extends PreferencePageWithHelp {
 
         // Default Keyword
         TestCasePreferenceDefaultValueInitializer.storeDefaultKeywords(defaultKeywords);
-
-        // Default Failure Handling
-//        getPreferenceStore().setValue(TestCasePreferenceConstants.TESTCASE_DEFAULT_FAILURE_HANDLING,
-//                comboDefaultFailureHandling.getData(comboDefaultFailureHandling.getText()).toString());
 
         applyValueForTestCaseStartView();
     }

@@ -381,7 +381,6 @@ public class KatalonMethodCompletionProposal extends ParameterGuessingProposal {
     }
 
     private ICompletionProposal getDefaultFailureHandlingProposal(ICompletionProposal[] guessingCompletionProposals) {
-//        FailureHandling defaultFailureHandling = TestCasePreferenceDefaultValueInitializer.getDefaultFailureHandling();
         FailureHandling defaultFailureHandling = new TestCaseSettingStore(
                 ProjectController.getInstance().getCurrentProject().getFolderLocation()).getDefaultFailureHandling();
 
