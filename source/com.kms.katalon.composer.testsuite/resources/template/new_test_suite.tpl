@@ -45,7 +45,7 @@ def tearDown() {
 }
 
 /**
- * Run before every test case starts.
+ * Run before each test case starts.
  */
 @SetupTestCase(skipped = true) // Please change skipped to be false to activate this method.
 def setupTestCase() {
@@ -53,9 +53,14 @@ def setupTestCase() {
 }
 
 /**
- * Run after every test case ends.
+ * Run after each test case ends.
  */
 @TearDownTestCase(skipped = true) // Please change skipped to be false to activate this method.
 def tearDownTestCase() {
 	// Put your code here.
 }
+
+/**
+ * References:
+ * Groovy tutorial page: http://docs.groovy-lang.org/next/html/documentation/
+ */
