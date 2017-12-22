@@ -300,6 +300,9 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String DIA_MSG_ANDROID_SDK_MISSING;
 
     public static String DIA_JOB_DOWNLOAD_AND_INSTALL_ANDROID_SDK;
+    
+    // ProxyConfigurationPreferencesPage
+    public static String PREF_MSG_UNABLE_TO_SAVE_PROXY_CONFIG;
 
     static {
         // initialize resource bundle

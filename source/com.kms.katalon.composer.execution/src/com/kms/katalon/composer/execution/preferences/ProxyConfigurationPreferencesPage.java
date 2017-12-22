@@ -1,6 +1,9 @@
 package com.kms.katalon.composer.execution.preferences;
 
+import java.io.IOException;
+
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -18,6 +21,8 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageConstants;
+import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.console.constants.ConsoleMessageConstants;
 import com.kms.katalon.console.utils.ProxyUtil;
 import com.kms.katalon.constants.MessageConstants;
@@ -275,7 +280,13 @@ public class ProxyConfigurationPreferencesPage extends PreferencePage {
                 ? String.valueOf(ProxyPreferenceDefaultValueInitializer.PROXY_SERVER_PORT_DEFAULT_VALUE) : portValue);
         proxyInfo.setUsername(txtUsername.getText());
         proxyInfo.setPassword(txtPass.getText());
-        ProxyPreferences.saveProxyInformation(proxyInfo);
-        return true;
+        try {
+            ProxyPreferences.saveProxyInformation(proxyInfo);
+            return true;
+        } catch (IOException e) {
+            MessageDialog.openError(getShell(), StringConstants.ERROR_TITLE,
+                    ComposerExecutionMessageConstants.PREF_MSG_UNABLE_TO_SAVE_PROXY_CONFIG);
+            return false;
+        }
     }
 }
