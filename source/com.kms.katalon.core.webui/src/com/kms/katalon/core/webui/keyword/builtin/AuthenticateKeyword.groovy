@@ -7,6 +7,7 @@ import org.openqa.selenium.WebDriver
 
 import com.kms.katalon.core.annotation.internal.Action
 import com.kms.katalon.core.configuration.RunConfiguration
+import com.kms.katalon.core.driver.DriverType
 import com.kms.katalon.core.keyword.internal.SupportLevel
 import com.kms.katalon.core.logging.KeywordLogger
 import com.kms.katalon.core.model.FailureHandling
@@ -18,6 +19,7 @@ import com.kms.katalon.core.webui.keyword.internal.WebUIAbstractKeyword
 import com.kms.katalon.core.webui.keyword.internal.WebUIKeywordMain
 import com.kms.katalon.core.webui.util.WinRegistry
 
+import groovy.json.internal.Exceptions
 import groovy.transform.CompileStatic
 
 @Action(value = "authenticate")
@@ -49,14 +51,16 @@ public class AuthenticateKeyword extends WebUIAbstractKeyword {
             Thread navigatedThread = null
 
             try{
-
-                if (System.getProperty("os.name") == null || !System.getProperty("os.name").toLowerCase().contains("win")) {
+                String osName = System.getProperty("os.name")
+                DriverType executedBrowser = DriverFactory.getExecutedBrowser()
+                
+                if (osName == null || !osName.toLowerCase().contains("win")) {
                     throw new Exception("Unsupported platform (only support Windows)")
                 }
 
-                if(DriverFactory.getExecutedBrowser() != WebUIDriverType.IE_DRIVER &&
-                DriverFactory.getExecutedBrowser() != WebUIDriverType.FIREFOX_DRIVER &&
-                DriverFactory.getExecutedBrowser() != WebUIDriverType.CHROME_DRIVER){
+                if( executedBrowser != WebUIDriverType.IE_DRIVER &&
+                    executedBrowser != WebUIDriverType.FIREFOX_DRIVER &&
+                    executedBrowser != WebUIDriverType.CHROME_DRIVER){
                     throw new Exception("Unsupported browser (only support IE, FF, Chrome)")
                 }
                 
@@ -70,7 +74,7 @@ public class AuthenticateKeyword extends WebUIAbstractKeyword {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_PASSWORD_IS_NULL)
                 }
                 
-                //For only Internet Explorer: to permit type username and password on URL.
+                //For only Internet Explorer: to permit entering username and password on URL.
                 if (DriverFactory.getExecutedBrowser() == WebUIDriverType.IE_DRIVER) {
                     WinRegistry.enableUsernamePasswordOnURL();
                 }
@@ -78,30 +82,39 @@ public class AuthenticateKeyword extends WebUIAbstractKeyword {
                 //Try to navigate to site destination
                 WebDriver driver = DriverFactory.getWebDriver()
                 String usernamePasswordURL = getAuthenticatedUrl(PathUtil.getUrl(url, "https"), userName, password)
-                String currentUrl = "";
+                String currentUrl = ""
+                boolean gotCurrentURL = false
                 
                 if (!StringUtils.isEmpty(url)) {
                     navigatedThread = new Thread() {
                         public void run() {
-                             driver.navigate().to(usernamePasswordURL)
-                             currentUrl = driver.getCurrentUrl()
+                                try {
+                                     driver.navigate().to(usernamePasswordURL)
+                                     currentUrl = driver.getCurrentUrl()
+                                     gotCurrentURL = true
+                                } catch (Exception e) {
+                                    gotCurrentURL = true
+                                }
                         }
-                    }    
+                    } 
                     navigatedThread.start()
                     
                     long startPolling = System.currentTimeMillis();
-                    while((System.currentTimeMillis() - startPolling)/1000 < timeout) {
-
-                        if (usernamePasswordURL.equals(currentUrl)) {
-                            logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_NAVIAGTED_TO_AUTHENTICATED_PAGE, [userName, password] as Object[]))
-                            return
-                        }
-
-                        Thread.sleep(50);
+                    while((System.currentTimeMillis() - startPolling) < timeout*1000) {
+                        if (gotCurrentURL) {
+                              if (!usernamePasswordURL.equals(driver.getCurrentUrl())) {
+                                  break
+                              } else {
+                                  logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_NAVIAGTED_TO_AUTHENTICATED_PAGE, [userName, password] as Object[]))
+                                  return
+                              }
+                            }
+                       
+                        Thread.sleep(200L)
                     }
                 }
                 
-                WebUIKeywordMain.stepFailed(StringConstants.KW_MSG_CANNOT_NAV_TO_AUTHENTICATED_PAGE, flowControl, null, false)
+                WebUIKeywordMain.stepFailed(StringConstants.KW_MSG_CANNOT_NAV_TO_AUTHENTICATED_PAGE, flowControl, "timeout", false)
        
      } finally {
              if (navigatedThread != null && navigatedThread.isAlive()) {

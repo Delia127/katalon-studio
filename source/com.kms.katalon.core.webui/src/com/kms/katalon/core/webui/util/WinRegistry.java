@@ -69,7 +69,11 @@ public class WinRegistry {
             Runtime.getRuntime().exec(ADD_DWORD_IEXPLORE_EXE);
         }
     }
-
+    
+    /**-------------------------------------------------------------------------
+     Edit registry in Window - reference solution from : https://stackoverflow.com/questions/62289/read-write-to-windows-registry-using-java/6163701
+     */
+   
     public static List<String> readStringSubKeys(int hkey, String key)
             throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         return readStringSubKeys(userRoot, hkey, key);
@@ -84,11 +88,10 @@ public class WinRegistry {
             return null;
         }
         int[] info = (int[]) regQueryInfoKey.invoke(root, new Object[] { new Integer(handles[0]) });
-
-        int count = info[0]; // Fix: info[2] was being used here with wrong
-                             // results. Suggested by davenpcj, confirmed by
-                             // Petrucio
-        int maxlen = info[3]; // value length max
+        
+        //Fix: info[2] was being used here with wrong results.
+        int count = info[0]; 
+        int maxlen = info[3]; 
         for (int index = 0; index < count; index++) {
             byte[] name = (byte[]) regEnumKeyEx.invoke(root,
                     new Object[] { new Integer(handles[0]), new Integer(index), new Integer(maxlen + 1) });
