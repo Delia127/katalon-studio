@@ -200,6 +200,7 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
             stop();
             showMessageForMissingIEAddon();
             try {
+                shell.setMinimized(true);
                 runIEAddonInstaller();
             } catch (IOException iOException) {
                 LoggerSingleton.logError(iOException);
@@ -285,7 +286,7 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
         UISynchronizeService.syncExec(new Runnable() {
             @Override
             public void run() {
-                MessageDialog.openInformation(Display.getCurrent().getActiveShell(), StringConstants.INFO,
+                MessageDialog.openInformation(shell, StringConstants.INFO,
                         StringConstants.DIALOG_CANNOT_START_IE_MESSAGE);
             }
         });
