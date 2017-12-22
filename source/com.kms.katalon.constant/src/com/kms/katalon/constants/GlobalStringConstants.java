@@ -254,6 +254,8 @@ public class GlobalStringConstants {
 
     // Common value
     public static final String NULL = GlobalMessageConstants.NULL;
+    
+    public static final String APP_TEMP_DIR = System.getProperty("java.io.tmpdir") + File.separator + "Katalon";
 
     public static final String APP_USER_DIR_LOCATION = System.getProperty("user.home") + File.separator + ".katalon";
 

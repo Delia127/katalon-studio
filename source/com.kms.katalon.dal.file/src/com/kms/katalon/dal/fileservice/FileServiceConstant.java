@@ -2,6 +2,7 @@ package com.kms.katalon.dal.fileservice;
 
 import java.io.File;
 
+import com.kms.katalon.constants.GlobalMessageConstants;
 import com.kms.katalon.dal.fileservice.constants.StringConstants;
 import com.kms.katalon.dal.fileservice.entity.GlobalVariableWrapper;
 
@@ -58,6 +59,10 @@ public class FileServiceConstant {
 
     public static String getCheckpointRootFolderLocation(String projectFolder) {
         return projectFolder + File.separator + CHECKPOINT_ROOT_FOLDER_NAME;
+    }
+
+    public static String getTestListenerRootFolderLocation(String projectFolder) {
+        return projectFolder + File.separator + GlobalMessageConstants.ROOT_FOLDER_NAME_TEST_LISTENER;
     }
 
     public static String getGlobalVariableFileLocation(String projectFolder) {

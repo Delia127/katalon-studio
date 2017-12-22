@@ -35,7 +35,7 @@ public class DeviceSelectionDialog extends TitleAreaDialog {
                 updateStatus();
             }
         });
-
+        
         return area;
     }
 
@@ -58,7 +58,7 @@ public class DeviceSelectionDialog extends TitleAreaDialog {
 
     @Override
     protected Point getInitialSize() {
-        return new Point(400, 200);
+        return getShell().computeSize(SWT.DEFAULT, SWT.DEFAULT);
     }
 
     @Override

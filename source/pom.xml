@@ -43,6 +43,7 @@
 		<module>com.kms.katalon.composer.search</module>
 		<module>com.kms.katalon.composer.testcase</module>
 		<module>com.kms.katalon.composer.testdata</module>
+		<module>com.kms.katalon.composer.testlistener</module>
 		<module>com.kms.katalon.composer.testsuite.collection</module>
 		<module>com.kms.katalon.composer.testsuite</module>
 		<module>com.kms.katalon.composer.util</module>
@@ -74,6 +75,7 @@
 		<module>com.kms.katalon.jasper</module>
 		<module>com.kms.katalon.logging</module>
 		<module>com.kms.katalon.preferences</module>
+		<module>com.kms.katalon.util</module>
 		<module>com.kms.katalon.product</module>
 		<module>com.kms.katalon.selenium-standalone</module>
 		<module>com.kms.katalon.target</module>

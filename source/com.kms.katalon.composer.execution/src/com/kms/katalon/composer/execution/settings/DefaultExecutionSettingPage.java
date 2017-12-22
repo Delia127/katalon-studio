@@ -41,8 +41,6 @@ public class DefaultExecutionSettingPage extends PreferencePageWithHelp {
 
     public static final short TIMEOUT_MAX_VALUE = 9999;
 
-    private static final int LABEL_WIDTH = 250;
-
     private static final int INPUT_WIDTH = 60;
 
     private ExecutionDefaultSettingStore store;
@@ -82,7 +80,6 @@ public class DefaultExecutionSettingPage extends PreferencePageWithHelp {
         Label lblDefaultBrowser = new Label(comp, SWT.NONE);
         lblDefaultBrowser.setText(LBL_DEFAULT_EXECUTION);
         GridData gdLblDefaultBrowser = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gdLblDefaultBrowser.widthHint = LABEL_WIDTH;
         lblDefaultBrowser.setLayoutData(gdLblDefaultBrowser);
 
         cbDefaultBrowser = new Combo(comp, SWT.BORDER | SWT.READ_ONLY | SWT.DROP_DOWN);
@@ -93,7 +90,6 @@ public class DefaultExecutionSettingPage extends PreferencePageWithHelp {
         Label lblDefaultElementTimeout = new Label(comp, SWT.NONE);
         lblDefaultElementTimeout.setText(StringConstants.PREF_LBL_DEFAULT_IMPLICIT_TIMEOUT);
         GridData gdLblDefaultElementTimeout = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gdLblDefaultElementTimeout.widthHint = LABEL_WIDTH;
         lblDefaultElementTimeout.setLayoutData(gdLblDefaultElementTimeout);
 
         txtDefaultElementTimeout = new Text(comp, SWT.BORDER);

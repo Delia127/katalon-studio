@@ -45,6 +45,8 @@ public abstract class MobileDeviceInfo {
     public abstract String getDeviceOS();
 
     public abstract String getDeviceOSVersion();
+    
+    public abstract boolean isEmulator();
 
     protected static File getResourceFolder(String resourceFolderRelativePath) throws IOException {
         File bundleFile = FileLocator.getBundleFile(Platform.getBundle(IdConstants.KATALON_MOBILE_BUNDLE_ID));
@@ -82,6 +84,12 @@ public abstract class MobileDeviceInfo {
     protected static void makeFileExecutable(File file) throws IOException, InterruptedException {
         ConsoleCommandExecutor
                 .runConsoleCommandAndCollectFirstResult(new String[] { CHMOD_COMMAND, X_FLAG, file.getAbsolutePath() });
+    }
+    
+    protected static void makeFolderExecutable(File file, boolean recursive) throws IOException, InterruptedException {
+        ConsoleCommandExecutor
+                .runConsoleCommandAndCollectFirstResult(new String[] { CHMOD_COMMAND, 
+                        recursive ? "-R " : "" +  X_FLAG, file.getAbsolutePath() });
     }
 
     public Map<String, String> getDeviceSystemProperties() {

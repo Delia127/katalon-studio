@@ -2,6 +2,7 @@ package com.kms.katalon.execution.launcher;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.logging.XmlLogRecord;
@@ -19,6 +20,8 @@ public abstract class LoggableLauncher extends ProcessLauncher implements ILogCo
     private static final int DF_WATCHER_DELAY_TIME = 1;
 
     private List<XmlLogRecord> logRecords = new ArrayList<XmlLogRecord>();
+
+    private Stack<XmlLogRecord> startRecords = new Stack<>();
 
     /**
      * Returns the level of the current {@link XmlLogRecord}
@@ -56,10 +59,11 @@ public abstract class LoggableLauncher extends ProcessLauncher implements ILogCo
 
             switch (logLevel) {
                 case START:
+                    startRecords.push(record);
                     logDepth++;
                     break;
                 case END:
-                    if (isLogUnderTestCaseMainLevel(runConfig, logDepth)) {
+                    if (isLogUnderTestCaseMainLevel(runConfig, logDepth) && isStartTestCaseLog(startRecords.peek())) {
                         switch (currentTestCaseResult) {
                             case PASSED:
                                 launcherResult.increasePasses();
@@ -78,14 +82,15 @@ public abstract class LoggableLauncher extends ProcessLauncher implements ILogCo
                         currentTestCaseResult = LogLevel.NOT_RUN;
                     }
                     logDepth--;
+                    startRecords.pop();
 
                     if (logDepth == 0) {
                         watchdog.stop();
                     }
                     break;
                 default:
-                    if (LogLevel.getResultLogs().contains(logLevel)
-                            && isLogUnderTestCaseMainLevel(runConfig, logDepth)) {
+                    if (LogLevel.getResultLogs().contains(logLevel) && isLogUnderTestCaseMainLevel(runConfig, logDepth)
+                            && isStartTestCaseLog(startRecords.peek())) {
                         currentTestCaseResult = logLevel;
                     }
                     break;

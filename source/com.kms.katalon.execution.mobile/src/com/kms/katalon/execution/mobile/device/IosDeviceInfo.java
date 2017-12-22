@@ -7,13 +7,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.eclipse.core.runtime.Platform;
 
 import com.kms.katalon.core.mobile.constants.StringConstants;
 import com.kms.katalon.core.util.ConsoleCommandExecutor;
 
 public class IosDeviceInfo extends MobileDeviceInfo {
-
     private static final String RELATIVE_PATH_TO_TOOLS_FOLDER = "resources" + File.separator + "tools" + File.separator;
 
     private static final String PATH = "PATH";
@@ -108,6 +109,33 @@ public class IosDeviceInfo extends MobileDeviceInfo {
         return deviceOSVersion;
     }
 
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(deviceId)
+                .append(deviceClass)
+                .append(deviceName)
+                .append(deviceOSVersion)
+                .append(deviceType)
+                .toHashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        IosDeviceInfo other = (IosDeviceInfo) obj;
+        return new EqualsBuilder().append(this.deviceId, other.deviceId)
+                .append(this.deviceClass, other.deviceClass)
+                .append(this.deviceName, other.deviceName)
+                .append(this.deviceOSVersion, other.deviceOSVersion)
+                .append(this.deviceType, other.deviceType)
+                .isEquals();
+    }
+
     public static File getIMobileDeviceDirectory() throws IOException {
         return getResourceFolder(IMOBILE_DEVICE_FOLDER_RELATIVE_PATH);
     }
@@ -186,5 +214,10 @@ public class IosDeviceInfo extends MobileDeviceInfo {
             return;
         }
         makeFileExecutable(deviceConsoleBinary);
+    }
+
+    @Override
+    public boolean isEmulator() {
+        return false;
     }
 }

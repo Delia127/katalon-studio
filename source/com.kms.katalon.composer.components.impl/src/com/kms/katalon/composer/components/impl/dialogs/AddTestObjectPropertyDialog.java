@@ -46,7 +46,9 @@ public class AddTestObjectPropertyDialog extends Dialog {
         Composite area = (Composite) super.createDialogArea(parent);
 
         Composite container = new Composite(area, SWT.NONE);
-        container.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        GridData gd_container = new GridData(SWT.FILL, SWT.CENTER, true, false);
+        gd_container.widthHint = 450;
+        container.setLayoutData(gd_container);
         GridLayout gl_container = new GridLayout(2, false);
         gl_container.marginWidth = 0;
         gl_container.marginHeight = 0;
@@ -93,12 +95,7 @@ public class AddTestObjectPropertyDialog extends Dialog {
         super.configureShell(newShell);
         newShell.setText(ComposerComponentsImplMessageConstants.VIEW_LBL_ADD_PROPERTY);
     }
-
-    @Override
-    protected Point getInitialSize() {
-        return new Point(450, 180);
-    }
-
+    
     public Point getSize() {
         return getInitialSize();
     }

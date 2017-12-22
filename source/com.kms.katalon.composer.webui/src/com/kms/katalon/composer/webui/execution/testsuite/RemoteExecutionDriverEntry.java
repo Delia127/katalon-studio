@@ -5,11 +5,11 @@ import java.util.Map;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.DialogCellEditor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 
+import com.kms.katalon.composer.components.dialogs.AbstractDialogCellEditor;
 import com.kms.katalon.composer.execution.collection.provider.TestExecutionDriverEntry;
 import com.kms.katalon.composer.execution.util.MapUtil;
 import com.kms.katalon.composer.webui.component.dialogs.RemoteExecutionInputDialog;
@@ -25,7 +25,7 @@ public class RemoteExecutionDriverEntry extends TestExecutionDriverEntry {
 
     @Override
     public CellEditor getRunConfigurationDataCellEditor(Composite parent) {
-        return new DialogCellEditor(parent) {
+        return new AbstractDialogCellEditor(parent) {
             @Override
             protected void updateContents(Object value) {
                 Map<String, String> newValueMap = MapUtil.convertObjectToStringMap(value);
@@ -39,7 +39,7 @@ public class RemoteExecutionDriverEntry extends TestExecutionDriverEntry {
             @Override
             protected Object openDialogBox(Control cellEditorWindow) {
                 Map<String, String> newValueMap = MapUtil.convertObjectToStringMap(getValue());
-                return changeRunConfigurationData(cellEditorWindow.getShell(), newValueMap);
+                return changeRunConfigurationData(getParentShell(), newValueMap);
             }
         };
     }

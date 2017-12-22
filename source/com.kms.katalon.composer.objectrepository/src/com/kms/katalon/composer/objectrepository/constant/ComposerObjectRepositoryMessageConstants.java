@@ -80,6 +80,9 @@ public class ComposerObjectRepositoryMessageConstants extends NLS {
     public static String RDO_SHADOW_ROOT_PARENT;
 
     public static String VIEW_HELP_SELECTION_METHOD_DOC_URL;
+    
+    // ObjectPropertyView
+    public static String VIEW_ITEM_TIP_ADD_NEW_PROPERTY;
 
     static {
         // initialize resource bundle

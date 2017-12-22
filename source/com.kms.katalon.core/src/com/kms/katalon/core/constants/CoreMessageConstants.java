@@ -284,6 +284,12 @@ public class CoreMessageConstants extends NLS {
     public static String KEYWORD_EXECUTOR_ERROR_MSG;
 
     public static String KW_MSG_LIST_KEYWORD_CLASS_FAILED_X;
+    
+    public static String EXEC_LOG_STARTING_INVOKE_LISTENER_METHOD;
+
+    public static String EXEC_LOG_INVOKE_LISTENER_METHOD_COMPLETED;
+
+    public static String EXEC_MSG_INVOKE_LISTENER_METHOD_FAILED; 
 
     static {
         // initialize resource bundle

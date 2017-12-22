@@ -6,15 +6,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.core.util.ConsoleCommandExecutor;
+import com.kms.katalon.execution.mobile.exception.AndroidSDKNotFoundException;
 import com.kms.katalon.execution.mobile.exception.AndroidSetupException;
 
 public class AndroidDeviceInfo extends MobileDeviceInfo {
+
     private static final String BIN = "bin";
 
     private static final String UNIX_PATH_SEPARATOR = ":";
@@ -34,14 +38,9 @@ public class AndroidDeviceInfo extends MobileDeviceInfo {
 
     private static final String FOR_ANDROID_VERSION = " - Android ";
 
-    private static final String EMULATOR_PREFIX = "Emulator (";
-
     private static final String ANDROID_EMULATOR_PREFIX = "emulator-";
 
     private static final String ANDROID_HOME_ENVIRONMENT_VARIABLE_NAME = "ANDROID_HOME";
-
-    private static final String ANDROID_SDK_FOLDER_RELATIVE_PATH = "resources" + File.separator + "tools"
-            + File.separator + "android_sdk";
 
     private static final String ADB = "adb";
 
@@ -73,10 +72,44 @@ public class AndroidDeviceInfo extends MobileDeviceInfo {
 
     private boolean isEmulator;
 
+    public boolean isEmulator() {
+        return isEmulator;
+    }
+
     public AndroidDeviceInfo(String deviceId) throws AndroidSetupException, IOException, InterruptedException {
         super(deviceId);
         isEmulator = deviceId.startsWith(ANDROID_EMULATOR_PREFIX);
         initDeviceProperties();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(deviceId)
+                .append(deviceManufacture)
+                .append(deviceModel)
+                .append(deviceModel)
+                .append(deviceOSVersion)
+                .append(deviceOs)
+                .append(isEmulator)
+                .toHashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        AndroidDeviceInfo other = (AndroidDeviceInfo) obj;
+        return new EqualsBuilder().append(this.deviceId, other.deviceId)
+                .append(this.deviceManufacture, other.deviceManufacture)
+                .append(this.deviceModel, other.deviceModel)
+                .append(this.deviceOSVersion, other.deviceOSVersion)
+                .append(this.deviceOs, other.deviceOs)
+                .append(this.isEmulator, this.isEmulator)
+                .isEquals();
     }
 
     protected void initDeviceProperties() throws IOException, InterruptedException, AndroidSetupException {
@@ -110,25 +143,25 @@ public class AndroidDeviceInfo extends MobileDeviceInfo {
         return ConsoleCommandExecutor.runConsoleCommandAndCollectFirstResult(getManuFacturerCommand);
     }
 
-    public static File getAndroidSDKDirectory() throws IOException {
-        return getResourceFolder(ANDROID_SDK_FOLDER_RELATIVE_PATH);
-    }
-
-    public static String getAndroidSDKDirectoryAsString() throws IOException {
-        return getResourceFolder(ANDROID_SDK_FOLDER_RELATIVE_PATH).getAbsolutePath();
+    public static File getAndroidSDKDirectory() throws IOException, AndroidSetupException {
+        AndroidSDKManager androidSDKManager = new AndroidSDKManager();
+        if (!androidSDKManager.checkSDKExists()) {
+            throw new AndroidSDKNotFoundException();
+        }
+        return androidSDKManager.getSDKFolder();
     }
 
     public static String getADBPath() throws IOException, AndroidSetupException {
         if (!StringUtils.isEmpty(adbPath)) {
             return adbPath;
         }
-        adbPath = getAndroidSDKDirectoryAsString() + File.separator + PLATFORM_TOOLS + File.separator + ADB;
+        adbPath = new File(getAndroidSDKDirectory(), PLATFORM_TOOLS + File.separator + ADB).getAbsolutePath();
         return adbPath;
     }
 
     public static void makeAllAndroidSDKBinaryExecutable()
             throws IOException, InterruptedException, AndroidSetupException {
-        if (!Platform.OS_MACOSX.equals(Platform.getOS())) {
+        if (Platform.OS_WIN32.equals(Platform.getOS())) {
             return;
         }
 
@@ -141,24 +174,18 @@ public class AndroidDeviceInfo extends MobileDeviceInfo {
         if (!(parentFolder.exists() && parentFolder.isDirectory())) {
             return;
         }
-        for (File file : parentFolder.listFiles()) {
-            if (file.isDirectory()) {
-                makeAllFileExecutable(file);
-                continue;
-            }
-            if (!file.isFile()) {
-                continue;
-            }
-            makeFileExecutable(file);
-        }
+        ConsoleCommandExecutor.runConsoleCommandAndCollectFirstResult(
+                new String[] { "chmod", "-R", "+x", parentFolder.getAbsolutePath() });
     }
 
     @Override
     public String getDisplayName() {
         if (isEmulator) {
-            return EMULATOR_PREFIX + getDeviceModel() + FOR_ANDROID_VERSION + getDeviceOSVersion() + EMULATOR_SUFFIX;
+            return getDeviceId() + " (" + getDeviceModel() + FOR_ANDROID_VERSION + getDeviceOSVersion()
+                    + EMULATOR_SUFFIX;
         }
-        return getDeviceManufacturer() + " " + getDeviceModel() + " " + getDeviceOSVersion();
+        return getDeviceManufacturer() + " " + getDeviceModel() + " (" + getDeviceOS() + " " + getDeviceOSVersion()
+                + ")";
     }
 
     @Override
@@ -186,8 +213,9 @@ public class AndroidDeviceInfo extends MobileDeviceInfo {
         return deviceOSVersion;
     }
 
-    public static Map<String, String> getAndroidAdditionalEnvironmentVariables() throws IOException {
-        String androidSDKFolder = getAndroidSDKDirectoryAsString();
+    public static Map<String, String> getAndroidAdditionalEnvironmentVariables()
+            throws IOException, AndroidSetupException {
+        String androidSDKFolder = getAndroidSDKDirectory().getAbsolutePath();
         if (StringUtils.isEmpty(androidSDKFolder)) {
             return new HashMap<String, String>();
         }

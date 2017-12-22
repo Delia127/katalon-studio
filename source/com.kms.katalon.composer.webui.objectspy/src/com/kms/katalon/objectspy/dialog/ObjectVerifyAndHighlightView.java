@@ -27,7 +27,6 @@ import org.openqa.selenium.WebDriverException;
 import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.composer.components.impl.control.GifCLabel;
-import com.kms.katalon.composer.components.impl.listener.EventListener;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
@@ -46,6 +45,7 @@ import com.kms.katalon.objectspy.util.WebElementUtils;
 import com.kms.katalon.objectspy.websocket.AddonCommand;
 import com.kms.katalon.objectspy.websocket.AddonSocket;
 import com.kms.katalon.objectspy.websocket.messages.AddonMessage;
+import com.kms.katalon.util.listener.EventListener;
 
 public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEvent> {
 

@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.execution.util.MobileDeviceUIProvider;
 import com.kms.katalon.composer.mobile.constants.StringConstants;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.execution.mobile.configuration.providers.MobileDeviceProvider;
@@ -33,7 +34,11 @@ public class DeviceSelectionComposite extends Composite {
 
     public DeviceSelectionComposite(Composite parent, int style, MobileDriverType platform) {
         super(parent, style);
-        setLayoutData(new GridData(GridData.FILL_BOTH));
+        
+        GridData gdDeviceSelectionComposite = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+        gdDeviceSelectionComposite.widthHint = 400;
+        gdDeviceSelectionComposite.heightHint = SWT.DEFAULT;
+        setLayoutData(gdDeviceSelectionComposite);
         GridLayout glContainer = new GridLayout(2, false);
         glContainer.verticalSpacing = 10;
         setLayout(glContainer);
@@ -93,7 +98,9 @@ public class DeviceSelectionComposite extends Composite {
         switch (platForm) {
             case ANDROID_DRIVER:
                 try {
-                    devicesList.addAll(MobileDeviceProvider.getAndroidDevices());
+                    if (MobileDeviceUIProvider.checkAndroidSDKExist(getShell())) {
+                        devicesList.addAll(MobileDeviceProvider.getAndroidDevices());
+                    }
                 } catch (IOException | InterruptedException | MobileSetupException e) {
                     logException(e);
                 }

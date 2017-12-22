@@ -96,7 +96,7 @@ public class ExecuteFromTestStepContributionItem extends ContributionItem implem
         ITextSelection textSelection = (ITextSelection) viewer.getSelection();
         final String scriptContent = viewer.getDocument().get();
         try {
-            ScriptNodeWrapper scriptNode = GroovyWrapperParser.parseGroovyScriptIntoNodeWrapper(scriptContent, null);
+            ScriptNodeWrapper scriptNode = GroovyWrapperParser.parseGroovyScriptIntoNodeWrapper(scriptContent);
             StatementWrapper selectedStatement = findSelectedStatement(textSelection.getStartLine() + 1,
                     textSelection.getEndLine() + 1, scriptNode);
             if (selectedStatement == null) {

@@ -16,11 +16,8 @@ import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
 
 public class KatalonFormatAction extends FormatGroovyAction {
 
-    private String testCaseId;
-
-    public KatalonFormatAction(IWorkbenchSite site, FormatKind kind, String testCaseId) {
+    public KatalonFormatAction(IWorkbenchSite site, FormatKind kind) {
         super(site, kind);
-        this.testCaseId = testCaseId;
     }
 
     @Override
@@ -49,7 +46,7 @@ public class KatalonFormatAction extends FormatGroovyAction {
         try {
             GroovyWrapperParser parser = new GroovyWrapperParser(new StringBuilder());
             parser.parseGroovyAstIntoScript(GroovyWrapperParser.parseGroovyScriptIntoNodeWrapper(
-                    text, testCaseId));
+                    text));
 
             String newValue = StringUtils.trimToEmpty(parser.getValue());
             doc.replace(selectedOffset, selectedLength, newValue);
