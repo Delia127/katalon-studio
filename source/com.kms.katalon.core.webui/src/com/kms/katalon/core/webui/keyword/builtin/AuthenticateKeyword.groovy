@@ -1,54 +1,24 @@
 package com.kms.katalon.core.webui.keyword.builtin
 
-import groovy.transform.CompileStatic
-
 import java.text.MessageFormat
-import java.util.concurrent.TimeUnit
 
-import org.apache.commons.io.FileUtils
-import org.openqa.selenium.Alert
-import org.openqa.selenium.By
-import org.openqa.selenium.Dimension
-import org.openqa.selenium.JavascriptExecutor
-import org.openqa.selenium.NoSuchElementException
-import org.openqa.selenium.NoSuchWindowException
-import org.openqa.selenium.TimeoutException
+import org.apache.commons.lang.StringUtils
 import org.openqa.selenium.WebDriver
-import org.openqa.selenium.WebDriverException
-import org.openqa.selenium.WebElement
-import org.openqa.selenium.interactions.Actions
-import org.openqa.selenium.support.ui.ExpectedCondition
-import org.openqa.selenium.support.ui.ExpectedConditions
-import org.openqa.selenium.support.ui.FluentWait
-import org.openqa.selenium.support.ui.Select
-import org.openqa.selenium.support.ui.Wait
-import org.openqa.selenium.support.ui.WebDriverWait
 
-import com.google.common.base.Function
-import com.kms.katalon.core.annotation.Keyword
 import com.kms.katalon.core.annotation.internal.Action
 import com.kms.katalon.core.configuration.RunConfiguration
-import com.kms.katalon.core.exception.StepFailedException
-import com.kms.katalon.core.keyword.BuiltinKeywords
-import com.kms.katalon.core.keyword.internal.KeywordExecutor
 import com.kms.katalon.core.keyword.internal.SupportLevel
 import com.kms.katalon.core.logging.KeywordLogger
 import com.kms.katalon.core.model.FailureHandling
-import com.kms.katalon.core.testobject.ConditionType
-import com.kms.katalon.core.testobject.TestObject
-import com.kms.katalon.core.testobject.TestObjectProperty
-import com.kms.katalon.core.util.internal.ExceptionsUtil
 import com.kms.katalon.core.util.internal.PathUtil
-import com.kms.katalon.core.webui.common.ScreenUtil
-import com.kms.katalon.core.webui.common.WebUiCommonHelper
 import com.kms.katalon.core.webui.constants.StringConstants
 import com.kms.katalon.core.webui.driver.DriverFactory
 import com.kms.katalon.core.webui.driver.WebUIDriverType
-import com.kms.katalon.core.webui.exception.BrowserNotOpenedException
-import com.kms.katalon.core.webui.exception.WebElementNotFoundException
 import com.kms.katalon.core.webui.keyword.internal.WebUIAbstractKeyword
 import com.kms.katalon.core.webui.keyword.internal.WebUIKeywordMain
-import com.kms.katalon.core.webui.util.FileUtil
+import com.kms.katalon.core.webui.util.WinRegistry
+
+import groovy.transform.CompileStatic
 
 @Action(value = "authenticate")
 public class AuthenticateKeyword extends WebUIAbstractKeyword {
@@ -76,7 +46,7 @@ public class AuthenticateKeyword extends WebUIAbstractKeyword {
 
         WebUIKeywordMain.runKeyword({
 
-            Thread navigateThread = null
+            Thread navigatedThread = null
 
             try{
 
@@ -89,9 +59,8 @@ public class AuthenticateKeyword extends WebUIAbstractKeyword {
                 DriverFactory.getExecutedBrowser() != WebUIDriverType.CHROME_DRIVER){
                     throw new Exception("Unsupported browser (only support IE, FF, Chrome)")
                 }
-
-                timeout = WebUiCommonHelper.checkTimeout(timeout)
-
+                
+                //Pre-check username and password
                 KeywordLogger.getInstance().logInfo(StringConstants.KW_LOG_INFO_CHECKING_USERNAME)
                 if (userName == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_USERNAME_IS_NULL)
@@ -100,81 +69,56 @@ public class AuthenticateKeyword extends WebUIAbstractKeyword {
                 if (password == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_PASSWORD_IS_NULL)
                 }
-
+                
+                //For only Internet Explorer: to permit type username and password on URL.
+                if (DriverFactory.getExecutedBrowser() == WebUIDriverType.IE_DRIVER) {
+                    WinRegistry.enableUsernamePasswordOnURL();
+                }
+                
+                //Try to navigate to site destination
                 WebDriver driver = DriverFactory.getWebDriver()
-
-                if(url != null && !url.equals("")){
-                    navigateThread = new Thread() {
-                                public void run() {
-                                    driver.get(url)
-                                }
-                            }
-                    navigateThread.start()
-                    //Wait for secured page is fully loaded
+                String usernamePasswordURL = getAuthenticatedUrl(PathUtil.getUrl(url, "https"), userName, password)
+                String currentUrl = "";
+                
+                if (!StringUtils.isEmpty(url)) {
+                    navigatedThread = new Thread() {
+                        public void run() {
+                             driver.navigate().to(usernamePasswordURL)
+                             currentUrl = driver.getCurrentUrl()
+                        }
+                    }    
+                    navigatedThread.start()
                     Thread.sleep(timeout * 1000)
                 }
-
-                // send username and pasword to authentication popup
-                //screenUtil.authenticate(userName, password)
-                File kmsIeFolder = FileUtil.getKmsIeDriverDirectory()
-                File authFolder = FileUtil.getAuthenticationDirectory()
-                File userNameParamFile = new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "set user name" + File.separator + "paramter0")
-                File passwordParamFile = new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "set password" + File.separator + "paramter0")
-
-                //Set user name
-                FileUtils.writeStringToFile(userNameParamFile, userName, false)
-                String[] cmd = [kmsIeFolder.getAbsolutePath() + "/kmsie.exe", userNameParamFile.getParent()]
-                Process proc = Runtime.getRuntime().exec(cmd)
-                //The default timeout for this task is 10s (implemented inside KMS IE Driver)
-                proc.waitFor()
-                //Check result
-                String resStatus = FileUtils.readFileToString(
-                        new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "set user name" + File.separator + "result_status"),
-                        "UTF-8")
-                if(!"PASSED".equals(resStatus.trim())){
-                    //Should consider to read result_message
-                    String errMsg = FileUtils.readFileToString(
-                            new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "set user name" + File.separator + "result_message"),
-                            "UTF-8")
-                    throw new Exception("Failed to set user name on Authentication dialog: " + errMsg)
+                
+                if (usernamePasswordURL.equals(currentUrl)) {
+                    logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_NAVIAGTED_TO_AUTHENTICATED_PAGE, [userName, password] as Object[]))
+                } else {
+                    WebUIKeywordMain.stepFailed(StringConstants.KW_MSG_CANNOT_NAV_TO_AUTHENTICATED_PAGE, flowControl, null, false)
                 }
-
-                //Set password
-                FileUtils.writeStringToFile(passwordParamFile, password, false)
-                cmd = [kmsIeFolder.getAbsolutePath() + "/kmsie.exe", passwordParamFile.getParent()]
-                proc = Runtime.getRuntime().exec(cmd)
-                proc.waitFor()
-                resStatus = FileUtils.readFileToString(
-                        new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "set password" + File.separator + "result_status"),
-                        "UTF-8")
-                if(!"PASSED".equals(resStatus.trim())){
-                    String errMsg = FileUtils.readFileToString(
-                            new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "set password" + File.separator + "result_message"),
-                            "UTF-8")
-                    throw new Exception("Failed to set password on Authentication dialog: " + errMsg)
-                }
-
-                //Click OK
-                cmd = [kmsIeFolder.getAbsolutePath() + "/kmsie.exe", new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "click ok").getAbsolutePath()]
-                proc = Runtime.getRuntime().exec(cmd)
-                proc.waitFor()
-                resStatus = FileUtils.readFileToString(
-                        new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "click ok" + File.separator + "result_status"),
-                        "UTF-8")
-                if(!"PASSED".equals(resStatus.trim())){
-                    String errMsg = FileUtils.readFileToString(
-                            new File(authFolder, DriverFactory.getExecutedBrowser().toString() + File.separator + "click ok" + File.separator + "result_message"),
-                            "UTF-8")
-                    throw new Exception("Failed to click OK button on Authentication dialog: " + errMsg)
-                }
-
-                logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_NAVIAGTED_TO_AUTHENTICATED_PAGE, [userName, password] as Object[]))
-            }
-            finally{
-                if (navigateThread != null && navigateThread.isAlive()) {
-                    navigateThread.interrupt()
-                }
-            }
-        }, flowControl, true, StringConstants.KW_MSG_CANNOT_NAV_TO_AUTHENTICATED_PAGE)
+        } finally {
+             if (navigatedThread != null && navigatedThread.isAlive()) {
+                 navigatedThread.interrupt()
+             }
+         }       
+                         
+        }, flowControl, false, StringConstants.KW_MSG_CANNOT_NAV_TO_AUTHENTICATED_PAGE)
     }
+        
+    @CompileStatic
+    private String getAuthenticatedUrl(URL url, String userName, String password) {
+         StringBuilder getAuthenticatedUrl = new StringBuilder()
+         
+         getAuthenticatedUrl.append(url.getProtocol())
+         getAuthenticatedUrl.append("://")
+         getAuthenticatedUrl.append(userName)
+         getAuthenticatedUrl.append(":")
+         getAuthenticatedUrl.append(password)
+         getAuthenticatedUrl.append("@")
+         getAuthenticatedUrl.append(url.getHost())
+         getAuthenticatedUrl.append(url.getPath())
+         
+         return getAuthenticatedUrl
+     }
+    
 }
