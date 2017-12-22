@@ -11,6 +11,7 @@ import javax.inject.Inject;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.di.annotations.CanExecute;
@@ -136,6 +137,9 @@ public class RecordHandler {
     }
     
     private Shell getShell(Shell activeShell) {
+        if (Platform.OS_WIN32.equals(Platform.getOS())) {
+            return null;
+        }
         Shell shell = new Shell();
         Rectangle activeShellSize = activeShell.getBounds();
         shell.setLocation((activeShellSize.width - shell.getBounds().width) / 2, (activeShellSize.height - shell.getBounds().height) / 2);

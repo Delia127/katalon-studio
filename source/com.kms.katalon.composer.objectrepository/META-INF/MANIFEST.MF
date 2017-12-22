@@ -39,7 +39,8 @@ Require-Bundle: com.kms.katalon.composer.explorer,
  com.kms.katalon.composer.testcase,
  com.kms.katalon.composer.resources,
  org.eclipse.ui.forms,
- com.kms.katalon.core.webui
+ com.kms.katalon.core.webui,
+ org.eclipse.core.runtime
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: javax.annotation;version="1.2.0"
