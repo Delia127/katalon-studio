@@ -75,6 +75,10 @@ public class RunConfiguration {
     public static final String EXCUTION_DEFAULT_FAILURE_HANDLING = StringConstants.CONF_PROPERTY_DEFAULT_FAILURE_HANDLING;
     
     public static final String PROXY_PROPERTY = StringConstants.CONF_PROPERTY_PROXY;
+    
+    public static final String TERMINATE_DRIVER_AFTER_TEST_CASE = "terminateDriverAfterTestCase";
+    
+    public static final String TERMINATE_DRIVER_AFTER_TEST_SUITE = "terminateDriverAfterTestSuite";
 
     private static String settingFilePath;
 
@@ -440,5 +444,21 @@ public class RunConfiguration {
         }
         Gson gson = new Gson();
         return gson.fromJson((String) generalProperties.get(PROXY_PROPERTY), ProxyInformation.class);
+    }
+    
+    public static boolean shouldTerminateDriverAfterTestCase() {
+        Map<String, Object> generalProperties = getExecutionGeneralProperties();
+        if (generalProperties == null) {
+            return false;
+        }
+        return (boolean) generalProperties.getOrDefault(TERMINATE_DRIVER_AFTER_TEST_CASE, false);
+    }
+    
+    public static boolean shouldTerminateDriverAfterTestSuite() {
+        Map<String, Object> generalProperties = getExecutionGeneralProperties();
+        if (generalProperties == null) {
+            return false;
+        }
+        return (boolean) generalProperties.getOrDefault(TERMINATE_DRIVER_AFTER_TEST_SUITE, false);
     }
 }

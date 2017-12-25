@@ -182,10 +182,10 @@ public class KeywordLogger {
             Stack<KeywordStackElement> keywordStack) {
         Map<String, String> modifiedAttr = new HashMap<>(attributes != null ? attributes : Collections.emptyMap());
         modifiedAttr.put(StringConstants.XML_LOG_IS_IGNORED_IF_FAILED, Boolean.toString(true));
-        startKeyword(name, StringConstants.LOG_START_LISTENER_ACTION, modifiedAttr, keywordStack);
+        startKeyword(name, StringConstants.LOG_LISTENER_ACTION, attributes, keywordStack);
     }
 
-    private void startKeyword(String name, String keywordType, Map<String, String> attributes,
+    public void startKeyword(String name, String actionType, Map<String, String> attributes,
             Stack<KeywordStackElement> keywordStack) {
         if (attributes == null) {
             attributes = new HashMap<String, String>();
@@ -195,7 +195,8 @@ public class KeywordLogger {
             pendingDescription = null;
         }
         getLogger()
-                .log(new XmlLogRecord(LogLevel.START.getLevel(), keywordType + " : " + name, nestedLevel, attributes));
+                .log(new XmlLogRecord(LogLevel.START.getLevel(), 
+                        "Start " + actionType + " : " + name, nestedLevel, attributes));
         if (currentKeywordStack != null) {
             keywordStacksContainer.push(currentKeywordStack);
         }
@@ -253,12 +254,13 @@ public class KeywordLogger {
 
     public void endListnerKeyword(String name, Map<String, String> attributes,
             Stack<KeywordStackElement> keywordStack) {
-        endKeyword(name, StringConstants.LOG_END_LISTENER_ACTION, attributes, keywordStack);
+        endKeyword(name, StringConstants.LOG_LISTENER_ACTION, attributes, keywordStack);
     }
 
-    private void endKeyword(String name, String keywordType, Map<String, String> attributes,
+    public void endKeyword(String name, String keywordType, Map<String, String> attributes,
             Stack<KeywordStackElement> keywordStack) {
-        getLogger().log(new XmlLogRecord(LogLevel.END.getLevel(), keywordType + " : " + name, nestedLevel, attributes));
+        getLogger().log(new XmlLogRecord(LogLevel.END.getLevel(), 
+                "End " + keywordType + " : " + name, nestedLevel, attributes));
         if (currentKeywordStack == keywordStack && !keywordStacksContainer.isEmpty()) {
             currentKeywordStack = keywordStacksContainer.pop();
         } else {

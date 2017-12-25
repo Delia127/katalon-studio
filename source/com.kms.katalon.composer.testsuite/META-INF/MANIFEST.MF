@@ -30,7 +30,13 @@ Require-Bundle: com.kms.katalon.composer.explorer,
  com.kms.katalon.preferences,
  com.kms.katalon.composer.testcase,
  com.kms.katalon.dal,
- com.kms.katalon.composer.resources
+ com.kms.katalon.composer.resources,
+ com.kms.katalon.composer.util,
+ org.eclipse.core.resources,
+ org.codehaus.groovy.eclipse.ui,
+ org.eclipse.ui.editors,
+ org.apache.commons.lang3,
+ org.apache.commons.io
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: com.kms.katalon.composer.testsuite.constants,

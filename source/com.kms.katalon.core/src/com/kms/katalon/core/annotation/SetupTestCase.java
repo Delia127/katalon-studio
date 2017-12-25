@@ -6,12 +6,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /***
- * Annotation for methods that will run after a test case is failed
+ * Annotation for test suite methods that will run before every test case is run
  *
- ***/
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface TearDownIfFailed {
-	String description() default "";
-	boolean skipped() default false;
+public @interface SetupTestCase {
+    boolean skipped() default false;
 }

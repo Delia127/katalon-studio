@@ -12,14 +12,14 @@ import groovy.util.ScriptException;
 public class RawTestScriptExecutor extends TestCaseExecutor {
     private String rawScript;
 
-    public RawTestScriptExecutor(String rawScript, String testCaseId, TestCaseBinding testCaseBinding,
+    public RawTestScriptExecutor(String rawScript, TestCaseBinding testCaseBinding,
             ScriptEngine engine, TestContextEvaluator contextEvaluator) {
-        this(rawScript, testCaseId, testCaseBinding, engine, contextEvaluator, false);
+        this(rawScript, testCaseBinding, engine, contextEvaluator, false);
     }
 
-    public RawTestScriptExecutor(String rawScript, String testCaseId, TestCaseBinding testCaseBinding,
+    public RawTestScriptExecutor(String rawScript, TestCaseBinding testCaseBinding,
             ScriptEngine engine, TestContextEvaluator contextEvaluator, boolean doCleanUp) {
-        super(testCaseId, testCaseBinding, engine, contextEvaluator, doCleanUp);
+        super(testCaseBinding, engine, contextEvaluator, doCleanUp);
         this.rawScript = rawScript;
     }
 

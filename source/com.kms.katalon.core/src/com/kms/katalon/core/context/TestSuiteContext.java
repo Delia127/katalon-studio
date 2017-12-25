@@ -16,7 +16,17 @@ import com.kms.katalon.core.annotation.BeforeTestSuite;
  */
 public interface TestSuiteContext {
     /**
+     * @since 5.1
      * @return Id of the current executed test suite
      */
     String getTestSuiteId();
+    
+    /**
+     * @since 5.3
+     * @return <ul>
+     * <li>COMPLETE: All test cases completed normally.</li>
+     * <li>ERROR: Some errors occurred. Eg: SetUp or TearDown methods failed.</li>
+     * </ul>
+     */
+    String getStatus();
 }

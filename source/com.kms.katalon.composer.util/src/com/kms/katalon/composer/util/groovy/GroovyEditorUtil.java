@@ -12,6 +12,7 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
@@ -35,6 +36,9 @@ import org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor;
 import org.eclipse.ui.internal.registry.EditorDescriptor;
 import org.eclipse.ui.part.FileEditorInput;
 
+import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.groovy.util.GroovyUtil;
+
 @SuppressWarnings("restriction")
 public class GroovyEditorUtil {
 
@@ -48,6 +52,13 @@ public class GroovyEditorUtil {
 
         parentPartStack.getChildren().add(index, editor);
         return editor;
+    }
+
+    public static MPart createEditorPart(ProjectEntity projectEntity, String filePath, EPartService partService)
+            throws CoreException {
+        IFile scriptFile = GroovyUtil.getGroovyProject(projectEntity).getFile(Path.fromOSString(filePath));
+        scriptFile.refreshLocal(IResource.DEPTH_ZERO, new NullProgressMonitor());
+        return createEditorPart(scriptFile, partService);
     }
 
     public static MPart createEditorPart(IFile scriptFile, EPartService partService) {
