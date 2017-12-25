@@ -35,6 +35,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testlistener.dialog.NewTestListenerDialog;
 import com.kms.katalon.composer.testlistener.dialog.NewTestListenerDialog.NewTestListenerResult;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestListenerController;
 import com.kms.katalon.core.constants.StringConstants;
@@ -158,7 +159,8 @@ public class NewTestListenerHandler extends TestListenerTreeRootCatcher {
         private String getFileContent(String filePath) {
             URL url = FileLocator.find(FrameworkUtil.getBundle(NewTestListenerHandler.class), new Path(filePath), null);
             try {
-                return StringUtils.join(IOUtils.readLines(new BufferedInputStream(url.openStream())), "\n");
+                return StringUtils.join(IOUtils.readLines(new BufferedInputStream(url.openStream()),
+                                GlobalStringConstants.DF_CHARSET), "\n");
             } catch (IOException e) {
                 LoggerSingleton.logError(e);
                 return StringUtils.EMPTY;

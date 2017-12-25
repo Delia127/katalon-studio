@@ -56,6 +56,8 @@ public class GlobalStringConstants {
     
     // Path
     public static final String ENTITY_ID_SEPARATOR = "/";
+    
+    public static final String DF_CHARSET = "UTF-8";
 
     // Common character
     public static final String CR_DOT = ".";

@@ -30,6 +30,7 @@ import com.kms.katalon.composer.components.impl.control.GifCLabel;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.core.webui.common.WebUiCommonHelper;
@@ -82,7 +83,8 @@ public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEven
         try {
             URL url = FileLocator.find(FrameworkUtil.getBundle(ObjectVerifyAndHighlightView.class),
                     new Path(HIGHLIGHT_JS_PATH), null);
-            return StringUtils.join(IOUtils.readLines(new BufferedInputStream(url.openStream())), "\n");
+            return StringUtils.join(IOUtils.readLines(new BufferedInputStream(url.openStream()),
+                            GlobalStringConstants.DF_CHARSET), "\n");
         } catch (IOException e) {
             LoggerSingleton.logError(e);
         }
