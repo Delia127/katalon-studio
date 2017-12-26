@@ -54,8 +54,8 @@ public class IosDeviceInfo extends MobileDeviceInfo {
     }
 
     protected void initDeviceInfos(String deviceId) throws IOException, InterruptedException {
-        String[] deviceInfoCommand = new String[] {
-                getIMobileDeviceDirectoryAsString() + File.separator + "ideviceinfo", "-u", deviceId };
+        String[] deviceInfoCommand = new String[] { "/bin/sh", "-c",
+                "\"" + getIMobileDeviceDirectoryAsString() + File.separator + "ideviceinfo\" -u " + deviceId };
         List<String> deviceInfos = ConsoleCommandExecutor.runConsoleCommandAndCollectResults(deviceInfoCommand,
                 getIosAdditionalEnvironmentVariables());
         for (String deviceInfo : deviceInfos) {
@@ -172,7 +172,7 @@ public class IosDeviceInfo extends MobileDeviceInfo {
         if (StringUtils.isEmpty(iMobileDeviceDirectory)) {
             return new HashMap<String, String>();
         }
-        additionalEnvironmentVariables.put(DYLD_LIBRARY_PATH, System.getenv(PATH) + ":" + iMobileDeviceDirectory);
+        additionalEnvironmentVariables.put(DYLD_LIBRARY_PATH, System.getenv(DYLD_LIBRARY_PATH) + ":" + iMobileDeviceDirectory);
         additionalEnvironmentVariables.put(PATH, System.getenv(PATH) + ":" + iMobileDeviceDirectory + ":"
                 + getIosDeployDirectory().getAbsolutePath() + ":" + getCarthageDirectory().getAbsolutePath());
         return additionalEnvironmentVariables;
