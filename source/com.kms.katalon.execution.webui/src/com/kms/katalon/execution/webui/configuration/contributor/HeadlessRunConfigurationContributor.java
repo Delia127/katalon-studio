@@ -11,7 +11,7 @@ public class HeadlessRunConfigurationContributor extends WebUIRunConfigurationCo
 
     @Override
     public String getId() {
-        return WebUIDriverType.HEADLESS_DRIVER.toString();
+        return WebUIDriverType.CHROME_HEADLESS_DRIVER.toString();
     }
 
     @Override

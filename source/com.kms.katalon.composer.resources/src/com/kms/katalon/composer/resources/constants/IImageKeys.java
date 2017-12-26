@@ -82,10 +82,14 @@ public interface IImageKeys {
     public static final String APPLE_16 = "execution/apple_16.png"; //$NON-NLS-1$
 
     public static final String CHROME_16 = "execution/chrome_16.png"; //$NON-NLS-1$
+    
+    public static final String CHROME_HEADLESS_16 = "execution/chrome_headless_16.png";
 
     public static final String EDGE_16 = "execution/edge_16.png"; //$NON-NLS-1$
 
     public static final String FIREFOX_16 = "execution/firefox_16.png"; //$NON-NLS-1$
+    
+    public static final String FIREFOX_HEADLESS_16 = "execution/firefox_headless_16.png";
 
     public static final String IE_16 = "execution/ie_16.png"; //$NON-NLS-1$
 

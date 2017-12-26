@@ -249,7 +249,7 @@ public class DriverFactory {
             case REMOTE_CHROME_DRIVER:
                 webDriver = createNewRemoteChromeDriver(desireCapibilities);
                 break;
-            case HEADLESS_DRIVER:
+            case CHROME_HEADLESS_DRIVER:
                 webDriver = createHeadlessChromeDriver(desireCapibilities);
                 break;
             case FIREFOX_HEADLESS_DRIVER:

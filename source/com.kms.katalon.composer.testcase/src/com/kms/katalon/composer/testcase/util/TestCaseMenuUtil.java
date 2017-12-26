@@ -230,8 +230,8 @@ public class TestCaseMenuUtil {
         if (WebUIDriverType.FIREFOX_DRIVER.toString().equals(driverTypeName)) {
             return ImageManager.getImage(IImageKeys.FIREFOX_16);
         }
-        if (WebUIDriverType.HEADLESS_DRIVER.toString().equals(driverTypeName)) {
-            return ImageManager.getImage(IImageKeys.TERMINAL_16);
+        if (WebUIDriverType.CHROME_HEADLESS_DRIVER.toString().equals(driverTypeName)) {
+            return ImageManager.getImage(IImageKeys.CHROME_HEADLESS_16);
         }
         if (WebUIDriverType.IE_DRIVER.toString().equals(driverTypeName)) {
             return ImageManager.getImage(IImageKeys.IE_16);
@@ -242,8 +242,8 @@ public class TestCaseMenuUtil {
         if (WebUIDriverType.SAFARI_DRIVER.toString().equals(driverTypeName)) {
             return ImageManager.getImage(IImageKeys.SAFARI_16);
         }
-        if (WebUIDriverType.HEADLESS_DRIVER.toString().equals(driverTypeName)) {
-            return ImageManager.getImage(IImageKeys.TERMINAL_16);
+        if (WebUIDriverType.FIREFOX_HEADLESS_DRIVER.toString().equals(driverTypeName)) {
+            return ImageManager.getImage(IImageKeys.FIREFOX_HEADLESS_16);
         }
         return null;
     }
