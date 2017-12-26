@@ -17,9 +17,7 @@ public class ImageConstants {
 
     public static final String IMG_URL_16_REMOTE_WEB = ImageManager.getImageURLString(IImageKeys.REMOTE_16);
 
-    public static final String IMG_URL_16_CHROME_HEADLESS = ImageManager.getImageURLString(IImageKeys.CHROME_HEADLESS_16);
-    
-    public static final String IMG_URL_16_FIREFOX_HEADLESS = ImageManager.getImageURLString(IImageKeys.FIREFOX_HEADLESS_16);
+    public static final String IMG_URL_16_HEADLESS = ImageManager.getImageURLString(IImageKeys.TERMINAL_16);
 
     public static final String IMG_URL_16_WEB_DESKTOP = ImageManager.getImageURLString(IImageKeys.DESKTOP_16);
 }

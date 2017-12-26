@@ -19,7 +19,7 @@ public class HeadlessDriverConnector extends WebUiDriverConnector {
 
     @Override
     public DriverType getDriverType() {
-        return WebUIDriverType.CHROME_HEADLESS_DRIVER;
+        return WebUIDriverType.HEADLESS_DRIVER;
     }
 
     @Override
