@@ -2,7 +2,6 @@ package com.kms.katalon.selenium.ide.format;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.kms.katalon.core.webui.driver.KatalonWebDriverBackedSelenium;
 import com.kms.katalon.selenium.ide.model.Command;
 import com.kms.katalon.selenium.ide.util.ClazzUtils;
 
@@ -39,7 +38,7 @@ public interface Formatter {
 	
 	public default String getWaitIfHas(String commandTail) {
 		if (commandTail.lastIndexOf("AndWait") != -1) {
-			return String.format("\nselenium.waitForPageToLoad('%s')", KatalonWebDriverBackedSelenium.WAIT_FOR_PAGE_TO_LOAD_IN_SECONDS);
+			return "\nselenium.waitForPageToLoad(WAIT_FOR_PAGE_TO_LOAD_IN_SECONDS)";
 		}
 		return null;
 	}
