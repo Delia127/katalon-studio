@@ -3,6 +3,7 @@ package com.kms.katalon.core.webui.keyword.builtin
 import java.text.MessageFormat
 
 import org.apache.commons.lang.StringUtils
+import org.openqa.selenium.UnhandledAlertException
 import org.openqa.selenium.WebDriver
 
 import com.kms.katalon.core.annotation.internal.Action
@@ -19,7 +20,6 @@ import com.kms.katalon.core.webui.keyword.internal.WebUIAbstractKeyword
 import com.kms.katalon.core.webui.keyword.internal.WebUIKeywordMain
 import com.kms.katalon.core.webui.util.WinRegistry
 
-import groovy.json.internal.Exceptions
 import groovy.transform.CompileStatic
 
 @Action(value = "authenticate")
@@ -47,10 +47,6 @@ public class AuthenticateKeyword extends WebUIAbstractKeyword {
             FailureHandling flowControl) {
 
         WebUIKeywordMain.runKeyword({
-
-            Thread navigatedThread = null
-
-            try{
                 String osName = System.getProperty("os.name")
                 DriverType executedBrowser = DriverFactory.getExecutedBrowser()
                 
@@ -73,58 +69,81 @@ public class AuthenticateKeyword extends WebUIAbstractKeyword {
                 if (password == null) {
                     throw new IllegalArgumentException(StringConstants.KW_EXC_PASSWORD_IS_NULL)
                 }
-                
-                //For only Internet Explorer: to permit entering username and password on URL.
-                if (DriverFactory.getExecutedBrowser() == WebUIDriverType.IE_DRIVER) {
-                    WinRegistry.enableUsernamePasswordOnURL();
-                }
-                
-                //Try to navigate to site destination
-                WebDriver driver = DriverFactory.getWebDriver()
+               
                 String usernamePasswordURL = getAuthenticatedUrl(PathUtil.getUrl(url, "https"), userName, password)
-                String currentUrl = ""
-                boolean gotCurrentURL = false
-                
-                if (!StringUtils.isEmpty(url)) {
-                    navigatedThread = new Thread() {
-                        public void run() {
-                                try {
-                                     driver.navigate().to(usernamePasswordURL)
-                                     currentUrl = driver.getCurrentUrl()
-                                     gotCurrentURL = true
-                                } catch (Exception e) {
-                                    gotCurrentURL = true
-                                }
-                        }
-                    } 
-                    navigatedThread.start()
-                    
-                    long startPolling = System.currentTimeMillis();
-                    while((System.currentTimeMillis() - startPolling) < timeout*1000) {
-                        if (gotCurrentURL) {
-                              if (!usernamePasswordURL.equals(driver.getCurrentUrl())) {
-                                  break
-                              } else {
-                                  logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_NAVIAGTED_TO_AUTHENTICATED_PAGE, [userName, password] as Object[]))
-                                  return
-                              }
-                            }
-                       
-                        Thread.sleep(200L)
-                    }
+                boolean authenticateSuccess = false
+
+                //Google Chrome and Firefox
+                if (DriverFactory.getExecutedBrowser() == WebUIDriverType.CHROME_DRIVER 
+                  || DriverFactory.getExecutedBrowser() == WebUIDriverType.FIREFOX_DRIVER) {
+                     authenticateSuccess = isNavigateOnChromeFirefoxSuccess(usernamePasswordURL)
                 }
                 
-                WebUIKeywordMain.stepFailed(StringConstants.KW_MSG_CANNOT_NAV_TO_AUTHENTICATED_PAGE, flowControl, "timeout", false)
-       
-     } finally {
-             if (navigatedThread != null && navigatedThread.isAlive()) {
-                 navigatedThread.interrupt()
-             }
-         }       
-                         
+                //Internet Explorer
+                if (DriverFactory.getExecutedBrowser() == WebUIDriverType.IE_DRIVER) {
+                    WinRegistry.enableUsernamePasswordOnURL()
+                    authenticateSuccess = isNavigateOnIESuccess(usernamePasswordURL, url, timeout)
+                }
+                
+                if (authenticateSuccess) {
+                    logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_NAVIAGTED_TO_AUTHENTICATED_PAGE, [userName, password] as Object[]))
+                } else {
+                    WebUIKeywordMain.stepFailed(StringConstants.KW_MSG_CANNOT_NAV_TO_AUTHENTICATED_PAGE, flowControl, "", false)
+                }
+                
         }, flowControl, false, StringConstants.KW_MSG_CANNOT_NAV_TO_AUTHENTICATED_PAGE)
     }
         
+    @CompileStatic
+    private boolean isNavigateOnChromeFirefoxSuccess(String usernamePasswordURL) {
+        try {
+            WebDriver driver = DriverFactory.getWebDriver()
+            
+            driver.navigate().to(usernamePasswordURL)
+            if (usernamePasswordURL.equals(driver.getCurrentUrl())) {
+                return true
+            }
+            return false
+            
+        } catch (UnhandledAlertException e) {
+            return false
+        }
+    }
+    
+     @CompileStatic
+     private boolean isNavigateOnIESuccess(String usernamePasswordURL, String url, int timeout) {
+         WebDriver driver = DriverFactory.getWebDriver()
+         Thread navigateThread = null
+          
+         try {
+             String currentURL ="";
+             //start new thread to try navigate
+             if (!StringUtils.isEmpty(url)) {
+                 navigateThread = new Thread() {
+                     public void run() {
+                         driver.navigate().to(usernamePasswordURL)
+                         currentURL = driver.getCurrentUrl()
+                     }
+                 }
+                 navigateThread.start()
+             }
+             
+             //check if it can navigate to the destination site 
+             long startPolling = System.currentTimeMillis();
+             while((System.currentTimeMillis() - startPolling) < timeout*1000L) {
+                 if (usernamePasswordURL.equals(currentURL)) {
+                    return true;
+                 }
+                 Thread.sleep(200L)
+             }
+              return false;
+        } finally {
+            if (navigateThread != null && navigateThread.isAlive()) {
+                navigateThread.interrupt()
+            }
+        }
+     }
+    
     @CompileStatic
     private String getAuthenticatedUrl(URL url, String userName, String password) {
          StringBuilder getAuthenticatedUrl = new StringBuilder()
@@ -140,5 +159,5 @@ public class AuthenticateKeyword extends WebUIAbstractKeyword {
          
          return getAuthenticatedUrl.toString()
      }
-    
+
 }
