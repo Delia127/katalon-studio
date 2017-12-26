@@ -4,7 +4,6 @@ import java.io.File;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.kms.katalon.selenium.ide.model.Command;
 import com.kms.katalon.selenium.ide.model.TestCase;
 import com.kms.katalon.selenium.ide.model.TestSuite;
 import com.kms.katalon.selenium.ide.util.FileUtils;

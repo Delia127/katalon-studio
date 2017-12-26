@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 
 public final class ClazzUtils {
 	
-	public static final String WebDriverBackedSelenium = "com.thoughtworks.selenium.webdriven.WebDriverBackedSelenium";
+	public static final String WebDriverBackedSelenium = "com.kms.katalon.core.webui.driver.KatalonWebDriverBackedSelenium";
 	
 	public static boolean isArrayReturned(String methodName) {
 		String getMethod = "get" + methodName;

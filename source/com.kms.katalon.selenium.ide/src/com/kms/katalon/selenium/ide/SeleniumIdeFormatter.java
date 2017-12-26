@@ -11,12 +11,10 @@ import java.util.regex.Matcher;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.kms.katalon.selenium.ide.format.ChooseCancelOnNextPromptFormatter;
 import com.kms.katalon.selenium.ide.format.DefaultFormatter;
 import com.kms.katalon.selenium.ide.format.EchoFormatter;
 import com.kms.katalon.selenium.ide.format.Formatter;
 import com.kms.katalon.selenium.ide.format.PauseFormatter;
-import com.kms.katalon.selenium.ide.format.SendKeysFormatter;
 import com.kms.katalon.selenium.ide.format.StoreFormatter;
 import com.kms.katalon.selenium.ide.format.VerifyAndAssertFormatter;
 import com.kms.katalon.selenium.ide.format.WaitForFormatter;
@@ -37,8 +35,9 @@ public final class SeleniumIdeFormatter {
 		formatters.put("assert", new VerifyAndAssertFormatter("assert"));
 		formatters.put("verify", new VerifyAndAssertFormatter("verify"));
 		formatters.put("store", new StoreFormatter());
-		formatters.put("sendKeys", new SendKeysFormatter());
-		formatters.put("chooseCancelOnNextPrompt", new ChooseCancelOnNextPromptFormatter());
+		
+		formatters.put("sendKeys", new DefaultFormatter());
+		formatters.put("chooseCancelOnNextPrompt", new DefaultFormatter());
 		
 		formatters.put("waitForPageToLoad", new DefaultFormatter());
 		formatters.put("waitForCondition", new DefaultFormatter());
@@ -115,13 +114,11 @@ public final class SeleniumIdeFormatter {
 						"import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords as WebUI\n" +
 						"import internal.GlobalVariable as GlobalVariable\n");
 		
-		buffer.append(  "import com.kms.katalon.core.webui.driver.DriverFactory as DriverFactory\n\n" +
+		buffer.append(  "import com.kms.katalon.core.webui.driver.DriverFactory as DriverFactory\n" +
+						"import com.kms.katalon.core.webui.driver.KatalonWebDriverBackedSelenium\n\n" +
 						"import com.thoughtworks.selenium.Selenium\n" +
 						"import org.openqa.selenium.firefox.FirefoxDriver\n" +
-						"import org.openqa.selenium.WebDriver\n" +
-						"import com.thoughtworks.selenium.webdriven.WebDriverBackedSelenium\n" +
-						"import com.thoughtworks.selenium.webdriven.ElementFinder\n" +
-						"import com.thoughtworks.selenium.webdriven.JavascriptLibrary\n" +
+						"import org.openqa.selenium.WebDriver\n" +						
 						"import static org.junit.Assert.*\n" +
 						"import java.util.regex.Pattern\n" +
 						"import static org.apache.commons.lang3.StringUtils.join\n\n");
@@ -133,10 +130,7 @@ public final class SeleniumIdeFormatter {
 		buffer.append("'----------------------------------------------------'\n\n");
 		buffer.append("String baseUrl = \""+ testCase.getBaseUrl() +"\"\n\n");
 		buffer.append("WebUI.openBrowser(baseUrl)\n\n");
-		buffer.append("driver = DriverFactory.getWebDriver()\n");
-		buffer.append("selenium = new WebDriverBackedSelenium(driver, baseUrl)\n");
-		buffer.append("javascriptLibrary = new JavascriptLibrary()\n");
-		buffer.append("elementFinder = new ElementFinder(javascriptLibrary)\n");
+		buffer.append("selenium = new KatalonWebDriverBackedSelenium(baseUrl)\n");
 		return buffer.toString();
 	}
 
@@ -174,4 +168,5 @@ public final class SeleniumIdeFormatter {
 	public String getEmail() {
 		return email;
 	}
+	
 }
