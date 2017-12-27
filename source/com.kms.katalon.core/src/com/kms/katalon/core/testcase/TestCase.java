@@ -46,7 +46,7 @@ public class TestCase {
     }
     
     public String getMetaFilePath() {
-        return (TestCaseFactory.getProjectDirPath() + testCaseId + TestCaseFactory.TEST_CASE_META_FILE_EXTENSION).replace("/", "\\");
+        return (TestCaseFactory.getProjectDirPath() + "\\" + testCaseId + TestCaseFactory.TEST_CASE_META_FILE_EXTENSION).replace("/", "\\");
     }
 
 	public List<Variable> getVariables() {
