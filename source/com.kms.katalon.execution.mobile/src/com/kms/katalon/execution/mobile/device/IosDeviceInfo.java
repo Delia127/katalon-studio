@@ -168,7 +168,7 @@ public class IosDeviceInfo extends MobileDeviceInfo {
         makeAllFilesInFolderExecutable(getCarthageDirectory());
 
         Map<String, String> additionalEnvironmentVariables = new HashMap<String, String>();
-        String iMobileDeviceDirectory = getIMobileDeviceDirectoryAsString();
+        String iMobileDeviceDirectory = getIMobileDeviceDirectoryAsString().replace(" ", "\\ ");
         if (StringUtils.isEmpty(iMobileDeviceDirectory)) {
             return new HashMap<String, String>();
         }
