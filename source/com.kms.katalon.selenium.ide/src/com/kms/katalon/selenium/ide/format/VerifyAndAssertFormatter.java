@@ -24,6 +24,12 @@ public class VerifyAndAssertFormatter implements Formatter {
 				formatted = notChecked(command);
 			}
 			if (StringUtils.isBlank(formatted)) {
+				formatted = whether(command);
+			}
+			if (StringUtils.isBlank(formatted)) {
+				formatted = notWhether(command);
+			}
+			if (StringUtils.isBlank(formatted)) {
 				formatted = notPresent(command);
 			}
 			if (StringUtils.isBlank(formatted)) {
@@ -101,4 +107,23 @@ public class VerifyAndAssertFormatter implements Formatter {
 		return StringUtils.EMPTY;
 	}
 
+	public String whether(Command command) throws Exception {
+		Pattern pattern = Pattern.compile("(" + action + ")(Whether.*?)$");
+		Matcher matcher = pattern.matcher(command.getCommand());
+		if (matcher.find()) {
+			String method = getBoolWhetherMethod(matcher.group(2), command.getTarget(), command.getValue());
+			return action + "True(" + method + ")";
+		}
+		return StringUtils.EMPTY;
+	}
+	
+	public String notWhether(Command command) throws Exception {
+		Pattern pattern = Pattern.compile("(" + action + ")(Not)(Whether.*?)$");
+		Matcher matcher = pattern.matcher(command.getCommand());
+		if (matcher.find()) {
+			String method = getBoolWhetherMethod(matcher.group(3), command.getTarget(), command.getValue());
+			return action + "False(" + method + ")";
+		}
+		return StringUtils.EMPTY;
+	}
 }

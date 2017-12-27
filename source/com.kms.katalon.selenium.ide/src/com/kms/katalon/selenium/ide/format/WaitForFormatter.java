@@ -18,6 +18,12 @@ public class WaitForFormatter implements Formatter {
 				formatted = notChecked(command);
 			}
 			if (StringUtils.isBlank(formatted)) {
+				formatted = whether(command);
+			}
+			if (StringUtils.isBlank(formatted)) {
+				formatted = notWhether(command);
+			}
+			if (StringUtils.isBlank(formatted)) {
 				formatted = notPresent(command);
 			}
 			if (StringUtils.isBlank(formatted)) {
@@ -76,6 +82,26 @@ public class WaitForFormatter implements Formatter {
 		return StringUtils.EMPTY;
 	}
 	
+	public String whether(Command command) throws Exception {
+		Pattern pattern = Pattern.compile("(waitFor)(Whether.*?)$");
+		Matcher matcher = pattern.matcher(command.getCommand());
+		if (matcher.find()) {
+			String method = getBoolWhetherMethod(matcher.group(2), command.getTarget(), command.getValue());
+			return returnPattern(method);
+		}
+		return StringUtils.EMPTY;
+	}
+	
+	public String notWhether(Command command) throws Exception {
+		Pattern pattern = Pattern.compile("(waitForNot)(Whether.*?)$");
+		Matcher matcher = pattern.matcher(command.getCommand());
+		if (matcher.find()) {
+			String method = getBoolWhetherMethod(matcher.group(2), command.getTarget(), command.getValue());
+			return returnPattern("!" + method);
+		}
+		return StringUtils.EMPTY;
+	}
+	
 	public String notChecked(Command command) throws Exception {
 		Pattern pattern = Pattern.compile("(waitForNot)(Checked|Editable|Ordered|Visible|SomethingSelected)$");
 		Matcher matcher = pattern.matcher(command.getCommand());
@@ -87,11 +113,7 @@ public class WaitForFormatter implements Formatter {
 	}
 
 	private String returnPattern(String condition) {
-		return "for (int second = 0;; second++) {\n"
-				+ "   if (second >= 60) fail(\"timeout\");\n"
-				+ "   try { if (" + condition + ") break; } catch (Exception e) {}\n"
-				+ "   Thread.sleep(1000);\n"
-				+ "}";
+		return "selenium.waitFor(" + condition + ")";
 	}
 	
 }

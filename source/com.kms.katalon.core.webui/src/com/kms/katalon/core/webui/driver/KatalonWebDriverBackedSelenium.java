@@ -1,5 +1,6 @@
 package com.kms.katalon.core.webui.driver;
 
+import org.junit.Assert;
 import org.openqa.selenium.WebDriver;
 
 import com.thoughtworks.selenium.webdriven.ElementFinder;
@@ -32,4 +33,19 @@ public class KatalonWebDriverBackedSelenium extends WebDriverBackedSelenium {
 		elementFinder.findElement(this.getWrappedDriver(), locator).sendKeys(value);
 	}
 	
+	@SuppressWarnings("deprecation")
+	public void andWait() {
+		super.waitForPageToLoad(WAIT_FOR_PAGE_TO_LOAD_IN_SECONDS);
+	}
+	
+	public void waitFor(boolean satisfied) {
+		try {
+			for (int second = 0;; second++) {
+			   if (second >= 60) Assert.fail("timeout");
+			   try { if (satisfied) break; } catch (Exception e) {}
+			   Thread.sleep(1000);
+			}
+		} catch (Exception e) {
+		}
+	}
 }

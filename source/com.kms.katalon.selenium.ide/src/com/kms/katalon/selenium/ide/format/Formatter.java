@@ -38,7 +38,7 @@ public interface Formatter {
 	
 	public default String getWaitIfHas(String commandTail) {
 		if (commandTail.lastIndexOf("AndWait") != -1) {
-			return "\nselenium.waitForPageToLoad(WAIT_FOR_PAGE_TO_LOAD_IN_SECONDS)";
+			return "\nselenium.andWait()";
 		}
 		return null;
 	}
@@ -81,5 +81,20 @@ public interface Formatter {
 		String methodName = getCleanCommandTail(commandTail);
 		String param = getParamMethod("is" + methodName, target);
 		return "selenium.is" + methodName + param;
+	}
+	
+	public default String getBoolWhetherMethod(String commandTail, String target, String value) throws Exception {
+		String methodName = getCleanCommandTail(commandTail);
+		int paramCount = ClazzUtils.getParamCount("get" + methodName);
+		StringBuffer params = new StringBuffer();
+		params.append("(");
+		if (paramCount == 2) {
+			params.append("\"" + target + "\"");
+			params.append(", \"" + value + "\"");
+		} else if (paramCount == 1){
+			params.append("\"" + target + "\"");
+		}
+		params.append(")");
+		return "selenium.get" + methodName + params.toString();
 	}
 }
