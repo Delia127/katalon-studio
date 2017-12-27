@@ -29,7 +29,6 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
@@ -96,7 +95,6 @@ import com.kms.katalon.core.testobject.ConditionType;
 import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.core.util.internal.PathUtil;
-import com.kms.katalon.core.webui.common.WebUiCommonHelper;
 import com.kms.katalon.entity.dal.exception.DuplicatedFileNameException;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -114,8 +112,6 @@ public class ObjectPropertyView implements EventHandler {
     private static final String RADIO_LBL_XPATH = ObjectspyMessageConstants.DIA_RADIO_LABEL_XPATH;
 
     private static final String LBL_SELECTION_METHOD = ObjectspyMessageConstants.DIA_LBL_OBJECT_SELECTION_METHOD;
-
-    private static final String LBL_SELECTOR_EDITOR = ObjectspyMessageConstants.LBL_DLG_SELECTOR_EDITOR;
 
     private static final String HK_ADD = "M1+N";
 
@@ -162,8 +158,6 @@ public class ObjectPropertyView implements EventHandler {
     private boolean isParentObjectShadowRoot = false;
 
     private TestObjectPart testObjectPart;
-
-    private StyledText txtSelectorEditor;
 
     private Button radioBasic, radioXpath, radioCss;
 
@@ -420,25 +414,6 @@ public class ObjectPropertyView implements EventHandler {
 
         createTableMenu();
 
-        createSelectorEditor(parent);
-    }
-
-    private void createSelectorEditor(Composite parent) {
-        Composite c = new Composite(parent, SWT.NONE);
-        c.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        GridLayout layout = new GridLayout();
-        layout.marginHeight = 0;
-        layout.marginWidth = 0;
-        c.setLayout(layout);
-
-        Label lblSelectorEditor = new Label(c, SWT.NONE);
-        lblSelectorEditor.setText(LBL_SELECTOR_EDITOR);
-        lblSelectorEditor.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-
-        txtSelectorEditor = new StyledText(c, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
-        GridData gdSelectorEditor = new GridData(SWT.FILL, SWT.FILL, true, true);
-        gdSelectorEditor.minimumHeight = 80;
-        txtSelectorEditor.setLayoutData(gdSelectorEditor);
     }
 
     private void createSettingsComposite(Composite parent) {
@@ -603,7 +578,6 @@ public class ObjectPropertyView implements EventHandler {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 tableViewer.setSelectedAll();
-                onWebElementPropertyChanged();
                 setDirty(true);
             }
         });
@@ -694,40 +668,6 @@ public class ObjectPropertyView implements EventHandler {
             }
         });
 
-        txtSelectorEditor.addModifyListener(new ModifyListener() {
-
-            @Override
-            public void modifyText(ModifyEvent e) {
-                String selector = ((StyledText) e.getSource()).getText();
-                getCloneTestObject().setSelectorValue(getCloneTestObject().getSelectorMethod(), selector);
-                setDirty(true);
-            }
-        });
-    }
-
-    private void onWebElementPropertyChanged() {
-        if (txtSelectorEditor.isDisposed()) {
-            return;
-        }
-        if (cloneTestObject == null) {
-            txtSelectorEditor.setEnabled(false);
-            txtSelectorEditor.setText(StringUtils.EMPTY);
-            return;
-        }
-        WebElementSelectorMethod selectorMethod = cloneTestObject.getSelectorMethod();
-        switch (selectorMethod) {
-            case BASIC:
-                TestObject testObject = buildTestObject(cloneTestObject);
-                txtSelectorEditor.setText(WebUiCommonHelper.getSelectorValue(testObject));
-                txtSelectorEditor.setEditable(false);
-                txtSelectorEditor.setBackground(ColorUtil.getDisabledItemBackgroundColor());
-                return;
-            default:
-                txtSelectorEditor.setText(
-                        cloneTestObject.getSelectorCollection().getOrDefault(selectorMethod, StringConstants.EMPTY));
-                txtSelectorEditor.setEditable(true);
-                txtSelectorEditor.setBackground(null);
-        }
     }
 
     private void setDirty(final boolean isDirty) {
@@ -890,7 +830,6 @@ public class ObjectPropertyView implements EventHandler {
         radioCss.setSelection(selectorMethod == WebElementSelectorMethod.CSS);
         radioXpath.setSelection(selectorMethod == WebElementSelectorMethod.XPATH);
 
-        onWebElementPropertyChanged();
         showTableComposite(isBasicMethod);
     }
 
@@ -1049,7 +988,6 @@ public class ObjectPropertyView implements EventHandler {
             case ObjectEventConstants.OBJECT_UPDATE_DIRTY: {
                 if (object != null && object instanceof TableViewer) {
                     if (object.equals(tableViewer)) {
-                        onWebElementPropertyChanged();
                         dirtyable.setDirty(true);
                     }
                 }

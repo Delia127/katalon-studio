@@ -131,7 +131,6 @@ import com.kms.katalon.objectspy.dialog.CapturedObjectsView;
 import com.kms.katalon.objectspy.dialog.GoToAddonStoreMessageDialog;
 import com.kms.katalon.objectspy.dialog.ObjectPropertiesView;
 import com.kms.katalon.objectspy.dialog.ObjectSpyEvent;
-import com.kms.katalon.objectspy.dialog.ObjectSpySelectorEditor;
 import com.kms.katalon.objectspy.dialog.ObjectSpyUrlView;
 import com.kms.katalon.objectspy.dialog.ObjectVerifyAndHighlightView;
 import com.kms.katalon.objectspy.dialog.SaveToObjectRepositoryDialog;
@@ -559,8 +558,6 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             }
         });
 
-        ObjectSpySelectorEditor selectorEditor = new ObjectSpySelectorEditor();
-        selectorEditor.createObjectSelectorEditor(parent);
 
         ObjectVerifyAndHighlightView verifyView = new ObjectVerifyAndHighlightView();
         verifyView.createVerifyAndHighlightView(parent, GridData.FILL_HORIZONTAL);
@@ -570,8 +567,6 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 Arrays.asList(ObjectSpyEvent.SELECTED_ELEMENT_CHANGED));
         // capturedObjectComposite.addListener(this, Arrays.asList(ObjectSpyEvent.SELECTED_ELEMENT_CHANGED));
 
-        selectorEditor.addListener(verifyView, Arrays.asList(ObjectSpyEvent.SELECTOR_HAS_CHANGED));
-        objectPropertiesView.addListener(selectorEditor, Arrays.asList(ObjectSpyEvent.ELEMENT_PROPERTIES_CHANGED));
         objectPropertiesView.addListener(verifyView, Arrays.asList(ObjectSpyEvent.ELEMENT_PROPERTIES_CHANGED));
 
         this.addListener(verifyView,
