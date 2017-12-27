@@ -113,6 +113,8 @@ public class ObjectPropertyView implements EventHandler {
 
     private static final String LBL_SELECTION_METHOD = ObjectspyMessageConstants.DIA_LBL_OBJECT_SELECTION_METHOD;
 
+    private static final String LBL_WARN_MSG_SELECTED_PROPERTIES_LOCATE_OBJECT = ObjectspyMessageConstants.WARN_MSG_SELECTED_PROPERTIES_LOCATE_OBJECT;
+   
     private static final String HK_ADD = "M1+N";
 
     private static final String HK_DEL = "Delete";
@@ -271,7 +273,7 @@ public class ObjectPropertyView implements EventHandler {
 
     private void createTableDetails(Composite parent) {
         Composite compositeTableDetails = new Composite(parent, SWT.NONE);
-        compositeTableDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        compositeTableDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
         GridLayout glCompositeTableDetails = new GridLayout(1, false);
         glCompositeTableDetails.marginWidth = 0;
         glCompositeTableDetails.marginHeight = 0;
@@ -406,14 +408,21 @@ public class ObjectPropertyView implements EventHandler {
         GridLayout glCompositeTable = new GridLayout();
         glCompositeTable.marginWidth = 0;
         glCompositeTable.marginHeight = 0;
+        glCompositeTable.numColumns = 2;
         compositeTable.setLayout(glCompositeTable);
 
         createTableToolbar(compositeTable);
+        createWarningMsgLabel(compositeTable);
 
         createTableDetails(compositeTable);
 
         createTableMenu();
 
+    }
+
+    private void createWarningMsgLabel(Composite parent) {
+        Label warningMsgLabel = new Label(parent, SWT.PUSH);
+        warningMsgLabel.setText(LBL_WARN_MSG_SELECTED_PROPERTIES_LOCATE_OBJECT);
     }
 
     private void createSettingsComposite(Composite parent) {

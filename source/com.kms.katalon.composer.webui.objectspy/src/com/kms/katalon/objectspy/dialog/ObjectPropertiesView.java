@@ -19,6 +19,7 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -79,6 +80,8 @@ public class ObjectPropertiesView extends Composite
     private static final String RADIO_LABEL_BASIC = ObjectspyMessageConstants.DIA_RADIO_LABEL_BASIC;
 
     private static final String COL_LABEL_CONDITION = ObjectspyMessageConstants.DIA_COL_LABEL_CONDITION;
+    
+    private static final String TOOL_TIP_WARN_MSG   = ObjectspyMessageConstants.WARN_MSG_SELECTED_PROPERTIES_LOCATE_OBJECT;
 
     private Table tProperty;
 
@@ -284,6 +287,7 @@ public class ObjectPropertiesView extends Composite
         tvProperty = new TableViewer(tableComposite,
                 SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
         tvProperty.setContentProvider(ArrayContentProvider.getInstance());
+        ColumnViewerToolTipSupport.enableFor(tvProperty);
         tProperty = tvProperty.getTable();
         tProperty.setHeaderVisible(true);
         tProperty.setLinesVisible(true);
@@ -297,6 +301,11 @@ public class ObjectPropertiesView extends Composite
             @Override
             public String getText(Object element) {
                 return ((WebElementPropertyEntity) element).getName();
+            }
+            
+            @Override
+            public String getToolTipText(Object element) {
+                return TOOL_TIP_WARN_MSG;
             }
         });
 
@@ -341,6 +350,11 @@ public class ObjectPropertiesView extends Composite
             public String getText(Object element) {
                 return ((WebElementPropertyEntity) element).getMatchCondition();
             }
+            
+            @Override
+            public String getToolTipText(Object element) {
+                return TOOL_TIP_WARN_MSG;
+            }
         });
         cvCondition.setEditingSupport(new EditingSupport(cvCondition.getViewer()) {
 
@@ -384,6 +398,11 @@ public class ObjectPropertiesView extends Composite
             @Override
             public String getText(Object element) {
                 return ((WebElementPropertyEntity) element).getValue();
+            }
+            
+            @Override
+            public String getToolTipText(Object element) {
+                return TOOL_TIP_WARN_MSG;
             }
         });
         cvValue.setEditingSupport(new EditingSupport(cvValue.getViewer()) {
@@ -451,6 +470,11 @@ public class ObjectPropertiesView extends Composite
                 // cell.setFont(ControlUtils.getFontStyle(tProperty, SWT.NORMAL, 10));
                 cell.setText(getCheckboxIcon(isSelected));
                 cSelected.setText(getCheckboxIcon(isAllPropetyEnabled()));
+            }
+            
+            @Override
+            public String getToolTipText(Object element) {
+                return TOOL_TIP_WARN_MSG;
             }
         });
         cvSelected.setEditingSupport(new EditingSupport(cvSelected.getViewer()) {
