@@ -18,6 +18,9 @@ public class StoreFormatter implements Formatter {
 		try {
 			formatted = checked(command);
 			if (StringUtils.isBlank(formatted)) {
+				formatted = whether(command);
+			}
+			if (StringUtils.isBlank(formatted)) {
 				formatted = notChecked(command);
 			}
 			if (StringUtils.isBlank(formatted)) {
@@ -89,6 +92,16 @@ public class StoreFormatter implements Formatter {
 		if (matcher.find()) {
 			String method = getBoolCheckedMethod(matcher.group(3), command.getTarget());
 			return ACTION + "False(" + method + ")";
+		}
+		return StringUtils.EMPTY;
+	}
+	
+	public String whether(Command command) throws Exception {
+		Pattern pattern = Pattern.compile("(" + ACTION + ")(Whether.*?)$");
+		Matcher matcher = pattern.matcher(command.getCommand());
+		if (matcher.find()) {
+			String method = getBoolWhetherMethod(matcher.group(2), command.getTarget(), command.getValue());
+			return "boolean " + command.getValue() + " = " + method;
 		}
 		return StringUtils.EMPTY;
 	}

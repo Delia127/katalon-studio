@@ -25,7 +25,7 @@ public final class HtmlParser {
 		
 		List<TestCase> testCases = new ArrayList<>();
 		
-		if (StringUtils.isBlank(extension)) {
+		if (StringUtils.isBlank(extension) || hasSuiteTable(file)) {
 			Map<String, String> testCaseFiles = HtmlParser.parseTestCaseFiles(testSuiteHtmlContent);
 			testCaseFiles.forEach((key, value) -> {
 				String testCaseFilePath = parentFile.getAbsolutePath() + File.separator + value;
@@ -233,6 +233,11 @@ public final class HtmlParser {
 			return FileUtils.encode(selector.replace("=", "_"));
 		}
 		return StringUtils.EMPTY;
+	}
+
+	public static boolean hasSuiteTable(File file) {
+		String testSuiteHtmlContent = FileUtils.readFileToString(file.toPath());
+		return testSuiteHtmlContent.contains("<table id=\"suiteTable\"");
 	}
 	
 }

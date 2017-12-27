@@ -20,12 +20,12 @@ public final class SeleniumIdeParser {
 	
 	public boolean isTestSuiteFile(File file) {
 		String extension = com.google.common.io.Files.getFileExtension(file.getName());
-		return StringUtils.isBlank(extension) || !HtmlParser.hasBaseUrl(file);
+		return StringUtils.isBlank(extension) || HtmlParser.hasSuiteTable(file) || !HtmlParser.hasBaseUrl(file);
 	}
 	
 	public boolean isTestCaseFile(File file) {
 		String extension = com.google.common.io.Files.getFileExtension(file.getName());
-		return "html".equalsIgnoreCase(extension);
+		return "html".equalsIgnoreCase(extension) && HtmlParser.hasBaseUrl(file);
 	}
 	
 	public TestSuite parseTestSuite(File file) {

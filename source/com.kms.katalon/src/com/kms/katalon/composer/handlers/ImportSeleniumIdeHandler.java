@@ -60,6 +60,8 @@ import com.kms.katalon.selenium.ide.model.TestSuite;
 
 public class ImportSeleniumIdeHandler {
 	
+	private static final String PREFIX_IMPORT = "Import ";
+
 	@Inject
     private ESelectionService selectionService;
 	
@@ -237,18 +239,18 @@ public class ImportSeleniumIdeHandler {
             parentTreeEntity = testCaseTreeRoot;
         }
         FolderEntity parentFolderEntity = (FolderEntity) parentTreeEntity.getObject();
-        String importFolderName = "Import " + name;
+        String importFolderName = PREFIX_IMPORT + name;
         return FolderController.getInstance().addNewFolder(parentFolderEntity, importFolderName);        
 	}
 	
 	private FolderEntity createImportTestObjectFolderEntity(String name) throws Exception {
 		Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
-        ITreeEntity parentTreeEntity = findParentTreeEntity(FolderType.TESTCASE, selectedObjects);
+        ITreeEntity parentTreeEntity = findParentTreeEntity(FolderType.WEBELEMENT, selectedObjects);
         if (parentTreeEntity == null) {
             parentTreeEntity = objectRepositoryTreeRoot;
         }
         FolderEntity parentFolderEntity = (FolderEntity) parentTreeEntity.getObject();
-        String importFolderName = "Import " + name;
+        String importFolderName = PREFIX_IMPORT + name;
         return FolderController.getInstance().addNewFolder(parentFolderEntity, importFolderName);        
 	}
 	
