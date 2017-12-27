@@ -120,6 +120,7 @@ public final class SeleniumIdeFormatter {
 						"import org.openqa.selenium.firefox.FirefoxDriver\n" +
 						"import org.openqa.selenium.WebDriver\n" +						
 						"import static org.junit.Assert.*\n" +
+						"import java.util.concurrent.Callable\n" +
 						"import java.util.regex.Pattern\n" +
 						"import static org.apache.commons.lang3.StringUtils.join\n\n");
 		buffer.append("'----------------------------------------------------'\n");

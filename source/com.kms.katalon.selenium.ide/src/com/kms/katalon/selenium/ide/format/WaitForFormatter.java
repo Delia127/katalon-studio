@@ -113,7 +113,7 @@ public class WaitForFormatter implements Formatter {
 	}
 
 	private String returnPattern(String condition) {
-		return "selenium.waitFor(" + condition + ")";
+		return "selenium.waitFor({" + condition + "} as Callable<Boolean>)";
 	}
 	
 }
