@@ -1051,10 +1051,12 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 }
                 htmlActions.clear();
                 htmlActions.addAll(keywords.values());
+                htmlActions.sort((action1, action2) -> action1.getName().compareTo(action2.getName()));
 
                 for (IHTMLAction htmlAction : htmlActions) {
                     actionNames.add(TreeEntityUtil.getReadableKeywordName(htmlAction.getName()));
                 }
+                
                 return new ComboBoxCellEditor((Composite) getViewer().getControl(),
                         actionNames.toArray(new String[actionNames.size()]));
             }
