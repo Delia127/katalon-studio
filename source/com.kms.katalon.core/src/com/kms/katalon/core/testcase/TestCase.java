@@ -1,5 +1,6 @@
 package com.kms.katalon.core.testcase;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -46,7 +47,7 @@ public class TestCase {
     }
     
     public String getMetaFilePath() {
-        return (TestCaseFactory.getProjectDirPath() + "\\" + testCaseId + TestCaseFactory.TEST_CASE_META_FILE_EXTENSION).replace("/", "\\");
+        return (TestCaseFactory.getProjectDirPath()  + File.separator + testCaseId + TestCaseFactory.TEST_CASE_META_FILE_EXTENSION).replace("/", "\\");
     }
 
 	public List<Variable> getVariables() {
