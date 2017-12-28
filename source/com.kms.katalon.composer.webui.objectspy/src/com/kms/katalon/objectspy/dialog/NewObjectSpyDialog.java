@@ -115,6 +115,8 @@ public class NewObjectSpyDialog extends Dialog
 
     private ObjectVerifyAndHighlightView verifyView;
 
+    private ObjectSpySelectorEditor selectorEditor;
+
     private Composite bodyComposite;
 
     /**
@@ -183,6 +185,9 @@ public class NewObjectSpyDialog extends Dialog
 
         createCapturedObjectsAndPropertiesView(bodyComposite);
 
+        selectorEditor = new ObjectSpySelectorEditor();
+        selectorEditor.createObjectSelectorEditor(bodyComposite);
+
         Composite bottomComposite = new Composite(bodyComposite, SWT.NONE);
         GridLayout bottomLayout = new GridLayout(2, false);
         bottomLayout.marginHeight = 0;
@@ -218,6 +223,8 @@ public class NewObjectSpyDialog extends Dialog
         capturedObjectsView.addListener(objectPropertiesView, Arrays.asList(ObjectSpyEvent.SELECTED_ELEMENT_CHANGED));
         capturedObjectsView.addListener(this, Arrays.asList(ObjectSpyEvent.SELECTED_ELEMENT_CHANGED));
 
+        selectorEditor.addListener(verifyView, Arrays.asList(ObjectSpyEvent.SELECTOR_HAS_CHANGED));
+        objectPropertiesView.addListener(selectorEditor, Arrays.asList(ObjectSpyEvent.ELEMENT_PROPERTIES_CHANGED));
         objectPropertiesView.addListener(verifyView, Arrays.asList(ObjectSpyEvent.ELEMENT_PROPERTIES_CHANGED));
         objectPropertiesView.addListener(this, Arrays.asList(ObjectSpyEvent.REQUEST_DIALOG_RESIZE));
     }

@@ -161,6 +161,8 @@ public class ObjectspyMessageConstants extends NLS {
 
     public static String WARN_MSG_OBJECT_PROPERTY_NAME_IS_EXISTED;
 
+    public static String LBL_DLG_SELECTOR_EDITOR;
+
     public static String DIA_MSG_FOUND_X_ELEMENTS_USING_Y_SELECTOR;
 
     public static String DIA_UNABLE_TO_FIND_OBJECT_USING_Y_SELECTOR;
