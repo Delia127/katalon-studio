@@ -957,8 +957,8 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
         TableColumnLayout tableLayout = new TableColumnLayout();
         tableLayout.setColumnData(tableViewerNo, new ColumnWeightData(0, 40));
-        tableLayout.setColumnData(tableColumnAction, new ColumnWeightData(40, 150));
-        tableLayout.setColumnData(tableColumnActionData, new ColumnWeightData(30, 100));
+        tableLayout.setColumnData(tableColumnAction, new ColumnWeightData(20, 100));
+        tableLayout.setColumnData(tableColumnActionData, new ColumnWeightData(50, 150));
         tableLayout.setColumnData(tableColumnElement, new ColumnWeightData(30, 100));
 
         tableComposite.setLayout(tableLayout);
@@ -1258,7 +1258,6 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         toolBar.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 
         toolItemBrowserDropdown = new ToolItem(toolBar, SWT.DROP_DOWN);
-        toolItemBrowserDropdown.setText(RECORD_TOOL_ITEM_LABEL);
         toolItemBrowserDropdown.setImage(getWebUIDriverToolItemImage(getWebUIDriver()));
         Dropdown dropdown = new Dropdown(getShell());
         createDropdownContent(dropdown);
@@ -1278,7 +1277,6 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         });
 
         tltmPause = new ToolItem(toolBar, SWT.PUSH);
-        tltmPause.setText(PAUSE_TOOL_ITEM_LABEL);
         tltmPause.setImage(ImageConstants.IMG_24_PAUSE);
         tltmPause.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -1294,7 +1292,6 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         tltmPause.setEnabled(false);
 
         tltmStop = new ToolItem(toolBar, SWT.PUSH);
-        tltmStop.setText(STOP_TOOL_ITEM_LABEL);
         tltmStop.setImage(ImageConstants.IMG_24_STOP);
         tltmStop.addSelectionListener(new SelectionAdapter() {
             @Override
