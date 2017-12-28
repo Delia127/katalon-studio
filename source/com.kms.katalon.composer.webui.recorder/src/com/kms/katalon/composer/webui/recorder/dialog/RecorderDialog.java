@@ -484,7 +484,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         bodyComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         hSashForm = new SashForm(bodyComposite, SWT.NONE);
-        hSashForm.setSashWidth(5);
+        hSashForm.setSashWidth(3);
 
         Composite objectComposite = new Composite(hSashForm, SWT.NONE);
         GridLayout gl_objectComposite = new GridLayout();
@@ -509,7 +509,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
         createRightPanel(htmlDomComposite);
 
-        hSashForm.setWeights(new int[] { 5, 5 });
+        hSashForm.setWeights(new int[] { 0, 10 });
 
         txtStartUrl.setFocus();
 
@@ -892,8 +892,8 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
         ToolItem tltmCapturedObjects = new ToolItem(rightToolBar, SWT.CHECK);
 
-        tltmCapturedObjects.setImage(ImageConstants.IMG_16_WATCH);
-        tltmCapturedObjects.setText(StringConstants.DIA_TITLE_CAPTURED_OBJECTS);
+        
+        tltmCapturedObjects.setText("Show " + StringConstants.DIA_TITLE_CAPTURED_OBJECTS);
         tltmCapturedObjects.setToolTipText(StringConstants.DIA_TOOLTIP_SHOW_HIDE_CAPTURED_OBJECTS);
         tltmCapturedObjects.setSelection(true);
         tltmCapturedObjects.addSelectionListener(new SelectionAdapter() {
@@ -902,12 +902,12 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             public void widgetSelected(SelectionEvent e) {
                 int[] sashFormWeights = new int[] { 5, 5 };
                 boolean isChecked = tltmCapturedObjects.getSelection();
-                Image image = ImageConstants.IMG_16_WATCH;
+                String showOrHide = "Show " + StringConstants.DIA_TITLE_CAPTURED_OBJECTS;
                 if (!isChecked) {
                     sashFormWeights = new int[] { 0, 10 };
-                    image = ImageConstants.IMG_16_UNWATCH;
+                    showOrHide = "Hide " + StringConstants.DIA_TITLE_CAPTURED_OBJECTS;
                 }
-                tltmCapturedObjects.setImage(image);
+                tltmCapturedObjects.setText(showOrHide);
                 hSashForm.setWeights(sashFormWeights);
             }
         });
@@ -958,7 +958,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         TableColumnLayout tableLayout = new TableColumnLayout();
         tableLayout.setColumnData(tableViewerNo, new ColumnWeightData(0, 40));
         tableLayout.setColumnData(tableColumnAction, new ColumnWeightData(20, 100));
-        tableLayout.setColumnData(tableColumnActionData, new ColumnWeightData(50, 150));
+        tableLayout.setColumnData(tableColumnActionData, new ColumnWeightData(30, 150));
         tableLayout.setColumnData(tableColumnElement, new ColumnWeightData(30, 100));
 
         tableComposite.setLayout(tableLayout);
