@@ -65,10 +65,18 @@ public class ObjectSpySelectorEditor implements EventListener<ObjectSpyEvent>, E
         txtSelector.setLayoutData(gdTxtSelector);
 
         registerControlListeners();
-
+        selectorEditorPartVisible(false, txtSelector);
+        
         return composite;
     }
 
+    private void selectorEditorPartVisible(boolean visible, Composite child) {
+        GridData gd = (GridData) child.getParent().getLayoutData();
+        gd.exclude = !visible;
+        child.getParent().setVisible(visible);
+        child.getParent().pack();
+    }
+    
     private void registerControlListeners() {
         txtSelector.addModifyListener(new ModifyListener() {
 
@@ -101,10 +109,12 @@ public class ObjectSpySelectorEditor implements EventListener<ObjectSpyEvent>, E
         }
         if (webElement == null) {
             txtSelector.setEnabled(false);
+            selectorEditorPartVisible(false, txtSelector);
             txtSelector.setText(StringUtils.EMPTY);
             return;
         }
         txtSelector.setEnabled(true);
+        selectorEditorPartVisible(true, txtSelector);
         SelectorMethod selectorMethod = webElement.getSelectorMethod();
         switch (selectorMethod) {
             case BASIC:
@@ -113,6 +123,7 @@ public class ObjectSpySelectorEditor implements EventListener<ObjectSpyEvent>, E
                 return;
             default:
                 changeEditorStatus(webElement.getSelectorCollection().get(selectorMethod), true);
+                
         }
     }
 

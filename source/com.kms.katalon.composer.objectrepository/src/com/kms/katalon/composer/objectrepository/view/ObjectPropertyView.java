@@ -443,6 +443,15 @@ public class ObjectPropertyView implements EventHandler {
         GridData gdSelectorEditor = new GridData(SWT.FILL, SWT.FILL, true, true);
         gdSelectorEditor.minimumHeight = 80;
         txtSelectorEditor.setLayoutData(gdSelectorEditor);
+        
+        selectorEditorPartVisible(false, txtSelectorEditor);
+    }
+    
+    private void selectorEditorPartVisible(boolean visible, Composite child) {
+        GridData gd = (GridData) child.getParent().getLayoutData();
+        gd.exclude = !visible;
+        child.getParent().setVisible(visible);
+        child.getParent().pack();
     }
 
     private void createWarningMsgLabel(Composite parent) {
@@ -730,12 +739,14 @@ public class ObjectPropertyView implements EventHandler {
                 txtSelectorEditor.setText(WebUiCommonHelper.getSelectorValue(testObject));
                 txtSelectorEditor.setEditable(false);
                 txtSelectorEditor.setBackground(ColorUtil.getDisabledItemBackgroundColor());
+                selectorEditorPartVisible(false, txtSelectorEditor);
                 return;
             default:
                 String selectorContent = StringUtils.defaultString(cloneTestObject.getSelectorCollection().getOrDefault(selectorMethod, StringConstants.EMPTY)); 
                 txtSelectorEditor.setText(selectorContent);
                 txtSelectorEditor.setEditable(true);
                 txtSelectorEditor.setBackground(null);
+                selectorEditorPartVisible(true, txtSelectorEditor);
         }
     }
 
