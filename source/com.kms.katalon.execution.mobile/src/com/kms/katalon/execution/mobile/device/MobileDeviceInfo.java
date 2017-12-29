@@ -81,7 +81,7 @@ public abstract class MobileDeviceInfo {
         return "";
     }
 
-    protected static void makeFileExecutable(File file) throws IOException, InterruptedException {
+    public static void makeFileExecutable(File file) throws IOException, InterruptedException {
         ConsoleCommandExecutor
                 .runConsoleCommandAndCollectFirstResult(new String[] { CHMOD_COMMAND, X_FLAG, file.getAbsolutePath() });
     }

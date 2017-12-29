@@ -1,6 +1,5 @@
 package com.kms.katalon.execution.mobile.configuration.providers;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,9 +18,6 @@ import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
 import com.kms.katalon.execution.mobile.exception.MobileSetupException;
 
 public class MobileDeviceProvider {
-    private static final String L_FLAG = "-l";
-
-    private static final String IDEVICE_ID_COMMAND = "idevice_id";
 
     private static final String ANDROID_ADB_DEVICES_COMMAND = "devices";
 
@@ -95,11 +91,8 @@ public class MobileDeviceProvider {
         if (!isRunningOnMacOSX()) {
             return Collections.emptyList();
         }
-        List<IosDeviceInfo> iosDevices = new ArrayList<IosDeviceInfo>();
-        String[] getDeviceIdsCommand = { "/bin/sh", "-c", "\""+ IosDeviceInfo.getIMobileDeviceDirectoryAsString()
-                + File.separator + IDEVICE_ID_COMMAND +  "\" " + L_FLAG };
-        List<String> deviceIds = ConsoleCommandExecutor.runConsoleCommandAndCollectResults(getDeviceIdsCommand,
-                IosDeviceInfo.getIosAdditionalEnvironmentVariables());
+        List<IosDeviceInfo> iosDevices = new ArrayList<>();
+        List<String> deviceIds = IosDeviceInfo.executeCommand("./idevice_id -l");
 
         for (String deviceId : deviceIds) {
             iosDevices.add(new IosDeviceInfo(deviceId));

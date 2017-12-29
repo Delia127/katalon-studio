@@ -1,12 +1,14 @@
 package com.kms.katalon.execution.mobile.device;
 
+import static com.kms.katalon.execution.mobile.util.OSUtil.toOSString;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.eclipse.core.runtime.Platform;
@@ -40,6 +42,8 @@ public class IosDeviceInfo extends MobileDeviceInfo {
 
     private static final String DEVICE_CONSOLE_FOLDER_RELATIVE_PATH = RELATIVE_PATH_TO_TOOLS_FOLDER + DEVICECONSOLE;
 
+    private static final String DYLD_FALLBACK_LIBRARY_PATH = "DYLD_FALLBACK_LIBRARY_PATH";
+
     protected String deviceClass = "";
 
     protected String deviceName = "";
@@ -53,11 +57,21 @@ public class IosDeviceInfo extends MobileDeviceInfo {
         initDeviceInfos(deviceId);
     }
 
+    public static List<String> executeCommand(String command) throws IOException, InterruptedException {
+        String iMobileDeviceDirectory = IosDeviceInfo.getIMobileDeviceDirectoryAsString();
+        String deviceCommandFile = "../device.sh";
+        IosDeviceInfo.makeFileExecutable(new File(iMobileDeviceDirectory, deviceCommandFile));
+
+        Map<String, String> env = new HashMap<>();
+        env.put("KATALON_DEVICE_COMMAND", command);
+        return ConsoleCommandExecutor.runConsoleCommandAndCollectResults(new String[] { deviceCommandFile }, env,
+                iMobileDeviceDirectory);
+    }
+
     protected void initDeviceInfos(String deviceId) throws IOException, InterruptedException {
-        String[] deviceInfoCommand = new String[] { "/bin/sh", "-c",
-                "\"" + getIMobileDeviceDirectoryAsString() + File.separator + "ideviceinfo\" -u " + deviceId };
-        List<String> deviceInfos = ConsoleCommandExecutor.runConsoleCommandAndCollectResults(deviceInfoCommand,
-                getIosAdditionalEnvironmentVariables());
+        executeCommand("./idevicepair pair -u " + deviceId);
+
+        List<String> deviceInfos = executeCommand("./ideviceinfo -u " + deviceId);
         for (String deviceInfo : deviceInfos) {
             if (deviceInfo.contains(DEVICE_CLASS_INFO_PREFIX)) {
                 deviceClass = deviceInfo.substring(DEVICE_CLASS_INFO_PREFIX.length(), deviceInfo.length()).trim();
@@ -77,6 +91,7 @@ public class IosDeviceInfo extends MobileDeviceInfo {
                 continue;
             }
         }
+        executeCommand("./idevicepair unpair -u " + deviceId);
     }
 
     @Override
@@ -168,13 +183,19 @@ public class IosDeviceInfo extends MobileDeviceInfo {
         makeAllFilesInFolderExecutable(getCarthageDirectory());
 
         Map<String, String> additionalEnvironmentVariables = new HashMap<String, String>();
-        String iMobileDeviceDirectory = getIMobileDeviceDirectoryAsString().replace(" ", "\\ ");
-        if (StringUtils.isEmpty(iMobileDeviceDirectory)) {
-            return new HashMap<String, String>();
+        String iMobileDeviceDirectory = getIMobileDeviceDirectoryAsString();
+        if (StringUtils.isNotEmpty(iMobileDeviceDirectory)) {
+            additionalEnvironmentVariables.put(DYLD_LIBRARY_PATH,
+                    StringUtils.defaultString(System.getenv(DYLD_LIBRARY_PATH)) + ":"
+                            + toOSString(iMobileDeviceDirectory));
+            additionalEnvironmentVariables.put(DYLD_FALLBACK_LIBRARY_PATH,
+                    StringUtils.defaultString(System.getenv(DYLD_FALLBACK_LIBRARY_PATH)) + ":"
+                            + toOSString(iMobileDeviceDirectory));
+            additionalEnvironmentVariables.put(PATH,
+                    StringUtils.defaultString(System.getenv(PATH)) + ":" + toOSString(iMobileDeviceDirectory) + ":"
+                            + toOSString(getIosDeployDirectory().getAbsolutePath()) + ":"
+                            + toOSString(getCarthageDirectory().getAbsolutePath()));
         }
-        additionalEnvironmentVariables.put(DYLD_LIBRARY_PATH, System.getenv(DYLD_LIBRARY_PATH) + ":" + iMobileDeviceDirectory);
-        additionalEnvironmentVariables.put(PATH, System.getenv(PATH) + ":" + iMobileDeviceDirectory + ":"
-                + getIosDeployDirectory().getAbsolutePath() + ":" + getCarthageDirectory().getAbsolutePath());
         return additionalEnvironmentVariables;
     }
 
