@@ -123,9 +123,9 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
      * @param startY
      *      starting y position
      * @param endX
-     *      ending x position
+     *      relative x position of startX
      * @param endY
-     *      ending y position
+     *      relative y position of startY
      * @param flowControl
      * @throws StepFailedException
      */
@@ -142,9 +142,9 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
      * @param startY
      *      starting y position
      * @param endX
-     *      ending x position
+     *      relative x position of startX
      * @param endY
-     *      ending y position
+     *      relative y position of startY
      * @throws StepFailedException
      */
     @CompileStatic
