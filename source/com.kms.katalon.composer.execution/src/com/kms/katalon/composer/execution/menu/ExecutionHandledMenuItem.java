@@ -1,8 +1,10 @@
 package com.kms.katalon.composer.execution.menu;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.ui.model.application.commands.MParameter;
@@ -11,6 +13,8 @@ import org.eclipse.e4.ui.model.application.ui.menu.impl.HandledMenuItemImpl;
 import org.eclipse.emf.common.util.EList;
 
 import com.kms.katalon.execution.setting.ExecutionDefaultSettingStore;
+import com.kms.katalon.preferences.internal.PreferenceStoreManager;
+import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 @SuppressWarnings("restriction")
 public class ExecutionHandledMenuItem extends HandledMenuItemImpl {
@@ -40,12 +44,19 @@ public class ExecutionHandledMenuItem extends HandledMenuItemImpl {
     }
 
     public boolean isDefault() {
-        ExecutionDefaultSettingStore store = ExecutionDefaultSettingStore.getStore();
-        if (store == null) {
-            return false;
+//        ExecutionDefaultSettingStore store = ExecutionDefaultSettingStore.getStore();
+//        if (store == null) {
+//            return false;
+//        }
+//        String defaultItemLabel = store.getExecutionConfiguration();
+//        String defaultItemLabel = getPreferenceStore().getString("command");
+//        return getDefaultLabel().equals(defaultItemLabel);
+        String commandName = getPreferenceStore().getString("command");
+        if (StringUtils.isBlank(commandName)) {
+            commandName = "com.kms.katalon.composer.webui.execution.command.chrome";
         }
-        String defaultItemLabel = store.getExecutionConfiguration();
-        return getDefaultLabel().equals(defaultItemLabel);
+//        System.out.println("command name: " + getCommand().getCommandName());
+        return getCommand().getElementId().equals(commandName);
     }
 
     @Override
@@ -63,5 +74,9 @@ public class ExecutionHandledMenuItem extends HandledMenuItemImpl {
             parameters.put(param.getName(), param.getValue());
         }
         return commandService.createCommand(getCommand().getElementId(), parameters);
+    }
+    
+    private ScopedPreferenceStore getPreferenceStore() {
+        return PreferenceStoreManager.getPreferenceStore("execution_browser");
     }
 }

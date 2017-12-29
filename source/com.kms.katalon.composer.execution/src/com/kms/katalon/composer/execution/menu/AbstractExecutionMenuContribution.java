@@ -126,6 +126,7 @@ public abstract class AbstractExecutionMenuContribution {
                 ConstantsHelper.getApplicationURI());
         executionMenuItem.setTooltip(null);
         executionMenuItem.setIconURI(getIconUri());
+        executionMenuItem.getCommand().setElementId(executionCommand.getId());
         return new ExecutionHandledMenuItem(executionMenuItem);
     }
 
