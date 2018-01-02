@@ -6,6 +6,8 @@ import java.io.StringReader;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -14,6 +16,9 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListenerAdapter;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.text.StrBuilder;
+import org.apache.commons.lang3.text.StrMatcher;
 import org.json.JSONObject;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -23,6 +28,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
@@ -122,7 +128,7 @@ public class MobileInspectorController {
         }
 
         mobileDeviceInfo.updateRuntimeEnvironmentVariables();
-        
+
         AppiumDriverManager.startAppiumServerJS(SERVER_START_TIMEOUT,
                 getAdditionalEnvironmentVariables(mobileDriverType));
         driver = MobileDriverFactory.startMobileDriver(mobileDriverType, mobileDeviceInfo.getDeviceId(),
@@ -132,7 +138,7 @@ public class MobileInspectorController {
 
         iosWebKitProcess = AppiumDriverManager.getIosWebKitProcess();
     }
-    
+
     private void createAppiumLogTailer(String logFilePath) {
         appiumTailerThread = new Thread(new Tailer(new File(logFilePath), new TailerListenerAdapter() {
             @Override
@@ -281,9 +287,16 @@ public class MobileInspectorController {
             } else {
                 String pageSource = driver.getPageSource();
                 DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-                InputSource is = new InputSource();
-                is.setCharacterStream(new StringReader(pageSource));
-                Document doc = db.parse(is);
+                Document doc = null;
+                try {
+                    InputSource is = new InputSource();
+                    is.setCharacterStream(new StringReader(pageSource));
+                    doc = db.parse(is);
+                } catch (SAXParseException e) {
+                    InputSource is = new InputSource();
+                    is.setCharacterStream(new StringReader(removeEscapeCharacter(pageSource)));
+                    doc = db.parse(is);
+                }
                 Element rootElement = doc.getDocumentElement();
 
                 AndroidSnapshotMobileElement htmlMobileElementRootNode = new AndroidSnapshotMobileElement();
@@ -297,6 +310,21 @@ public class MobileInspectorController {
             LoggerSingleton.logError(ex);
             return null;
         }
+    }
+
+    public static String removeEscapeCharacter(String contentBuilder) {
+        String pattern = "(\\\"([^=])*\\\")";
+
+        Pattern pattern2 = Pattern.compile(pattern);
+        Matcher matcher = pattern2.matcher(contentBuilder);
+        StrBuilder sb = new StrBuilder(contentBuilder);
+
+        while (matcher.find()) {
+            String str = matcher.group(1).substring(1, matcher.group(1).length() - 1);
+            sb = sb.replaceFirst(StrMatcher.stringMatcher(str), StringEscapeUtils.escapeXml(str));
+        }
+
+        return sb.toString();
     }
 
     @SuppressWarnings("unchecked")
