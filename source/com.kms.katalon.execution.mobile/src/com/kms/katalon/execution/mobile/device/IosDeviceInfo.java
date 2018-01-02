@@ -187,14 +187,15 @@ public class IosDeviceInfo extends MobileDeviceInfo {
         if (StringUtils.isNotEmpty(iMobileDeviceDirectory)) {
             additionalEnvironmentVariables.put(DYLD_LIBRARY_PATH,
                     StringUtils.defaultString(System.getenv(DYLD_LIBRARY_PATH)) + ":"
-                            + toOSString(iMobileDeviceDirectory));
+                            + iMobileDeviceDirectory);
             additionalEnvironmentVariables.put(DYLD_FALLBACK_LIBRARY_PATH,
                     StringUtils.defaultString(System.getenv(DYLD_FALLBACK_LIBRARY_PATH)) + ":"
-                            + toOSString(iMobileDeviceDirectory));
+                            + iMobileDeviceDirectory);
             additionalEnvironmentVariables.put(PATH,
-                    StringUtils.defaultString(System.getenv(PATH)) + ":" + toOSString(iMobileDeviceDirectory) + ":"
-                            + toOSString(getIosDeployDirectory().getAbsolutePath()) + ":"
-                            + toOSString(getCarthageDirectory().getAbsolutePath()));
+                    StringUtils.defaultString(System.getenv(PATH)) + ":" 
+                            + iMobileDeviceDirectory + ":"
+                            + getIosDeployDirectory().getAbsolutePath() + ":"
+                            + getCarthageDirectory().getAbsolutePath());
         }
         return additionalEnvironmentVariables;
     }
