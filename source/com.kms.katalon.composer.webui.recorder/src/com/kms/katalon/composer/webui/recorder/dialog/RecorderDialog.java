@@ -309,6 +309,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             stop();
             showMessageForMissingIEAddon();
             try {
+                getShell().setMinimized(true);
                 runIEAddonInstaller();
             } catch (IOException iOException) {
                 LoggerSingleton.logError(iOException);
@@ -378,7 +379,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         UISynchronizeService.syncExec(new Runnable() {
             @Override
             public void run() {
-                MessageDialog.openInformation(Display.getCurrent().getActiveShell(), StringConstants.INFO,
+                MessageDialog.openInformation(getShell(), StringConstants.INFO,
                         StringConstants.DIALOG_CANNOT_START_IE_MESSAGE);
             }
         });
@@ -1357,7 +1358,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                             @Override
                             public void run() {
                                 MessageDialogWithToggle messageDialogWithToggle = MessageDialogWithToggle
-                                        .openInformation(Display.getCurrent().getActiveShell(),
+                                        .openInformation(getShell(),
                                                 StringConstants.HAND_ACTIVE_BROWSERS_DIA_TITLE,
                                                 StringConstants.DIALOG_RUNNING_INSTANT_IE_MESSAGE,
                                                 StringConstants.HAND_ACTIVE_BROWSERS_DIA_TOOGLE_MESSAGE, false, null,
