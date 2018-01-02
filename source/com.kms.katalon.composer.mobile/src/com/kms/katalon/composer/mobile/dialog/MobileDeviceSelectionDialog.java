@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.Comparator;
 import java.util.List;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -40,6 +41,7 @@ import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.mobile.constants.ComposerMobileMessageConstants;
 import com.kms.katalon.composer.mobile.constants.ImageConstants;
 import com.kms.katalon.composer.mobile.dialog.provider.MobileDeviceColumnLabelProvider;
+import com.kms.katalon.execution.mobile.constants.StringConstants;
 import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
 import com.kms.katalon.execution.mobile.exception.MobileSetupException;
 
@@ -176,7 +178,13 @@ public abstract class MobileDeviceSelectionDialog extends AbstractDialog {
                     }
                     Thread.sleep(2000L);
                 }
-            } catch (MobileSetupException | IOException | InterruptedException ignored) {}
+            } catch (MobileSetupException | InterruptedException ignored) {
+                
+            } catch (IOException e) {
+                UISynchronizeService.syncExec(() -> {
+                   MessageDialog.openError(getShell(), StringConstants.ERROR, e.getMessage()); 
+                });
+            }
         });
         thread.start();
     }
