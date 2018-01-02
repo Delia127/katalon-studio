@@ -60,6 +60,7 @@ import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
+import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
@@ -139,8 +140,7 @@ public abstract class AbstractExecutionHandler {
     public void execute(ParameterizedCommand command) {
         try {
             execute(getLaunchMode(command));
-            getPreferenceStore().setValue("command", command.getCommand().getId());
-            getPreferenceStore().save();
+            ExecutionUtil.saveExecutionCommand(command.getCommand().getId());
         } catch (ExecutionException e) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR, e.getMessage());
         } catch (SWTException e) {
