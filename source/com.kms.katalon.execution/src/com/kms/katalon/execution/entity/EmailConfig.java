@@ -10,6 +10,8 @@ import com.kms.katalon.execution.util.MailUtil;
 import com.kms.katalon.execution.util.MailUtil.MailSecurityProtocolType;
 
 public class EmailConfig {
+    
+    private boolean enabled = false;
 
     private String host = "";
 
@@ -48,7 +50,7 @@ public class EmailConfig {
     }
 
     public boolean canSend() {
-        return !tos.isEmpty();
+        return enabled && !tos.isEmpty();
     }
 
     public void addRecipients(Set<String> recipients) {
@@ -69,6 +71,14 @@ public class EmailConfig {
 
     public void setSecurityProtocol(MailSecurityProtocolType securityProtocol) {
         this.securityProtocol = securityProtocol;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public String getHost() {
