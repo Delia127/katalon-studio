@@ -31,7 +31,7 @@ public class TestObjectParser {
 	}
 	
 	private static String formatNormal(String text) {
-		Pattern pattern = Pattern.compile("^(id|name|class|href|title|css)(=)(.*?)$");
+		Pattern pattern = Pattern.compile("^(id|name|class|href|title|css|type|value)(=)(.*?)$");
         Matcher matcher = pattern.matcher(text);
         if (matcher.find()) {
         	return String.format("//*[%s='%s']", matcher.group(1), matcher.group(3));
