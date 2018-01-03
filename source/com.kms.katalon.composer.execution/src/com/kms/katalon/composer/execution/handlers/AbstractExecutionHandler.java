@@ -382,8 +382,4 @@ public abstract class AbstractExecutionHandler {
             throw new JobCancelException();
         }
     }
-    
-    private ScopedPreferenceStore getPreferenceStore() {
-        return PreferenceStoreManager.getPreferenceStore("execution_browser");
-    }
 }
