@@ -10,6 +10,8 @@ import com.kms.katalon.core.testobject.TestObjectProperty;
 
 public class XPathBuilder {
 
+    private static final String XPATH_INTESECTION_FORMULA = "%s[count(. | %s) = count(%s)]";
+
     private static final String XPATH_CONDITION_TYPE_NOT_MATCHES = "not(matches(%s, '%s'))";
 
     private static final String XPATH_CONDITION_TYPE_MATCHES = "matches(%s, '%s')";
@@ -68,21 +70,37 @@ public class XPathBuilder {
                 }
             });
         }
-        StringBuilder xpathBuilder = new StringBuilder();
+
+        List<String> xpaths = new ArrayList<>();
 
         if (StringUtils.isNotEmpty(xpath)) {
-            xpathBuilder.append(xpath);
+            xpaths.add(xpath);
         }
 
         if (!predicates.isEmpty()) {
-            if (xpathBuilder.length() > 0) {
-                xpathBuilder.append(" | ");
-            }
-            xpathBuilder.append("//").append(tag)
-                        .append("[").append(StringUtils.join(predicates, " and ")).append("]");
+            StringBuilder propertyBuilder = new StringBuilder();
+            propertyBuilder.append("//")
+                    .append(tag)
+                    .append("[")
+                    .append(StringUtils.join(predicates, " and "))
+                    .append("]");
+            xpaths.add(propertyBuilder.toString());
         }
 
-        return xpathBuilder.toString();
+        return getXpathSelectorValue(xpaths);
+    }
+
+    private String getXpathSelectorValue(List<String> xpathList) {
+        StringBuilder xpathString = new StringBuilder();
+        for (String xpath : xpathList) {
+            if (xpathString.toString().isEmpty()) {
+                xpathString.append(xpath);
+            } else {
+                String existingXpath = xpathString.toString();
+                xpathString = new StringBuilder(String.format(XPATH_INTESECTION_FORMULA, existingXpath, xpath, xpath));
+            }
+        }
+        return xpathString.toString();
     }
 
     private String buildExpression(String propertyName, String propertyValue, ConditionType contidionType) {
