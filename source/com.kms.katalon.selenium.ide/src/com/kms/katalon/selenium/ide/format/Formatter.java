@@ -9,11 +9,22 @@ public interface Formatter {
 
 	public String format(Command command);
 	
-	public default String valueOf(String param) {
+	public default String stringValue(String value) {
+		return "'" + value + "'";
+	}
+	
+	public default String paramOf(String param) {
 		if (StringUtils.isNotBlank(param) && param.contains("{")) {
 			param = param.replace("${", "");
 			param = param.replace("}", "");
 			return param;
+		}
+		return param;
+	}
+	
+	public default String valueOf(String param) {
+		if (StringUtils.isNotBlank(param) && param.contains("{")) {
+			return paramOf(param);
 		}
 		return stringValue(param);
 	}
@@ -62,19 +73,6 @@ public interface Formatter {
 			ret = "\"" + pattern + "\".equals(" + method + ")";
 		}
 		return ret;
-	}
-	
-	public default String paramOf(String param) {
-		if (StringUtils.isNotBlank(param) && param.contains("{")) {
-			param = param.replace("${", "");
-			param = param.replace("}", "");
-			return param;
-		}
-		return param;
-	}
-	
-	public default String stringValue(String value) {
-		return "'" + value + "'";
 	}
 	
 	public default String getCleanCommandTail(String commandTail) {
