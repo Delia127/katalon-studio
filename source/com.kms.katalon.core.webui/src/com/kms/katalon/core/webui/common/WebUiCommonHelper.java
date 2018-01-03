@@ -794,6 +794,7 @@ public class WebUiCommonHelper extends KeywordHelper {
                     if (objectInsideShadowDom) {
                         webElements = doFindElementsInsideShadowDom(testObject, timeOut, webDriver, cssLocator,
                                 parentObject, shadowRootElement);
+                        return webElements;
                     } else {
                         webElements = webDriver.findElements(defaultLocator);
                         if (webElements != null && webElements.size() > 0) {
