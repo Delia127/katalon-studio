@@ -43,9 +43,9 @@ public class WaitForFormatter implements Formatter {
 		Pattern pattern = Pattern.compile("(waitFor)(.*?)$");
 		Matcher matcher = pattern.matcher(command.getCommand());
 		if (matcher.find()) {
-			String paramName = getParamName("get" + matcher.group(2), command.getTarget(), command.getValue());
-			String method = getNormalMethod(matcher.group(2), command.getTarget());
-			return returnPattern("'" + paramName + "'.equals(" + method + ")");
+			String suffixMethodName = matcher.group(2);
+			String condition = conditionWithMatchingOrNotForWaitFor(suffixMethodName, command.getTarget(), command.getValue());
+			return returnPattern(condition);
 		}
 		return formatted.toString();
 	}
@@ -113,7 +113,7 @@ public class WaitForFormatter implements Formatter {
 	}
 
 	private String returnPattern(String condition) {
-		return "selenium.waitFor({" + condition + "} as Callable<Boolean>)";
+		return "selenium.waitFor({" + condition + "})";
 	}
 	
 }

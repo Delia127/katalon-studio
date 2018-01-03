@@ -18,6 +18,52 @@ public interface Formatter {
 		return stringValue(param);
 	}
 	
+	public default String getPattern(String suffixMethodName, String target, String value) {
+		boolean hasParam = ClazzUtils.hasParam("get" + suffixMethodName);
+		return hasParam ? value : target;
+	}
+	
+	public default boolean isMatching(String pattern) {
+		return pattern.contains("*") || pattern.startsWith("glob:") || pattern.startsWith("regrex:");
+	}
+	
+	public default String toPattern(String userPattern) {
+		if (userPattern.startsWith("glob:")) {
+			userPattern = userPattern.replace("glob:", "");
+			return com.kms.katalon.selenium.ide.util.StringUtils.convertGlobToRegex(userPattern);
+		}
+		if (userPattern.startsWith("regex:")) {
+			userPattern = userPattern.replace("regex:", "");
+		}
+		return userPattern.replaceAll("\\*", ".*");
+	}
+	
+	public default String conditionWithMatchingOrNot(String suffixMethodName, String target, String value) throws Exception {
+		String cleanMethodName = getCleanCommandTail(suffixMethodName);
+		String method = getNormalMethod(cleanMethodName, target);
+		String pattern = getPattern(cleanMethodName, target, value);
+		String ret = "";
+		if (isMatching(pattern)) {
+			ret = method + ".matches(\"" + toPattern(pattern) + "\")";
+		} else {
+			ret = "\"" + pattern + "\", " + method + "";
+		}
+		return ret;
+	}
+	
+	public default String conditionWithMatchingOrNotForWaitFor(String suffixMethodName, String target, String value) throws Exception {
+		String cleanMethodName = getCleanCommandTail(suffixMethodName);
+		String method = getNormalMethod(cleanMethodName, target);
+		String pattern = getPattern(cleanMethodName, target, value);
+		String ret = "";
+		if (isMatching(pattern)) {
+			ret = method + ".matches(\"" + toPattern(pattern) + "\")";
+		} else {
+			ret = "\"" + pattern + "\".equals(" + method + ")";
+		}
+		return ret;
+	}
+	
 	public default String paramOf(String param) {
 		if (StringUtils.isNotBlank(param) && param.contains("{")) {
 			param = param.replace("${", "");

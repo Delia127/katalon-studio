@@ -49,10 +49,10 @@ public class VerifyAndAssertFormatter implements Formatter {
 		Pattern pattern = Pattern.compile("(" + action + ")(.*?)$");
 		Matcher matcher = pattern.matcher(command.getCommand());
 		if (matcher.find()) {
-			String actionMethod = getActionMethod(matcher.group(2));
-			String method = getNormalMethod(matcher.group(2), command.getTarget());
-			String paramName = getParamName("get" + matcher.group(2), command.getTarget(), command.getValue());
-			formatted.append(actionMethod + "('" + paramName + "', " + method + ")");
+			String suffixMethodName = matcher.group(2);
+			String actionMethod = getActionMethod(suffixMethodName, command.getTarget(), command.getValue());
+			String condition = conditionWithMatchingOrNot(suffixMethodName, command.getTarget(), command.getValue());
+			formatted.append(actionMethod + "(" + condition + ")");
 
 			String wait = getWaitIfHas(matcher.group(2));
 			if (StringUtils.isNotBlank(wait)) {
@@ -62,7 +62,10 @@ public class VerifyAndAssertFormatter implements Formatter {
 		return formatted.toString();
 	}
 
-	public String getActionMethod(String commandTail) {
+	public String getActionMethod(String commandTail, String target, String value) {
+		if (isMatching(getPattern(commandTail, target, value))) {
+			return commandTail.startsWith("Not") ? action + "False" : action + "True";
+		}
 		return commandTail.startsWith("Not") ? action + "NotEquals" : action + "Equals";
 	}
 	

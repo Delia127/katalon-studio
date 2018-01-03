@@ -1,13 +1,13 @@
 package com.kms.katalon.core.webui.driver;
 
-import java.util.concurrent.Callable;
-
 import org.junit.Assert;
 import org.openqa.selenium.WebDriver;
 
 import com.thoughtworks.selenium.webdriven.ElementFinder;
 import com.thoughtworks.selenium.webdriven.JavascriptLibrary;
 import com.thoughtworks.selenium.webdriven.WebDriverBackedSelenium;
+
+import groovy.lang.Closure;
 
 public class KatalonWebDriverBackedSelenium extends WebDriverBackedSelenium {
 
@@ -40,10 +40,10 @@ public class KatalonWebDriverBackedSelenium extends WebDriverBackedSelenium {
 		super.waitForPageToLoad(WAIT_FOR_PAGE_TO_LOAD_IN_SECONDS);
 	}
 	
-	public void waitFor(Callable<?> callable) {
+	public void waitFor(Closure<Boolean> callable) {
 		try {
 			for (int second = 0;; second++) {
-				Boolean satisfied = (Boolean) callable.call();
+				Boolean satisfied = callable.call();
 				if (second >= 60) Assert.fail("timeout");
 				try {
 					if (satisfied)
