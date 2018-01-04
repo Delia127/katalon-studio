@@ -276,8 +276,10 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.ANDROID_16);
         ImageManager.registerImage(IImageKeys.APPLE_16);
         ImageManager.registerImage(IImageKeys.CHROME_16);
+        ImageManager.registerImage(IImageKeys.CHROME_HEADLESS_16);
         ImageManager.registerImage(IImageKeys.EDGE_16);
         ImageManager.registerImage(IImageKeys.FIREFOX_16);
+        ImageManager.registerImage(IImageKeys.FIREFOX_HEADLESS_16);
         ImageManager.registerImage(IImageKeys.IE_16);
         ImageManager.registerImage(IImageKeys.REMOTE_16);
         ImageManager.registerImage(IImageKeys.SAFARI_16);
