@@ -172,7 +172,9 @@ public class VideoRecorderService implements LauncherListener, LogEvaluator {
             videoSubtitleWriter.delete();
         }
 
-        getCurrentReportItem(testCaseIndex - 1).setVideoLocation(StringUtils.EMPTY);
+        if (testCaseIndex > 0) {
+            getCurrentReportItem(testCaseIndex - 1).setVideoLocation(StringUtils.EMPTY);
+        }
     }
 
     private void writeSub() {

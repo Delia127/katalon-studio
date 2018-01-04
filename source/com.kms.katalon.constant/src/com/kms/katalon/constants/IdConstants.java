@@ -103,6 +103,8 @@ public interface IdConstants {
             + ".integration";
 
     public static final String TEST_SUITE_MAIN_PART_ID_SUFFIX = TEST_SUITE_SUB_PART_STACK_ID_SUFFIX + ".testSuitePart";
+    
+    public static final String TEST_SUITE_SCRIPT_PART_ID_SUFFIX = TEST_SUITE_SUB_PART_STACK_ID_SUFFIX + ".editor";
 
     // Test Data Part content
     public static final String TESTDATA_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID + ".testdata";

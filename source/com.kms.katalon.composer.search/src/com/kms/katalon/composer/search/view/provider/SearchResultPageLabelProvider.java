@@ -12,6 +12,7 @@ import org.eclipse.swt.graphics.Image;
 
 import com.kms.katalon.composer.search.constants.ImageConstants;
 import com.kms.katalon.composer.search.constants.StringConstants;
+import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
@@ -20,6 +21,8 @@ import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.groovy.constant.GroovyConstants;
+
+import static com.kms.katalon.constants.GlobalStringConstants.DF_CHARSET;
 
 @SuppressWarnings({ "restriction" })
 public class SearchResultPageLabelProvider extends DecoratingFileSearchLabelProvider {
@@ -73,14 +76,15 @@ public class SearchResultPageLabelProvider extends DecoratingFileSearchLabelProv
                 }
 
                 if (fileExtension.equals(WebElementEntity.getWebElementFileExtension())) {
-                    if (IOUtils.toString(file.getContents()).contains(WebServiceRequestEntity.class.getSimpleName())) {
+                    if (IOUtils.toString(file.getContents(), 
+                                    DF_CHARSET).contains(WebServiceRequestEntity.class.getSimpleName())) {
                         return ImageConstants.IMG_16_TEST_OBJECT_WS;
                     }
                     return ImageConstants.IMG_16_TEST_OBJECT;
                 }
 
                 if (fileExtension.equals(TestSuiteEntity.getTestSuiteFileExtension())) {
-                    if (IOUtils.toString(file.getContents())
+                    if (IOUtils.toString(file.getContents(), DF_CHARSET)
                             .contains(TestSuiteCollectionEntity.class.getSimpleName())) {
                         return ImageConstants.IMG_16_TEST_SUITE_COLLECTION;
                     }

@@ -4,6 +4,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -63,8 +64,7 @@ public class SpyObjectHandler {
         try {
             if (objectSpyDialog == null || objectSpyDialog.isDisposed()) {
                 Shell shell = getShell(activeShell);
-                objectSpyDialog = new NewObjectSpyDialog(shell, LoggerSingleton.getInstance().getLogger(),
-                        eventBroker);
+                objectSpyDialog = new NewObjectSpyDialog(shell, LoggerSingleton.getInstance().getLogger(), eventBroker);
                 objectSpyDialog.setBlockOnOpen(false);
             }
             objectSpyDialog.open();
@@ -82,12 +82,16 @@ public class SpyObjectHandler {
     }
 
     private Shell getShell(Shell activeShell) {
+        if (Platform.OS_WIN32.equals(Platform.getOS())) {
+            return null;
+        }
         Shell shell = new Shell();
         Rectangle activeShellSize = activeShell.getBounds();
-        shell.setLocation((activeShellSize.width - shell.getBounds().width) / 2, (activeShellSize.height - shell.getBounds().height) / 2);
+        shell.setLocation((activeShellSize.width - shell.getBounds().width) / 2,
+                (activeShellSize.height - shell.getBounds().height) / 2);
         return shell;
     }
-    
+
     @CanExecute
     private boolean canExecute() {
         return ProjectController.getInstance().getCurrentProject() != null;

@@ -5,13 +5,17 @@ import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPre
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.core.setting.BundleSettingStore;
+import com.kms.katalon.core.setting.ReportFormatType;
 import com.kms.katalon.core.util.internal.JarUtil;
+import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
@@ -19,6 +23,9 @@ import com.kms.katalon.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class EmailSettingStore extends BundleSettingStore {
+
+    private static final boolean DEFAULT_EMAIL_SETTING_ENABLED = true;
+
     private static final String KATALON_STUDIO_EMAIL_SIGNATURE = "Katalon Studio";
 
     private static final String RESOURCES_TEMPLATE_EMAIL_FOLDER = "resources/template/email";
@@ -39,6 +46,14 @@ public class EmailSettingStore extends BundleSettingStore {
 
     private boolean getBooleanFromSettingOrPrefs(String mailConfigSettingName) throws IOException {
         return getBoolean(mailConfigSettingName, mailPreferenceStore.getBoolean(mailConfigSettingName));
+    }
+
+    public boolean isEnabled() throws IOException {
+        return getBoolean(ExecutionPreferenceConstants.MAIL_CONFIG_ENABLED, DEFAULT_EMAIL_SETTING_ENABLED);
+    }
+
+    public void setEnabled(boolean isEnabled) throws IOException {
+        setProperty(ExecutionPreferenceConstants.MAIL_CONFIG_ENABLED, isEnabled);
     }
 
     public String getHost() throws IOException {
@@ -151,5 +166,19 @@ public class EmailSettingStore extends BundleSettingStore {
 
     public void setEmailBcc(String bcc) throws IOException {
         setProperty(ExecutionPreferenceConstants.MAIL_CONFIG_CC, StringUtils.defaultString(bcc));
+    }
+
+    public List<ReportFormatType> getReportFormatOptions() throws IOException {
+        String reportFormatOptAsJson = getString(ExecutionPreferenceConstants.MAIL_CONFIG_REPORT_FORMAT,
+                StringUtils.EMPTY);
+        if (StringUtils.isEmpty(reportFormatOptAsJson)) {
+            return Arrays.asList(ReportFormatType.HTML, ReportFormatType.CSV);
+        }
+        return Arrays.asList(JsonUtil.fromJson(reportFormatOptAsJson, ReportFormatType[].class));
+    }
+
+    public void setReportFormatOptions(List<ReportFormatType> reportFormatOptions) throws IOException {
+        String reportFormatOptAsJson = JsonUtil.toJson(reportFormatOptions.toArray(new ReportFormatType[0]));
+        setProperty(ExecutionPreferenceConstants.MAIL_CONFIG_REPORT_FORMAT, reportFormatOptAsJson);
     }
 }

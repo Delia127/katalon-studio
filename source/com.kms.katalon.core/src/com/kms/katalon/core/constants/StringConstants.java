@@ -17,6 +17,10 @@ public class StringConstants {
     public static final String LOG_START_TEST_METHOD = "startTest";
 
     public static final String LOG_START_KEYWORD = "Start action";
+    
+    public static final String LOG_SETUP_ACTION = "setup action";
+    
+    public static final String LOG_TEAR_DOWN_ACTION = "tear down";
 
     public static final String LOG_START_KEYWORD_METHOD = "startKeyword";
 
@@ -27,6 +31,8 @@ public class StringConstants {
     public static final String LOG_END_TEST = "End Test Case";
 
     public static final String LOG_END_TEST_METHOD = "endTest";
+    
+    public static final String LOG_LISTENER_ACTION = "listener action";
 
     public static final String LOG_END_KEYWORD = "End action";
 

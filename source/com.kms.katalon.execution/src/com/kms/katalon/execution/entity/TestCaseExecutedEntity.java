@@ -65,7 +65,7 @@ public class TestCaseExecutedEntity extends ExecutedEntity {
         
         for (int loop = 0; loop < loopTimes; loop++) {
             ReportTestCaseEntity reportItems = new ReportTestCaseEntity();
-            String testCaseName = (loop == 0) ? getSourceName() : String.format("%s - Iteration %d", loop);
+            String testCaseName = (loop == 0) ? getSourceName() : String.format("%s - Iteration %d", getSourceName(), loop);
             reportItems.setTestCaseName(testCaseName);
             reportItems.setTestCaseId(getSourceId());
             reportTestCases.add(reportItems);

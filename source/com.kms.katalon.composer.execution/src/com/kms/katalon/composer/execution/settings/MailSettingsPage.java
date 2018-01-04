@@ -5,8 +5,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -35,12 +37,14 @@ import org.eclipse.swt.widgets.Text;
 import com.kms.katalon.composer.components.dialogs.MessageDialogWithLink;
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.setting.ReportFormatType;
 import com.kms.katalon.execution.entity.EmailConfig;
 import com.kms.katalon.execution.setting.EmailSettingStore;
 import com.kms.katalon.execution.util.MailUtil;
@@ -57,6 +61,8 @@ public class MailSettingsPage extends PreferencePageWithHelp {
 
     private EmailSettingStore store;
 
+    private Button checkboxEnableEmail;
+
     private Text txtHost, txtPort, txtUsername, txtPassword;
 
     private Combo comboProtocol;
@@ -71,11 +77,20 @@ public class MailSettingsPage extends PreferencePageWithHelp {
 
     private EmailConfigValidator validator;
 
+    private Group grpReportFormatOptions;
+
+    private Composite attachmentOptionsComposite;
+
+    Composite configComposite;
+
+    private Map<ReportFormatType, Button> formatOptionCheckboxes;
+
     public MailSettingsPage() {
         super();
         noDefaultButton();
         store = new EmailSettingStore(ProjectController.getInstance().getCurrentProject());
         validator = new EmailConfigValidator();
+        formatOptionCheckboxes = new HashMap<>();
     }
 
     public EmailSettingStore getSettingStore() {
@@ -86,9 +101,19 @@ public class MailSettingsPage extends PreferencePageWithHelp {
     protected Control createContents(Composite parent) {
         Composite container = createComposite(parent, 1, 1);
 
-        createServerGroup(container);
+        checkboxEnableEmail = new Button(container, SWT.CHECK);
+        checkboxEnableEmail.setText(ComposerExecutionMessageConstants.PREF_CHKBOX_ENABLE_SENDING_EMAIL);
+        checkboxEnableEmail.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-        createPostExecuteGroup(container);
+        configComposite = createComposite(container, 1, 1);
+
+        createServerGroup(configComposite);
+
+        createPostExecuteGroup(configComposite);
+
+        createReportFormatGroup(configComposite);
+
+        createSendTestEmailButton(configComposite);
 
         registerControlListers();
 
@@ -100,23 +125,38 @@ public class MailSettingsPage extends PreferencePageWithHelp {
     private void updateInput() {
         try {
             EmailSettingStore settingStore = getSettingStore();
+            checkboxEnableEmail.setSelection(settingStore.isEnabled());
+            enableEmailControls();
+
             txtHost.setText(settingStore.getHost());
             txtPort.setText(settingStore.getPort());
             txtUsername.setText(settingStore.getUsername());
             txtPassword.setText(settingStore.getPassword());
             comboProtocol.setText(settingStore.getProtocol());
             btnChkAttachment.setSelection(settingStore.isAddAttachment());
+            updateReportFormatOptionsStatus();
 
             txtRecipients.setText(settingStore.getRecipients());
             txtCc.setText(settingStore.getEmailCc());
             txtBcc.setText(settingStore.getEmailBcc());
             txtSubject.setText(settingStore.getEmailSubject());
+
+            settingStore.getReportFormatOptions().forEach(format -> {
+                formatOptionCheckboxes.get(format).setSelection(true);
+            });
         } catch (IOException e) {
             LoggerSingleton.logError(e);
         }
     }
 
     private void registerControlListers() {
+        checkboxEnableEmail.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                enableEmailControls();
+            }
+        });
         lnkEditTemplate.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -139,6 +179,7 @@ public class MailSettingsPage extends PreferencePageWithHelp {
                 emailConfig.setSubject(txtSubject.getText());
                 emailConfig.setCc(txtCc.getText());
                 emailConfig.setBcc(txtBcc.getText());
+                emailConfig.setAttachmentOptions(getSelectedAttachmentOptions());
                 try {
                     emailConfig.setHtmlMessage(getSettingStore().getEmailHTMLTemplate());
                 } catch (IOException | URISyntaxException ex) {
@@ -203,6 +244,24 @@ public class MailSettingsPage extends PreferencePageWithHelp {
             }
         });
 
+        btnChkAttachment.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                updateReportFormatOptionsStatus();
+            }
+        });
+    }
+
+    private List<ReportFormatType> getSelectedAttachmentOptions() {
+        return formatOptionCheckboxes.entrySet()
+                .stream()
+                .filter(e -> e.getValue().getSelection())
+                .map(e -> e.getKey())
+                .collect(Collectors.toList());
+    }
+
+    private void updateReportFormatOptionsStatus() {
+        ControlUtils.recursiveSetEnabled(attachmentOptionsComposite, btnChkAttachment.getSelection());
     }
 
     private void setValidationAndEnableSendEmail(String property, boolean validated) {
@@ -222,6 +281,7 @@ public class MailSettingsPage extends PreferencePageWithHelp {
         }
         try {
             EmailSettingStore settingStore = getSettingStore();
+            settingStore.setEnabled(checkboxEnableEmail.getSelection());
             settingStore.setHost(txtHost.getText());
             settingStore.setPort(txtPort.getText());
             settingStore.setUsername(txtUsername.getText());
@@ -232,6 +292,7 @@ public class MailSettingsPage extends PreferencePageWithHelp {
             settingStore.setEmailCc(txtCc.getText());
             settingStore.setEmailBcc(txtBcc.getText());
             settingStore.setRecipients(txtRecipients.getText());
+            settingStore.setReportFormatOptions(getSelectedAttachmentOptions());
             return super.performOk();
         } catch (IOException e) {
             LoggerSingleton.logError(e);
@@ -263,15 +324,45 @@ public class MailSettingsPage extends PreferencePageWithHelp {
         lnkEditTemplate = new Link(postExecuteGroup, SWT.NONE);
         lnkEditTemplate.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
         lnkEditTemplate.setText(String.format("<a>%s</a>", ComposerExecutionMessageConstants.PREF_LNK_EDIT_TEMPLATE));
+    }
 
-        btnChkAttachment = new Button(postExecuteGroup, SWT.CHECK);
-        btnChkAttachment.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+    private void createReportFormatGroup(Composite container) {
+        grpReportFormatOptions = new Group(container, SWT.NONE);
+        grpReportFormatOptions.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        grpReportFormatOptions.setText(ComposerExecutionMessageConstants.PREF_LBL_REPORT_FORMAT);
+
+        GridLayout reportFormatLayout = new GridLayout(1, true);
+        reportFormatLayout.marginLeft = 0;
+        reportFormatLayout.marginRight = 0;
+        reportFormatLayout.marginHeight = 5;
+        grpReportFormatOptions.setLayout(reportFormatLayout);
+
+        btnChkAttachment = new Button(grpReportFormatOptions, SWT.CHECK);
+        btnChkAttachment.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         btnChkAttachment.setText(ComposerExecutionMessageConstants.PREF_LBL_INCLUDE_ATTACHMENT);
 
-        btnSendTestEmail = new Button(postExecuteGroup, SWT.PUSH);
-        btnSendTestEmail.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 2, 1));
-        btnSendTestEmail.setText(ComposerExecutionMessageConstants.PREF_LBL_SEND_TEST_EMAIL);
+        attachmentOptionsComposite = new Composite(grpReportFormatOptions, SWT.NONE);
+        attachmentOptionsComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+        GridLayout attachmentsLayout = new GridLayout(1, true);
+        attachmentsLayout.marginLeft = 15;
+        attachmentsLayout.marginRight = 0;
+        attachmentsLayout.marginHeight = 0;
+        attachmentOptionsComposite.setLayout(attachmentsLayout);
 
+        for (ReportFormatType formatType : ReportFormatType.values()) {
+            Button btnFormmatingType = new Button(attachmentOptionsComposite, SWT.CHECK);
+            btnFormmatingType.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+            btnFormmatingType.setText(formatType.toString());
+            btnFormmatingType.setData(formatType);
+
+            formatOptionCheckboxes.put(formatType, btnFormmatingType);
+        }
+    }
+
+    private void createSendTestEmailButton(Composite parent) {
+        btnSendTestEmail = new Button(parent, SWT.PUSH);
+        btnSendTestEmail.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+        btnSendTestEmail.setText(ComposerExecutionMessageConstants.PREF_LBL_SEND_TEST_EMAIL);
     }
 
     private void createServerGroup(Composite container) {
@@ -375,6 +466,24 @@ public class MailSettingsPage extends PreferencePageWithHelp {
     @Override
     protected String getDocumentationUrl() {
         return DocumentationMessageConstants.SETTINGS_EMAIL;
+    }
+
+    private void enableEmailControls() {
+        boolean isEnabled = checkboxEnableEmail.getSelection();
+        txtHost.setEnabled(isEnabled);
+        txtPort.setEnabled(isEnabled);
+        txtUsername.setEnabled(isEnabled);
+        txtPassword.setEnabled(isEnabled);
+        comboProtocol.setEnabled(isEnabled);
+        txtRecipients.setEnabled(isEnabled);
+        txtCc.setEnabled(isEnabled);
+        txtBcc.setEnabled(isEnabled);
+        txtSubject.setEnabled(isEnabled);
+        lnkEditTemplate.setEnabled(isEnabled);
+        btnChkAttachment.setEnabled(isEnabled);
+        boolean isSubAttachmentEnabled = btnChkAttachment.getSelection() && isEnabled;
+        ControlUtils.recursiveSetEnabled(attachmentOptionsComposite, isSubAttachmentEnabled);
+        btnSendTestEmail.setEnabled(isEnabled);
     }
 
     private class EmailConfigValidator {

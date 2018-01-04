@@ -19,7 +19,7 @@ public class ColorUtil {
 
     private static final String ERROR_LOG_BACKGROUND_COLOR = "#ec5c51";
 
-    private static final String WARNING_LOG_BACKGROUND_COLOR = "#fecc22";
+    private static final String WARNING_LOG_BACKGROUND_COLOR = "#ffd54f";
 
     private static final String INCOMPLETE_LOG_COLOR = "#997515";
 

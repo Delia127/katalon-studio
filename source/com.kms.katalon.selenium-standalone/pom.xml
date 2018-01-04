@@ -20,7 +20,7 @@
 				<version>${maven-resources-plugin.version}</version>
 				<executions>
 					<execution>						
-						<id>copy-selenium-standalone-resources</id>
+						<id>copy-selenium-resources</id>
 						<phase>generate-resources</phase>
 						<goals>
 							<goal>copy-resources</goal>

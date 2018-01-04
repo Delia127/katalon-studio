@@ -1,5 +1,7 @@
 package com.kms.katalon.execution.preferences;
 
+import java.io.IOException;
+
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.kms.katalon.core.network.ProxyInformation;
@@ -26,7 +28,7 @@ public class ProxyPreferences {
         return proxyInfo;
     }
 
-    public static void saveProxyInformation(ProxyInformation proxyInfo) {
+    public static void saveProxyInformation(ProxyInformation proxyInfo) throws IOException {
         IPreferenceStore store = getPreferenceStore();
         store.setValue(ProxyPreferenceConstants.PROXY_OPTION, proxyInfo.getProxyOption());
         store.setValue(ProxyPreferenceConstants.PROXY_SERVER_TYPE, proxyInfo.getProxyServerType());
@@ -35,6 +37,8 @@ public class ProxyPreferences {
         store.setValue(ProxyPreferenceConstants.PROXY_USERNAME, proxyInfo.getUsername());
         store.setValue(ProxyPreferenceConstants.PROXY_PASSWORD, proxyInfo.getPassword());
         store.setValue(ProxyPreferenceConstants.PROXY_PREFERENCE_SET, true);
+        
+        ((ScopedPreferenceStore) store).save();
     }
 
     private static ScopedPreferenceStore getPreferenceStore() {

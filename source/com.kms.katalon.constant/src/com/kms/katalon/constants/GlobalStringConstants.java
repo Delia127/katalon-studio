@@ -56,6 +56,8 @@ public class GlobalStringConstants {
     
     // Path
     public static final String ENTITY_ID_SEPARATOR = "/";
+    
+    public static final String DF_CHARSET = "UTF-8";
 
     // Common character
     public static final String CR_DOT = ".";
@@ -165,6 +167,8 @@ public class GlobalStringConstants {
 
     public static final String OBJECT_SPY = GlobalMessageConstants.OBJECT_SPY;
 
+    public static final String WEB_RECORDER = GlobalMessageConstants.WEB_RECORDER;
+
     public static final String RUN = GlobalMessageConstants.RUN;
 
     public static final String STOP = GlobalMessageConstants.STOP;
@@ -252,6 +256,8 @@ public class GlobalStringConstants {
 
     // Common value
     public static final String NULL = GlobalMessageConstants.NULL;
+    
+    public static final String APP_TEMP_DIR = System.getProperty("java.io.tmpdir") + File.separator + "Katalon";
 
     public static final String APP_USER_DIR_LOCATION = System.getProperty("user.home") + File.separator + ".katalon";
 

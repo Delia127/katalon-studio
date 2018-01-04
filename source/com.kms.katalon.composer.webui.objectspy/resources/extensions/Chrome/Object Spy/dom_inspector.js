@@ -62,20 +62,12 @@ function createInstructionDiv() {
     addSpanElementToElement('Capture object: ', instructionDiv)
     createElementForHotKey(spy_captureObjectHotKey, instructionDiv)
 
-    addSpanElementToElement(dot + ' Load DOM Map: ', instructionDiv)
-    createElementForHotKey(spy_loadDomMapHotKey, instructionDiv)
-    infoDiv.appendChild(instructionDiv);
-
     infoDiv.appendChild(instructionDiv);
 }
 
 function createElementForHotKey(hotKeyObject, parentDiv) {
     if (!hotKeyObject) {
         return;
-    }
-    if (hotKeyObject.useCtrlKey) {
-        addKbdElementToElement('Ctrl', parentDiv);
-        parentDiv.appendChild(document.createTextNode(space));
     }
     if (hotKeyObject.useAltKey) {
         addKbdElementToElement('Alt', parentDiv);
@@ -225,9 +217,6 @@ function keyUp(e) {
     if (isHotKeyPressed(spy_captureObjectHotKey, e)) {
         sendData();
         return;
-    }
-    if (isHotKeyPressed(spy_loadDomMapHotKey, e)) {
-        forwardPostDomMapEvent();
     }
 }
 

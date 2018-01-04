@@ -8,6 +8,7 @@ import java.io.IOException;
 import org.openqa.selenium.firefox.internal.Extension;
 import org.openqa.selenium.io.FileHandler;
 import org.openqa.selenium.io.TemporaryFilesystem;
+import org.openqa.selenium.io.Zip;
 
 public class FirefoxWebExtension implements Extension {
     private final File toInstall;
@@ -46,7 +47,7 @@ public class FirefoxWebExtension implements Extension {
         if (!extensionToInstall.isDirectory()) {
             BufferedInputStream bis = new BufferedInputStream(new FileInputStream(extensionToInstall));
             try {
-                root = FileHandler.unzip(bis);
+                Zip.unzip(bis, root);
             } finally {
                 bis.close();
             }

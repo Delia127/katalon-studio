@@ -36,6 +36,7 @@ import com.kms.katalon.composer.mobile.objectspy.constant.StringConstants;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileAppDialog;
 import com.kms.katalon.composer.mobile.objectspy.dialog.MobileInspectorController;
 import com.kms.katalon.composer.mobile.objectspy.preferences.MobileObjectSpyPreferencesHelper;
+import com.kms.katalon.execution.mobile.device.AndroidDeviceInfo;
 import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
 
 public class LocalAppComposite extends Composite {
@@ -234,6 +235,10 @@ public class LocalAppComposite extends Composite {
             ProgressMonitorDialogWithThread progressDlg) throws InvocationTargetException, InterruptedException {
         final MobileDeviceInfo selectDeviceInfo = getSelectedMobileDeviceInfo();
         if (selectDeviceInfo == null) {
+            return false;
+        }
+
+        if (selectDeviceInfo instanceof AndroidDeviceInfo && !MobileDeviceUIProvider.checkAndroidSDKExist(getShell())) {
             return false;
         }
         final String appFile = getAppFile();

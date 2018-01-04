@@ -128,7 +128,7 @@ public abstract class AbstractDriverConnector implements IDriverConnector {
             } else if (object instanceof Map) {
                 convertSettingValue((Map<String, Object>) object);
             } else if (object instanceof Double) {
-                list.set(i, ((Double) object).intValue());
+                list.set(i, ((Double) object).doubleValue());
             }
         }
     }
@@ -142,7 +142,7 @@ public abstract class AbstractDriverConnector implements IDriverConnector {
             } else if (object instanceof Map) {
                 convertSettingValue((Map<String, Object>) object);
             } else if (object instanceof Double) {
-                entry.setValue(((Double) object).intValue());
+                entry.setValue(((Double) object).doubleValue());
             }
         }
     }

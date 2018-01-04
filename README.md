@@ -45,3 +45,75 @@
   Type command "mvn clean verify" and wait for Maven BUILD SUCCESS.
   Katalon builds for typical platforms (Windows, Mac, Linux) will be generated and packaged under com.kms.katalon.product\target\products
   
+### Embedded Katalon Object Spy and Recorder extensions (Since Release 5.1.0)
+- Location
+-- Chrome Object Spy location: /../com.kms.katalon.composer.webui.objectspy/resources/extensions/Chrome/Object Spy/
+-- Chrome Recorder location: /../com.kms.katalon.composer.webui.recorder/resources/extensions/Chrome/Recorder/
+-- Firefox Object Spy/Recorder location: /../com.kms.katalon.composer.webui.objectspy/resources/extensions/Firefox/objectspy/
+-- IE Object Spy location: /../com.kms.katalon.composer.webui.objectspy/resources/extensions/IE/Object Spy
+-- IE Recorder location: /../com.kms.katalon.composer.webui.recorder/extensions/IE/RecorderExtension
+- Source code to follow-up: [InspectSession](https://github.com/kms-technology/katalon/blob/Release-5.1.0/source/com.kms.katalon.composer.webui.objectspy/src/com/kms/katalon/objectspy/core/InspectSession.java) and [RecordSession](https://github.com/kms-technology/katalon/blob/Release-5.1.0/source/com.kms.katalon.composer.webui.recorder/src/com/kms/katalon/composer/webui/recorder/core/RecordSession.java)
+
+### Katalon Utility Addon Message format (Since Release 5.3.0)
+##### Request sends from object spy to Katalon Studio
+
+*When users capture an object*
+
+- Host: http://localhost:50001
+
+- Method: POST
+
+- Body: element=URIEncoder.encode(capturedObject)
+
+- capturedObject: 
+
+| Name | Type | Description |
+|-----------|-------------|------------------------------------------------------------------------------------------------------------------|
+| type | String | HTML tag name. Eg: "div", "a", "input". |
+| attribute | Map | All html attributes of the captured object. Key is attribute name (String) and value is attribute value (String) |
+| xpath | String | XPath of the captured object. |
+| page | page object | Information of the current page that contains the captured object. |
+
+** *page object*
+
+| Name | Type | Description |
+|-----------|-------------|------------------------------------------------------------------------------------------------------------------|
+| url | String | Page url. Eg: "http://www.katalon.com" |
+| title | String | Page title. Eg: "Katalon Studio" |
+
+*When users record an object*
+
+- Host: http://localhost:50001
+
+- Method: POST
+
+- Body: element=URIEncoder.encode(recordedAction)
+
+- recordedAction: 
+
+| Name | Type | Description |
+|-----------|-------------|------------------------------------------------------------------------------------------------------------------|
+| type | String | HTML tag name. Eg: "div", "a", "input". |
+| attribute | Map | All html attributes of the captured object. Key is attribute name (String) and value is attribute value (String) |
+| xpath | String | XPath of the captured object. |
+| page | page object | Information of the current page that contains the captured object. |
+| action | action object | Description of an action|
+
+** *Action object*
+
+| Name | Type | Description |
+|-----------|-------------|------------------------------------------------------------------------------------------------------------------|
+| actionName | String | Name of the action. Eg: "nagivate", "click", "sendKeys" |
+| actionData | String | Data of the action |
+
+##### Request sends from Katalon Studio to Utility Addon
+
+*Request Message*
+
+| Name | Type | Description |
+|-----------|-------------|------------------------------------------------------------------------------------------------------------------|
+| command | enum | Name of the command. Eg: REQUEST_BROWSER_INFO, BROWSER_INFO, START_INSPECT, START_RECORD, HIGHLIGHT_OBJECT |
+| data | String | Follow-up data of the command. Maybe null. |
+##### Source code to follow-up:
+[ObjectSpy](https://github.com/kms-technology/katalon/tree/Release-5.3.0/source/com.kms.katalon.composer.webui.objectspy/src/com/kms/katalon/objectspy) and
+[Recorder](https://github.com/kms-technology/katalon/tree/Release-5.3.0/source/com.kms.katalon.composer.webui.recorder/src/com/kms/katalon/composer/webui/recorder)

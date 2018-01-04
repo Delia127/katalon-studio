@@ -40,10 +40,8 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
-import org.w3c.dom.Document;
 
 import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
-import com.kms.katalon.composer.components.impl.listener.EventListener;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
@@ -61,8 +59,6 @@ import com.kms.katalon.objectspy.constants.ObjectspyMessageConstants;
 import com.kms.katalon.objectspy.constants.StringConstants;
 import com.kms.katalon.objectspy.core.HTMLElementCollector;
 import com.kms.katalon.objectspy.dialog.SaveToObjectRepositoryDialog.SaveToObjectRepositoryDialogResult;
-import com.kms.katalon.objectspy.element.HTMLElement;
-import com.kms.katalon.objectspy.element.HTMLRawElement;
 import com.kms.katalon.objectspy.element.WebElement;
 import com.kms.katalon.objectspy.element.WebElement.WebElementType;
 import com.kms.katalon.objectspy.element.WebFrame;
@@ -74,6 +70,7 @@ import com.kms.katalon.objectspy.websocket.AddonSocket;
 import com.kms.katalon.objectspy.websocket.AddonSocketServer;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
+import com.kms.katalon.util.listener.EventListener;
 
 @SuppressWarnings("restriction")
 public class NewObjectSpyDialog extends Dialog
@@ -140,6 +137,7 @@ public class NewObjectSpyDialog extends Dialog
         this.logger = logger;
         this.eventBroker = eventBroker;
         eventBroker.subscribe(EventConstants.OBJECT_SPY_HTML_ELEMENT_CAPTURED, this);
+        eventBroker.subscribe(EventConstants.WORKSPACE_CLOSED, this);
         isDisposed = false;
         pages = new ArrayList<>();
         startSocketServer();
@@ -229,7 +227,7 @@ public class NewObjectSpyDialog extends Dialog
     }
 
     private void createCapturedObjectsAndPropertiesView(Composite bodyComposite) {
-        capturedObjectsView = new CapturedObjectsView(bodyComposite, SWT.NONE);
+        capturedObjectsView = new CapturedObjectsView(bodyComposite, SWT.NONE, eventBroker);
         Sash sash = new Sash(bodyComposite, SWT.HORIZONTAL);
         GridData layoutData = new GridData(SWT.FILL, SWT.TOP, true, false);
         sash.setLayoutData(layoutData);
@@ -309,16 +307,32 @@ public class NewObjectSpyDialog extends Dialog
                 IStructuredSelection selection = capturedObjectsView.getSelection();
                 @SuppressWarnings("rawtypes")
                 Iterator iterator = selection.iterator();
+                List<WebElement> removedElements = new ArrayList<>();
                 while (iterator.hasNext()) {
                     WebElement webElement = (WebElement) iterator.next();
                     WebFrame parent = webElement.getParent();
+                    removedElements.add(webElement);
                     if (webElement.getParent() == null) {
                         pages.remove(webElement);
                         continue;
                     }
-                    parent.getChildren().remove(webElement);
+                    
+                    int index = -1;
+                    List<WebElement> children = parent.getChildren();
+                    for (int i = 0; i < children.size(); i++) {
+                        WebElement child = children.get(i);
+                        if (child == webElement) {
+                            index = i;
+                            break;
+                        }
+                    }
+                    if (index >= 0) {
+                        children.remove(index);
+                    }
                 }
-                capturedObjectsView.refreshTree(null);
+                
+                removeElements(removedElements.toArray());
+                
                 objectPropertiesView.refreshTable(null);
             }
         });
@@ -343,6 +357,17 @@ public class NewObjectSpyDialog extends Dialog
                 capturedObjectsView.refreshTree(null);
             }
         });
+    }
+    
+    private void removeElements(Object[] removedElements) {
+        TreeViewer treeViewer = capturedObjectsView.getTreeViewer();
+        treeViewer.getControl().setRedraw(false);
+        Object[] expandedElements = treeViewer.getExpandedElements();
+        treeViewer.remove(removedElements);
+        for (Object element : expandedElements) {
+            treeViewer.setExpandedState(element, true);
+        }
+        treeViewer.getControl().setRedraw(true);
     }
 
     @Override
@@ -599,17 +624,20 @@ public class NewObjectSpyDialog extends Dialog
     @Override
     public void handleEvent(Event event) {
         Object dataObject = EventUtil.getData(event);
-        if (EventConstants.OBJECT_SPY_HTML_ELEMENT_CAPTURED.equals(event.getTopic())) {
-            if (!(dataObject instanceof WebElement)) {
+        String topic = event.getTopic();
+        switch (topic) {
+            case EventConstants.OBJECT_SPY_HTML_ELEMENT_CAPTURED: {
+                if (!(dataObject instanceof WebElement)) {
+                    return;
+                }
+                addNewElement((WebElement) dataObject);
                 return;
             }
-            addNewElement((WebElement) dataObject);
-            return;
+            case EventConstants.WORKSPACE_CLOSED: {
+                cancelPressed();
+                return;
+            }
         }
-        // if (event.getTopic() == ObjectSpyEventConstants.DIALOG_SIZE_CHANGED) {
-        // Shell shell = getShell();
-        // shell.setSize(shell.getSize().x, getInitialSize().y);
-        // }
     }
 
     private WebPage findPage(WebElement webElement) {
@@ -640,7 +668,8 @@ public class NewObjectSpyDialog extends Dialog
         newFrame.getChildren().forEach(newChild -> {
             int index = indexOf(oldChildren, newChild);
             if (index < 0) {
-                oldFrame.addChild(newChild);
+//                oldFrame.addChild(newChild);
+                newChild.setParent(oldFrame);
                 return;
             }
 
@@ -652,6 +681,7 @@ public class NewObjectSpyDialog extends Dialog
             WebElement mergedChildFrame = merge(oldChildFrame, (WebFrame) newChild);
             oldChildren.remove(index);
             oldChildren.add(index, mergedChildFrame);
+            mergedChildFrame.setParentOnly(oldFrame);
         });
         return oldFrame;
     }
@@ -679,16 +709,6 @@ public class NewObjectSpyDialog extends Dialog
                 setExpandForParentElement(pageOfElement, capturedElementTreeViewer);
             }
         });
-    }
-
-    @Override
-    public void addNewElement(HTMLElement newElement) {
-        // Do nothing. This method will be removed, once the new object spy complete
-    }
-
-    @Override
-    public void setHTMLDOMDocument(HTMLRawElement bodyElement, Document document) {
-        // Do nothing. This method will be removed, once the new object spy complete
     }
 
     private ScopedPreferenceStore getPreferenceStore() {

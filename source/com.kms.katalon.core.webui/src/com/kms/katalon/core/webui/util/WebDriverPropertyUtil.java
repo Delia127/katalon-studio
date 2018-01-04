@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
@@ -159,5 +160,22 @@ public class WebDriverPropertyUtil {
         argumentsList.add(CHROME_SWITCHES);
         argumentsList.add(DISABLE_EXTENSIONS);
         chromeOptions.put(CHROME_ARGUMENT_PROPERTY_KEY, argumentsList);
+    }
+    
+    public static void addArgumentsForChrome(DesiredCapabilities caps, String... args) {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> chromeOptions = (Map<String, Object>) caps.getCapability(ChromeOptions.CAPABILITY);
+        if (chromeOptions == null) {
+            chromeOptions= new HashMap<>();
+        }
+        
+        @SuppressWarnings("unchecked")
+        List<String> argsEntry = (List<String>) chromeOptions.get(CHROME_ARGUMENT_PROPERTY_KEY);
+        if (argsEntry == null) {
+            argsEntry = new ArrayList<>();
+        }
+        argsEntry.addAll(Arrays.asList(args));
+        chromeOptions.put(CHROME_ARGUMENT_PROPERTY_KEY, argsEntry);
+        caps.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
     }
 }

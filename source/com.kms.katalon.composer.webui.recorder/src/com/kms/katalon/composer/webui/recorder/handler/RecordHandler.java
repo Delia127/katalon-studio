@@ -11,6 +11,7 @@ import javax.inject.Inject;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.di.annotations.CanExecute;
@@ -23,6 +24,7 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.openqa.selenium.Keys;
@@ -56,7 +58,6 @@ import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
-import com.kms.katalon.objectspy.dialog.AddToObjectRepositoryDialog.AddToObjectRepositoryDialogResult;
 import com.kms.katalon.objectspy.dialog.SaveToObjectRepositoryDialog.SaveToObjectRepositoryDialogResult;
 import com.kms.katalon.objectspy.element.WebElement;
 import com.kms.katalon.objectspy.element.WebFrame;
@@ -79,6 +80,8 @@ public class RecordHandler {
     @Inject
     private UISynchronize sync;
 
+    private RecorderDialog recordDialog;
+
     @PostConstruct
     public void registerEventHandler() {
         eventBroker.subscribe(EventConstants.KATALON_RECORD, new EventHandler() {
@@ -100,14 +103,17 @@ public class RecordHandler {
 
     @Execute
     public void execute() {
+        Shell shell = null;
         try {
-            Shell activeShell = Display.getCurrent().getActiveShell();
             TestCaseCompositePart testCaseCompositePart = getSelectedTestCasePart();
             if (testCaseCompositePart != null && !verifyTestCase(testCaseCompositePart)) {
                 return;
             }
-            final RecorderDialog recordDialog = new RecorderDialog(activeShell,
-                    LoggerSingleton.getInstance().getLogger(), eventBroker);
+            if (recordDialog == null || recordDialog.isDisposed()) {
+                shell = getShell(Display.getCurrent().getActiveShell());
+                recordDialog = new RecorderDialog(shell, LoggerSingleton.getInstance().getLogger(), eventBroker);
+            }
+
             int responseCode = recordDialog.open();
             if (responseCode != Window.OK) {
                 return;
@@ -123,7 +129,21 @@ public class RecordHandler {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
                     StringConstants.HAND_ERROR_MSG_CANNOT_GEN_TEST_STEPS);
             LoggerSingleton.logError(e);
+        } finally {
+             if (shell != null && !shell.isDisposed()) {
+                 shell.dispose();
+             }
         }
+    }
+    
+    private Shell getShell(Shell activeShell) {
+        if (Platform.OS_WIN32.equals(Platform.getOS())) {
+            return null;
+        }
+        Shell shell = new Shell();
+        Rectangle activeShellSize = activeShell.getBounds();
+        shell.setLocation((activeShellSize.width - shell.getBounds().width) / 2, (activeShellSize.height - shell.getBounds().height) / 2);
+        return shell;
     }
 
     private TestCaseCompositePart createNewTestCase() throws Exception {

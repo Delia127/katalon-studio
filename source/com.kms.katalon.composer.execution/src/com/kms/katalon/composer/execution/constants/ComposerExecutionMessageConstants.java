@@ -36,9 +36,9 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String HAND_JOB_BUILDING_SCRIPTS;
 
     public static String HAND_TITLE_INFORMATION;
-    
+
     public static String HAND_ERROR_MSG_ERROR_IN_SCRIPT;
-    
+
     public static String HAND_INFO_MSG_NO_TEST_STEP_IN_TEST_CASE;
 
     public static String HAND_CONFIRM_MSG_NO_TEST_CASE_IN_TEST_SUITE;
@@ -60,7 +60,7 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String PA_LOADING_LOGS;
 
     public static String PA_LBL_START;
-    
+
     public static String PA_LBL_ELAPSED_TIME;
 
     public static String PA_LBL_RUNS;
@@ -82,8 +82,6 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String TRACE_WARN_MSG_UNABLE_TO_OPEN_TEST_CASE;
 
     public static String TRACE_WARN_MSG_UNABLE_TO_OPEN_KEYWORD_FILE;
-
-    public static String PREF_GRP_DEFAULT_EXECUTION_CONFIG;
 
     public static String PREF_LBL_DEFAULT_IMPLICIT_TIMEOUT;
 
@@ -226,15 +224,15 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String PAGE_EXTERNAL_LIB_JOB_TASK_REBUILD_PROJECT;
 
     public static String PAGE_EXTERNAL_LIB_MSG_UNABLE_UPDATE_PROJECT;
-    
+
     public static String HAND_CREATING_DIALOG;
-    
+
     public static String HAND_OPEN_DIALOG;
-    
+
     public static String HAND_OPEN_GENERATE_COMMAND_DIALOG;
 
     public static String DIA_CONFIRM_INSTALL_WEBDRIVER_TITLE;
-    
+
     public static String DIA_CONFIRM_INSTALL_WEBDRIVER;
 
     public static String LBL_EXECUTION_EXISTING_SESSION_BLANK_TITLE;
@@ -261,10 +259,10 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String DIA_WARN_TEST_CASE_NOT_FOUND;
 
     public static String DIA_WARN_UNABLE_NAVIGATE_TEST_CASE_STEP;
-    
+
     public static String MENU_ITEM_NAVIGATE_TEST_CASE_STEP;
 
-    //MailSettingsPage
+    // MailSettingsPage
     public static String PREF_TXT_PH_RECIPIENTS;
 
     public static String PREF_LBL_SUBJECT;
@@ -276,7 +274,9 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String PREF_LBL_BODY;
 
     public static String PREF_LNK_EDIT_TEMPLATE;
-    
+
+    public static String PREF_LBL_REPORT_FORMAT;
+
     // StyleRangeMatcher
     public static String WARN_TEST_OBEJCT_NOT_FOUND;
 
@@ -285,16 +285,26 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String WARN_CHECK_POINT_NOT_FOUND;
 
     public static String WARN_TEST_CASE_NOT_FOUND;
-    
+
     // RunConfigurationSelectionDialog
     public static String DIA_TITLE_RUN_CONFIG_SELECTION;
-    
+
     // GenerateCommandDialog
     public static String DIA_LBL_RUN_WITH;
 
     public static String DIA_LBL_RUN_CONFIGURATION;
-    
+
     public static String DIA_MSG_CONFIGURATION_IS_REQUIRED;
+
+    public static String PREF_CHKBOX_ENABLE_SENDING_EMAIL;
+
+    // MobileDeviceUIProvider
+    public static String DIA_MSG_ANDROID_SDK_MISSING;
+
+    public static String DIA_JOB_DOWNLOAD_AND_INSTALL_ANDROID_SDK;
+    
+    // ProxyConfigurationPreferencesPage
+    public static String PREF_MSG_UNABLE_TO_SAVE_PROXY_CONFIG;
 
     static {
         // initialize resource bundle

@@ -5,11 +5,11 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.DialogCellEditor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 
+import com.kms.katalon.composer.components.dialogs.AbstractDialogCellEditor;
 import com.kms.katalon.composer.integration.kobiton.constants.KobitonImageConstants;
 import com.kms.katalon.composer.integration.kobiton.dialog.KobitonDeviceDialog;
 import com.kms.katalon.composer.mobile.execution.testsuite.MobileTestExecutionDriverEntry;
@@ -26,7 +26,7 @@ public class KobitonTestExecutionDriverEntry extends MobileTestExecutionDriverEn
 
     @Override
     public CellEditor getRunConfigurationDataCellEditor(Composite parent) {
-        return new DialogCellEditor(parent) {  
+        return new AbstractDialogCellEditor(parent) {
 
             @Override
             protected void updateContents(Object value) {
@@ -36,7 +36,7 @@ public class KobitonTestExecutionDriverEntry extends MobileTestExecutionDriverEn
             @SuppressWarnings("unchecked")
             @Override
             protected Object openDialogBox(Control cellEditorWindow) {
-                KobitonDeviceDialog dialog = new KobitonDeviceDialog(cellEditorWindow.getShell(),
+                KobitonDeviceDialog dialog = new KobitonDeviceDialog(getParentShell(),
                         getDevice((Map<String, String>) getValue()));
                 if (dialog.open() != KobitonDeviceDialog.OK) {
                     return null;

@@ -30,6 +30,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.util.internal.PathUtil;
+import com.kms.katalon.core.util.internal.ZipUtil;
 import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.core.webui.util.WebDriverPropertyUtil;
@@ -84,6 +85,9 @@ public class InspectSession implements Runnable {
 
     protected static final String FIREFOX_ADDON_RELATIVE_PATH = File.separator + "Firefox" + File.separator
             + "objectspy.xpi";
+
+    protected static final String FIREFOX_ADDON_FOLDER_RELATIVE_PATH = File.separator + "Firefox" + File.separator
+            + "objectspy";
 
     protected String projectDir;
 
@@ -214,8 +218,7 @@ public class InspectSession implements Runnable {
             // wait for web socket to connect
             Thread.sleep(500);
         }
-        final AddonSocket firefoxAddonSocket = socketServer
-                .getAddonSocketByBrowserName(webUiDriverType.toString());
+        final AddonSocket firefoxAddonSocket = socketServer.getAddonSocketByBrowserName(webUiDriverType.toString());
         firefoxAddonSocket.sendMessage(new StartInspectAddonMessage());
     }
 
@@ -256,8 +259,7 @@ public class InspectSession implements Runnable {
         FirefoxProfile firefoxProfile = WebDriverPropertyUtil.createDefaultFirefoxProfile();
         File file = getFirefoxAddonFile();
         if (file != null) {
-            firefoxProfile.addExtension(file.getName(),
-                    new FirefoxWebExtension(file, FIREFOX_ADDON_UUID));
+            firefoxProfile.addExtension(file.getName(), new FirefoxWebExtension(file, FIREFOX_ADDON_UUID));
         }
         return firefoxProfile;
     }
@@ -289,7 +291,7 @@ public class InspectSession implements Runnable {
 
     protected File getChromeExtensionFile() throws IOException {
         File chromeExtension = null;
-        File extensionFolder = FileUtil.getExtensionsDirectory(FrameworkUtil.getBundle(this.getClass()));
+        File extensionFolder = FileUtil.getExtensionsDirectory(FrameworkUtil.getBundle(InspectSession.class));
         if (extensionFolder.exists() && extensionFolder.isDirectory()) {
             chromeExtension = new File(extensionFolder.getAbsolutePath() + getChromeExtensionPath());
         }
@@ -297,12 +299,18 @@ public class InspectSession implements Runnable {
     }
 
     protected File getFirefoxAddonFile() throws IOException {
-        File firefoxAddon = null;
-        File extensionFolder = FileUtil.getExtensionsDirectory(FrameworkUtil.getBundle(this.getClass()));
+        File extensionFolder = FileUtil.getExtensionsDirectory(FrameworkUtil.getBundle(InspectSession.class));
         if (extensionFolder.exists() && extensionFolder.isDirectory()) {
-            firefoxAddon = new File(extensionFolder.getAbsolutePath() + getFirefoxExtensionPath());
+            File firefoxExtensionFolder = FileUtil.getExtensionBuildFolder();
+            File firefoxAddonExtracted = new File(firefoxExtensionFolder, FIREFOX_ADDON_FOLDER_RELATIVE_PATH);
+            if (firefoxAddonExtracted.exists()) {
+                return firefoxAddonExtracted;
+            }
+            File firefoxAddon = new File(extensionFolder.getAbsolutePath() + getFirefoxExtensionPath());
+            ZipUtil.extract(firefoxAddon, firefoxAddonExtracted);
+            return firefoxAddonExtracted;
         }
-        return firefoxAddon;
+        return null;
     }
 
     public void stop() {

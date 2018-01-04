@@ -11,6 +11,7 @@ import com.kms.katalon.dal.IImportDataProvider;
 import com.kms.katalon.dal.IProjectDataProvider;
 import com.kms.katalon.dal.IReportDataProvider;
 import com.kms.katalon.dal.ITestCaseDataProvider;
+import com.kms.katalon.dal.ITestListenerDataProvider;
 import com.kms.katalon.dal.ITestSuiteDataProvider;
 import com.kms.katalon.dal.IWebElementDataProvider;
 import com.kms.katalon.dal.TestSuiteCollectionDataProvider;
@@ -55,5 +56,7 @@ public interface IDataProviderSetting {
     public ICheckpointProvider getCheckpointDataProvider();
 
     public IEntityDataProvider getEntityDataProvider();
+
+    public ITestListenerDataProvider getTestListenerDataProvider();
 
 }

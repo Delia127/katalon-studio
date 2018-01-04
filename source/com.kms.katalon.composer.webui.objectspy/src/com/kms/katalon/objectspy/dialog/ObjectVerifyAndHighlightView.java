@@ -27,10 +27,10 @@ import org.openqa.selenium.WebDriverException;
 import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.composer.components.impl.control.GifCLabel;
-import com.kms.katalon.composer.components.impl.listener.EventListener;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.core.webui.common.WebUiCommonHelper;
@@ -46,6 +46,7 @@ import com.kms.katalon.objectspy.util.WebElementUtils;
 import com.kms.katalon.objectspy.websocket.AddonCommand;
 import com.kms.katalon.objectspy.websocket.AddonSocket;
 import com.kms.katalon.objectspy.websocket.messages.AddonMessage;
+import com.kms.katalon.util.listener.EventListener;
 
 public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEvent> {
 
@@ -82,7 +83,8 @@ public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEven
         try {
             URL url = FileLocator.find(FrameworkUtil.getBundle(ObjectVerifyAndHighlightView.class),
                     new Path(HIGHLIGHT_JS_PATH), null);
-            return StringUtils.join(IOUtils.readLines(new BufferedInputStream(url.openStream())), "\n");
+            return StringUtils.join(IOUtils.readLines(new BufferedInputStream(url.openStream()),
+                            GlobalStringConstants.DF_CHARSET), "\n");
         } catch (IOException e) {
             LoggerSingleton.logError(e);
         }
@@ -205,6 +207,11 @@ public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEven
             private void highlightElements(WebDriver webDriver, List<org.openqa.selenium.WebElement> webElements) {
                 if (webDriver instanceof JavascriptExecutor) {
                     JavascriptExecutor jsExecutor = (JavascriptExecutor) webDriver;
+                    
+                    //scroll to first element
+                    org.openqa.selenium.WebElement firstElement = webElements.get(0);
+                    jsExecutor.executeScript("arguments[0].scrollIntoView(true);", firstElement);
+                    
                     // highlight all elements
                     String highlightJS = getHighlightJS();
                     webElements.parallelStream().forEach(element -> {

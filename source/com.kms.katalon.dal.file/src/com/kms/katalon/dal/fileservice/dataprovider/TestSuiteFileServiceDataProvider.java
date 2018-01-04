@@ -1,6 +1,9 @@
 package com.kms.katalon.dal.fileservice.dataprovider;
 
+import java.io.File;
+
 import com.kms.katalon.dal.ITestSuiteDataProvider;
+import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.dal.fileservice.manager.TestSuiteFileServiceManager;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
@@ -21,6 +24,11 @@ public class TestSuiteFileServiceDataProvider implements ITestSuiteDataProvider 
     @Override
     public TestSuiteEntity updateTestSuite(TestSuiteEntity testSuite) throws Exception {
         return TestSuiteFileServiceManager.updateTestSuite(testSuite);
+    }
+
+    @Override
+    public TestSuiteEntity renameTestSuite(String newName, TestSuiteEntity testSuite) throws DALException {
+        return TestSuiteFileServiceManager.renameTestSuite(newName, testSuite);
     }
 
     @Override
@@ -51,11 +59,20 @@ public class TestSuiteFileServiceDataProvider implements ITestSuiteDataProvider 
             }
         }
         return null;
-
     }
 
     @Override
     public String getAvailableTestSuiteName(FolderEntity parentFolder, String name) throws Exception {
         return TestSuiteFileServiceManager.getAvailableTestSuiteName(parentFolder, name);
+    }
+
+    @Override
+    public File getTestSuiteScriptFile(TestSuiteEntity testSuite) throws DALException {
+        return TestSuiteFileServiceManager.getTestSuiteScriptFile(testSuite);
+    }
+
+    @Override
+    public File newTestSuiteScriptFile(TestSuiteEntity testSuite) throws DALException {
+        return TestSuiteFileServiceManager.newTestSuiteScriptFile(testSuite);
     }
 }

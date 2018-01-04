@@ -43,6 +43,7 @@ import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.custom.keyword.KeywordClass;
 import com.kms.katalon.custom.keyword.KeywordMethod;
 import com.kms.katalon.custom.keyword.KeywordParameter;
+import com.kms.katalon.execution.setting.TestCaseSettingStore;
 
 /**
  * Utility class to process ast input classes for keywords
@@ -147,8 +148,10 @@ public class AstKeywordsInputUtil {
     }
 
     public static PropertyExpressionWrapper getNewFailureHandlingPropertyExpression(ASTNodeWrapper parentNode) {
+        FailureHandling defaultFailureHandling = new TestCaseSettingStore(
+                ProjectController.getInstance().getCurrentProject().getFolderLocation()).getDefaultFailureHandling();
         return new PropertyExpressionWrapper(FailureHandling.class.getSimpleName(),
-                TestCasePreferenceDefaultValueInitializer.getDefaultFailureHandling().name(), parentNode);
+                defaultFailureHandling.name(), parentNode);
     }
 
     // recursively creating property expression

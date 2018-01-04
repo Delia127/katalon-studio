@@ -35,14 +35,6 @@ import com.kms.katalon.groovy.util.GroovyStringUtil
 public class TestSuiteScriptTemplate {
     private static final String tpl ='''<% importNames.each { %>import <%= it %>
 <% } %>
-
-<% testCaseIds.eachWithIndex { item, index -> %>
-def static runTestCase_<%= index %>() {
-    TestCaseMain.runTestCase('<%= item %>', <%= testCaseBindings.get(index) %>, FailureHandling.STOP_ON_FAILURE)
-    <%= isQuitDriversAfterTestCase ? "DriverCleanerCollector.getInstance().cleanDrivers()" : "" %>
-}
-<% } %>
-
 Map<String, String> suiteProperties = new HashMap<String, String>();
 
 <% configProperties.each { k, v -> %>
@@ -57,15 +49,7 @@ RunConfiguration.setExecutionSettingFile("<%= executionConfigFilePath %>")
 
 TestCaseMain.beforeStart()
 
-KeywordLogger.getInstance().startSuite('<%= testSuite.getName() %>', suiteProperties)
-
-(0..<%= testCaseIds.size() - 1 %>).each {
-    "<%= trigger %>"()
-}
-
-<%= isQuitDriversAfterRun ? "DriverCleanerCollector.getInstance().cleanDrivers()" : "" %>
-
-KeywordLogger.getInstance().endSuite('<%= testSuite.getName() %>', null)
+TestCaseMain.startTestSuite('<%= testSuite.getIdForDisplay() %>', suiteProperties, <%=  testCaseBindings %>)
 '''
     private static final String STATIC = "static";
 

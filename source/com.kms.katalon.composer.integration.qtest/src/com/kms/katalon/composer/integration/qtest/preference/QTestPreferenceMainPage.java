@@ -41,13 +41,13 @@ import com.kms.katalon.composer.integration.qtest.dialog.GenerateNewTokenDialog;
 import com.kms.katalon.composer.integration.qtest.wizard.SetupWizardDialog;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.setting.ReportFormatType;
 import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.integration.qtest.credential.IQTestCredential;
 import com.kms.katalon.integration.qtest.credential.QTestTokenManager;
 import com.kms.katalon.integration.qtest.credential.impl.QTestCredentialImpl;
 import com.kms.katalon.integration.qtest.exception.QTestInvalidFormatException;
 import com.kms.katalon.integration.qtest.setting.QTestAttachmentSendingType;
-import com.kms.katalon.integration.qtest.setting.QTestReportFormatType;
 import com.kms.katalon.integration.qtest.setting.QTestSettingCredential;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 import com.kms.katalon.integration.qtest.setting.QTestVersion;
@@ -179,7 +179,7 @@ public class QTestPreferenceMainPage extends PreferencePageWithHelp {
         attachmentOptionsLayout.marginHeight = 5;
         grpReportFormatOptions.setLayout(attachmentOptionsLayout);
 
-        for (QTestReportFormatType formatType : QTestReportFormatType.values()) {
+        for (ReportFormatType formatType : ReportFormatType.values()) {
             Button btnFormmatingType = new Button(grpReportFormatOptions, SWT.CHECK);
             btnFormmatingType.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
             btnFormmatingType.setText(formatType.toString());
@@ -360,7 +360,7 @@ public class QTestPreferenceMainPage extends PreferencePageWithHelp {
         }
 
         // set input for grpFormattedOptions
-        List<QTestReportFormatType> selectedFormattedReportTypes = QTestSettingStore.getFormatReportTypes(projectDir);
+        List<ReportFormatType> selectedFormattedReportTypes = QTestSettingStore.getFormatReportTypes(projectDir);
         for (Control chckButton : grpReportFormatOptions.getChildren()) {
             if (chckButton instanceof Button) {
                 if (selectedFormattedReportTypes.contains(chckButton.getData())) {
@@ -432,12 +432,12 @@ public class QTestPreferenceMainPage extends PreferencePageWithHelp {
     }
 
     private void saveFormatOptions() {
-        List<QTestReportFormatType> selectedFormat = new ArrayList<QTestReportFormatType>();
+        List<ReportFormatType> selectedFormat = new ArrayList<ReportFormatType>();
         for (Control radioButtonControl : grpReportFormatOptions.getChildren()) {
             if (radioButtonControl instanceof Button) {
                 Button formateTypeRadioButton = (Button) radioButtonControl;
                 if (formateTypeRadioButton.getSelection()) {
-                    QTestReportFormatType resultSendingType = (QTestReportFormatType) formateTypeRadioButton.getData();
+                    ReportFormatType resultSendingType = (ReportFormatType) formateTypeRadioButton.getData();
                     selectedFormat.add(resultSendingType);
                 }
             }

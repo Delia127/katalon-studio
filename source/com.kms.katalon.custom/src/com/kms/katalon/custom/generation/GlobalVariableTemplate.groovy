@@ -11,6 +11,10 @@ import com.kms.katalon.core.testobject.ObjectRepository
 import com.kms.katalon.custom.parser.GlobalVariableParser
 import com.kms.katalon.entity.global.GlobalVariableEntity
 
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
+
 class GlobalVariableTemplate {
     private static final String DEPRECATED_STRING = "@deprecated Please use " + GlobalVariableParser.INTERNAL_PACKAGE_NAME + "." + GlobalVariableParser.GLOBAL_VARIABLE_CLASS_NAME +" instead";
     private static final String PACKAGE_STRING = "package " + GlobalVariableParser.INTERNAL_PACKAGE_NAME;
@@ -56,9 +60,21 @@ public class GlobalVariable {
 
         def engine = new GStringTemplateEngine()
         def tpl = engine.createTemplate(tpl).make(binding)
-        if (file.canWrite()) {
-            file.write(tpl.toString());
+        
+        def out
+        try {
+            out = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)
+            tpl.writeTo(out)
+        } catch (Exception e) {
+            
+        } finally {
+            out.close();
         }
+        
+//        
+//        if (file.canWrite()) {
+//            file.write(tpl.toString());
+//        }
     }
 
     @CompileStatic

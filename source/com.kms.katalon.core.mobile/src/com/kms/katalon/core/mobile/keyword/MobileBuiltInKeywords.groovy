@@ -2,9 +2,7 @@ package com.kms.katalon.core.mobile.keyword;
 
 import groovy.transform.CompileStatic
 import io.appium.java_client.AppiumDriver
-import io.appium.java_client.DeviceActionShortcuts
 import io.appium.java_client.MobileElement
-import io.appium.java_client.NetworkConnectionSetting
 import io.appium.java_client.android.AndroidDriver
 import io.appium.java_client.android.AndroidKeyCode
 import io.appium.java_client.ios.IOSDriver
@@ -125,9 +123,9 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
      * @param startY
      *      starting y position
      * @param endX
-     *      ending x position
+     *      relative x position of startX
      * @param endY
-     *      ending y position
+     *      relative y position of startY
      * @param flowControl
      * @throws StepFailedException
      */
@@ -144,9 +142,9 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
      * @param startY
      *      starting y position
      * @param endX
-     *      ending x position
+     *      relative x position of startX
      * @param endY
-     *      ending y position
+     *      relative y position of startY
      * @throws StepFailedException
      */
     @CompileStatic

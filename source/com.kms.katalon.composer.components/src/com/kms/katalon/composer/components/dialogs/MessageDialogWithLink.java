@@ -1,10 +1,5 @@
 package com.kms.katalon.composer.components.dialogs;
 
-import java.awt.Desktop;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IconAndMessageDialog;
@@ -16,14 +11,13 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
-
-import com.kms.katalon.composer.components.log.LoggerSingleton;
 
 /**
  * Custom class to replace default message dialog label with a link
@@ -501,11 +495,7 @@ public class MessageDialogWithLink extends IconAndMessageDialog {
         linkLabel.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                try {
-                    Desktop.getDesktop().browse(new URI(e.text));
-                } catch (IOException | URISyntaxException ex) {
-                    LoggerSingleton.logError(ex);
-                }
+                Program.launch(e.text);
             }
         });
 

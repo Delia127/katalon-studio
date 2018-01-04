@@ -18,6 +18,7 @@ import com.kms.katalon.composer.components.impl.tree.ReportCollectionTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.ReportTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.TestListenerFolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteCollectionTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestSuiteTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
@@ -208,6 +209,9 @@ public class TreeEntityUtil {
         }
         if ("waitForJQueryLoad".equals(keywordMethodName)) {
             return "Wait For jQuery Load";
+        }
+        if ("executeJavaScript".equals(keywordMethodName)) {
+            return "Execute JavaScript";
         }
         return StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(StringUtils.capitalize(keywordMethodName)),
                 " ");
@@ -419,6 +423,7 @@ public class TreeEntityUtil {
         treeEntities.add(new FolderTreeEntity(folderController.getTestDataRoot(project), null));
         treeEntities.add(new FolderTreeEntity(folderController.getCheckpointRoot(project), null));
         treeEntities.add(new FolderTreeEntity(folderController.getKeywordRoot(project), null));
+        treeEntities.add(new TestListenerFolderTreeEntity(folderController.getTestListenerRoot(project), null));
         treeEntities.add(new FolderTreeEntity(folderController.getReportRoot(project), null));
         return treeEntities;
     }

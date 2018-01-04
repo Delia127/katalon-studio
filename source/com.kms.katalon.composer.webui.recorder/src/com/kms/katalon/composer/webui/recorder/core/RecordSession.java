@@ -1,13 +1,16 @@
 package com.kms.katalon.composer.webui.recorder.core;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.eclipse.e4.core.services.log.Logger;
+import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.objectspy.core.HTMLElementCaptureServer;
 import com.kms.katalon.objectspy.core.InspectSession;
+import com.kms.katalon.objectspy.util.FileUtil;
 import com.kms.katalon.objectspy.websocket.AddonCommand;
 import com.kms.katalon.objectspy.websocket.AddonSocket;
 import com.kms.katalon.objectspy.websocket.AddonSocketServer;
@@ -19,9 +22,6 @@ public class RecordSession extends InspectSession {
 
     private static final String CHROME_EXTENSION_RELATIVE_PATH = File.separator + "Chrome" + File.separator
             + RECORDER_ADDON_NAME;
-
-    private static final String FIREFOX_ADDON_RELATIVE_PATH = File.separator + "Firefox" + File.separator
-            + "recorder.xpi";
 
     private static final String RECORDER_APPLICATION_DATA_FOLDER = System.getProperty("user.home") + File.separator
             + "AppData" + File.separator + "Local" + File.separator + "KMS" + File.separator + "qAutomate"
@@ -40,9 +40,15 @@ public class RecordSession extends InspectSession {
     protected String getChromeExtensionPath() {
         return CHROME_EXTENSION_RELATIVE_PATH;
     }
-
-    protected String getFirefoxExtensionPath() {
-        return FIREFOX_ADDON_RELATIVE_PATH;
+    
+    @Override
+    protected File getChromeExtensionFile() throws IOException {
+        File chromeExtension = null;
+        File extensionFolder = FileUtil.getExtensionsDirectory(FrameworkUtil.getBundle(RecordSession.class));
+        if (extensionFolder.exists() && extensionFolder.isDirectory()) {
+            chromeExtension = new File(extensionFolder.getAbsolutePath() + getChromeExtensionPath());
+        }
+        return chromeExtension;
     }
 
     @Override

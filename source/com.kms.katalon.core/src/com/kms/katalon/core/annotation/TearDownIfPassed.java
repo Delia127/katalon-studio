@@ -13,4 +13,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface TearDownIfPassed {
 	String description() default "";
+	boolean skipped() default false;
 }

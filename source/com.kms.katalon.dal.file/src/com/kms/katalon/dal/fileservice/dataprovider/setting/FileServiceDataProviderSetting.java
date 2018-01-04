@@ -11,6 +11,7 @@ import com.kms.katalon.dal.IImportDataProvider;
 import com.kms.katalon.dal.IProjectDataProvider;
 import com.kms.katalon.dal.IReportDataProvider;
 import com.kms.katalon.dal.ITestCaseDataProvider;
+import com.kms.katalon.dal.ITestListenerDataProvider;
 import com.kms.katalon.dal.ITestSuiteDataProvider;
 import com.kms.katalon.dal.IWebElementDataProvider;
 import com.kms.katalon.dal.TestSuiteCollectionDataProvider;
@@ -25,6 +26,7 @@ import com.kms.katalon.dal.fileservice.dataprovider.ImportFileServiceDataProvide
 import com.kms.katalon.dal.fileservice.dataprovider.ProjectFileServiceDataProvider;
 import com.kms.katalon.dal.fileservice.dataprovider.ReportFileServiceDataProvider;
 import com.kms.katalon.dal.fileservice.dataprovider.TestCaseFileServiceDataProvider;
+import com.kms.katalon.dal.fileservice.dataprovider.TestListenerFileServiceDataProvider;
 import com.kms.katalon.dal.fileservice.dataprovider.TestSuiteCollectionFileServiceDataProvider;
 import com.kms.katalon.dal.fileservice.dataprovider.TestSuiteFileServiceDataProvider;
 import com.kms.katalon.dal.fileservice.dataprovider.WebElementFileServiceDataProvider;
@@ -124,6 +126,11 @@ public class FileServiceDataProviderSetting implements IDataProviderSetting {
     @Override
     public IEntityDataProvider getEntityDataProvider() {
         return new EntityFileServiceDataProvider();
+    }
+
+    @Override
+    public ITestListenerDataProvider getTestListenerDataProvider() {
+        return new TestListenerFileServiceDataProvider();
     }
 
 }

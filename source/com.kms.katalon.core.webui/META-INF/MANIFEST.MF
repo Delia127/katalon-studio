@@ -10,11 +10,11 @@ Require-Bundle: org.codehaus.groovy,
  org.apache.commons.io,
  com.kms.katalon.selenium-standalone,
  com.kms.katalon.core.appium,
- io.appium.java-client,
  org.apache.commons.lang,
  org.apache.commons.lang3,
  org.eclipse.osgi,
- com.google.gson
+ com.google.gson,
+ com.google.guava
 Export-Package: com.kms.katalon.core.webui.common,
  com.kms.katalon.core.webui.constants,
  com.kms.katalon.core.webui.driver,
@@ -22,5 +22,6 @@ Export-Package: com.kms.katalon.core.webui.common,
  com.kms.katalon.core.webui.keyword,
  com.kms.katalon.core.webui.util
 Bundle-ClassPath: .,
- resources/lib/sikuli-api-1.0.2-standalone.jar
+ resources/lib/repackaged-guava-19.0.jar,
+ resources/lib/repackaged-sikuli-api-1.0.2-standalone.jar
 

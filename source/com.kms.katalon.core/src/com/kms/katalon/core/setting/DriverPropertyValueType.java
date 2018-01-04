@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 public enum DriverPropertyValueType {
-    String, Integer, Boolean, Dictionary, List;
+    String, Boolean, Dictionary, List, Number;
     
     public static String[] stringValues() {
         DriverPropertyValueType[] values = values();
@@ -18,8 +18,8 @@ public enum DriverPropertyValueType {
     }
     
     public static DriverPropertyValueType fromValue(Object value) {
-        if (value instanceof Integer) {
-            return Integer;
+        if (value instanceof Double) {
+            return Number;
         } else if (value instanceof Boolean) {
             return Boolean;
         } else if (value instanceof Map) {
@@ -34,8 +34,8 @@ public enum DriverPropertyValueType {
         switch (this) {
         case Boolean:
             return new Boolean(true);
-        case Integer:
-            return new Integer(0);
+        case Number:
+            return new Double(0);
         case List:
             return new ArrayList<Object>();
         case Dictionary:

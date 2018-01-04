@@ -53,6 +53,7 @@ public class FolderFileServiceManager {
             initRootFolder(FileServiceConstant.getKeywordRootFolderLocation(project.getFolderLocation()));
             initRootFolder(FileServiceConstant.getReportRootFolderLocation(project.getFolderLocation()));
             initRootFolder(FileServiceConstant.getCheckpointRootFolderLocation(project.getFolderLocation()));
+            initRootFolder(FileServiceConstant.getTestListenerRootFolderLocation(project.getFolderLocation()));
         }
     }
 
@@ -133,6 +134,22 @@ public class FolderFileServiceManager {
             return null;
         }
 
+        folder.setProject(project);
+        return folder;
+    }
+
+    public static FolderEntity getTestListenerRoot(ProjectEntity project) throws Exception {
+        if (project == null) {
+            return null;
+        }
+
+        FolderEntity folder = getFolder(
+                FileServiceConstant.getTestListenerRootFolderLocation(project.getFolderLocation()));
+        if (folder == null) {
+            return null;
+        }
+
+        folder.setFolderType(FolderType.TESTLISTENER);
         folder.setProject(project);
         return folder;
     }

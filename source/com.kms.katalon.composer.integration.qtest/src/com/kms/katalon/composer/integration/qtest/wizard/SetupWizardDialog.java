@@ -59,6 +59,7 @@ import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.controller.TestSuiteController;
+import com.kms.katalon.core.setting.ReportFormatType;
 import com.kms.katalon.entity.file.IntegratedFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.integration.IntegratedEntity;
@@ -72,7 +73,6 @@ import com.kms.katalon.integration.qtest.credential.IQTestToken;
 import com.kms.katalon.integration.qtest.entity.QTestModule;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
 import com.kms.katalon.integration.qtest.setting.QTestAttachmentSendingType;
-import com.kms.katalon.integration.qtest.setting.QTestReportFormatType;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 import com.kms.katalon.integration.qtest.setting.QTestVersion;
 
@@ -368,7 +368,7 @@ public class SetupWizardDialog extends SimpleWizardDialog {
                     (List<QTestAttachmentSendingType>) sharedData.get(QTestSettingStore.SEND_ATTACHMENTS_PROPERTY),
                     projectDir);
             QTestSettingStore.saveFormatReportTypes(
-                    (List<QTestReportFormatType>) sharedData.get(QTestSettingStore.REPORT_FORMAT), projectDir);
+                    (List<ReportFormatType>) sharedData.get(QTestSettingStore.REPORT_FORMAT), projectDir);
         } catch (IOException e) {
             LoggerSingleton.logError(e);
         }

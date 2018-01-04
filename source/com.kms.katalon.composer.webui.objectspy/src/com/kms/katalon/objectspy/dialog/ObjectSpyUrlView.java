@@ -44,8 +44,6 @@ import org.osgi.framework.Bundle;
 import com.kms.katalon.composer.components.impl.control.Dropdown;
 import com.kms.katalon.composer.components.impl.control.DropdownGroup;
 import com.kms.katalon.composer.components.impl.control.DropdownItemSelectionListener;
-import com.kms.katalon.composer.components.impl.listener.EventListener;
-import com.kms.katalon.composer.components.impl.listener.EventManager;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.constants.IdConstants;
@@ -69,6 +67,8 @@ import com.kms.katalon.objectspy.websocket.AddonSocketServer;
 import com.kms.katalon.objectspy.websocket.messages.StartInspectAddonMessage;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
+import com.kms.katalon.util.listener.EventListener;
+import com.kms.katalon.util.listener.EventManager;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef.HWND;
 
@@ -200,6 +200,7 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
             stop();
             showMessageForMissingIEAddon();
             try {
+                shell.setMinimized(true);
                 runIEAddonInstaller();
             } catch (IOException iOException) {
                 LoggerSingleton.logError(iOException);
@@ -285,7 +286,7 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
         UISynchronizeService.syncExec(new Runnable() {
             @Override
             public void run() {
-                MessageDialog.openInformation(Display.getCurrent().getActiveShell(), StringConstants.INFO,
+                MessageDialog.openInformation(shell, StringConstants.INFO,
                         StringConstants.DIALOG_CANNOT_START_IE_MESSAGE);
             }
         });
