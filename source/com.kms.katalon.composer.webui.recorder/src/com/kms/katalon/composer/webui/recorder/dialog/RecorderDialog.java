@@ -893,7 +893,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         ToolItem tltmCapturedObjects = new ToolItem(rightToolBar, SWT.CHECK);
 
         
-        tltmCapturedObjects.setText("Hide " + StringConstants.DIA_TITLE_CAPTURED_OBJECTS);
+        tltmCapturedObjects.setText("Show " + StringConstants.DIA_TITLE_CAPTURED_OBJECTS);
         tltmCapturedObjects.setToolTipText(StringConstants.DIA_TOOLTIP_SHOW_HIDE_CAPTURED_OBJECTS);
         tltmCapturedObjects.setSelection(false);
         tltmCapturedObjects.addSelectionListener(new SelectionAdapter() {
@@ -902,10 +902,10 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             public void widgetSelected(SelectionEvent e) {
                 int[] sashFormWeights = new int[] { 0, 10 };
                 boolean isChecked = tltmCapturedObjects.getSelection();
-                String showOrHide = "Hide " + StringConstants.DIA_TITLE_CAPTURED_OBJECTS;
+                String showOrHide = "Show " + StringConstants.DIA_TITLE_CAPTURED_OBJECTS;
                 if (isChecked) {
                     sashFormWeights = new int[] { 5, 5 };
-                    showOrHide = "Show " + StringConstants.DIA_TITLE_CAPTURED_OBJECTS;
+                    showOrHide = "Hide " + StringConstants.DIA_TITLE_CAPTURED_OBJECTS;
                 }
                 tltmCapturedObjects.setText(showOrHide);
                 hSashForm.setWeights(sashFormWeights);
@@ -957,7 +957,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
         TableColumnLayout tableLayout = new TableColumnLayout();
         tableLayout.setColumnData(tableViewerNo, new ColumnWeightData(0, 40));
-        tableLayout.setColumnData(tableColumnAction, new ColumnWeightData(20, 100));
+        tableLayout.setColumnData(tableColumnAction, new ColumnWeightData(20, 60));
         tableLayout.setColumnData(tableColumnActionData, new ColumnWeightData(30, 150));
         tableLayout.setColumnData(tableColumnElement, new ColumnWeightData(30, 100));
 
