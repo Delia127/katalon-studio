@@ -61,7 +61,7 @@ public class ImportSeleniumIdeHandler {
 	
 	private static final String COMMON_FOLDER_NAME = "Common";
 
-	private static final String IMPORTED_FOLDER_NAME = "Imported from Selenium IDE";
+	private static final String IMPORTED_FOLDER_NAME = "Imported from Selenium IDE Scripts";
 
 	@Inject
     private IEventBroker eventBroker;

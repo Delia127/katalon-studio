@@ -79,7 +79,7 @@
     <mainMenu xmi:id="_hQQH6RYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu">
       <children xsi:type="menu:Menu" xmi:id="_hQQH6hYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.file" label="File">
         <children xsi:type="menu:Menu" xmi:id="_4vwU0BsSEeSXreVpxhllQw" elementId="com.kms.katalon.menu.submenu.new" label="New"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="__bv3kOBxEeejXLn7_j51hg" elementId="com.kms.katalon.composer.menu.file.importSeleniumIde" label="Import Selenium IDE" command="_2sDjkOBxEeejXLn7_j51hg"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="__bv3kOBxEeejXLn7_j51hg" elementId="com.kms.katalon.composer.menu.file.importSeleniumIde" label="Import Selenium IDE Scripts" command="_2sDjkOBxEeejXLn7_j51hg"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_NTAbcKmBEeeKpbJK4Cc3kQ" elementId="com.kms.katalon.menuseparator.0"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_hQQH7BYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.file.save" label="Save" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/save_16.png" tooltip="" command="_hQQH4xYMEeSUMbyEN2kbFQ"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_VvjpYDayEeWjs_ysgU5nDA" elementId="com.kms.katalon.composer.menu.file.save_all" label="Save All" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/save_all_16.png" tooltip="" command="_8qJlUEO4EeSlQuaMBzQJOw"/>
