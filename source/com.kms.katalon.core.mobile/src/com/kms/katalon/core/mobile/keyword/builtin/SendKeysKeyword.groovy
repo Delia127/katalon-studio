@@ -42,7 +42,7 @@ public class SendKeysKeyword extends MobileAbstractKeyword {
     @CompileStatic
     public void sendKeys(TestObject to, String strokeKeys, FailureHandling flowControl) throws StepFailedException {
         String readableText = SeleniumKeysUtil.getReadableText(strokeKeys)
-        KeywordMain.runKeyword({
+        MobileKeywordMain.runKeyword({
             KeywordHelper.checkTestObjectParameter(to)
             int timeout = KeywordHelper.checkTimeout(RunConfiguration.getTimeOut())
             WebElement element = findElement(to, timeout * 1000)
@@ -53,7 +53,7 @@ public class SendKeysKeyword extends MobileAbstractKeyword {
             logger.logPassed(MessageFormat.format(CoreMobileMessageConstants.KW_LOG_SEND_KEYS_X_ON_ELEMENT_Y_SUCCESSFULLY,
                     StringUtils.defaultString(readableText)
                     , StringUtils.defaultString(to.getObjectId())))
-        }, flowControl, MessageFormat.format(CoreMobileMessageConstants.KW_MSG_CANNOT_SEND_KEYS_X_ON_ELEMENT_Y,
+        }, flowControl, true, MessageFormat.format(CoreMobileMessageConstants.KW_MSG_CANNOT_SEND_KEYS_X_ON_ELEMENT_Y,
         StringUtils.defaultString(readableText)
         , StringUtils.defaultString(to.getObjectId())))
     }

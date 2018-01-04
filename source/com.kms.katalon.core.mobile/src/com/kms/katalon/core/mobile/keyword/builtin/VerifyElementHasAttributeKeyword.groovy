@@ -67,7 +67,7 @@ public class VerifyElementHasAttributeKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public boolean verifyElementHasAttribute(TestObject to, String attributeName, int timeout, FailureHandling flowControl) {
-        KeywordMain.runKeyword({
+        MobileKeywordMain.runKeyword({
             boolean isSwitchIntoFrame = false
             KeywordHelper.checkTestObjectParameter(to)
             logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_ATTRIBUTE_NAME)
@@ -88,6 +88,6 @@ public class VerifyElementHasAttributeKeyword extends MobileAbstractKeyword {
                 MobileKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_OBJ_X_HAS_ATTRIBUTE_Y, [to.getObjectId(), attributeName] as Object[]), flowControl, null, true)
                 return false
             }
-        }, flowControl, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_HAS_ATTRIBUTE_Y, [to.getObjectId(), attributeName] as Object[]) : StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_HAS_ATTRIBUTE)
+        }, flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_X_HAS_ATTRIBUTE_Y, [to.getObjectId(), attributeName] as Object[]) : StringConstants.KW_MSG_CANNOT_VERIFY_OBJ_HAS_ATTRIBUTE)
     }
 }

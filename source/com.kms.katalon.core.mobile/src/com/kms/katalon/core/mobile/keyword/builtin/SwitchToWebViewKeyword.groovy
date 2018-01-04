@@ -64,7 +64,7 @@ public class SwitchToWebViewKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public void switchToWebView(FailureHandling flowControl) throws StepFailedException {
-        KeywordMain.runKeyword({
+        MobileKeywordMain.runKeyword({
             AppiumDriver driver = getAnyAppiumDriver()
             boolean result = internalSwitchToWebViewContext(driver)
             if (result) {
@@ -73,6 +73,6 @@ public class SwitchToWebViewKeyword extends MobileAbstractKeyword {
             } else {
                 MobileKeywordMain.stepFailed(StringConstants.KW_LOG_FAILED_SWITCH_WEB_VIEW, flowControl, null, true)
             }
-        }, flowControl, StringConstants.KW_MSG_UNABLE_SWITCH_WEB_VIEW)
+        }, flowControl, true, StringConstants.KW_MSG_UNABLE_SWITCH_WEB_VIEW)
     }
 }

@@ -68,7 +68,7 @@ public class TapKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public void tap(TestObject to, int timeout, FailureHandling flowControl) throws StepFailedException {
-        KeywordMain.runKeyword({
+        MobileKeywordMain.runKeyword({
             KeywordHelper.checkTestObjectParameter(to)
             timeout = KeywordHelper.checkTimeout(timeout)
             WebElement element = findElement(to, timeout * 1000)
@@ -80,6 +80,6 @@ public class TapKeyword extends MobileAbstractKeyword {
             TouchAction tap = new TouchAction(MobileDriverFactory.getDriver()).tap(element, 1, 1);
             tap.perform();
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_TAPPED_ON_ELEMENT, to.getObjectId()))
-        }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_TAP_ON_ELEMENT_X, to.getObjectId()) : StringConstants.KW_MSG_FAILED_TO_TAP_ON_ELEMENT)
+        }, flowControl, true, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_TAP_ON_ELEMENT_X, to.getObjectId()) : StringConstants.KW_MSG_FAILED_TO_TAP_ON_ELEMENT)
     }
 }

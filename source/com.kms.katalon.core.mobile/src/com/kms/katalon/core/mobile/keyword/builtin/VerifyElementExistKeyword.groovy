@@ -66,7 +66,7 @@ public class VerifyElementExistKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public boolean verifyElementExist(TestObject to, int timeout, FailureHandling flowControl) throws StepFailedException {
-        return KeywordMain.runKeyword({
+        return MobileKeywordMain.runKeyword({
             KeywordHelper.checkTestObjectParameter(to)
             timeout = KeywordHelper.checkTimeout(timeout)
             WebElement element = findElement(to, timeout * 1000)
@@ -77,6 +77,6 @@ public class VerifyElementExistKeyword extends MobileAbstractKeyword {
                 MobileKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_ELEMENT_X_EXISTED, to.getObjectId()), flowControl, null, true)
                 return false
             }
-        }, flowControl, to != null ?  MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_X_EXIST, to.getObjectId()) : StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_EXIST)
+        }, flowControl, true, to != null ?  MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_X_EXIST, to.getObjectId()) : StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_EXIST)
     }
 }

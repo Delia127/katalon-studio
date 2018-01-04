@@ -70,7 +70,7 @@ public class ScrollToTextKeyword extends MobileAbstractKeyword {
     }
 
     public void scrollToText(String text, FailureHandling flowControl) throws StepFailedException {
-        KeywordMain.runKeyword({
+        MobileKeywordMain.runKeyword({
             logger.logInfo(StringConstants.COMM_LOG_INFO_CHECKING_TEXT)
             if (text == null) {
                 throw new IllegalArgumentException(StringConstants.COMM_EXC_TEXT_IS_NULL)
@@ -106,7 +106,7 @@ public class ScrollToTextKeyword extends MobileAbstractKeyword {
             } finally {
                 driver.context(context)
             }
-        }, flowControl, MessageFormat.format(StringConstants.KW_MSG_UNABLE_SCROLL_TO_TEXT_X, text))
+        }, flowControl, true, MessageFormat.format(StringConstants.KW_MSG_UNABLE_SCROLL_TO_TEXT_X, text))
     }
 
     private Fiz

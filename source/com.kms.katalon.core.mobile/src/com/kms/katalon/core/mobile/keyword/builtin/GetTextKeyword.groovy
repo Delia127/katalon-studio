@@ -66,7 +66,7 @@ public class GetTextKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public String getText(TestObject to, int timeout, FailureHandling flowControl) throws StepFailedException {
-        return KeywordMain.runKeyword({
+        return MobileKeywordMain.runKeyword({
             KeywordHelper.checkTestObjectParameter(to)
             timeout = KeywordHelper.checkTimeout(timeout)
             WebElement element = findElement(to, timeout * 1000)
@@ -77,6 +77,6 @@ public class GetTextKeyword extends MobileAbstractKeyword {
             String text = element.getText()
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_ELEMENT_TEXT_IS, [to.getObjectId(), text] as Object[]))
             return text
-        }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_GET_ELEMENT_TEXT, to.getObjectId()) : StringConstants.KW_MSG_FAILED_TO_GET_ELEMENT_TEXT)
+        }, flowControl, true, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_GET_ELEMENT_TEXT, to.getObjectId()) : StringConstants.KW_MSG_FAILED_TO_GET_ELEMENT_TEXT)
     }
 }

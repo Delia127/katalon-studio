@@ -41,7 +41,7 @@ public class VerifyElementTextKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public boolean verifyElementText(TestObject to, String expectedText, FailureHandling flowControl) throws StepFailedException {
-        return KeywordMain.runKeyword({
+        return MobileKeywordMain.runKeyword({
             KeywordHelper.checkTestObjectParameter(to)
             int timeout = KeywordHelper.checkTimeout(RunConfiguration.getTimeOut())
             WebElement element = findElement(to, timeout * 1000)
@@ -59,6 +59,6 @@ public class VerifyElementTextKeyword extends MobileAbstractKeyword {
                 logger.logPassed(MessageFormat.format(CoreMobileMessageConstants.KW_LOG_ACTUAL_ELEMENT_TXT_MATCHED_EXPECTED_TXT, to.getObjectId()))
             }
             return textPresent
-        }, flowControl, MessageFormat.format(CoreMobileMessageConstants.KW_MSG_VERIFY_ELEMENT_TEXT_FAILED, StringUtils.defaultString(to.getObjectId())))
+        }, flowControl, true, MessageFormat.format(CoreMobileMessageConstants.KW_MSG_VERIFY_ELEMENT_TEXT_FAILED, StringUtils.defaultString(to.getObjectId())))
     }
 }

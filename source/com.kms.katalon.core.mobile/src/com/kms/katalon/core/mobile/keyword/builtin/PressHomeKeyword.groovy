@@ -64,7 +64,7 @@ public class PressHomeKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public void pressHome(FailureHandling flowControl) throws StepFailedException {
-        KeywordMain.runKeyword({
+        MobileKeywordMain.runKeyword({
             AppiumDriver<?> driver = getAnyAppiumDriver()
             String context = driver.getContext()
             try {
@@ -79,6 +79,6 @@ public class PressHomeKeyword extends MobileAbstractKeyword {
             } finally {
                 driver.context(context)
             }
-        }, flowControl, StringConstants.KW_MSG_CANNOT_PRESS_HOME_BTN)
+        }, flowControl, true, StringConstants.KW_MSG_CANNOT_PRESS_HOME_BTN)
     }
 }

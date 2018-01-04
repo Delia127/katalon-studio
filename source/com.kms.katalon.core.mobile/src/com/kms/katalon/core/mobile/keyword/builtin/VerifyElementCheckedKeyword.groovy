@@ -66,7 +66,7 @@ public class VerifyElementCheckedKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public boolean verifyElementChecked(TestObject to, int timeout, FailureHandling flowControl) throws StepFailedException {
-        return KeywordMain.runKeyword({
+        return MobileKeywordMain.runKeyword({
             if (MobileElementCommonHelper.isElementChecked(to, timeout)) {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_ELEMENT_X_CHECKED, to.getObjectId()))
                 return true
@@ -74,6 +74,6 @@ public class VerifyElementCheckedKeyword extends MobileAbstractKeyword {
                 MobileKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_ELEMENT_X_CHECKED, to.getObjectId()), flowControl, null, true)
                 return false
             }
-        }, flowControl, to != null ?  MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_X_CHECKED, to.getObjectId()) : StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_CHECKED)
+        }, flowControl, true, to != null ?  MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_X_CHECKED, to.getObjectId()) : StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_CHECKED)
     }
 }

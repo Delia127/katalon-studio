@@ -66,7 +66,7 @@ public class VerifyElementNotCheckedKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public boolean verifyElementNotChecked(TestObject to, int timeout, FailureHandling flowControl) throws StepFailedException {
-        return KeywordMain.runKeyword({
+        return MobileKeywordMain.runKeyword({
             if (!MobileElementCommonHelper.isElementChecked(to, timeout)) {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_ELEMENT_X_UNCHECKED, to.getObjectId()))
                 return true
@@ -74,6 +74,6 @@ public class VerifyElementNotCheckedKeyword extends MobileAbstractKeyword {
                 MobileKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_ELEMENT_X_UNCHECKED, to.getObjectId()), flowControl, null, true)
                 return false
             }
-        }, flowControl, to != null ?  MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_X_UNCHECKED, to.getObjectId()) : StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_UNCHECKED)
+        }, flowControl, true, to != null ?  MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_X_UNCHECKED, to.getObjectId()) : StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_UNCHECKED)
     }
 }

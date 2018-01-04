@@ -64,7 +64,7 @@ public class VerifyIsLandscapeKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public boolean verifyIsLandscape(FailureHandling flowControl) throws StepFailedException {
-        KeywordMain.runKeyword({
+        MobileKeywordMain.runKeyword({
             AppiumDriver driver = getAnyAppiumDriver()
             String context = driver.getContext()
             try {
@@ -79,6 +79,6 @@ public class VerifyIsLandscapeKeyword extends MobileAbstractKeyword {
             } finally {
                 driver.context(context)
             }
-        }, flowControl, StringConstants.KW_MSG_UNABLE_VERIFY_LANDSCAPE)
+        }, flowControl, true, StringConstants.KW_MSG_UNABLE_VERIFY_LANDSCAPE)
     }
 }

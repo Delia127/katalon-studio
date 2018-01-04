@@ -64,7 +64,7 @@ public class PressBackKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public void pressBack(FailureHandling flowControl) throws StepFailedException {
-        KeywordMain.runKeyword({
+        MobileKeywordMain.runKeyword({
             AppiumDriver<?> driver = getAnyAppiumDriver()
             String context = driver.getContext()
             try {
@@ -79,6 +79,6 @@ public class PressBackKeyword extends MobileAbstractKeyword {
                 driver.context(context)
             }
             logger.logPassed(StringConstants.KW_LOG_PASSED_PRESS_BACK_BTN)
-        }, flowControl, StringConstants.KW_MSG_CANNOT_PRESS_BACK_BTN)
+        }, flowControl, true, StringConstants.KW_MSG_CANNOT_PRESS_BACK_BTN)
     }
 }

@@ -67,7 +67,7 @@ public class ClearTextKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public void clearText(TestObject to, int timeout, FailureHandling flowControl) throws StepFailedException {
-        KeywordMain.runKeyword({
+        MobileKeywordMain.runKeyword({
             KeywordHelper.checkTestObjectParameter(to)
             timeout = KeywordHelper.checkTimeout(timeout)
             WebElement element = findElement(to, timeout * 1000)
@@ -77,6 +77,6 @@ public class ClearTextKeyword extends MobileAbstractKeyword {
             }
             element.clear()
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_ELEMENT_TEXT_IS_CLEARED, to.getObjectId()))
-        }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_CLEAR_TEXT_OF_ELEMENT, to.getObjectId()) : StringConstants.KW_MSG_FAILED_TO_CLEAR_TEXT_OF_ELEMENT)
+        }, flowControl, true, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_CLEAR_TEXT_OF_ELEMENT, to.getObjectId()) : StringConstants.KW_MSG_FAILED_TO_CLEAR_TEXT_OF_ELEMENT)
     }
 }

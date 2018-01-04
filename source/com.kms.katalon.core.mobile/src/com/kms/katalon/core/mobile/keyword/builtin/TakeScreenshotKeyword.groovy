@@ -80,7 +80,7 @@ public class TakeScreenshotKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public String takeScreenshot(String fileName, FailureHandling flowControl) throws StepFailedException {
-        return KeywordMain.runKeyword({
+        return MobileKeywordMain.runKeyword({
             AppiumDriver<?> driver = getAnyAppiumDriver()
             String context = driver.getContext()
             try {
@@ -104,6 +104,6 @@ public class TakeScreenshotKeyword extends MobileAbstractKeyword {
             } finally {
                 driver.context(context)
             }
-        }, flowControl, StringConstants.KW_MSG_UNABLE_TO_TAKE_SCREENSHOT)
+        }, flowControl, false, StringConstants.KW_MSG_UNABLE_TO_TAKE_SCREENSHOT)
     }
 }
