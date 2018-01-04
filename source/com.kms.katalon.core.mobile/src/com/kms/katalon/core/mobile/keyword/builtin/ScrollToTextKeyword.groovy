@@ -50,6 +50,7 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 
 @Action(value = "scrollToText")
 public class ScrollToTextKeyword extends MobileAbstractKeyword {
@@ -100,7 +101,7 @@ public class ScrollToTextKeyword extends MobileAbstractKeyword {
                 if (element != null) {
                     logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SCROLL_TO_TEXT_X, text))
                 } else {
-                    KeywordMain.stepFailed(MessageFormat.format(CoreMobileMessageConstants.KW_MSG_TEXT_NOT_FOUND, text), flowControl)
+                    MobileKeywordMain.stepFailed(MessageFormat.format(CoreMobileMessageConstants.KW_MSG_TEXT_NOT_FOUND, text), flowControl, null, true)
                 }
             } finally {
                 driver.context(context)
