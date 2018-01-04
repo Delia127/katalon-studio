@@ -184,10 +184,6 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     private static final String RESUME_TOOL_ITEM_LABEL = StringConstants.DIA_TOOLITEM_RESUME;
 
-    private static final String STOP_TOOL_ITEM_LABEL = StringConstants.DIA_TOOLITEM_STOP;
-
-    private static final String PAUSE_TOOL_ITEM_LABEL = StringConstants.DIA_TOOLITEM_PAUSE;
-
     private static final String RECORD_TOOL_ITEM_LABEL = StringConstants.DIA_TOOLITEM_RECORD;
 
     private static Point MIN_DIALOG_SIZE = new Point(665, 630);
@@ -464,7 +460,6 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     private void resume() {
         isPausing = false;
-        tltmPause.setText(PAUSE_TOOL_ITEM_LABEL);
         tltmPause.setImage(ImageConstants.IMG_24_PAUSE);
         toolBar.getParent().layout();
     }
@@ -893,7 +888,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         ToolItem tltmCapturedObjects = new ToolItem(rightToolBar, SWT.CHECK);
 
         
-        tltmCapturedObjects.setText("Show " + StringConstants.DIA_TITLE_CAPTURED_OBJECTS);
+        tltmCapturedObjects.setText(StringConstants.DIA_TITLE_SHOW + StringConstants.DIA_TITLE_CAPTURED_OBJECTS);
         tltmCapturedObjects.setToolTipText(StringConstants.DIA_TOOLTIP_SHOW_HIDE_CAPTURED_OBJECTS);
         tltmCapturedObjects.setSelection(false);
         tltmCapturedObjects.addSelectionListener(new SelectionAdapter() {
@@ -902,10 +897,10 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             public void widgetSelected(SelectionEvent e) {
                 int[] sashFormWeights = new int[] { 0, 10 };
                 boolean isChecked = tltmCapturedObjects.getSelection();
-                String showOrHide = "Show " + StringConstants.DIA_TITLE_CAPTURED_OBJECTS;
+                String showOrHide = StringConstants.DIA_TITLE_SHOW + StringConstants.DIA_TITLE_CAPTURED_OBJECTS;
                 if (isChecked) {
                     sashFormWeights = new int[] { 5, 5 };
-                    showOrHide = "Hide " + StringConstants.DIA_TITLE_CAPTURED_OBJECTS;
+                    showOrHide = StringConstants.DIA_TITLE_HIDE + StringConstants.DIA_TITLE_CAPTURED_OBJECTS;
                 }
                 tltmCapturedObjects.setText(showOrHide);
                 hSashForm.setWeights(sashFormWeights);
@@ -957,8 +952,8 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
         TableColumnLayout tableLayout = new TableColumnLayout();
         tableLayout.setColumnData(tableViewerNo, new ColumnWeightData(0, 40));
-        tableLayout.setColumnData(tableColumnAction, new ColumnWeightData(20, 60));
-        tableLayout.setColumnData(tableColumnActionData, new ColumnWeightData(30, 150));
+        tableLayout.setColumnData(tableColumnAction, new ColumnWeightData(20, 70));
+        tableLayout.setColumnData(tableColumnActionData, new ColumnWeightData(30, 140));
         tableLayout.setColumnData(tableColumnElement, new ColumnWeightData(30, 100));
 
         tableComposite.setLayout(tableLayout);
