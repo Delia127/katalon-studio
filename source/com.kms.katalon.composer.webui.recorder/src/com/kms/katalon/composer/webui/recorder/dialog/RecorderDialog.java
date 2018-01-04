@@ -484,7 +484,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         bodyComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         hSashForm = new SashForm(bodyComposite, SWT.NONE);
-        hSashForm.setSashWidth(3);
+        hSashForm.setSashWidth(5);
 
         Composite objectComposite = new Composite(hSashForm, SWT.NONE);
         GridLayout gl_objectComposite = new GridLayout();
@@ -893,19 +893,19 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         ToolItem tltmCapturedObjects = new ToolItem(rightToolBar, SWT.CHECK);
 
         
-        tltmCapturedObjects.setText("Show " + StringConstants.DIA_TITLE_CAPTURED_OBJECTS);
+        tltmCapturedObjects.setText("Hide " + StringConstants.DIA_TITLE_CAPTURED_OBJECTS);
         tltmCapturedObjects.setToolTipText(StringConstants.DIA_TOOLTIP_SHOW_HIDE_CAPTURED_OBJECTS);
-        tltmCapturedObjects.setSelection(true);
+        tltmCapturedObjects.setSelection(false);
         tltmCapturedObjects.addSelectionListener(new SelectionAdapter() {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                int[] sashFormWeights = new int[] { 5, 5 };
+                int[] sashFormWeights = new int[] { 0, 10 };
                 boolean isChecked = tltmCapturedObjects.getSelection();
-                String showOrHide = "Show " + StringConstants.DIA_TITLE_CAPTURED_OBJECTS;
-                if (!isChecked) {
-                    sashFormWeights = new int[] { 0, 10 };
-                    showOrHide = "Hide " + StringConstants.DIA_TITLE_CAPTURED_OBJECTS;
+                String showOrHide = "Hide " + StringConstants.DIA_TITLE_CAPTURED_OBJECTS;
+                if (isChecked) {
+                    sashFormWeights = new int[] { 5, 5 };
+                    showOrHide = "Show " + StringConstants.DIA_TITLE_CAPTURED_OBJECTS;
                 }
                 tltmCapturedObjects.setText(showOrHide);
                 hSashForm.setWeights(sashFormWeights);
