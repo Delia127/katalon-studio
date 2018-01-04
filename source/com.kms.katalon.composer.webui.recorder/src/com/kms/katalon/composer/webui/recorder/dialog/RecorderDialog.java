@@ -887,20 +887,17 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         ToolBar rightToolBar = new ToolBar(tbComposite, SWT.FLAT | SWT.RIGHT);
         rightToolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
 
-        ToolItem tltmCapturedObjects = new ToolItem(rightToolBar, SWT.CHECK);
-
-        
+        ToolItem tltmCapturedObjects = new ToolItem(rightToolBar, SWT.PUSH);
         tltmCapturedObjects.setText(StringConstants.DIA_TITLE_SHOW + StringConstants.DIA_TITLE_CAPTURED_OBJECTS);
         tltmCapturedObjects.setToolTipText(StringConstants.DIA_TOOLTIP_SHOW_HIDE_CAPTURED_OBJECTS);
-        tltmCapturedObjects.setSelection(false);
         tltmCapturedObjects.addSelectionListener(new SelectionAdapter() {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
                 int[] sashFormWeights = new int[] { 0, 10 };
-                boolean isChecked = tltmCapturedObjects.getSelection();
                 String showOrHide = StringConstants.DIA_TITLE_SHOW + StringConstants.DIA_TITLE_CAPTURED_OBJECTS;
-                if (isChecked) {
+                
+                if (tltmCapturedObjects.getText().contains(StringConstants.DIA_TITLE_SHOW)) {
                     sashFormWeights = new int[] { 5, 5 };
                     showOrHide = StringConstants.DIA_TITLE_HIDE + StringConstants.DIA_TITLE_CAPTURED_OBJECTS;
                 }
