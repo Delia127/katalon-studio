@@ -157,6 +157,8 @@ import com.kms.katalon.util.listener.EventManager;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef.HWND;
 
+import net.sourceforge.htmlunit.corejs.javascript.ast.ParenthesizedExpression;
+
 @SuppressWarnings("restriction")
 public class RecorderDialog extends AbstractDialog implements EventHandler, EventManager<ObjectSpyEvent> {
     private static final String IE_WINDOW_CLASS = "IEFrame"; //$NON-NLS-1$
@@ -186,7 +188,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     private static final String RECORD_TOOL_ITEM_LABEL = StringConstants.DIA_TOOLITEM_RECORD;
 
-    private static Point MIN_DIALOG_SIZE = new Point(665, 630);
+    private static Point MIN_DIALOG_SIZE = new Point(400, 600);
 
     private HTMLElementRecorderServer server;
 
@@ -904,6 +906,8 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 }
                 tltmCapturedObjects.setText(showOrHide);
                 hSashForm.setWeights(sashFormWeights);
+                getShell().pack();
+                
             }
         });
     }
@@ -1586,7 +1590,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
      */
     @Override
     protected Point getInitialSize() {
-        return getShell().computeSize(SWT.DEFAULT, SWT.DEFAULT);
+        return new Point(500, 500);
     }
 
     @Override
