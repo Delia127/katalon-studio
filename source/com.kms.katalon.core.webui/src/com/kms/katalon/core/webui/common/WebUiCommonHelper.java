@@ -34,35 +34,11 @@ import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.core.webui.exception.WebElementNotFoundException;
 
 public class WebUiCommonHelper extends KeywordHelper {
-    private static final String XPATH_DOT = ".";
-
     public static final String CSS_LOCATOR_PROPERTY_NAME = "css";
+    
+    public static final String XPATH_LOCATOR_PROPERTY_NAME = "xpath";
 
     public static final String WEB_ELEMENT_TAG = "tag";
-
-    private static final String XPATH_PREFIX = "//";
-
-    private static final String XPATH_ATTRIBUTE_PREFIX = "@";
-
-    private static final String XPATH_CONDITION_TYPE_NOT_MATCHES = "not(matches(%s,'%s'))";
-
-    private static final String XPATH_CONDITION_TYPE_MATCHES = "matches(%s,'%s')";
-
-    private static final String XPATH_CONDITION_TYPE_ENDS_WITH = "ends-with(%s,'%s')";
-
-    private static final String XPATH_CONDITION_TYPE_STARTS_WITH = "starts-with(%s,'%s')";
-
-    private static final String XPATH_CONDITION_TYPE_NOT_EQUALS = "%s != '%s'";
-
-    private static final String XPATH_CONDITION_TYPE_NOT_CONTAINS = "not(contains(%s,'%s'))";
-
-    private static final String XPATH_CONDITION_TYPE_EQUALS = "%s = '%s'";
-
-    private static final String XPATH_CONDITION_TYPE_CONTAINS = "contains(%s,'%s')";
-
-    private static final String CSS_METHOD_SUFFIX = "()";
-
-    private static final String XPATH_GET_TEXT_METHOD = "text()";
 
     public static final String WEB_ELEMENT_ATTRIBUTE_LINK_TEXT = "link_text";
 
@@ -71,8 +47,6 @@ public class WebUiCommonHelper extends KeywordHelper {
     public static final String WEB_ELEMENT_XPATH = "xpath";
 
     private static KeywordLogger logger = KeywordLogger.getInstance();
-
-    private static final String XPATH_INTESECTION_FORMULA = "%s[count(. | %s) = count(%s)]";
 
     public static boolean isTextPresent(WebDriver webDriver, String text, boolean isRegex)
             throws WebDriverException, IllegalArgumentException {
@@ -522,7 +496,8 @@ public class WebUiCommonHelper extends KeywordHelper {
                 if (cssLocatorValue != null) {
                     return cssLocatorValue;
                 }
-                return getXpathSelectorValue(getListXpathProperties(to));
+                XPathBuilder xpathBuilder = new XPathBuilder(to.getActiveProperties());
+                return xpathBuilder.build(); 
             default:
                 return to.getSelectorCollection().get(selectorMethod);
         }
@@ -538,101 +513,8 @@ public class WebUiCommonHelper extends KeywordHelper {
     }
 
     private static By buildXpath(TestObject to) {
-        return intersectXpathList(getListXpathProperties(to));
-    }
-
-    private static List<String> getListXpathProperties(TestObject to) {
-        List<String> xpathList = new ArrayList<String>();
-        for (TestObjectProperty property : to.getActiveProperties()) {
-            String xpath = buildXpath(property);
-            if (xpath != null) {
-                xpathList.add(xpath);
-            }
-        }
-        return xpathList;
-    }
-
-    private static By intersectXpathList(List<String> xpathList) {
-        String xpathString = getXpathSelectorValue(xpathList);
-        if (!xpathString.toString().isEmpty()) {
-            return By.xpath(xpathString.toString());
-        }
-        return null;
-    }
-
-    private static String getXpathSelectorValue(List<String> xpathList) {
-        StringBuilder xpathString = new StringBuilder();
-        for (String xpath : xpathList) {
-            if (xpathString.toString().isEmpty()) {
-                xpathString.append(xpath);
-            } else {
-                String existingXpath = xpathString.toString();
-                xpathString = new StringBuilder(String.format(XPATH_INTESECTION_FORMULA, existingXpath, xpath, xpath));
-            }
-        }
-        return xpathString.toString();
-    }
-
-    public static String buildXpath(TestObjectProperty property) {
-        String propertyName = property.getName();
-        String propertyValue = property.getValue();
-        ConditionType conditionType = property.getCondition();
-        if (propertyName.equals(WEB_ELEMENT_XPATH)) {
-            return propertyValue;
-        }
-        if (propertyName.equals(WEB_ELEMENT_TAG)) {
-            return "//" + propertyValue;
-        }
-        StringBuilder expression = new StringBuilder();
-        if (propertyName.equals(WEB_ELEMENT_ATTRIBUTE_TEXT) || propertyName.equals(WEB_ELEMENT_ATTRIBUTE_LINK_TEXT)) {
-            if (conditionType == ConditionType.EQUALS || conditionType == ConditionType.NOT_EQUAL) {
-                propertyName = XPATH_GET_TEXT_METHOD;
-            } else {
-                propertyName = XPATH_DOT;
-            }
-        }
-        // If attribute, append '@' before attribute name, skip it if method or dot
-        if (!propertyName.endsWith(CSS_METHOD_SUFFIX) && !propertyName.equals(XPATH_DOT)) {
-            propertyName = XPATH_ATTRIBUTE_PREFIX + propertyName;
-        }
-
-        switch (conditionType) {
-            case CONTAINS:
-                expression.append(String.format(XPATH_CONDITION_TYPE_CONTAINS, propertyName, propertyValue));
-                break;
-            case ENDS_WITH:
-                expression.append(String.format(XPATH_CONDITION_TYPE_ENDS_WITH, propertyName, propertyValue));
-                break;
-            case EQUALS:
-                expression.append(String.format(XPATH_CONDITION_TYPE_EQUALS, propertyName, propertyValue));
-                break;
-            case MATCHES_REGEX:
-                expression.append(String.format(XPATH_CONDITION_TYPE_MATCHES, propertyName, propertyValue));
-                break;
-            case NOT_CONTAIN:
-                expression.append(String.format(XPATH_CONDITION_TYPE_NOT_CONTAINS, propertyName, propertyValue));
-                break;
-            case NOT_EQUAL:
-                expression.append(String.format(XPATH_CONDITION_TYPE_NOT_EQUALS, propertyName, propertyValue));
-                break;
-            case NOT_MATCH_REGEX:
-                expression.append(String.format(XPATH_CONDITION_TYPE_NOT_MATCHES, propertyName, propertyValue));
-                break;
-            case STARTS_WITH:
-                expression.append(String.format(XPATH_CONDITION_TYPE_STARTS_WITH, propertyName, propertyValue));
-                break;
-            default:
-                break;
-
-        }
-        if (expression != null && !expression.toString().isEmpty()) {
-            StringBuilder xpath = new StringBuilder();
-            xpath.append(XPATH_PREFIX);
-            xpath.append("*");
-            xpath.append("[" + expression.toString() + "]");
-            return xpath.toString();
-        }
-        return null;
+        XPathBuilder xpathBuilder = new XPathBuilder(to.getActiveProperties());
+        return By.xpath(xpathBuilder.build()); 
     }
 
     public static String getBrowserAndVersion(WebDriver webDriver) {

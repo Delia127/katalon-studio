@@ -15,7 +15,6 @@ import javax.websocket.server.ServerEndpoint;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.eclipse.e4.core.services.events.IEventBroker;
 import org.w3c.dom.Document;
 
 import com.google.gson.Gson;
@@ -177,13 +176,9 @@ public class AddonSocket {
 
     private void addNewElement(String value) {
         try {
-            // TODO remove this when the new Object spy complete
-            IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
-            eventBroker.post(EventConstants.OBJECT_SPY_HTML_ELEMENT_CAPTURED, HTMLElementUtil.buildHTMLElement(value));
-
-            // For new object spy
             // Note that, the web socket is used for Firefox plugin only
-            eventBroker.post(EventConstants.OBJECT_SPY_HTML_ELEMENT_CAPTURED, WebElementUtils.buildWebElement(value));
+            EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.OBJECT_SPY_HTML_ELEMENT_CAPTURED,
+                    WebElementUtils.buildWebElement(value));
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
