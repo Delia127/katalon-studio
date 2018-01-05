@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -705,6 +706,8 @@ public class GenerateCommandDialog extends AbstractDialog {
                 commandBuilder.append(KATALON_EXECUTABLE_WIN32);
                 break;
         }
+        
+        commandBuilder.append(" -noSpash ");
 
         for (String key : consoleAgrsMap.keySet()) {
             commandBuilder.append(" ");
@@ -750,7 +753,9 @@ public class GenerateCommandDialog extends AbstractDialog {
         if (isTestSuite(entityId)) {
             args.put(ARG_TEST_SUITE_PATH, getArgumentValueToSave(entityId, generateCommandMode));
 
-            args.putAll(ConsoleOptionBuilder.argsMap(runConfigDescription));
+            for (Entry<String, String> entry : ConsoleOptionBuilder.argsMap(runConfigDescription).entrySet()) {
+                args.put(entry.getKey(), getArgumentValueToSave(entry.getValue(), generateCommandMode));
+            }
         } else {
             args.put(ARG_TEST_SUITE_COLLECTION_PATH, getArgumentValueToSave(entityId, generateCommandMode));
             return args;
