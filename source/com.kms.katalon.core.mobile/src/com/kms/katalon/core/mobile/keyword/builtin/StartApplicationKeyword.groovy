@@ -48,7 +48,7 @@ public class StartApplicationKeyword extends MobileAbstractKeyword {
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_STARTING_APP_AT, StringUtils.defaultString(applicationFileAbs)))
             MobileDriverFactory.startMobileDriver(applicationFileAbs, uninstallAfterCloseApp)
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_START_APP_AT,  StringUtils.defaultString(applicationFileAbs)))
-        }, flowControl, true, MessageFormat.format(StringConstants.KW_MSG_UNABLE_TO_START_APP_AT, StringUtils.defaultString(appFile)))
+        }, flowControl, false, MessageFormat.format(StringConstants.KW_MSG_UNABLE_TO_START_APP_AT, StringUtils.defaultString(appFile)))
     }
     
     private String getAbsolutePath(String filePath) {

@@ -69,6 +69,6 @@ public class CloseApplicationKeyword extends MobileAbstractKeyword {
         MobileKeywordMain.runKeyword({
             MobileDriverFactory.closeDriver()
             logger.logPassed(StringConstants.KW_LOG_PASSED_CLOSE_APP)
-        }, flowControl, true, StringConstants.KW_MSG_UNABLE_TO_CLOSE_APPLICATION)
+        }, flowControl, false, StringConstants.KW_MSG_UNABLE_TO_CLOSE_APPLICATION)
     }
 }
