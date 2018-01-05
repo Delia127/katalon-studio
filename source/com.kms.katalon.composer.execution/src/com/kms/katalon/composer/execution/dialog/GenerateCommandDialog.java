@@ -707,7 +707,7 @@ public class GenerateCommandDialog extends AbstractDialog {
                 break;
         }
         
-        commandBuilder.append(" -noSpash ");
+        commandBuilder.append(" -noSplash ");
 
         for (String key : consoleAgrsMap.keySet()) {
             commandBuilder.append(" ");
