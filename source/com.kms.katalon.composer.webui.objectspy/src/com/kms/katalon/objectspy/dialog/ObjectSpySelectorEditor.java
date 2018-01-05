@@ -62,6 +62,7 @@ public class ObjectSpySelectorEditor implements EventListener<ObjectSpyEvent>, E
         GC graphicContext = new GC(txtSelector);
         FontMetrics fm = graphicContext.getFontMetrics();
         gdTxtSelector.heightHint = EDITOR_LINE_HEIGHT * fm.getHeight();
+        gdTxtSelector.widthHint  = 300;
         txtSelector.setLayoutData(gdTxtSelector);
 
         registerControlListeners();
@@ -74,7 +75,9 @@ public class ObjectSpySelectorEditor implements EventListener<ObjectSpyEvent>, E
         GridData gd = (GridData) child.getParent().getLayoutData();
         gd.exclude = !visible;
         child.getParent().setVisible(visible);
-        child.getParent().pack();
+        
+        child.getParent().getParent().layout(true, true);
+        invoke(ObjectSpyEvent.REQUEST_DIALOG_RESIZE, null);
     }
     
     private void registerControlListeners() {
@@ -109,20 +112,20 @@ public class ObjectSpySelectorEditor implements EventListener<ObjectSpyEvent>, E
         }
         if (webElement == null) {
             txtSelector.setEnabled(false);
-            selectorEditorPartVisible(false, txtSelector);
             txtSelector.setText(StringUtils.EMPTY);
             return;
         }
         txtSelector.setEnabled(true);
-        selectorEditorPartVisible(true, txtSelector);
         SelectorMethod selectorMethod = webElement.getSelectorMethod();
         switch (selectorMethod) {
             case BASIC:
                 TestObject testObject = WebElementUtils.buildTestObject(webElement);
                 changeEditorStatus(WebUiCommonHelper.getSelectorValue(testObject), false);
+                selectorEditorPartVisible(false, txtSelector);
                 return;
             default:
                 changeEditorStatus(webElement.getSelectorCollection().get(selectorMethod), true);
+                selectorEditorPartVisible(true, txtSelector);
                 
         }
     }
