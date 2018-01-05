@@ -184,7 +184,6 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     private static final String TABLE_COLUMN_NO_TITLE = StringConstants.DIA_COL_NO;
 
-    private static final String RESUME_TOOL_ITEM_LABEL = StringConstants.DIA_TOOLITEM_RESUME;
 
     private static final String RECORD_TOOL_ITEM_LABEL = StringConstants.DIA_TOOLITEM_RECORD;
 
@@ -455,7 +454,6 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     private void pause() {
         isPausing = true;
-        tltmPause.setText(RESUME_TOOL_ITEM_LABEL);
         tltmPause.setImage(ImageConstants.IMG_24_PLAY);
         toolBar.getParent().layout();
     }
