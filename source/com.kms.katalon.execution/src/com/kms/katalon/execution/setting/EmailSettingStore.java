@@ -23,9 +23,6 @@ import com.kms.katalon.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class EmailSettingStore extends BundleSettingStore {
-
-    private static final boolean DEFAULT_EMAIL_SETTING_ENABLED = true;
-
     private static final String KATALON_STUDIO_EMAIL_SIGNATURE = "Katalon Studio";
 
     private static final String RESOURCES_TEMPLATE_EMAIL_FOLDER = "resources/template/email";
@@ -46,14 +43,6 @@ public class EmailSettingStore extends BundleSettingStore {
 
     private boolean getBooleanFromSettingOrPrefs(String mailConfigSettingName) throws IOException {
         return getBoolean(mailConfigSettingName, mailPreferenceStore.getBoolean(mailConfigSettingName));
-    }
-
-    public boolean isEnabled() throws IOException {
-        return getBoolean(ExecutionPreferenceConstants.MAIL_CONFIG_ENABLED, DEFAULT_EMAIL_SETTING_ENABLED);
-    }
-
-    public void setEnabled(boolean isEnabled) throws IOException {
-        setProperty(ExecutionPreferenceConstants.MAIL_CONFIG_ENABLED, isEnabled);
     }
 
     public String getHost() throws IOException {

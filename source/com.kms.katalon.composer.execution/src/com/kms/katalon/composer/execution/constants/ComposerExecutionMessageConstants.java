@@ -296,8 +296,6 @@ public class ComposerExecutionMessageConstants extends NLS {
 
     public static String DIA_MSG_CONFIGURATION_IS_REQUIRED;
 
-    public static String PREF_CHKBOX_ENABLE_SENDING_EMAIL;
-
     // MobileDeviceUIProvider
     public static String DIA_MSG_ANDROID_SDK_MISSING;
 

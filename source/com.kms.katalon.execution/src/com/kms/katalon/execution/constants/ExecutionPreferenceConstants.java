@@ -2,10 +2,8 @@ package com.kms.katalon.execution.constants;
 
 public interface ExecutionPreferenceConstants {
     public static final String EXECUTION_QUALIFIER = "com.kms.katalon.execution";
-
+    
     public static final String EXECUTION_NOTIFY_AFTER_EXECUTING = "execution.notifyAfterExecuting";
-
-    public static final String MAIL_CONFIG_ENABLED = "mailConfig.enabled";
 
     public static final String MAIL_CONFIG_HOST = "mailConfig.host";
 
