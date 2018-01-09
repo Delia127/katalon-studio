@@ -578,7 +578,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 Arrays.asList(ObjectSpyEvent.ADDON_SESSION_STARTED, ObjectSpyEvent.SELENIUM_SESSION_STARTED));
         // objectPropertiesView.addListener(this, Arrays.asList(ObjectSpyEvent.REQUEST_DIALOG_RESIZE));
     }
-    
+
     private void createDeleteItem(Item deleteMenuItem) {
         deleteMenuItem.setText(StringConstants.DELETE);
         deleteMenuItem.addListener(SWT.Selection, new Listener() {

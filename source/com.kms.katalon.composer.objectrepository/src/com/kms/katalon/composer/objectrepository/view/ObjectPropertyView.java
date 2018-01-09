@@ -116,7 +116,7 @@ public class ObjectPropertyView implements EventHandler {
     private static final String LBL_SELECTION_METHOD = ObjectspyMessageConstants.DIA_LBL_OBJECT_SELECTION_METHOD;
 
     private static final String LBL_WARN_MSG_SELECTED_PROPERTIES_LOCATE_OBJECT = ObjectspyMessageConstants.WARN_MSG_SELECTED_PROPERTIES_LOCATE_OBJECT;
-   
+
     private static final String LBL_SELECTOR_EDITOR = ObjectspyMessageConstants.LBL_DLG_SELECTOR_EDITOR;
 
     private static final String HK_ADD = "M1+N";
@@ -443,7 +443,7 @@ public class ObjectPropertyView implements EventHandler {
         GridData gdSelectorEditor = new GridData(SWT.FILL, SWT.FILL, true, true);
         gdSelectorEditor.minimumHeight = 80;
         txtSelectorEditor.setLayoutData(gdSelectorEditor);
-        
+
         selectorEditorPartVisible(false, txtSelectorEditor);
     }
     

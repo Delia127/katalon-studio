@@ -80,7 +80,7 @@ public class ObjectPropertiesView extends Composite
     private static final String RADIO_LABEL_BASIC = ObjectspyMessageConstants.DIA_RADIO_LABEL_BASIC;
 
     private static final String COL_LABEL_CONDITION = ObjectspyMessageConstants.DIA_COL_LABEL_CONDITION;
-    
+
     private static final String TOOL_TIP_WARN_MSG   = ObjectspyMessageConstants.WARN_MSG_SELECTED_PROPERTIES_LOCATE_OBJECT;
 
     private Table tProperty;
@@ -302,7 +302,7 @@ public class ObjectPropertiesView extends Composite
             public String getText(Object element) {
                 return ((WebElementPropertyEntity) element).getName();
             }
-            
+
             @Override
             public String getToolTipText(Object element) {
                 return TOOL_TIP_WARN_MSG;
@@ -350,7 +350,7 @@ public class ObjectPropertiesView extends Composite
             public String getText(Object element) {
                 return ((WebElementPropertyEntity) element).getMatchCondition();
             }
-            
+
             @Override
             public String getToolTipText(Object element) {
                 return TOOL_TIP_WARN_MSG;
@@ -399,7 +399,7 @@ public class ObjectPropertiesView extends Composite
             public String getText(Object element) {
                 return ((WebElementPropertyEntity) element).getValue();
             }
-            
+
             @Override
             public String getToolTipText(Object element) {
                 return TOOL_TIP_WARN_MSG;
@@ -471,7 +471,7 @@ public class ObjectPropertiesView extends Composite
                 cell.setText(getCheckboxIcon(isSelected));
                 cSelected.setText(getCheckboxIcon(isAllPropetyEnabled()));
             }
-            
+
             @Override
             public String getToolTipText(Object element) {
                 return TOOL_TIP_WARN_MSG;
