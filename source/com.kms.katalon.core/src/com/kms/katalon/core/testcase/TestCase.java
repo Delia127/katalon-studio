@@ -67,11 +67,11 @@ public class TestCase {
 		this.description = description;
 	}
 	
-	public String getTag() {
-	    return tag;
-	}
+    public String getTag() {
+        return tag;
+    }
 
-	/*package*/ void setTag(String tag) {
-	    this.tag = tag;
-	}
+    /* package */ void setTag(String tag) {
+        this.tag = tag;
+    }
 }

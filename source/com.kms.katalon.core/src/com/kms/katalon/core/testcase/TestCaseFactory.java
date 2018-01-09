@@ -33,7 +33,7 @@ public class TestCaseFactory {
     /* package */static final String TEST_CASE_META_FILE_EXTENSION = ".tc";
 
     private static final String DESCRIPTION_NODE_NAME = "description";
-    
+
     private static final String TAG_NODE_NAME = "tag";
 
     private static final String VARIABLE_NODE_NAME = "variable";
