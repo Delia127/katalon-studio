@@ -17,7 +17,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -60,7 +60,7 @@ public class InspectSession implements Runnable {
 
     public static final String OBJECT_SPY_ADD_ON_NAME = "Object Spy";
 
-    protected static final String LOAD_EXTENSION_CHROME_PREFIX = "load-extension=";
+    protected static final String LOAD_EXTENSION_CHROME_PREFIX = "load-extension";
 
     private static final String VARIABLE_INIT_EXPRESSION_FOR_CHROME = "katalonServerPort = ''{0}''\r\n"
             + "katalonOnOffStatus = true\r\n" + "spy_captureObjectHotKey = {1};\r\n"
@@ -134,8 +134,9 @@ public class InspectSession implements Runnable {
         driverConnectors.put(DriverFactory.WEB_UI_DRIVER_PROPERTY, webUIDriverConnector);
 
         RunConfiguration.setExecutionSetting(ExecutionUtil.getExecutionProperties(executionSetting, driverConnectors));
-        options = createDriverOptions(webUIDriverType);
 
+        Map<String, Object> driverPreferenceProps = RunConfiguration.getDriverPreferencesProperties(DriverFactory.WEB_UI_DRIVER_PROPERTY);
+        options = createDriverOptions(webUIDriverType, driverPreferenceProps);
         if (webUiDriverType == WebUIDriverType.IE_DRIVER) {
             setupIE();
         }
@@ -235,46 +236,46 @@ public class InspectSession implements Runnable {
         });
     }
 
-    protected Object createDriverOptions(WebUIDriverType driverType)
+    protected Object createDriverOptions(WebUIDriverType driverType, Map<String, Object> propertyMap)
             throws IOException, ExtensionNotFoundException, BrowserNotSupportedException {
         if (driverType == WebUIDriverType.CHROME_DRIVER) {
-            return createChromDriverOptions();
+            return createChromDriverOptions(propertyMap);
         }
         if (driverType == WebUIDriverType.FIREFOX_DRIVER) {
-            return createFireFoxProfile();
+            return createFireFoxProfile(propertyMap);
         }
         if (driverType == WebUIDriverType.IE_DRIVER) {
-            return createIEDesiredCapabilities();
+            return createIEDesiredCapabilities(propertyMap);
         }
         return null;
     }
 
-    private DesiredCapabilities createIEDesiredCapabilities() {
+    private DesiredCapabilities createIEDesiredCapabilities(Map<String, Object> propertyMap) {
         DesiredCapabilities desiredCapabilities = DesiredCapabilities.internetExplorer();
+        WebDriverPropertyUtil.toDesireCapabilities(propertyMap, desiredCapabilities, true);
         desiredCapabilities.setCapability(InternetExplorerDriver.INITIAL_BROWSER_URL, ABOUT_BLANK);
         return desiredCapabilities;
     }
 
-    protected FirefoxProfile createFireFoxProfile() throws IOException {
-        FirefoxProfile firefoxProfile = WebDriverPropertyUtil.createDefaultFirefoxProfile();
+    protected DesiredCapabilities createFireFoxProfile(Map<String, Object> propertyMap) throws IOException {
+        DesiredCapabilities firefoxCapabilities = WebDriverPropertyUtil.getDesireCapabilitiesForFirefox(propertyMap);
+        FirefoxProfile firefoxProfile = new FirefoxProfile();
         File file = getFirefoxAddonFile();
         if (file != null) {
             firefoxProfile.addExtension(file.getName(), new FirefoxWebExtension(file, FIREFOX_ADDON_UUID));
+            firefoxCapabilities.setCapability(FirefoxDriver.PROFILE, firefoxProfile);
         }
-        return firefoxProfile;
+        return firefoxCapabilities;
     }
 
-    protected DesiredCapabilities createChromDriverOptions() throws IOException, ExtensionNotFoundException {
+    protected DesiredCapabilities createChromDriverOptions(Map<String, Object> propertyMap) throws IOException, ExtensionNotFoundException {
         File chromeExtensionFolder = getChromeExtensionFile();
         if (chromeExtensionFolder == null || !chromeExtensionFolder.isDirectory() || !chromeExtensionFolder.exists()) {
             throw new ExtensionNotFoundException(getChromeExtensionPath(), WebUIDriverType.CHROME_DRIVER);
         }
         generateVariableInitFileForChrome(chromeExtensionFolder);
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments(LOAD_EXTENSION_CHROME_PREFIX + chromeExtensionFolder.getAbsolutePath());
-        DesiredCapabilities capabilities = new DesiredCapabilities();
-        capabilities.setCapability(ChromeOptions.CAPABILITY, options);
-        return capabilities;
+        propertyMap.put(LOAD_EXTENSION_CHROME_PREFIX, chromeExtensionFolder.getAbsolutePath());
+        return WebDriverPropertyUtil.toDesireCapabilities(propertyMap, WebUIDriverType.CHROME_DRIVER); 
     }
 
     private void generateVariableInitFileForChrome(File chromeExtensionFolder) throws IOException {

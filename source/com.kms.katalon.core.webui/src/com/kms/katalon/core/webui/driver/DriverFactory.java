@@ -502,10 +502,8 @@ public class DriverFactory {
             WebUIDriverType webUIDriver = (WebUIDriverType) driver;
             switch (webUIDriver) {
                 case FIREFOX_DRIVER:
-                    if (options instanceof FirefoxProfile) {
-                        DesiredCapabilities desiredCapabilities = DesiredCapabilities.firefox();
-                        desiredCapabilities.setCapability(FirefoxDriver.PROFILE, (FirefoxProfile) options);
-                        webDriver = createNewFirefoxDriver(desiredCapabilities);
+                    if (options instanceof DesiredCapabilities) {
+                        webDriver = createNewFirefoxDriver((DesiredCapabilities)options);
                     } else {
                         webDriver = new CFirefoxDriver(DesiredCapabilities.firefox(), getActionDelay());
                     }
