@@ -23,6 +23,7 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.launching.JavaRuntime;
 
 import com.kms.katalon.core.ast.GroovyParser;
@@ -39,6 +40,10 @@ public class GroovyGuiUtil {
         return GroovyCompilationHelper.createGroovyType(parentPackage, typeName, false, ImportType.KEYWORD_IMPORTS);
     }
 
+    public static ICompilationUnit createGroovyScriptForCustomKeywordFromTemplate(IPackageFragment parentPackage, String typeName, String template) throws CoreException {
+        return GroovyCompilationHelper.createGroovyTypeFromString(parentPackage, typeName, template);
+    }
+    
     public static ICompilationUnit getGroovyScriptForTestCase(TestCaseEntity testCase) throws CoreException,
             IOException {
         getTestCaseScriptFolder(testCase);

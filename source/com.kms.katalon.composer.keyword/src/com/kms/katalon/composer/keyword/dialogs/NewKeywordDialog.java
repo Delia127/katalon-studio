@@ -31,6 +31,12 @@ import com.kms.katalon.composer.keyword.constants.ComposerKeywordMessageConstant
 import com.kms.katalon.composer.keyword.constants.StringConstants;
 
 public class NewKeywordDialog extends CommonAbstractKeywordDialog {
+    
+    public static final int SAMPLE_WEB_KEYWORD = 1;
+    
+    public static final int SAMPLE_MOBILE_KEYWORD = 2;
+    
+    public static final int SAMPLE_API_KEYWORD = 4;
 
     private IPackageFragment parentPackage;
 
@@ -45,6 +51,8 @@ public class NewKeywordDialog extends CommonAbstractKeywordDialog {
     private Button btnGenerateSampleMobileKeyword;
     
     private Button btnGenerateSampleAPIKeyword;
+    
+    private int sampleKeywordType = 0;
 
     private ValidatorManager validatorManager;
 
@@ -114,6 +122,30 @@ public class NewKeywordDialog extends CommonAbstractKeywordDialog {
                     updateStatus();
                     setName(newName);
                 }
+            }
+        });
+        
+        btnGenerateSampleWebKeyword.addSelectionListener(new SelectionAdapter() {
+           
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                sampleKeywordType |= SAMPLE_WEB_KEYWORD;
+            }
+        });
+        
+        btnGenerateSampleMobileKeyword.addSelectionListener(new SelectionAdapter() {
+            
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                sampleKeywordType |= SAMPLE_MOBILE_KEYWORD;
+            }
+        });
+        
+        btnGenerateSampleAPIKeyword.addSelectionListener(new SelectionAdapter() {
+                    
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                sampleKeywordType |= SAMPLE_API_KEYWORD;
             }
         });
     }
@@ -258,18 +290,10 @@ public class NewKeywordDialog extends CommonAbstractKeywordDialog {
         return parentPackage;
     }
     
-    public boolean shouldGenerateSampleWebKeyword() {
-        return btnGenerateSampleWebKeyword.getSelection();
+    public int getSampleKeywordType() {
+        return sampleKeywordType;
     }
     
-    public boolean shouldGenerateSampleMobileKeyword() {
-        return btnGenerateSampleMobileKeyword.getSelection();
-    }
-    
-    public boolean shouldGenerateSampleAPIKeyword() {
-        return btnGenerateSampleAPIKeyword.getSelection();
-    }
-
     private class Validator {
         private String message;
 
