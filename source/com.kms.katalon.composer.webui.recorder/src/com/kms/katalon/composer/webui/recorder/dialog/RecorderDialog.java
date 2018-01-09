@@ -187,7 +187,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     private static final String RECORD_TOOL_ITEM_LABEL = StringConstants.DIA_TOOLITEM_RECORD;
 
-    private static Point MIN_DIALOG_SIZE = new Point(500, 500);
+    private static Point MIN_DIALOG_SIZE = new Point(500, 600);
 
     private HTMLElementRecorderServer server;
 
