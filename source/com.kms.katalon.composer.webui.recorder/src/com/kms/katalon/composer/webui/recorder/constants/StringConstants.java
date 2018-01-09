@@ -4,14 +4,10 @@ import com.kms.katalon.constants.GlobalStringConstants;
 
 public class StringConstants extends GlobalStringConstants {
 	// RecorderDialog
-    public static final String DIA_TITLE_RECORD = ComposerWebuiRecorderMessageConstants.DIA_TITLE_RECORD;
     public static final String DIA_COL_ELEMENT = ComposerWebuiRecorderMessageConstants.DIA_COL_ELEMENT;
     public static final String DIA_COL_ACTION_DATA = ComposerWebuiRecorderMessageConstants.DIA_COL_ACTION_DATA;
     public static final String DIA_COL_ACTION = ComposerWebuiRecorderMessageConstants.DIA_COL_ACTION;
 	public static final String DIA_COL_NO = NO_;
-    public static final String DIA_TOOLITEM_RESUME = ComposerWebuiRecorderMessageConstants.DIA_TOOLITEM_RESUME;
-    public static final String DIA_TOOLITEM_STOP = ComposerWebuiRecorderMessageConstants.DIA_TOOLITEM_STOP;
-    public static final String DIA_TOOLITEM_PAUSE = ComposerWebuiRecorderMessageConstants.DIA_TOOLITEM_PAUSE;
     public static final String DIA_TOOLITEM_RECORD = ComposerWebuiRecorderMessageConstants.DIA_TOOLITEM_RECORD;
 	public static final String ERROR_TITLE = ERROR;
     public static final String DIA_LBL_CAPTURED_OBJECTS = ComposerWebuiRecorderMessageConstants.DIA_LBL_CAPTURED_OBJECTS;

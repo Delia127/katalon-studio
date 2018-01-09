@@ -5,19 +5,11 @@ import org.eclipse.osgi.util.NLS;
 public class ComposerWebuiRecorderMessageConstants extends NLS {
     private static final String BUNDLE_NAME = "com.kms.katalon.composer.webui.recorder.constants.composerWebuiRecorderMessages";
 
-    public static String DIA_TITLE_RECORD;
-
     public static String DIA_COL_ELEMENT;
 
     public static String DIA_COL_ACTION_DATA;
 
     public static String DIA_COL_ACTION;
-
-    public static String DIA_TOOLITEM_RESUME;
-
-    public static String DIA_TOOLITEM_STOP;
-
-    public static String DIA_TOOLITEM_PAUSE;
 
     public static String DIA_TOOLITEM_RECORD;
 

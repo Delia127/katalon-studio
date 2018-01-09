@@ -187,7 +187,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     private static final String RECORD_TOOL_ITEM_LABEL = StringConstants.DIA_TOOLITEM_RECORD;
 
-    private static Point MIN_DIALOG_SIZE = new Point(400, 600);
+    private static Point MIN_DIALOG_SIZE = new Point(500, 500);
 
     private HTMLElementRecorderServer server;
 
@@ -902,7 +902,6 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 tltmCapturedObjects.setText(showOrHide);
                 hSashForm.setWeights(sashFormWeights);
                 getShell().pack();
-                
             }
         });
     }
@@ -1585,7 +1584,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
      */
     @Override
     protected Point getInitialSize() {
-        return new Point(500, 500);
+        return MIN_DIALOG_SIZE;
     }
 
     @Override
