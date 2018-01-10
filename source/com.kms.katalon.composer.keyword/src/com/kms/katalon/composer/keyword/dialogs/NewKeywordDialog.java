@@ -126,23 +126,23 @@ public class NewKeywordDialog extends CommonAbstractKeywordDialog {
             }
         });
         
-        BiFunction<Integer, Button, SelectionAdapter> selectionAdapterCreator = 
-        		(sampleType, sampleButton) -> new SelectionAdapter() {
-        			@Override
-        			public void widgetSelected(SelectionEvent e) {
-        				if (sampleButton.getSelection()) {
-        					sampleKeywordType |= sampleType;
-        				} else {
-        					sampleKeywordType &= ~sampleType;
-        				}
-        			}
-        		};
+        BiFunction<Integer, Button, SelectionAdapter> selectionAdapterCreator = (sampleType,
+                sampleButton) -> new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        if (sampleButton.getSelection()) {
+                            sampleKeywordType |= sampleType;
+                        } else {
+                            sampleKeywordType &= ~sampleType;
+                        }
+                    }
+                };
         btnGenerateSampleWebKeyword.addSelectionListener(
-        		selectionAdapterCreator.apply(SAMPLE_WEB_KEYWORD, btnGenerateSampleWebKeyword));
+                selectionAdapterCreator.apply(SAMPLE_WEB_KEYWORD, btnGenerateSampleWebKeyword));
         btnGenerateSampleMobileKeyword.addSelectionListener(
-        		selectionAdapterCreator.apply(SAMPLE_MOBILE_KEYWORD, btnGenerateSampleMobileKeyword)); 
+                selectionAdapterCreator.apply(SAMPLE_MOBILE_KEYWORD, btnGenerateSampleMobileKeyword));
         btnGenerateSampleAPIKeyword.addSelectionListener(
-        		selectionAdapterCreator.apply(SAMPLE_API_KEYWORD, btnGenerateSampleAPIKeyword));
+                selectionAdapterCreator.apply(SAMPLE_API_KEYWORD, btnGenerateSampleAPIKeyword));
     }
     
     

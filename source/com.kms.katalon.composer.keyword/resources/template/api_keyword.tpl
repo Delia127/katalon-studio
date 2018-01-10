@@ -6,16 +6,16 @@
  */
 @Keyword
 def verifyStatusCode(TestObject request, int expectedStatusCode) {
-	if (request instanceof RequestObject) {
-		RequestObject requestObject = (RequestObject) request
-		ResponseObject response = WSBuiltInKeywords.sendRequest(requestObject)
-		if (response.getStatusCode() == expectedStatusCode) {
-			KeywordUtil.markPassed("Response status codes match")
-		} else {
-			KeywordUtil.markFailed("Response status code not match. Expected: " +
-					expectedStatusCode + " - Actual: " + response.getStatusCode() )
-		}
-	} else {
-		KeywordUtil.markFailed(request.getObjectId() + " is not a RequestObject")
-	}
+    if (request instanceof RequestObject) {
+        RequestObject requestObject = (RequestObject) request
+        ResponseObject response = WSBuiltInKeywords.sendRequest(requestObject)
+        if (response.getStatusCode() == expectedStatusCode) {
+            KeywordUtil.markPassed("Response status codes match")
+        } else {
+            KeywordUtil.markFailed("Response status code not match. Expected: " +
+                    expectedStatusCode + " - Actual: " + response.getStatusCode() )
+        }
+    } else {
+        KeywordUtil.markFailed(request.getObjectId() + " is not a RequestObject")
+    }
 }

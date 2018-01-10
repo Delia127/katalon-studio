@@ -6,18 +6,18 @@
  */
 @Keyword
 def isElementPresent_Mobile(TestObject to, int timeout){
-	try {
-		KeywordUtil.logInfo("Finding element with id:" + to.getObjectId())
+    try {
+        KeywordUtil.logInfo("Finding element with id:" + to.getObjectId())
 
-		WebElement element = MobileElementCommonHelper.findElement(to, timeout)
-		if (element != null) {
-			KeywordUtil.markPassed("Object " + to.getObjectId() + " is present")
-		}
-		return true
-	} catch (Exception e) {
-		KeywordUtil.markFailed("Object " + to.getObjectId() + " is not present aa")
-	}
-	return false;
+        WebElement element = MobileElementCommonHelper.findElement(to, timeout)
+        if (element != null) {
+            KeywordUtil.markPassed("Object " + to.getObjectId() + " is present")
+        }
+        return true
+    } catch (Exception e) {
+        KeywordUtil.markFailed("Object " + to.getObjectId() + " is not present aa")
+    }
+    return false;
 }
 
 /**
@@ -26,5 +26,5 @@ def isElementPresent_Mobile(TestObject to, int timeout){
  */
 @Keyword
 def WebDriver getCurrentSessionMobileDriver() {
-	return MobileDriverFactory.getDriver();
+    return MobileDriverFactory.getDriver();
 }
