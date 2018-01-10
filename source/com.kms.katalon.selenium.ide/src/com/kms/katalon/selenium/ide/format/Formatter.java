@@ -10,7 +10,7 @@ public interface Formatter {
 	public String format(Command command);
 	
 	public default String stringValue(String value) {
-		return "'" + value + "'";
+		return "\"" + value + "\"";
 	}
 	
 	public default String paramOf(String param) {
