@@ -2,9 +2,11 @@ package com.kms.katalon.composer.util.groovy;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.bsf.util.JavaUtils;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jdt.groovy.model.GroovyCompilationUnit;
 import org.eclipse.core.runtime.CoreException;
@@ -12,11 +14,13 @@ import org.eclipse.jdt.core.Flags;
 import org.eclipse.jdt.core.IBuffer;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IImportDeclaration;
+import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageDeclaration;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.ToolFactory;
 import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
@@ -31,9 +35,11 @@ import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
 import org.eclipse.jdt.internal.corext.util.Strings;
 import org.eclipse.jdt.internal.ui.javaeditor.ASTProvider;
 import org.eclipse.jdt.ui.CodeGeneration;
+import org.eclipse.jface.text.Document;
 import org.eclipse.text.edits.DeleteEdit;
 import org.eclipse.text.edits.MultiTextEdit;
 import org.eclipse.text.edits.ReplaceEdit;
+import org.eclipse.text.edits.TextEdit;
 
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.core.annotation.Keyword;
@@ -369,16 +375,25 @@ public class GroovyCompilationHelper {
     }
     
     public static ICompilationUnit createGroovyTypeFromString(IPackageFragment parentPackage, String typeName, String content) throws CoreException {
+
         createType(parentPackage, typeName, ImportType.KEYWORD_IMPORTS);
         
         GroovyCompilationUnit unit = (GroovyCompilationUnit) parentPackage.getCompilationUnit(getCompilationUnitName(typeName));
         try {
             unit.becomeWorkingCopy(null);
             
-            String formattedContent = CodeFormatterUtil.format(CodeFormatter.K_UNKNOWN, content, 0, "", parentPackage.getJavaProject());
+//            String formattedContent = CodeFormatterUtil.format(CodeFormatter.K_STATEMENTS, content, 0, "", parentPackage.getJavaProject());
 
             ISourceRange sourceRange = unit.getSourceRange();
-            unit.applyTextEdit(new ReplaceEdit(0, sourceRange.getLength(), formattedContent), null);
+            MultiTextEdit textEdit = new MultiTextEdit();
+            
+            ReplaceEdit replaceEdit = new ReplaceEdit(0, sourceRange.getLength(), content);
+            textEdit.addChild(replaceEdit);
+            
+//            TextEdit formatEdit = getFormatterEdit(content, "", parentPackage.getJavaProject());
+//            textEdit.addChild(formatEdit);
+//            
+            unit.applyTextEdit(textEdit, null);
             
             unit.commitWorkingCopy(true, null);
         } finally {
@@ -389,6 +404,11 @@ public class GroovyCompilationHelper {
         return unit;
     }
     
+//    private static TextEdit getFormatterEdit(String source, String lineSeparator, IJavaProject project) {
+//        CodeFormatter formatter = ToolFactory.createCodeFormatter(null);
+//        return formatter.format(CodeFormatter.K_COMPILATION_UNIT, source, 0, source.length(), 0, StubUtility.getLineDelimiterUsed(project));
+//    }
+//    
 //    public static ICompilationUnit createGroovyTypeFromString(IPackageFragment parentPackage, String typeName, String content) throws JavaModelException {
 //        boolean needsSave;
 //        ICompilationUnit connectedCU = null;
