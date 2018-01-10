@@ -13,6 +13,7 @@ public class TestCase {
     private String description;
     private TestData testData;
     private List<Variable> variables;
+    private String tag;
     
     /*package*/ TestCase(String testCaseId) {
         this.setTestCaseId(testCaseId);
@@ -65,4 +66,12 @@ public class TestCase {
 	/*package*/ void setDescription(String description) {
 		this.description = description;
 	}
+	
+    public String getTag() {
+        return tag;
+    }
+
+    /* package */ void setTag(String tag) {
+        this.tag = tag;
+    }
 }
