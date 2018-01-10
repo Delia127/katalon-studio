@@ -1,15 +1,37 @@
+/**
+ * Refresh browser
+ */
 @Keyword
-def isElementPresent(TestObject to, int timeout){
-	//Use Katalon built-in function to find elements with time out 1 seconds
-	List<WebElement> elements = WebUiBuiltInKeywords.findWebElements(to, timeout)
-	return elements.size() > 0
+def refreshBrowser() {
+	KeywordUtil.logInfo("Refreshing")
+	WebDriver webDriver = DriverFactory.getWebDriver()
+	webDriver.navigate().refresh()
+	KeywordUtil.markPassed("Refresh successfully")
 }
-	
+
+/**
+ * Click element
+ * @param to Katalon test object
+ */
+@Keyword
+def clickElement(TestObject to) {
+	try {
+		WebElement element = WebUiBuiltInKeywords.findWebElement(to);
+		KeywordUtil.logInfo("Clicking element")
+		element.click()
+		KeywordUtil.markPassed("Element has been clicked")
+	} catch (WebElementNotFoundException e) {
+		KeywordUtil.markFailed("Element not found")
+	} catch (Exception e) {
+		KeywordUtil.markFailed("Fail to click on element")
+	}
+}
+
 /**
  * Get all rows of HTML table
  * @param table Katalon test object represent for HTML table
  * @param outerTagName outer tag name of TR tag, usually is TBODY
- * @return All rows inside HTML table 
+ * @return All rows inside HTML table
  */
 @Keyword
 def List<WebElement> getHtmlTableRows(TestObject table, String outerTagName) {

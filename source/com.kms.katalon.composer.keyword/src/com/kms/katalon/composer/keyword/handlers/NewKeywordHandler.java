@@ -9,7 +9,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jdt.groovy.model.GroovyCompilationUnit;
@@ -34,7 +33,6 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.text.edits.TextEdit;
 import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
@@ -70,93 +68,6 @@ public class NewKeywordHandler {
     private boolean canExecute() {
         return ProjectController.getInstance().getCurrentProject() != null;
     }
-
-//    @Execute
-//    public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell) {
-//        try {
-//            Object[] selectedObjects = (Object[]) selectionService.getSelection(IdConstants.EXPLORER_PART_ID);
-//            ITreeEntity parentTreeEntity = findParentTreeEntity(selectedObjects);
-//            if (parentTreeEntity == null) {
-//                parentTreeEntity = keywordTreeRoot;
-//            }
-//
-//            IPackageFragment packageFragment = null;
-//
-//            if (parentTreeEntity != null && parentTreeEntity instanceof PackageTreeEntity) {
-//                packageFragment = (IPackageFragment) parentTreeEntity.getObject();
-//            } else {
-//                packageFragment = GroovyUtil.getDefaultPackageForKeyword(ProjectController.getInstance()
-//                        .getCurrentProject());
-//            }
-//            if (packageFragment != null) {
-//                IProject groovyProject = GroovyUtil.getGroovyProject(ProjectController.getInstance()
-//                        .getCurrentProject());
-//                IPackageFragmentRoot rootPackage = JavaCore.create(groovyProject).getPackageFragmentRoot(
-//                        groovyProject.getFolder(StringConstants.ROOT_FOLDER_NAME_KEYWORD));
-//                packageFragment.getResource().refreshLocal(IResource.DEPTH_ONE, null);
-//                NewKeywordDialog dialog = new NewKeywordDialog(parentShell, rootPackage, packageFragment);
-//                dialog.open();
-//                if (dialog.getReturnCode() == Dialog.OK) {
-//                    int kwFilePathLength = dialog.getParentPackage().getElementName().length()
-//                            + dialog.getName().length();
-//                    if (kwFilePathLength > StringConstants.MAX_PKG_AND_CLASS_NAME_LENGTH) {
-//                        MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE, MessageFormat.format(
-//                                StringConstants.HAND_ERROR_MSG_EXCEED_CLASS_NAME_LENGTH, kwFilePathLength,
-//                                StringConstants.MAX_PKG_AND_CLASS_NAME_LENGTH));
-//                        return;
-//                    }
-//                    // get new input package
-//                    packageFragment = dialog.getParentPackage();
-//                    IProgressMonitor monitor = new NullProgressMonitor();
-//                    monitor.setTaskName("Create Keyword");
-//                    if (!packageFragment.exists()) {
-//                        // create package
-//                        monitor.subTask("Create Package");
-//                        packageFragment = rootPackage.createPackageFragment(packageFragment.getElementName(), true,
-//                                monitor);
-//
-//                        // remove any working copy of child complicationUnit that exists in the current package
-//                        for (ICompilationUnit compicationUnit : packageFragment.getCompilationUnits()) {
-//                            compicationUnit.discardWorkingCopy();
-//                        }
-//                    }
-//
-//                    // create Keyword class
-//                    ICompilationUnit createdCompilationUnit;
-//                    if (dialog.getSampleKeywordType() != 0) {
-//                        SampleCustomKeywordScriptBuilder sampleScriptBuilder = new SampleCustomKeywordScriptBuilder(dialog);
-//                        String sampleScript = sampleScriptBuilder.build();
-//                        createdCompilationUnit = GroovyGuiUtil.createGroovyScriptForCustomKeywordFromTemplate(packageFragment, dialog.getName(), sampleScript);
-//                    } else {
-//                        createdCompilationUnit = GroovyGuiUtil.createGroovyScriptForCustomKeyword(packageFragment, dialog.getName());
-//                    }
-//                            
-//
-//                    if (createdCompilationUnit instanceof GroovyCompilationUnit
-//                            && createdCompilationUnit.getParent() instanceof IPackageFragment) {
-//                        ITreeEntity keywordRootFolder = new FolderTreeEntity(FolderController.getInstance()
-//                                .getKeywordRoot(ProjectController.getInstance().getCurrentProject()), null);
-//                        ITreeEntity newPackageTreeEntity = new PackageTreeEntity(packageFragment, keywordRootFolder);
-//                        eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, keywordRootFolder);
-//                        eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, new KeywordTreeEntity(
-//                                createdCompilationUnit, newPackageTreeEntity));
-//                        eventBroker.post(EventConstants.EXPLORER_OPEN_SELECTED_ITEM, createdCompilationUnit);
-//                    }
-//
-//                    if (monitor.isCanceled()) {
-//                        throw new InterruptedException();
-//                    }
-//
-//                }
-//            }
-//
-//        } catch (Exception e) {
-//            LoggerSingleton.logError(e);
-//            MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE,
-//                    StringConstants.HAND_ERROR_MSG_UNABLE_TO_CREATE_KEYWORD);
-//        }
-//
-//    }
     
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell) {
@@ -217,24 +128,6 @@ public class NewKeywordHandler {
                     } else {
                         createdCompilationUnit = GroovyGuiUtil.createGroovyScriptForCustomKeyword(packageFragment, dialog.getName());
                     }
-                            
-                    
-//                    if (dialog.getSampleKeywordType() == 0) {
-//                        if (createdCompilationUnit instanceof GroovyCompilationUnit
-//                                && createdCompilationUnit.getParent() instanceof IPackageFragment) {
-//                            ITreeEntity keywordRootFolder = new FolderTreeEntity(FolderController.getInstance()
-//                                    .getKeywordRoot(ProjectController.getInstance().getCurrentProject()), null);
-//                            ITreeEntity newPackageTreeEntity = new PackageTreeEntity(packageFragment, keywordRootFolder);
-//                            eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, keywordRootFolder);
-//                            eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, new KeywordTreeEntity(
-//                                    createdCompilationUnit, newPackageTreeEntity));
-//                            eventBroker.post(EventConstants.EXPLORER_OPEN_SELECTED_ITEM, createdCompilationUnit);
-//                        }
-//                    } else {
-//                        SampleCustomKeywordScriptBuilder sampleScriptBuilder = new SampleCustomKeywordScriptBuilder(dialog);
-//                        String sampleScript = sampleScriptBuilder.build();
-//                        S
-//                    }
                     
                     if (createdCompilationUnit instanceof GroovyCompilationUnit
                             && createdCompilationUnit.getParent() instanceof IPackageFragment) {
@@ -350,17 +243,17 @@ public class NewKeywordHandler {
             int sampleKeywordType = dialog.getSampleKeywordType();
             if ((sampleKeywordType & NewKeywordDialog.SAMPLE_WEB_KEYWORD) != 0) {
                 String webCustomKeywordScript = getFileContent(SAMPLE_WEB_KEYWORD_FILE);
-                keywordScriptBuilder.append(webCustomKeywordScript);
+                keywordScriptBuilder.append(webCustomKeywordScript).append("\n\n");
             }
             
             if ((sampleKeywordType & NewKeywordDialog.SAMPLE_MOBILE_KEYWORD) != 0) {
                 String mobileCustomKeywordScript = getFileContent(SAMPLE_MOBILE_KEYWORD_FILE);
-                keywordScriptBuilder.append(mobileCustomKeywordScript);
+                keywordScriptBuilder.append(mobileCustomKeywordScript).append("\n\n");
             }
             
             if ((sampleKeywordType & NewKeywordDialog.SAMPLE_API_KEYWORD) != 0) {
                 String APICustomKeywordScript = getFileContent(SAMPLE_API_KEYWORD_FILE);
-                keywordScriptBuilder.append(APICustomKeywordScript);
+                keywordScriptBuilder.append(APICustomKeywordScript).append("\n\n");
             }
             
             return keywordScriptBuilder.toString();

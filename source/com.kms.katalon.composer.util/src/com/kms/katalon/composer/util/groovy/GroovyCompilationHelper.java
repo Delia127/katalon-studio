@@ -2,11 +2,9 @@ package com.kms.katalon.composer.util.groovy;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.bsf.util.JavaUtils;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jdt.groovy.model.GroovyCompilationUnit;
 import org.eclipse.core.runtime.CoreException;
@@ -14,13 +12,10 @@ import org.eclipse.jdt.core.Flags;
 import org.eclipse.jdt.core.IBuffer;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IImportDeclaration;
-import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageDeclaration;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.IType;
-import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.core.ToolFactory;
 import org.eclipse.jdt.core.compiler.IProblem;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
@@ -35,11 +30,9 @@ import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
 import org.eclipse.jdt.internal.corext.util.Strings;
 import org.eclipse.jdt.internal.ui.javaeditor.ASTProvider;
 import org.eclipse.jdt.ui.CodeGeneration;
-import org.eclipse.jface.text.Document;
 import org.eclipse.text.edits.DeleteEdit;
 import org.eclipse.text.edits.MultiTextEdit;
 import org.eclipse.text.edits.ReplaceEdit;
-import org.eclipse.text.edits.TextEdit;
 
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.core.annotation.Keyword;
@@ -382,18 +375,10 @@ public class GroovyCompilationHelper {
         try {
             unit.becomeWorkingCopy(null);
             
-//            String formattedContent = CodeFormatterUtil.format(CodeFormatter.K_STATEMENTS, content, 0, "", parentPackage.getJavaProject());
-
             ISourceRange sourceRange = unit.getSourceRange();
-            MultiTextEdit textEdit = new MultiTextEdit();
             
-            ReplaceEdit replaceEdit = new ReplaceEdit(0, sourceRange.getLength(), content);
-            textEdit.addChild(replaceEdit);
-            
-//            TextEdit formatEdit = getFormatterEdit(content, "", parentPackage.getJavaProject());
-//            textEdit.addChild(formatEdit);
-//            
-            unit.applyTextEdit(textEdit, null);
+            ReplaceEdit replaceEdit = new ReplaceEdit(0, sourceRange.getLength(), content);         
+            unit.applyTextEdit(replaceEdit, null);
             
             unit.commitWorkingCopy(true, null);
         } finally {
@@ -403,112 +388,4 @@ public class GroovyCompilationHelper {
         }
         return unit;
     }
-    
-//    private static TextEdit getFormatterEdit(String source, String lineSeparator, IJavaProject project) {
-//        CodeFormatter formatter = ToolFactory.createCodeFormatter(null);
-//        return formatter.format(CodeFormatter.K_COMPILATION_UNIT, source, 0, source.length(), 0, StubUtility.getLineDelimiterUsed(project));
-//    }
-//    
-//    public static ICompilationUnit createGroovyTypeFromString(IPackageFragment parentPackage, String typeName, String content) throws JavaModelException {
-//        boolean needsSave;
-//        ICompilationUnit connectedCU = null;
-//        try {
-//            IType createdType;
-//            ImportsManager imports = null;
-//            int indent = 0;
-//
-//            Set<String> existingImports;
-//
-//            String lineDelimiter = StubUtility.getLineDelimiterUsed(parentPackage.getJavaProject());
-//
-//            String cuName = typeName + GroovyConstants.GROOVY_FILE_EXTENSION;
-//            ICompilationUnit parentCU = parentPackage.createCompilationUnit(cuName, "", false, null); //$NON-NLS-1$
-//
-//            needsSave = true;
-//            parentCU.becomeWorkingCopy(null);
-//            connectedCU = parentCU;
-//
-//            IBuffer buffer = parentCU.getBuffer();
-//
-//            String simpleTypeStub = constructSimpleTypeStub(typeName);
-//
-//            String cuContent = constructCUContent(parentCU, simpleTypeStub, lineDelimiter);
-//            buffer.setContents(cuContent);
-//
-//            CompilationUnit astRoot = createASTForImports(parentCU);
-//            existingImports = getExistingImports(astRoot);
-//
-//            switch (type) {
-//                case SCRIPTS_IMPORTS:
-//                    imports = addImports(parentPackage, typeName, astRoot);
-//                    break;
-//                case KEYWORD_IMPORTS:
-//                    imports = addImportsForCustomKeyword(parentPackage, typeName, astRoot);
-//                    break;
-//                default:
-//                    imports = new ImportsManager(astRoot);
-//                    break;
-//            }
-//
-//            String typeContent = constructTypeStub(typeName, parentCU, imports, lineDelimiter);
-//
-//            int index = cuContent.lastIndexOf(simpleTypeStub);
-//            if (index == -1) {
-//                AbstractTypeDeclaration typeNode = (AbstractTypeDeclaration) astRoot.types().get(0);
-//                int start = ((ASTNode) typeNode.modifiers().get(0)).getStartPosition();
-//                int end = typeNode.getStartPosition() + typeNode.getLength();
-//                buffer.replace(start, end - start, typeContent);
-//            } else {
-//                buffer.replace(index, simpleTypeStub.length(), typeContent);
-//            }
-//
-//            createdType = parentCU.getType(typeName);
-//
-//            // add imports for superclass/interfaces, so types can be resolved correctly
-//
-//            ICompilationUnit cu = createdType.getCompilationUnit();
-//
-//            imports.create(false, null);
-//
-//            JavaModelUtil.reconcile(cu);
-//
-//            // set up again
-//            astRoot = createASTForImports(imports.getCompilationUnit());
-//            imports = new ImportsManager(astRoot);
-//
-//            // add imports
-//            imports.create(false, null);
-//
-//            removeUnusedImports(cu, existingImports, false);
-//
-//            JavaModelUtil.reconcile(cu);
-//
-//            ISourceRange range = createdType.getSourceRange();
-//
-//            IBuffer buf = cu.getBuffer();
-//            String originalContent = buf.getText(range.getOffset(), range.getLength());
-//
-//            // add alias imports in front of class manually
-//            originalContent = addAliasImportByManual(originalContent, null, null);
-//            for (Entry<String, String> entry : GroovyConstants.DEFAULT_KEYWORD_CONTRIBUTOR_IMPORTS.entrySet()) {
-//                originalContent = addAliasImportByManual(originalContent,
-//                        StringUtils.substringAfterLast(entry.getValue(), "."), entry.getKey());
-//            }
-//
-//            String formattedContent = CodeFormatterUtil.format(CodeFormatter.K_CLASS_BODY_DECLARATIONS, originalContent,
-//                    indent, lineDelimiter, parentPackage.getJavaProject());
-//            formattedContent = Strings.trimLeadingTabsAndSpaces(formattedContent);
-//            buf.replace(range.getOffset(), range.getLength(), formattedContent);
-//
-//            if (needsSave) {
-//                cu.commitWorkingCopy(true, null);
-//            }
-//
-//        } finally {
-//            if (connectedCU != null) {
-//                connectedCU.discardWorkingCopy();
-//            }
-//        }
-//        return connectedCU;
-//    }
 }

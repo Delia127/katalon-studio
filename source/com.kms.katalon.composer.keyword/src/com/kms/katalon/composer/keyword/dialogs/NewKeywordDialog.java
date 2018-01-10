@@ -2,6 +2,7 @@ package com.kms.katalon.composer.keyword.dialogs;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiFunction;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.core.IJavaElement;
@@ -125,30 +126,26 @@ public class NewKeywordDialog extends CommonAbstractKeywordDialog {
             }
         });
         
-        btnGenerateSampleWebKeyword.addSelectionListener(new SelectionAdapter() {
-           
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                sampleKeywordType |= SAMPLE_WEB_KEYWORD;
-            }
-        });
-        
-        btnGenerateSampleMobileKeyword.addSelectionListener(new SelectionAdapter() {
-            
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                sampleKeywordType |= SAMPLE_MOBILE_KEYWORD;
-            }
-        });
-        
-        btnGenerateSampleAPIKeyword.addSelectionListener(new SelectionAdapter() {
-                    
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                sampleKeywordType |= SAMPLE_API_KEYWORD;
-            }
-        });
+        BiFunction<Integer, Button, SelectionAdapter> selectionAdapterCreator = 
+        		(sampleType, sampleButton) -> new SelectionAdapter() {
+        			@Override
+        			public void widgetSelected(SelectionEvent e) {
+        				if (sampleButton.getSelection()) {
+        					sampleKeywordType |= sampleType;
+        				} else {
+        					sampleKeywordType &= ~sampleType;
+        				}
+        			}
+        		};
+        btnGenerateSampleWebKeyword.addSelectionListener(
+        		selectionAdapterCreator.apply(SAMPLE_WEB_KEYWORD, btnGenerateSampleWebKeyword));
+        btnGenerateSampleMobileKeyword.addSelectionListener(
+        		selectionAdapterCreator.apply(SAMPLE_MOBILE_KEYWORD, btnGenerateSampleMobileKeyword)); 
+        btnGenerateSampleAPIKeyword.addSelectionListener(
+        		selectionAdapterCreator.apply(SAMPLE_API_KEYWORD, btnGenerateSampleAPIKeyword));
     }
+    
+    
 
     private void prepareValidators() {
         validatorManager = new ValidatorManager();
