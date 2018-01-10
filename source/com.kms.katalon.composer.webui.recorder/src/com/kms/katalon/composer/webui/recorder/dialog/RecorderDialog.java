@@ -157,8 +157,6 @@ import com.kms.katalon.util.listener.EventManager;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef.HWND;
 
-import net.sourceforge.htmlunit.corejs.javascript.ast.ParenthesizedExpression;
-
 @SuppressWarnings("restriction")
 public class RecorderDialog extends AbstractDialog implements EventHandler, EventManager<ObjectSpyEvent> {
     private static final String IE_WINDOW_CLASS = "IEFrame"; //$NON-NLS-1$
@@ -183,7 +181,6 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     private static final String TABLE_COLUMN_ACTION_TITLE = StringConstants.DIA_COL_ACTION;
 
     private static final String TABLE_COLUMN_NO_TITLE = StringConstants.DIA_COL_NO;
-
 
     private static final String RECORD_TOOL_ITEM_LABEL = StringConstants.DIA_TOOLITEM_RECORD;
 
@@ -247,7 +244,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         eventBroker.subscribe(EventConstants.WORKSPACE_CLOSED, this);
         startSocketServer();
     }
-    
+
     @Override
     protected int getShellStyle() {
         boolean onTop = store.getBoolean(RecorderPreferenceConstants.WEBUI_RECORDER_PIN_WINDOW);
@@ -517,6 +514,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
         newShell.setMinimumSize(MIN_DIALOG_SIZE);
+        newShell.setSize(MIN_DIALOG_SIZE);
     }
 
     private void initializeInput() {
@@ -894,7 +892,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             public void widgetSelected(SelectionEvent e) {
                 int[] sashFormWeights = new int[] { 0, 10 };
                 String showOrHide = StringConstants.DIA_TITLE_SHOW + StringConstants.DIA_TITLE_CAPTURED_OBJECTS;
-                
+
                 if (tltmCapturedObjects.getText().contains(StringConstants.DIA_TITLE_SHOW)) {
                     sashFormWeights = new int[] { 5, 5 };
                     showOrHide = StringConstants.DIA_TITLE_HIDE + StringConstants.DIA_TITLE_CAPTURED_OBJECTS;
@@ -1741,7 +1739,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 }
 
                 WebElement[] oldNewElement = (WebElement[]) dataObject;
-                if(oldNewElement.length != 2) {
+                if (oldNewElement.length != 2) {
                     return;
                 }
                 replaceCapturedObjectInActionMapping(oldNewElement[0], oldNewElement[1]);
