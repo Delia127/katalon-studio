@@ -60,8 +60,6 @@ public class InspectSession implements Runnable {
 
     public static final String OBJECT_SPY_ADD_ON_NAME = "Object Spy";
 
-    protected static final String LOAD_EXTENSION_CHROME_PREFIX = "load-extension";
-
     private static final String VARIABLE_INIT_EXPRESSION_FOR_CHROME = "katalonServerPort = ''{0}''\r\n"
             + "katalonOnOffStatus = true\r\n" + "spy_captureObjectHotKey = {1};\r\n"
             + "spy_loadDomMapHotKey = {2};\r\n";
@@ -135,7 +133,8 @@ public class InspectSession implements Runnable {
 
         RunConfiguration.setExecutionSetting(ExecutionUtil.getExecutionProperties(executionSetting, driverConnectors));
 
-        Map<String, Object> driverPreferenceProps = RunConfiguration.getDriverPreferencesProperties(DriverFactory.WEB_UI_DRIVER_PROPERTY);
+        Map<String, Object> driverPreferenceProps = RunConfiguration
+                .getDriverPreferencesProperties(DriverFactory.WEB_UI_DRIVER_PROPERTY);
         options = createDriverOptions(webUIDriverType, driverPreferenceProps);
         if (webUiDriverType == WebUIDriverType.IE_DRIVER) {
             setupIE();
@@ -268,14 +267,14 @@ public class InspectSession implements Runnable {
         return firefoxCapabilities;
     }
 
-    protected DesiredCapabilities createChromDriverOptions(Map<String, Object> propertyMap) throws IOException, ExtensionNotFoundException {
+    protected DesiredCapabilities createChromDriverOptions(Map<String, Object> propertyMap)
+            throws IOException, ExtensionNotFoundException {
         File chromeExtensionFolder = getChromeExtensionFile();
         if (chromeExtensionFolder == null || !chromeExtensionFolder.isDirectory() || !chromeExtensionFolder.exists()) {
             throw new ExtensionNotFoundException(getChromeExtensionPath(), WebUIDriverType.CHROME_DRIVER);
         }
         generateVariableInitFileForChrome(chromeExtensionFolder);
-        propertyMap.put(LOAD_EXTENSION_CHROME_PREFIX, chromeExtensionFolder.getAbsolutePath());
-        return WebDriverPropertyUtil.toDesireCapabilities(propertyMap, WebUIDriverType.CHROME_DRIVER); 
+        return WebDriverPropertyUtil.getDesireCapabilitiesChromeForSpyAndRecord(propertyMap,chromeExtensionFolder.getAbsolutePath());
     }
 
     private void generateVariableInitFileForChrome(File chromeExtensionFolder) throws IOException {

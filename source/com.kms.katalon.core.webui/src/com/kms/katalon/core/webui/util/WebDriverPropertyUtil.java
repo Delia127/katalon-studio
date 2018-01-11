@@ -10,7 +10,6 @@ import java.util.Map.Entry;
 
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
@@ -43,6 +42,7 @@ public class WebDriverPropertyUtil {
     private static final String STARTUP_HOMEPAGE_WELCOME_URL_PREFERENCE = "startup.homepage_welcome_url";
     private static final String BROWSER_STARTUP_HOMEPAGE_PREFERENCE = "browser.startup.homepage";
     private static final String FIREFOX_BLANK_PAGE = "about:blank";
+    private static final String LOAD_EXTENSION_CHROME_PREFIX = "load-extension=";
 
     public static DesiredCapabilities toDesireCapabilities(Map<String, Object> propertyMap,
             WebUIDriverType webUIDriverType) {
@@ -51,7 +51,7 @@ public class WebDriverPropertyUtil {
         }
         switch (webUIDriverType) {
         case CHROME_DRIVER:
-            return getDesireCapabilitiesForChrome(propertyMap);
+            return getDesireCapabilitiesChromeForExecution(propertyMap);
         case FIREFOX_DRIVER:
             return getDesireCapabilitiesForFirefox(propertyMap);
         default:
@@ -131,8 +131,38 @@ public class WebDriverPropertyUtil {
         return firefoxProfile;
     }
 
-    public static DesiredCapabilities getDesireCapabilitiesForChrome(Map<String, Object> propertyMap) {
+    public static DesiredCapabilities getDesireCapabilitiesChromeForExecution(Map<String, Object> propertyMap) {
         DesiredCapabilities desireCapabilities = DesiredCapabilities.chrome();
+        Map<String, Object> chromeOptions = getDesireCapabilitesChrome(propertyMap, desireCapabilities);
+        injectAddtionalArgumentsChromeForExecution(chromeOptions);
+        desireCapabilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
+        return desireCapabilities;
+    }
+
+    private static void injectAddtionalArgumentsChromeForExecution(Map<String, Object> chromeOptions) {
+        if (chromeOptions == null) {
+            return;
+        }
+        List<Object> argumentsList = new ArrayList<Object>();
+        if (chromeOptions.get(CHROME_ARGUMENT_PROPERTY_KEY) instanceof List) {
+            argumentsList.addAll((List<?>) chromeOptions.get(CHROME_ARGUMENT_PROPERTY_KEY));
+        }
+        argumentsList.add(CHROME_SWITCHES);
+        argumentsList.add(DISABLE_EXTENSIONS);
+        chromeOptions.put(CHROME_ARGUMENT_PROPERTY_KEY, argumentsList);
+    }
+
+    public static DesiredCapabilities getDesireCapabilitiesChromeForSpyAndRecord(Map<String, Object> propertyMap,
+            String extensionFolderAbsolutePath) {
+        DesiredCapabilities desireCapabilities = DesiredCapabilities.chrome();
+        Map<String, Object> chromeOptions = getDesireCapabilitesChrome(propertyMap, desireCapabilities);
+        injectAddtionalArgumentsChromeForSpyAndRecord(chromeOptions, extensionFolderAbsolutePath);
+        desireCapabilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
+        return desireCapabilities;
+    }
+
+    private static Map<String, Object> getDesireCapabilitesChrome(Map<String, Object> propertyMap,
+            DesiredCapabilities desireCapabilities) {
         Map<String, Object> chromeOptions = new HashMap<String, Object>();
         for (Entry<String, Object> driverProperty : propertyMap.entrySet()) {
             if (Arrays.asList(CHROME_CAPABILITIES).contains(driverProperty.getKey())) {
@@ -144,12 +174,11 @@ public class WebDriverPropertyUtil {
                     MessageFormat.format(StringConstants.KW_LOG_WEB_UI_PROPERTY_SETTING, driverProperty.getKey(),
                             driverProperty.getValue()));
         }
-        injectAddtionalArgumentsForChrome(chromeOptions);
-        desireCapabilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
-        return desireCapabilities;
+        return chromeOptions;
     }
 
-    private static void injectAddtionalArgumentsForChrome(Map<String, Object> chromeOptions) {
+    private static void injectAddtionalArgumentsChromeForSpyAndRecord(Map<String, Object> chromeOptions,
+            String extensionFolderAbsolutePath) {
         if (chromeOptions == null) {
             return;
         }
@@ -158,7 +187,7 @@ public class WebDriverPropertyUtil {
             argumentsList.addAll((List<?>) chromeOptions.get(CHROME_ARGUMENT_PROPERTY_KEY));
         }
         argumentsList.add(CHROME_SWITCHES);
-        argumentsList.add(DISABLE_EXTENSIONS);
+        argumentsList.add(LOAD_EXTENSION_CHROME_PREFIX + extensionFolderAbsolutePath);
         chromeOptions.put(CHROME_ARGUMENT_PROPERTY_KEY, argumentsList);
     }
     
