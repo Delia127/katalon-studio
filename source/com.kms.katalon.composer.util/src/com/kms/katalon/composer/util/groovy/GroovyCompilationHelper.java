@@ -379,7 +379,7 @@ public class GroovyCompilationHelper {
             
             ReplaceEdit replaceEdit = new ReplaceEdit(0, sourceRange.getLength(), content);         
             unit.applyTextEdit(replaceEdit, null);
-            
+
             unit.commitWorkingCopy(true, null);
         } finally {
             if (unit != null) {

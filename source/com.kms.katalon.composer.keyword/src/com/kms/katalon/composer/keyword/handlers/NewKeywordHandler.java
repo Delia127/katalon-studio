@@ -134,10 +134,11 @@ public class NewKeywordHandler {
                         ITreeEntity keywordRootFolder = new FolderTreeEntity(FolderController.getInstance()
                                 .getKeywordRoot(ProjectController.getInstance().getCurrentProject()), null);
                         ITreeEntity newPackageTreeEntity = new PackageTreeEntity(packageFragment, keywordRootFolder);
+                        KeywordTreeEntity keywordTreeEntity = new KeywordTreeEntity(createdCompilationUnit, newPackageTreeEntity);
                         eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, keywordRootFolder);
-                        eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, new KeywordTreeEntity(
-                                createdCompilationUnit, newPackageTreeEntity));
+                        eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, keywordTreeEntity);
                         eventBroker.post(EventConstants.EXPLORER_OPEN_SELECTED_ITEM, createdCompilationUnit);
+                        eventBroker.post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, keywordTreeEntity);
                     }
 
                     if (monitor.isCanceled()) {
