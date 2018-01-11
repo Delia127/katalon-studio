@@ -20,9 +20,9 @@ public class ComposerWebuiRecorderMessageConstants extends NLS {
     public static String DIA_LBL_RECORED_ACTIONS;
 
     public static String DIA_TITLE_CAPTURED_OBJECTS;
-    
+
     public static String DIA_TITLE_SHOW;
-    
+
     public static String DIA_TITLE_HIDE;
 
     public static String DIA_MESSAGE_SELECT_ELEMENT;
@@ -88,7 +88,7 @@ public class ComposerWebuiRecorderMessageConstants extends NLS {
     public static String DIA_MSG_CANNOT_START_BROWSER;
 
     public static String DIA_TOOLTIP_SHOW_HIDE_CAPTURED_OBJECTS;
-    
+
     public static String PREF_LBL_PIN_RECORDER_WINDOW;
 
     static {

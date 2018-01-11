@@ -157,8 +157,6 @@ import com.kms.katalon.util.listener.EventManager;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef.HWND;
 
-import net.sourceforge.htmlunit.corejs.javascript.ast.ParenthesizedExpression;
-
 @SuppressWarnings("restriction")
 public class RecorderDialog extends AbstractDialog implements EventHandler, EventManager<ObjectSpyEvent> {
     private static final String IE_WINDOW_CLASS = "IEFrame"; //$NON-NLS-1$
