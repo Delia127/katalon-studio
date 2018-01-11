@@ -104,7 +104,7 @@ public class JiraSettingsComposite {
                                 result.getUser().getDisplayName()));
             }
         });
-        
+
         chckShowPassword.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -149,7 +149,7 @@ public class JiraSettingsComposite {
 
             chckUseTestCaseNameAsSumarry.setSelection(settingStore.isUseTestCaseNameAsSummaryEnabled());
             chckAttachScreenshot.setSelection(settingStore.isAttachScreenshotEnabled());
-            chckAttachLog.setSelection(settingStore.isAttachLogEnabled());            
+            chckAttachLog.setSelection(settingStore.isAttachLogEnabled());
             chckAutoSubmitTestResult.setSelection(settingStore.isSubmitTestResultAutomatically());
 
             displayedJiraProject = new DisplayedComboboxObject<>(settingStore.getStoredJiraProject());
@@ -227,16 +227,17 @@ public class JiraSettingsComposite {
         glPassword.marginWidth = 0;
         glPassword.marginHeight = 0;
         passwordComposite.setLayout(glPassword);
-        
+
         txtPassword = new Text(passwordComposite, SWT.BORDER);
         txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+
         chckShowPassword = new Button(passwordComposite, SWT.CHECK);
         chckShowPassword.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-        chckShowPassword.setText("Show Password");
-        
+        chckShowPassword.setText(ComposerJiraIntegrationMessageConstant.PREF_CHCK_SHOW_PASSWORD);
+
         chckEncryptPassword = new Button(passwordComposite, SWT.CHECK);
         chckEncryptPassword.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, true, 1, 1));
-        chckEncryptPassword.setText("Encrypt Password");
+        chckEncryptPassword.setText(ComposerJiraIntegrationMessageConstant.PREF_CHCK_ENCRYPT_PASSWORD);
 
         btnConnect = new Button(grpAuthentication, SWT.NONE);
         btnConnect.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));

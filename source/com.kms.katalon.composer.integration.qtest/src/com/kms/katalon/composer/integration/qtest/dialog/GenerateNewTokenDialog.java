@@ -29,6 +29,7 @@ import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
+import com.kms.katalon.composer.integration.qtest.constant.ComposerIntegrationQtestMessageConstants;
 import com.kms.katalon.composer.integration.qtest.constant.ImageConstants;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
@@ -279,7 +280,7 @@ public class GenerateNewTokenDialog extends AbstractDialog {
         
         chckEncryptPassword = new Button(passwordComposite, SWT.CHECK);
         chckEncryptPassword.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, true, 1, 1));
-        chckEncryptPassword.setText("Encrypt Password");
+        chckEncryptPassword.setText(ComposerIntegrationQtestMessageConstants.WZ_P_AUTHENTICATION_ENCRYPT_PASSWORD);
 
         connectingComposite = new Composite(container, SWT.NONE);
         connectingComposite.setLayout(new GridLayout(2, false));

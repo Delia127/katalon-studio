@@ -145,11 +145,11 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
         chckShowPassword = new Button(passwordComposite, SWT.CHECK);
         chckShowPassword.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-        chckShowPassword.setText("Show Password");
+        chckShowPassword.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_SHOW_PASSWORD);
 
         chckEncryptPassword = new Button(passwordComposite, SWT.CHECK);
         chckEncryptPassword.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, true, 1, 1));
-        chckEncryptPassword.setText("Encrypt Password");
+        chckEncryptPassword.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_ENABLE_PASSWORD_ENCRYPTION);
 
         Composite compConnect = new Composite(grpAuthentication, SWT.NONE);
         compConnect.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));

@@ -170,7 +170,7 @@ public class AuthenticationWizardPage extends AbstractWizardPage implements QTes
         
         chckEncryptPassword = new Button(passwordComposite, SWT.CHECK);
         chckEncryptPassword.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, true, 1, 1));
-        chckEncryptPassword.setText("Encrypt Password");
+        chckEncryptPassword.setText(ComposerIntegrationQtestMessageConstants.WZ_P_AUTHENTICATION_ENCRYPT_PASSWORD);
 
         Composite connectionComposite = new Composite(authenticationComposite, SWT.NONE);
         GridLayout glConectionComposite = new GridLayout(2, false);
