@@ -25,6 +25,8 @@ public class StringConstants {
 
     public static final String PREF_AUTH_USER = "auth.user";
 
+    public static final String PREF_AUTH_PASSWORD_ENCRYPTED = "auth.passwordEncrypted";
+
     public static final String PREF_INTEGRATION_ENABLED = "integration.enabled";
 
     public static final String INTEGRATED_VALUE_NAME = "integratedValue";

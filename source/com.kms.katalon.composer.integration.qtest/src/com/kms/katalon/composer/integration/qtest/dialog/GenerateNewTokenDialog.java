@@ -14,7 +14,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -32,6 +31,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.integration.qtest.constant.ImageConstants;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
+import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.integration.qtest.QTestIntegrationAuthenticationManager;
 import com.kms.katalon.integration.qtest.credential.IQTestCredential;
 import com.kms.katalon.integration.qtest.credential.impl.QTestCredentialImpl;
@@ -50,6 +50,7 @@ public class GenerateNewTokenDialog extends AbstractDialog {
     private Job connectingJob;
     private Composite passwordComposite;
     private Button btnShowPassword;
+    private Button chckEncryptPassword;
 
     public GenerateNewTokenDialog(Shell parentShell, IQTestCredential credential) {
         super(parentShell);
@@ -84,6 +85,7 @@ public class GenerateNewTokenDialog extends AbstractDialog {
         final String newServerUrl = txtServerUrl.getText().trim();
         final String newUsername = txtUsername.getText();
         final String newPassword = txtPassword.getText();
+        final boolean passwordEncryptionEnabled = chckEncryptPassword.getSelection();
 
         if (newServerUrl.isEmpty()) {
             MessageDialog.openInformation(null, StringConstants.INFORMATION, StringConstants.DIA_MSG_ENTER_SERVER_URL);
@@ -108,7 +110,8 @@ public class GenerateNewTokenDialog extends AbstractDialog {
             protected IStatus run(IProgressMonitor monitor) {
                 try {
                     QTestCredentialImpl credentials = new QTestCredentialImpl().setServerUrl(newServerUrl)
-                            .setUsername(newUsername).setPassword(newPassword).setVersion(fCredential.getVersion());
+                            .setUsername(newUsername).setPassword(newPassword).setVersion(fCredential.getVersion())
+                            .setPasswordEncryptionEnabled(passwordEncryptionEnabled);;
 
                     credentials.setToken(QTestIntegrationAuthenticationManager.getToken(credentials));
 
@@ -207,11 +210,6 @@ public class GenerateNewTokenDialog extends AbstractDialog {
     }
 
     @Override
-    protected Point getInitialSize() {
-        return new Point(430, 220);
-    }
-
-    @Override
     protected void registerControlModifyListeners() {
         btnShowPassword.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
@@ -225,7 +223,7 @@ public class GenerateNewTokenDialog extends AbstractDialog {
             // show password
             txtPassword.setEchoChar('\0');
         } else {
-            txtPassword.setEchoChar('*');
+            txtPassword.setEchoChar(GlobalStringConstants.CR_ECO_PASSWORD.charAt(0));
         }
     }
 
@@ -238,6 +236,7 @@ public class GenerateNewTokenDialog extends AbstractDialog {
         setText(txtServerUrl, fCredential.getServerUrl());
         setText(txtUsername, fCredential.getUsername());
         setText(txtPassword, fCredential.getPassword());
+        chckEncryptPassword.setSelection(fCredential.isPasswordEncryptionEnabled());
         updatePasswordField();
     }
 
@@ -265,16 +264,22 @@ public class GenerateNewTokenDialog extends AbstractDialog {
 
         passwordComposite = new Composite(container, SWT.NONE);
         passwordComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        GridLayout glPasswordComposite = new GridLayout(2, false);
+        GridLayout glPasswordComposite = new GridLayout(3, false);
         glPasswordComposite.marginHeight = 0;
         glPasswordComposite.marginWidth = 0;
         passwordComposite.setLayout(glPasswordComposite);
 
         txtPassword = new Text(passwordComposite, SWT.BORDER);
-        txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        GridData gdTxtData = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+        gdTxtData.widthHint = 200;
+        txtPassword.setLayoutData(gdTxtData);
 
         btnShowPassword = new Button(passwordComposite, SWT.CHECK);
         btnShowPassword.setText(StringConstants.WZ_P_AUTHENTICATION_SHOW_PASSWORD);
+        
+        chckEncryptPassword = new Button(passwordComposite, SWT.CHECK);
+        chckEncryptPassword.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, true, 1, 1));
+        chckEncryptPassword.setText("Encrypt Password");
 
         connectingComposite = new Composite(container, SWT.NONE);
         connectingComposite.setLayout(new GridLayout(2, false));

@@ -22,6 +22,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.jira.JiraUIComponent;
 import com.kms.katalon.composer.integration.jira.constant.ComposerJiraIntegrationMessageConstant;
 import com.kms.katalon.core.logging.model.TestCaseLogRecord;
+import com.kms.katalon.integration.jira.JiraIntegrationException;
 import com.kms.katalon.integration.jira.issue.IssueHTMLLinkProvider;
 
 public class JiraIssueBrowserDialog extends Dialog implements JiraUIComponent {
@@ -156,7 +157,7 @@ public class JiraIssueBrowserDialog extends Dialog implements JiraUIComponent {
                     .append("document.getElementById(\"remember-me\").checked = true;\n")
                     .append("document.getElementById(\"login\").click();\n");
             browser.execute(waitAndExec("remember-me", js.toString()));
-        } catch (IOException e) {
+        } catch (IOException | JiraIntegrationException e) {
             LoggerSingleton.logError(e);
         }
     }
@@ -171,7 +172,7 @@ public class JiraIssueBrowserDialog extends Dialog implements JiraUIComponent {
                     .append("document.getElementById(\"login-form-remember-me\").checked = true;\n")
                     .append("document.getElementById(\"login-form-submit\").click();\n");
             browser.execute(waitAndExec("login-form-submit", js.toString()));
-        } catch (IOException e) {
+        } catch (IOException | JiraIntegrationException e) {
             LoggerSingleton.logError(e);
         }
     }

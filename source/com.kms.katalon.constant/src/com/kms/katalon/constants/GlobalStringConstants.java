@@ -78,6 +78,8 @@ public class GlobalStringConstants {
 
     /** RFC 4180 defines line breaks as CRLF */
     public static final String CRLF = "\r\n";
+    
+    public static final String CR_ECO_PASSWORD = "\u2022";
 
     // Common action use
     public static final String ADD = GlobalMessageConstants.ADD;
