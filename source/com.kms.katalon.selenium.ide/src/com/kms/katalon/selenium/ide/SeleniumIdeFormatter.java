@@ -82,8 +82,8 @@ public final class SeleniumIdeFormatter {
 		}
 		String comment = String.format("\n\"%s | %s | %s\"\n", 
 				encodeString(command.getCommand()), 
-				encodeString(command.getTarget()), 
-				encodeString(command.getValue()));
+				encodeString(replaceBraces(command.getTarget())), 
+				encodeString(replaceBraces(command.getValue())));
 		String formatted = formatter.format(command);
 		if (StringUtils.isBlank(formatted)) {
 			return String.format("Method %s is not found\n", command.getCommand());
@@ -117,8 +117,9 @@ public final class SeleniumIdeFormatter {
 		buffer.append(  "import com.kms.katalon.core.webui.driver.DriverFactory as DriverFactory\n" +
 						"import com.kms.katalon.core.webui.driver.KatalonWebDriverBackedSelenium\n\n" +
 						"import com.thoughtworks.selenium.Selenium\n" +
+						"import org.openqa.selenium.Keys\n" +	
 						"import org.openqa.selenium.firefox.FirefoxDriver\n" +
-						"import org.openqa.selenium.WebDriver\n" +						
+						"import org.openqa.selenium.WebDriver\n" +	
 						"import static org.junit.Assert.*\n" +
 						"import java.util.concurrent.Callable\n" +
 						"import java.util.regex.Pattern\n" +
@@ -160,6 +161,17 @@ public final class SeleniumIdeFormatter {
 		    }
 		}
 		return formatters.get("default");
+	}
+	
+	private String replaceBraces(String value) {
+		if (StringUtils.isBlank(value)) {
+			return value;
+		}
+		if (value.contains("${")) {
+			value = value.replace("${", "");
+			value = value.replace("}", "");
+		}
+		return value;
 	}
 
 	public void setEmail(String email) {

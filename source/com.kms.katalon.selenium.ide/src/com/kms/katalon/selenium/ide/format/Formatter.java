@@ -17,6 +17,10 @@ public interface Formatter {
 		if (StringUtils.isNotBlank(param) && param.contains("{")) {
 			param = param.replace("${", "");
 			param = param.replace("}", "");
+			if (param.contains("KEY_")) {
+				param = param.replace("KEY_", "");
+				param = "Keys." + param;
+			}
 			return param;
 		}
 		return param;

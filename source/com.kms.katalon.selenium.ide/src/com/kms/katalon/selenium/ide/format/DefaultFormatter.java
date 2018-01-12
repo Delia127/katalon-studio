@@ -23,10 +23,10 @@ public class DefaultFormatter implements Formatter {
 		int paramCount = ClazzUtils.getParamCount(method);
 		
 		if (paramCount == 2) {
-			buffer.append("\"" + command.getTarget() + "\"");
-			buffer.append(", \"" + command.getValue() + "\"");
+			buffer.append(valueOf(command.getTarget()));
+			buffer.append(", " + valueOf(command.getValue()));
 		} else if (paramCount == 1){
-			buffer.append("\"" + command.getTarget() + "\"");
+			buffer.append(valueOf(command.getTarget()));
 		}
 		buffer.append(")");
 		

@@ -1,6 +1,7 @@
 package com.kms.katalon.core.webui.driver;
 
 import org.junit.Assert;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 
 import com.thoughtworks.selenium.webdriven.ElementFinder;
@@ -31,7 +32,7 @@ public class KatalonWebDriverBackedSelenium extends WebDriverBackedSelenium {
 		this.getWrappedDriver().switchTo().alert().dismiss();
 	}
 	
-	public void sendKeys(String locator, String value) {
+	public void sendKeys(String locator, Keys value) {
 		elementFinder.findElement(this.getWrappedDriver(), locator).sendKeys(value);
 	}
 	
