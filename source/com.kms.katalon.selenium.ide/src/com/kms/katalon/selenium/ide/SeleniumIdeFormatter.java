@@ -115,7 +115,8 @@ public final class SeleniumIdeFormatter {
 						"import internal.GlobalVariable as GlobalVariable\n");
 		
 		buffer.append(  "import com.kms.katalon.core.webui.driver.DriverFactory as DriverFactory\n" +
-						"import com.kms.katalon.core.webui.driver.KatalonWebDriverBackedSelenium\n\n" +
+						"import com.kms.katalon.core.webui.driver.KatalonWebDriverBackedSelenium\n" +
+						"import static com.kms.katalon.core.webui.driver.KatalonWebDriverBackedSelenium.*\n\n" +
 						"import com.thoughtworks.selenium.Selenium\n" +
 						"import org.openqa.selenium.Keys\n" +	
 						"import org.openqa.selenium.firefox.FirefoxDriver\n" +

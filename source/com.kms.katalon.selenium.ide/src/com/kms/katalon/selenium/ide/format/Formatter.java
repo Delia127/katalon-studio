@@ -17,20 +17,39 @@ public interface Formatter {
 	}
 	
 	public default String paramOf(String param) {
-		if (StringUtils.isNotBlank(param) && param.contains("{")) {
-			param = param.replace("${", "");
-			param = param.replace("}", "");
-			if (param.contains("KEY_")) {
+		if (StringUtils.isNotBlank(param)) {
+			param = param.trim();
+			
+			if (param.contains("${")) {
+				param = param.replace("${", "+");
+				param = param.replace("}", "+");
+				
+				if (param.startsWith("+")) {
+					param = param.replaceFirst("\\+", "");
+				} else {
+					param =  "\"" + param;
+					param = param.replaceFirst("\\+", "\" + ");
+				}
+				
+				if (param.endsWith("+")) {
+					param = param.substring(0, param.lastIndexOf("+"));
+				} else {
+					String tail = param.substring(param.lastIndexOf("+"), param.length());
+					param = param.substring(0, param.indexOf("+")) + " + \""+ tail + "\"";
+				}
+			} 
+			
+			if (param.startsWith("KEY_")) {
 				param = param.replace("KEY_", "");
 				param = "Keys." + param;
 			}
-			return param;
 		}
+		
 		return param;
 	}
 	
 	public default String valueOf(String param) {
-		if (StringUtils.isNotBlank(param) && param.contains("{")) {
+		if (StringUtils.isNotBlank(param) && param.contains("${")) {
 			return paramOf(param);
 		}
 		return stringValue(param);

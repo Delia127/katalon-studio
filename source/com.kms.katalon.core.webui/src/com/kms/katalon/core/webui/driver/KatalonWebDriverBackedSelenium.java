@@ -16,6 +16,7 @@ public class KatalonWebDriverBackedSelenium extends WebDriverBackedSelenium {
 	
 	private JavascriptLibrary javascriptLibrary;
 	private ElementFinder elementFinder;
+	private static StringBuffer verificationErrors = new StringBuffer();	
 
 	public KatalonWebDriverBackedSelenium(WebDriver maker, String baseUrl) {
 		super(maker, baseUrl);
@@ -30,6 +31,35 @@ public class KatalonWebDriverBackedSelenium extends WebDriverBackedSelenium {
 	
 	public void chooseCancelOnNextPrompt() {
 		this.getWrappedDriver().switchTo().alert().dismiss();
+	}
+	
+	static public void verifyEquals(Object actual, Object expected) {
+		try {
+			org.testng.Assert.assertEquals(actual, expected, null);
+		} catch (Error error) {
+			verificationErrors.append(error.toString());
+		}
+	}
+	
+	static public void verifyTrue(boolean condition) {
+		try {
+			org.testng.Assert.assertTrue(condition, null);
+		} catch (Error error) {
+			verificationErrors.append(error.toString());
+		}
+	}
+	
+	static public void verifyFalse(boolean condition) {
+		try {
+			org.testng.Assert.assertFalse(condition, null);
+		} catch (Error error) {
+			verificationErrors.append(error.toString());
+		}
+	}
+	
+	@SuppressWarnings("deprecation")
+	public void typeKeys(String locator, Keys value) {
+		super.typeKeys(locator, value.toString());
 	}
 	
 	public void sendKeys(String locator, Keys value) {
