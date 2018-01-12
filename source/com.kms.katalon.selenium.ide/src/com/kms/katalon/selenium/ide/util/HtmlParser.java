@@ -98,13 +98,13 @@ public final class HtmlParser {
 	
 	public static Command parseCommand(String commandHtmlContent) {
 		Command command = null;
-		Pattern pattern = Pattern.compile("(<tr>.*?<td>)(.*?)(</td>.+?<td>)(.*?)(<datalist>)(.*?)(</datalist)(.*?</td>.+?<td>)(.*?)(</td>.*?</tr>)");
+		Pattern pattern = Pattern.compile("(<tr>.*?<td>)(.*?)(</td>.*?<td>)(.*?)(<datalist>)(.*?)(</datalist)(.*?</td>.*?<td>)(.*?)(</td>.*?</tr>)");
         Matcher matcher = pattern.matcher(commandHtmlContent);
         if (matcher.find()) {
         	List<String> options = parseOptions(matcher.group(6));
         	command = createCommand(matcher.group(2), matcher.group(4), matcher.group(9), options);
         } else {
-        	pattern = Pattern.compile("(<tr>.*?<td>)(.*?)(</td>.+?<td>)(.*?)(</td>.+?<td>)(.*?)(</td>.*?</tr>)");
+        	pattern = Pattern.compile("(<tr>.*?<td>)(.*?)(</td>.*?<td>)(.*?)(</td>.*?<td>)(.*?)(</td>.*?</tr>)");
         	matcher = pattern.matcher(commandHtmlContent);
         	if (matcher.find()) {
             	command = createCommand(matcher.group(2), matcher.group(4), matcher.group(6), new ArrayList<>());

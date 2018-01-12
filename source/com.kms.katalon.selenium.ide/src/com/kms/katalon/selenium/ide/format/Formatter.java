@@ -10,6 +10,9 @@ public interface Formatter {
 	public String format(Command command);
 	
 	public default String stringValue(String value) {
+		if (StringUtils.isNotBlank(value)) {
+			value = value.replace("\"", "'");
+		}
 		return "\"" + value + "\"";
 	}
 	

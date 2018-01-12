@@ -22,6 +22,7 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
@@ -37,6 +38,7 @@ import com.kms.katalon.composer.util.groovy.GroovyGuiUtil;
 import com.kms.katalon.console.constants.ConsoleStringConstants;
 import com.kms.katalon.console.utils.ApplicationInfo;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
@@ -102,6 +104,7 @@ public class ImportSeleniumIdeHandler {
 				}
 			}
 		} catch (Exception e) {
+			MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR, MessageConstants.HAND_IMPORT_SELENIUM_IDE_MSG_ERROR);
 			LoggerSingleton.logError(e);
 		}
 	}

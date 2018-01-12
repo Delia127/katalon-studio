@@ -171,6 +171,7 @@ public final class SeleniumIdeFormatter {
 			value = value.replace("${", "");
 			value = value.replace("}", "");
 		}
+		value = value.replace("\"", "");
 		return value;
 	}
 
