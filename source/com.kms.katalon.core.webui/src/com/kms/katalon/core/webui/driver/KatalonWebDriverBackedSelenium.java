@@ -16,7 +16,7 @@ public class KatalonWebDriverBackedSelenium extends WebDriverBackedSelenium {
 	
 	private JavascriptLibrary javascriptLibrary;
 	private ElementFinder elementFinder;
-	private static StringBuffer verificationErrors = new StringBuffer();	
+	public static StringBuffer verificationErrors = new StringBuffer();	
 
 	public KatalonWebDriverBackedSelenium(WebDriver maker, String baseUrl) {
 		super(maker, baseUrl);
