@@ -173,7 +173,7 @@ public class WebUiSettingsPerferencePage extends PreferencePage {
         Group locatorGroup = new Group(container, SWT.NONE);
         locatorGroup.setText(GRP_LBL_DEFAULT_SELECTED_PROPERTIES_FOR_CAPTURED_TEST_OBJECT);
         locatorGroup.setLayout(new GridLayout());
-        locatorGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+        locatorGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
 
         Composite locatorContainer = new Composite(locatorGroup, SWT.NONE);
         locatorContainer.setLayout(new GridLayout());
@@ -201,6 +201,7 @@ public class WebUiSettingsPerferencePage extends PreferencePage {
         Composite tableComposite = new Composite(parent, SWT.NONE);
         GridData ldTableComposite = new GridData(SWT.FILL, SWT.FILL, true, true);
         ldTableComposite.minimumHeight = 100;
+        ldTableComposite.heightHint = 200;
         tableComposite.setLayoutData(ldTableComposite);
         TableColumnLayout tableColumnLayout = new TableColumnLayout();
         tableComposite.setLayout(tableColumnLayout);
