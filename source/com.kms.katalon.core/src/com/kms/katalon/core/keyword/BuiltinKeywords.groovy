@@ -325,6 +325,7 @@ public class BuiltinKeywords {
      *      contains variables bindings for the called test case. 
      *      If the <code>binding<code> parameter is null, default values of all variables are used.
      * @param flowControl
+     * @return returned value of called test case
      * @throws Exception
      */
     @CompileStatic
@@ -340,6 +341,7 @@ public class BuiltinKeywords {
      * @param binding
      *      contains variables bindings for the called test case. 
      *      If the <code>binding<code> parameter is null, default values of all variables are used.
+     * @return returned value of called test case      
      * @throws Exception
      */
     @CompileStatic

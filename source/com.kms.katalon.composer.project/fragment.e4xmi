@@ -23,6 +23,7 @@
     <elements xsi:type="commands:Command" xmi:id="_mcEVwEAyEee1vqj3mySoiQ" elementId="com.kms.katalon.composer.project.command.new.webservice" commandName="Sample Web Services Testing Project">
       <parameters xmi:id="_cOmcYEBXEee1vqj3mySoiQ" elementId="com.kms.katalon.composer.project.commandparameter.sample" name="WebService"/>
     </elements>
+    <elements xsi:type="commands:Command" xmi:id="_gAi40NWYEeedQO9m9dDpVg" elementId="com.kms.katalon.composer.project.command.importSeleniumIde" commandName="Import Selenium IDE"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_5w-Z4BsVEeSXreVpxhllQw" featurename="handlers" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Handler" xmi:id="_G6emwBsWEeSXreVpxhllQw" elementId="com.kms.katalon.composer.project.handler.add" contributionURI="bundleclass://com.kms.katalon.composer.project/com.kms.katalon.composer.project.handlers.NewProjectHandler" command="_kly1kBsVEeSXreVpxhllQw"/>
@@ -36,6 +37,7 @@
     <elements xsi:type="commands:Handler" xmi:id="_9l_esEAyEee1vqj3mySoiQ" elementId="com.kms.katalon.composer.project.handler.new.webui" contributionURI="bundleclass://com.kms.katalon.composer.project/com.kms.katalon.composer.project.handlers.NewSampleProjectHandler" command="_eKuKoEAyEee1vqj3mySoiQ"/>
     <elements xsi:type="commands:Handler" xmi:id="_u01XsEBXEee1vqj3mySoiQ" elementId="com.kms.katalon.composer.project.handler.new.mobile" contributionURI="bundleclass://com.kms.katalon.composer.project/com.kms.katalon.composer.project.handlers.NewSampleProjectHandler" command="_i3LSsEAyEee1vqj3mySoiQ"/>
     <elements xsi:type="commands:Handler" xmi:id="_xYj4sEBXEee1vqj3mySoiQ" elementId="com.kms.katalon.composer.project.handler.new.webservice" contributionURI="bundleclass://com.kms.katalon.composer.project/com.kms.katalon.composer.project.handlers.NewSampleProjectHandler" command="_mcEVwEAyEee1vqj3mySoiQ"/>
+    <elements xsi:type="commands:Handler" xmi:id="_nHftYNWYEeedQO9m9dDpVg" elementId="com.kms.katalon.composer.project.handler.importSeleniumIde" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.ImportSeleniumIdeHandler" command="_gAi40NWYEeedQO9m9dDpVg"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_cyjp0Bx1EeShZZ1PXPrY1w" featurename="children" parentElementId="com.kms.katalon.composer.menu.file" positionInList="index:5">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_8pdzkAmfEeWmsZWUQ_5cNA" elementId="com.kms.katalon.menu.submenu.project.clean" label="Clean up..." iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/clean_project_16.png" tooltip="" command="_NI-S8AmgEeWmsZWUQ_5cNA"/>

@@ -1,11 +1,7 @@
 package com.kms.katalon.composer.execution.settings;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
@@ -16,7 +12,6 @@ import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
@@ -28,14 +23,9 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.constants.DocumentationMessageConstants;
-import com.kms.katalon.execution.collector.RunConfigurationCollector;
-import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
-import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.setting.ExecutionDefaultSettingStore;
 
 public class DefaultExecutionSettingPage extends PreferencePageWithHelp {
-
-    private static final String LBL_DEFAULT_EXECUTION = ExecutionMessageConstants.LBL_DEFAULT_EXECUTION;
 
     public static final short TIMEOUT_MIN_VALUE = 0;
 
@@ -47,15 +37,9 @@ public class DefaultExecutionSettingPage extends PreferencePageWithHelp {
 
     private Composite container;
 
-    private Combo cbDefaultBrowser;
-
     private Text txtDefaultElementTimeout;
 
     private Button chckOpenReport, chckQuitDriversTestCase, chckQuitDriversTestSuite;
-
-    private IRunConfigurationContributor[] runConfigs;
-
-    private String selectedExecutionConfiguration;
 
     public DefaultExecutionSettingPage() {
         store = ExecutionDefaultSettingStore.getStore();
@@ -76,16 +60,6 @@ public class DefaultExecutionSettingPage extends PreferencePageWithHelp {
         glComp.marginHeight = 0;
         glComp.marginWidth = 0;
         comp.setLayout(glComp);
-
-        Label lblDefaultBrowser = new Label(comp, SWT.NONE);
-        lblDefaultBrowser.setText(LBL_DEFAULT_EXECUTION);
-        GridData gdLblDefaultBrowser = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        lblDefaultBrowser.setLayoutData(gdLblDefaultBrowser);
-
-        cbDefaultBrowser = new Combo(comp, SWT.BORDER | SWT.READ_ONLY | SWT.DROP_DOWN);
-        GridData gdCbDefaultBrowser = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-        gdCbDefaultBrowser.widthHint = INPUT_WIDTH * 2;
-        cbDefaultBrowser.setLayoutData(gdCbDefaultBrowser);
 
         Label lblDefaultElementTimeout = new Label(comp, SWT.NONE);
         lblDefaultElementTimeout.setText(StringConstants.PREF_LBL_DEFAULT_IMPLICIT_TIMEOUT);
@@ -184,17 +158,6 @@ public class DefaultExecutionSettingPage extends PreferencePageWithHelp {
     }
 
     private void initialize() throws IOException {
-        selectedExecutionConfiguration = store.getExecutionConfiguration();
-        runConfigs = RunConfigurationCollector.getInstance().getAllBuiltinRunConfigurationContributors();
-        if (runConfigs.length > 0) {
-            List<String> runConfigIds = Arrays.stream(runConfigs)
-                    .map(config -> config.getId())
-                    .collect(Collectors.toList());
-            int selectedIndex = Math.max(runConfigIds.indexOf(selectedExecutionConfiguration), 0);
-            String[] runConfigIdList = runConfigIds.toArray(new String[0]);
-            cbDefaultBrowser.setItems(runConfigIdList);
-            cbDefaultBrowser.select(selectedIndex);
-        }
         txtDefaultElementTimeout.setText(Integer.toString(store.getElementTimeout()));
 
         chckOpenReport.setSelection(store.isPostExecOpenReport());
@@ -207,17 +170,7 @@ public class DefaultExecutionSettingPage extends PreferencePageWithHelp {
         if (container == null) {
             return;
         }
-        String selectedExecutionConfiguration = ExecutionDefaultSettingStore.EXECUTION_DEFAULT_CONFIGURATION;
-        runConfigs = RunConfigurationCollector.getInstance().getAllBuiltinRunConfigurationContributors();
-        if (runConfigs.length > 0) {
-            List<String> runConfigIds = Arrays.stream(runConfigs)
-                    .map(config -> config.getId())
-                    .collect(Collectors.toList());
-            int selectedIndex = Math.max(runConfigIds.indexOf(selectedExecutionConfiguration), 0);
-            String[] runConfigIdList = runConfigIds.toArray(new String[0]);
-            cbDefaultBrowser.setItems(runConfigIdList);
-            cbDefaultBrowser.select(selectedIndex);
-        }
+
         txtDefaultElementTimeout
                 .setText(Integer.toString(ExecutionDefaultSettingStore.EXECUTION_DEFAULT_TIMEOUT_VALUE));
         chckOpenReport.setSelection(ExecutionDefaultSettingStore.EXECUTION_DEFAULT_OPEN_REPORT_REPORT_VALUE);
@@ -233,11 +186,6 @@ public class DefaultExecutionSettingPage extends PreferencePageWithHelp {
             return;
         }
         try {
-            if (cbDefaultBrowser != null && runConfigs != null && runConfigs.length > 0
-                    && !StringUtils.equals(cbDefaultBrowser.getText(), selectedExecutionConfiguration)) {
-                selectedExecutionConfiguration = cbDefaultBrowser.getText();
-                store.setExecutionConfiguration(selectedExecutionConfiguration);
-            }
             if (txtDefaultElementTimeout != null) {
                 store.setElementTimeout(Integer.parseInt(txtDefaultElementTimeout.getText()));
             }

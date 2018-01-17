@@ -42,4 +42,5 @@ Require-Bundle: org.eclipse.core.runtime,
  com.kms.katalon.preferences,
  com.kms.katalon.composer.components.impl,
  org.codehaus.groovy.eclipse.quickfix,
- org.apache.commons.codec
+ org.apache.commons.codec,
+ com.kms.katalon.execution

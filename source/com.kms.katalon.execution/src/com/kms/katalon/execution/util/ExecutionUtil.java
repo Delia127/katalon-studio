@@ -34,6 +34,7 @@ import com.kms.katalon.execution.configuration.IDriverConnector;
 import com.kms.katalon.execution.configuration.IExecutionSetting;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
+import com.kms.katalon.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.execution.entity.DefaultRerunSetting;
 import com.kms.katalon.execution.entity.IExecutedEntity;
 import com.kms.katalon.execution.entity.TestCaseExecutedEntity;
@@ -42,6 +43,8 @@ import com.kms.katalon.execution.launcher.result.ILauncherResult;
 import com.kms.katalon.execution.setting.ExecutionDefaultSettingStore;
 import com.kms.katalon.groovy.util.GroovyStringUtil;
 import com.kms.katalon.logging.LogUtil;
+import com.kms.katalon.preferences.internal.PreferenceStoreManager;
+import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class ExecutionUtil {
     private static final String BIT = "bit";
@@ -278,5 +281,47 @@ public class ExecutionUtil {
             return null;
         }
 
+    }
+    
+    public static void saveExecutionCommand(String commandId) {
+        ScopedPreferenceStore store = getPreferenceStore();
+        store.setValue(ExecutionPreferenceConstants.EXECUTION_COMMAND, commandId);
+        try {
+            store.save();
+        } catch (Exception e) {
+            LogUtil.logError(e);
+        }
+    }
+    
+    public static String getStoredExecutionConfiguration() {
+        String commandId = getPreferenceStore().getString(ExecutionPreferenceConstants.EXECUTION_COMMAND);
+        return fromCommandToExecutionConfiguration(commandId);
+    }
+    
+    private static String fromCommandToExecutionConfiguration(String commandId) {
+        switch (commandId) {
+            case "com.kms.katalon.composer.webui.execution.command.chrome": 
+                return "Chrome";
+            case "com.kms.katalon.composer.webui.execution.command.firefox":
+                return "Firefox";
+            case "com.kms.katalon.composer.webui.execution.command.ie":
+                return "IE";
+            case "com.kms.katalon.composer.webui.execution.command.safari":
+                return "Safari";
+            case "com.kms.katalon.composer.webui.execution.command.remoteweb":
+                return "Remote";
+            case "com.kms.katalon.composer.webui.execution.command.edge":
+                return "Edge";
+            case "com.kms.katalon.composer.webui.execution.command.headless":
+                return "Chrome (headless)";
+            case "com.kms.katalon.composer.webui.execution.command.firefoxHeadless":
+                return "Firefox (headless)";
+            default:
+                return null;
+        }
+    }
+    
+    private static ScopedPreferenceStore getPreferenceStore() {
+        return PreferenceStoreManager.getPreferenceStore(ExecutionPreferenceConstants.EXECUTION_QUALIFIER);
     }
 }

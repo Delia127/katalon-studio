@@ -1,13 +1,19 @@
 package com.kms.katalon.execution.webui.setting;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.setting.BundleSettingStore;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.execution.webui.constants.StringConstants;
 import com.kms.katalon.execution.webui.constants.WebUiExecutionSettingConstants;
+import com.kms.katalon.util.collections.Pair;
 
 public class WebUiExecutionSettingStore extends BundleSettingStore {
 
@@ -20,6 +26,11 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
     public static final int EXECUTION_DEFAULT_PAGE_LOAD_TIMEOUT = 30;
 
     public static final int EXECUTION_DEFAULT_WAIT_FOR_IE_HANGING = 600;
+
+    /**
+     * In the format of pair value: <code>property-name-1,is-selected-1;property-name-2,is-selected-2;...</code>
+     */
+    public static final String DEFAULT_SELECTING_CAPTURED_OBJECT_PROPERTIES = "id,true;name,true;alt,true;checked,true;form,true;href,true;placeholder,true;selected,true;src,true;title,true;type,true;text,true;linked_text,true";
 
     public static WebUiExecutionSettingStore getStore() {
         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
@@ -82,6 +93,51 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
     public void setDefaultIEHangTimeout() throws IOException {
         setProperty(WebUiExecutionSettingConstants.WEBUI_EXECUTION_WAIT_FOR_IE_HANGING,
                 EXECUTION_DEFAULT_WAIT_FOR_IE_HANGING);
+    }
+
+    public void setDefaultCapturedTestObjectLocators() throws IOException {
+        setProperty(WebUiExecutionSettingConstants.WEBUI_DEFAULT_SELECTING_CAPTURED_OBJECT_PROPERTIES,
+                DEFAULT_SELECTING_CAPTURED_OBJECT_PROPERTIES);
+    }
+
+    public void setCapturedTestObjectLocators(List<Pair<String, Boolean>> locators) throws IOException {
+        setProperty(WebUiExecutionSettingConstants.WEBUI_DEFAULT_SELECTING_CAPTURED_OBJECT_PROPERTIES,
+                flatList(locators));
+    }
+
+    public List<Pair<String, Boolean>> getCapturedTestObjectLocators() throws IOException {
+        return parseStringList(
+                getString(WebUiExecutionSettingConstants.WEBUI_DEFAULT_SELECTING_CAPTURED_OBJECT_PROPERTIES,
+                        DEFAULT_SELECTING_CAPTURED_OBJECT_PROPERTIES));
+    }
+
+    /**
+     * @param list List&lt;Pair&lt;String, Boolean>>
+     * @return a string of left-1,right-1;left-2,right-2;...
+     * @see #parseStringList
+     * @see com.kms.katalon.util.collections.Pair
+     */
+    private String flatList(List<Pair<String, Boolean>> list) {
+        if (list == null || list.isEmpty()) {
+            return StringConstants.EMPTY;
+        }
+        return list.stream().map(i -> i.getLeft() + "," + i.getRight()).collect(Collectors.joining(";"));
+    }
+
+    /**
+     * @param str String in the format of key1,value1;key2,value2;...
+     * @return List&lt;Pair&lt;String, Boolean>>
+     * @see #flatList
+     * @see com.kms.katalon.util.collections.Pair
+     */
+    private List<Pair<String, Boolean>> parseStringList(String str) {
+        if (str == null || str.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return Stream.of(str.split(";"))
+                .map(i -> i.split(","))
+                .map(i -> new Pair<String, Boolean>(i[0], Boolean.valueOf(i[1])))
+                .collect(Collectors.toList());
     }
 
 }

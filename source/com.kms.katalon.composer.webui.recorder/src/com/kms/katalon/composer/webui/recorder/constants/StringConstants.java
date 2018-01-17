@@ -4,14 +4,10 @@ import com.kms.katalon.constants.GlobalStringConstants;
 
 public class StringConstants extends GlobalStringConstants {
 	// RecorderDialog
-    public static final String DIA_TITLE_RECORD = ComposerWebuiRecorderMessageConstants.DIA_TITLE_RECORD;
     public static final String DIA_COL_ELEMENT = ComposerWebuiRecorderMessageConstants.DIA_COL_ELEMENT;
     public static final String DIA_COL_ACTION_DATA = ComposerWebuiRecorderMessageConstants.DIA_COL_ACTION_DATA;
     public static final String DIA_COL_ACTION = ComposerWebuiRecorderMessageConstants.DIA_COL_ACTION;
 	public static final String DIA_COL_NO = NO_;
-    public static final String DIA_TOOLITEM_RESUME = ComposerWebuiRecorderMessageConstants.DIA_TOOLITEM_RESUME;
-    public static final String DIA_TOOLITEM_STOP = ComposerWebuiRecorderMessageConstants.DIA_TOOLITEM_STOP;
-    public static final String DIA_TOOLITEM_PAUSE = ComposerWebuiRecorderMessageConstants.DIA_TOOLITEM_PAUSE;
     public static final String DIA_TOOLITEM_RECORD = ComposerWebuiRecorderMessageConstants.DIA_TOOLITEM_RECORD;
 	public static final String ERROR_TITLE = ERROR;
     public static final String DIA_LBL_CAPTURED_OBJECTS = ComposerWebuiRecorderMessageConstants.DIA_LBL_CAPTURED_OBJECTS;
@@ -22,6 +18,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_COL_NAME = NAME;
     public static final String DIA_COL_VALUE = VALUE;
     public static final String DIA_TITLE_CAPTURED_OBJECTS = ComposerWebuiRecorderMessageConstants.DIA_TITLE_CAPTURED_OBJECTS;
+    public static final String DIA_TITLE_SHOW = ComposerWebuiRecorderMessageConstants.DIA_TITLE_SHOW;
+    public static final String DIA_TITLE_HIDE = ComposerWebuiRecorderMessageConstants.DIA_TITLE_HIDE;
     public static final String DIA_TOOLTIP_SHOW_HIDE_CAPTURED_OBJECTS = ComposerWebuiRecorderMessageConstants.DIA_TOOLTIP_SHOW_HIDE_CAPTURED_OBJECTS;
     public static final String DIA_MESSAGE_SELECT_ELEMENT = ComposerWebuiRecorderMessageConstants.DIA_MESSAGE_SELECT_ELEMENT;
     public static final String DIA_ERROR_MESSAGE_SELECT_ELEMENT = ComposerWebuiRecorderMessageConstants.DIA_ERROR_MESSAGE_SELECT_ELEMENT;

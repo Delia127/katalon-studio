@@ -28,6 +28,7 @@ import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeDriverService;
 import org.openqa.selenium.firefox.ExtensionConnection;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.ie.InternetExplorerDriverLogLevel;
@@ -251,6 +252,9 @@ public class DriverFactory {
             case HEADLESS_DRIVER:
                 webDriver = createHeadlessChromeDriver(desireCapibilities);
                 break;
+            case FIREFOX_HEADLESS_DRIVER:
+                webDriver = createHeadlessFirefoxDriver(desireCapibilities);
+                break;
             default:
                 throw new StepFailedException(
                         MessageFormat.format(StringConstants.DRI_ERROR_DRIVER_X_NOT_IMPLEMENTED, driver.getName()));
@@ -391,6 +395,12 @@ public class DriverFactory {
             return CFirefoxDriver47.from(desiredCapabilities, actionDelay);
         }
         return new CFirefoxDriver(desiredCapabilities, actionDelay);
+    }
+
+    private static WebDriver createHeadlessFirefoxDriver(DesiredCapabilities desiredCapibilities) {
+        FirefoxOptions firefoxOptions = new FirefoxOptions(desiredCapibilities);
+        firefoxOptions.setHeadless(true);
+        return createNewFirefoxDriver(new DesiredCapabilities(firefoxOptions.asMap()));
     }
 
     private static void saveWebDriverSessionData(WebDriver webDriver) {

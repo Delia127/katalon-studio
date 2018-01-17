@@ -5,19 +5,11 @@ import org.eclipse.osgi.util.NLS;
 public class ComposerWebuiRecorderMessageConstants extends NLS {
     private static final String BUNDLE_NAME = "com.kms.katalon.composer.webui.recorder.constants.composerWebuiRecorderMessages";
 
-    public static String DIA_TITLE_RECORD;
-
     public static String DIA_COL_ELEMENT;
 
     public static String DIA_COL_ACTION_DATA;
 
     public static String DIA_COL_ACTION;
-
-    public static String DIA_TOOLITEM_RESUME;
-
-    public static String DIA_TOOLITEM_STOP;
-
-    public static String DIA_TOOLITEM_PAUSE;
 
     public static String DIA_TOOLITEM_RECORD;
 
@@ -28,6 +20,10 @@ public class ComposerWebuiRecorderMessageConstants extends NLS {
     public static String DIA_LBL_RECORED_ACTIONS;
 
     public static String DIA_TITLE_CAPTURED_OBJECTS;
+
+    public static String DIA_TITLE_SHOW;
+
+    public static String DIA_TITLE_HIDE;
 
     public static String DIA_MESSAGE_SELECT_ELEMENT;
 
@@ -92,7 +88,7 @@ public class ComposerWebuiRecorderMessageConstants extends NLS {
     public static String DIA_MSG_CANNOT_START_BROWSER;
 
     public static String DIA_TOOLTIP_SHOW_HIDE_CAPTURED_OBJECTS;
-    
+
     public static String PREF_LBL_PIN_RECORDER_WINDOW;
 
     static {

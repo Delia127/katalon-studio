@@ -182,15 +182,9 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     private static final String TABLE_COLUMN_NO_TITLE = StringConstants.DIA_COL_NO;
 
-    private static final String RESUME_TOOL_ITEM_LABEL = StringConstants.DIA_TOOLITEM_RESUME;
-
-    private static final String STOP_TOOL_ITEM_LABEL = StringConstants.DIA_TOOLITEM_STOP;
-
-    private static final String PAUSE_TOOL_ITEM_LABEL = StringConstants.DIA_TOOLITEM_PAUSE;
-
     private static final String RECORD_TOOL_ITEM_LABEL = StringConstants.DIA_TOOLITEM_RECORD;
 
-    private static Point MIN_DIALOG_SIZE = new Point(665, 630);
+    private static Point MIN_DIALOG_SIZE = new Point(500, 600);
 
     private HTMLElementRecorderServer server;
 
@@ -250,7 +244,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         eventBroker.subscribe(EventConstants.WORKSPACE_CLOSED, this);
         startSocketServer();
     }
-    
+
     @Override
     protected int getShellStyle() {
         boolean onTop = store.getBoolean(RecorderPreferenceConstants.WEBUI_RECORDER_PIN_WINDOW);
@@ -309,6 +303,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             stop();
             showMessageForMissingIEAddon();
             try {
+                getShell().setMinimized(true);
                 runIEAddonInstaller();
             } catch (IOException iOException) {
                 LoggerSingleton.logError(iOException);
@@ -378,7 +373,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         UISynchronizeService.syncExec(new Runnable() {
             @Override
             public void run() {
-                MessageDialog.openInformation(Display.getCurrent().getActiveShell(), StringConstants.INFO,
+                MessageDialog.openInformation(getShell(), StringConstants.INFO,
                         StringConstants.DIALOG_CANNOT_START_IE_MESSAGE);
             }
         });
@@ -457,14 +452,12 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     private void pause() {
         isPausing = true;
-        tltmPause.setText(RESUME_TOOL_ITEM_LABEL);
         tltmPause.setImage(ImageConstants.IMG_24_PLAY);
         toolBar.getParent().layout();
     }
 
     private void resume() {
         isPausing = false;
-        tltmPause.setText(PAUSE_TOOL_ITEM_LABEL);
         tltmPause.setImage(ImageConstants.IMG_24_PAUSE);
         toolBar.getParent().layout();
     }
@@ -509,7 +502,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
         createRightPanel(htmlDomComposite);
 
-        hSashForm.setWeights(new int[] { 5, 5 });
+        hSashForm.setWeights(new int[] { 0, 10 });
 
         txtStartUrl.setFocus();
 
@@ -522,6 +515,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
         newShell.setMinimumSize(MIN_DIALOG_SIZE);
+        newShell.setSize(MIN_DIALOG_SIZE);
     }
 
     private void initializeInput() {
@@ -890,25 +884,23 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         ToolBar rightToolBar = new ToolBar(tbComposite, SWT.FLAT | SWT.RIGHT);
         rightToolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
 
-        ToolItem tltmCapturedObjects = new ToolItem(rightToolBar, SWT.CHECK);
-
-        tltmCapturedObjects.setImage(ImageConstants.IMG_16_WATCH);
-        tltmCapturedObjects.setText(StringConstants.DIA_TITLE_CAPTURED_OBJECTS);
+        ToolItem tltmCapturedObjects = new ToolItem(rightToolBar, SWT.PUSH);
+        tltmCapturedObjects.setText(StringConstants.DIA_TITLE_SHOW + StringConstants.DIA_TITLE_CAPTURED_OBJECTS);
         tltmCapturedObjects.setToolTipText(StringConstants.DIA_TOOLTIP_SHOW_HIDE_CAPTURED_OBJECTS);
-        tltmCapturedObjects.setSelection(true);
         tltmCapturedObjects.addSelectionListener(new SelectionAdapter() {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                int[] sashFormWeights = new int[] { 5, 5 };
-                boolean isChecked = tltmCapturedObjects.getSelection();
-                Image image = ImageConstants.IMG_16_WATCH;
-                if (!isChecked) {
-                    sashFormWeights = new int[] { 0, 10 };
-                    image = ImageConstants.IMG_16_UNWATCH;
+                int[] sashFormWeights = new int[] { 0, 10 };
+                String showOrHide = StringConstants.DIA_TITLE_SHOW + StringConstants.DIA_TITLE_CAPTURED_OBJECTS;
+
+                if (tltmCapturedObjects.getText().contains(StringConstants.DIA_TITLE_SHOW)) {
+                    sashFormWeights = new int[] { 5, 5 };
+                    showOrHide = StringConstants.DIA_TITLE_HIDE + StringConstants.DIA_TITLE_CAPTURED_OBJECTS;
                 }
-                tltmCapturedObjects.setImage(image);
+                tltmCapturedObjects.setText(showOrHide);
                 hSashForm.setWeights(sashFormWeights);
+                getShell().pack();
             }
         });
     }
@@ -957,8 +949,8 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
         TableColumnLayout tableLayout = new TableColumnLayout();
         tableLayout.setColumnData(tableViewerNo, new ColumnWeightData(0, 40));
-        tableLayout.setColumnData(tableColumnAction, new ColumnWeightData(40, 150));
-        tableLayout.setColumnData(tableColumnActionData, new ColumnWeightData(30, 100));
+        tableLayout.setColumnData(tableColumnAction, new ColumnWeightData(20, 70));
+        tableLayout.setColumnData(tableColumnActionData, new ColumnWeightData(30, 140));
         tableLayout.setColumnData(tableColumnElement, new ColumnWeightData(30, 100));
 
         tableComposite.setLayout(tableLayout);
@@ -1051,10 +1043,12 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 }
                 htmlActions.clear();
                 htmlActions.addAll(keywords.values());
+                htmlActions.sort((action1, action2) -> action1.getName().compareTo(action2.getName()));
 
                 for (IHTMLAction htmlAction : htmlActions) {
                     actionNames.add(TreeEntityUtil.getReadableKeywordName(htmlAction.getName()));
                 }
+                
                 return new ComboBoxCellEditor((Composite) getViewer().getControl(),
                         actionNames.toArray(new String[actionNames.size()]));
             }
@@ -1258,7 +1252,6 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         toolBar.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 
         toolItemBrowserDropdown = new ToolItem(toolBar, SWT.DROP_DOWN);
-        toolItemBrowserDropdown.setText(RECORD_TOOL_ITEM_LABEL);
         toolItemBrowserDropdown.setImage(getWebUIDriverToolItemImage(getWebUIDriver()));
         Dropdown dropdown = new Dropdown(getShell());
         createDropdownContent(dropdown);
@@ -1278,7 +1271,6 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         });
 
         tltmPause = new ToolItem(toolBar, SWT.PUSH);
-        tltmPause.setText(PAUSE_TOOL_ITEM_LABEL);
         tltmPause.setImage(ImageConstants.IMG_24_PAUSE);
         tltmPause.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -1294,7 +1286,6 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         tltmPause.setEnabled(false);
 
         tltmStop = new ToolItem(toolBar, SWT.PUSH);
-        tltmStop.setText(STOP_TOOL_ITEM_LABEL);
         tltmStop.setImage(ImageConstants.IMG_24_STOP);
         tltmStop.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -1355,7 +1346,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                             @Override
                             public void run() {
                                 MessageDialogWithToggle messageDialogWithToggle = MessageDialogWithToggle
-                                        .openInformation(Display.getCurrent().getActiveShell(),
+                                        .openInformation(getShell(),
                                                 StringConstants.HAND_ACTIVE_BROWSERS_DIA_TITLE,
                                                 StringConstants.DIALOG_RUNNING_INSTANT_IE_MESSAGE,
                                                 StringConstants.HAND_ACTIVE_BROWSERS_DIA_TOOGLE_MESSAGE, false, null,
@@ -1594,7 +1585,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
      */
     @Override
     protected Point getInitialSize() {
-        return getShell().computeSize(SWT.DEFAULT, SWT.DEFAULT);
+        return MIN_DIALOG_SIZE;
     }
 
     @Override
@@ -1751,7 +1742,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 }
 
                 WebElement[] oldNewElement = (WebElement[]) dataObject;
-                if(oldNewElement.length != 2) {
+                if (oldNewElement.length != 2) {
                     return;
                 }
                 replaceCapturedObjectInActionMapping(oldNewElement[0], oldNewElement[1]);
