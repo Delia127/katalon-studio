@@ -62,7 +62,6 @@ public class ObjectSpySelectorEditor implements EventListener<ObjectSpyEvent>, E
         GC graphicContext = new GC(txtSelector);
         FontMetrics fm = graphicContext.getFontMetrics();
         gdTxtSelector.heightHint = EDITOR_LINE_HEIGHT * fm.getHeight();
-        gdTxtSelector.widthHint  = 300;
         txtSelector.setLayoutData(gdTxtSelector);
 
         registerControlListeners();
