@@ -316,8 +316,14 @@ public class ExecutionUtil {
                 return "Chrome (headless)";
             case "com.kms.katalon.composer.webui.execution.command.firefoxHeadless":
                 return "Firefox (headless)";
+            case "com.kms.katalon.composer.mobile.execution.command.android":
+            	return "Android";
+            case "com.kms.katalon.composer.mobile.execution.command.ios":
+            	return "iOS";
+            case "com.kms.katalon.composer.integration.kobiton.execution.command.kobiton":
+            	return "Kobiton Device";
             default:
-                return null;
+                return "Firefox";
         }
     }
     
