@@ -21,13 +21,10 @@ import org.apache.commons.io.FileUtils;
 
 import com.google.gson.Gson;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
-import com.kms.katalon.entity.report.ReportEntity;
-import com.kms.katalon.entity.report.ReportTestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.collector.RunConfigurationCollector;
 import com.kms.katalon.execution.configuration.IDriverConnector;
@@ -262,25 +259,6 @@ public class ExecutionUtil {
             // save properties
             prop.store(output, null);
         }
-    }
-
-    public static ReportEntity newReportEntity(String id, TestSuiteExecutedEntity executedEntity) {
-        try {
-            TestSuiteEntity testSuite = TestSuiteController.getInstance().getTestSuiteByDisplayId(
-                    executedEntity.getSourceId(), ProjectController.getInstance().getCurrentProject());
-            ReportEntity report = ReportController.getInstance().getReportEntity(testSuite, id);
-
-            List<ReportTestCaseEntity> reportTestCases = new ArrayList<>();
-            executedEntity.getExecutedItems().forEach(item -> {
-                TestCaseExecutedEntity testCaseExecuted = (TestCaseExecutedEntity) item;
-                reportTestCases.addAll(testCaseExecuted.reportTestCases());
-            });
-            report.setReportTestCases(reportTestCases);
-            return report;
-        } catch (Exception e) {
-            return null;
-        }
-
     }
     
     public static void saveExecutionCommand(String commandId) {

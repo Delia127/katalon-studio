@@ -5,11 +5,24 @@ import java.util.Map;
 import com.kms.katalon.core.context.TestCaseContext;
 
 public class InternalTestCaseContext implements TestCaseContext {
+    private boolean isMainTestCase = true;
+
     private String testCaseStatus;
 
     private String testCaseId;
 
     private Map<String, Object> testCaseVariables;
+
+    private int testCaseIndex;
+
+    public InternalTestCaseContext(String testCaseId, int testCaseIndex) {
+        this.testCaseId = testCaseId;
+        this.testCaseIndex = testCaseIndex;
+    }
+
+    public InternalTestCaseContext(String testCaseId) {
+        this(testCaseId, 0);
+    }
 
     @Override
     public String getTestCaseStatus() {
@@ -36,5 +49,21 @@ public class InternalTestCaseContext implements TestCaseContext {
 
     public void setTestCaseVariables(Map<String, Object> testCaseVariables) {
         this.testCaseVariables = testCaseVariables;
+    }
+
+    public int getTestCaseIndex() {
+        return testCaseIndex;
+    }
+
+    public void setTestCaseIndex(int testCaseIndex) {
+        this.testCaseIndex = testCaseIndex;
+    }
+
+    public boolean isMainTestCase() {
+        return isMainTestCase;
+    }
+
+    public void setMainTestCase(boolean isMainTestCase) {
+        this.isMainTestCase = isMainTestCase;
     }
 }

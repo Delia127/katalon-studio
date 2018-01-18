@@ -30,8 +30,6 @@ import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.ExistingRunConfiguration;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
-import com.kms.katalon.execution.entity.IExecutedEntity;
-import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.launcher.ReportableLauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
@@ -41,8 +39,6 @@ import com.kms.katalon.execution.launcher.result.LauncherStatus;
 import com.kms.katalon.execution.session.ExecutionSession;
 import com.kms.katalon.execution.session.ExecutionSessionSocketServer;
 import com.kms.katalon.execution.setting.ExecutionDefaultSettingStore;
-import com.kms.katalon.execution.util.ExecutionUtil;
-import com.kms.katalon.execution.video.VideoRecorderService;
 import com.kms.katalon.groovy.util.GroovyUtil;
 import com.kms.katalon.logging.LogUtil;
 
@@ -311,20 +307,5 @@ public class IDELauncher extends ReportableLauncher implements ILaunchListener, 
         String displayMessage = StringUtils.isNotEmpty(currentStatusMessage) ? currentStatusMessage
                 : getStatus().toString();
         return "<" + displayMessage + ">" + " - " + getRunConfig().getName();
-    }
-    
-
-    
-    @Override
-    protected void onStartExecution() {
-        IExecutedEntity executedEntity = getExecutedEntity();
-        if (executedEntity instanceof TestSuiteExecutedEntity) {
-            setReportEntity(ExecutionUtil.newReportEntity(getId(), (TestSuiteExecutedEntity) executedEntity));
-            
-            if (getRunConfig().allowsRecording()) {
-                addListener(new VideoRecorderService(getRunConfig(), getReportEntity()));
-            }
-        }
-        super.onStartExecution();
     }
 }

@@ -1,8 +1,6 @@
 package com.kms.katalon.entity.report;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.kms.katalon.entity.file.IntegratedFileEntity;
 
@@ -23,8 +21,6 @@ public class ReportEntity extends IntegratedFileEntity {
     public static final String VIDEO_RECORDED_FOLDER = "videos";
 
     private String displayName;
-    
-    private List<ReportTestCaseEntity> reportTestCases;
 
     @Override
     public String getRelativePathForUI() {
@@ -71,15 +67,8 @@ public class ReportEntity extends IntegratedFileEntity {
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
     }
-
-    public List<ReportTestCaseEntity> getReportTestCases() {
-        if (reportTestCases == null) {
-            reportTestCases = new ArrayList<>();
-        }
-        return reportTestCases;
-    }
-
-    public void setReportTestCases(List<ReportTestCaseEntity> reportTestCases) {
-        this.reportTestCases = reportTestCases;
+    
+    public String getVideoFolder() {
+        return getLocation() + File.separator + VIDEO_RECORDED_FOLDER;
     }
 }

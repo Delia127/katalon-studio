@@ -290,6 +290,11 @@ public class CoreMessageConstants extends NLS {
     public static String EXEC_LOG_INVOKE_LISTENER_METHOD_COMPLETED;
 
     public static String EXEC_MSG_INVOKE_LISTENER_METHOD_FAILED; 
+    
+    //VideoRecorderService
+    public static String EXEC_LOG_START_RECORDING_VIDEO;
+
+    public static String EXEC_LOG_VIDEO_RECORDING_COMPLETED;
 
     static {
         // initialize resource bundle

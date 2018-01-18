@@ -64,6 +64,7 @@ public class DefaultExecutionSetting implements IExecutionSetting {
         try {
             ExecutionSettingStore reportSettings = new ExecutionSettingStore(
                     getCurrentProject());
+            reportProps.put(RunConfiguration.REPORT_FOLDER_PATH_PROPERTY, getFolderPath());
             reportProps.put(StringConstants.CONF_PROPERTY_SCREEN_CAPTURE_OPTION, reportSettings.getScreenCaptureOption());
             reportProps.put(StringConstants.CONF_PROPERTY_VIDEO_RECORDER_OPTION, reportSettings.getVideoRecorderSetting());
         } catch (IOException e) {
