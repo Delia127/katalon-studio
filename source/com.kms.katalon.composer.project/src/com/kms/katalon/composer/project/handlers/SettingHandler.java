@@ -86,7 +86,6 @@ public class SettingHandler {
         dialog.setSelectedNode(StringConstants.PROJECT_INFORMATION_SETTINGS_PAGE_ID);
         dialog.create();
         dialog.getTreeViewer().setComparator(new DefinedOrderedPageComparator());
-        dialog.getTreeViewer().expandToLevel(2);
         dialog.getShell().setText(StringConstants.HAND_PROJ_SETTING);
         dialog.open();
     }

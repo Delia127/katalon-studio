@@ -1,6 +1,6 @@
 package com.kms.katalon.composer.project.handlers;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.preference.PreferenceNode;
@@ -14,7 +14,7 @@ public class DefinedOrderedPageComparator extends ViewerComparator {
     List<String> predefinedOrder;
     
     public DefinedOrderedPageComparator() {
-        predefinedOrder = new LinkedList<>();
+        predefinedOrder = new ArrayList<>();
         predefinedOrder.add(StringConstants.PROJECT_INFORMATION_SETTINGS_PAGE_ID);
         
         predefinedOrder.add(StringConstants.TEST_DESIGN_SETTINGS_PAGE_ID);
