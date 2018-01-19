@@ -3,6 +3,7 @@ package com.kms.katalon.composer.integration.jira;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.GeneralSecurityException;
 
 import com.kms.katalon.composer.integration.jira.constant.StringConstants;
 import com.kms.katalon.composer.report.lookup.LogRecordLookup;
@@ -14,11 +15,12 @@ import com.kms.katalon.integration.jira.entity.JiraIssue;
 import com.kms.katalon.integration.jira.entity.JiraIssueCollection;
 
 public interface JiraUIComponent extends JiraComponent {
-    default String getHTMLIssueURLPrefix() throws IOException {
-        return getSettingStore().getServerUrl() + StringConstants.HREF_BROWSE_ISSUE;
+    default String getHTMLIssueURLPrefix() throws IOException, GeneralSecurityException {
+        return getSettingStore().getServerUrl(getSettingStore().isEncryptionEnabled())
+                + StringConstants.HREF_BROWSE_ISSUE;
     }
 
-    default URI getHTMLLink(JiraIssue jiraIssue) throws URISyntaxException, IOException {
+    default URI getHTMLLink(JiraIssue jiraIssue) throws URISyntaxException, IOException, GeneralSecurityException {
         return new URI(getHTMLIssueURLPrefix() + "/" + jiraIssue.getKey());
     }
 

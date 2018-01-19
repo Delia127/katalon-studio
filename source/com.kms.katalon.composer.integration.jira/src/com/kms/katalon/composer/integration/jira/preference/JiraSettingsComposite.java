@@ -63,7 +63,7 @@ public class JiraSettingsComposite {
 
     private Button chckAutoSubmitTestResult;
 
-    private Button chckEncryptPassword;
+    private Button chckEncrypt;
 
     private Button chckShowPassword;
 
@@ -139,12 +139,11 @@ public class JiraSettingsComposite {
             chckEnableIntegration.setSelection(settingStore.isIntegrationEnabled());
             enableIntegrationComposite();
 
-            txtServerUrl.setText(settingStore.getServerUrl());
-            txtUsername.setText(settingStore.getUsername());
-
-            boolean passwordEncryptionEnabled = settingStore.isPasswordEncryptionEnabled();
-            txtPassword.setText(settingStore.getPassword(passwordEncryptionEnabled));
-            chckEncryptPassword.setSelection(passwordEncryptionEnabled);
+            boolean encryptionEnabled = settingStore.isEncryptionEnabled();
+            txtServerUrl.setText(settingStore.getServerUrl(encryptionEnabled));
+            txtUsername.setText(settingStore.getUsername(encryptionEnabled));
+            txtPassword.setText(settingStore.getPassword(encryptionEnabled));
+            chckEncrypt.setSelection(encryptionEnabled);
             maskPasswordField();
 
             chckUseTestCaseNameAsSumarry.setSelection(settingStore.isUseTestCaseNameAsSummaryEnabled());
@@ -223,7 +222,7 @@ public class JiraSettingsComposite {
 
         Composite passwordComposite = new Composite(grpAuthentication, SWT.NONE);
         passwordComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        GridLayout glPassword = new GridLayout(3, false);
+        GridLayout glPassword = new GridLayout(2, false);
         glPassword.marginWidth = 0;
         glPassword.marginHeight = 0;
         passwordComposite.setLayout(glPassword);
@@ -235,9 +234,9 @@ public class JiraSettingsComposite {
         chckShowPassword.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
         chckShowPassword.setText(ComposerJiraIntegrationMessageConstant.PREF_CHCK_SHOW_PASSWORD);
 
-        chckEncryptPassword = new Button(passwordComposite, SWT.CHECK);
-        chckEncryptPassword.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, true, 1, 1));
-        chckEncryptPassword.setText(ComposerJiraIntegrationMessageConstant.PREF_CHCK_ENCRYPT_PASSWORD);
+        chckEncrypt = new Button(grpAuthentication, SWT.CHECK);
+        chckEncrypt.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 2, 1));
+        chckEncrypt.setText(ComposerJiraIntegrationMessageConstant.PREF_CHCK_ENCRYPT_PASSWORD);
 
         btnConnect = new Button(grpAuthentication, SWT.NONE);
         btnConnect.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
@@ -294,12 +293,12 @@ public class JiraSettingsComposite {
         try {
             settingStore.enableIntegration(chckEnableIntegration.getSelection());
 
-            settingStore.saveServerUrl(getTrimedValue(txtServerUrl));
-            settingStore.saveUsername(getTrimedValue(txtUsername));
-            boolean passwordEncryptionEnable = chckEncryptPassword.getSelection();
-            settingStore.savePassword(txtPassword.getText(), passwordEncryptionEnable);
+            boolean encryptionEnable = chckEncrypt.getSelection();
+            settingStore.saveServerUrl(getTrimedValue(txtServerUrl), encryptionEnable);
+            settingStore.saveUsername(getTrimedValue(txtUsername), encryptionEnable);
+            settingStore.savePassword(txtPassword.getText(), encryptionEnable);
             settingStore.saveJiraUser(user);
-            settingStore.enablePasswordEncryption(passwordEncryptionEnable);
+            settingStore.enableEncryption(encryptionEnable);
 
             settingStore.enableUseTestCaseNameAsSummary(chckUseTestCaseNameAsSumarry.getSelection());
             settingStore.enableAttachScreenshot(chckAttachScreenshot.getSelection());

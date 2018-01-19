@@ -20,23 +20,23 @@ public class QTestSettingCredential implements IQTestCredential {
 
     @Override
     public String getServerUrl() {
-        return QTestSettingStore.getServerUrl(getProjectDir());
+        return QTestSettingStore.getServerUrl(QTestSettingStore.isEncryptionEnabled(fProjectDir), fProjectDir);
     }
 
     @Override
     public String getUsername() {
-        return QTestSettingStore.getUsername(getProjectDir());
+        return QTestSettingStore.getUsername(QTestSettingStore.isEncryptionEnabled(fProjectDir), fProjectDir);
     }
 
     @Override
     public String getPassword() {
-        return QTestSettingStore.getPassword(isPasswordEncryptionEnabled(), getProjectDir());
+        return QTestSettingStore.getPassword(isEncryptionEnabled(), fProjectDir);
     }
 
     @Override
     public IQTestToken getToken() {
         try {
-            return QTestTokenManager.getToken(QTestSettingStore.getRawToken(getProjectDir()));
+            return QTestTokenManager.getToken(QTestSettingStore.getRawToken(isEncryptionEnabled(), fProjectDir));
         } catch (QTestInvalidFormatException e) {
             return null;
         }
@@ -53,7 +53,7 @@ public class QTestSettingCredential implements IQTestCredential {
     @Override
     public QTestVersion getVersion() {
         if (fVersion == null) {
-            fVersion = QTestSettingStore.getQTestVersion(getProjectDir());
+            fVersion = QTestSettingStore.getQTestVersion(fProjectDir);
         }
         return fVersion;
     }
@@ -63,7 +63,7 @@ public class QTestSettingCredential implements IQTestCredential {
     }
 
     @Override
-    public boolean isPasswordEncryptionEnabled() {
-        return QTestSettingStore.isPasswordEncryptionEnabled(getProjectDir());
+    public boolean isEncryptionEnabled() {
+        return QTestSettingStore.isEncryptionEnabled(fProjectDir);
     }
 }

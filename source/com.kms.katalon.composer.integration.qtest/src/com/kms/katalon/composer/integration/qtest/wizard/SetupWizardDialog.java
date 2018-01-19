@@ -557,8 +557,8 @@ public class SetupWizardDialog extends SimpleWizardDialog {
             }
 
             @Override
-            public boolean isPasswordEncryptionEnabled() {
-                return (boolean) sharedData.get(QTestSettingStore.ENABLE_PASSWORD_ENCRYPTION_PROPERTY);
+            public boolean isEncryptionEnabled() {
+                return (boolean) sharedData.get(QTestSettingStore.ENABLE_ENCRYPTION_PROPERTY);
             }
         };
     }

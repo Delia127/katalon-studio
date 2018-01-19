@@ -29,13 +29,23 @@ public class AnalyticsReportService implements AnalyticsComponent {
         return isIntegrationEnabled;
     }
     
+    private boolean isEncryptionEnabled() {
+        boolean isEncryptionEnabled = false;
+        try {
+            isEncryptionEnabled = getSettingStore().isEncryptionEnabled();
+        } catch (IOException ex) {
+            // do nothing
+        }
+        return isEncryptionEnabled;
+    }
+    
     public void upload(String folderPath) throws AnalyticsApiExeception {
         if (isIntegrationEnabled()) {
             LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_SEND_TEST_RESULT_START);
             try {
-                String serverUrl = getSettingStore().getServerEndpoint();
-                String email = getSettingStore().getEmail();
-                String password = getSettingStore().getPassword(getSettingStore().isPasswordEncryptionEnabled());
+                String serverUrl = getSettingStore().getServerEndpoint(isEncryptionEnabled());
+                String email = getSettingStore().getEmail(isEncryptionEnabled());
+                String password = getSettingStore().getPassword(getSettingStore().isEncryptionEnabled());
                 AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
                 if (token != null) {
                     perform(token.getAccess_token(), folderPath);
@@ -50,9 +60,9 @@ public class AnalyticsReportService implements AnalyticsComponent {
         }
     }
 
-    private void perform(String token, String path) throws AnalyticsApiExeception, IOException {
+    private void perform(String token, String path) throws AnalyticsApiExeception, IOException, GeneralSecurityException {
         LogUtil.printOutputLine("Uploading log files in folder path: " + path);
-        String serverUrl = getSettingStore().getServerEndpoint();
+        String serverUrl = getSettingStore().getServerEndpoint(isEncryptionEnabled());
         Long projectId = getSettingStore().getProject().getId();
         List<Path> files = scanFiles(path);
         long timestamp = System.currentTimeMillis();

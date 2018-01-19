@@ -2,6 +2,7 @@ package com.kms.katalon.composer.integration.jira.report.dialog;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.security.GeneralSecurityException;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.jface.dialogs.Dialog;
@@ -72,7 +73,7 @@ public class JiraIssueBrowserDialog extends Dialog implements JiraUIComponent {
     private void setInput() {
         try {
             browser.setUrl(htmlLinkProvider.getLoginHTMLLink());
-        } catch (IOException | URISyntaxException e) {
+        } catch (IOException | URISyntaxException | GeneralSecurityException e) {
             LoggerSingleton.logError(e);
         }
     }
@@ -115,12 +116,12 @@ public class JiraIssueBrowserDialog extends Dialog implements JiraUIComponent {
                         return;
                     }
                     getNewIssueKey(location);
-                } catch (IOException | URISyntaxException e) {
+                } catch (IOException | URISyntaxException | GeneralSecurityException e) {
                     LoggerSingleton.logError(e);
                 }
             }
 
-            private void login() throws IOException, URISyntaxException {
+            private void login() throws IOException, URISyntaxException, GeneralSecurityException {
                 if (isLoginDashboard()) {
                     loginForServer();
                 } else {
@@ -128,7 +129,7 @@ public class JiraIssueBrowserDialog extends Dialog implements JiraUIComponent {
                 }
             }
 
-            private void getNewIssueKey(String location) throws IOException {
+            private void getNewIssueKey(String location) throws IOException, GeneralSecurityException {
                 String createdIssueURLPrefix = getHTMLIssueURLPrefix();
                 if (location.startsWith(createdIssueURLPrefix)) {
                     browser.removeLocationListener(this);
@@ -139,11 +140,11 @@ public class JiraIssueBrowserDialog extends Dialog implements JiraUIComponent {
         });
     }
 
-    private boolean isLoginDashboard() throws IOException, URISyntaxException {
+    private boolean isLoginDashboard() throws IOException, URISyntaxException, GeneralSecurityException {
         return htmlLinkProvider.getLoginHTMLLink().equals(browser.getUrl());
     }
 
-    private boolean isLoginPage() throws IOException, URISyntaxException {
+    private boolean isLoginPage() throws IOException, URISyntaxException, GeneralSecurityException {
         return htmlLinkProvider.getLoginHTMLLink().startsWith(browser.getUrl());
     }
 
