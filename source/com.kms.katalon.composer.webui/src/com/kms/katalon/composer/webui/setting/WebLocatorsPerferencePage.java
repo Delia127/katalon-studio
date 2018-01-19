@@ -129,8 +129,8 @@ public class WebLocatorsPerferencePage extends PreferencePage {
     private void createPropertyTable(Composite parent) {
         Composite tableComposite = new Composite(parent, SWT.NONE);
         GridData ldTableComposite = new GridData(SWT.FILL, SWT.FILL, true, true);
-        ldTableComposite.minimumHeight = 100;
-        ldTableComposite.heightHint = 500;
+        ldTableComposite.minimumHeight = 70;
+        ldTableComposite.heightHint = 380;
         tableComposite.setLayoutData(ldTableComposite);
         TableColumnLayout tableColumnLayout = new TableColumnLayout();
         tableComposite.setLayout(tableColumnLayout);
@@ -327,7 +327,17 @@ public class WebLocatorsPerferencePage extends PreferencePage {
     @Override
     public boolean performOk() {
         if (super.performOk() && isValid()) {
-            performApply();
+            if (tvProperty != null) {
+                try {
+                    List<Pair<String, Boolean>> emptyItems = defaultSelectingCapturedObjectProperties.stream()
+                            .filter(i -> i.getLeft().isEmpty())
+                            .collect(Collectors.toList());
+                    defaultSelectingCapturedObjectProperties.removeAll(emptyItems);
+                    store.setCapturedTestObjectLocators(defaultSelectingCapturedObjectProperties);
+                } catch (IOException e) {
+                    LoggerSingleton.logError(e);
+                }
+            }
         }
         return true;
     }
