@@ -11,6 +11,12 @@
    <extension
          point="com.kms.katalon.preferences.PreferencePages">
       <page
+            category="com.kms.katalon.composer.preferences.GeneralPreferencePage"
+            class="com.kms.katalon.composer.testcase.preferences.TestCasePreferencePage"
+            id="com.kms.katalon.composer.testcase.preference"
+            name="Test Case">
+      </page>
+      <page
             category="com.kms.katalon.composer.testcase.preference"
             class="com.kms.katalon.composer.testcase.preferences.ManualPreferencePage"
             id="com.kms.katalon.composer.testcase.preference.manual"
@@ -38,15 +44,6 @@
             handler="com.kms.katalon.composer.testcase.handlers.DeleteTestCaseFolderHandler">
       </client>
    </extension>
-   <extension
-         point="com.kms.katalon.preferences.ProjectSettingPages">
-      <page
-            class="com.kms.katalon.composer.testcase.preferences.TestCaseSettingPage"
-            id="com.kms.katalon.composer.testcase.settings"
-            name="Test Case">
-      </page>
-   </extension>
-   
    <extension point="org.eclipse.ui.menus">
 	  <menuContribution locationURI="popup:#GroovyCompilationUnitEditorContext?before=undo">
  		<dynamic

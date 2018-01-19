@@ -137,7 +137,7 @@
      <page
            category="com.kms.katalon.composer.webui.setting.testdesign"
            class="com.kms.katalon.composer.testcase.preferences.TestCaseSettingPage"
-           id="com.kms.katalon.composer.webui.setting.testdesign.3"
+           id="com.kms.katalon.composer.testcase.settings"
            name="Test Case">
      </page>
   </extension>
