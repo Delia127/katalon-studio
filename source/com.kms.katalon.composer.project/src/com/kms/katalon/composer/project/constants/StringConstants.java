@@ -68,11 +68,7 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String TEMPLATE_SETTING_PAGE_ID = "com.kms.katalon.composer.execution.page.emailTemplate";
 
-    public static final String EXECUTION_SETTING_PAGE_ID = "com.kms.katalon.composer.execution.settings";
-
     public static final String CUSTOM_SETTING_PAGE_ID = "com.kms.katalon.composer.execution.settings.custom";
-
-    public static final String DEFAULT_SETTING_PAGE_ID = "com.kms.katalon.composer.execution.settings.default";
 
     public static final String WEB_UI_SETTING_PAGE_ID = "com.kms.katalon.composer.execution.settings.default.1";
 
@@ -92,11 +88,7 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String FIREFOX_HEADLESS_SETTING_PAGE_ID = "com.kms.katalon.composer.execution.settings.default.1.8";
 
-    public static final String MOBILE_SETTING_PAGE_ID = "com.kms.katalon.composer.execution.settings.default.2";
-
     public static final String ANDROID_SETTING_PAGE_ID = "com.kms.katalon.composer.execution.settings.default.2.1";
-
-    public static final String IOS_SETTING_PAGE_ID = "com.kms.katalon.composer.execution.settings.default.2.2";
 
     public static final String INTEGRATION_SETTING_PAGE_ID = "com.kms.katalon.composer.preferences.integration";
 
