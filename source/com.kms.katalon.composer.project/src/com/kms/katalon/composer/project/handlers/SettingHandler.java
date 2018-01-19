@@ -93,13 +93,12 @@ public class SettingHandler {
                 if (e1 instanceof PreferenceNode && e2 instanceof PreferenceNode) {
                     String pageId1 = ((PreferenceNode) e1).getId();
                     String pageId2 = ((PreferenceNode) e2).getId();
-                    if (StringConstants.PROJECT_INFORMATION_SETTINGS_PAGE_ID.equals(pageId1)) {
-                        return -1;
-                    }
+                    
                     if (StringConstants.PROJECT_INFORMATION_SETTINGS_PAGE_ID.equals(pageId2)) {
                         return 1;
                     }
-                    if (StringConstants.TEST_DESIGN_SETTINGS_PAGE_ID.equals(pageId1)) {
+                    if (StringConstants.PROJECT_INFORMATION_SETTINGS_PAGE_ID.equals(pageId1)
+                            || StringConstants.TEST_DESIGN_SETTINGS_PAGE_ID.equals(pageId1)) {
                         return -1;
                     }
 
