@@ -96,6 +96,13 @@ public class SettingHandler {
                     if (StringConstants.PROJECT_INFORMATION_SETTINGS_PAGE_ID.equals(pageId1)) {
                         return -1;
                     }
+                    if (StringConstants.PROJECT_INFORMATION_SETTINGS_PAGE_ID.equals(pageId2)) {
+                        return 1;
+                    }
+                    if (StringConstants.TEST_DESIGN_SETTINGS_PAGE_ID.equals(pageId1)) {
+                        return -1;
+                    }
+
                     return pageId1.compareToIgnoreCase(pageId2);
                 }
                 return super.compare(viewer, e1, e2);
