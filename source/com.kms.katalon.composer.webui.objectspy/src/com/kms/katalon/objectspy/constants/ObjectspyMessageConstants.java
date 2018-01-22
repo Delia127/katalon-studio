@@ -175,6 +175,8 @@ public class ObjectspyMessageConstants extends NLS {
 
     public static String DIA_MSG_VERIFYING;
 
+    public static String WARN_MSG_SELECTED_PROPERTIES_LOCATE_OBJECT;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ObjectspyMessageConstants.class);
