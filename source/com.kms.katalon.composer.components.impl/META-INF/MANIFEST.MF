@@ -50,3 +50,4 @@ Export-Package: com.kms.katalon.composer.components.impl.command,
  com.kms.katalon.composer.components.impl.tree,
  com.kms.katalon.composer.components.impl.util,
  com.kms.katalon.composer.components.impl.wizard
+Import-Package: org.eclipse.e4.ui.services
