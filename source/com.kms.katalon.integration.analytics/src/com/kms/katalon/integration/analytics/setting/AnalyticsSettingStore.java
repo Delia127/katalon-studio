@@ -1,6 +1,7 @@
 package com.kms.katalon.integration.analytics.setting;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -10,6 +11,7 @@ import com.kms.katalon.integration.analytics.constants.AnalyticsSettingStoreCons
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
+import com.kms.katalon.util.CryptoUtil;
 
 public class AnalyticsSettingStore extends BundleSettingStore {
 
@@ -42,12 +44,22 @@ public class AnalyticsSettingStore extends BundleSettingStore {
         setProperty(AnalyticsSettingStoreConstants.ANALYTICS_AUTHENTICATION_EMAIL, email);
     }
     
-    public String getPassword() throws IOException {
-        return getString(AnalyticsSettingStoreConstants.ANALYTICS_AUTHENTICATION_PASSWORD, StringUtils.EMPTY);
+    public String getPassword(boolean encrypted) throws IOException, GeneralSecurityException {
+        String storedPassword = getString(AnalyticsSettingStoreConstants.ANALYTICS_AUTHENTICATION_PASSWORD, StringUtils.EMPTY);
+        return encrypted ? CryptoUtil.decode(CryptoUtil.getDefault(storedPassword)) : storedPassword;
     }
     
-    public void setPassword(String password) throws IOException {
-        setProperty(AnalyticsSettingStoreConstants.ANALYTICS_AUTHENTICATION_PASSWORD, password);
+    public void setPassword(String rawPassword, boolean encrypted) throws IOException, GeneralSecurityException {
+        String storedPassword = encrypted ? CryptoUtil.encode(CryptoUtil.getDefault(rawPassword)) : rawPassword;
+        setProperty(AnalyticsSettingStoreConstants.ANALYTICS_AUTHENTICATION_PASSWORD, storedPassword);
+    }
+    
+    public boolean isPasswordEncryptionEnabled() throws IOException {
+        return getBoolean(AnalyticsSettingStoreConstants.ANALYTICS_ENCRYPTION_ENABLE, false);
+    }
+
+    public void enablePasswordEncryption(boolean enabled) throws IOException {
+        setProperty(AnalyticsSettingStoreConstants.ANALYTICS_ENCRYPTION_ENABLE, enabled);
     }
     
     public AnalyticsProject getProject() throws IOException {

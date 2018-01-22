@@ -2,6 +2,7 @@ package com.kms.katalon.integration.qtest.setting;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -13,25 +14,39 @@ import com.kms.katalon.core.setting.PropertySettingStoreUtil;
 import com.kms.katalon.core.setting.ReportFormatType;
 import com.kms.katalon.integration.qtest.credential.IQTestCredential;
 import com.kms.katalon.integration.qtest.credential.IQTestToken;
+import com.kms.katalon.util.CryptoUtil;
 
 public class QTestSettingStore {
     private static final String FILE_NAME = "com.kms.katalon.integration.qtest";
+
     public static final String TOKEN_PROPERTY = "token";
+
     public static final String USERNAME_PROPERTY = "username";
+
     public static final String PASSWORD_PROPERTY = "password";
+
     public static final String SERVER_URL_PROPERTY = "serverUrl";
+
+    public static final String ENABLE_PASSWORD_ENCRYPTION_PROPERTY = "enablePasswordEncryption";
+
     public static final String AUTO_SUBMIT_RESULT_PROPERTY = "autoSubmitResult";
+
     public static final String SUBMIT_RESULT_TO_LATEST_VERSION = "submitResultToLatestVersion";
+
     public static final String ENABLE_INTEGRATION_PROPERTY = "enableIntegration";
+
     public static final String SEND_ATTACHMENTS_PROPERTY = "sendAttachments";
+
     public static final String FIRST_TIME_USING = "firstTimeUsing";
+
     public static final String REPORT_FORMAT = "reportFormat";
+
     public static final String QTEST_VERSION_PROPERTY = "version";
 
     public static File getPropertyFile(String projectDir) throws IOException {
-        File configFile = new File(projectDir + File.separator
-                + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME + File.separator + FILE_NAME
-                + PropertySettingStoreUtil.PROPERTY_FILE_EXENSION);
+        File configFile = new File(
+                projectDir + File.separator + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME
+                        + File.separator + FILE_NAME + PropertySettingStoreUtil.PROPERTY_FILE_EXENSION);
         if (!configFile.exists()) {
             configFile.createNewFile();
         }
@@ -59,11 +74,22 @@ public class QTestSettingStore {
         }
     }
 
-    public static String getPassword(String projectDir) {
+    public static String getPassword(boolean encrypted, String projectDir) {
         try {
-            return PropertySettingStoreUtil.getPropertyValue(PASSWORD_PROPERTY, getPropertyFile(projectDir));
-        } catch (IOException e) {
+            String storedPassword = PropertySettingStoreUtil.getPropertyValue(PASSWORD_PROPERTY,
+                    getPropertyFile(projectDir));
+            return encrypted ? CryptoUtil.decode(CryptoUtil.getDefault(storedPassword)) : storedPassword;
+        } catch (IOException | GeneralSecurityException e) {
             return "";
+        }
+    }
+
+    public static boolean isPasswordEncryptionEnabled(String projectDir) {
+        try {
+            return Boolean.parseBoolean(PropertySettingStoreUtil.getPropertyValue(ENABLE_PASSWORD_ENCRYPTION_PROPERTY,
+                    getPropertyFile(projectDir)));
+        } catch (IOException e) {
+            return false;
         }
     }
 
@@ -93,13 +119,18 @@ public class QTestSettingStore {
         }
     }
 
-    public static void saveUserProfile(IQTestCredential credential, String projectDir) throws IOException {
+    public static void saveUserProfile(IQTestCredential credential, String projectDir)
+            throws IOException, GeneralSecurityException {
         saveToken(credential.getToken(), projectDir);
-        
+
         PropertySettingStoreUtil.addNewProperty(USERNAME_PROPERTY, credential.getUsername(),
                 getPropertyFile(projectDir));
-        PropertySettingStoreUtil.addNewProperty(PASSWORD_PROPERTY, credential.getPassword(),
-                getPropertyFile(projectDir));
+        String rawPassword = credential.getPassword();
+        String storedPassword = credential.isPasswordEncryptionEnabled()
+                ? CryptoUtil.encode(CryptoUtil.getDefault(rawPassword)) : rawPassword;
+        PropertySettingStoreUtil.addNewProperty(PASSWORD_PROPERTY, storedPassword, getPropertyFile(projectDir));
+        
+        savePasswordEncryption(credential.isPasswordEncryptionEnabled(), projectDir);
         PropertySettingStoreUtil.addNewProperty(QTEST_VERSION_PROPERTY, credential.getVersion().name(),
                 getPropertyFile(projectDir));
 
@@ -128,7 +159,7 @@ public class QTestSettingStore {
             return false;
         }
     }
-    
+
     public static boolean isIntegrationActive(String projectDir) {
         try {
             return Boolean.parseBoolean(PropertySettingStoreUtil.getPropertyValue(ENABLE_INTEGRATION_PROPERTY,
@@ -136,6 +167,11 @@ public class QTestSettingStore {
         } catch (IOException e) {
             return false;
         }
+    }
+
+    public static void savePasswordEncryption(boolean enabled, String projectDir) throws IOException {
+        PropertySettingStoreUtil.addNewProperty(ENABLE_PASSWORD_ENCRYPTION_PROPERTY, Boolean.toString(enabled),
+                getPropertyFile(projectDir));
     }
 
     public static void saveAutoSubmit(boolean autoSubmit, String projectDir) throws IOException {
@@ -147,7 +183,7 @@ public class QTestSettingStore {
         PropertySettingStoreUtil.addNewProperty(SUBMIT_RESULT_TO_LATEST_VERSION, Boolean.toString(submitToLatest),
                 getPropertyFile(projectDir));
     }
-    
+
     public static void saveEnableIntegration(boolean isIntegration, String projectDir) throws IOException {
         PropertySettingStoreUtil.addNewProperty(ENABLE_INTEGRATION_PROPERTY, Boolean.toString(isIntegration),
                 getPropertyFile(projectDir));
@@ -195,7 +231,7 @@ public class QTestSettingStore {
 
     /**
      * @param projectDir
-     *            folder location of the current project
+     * folder location of the current project
      * @return true if it is the first time users use this feature.
      */
     public static boolean isTheFirstTime(String projectDir) {
@@ -214,8 +250,7 @@ public class QTestSettingStore {
         try {
             PropertySettingStoreUtil.addNewProperty(FIRST_TIME_USING, Boolean.toString(false),
                     getPropertyFile(projectDir));
-        } catch (IOException | IllegalArgumentException e) {
-        }
+        } catch (IOException | IllegalArgumentException e) {}
     }
 
     public static List<ReportFormatType> getFormatReportTypes(String projectDir) {

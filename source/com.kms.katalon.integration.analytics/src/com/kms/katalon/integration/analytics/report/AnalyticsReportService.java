@@ -3,6 +3,7 @@ package com.kms.katalon.integration.analytics.report;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,14 +35,14 @@ public class AnalyticsReportService implements AnalyticsComponent {
             try {
                 String serverUrl = getSettingStore().getServerEndpoint();
                 String email = getSettingStore().getEmail();
-                String password = getSettingStore().getPassword();
+                String password = getSettingStore().getPassword(getSettingStore().isPasswordEncryptionEnabled());
                 AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
                 if (token != null) {
                     perform(token.getAccess_token(), folderPath);
                 } else {
                     LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_REQUEST_TOKEN_ERROR);
                 }
-            } catch (AnalyticsApiExeception | IOException e ) {
+            } catch (AnalyticsApiExeception | IOException | GeneralSecurityException e ) {
                 LogUtil.logError(e, IntegrationAnalyticsMessages.MSG_SEND_ERROR);
                 throw new AnalyticsApiExeception(e);
             }

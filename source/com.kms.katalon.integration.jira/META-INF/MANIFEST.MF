@@ -24,7 +24,8 @@ Require-Bundle: com.kms.katalon.core,
  org.apache.httpcomponents.httpmime,
  com.kms.katalon.controller,
  com.kms.katalon.execution,
- net.lingala.zip4j
+ net.lingala.zip4j,
+ com.kms.katalon.util
 Export-Package: com.atlassian.jira.rest.client.api,
  com.atlassian.jira.rest.client.api.domain,
  com.kms.katalon.integration.jira,

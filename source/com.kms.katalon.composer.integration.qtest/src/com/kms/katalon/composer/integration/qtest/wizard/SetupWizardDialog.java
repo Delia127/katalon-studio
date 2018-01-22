@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.integration.qtest.wizard;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -369,7 +370,7 @@ public class SetupWizardDialog extends SimpleWizardDialog {
                     projectDir);
             QTestSettingStore.saveFormatReportTypes(
                     (List<ReportFormatType>) sharedData.get(QTestSettingStore.REPORT_FORMAT), projectDir);
-        } catch (IOException e) {
+        } catch (IOException | GeneralSecurityException e) {
             LoggerSingleton.logError(e);
         }
     }
@@ -553,6 +554,11 @@ public class SetupWizardDialog extends SimpleWizardDialog {
             @Override
             public QTestVersion getVersion() {
                 return (QTestVersion) sharedData.get(QTestSettingStore.QTEST_VERSION_PROPERTY);
+            }
+
+            @Override
+            public boolean isPasswordEncryptionEnabled() {
+                return (boolean) sharedData.get(QTestSettingStore.ENABLE_PASSWORD_ENCRYPTION_PROPERTY);
             }
         };
     }

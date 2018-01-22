@@ -30,7 +30,7 @@ public class QTestSettingCredential implements IQTestCredential {
 
     @Override
     public String getPassword() {
-        return QTestSettingStore.getPassword(getProjectDir());
+        return QTestSettingStore.getPassword(isPasswordEncryptionEnabled(), getProjectDir());
     }
 
     @Override
@@ -60,5 +60,10 @@ public class QTestSettingCredential implements IQTestCredential {
     
     public void setVersion(QTestVersion version) {
         fVersion = version;
+    }
+
+    @Override
+    public boolean isPasswordEncryptionEnabled() {
+        return QTestSettingStore.isPasswordEncryptionEnabled(getProjectDir());
     }
 }
