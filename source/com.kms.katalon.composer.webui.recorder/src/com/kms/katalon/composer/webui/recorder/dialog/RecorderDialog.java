@@ -1077,7 +1077,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                             } else {
                                 isFirst = false;
                             }
-                            String finalText = isMasked ? StringUtils.repeat("*", dataObject.getValueToDisplay().length()): dataObject.getValueToDisplay();
+                            String finalText = isMasked ? StringUtils.repeat("*", dataObject.getValueToDisplay().length() - 2): dataObject.getValueToDisplay();
                             displayString.append(finalText);
                         }
                         displayString.append("]"); //$NON-NLS-1$
