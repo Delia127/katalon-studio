@@ -24,6 +24,7 @@ import com.kms.katalon.composer.testcase.ast.editors.MethodCallInputCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.NumberConstantCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.PropertyInputCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.RangeInputCellEditor;
+import com.kms.katalon.composer.testcase.ast.editors.SecuredTextDialogCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.StringConstantCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.TestCaseSelectionMethodCallBuilderDialogCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.TestDataSelectionMethodCallBuilderDialogCellEditor;
@@ -223,6 +224,10 @@ public class AstValueUtil {
             LoggerSingleton.logError(e);
         }
         return null;
+    }
+    
+    public static CellEditor getCellEditorForSecuredText(Composite parent) {
+        return new SecuredTextDialogCellEditor(parent);
     }
 
     public static CellEditor getCellEditorForClosureExpression(Composite parent,

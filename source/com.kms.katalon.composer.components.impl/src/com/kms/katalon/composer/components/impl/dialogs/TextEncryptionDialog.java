@@ -1,7 +1,13 @@
 package com.kms.katalon.composer.components.impl.dialogs;
 
+import java.io.UnsupportedEncodingException;
+import java.security.GeneralSecurityException;
+
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -10,6 +16,9 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+
+import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.util.CryptoUtil;
 
 public class TextEncryptionDialog extends Dialog {
     
@@ -23,7 +32,6 @@ public class TextEncryptionDialog extends Dialog {
 
     public TextEncryptionDialog(Shell parentShell) {
         super(parentShell);
-        
     }
     
     @Override
@@ -47,18 +55,18 @@ public class TextEncryptionDialog extends Dialog {
         lblEncryptedText.setText("Encrypted Text");
         txtEncryptedText = new Text(inputComposite, SWT.BORDER);
         txtEncryptedText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        txtEncryptedText.setEditable(false);
         
         Composite buttonComposite = new Composite(body, SWT.NONE);
         buttonComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false));
         buttonComposite.setLayout(new GridLayout(2, false));
         
-        Button btnEncrypt = new Button(buttonComposite, SWT.FLAT);
+        btnEncrypt = new Button(buttonComposite, SWT.FLAT);
         btnEncrypt.setText("Encrypt");
-        Button btnEncryptAndClose = new Button(buttonComposite, SWT.FLAT);
+        btnEncryptAndClose = new Button(buttonComposite, SWT.FLAT);
         btnEncryptAndClose.setText("Encrypt and Close");
         
         addControlListeners();
-        
         return body;
     }
     
@@ -79,6 +87,43 @@ public class TextEncryptionDialog extends Dialog {
     }
 
     private void addControlListeners() {
+        btnEncrypt.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                handleGenerateEncryptedText();
+            }
+        });
         
+        btnEncryptAndClose.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                handleGenerateEncryptedText();
+                closeDialog();
+            }
+        });
+    }
+    
+    private void handleGenerateEncryptedText() {
+        txtEncryptedText.setText(StringUtils.EMPTY);
+        
+        String rawText = txtRawText.getText();
+        if (!StringUtils.isEmpty(rawText)) {
+            try {
+                
+                CryptoUtil.CrytoInfo cryptoInfo = CryptoUtil.getDefault(rawText);
+                String encryptedText = CryptoUtil.encode(cryptoInfo);
+                txtEncryptedText.setText(encryptedText);
+            } catch (UnsupportedEncodingException | GeneralSecurityException e) {
+                LoggerSingleton.logError(e);
+            }
+        }
+    }
+    
+    private void closeDialog() {
+        this.close();
+    }
+    
+    public String getEncryptedText() {
+        return txtEncryptedText.getText();
     }
 }
