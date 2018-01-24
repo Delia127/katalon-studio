@@ -10,7 +10,6 @@ import java.util.Map.Entry;
 
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
@@ -54,8 +53,10 @@ public class WebDriverPropertyUtil {
         }
         switch (webUIDriverType) {
         case CHROME_DRIVER:
+        case HEADLESS_DRIVER:
             return getDesireCapabilitiesForChrome(propertyMap);
         case FIREFOX_DRIVER:
+        case FIREFOX_HEADLESS_DRIVER:
             return getDesireCapabilitiesForFirefox(propertyMap);
         default:
             return toDesireCapabilities(propertyMap);
