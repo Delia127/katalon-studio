@@ -34,6 +34,7 @@ import com.kms.katalon.composer.testcase.ast.editors.StringConstantCellEditor;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.PropertyExpressionWrapper;
 import com.kms.katalon.composer.testcase.model.InputParameter;
@@ -59,6 +60,8 @@ public class ArgumentInputBuilderDialog extends AbstractAstBuilderWithTableDialo
     private ASTNodeWrapper parent;
 
     protected StringConstantCellEditor valueCellEditor;
+    
+    private SecuredTextDialogCellEditor securedTextDialogCellEditor;
 
     public ArgumentInputBuilderDialog(Shell parentShell, InputParameterBuilder parameterBuilder, ASTNodeWrapper parent) {
         super(parentShell);
@@ -159,6 +162,19 @@ public class ArgumentInputBuilderDialog extends AbstractAstBuilderWithTableDialo
                     return new EnumPropertyComboBoxCellEditor((Composite) getViewer().getControl(),
                             FailureHandling.class);
                 }
+                
+                // Get CellEditor for secured text
+                InputValueType valueType = AstValueUtil.getTypeValue(((InputParameter) element).getValue());
+                if (valueType == InputValueType.String) {
+                    ASTNodeWrapper methodExpressionWrapper = parent.getParent();
+                    if (methodExpressionWrapper instanceof MethodCallExpressionWrapper &&
+                            "setSecuredText".equals(((MethodCallExpressionWrapper) methodExpressionWrapper).getMethodAsString())) {
+                        securedTextDialogCellEditor = (SecuredTextDialogCellEditor)AstValueUtil.getCellEditorForSecuredText((Composite) tableViewer.getControl(), 
+                                (ConstantExpressionWrapper)((InputParameter) element).getValue());
+                        return securedTextDialogCellEditor;
+                    }
+                }
+                
                 CellEditor cellEditor = super.getCellEditor(((InputParameter) element).getValue());
                 valueCellEditor = null;
                 if (cellEditor instanceof StringConstantCellEditor) {
@@ -172,8 +188,13 @@ public class ArgumentInputBuilderDialog extends AbstractAstBuilderWithTableDialo
 
     @Override
     protected void processEditingValueWhenOKPressed() {
-        if (tableViewer.isCellEditorActive() && valueCellEditor != null) {
-            valueCellEditor.applyEditingValue();
+        if (tableViewer.isCellEditorActive()) {
+            if (valueCellEditor != null) {
+                valueCellEditor.applyEditingValue();
+            }
+            if (securedTextDialogCellEditor != null) {
+                securedTextDialogCellEditor.applyEditingValue();
+            }
         }
     }
 

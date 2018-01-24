@@ -13,8 +13,6 @@ import com.kms.katalon.composer.testcase.model.InputParameterBuilder;
 
 public class InputCellEditor extends AstDialogCellEditor {
     private ASTNodeWrapper parentNode;
-    
-    private MethodCallExpressionWrapper methodCall;
 
     public InputCellEditor(Composite parent, String defaultContent, ASTNodeWrapper parentNode) {
         super(parent, defaultContent, null);
@@ -29,20 +27,6 @@ public class InputCellEditor extends AstDialogCellEditor {
             }
         });
     }
-    
-//    public InputCellEditor(Composite parent, String defaultContent, MethodCallExpressionWrapper methodCall) {
-//        super(parent, defaultContent, null);
-//        this.m
-//        this.setValidator(new ICellEditorValidator() {
-//            @Override
-//            public String isValid(Object value) {
-//                if (!(value instanceof InputParameterBuilder)) {
-//                    return getValidatorMessage(InputParameterBuilder.class.getName()) ;
-//                }
-//                return null;
-//            }
-//        });
-//    }
 
     @Override
     protected AbstractAstBuilderDialog getDialog(Shell shell) {

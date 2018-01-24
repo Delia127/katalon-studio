@@ -226,8 +226,8 @@ public class AstValueUtil {
         return null;
     }
     
-    public static CellEditor getCellEditorForSecuredText(Composite parent) {
-        return new SecuredTextDialogCellEditor(parent);
+    public static CellEditor getCellEditorForSecuredText(Composite parent, ConstantExpressionWrapper constantExpressionWrapper) {
+        return new SecuredTextDialogCellEditor(parent, constantExpressionWrapper);
     }
 
     public static CellEditor getCellEditorForClosureExpression(Composite parent,

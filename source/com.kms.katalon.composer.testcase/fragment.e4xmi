@@ -30,4 +30,13 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_6o6kcP-tEeWhao183koH_Q" featurename="children" parentElementId="com.kms.katalon.composer.explorer.popupmenu" positionInList="last">
     <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_xFRJUP_AEeW5LcOFd178Ew" elementId="com.kms.katalon.composer.testcase.dynamicmenucontribution.properties" label="Properties" contributionURI="bundleclass://com.kms.katalon.composer.testcase/com.kms.katalon.composer.testcase.contribution.TestCasePropertiesDynamicMenuContribution"/>
   </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_pmd3MAD7EeiMhoUeXENg3Q" featurename="children" parentElementId="com.kms.katalon.composer.menu.help">
+    <elements xsi:type="menu:HandledMenuItem" xmi:id="_ahJL8AD9EeiMhoUeXENg3Q" elementId="com.kms.katalon.composer.testcase.handledmenuitem.encrypt" label="Encrypt Text" command="_tWKmoAD8EeiMhoUeXENg3Q"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_du3hoAD8EeiMhoUeXENg3Q" featurename="commands" parentElementId="com.kms.katalon.composer.menu.help">
+    <elements xsi:type="commands:Command" xmi:id="_tWKmoAD8EeiMhoUeXENg3Q" elementId="com.kms.katalon.composer.testcase.command.encrypt"/>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_B7QbUAD9EeiMhoUeXENg3Q" featurename="handlers" parentElementId="com.kms.katalon.composer.menu.help">
+    <elements xsi:type="commands:Handler" xmi:id="_G1Db0AD9EeiMhoUeXENg3Q" elementId="com.kms.katalon.composer.testcase.handler.encrypt" contributionURI="bundleclass://com.kms.katalon.composer.testcase/com.kms.katalon.composer.testcase.handlers.TextEncryptionHandler" command="_tWKmoAD8EeiMhoUeXENg3Q"/>
+  </fragments>
 </fragment:ModelFragments>

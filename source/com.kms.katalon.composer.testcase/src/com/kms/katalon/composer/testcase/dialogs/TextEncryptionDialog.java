@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.components.impl.dialogs;
+package com.kms.katalon.composer.testcase.dialogs;
 
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
@@ -6,6 +6,8 @@ import java.security.GeneralSecurityException;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -25,6 +27,8 @@ public class TextEncryptionDialog extends Dialog {
     private Text txtRawText;
     
     private Text txtEncryptedText;
+    
+    private String encryptedText;
     
     private Button btnEncrypt;
     
@@ -51,6 +55,7 @@ public class TextEncryptionDialog extends Dialog {
         lblRawText.setText("Raw Text");
         txtRawText = new Text(inputComposite, SWT.BORDER);
         txtRawText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        
         Label lblEncryptedText = new Label(inputComposite, SWT.NONE);
         lblEncryptedText.setText("Encrypted Text");
         txtEncryptedText = new Text(inputComposite, SWT.BORDER);
@@ -63,11 +68,47 @@ public class TextEncryptionDialog extends Dialog {
         
         btnEncrypt = new Button(buttonComposite, SWT.FLAT);
         btnEncrypt.setText("Encrypt");
+        btnEncrypt.setEnabled(false);
+        
         btnEncryptAndClose = new Button(buttonComposite, SWT.FLAT);
         btnEncryptAndClose.setText("Encrypt and Close");
+        btnEncryptAndClose.setEnabled(false);
         
         addControlListeners();
         return body;
+    }
+    
+    private void addControlListeners() {
+        txtRawText.addModifyListener(new ModifyListener() {
+
+            @Override
+            public void modifyText(ModifyEvent e) {
+                Text text = (Text) e.widget;
+                if (StringUtils.isBlank(text.getText())) {
+                    btnEncrypt.setEnabled(false);
+                    btnEncryptAndClose.setEnabled(false);
+                } else {
+                    btnEncrypt.setEnabled(true);
+                    btnEncryptAndClose.setEnabled(true);
+                }
+            }
+        });
+        
+        btnEncrypt.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                handleGenerateEncryptedText();
+            }
+        });
+        
+        btnEncryptAndClose.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                handleGenerateEncryptedText();
+                encryptedText = txtEncryptedText.getText();
+                closeDialog();
+            }
+        });
     }
     
     @Override
@@ -85,23 +126,6 @@ public class TextEncryptionDialog extends Dialog {
         super.configureShell(shell);
         shell.setText("Encrypt Text");
     }
-
-    private void addControlListeners() {
-        btnEncrypt.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                handleGenerateEncryptedText();
-            }
-        });
-        
-        btnEncryptAndClose.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                handleGenerateEncryptedText();
-                closeDialog();
-            }
-        });
-    }
     
     private void handleGenerateEncryptedText() {
         txtEncryptedText.setText(StringUtils.EMPTY);
@@ -109,7 +133,6 @@ public class TextEncryptionDialog extends Dialog {
         String rawText = txtRawText.getText();
         if (!StringUtils.isEmpty(rawText)) {
             try {
-                
                 CryptoUtil.CrytoInfo cryptoInfo = CryptoUtil.getDefault(rawText);
                 String encryptedText = CryptoUtil.encode(cryptoInfo);
                 txtEncryptedText.setText(encryptedText);
@@ -124,6 +147,6 @@ public class TextEncryptionDialog extends Dialog {
     }
     
     public String getEncryptedText() {
-        return txtEncryptedText.getText();
+        return encryptedText;
     }
 }
