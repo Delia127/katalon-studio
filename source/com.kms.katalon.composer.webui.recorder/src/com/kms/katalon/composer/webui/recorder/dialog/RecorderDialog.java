@@ -183,8 +183,8 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     private static final String TABLE_COLUMN_NO_TITLE = StringConstants.DIA_COL_NO;
 
     private static final String RECORD_TOOL_ITEM_LABEL = StringConstants.DIA_TOOLITEM_RECORD;
-    
-    private static final String INPUT_PASSWORD_FIELD_PATTERN = "input_password";
+
+	private static final String INPUT_PASSWORD_FIELD_PATTERN = "input_password";
 
     private static Point MIN_DIALOG_SIZE = new Point(500, 600);
 
