@@ -49,17 +49,20 @@ public class SetSecuredTextKeyword extends WebUIAbstractKeyword {
                 
                 isSwitchIntoFrame = WebUiCommonHelper.switchToParentFrame(to)
                 WebElement webElement = WebUIAbstractKeyword.findWebElement(to)
+                
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_CLEARING_OBJ_TXT, to.getObjectId()))
                 webElement.clear()
-                MessageFormat.format(StringConstants.KW_LOG_INFO_SETTING_OBJ_TXT_TO_SECURED_VAL, [to.getObjectId()] as Object[])
+                
+                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SETTING_OBJ_TXT_TO_SECURED_VAL, to.getObjectId()))
                 webElement.sendKeys(rawText)
-                logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SECURED_TXT_IS_SET_ON_OBJ, [to.getObjectId()] as Object[]))
+                
+                logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SECURED_TXT_IS_SET_ON_OBJ, to.getObjectId()))
             } finally {
                 if (isSwitchIntoFrame) {
                     WebUiCommonHelper.switchToDefaultContent()
                 }
             }
-        }, flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_SET_SECURED_TEXT_FOR_OBJECT, [to.getObjectId()] as Object[])
+        }, flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_SET_SECURED_TEXT_FOR_OBJECT, to.getObjectId())
         : StringConstants.KW_MSG_CANNOT_SET_TXT)
     }
 }

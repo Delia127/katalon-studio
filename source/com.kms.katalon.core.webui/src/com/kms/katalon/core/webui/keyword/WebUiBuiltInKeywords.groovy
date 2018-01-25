@@ -951,7 +951,8 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
     
     /**
-     * Set the value of an input field, as though you type it in. It also clears the previous value of the input field
+     * Set encrypted text into an input field. It also clears the previous value of the input field.
+     * To encrypt raw text, go to Help/Encrypt Text
      * @param to
      *       represent a web element
      * @param encryptedText
@@ -966,7 +967,8 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     }
     
     /**
-     * Set the value of an input field, as though you type it in. It also clears the previous value of the input field
+     * Set encrypted text into an input field. It also clears the previous value of the input field.
+     * To encrypt raw text, go to Help/Encrypt Text
      * @param to
      *       represent a web element
      * @param encryptedText

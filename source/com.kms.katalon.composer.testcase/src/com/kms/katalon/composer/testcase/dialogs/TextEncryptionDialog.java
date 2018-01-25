@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.util.CryptoUtil;
 
 public class TextEncryptionDialog extends Dialog {
@@ -52,12 +53,12 @@ public class TextEncryptionDialog extends Dialog {
         
         
         Label lblRawText = new Label(inputComposite, SWT.NONE);
-        lblRawText.setText("Raw Text");
+        lblRawText.setText(StringConstants.LBL_RAW_TEXT);
         txtRawText = new Text(inputComposite, SWT.BORDER);
         txtRawText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         
         Label lblEncryptedText = new Label(inputComposite, SWT.NONE);
-        lblEncryptedText.setText("Encrypted Text");
+        lblEncryptedText.setText(StringConstants.LBL_ENCRYPTED_TEXT);
         txtEncryptedText = new Text(inputComposite, SWT.BORDER);
         txtEncryptedText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         txtEncryptedText.setEditable(false);
@@ -67,11 +68,11 @@ public class TextEncryptionDialog extends Dialog {
         buttonComposite.setLayout(new GridLayout(2, false));
         
         btnEncrypt = new Button(buttonComposite, SWT.FLAT);
-        btnEncrypt.setText("Encrypt");
+        btnEncrypt.setText(StringConstants.BTN_ENCRYPT);
         btnEncrypt.setEnabled(false);
         
         btnEncryptAndClose = new Button(buttonComposite, SWT.FLAT);
-        btnEncryptAndClose.setText("Encrypt and Close");
+        btnEncryptAndClose.setText(StringConstants.BTN_ENCRYPT_AND_CLOSE);
         btnEncryptAndClose.setEnabled(false);
         
         addControlListeners();
@@ -124,7 +125,7 @@ public class TextEncryptionDialog extends Dialog {
     @Override
     protected void configureShell(Shell shell) {
         super.configureShell(shell);
-        shell.setText("Encrypt Text");
+        shell.setText(StringConstants.DIA_TITLE_TEXT_ENCRYPTION);
     }
     
     private void handleGenerateEncryptedText() {

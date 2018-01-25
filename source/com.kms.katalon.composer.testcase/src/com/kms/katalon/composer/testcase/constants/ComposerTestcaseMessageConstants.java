@@ -354,6 +354,17 @@ public class ComposerTestcaseMessageConstants extends NLS {
     
     public static String PA_COL_MASKED_TOOLTIP;
 
+    //Text Encryption Dialog
+    public static String DIA_TITLE_TEXT_ENCRYPTION;
+    
+    public static String LBL_RAW_TEXT;
+    
+    public static String LBL_ENCRYPTED_TEXT;
+    
+    public static String BTN_ENCRYPT;
+    
+    public static String BTN_ENCRYPT_AND_CLOSE;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerTestcaseMessageConstants.class);
