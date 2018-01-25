@@ -169,8 +169,8 @@ public class ArgumentInputBuilderDialog extends AbstractAstBuilderWithTableDialo
                     ASTNodeWrapper methodExpressionWrapper = parent.getParent();
                     if (methodExpressionWrapper instanceof MethodCallExpressionWrapper &&
                             "setSecuredText".equals(((MethodCallExpressionWrapper) methodExpressionWrapper).getMethodAsString())) {
-                        securedTextDialogCellEditor = (SecuredTextDialogCellEditor)AstValueUtil.getCellEditorForSecuredText((Composite) tableViewer.getControl(), 
-                                (ConstantExpressionWrapper)((InputParameter) element).getValue());
+                        securedTextDialogCellEditor = (SecuredTextDialogCellEditor)AstValueUtil.getCellEditorForSecuredText(
+                                (Composite) tableViewer.getControl(), (ConstantExpressionWrapper)((InputParameter) element).getValue());
                         return securedTextDialogCellEditor;
                     }
                 }
