@@ -8,7 +8,6 @@ import com.kms.katalon.composer.testcase.ast.dialogs.AbstractAstBuilderDialog;
 import com.kms.katalon.composer.testcase.ast.dialogs.ArgumentInputBuilderDialog;
 import com.kms.katalon.composer.testcase.ast.dialogs.IAstDialogBuilder;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
-import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.model.InputParameterBuilder;
 
 public class InputCellEditor extends AstDialogCellEditor {

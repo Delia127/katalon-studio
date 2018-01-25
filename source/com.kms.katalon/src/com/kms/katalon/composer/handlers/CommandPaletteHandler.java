@@ -15,7 +15,6 @@ public class CommandPaletteHandler extends AbstractHandler {
     @Override
     public void execute() {
         new CommandPaletteDialog(Display.getCurrent().getActiveShell()).open();
-//        new TextEncryptionDialog(Display.getCurrent().getActiveShell()).open();
     }
 
 }
