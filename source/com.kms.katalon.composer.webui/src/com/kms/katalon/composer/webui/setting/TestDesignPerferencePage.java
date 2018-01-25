@@ -17,8 +17,4 @@ public class TestDesignPerferencePage extends PreferencePageWithHelp {
         return fieldEditorParent;
     }
 
-    @Override
-    protected boolean hasDocumentation() {
-        return true;
-    }
 }
