@@ -94,7 +94,9 @@ public class DocumentationMessageConstants extends NLS {
     public static String TEST_SUITE_MAIN;
     
     public static String SETTINGS_KATALON_ANALYTICS;
-    
+
+	public static String SETTINGS_WEBLOCATORS;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, DocumentationMessageConstants.class);
