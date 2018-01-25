@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
-import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
@@ -39,15 +38,17 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
+import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.webui.constants.ComposerWebuiMessageConstants;
 import com.kms.katalon.composer.webui.constants.ImageConstants;
 import com.kms.katalon.composer.webui.constants.StringConstants;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
 import com.kms.katalon.util.collections.Pair;
 
-public class WebLocatorsPerferencePage extends PreferencePage {
+public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
 
     private static final String MSG_PROPERTY_NAME_IS_EXISTED = ComposerWebuiMessageConstants.MSG_PROPERTY_NAME_IS_EXISTED;
 
@@ -341,4 +342,14 @@ public class WebLocatorsPerferencePage extends PreferencePage {
         }
         return true;
     }
+
+	@Override
+	protected boolean hasDocumentation() {
+		return true;
+	}
+
+	@Override
+	protected String getDocumentationUrl() {
+		return DocumentationMessageConstants.SETTINGS_WEBLOCATORS;
+	}
 }
