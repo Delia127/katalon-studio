@@ -32,8 +32,11 @@ import com.kms.katalon.core.webui.driver.DriverFactory
 
 import com.kms.katalon.core.testobject.RequestObject
 import com.kms.katalon.core.testobject.ResponseObject
+import com.kms.katalon.core.testobject.ConditionType
+import com.kms.katalon.core.testobject.TestObjectProperty
 
 import com.kms.katalon.core.mobile.helper.MobileElementCommonHelper
 import com.kms.katalon.core.util.KeywordUtil
 
 import com.kms.katalon.core.webui.exception.WebElementNotFoundException
+

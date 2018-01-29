@@ -15,7 +15,7 @@ def isElementPresent_Mobile(TestObject to, int timeout){
         }
         return true
     } catch (Exception e) {
-        KeywordUtil.markFailed("Object " + to.getObjectId() + " is not present aa")
+        KeywordUtil.markFailed("Object " + to.getObjectId() + " is not present")
     }
     return false;
 }
