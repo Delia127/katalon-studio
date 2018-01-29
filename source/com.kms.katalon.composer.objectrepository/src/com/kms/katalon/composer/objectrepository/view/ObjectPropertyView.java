@@ -115,6 +115,8 @@ public class ObjectPropertyView implements EventHandler {
 
     private static final String LBL_SELECTION_METHOD = ObjectspyMessageConstants.DIA_LBL_OBJECT_SELECTION_METHOD;
 
+    private static final String LBL_WARN_MSG_SELECTED_PROPERTIES_LOCATE_OBJECT = ObjectspyMessageConstants.WARN_MSG_SELECTED_PROPERTIES_LOCATE_OBJECT;
+
     private static final String LBL_SELECTOR_EDITOR = ObjectspyMessageConstants.LBL_DLG_SELECTOR_EDITOR;
 
     private static final String HK_ADD = "M1+N";
@@ -277,7 +279,7 @@ public class ObjectPropertyView implements EventHandler {
 
     private void createTableDetails(Composite parent) {
         Composite compositeTableDetails = new Composite(parent, SWT.NONE);
-        compositeTableDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        compositeTableDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
         GridLayout glCompositeTableDetails = new GridLayout(1, false);
         glCompositeTableDetails.marginWidth = 0;
         glCompositeTableDetails.marginHeight = 0;
@@ -412,9 +414,11 @@ public class ObjectPropertyView implements EventHandler {
         GridLayout glCompositeTable = new GridLayout();
         glCompositeTable.marginWidth = 0;
         glCompositeTable.marginHeight = 0;
+        glCompositeTable.numColumns = 2;
         compositeTable.setLayout(glCompositeTable);
 
         createTableToolbar(compositeTable);
+        createWarningMsgLabel(compositeTable);
 
         createTableDetails(compositeTable);
 
@@ -439,6 +443,20 @@ public class ObjectPropertyView implements EventHandler {
         GridData gdSelectorEditor = new GridData(SWT.FILL, SWT.FILL, true, true);
         gdSelectorEditor.minimumHeight = 80;
         txtSelectorEditor.setLayoutData(gdSelectorEditor);
+
+        selectorEditorPartVisible(false, txtSelectorEditor);
+    }
+    
+    private void selectorEditorPartVisible(boolean visible, Composite child) {
+        GridData gd = (GridData) child.getParent().getLayoutData();
+        gd.exclude = !visible;
+        child.getParent().setVisible(visible);
+        child.getParent().pack();
+    }
+
+    private void createWarningMsgLabel(Composite parent) {
+        Label warningMsgLabel = new Label(parent, SWT.PUSH);
+        warningMsgLabel.setText(LBL_WARN_MSG_SELECTED_PROPERTIES_LOCATE_OBJECT);
     }
 
     private void createSettingsComposite(Composite parent) {
@@ -721,12 +739,14 @@ public class ObjectPropertyView implements EventHandler {
                 txtSelectorEditor.setText(WebUiCommonHelper.getSelectorValue(testObject));
                 txtSelectorEditor.setEditable(false);
                 txtSelectorEditor.setBackground(ColorUtil.getDisabledItemBackgroundColor());
+                selectorEditorPartVisible(false, txtSelectorEditor);
                 return;
             default:
-                txtSelectorEditor.setText(
-                        cloneTestObject.getSelectorCollection().getOrDefault(selectorMethod, StringConstants.EMPTY));
+                String selectorContent = StringUtils.defaultString(cloneTestObject.getSelectorCollection().getOrDefault(selectorMethod, StringConstants.EMPTY)); 
+                txtSelectorEditor.setText(selectorContent);
                 txtSelectorEditor.setEditable(true);
                 txtSelectorEditor.setBackground(null);
+                selectorEditorPartVisible(true, txtSelectorEditor);
         }
     }
 

@@ -2,6 +2,7 @@ package com.kms.katalon.objectspy.util;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ import com.google.gson.JsonParser;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ObjectRepositoryController;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.testobject.ConditionType;
 import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.core.testobject.TestObject;
@@ -31,10 +33,12 @@ import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebElementSelectorMethod;
 import com.kms.katalon.entity.util.Util;
+import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
 import com.kms.katalon.objectspy.constants.StringConstants;
 import com.kms.katalon.objectspy.element.WebElement;
 import com.kms.katalon.objectspy.element.WebFrame;
 import com.kms.katalon.objectspy.element.WebPage;
+import com.kms.katalon.util.collections.Pair;
 
 public class WebElementUtils {
     private static final String PAGE_ELEMENT_NAME_PREFIX = "Page_";
@@ -140,6 +144,13 @@ public class WebElementUtils {
             properties.add(new WebElementPropertyEntity(XPATH_KEY, xpathString, !hasPriorityProperty));
         }
 
+        // Change default selected properties by user settings
+        Map<String, Boolean> customSettings = getCapturedTestObjectLocatorSettings().stream()
+                .collect(Collectors.toMap(Pair::getLeft, Pair::getRight));
+        properties.stream().filter(i -> customSettings.get(i.getName()) != null).forEach(i -> {
+            i.setIsSelected(customSettings.get(i.getName()));
+        });
+
         WebFrame parentElement = getParentElement(elementJsonObject);
 
         String newName = generateWebElementName(elementType, properties);
@@ -150,6 +161,17 @@ public class WebElementUtils {
         el.setParent(parentElement);
         el.setProperties(properties);
         return el;
+    }
+
+    private static List<Pair<String, Boolean>> getCapturedTestObjectLocatorSettings() {
+        WebUiExecutionSettingStore store = new WebUiExecutionSettingStore(
+                ProjectController.getInstance().getCurrentProject());
+        try {
+            return store.getCapturedTestObjectLocators();
+        } catch (IOException e) {
+            LoggerSingleton.logError(e);
+            return Collections.emptyList();
+        }
     }
 
     public static String toValidFileName(String fileName) {

@@ -55,6 +55,19 @@ public class WebUiSettingsPerferencePage extends PreferencePage {
         layout.marginWidth = 0;
         container.setLayout(layout);
 
+        createTimeoutSettings(container);
+
+        try {
+            initialize();
+        } catch (IOException e) {
+            LoggerSingleton.logError(e);
+        }
+        registerListeners();
+
+        return container;
+    }
+
+    private void createTimeoutSettings(Composite container) {
         Label lblActionDelay = new Label(container, SWT.NONE);
         lblActionDelay.setText(ComposerWebuiMessageConstants.LBL_ACTION_DELAY);
         GridData gdLblActionDelay = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
@@ -104,15 +117,6 @@ public class WebUiSettingsPerferencePage extends PreferencePage {
         chckIgnorePageLoadTimeoutException = new Button(compPageLoad, SWT.CHECK);
         chckIgnorePageLoadTimeoutException.setText(StringConstants.PREF_LBL_IGNORE_DEFAULT_PAGE_LOAD_TIMEOUT_EXCEPTION);
         chckIgnorePageLoadTimeoutException.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-
-        try {
-            initialize();
-        } catch (IOException e) {
-            LoggerSingleton.logError(e);
-        }
-        registerListeners();
-
-        return container;
     }
 
     private void addNumberVerification(Text txtInput, final int min, final int max) {
@@ -213,6 +217,11 @@ public class WebUiSettingsPerferencePage extends PreferencePage {
         txtActionDelay.setText(String.valueOf(WebUiExecutionSettingStore.EXECUTION_DEFAULT_ACTION_DELAY));
         txtDefaultIEHangTimeout
                 .setText(String.valueOf(WebUiExecutionSettingStore.EXECUTION_DEFAULT_WAIT_FOR_IE_HANGING));
+        try {
+            store.setDefaultCapturedTestObjectLocators();
+        } catch (IOException e) {
+            LoggerSingleton.logError(e);
+        }
     }
 
     @Override

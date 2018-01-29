@@ -55,6 +55,12 @@ public class ComposerWebuiMessageConstants extends NLS {
 
     public static String DIA_CONFIRM_INSTALL_WEBDRIVER_TITLE;
 
+    public static String MSG_PROPERTY_NAME_IS_EXISTED;
+
+    public static String GRP_LBL_DEFAULT_SELECTED_PROPERTIES_FOR_CAPTURED_TEST_OBJECT;
+
+    public static String COL_LBL_DETECT_OBJECT_BY;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerWebuiMessageConstants.class);
