@@ -184,6 +184,8 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     private static final String RECORD_TOOL_ITEM_LABEL = StringConstants.DIA_TOOLITEM_RECORD;
 
+	private static final String INPUT_PASSWORD_FIELD_PATTERN = "password";
+
     private static Point MIN_DIALOG_SIZE = new Point(500, 600);
 
     private HTMLElementRecorderServer server;
@@ -1068,13 +1070,15 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                             && actionMapping.getData() != null) {
                         StringBuilder displayString = new StringBuilder("["); //$NON-NLS-1$
                         boolean isFirst = true;
+                        boolean isMasked = actionMapping.getTargetElement() != null && INPUT_PASSWORD_FIELD_PATTERN.equals(actionMapping.getTargetElement().getTypeProperty());  
                         for (HTMLActionParamValueType dataObject : actionMapping.getData()) {
                             if (!isFirst) {
                                 displayString.append(", "); //$NON-NLS-1$
                             } else {
                                 isFirst = false;
                             }
-                            displayString.append(dataObject.getValueToDisplay());
+                            String finalText = isMasked ? StringUtils.repeat("*", dataObject.getValueToDisplay().length() - 2) : dataObject.getValueToDisplay();
+                            displayString.append(finalText);
                         }
                         displayString.append("]"); //$NON-NLS-1$
                         return displayString.toString();
