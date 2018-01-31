@@ -303,6 +303,12 @@ public class ComposerExecutionMessageConstants extends NLS {
     
     // ProxyConfigurationPreferencesPage
     public static String PREF_MSG_UNABLE_TO_SAVE_PROXY_CONFIG;
+    
+    //MailSettingPage
+    public static String PREF_CHECK_ENABLE_AUTHENTICATION_ENCRYPTION;
+    
+    //ExecutionToolControl
+    public static String TOOLTIP_CONTROL_EXECUTION_PROFILE;
 
     static {
         // initialize resource bundle

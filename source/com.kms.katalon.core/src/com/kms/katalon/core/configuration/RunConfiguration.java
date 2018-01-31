@@ -79,6 +79,8 @@ public class RunConfiguration {
     public static final String TERMINATE_DRIVER_AFTER_TEST_CASE = "terminateDriverAfterTestCase";
     
     public static final String TERMINATE_DRIVER_AFTER_TEST_SUITE = "terminateDriverAfterTestSuite";
+    
+    public static final String EXECUTION_PROFILE_PROPERTY = "executionProfile";
 
     private static String settingFilePath;
 
@@ -460,5 +462,17 @@ public class RunConfiguration {
             return false;
         }
         return (boolean) generalProperties.getOrDefault(TERMINATE_DRIVER_AFTER_TEST_SUITE, false);
+    }
+    
+    /**
+     * Returns name of selected execution profile. Default value is 'default' profile.
+     * @since 5.4
+     */
+    public static String getExecutionProfile() {
+        Map<String, Object> generalProperties = getExecutionGeneralProperties();
+        if (generalProperties == null) {
+            return "default";
+        }
+        return (String) generalProperties.getOrDefault(EXECUTION_PROFILE_PROPERTY, "default");
     }
 }

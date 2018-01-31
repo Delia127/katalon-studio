@@ -2,6 +2,7 @@ package com.kms.katalon.dal;
 
 import java.util.List;
 
+import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -39,6 +40,8 @@ public interface IFolderDataProvider {
     public FolderEntity getCheckpointRoot(ProjectEntity project) throws Exception;
 
     public FolderEntity getTestListenerRoot(ProjectEntity project) throws Exception;
+    
+    public FolderEntity getProfileRoot(ProjectEntity project) throws DALException;
 
     public void refreshFolder(FolderEntity folder) throws Exception;
 

@@ -20,7 +20,7 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.swt.widgets.ToolItem;
 
 import com.kms.katalon.composer.components.impl.handler.AbstractHandler;
-import com.kms.katalon.composer.perspective.PerspectiveSwitcher;
+import com.kms.katalon.composer.toolbar.PerspectiveSwitcher;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.services.PerspectiveRestoreService;

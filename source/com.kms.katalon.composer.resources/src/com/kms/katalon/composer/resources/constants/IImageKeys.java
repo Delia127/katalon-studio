@@ -173,7 +173,7 @@ public interface IImageKeys {
 
     public static final String PLAY_24 = "toolbar/play_24.png"; //$NON-NLS-1$
 
-    public static final String RECORD_24 = "toolbar/record_24.png"; //$NON-NLS-1$
+    public static final String RECORD_WEB_24 = "toolbar/web_oject_record_24.png"; //$NON-NLS-1$
 
     public static final String REDO_24 = "toolbar/redo_24.png"; //$NON-NLS-1$
 
@@ -245,6 +245,8 @@ public interface IImageKeys {
     public static final String SAVE_DISABLED_16 = "toolbar/save_disabled_16.png"; //$NON-NLS-1$
 
     public static final String SAVE_ALL_DISABLED_16 = "toolbar/save_all_disabled_16.png"; //$NON-NLS-1$
+    
+    public static final String PROFILE_16 = "toolbar/profile_16.png";
     // End Toolbar
 
     // Test Case steps
@@ -333,6 +335,10 @@ public interface IImageKeys {
     public static final String TEST_DATA_16 = "entity/test_data_16.png"; //$NON-NLS-1$
 
     public static final String KEYWORD_16 = "entity/keyword_16.png"; //$NON-NLS-1$
+    
+    public static final String PROFILE_FOLDER_ENTITY_16 = "entity/profile_16.png"; //$NON-NLS-1$
+    
+    public static final String PROFILE_ENTITY_16 = "entity/entity_global_variable_16.png"; //$NON-NLS-1$
     // End Entity
 
     // Sub-toolbar
@@ -578,6 +584,8 @@ public interface IImageKeys {
     public static final String VIDEO_16 = "video_16.png"; //$NON-NLS-1$
     
     public static final String IMPORT_16 = "import_16.png"; //$NON-NLS-1$
+    
+    public static final String CHECK_16 = "check_16.png"; //$NON-NLS-1$
     
     // End Common
 

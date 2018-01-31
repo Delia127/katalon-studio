@@ -120,8 +120,8 @@ public class MobileInspectorController {
         DefaultExecutionSetting generalExecutionSetting = new DefaultExecutionSetting();
         generalExecutionSetting.setTimeout(60);
 
-        RunConfiguration
-                .setExecutionSetting(ExecutionUtil.getExecutionProperties(generalExecutionSetting, driverConnectors));
+        RunConfiguration.setExecutionSetting(
+                ExecutionUtil.getExecutionProperties(generalExecutionSetting, driverConnectors, null));
 
         if (!AppiumDriverManager.isAppiumServerStarted(1)) {
             createAppiumLogTailer(logFilePath);
@@ -179,8 +179,8 @@ public class MobileInspectorController {
         DefaultExecutionSetting generalExecutionSetting = new DefaultExecutionSetting();
         generalExecutionSetting.setTimeout(60);
 
-        RunConfiguration
-                .setExecutionSetting(ExecutionUtil.getExecutionProperties(generalExecutionSetting, driverConnectors));
+        RunConfiguration.setExecutionSetting(
+                ExecutionUtil.getExecutionProperties(generalExecutionSetting, driverConnectors, null));
         driver = MobileDriverFactory.startMobileDriver(getMobileDriverType(kobitonDevice), null,
                 kobitonDevice.getCapabilities().getDeviceName(), kobitonApplication.buildAutomationKey(), false);
     }

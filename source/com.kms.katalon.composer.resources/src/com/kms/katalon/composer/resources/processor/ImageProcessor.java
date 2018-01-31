@@ -89,6 +89,7 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.SAMPLE_WEB_SERVICE_16);
         ImageManager.registerImage(IImageKeys.VIDEO_16);
         ImageManager.registerImage(IImageKeys.IMPORT_16);
+        ImageManager.registerImage(IImageKeys.CHECK_16);
     }
 
     private void registerSubToolbarImages() {
@@ -182,6 +183,8 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.TEST_CASE_16);
         ImageManager.registerImage(IImageKeys.TEST_DATA_16);
         ImageManager.registerImage(IImageKeys.KEYWORD_16);
+        ImageManager.registerImage(IImageKeys.PROFILE_FOLDER_ENTITY_16);
+        ImageManager.registerImage(IImageKeys.PROFILE_ENTITY_16);
     }
 
     private void registerTestCaseStepImages() {
@@ -217,7 +220,7 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.NEW_TEST_SUITE_COLLECTION_24);
         ImageManager.registerImage(IImageKeys.NEW_WS_TEST_OBJECT_24);
         ImageManager.registerImage(IImageKeys.PLAY_24);
-        ImageManager.registerImage(IImageKeys.RECORD_24);
+        ImageManager.registerImage(IImageKeys.RECORD_WEB_24);
         ImageManager.registerImage(IImageKeys.REDO_24);
         ImageManager.registerImage(IImageKeys.SAVE_24);
         ImageManager.registerImage(IImageKeys.SAVE_ALL_24);
@@ -227,6 +230,7 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.WEB_OBJECT_SPY_24);
         ImageManager.registerImage(IImageKeys.SAVE_16);
         ImageManager.registerImage(IImageKeys.SAVE_ALL_16);
+        ImageManager.registerImage(IImageKeys.PROFILE_16);
 
         // Toolbar disabled icons
         ImageManager.registerImage(IImageKeys.BUG_DISABLED_24);

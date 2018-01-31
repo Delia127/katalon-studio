@@ -54,6 +54,12 @@ public class ImageConstants {
 
     // TestSuiteCollectionTreeEntity
     public static final Image IMG_16_TEST_SUITE_COLLECTION = ImageManager.getImage(IImageKeys.TEST_SUITE_COLLECTION_16);
+    
+    // ProfileRootTreeEntity
+    public static final Image IMG_16_PROFILE_FOLDER_ENTITY = ImageManager.getImage(IImageKeys.PROFILE_FOLDER_ENTITY_16);
+    
+    // ProfileTreeEntity
+    public static final Image IMG_16_PROFILE_ENTITY = ImageManager.getImage(IImageKeys.PROFILE_ENTITY_16);
 
     // WebElementTreeEntity
     public static final Image IMG_16_TEST_OBJECT = ImageManager.getImage(IImageKeys.TEST_OBJECT_16);
@@ -126,4 +132,7 @@ public class ImageConstants {
     public static final Image IMG_16_EXECUTE = ImageManager.getImage(IImageKeys.PLAY_16);
 
     public static final Image IMG_24_EXECUTE = ImageManager.getImage(IImageKeys.PLAY_24);
+    
+    // CDropdownBox
+    public static final Image IMG_16_CHECK = ImageManager.getImage(IImageKeys.CHECK_16);
 }

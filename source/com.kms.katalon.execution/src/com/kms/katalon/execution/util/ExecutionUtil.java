@@ -26,6 +26,7 @@ import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
+import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.report.ReportTestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
@@ -117,12 +118,17 @@ public class ExecutionUtil {
     }
 
     public static Map<String, Object> getExecutionProperties(IExecutionSetting executionSetting,
-            Map<String, IDriverConnector> driverConnectors) {
+            Map<String, IDriverConnector> driverConnectors, ExecutionProfileEntity executionProfile) {
         Map<String, Object> propertyMap = new LinkedHashMap<String, Object>();
 
         Map<String, Object> executionProperties = new LinkedHashMap<String, Object>();
 
-        executionProperties.put(RunConfiguration.EXECUTION_GENERAL_PROPERTY, executionSetting.getGeneralProperties());
+        Map<String, Object> generalProperties = executionSetting.getGeneralProperties();
+        if (executionProfile != null) {
+            generalProperties.put(RunConfiguration.EXECUTION_PROFILE_PROPERTY, 
+                    executionProfile.getName());
+        }
+        executionProperties.put(RunConfiguration.EXECUTION_GENERAL_PROPERTY, generalProperties);
 
         executionProperties.put(RunConfiguration.EXECUTION_DRIVER_PROPERTY,
                 getDriverExecutionProperties(driverConnectors));
@@ -282,7 +288,7 @@ public class ExecutionUtil {
         }
 
     }
-    
+
     public static void saveExecutionCommand(String commandId) {
         ScopedPreferenceStore store = getPreferenceStore();
         store.setValue(ExecutionPreferenceConstants.EXECUTION_COMMAND, commandId);
@@ -292,15 +298,15 @@ public class ExecutionUtil {
             LogUtil.logError(e);
         }
     }
-    
+
     public static String getStoredExecutionConfiguration() {
         String commandId = getPreferenceStore().getString(ExecutionPreferenceConstants.EXECUTION_COMMAND);
         return fromCommandToExecutionConfiguration(commandId);
     }
-    
+
     private static String fromCommandToExecutionConfiguration(String commandId) {
         switch (commandId) {
-            case "com.kms.katalon.composer.webui.execution.command.chrome": 
+            case "com.kms.katalon.composer.webui.execution.command.chrome":
                 return "Chrome";
             case "com.kms.katalon.composer.webui.execution.command.firefox":
                 return "Firefox";
@@ -326,7 +332,7 @@ public class ExecutionUtil {
                 return "Firefox";
         }
     }
-    
+
     private static ScopedPreferenceStore getPreferenceStore() {
         return PreferenceStoreManager.getPreferenceStore(ExecutionPreferenceConstants.EXECUTION_QUALIFIER);
     }

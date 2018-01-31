@@ -69,6 +69,10 @@ public class EntityPartUtil {
     public static String getReportCollectionPartId(String reportCollectionId) {
         return IdConstants.REPORT_COLLECTION_CONTENT_PART_ID_PREFIX + "(" + reportCollectionId + ")";
     }
+    
+    public static String getExecutionProfilePartId(String executionProfileId) {
+        return IdConstants.EXECUTION_PROFILE_CONTENT_PART_ID_PREFIX + "(" + executionProfileId + ")";
+    }
 
     public static void closePart(IEntity entity) {
 
