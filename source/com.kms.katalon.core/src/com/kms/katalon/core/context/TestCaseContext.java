@@ -28,7 +28,7 @@ public interface TestCaseContext {
     Map<String, Object> getTestCaseVariables();
 
     /**
-     * Returns test status after the test case executed complete.
+     * Returns test status after the test case execution completes.
      * 
      * @return It should be <code>PASSED</code>, <code>FAILED</code>, or <code>ERROR</code>
      */

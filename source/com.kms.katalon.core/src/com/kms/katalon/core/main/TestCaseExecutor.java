@@ -18,8 +18,6 @@ import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.ast.MethodNode;
 import org.codehaus.groovy.control.CompilationFailedException;
 
-import com.kms.katalon.core.annotation.AfterTestCase;
-import com.kms.katalon.core.annotation.BeforeTestCase;
 import com.kms.katalon.core.annotation.SetUp;
 import com.kms.katalon.core.annotation.SetupTestCase;
 import com.kms.katalon.core.annotation.TearDown;
@@ -28,8 +26,9 @@ import com.kms.katalon.core.annotation.TearDownIfFailed;
 import com.kms.katalon.core.annotation.TearDownIfPassed;
 import com.kms.katalon.core.annotation.TearDownTestCase;
 import com.kms.katalon.core.constants.StringConstants;
+import com.kms.katalon.core.context.internal.ExecutionEventManager;
+import com.kms.katalon.core.context.internal.ExecutionListenerEvent;
 import com.kms.katalon.core.context.internal.InternalTestCaseContext;
-import com.kms.katalon.core.context.internal.TestContextEvaluator;
 import com.kms.katalon.core.driver.internal.DriverCleanerCollector;
 import com.kms.katalon.core.logging.ErrorCollector;
 import com.kms.katalon.core.logging.KeywordLogger;
@@ -69,7 +68,7 @@ public class TestCaseExecutor {
 
     private TestCaseBinding testCaseBinding;
 
-    private TestContextEvaluator contextEvaluator;
+    private ExecutionEventManager eventManager;
 
     private boolean doCleanUp;
 
@@ -81,21 +80,20 @@ public class TestCaseExecutor {
         this.testSuiteExecutor = testSuiteExecutor;
     }
 
-    public TestCaseExecutor(TestCaseBinding testCaseBinding, ScriptEngine engine, TestContextEvaluator contextEvaluator,
-            boolean doCleanUp) {
+    public TestCaseExecutor(TestCaseBinding testCaseBinding, ScriptEngine engine,
+            ExecutionEventManager eventManager, InternalTestCaseContext testCaseContext, boolean doCleanUp) {
         this.testCaseBinding = testCaseBinding;
         this.engine = engine;
         this.testCase = TestCaseFactory.findTestCase(testCaseBinding.getTestCaseId());
         this.doCleanUp = doCleanUp;
-        this.contextEvaluator = contextEvaluator;
+        this.eventManager = eventManager;
 
-        this.testCaseContext = new InternalTestCaseContext();
-        testCaseContext.setTestCaseId(testCaseBinding.getTestCaseId());
+        this.testCaseContext = testCaseContext;
     }
 
     public TestCaseExecutor(TestCaseBinding testCaseBinding, ScriptEngine engine,
-            TestContextEvaluator contextEvaluator) {
-        this(testCaseBinding, engine, contextEvaluator, false);
+            ExecutionEventManager eventManager, InternalTestCaseContext testCaseContext) {
+        this(testCaseBinding, engine, eventManager, testCaseContext, false);
     }
 
     private void preExecution() {
@@ -189,7 +187,7 @@ public class TestCaseExecutor {
 
             testCaseContext.setTestCaseVariables(variableBinding.getVariables());
 
-            contextEvaluator.invokeListenerMethod(BeforeTestCase.class.getName(), new Object[] { testCaseContext });
+            eventManager.publicEvent(ExecutionListenerEvent.BEFORE_TEST_CASE, new Object[] { testCaseContext });
 
             testCaseResult = invokeTestSuiteMethod(SetupTestCase.class.getName(), StringConstants.LOG_SETUP_ACTION,
                     false, testCaseResult);
@@ -207,7 +205,7 @@ public class TestCaseExecutor {
         } finally {
             testCaseContext.setTestCaseStatus(testCaseResult.getTestStatus().getStatusValue().name());
 
-            contextEvaluator.invokeListenerMethod(AfterTestCase.class.getName(), new Object[] { testCaseContext });
+            eventManager.publicEvent(ExecutionListenerEvent.AFTER_TEST_CASE, new Object[] { testCaseContext });
 
             logger.endTest(testCase.getTestCaseId(), null);
 
@@ -393,7 +391,8 @@ public class TestCaseExecutor {
         logger.logInfo(methodNodeWrapper.getStartMessage());
         int count = 1;
         for (MethodNode method : methodList) {
-            runMethod(method.getName(), methodNodeWrapper.getActionType(), count++, methodNodeWrapper.isIgnoredIfFailed());
+            runMethod(method.getName(), methodNodeWrapper.getActionType(), count++,
+                    methodNodeWrapper.isIgnoredIfFailed());
         }
     }
 
