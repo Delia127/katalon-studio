@@ -143,11 +143,13 @@ public class ScriptEngine extends GroovyScriptEngine {
 
     public Object runScriptMethod(final String className, final String methodName, Object args, Binding binding)
             throws ResourceException, ScriptException, ClassNotFoundException {
+        System.out.println("Hhahahha");
         return getScript(getGroovyClassLoader().loadClass(className), binding, true).invokeMethod(methodName, args);
     }
 
     public Object runScriptMethod(final String className, final String methodName, Binding binding)
             throws ResourceException, ScriptException, ClassNotFoundException {
+        System.out.println("Hhahahha");
         return runScriptMethod(className, methodName, null, binding);
     }
 

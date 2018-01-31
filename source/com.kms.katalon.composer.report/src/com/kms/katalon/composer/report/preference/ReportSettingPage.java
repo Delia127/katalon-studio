@@ -26,7 +26,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.helper.screenrecorder.VideoFileFormat;
 import com.kms.katalon.core.helper.screenrecorder.VideoQuality;
 import com.kms.katalon.execution.setting.ExecutionSettingStore;
-import com.kms.katalon.execution.setting.VideoRecorderSetting;
+import com.kms.katalon.core.setting.VideoRecorderSetting;
 
 public class ReportSettingPage extends PreferencePage {
 

@@ -53,11 +53,67 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String PROJECT_EXECUTION_SETTINGS_PAGE_ID = "com.kms.katalon.composer.execution.settings";
 
+    // Setting Page Id
     public static final String PROJECT_INFORMATION_SETTINGS_PAGE_ID = "com.kms.katalon.composer.project.information";
+
+    public static final String TEST_DESIGN_SETTINGS_PAGE_ID = "com.kms.katalon.composer.webui.setting.testdesign";
+
+    public static final String WEB_LOCATORS_SETTING_PAGE_ID = "com.kms.katalon.composer.webui.setting.testdesign.1";
+    
+    public static final String TEST_CASE_SETTING_PAGE_ID = "com.kms.katalon.composer.testcase.settings";
+
+    public static final String EXTERNAL_LIBRARIES_SETTING_PAGE_ID = "com.kms.katalon.composer.execution.externallib";
+
+    public static final String EMAIL_SETTING_PAGE_ID = "com.kms.katalon.composer.execution.mail";
+
+    public static final String TEMPLATE_SETTING_PAGE_ID = "com.kms.katalon.composer.execution.page.emailTemplate";
+
+    public static final String CUSTOM_SETTING_PAGE_ID = "com.kms.katalon.composer.execution.settings.custom";
+
+    public static final String WEB_UI_SETTING_PAGE_ID = "com.kms.katalon.composer.execution.settings.default.1";
+
+    public static final String CHROME_SETTING_PAGE_ID = "com.kms.katalon.composer.execution.settings.default.1.1";
+
+    public static final String FIREFOX_SETTING_PAGE_ID = "com.kms.katalon.composer.execution.settings.default.1.2";
+
+    public static final String IE_SETTING_PAGE_ID = "com.kms.katalon.composer.execution.settings.default.1.3";
+
+    public static final String SAFARI_SETTING_PAGE_ID = "com.kms.katalon.composer.execution.settings.default.1.4";
+
+    public static final String EDGE_SETTING_PAGE_ID = "com.kms.katalon.composer.execution.settings.default.1.5";
+
+    public static final String REMOTE_SETTING_PAGE_ID = "com.kms.katalon.composer.execution.settings.default.1.6";
+
+    public static final String CHROME_HEADLESS_SETTING_PAGE_ID = "com.kms.katalon.composer.execution.settings.default.1.7";
+
+    public static final String FIREFOX_HEADLESS_SETTING_PAGE_ID = "com.kms.katalon.composer.execution.settings.default.1.8";
+
+    public static final String ANDROID_SETTING_PAGE_ID = "com.kms.katalon.composer.execution.settings.default.2.1";
+
+    public static final String INTEGRATION_SETTING_PAGE_ID = "com.kms.katalon.composer.preferences.integration";
+
+    public static final String KATALON_ANALYTICS_SETTING_PAGE_ID = "com.kms.katalon.composer.integration.analytics.page";
+
+    public static final String JIRA_SETTING_PAGE_ID = "com.kms.katalon.composer.integration.jira.page";
+
+    public static final String QTEST_SETTING_PAGE_ID = "com.kms.katalon.composer.intergration.qtest.setting";
+
+    public static final String TEST_CASE_REPOSITORIES_SETTING_PAGE_ID = "com.kms.katalon.composer.integration.qtest.testCaseRepoMapping";
+
+    public static final String TEST_SUITE_REPOSITORIES_SETTING_PAGE_ID = "com.kms.katalon.composer.integration.qtest.testSuiteRepoMapping";
+
+    public static final String REPORT_SETTING_PAGE_ID = "com.kms.katalon.composer.report.setting";
+
+    public static final String DATABASE_SETTING_PAGE_ID = "com.kms.katalon.composer.testdata.settings.database";
+
+    public static final String NETWORK_SETTING_PAGE_ID = "com.kms.katalon.composer.webservice.network";
 
     // UpdateProjectHandler
     public static final String HAND_ERROR_MSG_UNABLE_TO_UPDATE_PROJ = ComposerProjectMessageConstants.HAND_ERROR_MSG_UNABLE_TO_UPDATE_PROJ;
 
+    // ImportSeleniumIdeHanlder
+    public static final String HAND_IMPORT_SELENIUM_IDE = ComposerProjectMessageConstants.HAND_IMPORT_SELENIUM_IDE;
+    
     // NewProjectDialog
     public static final String VIEW_TITLE_NEW_PROJ = ComposerProjectMessageConstants.VIEW_TITLE_NEW_PROJ;
 

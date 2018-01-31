@@ -78,7 +78,7 @@ public class GroovyGuiUtil {
         if (unit == null) {
             return;
         }
-        FileUtils.writeStringToFile(unit.getResource().getLocation().toFile(), content, true);
+        FileUtils.writeStringToFile(unit.getResource().getLocation().toFile(), content, java.nio.charset.Charset.forName("UTF-8"));
     }
 
     public static URLClassLoader getProjectClasLoader(ProjectEntity projectEntity) throws MalformedURLException,

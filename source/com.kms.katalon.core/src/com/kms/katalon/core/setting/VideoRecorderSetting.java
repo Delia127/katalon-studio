@@ -1,4 +1,4 @@
-package com.kms.katalon.execution.setting;
+package com.kms.katalon.core.setting;
 
 import com.kms.katalon.core.helper.screenrecorder.VideoConfiguration;
 import com.kms.katalon.core.helper.screenrecorder.VideoFileFormat;

@@ -10,7 +10,6 @@ import java.util.Map.Entry;
 
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
@@ -22,6 +21,7 @@ import com.kms.katalon.selenium.firefox.CFirefoxProfile;
 public class WebDriverPropertyUtil {
     public static final String DISABLE_EXTENSIONS = "--disable-extensions";
     public static final String CHROME_SWITCHES = "chrome.switches";
+    private static final String CHROME_NO_SANDBOX = "--no-sandbox";
     private static final String CHROME_ARGUMENT_PROPERTY_KEY = "args";
     private static final String CHROME_BINARY_PROPERTY_KEY = "binary";
     private static final String CHROME_EXTENSIONS_PROPERTY_KEY = "extensions";
@@ -44,6 +44,8 @@ public class WebDriverPropertyUtil {
     private static final String BROWSER_STARTUP_HOMEPAGE_PREFERENCE = "browser.startup.homepage";
     private static final String FIREFOX_BLANK_PAGE = "about:blank";
 
+    private static final String KATALON_DOCKER_PROPERTY_KEY = "KATALON_DOCKER";
+
     public static DesiredCapabilities toDesireCapabilities(Map<String, Object> propertyMap,
             WebUIDriverType webUIDriverType) {
         if (propertyMap == null) {
@@ -51,8 +53,10 @@ public class WebDriverPropertyUtil {
         }
         switch (webUIDriverType) {
         case CHROME_DRIVER:
+        case HEADLESS_DRIVER:
             return getDesireCapabilitiesForChrome(propertyMap);
         case FIREFOX_DRIVER:
+        case FIREFOX_HEADLESS_DRIVER:
             return getDesireCapabilitiesForFirefox(propertyMap);
         default:
             return toDesireCapabilities(propertyMap);
@@ -159,9 +163,12 @@ public class WebDriverPropertyUtil {
         }
         argumentsList.add(CHROME_SWITCHES);
         argumentsList.add(DISABLE_EXTENSIONS);
+        if (isRunningInDocker()) {
+            argumentsList.add(CHROME_NO_SANDBOX);
+        }
         chromeOptions.put(CHROME_ARGUMENT_PROPERTY_KEY, argumentsList);
     }
-    
+
     public static void addArgumentsForChrome(DesiredCapabilities caps, String... args) {
         @SuppressWarnings("unchecked")
         Map<String, Object> chromeOptions = (Map<String, Object>) caps.getCapability(ChromeOptions.CAPABILITY);
@@ -175,7 +182,14 @@ public class WebDriverPropertyUtil {
             argsEntry = new ArrayList<>();
         }
         argsEntry.addAll(Arrays.asList(args));
+        if (isRunningInDocker()) {
+            argsEntry.add(CHROME_NO_SANDBOX);
+        }
         chromeOptions.put(CHROME_ARGUMENT_PROPERTY_KEY, argsEntry);
         caps.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
+    }
+
+    private static boolean isRunningInDocker() {
+        return Boolean.valueOf(System.getProperty(KATALON_DOCKER_PROPERTY_KEY, "false"));
     }
 }
