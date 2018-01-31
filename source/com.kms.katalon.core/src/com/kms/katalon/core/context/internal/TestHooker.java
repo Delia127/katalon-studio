@@ -138,7 +138,7 @@ public class TestHooker {
                 KeywordStackElement keywordStackElement = keywordStack.pop();
                 LOG.endKeyword(keywordStackElement.getKeywordName(), null, keywordStackElement.getNestedLevel());
             }
-            LOG.endListnerKeyword(methodName, null, keywordStack);
+            LOG.endListenerKeyword(methodName, null, keywordStack);
             errorCollector.clearErrors();
             errorCollector.getErrors().addAll(oldErrors);
         }
