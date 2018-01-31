@@ -2,6 +2,7 @@ package com.kms.katalon.composer.keyword.dialogs;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiFunction;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.core.IJavaElement;
@@ -27,9 +28,16 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.keyword.constants.ComposerKeywordMessageConstants;
 import com.kms.katalon.composer.keyword.constants.StringConstants;
 
 public class NewKeywordDialog extends CommonAbstractKeywordDialog {
+    
+    public static final int SAMPLE_WEB_KEYWORD = 1;
+    
+    public static final int SAMPLE_MOBILE_KEYWORD = 2;
+    
+    public static final int SAMPLE_API_KEYWORD = 4;
 
     private IPackageFragment parentPackage;
 
@@ -38,6 +46,14 @@ public class NewKeywordDialog extends CommonAbstractKeywordDialog {
     private Text txtPackage;
 
     private Button btnBrowse;
+    
+    private Button btnGenerateSampleWebKeyword;
+    
+    private Button btnGenerateSampleMobileKeyword;
+    
+    private Button btnGenerateSampleAPIKeyword;
+    
+    private int sampleKeywordType = 0;
 
     private ValidatorManager validatorManager;
 
@@ -65,10 +81,16 @@ public class NewKeywordDialog extends CommonAbstractKeywordDialog {
         if (container == null) {
             container = new Composite(parent, SWT.NONE);
         }
+        
         createPackageNameControl(container, 3);
         return super.createDialogBodyArea(parent);
     }
 
+    @Override
+    protected Control createEntityCustomControl(Composite parent, int column, int span) {
+        return createSampleKeywordControl(parent, column);
+    }
+    
     private void addControlModifyListeners() {
         prepareValidators();
 
@@ -103,7 +125,27 @@ public class NewKeywordDialog extends CommonAbstractKeywordDialog {
                 }
             }
         });
+        
+        BiFunction<Integer, Button, SelectionAdapter> selectionAdapterCreator = (sampleType,
+                sampleButton) -> new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        if (sampleButton.getSelection()) {
+                            sampleKeywordType |= sampleType;
+                        } else {
+                            sampleKeywordType &= ~sampleType;
+                        }
+                    }
+                };
+        btnGenerateSampleWebKeyword.addSelectionListener(
+                selectionAdapterCreator.apply(SAMPLE_WEB_KEYWORD, btnGenerateSampleWebKeyword));
+        btnGenerateSampleMobileKeyword.addSelectionListener(
+                selectionAdapterCreator.apply(SAMPLE_MOBILE_KEYWORD, btnGenerateSampleMobileKeyword));
+        btnGenerateSampleAPIKeyword.addSelectionListener(
+                selectionAdapterCreator.apply(SAMPLE_API_KEYWORD, btnGenerateSampleAPIKeyword));
     }
+    
+    
 
     private void prepareValidators() {
         validatorManager = new ValidatorManager();
@@ -129,6 +171,23 @@ public class NewKeywordDialog extends CommonAbstractKeywordDialog {
         return builder.replace(event.start, event.end, event.text).toString();
     }
 
+    private Control createSampleKeywordControl(Composite parent, int column) {
+        Composite sampleKeywordComposite = new Composite(parent, SWT.NONE);
+        sampleKeywordComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, column, 1));
+        sampleKeywordComposite.setLayout(new GridLayout(1, false));
+        
+        btnGenerateSampleWebKeyword = new Button(sampleKeywordComposite, SWT.CHECK);
+        btnGenerateSampleWebKeyword.setText(ComposerKeywordMessageConstants.DIA_LBL_GENERATE_SAMPLE_FOR_WEB);
+        
+        btnGenerateSampleMobileKeyword = new Button(sampleKeywordComposite, SWT.CHECK);
+        btnGenerateSampleMobileKeyword.setText(ComposerKeywordMessageConstants.DIA_LBL_GENERATE_SAMPLE_FOR_MOBILE);
+        
+        btnGenerateSampleAPIKeyword = new Button(sampleKeywordComposite, SWT.CHECK);
+        btnGenerateSampleAPIKeyword.setText(ComposerKeywordMessageConstants.DIA_LBL_GENERATE_SAMPLE_FOR_API);
+        
+        return parent;
+    }
+    
     private Control createPackageNameControl(Composite parent, int column) {
         parent.setLayoutData(new GridData(GridData.FILL_BOTH));
         parent.setLayout(new GridLayout(column, false));
@@ -227,7 +286,11 @@ public class NewKeywordDialog extends CommonAbstractKeywordDialog {
     public IPackageFragment getParentPackage() {
         return parentPackage;
     }
-
+    
+    public int getSampleKeywordType() {
+        return sampleKeywordType;
+    }
+    
     private class Validator {
         private String message;
 
