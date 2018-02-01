@@ -31,7 +31,7 @@ public class ChromeRunConfiguration extends WebUiRunConfiguration {
     @Override
     public Map<String, String> getAdditionalEnvironmentVariables() throws IOException, ExecutionException {
         Map<String, String> environmentVariables = new HashMap<>(super.getAdditionalEnvironmentVariables());
-        environmentVariables.put(WebDriverPropertyUtil.CHROME_NO_SANDBOX, 
+        environmentVariables.put(WebDriverPropertyUtil.KATALON_DOCKER_ENV_KEY, 
                 String.valueOf(WebDriverPropertyUtil.isRunningInDocker()));
         return environmentVariables;
     }
