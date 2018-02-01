@@ -10,7 +10,6 @@ import java.util.Map.Entry;
 
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
@@ -22,7 +21,7 @@ import com.kms.katalon.selenium.firefox.CFirefoxProfile;
 public class WebDriverPropertyUtil {
     public static final String DISABLE_EXTENSIONS = "--disable-extensions";
     public static final String CHROME_SWITCHES = "chrome.switches";
-    private static final String CHROME_NO_SANDBOX = "--no-sandbox";
+    public static final String CHROME_NO_SANDBOX = "--no-sandbox";
     private static final String CHROME_ARGUMENT_PROPERTY_KEY = "args";
     private static final String CHROME_BINARY_PROPERTY_KEY = "binary";
     private static final String CHROME_EXTENSIONS_PROPERTY_KEY = "extensions";
@@ -45,7 +44,7 @@ public class WebDriverPropertyUtil {
     private static final String BROWSER_STARTUP_HOMEPAGE_PREFERENCE = "browser.startup.homepage";
     private static final String FIREFOX_BLANK_PAGE = "about:blank";
 
-    private static final String KATALON_DOCKER_PROPERTY_KEY = "KATALON_DOCKER";
+    private static final String KATALON_DOCKER_ENV_KEY = "KATALON_DOCKER_PROPERTY_KEY";
 
     public static DesiredCapabilities toDesireCapabilities(Map<String, Object> propertyMap,
             WebUIDriverType webUIDriverType) {
@@ -188,7 +187,10 @@ public class WebDriverPropertyUtil {
         caps.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
     }
 
-    private static boolean isRunningInDocker() {
-        return Boolean.valueOf(System.getProperty(KATALON_DOCKER_PROPERTY_KEY, "false"));
+    public static boolean isRunningInDocker() {
+        if (System.getenv().containsKey(KATALON_DOCKER_ENV_KEY)) {
+            return Boolean.valueOf(System.getenv(KATALON_DOCKER_ENV_KEY));
+        }
+        return false;
     }
 }
