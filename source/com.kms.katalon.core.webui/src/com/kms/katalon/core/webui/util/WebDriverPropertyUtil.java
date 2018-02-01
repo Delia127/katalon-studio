@@ -44,7 +44,7 @@ public class WebDriverPropertyUtil {
     private static final String BROWSER_STARTUP_HOMEPAGE_PREFERENCE = "browser.startup.homepage";
     private static final String FIREFOX_BLANK_PAGE = "about:blank";
 
-    private static final String KATALON_DOCKER_ENV_KEY = "KATALON_DOCKER_PROPERTY_KEY";
+    private static final String KATALON_DOCKER_ENV_KEY = "KATALON_DOCKER";
 
     public static DesiredCapabilities toDesireCapabilities(Map<String, Object> propertyMap,
             WebUIDriverType webUIDriverType) {
