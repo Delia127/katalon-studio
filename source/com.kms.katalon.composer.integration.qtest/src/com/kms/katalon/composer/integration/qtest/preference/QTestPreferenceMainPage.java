@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.integration.qtest.preference;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -397,7 +398,7 @@ public class QTestPreferenceMainPage extends PreferencePageWithHelp {
 
             eventBroker.post(com.kms.katalon.constants.EventConstants.EXPLORER_REFRESH, null);
             return true;
-        } catch (IOException e) {
+        } catch (IOException | GeneralSecurityException e) {
             MultiStatusErrorDialog.showErrorDialog(e, StringConstants.ERROR,
                     StringConstants.DIA_MSG_UNABLE_TO_SAVE_SETTING_PAGE);
             return false;
@@ -411,7 +412,8 @@ public class QTestPreferenceMainPage extends PreferencePageWithHelp {
                     .setUsername(credential.getUsername())
                     .setPassword(credential.getPassword())
                     .setToken(credential.getToken())
-                    .setVersion(credential.getVersion());
+                    .setVersion(credential.getVersion())
+                    .setPasswordEncryptionEnabled(credential.isEncryptionEnabled());;
         }
         return newCredential;
     }

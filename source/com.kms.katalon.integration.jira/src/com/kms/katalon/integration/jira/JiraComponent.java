@@ -1,6 +1,7 @@
 package com.kms.katalon.integration.jira;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.logging.model.TestCaseLogRecord;
@@ -19,8 +20,12 @@ public interface JiraComponent {
         return new JiraIntegrationSettingStore(getCurrentProject().getFolderLocation());
     }
 
-    default JiraCredential getCredential() throws IOException {
-        return getSettingStore().getJiraCredential();
+    default JiraCredential getCredential() throws IOException, JiraIntegrationException {
+        try {
+            return getSettingStore().getJiraCredential();
+        } catch (GeneralSecurityException e) {
+            throw new JiraIntegrationException(e);
+        }
     }
 
     default void updateJiraReport(int index, TestCaseLogRecord logRecord, JiraIssueCollection jiraIssueCollection,
