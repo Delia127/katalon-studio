@@ -260,23 +260,4 @@ public class ExecutionUtil {
             prop.store(output, null);
         }
     }
-
-    public static ReportEntity newReportEntity(String id, TestSuiteExecutedEntity executedEntity) {
-        try {
-            TestSuiteEntity testSuite = TestSuiteController.getInstance().getTestSuiteByDisplayId(
-                    executedEntity.getSourceId(), ProjectController.getInstance().getCurrentProject());
-            ReportEntity report = ReportController.getInstance().getReportEntity(testSuite, id);
-
-            List<ReportTestCaseEntity> reportTestCases = new ArrayList<>();
-            executedEntity.getExecutedItems().forEach(item -> {
-                TestCaseExecutedEntity testCaseExecuted = (TestCaseExecutedEntity) item;
-                reportTestCases.addAll(testCaseExecuted.reportTestCases());
-            });
-            report.setReportTestCases(reportTestCases);
-            return report;
-        } catch (Exception e) {
-            return null;
-        }
-
-    }
 }

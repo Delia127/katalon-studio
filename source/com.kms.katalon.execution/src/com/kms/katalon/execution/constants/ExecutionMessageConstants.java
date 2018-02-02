@@ -118,6 +118,9 @@ public class ExecutionMessageConstants extends NLS {
 
     //MailUtil
     public static String MSG_EMAIL_ATTACHMENT_EXCEEDS_SIZE;
+    
+    //ConsoleMain
+    public static String MNG_PRT_INVALID_PROPERTY_FILE_ARG;
 
     static {
         // initialize resource bundle
