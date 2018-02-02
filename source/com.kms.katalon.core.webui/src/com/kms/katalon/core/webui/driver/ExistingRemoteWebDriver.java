@@ -15,6 +15,8 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.Response;
 import org.openqa.selenium.remote.http.JsonHttpCommandCodec;
 import org.openqa.selenium.remote.http.JsonHttpResponseCodec;
+import org.openqa.selenium.remote.http.W3CHttpCommandCodec;
+import org.openqa.selenium.remote.http.W3CHttpResponseCodec;
 
 import com.kms.katalon.selenium.driver.IExistingRemoteWebDriver;
 
@@ -33,7 +35,9 @@ public class ExistingRemoteWebDriver extends RemoteWebDriver implements IExistin
             
             EXECUTOR_RESPONSE_CODEC_FIELD = HttpCommandExecutor.class.getDeclaredField("responseCodec");
             EXECUTOR_RESPONSE_CODEC_FIELD.setAccessible(true);
-        } catch (NoSuchFieldException | SecurityException e) {
+        } catch (NoSuchFieldException e) {
+            //ignore
+        } catch (SecurityException e) {
             //ignore
         }
         
@@ -49,9 +53,10 @@ public class ExistingRemoteWebDriver extends RemoteWebDriver implements IExistin
         
         if (getCommandExecutor() instanceof HttpCommandExecutor) {
             try {
-                initCommandCodecForHttpCommandExecutor();
-                initResponseCodecForHttpCommandExecutor();
-            } catch (IllegalArgumentException | IllegalAccessException e) {
+                initCodecForHttpCommandExecutor();
+            } catch (IllegalArgumentException e) {
+                //ignore
+            } catch (IllegalAccessException e) {
                 //ignore
             }
         }
@@ -59,16 +64,21 @@ public class ExistingRemoteWebDriver extends RemoteWebDriver implements IExistin
         startSession(new DesiredCapabilities());
     }
     
-    private void initCommandCodecForHttpCommandExecutor() throws IllegalArgumentException, IllegalAccessException {
+    private void initCodecForHttpCommandExecutor() throws IllegalArgumentException, IllegalAccessException {
         HttpCommandExecutor executor = (HttpCommandExecutor) getCommandExecutor();
+        
+        // try to execute a test command for each kind of codec and verify the response status to find which one works
         EXECUTOR_COMMAND_CODEC_FIELD.set(executor, new JsonHttpCommandCodec());
+        EXECUTOR_RESPONSE_CODEC_FIELD.set(executor, new JsonHttpResponseCodec());
+        
+        // Fix cannot execute with existing web driver for Firefox (KAT-2954)
+        Response response = this.execute("status");
+        if (!(response.getStatus() != null && response.getStatus() == 0)) {
+            EXECUTOR_COMMAND_CODEC_FIELD.set(executor, new W3CHttpCommandCodec());
+            EXECUTOR_RESPONSE_CODEC_FIELD.set(executor, new W3CHttpResponseCodec());
+        }
     }
     
-    private void initResponseCodecForHttpCommandExecutor() throws IllegalArgumentException, IllegalAccessException  {
-        HttpCommandExecutor executor = (HttpCommandExecutor) getCommandExecutor();
-        EXECUTOR_RESPONSE_CODEC_FIELD.set(executor, new JsonHttpResponseCodec());
-    }
-
     public ExistingRemoteWebDriver(String oldSessionId, CommandExecutor executor, Capabilities desiredCapabilities) {
         super(executor, desiredCapabilities);
         this.oldSessionId = oldSessionId;
