@@ -71,7 +71,8 @@ public class ExistingRemoteWebDriver extends RemoteWebDriver implements IExistin
         EXECUTOR_COMMAND_CODEC_FIELD.set(executor, new JsonHttpCommandCodec());
         EXECUTOR_RESPONSE_CODEC_FIELD.set(executor, new JsonHttpResponseCodec());
         
-        // Fix cannot execute with existing web driver for Firefox (KAT-2954)
+        // Fix action in test case does not work when executing test case by Debug active session function (KAT-2954),
+        // due to wrong command and response codec
         Response response = this.execute("status");
         if (!(response.getStatus() != null && response.getStatus() == 0)) {
             EXECUTOR_COMMAND_CODEC_FIELD.set(executor, new W3CHttpCommandCodec());
