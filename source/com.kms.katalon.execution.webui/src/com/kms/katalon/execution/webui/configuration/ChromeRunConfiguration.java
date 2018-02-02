@@ -2,9 +2,13 @@ package com.kms.katalon.execution.webui.configuration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
+import com.kms.katalon.core.webui.util.WebDriverPropertyUtil;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
+import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.webui.driver.ChromeDriverConnector;
 
 public class ChromeRunConfiguration extends WebUiRunConfiguration {
@@ -22,5 +26,13 @@ public class ChromeRunConfiguration extends WebUiRunConfiguration {
     @Override
     public boolean allowsRecording() {
         return true;
+    }
+    
+    @Override
+    public Map<String, String> getAdditionalEnvironmentVariables() throws IOException, ExecutionException {
+        Map<String, String> environmentVariables = new HashMap<>(super.getAdditionalEnvironmentVariables());
+        environmentVariables.put(WebDriverPropertyUtil.KATALON_DOCKER_ENV_KEY, 
+                String.valueOf(WebDriverPropertyUtil.isRunningInDocker()));
+        return environmentVariables;
     }
 }
