@@ -88,8 +88,8 @@ public class GlobalVariableFileServiceDataProvider implements IGlobalVariableDat
     }
 
     @Override
-    public ExecutionProfileEntity copyProfile(ExecutionProfileEntity profileEntity) throws DALException {
-        return GlobalVariableFileServiceManager.newProfile(profileEntity.getName() + " - Copy", false,
+    public ExecutionProfileEntity copyProfile(String newName, ExecutionProfileEntity profileEntity) throws DALException {
+        return GlobalVariableFileServiceManager.newProfile(newName, false,
                 profileEntity.getGlobalVariableEntities(), profileEntity.getProject());
     }
 

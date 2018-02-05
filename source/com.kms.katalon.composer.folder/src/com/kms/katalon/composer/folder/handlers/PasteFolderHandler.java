@@ -338,6 +338,8 @@ public class PasteFolderHandler {
         ExecutionProfileEntity sourceProfile = profileTree.getObject();
         ExecutionProfileEntity coppiedProfile = GlobalVariableController.getInstance().copyProfile(sourceProfile);
 
+        eventBroker.post(EventConstants.EXECUTION_PROFILE_CREATED, coppiedProfile.getName());
+        
         lastPastedTreeEntity = new ProfileTreeEntity(coppiedProfile, profileTree.getParent());
     }
 

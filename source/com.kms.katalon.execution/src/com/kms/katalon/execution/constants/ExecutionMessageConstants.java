@@ -119,6 +119,9 @@ public class ExecutionMessageConstants extends NLS {
     
     //ConsoleMain
     public static String MNG_PRT_INVALID_PROPERTY_FILE_ARG;
+    
+    // TestSuiteLauncherOptionParser
+    public static String CONSOLE_MSG_PROFILE_NOT_FOUND;
 
     static {
         // initialize resource bundle

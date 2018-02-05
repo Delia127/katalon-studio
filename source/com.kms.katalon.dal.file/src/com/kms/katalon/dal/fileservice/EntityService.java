@@ -176,6 +176,9 @@ public final class EntityService {
 
     public synchronized FileEntity loadEntityFromFile(String path) throws Exception {
         File file = new File(path);
+        if (!file.exists()) {
+            return null;
+        }
         FileEntity entity = (FileEntity) unmarshaller.unmarshal(file);
         setEntityTimeAttributes(path, entity);
         return entity;

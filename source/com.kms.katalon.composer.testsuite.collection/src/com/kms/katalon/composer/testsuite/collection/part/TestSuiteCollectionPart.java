@@ -88,6 +88,7 @@ import com.kms.katalon.composer.testsuite.collection.part.provider.TableViewerPr
 import com.kms.katalon.composer.testsuite.collection.part.provider.TestSuiteRunConfigLabelProvider;
 import com.kms.katalon.composer.testsuite.collection.part.provider.ToolbarItemListener;
 import com.kms.katalon.composer.testsuite.collection.part.provider.ToolbarItemListener.ActionId;
+import com.kms.katalon.composer.testsuite.collection.part.support.ExecutionProfileEditingSupport;
 import com.kms.katalon.composer.testsuite.collection.part.support.RunConfigurationChooserEditingSupport;
 import com.kms.katalon.composer.testsuite.collection.part.support.RunConfigurationDataEditingSupport;
 import com.kms.katalon.composer.testsuite.collection.part.support.RunEnabledEditingSupport;
@@ -402,7 +403,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         tblclmnNo.setText(StringConstants.NO_);
         tbvcNo.setLabelProvider(
                 new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.NO_COLUMN_IDX));
-        tableLayout.setColumnData(tblclmnNo, new ColumnWeightData(1, 60));
+        tableLayout.setColumnData(tblclmnNo, new ColumnWeightData(1, 30));
 
         TableViewerColumn tbvcId = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnId = tbvcId.getColumn();
@@ -427,6 +428,14 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         tbvcRunWithData.setLabelProvider(
                 new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.RUN_WITH_DATA_COLUMN_IDX));
         tableLayout.setColumnData(tblclmnRunWithData, new ColumnWeightData(40, 200));
+        
+        TableViewerColumn tbvcProfile = new TableViewerColumn(tableViewer, SWT.NONE);
+        TableColumn tblclmnProfile = tbvcProfile.getColumn();
+        tblclmnProfile.setText(ComposerTestsuiteCollectionMessageConstants.PA_TABLE_COLUMN_PROFILE);
+        tbvcProfile.setLabelProvider(
+                new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.PROFILE_COLUMN_IDX));
+        tbvcProfile.setEditingSupport(new ExecutionProfileEditingSupport(this));
+        tableLayout.setColumnData(tblclmnProfile, new ColumnWeightData(20, 100));
 
         TableViewerColumn tbvcRun = new TableViewerColumn(tableViewer, SWT.NONE);
         tblclmnRun = tbvcRun.getColumn();

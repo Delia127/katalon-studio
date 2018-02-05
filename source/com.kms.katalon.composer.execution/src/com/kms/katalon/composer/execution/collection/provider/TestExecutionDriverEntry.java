@@ -46,7 +46,8 @@ public class TestExecutionDriverEntry extends TestExecutionEntryItem {
     public RunConfigurationDescription toConfigurationEntity(RunConfigurationDescription previousDescription) {
         Map<String, String> runConfigurationData = previousDescription != null
                 ? previousDescription.getRunConfigurationData() : Collections.emptyMap();
-        return RunConfigurationDescription.from(groupName, getName(), runConfigurationData);
+        return RunConfigurationDescription.from(groupName, getName(), runConfigurationData,
+                previousDescription.getProfileName());
     }
 
     public static TestExecutionDriverEntry from(String groupName, DriverType driverType, String imageUrl) {

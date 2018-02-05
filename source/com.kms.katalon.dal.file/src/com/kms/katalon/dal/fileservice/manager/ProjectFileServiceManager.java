@@ -32,15 +32,7 @@ public class ProjectFileServiceManager {
             projectFolder.mkdirs();
         }
 
-        ProjectEntity project = new ProjectEntity();
-        project.setUUID(Util.generateGuid());
-        project.setFolderLocation(projectFolder.getAbsolutePath());
-        project.setName(name);
-        project.setDescription(description);
-        project.setPageLoadTimeout(pageLoadTimeout);
-        project.setMigratedVersion(MIGRATE_LEGACY_GLOBALVARIABLE_VS);
-
-        EntityService.getInstance().saveEntity(project);
+        ProjectEntity project = newProjectEntity(name, description, projectLocation, false);
         FolderFileServiceManager.initRootEntityFolders(project);
         createSettingFolder(project);
 
@@ -153,5 +145,34 @@ public class ProjectFileServiceManager {
         if (!internalSettingFolder.exists()) {
             internalSettingFolder.mkdir();
         }
+    }
+
+    public static ProjectEntity newProjectEntity(String name, String description, String projectLocation, boolean legacy)
+            throws DALException {
+        // remove the "\\" post-fix
+        if (projectLocation.endsWith(File.separator)) {
+            projectLocation = projectLocation.substring(0, projectLocation.length() - 1);
+        }
+        File projectFolder = new File(projectLocation + File.separator + name);
+        if (!projectFolder.exists()) {
+            projectFolder.mkdirs();
+        }
+
+        ProjectEntity project = new ProjectEntity();
+        project.setUUID(Util.generateGuid());
+        project.setFolderLocation(projectFolder.getAbsolutePath());
+        project.setName(name);
+        project.setDescription(description);
+        if (!legacy) {
+            project.setMigratedVersion(MIGRATE_LEGACY_GLOBALVARIABLE_VS);
+        }
+
+        try {
+            EntityService.getInstance().saveEntity(project);
+        } catch (Exception e) {
+            throw new DALException(e);
+        }
+
+        return project;
     }
 }

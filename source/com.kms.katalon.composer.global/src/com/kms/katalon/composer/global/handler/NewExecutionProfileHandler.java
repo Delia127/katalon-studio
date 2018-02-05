@@ -47,7 +47,7 @@ public class NewExecutionProfileHandler extends ExecutionProfileTreeRootCatcher 
                 return;
             }
             String newName = dialog.getNewName();
-            ExecutionProfileEntity newProfile = GlobalVariableController.getInstance().newExecutionProfile(newName);
+            ExecutionProfileEntity newProfile = GlobalVariableController.getInstance().newExecutionProfile(newName, project);
             eventBroker.post(EventConstants.EXECUTION_PROFILE_CREATED, newName);
 
             ProfileTreeEntity newProfileTree = new ProfileTreeEntity(newProfile, profileTreeFolder);

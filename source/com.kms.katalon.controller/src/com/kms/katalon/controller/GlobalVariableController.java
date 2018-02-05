@@ -65,11 +65,15 @@ public class GlobalVariableController extends EntityController {
     public void deleteExecutionProfile(ExecutionProfileEntity profile) throws DALException {
         getDataProviderSetting().getGlobalVariableDataProvider().delete(profile);
     }
+    
+    public ExecutionProfileEntity getExecutionProfile(String name, ProjectEntity project) throws DALException {
+        return getDataProviderSetting().getGlobalVariableDataProvider().get(name, project);
+    }
 
-    public ExecutionProfileEntity newExecutionProfile(String newName) throws Exception {
+    public ExecutionProfileEntity newExecutionProfile(String newName, ProjectEntity project) throws Exception {
         ExecutionProfileEntity newProfile = getDataProviderSetting().getGlobalVariableDataProvider().newProfile(newName,
-                ProjectController.getInstance().getCurrentProject());
-        generateGlobalVariableLibFile(ProjectController.getInstance().getCurrentProject(), null);
+                project);
+        generateGlobalVariableLibFile(project, null);
         return newProfile;
     }
 
@@ -110,7 +114,9 @@ public class GlobalVariableController extends EntityController {
         return profiles;
     }
 
-    public ExecutionProfileEntity copyProfile(ExecutionProfileEntity profileEntity) throws DALException {
-        return getDataProviderSetting().getGlobalVariableDataProvider().copyProfile(profileEntity);
+    public ExecutionProfileEntity copyProfile(ExecutionProfileEntity profileEntity) throws Exception {
+        String newName = EntityNameController.getInstance().getAvailableName(profileEntity.getName() + " - Copy",
+                profileEntity.getParentFolder(), false);
+        return getDataProviderSetting().getGlobalVariableDataProvider().copyProfile(newName, profileEntity);
     }
 }

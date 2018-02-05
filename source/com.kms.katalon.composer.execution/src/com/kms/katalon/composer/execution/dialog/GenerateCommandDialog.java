@@ -8,6 +8,7 @@ import static org.apache.commons.lang3.StringUtils.isNumeric;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -41,11 +42,13 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
+import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.execution.collection.collector.TestExecutionGroupCollector;
+import com.kms.katalon.composer.execution.collection.dialog.ExecutionProfileSelectionDialog;
 import com.kms.katalon.composer.execution.collection.dialog.RunConfigurationSelectionDialog;
 import com.kms.katalon.composer.execution.collection.provider.TestExecutionEntryItem;
 import com.kms.katalon.composer.execution.collection.provider.TestExecutionGroup;
@@ -60,12 +63,16 @@ import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
 import com.kms.katalon.composer.resources.util.ImageUtil;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.controller.FolderController;
+import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestSuiteCollectionController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.core.application.Application;
+import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.core.util.internal.JsonUtil;
+import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.file.FileEntity;
+import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
@@ -151,6 +158,10 @@ public class GenerateCommandDialog extends AbstractDialog {
 
     private Composite configurationComposite;
 
+    private CLabel lblProfileName;
+
+    private Button btnChangeProfile;
+
     public GenerateCommandDialog(Shell parentShell, ProjectEntity project) {
         super(parentShell);
         setDialogTitle(StringConstants.DIA_TITLE_GENERATE_COMMAND_FOR_CONSOLE);
@@ -212,6 +223,36 @@ public class GenerateCommandDialog extends AbstractDialog {
         createConfigurationComposite();
 
         createConfigurationDataComposite();
+
+        createExecutionProfileComposite();
+    }
+
+    private void createExecutionProfileComposite() {
+        Composite executionComposite = new Composite(grpPlatform, SWT.NONE);
+        executionComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        GridLayout gdExecutionComposite = new GridLayout(2, false);
+        gdExecutionComposite.marginWidth = 0;
+        gdExecutionComposite.marginHeight = 0;
+        executionComposite.setLayout(gdExecutionComposite);
+
+        Label lblRunWith = new Label(executionComposite, SWT.NONE);
+        lblRunWith.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_CENTER));
+        lblRunWith.setText(ComposerExecutionMessageConstants.DIA_LBL_PROFILE);
+
+        Composite profileDetailsComposite = new Composite(executionComposite, SWT.NONE);
+        profileDetailsComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        GridLayout gdConfiguration = new GridLayout(2, false);
+        gdConfiguration.marginWidth = 0;
+        gdConfiguration.marginHeight = 0;
+        profileDetailsComposite.setLayout(gdConfiguration);
+
+        lblProfileName = new CLabel(profileDetailsComposite, SWT.NONE);
+        lblProfileName.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
+
+        btnChangeProfile = new Button(profileDetailsComposite, SWT.FLAT);
+        btnChangeProfile.setImage(ImageConstants.IMG_16_EDIT);
+        btnChangeProfile.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+        btnChangeProfile.setText(StringConstants.EDIT);
     }
 
     private void createConfigurationComposite() {
@@ -403,9 +444,8 @@ public class GenerateCommandDialog extends AbstractDialog {
 
     private FileEntity getSelectedTestSuite(String prefSuiteId) throws Exception {
         if (isTestSuite(prefSuiteId)) {
-            return TestSuiteController.getInstance().getTestSuiteByDisplayId(prefSuiteId,
-                project);
-        } 
+            return TestSuiteController.getInstance().getTestSuiteByDisplayId(prefSuiteId, project);
+        }
         return TestSuiteCollectionController.getInstance().getTestSuiteCollection(prefSuiteId);
     }
 
@@ -517,6 +557,31 @@ public class GenerateCommandDialog extends AbstractDialog {
                 onRunConfigurationDataChanged();
             }
         });
+        
+        btnChangeProfile.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                try {
+                    List<ExecutionProfileEntity> profiles = GlobalVariableController.getInstance()
+                            .getAllGlobalVariableCollections(ProjectController.getInstance().getCurrentProject());
+                    ExecutionProfileEntity selectedProfile = profiles.stream()
+                            .filter(p -> p.getName().equals(runConfigDescription.getProfileName()))
+                            .findFirst()
+                            .orElse(null);
+                    ExecutionProfileSelectionDialog dialog = new ExecutionProfileSelectionDialog(getParentShell(), profiles,
+                            selectedProfile);
+                    if (dialog.open() != ExecutionProfileSelectionDialog.OK) {
+                        return ;
+                    }
+                    runConfigDescription.setProfileName(dialog.getSelectedProfile().getName());
+                    updateExecutionProfileLabel();
+                } catch (DALException ex) {
+                    MultiStatusErrorDialog.showErrorDialog(
+                            ComposerExecutionMessageConstants.PA_MSG_UNABLE_TO_SELECT_EXECUTION_PROFILES,
+                            ex.getMessage(), ExceptionsUtil.getMessageForThrowable(ex));
+                }
+            }
+        });
     }
 
     private void onRunConfigurationDataChanged() {
@@ -537,17 +602,24 @@ public class GenerateCommandDialog extends AbstractDialog {
         try {
             this.testExecutionItem = getSelectedExecutionItem(configurationDescription);
             if (testExecutionItem == null) {
-                this.runConfigDescription = null;
-                return;
+                this.runConfigDescription = new RunConfigurationDescription();
+            } else {
+                this.runConfigDescription = configurationDescription;
             }
-            this.runConfigDescription = configurationDescription;
 
             updateRunConfigurationLabel();
             updateRunConfigurationDataLabel();
+            updateExecutionProfileLabel();
             updateConfigurationDataCompositeLayout();
         } finally {
             setGenerateCommandButtonStates();
         }
+    }
+
+    private void updateExecutionProfileLabel() {
+        lblProfileName.setImage(ImageConstants.IMG_16_PROFILE);
+        lblProfileName.setText(runConfigDescription.getProfileName());
+        lblProfileName.getParent().layout();
     }
 
     private void resetLabel(CLabel label, String defautText) {
@@ -583,6 +655,9 @@ public class GenerateCommandDialog extends AbstractDialog {
     }
 
     private void updateRunConfigurationLabel() {
+        if (testExecutionItem == null) {
+            return;
+        }
         lblRunConfiguration.setText(testExecutionItem.getName());
         try {
             lblRunConfiguration.setImage(ImageUtil.loadImage(testExecutionItem.getImageUrlAsString()));
@@ -593,6 +668,9 @@ public class GenerateCommandDialog extends AbstractDialog {
     }
 
     private void updateRunConfigurationDataLabel() {
+        if (testExecutionItem == null) {
+            return;
+        }
         if (runConfigDescription == null) {
             resetLabel(lblConfigurationData, ComposerExecutionMessageConstants.DIA_MSG_CONFIGURATION_IS_REQUIRED);
         }
@@ -706,7 +784,7 @@ public class GenerateCommandDialog extends AbstractDialog {
                 commandBuilder.append(KATALON_EXECUTABLE_WIN32);
                 break;
         }
-        
+
         commandBuilder.append(" -noSplash ");
 
         for (String key : consoleAgrsMap.keySet()) {
@@ -797,7 +875,8 @@ public class GenerateCommandDialog extends AbstractDialog {
         if (!isTestSuite(entityId)) {
             return true;
         }
-        if (runConfigDescription == null || testExecutionItem == null) {
+        if (runConfigDescription == null || testExecutionItem == null
+                || runConfigDescription.getRunConfigurationId().isEmpty()) {
             return false;
         }
         if (!testExecutionItem.requiresExtraConfiguration()) {

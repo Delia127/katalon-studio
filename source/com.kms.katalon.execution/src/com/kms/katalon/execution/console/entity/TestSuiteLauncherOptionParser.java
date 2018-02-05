@@ -3,12 +3,16 @@ package com.kms.katalon.execution.console.entity;
 import java.text.MessageFormat;
 import java.util.List;
 
+import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.controller.TestSuiteController;
+import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.collector.RunConfigurationCollector;
+import com.kms.katalon.execution.configuration.AbstractRunConfiguration;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.console.ConsoleMain;
+import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.exception.ExecutionException;
@@ -18,12 +22,14 @@ import com.kms.katalon.execution.launcher.IConsoleLauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 
 public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParser {
+    private static final String EXECUTION_PROFILE_OPTION = "executionProfile";
+
     private StringConsoleOption testSuitePathOption = new StringConsoleOption() {
         @Override
         public String getOption() {
             return ConsoleMain.TESTSUITE_ID_OPTION;
         }
-        
+
         public boolean isRequired() {
             return true;
         }
@@ -34,10 +40,28 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
         public String getOption() {
             return ConsoleMain.BROWSER_TYPE_OPTION;
         }
-        
+
         public boolean isRequired() {
             return true;
         }
+    };
+
+    private StringConsoleOption executionProfileOption = new StringConsoleOption() {
+
+        @Override
+        public String getOption() {
+            return EXECUTION_PROFILE_OPTION;
+        }
+
+        public boolean isRequired() {
+            return false;
+        };
+
+        @Override
+        public String getDefaultArgumentValue() {
+            return ExecutionProfileEntity.DF_PROFILE_NAME;
+        }
+
     };
 
     @Override
@@ -45,13 +69,15 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
         List<ConsoleOption<?>> allOptions = super.getConsoleOptionList();
         allOptions.add(testSuitePathOption);
         allOptions.add(browserTypeOption);
+        allOptions.add(executionProfileOption);
         return allOptions;
     }
 
     @Override
     public void setArgumentValue(ConsoleOption<?> consoleOption, String argumentValue) throws Exception {
         super.setArgumentValue(consoleOption, argumentValue);
-        if (consoleOption == testSuitePathOption || consoleOption == browserTypeOption) {
+        if (consoleOption == testSuitePathOption || consoleOption == browserTypeOption
+                || consoleOption == executionProfileOption) {
             consoleOption.setValue(argumentValue);
             return;
         }
@@ -66,7 +92,16 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
             executedEntity.setReportLocation(reportableSetting.getReportLocationSetting());
             executedEntity.setEmailConfig(reportableSetting.getEmailConfig(project));
             executedEntity.setRerunSetting(rerunSetting);
-            IRunConfiguration runConfig = createRunConfiguration(project, testSuite, browserTypeOption.getValue());
+            AbstractRunConfiguration runConfig = (AbstractRunConfiguration) createRunConfiguration(project, testSuite,
+                    browserTypeOption.getValue());
+            String profileName = executionProfileOption.getValue();
+            ExecutionProfileEntity executionProfile = GlobalVariableController.getInstance()
+                    .getExecutionProfile(profileName, project);
+            if (executionProfile == null) {
+                throw new ExecutionException(
+                        MessageFormat.format(ExecutionMessageConstants.CONSOLE_MSG_PROFILE_NOT_FOUND, profileName));
+            }
+            runConfig.setExecutionProfile(executionProfile);
             runConfig.build(testSuite, executedEntity);
             return new ConsoleLauncher(manager, runConfig);
         } catch (Exception e) {

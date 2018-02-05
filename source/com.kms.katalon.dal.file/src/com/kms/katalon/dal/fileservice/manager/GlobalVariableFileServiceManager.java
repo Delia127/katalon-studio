@@ -82,7 +82,7 @@ public class GlobalVariableFileServiceManager {
      * Get the execution profile by the given <code>name</code> and <code>parent folder</code>
      * 
      * @param name
-     * @param parentFolder
+     * @param project
      * @return
      * @throws DALException
      */
@@ -91,11 +91,14 @@ public class GlobalVariableFileServiceManager {
             FolderEntity parentFolder = FolderFileServiceManager.getProfileRoot(project);
             String path = new File(parentFolder.getLocation(),
                     name + ExecutionProfileEntity.getGlobalVariableFileExtension()).getAbsolutePath();
-            ExecutionProfileEntity globalVariableCollection = (ExecutionProfileEntity) EntityService.getInstance()
+            ExecutionProfileEntity executionProfile = (ExecutionProfileEntity) EntityService.getInstance()
                     .getEntityByPath(path);
-            globalVariableCollection.setProject(parentFolder.getProject());
-            globalVariableCollection.setParentFolder(parentFolder);
-            return globalVariableCollection;
+            if (executionProfile == null) {
+                return null;
+            }
+            executionProfile.setProject(parentFolder.getProject());
+            executionProfile.setParentFolder(parentFolder);
+            return executionProfile;
         } catch (Exception e) {
             throw new DALException(e);
         }

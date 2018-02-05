@@ -29,5 +29,5 @@ public interface IGlobalVariableDataProvider {
 
     ExecutionProfileEntity newProfile(String newName, ProjectEntity project) throws DALException;
     
-    ExecutionProfileEntity copyProfile(ExecutionProfileEntity profileEntity) throws DALException;
+    ExecutionProfileEntity copyProfile(String newName, ExecutionProfileEntity profileEntity) throws DALException;
 }
