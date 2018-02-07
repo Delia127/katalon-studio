@@ -1,7 +1,10 @@
 package com.kms.katalon.composer.components.impl.tree;
 
 import java.io.File;
-
+import static com.kms.katalon.entity.repository.WebServiceRequestEntity.GET_METHOD;
+import static com.kms.katalon.entity.repository.WebServiceRequestEntity.POST_METHOD;
+import static com.kms.katalon.entity.repository.WebServiceRequestEntity.PUT_METHOD;
+import static com.kms.katalon.entity.repository.WebServiceRequestEntity.DELETE_METHOD;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Image;
@@ -54,9 +57,22 @@ public class WebElementTreeEntity extends AbstractTreeEntity {
 
     @Override
     public Image getImage() throws Exception {
+        
         if (webElement instanceof WebServiceRequestEntity) {
-            return ImageConstants.IMG_16_WS_TEST_OBJECT;
+            switch (((WebServiceRequestEntity) webElement).getRestRequestMethod()) {
+                case GET_METHOD:
+                    return ImageConstants.IMG_16_LNK_TEST_OBJECT;
+                case POST_METHOD:
+                    return ImageConstants.IMG_16_CHK_TEST_OBJECT;
+                case PUT_METHOD:
+                    return ImageConstants.IMG_16_IMG_TEST_OBJECT;
+                case DELETE_METHOD:
+                    return ImageConstants.IMG_16_IMG_TEST_OBJECT;
+                default:
+                    return ImageConstants.IMG_16_WS_TEST_OBJECT;
+            }
         }
+        
         WebElementEntity webElement = (WebElementEntity) getObject();
         switch (HTMLTags.getElementType(webElement.getPropertyValue(WebElementPropertyEntity.TAG_PROPERTY), 
                 webElement.getPropertyValue(WebElementPropertyEntity.TYPE_PROPERTY))) {

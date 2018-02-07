@@ -77,6 +77,7 @@ public class OpenWebServiceRequestObjectHandler {
                     mPart.setContributionURI(WEBSERVICE_REST_OBJECT_PART_URI);
                 }
                 mPart.setCloseable(true);
+                //TODO we will change this place.
                 mPart.setIconURI(ImageConstants.URL_16_WS_TEST_OBJECT);
                 mPart.setTooltip(requestObject.getIdForDisplay());
                 mPart.getTags().add(EPartService.REMOVE_ON_HIDE_TAG);
