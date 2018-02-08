@@ -162,7 +162,6 @@ public class RestServicePart extends WebServicePart {
 
     private List<WebElementPropertyEntity> extractRestParameters(String url) {
         List<WebElementPropertyEntity> paramEntities;
-
         try {
             uriBuilder = new URIBuilder(url);
             List<NameValuePair> params = uriBuilder.getQueryParams();
@@ -195,7 +194,6 @@ public class RestServicePart extends WebServicePart {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-
 //                tblParams.deleteSelections();
                 deleteSelectedParams();
             }
@@ -214,7 +212,6 @@ public class RestServicePart extends WebServicePart {
 
     @Override
     protected void deleteSelectedParams() {
-
         int[] selectionIndices = tblParams.getTable().getSelectionIndices();
         Set<Integer> selectionIndexSet = new HashSet<>();
         for (int index : selectionIndices) {
@@ -249,10 +246,8 @@ public class RestServicePart extends WebServicePart {
     protected void handleParamNameChanged(Object element, Object value) {
         if (element != null && element instanceof WebElementPropertyEntity && value != null
                 && value instanceof String) {
-
             WebElementPropertyEntity paramProperty = (WebElementPropertyEntity) element;
             paramProperty.setName((String) value);
-
             updateRequestUrlWhenParamsChange();
         }
     }
@@ -261,10 +256,8 @@ public class RestServicePart extends WebServicePart {
     protected void handleParamValueChanged(Object element, Object value) {
         if (element != null && element instanceof WebElementPropertyEntity && value != null
                 && value instanceof String) {
-
             WebElementPropertyEntity paramProperty = (WebElementPropertyEntity) element;
             paramProperty.setValue((String) value);
-
             updateRequestUrlWhenParamsChange();
         }
     }
