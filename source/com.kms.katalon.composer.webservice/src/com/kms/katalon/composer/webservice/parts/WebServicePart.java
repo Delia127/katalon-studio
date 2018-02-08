@@ -670,7 +670,16 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
         compositeTableDetails.setLayout(tableColumnLayout);
 
         final ParameterTable tblNameValue = new ParameterTable(compositeTableDetails,
-                SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.NO_SCROLL | SWT.V_SCROLL, dirtyable);
+                SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.NO_SCROLL | SWT.V_SCROLL, dirtyable) {
+            @Override
+            public void deleteSelections() {
+                if (!isHttpHeader) {
+                    deleteSelectedParams();
+                } else {
+                    super.deleteSelections();
+                }
+            }
+        };
         tblNameValue.createTableEditor();
 
         Table table = tblNameValue.getTable();
@@ -682,20 +691,23 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
         table.addListener(SWT.MouseDoubleClick, new Listener() {
             @Override
             public void handleEvent(org.eclipse.swt.widgets.Event event) {
-                WebElementPropertyEntity newProp = new WebElementPropertyEntity(StringConstants.EMPTY,
-                        StringConstants.EMPTY);
-                // Add new row
-                tblNameValue.addRow(newProp);
-
-                // Focus on the new row
-                tblNameValue.editElement(newProp, 0);
+                tblNameValue.addRow();
             }
         });
 
         TableViewerColumn tvcName = new TableViewerColumn(tblNameValue, SWT.NONE);
         tvcName.getColumn().setText(ParameterTable.columnNames[0]);
         tvcName.getColumn().setWidth(400);
-        tvcName.setEditingSupport(new PropertyNameEditingSupport(tblNameValue, dirtyable, isHttpHeader));
+        tvcName.setEditingSupport(new PropertyNameEditingSupport(tblNameValue, dirtyable, isHttpHeader) {
+            @Override
+            protected void setValue(Object element, Object value) {
+                if (!isHttpHeader) {
+                    handleParamNameChanged(element, value);
+                } else {
+                    super.setValue(element, value);
+                }
+            }
+        });
         tvcName.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -707,7 +719,16 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
         TableViewerColumn tvcValue = new TableViewerColumn(tblNameValue, SWT.NONE);
         tvcValue.getColumn().setText(ParameterTable.columnNames[1]);
         tvcValue.getColumn().setWidth(500);
-        tvcValue.setEditingSupport(new PropertyValueEditingSupport(tblNameValue, dirtyable, isHttpHeader));
+        tvcValue.setEditingSupport(new PropertyValueEditingSupport(tblNameValue, dirtyable, isHttpHeader) {
+            @Override
+            protected void setValue(Object element, Object value) {
+                if (!isHttpHeader) {
+                    handleParamValueChanged(element, value);
+                } else {
+                    super.setValue(element, value);
+                }
+            }
+        });
         tvcValue.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -726,6 +747,12 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
 
         return tblNameValue;
     }
+    
+    protected void handleParamNameChanged(Object element, Object value) {};
+    
+    protected void handleParamValueChanged(Object element, Object value) {};
+    
+    protected void deleteSelectedParams() {};
 
     protected SourceViewer createSourceViewer(Composite parent, GridData layoutData) {
         CompositeRuler ruler = new CompositeRuler();
