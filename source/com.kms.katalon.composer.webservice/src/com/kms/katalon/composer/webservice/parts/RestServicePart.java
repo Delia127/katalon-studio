@@ -224,8 +224,7 @@ public class RestServicePart extends WebServicePart {
             .filter(i -> !selectionIndexSet.contains(i))
             .forEach(i -> unselectedParamProperties.add(paramProperties.get(i)));
 
-        List<NameValuePair> params = unselectedParamProperties
-                .stream()
+        List<NameValuePair> params = unselectedParamProperties.stream()
                 .map(pr -> new BasicNameValuePair(pr.getName(), pr.getValue()))
                 .collect(Collectors.toList());
 
