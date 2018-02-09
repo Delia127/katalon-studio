@@ -44,6 +44,7 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 
 @Action(value = "verifyElementChecked")
 public class VerifyElementCheckedKeyword extends MobileAbstractKeyword {
@@ -65,14 +66,14 @@ public class VerifyElementCheckedKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public boolean verifyElementChecked(TestObject to, int timeout, FailureHandling flowControl) throws StepFailedException {
-        return KeywordMain.runKeyword({
+        return MobileKeywordMain.runKeyword({
             if (MobileElementCommonHelper.isElementChecked(to, timeout)) {
                 logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_ELEMENT_X_CHECKED, to.getObjectId()))
                 return true
             } else {
-                KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_ELEMENT_X_CHECKED, to.getObjectId()), flowControl, null)
+                MobileKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_ELEMENT_X_CHECKED, to.getObjectId()), flowControl, null, true)
                 return false
             }
-        }, flowControl, to != null ?  MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_X_CHECKED, to.getObjectId()) : StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_CHECKED)
+        }, flowControl, true, to != null ?  MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_X_CHECKED, to.getObjectId()) : StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_CHECKED)
     }
 }

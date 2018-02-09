@@ -18,6 +18,7 @@ import com.kms.katalon.core.mobile.constants.CoreMobileMessageConstants
 import com.kms.katalon.core.mobile.constants.StringConstants
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
 import com.kms.katalon.core.mobile.keyword.internal.MobileDriverFactory
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.util.internal.PathUtil
 
@@ -41,13 +42,13 @@ public class StartApplicationKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public void startApplication(String appFile, boolean uninstallAfterCloseApp, FailureHandling flowControl) throws StepFailedException {
-        KeywordMain.runKeyword({
+        MobileKeywordMain.runKeyword({
             Preconditions.checkArgument(StringUtils.isNotEmpty(appFile), CoreMobileMessageConstants.KW_MSG_APP_FILE_MISSING);
             String applicationFileAbs = getAbsolutePath(appFile)
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_STARTING_APP_AT, StringUtils.defaultString(applicationFileAbs)))
             MobileDriverFactory.startMobileDriver(applicationFileAbs, uninstallAfterCloseApp)
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_START_APP_AT,  StringUtils.defaultString(applicationFileAbs)))
-        }, flowControl, MessageFormat.format(StringConstants.KW_MSG_UNABLE_TO_START_APP_AT, StringUtils.defaultString(appFile)))
+        }, flowControl, false, MessageFormat.format(StringConstants.KW_MSG_UNABLE_TO_START_APP_AT, StringUtils.defaultString(appFile)))
     }
     
     private String getAbsolutePath(String filePath) {

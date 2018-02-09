@@ -44,6 +44,7 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 
 @Action(value = "switchToPortrait")
 public class SwitchToPortraitKeyword extends MobileAbstractKeyword {
@@ -63,7 +64,7 @@ public class SwitchToPortraitKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public boolean switchToPortrait(FailureHandling flowControl) throws StepFailedException {
-        KeywordMain.runKeyword({
+        MobileKeywordMain.runKeyword({
             AppiumDriver driver = getAnyAppiumDriver()
             String context = driver.getContext()
             try {
@@ -73,6 +74,6 @@ public class SwitchToPortraitKeyword extends MobileAbstractKeyword {
             } finally {
                 driver.context(context)
             }
-        }, flowControl, StringConstants.KW_MSG_UNABLE_SWITCH_PORTRAIT)
+        }, flowControl, true, StringConstants.KW_MSG_UNABLE_SWITCH_PORTRAIT)
     }
 }
