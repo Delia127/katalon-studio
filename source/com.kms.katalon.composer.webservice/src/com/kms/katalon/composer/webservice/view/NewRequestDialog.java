@@ -1,6 +1,8 @@
 package com.kms.katalon.composer.webservice.view;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -10,6 +12,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.impl.dialogs.CommonNewEntityDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -20,7 +23,9 @@ import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 
 public class NewRequestDialog extends CommonNewEntityDialog<WebServiceRequestEntity> {
 
-    private String webServiveType = WebServiceRequestEntity.SERVICE_TYPES[0];
+    private String webServiveType = WebServiceRequestEntity.SERVICE_TYPES[1];
+
+    private String endPoint = "";
 
     private Combo cbbRequestType;
 
@@ -33,6 +38,7 @@ public class NewRequestDialog extends CommonNewEntityDialog<WebServiceRequestEnt
     @Override
     protected Control createEntityCustomControl(Composite parent, int column, int span) {
         createRequestTypeControl(parent, column);
+        createURIControl(parent, column);
         return super.createEntityCustomControl(parent, column, span);
     }
 
@@ -45,7 +51,7 @@ public class NewRequestDialog extends CommonNewEntityDialog<WebServiceRequestEnt
         cbbRequestType = new Combo(parent, SWT.READ_ONLY);
         cbbRequestType.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         cbbRequestType.setItems(WebServiceRequestEntity.SERVICE_TYPES);
-        cbbRequestType.select(0);
+        cbbRequestType.select(1);
         cbbRequestType.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
                 setWebServiveType(((Combo) e.getSource()).getText());
@@ -59,6 +65,10 @@ public class NewRequestDialog extends CommonNewEntityDialog<WebServiceRequestEnt
         this.webServiveType = webServiveType;
     }
 
+    private void setEndPoint(String url) {
+        this.endPoint = url;
+    }
+    
     @Override
     protected void createEntity() {
         try {
@@ -72,6 +82,30 @@ public class NewRequestDialog extends CommonNewEntityDialog<WebServiceRequestEnt
     protected void setEntityProperties() {
         super.setEntityProperties();
         entity.setServiceType(webServiveType);
+        if (WebServiceRequestEntity.SOAP.equals(webServiveType)) {
+            entity.setWsdlAddress(endPoint);
+        } else {
+            entity.setRestUrl(endPoint);
+        }
     }
 
+    private Control createURIControl(Composite parent, int column) {
+        parent.setLayoutData(new GridData(GridData.FILL_BOTH));
+        parent.setLayout(new GridLayout(column, false));
+        Label labelName = new Label(parent, SWT.NONE);
+        labelName.setText(StringConstants.PA_LBL_URL);
+
+        Text textURL = new Text(parent, SWT.BORDER);
+        textURL.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        textURL.setMessage(StringConstants.PA_LBL_URL);
+        textURL.selectAll();
+        textURL.addModifyListener(new ModifyListener() {
+
+            @Override
+            public void modifyText(ModifyEvent e) {
+                setEndPoint(((Text) e.getSource()).getText());
+            }
+        });
+        return parent;
+    }
 }
