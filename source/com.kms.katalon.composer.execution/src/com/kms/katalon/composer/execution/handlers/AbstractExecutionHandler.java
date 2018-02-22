@@ -26,7 +26,6 @@ import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.advanced.MPerspectiveStack;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
-import org.eclipse.e4.ui.model.application.ui.menu.MHandledToolItem;
 import org.eclipse.e4.ui.model.application.ui.menu.impl.ToolControlImpl;
 import org.eclipse.e4.ui.workbench.addons.minmax.TrimStack;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
@@ -60,9 +59,6 @@ import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
-import com.kms.katalon.execution.util.ExecutionUtil;
-import com.kms.katalon.preferences.internal.PreferenceStoreManager;
-import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 @SuppressWarnings("restriction")
 public abstract class AbstractExecutionHandler {
@@ -140,7 +136,6 @@ public abstract class AbstractExecutionHandler {
     public void execute(ParameterizedCommand command) {
         try {
             execute(getLaunchMode(command));
-            ExecutionUtil.saveExecutionCommand(command.getCommand().getId());
         } catch (ExecutionException e) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR, e.getMessage());
         } catch (SWTException e) {
@@ -151,8 +146,7 @@ public abstract class AbstractExecutionHandler {
             LoggerSingleton.logError(e);
         }
     }
-    
-    
+
     public static Entity getExecutionTarget() {
         MPartStack composerStack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID,
                 application);

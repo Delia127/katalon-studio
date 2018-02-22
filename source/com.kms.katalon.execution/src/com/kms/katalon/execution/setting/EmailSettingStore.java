@@ -21,6 +21,7 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.constants.ExecutionPreferenceConstants;
+import com.kms.katalon.execution.util.MailUtil.MailSecurityProtocolType;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class EmailSettingStore extends BundleSettingStore {
@@ -97,7 +98,7 @@ public class EmailSettingStore extends BundleSettingStore {
     }
 
     public String getProtocol(boolean encryptionEnabled) throws IOException, GeneralSecurityException {
-        return getStringProperty(ExecutionPreferenceConstants.MAIL_CONFIG_SECURITY_PROTOCOL, StringUtils.EMPTY,
+        return getStringProperty(ExecutionPreferenceConstants.MAIL_CONFIG_SECURITY_PROTOCOL, MailSecurityProtocolType.None.toString(),
                 encryptionEnabled);
     }
 
