@@ -1,5 +1,10 @@
 package com.kms.katalon.composer.webservice.handlers;
 
+import static com.kms.katalon.entity.repository.WebServiceRequestEntity.DELETE_METHOD;
+import static com.kms.katalon.entity.repository.WebServiceRequestEntity.GET_METHOD;
+import static com.kms.katalon.entity.repository.WebServiceRequestEntity.POST_METHOD;
+import static com.kms.katalon.entity.repository.WebServiceRequestEntity.PUT_METHOD;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
@@ -19,6 +24,7 @@ import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.webservice.constants.ImageConstants;
 import com.kms.katalon.composer.webservice.parts.RestServicePart;
 import com.kms.katalon.composer.webservice.parts.SoapServicePart;
+import com.kms.katalon.composer.webservice.util.WebServiceUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
@@ -77,8 +83,7 @@ public class OpenWebServiceRequestObjectHandler {
                     mPart.setContributionURI(WEBSERVICE_REST_OBJECT_PART_URI);
                 }
                 mPart.setCloseable(true);
-                //TODO we will change this place.
-                mPart.setIconURI(ImageConstants.URL_16_WS_TEST_OBJECT);
+                mPart.setIconURI(WebServiceUtil.getRequestMethodIcon(requestObject.getRestRequestMethod()));
                 mPart.setTooltip(requestObject.getIdForDisplay());
                 mPart.getTags().add(EPartService.REMOVE_ON_HIDE_TAG);
                 stack.getChildren().add(mPart);
@@ -91,4 +96,5 @@ public class OpenWebServiceRequestObjectHandler {
             stack.setSelectedElement(mPart);
         }
     }
+
 }

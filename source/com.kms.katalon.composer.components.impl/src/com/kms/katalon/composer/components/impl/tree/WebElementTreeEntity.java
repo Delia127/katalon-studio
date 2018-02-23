@@ -1,10 +1,12 @@
 package com.kms.katalon.composer.components.impl.tree;
 
-import java.io.File;
+import static com.kms.katalon.entity.repository.WebServiceRequestEntity.DELETE_METHOD;
 import static com.kms.katalon.entity.repository.WebServiceRequestEntity.GET_METHOD;
 import static com.kms.katalon.entity.repository.WebServiceRequestEntity.POST_METHOD;
 import static com.kms.katalon.entity.repository.WebServiceRequestEntity.PUT_METHOD;
-import static com.kms.katalon.entity.repository.WebServiceRequestEntity.DELETE_METHOD;
+
+import java.io.File;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Image;
@@ -57,24 +59,24 @@ public class WebElementTreeEntity extends AbstractTreeEntity {
 
     @Override
     public Image getImage() throws Exception {
-        
+
         if (webElement instanceof WebServiceRequestEntity) {
             switch (((WebServiceRequestEntity) webElement).getRestRequestMethod()) {
                 case GET_METHOD:
-                    return ImageConstants.IMG_16_LNK_TEST_OBJECT;
+                    return ImageConstants.IMG_16_GET_METHOD;
                 case POST_METHOD:
-                    return ImageConstants.IMG_16_CHK_TEST_OBJECT;
+                    return ImageConstants.IMG_16_POST_METHOD;
                 case PUT_METHOD:
-                    return ImageConstants.IMG_16_IMG_TEST_OBJECT;
+                    return ImageConstants.IMG_16_PUT_METHOD;
                 case DELETE_METHOD:
-                    return ImageConstants.IMG_16_IMG_TEST_OBJECT;
+                    return ImageConstants.IMG_16_DELETE_METHOD;
                 default:
                     return ImageConstants.IMG_16_WS_TEST_OBJECT;
             }
         }
-        
+
         WebElementEntity webElement = (WebElementEntity) getObject();
-        switch (HTMLTags.getElementType(webElement.getPropertyValue(WebElementPropertyEntity.TAG_PROPERTY), 
+        switch (HTMLTags.getElementType(webElement.getPropertyValue(WebElementPropertyEntity.TAG_PROPERTY),
                 webElement.getPropertyValue(WebElementPropertyEntity.TYPE_PROPERTY))) {
             case HTMLTags.TAG_A:
                 return ImageConstants.IMG_16_LNK_TEST_OBJECT;
@@ -164,7 +166,7 @@ public class WebElementTreeEntity extends AbstractTreeEntity {
     @Override
     public void loadAllDescentdantEntities() throws Exception {
     }
-    
+
     public boolean canAddToObjectSpy() {
         if (webElement instanceof WebServiceRequestEntity) {
             return false;

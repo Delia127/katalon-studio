@@ -22,6 +22,7 @@ import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
+import org.eclipse.e4.ui.workbench.IPresentationEngine;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.jface.bindings.keys.IKeyLookup;
@@ -186,6 +187,8 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
     protected static final String OAUTH_1_0 = RequestHeaderConstants.AUTHORIZATION_TYPE_OAUTH_1_0;
 
     private static final int MIN_PART_WIDTH = 400;
+
+    private static final String ICON_URI_FOR_PART = "IconUriForPart";
 
     @Inject
     protected MApplication application;
@@ -1123,6 +1126,16 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
         if (StringUtils.isBlank(authType)) {
             ccbAuthType.select(0);
         }
+    }
+    
+    public void updateIconURL(String imageURL) {
+        MPartStack stack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
+        stack.getChildren().remove(mPart);
+        //Work around to update Icon URL for MPart.
+        mPart.getTransientData().put(ICON_URI_FOR_PART, imageURL);
+        mPart.setIconURI(imageURL);
+        stack.getChildren().add(mPart);
+        stack.setSelectedElement(mPart);
     }
 
 }

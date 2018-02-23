@@ -311,6 +311,14 @@ public interface IImageKeys {
     public static final String LBL_TEST_OBJECT_16 = "entity/lbl_test_object_16.png"; //$NON-NLS-1$
 
     public static final String LNK_TEST_OBJECT_16 = "entity/lnk_test_object_16.png"; //$NON-NLS-1$
+    
+    public static final String GET_METHOD_16 = "entity/get_16.png";
+
+    public static final String POST_METHOD_16 = "entity/post_16.png";
+
+    public static final String PUT_METHOD_16 = "entity/put_16.png";
+
+    public static final String DELETE_METHOD_16 = "entity/delete_16.png";
 
     public static final String RBT_TEST_OBJECT_16 = "entity/rbt_test_object_16.png"; //$NON-NLS-1$
 

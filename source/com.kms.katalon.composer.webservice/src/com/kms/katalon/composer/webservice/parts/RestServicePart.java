@@ -40,6 +40,7 @@ import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
+import com.kms.katalon.composer.webservice.util.WebServiceUtil;
 import com.kms.katalon.composer.webservice.view.ExpandableComposite;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.WebServiceController;
@@ -240,6 +241,7 @@ public class RestServicePart extends WebServicePart {
         originalWsObject.setHttpHeaderProperties(tblHeaders.getInput());
 
         originalWsObject.setHttpBody(requestBody.getTextWidget().getText());
+        updateIconURL(WebServiceUtil.getRequestMethodIcon(originalWsObject.getRestRequestMethod()));
     }
 
     @Override

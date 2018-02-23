@@ -71,6 +71,14 @@ public class ImageConstants {
     public static final Image IMG_16_LBL_TEST_OBJECT = ImageManager.getImage(IImageKeys.LBL_TEST_OBJECT_16);
 
     public static final Image IMG_16_LNK_TEST_OBJECT = ImageManager.getImage(IImageKeys.LNK_TEST_OBJECT_16);
+    
+    public static final Image IMG_16_GET_METHOD = ImageManager.getImage(IImageKeys.GET_METHOD_16);
+
+    public static final Image IMG_16_POST_METHOD = ImageManager.getImage(IImageKeys.POST_METHOD_16);
+
+    public static final Image IMG_16_DELETE_METHOD = ImageManager.getImage(IImageKeys.DELETE_METHOD_16);
+
+    public static final Image IMG_16_PUT_METHOD = ImageManager.getImage(IImageKeys.PUT_METHOD_16);
 
     public static final Image IMG_16_RBT_TEST_OBJECT = ImageManager.getImage(IImageKeys.RBT_TEST_OBJECT_16);
 
