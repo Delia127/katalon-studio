@@ -111,7 +111,7 @@ public class KobitonApiProvider {
 
         return allDevices.getOrDefault("favoriteDevices", Collections.emptyList())
                 .stream()
-                .filter(d -> !d.isHidden() && d.isOnline() && d.isFavorite() && d.isCloud())
+                .filter(d -> !d.isHidden() && d.isOnline() && d.isFavorite())
                 .collect(Collectors.toList());
     }
 
