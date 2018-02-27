@@ -31,6 +31,10 @@ public class WebServiceRequestEntity extends WebElementEntity {
     private String serviceType = SOAP; // Default
 
     private List<WebElementPropertyEntity> httpHeaderProperties;
+    
+    private String httpBodyType = ""; // text, x-www-form-urlencoded, form-data, file
+    
+    private String httpBodyContent = ""; // JSON format of body content
 
     private String httpBody = "";
 
@@ -155,5 +159,21 @@ public class WebServiceRequestEntity extends WebElementEntity {
 
     public void setRestParameters(List<WebElementPropertyEntity> restParameters) {
         this.restParameters = restParameters;
+    }
+
+    public String getHttpBodyType() {
+        return httpBodyType;
+    }
+
+    public void setHttpBodyType(String httpBodyType) {
+        this.httpBodyType = httpBodyType;
+    }
+
+    public String getHttpBodyContent() {
+        return httpBodyContent;
+    }
+
+    public void setHttpBodyContent(String httpBodyContent) {
+        this.httpBodyContent = httpBodyContent;
     }
 }

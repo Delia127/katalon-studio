@@ -34,7 +34,6 @@ import com.kms.katalon.entity.testdata.InternalDataColumnEntity;
 import com.kms.katalon.entity.testdata.InternalDataFilePropertyEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.entity.util.Util;
-import com.kms.katalon.entity.webservice.WsEntities;
 import com.kms.katalon.groovy.reference.TestArtifactScriptRefactor;
 
 public class DataFileFileServiceManager {
@@ -336,30 +335,7 @@ public class DataFileFileServiceManager {
                     project);
         }
     }
-
-    /**
-     * get all internal data values of a data file
-     * 
-     * @param dataFile
-     * @param columnName
-     * @return
-     * @throws Exception
-     */
-    public static WsEntities getAllInternalDataValue(DataFileEntity dataFile, String columnName) throws Exception {
-        // List<InternalDataColumnEntity> lstInternalDatas = new
-        // ArrayList<InternalDataColumnEntity>();
-        List<Object> valuesList = new ArrayList<Object>();
-        for (InternalDataColumnEntity entity : dataFile.getInternalDataColumns()) {
-            if (entity.getName().equals(columnName)) {
-                int colIndex = dataFile.getInternalDataColumns().indexOf(entity);
-                valuesList = dataFile.getData().get(colIndex);
-            }
-        }
-        WsEntities wsEntity = new WsEntities();
-        wsEntity.setInternalDataValues(valuesList);
-        return wsEntity;
-    }
-
+    
     /**
      * get number internal data rows by name of a data file
      * 

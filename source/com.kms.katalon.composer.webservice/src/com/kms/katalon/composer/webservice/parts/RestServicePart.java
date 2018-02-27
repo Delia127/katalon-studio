@@ -1,7 +1,5 @@
 package com.kms.katalon.composer.webservice.parts;
 
-import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -40,19 +38,16 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.widgets.ToolItem;
 
 import com.kms.katalon.composer.components.impl.dialogs.ProgressMonitorDialogWithThread;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.resources.constants.IImageKeys;
-import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
+import com.kms.katalon.composer.webservice.editor.HttpBodyEditorComposite;
 import com.kms.katalon.composer.webservice.view.ExpandableComposite;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.WebServiceController;
@@ -62,7 +57,6 @@ import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
 
 public class RestServicePart extends WebServicePart {
-
     private static final String[] FILTER_EXTS = new String[] { "*.json; *.xml; *.txt" };
 
     private static final String[] FILTER_NAMES = new String[] { "Text-based files (*.json, *.xml, *.txt)" };
@@ -109,7 +103,6 @@ public class RestServicePart extends WebServicePart {
                                 public void run() {
                                     try {
                                         tabResponse.getParent().setSelection(tabResponse);
-
                                         String projectDir = ProjectController.getInstance().getCurrentProject()
                                                 .getFolderLocation();
                                         ResponseObject responseObject = WebServiceController.getInstance().sendRequest(
@@ -287,36 +280,9 @@ public class RestServicePart extends WebServicePart {
     protected void addTabBody(TabFolder parent) {
         super.addTabBody(parent);
         Composite tabComposite = (Composite) tabBody.getControl();
-        ToolBar toolbar = new ToolBar(tabComposite, SWT.FLAT | SWT.RIGHT);
-        ToolItem tiLoadFromFile = new ToolItem(toolbar, SWT.PUSH);
-        tiLoadFromFile.setText(ComposerWebserviceMessageConstants.BTN_LOAD_FROM_FILE);
-        tiLoadFromFile.setImage(ImageManager.getImage(IImageKeys.ATTACHMENT_16));
-        tiLoadFromFile.addSelectionListener(new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                if (!warningIfBodyNotEmpty()) {
-                    return;
-                }
-                // Load body template from file
-                FileDialog dialog = new FileDialog(toolbar.getShell());
-                dialog.setFilterNames(FILTER_NAMES);
-                dialog.setFilterExtensions(FILTER_EXTS);
-                dialog.setFilterPath(ProjectController.getInstance().getCurrentProject().getFolderLocation());
-                String filePath = dialog.open();
-                if (StringUtils.isEmpty(filePath)) {
-                    return;
-                }
-                try {
-                    String bodyContent = FileUtils.readFileToString(new File(filePath));
-                    requestBody.setDocument(createDocument(bodyContent));
-                    setDirty();
-                } catch (IOException ex) {
-                    LoggerSingleton.logError(ex);
-                }
-            }
-        });
-        requestBody = createSourceViewer(tabComposite, new GridData(SWT.FILL, SWT.FILL, true, true));
+        // requestBody = createSourceViewer(tabComposite, new GridData(SWT.FILL, SWT.FILL, true, true));
+        requestBodyEditor = new HttpBodyEditorComposite(tabComposite, SWT.NONE, this);
+        requestBodyEditor.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
     }
 
     @Override
@@ -356,41 +322,74 @@ public class RestServicePart extends WebServicePart {
         originalWsObject.setRestUrl(wsApiControl.getRequestURL());
         originalWsObject.setRestRequestMethod(wsApiControl.getRequestMethod());
 
-        tblParams.removeEmptyProperty();
-        originalWsObject.setRestParameters(tblParams.getInput());
+//        tblParams.removeEmptyProperty();
+//        originalWsObject.setRestParameters(tblParams.getInput());
 
         tblHeaders.removeEmptyProperty();
         originalWsObject.setHttpHeaderProperties(tblHeaders.getInput());
 
-        originalWsObject.setHttpBody(requestBody.getTextWidget().getText());
+        // originalWsObject.setHttpBody(requestBody.getTextWidget().getText());
+        originalWsObject.setHttpBodyType(requestBodyEditor.getHttpBodyType());
+        originalWsObject.setHttpBodyContent(requestBodyEditor.getHttpBodyContent());
     }
 
     @Override
     protected void populateDataToUI() {
-        String restUrl = originalWsObject.getRestUrl();
-        wsApiControl.getRequestURLControl().setText(restUrl);
-        
-        String restRequestMethod = originalWsObject.getRestRequestMethod();
-        int index = Arrays.asList(WebServiceRequestEntity.REST_REQUEST_METHODS).indexOf(restRequestMethod);
-        wsApiControl.getRequestMethodControl().select(index < 0 ? 0 : index);
+        try {
+            WebServiceRequestEntity clone = (WebServiceRequestEntity) originalWsObject.clone();
+            String restUrl = clone.getRestUrl();
+            uriBuilder = new URIBuilder(restUrl);
+            
+            // Fix for back compatibility with already existing project (KAT-2930)
+            boolean isOldVersion = !clone.getRestParameters().isEmpty();
+            if (isOldVersion) {
+                tempPropList = new ArrayList<WebElementPropertyEntity>(clone.getRestParameters());
+                List<NameValuePair> params = tempPropList.stream()
+                        .map(pr -> new BasicNameValuePair(pr.getName(), pr.getValue()))
+                        .collect(Collectors.toList());
+                clone.setRestParameters(Collections.emptyList());
+                uriBuilder.addParameters(params);
+            }
+           
+            wsApiControl.getRequestURLControl().setText(uriBuilder.build().toString());
+            
+            String restRequestMethod = clone.getRestRequestMethod();
+            int index = Arrays.asList(WebServiceRequestEntity.REST_REQUEST_METHODS).indexOf(restRequestMethod);
+            wsApiControl.getRequestMethodControl().select(index < 0 ? 0 : index);
 
-        tempPropList = new ArrayList<WebElementPropertyEntity>(originalWsObject.getRestParameters());
-        params.clear();
-        params.addAll(tempPropList);
-        tblParams.refresh();
+            tempPropList = new ArrayList<WebElementPropertyEntity>(clone.getHttpHeaderProperties());
+            httpHeaders.clear();
+            httpHeaders.addAll(tempPropList);
+            tblHeaders.refresh();
 
-        tempPropList = new ArrayList<WebElementPropertyEntity>(originalWsObject.getHttpHeaderProperties());
+            populateBasicAuthFromHeader();
+            populateOAuth1FromHeader();
+            renderAuthenticationUI(ccbAuthType.getText());
+
+            updateHeaders(clone);
+
+            requestBodyEditor.setInput(clone);
+            
+            tabBody.getControl().setEnabled(isBodySupported());
+            dirtyable.setDirty(false);
+            
+            if (isOldVersion) {
+                originalWsObject = clone;
+                save();
+            }
+        } catch (URISyntaxException e) {
+            // ignore
+        }
+    }
+
+    public void updateHeaders(WebServiceRequestEntity cloneWS) {
+        tempPropList = new ArrayList<WebElementPropertyEntity>(cloneWS.getHttpHeaderProperties());
         httpHeaders.clear();
         httpHeaders.addAll(tempPropList);
         tblHeaders.refresh();
-
-        populateBasicAuthFromHeader();
-        populateOAuth1FromHeader();
-        renderAuthenticationUI(ccbAuthType.getText());
-
-        requestBody.setDocument(createDocument(originalWsObject.getHttpBody()));
-        tabBody.getControl().setEnabled(isBodySupported());
-        dirtyable.setDirty(false);
     }
-
+    
+    public void updateDirty(boolean dirty) {
+        dirtyable.setDirty(dirty);
+    }
 }

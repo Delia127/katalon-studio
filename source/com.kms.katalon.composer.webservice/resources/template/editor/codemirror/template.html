@@ -1,0 +1,60 @@
+<link rel="stylesheet" href="lib/codemirror.css">
+<link rel="stylesheet" href="addon/fold/foldgutter.css" />
+<script src="lib/codemirror.js"></script>
+<script src="addon/mode/loadmode.js"></script>
+<script src="mode/meta.js"></script>
+<script src="addon/fold/foldcode.js"></script>
+<script src="addon/fold/foldgutter.js"></script>
+<script src="addon/fold/brace-fold.js"></script>
+<script src="addon/fold/xml-fold.js"></script>
+<script src="addon/fold/indent-fold.js"></script>
+<script src="addon/fold/markdown-fold.js"></script>
+<script src="addon/fold/comment-fold.js"></script>
+<style>
+.CodeMirror {
+	border-top: 1px solid #ddd;
+	border-bottom: 1px solid #ddd;
+	height: auto;
+}
+
+body {
+	margin: 0px;
+}
+</style>
+<textarea id="code">
+</textarea>
+<script>
+	CodeMirror.modeURL = "mode/%N/%N.js";
+	var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+		lineNumbers : true,
+		lineWrapping: true,
+		matchBrackets : true,
+		foldGutter: true,
+	    gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
+	})
+	
+	editor.on("change", editor => {
+		if (typeof handleEditorChanged != "undefined") {
+			handleEditorChanged();
+		}
+	});
+	
+	editor.setSize(null, screen.availHeight);
+	changeMode(editor, "text/plain");
+	
+	function changeMode(editor, val) {
+		var info = CodeMirror.findModeByMIME(val);
+		console.log(info);
+		if (info) {
+			editor.setOption("mode", val);
+		    CodeMirror.autoLoadMode(editor, info.mode);
+		} else {
+			editor.setOption("mode", null);
+		}
+	}
+
+	function format(editor) {
+	    var totalLines = editor.lineCount();  
+	    editor.autoFormatRange({line:0, ch:0}, {line:totalLines});
+	}
+</script>
