@@ -129,6 +129,9 @@ public class ComposerWebserviceMessageConstants extends NLS {
 
     public static String PA_WARNING_UNSUPORTED_PRIVATE_KEY_FILE;
 
+    // TextBodyEditor
+    public static String PA_MSG_UNABLE_TO_OPEN_BODY_EDITOR;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerWebserviceMessageConstants.class);
