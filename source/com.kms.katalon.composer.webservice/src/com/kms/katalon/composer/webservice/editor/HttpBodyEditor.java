@@ -1,6 +1,8 @@
 package com.kms.katalon.composer.webservice.editor;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
 
 import com.kms.katalon.entity.webservice.HttpBodyContent;
 
@@ -40,5 +42,9 @@ public abstract class HttpBodyEditor extends Composite {
 
     public void setContentTypeUpdated(boolean contentTypeUpdated) {
         this.contentTypeUpdated = contentTypeUpdated;
+    }
+    
+    public void fireModifyEvent() {
+        notifyListeners(SWT.Modify, new Event());
     }
 }

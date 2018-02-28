@@ -19,8 +19,13 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
@@ -28,12 +33,15 @@ import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.core.util.internal.JsonUtil;
+import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.webservice.UrlEncodedBodyContent;
 import com.kms.katalon.entity.webservice.UrlEncodedBodyParameter;
 
 public class UrlEncodedBodyEditor extends HttpBodyEditor {
 
-    private TableViewer tvParams;
+    private ToolItem btnAdd, btnRemove;
+    
+    private ParameterTable tvParams;
     
     private UrlEncodedBodyContent bodyContent = new UrlEncodedBodyContent();
     
@@ -53,7 +61,7 @@ public class UrlEncodedBodyEditor extends HttpBodyEditor {
         ToolBar toolbar = new ToolBar(parent, SWT.FLAT | SWT.WRAP | SWT.RIGHT);
         toolbar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-        ToolItem btnAdd = new ToolItem(toolbar, SWT.FLAT);
+        btnAdd = new ToolItem(toolbar, SWT.FLAT);
         btnAdd.setText(StringConstants.ADD);
         btnAdd.setImage(ImageManager.getImage(IImageKeys.ADD_16));
         btnAdd.addSelectionListener(new SelectionAdapter() {
@@ -65,15 +73,25 @@ public class UrlEncodedBodyEditor extends HttpBodyEditor {
                 bodyContent.addParameter(param);
                 tvParams.add(param);
                 tvParams.editElement(param, 0);
+                fireModifyEvent();
             }
         });
         
-        ToolItem btnRemove = new ToolItem(toolbar, SWT.FLAT);
+        btnRemove = new ToolItem(toolbar, SWT.FLAT);
         btnRemove.setText(StringConstants.REMOVE);
         btnRemove.setImage(ImageManager.getImage(IImageKeys.DELETE_16));
         btnRemove.setDisabledImage(ImageManager.getImage(IImageKeys.DELETE_DISABLED_16));
-        btnRemove.setEnabled(false);
-        
+        btnRemove.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Object[] selections = tvParams.getStructuredSelection().toArray();
+                for (Object selection : selections) {
+                    bodyContent.removeParameter((UrlEncodedBodyParameter) selection);
+                }
+                tvParams.remove(selections);
+                fireModifyEvent();
+            }
+        });
     }
     
     private void createParamTable(Composite parent) {
@@ -84,31 +102,37 @@ public class UrlEncodedBodyEditor extends HttpBodyEditor {
         tableComposite.setLayoutData(gdData);
         tableComposite.setLayout(tableColumnLayout);
         
-        tvParams = new TableViewer(tableComposite,
+        tvParams = new ParameterTable(tableComposite,
                 SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
         tvParams.setContentProvider(ArrayContentProvider.getInstance());
         Table tParams = tvParams.getTable();
         tParams.setHeaderVisible(true);
         tParams.setLinesVisible(true);
+        tParams.addListener(SWT.MouseDoubleClick, new Listener() {
+            @Override
+            public void handleEvent(Event event) {
+                tvParams.addRow();
+            }
+            
+        });
         tvParams.setInput(bodyContent.getParameters());
         
         TableViewerColumn cvKey = new TableViewerColumn(tvParams, SWT.LEFT);
         TableColumn cKey = cvKey.getColumn();
         cKey.setText("Key");
-        
         cvKey.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
                 return ((UrlEncodedBodyParameter) element).getName();
             }
         });
-        
         cvKey.setEditingSupport(new EditingSupport(cvKey.getViewer()) {
             
             @Override
             protected void setValue(Object element, Object value) {
                 ((UrlEncodedBodyParameter) element).setName(String.valueOf(value));
                 tvParams.update(element, null);
+                fireModifyEvent();
             }
 
             @Override
@@ -130,20 +154,19 @@ public class UrlEncodedBodyEditor extends HttpBodyEditor {
         TableViewerColumn cvValue = new TableViewerColumn(tvParams, SWT.LEFT);
         TableColumn cValue = cvValue.getColumn();
         cValue.setText("Value");
-        
         cvValue.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
                 return ((UrlEncodedBodyParameter) element).getValue();
             }
         });
-        
         cvValue.setEditingSupport(new EditingSupport(cvValue.getViewer()) {
             
             @Override
             protected void setValue(Object element, Object value) {
                 ((UrlEncodedBodyParameter) element).setValue(String.valueOf(value));
                 tvParams.update(element, null);
+                fireModifyEvent();
             }
 
             @Override
@@ -183,6 +206,80 @@ public class UrlEncodedBodyEditor extends HttpBodyEditor {
         } else {
             bodyContent = JsonUtil.fromJson(httpBodyContent, UrlEncodedBodyContent.class);
         }
+        initParamTable();
     }
+    
+    private void initParamTable() {
+        tvParams.setInput(bodyContent.getParameters());
+        if (!bodyContent.getParameters().isEmpty()) {
+            btnRemove.setEnabled(true);
+        }
+    }
+    
+    private class ParameterTable extends TableViewer {
+        
+        private Menu menu;
 
+        public ParameterTable(Composite parent, int style) {
+            super(parent, style);
+            
+            createContextMenu();
+        }
+        
+        private void createContextMenu() {
+            Table table = this.getTable();
+            menu = new Menu(table);
+
+            MenuItem menuItemAdd = new MenuItem(menu, SWT.PUSH);
+            menuItemAdd.setText("Insert");
+            menuItemAdd.addSelectionListener(new SelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    TableItem[] items = table.getSelection();
+                    if (items.length > 0) {
+                        addRowAbove(table.indexOf(items[0]));
+                    } else {
+                        addRow();
+                    }
+                }
+            });
+            
+            MenuItem menuItemRemove = new MenuItem(menu, SWT.PUSH);
+            menuItemRemove.setText("Remove");
+            menuItemRemove.addSelectionListener(new SelectionAdapter() {
+                
+                
+            });
+            
+            table.setMenu(menu);
+        }
+
+        public void addRow() {
+            UrlEncodedBodyParameter param = new UrlEncodedBodyParameter();
+            param.setName(StringUtils.EMPTY);
+            param.setValue(StringUtils.EMPTY);
+            bodyContent.addParameter(param);
+            this.add(param);
+            this.editElement(param, 0);
+//            fireModifyEvent();
+        }
+        
+        public void addRowAbove(int selectedRowIndex) {
+            UrlEncodedBodyParameter param = new UrlEncodedBodyParameter();
+            param.setName(StringUtils.EMPTY);
+            param.setValue(StringUtils.EMPTY);
+            bodyContent.addParameter(selectedRowIndex, param);
+            insert(param, selectedRowIndex);
+            editElement(param, 0);
+        }
+        
+        public void removeSelectedRows() {
+            Object[] selections = tvParams.getStructuredSelection().toArray();
+            for (Object selection : selections) {
+                bodyContent.removeParameter((UrlEncodedBodyParameter) selection);
+            }
+            remove(selections);
+//            fireModifyEvent();
+        }
+    }
 }

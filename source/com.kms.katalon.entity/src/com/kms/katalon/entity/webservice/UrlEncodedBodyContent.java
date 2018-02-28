@@ -42,4 +42,12 @@ public class UrlEncodedBodyContent implements HttpBodyContent {
     public void addParameter(UrlEncodedBodyParameter param) {
         params.add(param);
     }
+    
+    public void addParameter(int index, UrlEncodedBodyParameter param) {
+        params.add(index, param);
+    }
+    
+    public void removeParameter(UrlEncodedBodyParameter param) {
+        params.remove(param);
+    }
 }
