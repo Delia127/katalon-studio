@@ -116,8 +116,6 @@ public class HttpBodyEditorComposite extends Composite {
 
         selectedButton.setSelection(true);
         selectedButton.notifyListeners(SWT.Selection, new Event());
-
-        bodyEditors.get(selectedBodyType).setInput(requestEntity.getHttpBodyContent());
     }
 
     private void handleControlModifyListeners() {
@@ -127,6 +125,9 @@ public class HttpBodyEditorComposite extends Composite {
                 Button source = (Button) e.getSource();
                 selectedBodyType = source.getText();
                 HttpBodyEditor httpBodyEditor = bodyEditors.get(selectedBodyType);
+                
+                httpBodyEditor.setInput(webServiceEntity.getHttpBodyContent());
+                
                 slBodyContent.topControl = httpBodyEditor;
                 httpBodyEditor.getParent().layout();
                 servicePart.updateDirty(true);
