@@ -2,6 +2,9 @@ package com.kms.katalon.entity.webservice;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
 
 public class UrlEncodedBodyContent implements HttpBodyContent {
     
@@ -49,5 +52,12 @@ public class UrlEncodedBodyContent implements HttpBodyContent {
     
     public void removeParameter(UrlEncodedBodyParameter param) {
         params.remove(param);
+    }
+    
+    public void removeEmptyParameters() {
+        List<UrlEncodedBodyParameter> removedParams = params.stream()
+                .filter(p -> StringUtils.isBlank(p.getName()) && StringUtils.isBlank(p.getValue()))
+                .collect(Collectors.toList());
+        params.removeAll(removedParams);
     }
 }
