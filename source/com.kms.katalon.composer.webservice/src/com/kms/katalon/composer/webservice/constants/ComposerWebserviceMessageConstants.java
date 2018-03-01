@@ -81,6 +81,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
 
     public static String LBL_PASSWORD;
 
+    public static String LBL_FILE_PATH;
+
     public static String CHK_SHOW_PASSWORD;
 
     public static String BTN_UPDATE_TO_HEADERS;

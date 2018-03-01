@@ -48,4 +48,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String LBL_LOAD_FROM_WSDL = ComposerWebserviceMessageConstants.LBL_LOAD_FROM_WSDL;
     public static final String MSG_CANNOT_PARSE_WSDL = ComposerWebserviceMessageConstants.MSG_CANNOT_PARSE_WSDL;
     public static final String MSG_FETCHING_FROM_WSDL = ComposerWebserviceMessageConstants.MSG_FETCHING_FROM_WSDL;     
+    public static final String DIA_BTN_BROWSE = BROWSE;
+    public static final String LBL_FILE_PATH = ComposerWebserviceMessageConstants.LBL_FILE_PATH;
 }
