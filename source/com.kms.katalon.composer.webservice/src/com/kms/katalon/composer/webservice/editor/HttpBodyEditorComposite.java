@@ -98,7 +98,7 @@ public class HttpBodyEditorComposite extends Composite {
             selectedBodyType = "text";
             TextBodyContent textBodyContent = new TextBodyContent();
             textBodyContent.setText(requestEntity.getHttpBody());
-            
+
             WebElementPropertyEntity contentTypeProperty = findContentTypeProperty();
             if (contentTypeProperty != null) {
                 textBodyContent.setContentType(contentTypeProperty.getValue());
@@ -107,11 +107,11 @@ public class HttpBodyEditorComposite extends Composite {
     }
 
     public void setInput(WebServiceRequestEntity requestEntity) {
-        migrateFromOldVersion(requestEntity);
-
         this.webServiceEntity = requestEntity;
 
-        selectedBodyType = StringUtils.defaultIfEmpty(requestEntity.getHttpBodyType(), "text");
+        migrateFromOldVersion(webServiceEntity);
+
+        selectedBodyType = StringUtils.defaultIfEmpty(webServiceEntity.getHttpBodyType(), "text");
         Button selectedButton = bodySelectionButtons.get(selectedBodyType);
 
         selectedButton.setSelection(true);
@@ -125,9 +125,9 @@ public class HttpBodyEditorComposite extends Composite {
                 Button source = (Button) e.getSource();
                 selectedBodyType = source.getText();
                 HttpBodyEditor httpBodyEditor = bodyEditors.get(selectedBodyType);
-                
+
                 httpBodyEditor.setInput(webServiceEntity.getHttpBodyContent());
-                
+
                 slBodyContent.topControl = httpBodyEditor;
                 httpBodyEditor.getParent().layout();
                 servicePart.updateDirty(true);
