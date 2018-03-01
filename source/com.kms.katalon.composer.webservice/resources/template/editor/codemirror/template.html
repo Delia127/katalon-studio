@@ -1,3 +1,6 @@
+<!DOCTYPE html>
+<html>
+<head>
 <link rel="stylesheet" href="lib/codemirror.css">
 <link rel="stylesheet" href="addon/fold/foldgutter.css" />
 <script src="lib/codemirror.js"></script>
@@ -13,6 +16,7 @@
 <style>
 .CodeMirror {
 	border-top: 1px solid #ddd;
+	border-left: 1px solid #ddd;
 	border-bottom: 1px solid #ddd;
 	height: auto;
 }
@@ -21,9 +25,11 @@ body {
 	margin: 0px;
 }
 </style>
+</head>
+<body>
 <textarea id="code">
 </textarea>
-<script>
+<script type="text/javascript">
 	CodeMirror.modeURL = "mode/%N/%N.js";
 	var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
 		lineNumbers : true,
@@ -33,7 +39,7 @@ body {
 	    gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
 	})
 	
-	editor.on("change", editor => {
+	editor.on("change", function(e) {
 		if (typeof handleEditorChanged != "undefined") {
 			handleEditorChanged();
 		}
@@ -58,3 +64,5 @@ body {
 	    editor.autoFormatRange({line:0, ch:0}, {line:totalLines});
 	}
 </script>
+</body>
+</html>
