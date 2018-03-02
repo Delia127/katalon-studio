@@ -105,6 +105,8 @@ public class TextBodyEditor extends HttpBodyEditor {
 
     private boolean documentReady = false;
 
+    private Button chckWrapLine;
+
     static {
         TEXT_MODE_COLLECTION = new HashMap<>();
         TEXT_MODE_COLLECTION.put(TextContentType.TEXT.getText(), "text/plain");
@@ -135,7 +137,13 @@ public class TextBodyEditor extends HttpBodyEditor {
             LoggerSingleton.logError(e);
         }
 
-        Composite tbBodyType = new Composite(this, SWT.NONE);
+        Composite bottomComposite = new Composite(this, SWT.NONE);
+        GridLayout bottomLayout = new GridLayout(2, false);
+        bottomLayout.marginWidth = bottomLayout.marginHeight = 0;
+        bottomComposite.setLayout(bottomLayout);
+        bottomComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
+        Composite tbBodyType = new Composite(bottomComposite, SWT.NONE);
         tbBodyType.setLayout(new GridLayout(TEXT_MODE_NAMES.length, false));
 
         Arrays.asList(TextContentType.values()).forEach(textContentType -> {
@@ -156,6 +164,10 @@ public class TextBodyEditor extends HttpBodyEditor {
                 }
             });
         });
+
+        chckWrapLine = new Button(bottomComposite, SWT.CHECK);
+        chckWrapLine.setText(ComposerWebserviceMessageConstants.PA_LBL_WRAP_LINE);
+        chckWrapLine.setSelection(true);
 
         browser.addProgressListener(new ProgressListener() {
 
@@ -211,6 +223,18 @@ public class TextBodyEditor extends HttpBodyEditor {
                 templateFile.delete();
             }
         });
+
+        chckWrapLine.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                wrapLine(chckWrapLine.getSelection());
+            }
+        });
+    }
+
+    private void wrapLine(boolean wrapped) {
+        browser.evaluate(
+                MessageFormat.format("editor.setOption(\"{0}\", {1});", "lineWrapping", wrapped));
     }
 
     private void changeMode(String text) {
@@ -276,6 +300,8 @@ public class TextBodyEditor extends HttpBodyEditor {
         selectionButton.setSelection(true);
 
         changeMode(preferedContentType.getText());
+        
+        wrapLine(chckWrapLine.getSelection());
 
         handleControlModifyListener();
     }

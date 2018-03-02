@@ -6,13 +6,15 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
+import com.kms.katalon.composer.webservice.constants.ImageConstants;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 
@@ -26,9 +28,11 @@ public class WebServiceAPIControl extends Composite {
 
     private Text txtRequestURL;
 
-    private Button btnSend;
+    private ToolItem btnSend;
 
     private GridData layoutData;
+
+    private boolean sendingState;
 
     public WebServiceAPIControl(Composite parent, boolean isSOAP) {
         super(parent, SWT.NONE);
@@ -69,11 +73,11 @@ public class WebServiceAPIControl extends Composite {
         txtRequestURL.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
         txtRequestURL.setMessage(StringConstants.PA_LBL_URL);
 
-        btnSend = new Button(this, SWT.FLAT);
-        btnSend.setText(ComposerWebserviceMessageConstants.BTN_SEND_TEST_REQUEST);
-        GridData gdBtnSend = new GridData(SWT.CENTER, SWT.FILL, false, true);
-        gdBtnSend.widthHint = 100;
-        btnSend.setLayoutData(gdBtnSend);
+        ToolBar toolbar = new ToolBar(this, SWT.RIGHT | SWT.RIGHT);
+        btnSend = new ToolItem(toolbar, SWT.FLAT);
+        setSendButtonState(false);
+        toolbar.setLayoutData(new GridData(SWT.CENTER, SWT.RIGHT, false, true));
+        // gdBtnSend.widthHint = 100;
     }
 
     public void addRequestMethodModifyListener(ModifyListener modifyListener) {
@@ -139,13 +143,29 @@ public class WebServiceAPIControl extends Composite {
         return txtRequestURL;
     }
 
-    public Button getSendControl() {
+    public ToolItem getSendControl() {
         return btnSend;
     }
 
     @Override
     protected void checkSubclass() {
         // Disable the check that prevents subclassing of SWT components
+    }
+
+    public void setSendButtonState(boolean sendingState) {
+        this.sendingState = sendingState;
+        if (this.sendingState) {
+            btnSend.setToolTipText(StringConstants.STOP);
+            btnSend.setImage(ImageConstants.IMG_24_STOP);
+        } else {
+            btnSend.setToolTipText(ComposerWebserviceMessageConstants.BTN_SEND_TEST_REQUEST);
+            btnSend.setImage(ImageConstants.IMG_24_PLAY);
+        }
+        btnSend.getParent().update();
+    }
+
+    public boolean getSendingState() {
+        return sendingState;
     }
 
 }

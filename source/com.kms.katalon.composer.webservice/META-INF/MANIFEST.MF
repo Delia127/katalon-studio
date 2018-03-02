@@ -52,4 +52,5 @@ Require-Bundle: com.kms.katalon.composer.explorer,
  com.kms.katalon.composer.preferences,
  com.kms.katalon.core.webservice,
  com.kms.katalon.execution,
- org.apache.commons.lang3
+ org.apache.commons.lang3,
+ com.kms.katalon

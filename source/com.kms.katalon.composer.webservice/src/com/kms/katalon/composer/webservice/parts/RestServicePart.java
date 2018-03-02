@@ -11,7 +11,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.apache.commons.io.FileUtils;
+import javax.annotation.PreDestroy;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
@@ -30,6 +31,7 @@ import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -39,12 +41,12 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 
 import com.kms.katalon.composer.components.impl.dialogs.ProgressMonitorDialogWithThread;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.editor.HttpBodyEditorComposite;
@@ -57,11 +59,10 @@ import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
 
 public class RestServicePart extends WebServicePart {
-    private static final String[] FILTER_EXTS = new String[] { "*.json; *.xml; *.txt" };
-
-    private static final String[] FILTER_NAMES = new String[] { "Text-based files (*.json, *.xml, *.txt)" };
 
     private URIBuilder uriBuilder;
+
+    private ProgressMonitorDialogWithThread progress;
 
     @Override
     protected void createAPIControls(Composite parent) {
@@ -88,27 +89,39 @@ public class RestServicePart extends WebServicePart {
                     return;
                 }
 
+                if (wsApiControl.getSendingState()) {
+                    progress.getProgressMonitor().setCanceled(true);
+                    wsApiControl.setSendButtonState(false);
+                    return;
+                }
+
                 try {
+                    wsApiControl.setSendButtonState(true);
                     Shell activeShell = Display.getCurrent().getActiveShell();
-                    new ProgressMonitorDialogWithThread(activeShell).run(true, true, new IRunnableWithProgress() {
+                    progress = new ProgressMonitorDialogWithThread(Display.getCurrent().getActiveShell());
+                    progress.setOpenOnRun(false);
+                    progress.run(true, true, new IRunnableWithProgress() {
 
                         @Override
                         public void run(IProgressMonitor monitor)
                                 throws InvocationTargetException, InterruptedException {
-                            monitor.beginTask(ComposerWebserviceMessageConstants.PART_MSG_SENDING_TEST_REQUEST,
-                                    IProgressMonitor.UNKNOWN);
-                            Display.getDefault().asyncExec(new Runnable() {
+                            try {
+                                monitor.beginTask(ComposerWebserviceMessageConstants.PART_MSG_SENDING_TEST_REQUEST,
+                                        IProgressMonitor.UNKNOWN);
 
-                                @Override
-                                public void run() {
-                                    try {
-                                        tabResponse.getParent().setSelection(tabResponse);
-                                        String projectDir = ProjectController.getInstance().getCurrentProject()
-                                                .getFolderLocation();
-                                        ResponseObject responseObject = WebServiceController.getInstance().sendRequest(
-                                                getWSRequestObject(), projectDir,
-                                                ProxyPreferences.getProxyInformation());
+                                String projectDir = ProjectController.getInstance()
+                                        .getCurrentProject()
+                                        .getFolderLocation();
+                                ResponseObject responseObject = WebServiceController.getInstance().sendRequest(
+                                        getWSRequestObject(), projectDir, ProxyPreferences.getProxyInformation());
 
+                                if (monitor.isCanceled()) {
+                                    return;
+                                }
+                                Display.getDefault().asyncExec(new Runnable() {
+
+                                    @Override
+                                    public void run() {
                                         responseHeader.setDocument(createDocument(getPrettyHeaders(responseObject)));
 
                                         String bodyContent = responseObject.getResponseText();
@@ -118,16 +131,17 @@ public class RestServicePart extends WebServicePart {
                                         }
 
                                         responseBody.setDocument(createDocument(bodyContent));
-                                    } catch (Exception e) {
-                                        LoggerSingleton.logError(e);
-                                        ErrorDialog.openError(activeShell, StringConstants.ERROR_TITLE,
-                                                ComposerWebserviceMessageConstants.PART_MSG_CANNOT_SEND_THE_TEST_REQUEST,
-                                                new Status(Status.ERROR, WS_BUNDLE_NAME, e.getMessage(), e));
-                                    } finally {
-                                        monitor.done();
                                     }
-                                }
-                            });
+                                });
+                            } catch (Exception e) {
+                                LoggerSingleton.logError(e);
+                                ErrorDialog.openError(activeShell, StringConstants.ERROR_TITLE,
+                                        ComposerWebserviceMessageConstants.PART_MSG_CANNOT_SEND_THE_TEST_REQUEST,
+                                        new Status(Status.ERROR, WS_BUNDLE_NAME, e.getMessage(), e));
+                            } finally {
+                                UISynchronizeService.syncExec(() -> wsApiControl.setSendButtonState(false));
+                                monitor.done();
+                            }
                         }
                     });
                 } catch (InvocationTargetException | InterruptedException ex) {
@@ -143,7 +157,6 @@ public class RestServicePart extends WebServicePart {
                 Text text = (Text) e.widget;
                 updateParamsTable(text.getText());
             }
-
         });
     }
 
@@ -187,7 +200,7 @@ public class RestServicePart extends WebServicePart {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-//                tblParams.deleteSelections();
+                // tblParams.deleteSelections();
                 deleteSelectedParams();
             }
         });
@@ -213,9 +226,8 @@ public class RestServicePart extends WebServicePart {
 
         List<WebElementPropertyEntity> paramProperties = tblParams.getInput();
         List<WebElementPropertyEntity> unselectedParamProperties = new ArrayList<>();
-        IntStream.range(0, paramProperties.size())
-            .filter(i -> !selectionIndexSet.contains(i))
-            .forEach(i -> unselectedParamProperties.add(paramProperties.get(i)));
+        IntStream.range(0, paramProperties.size()).filter(i -> !selectionIndexSet.contains(i)).forEach(
+                i -> unselectedParamProperties.add(paramProperties.get(i)));
 
         List<NameValuePair> params = unselectedParamProperties.stream()
                 .map(pr -> new BasicNameValuePair(pr.getName(), pr.getValue()))
@@ -230,7 +242,7 @@ public class RestServicePart extends WebServicePart {
             // the parameters table to be refreshed.
             text.setText(newUrl);
         } catch (URISyntaxException e) {
-            //ignore
+            // ignore
         }
     }
 
@@ -256,8 +268,7 @@ public class RestServicePart extends WebServicePart {
 
     private void updateRequestUrlWhenParamsChange() {
         List<WebElementPropertyEntity> paramProperties = tblParams.getInput();
-        List<NameValuePair> params = paramProperties
-                .stream()
+        List<NameValuePair> params = paramProperties.stream()
                 .filter(pr -> !StringUtils.isBlank(pr.getName()))
                 .map(pr -> new BasicNameValuePair(pr.getName(), pr.getValue()))
                 .collect(Collectors.toList());
@@ -277,7 +288,7 @@ public class RestServicePart extends WebServicePart {
     }
 
     @Override
-    protected void addTabBody(TabFolder parent) {
+    protected void addTabBody(CTabFolder parent) {
         super.addTabBody(parent);
         Composite tabComposite = (Composite) tabBody.getControl();
         // requestBody = createSourceViewer(tabComposite, new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -286,10 +297,9 @@ public class RestServicePart extends WebServicePart {
     }
 
     @Override
-    protected void addTabResponse(TabFolder parent) {
-        super.addTabResponse(parent);
-        Composite tabComposite = (Composite) tabResponse.getControl();
-        responseBody = createSourceViewer(tabComposite, new GridData(SWT.FILL, SWT.FILL, true, true));
+    protected void createResponseComposite(Composite parent) {
+        super.createResponseComposite(parent);
+        responseBody = createSourceViewer(responseComposite, new GridData(SWT.FILL, SWT.FILL, true, true));
         responseBody.setEditable(false);
     }
 
@@ -322,8 +332,8 @@ public class RestServicePart extends WebServicePart {
         originalWsObject.setRestUrl(wsApiControl.getRequestURL());
         originalWsObject.setRestRequestMethod(wsApiControl.getRequestMethod());
 
-//        tblParams.removeEmptyProperty();
-//        originalWsObject.setRestParameters(tblParams.getInput());
+        // tblParams.removeEmptyProperty();
+        // originalWsObject.setRestParameters(tblParams.getInput());
 
         tblHeaders.removeEmptyProperty();
         originalWsObject.setHttpHeaderProperties(tblHeaders.getInput());
@@ -339,7 +349,7 @@ public class RestServicePart extends WebServicePart {
             WebServiceRequestEntity clone = (WebServiceRequestEntity) originalWsObject.clone();
             String restUrl = clone.getRestUrl();
             uriBuilder = new URIBuilder(restUrl);
-            
+
             // Fix for back compatibility with already existing project (KAT-2930)
             boolean isOldVersion = !clone.getRestParameters().isEmpty();
             if (isOldVersion) {
@@ -350,9 +360,9 @@ public class RestServicePart extends WebServicePart {
                 clone.setRestParameters(Collections.emptyList());
                 uriBuilder.addParameters(params);
             }
-           
+
             wsApiControl.getRequestURLControl().setText(uriBuilder.build().toString());
-            
+
             String restRequestMethod = clone.getRestRequestMethod();
             int index = Arrays.asList(WebServiceRequestEntity.REST_REQUEST_METHODS).indexOf(restRequestMethod);
             wsApiControl.getRequestMethodControl().select(index < 0 ? 0 : index);
@@ -369,13 +379,13 @@ public class RestServicePart extends WebServicePart {
             updateHeaders(clone);
 
             requestBodyEditor.setInput(clone);
-            
+
             tabBody.getControl().setEnabled(isBodySupported());
             dirtyable.setDirty(false);
-            
+
             if (isOldVersion) {
                 originalWsObject = clone;
-                //save();
+                // save();
             }
         } catch (URISyntaxException e) {
             // ignore
@@ -388,8 +398,15 @@ public class RestServicePart extends WebServicePart {
         httpHeaders.addAll(tempPropList);
         tblHeaders.refresh();
     }
-    
+
     public void updateDirty(boolean dirty) {
         dirtyable.setDirty(dirty);
+    }
+
+    @PreDestroy
+    public void preClose() {
+        if (progress != null) {
+            progress.getProgressMonitor().setCanceled(true);
+        }
     }
 }

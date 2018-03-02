@@ -22,6 +22,7 @@ import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
+import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.jface.bindings.keys.IKeyLookup;
@@ -44,6 +45,9 @@ import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CLabel;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.ControlAdapter;
@@ -71,8 +75,6 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.TabFolder;
-import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
@@ -197,13 +199,16 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
     @Inject
     protected IEventBroker eventBroker;
 
+    @Inject
+    protected IStylingEngine styleEngine;
+
     protected MPart mPart;
 
     protected WebServiceRequestEntity originalWsObject;
 
     protected ScrolledComposite sComposite;
 
-    protected Composite mainComposite;
+    protected SashForm mainComposite;
 
     protected Composite userComposite;
 
@@ -224,20 +229,20 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
     protected WebServiceAPIControl wsApiControl;
 
     protected SourceViewer requestBody;
-    
+
     protected HttpBodyEditorComposite requestBodyEditor;
 
     protected SourceViewer responseHeader;
 
     protected SourceViewer responseBody;
 
-    protected TabItem tabAuthorization;
+    protected CTabItem tabAuthorization;
 
-    protected TabItem tabHeaders;
+    protected CTabItem tabHeaders;
 
-    protected TabItem tabBody;
+    protected CTabItem tabBody;
 
-    protected TabItem tabResponse;
+    protected Composite responseComposite;
 
     protected CCombo ccbAuthType;
 
@@ -284,15 +289,30 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
             }
         });
 
-        mainComposite = new Composite(sComposite, SWT.NONE);
-        mainComposite.setLayout(new GridLayout());
+        mainComposite = new SashForm(sComposite, SWT.HORIZONTAL);
+        mainComposite.setLayout(new FillLayout());
+
         sComposite.setContent(mainComposite);
 
-        createAPIControls(mainComposite);
+        Composite leftComposite = new Composite(mainComposite, SWT.NONE);
+        leftComposite.setLayout(new GridLayout());
 
-        createParamsComposite(mainComposite);
+        createAPIControls(leftComposite);
 
-        createTabsComposite(mainComposite);
+        createParamsComposite(leftComposite);
+
+        createTabsComposite(leftComposite);
+
+        Composite rightComposite = new Composite(mainComposite, SWT.NONE);
+        GridLayout glResponse = new GridLayout(2, false);
+        glResponse.marginWidth = glResponse.marginHeight = 0;
+        rightComposite.setLayout(glResponse);
+
+        Label separator = new Label(rightComposite, SWT.SEPARATOR | SWT.SHADOW_IN | SWT.VERTICAL);
+        separator.setLayoutData(new GridData(GridData.FILL_VERTICAL));
+
+        createResponseComposite(rightComposite);
+        responseComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
 
         populateDataToUI();
 
@@ -355,17 +375,26 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
     }
 
     protected void createTabsComposite(Composite parent) {
-        TabFolder tabFolder = new TabFolder(parent, SWT.NONE);
+        CTabFolder tabFolder = new CTabFolder(parent, SWT.NONE);
         tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        styleEngine.setId(parent, "DefaultCTabFolder");
 
         addTabAuthorization(tabFolder);
         addTabHeaders(tabFolder);
         addTabBody(tabFolder);
-        addTabResponse(tabFolder);
+        addTabVerification(tabFolder);
+        createResponseComposite(tabFolder);
+
+        tabFolder.setSelection(0);
     }
 
-    protected TabItem createTab(TabFolder parent, TabItem tab, String title) {
-        tab = new TabItem(parent, SWT.NONE);
+    private void addTabVerification(CTabFolder tabFolder) {
+        CTabItem verificationTab = null;
+        createTab(tabFolder, verificationTab, "Verification");
+    }
+
+    protected CTabItem createTab(CTabFolder parent, CTabItem tab, String title) {
+        tab = new CTabItem(parent, SWT.NONE);
         tab.setText(title);
 
         Composite tabComposite = new Composite(parent, SWT.NONE);
@@ -375,7 +404,7 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
         return tab;
     }
 
-    protected void addTabAuthorization(TabFolder parent) {
+    protected void addTabAuthorization(CTabFolder parent) {
         tabAuthorization = createTab(parent, tabAuthorization, ComposerWebserviceMessageConstants.TAB_AUTHORIZATION);
         Composite tabComposite = (Composite) tabAuthorization.getControl();
 
@@ -612,7 +641,7 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
         });
     }
 
-    protected void addTabHeaders(TabFolder parent) {
+    protected void addTabHeaders(CTabFolder parent) {
         tabHeaders = createTab(parent, tabHeaders, StringConstants.PA_LBL_HTTP_HEADER);
         Composite tabComposite = (Composite) tabHeaders.getControl();
         ToolBar toolbar = createAddRemoveToolBar(tabComposite, new SelectionAdapter() {
@@ -640,15 +669,19 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
         });
     }
 
-    protected void addTabBody(TabFolder parent) {
+    protected void addTabBody(CTabFolder parent) {
         tabBody = createTab(parent, tabBody, StringConstants.PA_LBL_HTTP_BODY);
     }
 
-    protected void addTabResponse(TabFolder parent) {
-        tabResponse = createTab(parent, tabResponse, ComposerWebserviceMessageConstants.TAB_RESPONSE);
-        Composite tabComposite = (Composite) tabResponse.getControl();
+    protected void createResponseComposite(Composite parent) {
+        responseComposite = new Composite(parent, SWT.NONE);
+        responseComposite.setLayout(new GridLayout());
+        
+        Label lblResponse = new Label(responseComposite, SWT.NONE);
+        lblResponse.setText(ComposerWebserviceMessageConstants.TAB_RESPONSE);
+        ControlUtils.setFontToBeBold(lblResponse);
 
-        ExpandableComposite responseExpandableComposite = new ExpandableComposite(tabComposite,
+        ExpandableComposite responseExpandableComposite = new ExpandableComposite(responseComposite,
                 ComposerWebserviceMessageConstants.LBL_RESPONSE_HEADER, 1, false);
         Composite responseHeaderComposite = responseExpandableComposite.createControl();
         GridLayout glHeader = (GridLayout) responseHeaderComposite.getLayout();
@@ -658,7 +691,7 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
         responseHeader = createSourceViewer(responseHeaderComposite, new GridData(SWT.FILL, SWT.TOP, true, false));
         responseHeader.setEditable(false);
 
-        CLabel lblBody = new CLabel(tabComposite, SWT.NONE);
+        CLabel lblBody = new CLabel(responseComposite, SWT.NONE);
         lblBody.setText(ComposerWebserviceMessageConstants.LBL_RESPONSE_BODY);
         lblBody.setImage(ImageConstants.IMG_16_ARROW_DOWN);
         ControlUtils.setFontToBeBold(lblBody);
@@ -750,12 +783,15 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
 
         return tblNameValue;
     }
-    
-    protected void handleParamNameChanged(Object element, Object value) {};
-    
-    protected void handleParamValueChanged(Object element, Object value) {};
-    
-    protected void deleteSelectedParams() {};
+
+    protected void handleParamNameChanged(Object element, Object value) {
+    };
+
+    protected void handleParamValueChanged(Object element, Object value) {
+    };
+
+    protected void deleteSelectedParams() {
+    };
 
     protected SourceViewer createSourceViewer(Composite parent, GridData layoutData) {
         CompositeRuler ruler = new CompositeRuler();
@@ -869,10 +905,10 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
     }
 
     protected boolean warningIfBodyNotEmpty() {
-//        if (StringUtils.isNotEmpty(requestBody.getDocument().get())) {
-//            return MessageDialog.openConfirm(null, StringConstants.WARN,
-//                    ComposerWebserviceMessageConstants.PART_WARNING_MSG_BODY_CONTENT_WILL_BE_OVERWRITTEN);
-//        }
+        // if (StringUtils.isNotEmpty(requestBody.getDocument().get())) {
+        // return MessageDialog.openConfirm(null, StringConstants.WARN,
+        // ComposerWebserviceMessageConstants.PART_WARNING_MSG_BODY_CONTENT_WILL_BE_OVERWRITTEN);
+        // }
         return true;
     }
 

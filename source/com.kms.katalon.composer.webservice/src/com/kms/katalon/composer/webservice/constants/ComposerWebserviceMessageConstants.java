@@ -132,6 +132,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
     // TextBodyEditor
     public static String PA_MSG_UNABLE_TO_OPEN_BODY_EDITOR;
 
+    public static String PA_LBL_WRAP_LINE;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerWebserviceMessageConstants.class);
