@@ -1,10 +1,6 @@
 package com.kms.katalon.entity.webservice;
 
-import org.apache.commons.lang.StringUtils;
-
 public class FormDataBodyParameter {
-    
-    public static final String FILE_PATH_SEPARATOR = ", ";
     
     public static final String PARAM_TYPE_TEXT = "Text";
     

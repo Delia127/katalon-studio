@@ -1,8 +1,6 @@
 package com.kms.katalon.entity.webservice;
 
-import org.apache.commons.lang3.StringUtils;
-
-public class UrlEncodedBodyParameter implements EmptiableParameter {
+public class UrlEncodedBodyParameter {
     
     private String name;
     
@@ -22,10 +20,5 @@ public class UrlEncodedBodyParameter implements EmptiableParameter {
 
     public void setValue(String value) {
         this.value = value;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return StringUtils.isBlank(name) && StringUtils.isBlank(value);
     }
 }
