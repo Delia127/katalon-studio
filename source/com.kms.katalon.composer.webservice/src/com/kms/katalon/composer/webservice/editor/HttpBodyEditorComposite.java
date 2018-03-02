@@ -80,10 +80,10 @@ public class HttpBodyEditorComposite extends Composite {
         TextBodyEditor textBodyEditor = new TextBodyEditor(bodyContentComposite, SWT.NONE);
         bodyEditors.put("text", textBodyEditor);
 
-        UrlEncodedBodyEditor urlEncodedEditor = new UrlEncodedBodyEditor(bodyContentComposite, SWT.NONE);
+        UrlEncodedBodyEditor1 urlEncodedEditor = new UrlEncodedBodyEditor1(bodyContentComposite, SWT.NONE);
         bodyEditors.put("x-www-form-urlencoded", urlEncodedEditor);
 
-        FormDataBodyEditor formDataEditor = new FormDataBodyEditor(bodyContentComposite, SWT.NONE);
+        FormDataBodyEditor1 formDataEditor = new FormDataBodyEditor1(bodyContentComposite, SWT.NONE);
         bodyEditors.put("form-data", formDataEditor);
 
         BinaryBodyEditor fileBodyEditor = new BinaryBodyEditor(bodyContentComposite, SWT.NONE);
