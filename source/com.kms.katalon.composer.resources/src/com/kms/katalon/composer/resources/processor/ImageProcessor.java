@@ -170,10 +170,10 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.IMG_TEST_OBJECT_16);
         ImageManager.registerImage(IImageKeys.LBL_TEST_OBJECT_16);
         ImageManager.registerImage(IImageKeys.LNK_TEST_OBJECT_16);
-        ImageManager.registerImage(IImageKeys.POST_METHOD_16);
-        ImageManager.registerImage(IImageKeys.GET_METHOD_16);
-        ImageManager.registerImage(IImageKeys.PUT_METHOD_16);
-        ImageManager.registerImage(IImageKeys.DELETE_METHOD_16);
+        ImageManager.registerImage(IImageKeys.WS_POST_METHOD_16);
+        ImageManager.registerImage(IImageKeys.WS_GET_METHOD_16);
+        ImageManager.registerImage(IImageKeys.WS_PUT_METHOD_16);
+        ImageManager.registerImage(IImageKeys.WS_DELETE_METHOD_16);
         ImageManager.registerImage(IImageKeys.RBT_TEST_OBJECT_16);
         ImageManager.registerImage(IImageKeys.TXT_TEST_OBJECT_16);
 

@@ -63,13 +63,13 @@ public class WebElementTreeEntity extends AbstractTreeEntity {
         if (webElement instanceof WebServiceRequestEntity) {
             switch (((WebServiceRequestEntity) webElement).getRestRequestMethod()) {
                 case GET_METHOD:
-                    return ImageConstants.IMG_16_GET_METHOD;
+                    return ImageConstants.IMG_16_WS_GET_METHOD;
                 case POST_METHOD:
-                    return ImageConstants.IMG_16_POST_METHOD;
+                    return ImageConstants.IMG_16_WS_POST_METHOD;
                 case PUT_METHOD:
-                    return ImageConstants.IMG_16_PUT_METHOD;
+                    return ImageConstants.IMG_16_WS_PUT_METHOD;
                 case DELETE_METHOD:
-                    return ImageConstants.IMG_16_DELETE_METHOD;
+                    return ImageConstants.IMG_16_WS_DELETE_METHOD;
                 default:
                     return ImageConstants.IMG_16_WS_TEST_OBJECT;
             }

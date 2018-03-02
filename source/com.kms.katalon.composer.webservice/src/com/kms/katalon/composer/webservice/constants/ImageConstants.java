@@ -10,12 +10,12 @@ public class ImageConstants {
 
     public static final String WS_TEST_OBJECT_16 = ImageManager.getImageURLString(IImageKeys.WS_TEST_OBJECT_16);
     
-    public static final String DELETE_METHOD_16 = ImageManager.getImageURLString(IImageKeys.DELETE_METHOD_16);
+    public static final String WS_DELETE_METHOD_16 = ImageManager.getImageURLString(IImageKeys.WS_DELETE_METHOD_16);
     
-    public static final String GET_METHOD_16 = ImageManager.getImageURLString(IImageKeys.GET_METHOD_16);
+    public static final String WS_GET_METHOD_16 = ImageManager.getImageURLString(IImageKeys.WS_GET_METHOD_16);
     
-    public static final String POST_METHOD_16 = ImageManager.getImageURLString(IImageKeys.POST_METHOD_16);
+    public static final String WS_POST_METHOD_16 = ImageManager.getImageURLString(IImageKeys.WS_POST_METHOD_16);
     
-    public static final String PUT_METHOD_16 = ImageManager.getImageURLString(IImageKeys.PUT_METHOD_16);
+    public static final String WS_PUT_METHOD_16 = ImageManager.getImageURLString(IImageKeys.WS_PUT_METHOD_16);
 
 }
