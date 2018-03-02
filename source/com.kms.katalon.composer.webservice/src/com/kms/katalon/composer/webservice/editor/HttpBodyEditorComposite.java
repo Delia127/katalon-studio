@@ -114,6 +114,8 @@ public class HttpBodyEditorComposite extends Composite {
         selectedBodyType = StringUtils.defaultIfEmpty(webServiceEntity.getHttpBodyType(), "text");
         Button selectedButton = bodySelectionButtons.get(selectedBodyType);
 
+        bodyEditors.get(selectedBodyType).setInput(webServiceEntity.getHttpBodyContent());
+
         selectedButton.setSelection(true);
         selectedButton.notifyListeners(SWT.Selection, new Event());
     }
@@ -125,12 +127,12 @@ public class HttpBodyEditorComposite extends Composite {
                 Button source = (Button) e.getSource();
                 selectedBodyType = source.getText();
                 HttpBodyEditor httpBodyEditor = bodyEditors.get(selectedBodyType);
-
-                httpBodyEditor.setInput(webServiceEntity.getHttpBodyContent());
+                httpBodyEditor.onBodyTypeChanged();
 
                 slBodyContent.topControl = httpBodyEditor;
                 httpBodyEditor.getParent().layout();
                 servicePart.updateDirty(true);
+                updateContentTypeByEditor(httpBodyEditor);
             }
         };
 
@@ -141,21 +143,25 @@ public class HttpBodyEditorComposite extends Composite {
         bodyEditors.values().forEach(editor -> {
             editor.addListener(SWT.Modify, event -> {
                 servicePart.updateDirty(true);
-                if (editor.isContentTypeUpdated()) {
-                    WebElementPropertyEntity propertyEntity = findContentTypeProperty();
-                    String newContentType = editor.getContentType();
-                    if (propertyEntity != null) {
-                        propertyEntity.setValue(newContentType);
-                    } else {
-                        propertyEntity = new WebElementPropertyEntity("Content-Type", newContentType);
-                        webServiceEntity.getHttpHeaderProperties().add(0, propertyEntity);
-                    }
-                    servicePart.updateHeaders(webServiceEntity);
-
-                    editor.setContentTypeUpdated(false);
-                }
+                updateContentTypeByEditor(editor);
             });
         });
+    }
+
+    private void updateContentTypeByEditor(HttpBodyEditor editor) {
+        if (editor.isContentTypeUpdated()) {
+            WebElementPropertyEntity propertyEntity = findContentTypeProperty();
+            String newContentType = editor.getContentType();
+            if (propertyEntity != null) {
+                propertyEntity.setValue(newContentType);
+            } else {
+                propertyEntity = new WebElementPropertyEntity("Content-Type", newContentType);
+                webServiceEntity.getHttpHeaderProperties().add(0, propertyEntity);
+            }
+            servicePart.updateHeaders(webServiceEntity);
+
+            editor.setContentTypeUpdated(false);
+        }
     }
 
     private WebElementPropertyEntity findContentTypeProperty() {
