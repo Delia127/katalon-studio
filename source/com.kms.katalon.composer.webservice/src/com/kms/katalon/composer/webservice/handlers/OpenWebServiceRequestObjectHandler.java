@@ -1,10 +1,5 @@
 package com.kms.katalon.composer.webservice.handlers;
 
-import static com.kms.katalon.entity.repository.WebServiceRequestEntity.DELETE_METHOD;
-import static com.kms.katalon.entity.repository.WebServiceRequestEntity.GET_METHOD;
-import static com.kms.katalon.entity.repository.WebServiceRequestEntity.POST_METHOD;
-import static com.kms.katalon.entity.repository.WebServiceRequestEntity.PUT_METHOD;
-
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
@@ -21,7 +16,6 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
-import com.kms.katalon.composer.webservice.constants.ImageConstants;
 import com.kms.katalon.composer.webservice.parts.RestServicePart;
 import com.kms.katalon.composer.webservice.parts.SoapServicePart;
 import com.kms.katalon.composer.webservice.util.WebServiceUtil;
@@ -83,7 +77,7 @@ public class OpenWebServiceRequestObjectHandler {
                     mPart.setContributionURI(WEBSERVICE_REST_OBJECT_PART_URI);
                 }
                 mPart.setCloseable(true);
-                mPart.setIconURI(WebServiceUtil.getRequestMethodIcon(requestObject.getRestRequestMethod()));
+                mPart.setIconURI(WebServiceUtil.getRequestMethodIcon(requestObject.getServiceType(), requestObject.getRestRequestMethod()));
                 mPart.setTooltip(requestObject.getIdForDisplay());
                 mPart.getTags().add(EPartService.REMOVE_ON_HIDE_TAG);
                 stack.getChildren().add(mPart);

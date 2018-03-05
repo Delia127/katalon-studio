@@ -241,7 +241,7 @@ public class RestServicePart extends WebServicePart {
         originalWsObject.setHttpHeaderProperties(tblHeaders.getInput());
 
         originalWsObject.setHttpBody(requestBody.getTextWidget().getText());
-        updateIconURL(WebServiceUtil.getRequestMethodIcon(originalWsObject.getRestRequestMethod()));
+        updateIconURL(WebServiceUtil.getRequestMethodIcon(originalWsObject.getServiceType(), originalWsObject.getRestRequestMethod()));
     }
 
     @Override

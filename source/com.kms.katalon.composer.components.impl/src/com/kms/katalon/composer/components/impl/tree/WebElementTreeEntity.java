@@ -61,20 +61,24 @@ public class WebElementTreeEntity extends AbstractTreeEntity {
     public Image getImage() throws Exception {
 
         if (webElement instanceof WebServiceRequestEntity) {
-            switch (((WebServiceRequestEntity) webElement).getRestRequestMethod()) {
-                case GET_METHOD:
-                    return ImageConstants.IMG_16_WS_GET_METHOD;
-                case POST_METHOD:
-                    return ImageConstants.IMG_16_WS_POST_METHOD;
-                case PUT_METHOD:
-                    return ImageConstants.IMG_16_WS_PUT_METHOD;
-                case DELETE_METHOD:
-                    return ImageConstants.IMG_16_WS_DELETE_METHOD;
-                default:
-                    return ImageConstants.IMG_16_WS_TEST_OBJECT;
+            WebServiceRequestEntity wsEntity = (WebServiceRequestEntity) webElement;
+            if (wsEntity.getServiceType().equals(WebServiceRequestEntity.SERVICE_TYPES[1])) {
+                switch (((WebServiceRequestEntity) webElement).getRestRequestMethod()) {
+                    case GET_METHOD:
+                        return ImageConstants.IMG_16_WS_GET_METHOD;
+                    case POST_METHOD:
+                        return ImageConstants.IMG_16_WS_POST_METHOD;
+                    case PUT_METHOD:
+                        return ImageConstants.IMG_16_WS_PUT_METHOD;
+                    case DELETE_METHOD:
+                        return ImageConstants.IMG_16_WS_DELETE_METHOD;
+                    default:
+                        return ImageConstants.IMG_16_WS_GET_METHOD;
+                }
+            } else {
+                return ImageConstants.IMG_16_WS_TEST_OBJECT;
             }
         }
-
         WebElementEntity webElement = (WebElementEntity) getObject();
         switch (HTMLTags.getElementType(webElement.getPropertyValue(WebElementPropertyEntity.TAG_PROPERTY),
                 webElement.getPropertyValue(WebElementPropertyEntity.TYPE_PROPERTY))) {
