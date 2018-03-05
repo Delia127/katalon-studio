@@ -168,7 +168,8 @@ public class ArgumentInputBuilderDialog extends AbstractAstBuilderWithTableDialo
                 if (valueType == InputValueType.String) {
                     ASTNodeWrapper methodExpressionWrapper = parent.getParent();
                     if (methodExpressionWrapper instanceof MethodCallExpressionWrapper &&
-                            "setSecuredText".equals(((MethodCallExpressionWrapper) methodExpressionWrapper).getMethodAsString())) {
+                            com.kms.katalon.core.webui.constants.StringConstants.SET_ENCRYPTED_TEXT_KEYWORD.equals(
+                                    ((MethodCallExpressionWrapper) methodExpressionWrapper).getMethodAsString())) {
                         encryptedTextDialogCellEditor = (EncryptedTextDialogCellEditor)AstValueUtil.getCellEditorForEncryptedText(
                                 (Composite) tableViewer.getControl(), (ConstantExpressionWrapper)((InputParameter) element).getValue());
                         return encryptedTextDialogCellEditor;

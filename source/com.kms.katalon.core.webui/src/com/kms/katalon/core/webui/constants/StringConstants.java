@@ -525,4 +525,6 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     // WebMobileDriverFactory
     public static final String APPIUM_START_EXCEPTION_APPIUM_DIRECTORY_NOT_SET = CoreWebuiMessageConstants.APPIUM_START_EXCEPTION_APPIUM_DIRECTORY_NOT_SET;
     public static final String APPIUM_START_EXCEPTION_APPIUM_DIRECTORY_INVALID_CANNOT_FIND_APPIUM_JS = CoreWebuiMessageConstants.APPIUM_START_EXCEPTION_APPIUM_DIRECTORY_INVALID_CANNOT_FIND_APPIUM_JS;
+
+    public static final String SET_ENCRYPTED_TEXT_KEYWORD = "setEncryptedText";
 }

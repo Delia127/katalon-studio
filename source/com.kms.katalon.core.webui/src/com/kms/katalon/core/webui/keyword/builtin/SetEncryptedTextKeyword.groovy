@@ -16,7 +16,7 @@ import com.kms.katalon.core.webui.keyword.internal.WebUIKeywordMain
 import com.kms.katalon.core.logging.KeywordLogger
 import com.kms.katalon.util.CryptoUtil
 
-@Action(value = "setEncryptedText")
+@Action(value = StringConstants.SET_ENCRYPTED_TEXT_KEYWORD)
 public class SetEncryptedTextKeyword extends WebUIAbstractKeyword {
 
     @CompileStatic
