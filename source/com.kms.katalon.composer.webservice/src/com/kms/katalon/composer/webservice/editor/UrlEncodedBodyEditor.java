@@ -16,21 +16,20 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
 import com.google.gson.reflect.TypeToken;
+import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.core.util.internal.JsonUtil;
-import com.kms.katalon.entity.webservice.BodyContent;
+import com.kms.katalon.entity.webservice.NameValueBodyContent;
 import com.kms.katalon.entity.webservice.UrlEncodedBodyParameter;
 
-public class UrlEncodedBodyEditor extends AbstractFormBodyEditor<UrlEncodedBodyParameter> {
-    
-    private static final String TABLE_COLUMN_KEY = "Key";
-    
-    private static final String TABLE_COLUMN_VALUE = "Value";
+public class UrlEncodedBodyEditor extends AbstractNameValueBodyEditor<UrlEncodedBodyParameter> {
     
     private static final String DEFAULT_CONTENT_TYPE = "application/x-www-form-urlencoded";
     
     private static final String DEFAULT_CHARSET = "UTF-8";
     
-    private TableColumn cKey, cValue;
+    private boolean initialized = false;
+    
+    private TableColumn cName, cValue;
     
     public UrlEncodedBodyEditor(Composite parent, int style) {
         super(parent, style);
@@ -52,16 +51,16 @@ public class UrlEncodedBodyEditor extends AbstractFormBodyEditor<UrlEncodedBodyP
         tParams.setHeaderVisible(true);
         tParams.setLinesVisible(true);
         
-        TableViewerColumn cvKey = new TableViewerColumn(tvParams, SWT.LEFT);
-        cKey = cvKey.getColumn();
-        cKey.setText(TABLE_COLUMN_KEY);
-        cvKey.setLabelProvider(new ColumnLabelProvider() {
+        TableViewerColumn cvName = new TableViewerColumn(tvParams, SWT.LEFT);
+        cName = cvName.getColumn();
+        cName.setText(StringConstants.NAME);
+        cvName.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
                 return ((UrlEncodedBodyParameter) element).getName();
             }
         });
-        cvKey.setEditingSupport(new EditingSupport(cvKey.getViewer()) {
+        cvName.setEditingSupport(new EditingSupport(cvName.getViewer()) {
             @Override
             protected void setValue(Object element, Object value) {
                 ((UrlEncodedBodyParameter) element).setName(String.valueOf(value));
@@ -87,7 +86,7 @@ public class UrlEncodedBodyEditor extends AbstractFormBodyEditor<UrlEncodedBodyP
         
         TableViewerColumn cvValue = new TableViewerColumn(tvParams, SWT.LEFT);
         cValue = cvValue.getColumn();
-        cValue.setText(TABLE_COLUMN_VALUE);
+        cValue.setText(StringConstants.VALUE);
         cvValue.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -118,7 +117,7 @@ public class UrlEncodedBodyEditor extends AbstractFormBodyEditor<UrlEncodedBodyP
             }
         });
         
-        tableColumnLayout.setColumnData(cKey, new ColumnWeightData(50, 100));
+        tableColumnLayout.setColumnData(cName, new ColumnWeightData(50, 100));
         tableColumnLayout.setColumnData(cValue, new ColumnWeightData(50, 100));
         
         return tvParams;
@@ -141,17 +140,30 @@ public class UrlEncodedBodyEditor extends AbstractFormBodyEditor<UrlEncodedBodyP
     @Override
     public void setInput(String httpBodyContent) {
         if (StringUtils.isEmpty(httpBodyContent)) {
-            bodyContent = new BodyContent<UrlEncodedBodyParameter>();
+            bodyContent = new NameValueBodyContent<UrlEncodedBodyParameter>();
             bodyContent.setContentType(DEFAULT_CONTENT_TYPE);
             bodyContent.setCharset(DEFAULT_CHARSET);
         } else {
             bodyContent = JsonUtil.fromJson(httpBodyContent, 
-                    new TypeToken<BodyContent<UrlEncodedBodyParameter>>(){}.getType());
+                    new TypeToken<NameValueBodyContent<UrlEncodedBodyParameter>>(){}.getType());
+        }
+    }
+    
+    @Override
+    public void onBodyTypeChanged() {
+        if (bodyContent == null) {
+            bodyContent = new NameValueBodyContent<UrlEncodedBodyParameter>();
+            bodyContent.setContentType(DEFAULT_CONTENT_TYPE);
+            bodyContent.setCharset(DEFAULT_CHARSET);
         }
         
-        tvParams.setInput(bodyContent.getParameters());
-        if (!bodyContent.getParameters().isEmpty()) {
-            btnRemove.setEnabled(true);
+        if (!initialized) {
+            tvParams.setInput(bodyContent.getParameters());
+            if (!bodyContent.getParameters().isEmpty()) {
+                btnRemove.setEnabled(true);
+            }
         }
+            
+        setContentTypeUpdated(true);
     }
 }

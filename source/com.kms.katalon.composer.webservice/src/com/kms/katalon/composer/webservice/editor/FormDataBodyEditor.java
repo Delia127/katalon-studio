@@ -26,23 +26,20 @@ import org.eclipse.swt.widgets.TableColumn;
 
 import com.google.gson.reflect.TypeToken;
 import com.kms.katalon.composer.components.impl.editors.StringComboBoxCellEditor;
+import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.core.util.internal.JsonUtil;
-import com.kms.katalon.entity.webservice.BodyContent;
-import com.kms.katalon.entity.webservice.FormDataBodyParameter;
+import com.kms.katalon.entity.webservice.NameValueBodyContent;
+import com.kms.katalon.entity.webservice.FormDataBodyParameter;;
 
-public class FormDataBodyEditor extends AbstractFormBodyEditor<FormDataBodyParameter> {
-
-    private static final String TABLE_COLUMN_KEY = "Key";
-    
-    private static final String TABLE_COLUMN_VALUE = "Value";
-    
-    private static final String TABLE_COLUMN_TYPE = "Type";
+public class FormDataBodyEditor extends AbstractNameValueBodyEditor<FormDataBodyParameter> {
     
     private static final String DEFAULT_CONTENT_TYPE = "multipart/form-data";
     
     private static final String DEFAULT_CHARSET = "UTF-8";
     
-    private TableColumn cKey, cValue, cType;
+    private boolean initialized = false;
+    
+    private TableColumn cName, cValue, cType;
     
     public FormDataBodyEditor(Composite parent, int style) {
         super(parent, style);
@@ -67,16 +64,16 @@ public class FormDataBodyEditor extends AbstractFormBodyEditor<FormDataBodyParam
         
         ColumnViewerToolTipSupport.enableFor(tvParams, ToolTip.NO_RECREATE);
         
-        TableViewerColumn cvKey = new TableViewerColumn(tvParams, SWT.LEFT);
-        cKey = cvKey.getColumn();
-        cKey.setText(TABLE_COLUMN_KEY);
-        cvKey.setLabelProvider(new ColumnLabelProvider() {
+        TableViewerColumn cvName = new TableViewerColumn(tvParams, SWT.LEFT);
+        cName = cvName.getColumn();
+        cName.setText(StringConstants.NAME);
+        cvName.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
                 return ((FormDataBodyParameter) element).getName();
             }
         });
-        cvKey.setEditingSupport(new EditingSupport(cvKey.getViewer()) {
+        cvName.setEditingSupport(new EditingSupport(cvName.getViewer()) {
             @Override
             protected void setValue(Object element, Object value) {
                 ((FormDataBodyParameter) element).setName(String.valueOf(value));
@@ -102,7 +99,7 @@ public class FormDataBodyEditor extends AbstractFormBodyEditor<FormDataBodyParam
         
         TableViewerColumn cvType = new TableViewerColumn(tvParams, SWT.LEFT);
         cType = cvType.getColumn();
-        cType.setText(TABLE_COLUMN_TYPE);
+        cType.setText(StringConstants.TYPE);
         cvType.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -144,7 +141,7 @@ public class FormDataBodyEditor extends AbstractFormBodyEditor<FormDataBodyParam
         
         TableViewerColumn cvValue = new TableViewerColumn(tvParams, SWT.LEFT);
         cValue = cvValue.getColumn();
-        cValue.setText(TABLE_COLUMN_VALUE);
+        cValue.setText(StringConstants.VALUE);
         cvValue.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -180,9 +177,9 @@ public class FormDataBodyEditor extends AbstractFormBodyEditor<FormDataBodyParam
             }
         });
         
-        tableColumnLayout.setColumnData(cKey, new ColumnWeightData(30, 100));
-        tableColumnLayout.setColumnData(cValue, new ColumnWeightData(30, 100));
-        tableColumnLayout.setColumnData(cType, new ColumnWeightData(40, 100));
+        tableColumnLayout.setColumnData(cName, new ColumnWeightData(40, 100));
+        tableColumnLayout.setColumnData(cValue, new ColumnWeightData(40, 100));
+        tableColumnLayout.setColumnData(cType, new ColumnWeightData(20, 100));
         
         return tvParams;
     }
@@ -205,20 +202,42 @@ public class FormDataBodyEditor extends AbstractFormBodyEditor<FormDataBodyParam
     @Override
     public void setInput(String httpBodyContent) {
         if (StringUtils.isEmpty(httpBodyContent)) {
-            bodyContent = new BodyContent<FormDataBodyParameter>();
+            bodyContent = new NameValueBodyContent<FormDataBodyParameter>();
             bodyContent.setContentType(DEFAULT_CONTENT_TYPE);
             bodyContent.setCharset(DEFAULT_CHARSET);
         } else {
             bodyContent = JsonUtil.fromJson(httpBodyContent, 
-                    new TypeToken<BodyContent<FormDataBodyParameter>>(){}.getType());
+                    new TypeToken<NameValueBodyContent<FormDataBodyParameter>>(){}.getType());
         }
         
-        tvParams.setInput(bodyContent.getParameters());
-        if (!bodyContent.getParameters().isEmpty()) {
-            btnRemove.setEnabled(true);
+        if (!initialized) {
+            tvParams.setInput(bodyContent.getParameters());
+            if (!bodyContent.getParameters().isEmpty()) {
+                btnRemove.setEnabled(true);
+            }
+        } else {
+            setContentTypeUpdated(true);
         }
     }
-
+    
+    @Override
+    public void onBodyTypeChanged() {
+        if (bodyContent == null) {
+            bodyContent = new NameValueBodyContent<FormDataBodyParameter>();
+            bodyContent.setContentType(DEFAULT_CONTENT_TYPE);
+            bodyContent.setCharset(DEFAULT_CHARSET);
+        }
+        
+        if (!initialized) {
+            tvParams.setInput(bodyContent.getParameters());
+            if (!bodyContent.getParameters().isEmpty()) {
+                btnRemove.setEnabled(true);
+            }
+        } 
+            
+        setContentTypeUpdated(true);
+    }
+    
     public class FileSelectionCellEditor extends DialogCellEditor {
 
         public FileSelectionCellEditor(Composite parent) {
@@ -228,7 +247,7 @@ public class FormDataBodyEditor extends AbstractFormBodyEditor<FormDataBodyParam
         @Override
         protected Button createButton(Composite parent) {
             Button result = new Button(parent, SWT.DOWN);
-            result.setText("Choose files");
+            result.setText(StringConstants.BTN_CHOOSE_FILE);
             return result;
         }
 

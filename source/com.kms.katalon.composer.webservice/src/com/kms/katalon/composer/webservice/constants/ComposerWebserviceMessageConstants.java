@@ -131,6 +131,12 @@ public class ComposerWebserviceMessageConstants extends NLS {
 
     // TextBodyEditor
     public static String PA_MSG_UNABLE_TO_OPEN_BODY_EDITOR;
+    
+    public static String PARAM_TABLE_MENU_ITEM_ADD;
+    
+    public static String PARAM_TABLE_MENU_ITEM_REMOVE;
+    
+    public static String BTN_CHOOSE_FILE;
 
     static {
         // initialize resource bundle

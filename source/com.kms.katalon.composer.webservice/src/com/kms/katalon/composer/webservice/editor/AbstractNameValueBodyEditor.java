@@ -23,17 +23,17 @@ import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.core.util.internal.JsonUtil;
-import com.kms.katalon.entity.webservice.BodyContent;
+import com.kms.katalon.entity.webservice.NameValueBodyContent;
 
-public abstract class AbstractFormBodyEditor<P> extends HttpBodyEditor {
+public abstract class AbstractNameValueBodyEditor<P> extends HttpBodyEditor {
 
     protected  ToolItem btnAdd, btnRemove;
     
     protected ParameterTable tvParams;
     
-    protected BodyContent<P> bodyContent = new BodyContent<P>();
+    protected NameValueBodyContent<P> bodyContent;
     
-    public AbstractFormBodyEditor(Composite parent, int style) {
+    public AbstractNameValueBodyEditor(Composite parent, int style) {
         super(parent, style);
         
         GridLayout gridLayout = new GridLayout();
@@ -107,12 +107,16 @@ public abstract class AbstractFormBodyEditor<P> extends HttpBodyEditor {
         tvParams.removeEmptyRows();
         return JsonUtil.toJson(bodyContent);
     }
+    
+    private void updateButtonRemoveState() {
+        if (bodyContent.getParameters().isEmpty()) {
+            btnRemove.setEnabled(false);
+        } else {
+            btnRemove.setEnabled(true);
+        }
+    }
 
     protected class ParameterTable extends TableViewer {
-        
-        private static final String MENU_ITEM_ADD = "Insert";
-        
-        private static final String MENU_ITEM_REMOVE = "Delete";
 
         public ParameterTable(Composite parent, int style) {
             super(parent, style);
@@ -127,7 +131,7 @@ public abstract class AbstractFormBodyEditor<P> extends HttpBodyEditor {
             menu = new Menu(table);
 
             MenuItem menuItemAdd = new MenuItem(menu, SWT.PUSH);
-            menuItemAdd.setText(MENU_ITEM_ADD);
+            menuItemAdd.setText(StringConstants.PARAM_TABLE_MENU_ITEM_ADD);
             menuItemAdd.addSelectionListener(new SelectionAdapter() {
                 @Override
                 public void widgetSelected(SelectionEvent e) {
@@ -142,7 +146,7 @@ public abstract class AbstractFormBodyEditor<P> extends HttpBodyEditor {
             
             if (table.getItemCount() > 0) {
                 MenuItem menuItemRemove = new MenuItem(menu, SWT.PUSH);
-                menuItemRemove.setText(MENU_ITEM_REMOVE);
+                menuItemRemove.setText(StringConstants.PARAM_TABLE_MENU_ITEM_REMOVE);
                 menuItemRemove.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent e) {
@@ -176,6 +180,7 @@ public abstract class AbstractFormBodyEditor<P> extends HttpBodyEditor {
                 bodyContent.removeParameter((P) selection);
             }
             tvParams.remove(selections);
+            updateButtonRemoveState();
             fireModifyEvent();
         }
         
@@ -186,6 +191,7 @@ public abstract class AbstractFormBodyEditor<P> extends HttpBodyEditor {
                     .collect(Collectors.toList());
             emptyParams.stream()
                     .forEach(p -> bodyContent.removeParameter(p));
+            updateButtonRemoveState();
             tvParams.refresh();
         }
     }
