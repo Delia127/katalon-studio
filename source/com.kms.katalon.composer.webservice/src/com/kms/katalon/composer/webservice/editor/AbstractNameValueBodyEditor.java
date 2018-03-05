@@ -69,6 +69,7 @@ public abstract class AbstractNameValueBodyEditor<P> extends HttpBodyEditor {
                 tvParams.removeSelectedRows();
             }
         });
+        btnRemove.setEnabled(false);
     }
     
     private void createParameterTable(Composite parent) {
@@ -95,7 +96,7 @@ public abstract class AbstractNameValueBodyEditor<P> extends HttpBodyEditor {
     
     protected abstract P createEmptyParameter();
     
-    protected abstract boolean checkEmptyParameter(P parameter);
+    protected abstract boolean isEmptyParameter(P parameter);
     
     @Override
     public String getContentType() {
@@ -159,10 +160,18 @@ public abstract class AbstractNameValueBodyEditor<P> extends HttpBodyEditor {
         }
 
         public void addEmptyRow() {
-            P param = createEmptyParameter();
-            bodyContent.addParameter(param);
-            tvParams.add(param);
-            tvParams.editElement(param, 0);
+            List<P> params = bodyContent.getParameters();
+            P lastParam;
+            if (params.size() > 0 &&
+                    isEmptyParameter(lastParam = params.get(params.size() - 1))) {
+                tvParams.editElement(lastParam, 0);
+            } else {
+                P param = createEmptyParameter();
+                bodyContent.addParameter(param);
+                tvParams.add(param);
+                tvParams.editElement(param, 0);
+            }
+            updateButtonRemoveState();
             fireModifyEvent();
         }
         
@@ -171,6 +180,7 @@ public abstract class AbstractNameValueBodyEditor<P> extends HttpBodyEditor {
             bodyContent.addParameter(selectedRowIndex, param);
             tvParams.insert(param, selectedRowIndex);
             tvParams.editElement(param, 0);
+            updateButtonRemoveState();
             fireModifyEvent();
         }
         
@@ -187,7 +197,7 @@ public abstract class AbstractNameValueBodyEditor<P> extends HttpBodyEditor {
         public void removeEmptyRows() {
             List<P> emptyParams = bodyContent.getParameters()
                     .stream()
-                    .filter(p -> checkEmptyParameter(p))
+                    .filter(p -> isEmptyParameter(p))
                     .collect(Collectors.toList());
             emptyParams.stream()
                     .forEach(p -> bodyContent.removeParameter(p));

@@ -132,7 +132,7 @@ public class UrlEncodedBodyEditor extends AbstractNameValueBodyEditor<UrlEncoded
     }
 
     @Override
-    protected boolean checkEmptyParameter(UrlEncodedBodyParameter parameter) {
+    protected boolean isEmptyParameter(UrlEncodedBodyParameter parameter) {
         return StringUtils.isBlank(parameter.getName()) 
                 && StringUtils.isBlank(parameter.getValue());
     }

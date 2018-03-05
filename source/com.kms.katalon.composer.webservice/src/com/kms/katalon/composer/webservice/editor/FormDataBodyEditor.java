@@ -194,7 +194,7 @@ public class FormDataBodyEditor extends AbstractNameValueBodyEditor<FormDataBody
     }
 
     @Override
-    protected boolean checkEmptyParameter(FormDataBodyParameter parameter) {
+    protected boolean isEmptyParameter(FormDataBodyParameter parameter) {
         return StringUtils.isBlank(parameter.getName())
                 && StringUtils.isBlank(parameter.getValue());
     }
