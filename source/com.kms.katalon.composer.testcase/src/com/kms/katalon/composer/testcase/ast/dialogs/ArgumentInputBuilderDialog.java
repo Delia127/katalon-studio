@@ -61,7 +61,7 @@ public class ArgumentInputBuilderDialog extends AbstractAstBuilderWithTableDialo
 
     protected StringConstantCellEditor valueCellEditor;
     
-    private SecuredTextDialogCellEditor securedTextDialogCellEditor;
+    private EncryptedTextDialogCellEditor encryptedTextDialogCellEditor;
 
     public ArgumentInputBuilderDialog(Shell parentShell, InputParameterBuilder parameterBuilder, ASTNodeWrapper parent) {
         super(parentShell);
@@ -163,15 +163,15 @@ public class ArgumentInputBuilderDialog extends AbstractAstBuilderWithTableDialo
                             FailureHandling.class);
                 }
                 
-                // Get CellEditor for SetSecuredTextKeyword
+                // Get CellEditor for SetEncryptedTextKeyword
                 InputValueType valueType = AstValueUtil.getTypeValue(((InputParameter) element).getValue());
                 if (valueType == InputValueType.String) {
                     ASTNodeWrapper methodExpressionWrapper = parent.getParent();
                     if (methodExpressionWrapper instanceof MethodCallExpressionWrapper &&
                             "setSecuredText".equals(((MethodCallExpressionWrapper) methodExpressionWrapper).getMethodAsString())) {
-                        securedTextDialogCellEditor = (SecuredTextDialogCellEditor)AstValueUtil.getCellEditorForSecuredText(
+                        encryptedTextDialogCellEditor = (EncryptedTextDialogCellEditor)AstValueUtil.getCellEditorForEncryptedText(
                                 (Composite) tableViewer.getControl(), (ConstantExpressionWrapper)((InputParameter) element).getValue());
-                        return securedTextDialogCellEditor;
+                        return encryptedTextDialogCellEditor;
                     }
                 }
                 
@@ -192,8 +192,8 @@ public class ArgumentInputBuilderDialog extends AbstractAstBuilderWithTableDialo
             if (valueCellEditor != null) {
                 valueCellEditor.applyEditingValue();
             }
-            if (securedTextDialogCellEditor != null) {
-                securedTextDialogCellEditor.applyEditingValue();
+            if (encryptedTextDialogCellEditor != null) {
+                encryptedTextDialogCellEditor.applyEditingValue();
             }
         }
     }

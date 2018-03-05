@@ -8,7 +8,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.composer.components.dialogs.ApplyingEditingValue;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.testcase.ast.dialogs.SecuredTextDialogCellEditor;
+import com.kms.katalon.composer.testcase.ast.dialogs.EncryptedTextDialogCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.BinaryCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.BooleanCellEditor;
 import com.kms.katalon.composer.testcase.ast.editors.BooleanConstantComboBoxCellEditor;
@@ -226,8 +226,8 @@ public class AstValueUtil {
         return null;
     }
     
-    public static CellEditor getCellEditorForSecuredText(Composite parent, ConstantExpressionWrapper constantExpressionWrapper) {
-        return new SecuredTextDialogCellEditor(parent, constantExpressionWrapper);
+    public static CellEditor getCellEditorForEncryptedText(Composite parent, ConstantExpressionWrapper constantExpressionWrapper) {
+        return new EncryptedTextDialogCellEditor(parent, constantExpressionWrapper);
     }
 
     public static CellEditor getCellEditorForClosureExpression(Composite parent,

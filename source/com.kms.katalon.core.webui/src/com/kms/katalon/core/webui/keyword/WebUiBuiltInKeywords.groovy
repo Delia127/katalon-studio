@@ -962,8 +962,8 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_TEXT)
-    public static void setSecuredText(TestObject to, String encryptedText, FailureHandling flowControl) throws StepFailedException {
-        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "setSecuredText", to, encryptedText, flowControl)
+    public static void seEncryptedText(TestObject to, String encryptedText, FailureHandling flowControl) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "setEncryptedText", to, encryptedText, flowControl)
     }
     
     /**
@@ -977,8 +977,8 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_TEXT)
-    public static void setSecuredText(TestObject to, String encryptedText) throws StepFailedException {
-        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "setSecuredText", to, encryptedText)
+    public static void setEncryptedText(TestObject to, String encryptedText) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "setEncryptedText", to, encryptedText)
     }
 
     /**

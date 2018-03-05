@@ -16,8 +16,8 @@ import com.kms.katalon.core.webui.keyword.internal.WebUIKeywordMain
 import com.kms.katalon.core.logging.KeywordLogger
 import com.kms.katalon.util.CryptoUtil
 
-@Action(value = "setSecuredText")
-public class SetSecuredTextKeyword extends WebUIAbstractKeyword {
+@Action(value = "setEncryptedText")
+public class SetEncryptedTextKeyword extends WebUIAbstractKeyword {
 
     @CompileStatic
     @Override
@@ -31,11 +31,11 @@ public class SetSecuredTextKeyword extends WebUIAbstractKeyword {
         TestObject to = getTestObject(params[0])
         String encryptedText = (String) params[1]
         FailureHandling flowControl = (FailureHandling)(params.length > 2 && params[2] instanceof FailureHandling ? params[2] : RunConfiguration.getDefaultFailureHandling())
-        return setSecuredText(to, encryptedText, flowControl)
+        return setEncryptedText(to, encryptedText, flowControl)
     }
     
     @CompileStatic
-    public void setSecuredText(TestObject to, String encryptedText, FailureHandling flowControl) {
+    public void setEncryptedText(TestObject to, String encryptedText, FailureHandling flowControl) {
         WebUIKeywordMain.runKeyword({
             boolean isSwitchIntoFrame = false
             try {
@@ -53,16 +53,16 @@ public class SetSecuredTextKeyword extends WebUIAbstractKeyword {
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_CLEARING_OBJ_TXT, to.getObjectId()))
                 webElement.clear()
                 
-                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SETTING_OBJ_TXT_TO_SECURED_VAL, to.getObjectId()))
+                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_SETTING_OBJ_TXT_TO_ENCRYPTED_VAL, to.getObjectId()))
                 webElement.sendKeys(rawText)
                 
-                logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_SECURED_TXT_IS_SET_ON_OBJ, to.getObjectId()))
+                logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_ENCRYPTED_TXT_IS_SET_ON_OBJ, to.getObjectId()))
             } finally {
                 if (isSwitchIntoFrame) {
                     WebUiCommonHelper.switchToDefaultContent()
                 }
             }
-        }, flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_SET_SECURED_TEXT_FOR_OBJECT, to.getObjectId())
+        }, flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_SET_ENCRYPTED_TEXT_FOR_OBJECT, to.getObjectId())
         : StringConstants.KW_MSG_CANNOT_SET_TXT)
     }
 }

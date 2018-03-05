@@ -11,10 +11,10 @@ import com.kms.katalon.composer.components.dialogs.AbstractDialogCellEditor;
 import com.kms.katalon.composer.testcase.dialogs.TextEncryptionDialog;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
 
-public class SecuredTextDialogCellEditor extends AbstractDialogCellEditor {
+public class EncryptedTextDialogCellEditor extends AbstractDialogCellEditor {
     private ConstantExpressionWrapper constantExpressionWrapper;
     
-    public SecuredTextDialogCellEditor(Composite parent, ConstantExpressionWrapper constantExpressionWrapper) {
+    public EncryptedTextDialogCellEditor(Composite parent, ConstantExpressionWrapper constantExpressionWrapper) {
         super(parent);
         this.constantExpressionWrapper = constantExpressionWrapper;
     }
