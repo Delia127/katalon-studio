@@ -163,7 +163,7 @@ public class ArgumentInputBuilderDialog extends AbstractAstBuilderWithTableDialo
                             FailureHandling.class);
                 }
                 
-                // Get CellEditor for secured text
+                // Get CellEditor for SetSecuredTextKeyword
                 InputValueType valueType = AstValueUtil.getTypeValue(((InputParameter) element).getValue());
                 if (valueType == InputValueType.String) {
                     ASTNodeWrapper methodExpressionWrapper = parent.getParent();
