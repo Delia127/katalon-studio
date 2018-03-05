@@ -1,9 +1,11 @@
 package com.kms.katalon.composer.testcase.ast.dialogs;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.dialogs.AbstractDialogCellEditor;
 import com.kms.katalon.composer.testcase.dialogs.TextEncryptionDialog;
@@ -19,11 +21,12 @@ public class SecuredTextDialogCellEditor extends AbstractDialogCellEditor {
 
     @Override
     protected Object openDialogBox(Control cellEditorWindow) {
-        TextEncryptionDialog dialog = new TextEncryptionDialog(Display.getCurrent().getActiveShell());
+        Shell shell = Display.getCurrent().getActiveShell();
+        TextEncryptionDialog dialog = TextEncryptionDialog.createDialogForManualModeCellEditor(shell);
         dialog.setBlockOnOpen(true);
         dialog.open();
         String encryptedText = dialog.getEncryptedText();
-        if (!StringUtils.isBlank(encryptedText)) {
+        if (dialog.getReturnCode() != Window.CANCEL && !StringUtils.isBlank(encryptedText)) {
             constantExpressionWrapper.setValue(dialog.getEncryptedText());
         }
         return constantExpressionWrapper;

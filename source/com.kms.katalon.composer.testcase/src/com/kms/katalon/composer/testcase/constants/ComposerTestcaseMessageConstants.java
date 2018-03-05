@@ -361,9 +361,11 @@ public class ComposerTestcaseMessageConstants extends NLS {
     
     public static String LBL_ENCRYPTED_TEXT;
     
-    public static String BTN_ENCRYPT;
+    public static String BTN_INSERT;
     
-    public static String BTN_ENCRYPT_AND_CLOSE;
+    public static String BTN_COPY_AND_CLOSE;
+    
+    public static String BTN_CANCEL;
     
     static {
         // initialize resource bundle

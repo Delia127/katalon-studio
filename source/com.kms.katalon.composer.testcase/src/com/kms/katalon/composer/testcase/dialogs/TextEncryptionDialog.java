@@ -6,6 +6,9 @@ import java.security.GeneralSecurityException;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -15,6 +18,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -31,12 +35,25 @@ public class TextEncryptionDialog extends Dialog {
     
     private String encryptedText;
     
-    private Button btnEncrypt;
+    private Button btnInsert;
     
-    private Button btnEncryptAndClose;
+    private Button btnCopyAndClose;
+    
+    private Button btnCancel;
+    
+    private boolean isManualMode;
 
-    public TextEncryptionDialog(Shell parentShell) {
+    private TextEncryptionDialog(Shell parentShell, boolean isManualMode) {
         super(parentShell);
+        this.isManualMode = isManualMode;
+    }
+    
+    public static TextEncryptionDialog createDialogForManualModeCellEditor(Shell parentShell) {
+        return new TextEncryptionDialog(parentShell, true);
+    }
+    
+    public static TextEncryptionDialog createDefault(Shell parentShell) {
+        return new TextEncryptionDialog(parentShell, false);
     }
     
     @Override
@@ -67,13 +84,18 @@ public class TextEncryptionDialog extends Dialog {
         buttonComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false));
         buttonComposite.setLayout(new GridLayout(2, false));
         
-        btnEncrypt = new Button(buttonComposite, SWT.FLAT);
-        btnEncrypt.setText(StringConstants.BTN_ENCRYPT);
-        btnEncrypt.setEnabled(false);
+        if (isManualMode) {
+            btnInsert = new Button(buttonComposite, SWT.FLAT);
+            btnInsert.setText(StringConstants.BTN_INSERT);
+            btnInsert.setEnabled(false);
+        } else {
+            btnCopyAndClose = new Button(buttonComposite, SWT.FLAT);
+            btnCopyAndClose.setText(StringConstants.BTN_COPY_AND_CLOSE);
+            btnCopyAndClose.setEnabled(false);
+        }
         
-        btnEncryptAndClose = new Button(buttonComposite, SWT.FLAT);
-        btnEncryptAndClose.setText(StringConstants.BTN_ENCRYPT_AND_CLOSE);
-        btnEncryptAndClose.setEnabled(false);
+        btnCancel = new Button(buttonComposite, SWT.FLAT);
+        btnCancel.setText(StringConstants.BTN_CANCEL);
         
         addControlListeners();
         return body;
@@ -84,30 +106,46 @@ public class TextEncryptionDialog extends Dialog {
 
             @Override
             public void modifyText(ModifyEvent e) {
-                Text text = (Text) e.widget;
-                if (StringUtils.isBlank(text.getText())) {
-                    btnEncrypt.setEnabled(false);
-                    btnEncryptAndClose.setEnabled(false);
+                handleGenerateEncryptedText();
+                if (!StringUtils.isBlank(encryptedText)) {
+                    if (isManualMode) {
+                        btnInsert.setEnabled(true);
+                    } else {
+                        btnCopyAndClose.setEnabled(true);
+                    }
                 } else {
-                    btnEncrypt.setEnabled(true);
-                    btnEncryptAndClose.setEnabled(true);
+                    if (isManualMode) {
+                        btnInsert.setEnabled(false);
+                    } else {
+                        btnCopyAndClose.setEnabled(false);
+                    }
                 }
             }
         });
         
-        btnEncrypt.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                handleGenerateEncryptedText();
-            }
-        });
+        if (isManualMode) {
+            btnInsert.addSelectionListener(new SelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    handleGenerateEncryptedText();
+                    closeDialog();
+                }
+            });
+        } else {
+            btnCopyAndClose.addSelectionListener(new SelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    handleGenerateEncryptedText();
+                    handleCopyEncryptedText();
+                    closeDialog();
+                }
+            });
+        }
         
-        btnEncryptAndClose.addSelectionListener(new SelectionAdapter() {
+        btnCancel.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                handleGenerateEncryptedText();
-                encryptedText = txtEncryptedText.getText();
-                closeDialog();
+                cancelPressed();
             }
         });
     }
@@ -129,18 +167,26 @@ public class TextEncryptionDialog extends Dialog {
     }
     
     private void handleGenerateEncryptedText() {
-        txtEncryptedText.setText(StringUtils.EMPTY);
-        
         String rawText = txtRawText.getText();
         if (!StringUtils.isEmpty(rawText)) {
             try {
                 CryptoUtil.CrytoInfo cryptoInfo = CryptoUtil.getDefault(rawText);
-                String encryptedText = CryptoUtil.encode(cryptoInfo);
+                encryptedText = CryptoUtil.encode(cryptoInfo);
                 txtEncryptedText.setText(encryptedText);
             } catch (UnsupportedEncodingException | GeneralSecurityException e) {
                 LoggerSingleton.logError(e);
             }
+        } else {
+            txtEncryptedText.setText(StringUtils.EMPTY);
+            encryptedText = txtEncryptedText.getText();
         }
+    }
+    
+    private void handleCopyEncryptedText() {
+        Clipboard clipboard = new Clipboard(Display.getCurrent());
+        TextTransfer textTransfer = TextTransfer.getInstance();
+        clipboard.setContents(new Object[] { encryptedText }, new Transfer[] { textTransfer });
+        clipboard.dispose();
     }
     
     private void closeDialog() {

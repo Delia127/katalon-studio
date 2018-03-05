@@ -453,7 +453,9 @@ public class StringConstants extends GlobalStringConstants {
     
     public static final String LBL_ENCRYPTED_TEXT = ComposerTestcaseMessageConstants.LBL_ENCRYPTED_TEXT;
     
-    public static final String BTN_ENCRYPT = ComposerTestcaseMessageConstants.BTN_ENCRYPT;
+    public static final String BTN_INSERT = ComposerTestcaseMessageConstants.BTN_INSERT;
     
-    public static final String BTN_ENCRYPT_AND_CLOSE = ComposerTestcaseMessageConstants.BTN_ENCRYPT_AND_CLOSE;
+    public static final String BTN_COPY_AND_CLOSE = ComposerTestcaseMessageConstants.BTN_COPY_AND_CLOSE;
+    
+    public static final String BTN_CANCEL = ComposerTestcaseMessageConstants.BTN_CANCEL;
 }
