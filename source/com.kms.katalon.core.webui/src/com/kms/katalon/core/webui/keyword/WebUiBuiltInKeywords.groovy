@@ -962,7 +962,7 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_TEXT)
-    public static void seEncryptedText(TestObject to, String encryptedText, FailureHandling flowControl) throws StepFailedException {
+    public static void setEncryptedText(TestObject to, String encryptedText, FailureHandling flowControl) throws StepFailedException {
         KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "setEncryptedText", to, encryptedText, flowControl)
     }
     
