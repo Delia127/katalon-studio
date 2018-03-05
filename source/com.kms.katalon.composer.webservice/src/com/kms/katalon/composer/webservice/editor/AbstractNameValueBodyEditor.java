@@ -23,7 +23,7 @@ import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.core.util.internal.JsonUtil;
-import com.kms.katalon.entity.webservice.NameValueBodyContent;
+import com.kms.katalon.entity.webservice.ParameterizedBodyContent;
 
 public abstract class AbstractNameValueBodyEditor<P> extends HttpBodyEditor {
 
@@ -31,7 +31,7 @@ public abstract class AbstractNameValueBodyEditor<P> extends HttpBodyEditor {
     
     protected ParameterTable tvParams;
     
-    protected NameValueBodyContent<P> bodyContent;
+    protected ParameterizedBodyContent<P> bodyContent;
     
     public AbstractNameValueBodyEditor(Composite parent, int style) {
         super(parent, style);

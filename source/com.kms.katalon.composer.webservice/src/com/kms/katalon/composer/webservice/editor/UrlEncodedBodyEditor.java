@@ -18,7 +18,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import com.google.gson.reflect.TypeToken;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.core.util.internal.JsonUtil;
-import com.kms.katalon.entity.webservice.NameValueBodyContent;
+import com.kms.katalon.entity.webservice.ParameterizedBodyContent;
 import com.kms.katalon.entity.webservice.UrlEncodedBodyParameter;
 
 public class UrlEncodedBodyEditor extends AbstractNameValueBodyEditor<UrlEncodedBodyParameter> {
@@ -140,19 +140,19 @@ public class UrlEncodedBodyEditor extends AbstractNameValueBodyEditor<UrlEncoded
     @Override
     public void setInput(String httpBodyContent) {
         if (StringUtils.isEmpty(httpBodyContent)) {
-            bodyContent = new NameValueBodyContent<UrlEncodedBodyParameter>();
+            bodyContent = new ParameterizedBodyContent<UrlEncodedBodyParameter>();
             bodyContent.setContentType(DEFAULT_CONTENT_TYPE);
             bodyContent.setCharset(DEFAULT_CHARSET);
         } else {
             bodyContent = JsonUtil.fromJson(httpBodyContent, 
-                    new TypeToken<NameValueBodyContent<UrlEncodedBodyParameter>>(){}.getType());
+                    new TypeToken<ParameterizedBodyContent<UrlEncodedBodyParameter>>(){}.getType());
         }
     }
     
     @Override
     public void onBodyTypeChanged() {
         if (bodyContent == null) {
-            bodyContent = new NameValueBodyContent<UrlEncodedBodyParameter>();
+            bodyContent = new ParameterizedBodyContent<UrlEncodedBodyParameter>();
             bodyContent.setContentType(DEFAULT_CONTENT_TYPE);
             bodyContent.setCharset(DEFAULT_CHARSET);
         }
@@ -162,6 +162,7 @@ public class UrlEncodedBodyEditor extends AbstractNameValueBodyEditor<UrlEncoded
             if (!bodyContent.getParameters().isEmpty()) {
                 btnRemove.setEnabled(true);
             }
+            initialized = true;
         }
             
         setContentTypeUpdated(true);

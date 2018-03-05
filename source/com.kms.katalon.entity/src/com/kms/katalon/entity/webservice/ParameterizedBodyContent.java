@@ -3,7 +3,7 @@ package com.kms.katalon.entity.webservice;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NameValueBodyContent<P> implements HttpBodyContent{
+public class ParameterizedBodyContent<P> implements HttpBodyContent{
 
     private String contentType;
     

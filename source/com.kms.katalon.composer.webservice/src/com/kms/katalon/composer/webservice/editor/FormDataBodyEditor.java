@@ -28,7 +28,7 @@ import com.google.gson.reflect.TypeToken;
 import com.kms.katalon.composer.components.impl.editors.StringComboBoxCellEditor;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.core.util.internal.JsonUtil;
-import com.kms.katalon.entity.webservice.NameValueBodyContent;
+import com.kms.katalon.entity.webservice.ParameterizedBodyContent;
 import com.kms.katalon.entity.webservice.FormDataBodyParameter;;
 
 public class FormDataBodyEditor extends AbstractNameValueBodyEditor<FormDataBodyParameter> {
@@ -202,28 +202,19 @@ public class FormDataBodyEditor extends AbstractNameValueBodyEditor<FormDataBody
     @Override
     public void setInput(String httpBodyContent) {
         if (StringUtils.isEmpty(httpBodyContent)) {
-            bodyContent = new NameValueBodyContent<FormDataBodyParameter>();
+            bodyContent = new ParameterizedBodyContent<FormDataBodyParameter>();
             bodyContent.setContentType(DEFAULT_CONTENT_TYPE);
             bodyContent.setCharset(DEFAULT_CHARSET);
         } else {
             bodyContent = JsonUtil.fromJson(httpBodyContent, 
-                    new TypeToken<NameValueBodyContent<FormDataBodyParameter>>(){}.getType());
-        }
-        
-        if (!initialized) {
-            tvParams.setInput(bodyContent.getParameters());
-            if (!bodyContent.getParameters().isEmpty()) {
-                btnRemove.setEnabled(true);
-            }
-        } else {
-            setContentTypeUpdated(true);
+                    new TypeToken<ParameterizedBodyContent<FormDataBodyParameter>>(){}.getType());
         }
     }
     
     @Override
     public void onBodyTypeChanged() {
         if (bodyContent == null) {
-            bodyContent = new NameValueBodyContent<FormDataBodyParameter>();
+            bodyContent = new ParameterizedBodyContent<FormDataBodyParameter>();
             bodyContent.setContentType(DEFAULT_CONTENT_TYPE);
             bodyContent.setCharset(DEFAULT_CHARSET);
         }
@@ -233,6 +224,7 @@ public class FormDataBodyEditor extends AbstractNameValueBodyEditor<FormDataBody
             if (!bodyContent.getParameters().isEmpty()) {
                 btnRemove.setEnabled(true);
             }
+            initialized = true;
         } 
             
         setContentTypeUpdated(true);
