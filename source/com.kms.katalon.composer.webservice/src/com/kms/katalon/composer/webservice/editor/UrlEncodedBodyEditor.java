@@ -147,6 +147,11 @@ public class UrlEncodedBodyEditor extends AbstractNameValueBodyEditor<UrlEncoded
             bodyContent = JsonUtil.fromJson(httpBodyContent, 
                     new TypeToken<ParameterizedBodyContent<UrlEncodedBodyParameter>>(){}.getType());
         }
+        
+        tvParams.setInput(bodyContent.getParameters());
+        if (!bodyContent.getParameters().isEmpty()) {
+            btnRemove.setEnabled(true);
+        }
     }
     
     @Override

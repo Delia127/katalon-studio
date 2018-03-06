@@ -78,6 +78,7 @@ public class FormDataBodyEditor extends AbstractNameValueBodyEditor<FormDataBody
             protected void setValue(Object element, Object value) {
                 ((FormDataBodyParameter) element).setName(String.valueOf(value));
                 tvParams.update(element, null);
+//                tvParams.setInput(bodyContent.getParameters());
                 fireModifyEvent();
             }
 
@@ -208,6 +209,11 @@ public class FormDataBodyEditor extends AbstractNameValueBodyEditor<FormDataBody
         } else {
             bodyContent = JsonUtil.fromJson(httpBodyContent, 
                     new TypeToken<ParameterizedBodyContent<FormDataBodyParameter>>(){}.getType());
+        }
+        
+        tvParams.setInput(bodyContent.getParameters());
+        if (!bodyContent.getParameters().isEmpty()) {
+            btnRemove.setEnabled(true);
         }
     }
     
