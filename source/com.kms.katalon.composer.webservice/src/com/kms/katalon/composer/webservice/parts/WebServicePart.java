@@ -302,7 +302,8 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
     }
 
     protected void createAPIControls(Composite parent) {
-        wsApiControl = new WebServiceAPIControl(parent, isSOAP());
+        String endPoint = isSOAP() ? originalWsObject.getWsdlAddress() : originalWsObject.getRestUrl();
+        wsApiControl = new WebServiceAPIControl(parent, isSOAP(), endPoint);
         wsApiControl.addRequestMethodSelectionListener(new SelectionAdapter() {
 
             @Override
