@@ -98,7 +98,7 @@ public class HttpBodyEditorComposite extends Composite {
             selectedBodyType = "text";
             TextBodyContent textBodyContent = new TextBodyContent();
             textBodyContent.setText(requestEntity.getHttpBody());
-            
+
             WebElementPropertyEntity contentTypeProperty = findContentTypeProperty();
             if (contentTypeProperty != null) {
                 textBodyContent.setContentType(contentTypeProperty.getValue());
@@ -107,17 +107,17 @@ public class HttpBodyEditorComposite extends Composite {
     }
 
     public void setInput(WebServiceRequestEntity requestEntity) {
-        migrateFromOldVersion(requestEntity);
-
         this.webServiceEntity = requestEntity;
 
-        selectedBodyType = StringUtils.defaultIfEmpty(requestEntity.getHttpBodyType(), "text");
+        migrateFromOldVersion(webServiceEntity);
+
+        selectedBodyType = StringUtils.defaultIfEmpty(webServiceEntity.getHttpBodyType(), "text");
         Button selectedButton = bodySelectionButtons.get(selectedBodyType);
+
+        bodyEditors.get(selectedBodyType).setInput(webServiceEntity.getHttpBodyContent());
 
         selectedButton.setSelection(true);
         selectedButton.notifyListeners(SWT.Selection, new Event());
-
-        bodyEditors.get(selectedBodyType).setInput(requestEntity.getHttpBodyContent());
     }
 
     private void handleControlModifyListeners() {
@@ -127,9 +127,12 @@ public class HttpBodyEditorComposite extends Composite {
                 Button source = (Button) e.getSource();
                 selectedBodyType = source.getText();
                 HttpBodyEditor httpBodyEditor = bodyEditors.get(selectedBodyType);
+                httpBodyEditor.onBodyTypeChanged();
+
                 slBodyContent.topControl = httpBodyEditor;
                 httpBodyEditor.getParent().layout();
                 servicePart.updateDirty(true);
+                updateContentTypeByEditor(httpBodyEditor);
             }
         };
 
@@ -140,21 +143,25 @@ public class HttpBodyEditorComposite extends Composite {
         bodyEditors.values().forEach(editor -> {
             editor.addListener(SWT.Modify, event -> {
                 servicePart.updateDirty(true);
-                if (editor.isContentTypeUpdated()) {
-                    WebElementPropertyEntity propertyEntity = findContentTypeProperty();
-                    String newContentType = editor.getContentType();
-                    if (propertyEntity != null) {
-                        propertyEntity.setValue(newContentType);
-                    } else {
-                        propertyEntity = new WebElementPropertyEntity("Content-Type", newContentType);
-                        webServiceEntity.getHttpHeaderProperties().add(0, propertyEntity);
-                    }
-                    servicePart.updateHeaders(webServiceEntity);
-
-                    editor.setContentTypeUpdated(false);
-                }
+                updateContentTypeByEditor(editor);
             });
         });
+    }
+
+    private void updateContentTypeByEditor(HttpBodyEditor editor) {
+        if (editor.isContentTypeUpdated()) {
+            WebElementPropertyEntity propertyEntity = findContentTypeProperty();
+            String newContentType = editor.getContentType();
+            if (propertyEntity != null) {
+                propertyEntity.setValue(newContentType);
+            } else {
+                propertyEntity = new WebElementPropertyEntity("Content-Type", newContentType);
+                webServiceEntity.getHttpHeaderProperties().add(0, propertyEntity);
+            }
+            servicePart.updateHeaders(webServiceEntity);
+
+            editor.setContentTypeUpdated(false);
+        }
     }
 
     private WebElementPropertyEntity findContentTypeProperty() {
