@@ -329,9 +329,6 @@ public class RestServicePart extends WebServicePart {
         originalWsObject.setRestUrl(wsApiControl.getRequestURL());
         originalWsObject.setRestRequestMethod(wsApiControl.getRequestMethod());
 
-        // tblParams.removeEmptyProperty();
-        // originalWsObject.setRestParameters(tblParams.getInput());
-
         tblHeaders.removeEmptyProperty();
         originalWsObject.setHttpHeaderProperties(tblHeaders.getInput());
 
