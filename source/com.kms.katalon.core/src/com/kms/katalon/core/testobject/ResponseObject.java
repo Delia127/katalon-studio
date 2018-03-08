@@ -21,7 +21,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
-public class ResponseObject {
+public class ResponseObject implements PerformanceResourceTiming {
 
     private String contentType = "text";
 
@@ -30,6 +30,14 @@ public class ResponseObject {
     private int statusCode;
 
     private Map<String, List<String>> headerFields;
+    
+    private long responseHeaderSize;
+    
+    private long responseBodySize;
+    
+    private long waitingTime;
+    
+    private long contentDownloadTime;
 
     public ResponseObject() {
     }
@@ -174,5 +182,68 @@ public class ResponseObject {
      */
     public void setStatusCode(int statusCode) {
         this.statusCode = statusCode;
+    }
+
+    /**
+     * Returns size (byte) as long value of the response.</br></br>
+     * Response size = Header size + Body size
+     * 
+     * @see #getResponseHeaderSize()
+     * @see #getResponseBodySize()
+     * 
+     */
+    public long getResponseSize() {
+        return getResponseHeaderSize() + getResponseBodySize();
+    }
+
+    /**
+     * Returns headers size (byte) as long value of the response.
+     * 
+     * @see #getResponseBodySize()
+     * @see #getResponseSize()
+     */
+    public long getResponseHeaderSize() {
+        return responseHeaderSize;
+    }
+
+    public void setResponseHeaderSize(long reponseHeaderSize) {
+        this.responseHeaderSize = reponseHeaderSize;
+    }
+
+    public long getResponseBodySize() {
+        return responseBodySize;
+    }
+
+    /**
+     * Returns body size (byte) as long value of the response.
+     * 
+     * @see #getResponseHeaderSize()
+     * @see #getResponseSize()
+     */
+    public void setResponseBodySize(long reponseBodySize) {
+        this.responseBodySize = reponseBodySize;
+    }
+
+    @Override
+    public long getElapsedTime() {
+        return getWaitingTime() + getContentDownloadTime();
+    }
+
+    @Override
+    public long getWaitingTime() {
+        return waitingTime;
+    }
+    
+    public void setWaitingTime(long waitingTime) {
+        this.waitingTime = waitingTime;
+    }
+
+    @Override
+    public long getContentDownloadTime() {
+        return contentDownloadTime;
+    }
+    
+    public void setContentDownloadTime(long contentDownloadTime) {
+        this.contentDownloadTime = contentDownloadTime;
     }
 }

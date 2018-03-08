@@ -112,26 +112,23 @@ public class RestServicePart extends WebServicePart {
                                 String projectDir = ProjectController.getInstance()
                                         .getCurrentProject()
                                         .getFolderLocation();
-                                ResponseObject responseObject = WebServiceController.getInstance().sendRequest(
+                                final ResponseObject responseObject = WebServiceController.getInstance().sendRequest(
                                         getWSRequestObject(), projectDir, ProxyPreferences.getProxyInformation());
 
                                 if (monitor.isCanceled()) {
                                     return;
                                 }
-                                Display.getDefault().asyncExec(new Runnable() {
+                                Display.getDefault().asyncExec(() -> {
+                                    setResponseStatus(responseObject);
+                                    responseHeader.setDocument(createDocument(getPrettyHeaders(responseObject)));
 
-                                    @Override
-                                    public void run() {
-                                        responseHeader.setDocument(createDocument(getPrettyHeaders(responseObject)));
+                                    String bodyContent = responseObject.getResponseText();
 
-                                        String bodyContent = responseObject.getResponseText();
-
-                                        if (bodyContent == null) {
-                                            return;
-                                        }
-
-                                        responseBody.setDocument(createDocument(bodyContent));
+                                    if (bodyContent == null) {
+                                        return;
                                     }
+
+                                    responseBody.setDocument(createDocument(bodyContent));
                                 });
                             } catch (Exception e) {
                                 LoggerSingleton.logError(e);
@@ -299,7 +296,7 @@ public class RestServicePart extends WebServicePart {
     @Override
     protected void createResponseComposite(Composite parent) {
         super.createResponseComposite(parent);
-        responseBody = createSourceViewer(responseComposite, new GridData(SWT.FILL, SWT.FILL, true, true));
+        responseBody = createSourceViewer(responseBodyComposite, new GridData(SWT.FILL, SWT.FILL, true, true));
         responseBody.setEditable(false);
     }
 

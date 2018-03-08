@@ -207,6 +207,10 @@ public class GlobalMessageConstants extends NLS {
     
     public static String OBJECT_FOLDER;
 
+    public static String ELAPSED;
+
+    public static String SIZE;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, GlobalMessageConstants.class);

@@ -357,7 +357,7 @@ public class SoapServicePart extends WebServicePart {
     @Override
     protected void createResponseComposite(Composite parent) {
         super.createResponseComposite(parent);
-        responseBody = createXMLSourceViewer(responseComposite);
+        responseBody = createXMLSourceViewer(responseBodyComposite);
         responseBody.setEditable(false);
     }
 
