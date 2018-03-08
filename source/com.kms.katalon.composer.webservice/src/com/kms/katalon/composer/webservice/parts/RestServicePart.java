@@ -356,8 +356,8 @@ public class RestServicePart extends WebServicePart {
         originalWsObject.setRestUrl(wsApiControl.getRequestURL());
         originalWsObject.setRestRequestMethod(wsApiControl.getRequestMethod());
 
-        tblParams.removeEmptyProperty();
-        originalWsObject.setRestParameters(tblParams.getInput());
+//        tblParams.removeEmptyProperty();
+//        originalWsObject.setRestParameters(tblParams.getInput());
 
         tblHeaders.removeEmptyProperty();
         originalWsObject.setHttpHeaderProperties(tblHeaders.getInput());
@@ -367,30 +367,46 @@ public class RestServicePart extends WebServicePart {
 
     @Override
     protected void populateDataToUI() {
-        String restUrl = originalWsObject.getRestUrl();
-        wsApiControl.getRequestURLControl().setText(restUrl);
-        
-        String restRequestMethod = originalWsObject.getRestRequestMethod();
-        int index = Arrays.asList(WebServiceRequestEntity.REST_REQUEST_METHODS).indexOf(restRequestMethod);
-        wsApiControl.getRequestMethodControl().select(index < 0 ? 0 : index);
+        try {
+            String restUrl = originalWsObject.getRestUrl();
+            uriBuilder = new URIBuilder(restUrl);
+            
+            // Fix for back compatibility with already existing project (KAT-2930)
+            boolean isOldVersion = !originalWsObject.getRestParameters().isEmpty();
+            if (isOldVersion) {
+                tempPropList = new ArrayList<WebElementPropertyEntity>(originalWsObject.getRestParameters());
+                List<NameValuePair> params = tempPropList.stream()
+                        .map(pr -> new BasicNameValuePair(pr.getName(), pr.getValue()))
+                        .collect(Collectors.toList());
+                originalWsObject.setRestParameters(Collections.emptyList());
+                uriBuilder.addParameters(params);
+            }
+           
+            wsApiControl.getRequestURLControl().setText(uriBuilder.build().toString());
+            
+            String restRequestMethod = originalWsObject.getRestRequestMethod();
+            int index = Arrays.asList(WebServiceRequestEntity.REST_REQUEST_METHODS).indexOf(restRequestMethod);
+            wsApiControl.getRequestMethodControl().select(index < 0 ? 0 : index);
 
-        tempPropList = new ArrayList<WebElementPropertyEntity>(originalWsObject.getRestParameters());
-        params.clear();
-        params.addAll(tempPropList);
-        tblParams.refresh();
+            tempPropList = new ArrayList<WebElementPropertyEntity>(originalWsObject.getHttpHeaderProperties());
+            httpHeaders.clear();
+            httpHeaders.addAll(tempPropList);
+            tblHeaders.refresh();
 
-        tempPropList = new ArrayList<WebElementPropertyEntity>(originalWsObject.getHttpHeaderProperties());
-        httpHeaders.clear();
-        httpHeaders.addAll(tempPropList);
-        tblHeaders.refresh();
+            populateBasicAuthFromHeader();
+            populateOAuth1FromHeader();
+            renderAuthenticationUI(ccbAuthType.getText());
 
-        populateBasicAuthFromHeader();
-        populateOAuth1FromHeader();
-        renderAuthenticationUI(ccbAuthType.getText());
-
-        requestBody.setDocument(createDocument(originalWsObject.getHttpBody()));
-        tabBody.getControl().setEnabled(isBodySupported());
-        dirtyable.setDirty(false);
+            requestBody.setDocument(createDocument(originalWsObject.getHttpBody()));
+            tabBody.getControl().setEnabled(isBodySupported());
+            dirtyable.setDirty(false);
+            
+            if (isOldVersion) {
+                save();
+            }
+        } catch (URISyntaxException e) {
+            // ignore
+        }
     }
 
 }
