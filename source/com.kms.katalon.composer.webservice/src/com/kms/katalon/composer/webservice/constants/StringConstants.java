@@ -50,4 +50,10 @@ public class StringConstants extends GlobalStringConstants {
     public static final String MSG_FETCHING_FROM_WSDL = ComposerWebserviceMessageConstants.MSG_FETCHING_FROM_WSDL;     
     public static final String DIA_BTN_BROWSE = BROWSE;
     public static final String LBL_FILE_PATH = ComposerWebserviceMessageConstants.LBL_FILE_PATH;
+    
+    public static final String BYTES_UNIT = ComposerWebserviceMessageConstants.BYTES_UNIT;
+    public static final String KILOBYTES_UNIT = ComposerWebserviceMessageConstants.KILOBYTES_UNIT;
+    public static final String MEGABYTES_UNIT = ComposerWebserviceMessageConstants.MEGABYTES_UNIT;
+    public static final String MSG_SPECIFIED_FILE_NOT_EXIST_WARN = ComposerWebserviceMessageConstants.MSG_SPECIFIED_FILE_NOT_EXIST_WARN;
+    public static final String LBL_FILE_SIZE = ComposerWebserviceMessageConstants.LBL_FILE_SIZE;
 }

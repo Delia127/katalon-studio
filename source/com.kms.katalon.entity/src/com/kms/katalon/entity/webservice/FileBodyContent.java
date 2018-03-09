@@ -2,32 +2,41 @@ package com.kms.katalon.entity.webservice;
 
 public class FileBodyContent implements HttpBodyContent {
 
-    private String absoluteFilePath;
+    private String filePath;
 
-    private String contentType = "file";
+    private long fileSize;
+
+    private String contentType = "";
 
     @Override
     public String getContentType() {
         return contentType;
     }
 
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
     @Override
     public long getContentLength() {
-        // TODO Auto-generated method stub
-        return 0;
+        return fileSize;
     }
 
     @Override
     public String getCharset() {
-        // TODO Auto-generated method stub
+        // Nothing to do
         return null;
     }
 
-    public String getAbsoluteFilePath() {
-        return absoluteFilePath;
+    public String getFilePath() {
+        return filePath;
     }
 
-    public void setAbsoluteFilePath(String absoluteFilePath) {
-        this.absoluteFilePath = absoluteFilePath;
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
+    public void setFileSize(long fileSize) {
+        this.fileSize = fileSize;
     }
 }
