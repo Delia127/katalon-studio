@@ -124,7 +124,8 @@ public abstract class AbstractLogRecord implements ILogRecord {
             TestStatusValue logRecordStatusValue = messageRecord.getStatus().getStatusValue();
 
             if (logRecordStatusValue == TestStatusValue.ERROR || logRecordStatusValue == TestStatusValue.FAILED
-                    || logRecordStatusValue == TestStatusValue.INCOMPLETE) {
+                    || logRecordStatusValue == TestStatusValue.INCOMPLETE
+                    || logRecordStatusValue == TestStatusValue.PASSED) {
                 testStatus.setStatusValue(logRecordStatusValue);
                 setMessage(messageRecord.getMessage());
                 return testStatus;
