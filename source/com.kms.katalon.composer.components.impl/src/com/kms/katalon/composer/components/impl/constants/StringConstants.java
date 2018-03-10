@@ -137,4 +137,5 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String DIA_TXT_POSTGRESQL_SAMPLE_LINK = ComposerComponentsImplMessageConstants.DIA_TXT_POSTGRESQL_SAMPLE_LINK;
 
+    public static final String BTN_CHOOSE_A_FILE = ComposerComponentsImplMessageConstants.BTN_CHOOSE_A_FILE;
 }

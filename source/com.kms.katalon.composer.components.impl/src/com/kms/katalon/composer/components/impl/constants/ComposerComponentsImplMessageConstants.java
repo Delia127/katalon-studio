@@ -153,6 +153,8 @@ public class ComposerComponentsImplMessageConstants extends NLS {
     public static String VIEW_LBL_ADD_PROPERTY;
 
     public static String VIEW_WARN_MSG_PROPERTY_CANNOT_BE_BLANK;
+    
+    public static String BTN_CHOOSE_A_FILE;
 
     static {
         // initialize resource bundle

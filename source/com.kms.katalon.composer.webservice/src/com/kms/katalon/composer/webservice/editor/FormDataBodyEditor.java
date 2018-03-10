@@ -1,7 +1,7 @@
 package com.kms.katalon.composer.webservice.editor;
 
-import java.nio.file.FileSystems;
-
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -9,38 +9,34 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
-import org.eclipse.jface.viewers.DialogCellEditor;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-
 import com.google.gson.reflect.TypeToken;
+import com.kms.katalon.composer.components.impl.editors.SingleFileSelectionDialogCellEditor;
 import com.kms.katalon.composer.components.impl.editors.StringComboBoxCellEditor;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.entity.webservice.ParameterizedBodyContent;
 import com.kms.katalon.entity.webservice.FormDataBodyParameter;;
 
 public class FormDataBodyEditor extends AbstractNameValueBodyEditor<FormDataBodyParameter> {
-    
+
     private static final String DEFAULT_CONTENT_TYPE = "multipart/form-data";
-    
+
     private static final String DEFAULT_CHARSET = "UTF-8";
-    
+
     private boolean initialized = false;
-    
+
     private TableColumn cName, cValue, cType;
-    
+
     public FormDataBodyEditor(Composite parent, int style) {
         super(parent, style);
     }
@@ -53,17 +49,17 @@ public class FormDataBodyEditor extends AbstractNameValueBodyEditor<FormDataBody
         gdData.heightHint = 150;
         tableComposite.setLayoutData(gdData);
         tableComposite.setLayout(tableColumnLayout);
-        
+
         ParameterTable tvParams = new ParameterTable(tableComposite,
                 SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-        
+
         tvParams.setContentProvider(ArrayContentProvider.getInstance());
         Table tParams = tvParams.getTable();
         tParams.setHeaderVisible(true);
         tParams.setLinesVisible(true);
-        
+
         ColumnViewerToolTipSupport.enableFor(tvParams, ToolTip.NO_RECREATE);
-        
+
         TableViewerColumn cvName = new TableViewerColumn(tvParams, SWT.LEFT);
         cName = cvName.getColumn();
         cName.setText(StringConstants.NAME);
@@ -78,7 +74,7 @@ public class FormDataBodyEditor extends AbstractNameValueBodyEditor<FormDataBody
             protected void setValue(Object element, Object value) {
                 ((FormDataBodyParameter) element).setName(String.valueOf(value));
                 tvParams.update(element, null);
-//                tvParams.setInput(bodyContent.getParameters());
+                // tvParams.setInput(bodyContent.getParameters());
                 fireModifyEvent();
             }
 
@@ -97,7 +93,7 @@ public class FormDataBodyEditor extends AbstractNameValueBodyEditor<FormDataBody
                 return ((FormDataBodyParameter) element).getName();
             }
         });
-        
+
         TableViewerColumn cvType = new TableViewerColumn(tvParams, SWT.LEFT);
         cType = cvType.getColumn();
         cType.setText(StringConstants.TYPE);
@@ -121,12 +117,8 @@ public class FormDataBodyEditor extends AbstractNameValueBodyEditor<FormDataBody
 
             @Override
             protected CellEditor getCellEditor(Object element) {
-                return new StringComboBoxCellEditor(
-                        tParams, 
-                        new String[]{
-                                FormDataBodyParameter.PARAM_TYPE_TEXT, 
-                                FormDataBodyParameter.PARAM_TYPE_FILE
-                        });
+                return new StringComboBoxCellEditor(tParams,
+                        new String[] { FormDataBodyParameter.PARAM_TYPE_TEXT, FormDataBodyParameter.PARAM_TYPE_FILE });
             }
 
             @Override
@@ -139,7 +131,7 @@ public class FormDataBodyEditor extends AbstractNameValueBodyEditor<FormDataBody
                 return ((FormDataBodyParameter) element).getType();
             }
         });
-        
+
         TableViewerColumn cvValue = new TableViewerColumn(tvParams, SWT.LEFT);
         cValue = cvValue.getColumn();
         cValue.setText(StringConstants.VALUE);
@@ -152,7 +144,9 @@ public class FormDataBodyEditor extends AbstractNameValueBodyEditor<FormDataBody
         cvValue.setEditingSupport(new EditingSupport(cvValue.getViewer()) {
             @Override
             protected void setValue(Object element, Object value) {
-                ((FormDataBodyParameter) element).setValue(String.valueOf(value));
+                String filePath = (String) value;
+                filePath = convertToRelativePathIfPossible(filePath);
+                ((FormDataBodyParameter) element).setValue(String.valueOf(filePath));
                 tvParams.update(element, null);
                 fireModifyEvent();
             }
@@ -163,7 +157,7 @@ public class FormDataBodyEditor extends AbstractNameValueBodyEditor<FormDataBody
                 if (param.getType().equals(FormDataBodyParameter.PARAM_TYPE_TEXT)) {
                     return new TextCellEditor(tParams);
                 } else {
-                    return new FileSelectionCellEditor(tParams);
+                    return new SingleFileSelectionDialogCellEditor(tParams);
                 }
             }
 
@@ -177,12 +171,23 @@ public class FormDataBodyEditor extends AbstractNameValueBodyEditor<FormDataBody
                 return ((FormDataBodyParameter) element).getValue();
             }
         });
-        
+
         tableColumnLayout.setColumnData(cName, new ColumnWeightData(40, 100));
         tableColumnLayout.setColumnData(cValue, new ColumnWeightData(40, 100));
         tableColumnLayout.setColumnData(cType, new ColumnWeightData(20, 100));
-        
+
         return tvParams;
+    }
+
+    private String convertToRelativePathIfPossible(String filePath) {
+        String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
+        if (filePath.startsWith(projectDir)) {
+            Path basePath = Paths.get(projectDir);
+            Path absolutePath = Paths.get(filePath);
+            return basePath.relativize(absolutePath).toString();
+        } else {
+            return filePath;
+        }
     }
 
     @Override
@@ -196,8 +201,7 @@ public class FormDataBodyEditor extends AbstractNameValueBodyEditor<FormDataBody
 
     @Override
     protected boolean isEmptyParameter(FormDataBodyParameter parameter) {
-        return StringUtils.isBlank(parameter.getName())
-                && StringUtils.isBlank(parameter.getValue());
+        return StringUtils.isBlank(parameter.getName()) && StringUtils.isBlank(parameter.getValue());
     }
 
     @Override
@@ -207,16 +211,17 @@ public class FormDataBodyEditor extends AbstractNameValueBodyEditor<FormDataBody
             bodyContent.setContentType(DEFAULT_CONTENT_TYPE);
             bodyContent.setCharset(DEFAULT_CHARSET);
         } else {
-            bodyContent = JsonUtil.fromJson(httpBodyContent, 
-                    new TypeToken<ParameterizedBodyContent<FormDataBodyParameter>>(){}.getType());
+            bodyContent = JsonUtil.fromJson(httpBodyContent,
+                    new TypeToken<ParameterizedBodyContent<FormDataBodyParameter>>() {
+                    }.getType());
         }
-        
+
         tvParams.setInput(bodyContent.getParameters());
         if (!bodyContent.getParameters().isEmpty()) {
             btnRemove.setEnabled(true);
         }
     }
-    
+
     @Override
     public void onBodyTypeChanged() {
         if (bodyContent == null) {
@@ -224,49 +229,15 @@ public class FormDataBodyEditor extends AbstractNameValueBodyEditor<FormDataBody
             bodyContent.setContentType(DEFAULT_CONTENT_TYPE);
             bodyContent.setCharset(DEFAULT_CHARSET);
         }
-        
+
         if (!initialized) {
             tvParams.setInput(bodyContent.getParameters());
             if (!bodyContent.getParameters().isEmpty()) {
                 btnRemove.setEnabled(true);
             }
             initialized = true;
-        } 
-            
+        }
+
         setContentTypeUpdated(true);
-    }
-    
-    public class FileSelectionCellEditor extends DialogCellEditor {
-
-        public FileSelectionCellEditor(Composite parent) {
-            super(parent, SWT.NONE);
-        }
-        
-        @Override
-        protected Button createButton(Composite parent) {
-            Button result = new Button(parent, SWT.DOWN);
-            result.setText(StringConstants.BTN_CHOOSE_FILE);
-            return result;
-        }
-
-        @Override
-        protected Object openDialogBox(Control cellEditorWindow) {
-            Object oldValue = doGetValue();
-            
-            FileDialog fileDialog = new FileDialog(Display.getCurrent().getActiveShell(), SWT.SINGLE);
-
-            String firstFile = fileDialog.open();
-            if (firstFile != null) {
-                String filterPath = fileDialog.getFilterPath();
-                String fileName = fileDialog.getFileName();
-                String filePath = String.format("%s%s%s", 
-                      filterPath, 
-                      FileSystems.getDefault().getSeparator(), 
-                      fileName);
-                return filePath;
-            } else {
-                return oldValue;
-            }
-        }
     }
 }

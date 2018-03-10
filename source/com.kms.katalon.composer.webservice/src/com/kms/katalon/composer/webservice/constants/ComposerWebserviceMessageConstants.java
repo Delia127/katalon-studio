@@ -135,8 +135,6 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String PARAM_TABLE_MENU_ITEM_ADD;
     
     public static String PARAM_TABLE_MENU_ITEM_REMOVE;
-    
-    public static String BTN_CHOOSE_FILE;
 
     static {
         // initialize resource bundle
