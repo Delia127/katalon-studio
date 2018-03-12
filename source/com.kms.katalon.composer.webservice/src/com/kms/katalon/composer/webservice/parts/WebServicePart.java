@@ -105,6 +105,7 @@ import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.editor.HttpBodyEditorComposite;
+import com.kms.katalon.composer.webservice.editor.MirrorEditor;
 import com.kms.katalon.composer.webservice.support.PropertyNameEditingSupport;
 import com.kms.katalon.composer.webservice.support.PropertyValueEditingSupport;
 import com.kms.katalon.composer.webservice.view.ParameterTable;
@@ -237,6 +238,8 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
     protected HttpBodyEditorComposite requestBodyEditor;
 
     protected SourceViewer responseHeader;
+
+    protected MirrorEditor mirrorEditor;
 
     protected SourceViewer responseBody;
 
@@ -698,15 +701,17 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
         reponseDetailsTabFolder.setLayoutData(new GridData(GridData.FILL_BOTH));
         styleEngine.setId(responseComposite, "DefaultCTabFolder");
 
-        CTabItem responseBodyTab = new CTabItem(reponseDetailsTabFolder, SWT.NONE);
-        responseBodyTab.setText(ComposerWebserviceMessageConstants.LBL_RESPONSE_BODY);
+        createResponseBody(reponseDetailsTabFolder);
 
-        responseBodyComposite = new Composite(reponseDetailsTabFolder, SWT.NONE);
-        responseBodyTab.setControl(responseBodyComposite);
-        GridLayout glBody = new GridLayout();
-        glBody.marginWidth = glBody.marginHeight = 0;
-        responseBodyComposite.setLayout(glBody);
+        createResponseHeader(reponseDetailsTabFolder);
 
+        CTabItem responseVerificationLogTab = new CTabItem(reponseDetailsTabFolder, SWT.NONE);
+        responseVerificationLogTab.setText(ComposerWebserviceMessageConstants.TAB_VERIFICATION_LOG);
+
+        reponseDetailsTabFolder.setSelection(0);
+    }
+
+    private void createResponseHeader(CTabFolder reponseDetailsTabFolder) {
         CTabItem responseHeaderTab = new CTabItem(reponseDetailsTabFolder, SWT.NONE);
         responseHeaderTab.setText(ComposerWebserviceMessageConstants.LBL_RESPONSE_HEADER);
 
@@ -716,13 +721,18 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
         glHeader.marginWidth = glHeader.marginHeight = 0;
         responseHeaderComposite.setLayout(glHeader);
 
-        responseHeader = createSourceViewer(responseHeaderComposite, new GridData(SWT.FILL, SWT.FILL, true, true));
-        responseHeader.setEditable(false);
-        
-        CTabItem responseVerificationLogTab = new CTabItem(reponseDetailsTabFolder, SWT.NONE);
-        responseVerificationLogTab.setText(ComposerWebserviceMessageConstants.TAB_VERIFICATION_LOG);
+        mirrorEditor = new MirrorEditor(responseHeaderComposite, SWT.NONE);
+    }
 
-        reponseDetailsTabFolder.setSelection(0);
+    private void createResponseBody(CTabFolder reponseDetailsTabFolder) {
+        CTabItem responseBodyTab = new CTabItem(reponseDetailsTabFolder, SWT.NONE);
+        responseBodyTab.setText(ComposerWebserviceMessageConstants.LBL_RESPONSE_BODY);
+
+        responseBodyComposite = new Composite(reponseDetailsTabFolder, SWT.NONE);
+        responseBodyTab.setControl(responseBodyComposite);
+        GridLayout glBody = new GridLayout();
+        glBody.marginWidth = glBody.marginHeight = 0;
+        responseBodyComposite.setLayout(glBody);
     }
 
     private void createResponseStatusComposite() {
@@ -1281,7 +1291,7 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
         StringBuilder sb = new StringBuilder();
         reponseObject.getHeaderFields().forEach((key, value) -> sb.append((key == null) ? "" : key + ": ")
                 .append(StringUtils.join(value, "\t"))
-                .append("\n"));
+                .append("\r\n"));
         return sb.toString();
     }
 

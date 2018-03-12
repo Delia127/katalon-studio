@@ -1,22 +1,13 @@
 package com.kms.katalon.composer.webservice.editor;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.browser.BrowserFunction;
-import org.eclipse.swt.browser.ProgressEvent;
-import org.eclipse.swt.browser.ProgressListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -24,21 +15,12 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
-import org.osgi.framework.FrameworkUtil;
 
-import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
-import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
-import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.entity.webservice.TextBodyContent;
-import com.kms.katalon.execution.classpath.ClassPathResolver;
 
 public class TextBodyEditor extends HttpBodyEditor {
-
-    private static final String RESOURCES_TEMPLATE_EDITOR = "resources/template/editor";
 
     private enum TextContentType {
         TEXT("Text", "text/plain"),
@@ -91,7 +73,7 @@ public class TextBodyEditor extends HttpBodyEditor {
 
     private TextBodyContent textBodyContent;
 
-    private Browser browser;
+    private MirrorEditor mirrorEditor;
 
     private File templateFile;
 
@@ -102,8 +84,6 @@ public class TextBodyEditor extends HttpBodyEditor {
     private static final String[] TEXT_MODE_NAMES;
 
     private Map<String, Button> TEXT_MODE_SELECTION_BUTTONS = new HashMap<>();
-
-    private boolean documentReady = false;
 
     private Button chckWrapLine;
 
@@ -126,17 +106,21 @@ public class TextBodyEditor extends HttpBodyEditor {
         gridLayout.marginWidth = 0;
         this.setLayout(gridLayout);
 
-        browser = new Browser(this, SWT.NONE);
-        browser.setLayoutData(new GridData(GridData.FILL_BOTH));
-        browser.setJavascriptEnabled(true);
+        mirrorEditor = new MirrorEditor(this, SWT.NONE);
+        mirrorEditor.registerDocumentHandler(new DocumentReadyHandler() {
 
-        initHTMLTemplateFile();
-        try {
-            browser.setUrl(templateFile.toURI().toURL().toString());
-        } catch (IOException e) {
-            LoggerSingleton.logError(e);
-        }
-
+            @Override
+            public void onDocumentReady() {
+                mirrorEditor.setText(textBodyContent.getText());
+                TextContentType preferedContentType = TextContentType
+                        .evaluateContentType(textBodyContent.getContentType());
+                Button selectionButton = TEXT_MODE_SELECTION_BUTTONS.get(preferedContentType.getText());
+                selectionButton.setSelection(true);
+                changeMode(preferedContentType.getText());
+                mirrorEditor.wrapLine(chckWrapLine.getSelection());
+                handleControlModifyListener();
+            }
+        });
         Composite bottomComposite = new Composite(this, SWT.NONE);
         GridLayout bottomLayout = new GridLayout(2, false);
         bottomLayout.marginWidth = bottomLayout.marginHeight = 0;
@@ -169,55 +153,9 @@ public class TextBodyEditor extends HttpBodyEditor {
         chckWrapLine.setText(ComposerWebserviceMessageConstants.PA_LBL_WRAP_LINE);
         chckWrapLine.setSelection(true);
 
-        browser.addProgressListener(new ProgressListener() {
-
-            @Override
-            public void completed(ProgressEvent event) {
-                documentReady = true;
-            }
-
-            @Override
-            public void changed(ProgressEvent event) {
-            }
-        });
-    }
-
-    private void initHTMLTemplateFile() {
-        try {
-            File codeMirrorTempFolder = new File(ProjectController.getInstance().getNonremovableTempDir(),
-                    "editor/codemirror");
-            if (!codeMirrorTempFolder.exists() || ArrayUtils.isEmpty(codeMirrorTempFolder.listFiles())) {
-                codeMirrorTempFolder.mkdirs();
-
-                File bundleLocation = FileLocator.getBundleFile(FrameworkUtil.getBundle(TextBodyEditor.class));
-
-                if (bundleLocation.isDirectory()) {
-                    FileUtils.copyDirectory(new File(bundleLocation, RESOURCES_TEMPLATE_EDITOR),
-                            codeMirrorTempFolder.getParentFile());
-                } else {
-                    FileUtils.copyDirectory(
-                            new File(ClassPathResolver.getConfigurationFolder(), RESOURCES_TEMPLATE_EDITOR),
-                            codeMirrorTempFolder.getParentFile());
-                }
-            }
-            templateFile = new File(codeMirrorTempFolder,
-                    String.format("template_%d.html", System.currentTimeMillis()));
-            FileUtils.copyFile(new File(codeMirrorTempFolder, "template.html"), templateFile);
-        } catch (IOException e) {
-            MultiStatusErrorDialog.showErrorDialog(ComposerWebserviceMessageConstants.PA_MSG_UNABLE_TO_OPEN_BODY_EDITOR,
-                    e.getMessage(), ExceptionsUtil.getMessageForThrowable(e));
-        }
     }
 
     private void handleControlModifyListener() {
-        new BrowserFunction(browser, "handleEditorChanged") {
-            @Override
-            public Object function(Object[] objects) {
-                TextBodyEditor.this.notifyListeners(SWT.Modify, new Event());
-                return null;
-            }
-        };
-
         addDisposeListener(e -> {
             if (templateFile != null && templateFile.exists()) {
                 templateFile.delete();
@@ -227,14 +165,9 @@ public class TextBodyEditor extends HttpBodyEditor {
         chckWrapLine.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                wrapLine(chckWrapLine.getSelection());
+                mirrorEditor.wrapLine(chckWrapLine.getSelection());
             }
         });
-    }
-
-    private void wrapLine(boolean wrapped) {
-        browser.evaluate(
-                MessageFormat.format("editor.setOption(\"{0}\", {1});", "lineWrapping", wrapped));
     }
 
     private void changeMode(String text) {
@@ -245,16 +178,7 @@ public class TextBodyEditor extends HttpBodyEditor {
                 .orElse(TextContentType.TEXT.getText());
 
         String mode = TEXT_MODE_COLLECTION.get(textType);
-        browser.evaluate(MessageFormat.format("changeMode(editor, \"{0}\");", mode));
-    }
-
-    private void setText(String text) {
-        browser.evaluate(String.format("editor.setValue(\"%s\");", StringEscapeUtils.escapeEcmaScript(text)));
-    }
-
-    @SuppressWarnings("unused")
-    private void setEditable(boolean editable) {
-        browser.evaluate(MessageFormat.format("editor.setOption(\"{0}\", {1});", "readOnly", !editable));
+        mirrorEditor.evaluate(MessageFormat.format("changeMode(editor, \"{0}\");", mode));
     }
 
     @Override
@@ -264,7 +188,7 @@ public class TextBodyEditor extends HttpBodyEditor {
 
     @Override
     public String getContentData() {
-        textBodyContent.setText((String) browser.evaluate("return editor.getValue();"));
+        textBodyContent.setText((String) mirrorEditor.evaluate("return editor.getValue();"));
         return JsonUtil.toJson(textBodyContent);
     }
 
@@ -280,29 +204,8 @@ public class TextBodyEditor extends HttpBodyEditor {
             textBodyContent = JsonUtil.fromJson(rawBodyContentData, TextBodyContent.class);
         }
 
-        Thread thread = new Thread(() -> {
-            while (!documentReady) {
-                try {
-                    Thread.sleep(50L);
-                } catch (InterruptedException ignored) {}
-            }
-            UISynchronizeService.syncExec(() -> onDocumentReady());
-        });
-        thread.start();
+        mirrorEditor.sleepForDocumentReady();
+
     }
 
-    private void onDocumentReady() {
-        setText(textBodyContent.getText());
-
-        TextContentType preferedContentType = TextContentType.evaluateContentType(textBodyContent.getContentType());
-
-        Button selectionButton = TEXT_MODE_SELECTION_BUTTONS.get(preferedContentType.getText());
-        selectionButton.setSelection(true);
-
-        changeMode(preferedContentType.getText());
-        
-        wrapLine(chckWrapLine.getSelection());
-
-        handleControlModifyListener();
-    }
 }

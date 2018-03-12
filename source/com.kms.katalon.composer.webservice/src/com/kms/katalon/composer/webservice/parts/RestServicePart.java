@@ -2,6 +2,7 @@ package com.kms.katalon.composer.webservice.parts;
 
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,6 +15,7 @@ import java.util.stream.IntStream;
 import javax.annotation.PreDestroy;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.message.BasicNameValuePair;
@@ -81,7 +83,7 @@ public class RestServicePart extends WebServicePart {
                 }
 
                 // clear previous response
-                responseHeader.setDocument(new Document());
+                mirrorEditor.setText("");
                 responseBody.setDocument(new Document());
 
                 String requestURL = wsApiControl.getRequestURL().trim();
@@ -120,8 +122,8 @@ public class RestServicePart extends WebServicePart {
                                 }
                                 Display.getDefault().asyncExec(() -> {
                                     setResponseStatus(responseObject);
-                                    responseHeader.setDocument(createDocument(getPrettyHeaders(responseObject)));
-
+                                    mirrorEditor.sleepForDocumentReady();
+                                    mirrorEditor.setText(getPrettyHeaders(responseObject));
                                     String bodyContent = responseObject.getResponseText();
 
                                     if (bodyContent == null) {
