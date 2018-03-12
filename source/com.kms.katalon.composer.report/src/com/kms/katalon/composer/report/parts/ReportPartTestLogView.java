@@ -23,8 +23,6 @@ import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.CTabFolder;
-import org.eclipse.swt.custom.CTabFolder2Listener;
-import org.eclipse.swt.custom.CTabFolderEvent;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -36,7 +34,6 @@ import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -729,10 +726,12 @@ public class ReportPartTestLogView {
 
         imageToolbar = new ToolBar(selectedTestLogTabFolder, SWT.NONE);
         tltmFitScreen = new ToolItem(imageToolbar, SWT.PUSH);
-        tltmFitScreen.setText("Fit Screen");
+        tltmFitScreen.setImage(ImageConstants.IMG_16_FIT_SCREEN);
+        tltmFitScreen.setToolTipText("Fit Screen");
 
         tltmResetImageSize = new ToolItem(imageToolbar, SWT.PUSH);
-        tltmResetImageSize.setText("Full Size");
+        tltmResetImageSize.setImage(ImageConstants.IMG_16_FULL_SIZE);
+        tltmResetImageSize.setText("Show Full Size");
 
         selectedTestLogTabFolder.setTopRight(imageToolbar);
 
