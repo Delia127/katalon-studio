@@ -52,6 +52,7 @@ import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.editor.HttpBodyEditorComposite;
+import com.kms.katalon.composer.webservice.response.body.HttpResponseBodyEditor;
 import com.kms.katalon.composer.webservice.view.ExpandableComposite;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.WebServiceController;
@@ -84,7 +85,6 @@ public class RestServicePart extends WebServicePart {
 
                 // clear previous response
                 mirrorEditor.setText("");
-                responseBody.setDocument(new Document());
 
                 String requestURL = wsApiControl.getRequestURL().trim();
                 if (isInvalidURL(requestURL)) {
@@ -129,8 +129,9 @@ public class RestServicePart extends WebServicePart {
                                     if (bodyContent == null) {
                                         return;
                                     }
-
-                                    responseBody.setDocument(createDocument(bodyContent));
+                                    //Todo set input for respose here
+                                    //responseBody.setDocument(createDocument(bodyContent));
+                                    responseBodyEditor.setInput(bodyContent);
                                 });
                             } catch (Exception e) {
                                 LoggerSingleton.logError(e);
@@ -298,8 +299,10 @@ public class RestServicePart extends WebServicePart {
     @Override
     protected void createResponseComposite(Composite parent) {
         super.createResponseComposite(parent);
-        responseBody = createSourceViewer(responseBodyComposite, new GridData(SWT.FILL, SWT.FILL, true, true));
-        responseBody.setEditable(false);
+//        responseBody = createSourceViewer(responseBodyComposite, new GridData(SWT.FILL, SWT.FILL, true, true));
+//        responseBody.setEditable(false);
+        responseBodyEditor = new HttpResponseBodyEditor(responseBodyComposite, SWT.NONE);
+        responseBodyEditor.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
     }
 
     @Override

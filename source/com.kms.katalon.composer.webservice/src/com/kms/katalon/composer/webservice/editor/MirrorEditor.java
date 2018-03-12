@@ -23,6 +23,7 @@ import org.osgi.framework.FrameworkUtil;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
@@ -50,11 +51,12 @@ public class MirrorEditor extends Composite {
         gridLayout.marginHeight = 0;
         gridLayout.marginWidth = 0;
         this.setLayout(gridLayout);
-
-        browser = new Browser(parent, style);
+        this.setLayoutData(new GridData(GridData.FILL_BOTH));
+        
+        browser = new Browser(this, style);
         browser.setLayoutData(new GridData(GridData.FILL_BOTH));
         browser.setJavascriptEnabled(true);
-
+        
         templateFile = initHTMLTemplateFile();
         try {
             browser.setUrl(templateFile.toURI().toURL().toString());
@@ -111,6 +113,9 @@ public class MirrorEditor extends Composite {
     }
 
     public void setText(String text) {
+        if (!documentReady) {
+            sleepForDocumentReady();
+        }
         browser.evaluate(String.format("editor.setValue(\"%s\");", StringEscapeUtils.escapeEcmaScript(text)));
     }
 

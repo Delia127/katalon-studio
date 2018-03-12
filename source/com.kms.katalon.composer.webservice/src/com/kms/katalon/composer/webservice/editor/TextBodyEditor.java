@@ -10,19 +10,22 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 
+import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.entity.webservice.TextBodyContent;
 
 public class TextBodyEditor extends HttpBodyEditor {
 
-    private enum TextContentType {
+    public enum TextContentType {
         TEXT("Text", "text/plain"),
         JSON("JSON", "application/json"),
         XML("XML", "application/xml"),
@@ -76,6 +79,8 @@ public class TextBodyEditor extends HttpBodyEditor {
     private MirrorEditor mirrorEditor;
 
     private File templateFile;
+    
+    Composite tbBodyType;
 
     // A collection of mirror modes for some text types
     private static final Map<String, String> TEXT_MODE_COLLECTION;
@@ -127,7 +132,7 @@ public class TextBodyEditor extends HttpBodyEditor {
         bottomComposite.setLayout(bottomLayout);
         bottomComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-        Composite tbBodyType = new Composite(bottomComposite, SWT.NONE);
+        tbBodyType = new Composite(bottomComposite, SWT.NONE);
         tbBodyType.setLayout(new GridLayout(TEXT_MODE_NAMES.length, false));
 
         Arrays.asList(TextContentType.values()).forEach(textContentType -> {
@@ -139,9 +144,9 @@ public class TextBodyEditor extends HttpBodyEditor {
                 @Override
                 public void widgetSelected(SelectionEvent e) {
                     changeMode(textContentType.getText());
-
-                    textBodyContent.setContentType(textContentType.getContentType());
-
+                    if (textBodyContent != null) {
+                        textBodyContent.setContentType(textContentType.getContentType());
+                    }
                     TextBodyEditor.this.setContentTypeUpdated(true);
 
                     TextBodyEditor.this.notifyListeners(SWT.Modify, new Event());
@@ -203,9 +208,24 @@ public class TextBodyEditor extends HttpBodyEditor {
         } else {
             textBodyContent = JsonUtil.fromJson(rawBodyContentData, TextBodyContent.class);
         }
-
+        
         mirrorEditor.sleepForDocumentReady();
-
+    }
+    
+    public void setText(String contentData) {
+        mirrorEditor.setText(contentData);
     }
 
+    public void setContentTypeVisible(TextContentType contentType, boolean visible) {
+        Control [] childs = tbBodyType.getChildren();
+        for (Control child : childs) {
+            if (child instanceof Button) {
+                Button bt = (Button) child;
+                if (bt.getText() == contentType.getText()) {
+                    bt.setVisible(visible);
+                    tbBodyType.layout(true);
+                }
+            }
+        }
+    }
 }
