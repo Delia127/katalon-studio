@@ -44,6 +44,7 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 
 @Action(value = "unlockScreen")
 public class UnlockScreenKeyword extends MobileAbstractKeyword {
@@ -63,7 +64,7 @@ public class UnlockScreenKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public void unlockScreen(FailureHandling flowControl) throws StepFailedException {
-        KeywordMain.runKeyword({
+        MobileKeywordMain.runKeyword({
             AppiumDriver<?> driver = getAnyAppiumDriver()
             String context = driver.getContext()
             try{
@@ -73,6 +74,6 @@ public class UnlockScreenKeyword extends MobileAbstractKeyword {
                 driver.context(context)
             }
             logger.logPassed(StringConstants.KW_MSG_PASSED_TO_UNLOCK_SCREEN)
-        }, flowControl, StringConstants.KW_MSG_FAILED_TO_UNLOCK_SCREEN)
+        }, flowControl, true, StringConstants.KW_MSG_FAILED_TO_UNLOCK_SCREEN)
     }
 }

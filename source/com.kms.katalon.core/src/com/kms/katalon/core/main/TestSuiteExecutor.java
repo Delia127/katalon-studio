@@ -16,16 +16,17 @@ import java.util.Stack;
 import org.apache.commons.io.FileUtils;
 import org.codehaus.groovy.ast.MethodNode;
 
-import com.kms.katalon.core.annotation.AfterTestSuite;
-import com.kms.katalon.core.annotation.BeforeTestSuite;
 import com.kms.katalon.core.annotation.SetUp;
 import com.kms.katalon.core.annotation.SetupTestCase;
 import com.kms.katalon.core.annotation.TearDown;
 import com.kms.katalon.core.annotation.TearDownTestCase;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.StringConstants;
+import com.kms.katalon.core.context.internal.ExecutionEventManager;
+import com.kms.katalon.core.context.internal.ExecutionListenerEvent;
+import com.kms.katalon.core.context.internal.InternalTestCaseContext;
 import com.kms.katalon.core.context.internal.InternalTestSuiteContext;
-import com.kms.katalon.core.context.internal.TestContextEvaluator;
+import com.kms.katalon.core.context.internal.VideoRecorderService;
 import com.kms.katalon.core.driver.internal.DriverCleanerCollector;
 import com.kms.katalon.core.logging.ErrorCollector;
 import com.kms.katalon.core.logging.KeywordLogger;
@@ -45,7 +46,7 @@ public class TestSuiteExecutor {
 
     private InternalTestSuiteContext testSuiteContext;
 
-    private TestContextEvaluator contextEvaluator;
+    private ExecutionEventManager eventManger;
 
     private ScriptCache scriptCache;
 
@@ -59,19 +60,23 @@ public class TestSuiteExecutor {
         TEST_SUITE_ANNOTATION_METHODS.add(TearDownTestCase.class.getName());
     }
 
-    public TestSuiteExecutor(String testSuiteId, ScriptEngine scriptEngine, TestContextEvaluator contextEvaluator) {
+    public TestSuiteExecutor(String testSuiteId, ScriptEngine scriptEngine, ExecutionEventManager eventManger) {
         this.testSuiteId = testSuiteId;
         this.scriptEngine = scriptEngine;
 
-        this.contextEvaluator = contextEvaluator;
+        this.eventManger = eventManger;
         this.testSuiteContext = new InternalTestSuiteContext();
         testSuiteContext.setTestSuiteId(testSuiteId);
+
+        VideoRecorderService videoRecorderService = new VideoRecorderService(RunConfiguration.getReportFolder(),
+                RunConfiguration.getRecorderSetting());
+        eventManger.addListenerEventHandle(videoRecorderService);
     }
 
     public void execute(Map<String, String> suiteProperties, List<TestCaseBinding> testCaseBindings) {
         LOG.startSuite(testSuiteId, suiteProperties);
 
-        contextEvaluator.invokeListenerMethod(BeforeTestSuite.class.getName(), new Object[] { testSuiteContext });
+        eventManger.publicEvent(ExecutionListenerEvent.BEFORE_TEST_SUITE, new Object[] { testSuiteContext });
 
         accessTestSuiteMainPhase(testCaseBindings);
 
@@ -81,7 +86,7 @@ public class TestSuiteExecutor {
         }
         testSuiteContext.setStatus(status);
 
-        contextEvaluator.invokeListenerMethod(AfterTestSuite.class.getName(), new Object[] { testSuiteContext });
+        eventManger.publicEvent(ExecutionListenerEvent.AFTER_TEST_SUITE, new Object[] { testSuiteContext });
 
         if (RunConfiguration.shouldTerminateDriverAfterTestSuite()) {
             DriverCleanerCollector.getInstance().cleanDrivers();
@@ -103,20 +108,23 @@ public class TestSuiteExecutor {
             return;
         }
 
-        for (TestCaseBinding tcBinding : testCaseBindings) {
-            accessTestCaseMainPhase(tcBinding);
+        for (int i = 0; i < testCaseBindings.size(); i++) {
+            accessTestCaseMainPhase(i, testCaseBindings.get(i));
         }
 
         invokeTestSuiteMethod(TearDown.class.getName(), StringConstants.LOG_TEAR_DOWN_ACTION, true);
     }
 
-    private void accessTestCaseMainPhase(TestCaseBinding tcBinding) {
+    private void accessTestCaseMainPhase(int index, TestCaseBinding tcBinding) {
         ErrorCollector errorCollector = ErrorCollector.getCollector();
         List<Throwable> coppiedErrors = errorCollector.getCoppiedErrors();
         errorCollector.clearErrors();
 
         try {
-            TestCaseExecutor testCaseExecutor = new TestCaseExecutor(tcBinding, scriptEngine, contextEvaluator);
+            InternalTestCaseContext testCaseContext = new InternalTestCaseContext(tcBinding.getTestCaseId(), index);
+
+            TestCaseExecutor testCaseExecutor = new TestCaseExecutor(tcBinding, scriptEngine, eventManger,
+                    testCaseContext);
             testCaseExecutor.setTestSuiteExecutor(this);
             testCaseExecutor.execute(FailureHandling.STOP_ON_FAILURE);
         } finally {

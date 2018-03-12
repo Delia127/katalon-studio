@@ -5,6 +5,7 @@ import static org.apache.commons.lang.StringUtils.split;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -214,23 +215,24 @@ public class MailUtil {
         }
         EmailSettingStore store = new EmailSettingStore(project);
         try {
+            boolean encryptionEnabled = store.isEncryptionEnabled();
             EmailConfig conf = new EmailConfig();
-            conf.setHost(store.getHost());
-            conf.setPort(store.getPort());
-            conf.setFrom(store.getUsername());
-            conf.setSecurityProtocol(MailSecurityProtocolType.valueOf(store.getProtocol()));
-            conf.setUsername(store.getUsername());
-            conf.setPassword(store.getPassword());
+            conf.setHost(store.getHost(encryptionEnabled));
+            conf.setPort(store.getPort(encryptionEnabled));
+            conf.setFrom(store.getUsername(encryptionEnabled));
+            conf.setSecurityProtocol(MailSecurityProtocolType.valueOf(store.getProtocol(encryptionEnabled)));
+            conf.setUsername(store.getUsername(encryptionEnabled));
+            conf.setPassword(store.getPassword(encryptionEnabled));
             conf.setSignature(store.getSignature());
             conf.setSendAttachment(store.isAddAttachment());
             conf.setCc(store.getEmailCc());
             conf.setBcc(store.getEmailBcc());
-            conf.addRecipients(splitRecipientsString(store.getRecipients()));
+            conf.addRecipients(splitRecipientsString(store.getRecipients(encryptionEnabled)));
             conf.setSubject(store.getEmailSubject());
             conf.setHtmlMessage(store.getEmailHTMLTemplate());
             conf.setAttachmentOptions(store.getReportFormatOptions());
             return conf;
-        } catch (IOException | URISyntaxException e) {
+        } catch (IOException | URISyntaxException | GeneralSecurityException e) {
             LogUtil.logError(e);
             return null;
         }

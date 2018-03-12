@@ -10,6 +10,7 @@ public class QTestCredentialImpl implements IQTestCredential {
     private String username;
     private String password;
     private IQTestToken token;
+    private boolean passwordEncryptionEnabled;
 
     @Override
     public QTestVersion getVersion() {
@@ -63,6 +64,16 @@ public class QTestCredentialImpl implements IQTestCredential {
 
     public QTestCredentialImpl setToken(IQTestToken token) {
         this.token = token;
+        return this;
+    }
+
+    @Override
+    public boolean isEncryptionEnabled() {
+        return passwordEncryptionEnabled;
+    }
+
+    public QTestCredentialImpl setPasswordEncryptionEnabled(boolean passwordEncryptionEnabled) {
+        this.passwordEncryptionEnabled = passwordEncryptionEnabled;
         return this;
     }
 }

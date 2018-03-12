@@ -10,6 +10,8 @@ public interface IQTestCredential {
     public String getUsername();
 
     public String getPassword();
+    
+    public boolean isEncryptionEnabled();
 
     public IQTestToken getToken();
 }

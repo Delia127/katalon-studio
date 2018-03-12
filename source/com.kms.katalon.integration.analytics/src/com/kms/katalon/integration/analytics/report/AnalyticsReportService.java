@@ -3,6 +3,7 @@ package com.kms.katalon.integration.analytics.report;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,20 +29,30 @@ public class AnalyticsReportService implements AnalyticsComponent {
         return isIntegrationEnabled;
     }
     
+    private boolean isEncryptionEnabled() {
+        boolean isEncryptionEnabled = false;
+        try {
+            isEncryptionEnabled = getSettingStore().isEncryptionEnabled();
+        } catch (IOException ex) {
+            // do nothing
+        }
+        return isEncryptionEnabled;
+    }
+    
     public void upload(String folderPath) throws AnalyticsApiExeception {
         if (isIntegrationEnabled()) {
             LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_SEND_TEST_RESULT_START);
             try {
-                String serverUrl = getSettingStore().getServerEndpoint();
-                String email = getSettingStore().getEmail();
-                String password = getSettingStore().getPassword();
+                String serverUrl = getSettingStore().getServerEndpoint(isEncryptionEnabled());
+                String email = getSettingStore().getEmail(isEncryptionEnabled());
+                String password = getSettingStore().getPassword(getSettingStore().isEncryptionEnabled());
                 AnalyticsTokenInfo token = AnalyticsApiProvider.requestToken(serverUrl, email, password);
                 if (token != null) {
                     perform(token.getAccess_token(), folderPath);
                 } else {
                     LogUtil.printOutputLine(IntegrationAnalyticsMessages.MSG_REQUEST_TOKEN_ERROR);
                 }
-            } catch (AnalyticsApiExeception | IOException e ) {
+            } catch (AnalyticsApiExeception | IOException | GeneralSecurityException e ) {
                 LogUtil.logError(e, IntegrationAnalyticsMessages.MSG_SEND_ERROR);
                 throw new AnalyticsApiExeception(e);
             }
@@ -49,9 +60,9 @@ public class AnalyticsReportService implements AnalyticsComponent {
         }
     }
 
-    private void perform(String token, String path) throws AnalyticsApiExeception, IOException {
+    private void perform(String token, String path) throws AnalyticsApiExeception, IOException, GeneralSecurityException {
         LogUtil.printOutputLine("Uploading log files in folder path: " + path);
-        String serverUrl = getSettingStore().getServerEndpoint();
+        String serverUrl = getSettingStore().getServerEndpoint(isEncryptionEnabled());
         Long projectId = getSettingStore().getProject().getId();
         List<Path> files = scanFiles(path);
         long timestamp = System.currentTimeMillis();

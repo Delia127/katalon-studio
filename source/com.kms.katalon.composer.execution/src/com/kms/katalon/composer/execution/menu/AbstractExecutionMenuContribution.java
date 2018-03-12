@@ -23,7 +23,6 @@ import com.kms.katalon.execution.launcher.model.LaunchMode;
 import com.kms.katalon.execution.session.ExecutionSession;
 import com.kms.katalon.execution.session.ExecutionSessionSocketServer;
 import com.kms.katalon.execution.setting.ExecutionDefaultSettingStore;
-import com.kms.katalon.execution.util.ExecutionUtil;
 
 @SuppressWarnings("restriction")
 public abstract class AbstractExecutionMenuContribution {
@@ -81,7 +80,7 @@ public abstract class AbstractExecutionMenuContribution {
 
     protected MMenu createExecutionMenu() {
         String menuLabel = getMenuLabel();
-        String defaultItemLabel = ExecutionUtil.getStoredExecutionConfiguration();
+        String defaultItemLabel = ExecutionDefaultSettingStore.getStore().getExecutionConfiguration();
         if (defaultItemLabel.equals(menuLabel)) {
             menuLabel += ExecutionHandledMenuItem.DEFAULT_LABEL;
         }

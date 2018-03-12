@@ -2,6 +2,7 @@ package com.kms.katalon.composer.integration.jira.testcase;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.security.GeneralSecurityException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -97,7 +98,7 @@ public class JiraTestCaseIntegrationView extends AbstractTestCaseIntegrationView
             public void mouseDown(MouseEvent e) {
                 try {
                     DesktopUtils.openUri(getHTMLLink(jiraIssue));
-                } catch (IOException | URISyntaxException ex) {
+                } catch (IOException | URISyntaxException | GeneralSecurityException ex) {
                     LoggerSingleton.logError(ex);
                 }
             }

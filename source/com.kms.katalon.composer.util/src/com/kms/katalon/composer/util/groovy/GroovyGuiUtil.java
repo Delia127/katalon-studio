@@ -39,6 +39,10 @@ public class GroovyGuiUtil {
         return GroovyCompilationHelper.createGroovyType(parentPackage, typeName, false, ImportType.KEYWORD_IMPORTS);
     }
 
+    public static ICompilationUnit createGroovyScriptForCustomKeywordFromTemplate(IPackageFragment parentPackage, String typeName, String template) throws CoreException {
+        return GroovyCompilationHelper.createGroovyTypeFromString(parentPackage, typeName, template);
+    }
+    
     public static ICompilationUnit getGroovyScriptForTestCase(TestCaseEntity testCase) throws CoreException,
             IOException {
         getTestCaseScriptFolder(testCase);

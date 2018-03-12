@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.integration.jira.preference;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.text.MessageFormat;
 
 import org.apache.commons.lang3.StringUtils;
@@ -25,6 +26,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.jira.constant.ComposerJiraIntegrationMessageConstant;
 import com.kms.katalon.composer.integration.jira.constant.StringConstants;
 import com.kms.katalon.composer.integration.jira.preference.JiraConnectionJob.JiraConnectionResult;
+import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.integration.jira.JiraCredential;
 import com.kms.katalon.integration.jira.entity.JiraIssueType;
@@ -60,6 +62,10 @@ public class JiraSettingsComposite {
     private Shell shell;
 
     private Button chckAutoSubmitTestResult;
+
+    private Button chckEncrypt;
+
+    private Button chckShowPassword;
 
     public JiraSettingsComposite() {
         settingStore = new JiraIntegrationSettingStore(
@@ -98,6 +104,22 @@ public class JiraSettingsComposite {
                                 result.getUser().getDisplayName()));
             }
         });
+
+        chckShowPassword.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                maskPasswordField();
+            }
+        });
+    }
+
+    private void maskPasswordField() {
+        if (chckShowPassword.getSelection()) {
+            // show password
+            txtPassword.setEchoChar('\0');
+        } else {
+            txtPassword.setEchoChar(GlobalStringConstants.CR_ECO_PASSWORD.charAt(0));
+        }
     }
 
     public void setShell(Shell shell) {
@@ -117,13 +139,16 @@ public class JiraSettingsComposite {
             chckEnableIntegration.setSelection(settingStore.isIntegrationEnabled());
             enableIntegrationComposite();
 
-            txtServerUrl.setText(settingStore.getServerUrl());
-            txtUsername.setText(settingStore.getUsername());
-            txtPassword.setText(settingStore.getPassword());
+            boolean encryptionEnabled = settingStore.isEncryptionEnabled();
+            txtServerUrl.setText(settingStore.getServerUrl(encryptionEnabled));
+            txtUsername.setText(settingStore.getUsername(encryptionEnabled));
+            txtPassword.setText(settingStore.getPassword(encryptionEnabled));
+            chckEncrypt.setSelection(encryptionEnabled);
+            maskPasswordField();
 
             chckUseTestCaseNameAsSumarry.setSelection(settingStore.isUseTestCaseNameAsSummaryEnabled());
             chckAttachScreenshot.setSelection(settingStore.isAttachScreenshotEnabled());
-            chckAttachLog.setSelection(settingStore.isAttachLogEnabled());            
+            chckAttachLog.setSelection(settingStore.isAttachLogEnabled());
             chckAutoSubmitTestResult.setSelection(settingStore.isSubmitTestResultAutomatically());
 
             displayedJiraProject = new DisplayedComboboxObject<>(settingStore.getStoredJiraProject());
@@ -133,7 +158,7 @@ public class JiraSettingsComposite {
             updateCombobox(cbbIssueTypes, displayedJiraIssueType);
 
             user = settingStore.getJiraUser();
-        } catch (IOException e) {
+        } catch (IOException | GeneralSecurityException e) {
             LoggerSingleton.logError(e);
             MultiStatusErrorDialog.showErrorDialog(e, StringConstants.ERROR, e.getMessage());
         }
@@ -195,8 +220,23 @@ public class JiraSettingsComposite {
         Label lblPassword = new Label(grpAuthentication, SWT.NONE);
         lblPassword.setText(ComposerJiraIntegrationMessageConstant.PREF_LBL_PASSWORD);
 
-        txtPassword = new Text(grpAuthentication, SWT.BORDER | SWT.PASSWORD);
+        Composite passwordComposite = new Composite(grpAuthentication, SWT.NONE);
+        passwordComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        GridLayout glPassword = new GridLayout(2, false);
+        glPassword.marginWidth = 0;
+        glPassword.marginHeight = 0;
+        passwordComposite.setLayout(glPassword);
+
+        txtPassword = new Text(passwordComposite, SWT.BORDER);
         txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+
+        chckShowPassword = new Button(passwordComposite, SWT.CHECK);
+        chckShowPassword.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+        chckShowPassword.setText(ComposerJiraIntegrationMessageConstant.PREF_CHCK_SHOW_PASSWORD);
+
+        chckEncrypt = new Button(grpAuthentication, SWT.CHECK);
+        chckEncrypt.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 2, 1));
+        chckEncrypt.setText(ComposerJiraIntegrationMessageConstant.PREF_CHCK_ENCRYPT_PASSWORD);
 
         btnConnect = new Button(grpAuthentication, SWT.NONE);
         btnConnect.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
@@ -253,10 +293,12 @@ public class JiraSettingsComposite {
         try {
             settingStore.enableIntegration(chckEnableIntegration.getSelection());
 
-            settingStore.saveServerUrl(getTrimedValue(txtServerUrl));
-            settingStore.saveUsername(getTrimedValue(txtUsername));
-            settingStore.savePassword(txtPassword.getText());
+            boolean encryptionEnable = chckEncrypt.getSelection();
+            settingStore.saveServerUrl(getTrimedValue(txtServerUrl), encryptionEnable);
+            settingStore.saveUsername(getTrimedValue(txtUsername), encryptionEnable);
+            settingStore.savePassword(txtPassword.getText(), encryptionEnable);
             settingStore.saveJiraUser(user);
+            settingStore.enableEncryption(encryptionEnable);
 
             settingStore.enableUseTestCaseNameAsSummary(chckUseTestCaseNameAsSumarry.getSelection());
             settingStore.enableAttachScreenshot(chckAttachScreenshot.getSelection());
@@ -269,7 +311,7 @@ public class JiraSettingsComposite {
             displayedJiraIssueType.setDefaultObjectIndex(cbbIssueTypes.getSelectionIndex());
             settingStore.saveStoredJiraIssueType(displayedJiraIssueType.getStoredObject());
             return true;
-        } catch (IOException e) {
+        } catch (IOException | GeneralSecurityException e) {
             LoggerSingleton.logError(e);
             MultiStatusErrorDialog.showErrorDialog(e, StringConstants.ERROR, e.getMessage());
             return false;

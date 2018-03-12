@@ -8,12 +8,12 @@ import java.util.Map;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.runtime.InvokerHelper;
 
-import com.kms.katalon.core.annotation.AfterTestSuite;
-import com.kms.katalon.core.annotation.BeforeTestSuite;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.StringConstants;
+import com.kms.katalon.core.context.internal.ExecutionEventManager;
+import com.kms.katalon.core.context.internal.ExecutionListenerEvent;
+import com.kms.katalon.core.context.internal.InternalTestCaseContext;
 import com.kms.katalon.core.context.internal.InternalTestSuiteContext;
-import com.kms.katalon.core.context.internal.TestContextEvaluator;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testcase.TestCaseBinding;
 
@@ -25,7 +25,7 @@ public class TestCaseMain {
 
     private static ScriptEngine engine;
 
-    private static TestContextEvaluator contextEvaluator;
+    private static ExecutionEventManager eventManager;
 
     /**
      * Setup test case or test suite before executing.
@@ -45,8 +45,7 @@ public class TestCaseMain {
         loadGlobalVariableClass(classLoader);
         loadCustomKeywordsClass(classLoader);
 
-        String testListenerFolder = new File(RunConfiguration.getProjectDir(), "Test Listeners").getAbsolutePath();
-        contextEvaluator = new TestContextEvaluator(testListenerFolder);
+        eventManager = ExecutionEventManager.getInstance();
     }
 
     private static void loadCustomKeywordsClass(GroovyClassLoader cl) {
@@ -70,46 +69,54 @@ public class TestCaseMain {
 
     public static TestResult runTestCase(String testCaseId, TestCaseBinding testCaseBinding,
             FailureHandling flowControl) throws InterruptedException {
-        Thread.sleep(DELAY_TIME);
-        return new TestCaseExecutor(testCaseBinding, engine, contextEvaluator).execute(flowControl);
+        return runTestCase(testCaseId, testCaseBinding, flowControl, true, true);
     }
 
     public static TestResult runTestCase(String testCaseId, TestCaseBinding testCaseBinding,
             FailureHandling flowControl, boolean doCleanUp) throws InterruptedException {
+        return runTestCase(testCaseId, testCaseBinding, flowControl, true, doCleanUp);
+    }
+
+    public static TestResult runTestCase(String testCaseId, TestCaseBinding testCaseBinding,
+            FailureHandling flowControl, boolean isMain, boolean doCleanUp) throws InterruptedException {
         Thread.sleep(DELAY_TIME);
-        return new TestCaseExecutor(testCaseBinding, engine, contextEvaluator, doCleanUp).execute(flowControl);
+        InternalTestCaseContext testCaseContext = new InternalTestCaseContext(testCaseId);
+        testCaseContext.setMainTestCase(isMain);
+        return new TestCaseExecutor(testCaseBinding, engine, eventManager, testCaseContext, doCleanUp)
+                .execute(flowControl);
     }
 
     public static TestResult runTestCaseRawScript(String testScript, String testCaseId, TestCaseBinding testCaseBinding,
             FailureHandling flowControl) throws InterruptedException {
         Thread.sleep(DELAY_TIME);
-        return new RawTestScriptExecutor(testScript, testCaseBinding, engine, contextEvaluator).execute(flowControl);
+        return new RawTestScriptExecutor(testScript, testCaseBinding, engine, eventManager,
+                new InternalTestCaseContext(testCaseId)).execute(flowControl);
     }
 
     public static TestResult runTestCaseRawScript(String testScript, String testCaseId, TestCaseBinding testCaseBinding,
             FailureHandling flowControl, boolean doCleanUp) throws InterruptedException {
         Thread.sleep(DELAY_TIME);
-        return new RawTestScriptExecutor(testScript, testCaseBinding, engine, contextEvaluator, doCleanUp)
-                .execute(flowControl);
+        return new RawTestScriptExecutor(testScript, testCaseBinding, engine, eventManager,
+                new InternalTestCaseContext(testCaseId), doCleanUp).execute(flowControl);
     }
 
     public static void startTestSuite(String testSuiteId, Map<String, String> suiteProperties,
             List<TestCaseBinding> testCaseBindings) {
-        TestSuiteExecutor testSuiteExecutor = new TestSuiteExecutor(testSuiteId, engine, contextEvaluator);
+        TestSuiteExecutor testSuiteExecutor = new TestSuiteExecutor(testSuiteId, engine, eventManager);
         testSuiteExecutor.execute(suiteProperties, testCaseBindings);
     }
 
     public static void invokeStartSuite(String testSuiteId) {
         InternalTestSuiteContext testSuiteContext = new InternalTestSuiteContext();
         testSuiteContext.setTestSuiteId(testSuiteId);
-        contextEvaluator.invokeListenerMethod(BeforeTestSuite.class.getName(), new Object[] { testSuiteContext });
+        eventManager.publicEvent(ExecutionListenerEvent.BEFORE_TEST_SUITE, new Object[] { testSuiteContext });
     }
 
     public static void invokeEndSuite(String testSuiteId) {
         InternalTestSuiteContext testSuiteContext = new InternalTestSuiteContext();
         testSuiteContext.setTestSuiteId(testSuiteId);
 
-        contextEvaluator.invokeListenerMethod(AfterTestSuite.class.getName(), new Object[] { testSuiteContext });
+        eventManager.publicEvent(ExecutionListenerEvent.AFTER_TEST_SUITE, new Object[] { testSuiteContext });
     }
 
     public static ScriptEngine getScriptEngine() {

@@ -37,7 +37,7 @@ public class VideoSubtitleWriter {
     private String getTimeFormat(long time) {
         return DurationFormatUtils.formatDuration(time, SUB_DATE_TIME_FORMAT);
     }
-    
+
     public void delete() {
         if (subFile != null && subFile.exists()) {
             FileUtils.deleteQuietly(subFile);

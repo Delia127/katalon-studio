@@ -44,6 +44,7 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 
 @Action(value = "verifyIsLandscape")
 public class VerifyIsLandscapeKeyword extends MobileAbstractKeyword {
@@ -63,7 +64,7 @@ public class VerifyIsLandscapeKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public boolean verifyIsLandscape(FailureHandling flowControl) throws StepFailedException {
-        KeywordMain.runKeyword({
+        MobileKeywordMain.runKeyword({
             AppiumDriver driver = getAnyAppiumDriver()
             String context = driver.getContext()
             try {
@@ -72,12 +73,12 @@ public class VerifyIsLandscapeKeyword extends MobileAbstractKeyword {
                     logger.logPassed(StringConstants.KW_LOG_PASSED_VERIFY_LANDSCAPE)
                     return true
                 } else {
-                    KeywordMain.stepFailed(StringConstants.KW_LOG_FAILED_VERIFY_LANDSCAPE, flowControl, null)
+                    MobileKeywordMain.stepFailed(StringConstants.KW_LOG_FAILED_VERIFY_LANDSCAPE, flowControl, null, true)
                     return false
                 }
             } finally {
                 driver.context(context)
             }
-        }, flowControl, StringConstants.KW_MSG_UNABLE_VERIFY_LANDSCAPE)
+        }, flowControl, true, StringConstants.KW_MSG_UNABLE_VERIFY_LANDSCAPE)
     }
 }

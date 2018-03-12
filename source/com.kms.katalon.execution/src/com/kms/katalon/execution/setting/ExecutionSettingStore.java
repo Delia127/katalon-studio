@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.core.setting.BundleSettingStore;
+import com.kms.katalon.core.setting.VideoRecorderSetting;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.constants.ExecutionSettingConstants;

@@ -44,6 +44,7 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 
 @Action(value = "verifyElementVisible")
 public class VerifyElementVisibleKeyword extends MobileAbstractKeyword {
@@ -65,7 +66,7 @@ public class VerifyElementVisibleKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public boolean verifyElementVisible(TestObject to, int timeout, FailureHandling flowControl) throws StepFailedException {
-        return KeywordMain.runKeyword({
+        return MobileKeywordMain.runKeyword({
             KeywordHelper.checkTestObjectParameter(to)
             timeout = KeywordHelper.checkTimeout(timeout)
             WebElement element = findElement(to, timeout * 1000)
@@ -74,13 +75,13 @@ public class VerifyElementVisibleKeyword extends MobileAbstractKeyword {
                     logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_ELEMENT_X_VISIBLE, to.getObjectId()))
                     return true
                 } else {
-                    KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_ELEMENT_X_VISIBLE, to.getObjectId()), flowControl, null)
+                    MobileKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_ELEMENT_X_VISIBLE, to.getObjectId()), flowControl, null, true)
                     return false
                 }
             } else {
-                KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_ELEMENT_X_EXISTED, to.getObjectId()), flowControl, null)
+                MobileKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_LOG_FAILED_ELEMENT_X_EXISTED, to.getObjectId()), flowControl, null, true)
                 return false
             }
-        }, flowControl, to != null ?  MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_X_VISIBLE, to.getObjectId()) : StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_VISIBLE)
+        }, flowControl, true, to != null ?  MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_X_VISIBLE, to.getObjectId()) : StringConstants.KW_MSG_FAILED_TO_CHECK_FOR_ELEMENT_VISIBLE)
     }
 }

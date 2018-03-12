@@ -2,6 +2,7 @@ package com.kms.katalon.composer.integration.jira.report.provider;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.security.GeneralSecurityException;
 
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.events.MouseEvent;
@@ -24,7 +25,7 @@ public class JiraIssueIDLabelProvider extends HyperLinkColumnLabelProvider<JiraI
         JiraIssue jiraIssue = (JiraIssue) cell.getElement();
         try {
             DesktopUtils.openUri(getHTMLLink(jiraIssue));
-        } catch (IOException | URISyntaxException ex) {
+        } catch (IOException | URISyntaxException | GeneralSecurityException ex) {
             LoggerSingleton.logError(ex);
         }
     }
@@ -48,7 +49,7 @@ public class JiraIssueIDLabelProvider extends HyperLinkColumnLabelProvider<JiraI
     protected String getElementToolTipText(JiraIssue element) {
         try {
             return getHTMLLink(element).toString();
-        } catch (URISyntaxException | IOException e) {
+        } catch (URISyntaxException | IOException | GeneralSecurityException e) {
             LoggerSingleton.logError(e);
             return null;
         }

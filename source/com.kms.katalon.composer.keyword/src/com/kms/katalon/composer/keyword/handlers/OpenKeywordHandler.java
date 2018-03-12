@@ -3,13 +3,18 @@ package com.kms.katalon.composer.keyword.handlers;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.codehaus.groovy.eclipse.refactoring.actions.FormatGroovyAction;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.TextSelection;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
+import org.eclipse.ui.texteditor.ITextEditor;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
@@ -54,14 +59,24 @@ public class OpenKeywordHandler {
                  IEditorDescriptor desc = PlatformUI.getWorkbench().getEditorRegistry()
                  .getDefaultEditor(iFile.getName());
                  desc.getImageDescriptor().createFromImage(ImageConstants.IMG_16_KEYWORD);
-                 PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
+                 ITextEditor editor = (ITextEditor) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
                  .openEditor(new FileEditorInput(iFile), desc.getId());
-
+                 if (editor != null) {
+                     formatEditor(editor);
+                 }
             } catch (Exception e) {
                 LoggerSingleton.logError(e);
                 MessageDialog.openError(null, StringConstants.ERROR_TITLE,
                         StringConstants.HAND_ERROR_MSG_CANNOT_OPEN_KEYWORD_FILE);
             }
         }
+    }
+    
+    private void formatEditor(ITextEditor editor) {
+        FormatGroovyAction formatAction = (FormatGroovyAction) editor.getAction("Format");
+
+        IDocument document = editor.getDocumentProvider().getDocument(editor.getEditorInput());
+        formatAction.run(new TextSelection(0, document.getLength()));
+        editor.doSave(new NullProgressMonitor());
     }
 }

@@ -5,6 +5,7 @@ import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPre
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -20,6 +21,7 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.constants.ExecutionPreferenceConstants;
+import com.kms.katalon.execution.util.MailUtil.MailSecurityProtocolType;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class EmailSettingStore extends BundleSettingStore {
@@ -45,20 +47,28 @@ public class EmailSettingStore extends BundleSettingStore {
         return getBoolean(mailConfigSettingName, mailPreferenceStore.getBoolean(mailConfigSettingName));
     }
 
-    public String getHost() throws IOException {
-        return getStringFromSettingOrPrefs(ExecutionPreferenceConstants.MAIL_CONFIG_HOST);
+    public boolean isEncryptionEnabled() throws IOException {
+        return getBoolean(ExecutionPreferenceConstants.MAIL_CONFIG_ENABLE_ENCRYPTION, false);
     }
 
-    public void setHost(String hostName) throws IOException {
-        setProperty(ExecutionPreferenceConstants.MAIL_CONFIG_HOST, hostName);
+    public void enableAuthenticationEncryption(boolean enabled) throws IOException {
+        setProperty(ExecutionPreferenceConstants.MAIL_CONFIG_ENABLE_ENCRYPTION, enabled);
     }
 
-    public String getPort() throws IOException {
-        return getStringFromSettingOrPrefs(ExecutionPreferenceConstants.MAIL_CONFIG_PORT);
+    public String getHost(boolean encryptionEnabled) throws IOException, GeneralSecurityException {
+        return getStringProperty(ExecutionPreferenceConstants.MAIL_CONFIG_HOST, StringUtils.EMPTY, encryptionEnabled);
     }
 
-    public void setPort(String port) throws IOException {
-        setProperty(ExecutionPreferenceConstants.MAIL_CONFIG_PORT, port);
+    public void setHost(String hostName, boolean encryptionEnabled) throws IOException, GeneralSecurityException {
+        setStringProperty(ExecutionPreferenceConstants.MAIL_CONFIG_HOST, hostName, encryptionEnabled);
+    }
+
+    public String getPort(boolean encryptionEnabled) throws IOException, GeneralSecurityException {
+        return getStringProperty(ExecutionPreferenceConstants.MAIL_CONFIG_PORT, StringUtils.EMPTY, encryptionEnabled);
+    }
+
+    public void setPort(String port, boolean encryptionEnabled) throws IOException, GeneralSecurityException {
+        setStringProperty(ExecutionPreferenceConstants.MAIL_CONFIG_PORT, port, encryptionEnabled);
     }
 
     public boolean isAddAttachment() throws IOException {
@@ -69,36 +79,41 @@ public class EmailSettingStore extends BundleSettingStore {
         setProperty(ExecutionPreferenceConstants.MAIL_CONFIG_ATTACHMENT, isAddAttachment);
     }
 
-    public String getUsername() throws IOException {
-        return getStringFromSettingOrPrefs(ExecutionPreferenceConstants.MAIL_CONFIG_USERNAME);
+    public String getUsername(boolean encryptionEnabled) throws IOException, GeneralSecurityException {
+        return getStringProperty(ExecutionPreferenceConstants.MAIL_CONFIG_USERNAME, StringUtils.EMPTY,
+                encryptionEnabled);
     }
 
-    public void setUsername(String userName) throws IOException {
-        setProperty(ExecutionPreferenceConstants.MAIL_CONFIG_USERNAME, userName);
+    public void setUsername(String username, boolean encryptionEnabled) throws IOException, GeneralSecurityException {
+        setStringProperty(ExecutionPreferenceConstants.MAIL_CONFIG_USERNAME, username, encryptionEnabled);
     }
 
-    public String getPassword() throws IOException {
-        return getStringFromSettingOrPrefs(ExecutionPreferenceConstants.MAIL_CONFIG_PASSWORD);
+    public String getPassword(boolean encryptionEnabled) throws IOException, GeneralSecurityException {
+        return getStringProperty(ExecutionPreferenceConstants.MAIL_CONFIG_PASSWORD, StringUtils.EMPTY,
+                encryptionEnabled);
     }
 
-    public void setPassword(String password) throws IOException {
-        setProperty(ExecutionPreferenceConstants.MAIL_CONFIG_PASSWORD, password);
+    public void setPassword(String password, boolean encryptionEnabled) throws IOException, GeneralSecurityException {
+        setStringProperty(ExecutionPreferenceConstants.MAIL_CONFIG_PASSWORD, password, encryptionEnabled);
     }
 
-    public String getProtocol() throws IOException {
-        return getStringFromSettingOrPrefs(ExecutionPreferenceConstants.MAIL_CONFIG_SECURITY_PROTOCOL);
+    public String getProtocol(boolean encryptionEnabled) throws IOException, GeneralSecurityException {
+        return getStringProperty(ExecutionPreferenceConstants.MAIL_CONFIG_SECURITY_PROTOCOL, MailSecurityProtocolType.None.toString(),
+                encryptionEnabled);
     }
 
-    public void setProtocol(String protocol) throws IOException {
-        setProperty(ExecutionPreferenceConstants.MAIL_CONFIG_SECURITY_PROTOCOL, protocol);
+    public void setProtocol(String protocol, boolean encryptionEnabled) throws IOException, GeneralSecurityException {
+        setStringProperty(ExecutionPreferenceConstants.MAIL_CONFIG_SECURITY_PROTOCOL, protocol, encryptionEnabled);
     }
 
-    public String getRecipients() throws IOException {
-        return getStringFromSettingOrPrefs(ExecutionPreferenceConstants.MAIL_CONFIG_REPORT_RECIPIENTS);
+    public String getRecipients(boolean encryptionEnabled) throws IOException, GeneralSecurityException {
+        return getStringProperty(ExecutionPreferenceConstants.MAIL_CONFIG_REPORT_RECIPIENTS, StringUtils.EMPTY,
+                encryptionEnabled);
     }
 
-    public void setRecipients(String recipients) throws IOException {
-        setProperty(ExecutionPreferenceConstants.MAIL_CONFIG_REPORT_RECIPIENTS, recipients);
+    public void setRecipients(String recipients, boolean encryptionEnabled)
+            throws IOException, GeneralSecurityException {
+        setStringProperty(ExecutionPreferenceConstants.MAIL_CONFIG_REPORT_RECIPIENTS, recipients, encryptionEnabled);
     }
 
     public String getSignature() throws IOException {

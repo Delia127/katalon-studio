@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.webservice.view;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyListener;
@@ -29,14 +30,14 @@ public class WebServiceAPIControl extends Composite {
     private Button btnSend;
 
     private GridData layoutData;
-
-    public WebServiceAPIControl(Composite parent, boolean isSOAP) {
+    
+    public WebServiceAPIControl(Composite parent, boolean isSOAP, String url) {
         super(parent, SWT.NONE);
-        createControl();
+        createControl(url);
         setInput(isSOAP);
     }
 
-    private void createControl() {
+    private void createControl(String url) {
         GridLayout gridLayout = new GridLayout(2, false);
         gridLayout.marginHeight = 0;
         gridLayout.marginWidth = 0;
@@ -68,6 +69,9 @@ public class WebServiceAPIControl extends Composite {
         txtRequestURL = new Text(fieldsComposite, SWT.NONE);
         txtRequestURL.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
         txtRequestURL.setMessage(StringConstants.PA_LBL_URL);
+        if (!StringUtils.trim(url).isEmpty()) {
+            txtRequestURL.setText(url);
+        }
 
         btnSend = new Button(this, SWT.FLAT);
         btnSend.setText(ComposerWebserviceMessageConstants.BTN_SEND_TEST_REQUEST);

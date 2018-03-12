@@ -2,6 +2,7 @@ package com.kms.katalon.integration.jira.issue;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,13 +29,13 @@ public class NewSubtaskHTMLLinkProvider extends DefaultIssueHTMLLinkProvider {
         this.parentIssue = parentIssue;
     }
     
-    public String getIssueUrl() throws IOException {
-        return settingStore.getServerUrl() + StringConstants.HREF_CREATE_SUB_TASK_ISSUE;
+    public String getIssueUrl() throws IOException, GeneralSecurityException {
+        return settingStore.getServerUrl(settingStore.isEncryptionEnabled()) + StringConstants.HREF_CREATE_SUB_TASK_ISSUE;
     }
     
     @Override
-    public String getIssueUrlPrefix() throws IOException, URISyntaxException {
-        return settingStore.getServerUrl() + StringConstants.HREF_CREATE_SUB_TASK_ISSUE_PREFIX;
+    public String getIssueUrlPrefix() throws IOException, URISyntaxException, GeneralSecurityException {
+        return settingStore.getServerUrl(settingStore.isEncryptionEnabled()) + StringConstants.HREF_CREATE_SUB_TASK_ISSUE_PREFIX;
     }
 
     @Override
