@@ -16,23 +16,33 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.http.impl.EnglishReasonPhraseCatalog;
+import org.codehaus.groovy.eclipse.editor.GroovyEditor;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
+import org.eclipse.e4.ui.model.application.ui.basic.MCompositePart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.jdt.core.IBuffer;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.bindings.keys.IKeyLookup;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.text.DocumentCommand;
+import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.jface.text.source.CompositeRuler;
 import org.eclipse.jface.text.source.LineNumberRulerColumn;
 import org.eclipse.jface.text.source.SourceViewer;
@@ -51,8 +61,6 @@ import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.ControlAdapter;
-import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MenuDetectEvent;
@@ -68,7 +76,6 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.program.Program;
@@ -85,6 +92,11 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.IPropertyListener;
+import org.eclipse.ui.ISaveablePart;
+import org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
@@ -100,13 +112,16 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.parts.SavableCompositePart;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
+import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.editor.HttpBodyEditorComposite;
 import com.kms.katalon.composer.webservice.support.PropertyNameEditingSupport;
 import com.kms.katalon.composer.webservice.support.PropertyValueEditingSupport;
+import com.kms.katalon.composer.webservice.util.WSRequestPartService;
 import com.kms.katalon.composer.webservice.view.ParameterTable;
 import com.kms.katalon.composer.webservice.view.WebServiceAPIControl;
 import com.kms.katalon.constants.DocumentationMessageConstants;
@@ -124,8 +139,8 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 
-public abstract class WebServicePart implements EventHandler, IComposerPartEvent {
-
+public abstract class WebServicePart implements SavableCompositePart, EventHandler, IComposerPartEvent {
+    
     protected static final String WS_BUNDLE_NAME = FrameworkUtil.getBundle(WebServicePart.class).getSymbolicName();
 
     private static final Font FONT_COURIER_NEW_12 = new Font(Display.getCurrent(), "Courier New", 12, SWT.NORMAL);
@@ -191,9 +206,7 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
     private static final String HMAC_SHA1 = RequestHeaderConstants.SIGNATURE_METHOD_HMAC_SHA1;
 
     protected static final String OAUTH_1_0 = RequestHeaderConstants.AUTHORIZATION_TYPE_OAUTH_1_0;
-
-    private static final int MIN_PART_WIDTH = 400;
-
+    
     @Inject
     protected MApplication application;
 
@@ -206,8 +219,8 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
     @Inject
     protected IStylingEngine styleEngine;
 
-    protected MPart mPart;
-
+    protected MCompositePart mPart;
+    
     protected WebServiceRequestEntity originalWsObject;
 
     protected ScrolledComposite sComposite;
@@ -245,6 +258,8 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
     protected CTabItem tabHeaders;
 
     protected CTabItem tabBody;
+    
+    protected CTabItem tabVerification;
 
     protected Composite responseComposite;
 
@@ -269,63 +284,112 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
     protected CCombo ccbOAuth1SignatureMethod;
 
     protected List<WebElementPropertyEntity> oauth1Headers = new ArrayList<WebElementPropertyEntity>();
-
+    
     @Inject
     protected MDirtyable dirtyable;
 
     private Label lblStatusCodeDetails, lblReponseTimeDetails, lblReponseLengthDetails;
+    
+    protected MPart topLeftPart;
+    
+    protected MPart responsePart;
+    
+    protected MPart authorizationPart;
+    
+    protected MPart headersPart;
+    
+    protected MPart bodyPart;
+    
+    protected MPart verificationPart;
 
     protected Composite responseBodyComposite;
+    
+    protected Composite topLeftPartComposite;
+    
+    protected Composite responsePartComposite;
+
+    protected Composite authorizationPartComposite;
+    
+    protected Composite headersPartComposite;
+    
+    protected Composite bodyPartComposite;
+    
+    protected Composite verificationPartComposite;
+    
+    protected File tempScriptFile;
+    
+    protected GroovyEditor verificationScriptEditor;
+    
+    public WebServiceRequestEntity getOriginalWsObject() {
+        return originalWsObject;
+    }
+
+    public void setOriginalWsObject(WebServiceRequestEntity originalWsObject) {
+        this.originalWsObject = originalWsObject;
+    }
+
+    public File getTempScriptFile() {
+        return tempScriptFile;
+    }
+
+    public void setTempScriptFile(File tempScriptFile) {
+        this.tempScriptFile = tempScriptFile;
+    }
 
     @PostConstruct
-    public void createComposite(Composite parent, MPart part) {
+    public void createComposite(Composite parent, MCompositePart part) {
         this.mPart = part;
         new HelpToolBarForMPart(part, DocumentationMessageConstants.TEST_OBJECT_WEB_SERVICES);
         this.originalWsObject = (WebServiceRequestEntity) part.getObject();
-
-        parent.setLayout(new FillLayout());
-
-        sComposite = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
-        sComposite.setExpandHorizontal(true);
-        sComposite.setExpandVertical(true);
-        sComposite.setBackground(ColorUtil.getCompositeBackgroundColor());
-        sComposite.setBackgroundMode(SWT.INHERIT_DEFAULT);
-        sComposite.addControlListener(new ControlAdapter() {
-            @Override
-            public void controlResized(ControlEvent e) {
-                sComposite.setMinSize(mainComposite.computeSize(MIN_PART_WIDTH, SWT.DEFAULT));
-            }
-        });
-
-        mainComposite = new SashForm(sComposite, SWT.HORIZONTAL);
-        mainComposite.setLayout(new FillLayout());
-
-        sComposite.setContent(mainComposite);
-
-        Composite leftComposite = new Composite(mainComposite, SWT.NONE);
-        leftComposite.setLayout(new GridLayout());
-
-        createAPIControls(leftComposite);
-
-        createParamsComposite(leftComposite);
-
-        createTabsComposite(leftComposite);
-
-        Composite rightComposite = new Composite(mainComposite, SWT.NONE);
+    }
+    
+    public void initComponents() {
+        initChildPartsAndChildPartComposites();
+        
+        verificationScriptEditor = (GroovyEditor)GroovyEditorUtil.getEditor(verificationPart);
+       
+        Composite topLeftPartInnerComposite = new Composite(topLeftPartComposite, SWT.NONE);
+        topLeftPartInnerComposite.setLayout(new GridLayout());
+        
+        createAPIControls(topLeftPartInnerComposite);
+        
+        createParamsComposite(topLeftPartInnerComposite);
+        
+        createTabsComposite();
+        
+        Composite responsePartInnerComposite = new Composite(responsePartComposite, SWT.NONE);
         GridLayout glResponse = new GridLayout(2, false);
         glResponse.marginWidth = glResponse.marginHeight = 0;
-        rightComposite.setLayout(glResponse);
-
-        Label separator = new Label(rightComposite, SWT.SEPARATOR | SWT.SHADOW_IN | SWT.VERTICAL);
+        responsePartInnerComposite.setLayout(glResponse);
+        
+        Label separator = new Label(responsePartInnerComposite, SWT.SEPARATOR | SWT.SHADOW_IN | SWT.VERTICAL);
         separator.setLayoutData(new GridData(GridData.FILL_VERTICAL));
-
-        createResponseComposite(rightComposite);
+        
+        createResponseComposite(responsePartInnerComposite);
+        
         responseComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
         populateDataToUI();
-
-        dirtyable.setDirty(false);
-
         registerListeners();
+    }
+
+    private void initChildPartsAndChildPartComposites() {
+        topLeftPart = WSRequestPartService.getTopLeftPart(mPart);
+        topLeftPartComposite = WSRequestPartService.getPartComposite(topLeftPart);
+        
+        authorizationPart = WSRequestPartService.getAuthorizationPart(mPart);
+        authorizationPartComposite = WSRequestPartService.getPartComposite(authorizationPart);
+        
+        headersPart = WSRequestPartService.getHeadersPart(mPart);
+        headersPartComposite = WSRequestPartService.getPartComposite(headersPart);
+        
+        bodyPart = WSRequestPartService.getBodyPart(mPart);
+        bodyPartComposite = WSRequestPartService.getPartComposite(bodyPart);
+        
+        verificationPart = WSRequestPartService.getVerificationPart(mPart);
+        verificationPartComposite = WSRequestPartService.getPartComposite(verificationPart);
+        
+        responsePart = WSRequestPartService.getResponsePart(mPart);
+        responsePartComposite = WSRequestPartService.getPartComposite(responsePart);
     }
 
     protected void createAPIControls(Composite parent) {
@@ -381,10 +445,11 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
         return toolbar;
     }
 
-    protected void createTabsComposite(Composite parent) {
-        CTabFolder tabFolder = new CTabFolder(parent, SWT.NONE);
+    protected void createTabsComposite() {
+        CTabFolder tabFolder = WSRequestPartService.getTabFolder(mPart);
         tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        styleEngine.setId(parent, "DefaultCTabFolder");
+        styleEngine.setId(tabFolder.getParent(), "DefaultCTabFolder");
+//        styleEngine.setId(parent, "DefaultCTabFolder");
 
         addTabAuthorization(tabFolder);
         addTabHeaders(tabFolder);
@@ -395,10 +460,7 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
         tabFolder.setSelection(0);
     }
 
-    private void addTabVerification(CTabFolder tabFolder) {
-        CTabItem verificationTab = null;
-        createTab(tabFolder, verificationTab, "Verification");
-    }
+   
 
     protected CTabItem createTab(CTabFolder parent, CTabItem tab, String title) {
         tab = new CTabItem(parent, SWT.NONE);
@@ -412,10 +474,9 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
     }
 
     protected void addTabAuthorization(CTabFolder parent) {
-        tabAuthorization = createTab(parent, tabAuthorization, ComposerWebserviceMessageConstants.TAB_AUTHORIZATION);
-        Composite tabComposite = (Composite) tabAuthorization.getControl();
+        tabAuthorization = WSRequestPartService.getAuthorizationTab(parent);
 
-        Composite formComposite = new Composite(tabComposite, SWT.NONE);
+        Composite formComposite = new Composite(authorizationPartComposite, SWT.NONE);
         formComposite.setLayout(new GridLayout(2, false));
         GridData gdForm = new GridData(SWT.LEFT, SWT.FILL, true, true, 1, 1);
         gdForm.widthHint = 400;
@@ -649,9 +710,10 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
     }
 
     protected void addTabHeaders(CTabFolder parent) {
-        tabHeaders = createTab(parent, tabHeaders, StringConstants.PA_LBL_HTTP_HEADER);
-        Composite tabComposite = (Composite) tabHeaders.getControl();
-        ToolBar toolbar = createAddRemoveToolBar(tabComposite, new SelectionAdapter() {
+        tabHeaders = WSRequestPartService.getHeadersTab(parent);
+        Composite headersPartInnerComposite = new Composite(headersPartComposite, SWT.NONE);
+        headersPartInnerComposite.setLayout(new GridLayout());
+        ToolBar toolbar = createAddRemoveToolBar(headersPartInnerComposite, new SelectionAdapter() {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -665,7 +727,7 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
             }
         });
 
-        tblHeaders = createKeyValueTable(tabComposite, true);
+        tblHeaders = createKeyValueTable(headersPartInnerComposite, true);
         tblHeaders.setInput(httpHeaders);
         tblHeaders.addSelectionChangedListener(new ISelectionChangedListener() {
 
@@ -677,7 +739,11 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
     }
 
     protected void addTabBody(CTabFolder parent) {
-        tabBody = createTab(parent, tabBody, StringConstants.PA_LBL_HTTP_BODY);
+        tabBody = WSRequestPartService.getBodyTab(parent);
+    }
+    
+    protected void addTabVerification(CTabFolder parent) {
+        tabVerification = WSRequestPartService.getVerificationTab(parent);
     }
 
     protected void createResponseComposite(Composite parent) {
@@ -1021,6 +1087,18 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
     protected void registerListeners() {
         eventBroker.subscribe(EventConstants.TEST_OBJECT_UPDATED, this);
         eventBroker.subscribe(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, this);
+        
+        verificationScriptEditor.addPropertyListener(new IPropertyListener() {
+            @Override
+            public void propertyChanged(Object source, int propId) {
+                if (source instanceof GroovyEditor && propId == ISaveablePart.PROP_DIRTY) {
+                    if (verificationScriptEditor.isDirty()) {
+                        WebServicePart.this.dirtyable.setDirty(true);
+                        tabVerification.setText(StringConstants.PA_LBL_VERIFICATION);
+                    } 
+                }
+            }
+        });
     }
 
     @Override
@@ -1106,7 +1184,9 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
     @Persist
     public void save() {
         try {
+            updateVerificationScript();
             preSaving();
+
             ObjectRepositoryController.getInstance().updateTestObject(originalWsObject);
             eventBroker.post(EventConstants.TEST_OBJECT_UPDATED,
                     new Object[] { originalWsObject.getId(), originalWsObject });
@@ -1115,6 +1195,16 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
         } catch (Exception e) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, e.getMessage());
         }
+    }
+    
+    private void updateVerificationScript() {        
+        IEditorInput input = verificationScriptEditor.getEditorInput();
+        IDocument document = verificationScriptEditor.getDocumentProvider().getDocument(input);
+        if (document != null) {
+            String script = document.get();
+            originalWsObject.setVerificationScript(script);
+        }
+        GroovyEditorUtil.saveEditor(verificationPart);
     }
 
     public WebServiceRequestEntity getWSRequestObject() {
@@ -1158,6 +1248,7 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
     @Override
     @PreDestroy
     public void onClose() {
+        tempScriptFile.delete();
         EventUtil.post(EventConstants.PROPERTIES_ENTITY, null);
     }
 
@@ -1297,4 +1388,15 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
         }
     }
 
+    @Override
+    public List<MPart> getChildParts() {
+        return Arrays.asList(
+                    topLeftPart, 
+                    headersPart, 
+                    authorizationPart, 
+                    bodyPart, 
+                    verificationPart, 
+                    responsePart
+                );
+    }
 }

@@ -255,8 +255,9 @@ public class SoapServicePart extends WebServicePart {
     protected void addTabBody(CTabFolder parent) {
         super.addTabBody(parent);
         tabBody.setText(StringConstants.PA_LBL_XML_REQ_MSG);
-        Composite tabComposite = (Composite) tabBody.getControl();
-
+        Composite tabComposite = new Composite((Composite) tabBody.getControl(), SWT.NONE);
+        tabComposite.setLayout(new GridLayout());
+        
         ToolBar toolbar = new ToolBar(tabComposite, SWT.FLAT | SWT.RIGHT);
 
         // TODO This feature will be added later
