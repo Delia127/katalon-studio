@@ -1,17 +1,17 @@
 package com.kms.katalon.integration.jira.setting;
 
+import static com.kms.katalon.integration.jira.constant.StringConstants.PREF_AUTH_ENCRYPTION_ENABLED;
 import static com.kms.katalon.integration.jira.constant.StringConstants.PREF_AUTH_PASSWORD;
 import static com.kms.katalon.integration.jira.constant.StringConstants.PREF_AUTH_SERVER_URL;
 import static com.kms.katalon.integration.jira.constant.StringConstants.PREF_AUTH_USER;
 import static com.kms.katalon.integration.jira.constant.StringConstants.PREF_AUTH_USERNAME;
-import static com.kms.katalon.integration.jira.constant.StringConstants.PREF_AUTH_PASSWORD_ENCRYPTED;
 import static com.kms.katalon.integration.jira.constant.StringConstants.PREF_INTEGRATION_ENABLED;
 import static com.kms.katalon.integration.jira.constant.StringConstants.PREF_SUBMIT_ATTACH_LOG;
 import static com.kms.katalon.integration.jira.constant.StringConstants.PREF_SUBMIT_ATTACH_SCREENSHOT;
 import static com.kms.katalon.integration.jira.constant.StringConstants.PREF_SUBMIT_JIRA_ISSUE_TYPE;
 import static com.kms.katalon.integration.jira.constant.StringConstants.PREF_SUBMIT_JIRA_PROJECT;
-import static com.kms.katalon.integration.jira.constant.StringConstants.PREF_SUBMIT_USE_TEST_CASE_NAME_AS_SUMMARY;
 import static com.kms.katalon.integration.jira.constant.StringConstants.PREF_SUBMIT_TEST_RESULT_AUTOMATICALLY;
+import static com.kms.katalon.integration.jira.constant.StringConstants.PREF_SUBMIT_USE_TEST_CASE_NAME_AS_SUMMARY;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -28,7 +28,6 @@ import com.kms.katalon.integration.jira.JiraCredential;
 import com.kms.katalon.integration.jira.constant.StringConstants;
 import com.kms.katalon.integration.jira.entity.JiraIssueType;
 import com.kms.katalon.integration.jira.entity.JiraProject;
-import com.kms.katalon.util.CryptoUtil;
 
 public class JiraIntegrationSettingStore extends BundleSettingStore {
 
@@ -44,38 +43,37 @@ public class JiraIntegrationSettingStore extends BundleSettingStore {
         setProperty(PREF_INTEGRATION_ENABLED, enabled);
     }
 
-    public String getUsername() throws IOException {
-        return getString(PREF_AUTH_USERNAME, StringUtils.EMPTY);
+    public String getUsername(boolean encryptionEnabled) throws IOException, GeneralSecurityException {
+        return getStringProperty(PREF_AUTH_USERNAME, StringUtils.EMPTY, encryptionEnabled);
     }
 
-    public void saveUsername(String username) throws IOException {
-        setProperty(PREF_AUTH_USERNAME, username);
+    public void saveUsername(String username, boolean encryptionEnabled) throws IOException, GeneralSecurityException {
+        setStringProperty(PREF_AUTH_USERNAME, username, encryptionEnabled);
     }
 
-    public String getPassword(boolean encrypted) throws IOException, GeneralSecurityException {
-        String storedPassword = getString(PREF_AUTH_PASSWORD, StringUtils.EMPTY);
-        return encrypted ? CryptoUtil.decode(CryptoUtil.getDefault(storedPassword)) : storedPassword;
+    public String getPassword(boolean encryptionEnabled) throws IOException, GeneralSecurityException {
+        return getStringProperty(PREF_AUTH_PASSWORD, StringUtils.EMPTY, encryptionEnabled);
     }
 
-    public void savePassword(String rawPassword, boolean encrypted) throws IOException, GeneralSecurityException {
-        String storedPassword = encrypted ? CryptoUtil.encode(CryptoUtil.getDefault(rawPassword)) : rawPassword;
-        setProperty(PREF_AUTH_PASSWORD, storedPassword);
+    public void savePassword(String rawPassword, boolean encryptEnabled) throws IOException, GeneralSecurityException {
+        setStringProperty(PREF_AUTH_PASSWORD, rawPassword, encryptEnabled);
     }
 
-    public boolean isPasswordEncryptionEnabled() throws IOException {
-        return getBoolean(PREF_AUTH_PASSWORD_ENCRYPTED, false);
+    public boolean isEncryptionEnabled() throws IOException {
+        return getBoolean(PREF_AUTH_ENCRYPTION_ENABLED, false);
     }
 
-    public void enablePasswordEncryption(boolean enabled) throws IOException {
-        setProperty(PREF_AUTH_PASSWORD_ENCRYPTED, enabled);
+    public void enableEncryption(boolean enabled) throws IOException {
+        setProperty(PREF_AUTH_ENCRYPTION_ENABLED, enabled);
     }
 
-    public String getServerUrl() throws IOException {
-        return JiraAPIURL.removeLastSplash(getString(PREF_AUTH_SERVER_URL, StringUtils.EMPTY));
+    public String getServerUrl(boolean encryptionEnabled) throws IOException, GeneralSecurityException {
+        String decryptedServerUrl = getStringProperty(PREF_AUTH_SERVER_URL, StringUtils.EMPTY, encryptionEnabled);
+        return JiraAPIURL.removeLastSplash(decryptedServerUrl);
     }
 
-    public void saveServerUrl(String serverUrl) throws IOException {
-        setProperty(PREF_AUTH_SERVER_URL, serverUrl);
+    public void saveServerUrl(String serverUrl, boolean encryptionEnabled) throws IOException, GeneralSecurityException {
+        setStringProperty(PREF_AUTH_SERVER_URL, serverUrl, encryptionEnabled);
     }
 
     public boolean isUseTestCaseNameAsSummaryEnabled() throws IOException {
@@ -152,9 +150,11 @@ public class JiraIntegrationSettingStore extends BundleSettingStore {
 
     public JiraCredential getJiraCredential() throws IOException, GeneralSecurityException {
         JiraCredential credential = new JiraCredential();
-        credential.setServerUrl(getServerUrl());
-        credential.setUsername(getUsername());
-        credential.setPassword(getPassword(isPasswordEncryptionEnabled()));
+
+        boolean authenticationEncrypted = isEncryptionEnabled();
+        credential.setServerUrl(getServerUrl(authenticationEncrypted));
+        credential.setUsername(getUsername(authenticationEncrypted));
+        credential.setPassword(getPassword(authenticationEncrypted));
         return credential;
     }
 }

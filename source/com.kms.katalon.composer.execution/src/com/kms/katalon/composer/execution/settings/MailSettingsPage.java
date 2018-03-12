@@ -3,6 +3,7 @@ package com.kms.katalon.composer.execution.settings;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
+import java.security.GeneralSecurityException;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
@@ -78,8 +79,10 @@ public class MailSettingsPage extends PreferencePageWithHelp {
     private Group grpReportFormatOptions;
 
     private Composite attachmentOptionsComposite;
-    
+
     private Map<ReportFormatType, Button> formatOptionCheckboxes;
+
+    private Button chckEncrypt;
 
     public MailSettingsPage() {
         super();
@@ -100,9 +103,9 @@ public class MailSettingsPage extends PreferencePageWithHelp {
         createServerGroup(container);
 
         createPostExecuteGroup(container);
-        
+
         createReportFormatGroup(container);
-        
+
         createSendTestEmailButton(container);
 
         registerControlListers();
@@ -115,23 +118,25 @@ public class MailSettingsPage extends PreferencePageWithHelp {
     private void updateInput() {
         try {
             EmailSettingStore settingStore = getSettingStore();
-            txtHost.setText(settingStore.getHost());
-            txtPort.setText(settingStore.getPort());
-            txtUsername.setText(settingStore.getUsername());
-            txtPassword.setText(settingStore.getPassword());
-            comboProtocol.setText(settingStore.getProtocol());
+            boolean encrytionEnabled = settingStore.isEncryptionEnabled();
+            chckEncrypt.setSelection(encrytionEnabled);
+            txtHost.setText(settingStore.getHost(encrytionEnabled));
+            txtPort.setText(settingStore.getPort(encrytionEnabled));
+            txtUsername.setText(settingStore.getUsername(encrytionEnabled));
+            txtPassword.setText(settingStore.getPassword(encrytionEnabled));
+            comboProtocol.setText(settingStore.getProtocol(encrytionEnabled));
             btnChkAttachment.setSelection(settingStore.isAddAttachment());
             updateReportFormatOptionsStatus();
 
-            txtRecipients.setText(settingStore.getRecipients());
+            txtRecipients.setText(settingStore.getRecipients(encrytionEnabled));
             txtCc.setText(settingStore.getEmailCc());
             txtBcc.setText(settingStore.getEmailBcc());
-            txtSubject.setText(settingStore.getEmailSubject());            
-            
+            txtSubject.setText(settingStore.getEmailSubject());
+
             settingStore.getReportFormatOptions().forEach(format -> {
                 formatOptionCheckboxes.get(format).setSelection(true);
             });
-        } catch (IOException e) {
+        } catch (IOException | GeneralSecurityException e) {
             LoggerSingleton.logError(e);
         }
     }
@@ -224,14 +229,14 @@ public class MailSettingsPage extends PreferencePageWithHelp {
             }
         });
 
-        btnChkAttachment.addSelectionListener(new SelectionAdapter() {            
+        btnChkAttachment.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 updateReportFormatOptionsStatus();
             }
         });
     }
-    
+
     private List<ReportFormatType> getSelectedAttachmentOptions() {
         return formatOptionCheckboxes.entrySet()
                 .stream()
@@ -260,20 +265,23 @@ public class MailSettingsPage extends PreferencePageWithHelp {
             return super.performOk();
         }
         try {
+            boolean encrytionEnabled = chckEncrypt.getSelection();
+
             EmailSettingStore settingStore = getSettingStore();
-            settingStore.setHost(txtHost.getText());
-            settingStore.setPort(txtPort.getText());
-            settingStore.setUsername(txtUsername.getText());
-            settingStore.setPassword(txtPassword.getText());
-            settingStore.setProtocol(comboProtocol.getText());
+            settingStore.enableAuthenticationEncryption(encrytionEnabled);
+            settingStore.setHost(txtHost.getText(), encrytionEnabled);
+            settingStore.setPort(txtPort.getText(), encrytionEnabled);
+            settingStore.setUsername(txtUsername.getText(), encrytionEnabled);
+            settingStore.setPassword(txtPassword.getText(), encrytionEnabled);
+            settingStore.setProtocol(comboProtocol.getText(), encrytionEnabled);
             settingStore.setIsAddAttachment(btnChkAttachment.getSelection());
             settingStore.setEmailSubject(txtSubject.getText());
             settingStore.setEmailCc(txtCc.getText());
             settingStore.setEmailBcc(txtBcc.getText());
-            settingStore.setRecipients(txtRecipients.getText());
+            settingStore.setRecipients(txtRecipients.getText(), encrytionEnabled);
             settingStore.setReportFormatOptions(getSelectedAttachmentOptions());
             return super.performOk();
-        } catch (IOException e) {
+        } catch (IOException | GeneralSecurityException e) {
             LoggerSingleton.logError(e);
             return false;
         }
@@ -304,7 +312,7 @@ public class MailSettingsPage extends PreferencePageWithHelp {
         lnkEditTemplate.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
         lnkEditTemplate.setText(String.format("<a>%s</a>", ComposerExecutionMessageConstants.PREF_LNK_EDIT_TEMPLATE));
     }
-    
+
     private void createReportFormatGroup(Composite container) {
         grpReportFormatOptions = new Group(container, SWT.NONE);
         grpReportFormatOptions.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
@@ -321,8 +329,8 @@ public class MailSettingsPage extends PreferencePageWithHelp {
         btnChkAttachment.setText(ComposerExecutionMessageConstants.PREF_LBL_INCLUDE_ATTACHMENT);
 
         attachmentOptionsComposite = new Composite(grpReportFormatOptions, SWT.NONE);
-        attachmentOptionsComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));        
-        GridLayout attachmentsLayout = new GridLayout(1, true);        
+        attachmentOptionsComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+        GridLayout attachmentsLayout = new GridLayout(1, true);
         attachmentsLayout.marginLeft = 15;
         attachmentsLayout.marginRight = 0;
         attachmentsLayout.marginHeight = 0;
@@ -333,17 +341,16 @@ public class MailSettingsPage extends PreferencePageWithHelp {
             btnFormmatingType.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
             btnFormmatingType.setText(formatType.toString());
             btnFormmatingType.setData(formatType);
-            
+
             formatOptionCheckboxes.put(formatType, btnFormmatingType);
         }
     }
-    
+
     private void createSendTestEmailButton(Composite parent) {
         btnSendTestEmail = new Button(parent, SWT.PUSH);
         btnSendTestEmail.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
         btnSendTestEmail.setText(ComposerExecutionMessageConstants.PREF_LBL_SEND_TEST_EMAIL);
     }
-    
 
     private void createServerGroup(Composite container) {
         Group serverGroup = createGroup(container, StringConstants.PREF_GROUP_LBL_MAIL_SERVER, 4, 1,
@@ -362,6 +369,10 @@ public class MailSettingsPage extends PreferencePageWithHelp {
         comboProtocol = new Combo(serverGroup, SWT.READ_ONLY);
         comboProtocol.setLayoutData(new GridData(SWT.LEFT, GridData.FILL, false, true, 1, 1));
         comboProtocol.setItems(MailSecurityProtocolType.getStringValues());
+
+        chckEncrypt = new Button(serverGroup, SWT.CHECK);
+        chckEncrypt.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, true, false, 4, 1));
+        chckEncrypt.setText(ComposerExecutionMessageConstants.PREF_CHECK_ENABLE_AUTHENTICATION_ENCRYPTION);
     }
 
     private void sendTestEmail(final EmailConfig conf) {

@@ -27,8 +27,7 @@ Export-Package: com.kms.katalon.execution.classpath,
  com.kms.katalon.execution.preferences,
  com.kms.katalon.execution.session,
  com.kms.katalon.execution.setting,
- com.kms.katalon.execution.util,
- com.kms.katalon.execution.video
+ com.kms.katalon.execution.util
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: com.google.common.base,
  javax.annotation;version="1.2.0",
@@ -70,5 +69,6 @@ Require-Bundle: org.eclipse.e4.core.contexts,
  com.kms.katalon.selenium-standalone,
  com.kms.katalon.core.mobile,
  org.apache.commons.lang3,
- org.eclipse.jdt.launching
+ org.eclipse.jdt.launching,
+ com.kms.katalon.util
 Bundle-Activator: com.kms.katalon.execution.addon.ExecutionBundleActivator

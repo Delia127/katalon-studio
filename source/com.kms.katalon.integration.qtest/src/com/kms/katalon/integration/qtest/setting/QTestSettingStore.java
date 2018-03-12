@@ -13,7 +13,6 @@ import org.apache.commons.lang.StringUtils;
 import com.kms.katalon.core.setting.PropertySettingStoreUtil;
 import com.kms.katalon.core.setting.ReportFormatType;
 import com.kms.katalon.integration.qtest.credential.IQTestCredential;
-import com.kms.katalon.integration.qtest.credential.IQTestToken;
 import com.kms.katalon.util.CryptoUtil;
 
 public class QTestSettingStore {
@@ -27,7 +26,7 @@ public class QTestSettingStore {
 
     public static final String SERVER_URL_PROPERTY = "serverUrl";
 
-    public static final String ENABLE_PASSWORD_ENCRYPTION_PROPERTY = "enablePasswordEncryption";
+    public static final String ENABLE_ENCRYPTION_PROPERTY = "enableAuthenticationEncryption";
 
     public static final String AUTO_SUBMIT_RESULT_PROPERTY = "autoSubmitResult";
 
@@ -53,51 +52,50 @@ public class QTestSettingStore {
         return configFile;
     }
 
-    /* package */static String getRawToken(String projectDir) {
-        try {
-            return PropertySettingStoreUtil.getPropertyValue(TOKEN_PROPERTY, getPropertyFile(projectDir));
-        } catch (IOException e) {
-            return "";
-        }
+    private static void setStringProperty(String key, String defaultValue, boolean shouldEncrypt, String projectDir)
+            throws IOException, GeneralSecurityException {
+        String storedUsername = shouldEncrypt ? CryptoUtil.encode(CryptoUtil.getDefault(defaultValue)) : defaultValue;
+        PropertySettingStoreUtil.addNewProperty(key, storedUsername, getPropertyFile(projectDir));
     }
 
-    public static void saveToken(IQTestToken token, String projectDir) throws IOException {
-        String rawToken = token != null ? token.getRawToken() : "";
-        PropertySettingStoreUtil.addNewProperty(TOKEN_PROPERTY, rawToken, getPropertyFile(projectDir));
-    }
-
-    public static String getUsername(String projectDir) {
+    private static String getStringProperty(String key, String defaultValue, boolean shouldDecrypt, String projectDir) {
         try {
-            return PropertySettingStoreUtil.getPropertyValue(USERNAME_PROPERTY, getPropertyFile(projectDir));
-        } catch (IOException e) {
-            return "";
-        }
-    }
+            String storedValue = PropertySettingStoreUtil.getPropertyValue(key, getPropertyFile(projectDir));
 
-    public static String getPassword(boolean encrypted, String projectDir) {
-        try {
-            String storedPassword = PropertySettingStoreUtil.getPropertyValue(PASSWORD_PROPERTY,
-                    getPropertyFile(projectDir));
-            return encrypted ? CryptoUtil.decode(CryptoUtil.getDefault(storedPassword)) : storedPassword;
+            return shouldDecrypt ? CryptoUtil.decode(CryptoUtil.getDefault(storedValue)) : storedValue;
         } catch (IOException | GeneralSecurityException e) {
-            return "";
+            return defaultValue;
         }
     }
 
-    public static boolean isPasswordEncryptionEnabled(String projectDir) {
+    /* package */static String getRawToken(boolean encryptionEnabled, String projectDir) {
+        return getStringProperty(TOKEN_PROPERTY, StringUtils.EMPTY, encryptionEnabled, projectDir);
+    }
+
+    public static String getUsername(boolean encryptionEnabled, String projectDir) {
+        return getStringProperty(USERNAME_PROPERTY, StringUtils.EMPTY, encryptionEnabled, projectDir);
+    }
+
+    public static String getPassword(boolean encryptionEnabled, String projectDir) {
+        return getStringProperty(PASSWORD_PROPERTY, StringUtils.EMPTY, encryptionEnabled, projectDir);
+    }
+
+    public static boolean isEncryptionEnabled(String projectDir) {
         try {
-            return Boolean.parseBoolean(PropertySettingStoreUtil.getPropertyValue(ENABLE_PASSWORD_ENCRYPTION_PROPERTY,
-                    getPropertyFile(projectDir)));
+            return Boolean.parseBoolean(
+                    PropertySettingStoreUtil.getPropertyValue(ENABLE_ENCRYPTION_PROPERTY, getPropertyFile(projectDir)));
         } catch (IOException e) {
             return false;
         }
     }
 
-    public static String getServerUrl(String projectDir) {
+    public static String getServerUrl(boolean encrypted, String projectDir) {
         try {
-            return PropertySettingStoreUtil.getPropertyValue(SERVER_URL_PROPERTY, getPropertyFile(projectDir));
-        } catch (IOException e) {
-            return "";
+            String storedUrl = PropertySettingStoreUtil.getPropertyValue(SERVER_URL_PROPERTY,
+                    getPropertyFile(projectDir));
+            return encrypted ? CryptoUtil.decode(CryptoUtil.getDefault(storedUrl)) : storedUrl;
+        } catch (IOException | GeneralSecurityException e) {
+            return StringUtils.EMPTY;
         }
     }
 
@@ -106,7 +104,7 @@ public class QTestSettingStore {
             String versionName = PropertySettingStoreUtil.getPropertyValue(QTEST_VERSION_PROPERTY,
                     getPropertyFile(projectDir));
             if (StringUtils.isBlank(versionName)) {
-                if (!StringUtils.isBlank(getRawToken(projectDir))) {
+                if (!StringUtils.isBlank(getRawToken(isEncryptionEnabled(projectDir), projectDir))) {
                     return QTestVersion.V6;
                 } else {
                     return QTestVersion.getLastest();
@@ -121,25 +119,24 @@ public class QTestSettingStore {
 
     public static void saveUserProfile(IQTestCredential credential, String projectDir)
             throws IOException, GeneralSecurityException {
-        saveToken(credential.getToken(), projectDir);
-
-        PropertySettingStoreUtil.addNewProperty(USERNAME_PROPERTY, credential.getUsername(),
-                getPropertyFile(projectDir));
-        String rawPassword = credential.getPassword();
-        String storedPassword = credential.isPasswordEncryptionEnabled()
-                ? CryptoUtil.encode(CryptoUtil.getDefault(rawPassword)) : rawPassword;
-        PropertySettingStoreUtil.addNewProperty(PASSWORD_PROPERTY, storedPassword, getPropertyFile(projectDir));
+        boolean encryptionEnabled = credential.isEncryptionEnabled();
+        setEnableEncryption(encryptionEnabled, projectDir);
         
-        savePasswordEncryption(credential.isPasswordEncryptionEnabled(), projectDir);
-        PropertySettingStoreUtil.addNewProperty(QTEST_VERSION_PROPERTY, credential.getVersion().name(),
-                getPropertyFile(projectDir));
+        String rawToken = credential.getToken() != null ? credential.getToken().getRawToken() : StringUtils.EMPTY;
+        setStringProperty(TOKEN_PROPERTY, rawToken, encryptionEnabled, projectDir);
+
+        setStringProperty(USERNAME_PROPERTY, credential.getUsername(), encryptionEnabled, projectDir);
+
+        setStringProperty(PASSWORD_PROPERTY, credential.getPassword(), encryptionEnabled, projectDir);
+
+        setStringProperty(QTEST_VERSION_PROPERTY, credential.getVersion().name(), false, projectDir);
 
         String savedServerUrl = credential.getServerUrl();
         while (!savedServerUrl.isEmpty() && savedServerUrl.endsWith("/")) {
             savedServerUrl = savedServerUrl.substring(0, savedServerUrl.length() - 1);
         }
 
-        PropertySettingStoreUtil.addNewProperty(SERVER_URL_PROPERTY, savedServerUrl, getPropertyFile(projectDir));
+        setStringProperty(SERVER_URL_PROPERTY, savedServerUrl, encryptionEnabled, projectDir);
     }
 
     public static boolean isAutoSubmitResultActive(String projectDir) {
@@ -169,8 +166,8 @@ public class QTestSettingStore {
         }
     }
 
-    public static void savePasswordEncryption(boolean enabled, String projectDir) throws IOException {
-        PropertySettingStoreUtil.addNewProperty(ENABLE_PASSWORD_ENCRYPTION_PROPERTY, Boolean.toString(enabled),
+    public static void setEnableEncryption(boolean enabled, String projectDir) throws IOException {
+        PropertySettingStoreUtil.addNewProperty(ENABLE_ENCRYPTION_PROPERTY, Boolean.toString(enabled),
                 getPropertyFile(projectDir));
     }
 

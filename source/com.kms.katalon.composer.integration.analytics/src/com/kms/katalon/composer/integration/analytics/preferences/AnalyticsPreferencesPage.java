@@ -72,7 +72,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     private AnalyticsSettingStore analyticsSettingStore;
 
-    private Button chckShowPassword, chckEncryptPassword;
+    private Button chckShowPassword, chckEncrypt;
 
     public AnalyticsPreferencesPage() {
         analyticsSettingStore = new AnalyticsSettingStore(
@@ -135,7 +135,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
         Composite passwordComposite = new Composite(grpAuthentication, SWT.NONE);
         passwordComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        GridLayout glPassword = new GridLayout(3, false);
+        GridLayout glPassword = new GridLayout(2, false);
         glPassword.marginWidth = 0;
         glPassword.marginHeight = 0;
         passwordComposite.setLayout(glPassword);
@@ -147,9 +147,9 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         chckShowPassword.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
         chckShowPassword.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_SHOW_PASSWORD);
 
-        chckEncryptPassword = new Button(passwordComposite, SWT.CHECK);
-        chckEncryptPassword.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, true, 1, 1));
-        chckEncryptPassword.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_ENABLE_PASSWORD_ENCRYPTION);
+        chckEncrypt = new Button(grpAuthentication, SWT.CHECK);
+        chckEncrypt.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, true, 2, 1));
+        chckEncrypt.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_ENABLE_ANTHENTICATION_ENCRYPTION);
 
         Composite compConnect = new Composite(grpAuthentication, SWT.NONE);
         compConnect.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
@@ -270,14 +270,15 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     private void fillData() {
         try {
+            boolean encryptionEnabled = analyticsSettingStore.isEncryptionEnabled();
             enableAnalyticsIntegration.setSelection(analyticsSettingStore.isIntegrationEnabled());
 
             cbbTeams.setItems();
             cbbProjects.setItems();
 
-            String password = analyticsSettingStore.getPassword(analyticsSettingStore.isPasswordEncryptionEnabled());
+            String password = analyticsSettingStore.getPassword(analyticsSettingStore.isEncryptionEnabled());
             if (enableAnalyticsIntegration.getSelection()) {
-                teams = getTeams(analyticsSettingStore.getServerEndpoint(), analyticsSettingStore.getEmail(),
+                teams = getTeams(analyticsSettingStore.getServerEndpoint(encryptionEnabled), analyticsSettingStore.getEmail(encryptionEnabled),
                         password, false);
                 if (teams != null && !teams.isEmpty()) {
                     cbbTeams.setItems(getTeamNames(teams).toArray(new String[teams.size()]));
@@ -286,7 +287,8 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
                 if (teams != null && teams.size() > 0) {
                     AnalyticsTeam team = teams.get(getDefaultTeamIndex());
-                    projects = getProjects(analyticsSettingStore.getServerEndpoint(), analyticsSettingStore.getEmail(),
+                    projects = getProjects(analyticsSettingStore.getServerEndpoint(encryptionEnabled), 
+                            analyticsSettingStore.getEmail(encryptionEnabled),
                             password, team, false);
                     if (projects != null && !projects.isEmpty()) {
                         cbbProjects.setItems(getProjectNames(projects).toArray(new String[projects.size()]));
@@ -295,11 +297,11 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                 }
             }
 
-            txtEmail.setText(analyticsSettingStore.getEmail());
+            txtEmail.setText(analyticsSettingStore.getEmail(encryptionEnabled));
             txtPassword.setText(password);
-            chckEncryptPassword.setSelection(analyticsSettingStore.isPasswordEncryptionEnabled());
+            chckEncrypt.setSelection(analyticsSettingStore.isEncryptionEnabled());
             maskPasswordField();
-            txtServerUrl.setText(analyticsSettingStore.getServerEndpoint());
+            txtServerUrl.setText(analyticsSettingStore.getServerEndpoint(encryptionEnabled));
             cbxAutoSubmit.setSelection(analyticsSettingStore.isAutoSubmit());
             cbxAttachScreenshot.setSelection(analyticsSettingStore.isAttachScreenshot());
             cbxAttachLog.setSelection(analyticsSettingStore.isAttachLog());
@@ -331,17 +333,18 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         cbxAttachScreenshot.setEnabled(isAnalyticsIntegrated);
         cbxAttachLog.setEnabled(isAnalyticsIntegrated);
         cbxAttachCaptureVideo.setEnabled(isAnalyticsIntegrated);
-        chckEncryptPassword.setEnabled(isAnalyticsIntegrated);
+        chckEncrypt.setEnabled(isAnalyticsIntegrated);
         chckShowPassword.setEnabled(isAnalyticsIntegrated);
     }
 
     private void updateDataStore() {
         try {
+            boolean encryptionEnabled = chckEncrypt.getSelection();
             analyticsSettingStore.enableIntegration(enableAnalyticsIntegration.getSelection());
-            analyticsSettingStore.setServerEndPoint(txtServerUrl.getText());
-            analyticsSettingStore.setEmail(txtEmail.getText());
-            analyticsSettingStore.setPassword(txtPassword.getText(), chckEncryptPassword.getSelection());
-            analyticsSettingStore.enablePasswordEncryption(chckEncryptPassword.getSelection());
+            analyticsSettingStore.setServerEndPoint(txtServerUrl.getText(), encryptionEnabled);
+            analyticsSettingStore.setEmail(txtEmail.getText(), encryptionEnabled);
+            analyticsSettingStore.setPassword(txtPassword.getText(), encryptionEnabled);
+            analyticsSettingStore.enableEncryption(encryptionEnabled);
             analyticsSettingStore.setProject(
                     cbbProjects.getSelectionIndex() != -1 ? projects.get(cbbProjects.getSelectionIndex()) : null);
             analyticsSettingStore.setAutoSubmit(cbxAutoSubmit.getSelection());

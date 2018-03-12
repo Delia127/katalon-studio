@@ -44,6 +44,7 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 
 @Action(value = "getElementLeftPosition")
 public class GetElementLeftPositionKeyword extends MobileAbstractKeyword {
@@ -65,8 +66,8 @@ public class GetElementLeftPositionKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public int getElementLeftPosition(TestObject to, int timeout, FailureHandling flowControl) throws StepFailedException {
-        return KeywordMain.runKeywordAndReturnInt({
+        return MobileKeywordMain.runKeywordAndReturnInt({
             return MobileElementCommonHelper.getElementLeftPosition(to, timeout, flowControl)
-        }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_GET_LEFT_POSITION_OF_ELEMENT, to.getObjectId()) : StringConstants.KW_MSG_FAILED_TO_GET_LEFT_POSITION)
+        }, flowControl, true, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_GET_LEFT_POSITION_OF_ELEMENT, to.getObjectId()) : StringConstants.KW_MSG_FAILED_TO_GET_LEFT_POSITION)
     }
 }

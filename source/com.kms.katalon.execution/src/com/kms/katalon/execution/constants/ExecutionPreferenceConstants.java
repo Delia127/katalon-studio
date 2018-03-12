@@ -15,6 +15,8 @@ public interface ExecutionPreferenceConstants {
 
     public static final String MAIL_CONFIG_PASSWORD = "mailConfig.password";
 
+    public static final String MAIL_CONFIG_ENABLE_ENCRYPTION = "mailConfig.encryptionEnabled";
+
     public static final String MAIL_CONFIG_REPORT_RECIPIENTS = "mailConfig.reportRecipients";
 
     public static final String MAIL_CONFIG_SIGNATURE = "mailConfig.signature";
@@ -30,6 +32,4 @@ public interface ExecutionPreferenceConstants {
     public static final String MAIL_CONFIG_BCC = "mailConfig.bcc";
 
     public static final String MAIL_CONFIG_REPORT_FORMAT = "mailConfig.reportFormat";
-    
-    public static final String EXECUTION_COMMAND = "execution.command";
 }

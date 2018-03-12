@@ -252,7 +252,7 @@ public class KeywordLogger {
                 nestedLevel, attributes));
     }
 
-    public void endListnerKeyword(String name, Map<String, String> attributes,
+    public void endListenerKeyword(String name, Map<String, String> attributes,
             Stack<KeywordStackElement> keywordStack) {
         endKeyword(name, StringConstants.LOG_LISTENER_ACTION, attributes, keywordStack);
     }

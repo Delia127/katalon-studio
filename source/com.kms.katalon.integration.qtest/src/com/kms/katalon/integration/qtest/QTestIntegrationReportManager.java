@@ -88,7 +88,7 @@ public class QTestIntegrationReportManager {
      */
     public static URL getTestLogURL(String projectDir, QTestProject qTestProject, QTestRun qTestRun, QTestLog qTestLog)
             throws IOException {
-        String url = QTestSettingStore.getServerUrl(projectDir);
+        String url = QTestSettingStore.getServerUrl(QTestSettingStore.isEncryptionEnabled(projectDir), projectDir);
 
         return new URL(url + "/p/" + Long.toString(qTestProject.getId()) + "/portal/project#tab=testexecution&object="
                 + QTestRun.getType() + "&id=" + Long.toString(qTestRun.getId()));

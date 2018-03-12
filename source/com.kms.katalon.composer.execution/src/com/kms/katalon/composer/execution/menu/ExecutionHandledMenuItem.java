@@ -10,7 +10,7 @@ import org.eclipse.e4.ui.model.application.ui.menu.MHandledMenuItem;
 import org.eclipse.e4.ui.model.application.ui.menu.impl.HandledMenuItemImpl;
 import org.eclipse.emf.common.util.EList;
 
-import com.kms.katalon.execution.util.ExecutionUtil;
+import com.kms.katalon.execution.setting.ExecutionDefaultSettingStore;
 
 @SuppressWarnings("restriction")
 public class ExecutionHandledMenuItem extends HandledMenuItemImpl {
@@ -40,7 +40,11 @@ public class ExecutionHandledMenuItem extends HandledMenuItemImpl {
     }
 
     public boolean isDefault() {
-        String defaultItemLabel = ExecutionUtil.getStoredExecutionConfiguration();
+        ExecutionDefaultSettingStore store = ExecutionDefaultSettingStore.getStore();
+        if (store == null) {
+            return false;
+        }
+        String defaultItemLabel = store.getExecutionConfiguration();
         return getDefaultLabel().equals(defaultItemLabel);
     }
 

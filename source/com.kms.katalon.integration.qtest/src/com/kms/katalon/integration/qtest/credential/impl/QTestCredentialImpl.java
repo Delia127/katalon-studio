@@ -68,7 +68,7 @@ public class QTestCredentialImpl implements IQTestCredential {
     }
 
     @Override
-    public boolean isPasswordEncryptionEnabled() {
+    public boolean isEncryptionEnabled() {
         return passwordEncryptionEnabled;
     }
 

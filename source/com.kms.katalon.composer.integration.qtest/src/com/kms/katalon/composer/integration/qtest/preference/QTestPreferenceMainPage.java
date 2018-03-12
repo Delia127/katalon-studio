@@ -413,7 +413,7 @@ public class QTestPreferenceMainPage extends PreferencePageWithHelp {
                     .setPassword(credential.getPassword())
                     .setToken(credential.getToken())
                     .setVersion(credential.getVersion())
-                    .setPasswordEncryptionEnabled(credential.isPasswordEncryptionEnabled());;
+                    .setPasswordEncryptionEnabled(credential.isEncryptionEnabled());;
         }
         return newCredential;
     }

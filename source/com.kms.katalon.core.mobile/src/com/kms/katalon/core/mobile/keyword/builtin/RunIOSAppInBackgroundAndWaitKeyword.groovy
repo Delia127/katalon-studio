@@ -45,6 +45,7 @@ import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
 import com.kms.katalon.core.mobile.keyword.internal.MobileDriverFactory
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 
 @Action(value = "runIOSAppInBackgroundAndWait")
 public class RunIOSAppInBackgroundAndWaitKeyword extends MobileAbstractKeyword {
@@ -65,7 +66,7 @@ public class RunIOSAppInBackgroundAndWaitKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public void runIOSAppInBackgroundAndWait(int seconds, FailureHandling flowControl) throws StepFailedException {
-        KeywordMain.runKeyword({
+        MobileKeywordMain.runKeyword({
             AppiumDriver<?> driver = MobileDriverFactory.getDriver()
             String osVersion = MobileDriverFactory.getDeviceOSVersion()
             int majorversion = Integer.parseInt(osVersion.split("\\.")[0])
@@ -77,6 +78,6 @@ public class RunIOSAppInBackgroundAndWaitKeyword extends MobileAbstractKeyword {
                 driver.executeScript(command)
             }
             logger.logPassed(StringConstants.KW_LOG_PASSED_RUN_IOS_APP_PASSED)
-        }, flowControl, StringConstants.KW_MSG_CANNOT_RUN_IOS_APP_IN_BACKGROUND)
+        }, flowControl, true, StringConstants.KW_MSG_CANNOT_RUN_IOS_APP_IN_BACKGROUND)
     }
 }

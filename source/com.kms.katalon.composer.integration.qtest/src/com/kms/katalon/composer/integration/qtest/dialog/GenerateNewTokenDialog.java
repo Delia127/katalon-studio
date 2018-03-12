@@ -237,7 +237,7 @@ public class GenerateNewTokenDialog extends AbstractDialog {
         setText(txtServerUrl, fCredential.getServerUrl());
         setText(txtUsername, fCredential.getUsername());
         setText(txtPassword, fCredential.getPassword());
-        chckEncryptPassword.setSelection(fCredential.isPasswordEncryptionEnabled());
+        chckEncryptPassword.setSelection(fCredential.isEncryptionEnabled());
         updatePasswordField();
     }
 
@@ -265,7 +265,7 @@ public class GenerateNewTokenDialog extends AbstractDialog {
 
         passwordComposite = new Composite(container, SWT.NONE);
         passwordComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-        GridLayout glPasswordComposite = new GridLayout(3, false);
+        GridLayout glPasswordComposite = new GridLayout(2, false);
         glPasswordComposite.marginHeight = 0;
         glPasswordComposite.marginWidth = 0;
         passwordComposite.setLayout(glPasswordComposite);
@@ -278,9 +278,9 @@ public class GenerateNewTokenDialog extends AbstractDialog {
         btnShowPassword = new Button(passwordComposite, SWT.CHECK);
         btnShowPassword.setText(StringConstants.WZ_P_AUTHENTICATION_SHOW_PASSWORD);
         
-        chckEncryptPassword = new Button(passwordComposite, SWT.CHECK);
-        chckEncryptPassword.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, true, 1, 1));
-        chckEncryptPassword.setText(ComposerIntegrationQtestMessageConstants.WZ_P_AUTHENTICATION_ENCRYPT_PASSWORD);
+        chckEncryptPassword = new Button(container, SWT.CHECK);
+        chckEncryptPassword.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 2, 1));
+        chckEncryptPassword.setText(ComposerIntegrationQtestMessageConstants.WZ_P_AUTHENTICATION_ENCRYPT_AUTHENTICATION_DATA);
 
         connectingComposite = new Composite(container, SWT.NONE);
         connectingComposite.setLayout(new GridLayout(2, false));

@@ -365,7 +365,7 @@ public class QTestIntegrationTestCaseManager {
             throws QTestIOException {
 
         try {
-            String url = QTestSettingStore.getServerUrl(projectDir);
+            String url = QTestSettingStore.getServerUrl(QTestSettingStore.isEncryptionEnabled(projectDir), projectDir);
 
             return new URL(url + "/p/" + Long.toString(qTestProject.getId()) + "/portal/project#id="
                     + Long.toString(testCase.getId()) + "&object=" + QTestTestCase.getType() + "&tab=testdesign");

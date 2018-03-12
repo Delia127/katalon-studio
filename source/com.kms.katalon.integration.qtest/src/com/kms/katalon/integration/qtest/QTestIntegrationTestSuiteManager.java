@@ -564,7 +564,7 @@ public class QTestIntegrationTestSuiteManager {
     public static URL navigatedUrlForQTestSuite(String projectDir, QTestSuite testSuite, QTestProject qTestProject)
             throws MalformedURLException {
 
-        String url = QTestSettingStore.getServerUrl(projectDir);
+        String url = QTestSettingStore.getServerUrl(QTestSettingStore.isEncryptionEnabled(projectDir), projectDir);
 
         return new URL(url + "/p/" + Long.toString(qTestProject.getId()) + "/portal/project#tab=testexecution&object="
                 + QTestSuite.getType() + "&id=" + Long.toString(testSuite.getId()));

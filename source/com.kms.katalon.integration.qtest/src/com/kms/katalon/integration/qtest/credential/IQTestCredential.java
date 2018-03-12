@@ -11,7 +11,7 @@ public interface IQTestCredential {
 
     public String getPassword();
     
-    public boolean isPasswordEncryptionEnabled();
+    public boolean isEncryptionEnabled();
 
     public IQTestToken getToken();
 }

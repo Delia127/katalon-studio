@@ -317,7 +317,7 @@ public class ComposerIntegrationQtestMessageConstants extends NLS {
 
     public static String WZ_P_AUTHENTICATION_SHOW_PASSWORD;
     
-    public static String WZ_P_AUTHENTICATION_ENCRYPT_PASSWORD;
+    public static String WZ_P_AUTHENTICATION_ENCRYPT_AUTHENTICATION_DATA;
 
     public static String WZ_P_AUTHENTICATION_CONNECT_ACCOUNT;
 

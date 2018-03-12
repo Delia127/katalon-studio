@@ -21,7 +21,7 @@ public class ComposerIntegrationAnalyticsMessageConstants extends NLS {
 
     public static String LBL_SHOW_PASSWORD;
 
-    public static String LBL_ENABLE_PASSWORD_ENCRYPTION;
+    public static String LBL_ENABLE_ANTHENTICATION_ENCRYPTION;
 
     public static String LBL_SERVER_URL;
 

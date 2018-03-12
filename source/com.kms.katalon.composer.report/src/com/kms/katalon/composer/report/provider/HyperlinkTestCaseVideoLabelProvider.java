@@ -1,7 +1,10 @@
 package com.kms.katalon.composer.report.provider;
 
 import java.io.File;
-import java.util.List;
+import java.io.IOException;
+import java.text.MessageFormat;
+import java.util.Collections;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.viewers.ViewerCell;
@@ -16,18 +19,40 @@ import com.kms.katalon.composer.components.impl.providers.TableCellLayoutInfo;
 import com.kms.katalon.composer.report.constants.ComposerReportMessageConstants;
 import com.kms.katalon.composer.report.constants.ImageConstants;
 import com.kms.katalon.composer.report.parts.ReportPart;
+import com.kms.katalon.controller.ReportController;
+import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.logging.model.ILogRecord;
-import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
+import com.kms.katalon.core.setting.VideoRecorderSetting;
+import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.entity.report.ReportEntity;
-import com.kms.katalon.entity.report.ReportTestCaseEntity;
+import com.kms.katalon.execution.util.ExecutionUtil;
 
 public class HyperlinkTestCaseVideoLabelProvider extends HyperLinkColumnLabelProvider<ILogRecord> {
 
     private ReportPart reportPart;
 
+    private VideoRecorderSetting videoSetting;
+
+    @SuppressWarnings("unchecked")
     public HyperlinkTestCaseVideoLabelProvider(ReportPart reportPart) {
         super(ReportPartTestCaseLabelProvider.CLMN_TEST_CASE_VIDEO);
         this.reportPart = reportPart;
+        File executionSettingFile = ReportController.getInstance()
+                .getExecutionSettingFile(reportPart.getReport().getLocation());
+        if (executionSettingFile.exists()) {
+            try {
+                Map<String, Object> reportProperties = (Map<String, Object>) ExecutionUtil
+                        .readRunConfigSettingFromFile(executionSettingFile.getAbsolutePath())
+                        .getOrDefault("report", Collections.emptyMap());
+                Map<String, Object> videoOptions = (Map<String, Object>) reportProperties
+                        .getOrDefault(StringConstants.CONF_PROPERTY_VIDEO_RECORDER_OPTION, Collections.emptyMap());
+
+                videoSetting = new VideoRecorderSetting();
+                if (!videoOptions.isEmpty()) {
+                    videoSetting = JsonUtil.fromJson(JsonUtil.toJson(videoOptions), VideoRecorderSetting.class);
+                }
+            } catch (IOException ignored) {}
+        }
     }
 
     @Override
@@ -55,7 +80,7 @@ public class HyperlinkTestCaseVideoLabelProvider extends HyperLinkColumnLabelPro
 
     @Override
     protected Image getImage(ILogRecord logRecord) {
-        return getVideoFile(logRecord) != null ? ImageConstants.IMG_16_VIDEO : null;
+        return getVideoFile(logRecord).exists() ? ImageConstants.IMG_16_VIDEO : null;
     }
 
     private File getVideoFile(ILogRecord logRecord) {
@@ -65,17 +90,8 @@ public class HyperlinkTestCaseVideoLabelProvider extends HyperLinkColumnLabelPro
         }
 
         int index = getOrder((ILogRecord[]) getViewer().getInput(), logRecord);
-        TestSuiteLogRecord testSuiteLog = (TestSuiteLogRecord) logRecord.getParentLogRecord();
-
-        List<ReportTestCaseEntity> reportTestCases = report.getReportTestCases();
-        if (index >= reportTestCases.size()) {
-            return null;
-        }
-        String location = reportTestCases.get(index).getVideoLocation();
-        if (StringUtils.isEmpty(location)) {
-            return null;
-        }
-        return new File(testSuiteLog.getLogFolder(), location);
+        return new File(report.getVideoFolder(),
+                MessageFormat.format("test_{0}{1}", index + 1, videoSetting.getVideoFormat().getExtension()));
     }
 
     @Override
