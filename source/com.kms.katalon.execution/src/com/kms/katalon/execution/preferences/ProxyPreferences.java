@@ -2,9 +2,12 @@ package com.kms.katalon.execution.preferences;
 
 import java.io.IOException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.kms.katalon.core.network.ProxyInformation;
+import com.kms.katalon.core.network.ProxyOption;
+import com.kms.katalon.core.network.ProxyServerType;
 import com.kms.katalon.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.execution.constants.ProxyPreferenceConstants;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
@@ -15,12 +18,14 @@ public class ProxyPreferences {
         IPreferenceStore store = getPreferenceStore();
         return store.getBoolean(ProxyPreferenceConstants.PROXY_PREFERENCE_SET);
     }
-    
+
     public static ProxyInformation getProxyInformation() {
         IPreferenceStore store = getPreferenceStore();
         ProxyInformation proxyInfo = new ProxyInformation();
-        proxyInfo.setProxyOption(store.getString(ProxyPreferenceConstants.PROXY_OPTION));
-        proxyInfo.setProxyServerType(store.getString(ProxyPreferenceConstants.PROXY_SERVER_TYPE));
+        proxyInfo.setProxyOption(StringUtils.defaultIfEmpty(store.getString(ProxyPreferenceConstants.PROXY_OPTION),
+                ProxyOption.NO_PROXY.name()));
+        proxyInfo.setProxyServerType(StringUtils.defaultIfEmpty(
+                store.getString(ProxyPreferenceConstants.PROXY_SERVER_TYPE), ProxyServerType.HTTP.name()));
         proxyInfo.setProxyServerAddress(store.getString(ProxyPreferenceConstants.PROXY_SERVER_ADDRESS));
         proxyInfo.setProxyServerPort(store.getInt(ProxyPreferenceConstants.PROXY_SERVER_PORT));
         proxyInfo.setUsername(store.getString(ProxyPreferenceConstants.PROXY_USERNAME));
@@ -37,7 +42,7 @@ public class ProxyPreferences {
         store.setValue(ProxyPreferenceConstants.PROXY_USERNAME, proxyInfo.getUsername());
         store.setValue(ProxyPreferenceConstants.PROXY_PASSWORD, proxyInfo.getPassword());
         store.setValue(ProxyPreferenceConstants.PROXY_PREFERENCE_SET, true);
-        
+
         ((ScopedPreferenceStore) store).save();
     }
 
