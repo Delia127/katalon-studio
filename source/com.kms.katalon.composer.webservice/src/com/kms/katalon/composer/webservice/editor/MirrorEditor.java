@@ -17,13 +17,11 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Widget;
 import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
-import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
@@ -41,22 +39,19 @@ public class MirrorEditor extends Composite {
 
     private File templateFile;
 
-    private Widget parent;
-
     public MirrorEditor(Composite parent, int style) {
         super(parent, style);
-        this.parent = parent;
 
         GridLayout gridLayout = new GridLayout();
         gridLayout.marginHeight = 0;
         gridLayout.marginWidth = 0;
         this.setLayout(gridLayout);
         this.setLayoutData(new GridData(GridData.FILL_BOTH));
-        
+
         browser = new Browser(this, style);
         browser.setLayoutData(new GridData(GridData.FILL_BOTH));
         browser.setJavascriptEnabled(true);
-        
+
         templateFile = initHTMLTemplateFile();
         try {
             browser.setUrl(templateFile.toURI().toURL().toString());
@@ -114,7 +109,7 @@ public class MirrorEditor extends Composite {
 
     public void setText(String text) {
         if (!documentReady) {
-            sleepForDocumentReady();
+            sleepForLoadingDocumentReady();
         }
         browser.evaluate(String.format("editor.setValue(\"%s\");", StringEscapeUtils.escapeEcmaScript(text)));
     }
@@ -127,7 +122,7 @@ public class MirrorEditor extends Composite {
         return browser.evaluate(script);
     }
 
-    public void sleepForDocumentReady() {
+    public void sleepForLoadingDocumentReady() {
         Thread thread = new Thread(() -> {
             while (!documentReady) {
                 try {
@@ -147,7 +142,7 @@ public class MirrorEditor extends Composite {
         new BrowserFunction(browser, "handleEditorChanged") {
             @Override
             public Object function(Object[] objects) {
-                parent.notifyListeners(SWT.Modify, new Event());
+                MirrorEditor.this.notifyListeners(SWT.Modify, new Event());
                 return null;
             }
         };

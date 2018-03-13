@@ -10,15 +10,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 
-import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.entity.webservice.TextBodyContent;
@@ -79,7 +76,7 @@ public class TextBodyEditor extends HttpBodyEditor {
     private MirrorEditor mirrorEditor;
 
     private File templateFile;
-    
+
     Composite tbBodyType;
 
     // A collection of mirror modes for some text types
@@ -103,7 +100,7 @@ public class TextBodyEditor extends HttpBodyEditor {
         TEXT_MODE_NAMES = TextContentType.getTextValues();
     }
 
-    public TextBodyEditor(Composite parent, int style) {
+    public TextBodyEditor(Composite parent, int style, boolean showTextType) {
         super(parent, style);
 
         GridLayout gridLayout = new GridLayout();
@@ -120,9 +117,12 @@ public class TextBodyEditor extends HttpBodyEditor {
                 TextContentType preferedContentType = TextContentType
                         .evaluateContentType(textBodyContent.getContentType());
                 Button selectionButton = TEXT_MODE_SELECTION_BUTTONS.get(preferedContentType.getText());
-                selectionButton.setSelection(true);
-                changeMode(preferedContentType.getText());
-                mirrorEditor.wrapLine(chckWrapLine.getSelection());
+                TEXT_MODE_SELECTION_BUTTONS.entrySet().forEach(e -> e.getValue().setSelection(false));
+                if (selectionButton != null) {
+                    selectionButton.setSelection(true);
+                    changeMode(preferedContentType.getText());
+                    mirrorEditor.wrapLine(chckWrapLine.getSelection());
+                }
                 handleControlModifyListener();
             }
         });
@@ -136,6 +136,7 @@ public class TextBodyEditor extends HttpBodyEditor {
         tbBodyType.setLayout(new GridLayout(TEXT_MODE_NAMES.length, false));
 
         Arrays.asList(TextContentType.values()).forEach(textContentType -> {
+            if (showTextType || (!showTextType && textContentType != TextContentType.TEXT)) {
             Button btnTextMode = new Button(tbBodyType, SWT.RADIO);
             btnTextMode.setText(textContentType.getText());
             TEXT_MODE_SELECTION_BUTTONS.put(textContentType.getText(), btnTextMode);
@@ -151,7 +152,7 @@ public class TextBodyEditor extends HttpBodyEditor {
 
                     TextBodyEditor.this.notifyListeners(SWT.Modify, new Event());
                 }
-            });
+            });}
         });
 
         chckWrapLine = new Button(bottomComposite, SWT.CHECK);
@@ -200,32 +201,29 @@ public class TextBodyEditor extends HttpBodyEditor {
     @Override
     public void setInput(String rawBodyContentData) {
         if (textBodyContent != null) {
+            updateBodyContent(rawBodyContentData);
             return;
         }
-
+        // Request object - content type was included in rawBodyContentData.
         if (StringUtils.isEmpty(rawBodyContentData)) {
             textBodyContent = new TextBodyContent();
         } else {
             textBodyContent = JsonUtil.fromJson(rawBodyContentData, TextBodyContent.class);
         }
-        
-        mirrorEditor.sleepForDocumentReady();
-    }
-    
-    public void setText(String contentData) {
-        mirrorEditor.setText(contentData);
+        // Response object. todo remove to child.
+        mirrorEditor.sleepForLoadingDocumentReady();
     }
 
-    public void setContentTypeVisible(TextContentType contentType, boolean visible) {
-        Control [] childs = tbBodyType.getChildren();
-        for (Control child : childs) {
-            if (child instanceof Button) {
-                Button bt = (Button) child;
-                if (bt.getText() == contentType.getText()) {
-                    bt.setVisible(visible);
-                    tbBodyType.layout(true);
-                }
-            }
+    private void updateBodyContent(String rawBodyContentData) {
+        this.textBodyContent = JsonUtil.fromJson(rawBodyContentData, TextBodyContent.class);
+        Button selectionButton = TEXT_MODE_SELECTION_BUTTONS.get(TextContentType.evaluateContentType (textBodyContent.getContentType()).getText());
+        TEXT_MODE_SELECTION_BUTTONS.entrySet().forEach(e -> e.getValue().setSelection(false));
+        if (selectionButton != null) { 
+            selectionButton.setSelection(true);
+            selectionButton.notifyListeners(SWT.Selection, new Event());
         }
+        mirrorEditor.setText(textBodyContent.getText());
+        mirrorEditor.wrapLine(chckWrapLine.getSelection());
     }
+
 }

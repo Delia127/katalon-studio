@@ -122,16 +122,16 @@ public class RestServicePart extends WebServicePart {
                                 }
                                 Display.getDefault().asyncExec(() -> {
                                     setResponseStatus(responseObject);
-                                    mirrorEditor.sleepForDocumentReady();
+                                    mirrorEditor.sleepForLoadingDocumentReady();
                                     mirrorEditor.setText(getPrettyHeaders(responseObject));
                                     String bodyContent = responseObject.getResponseText();
 
                                     if (bodyContent == null) {
                                         return;
                                     }
-                                    //Todo set input for respose here
-                                    //responseBody.setDocument(createDocument(bodyContent));
-                                    responseBodyEditor.setInput(bodyContent);
+                                    responseBodyEditor.setInput(bodyContent, responseObject.getContentType());
+                                    
+//                                    responseBodyEditor.setInput(, contentType);
                                 });
                             } catch (Exception e) {
                                 LoggerSingleton.logError(e);
