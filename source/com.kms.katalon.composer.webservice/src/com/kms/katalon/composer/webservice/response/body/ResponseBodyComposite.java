@@ -13,17 +13,13 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
 
-import com.kms.katalon.composer.webservice.editor.MirrorEditor;
-import com.kms.katalon.composer.webservice.editor.TextBodyEditor;
-import com.kms.katalon.composer.webservice.editor.TextBodyEditor.TextContentType;
-import com.kms.katalon.core.util.internal.JsonUtil;
-import com.kms.katalon.entity.webservice.TextBodyContent;
+import com.kms.katalon.composer.webservice.constants.TextContentType;
+import com.kms.katalon.core.testobject.ResponseObject;
 
-public class HttpResponseBodyEditor extends Composite {
+public class ResponseBodyComposite extends Composite {
 
-    private Map<EditorMode, Composite> bodyEditors = new HashMap<>();
+    private Map<EditorMode, ResponseBodyEditor> bodyEditors = new HashMap<>();
 
     private Map<EditorMode, Button> bodySelectionButtons = new HashMap<>();
 
@@ -33,23 +29,17 @@ public class HttpResponseBodyEditor extends Composite {
 
     private Button previewRadio;
 
-    private MirrorEditor rawEditor;
-
     private StackLayout slBodyContent;
 
-    private String bodyContent;
+    private ResponseObject responseObject;
 
     private EditorMode selectedEditorMode;
-    
-    private String contentType;
-
-    private Browser previewEditor;
 
     private enum EditorMode {
         PRETTY, RAW, PREVIEW
     };
 
-    public HttpResponseBodyEditor(Composite parent, int style) {
+    public ResponseBodyComposite(Composite parent, int style) {
 
         super(parent, style);
         setLayout(new GridLayout());
@@ -72,7 +62,7 @@ public class HttpResponseBodyEditor extends Composite {
         prettyRadio.setText(EditorMode.PRETTY.toString().toLowerCase());
         bodySelectionButtons.put(EditorMode.PRETTY, prettyRadio);
 
-        TextBodyEditor textBodyEditor = new TextBodyEditor(bodyContentComposite, SWT.NONE, false);
+        PrettyEditor textBodyEditor = new PrettyEditor(bodyContentComposite, SWT.NONE);
         bodyEditors.put(EditorMode.PRETTY, textBodyEditor);
 
         // Raw Mode
@@ -80,7 +70,7 @@ public class HttpResponseBodyEditor extends Composite {
         rawRadio.setText(EditorMode.RAW.toString().toLowerCase());
         bodySelectionButtons.put(EditorMode.RAW, rawRadio);
 
-        rawEditor = new MirrorEditor(bodyContentComposite, SWT.NONE);
+        RawEditor rawEditor = new RawEditor(bodyContentComposite, SWT.NONE);
         bodyEditors.put(EditorMode.RAW, rawEditor);
 
         // Preview Mode
@@ -88,25 +78,32 @@ public class HttpResponseBodyEditor extends Composite {
         previewRadio.setText(EditorMode.PREVIEW.toString().toLowerCase());
         bodySelectionButtons.put(EditorMode.PREVIEW, previewRadio);
 
-        previewEditor = new Browser(bodyContentComposite, SWT.NONE);
+        PreviewEditor previewEditor = new PreviewEditor(bodyContentComposite, SWT.NONE);
         bodyEditors.put(EditorMode.PREVIEW, previewEditor);
 
         handleControlModifyListeners();
     }
 
-    public void setInput(String responseBodyContent, String contentType) {
-        this.bodyContent = responseBodyContent;
-        this.selectedEditorMode = detectEditorMode(contentType);
-        Button selectedButton = bodySelectionButtons.get(selectedEditorMode);
-        
+    public void setInput(ResponseObject responseOb) {
+        this.responseObject = new ResponseObject();
+        this.responseObject.setResponseText(responseOb.getResponseText());
+        this.responseObject.setContentType(StringUtils.substringBefore(responseOb.getContentType(), ";"));
+
+        this.selectedEditorMode = detectEditorMode(responseObject.getContentType());
+
+        // Mark radio is selected.
         bodySelectionButtons.entrySet().forEach(e -> e.getValue().setSelection(false));
+        Button selectedButton = bodySelectionButtons.get(selectedEditorMode);
         selectedButton.setSelection(true);
-        selectedButton.notifyListeners(SWT.Selection, new Event());
+
+        // Init body content.
+        ResponseBodyEditor childEditor = bodyEditors.get(selectedEditorMode);
+        childEditor.updateContentBody(responseObject);
+        slBodyContent.topControl = (Composite) childEditor;
+        ((Composite) childEditor).getParent().layout();
     }
-    
-    
+
     private EditorMode detectEditorMode(String contentType) {
-        this.contentType = StringUtils.substringBefore(contentType, ";");
         if (StringUtils.isNotEmpty(contentType)) {
             if (contentType.startsWith(TextContentType.XML.getContentType())
                     || contentType.startsWith(TextContentType.JAVASCRIPT.getContentType())
@@ -125,29 +122,13 @@ public class HttpResponseBodyEditor extends Composite {
                 Button source = (Button) e.getSource();
                 if (source.getSelection()) {
                     selectedEditorMode = EditorMode.valueOf(source.getText().toUpperCase());
-                    Composite editorComposite = bodyEditors.get(selectedEditorMode);
+                    ResponseBodyEditor editorComposite = bodyEditors.get(selectedEditorMode);
+                    editorComposite.switchModeContentBody(responseObject);
 
-                    if (StringUtils.isNotEmpty(bodyContent)) {
-                        switch (selectedEditorMode) {
-                            case PRETTY:
-                                TextBodyContent textBodyContent = new TextBodyContent();
-                                textBodyContent.setText(bodyContent);
-                                textBodyContent.setContentType(contentType);
-                                ((TextBodyEditor) editorComposite).setInput(JsonUtil.toJson(textBodyContent));
-                                break;
-                            case RAW:
-                                ((MirrorEditor) editorComposite).setText(bodyContent);
-                                break;
-                            case PREVIEW:
-                                ((Browser) editorComposite).setText(bodyContent);
-                            default:
-                                break;
-                        }
-                    }
-                    slBodyContent.topControl = editorComposite;
-                    editorComposite.getParent().layout();
+                    slBodyContent.topControl = (Composite) editorComposite;
+                    ((Composite) editorComposite).getParent().layout();
                 }
-            }
+            };
         };
 
         bodySelectionButtons.values().forEach(button -> {
@@ -155,11 +136,9 @@ public class HttpResponseBodyEditor extends Composite {
         });
 
         bodyEditors.values().forEach(editor -> {
-            if (editor instanceof TextBodyEditor) {
-                editor.addListener(SWT.Modify, event -> {
-                    contentType = ((TextBodyEditor) editor).getContentType();
-                });
-            }
+            ((Composite) editor).addListener(SWT.Modify, event -> {
+                responseObject.setContentType(editor.getContentType());
+            });
         });
 
     }

@@ -106,7 +106,7 @@ import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageCo
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.editor.HttpBodyEditorComposite;
 import com.kms.katalon.composer.webservice.editor.MirrorEditor;
-import com.kms.katalon.composer.webservice.response.body.HttpResponseBodyEditor;
+import com.kms.katalon.composer.webservice.response.body.ResponseBodyComposite;
 import com.kms.katalon.composer.webservice.support.PropertyNameEditingSupport;
 import com.kms.katalon.composer.webservice.support.PropertyValueEditingSupport;
 import com.kms.katalon.composer.webservice.view.ParameterTable;
@@ -238,7 +238,7 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
 
     protected HttpBodyEditorComposite requestBodyEditor;
     
-    protected HttpResponseBodyEditor responseBodyEditor;
+    protected ResponseBodyComposite responseBodyEditor;
 
     protected SourceViewer responseHeader;
 

@@ -3,6 +3,8 @@ package com.kms.katalon.composer.webservice.editor;
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -23,6 +25,7 @@ import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
+import com.kms.katalon.composer.webservice.constants.TextContentType;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
@@ -38,6 +41,21 @@ public class MirrorEditor extends Composite {
     private DocumentReadyHandler documentReadyHandler;
 
     private File templateFile;
+    
+    // A collection of mirror modes for some text types
+    private static final Map<String, String> TEXT_MODE_COLLECTION;
+
+
+    
+    static {
+        TEXT_MODE_COLLECTION = new HashMap<>();
+        TEXT_MODE_COLLECTION.put(TextContentType.TEXT.getText(), "text/plain");
+        TEXT_MODE_COLLECTION.put(TextContentType.JSON.getText(), "application/ld+json");
+        TEXT_MODE_COLLECTION.put(TextContentType.XML.getText(), "application/xml");
+        TEXT_MODE_COLLECTION.put(TextContentType.HTML.getText(), "text/html");
+        TEXT_MODE_COLLECTION.put(TextContentType.JAVASCRIPT.getText(), "application/javascript");
+
+    }
 
     public MirrorEditor(Composite parent, int style) {
         super(parent, style);
@@ -108,8 +126,8 @@ public class MirrorEditor extends Composite {
     }
 
     public void setText(String text) {
-        if (!documentReady) {
-            sleepForLoadingDocumentReady();
+        while (!documentReady) {
+            this.sleep(50L);
         }
         browser.evaluate(String.format("editor.setValue(\"%s\");", StringEscapeUtils.escapeEcmaScript(text)));
     }
@@ -156,6 +174,17 @@ public class MirrorEditor extends Composite {
 
     public void registerDocumentHandler(DocumentReadyHandler handler) {
         this.documentReadyHandler = handler;
+    }
+    
+    public void changeMode(String text) {
+        String textType = TEXT_MODE_COLLECTION.keySet()
+                .stream()
+                .filter(key -> text.toLowerCase().startsWith(key.toLowerCase()))
+                .findFirst()
+                .orElse(TextContentType.TEXT.getText());
+
+        String mode = TEXT_MODE_COLLECTION.get(textType);
+        evaluate(MessageFormat.format("changeMode(editor, \"{0}\");", mode));
     }
 
 }

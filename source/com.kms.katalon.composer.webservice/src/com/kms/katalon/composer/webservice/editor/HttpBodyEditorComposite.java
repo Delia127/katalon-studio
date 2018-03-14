@@ -77,7 +77,7 @@ public class HttpBodyEditorComposite extends Composite {
         slBodyContent = new StackLayout();
         bodyContentComposite.setLayout(slBodyContent);
 
-        TextBodyEditor textBodyEditor = new TextBodyEditor(bodyContentComposite, SWT.NONE, true);
+        TextBodyEditor textBodyEditor = new TextBodyEditor(bodyContentComposite, SWT.NONE);
         bodyEditors.put("text", textBodyEditor);
 
         UrlEncodedBodyEditor urlEncodedEditor = new UrlEncodedBodyEditor(bodyContentComposite, SWT.NONE);
