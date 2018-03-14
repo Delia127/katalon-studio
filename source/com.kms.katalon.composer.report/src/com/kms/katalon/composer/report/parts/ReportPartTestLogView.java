@@ -731,7 +731,7 @@ public class ReportPartTestLogView {
 
         tltmResetImageSize = new ToolItem(imageToolbar, SWT.PUSH);
         tltmResetImageSize.setImage(ImageConstants.IMG_16_FULL_SIZE);
-        tltmResetImageSize.setText("Show Full Size");
+        tltmResetImageSize.setToolTipText("Show Full Size");
 
         selectedTestLogTabFolder.setTopRight(imageToolbar);
 
