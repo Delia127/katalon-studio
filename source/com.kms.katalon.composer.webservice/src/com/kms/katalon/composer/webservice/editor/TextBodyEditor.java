@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
+import com.kms.katalon.composer.webservice.components.MirrorEditor;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.composer.webservice.constants.TextContentType;
 import com.kms.katalon.core.util.internal.JsonUtil;
@@ -25,6 +26,8 @@ public class TextBodyEditor extends HttpBodyEditor {
     private TextBodyContent textBodyContent;
 
     private MirrorEditor mirrorEditor;
+
+    private Button chckWrapLine;
 
     Composite tbBodyType;
 
@@ -37,7 +40,6 @@ public class TextBodyEditor extends HttpBodyEditor {
         TEXT_MODE_NAMES = TextContentType.getTextValues();
     }
     
-    private Button chckWrapLine;
 
     public TextBodyEditor(Composite parent, int style) {
         super(parent, style);
@@ -122,7 +124,6 @@ public class TextBodyEditor extends HttpBodyEditor {
         if (textBodyContent != null) {
             return;
         }
-        // Request object - content type was included in rawBodyContentData.
         if (StringUtils.isEmpty(rawBodyContentData)) {
             textBodyContent = new TextBodyContent();
         } else {

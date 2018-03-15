@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.webservice.editor;
+package com.kms.katalon.composer.webservice.components;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,6 +26,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.composer.webservice.constants.TextContentType;
+import com.kms.katalon.composer.webservice.editor.DocumentReadyHandler;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
@@ -97,8 +98,7 @@ public class MirrorEditor extends Composite {
             if (!codeMirrorTempFolder.exists() || ArrayUtils.isEmpty(codeMirrorTempFolder.listFiles())) {
                 codeMirrorTempFolder.mkdirs();
 
-                // Todo Thai get current bundle.
-                File bundleLocation = FileLocator.getBundleFile(FrameworkUtil.getBundle(TextBodyEditor.class));
+                File bundleLocation = FileLocator.getBundleFile(FrameworkUtil.getBundle(MirrorEditor.class));
 
                 if (bundleLocation.isDirectory()) {
                     FileUtils.copyDirectory(new File(bundleLocation, RESOURCES_TEMPLATE_EDITOR),
