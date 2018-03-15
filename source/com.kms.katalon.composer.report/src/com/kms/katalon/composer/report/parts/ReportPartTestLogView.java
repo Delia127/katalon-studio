@@ -750,7 +750,7 @@ public class ReportPartTestLogView {
         imageToolbar = new ToolBar(selectedTestLogTabFolder, SWT.NONE);
         tltmFitScreen = new ToolItem(imageToolbar, SWT.CHECK);
         tltmFitScreen.setImage(ImageConstants.IMG_16_FIT_SCREEN);
-        tltmFitScreen.setToolTipText("Fit Screen");
+        tltmFitScreen.setToolTipText("Fit to View");
 
         tltmResetImageSize = new ToolItem(imageToolbar, SWT.CHECK);
         tltmResetImageSize.setImage(ImageConstants.IMG_16_FULL_SIZE);
