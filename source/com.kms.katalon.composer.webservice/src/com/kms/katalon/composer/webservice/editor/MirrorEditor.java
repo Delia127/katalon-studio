@@ -41,12 +41,10 @@ public class MirrorEditor extends Composite {
     private DocumentReadyHandler documentReadyHandler;
 
     private File templateFile;
-    
+
     // A collection of mirror modes for some text types
     private static final Map<String, String> TEXT_MODE_COLLECTION;
 
-
-    
     static {
         TEXT_MODE_COLLECTION = new HashMap<>();
         TEXT_MODE_COLLECTION.put(TextContentType.TEXT.getText(), "text/plain");
@@ -82,6 +80,7 @@ public class MirrorEditor extends Composite {
             @Override
             public void completed(ProgressEvent event) {
                 documentReady = true;
+                onDocumentReady();
             }
 
             @Override
@@ -126,10 +125,19 @@ public class MirrorEditor extends Composite {
     }
 
     public void setText(String text) {
-        while (!documentReady) {
-            this.sleep(50L);
+        if (!documentReady) {
+            Thread thread = new Thread(() -> {
+                while (!documentReady) {
+                    try {
+                        Thread.sleep(50L);
+                    } catch (InterruptedException ignored) {}
+                }
+                UISynchronizeService.syncExec(() -> setText(text));
+            });
+            thread.start();
+        } else {
+            browser.evaluate(String.format("editor.setValue(\"%s\");", StringEscapeUtils.escapeEcmaScript(text)));
         }
-        browser.evaluate(String.format("editor.setValue(\"%s\");", StringEscapeUtils.escapeEcmaScript(text)));
     }
 
     public void wrapLine(boolean wrapped) {
@@ -140,19 +148,35 @@ public class MirrorEditor extends Composite {
         return browser.evaluate(script);
     }
 
-    public void sleepForLoadingDocumentReady() {
-        Thread thread = new Thread(() -> {
-            while (!documentReady) {
-                try {
-                    Thread.sleep(50L);
-                } catch (InterruptedException ignored) {}
-            }
-            UISynchronizeService.syncExec(() -> documentReady());
-        });
-        thread.start();
+    public void registerDocumentHandler(DocumentReadyHandler handler) {
+        this.documentReadyHandler = handler;
     }
 
-    private void documentReady() {
+    public void changeMode(String text) {
+        String textType = TEXT_MODE_COLLECTION.keySet()
+                .stream()
+                .filter(key -> text.toLowerCase().startsWith(key.toLowerCase()))
+                .findFirst()
+                .orElse(TextContentType.TEXT.getText());
+
+        String mode = TEXT_MODE_COLLECTION.get(textType);
+
+        if (!documentReady) {
+            Thread thread = new Thread(() -> {
+                while (!documentReady) {
+                    try {
+                        Thread.sleep(50L);
+                    } catch (InterruptedException ignored) {}
+                }
+                UISynchronizeService.syncExec(() -> changeMode(text));
+            });
+            thread.start();
+        } else {
+            evaluate(MessageFormat.format("changeMode(editor, \"{0}\");", mode));
+        }
+    }
+
+    private void onDocumentReady() {
         if (documentReadyHandler != null) {
             documentReadyHandler.onDocumentReady();
         }
@@ -170,21 +194,6 @@ public class MirrorEditor extends Composite {
                 templateFile.delete();
             }
         });
-    }
-
-    public void registerDocumentHandler(DocumentReadyHandler handler) {
-        this.documentReadyHandler = handler;
-    }
-    
-    public void changeMode(String text) {
-        String textType = TEXT_MODE_COLLECTION.keySet()
-                .stream()
-                .filter(key -> text.toLowerCase().startsWith(key.toLowerCase()))
-                .findFirst()
-                .orElse(TextContentType.TEXT.getText());
-
-        String mode = TEXT_MODE_COLLECTION.get(textType);
-        evaluate(MessageFormat.format("changeMode(editor, \"{0}\");", mode));
     }
 
 }

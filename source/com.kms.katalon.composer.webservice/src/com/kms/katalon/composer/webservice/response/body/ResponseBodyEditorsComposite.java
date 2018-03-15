@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -17,7 +16,7 @@ import org.eclipse.swt.widgets.Composite;
 import com.kms.katalon.composer.webservice.constants.TextContentType;
 import com.kms.katalon.core.testobject.ResponseObject;
 
-public class ResponseBodyComposite extends Composite {
+public class ResponseBodyEditorsComposite extends Composite {
 
     private Map<EditorMode, ResponseBodyEditor> bodyEditors = new HashMap<>();
 
@@ -39,7 +38,11 @@ public class ResponseBodyComposite extends Composite {
         PRETTY, RAW, PREVIEW
     };
 
-    public ResponseBodyComposite(Composite parent, int style) {
+    private final String PRETTY_MODE_DEFAULT_CONTENT_TYPE = TextContentType.HTML.getContentType().toString();
+
+    private final String PRETTY_MODE_DEFAULT_INITAL_MESSAGE = StringUtils.EMPTY;
+
+    public ResponseBodyEditorsComposite(Composite parent, int style) {
 
         super(parent, style);
         setLayout(new GridLayout());
@@ -62,8 +65,8 @@ public class ResponseBodyComposite extends Composite {
         prettyRadio.setText(EditorMode.PRETTY.toString().toLowerCase());
         bodySelectionButtons.put(EditorMode.PRETTY, prettyRadio);
 
-        PrettyEditor textBodyEditor = new PrettyEditor(bodyContentComposite, SWT.NONE);
-        bodyEditors.put(EditorMode.PRETTY, textBodyEditor);
+        PrettyEditor prettyEditor = new PrettyEditor(bodyContentComposite, SWT.NONE);
+        bodyEditors.put(EditorMode.PRETTY, prettyEditor);
 
         // Raw Mode
         rawRadio = new Button(tbBodyType, SWT.RADIO);
@@ -82,6 +85,11 @@ public class ResponseBodyComposite extends Composite {
         bodyEditors.put(EditorMode.PREVIEW, previewEditor);
 
         handleControlModifyListeners();
+
+        ResponseObject defaultResponseOb = new ResponseObject();
+        defaultResponseOb.setContentType(PRETTY_MODE_DEFAULT_CONTENT_TYPE);
+        defaultResponseOb.setResponseText(PRETTY_MODE_DEFAULT_INITAL_MESSAGE);
+        setInput(defaultResponseOb);
     }
 
     public void setInput(ResponseObject responseOb) {
@@ -98,7 +106,7 @@ public class ResponseBodyComposite extends Composite {
 
         // Init body content.
         ResponseBodyEditor childEditor = bodyEditors.get(selectedEditorMode);
-        childEditor.updateContentBody(responseObject);
+        childEditor.setContentBody(responseObject);
         slBodyContent.topControl = (Composite) childEditor;
         ((Composite) childEditor).getParent().layout();
     }
@@ -112,7 +120,7 @@ public class ResponseBodyComposite extends Composite {
                 return EditorMode.PRETTY;
             }
         }
-        return EditorMode.RAW;
+        return EditorMode.PREVIEW;
     }
 
     private void handleControlModifyListeners() {

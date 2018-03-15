@@ -2,7 +2,6 @@ package com.kms.katalon.composer.webservice.parts;
 
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -15,7 +14,6 @@ import java.util.stream.IntStream;
 import javax.annotation.PreDestroy;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.message.BasicNameValuePair;
@@ -52,7 +50,7 @@ import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.editor.HttpBodyEditorComposite;
-import com.kms.katalon.composer.webservice.response.body.ResponseBodyComposite;
+import com.kms.katalon.composer.webservice.response.body.ResponseBodyEditorsComposite;
 import com.kms.katalon.composer.webservice.view.ExpandableComposite;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.WebServiceController;
@@ -122,7 +120,6 @@ public class RestServicePart extends WebServicePart {
                                 }
                                 Display.getDefault().asyncExec(() -> {
                                     setResponseStatus(responseObject);
-                                    mirrorEditor.sleepForLoadingDocumentReady();
                                     mirrorEditor.setText(getPrettyHeaders(responseObject));
                                     String bodyContent = responseObject.getResponseText();
 
@@ -290,7 +287,6 @@ public class RestServicePart extends WebServicePart {
     protected void addTabBody(CTabFolder parent) {
         super.addTabBody(parent);
         Composite tabComposite = (Composite) tabBody.getControl();
-        // requestBody = createSourceViewer(tabComposite, new GridData(SWT.FILL, SWT.FILL, true, true));
         requestBodyEditor = new HttpBodyEditorComposite(tabComposite, SWT.NONE, this);
         requestBodyEditor.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
     }
@@ -298,9 +294,7 @@ public class RestServicePart extends WebServicePart {
     @Override
     protected void createResponseComposite(Composite parent) {
         super.createResponseComposite(parent);
-//        responseBody = createSourceViewer(responseBodyComposite, new GridData(SWT.FILL, SWT.FILL, true, true));
-//        responseBody.setEditable(false);
-        responseBodyEditor = new ResponseBodyComposite(responseBodyComposite, SWT.NONE);
+        responseBodyEditor = new ResponseBodyEditorsComposite(responseBodyComposite, SWT.NONE);
         responseBodyEditor.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
     }
 

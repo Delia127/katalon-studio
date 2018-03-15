@@ -52,16 +52,6 @@ public class TextBodyEditor extends HttpBodyEditor {
 
             @Override
             public void onDocumentReady() {
-                mirrorEditor.setText(textBodyContent.getText());
-                TextContentType preferedContentType = TextContentType
-                        .evaluateContentType(textBodyContent.getContentType());
-                Button selectionButton = TEXT_MODE_SELECTION_BUTTONS.get(preferedContentType.getText());
-                TEXT_MODE_SELECTION_BUTTONS.entrySet().forEach(e -> e.getValue().setSelection(false));
-                if (selectionButton != null) {
-                    selectionButton.setSelection(true);
-                    mirrorEditor.changeMode(preferedContentType.getText());
-                    mirrorEditor.wrapLine(chckWrapLine.getSelection());
-                }
                 handleControlModifyListener();
             }
         });
@@ -106,8 +96,6 @@ public class TextBodyEditor extends HttpBodyEditor {
         chckWrapLine.setSelection(true);
 
     }
-    
-
 
     private void handleControlModifyListener() {
         chckWrapLine.addSelectionListener(new SelectionAdapter() {

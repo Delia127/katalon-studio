@@ -1,6 +1,5 @@
 package com.kms.katalon.composer.webservice.response.body;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,8 +26,6 @@ public class PrettyEditor extends Composite implements ResponseBodyEditor {
 
     private MirrorEditor mirrorEditor;
 
-    private File templateFile;
-
     Composite tbBodyType;
 
     private Map<String, Button> TEXT_MODE_SELECTION_BUTTONS = new HashMap<>();
@@ -54,7 +51,6 @@ public class PrettyEditor extends Composite implements ResponseBodyEditor {
 
             @Override
             public void onDocumentReady() {
-                updateRadioStatus();
                 handleControlModifyListener();
             }
         });
@@ -94,12 +90,6 @@ public class PrettyEditor extends Composite implements ResponseBodyEditor {
     }
 
     private void handleControlModifyListener() {
-        addDisposeListener(e -> {
-            if (templateFile != null && templateFile.exists()) {
-                templateFile.delete();
-            }
-        });
-
         chckWrapLine.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -114,24 +104,27 @@ public class PrettyEditor extends Composite implements ResponseBodyEditor {
     }
 
     @Override
-    public void updateContentBody(ResponseObject responseObject) {
+    public void setContentBody(ResponseObject responseObject) {
         textBodyContent = new TextBodyContent();
         textBodyContent.setText(responseObject.getResponseText());
         textBodyContent.setContentType(responseObject.getContentType());
 
         mirrorEditor.setText(textBodyContent.getText());
+        updateRadioStatus();
     }
 
     @Override
     public void switchModeContentBody(ResponseObject responseObject) {
-        if (textBodyContent == null) {
-            updateContentBody(responseObject);
-        } else {
-            textBodyContent.setContentType(responseObject.getContentType());
-            updateRadioStatus();
+        if (responseObject != null) {
+            if (textBodyContent == null) {
+                setContentBody(responseObject);
+            } else {
+                textBodyContent.setContentType(responseObject.getContentType());
+                updateRadioStatus();
+            }
         }
     }
-    
+
     private void updateRadioStatus() {
         TextContentType preferedContentType = TextContentType.evaluateContentType(textBodyContent.getContentType());
         Button selectionButton = TEXT_MODE_SELECTION_BUTTONS.get(preferedContentType.getText());
@@ -142,5 +135,5 @@ public class PrettyEditor extends Composite implements ResponseBodyEditor {
             mirrorEditor.changeMode(preferedContentType.getText());
         }
     }
-    
+
 }
