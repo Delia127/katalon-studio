@@ -858,10 +858,19 @@ public class ReportPartTestLogView {
             public void paintControl(PaintEvent e) {
                 if (drawnImage != null && !drawnImage.isDisposed()) {
                     e.gc.drawImage(drawnImage, 0, 0);
-                    drawImage();
                 }
             }
         });
+        
+        compositeSTLSImageView.addListener(SWT.Resize, new Listener() {
+            
+            @Override
+            public void handleEvent(Event event) {
+                selectedTestLogCanvas.redraw();
+                drawImage();
+            }
+        });
+        
 
         compositeSTLSImageView.setContent(selectedTestLogCanvas);
     }
