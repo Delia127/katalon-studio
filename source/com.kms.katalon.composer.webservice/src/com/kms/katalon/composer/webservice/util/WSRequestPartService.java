@@ -19,8 +19,12 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.workbench.IPresentationEngine;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.composer.components.application.ApplicationSingleton;
@@ -36,6 +40,7 @@ import com.kms.katalon.composer.webservice.parts.SoapServicePart;
 import com.kms.katalon.composer.webservice.parts.WSRequestChildPart;
 import com.kms.katalon.composer.webservice.parts.WebServicePart;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.groovy.constant.GroovyConstants;
@@ -100,6 +105,7 @@ public class WSRequestPartService {
         compositePart.setTooltip(requestObject.getIdForDisplay());
         compositePart.getTags().add(EPartService.REMOVE_ON_HIDE_TAG);
         stack.getChildren().add(compositePart);
+        
 
         String subPartSashContainerId = getSubPartSashContainerId(requestObject);
         MPartSashContainer subPartSashContainer = modelService.createModelElement(MPartSashContainer.class);
@@ -154,8 +160,7 @@ public class WSRequestPartService {
         bottomLeftPartStack.getChildren().add(bodyPart);
 
         String verificationPartId = getVerificationPartId(requestObject);
-        File tempFile = File.createTempFile("kat-", GroovyConstants.GROOVY_FILE_EXTENSION);
-        IFile tempScriptFile = createTempScriptFile(requestObject, tempFile);
+        IFile tempScriptFile = createTempScriptFile(requestObject);
         tempScriptFile.refreshLocal(IResource.DEPTH_ZERO, new NullProgressMonitor());
         MPart verificationPart = GroovyEditorUtil.createEditorPart(tempScriptFile, partService);
         verificationPart.setElementId(verificationPartId);
@@ -182,9 +187,24 @@ public class WSRequestPartService {
 
         webServicePart1.setOriginalWsObject(requestObject);
 
-        webServicePart1.setTempScriptFile(tempFile);
         webServicePart1.initComponents();
-
+        
+        handleLeftPartSize(compositePart, leftPartSashContainer);
+        
+        webServicePart1.getComposite().addControlListener(new ControlListener() {
+            
+            @Override
+            public void controlResized(ControlEvent e) {
+                handleLeftPartSize(compositePart, leftPartSashContainer);
+            }
+            
+            @Override
+            public void controlMoved(ControlEvent e) {
+                // TODO Auto-generated method stub
+                
+            }
+        });
+        
         // Get the verification tab and set it label
         // since setLabel() doesn't work for editor part
         CTabFolder tabFolder = (CTabFolder) bottomLeftPartStack.getWidget();
@@ -195,8 +215,30 @@ public class WSRequestPartService {
         return compositePart;
     }
 
-    private static IFile createTempScriptFile(WebServiceRequestEntity requestObject, File tempFile)
+    private static void handleLeftPartSize(MCompositePart compositePart, MPartSashContainer container) {
+        MPart topLeftPart = (MPart) container.getChildren().get(0);
+        MPartStack bottomLeftPartStack = (MPartStack) container.getChildren().get(1);
+        
+        WSRequestChildPart topLeftPartObject = (WSRequestChildPart) topLeftPart.getObject();
+        Point topLeftPartCompositeSize = topLeftPartObject.getComposite().getChildren()[0]
+                .computeSize(SWT.DEFAULT, SWT.DEFAULT);
+        
+        int totalHeight = ((WebServicePart) compositePart.getObject()).getComposite().getSize().y;
+        
+        long topWeight = Math.round(((double) topLeftPartCompositeSize.y / totalHeight) * 1000);
+        long bottomWeight = 1000 - topWeight;
+        topLeftPart.setContainerData(String.valueOf(topWeight));
+        bottomLeftPartStack.setContainerData(String.valueOf(bottomWeight));
+    }
+    
+    private static IFile createTempScriptFile(WebServiceRequestEntity requestObject)
             throws IOException, CoreException {
+        String wsTempFolderPath = ProjectController.getInstance().getWebServiceTempDir();
+        File wsTempFolder = new File(wsTempFolderPath);
+        if (!wsTempFolder.exists()) {
+            wsTempFolder.mkdirs();
+        }
+        File tempFile = File.createTempFile("kat-", GroovyConstants.GROOVY_FILE_EXTENSION, wsTempFolder);
         ProjectEntity projectEntity = requestObject.getProject();
         IPath location = new Path(tempFile.getAbsolutePath());
         IFile tempIFile = GroovyUtil.getGroovyProject(projectEntity).getFile(location.lastSegment());

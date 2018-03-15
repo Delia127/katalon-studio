@@ -18,8 +18,7 @@ import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.http.impl.EnglishReasonPhraseCatalog;
 import org.codehaus.groovy.eclipse.editor.GroovyEditor;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Persist;
@@ -32,9 +31,6 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
-import org.eclipse.jdt.core.IBuffer;
-import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.bindings.keys.IKeyLookup;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -96,7 +92,6 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.ISaveablePart;
-import org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
@@ -316,9 +311,13 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
     
     protected Composite verificationPartComposite;
     
+    protected Composite topLeftPartInnerComposite;
+    
     protected File tempScriptFile;
     
     protected GroovyEditor verificationScriptEditor;
+    
+    protected Composite parent;
     
     public WebServiceRequestEntity getOriginalWsObject() {
         return originalWsObject;
@@ -341,6 +340,11 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
         this.mPart = part;
         new HelpToolBarForMPart(part, DocumentationMessageConstants.TEST_OBJECT_WEB_SERVICES);
         this.originalWsObject = (WebServiceRequestEntity) part.getObject();
+        this.parent = parent;
+    }
+    
+    public Composite getComposite() {
+        return parent;
     }
     
     public void initComponents() {
@@ -348,7 +352,7 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
         
         verificationScriptEditor = (GroovyEditor)GroovyEditorUtil.getEditor(verificationPart);
        
-        Composite topLeftPartInnerComposite = new Composite(topLeftPartComposite, SWT.NONE);
+        topLeftPartInnerComposite = new Composite(topLeftPartComposite, SWT.NONE);
         topLeftPartInnerComposite.setLayout(new GridLayout());
         
         createAPIControls(topLeftPartInnerComposite);
@@ -1088,6 +1092,21 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
         eventBroker.subscribe(EventConstants.TEST_OBJECT_UPDATED, this);
         eventBroker.subscribe(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, this);
         
+        IFileEditorInput editorInput = (IFileEditorInput) verificationScriptEditor.getEditorInput();
+        verificationScriptEditor.getDocumentProvider()
+            .getDocument(editorInput)
+            .addDocumentListener(new IDocumentListener() {
+                @Override
+                public void documentChanged(DocumentEvent event) {
+                   GroovyEditorUtil.showProblems(verificationScriptEditor);
+                }
+    
+                @Override
+                public void documentAboutToBeChanged(DocumentEvent event) {
+                    // TODO Auto-generated method stub
+                }
+            });
+        
         verificationScriptEditor.addPropertyListener(new IPropertyListener() {
             @Override
             public void propertyChanged(Object source, int propId) {
@@ -1248,8 +1267,19 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
     @Override
     @PreDestroy
     public void onClose() {
-        tempScriptFile.delete();
+        deleteTempScriptFile();
+        try {
+            GroovyEditorUtil.clearEditorProblems(verificationScriptEditor);
+        } catch (CoreException e) {
+            LoggerSingleton.logError(e);
+        }
         EventUtil.post(EventConstants.PROPERTIES_ENTITY, null);
+    }
+    
+    private void deleteTempScriptFile() {
+        IFileEditorInput input = (IFileEditorInput) verificationScriptEditor.getEditorInput();
+        IFile tempScriptFile = input.getFile();
+        tempScriptFile.getRawLocation().toFile().delete();
     }
 
     private WebElementPropertyEntity createBasicAuthHeaderElement() {

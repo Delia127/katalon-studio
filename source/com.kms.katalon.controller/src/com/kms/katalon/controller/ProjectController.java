@@ -211,6 +211,10 @@ public class ProjectController extends EntityController {
     public String getTempDir() {
         return getDataProviderSetting().getProjectDataProvider().getSystemTempFolder();
     }
+    
+    public String getWebServiceTempDir() {
+        return getTempDir() + File.separator + "Web Services";
+    }
 
     public String getNonremovableTempDir() {
         return new File(getDataProviderSetting().getProjectDataProvider().getSystemTempFolder(), "non-removable")
