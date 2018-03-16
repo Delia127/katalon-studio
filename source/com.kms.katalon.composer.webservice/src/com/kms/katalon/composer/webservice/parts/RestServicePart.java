@@ -375,7 +375,7 @@ public class RestServicePart extends WebServicePart {
             
             if (isOldVersion) {
                 originalWsObject = clone;
-                //save();
+                save();
             }
         } catch (URISyntaxException e) {
             // ignore
