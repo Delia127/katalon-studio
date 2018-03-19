@@ -37,6 +37,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -84,6 +85,9 @@ import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 
 public class ReportPartTestLogView {
+
+    private static final int IMAGE_VIEW_TAB_ITEM_IDX = 1;
+
     private Button btnFilterTestStepInfo, btnFilterTestStepPassed, btnFilterTestStepFailed, btnFilterTestStepError,
             btnFilterTestStepIncomplete, btnFilterTestStepWarning, btnFilterTestStepNotRun;
 
@@ -108,7 +112,7 @@ public class ReportPartTestLogView {
 
     private Canvas selectedTestLogCanvas;
 
-    private Image selectedTestLogImage;
+    private Image selectedTestLogImage, drawnImage;
 
     @SuppressWarnings("unused")
     private StyledText txtSTLStackTrace;
@@ -130,8 +134,18 @@ public class ReportPartTestLogView {
     private CTabItem tbtmTestLog;
 
     private Composite compositeTestCaseInformation;
-    
+
     private List<TestCaseChangedEventListener> testCaseChangedEventListeners;
+
+    private ToolItem tltmResetImageSize;
+
+    private ToolItem tltmFitScreen;
+
+    private CTabFolder selectedTestLogTabFolder;
+
+    private ToolBar imageToolbar;
+
+    private ImageScreenMode imageScreenMode = ImageScreenMode.FIT_SCREEN;
 
     public ReportPartTestLogView(ReportPart parentPart) {
         this.parentPart = parentPart;
@@ -212,7 +226,6 @@ public class ReportPartTestLogView {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                // TODO Auto-generated method stub
                 testStepFilter.showInfo(btnFilterTestStepInfo.getSelection());
                 treeViewerTestSteps.refresh(true);
                 updateSelectedTestStep(getSelectedTestStep());
@@ -324,6 +337,62 @@ public class ReportPartTestLogView {
                 }
             }
         });
+
+        tltmFitScreen.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                imageScreenMode = ImageScreenMode.FIT_SCREEN;
+                drawImage();
+            }
+        });
+
+        tltmResetImageSize.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                imageScreenMode = ImageScreenMode.FULL_SIZE;
+                tltmFitScreen.setSelection(false);
+                drawImage();
+            }
+        });
+
+        selectedTestLogTabFolder.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                imageToolbar.setVisible(selectedTestLogTabFolder.getSelectionIndex() == IMAGE_VIEW_TAB_ITEM_IDX);
+            }
+        });
+    }
+
+    private void drawImage() {
+        if (drawnImage == null) {
+            return;
+        }
+        switch (imageScreenMode) {
+            case FIT_SCREEN: {
+                tltmFitScreen.setSelection(true);
+                tltmResetImageSize.setSelection(false);
+                Rectangle bounds = compositeSTLSImageView.getClientArea();
+                drawnImage = ImageUtil.resize(selectedTestLogImage, bounds.width, bounds.height);
+
+                compositeSTLSImageView
+                        .setMinSize(new Point(drawnImage.getBounds().width, drawnImage.getBounds().height));
+                selectedTestLogCanvas.redraw();
+                break;
+            }
+            case FULL_SIZE: {
+                tltmFitScreen.setSelection(false);
+                tltmResetImageSize.setSelection(true);
+
+                drawnImage = selectedTestLogImage;
+
+                compositeSTLSImageView
+                        .setMinSize(new Point(drawnImage.getBounds().width, drawnImage.getBounds().height));
+                selectedTestLogCanvas.redraw();
+
+                break;
+            }
+        }
     }
 
     private ILogRecord getSelectedTestStep() {
@@ -482,8 +551,8 @@ public class ReportPartTestLogView {
 
         tltmCollapseAllLogs = new ToolItem(testLogToolbar, SWT.NONE);
         tltmCollapseAllLogs.setToolTipText("Collapse All Logs");
-        tltmCollapseAllLogs
-                .setImage(ImageUtil.loadImage(Platform.getBundle("org.eclipse.ui"), "icons/full/elcl16/collapseall.png"));
+        tltmCollapseAllLogs.setImage(
+                ImageUtil.loadImage(Platform.getBundle("org.eclipse.ui"), "icons/full/elcl16/collapseall.png"));
 
         tltmExpandAllLogs = new ToolItem(testLogToolbar, SWT.NONE);
         tltmExpandAllLogs.setToolTipText("Expand All Logs");
@@ -664,20 +733,32 @@ public class ReportPartTestLogView {
         compositeTestCaseLogIntegration = new Composite(compositeTestCaseIntegration, SWT.NONE);
         compositeTestCaseLogIntegration.setLayout(new FillLayout(SWT.HORIZONTAL));
         compositeTestCaseLogIntegration.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-
     }
 
     public Composite createCompositeSelectedTestLog(SashForm sashFormDetails) {
         Composite compositeTestCaseSelectedLog = new Composite(sashFormDetails, SWT.BORDER);
         compositeTestCaseSelectedLog.setLayout(new FillLayout(SWT.HORIZONTAL));
 
-        CTabFolder tabFolder = new CTabFolder(compositeTestCaseSelectedLog, SWT.BORDER);
+        selectedTestLogTabFolder = new CTabFolder(compositeTestCaseSelectedLog, SWT.BORDER);
 
-        createSelectedTestStepInformationTabItem(tabFolder);
+        createSelectedTestStepInformationTabItem(selectedTestLogTabFolder);
 
         // createSelectedTestLogStackTraceTabItem(tabFolder);
 
-        createSelectedTestStepImageViewTabItem(tabFolder);
+        createSelectedTestStepImageViewTabItem(selectedTestLogTabFolder);
+
+        imageToolbar = new ToolBar(selectedTestLogTabFolder, SWT.NONE);
+        tltmFitScreen = new ToolItem(imageToolbar, SWT.CHECK);
+        tltmFitScreen.setImage(ImageConstants.IMG_16_FIT_SCREEN);
+        tltmFitScreen.setToolTipText("Fit to View");
+
+        tltmResetImageSize = new ToolItem(imageToolbar, SWT.CHECK);
+        tltmResetImageSize.setImage(ImageConstants.IMG_16_FULL_SIZE);
+        tltmResetImageSize.setToolTipText("Show Full Size");
+
+        selectedTestLogTabFolder.setTopRight(imageToolbar);
+
+        imageToolbar.setVisible(selectedTestLogTabFolder.getSelectionIndex() == IMAGE_VIEW_TAB_ITEM_IDX);
         return compositeTestCaseSelectedLog;
     }
 
@@ -775,11 +856,21 @@ public class ReportPartTestLogView {
         selectedTestLogCanvas.addPaintListener(new PaintListener() {
 
             public void paintControl(PaintEvent e) {
-                if (selectedTestLogImage != null && !selectedTestLogImage.isDisposed()) {
-                    e.gc.drawImage(selectedTestLogImage, 0, 0);
+                if (drawnImage != null && !drawnImage.isDisposed()) {
+                    e.gc.drawImage(drawnImage, 0, 0);
                 }
             }
         });
+        
+        compositeSTLSImageView.addListener(SWT.Resize, new Listener() {
+            
+            @Override
+            public void handleEvent(Event event) {
+                selectedTestLogCanvas.redraw();
+                drawImage();
+            }
+        });
+        
 
         compositeSTLSImageView.setContent(selectedTestLogCanvas);
     }
@@ -1002,6 +1093,7 @@ public class ReportPartTestLogView {
         compositeSTLInformation.layout();
 
         if (selectedTestLogImage != null) {
+            drawnImage.dispose();
             selectedTestLogImage.dispose();
         }
 
@@ -1011,9 +1103,7 @@ public class ReportPartTestLogView {
 
                 selectedTestLogImage = new Image(selectedTestLogCanvas.getDisplay(),
                         PathUtil.relativeToAbsolutePath(messageLog.getAttachment(), getReport().getLocation()));
-                compositeSTLSImageView.setMinSize(
-                        new Point(selectedTestLogImage.getBounds().width, selectedTestLogImage.getBounds().height));
-
+                drawnImage = selectedTestLogImage;
             }
         } else {
             compositeSTLSImageView.setMinSize(0, 0);
@@ -1045,4 +1135,7 @@ public class ReportPartTestLogView {
         styledText.layout(true);
     }
 
+    private static enum ImageScreenMode {
+        FIT_SCREEN, FULL_SIZE
+    }
 }

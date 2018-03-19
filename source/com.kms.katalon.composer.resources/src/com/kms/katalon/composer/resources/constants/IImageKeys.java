@@ -587,6 +587,10 @@ public interface IImageKeys {
     
     public static final String IMPORT_16 = "import_16.png"; //$NON-NLS-1$
     
+    public static final String FIT_SCREEN_16 = "fit_screen_16.png"; //$NON-NLS-1$
+
+    public static final String FULL_SIZE_16 = "full_size_16.png"; //$NON-NLS-1$
+    
     // End Common
 
 }
