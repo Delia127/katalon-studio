@@ -97,6 +97,7 @@ import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
+import com.kms.katalon.composer.webservice.editor.HttpBodyEditorComposite;
 import com.kms.katalon.composer.webservice.support.PropertyNameEditingSupport;
 import com.kms.katalon.composer.webservice.support.PropertyValueEditingSupport;
 import com.kms.katalon.composer.webservice.view.ExpandableComposite;
@@ -223,6 +224,8 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
     protected WebServiceAPIControl wsApiControl;
 
     protected SourceViewer requestBody;
+    
+    protected HttpBodyEditorComposite requestBodyEditor;
 
     protected SourceViewer responseHeader;
 
@@ -866,14 +869,14 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
     }
 
     protected boolean warningIfBodyNotEmpty() {
-        if (StringUtils.isNotEmpty(requestBody.getDocument().get())) {
-            return MessageDialog.openConfirm(null, StringConstants.WARN,
-                    ComposerWebserviceMessageConstants.PART_WARNING_MSG_BODY_CONTENT_WILL_BE_OVERWRITTEN);
-        }
+//        if (StringUtils.isNotEmpty(requestBody.getDocument().get())) {
+//            return MessageDialog.openConfirm(null, StringConstants.WARN,
+//                    ComposerWebserviceMessageConstants.PART_WARNING_MSG_BODY_CONTENT_WILL_BE_OVERWRITTEN);
+//        }
         return true;
     }
 
-    private void registerListeners() {
+    protected void registerListeners() {
         eventBroker.subscribe(EventConstants.TEST_OBJECT_UPDATED, this);
         eventBroker.subscribe(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, this);
     }
