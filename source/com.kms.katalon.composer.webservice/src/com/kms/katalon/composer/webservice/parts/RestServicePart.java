@@ -11,8 +11,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import javax.annotation.PreDestroy;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
@@ -333,7 +331,6 @@ public class RestServicePart extends WebServicePart {
             }
 
             wsApiControl.getRequestURLControl().setText(uriBuilder.build().toString());
-
             String restRequestMethod = clone.getRestRequestMethod();
             int index = Arrays.asList(WebServiceRequestEntity.REST_REQUEST_METHODS).indexOf(restRequestMethod);
             wsApiControl.getRequestMethodControl().select(index < 0 ? 0 : index);
@@ -350,13 +347,12 @@ public class RestServicePart extends WebServicePart {
             updateHeaders(clone);
 
             requestBodyEditor.setInput(clone);
-
             tabBody.getControl().setEnabled(isBodySupported());
             dirtyable.setDirty(false);
 
             if (isOldVersion) {
                 originalWsObject = clone;
-                // save();
+//                save();
             }
         } catch (URISyntaxException e) {
             // ignore
@@ -372,12 +368,5 @@ public class RestServicePart extends WebServicePart {
 
     public void updateDirty(boolean dirty) {
         dirtyable.setDirty(dirty);
-    }
-
-    @PreDestroy
-    public void preClose() {
-        if (progress != null) {
-            progress.getProgressMonitor().setCanceled(true);
-        }
     }
 }

@@ -35,7 +35,6 @@ public class TextBodyEditor extends HttpBodyEditor {
     
     // List of TextContentType by name
     private static final String[] TEXT_MODE_NAMES;
-    
     static {
         TEXT_MODE_NAMES = TextContentType.getTextValues();
     }
@@ -106,6 +105,7 @@ public class TextBodyEditor extends HttpBodyEditor {
                 mirrorEditor.wrapLine(chckWrapLine.getSelection());
             }
         });
+        mirrorEditor.setText(textBodyContent.getText());
     }
 
     @Override
@@ -121,17 +121,30 @@ public class TextBodyEditor extends HttpBodyEditor {
 
     @Override
     public void setInput(String rawBodyContentData) {
-        if (textBodyContent != null) {
-            return;
-        }
         if (StringUtils.isEmpty(rawBodyContentData)) {
             textBodyContent = new TextBodyContent();
         } else {
             textBodyContent = JsonUtil.fromJson(rawBodyContentData, TextBodyContent.class);
         }
-        
-        mirrorEditor.setText(textBodyContent.getText());
+        updateRadioStatus();
     }
 
+    @Override
+    public void onBodyTypeChanged() {
+        if (textBodyContent == null) {
+            textBodyContent = new TextBodyContent();
+        }
 
+        setContentTypeUpdated(true);
+    }
+
+    private void updateRadioStatus() {
+        TextContentType preferedContentType = TextContentType.evaluateContentType(textBodyContent.getContentType());
+        Button selectionButton = TEXT_MODE_SELECTION_BUTTONS.get(preferedContentType.getText());
+        TEXT_MODE_SELECTION_BUTTONS.entrySet().forEach(e -> e.getValue().setSelection(false));
+        if (selectionButton != null) {
+            selectionButton.setSelection(true);
+            mirrorEditor.changeMode(preferedContentType.getText());
+        }
+    }
 }
