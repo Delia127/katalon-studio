@@ -65,8 +65,9 @@ public class FileBodyEditor extends HttpBodyEditor {
     public String getContentData() {
         fileBodyContent.setFilePath(txtProjectLocation.getText());
         fileBodyContent.setFileSize(fileSize);
-        String type = MimetypesFileTypeMapUtil.getInstance()
-                .getContentType(FilenameUtils.getExtension(txtProjectLocation.getText()));
+        String type = MimetypesFileTypeMapUtil.getContentType(FilenameUtils.getExtension(txtProjectLocation.getText()));
+        
+        setContentTypeUpdated(!StringUtils.isEmpty(type));
         if (StringUtils.isNotEmpty(type)) {
             fileBodyContent.setContentType(type);
         }
@@ -94,7 +95,6 @@ public class FileBodyEditor extends HttpBodyEditor {
             size.setText(fommatFileSize(fileBodyContent.getContentLength()));
             size.getParent().layout();
         }
-        setContentTypeUpdated(true);
     }
 
     private void createComponentLayout() {
@@ -142,8 +142,7 @@ public class FileBodyEditor extends HttpBodyEditor {
                     return;
                 }
 
-                String type = MimetypesFileTypeMapUtil.getInstance()
-                        .getContentType(FilenameUtils.getExtension(getRelativePath(path)));
+                String type = MimetypesFileTypeMapUtil.getContentType(FilenameUtils.getExtension(getRelativePath(path)));
                 if (!txtProjectLocation.getText().equals(path) && StringUtils.isNotEmpty(type)) {
                     fileBodyContent.setContentType(type);
                     setContentTypeUpdated(true);
@@ -151,11 +150,10 @@ public class FileBodyEditor extends HttpBodyEditor {
                 FileBodyEditor.this.notifyListeners(SWT.Modify, new Event());
 
                 File file = new File(path);
-
-                String savePath = (file.isAbsolute() && path.contains(currentProjectFolder)) ? getRelativePath(path)
-                        : path;
+                String savePath = (file.isAbsolute() && path.contains(currentProjectFolder)) 
+                                    ? getRelativePath(path): path;
+                                    
                 txtProjectLocation.setText(savePath);
-
                 if (file.exists() && file.isFile()) {
                     fileSize = file.length();
                     size.setText(fommatFileSize(fileSize));

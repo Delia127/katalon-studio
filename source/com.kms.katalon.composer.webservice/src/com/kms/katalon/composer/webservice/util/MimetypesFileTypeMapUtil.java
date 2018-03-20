@@ -5,18 +5,9 @@ import java.util.Map;
 
 public class MimetypesFileTypeMapUtil {
 
-    private static MimetypesFileTypeMapUtil _instance;
-
     private static Map<String, String> mimetypesFileTypeMap;
 
-    public static MimetypesFileTypeMapUtil getInstance() {
-        if (_instance == null) {
-            _instance = new MimetypesFileTypeMapUtil();
-        }
-        return _instance;
-    }
-
-    private MimetypesFileTypeMapUtil() {
+    static {
         mimetypesFileTypeMap = new HashMap<>();
         mimetypesFileTypeMap.put("aac", "audio/aac");
         mimetypesFileTypeMap.put("abw", "application/x-abiword");
@@ -84,10 +75,9 @@ public class MimetypesFileTypeMapUtil {
         mimetypesFileTypeMap.put("3gp", "video/3gpp");
         mimetypesFileTypeMap.put("3g2", "video/3gpp2");
         mimetypesFileTypeMap.put("7z", "application/x-7z-compressed");
-
     }
 
-    public String getContentType(String extensionFile) {
+    public static String getContentType(String extensionFile) {
         return mimetypesFileTypeMap.get(extensionFile);
     }
 
