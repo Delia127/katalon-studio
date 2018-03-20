@@ -41,6 +41,8 @@ public class HttpBodyEditorComposite extends Composite {
 
     private String selectedBodyType;
 
+    private boolean isInputReady;
+
     public HttpBodyEditorComposite(Composite parent, int style, RestServicePart servicePart) {
         super(parent, style);
 
@@ -107,6 +109,8 @@ public class HttpBodyEditorComposite extends Composite {
     }
 
     public void setInput(WebServiceRequestEntity requestEntity) {
+        isInputReady = false;
+
         this.webServiceEntity = requestEntity;
 
         migrateFromOldVersion(webServiceEntity);
@@ -118,6 +122,8 @@ public class HttpBodyEditorComposite extends Composite {
 
         selectedButton.setSelection(true);
         selectedButton.notifyListeners(SWT.Selection, new Event());
+
+        isInputReady = true;
     }
 
     private void handleControlModifyListeners() {
@@ -131,6 +137,10 @@ public class HttpBodyEditorComposite extends Composite {
 
                 slBodyContent.topControl = httpBodyEditor;
                 httpBodyEditor.getParent().layout();
+
+                if (!isInputReady) {
+                    return;
+                }
                 servicePart.updateDirty(true);
                 updateContentTypeByEditor(httpBodyEditor);
             }
@@ -142,8 +152,10 @@ public class HttpBodyEditorComposite extends Composite {
 
         bodyEditors.values().forEach(editor -> {
             editor.addListener(SWT.Modify, event -> {
-                servicePart.updateDirty(true);
-                updateContentTypeByEditor(editor);
+                if (isInputReady) {
+                    servicePart.updateDirty(true);
+                    updateContentTypeByEditor(editor);
+                }
             });
         });
     }
