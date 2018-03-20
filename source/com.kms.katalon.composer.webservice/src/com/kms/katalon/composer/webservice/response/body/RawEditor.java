@@ -21,6 +21,7 @@ public class RawEditor extends Composite implements ResponseBodyEditor {
         this.setLayout(gridLayout);
 
         mirrorEditor = new MirrorEditor(this, style);
+        mirrorEditor.setEditable(false);
     }
 
     @Override

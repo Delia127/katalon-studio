@@ -22,10 +22,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.jface.text.Document;
-import org.eclipse.jface.text.DocumentEvent;
-import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -303,23 +299,6 @@ public class RestServicePart extends WebServicePart {
         SourceViewer sv = super.createSourceViewer(parent, layoutData);
         sv.configure(new SourceViewerConfiguration());
         return sv;
-    }
-
-    private IDocument createDocument(String documentContent) {
-        IDocument document = new Document(documentContent);
-        document.addDocumentListener(new IDocumentListener() {
-
-            @Override
-            public void documentChanged(DocumentEvent event) {
-                setDirty();
-            }
-
-            @Override
-            public void documentAboutToBeChanged(DocumentEvent event) {
-                // do nothing
-            }
-        });
-        return document;
     }
 
     @Override

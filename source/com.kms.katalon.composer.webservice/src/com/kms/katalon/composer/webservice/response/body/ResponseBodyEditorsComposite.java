@@ -105,10 +105,12 @@ public class ResponseBodyEditorsComposite extends Composite {
         selectedButton.setSelection(true);
 
         // Init body content.
-        ResponseBodyEditor childEditor = bodyEditors.get(selectedEditorMode);
-        childEditor.setContentBody(responseObject);
-        slBodyContent.topControl = (Composite) childEditor;
-        ((Composite) childEditor).getParent().layout();
+        for (ResponseBodyEditor childEditor : bodyEditors.values()) {
+            childEditor.setContentBody(responseObject);
+        }
+        Composite selectedEditor = (Composite) bodyEditors.get(selectedEditorMode);
+        slBodyContent.topControl = selectedEditor;
+        selectedEditor.getParent().layout();
     }
 
     private EditorMode detectEditorMode(String contentType) {

@@ -47,6 +47,7 @@ public class PrettyEditor extends Composite implements ResponseBodyEditor {
         this.setLayout(gridLayout);
 
         mirrorEditor = new MirrorEditor(this, SWT.NONE);
+        mirrorEditor.setEditable(false);
         mirrorEditor.registerDocumentHandler(new DocumentReadyHandler() {
 
             @Override
@@ -72,12 +73,14 @@ public class PrettyEditor extends Composite implements ResponseBodyEditor {
                 btnTextMode.addSelectionListener(new SelectionAdapter() {
                     @Override
                     public void widgetSelected(SelectionEvent e) {
-                        mirrorEditor.changeMode(textContentType.getText());
-                        if (textBodyContent != null) {
-                            textBodyContent.setContentType(textContentType.getContentType());
+                        Button source = (Button) e.getSource();
+                        if (source.getSelection()) {
+                            mirrorEditor.changeMode(textContentType.getText());
+                            if (textBodyContent != null) {
+                                textBodyContent.setContentType(textContentType.getContentType());
+                            }
+                            PrettyEditor.this.notifyListeners(SWT.Modify, new Event());
                         }
-                        // Todo parent should fire recheck.
-                        PrettyEditor.this.notifyListeners(SWT.Modify, new Event());
                     }
                 });
             }
@@ -111,6 +114,7 @@ public class PrettyEditor extends Composite implements ResponseBodyEditor {
 
         mirrorEditor.setText(textBodyContent.getText());
         updateRadioStatus();
+        mirrorEditor.beautify();
     }
 
     @Override

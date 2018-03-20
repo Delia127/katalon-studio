@@ -23,7 +23,6 @@ import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.composer.webservice.constants.TextContentType;
 import com.kms.katalon.composer.webservice.editor.DocumentReadyHandler;
@@ -88,6 +87,7 @@ public class MirrorEditor extends Composite {
             public void changed(ProgressEvent event) {
             }
         });
+
     }
 
     private File initHTMLTemplateFile() {
@@ -121,22 +121,21 @@ public class MirrorEditor extends Composite {
     }
 
     public void setEditable(boolean editable) {
-        browser.evaluate(MessageFormat.format("editor.setOption(\"{0}\", {1});", "readOnly", !editable));
+        String command = MessageFormat.format("editor.setOption(\"{0}\", {1});", "readOnly", !editable);
+        if (documentReady) {
+            browser.evaluate(command);
+        } else {
+            (new SettingOptionsThread(browser, command)).start();
+        }
     }
 
     public void setText(String text) {
-        if (!documentReady) {
-            Thread thread = new Thread(() -> {
-                while (!documentReady) {
-                    try {
-                        Thread.sleep(50L);
-                    } catch (InterruptedException ignored) {}
-                }
-                UISynchronizeService.syncExec(() -> setText(text));
-            });
-            thread.start();
+
+        String setTextCommand = String.format("editor.setValue(\"%s\");", StringEscapeUtils.escapeEcmaScript(text));
+        if (documentReady) {
+            browser.evaluate(setTextCommand);
         } else {
-            browser.evaluate(String.format("editor.setValue(\"%s\");", StringEscapeUtils.escapeEcmaScript(text)));
+            (new SettingOptionsThread(browser, setTextCommand)).start();
         }
     }
 
@@ -161,18 +160,20 @@ public class MirrorEditor extends Composite {
 
         String mode = TEXT_MODE_COLLECTION.get(textType);
 
-        if (!documentReady) {
-            Thread thread = new Thread(() -> {
-                while (!documentReady) {
-                    try {
-                        Thread.sleep(50L);
-                    } catch (InterruptedException ignored) {}
-                }
-                UISynchronizeService.syncExec(() -> changeMode(text));
-            });
-            thread.start();
+        String command = MessageFormat.format("changeMode(editor, \"{0}\");", mode);
+        if (documentReady) {
+            browser.evaluate(command);
         } else {
-            evaluate(MessageFormat.format("changeMode(editor, \"{0}\");", mode));
+            (new SettingOptionsThread(browser, command)).start();
+        }
+    }
+
+    public void beautify() {
+        String command = String.format("format(editor);");
+        if (documentReady) {
+            browser.evaluate(command);
+        } else {
+            (new SettingOptionsThread(browser, command)).start();
         }
     }
 
