@@ -41,4 +41,11 @@ public abstract class HttpBodyEditor extends Composite {
     public void setContentTypeUpdated(boolean contentTypeUpdated) {
         this.contentTypeUpdated = contentTypeUpdated;
     }
+
+    /**
+     * Invokes when users select on a body type button. Children may override this.
+     */
+    public void onBodyTypeChanged() {
+
+    }
 }

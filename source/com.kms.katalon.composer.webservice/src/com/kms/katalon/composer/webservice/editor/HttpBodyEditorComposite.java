@@ -41,6 +41,8 @@ public class HttpBodyEditorComposite extends Composite {
 
     private String selectedBodyType;
 
+    private boolean isInputReady;
+
     public HttpBodyEditorComposite(Composite parent, int style, RestServicePart servicePart) {
         super(parent, style);
 
@@ -86,7 +88,7 @@ public class HttpBodyEditorComposite extends Composite {
         FormDataBodyEditor formDataEditor = new FormDataBodyEditor(bodyContentComposite, SWT.NONE);
         bodyEditors.put("form-data", formDataEditor);
 
-        BinaryBodyEditor fileBodyEditor = new BinaryBodyEditor(bodyContentComposite, SWT.NONE);
+        FileBodyEditor fileBodyEditor = new FileBodyEditor(bodyContentComposite, SWT.NONE);
         bodyEditors.put("file", fileBodyEditor);
 
         handleControlModifyListeners();
@@ -107,6 +109,8 @@ public class HttpBodyEditorComposite extends Composite {
     }
 
     public void setInput(WebServiceRequestEntity requestEntity) {
+        isInputReady = false;
+
         this.webServiceEntity = requestEntity;
 
         migrateFromOldVersion(webServiceEntity);
@@ -114,8 +118,12 @@ public class HttpBodyEditorComposite extends Composite {
         selectedBodyType = StringUtils.defaultIfEmpty(webServiceEntity.getHttpBodyType(), "text");
         Button selectedButton = bodySelectionButtons.get(selectedBodyType);
 
+        bodyEditors.get(selectedBodyType).setInput(webServiceEntity.getHttpBodyContent());
+
         selectedButton.setSelection(true);
         selectedButton.notifyListeners(SWT.Selection, new Event());
+
+        isInputReady = true;
     }
 
     private void handleControlModifyListeners() {
@@ -125,12 +133,16 @@ public class HttpBodyEditorComposite extends Composite {
                 Button source = (Button) e.getSource();
                 selectedBodyType = source.getText();
                 HttpBodyEditor httpBodyEditor = bodyEditors.get(selectedBodyType);
-
-                httpBodyEditor.setInput(webServiceEntity.getHttpBodyContent());
+                httpBodyEditor.onBodyTypeChanged();
 
                 slBodyContent.topControl = httpBodyEditor;
                 httpBodyEditor.getParent().layout();
+
+                if (!isInputReady) {
+                    return;
+                }
                 servicePart.updateDirty(true);
+                updateContentTypeByEditor(httpBodyEditor);
             }
         };
 
@@ -140,22 +152,28 @@ public class HttpBodyEditorComposite extends Composite {
 
         bodyEditors.values().forEach(editor -> {
             editor.addListener(SWT.Modify, event -> {
-                servicePart.updateDirty(true);
-                if (editor.isContentTypeUpdated()) {
-                    WebElementPropertyEntity propertyEntity = findContentTypeProperty();
-                    String newContentType = editor.getContentType();
-                    if (propertyEntity != null) {
-                        propertyEntity.setValue(newContentType);
-                    } else {
-                        propertyEntity = new WebElementPropertyEntity("Content-Type", newContentType);
-                        webServiceEntity.getHttpHeaderProperties().add(0, propertyEntity);
-                    }
-                    servicePart.updateHeaders(webServiceEntity);
-
-                    editor.setContentTypeUpdated(false);
+                if (isInputReady) {
+                    servicePart.updateDirty(true);
+                    updateContentTypeByEditor(editor);
                 }
             });
         });
+    }
+
+    private void updateContentTypeByEditor(HttpBodyEditor editor) {
+        if (editor.isContentTypeUpdated()) {
+            WebElementPropertyEntity propertyEntity = findContentTypeProperty();
+            String newContentType = editor.getContentType();
+            if (propertyEntity != null) {
+                propertyEntity.setValue(newContentType);
+            } else {
+                propertyEntity = new WebElementPropertyEntity("Content-Type", newContentType);
+                webServiceEntity.getHttpHeaderProperties().add(0, propertyEntity);
+            }
+            servicePart.updateHeaders(webServiceEntity);
+
+            editor.setContentTypeUpdated(false);
+        }
     }
 
     private WebElementPropertyEntity findContentTypeProperty() {

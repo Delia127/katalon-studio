@@ -330,7 +330,7 @@ public class RestServicePart extends WebServicePart {
         originalWsObject.setRestRequestMethod(wsApiControl.getRequestMethod());
 
         tblHeaders.removeEmptyProperty();
-        originalWsObject.setHttpHeaderProperties(tblHeaders.getInput());
+        originalWsObject.setHttpHeaderProperties(new ArrayList<>(httpHeaders));
 
         // originalWsObject.setHttpBody(requestBody.getTextWidget().getText());
         originalWsObject.setHttpBodyType(requestBodyEditor.getHttpBodyType());
@@ -387,9 +387,8 @@ public class RestServicePart extends WebServicePart {
     }
 
     public void updateHeaders(WebServiceRequestEntity cloneWS) {
-        tempPropList = new ArrayList<WebElementPropertyEntity>(cloneWS.getHttpHeaderProperties());
-        httpHeaders.clear();
-        httpHeaders.addAll(tempPropList);
+        httpHeaders = cloneWS.getHttpHeaderProperties();
+        tblHeaders.setInput(httpHeaders);
         tblHeaders.refresh();
     }
 

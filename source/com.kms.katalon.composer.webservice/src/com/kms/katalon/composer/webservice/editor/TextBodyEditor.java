@@ -104,6 +104,8 @@ public class TextBodyEditor extends HttpBodyEditor {
     private Map<String, Button> TEXT_MODE_SELECTION_BUTTONS = new HashMap<>();
 
     private boolean documentReady = false;
+    
+    private boolean initialized = false;
 
     private Button chckWrapLine;
 
@@ -270,25 +272,34 @@ public class TextBodyEditor extends HttpBodyEditor {
 
     @Override
     public void setInput(String rawBodyContentData) {
-        if (textBodyContent != null) {
-            return;
-        }
-
         if (StringUtils.isEmpty(rawBodyContentData)) {
             textBodyContent = new TextBodyContent();
         } else {
             textBodyContent = JsonUtil.fromJson(rawBodyContentData, TextBodyContent.class);
         }
+    }
 
-        Thread thread = new Thread(() -> {
-            while (!documentReady) {
-                try {
-                    Thread.sleep(50L);
-                } catch (InterruptedException ignored) {}
-            }
-            UISynchronizeService.syncExec(() -> onDocumentReady());
-        });
-        thread.start();
+    @Override
+    public void onBodyTypeChanged() {
+        if (textBodyContent == null) {
+            textBodyContent = new TextBodyContent();
+        }
+
+        if (!initialized) {
+            Thread thread = new Thread(() -> {
+                while (!documentReady) {
+                    try {
+                        Thread.sleep(50L);
+                    } catch (InterruptedException ignored) {}
+                }
+                UISynchronizeService.syncExec(() -> onDocumentReady());
+                
+                initialized = true;
+            });
+            thread.start();
+        } else {
+            setContentTypeUpdated(true);
+        }
     }
 
     private void onDocumentReady() {
