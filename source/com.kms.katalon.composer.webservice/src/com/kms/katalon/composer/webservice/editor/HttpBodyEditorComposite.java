@@ -88,7 +88,7 @@ public class HttpBodyEditorComposite extends Composite {
         FormDataBodyEditor formDataEditor = new FormDataBodyEditor(bodyContentComposite, SWT.NONE);
         bodyEditors.put("form-data", formDataEditor);
 
-        BinaryBodyEditor fileBodyEditor = new BinaryBodyEditor(bodyContentComposite, SWT.NONE);
+        FileBodyEditor fileBodyEditor = new FileBodyEditor(bodyContentComposite, SWT.NONE);
         bodyEditors.put("file", fileBodyEditor);
 
         handleControlModifyListeners();
