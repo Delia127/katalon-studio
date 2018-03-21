@@ -326,7 +326,7 @@ public class RestServicePart extends WebServicePart {
 //        originalWsObject.setRestParameters(tblParams.getInput());
 
         tblHeaders.removeEmptyProperty();
-        originalWsObject.setHttpHeaderProperties(tblHeaders.getInput());
+        originalWsObject.setHttpHeaderProperties(new ArrayList<>(httpHeaders));
 
         // originalWsObject.setHttpBody(requestBody.getTextWidget().getText());
         originalWsObject.setHttpBodyType(requestBodyEditor.getHttpBodyType());
@@ -357,11 +357,6 @@ public class RestServicePart extends WebServicePart {
             int index = Arrays.asList(WebServiceRequestEntity.REST_REQUEST_METHODS).indexOf(restRequestMethod);
             wsApiControl.getRequestMethodControl().select(index < 0 ? 0 : index);
 
-            tempPropList = new ArrayList<WebElementPropertyEntity>(clone.getHttpHeaderProperties());
-            httpHeaders.clear();
-            httpHeaders.addAll(tempPropList);
-            tblHeaders.refresh();
-
             populateBasicAuthFromHeader();
             populateOAuth1FromHeader();
             renderAuthenticationUI(ccbAuthType.getText());
@@ -375,7 +370,7 @@ public class RestServicePart extends WebServicePart {
             
             if (isOldVersion) {
                 originalWsObject = clone;
-                //save();
+                save();
             }
         } catch (URISyntaxException e) {
             // ignore
@@ -383,9 +378,8 @@ public class RestServicePart extends WebServicePart {
     }
 
     public void updateHeaders(WebServiceRequestEntity cloneWS) {
-        tempPropList = new ArrayList<WebElementPropertyEntity>(cloneWS.getHttpHeaderProperties());
-        httpHeaders.clear();
-        httpHeaders.addAll(tempPropList);
+        httpHeaders = cloneWS.getHttpHeaderProperties();
+        tblHeaders.setInput(httpHeaders);
         tblHeaders.refresh();
     }
     
