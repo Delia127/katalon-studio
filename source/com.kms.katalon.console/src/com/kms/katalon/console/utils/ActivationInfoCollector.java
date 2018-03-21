@@ -9,8 +9,10 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.core.runtime.Platform;
 
 import com.google.gson.JsonObject;
+import com.kms.katalon.console.application.Application;
 import com.kms.katalon.console.constants.ConsoleMessageConstants;
 import com.kms.katalon.console.constants.ConsoleStringConstants;
+import com.kms.katalon.constants.UsagePropertyConstant;
 import com.kms.katalon.logging.LogUtil;
 
 import joptsimple.OptionParser;
@@ -99,6 +101,7 @@ public class ActivationInfoCollector {
         traits.addProperty("os_type", osType);
         traits.addProperty("kat_version", katVersion);
         traits.addProperty("kat_type", System.getProperty("sun.arch.data.model"));
+        traits.addProperty(UsagePropertyConstant.PROPERTY_SESSION_ID, Application.SESSION_ID);
 
         JsonObject activationObject = new JsonObject();
         activationObject.addProperty("userId", userName);
@@ -112,7 +115,6 @@ public class ActivationInfoCollector {
 
     public static boolean activate(String userName, String pass, StringBuilder errorMessage) {
         boolean activatedResult = false;
-
         try {
             String userInfo = collectActivationInfo(userName, pass);
             String result = ServerAPICommunicationUtil.post("/segment/identify", userInfo);

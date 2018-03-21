@@ -9,6 +9,7 @@ import java.util.List;
 
 import com.google.gson.JsonObject;
 import com.kms.katalon.composer.components.util.FileUtil;
+import com.kms.katalon.console.application.Application;
 import com.kms.katalon.console.utils.ApplicationInfo;
 import com.kms.katalon.console.utils.ServerAPICommunicationUtil;
 import com.kms.katalon.constants.UsagePropertyConstant;
@@ -24,8 +25,7 @@ public class UsageInfoCollector {
 
     private static final String EMAIL_KEY = "email";
 
-    public static void colllect() {
-        UsageInformation usageInfo = getUsageInfo();
+    public static void colllect(UsageInformation usageInfo) {
         JsonObject jsObject = new JsonObject();
         JsonObject jsTraits = new JsonObject();
         jsTraits.addProperty(UsagePropertyConstant.PROPERTY_KAT_VERSION, usageInfo.getVersion());
@@ -37,10 +37,12 @@ public class UsageInfoCollector {
         jsTraits.addProperty(UsagePropertyConstant.PROPERTY_NEW_TEST_RUN, usageInfo.getNewTestRunCount());
         jsTraits.addProperty(UsagePropertyConstant.PROPERTY_NEW_TEST_CASE_CREATED, usageInfo.getNewTestCaseCreatedCount());
         jsTraits.addProperty(UsagePropertyConstant.PROPERTY_NEW_PROJECT_CREATED, usageInfo.getNewProjectCreatedCount());
+        jsTraits.addProperty(UsagePropertyConstant.PROPERTY_SESSION_ID, Application.SESSION_ID);
 
         jsObject.add("traits", jsTraits);
         jsObject.addProperty("userId", usageInfo.getEmail());
-        if (usageInfo.getTestCaseCount() > 0 && usageInfo.getTestCaseRunCount() > 0) {
+        if (usageInfo.getTestCaseCount() > 0 && usageInfo.getTestCaseRunCount() > 0
+                || usageInfo.isAnonymous()) {
             sendUsageInfo(jsObject, usageInfo);
         }
     }
@@ -83,20 +85,22 @@ public class UsageInfoCollector {
         return Integer.parseInt(ApplicationInfo.getAppProperty(key));
     }
 
-    public static UsageInformation getUsageInfo() {
-        UsageInformation usageInfo = new UsageInformation();
+    public static UsageInformation getActivatedUsageInfo() {
+        String email = ApplicationInfo.getAppProperty(EMAIL_KEY);
+        UsageInformation usageInfo = UsageInformation.createActivatedInfo(email, Application.SESSION_ID);
         Date orgTime = restorePreviousUsageInfo(usageInfo);
         List<String> projectPaths = getRecentProjects();
-        collectGeneralInfo(usageInfo);
+        usageInfo.setVersion(ApplicationInfo.versionNo() + " build " + ApplicationInfo.buildNo());
         for (String prjPath : projectPaths) {
             collectUsageProjectInfo(prjPath, usageInfo, orgTime);
         }
         return usageInfo;
     }
 
-    private static void collectGeneralInfo(UsageInformation usageInfo) {
-        usageInfo.setEmail(ApplicationInfo.getAppProperty(EMAIL_KEY));
+    public static UsageInformation getAnonymousUsageInfo() {
+        UsageInformation usageInfo = UsageInformation.createAnonymousInfo(Application.SESSION_ID);
         usageInfo.setVersion(ApplicationInfo.versionNo() + " build " + ApplicationInfo.buildNo());
+        return usageInfo;
     }
 
     private static void collectUsageProjectInfo(String prjPath, UsageInformation usageInfo, Date orgTime) {
