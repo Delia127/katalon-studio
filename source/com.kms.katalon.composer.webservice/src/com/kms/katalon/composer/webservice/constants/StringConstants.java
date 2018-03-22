@@ -41,8 +41,11 @@ public class StringConstants extends GlobalStringConstants {
 	// ParameterTable
 	public static final String VIEW_COL_NAME = NAME;
 	public static final String VIEW_COL_VALUE = VALUE;
+	public static final String VIEW_COL_TYPE = TYPE;
     public static final String VIEW_MENU_CONTEXT_INSERT_PROP = ComposerWebserviceMessageConstants.VIEW_MENU_CONTEXT_INSERT_PROP;
     public static final String VIEW_MENU_CONTEXT_DEL_PROPS = ComposerWebserviceMessageConstants.VIEW_MENU_CONTEXT_DEL_PROPS;
+    public static final String PARAM_TABLE_MENU_ITEM_ADD = ComposerWebserviceMessageConstants.PARAM_TABLE_MENU_ITEM_ADD;
+    public static final String PARAM_TABLE_MENU_ITEM_REMOVE = ComposerWebserviceMessageConstants.PARAM_TABLE_MENU_ITEM_REMOVE;
     
     public static final String MSG_CANNOT_LOAD_WS = ComposerWebserviceMessageConstants.MSG_CANNOT_LOAD_WS;
     public static final String LBL_LOAD_FROM_WSDL = ComposerWebserviceMessageConstants.LBL_LOAD_FROM_WSDL;
