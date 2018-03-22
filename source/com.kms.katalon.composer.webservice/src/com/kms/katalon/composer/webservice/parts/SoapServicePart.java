@@ -61,6 +61,7 @@ import org.eclipse.swt.widgets.ToolItem;
 import com.kms.katalon.composer.components.impl.dialogs.ProgressMonitorDialogWithThread;
 import com.kms.katalon.composer.components.impl.util.KeyEventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
@@ -85,7 +86,9 @@ public class SoapServicePart extends WebServicePart {
     private static final String[] FILTER_NAMES = new String[] { "XML content files (*.xml, *.wsdl, *.txt)" };
 
     private CCombo ccbOperation;
-
+    
+    private ProgressMonitorDialogWithThread progress;
+    
     @Override
     protected void createAPIControls(Composite parent) {
         super.createAPIControls(parent);
@@ -119,45 +122,64 @@ public class SoapServicePart extends WebServicePart {
                 if (isInvalidURL(requestURL) || ccbOperation.getText().isEmpty()) {
                     return;
                 }
-
+                
+                if (wsApiControl.getSendingState()) {
+                    progress.getProgressMonitor().setCanceled(true);
+                    wsApiControl.setSendButtonState(false);
+                    return;
+                }
+                
                 try {
                     Shell activeShell = Display.getCurrent().getActiveShell();
-                    new ProgressMonitorDialogWithThread(activeShell).run(true, true, new IRunnableWithProgress() {
+                    progress = new ProgressMonitorDialogWithThread(Display.getCurrent().getActiveShell());
+                    progress.setOpenOnRun(false);
+                    progress.run(true, true, new IRunnableWithProgress() {
 
                         @Override
                         public void run(IProgressMonitor monitor)
                                 throws InvocationTargetException, InterruptedException {
-                            monitor.beginTask(ComposerWebserviceMessageConstants.PART_MSG_SENDING_TEST_REQUEST,
-                                    IProgressMonitor.UNKNOWN);
+                            
+                            
                             Display.getDefault().asyncExec(new Runnable() {
 
                                 @Override
                                 public void run() {
                                     try {
+                                        monitor.beginTask(ComposerWebserviceMessageConstants.PART_MSG_SENDING_TEST_REQUEST,
+                                                IProgressMonitor.UNKNOWN);
+                                        
                                         String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
-                                        ResponseObject responseObject = WebServiceController.getInstance().sendRequest(
+                                        
+                                        final ResponseObject responseObject = WebServiceController.getInstance().sendRequest(
                                                 getWSRequestObject(), projectDir, ProxyPreferences.getProxyInformation());
-
-                                        responseHeader.setDocument(createXMLDocument(getPrettyHeaders(responseObject)));
-
-                                        String bodyContent = responseObject.getResponseText();
-
-                                        if (bodyContent == null) {
+                                       
+                                        if (monitor.isCanceled()) {
                                             return;
                                         }
+                                        responseHeader.setDocument(createXMLDocument(getPrettyHeaders(responseObject)));
+                                       
+                                        Display.getDefault().asyncExec(() -> {
+                                            setResponseStatus(responseObject);
+                                            String bodyContent = responseObject.getResponseText();
+                                            
+                                            if (bodyContent == null) {
+                                                return;
+                                            }
+                                            try {
+                                                bodyContent = formatXMLContent(bodyContent);
+                                            } catch (DocumentException | IOException e) {
+                                                // The responded message has issue with syntax, then reuse raw message.
+                                            }
+                                            responseBody.setDocument(createXMLDocument(bodyContent));
+                                        });
 
-                                        try {
-                                            bodyContent = formatXMLContent(bodyContent);
-                                        } catch (DocumentException | IOException e) {
-                                            // The responded message has issue with syntax, then reuse raw message.
-                                        }
-                                        responseBody.setDocument(createXMLDocument(bodyContent));
                                     } catch (Exception e) {
                                         LoggerSingleton.logError(e);
                                         ErrorDialog.openError(activeShell, StringConstants.ERROR_TITLE,
                                                 ComposerWebserviceMessageConstants.PART_MSG_CANNOT_SEND_THE_TEST_REQUEST,
                                                 new Status(Status.ERROR, WS_BUNDLE_NAME, e.getMessage(), e));
                                     } finally {
+                                        UISynchronizeService.syncExec(() -> wsApiControl.setSendButtonState(false));
                                         monitor.done();
                                     }
                                 }

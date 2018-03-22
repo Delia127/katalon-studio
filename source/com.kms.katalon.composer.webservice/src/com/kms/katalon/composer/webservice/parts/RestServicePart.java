@@ -121,7 +121,7 @@ public class RestServicePart extends WebServicePart {
                                         return;
                                     }
                                     responseBodyEditor.setInput(responseObject);
-                                    
+
                                 });
                             } catch (Exception e) {
                                 LoggerSingleton.logError(e);
@@ -352,7 +352,7 @@ public class RestServicePart extends WebServicePart {
 
             if (isOldVersion) {
                 originalWsObject = clone;
-//                save();
+                // save();
             }
         } catch (URISyntaxException e) {
             // ignore
