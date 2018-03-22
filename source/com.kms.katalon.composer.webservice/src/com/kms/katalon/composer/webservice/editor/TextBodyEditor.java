@@ -105,7 +105,9 @@ public class TextBodyEditor extends HttpBodyEditor {
                 mirrorEditor.wrapLine(chckWrapLine.getSelection());
             }
         });
-        mirrorEditor.setText(textBodyContent.getText());
+		if (textBodyContent != null) {
+			mirrorEditor.setText(textBodyContent.getText());
+		}
     }
 
     @Override

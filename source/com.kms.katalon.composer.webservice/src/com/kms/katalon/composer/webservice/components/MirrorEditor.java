@@ -169,7 +169,9 @@ public class MirrorEditor extends Composite {
     }
 
     public void beautify() {
-        String command = String.format("format(editor);");
+        String command = String.format("format(editor); "
+        								+ "editor.focus(); "
+        								+ "editor.setCursor({line: 0, ch: 0});");
         if (documentReady) {
             browser.evaluate(command);
         } else {
