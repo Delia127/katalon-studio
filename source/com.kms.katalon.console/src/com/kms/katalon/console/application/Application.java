@@ -1,12 +1,16 @@
 package com.kms.katalon.console.application;
 
 import java.util.Map;
+import java.util.concurrent.Executors;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.osgi.framework.BundleException;
 
+import com.kms.katalon.application.RunningMode;
+import com.kms.katalon.application.usagetracking.UsageActionTrigger;
+import com.kms.katalon.application.usagetracking.UsageInfoCollector;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.application.utils.VersionUtil;
@@ -73,6 +77,10 @@ public class Application implements IApplication {
         if (ActivationInfoCollector.isActivated()) {
             return true;
         }
+
+        Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector.collect(
+                UsageInfoCollector.getAnonymousUsageInfo(UsageActionTrigger.OPEN_FIRST_TIME, RunningMode.CONSOLE)));
+
         String[] emailPass = getEmailAndPassword(arguments);
         String email = emailPass[0], password = emailPass[1];
         StringBuilder errorMessage = new StringBuilder();
@@ -100,7 +108,6 @@ public class Application implements IApplication {
         }
         return emailPass;
     }
-
 
     /*
      * (non-Javadoc)

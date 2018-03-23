@@ -20,17 +20,19 @@ public class UsageInformation {
     private int newTestcaseCount = 0;
 
     private int newTestRunCount = 0;
-    
+
     private int newProjectCreatedCount = 0;
-    
+
     private int newTestCaseCreatedCount = 0;
-    
+
     private String sessionId;
-    
+
     private String triggeredBy;
 
+    private String runningMode;
+
     private Map<String, Object> extra;
-    
+
     private UsageInformation() {
         // Disable default constructor
     }
@@ -130,23 +132,9 @@ public class UsageInformation {
     public void setSessionId(String sessionId) {
         this.sessionId = sessionId;
     }
-    
+
     public boolean isAnonymous() {
         return ANONYMOUS.equals(getEmail());
-    }
-
-    public static UsageInformation createAnonymousInfo(String sessionId) {
-        UsageInformation anonymous = new UsageInformation();
-        anonymous.setEmail(ANONYMOUS);
-        anonymous.setSessionId(sessionId);
-        return anonymous;
-    }
-    
-    public static UsageInformation createActivatedInfo(String email, String sessionId) {
-        UsageInformation activatedUser = new UsageInformation();
-        activatedUser.setEmail(email);
-        activatedUser.setSessionId(sessionId);
-        return activatedUser;
     }
 
     public String getTriggeredBy() {
@@ -155,5 +143,27 @@ public class UsageInformation {
 
     public void setTriggeredBy(String triggeredBy) {
         this.triggeredBy = triggeredBy;
+    }
+
+    public String getRunningMode() {
+        return runningMode;
+    }
+
+    public void setRunningMode(String runningMode) {
+        this.runningMode = runningMode;
+    }
+
+    public static UsageInformation createAnonymousInfo(String sessionId) {
+        UsageInformation anonymous = new UsageInformation();
+        anonymous.setEmail(ANONYMOUS);
+        anonymous.setSessionId(sessionId);
+        return anonymous;
+    }
+
+    public static UsageInformation createActivatedInfo(String email, String sessionId) {
+        UsageInformation activatedUser = new UsageInformation();
+        activatedUser.setEmail(email);
+        activatedUser.setSessionId(sessionId);
+        return activatedUser;
     }
 }

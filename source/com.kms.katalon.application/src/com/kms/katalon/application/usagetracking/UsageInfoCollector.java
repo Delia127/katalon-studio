@@ -10,6 +10,7 @@ import java.util.List;
 
 import com.google.gson.JsonObject;
 import com.kms.katalon.application.KatalonApplication;
+import com.kms.katalon.application.RunningMode;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.application.utils.FileUtil;
 import com.kms.katalon.application.utils.ServerAPICommunicationUtil;
@@ -41,6 +42,7 @@ public class UsageInfoCollector {
         jsTraits.addProperty(UsagePropertyConstant.PROPERTY_NEW_PROJECT_CREATED, usageInfo.getNewProjectCreatedCount());
         jsTraits.addProperty(UsagePropertyConstant.PROPERTY_SESSION_ID, KatalonApplication.SESSION_ID);
         jsTraits.addProperty(UsagePropertyConstant.PROPERTY_TRIGGERED_BY, usageInfo.getTriggeredBy());
+        jsTraits.addProperty(UsagePropertyConstant.PROPERTY_RUNNING_MODE, usageInfo.getRunningMode());
 
         jsObject.add("traits", jsTraits);
         jsObject.addProperty("userId", usageInfo.getEmail());
@@ -88,13 +90,14 @@ public class UsageInfoCollector {
         return Integer.parseInt(ApplicationInfo.getAppProperty(key));
     }
 
-    public static UsageInformation getActivatedUsageInfo(UsageActionTrigger actionTrigger) {
+    public static UsageInformation getActivatedUsageInfo(UsageActionTrigger actionTrigger, RunningMode runningMode) {
         String email = ApplicationInfo.getAppProperty(EMAIL_KEY);
         UsageInformation usageInfo = UsageInformation.createActivatedInfo(email, KatalonApplication.SESSION_ID);
         Date orgTime = restorePreviousUsageInfo(usageInfo);
         List<String> projectPaths = getRecentProjects();
         usageInfo.setVersion(ApplicationInfo.versionNo() + " build " + ApplicationInfo.buildNo());
         usageInfo.setTriggeredBy(actionTrigger.getAction());
+        usageInfo.setRunningMode(runningMode.getMode());
         for (String prjPath : projectPaths) {
             try {
                 collectUsageProjectInfo(prjPath, usageInfo, orgTime);
@@ -105,10 +108,11 @@ public class UsageInfoCollector {
         return usageInfo;
     }
 
-    public static UsageInformation getAnonymousUsageInfo(UsageActionTrigger actionTrigger) {
+    public static UsageInformation getAnonymousUsageInfo(UsageActionTrigger actionTrigger, RunningMode runningMode) {
         UsageInformation usageInfo = UsageInformation.createAnonymousInfo(KatalonApplication.SESSION_ID);
         usageInfo.setVersion(ApplicationInfo.versionNo() + " build " + ApplicationInfo.buildNo());
         usageInfo.setTriggeredBy(actionTrigger.getAction());
+        usageInfo.setRunningMode(runningMode.getMode());
         return usageInfo;
     }
 

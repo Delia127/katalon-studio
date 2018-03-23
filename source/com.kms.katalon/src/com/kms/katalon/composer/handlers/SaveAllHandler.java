@@ -8,6 +8,7 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.ui.PlatformUI;
 
+import com.kms.katalon.application.RunningMode;
 import com.kms.katalon.application.usagetracking.UsageActionTrigger;
 import com.kms.katalon.application.usagetracking.UsageInfoCollector;
 
@@ -28,7 +29,7 @@ public class SaveAllHandler {
             PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().saveAllEditors(false);
         } finally {
             Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector
-                    .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.SAVE_ALL)));
+                    .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.SAVE_ALL, RunningMode.GUI)));
         }
     }
 }

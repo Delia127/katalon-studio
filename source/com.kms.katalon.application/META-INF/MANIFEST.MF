@@ -13,7 +13,8 @@ Require-Bundle: com.google.gson,
  org.apache.commons.lang3,
  org.eclipse.core.runtime,
  com.kms.katalon.core
-Export-Package: com.kms.katalon.application.constants,
+Export-Package: com.kms.katalon.application,
+ com.kms.katalon.application.constants,
  com.kms.katalon.application.usagetracking,
  com.kms.katalon.application.utils
 Bundle-ClassPath: resources/lib/proxy-vole-1.0.4-SNAPSHOT-jar-with-dependencies.jar,
