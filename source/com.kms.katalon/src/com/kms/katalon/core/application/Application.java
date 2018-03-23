@@ -11,9 +11,9 @@ import org.eclipse.ui.PlatformUI;
 import org.osgi.framework.BundleException;
 
 import com.kms.katalon.activation.dialog.LinuxNotSupportedDialog;
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.application.ApplicationSingleton;
 import com.kms.katalon.console.addons.MacOSAddon;
-import com.kms.katalon.console.utils.ApplicationInfo;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.support.testing.katserver.KatServer;

@@ -42,6 +42,7 @@ Require-Bundle: com.kms.katalon.composer.preferences,
  com.kms.katalon.groovy,
  com.kms.katalon.composer.resources,
  com.kms.katalon.console,
- com.google.gson
+ com.google.gson,
+ com.kms.katalon.application
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: org.qas.qtest.api.services.project.model

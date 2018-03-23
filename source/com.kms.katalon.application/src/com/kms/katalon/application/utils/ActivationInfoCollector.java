@@ -1,4 +1,4 @@
-package com.kms.katalon.console.utils;
+package com.kms.katalon.application.utils;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -9,14 +9,11 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.core.runtime.Platform;
 
 import com.google.gson.JsonObject;
-import com.kms.katalon.console.application.Application;
-import com.kms.katalon.console.constants.ConsoleMessageConstants;
-import com.kms.katalon.console.constants.ConsoleStringConstants;
+import com.kms.katalon.application.KatalonApplication;
+import com.kms.katalon.application.constants.ApplicationMessageConstants;
+import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.constants.UsagePropertyConstant;
 import com.kms.katalon.logging.LogUtil;
-
-import joptsimple.OptionParser;
-import joptsimple.OptionSet;
 
 public class ActivationInfoCollector {
     public static final String DEFAULT_HOST_NAME = "can.not.get.host.name";
@@ -25,7 +22,7 @@ public class ActivationInfoCollector {
     }
 
     public static boolean isActivated() {
-        String activatedVal = ApplicationInfo.getAppProperty(ConsoleStringConstants.ACTIVATED_PROP_NAME);
+        String activatedVal = ApplicationInfo.getAppProperty(ApplicationStringConstants.ACTIVATED_PROP_NAME);
         if (activatedVal == null) {
             return false;
         }
@@ -43,39 +40,6 @@ public class ActivationInfoCollector {
             return false;
         }
     }
-
-    public static boolean checkConsoleActivation(String[] arguments) {
-        if (isActivated()) {
-            return true;
-        }
-        String[] emailPass = getEmailAndPassword(arguments);
-        String email = emailPass[0], password = emailPass[1];
-        StringBuilder errorMessage = new StringBuilder();
-        if (email == null || password == null || !activate(email, password, errorMessage)) {
-            System.out.println(email == null || password == null ? ConsoleMessageConstants.KATALON_NOT_ACTIVATED
-                    : errorMessage.toString());
-            return false;
-        }
-        return true;
-    }
-
-    private static String[] getEmailAndPassword(String[] arguments) {
-        OptionParser parser = new OptionParser(false);
-        parser.allowsUnrecognizedOptions();
-        parser.accepts(ConsoleStringConstants.ARG_EMAIL).withRequiredArg().ofType(String.class);
-        parser.accepts(ConsoleStringConstants.ARG_PASSWORD).withRequiredArg().ofType(String.class);
-
-        OptionSet argumentSet = parser.parse(arguments);
-        String[] emailPass = { null, null };
-        if (argumentSet.has(ConsoleStringConstants.ARG_EMAIL)) {
-            emailPass[0] = argumentSet.valueOf(ConsoleStringConstants.ARG_EMAIL).toString();
-        }
-        if (argumentSet.has(ConsoleStringConstants.ARG_PASSWORD)) {
-            emailPass[1] = argumentSet.valueOf(ConsoleStringConstants.ARG_PASSWORD).toString();
-        }
-        return emailPass;
-    }
-
     private static int getHostNameHashValue() throws Exception {
         String hostName = InetAddress.getLocalHost().getHostName();
         String ipAddress = InetAddress.getLocalHost().getHostAddress();
@@ -101,7 +65,7 @@ public class ActivationInfoCollector {
         traits.addProperty("os_type", osType);
         traits.addProperty("kat_version", katVersion);
         traits.addProperty("kat_type", System.getProperty("sun.arch.data.model"));
-        traits.addProperty(UsagePropertyConstant.PROPERTY_SESSION_ID, Application.SESSION_ID);
+        traits.addProperty(UsagePropertyConstant.PROPERTY_SESSION_ID, KatalonApplication.SESSION_ID);
 
         JsonObject activationObject = new JsonObject();
         activationObject.addProperty("userId", userName);
@@ -118,18 +82,18 @@ public class ActivationInfoCollector {
         try {
             String userInfo = collectActivationInfo(userName, pass);
             String result = ServerAPICommunicationUtil.post("/segment/identify", userInfo);
-            if (result.equals(ConsoleMessageConstants.SEND_SUCCESS_RESPONSE)) {
+            if (result.equals(ApplicationMessageConstants.SEND_SUCCESS_RESPONSE)) {
                 markActivated(userName);
                 activatedResult = true;
             } else if (errorMessage != null) {
-                errorMessage.append(ConsoleMessageConstants.ACTIVATE_INFO_INVALID);
+                errorMessage.append(ApplicationMessageConstants.ACTIVATE_INFO_INVALID);
             }
 
         } catch (IOException ex) {
-            LogUtil.logError(ex, ConsoleMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
+            LogUtil.logError(ex, ApplicationMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
             if (errorMessage != null) {
                 errorMessage.delete(0, errorMessage.length());
-                errorMessage.append(ConsoleMessageConstants.NETWORK_ERROR);
+                errorMessage.append(ApplicationMessageConstants.NETWORK_ERROR);
             }
         } catch (Exception e) {
             LogUtil.logError(e);
@@ -147,12 +111,12 @@ public class ActivationInfoCollector {
                 markActivated(activationCode);
                 return true;
             } else if (errorMessage != null) {
-                errorMessage.append(ConsoleMessageConstants.ACTIVATION_CODE_INVALID);
+                errorMessage.append(ApplicationMessageConstants.ACTIVATION_CODE_INVALID);
             }
         } catch (Exception ex) {
             LogUtil.logError(ex);
             if (errorMessage != null) {
-                errorMessage.append(ConsoleMessageConstants.ACTIVATION_CODE_INVALID);
+                errorMessage.append(ApplicationMessageConstants.ACTIVATION_CODE_INVALID);
             }
         }
 
@@ -162,9 +126,9 @@ public class ActivationInfoCollector {
     private static void markActivated(String userName) throws Exception {
         String activatedVal = Integer.toString(getHostNameHashValue());
         String curVersion = new StringBuilder(ApplicationInfo.versionNo().replaceAll("\\.", "")).reverse().toString();
-        ApplicationInfo.removeAppProperty(ConsoleStringConstants.REQUEST_CODE_PROP_NAME);
-        ApplicationInfo.setAppProperty(ConsoleStringConstants.ACTIVATED_PROP_NAME, curVersion + "_" + activatedVal,
+        ApplicationInfo.removeAppProperty(ApplicationStringConstants.REQUEST_CODE_PROP_NAME);
+        ApplicationInfo.setAppProperty(ApplicationStringConstants.ACTIVATED_PROP_NAME, curVersion + "_" + activatedVal,
                 true);
-        ApplicationInfo.setAppProperty(ConsoleStringConstants.ARG_EMAIL, userName, true);
+        ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_EMAIL, userName, true);
     }
 }

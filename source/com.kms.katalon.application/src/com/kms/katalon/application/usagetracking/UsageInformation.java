@@ -1,4 +1,4 @@
-package com.kms.katalon.usagetracking;
+package com.kms.katalon.application.usagetracking;
 
 import java.util.Map;
 
@@ -27,6 +27,8 @@ public class UsageInformation {
     
     private String sessionId;
     
+    private String triggeredBy;
+
     private Map<String, Object> extra;
     
     private UsageInformation() {
@@ -145,5 +147,13 @@ public class UsageInformation {
         activatedUser.setEmail(email);
         activatedUser.setSessionId(sessionId);
         return activatedUser;
+    }
+
+    public String getTriggeredBy() {
+        return triggeredBy;
+    }
+
+    public void setTriggeredBy(String triggeredBy) {
+        this.triggeredBy = triggeredBy;
     }
 }

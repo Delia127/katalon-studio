@@ -25,9 +25,9 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.util.ColorUtil;
-import com.kms.katalon.console.utils.ActivationInfoCollector;
 import com.kms.katalon.constants.ImageConstants;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.logging.LogUtil;
