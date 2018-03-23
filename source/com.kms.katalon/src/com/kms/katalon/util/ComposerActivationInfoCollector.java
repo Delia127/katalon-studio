@@ -1,6 +1,7 @@
 package com.kms.katalon.util;
 
 import java.util.Random;
+import java.util.concurrent.Executors;
 
 import org.eclipse.core.commands.common.CommandException;
 import org.eclipse.jface.dialogs.Dialog;
@@ -15,6 +16,7 @@ import com.kms.katalon.console.constants.ConsoleStringConstants;
 import com.kms.katalon.console.utils.ActivationInfoCollector;
 import com.kms.katalon.console.utils.ApplicationInfo;
 import com.kms.katalon.logging.LogUtil;
+import com.kms.katalon.usagetracking.UsageInfoCollector;
 
 public class ComposerActivationInfoCollector extends ActivationInfoCollector {
 
@@ -30,6 +32,9 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
         if (isActivated()) {
             return true;
         }
+        // Send anonymous info
+        Executors.newSingleThreadExecutor()
+                .submit(() -> UsageInfoCollector.colllect(UsageInfoCollector.getAnonymousUsageInfo()));
         int result = new ActivationDialog(null).open();
         if (result == Window.CANCEL) {
             return false;

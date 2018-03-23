@@ -232,7 +232,7 @@ public class LifeCycleManager {
         Executors.newSingleThreadExecutor().submit(new Runnable() {
             @Override
             public void run() {
-                UsageInfoCollector.colllect();
+                UsageInfoCollector.colllect(UsageInfoCollector.getActivatedUsageInfo());
             }
         });
     }

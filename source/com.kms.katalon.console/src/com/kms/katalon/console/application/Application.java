@@ -1,6 +1,7 @@
 package com.kms.katalon.console.application;
 
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.eclipse.core.runtime.Platform;
@@ -23,6 +24,13 @@ import com.kms.katalon.logging.LogUtil;
  * This class controls all aspects of the console application's execution
  */
 public class Application implements IApplication {
+
+    public static final String SESSION_ID;
+    
+    static {
+        SESSION_ID = UUID.randomUUID().toString();
+    }
+
     /*
      * (non-Javadoc)
      * @see org.eclipse.equinox.app.IApplication#start(org.eclipse.equinox.app.
