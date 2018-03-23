@@ -1,5 +1,6 @@
 package com.kms.katalon.core.webservice.common;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -20,7 +21,6 @@ import javax.wsdl.factory.WSDLFactory;
 import javax.wsdl.xml.WSDLReader;
 import javax.xml.namespace.QName;
 
-import org.apache.bsf.util.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.ibm.wsdl.BindingOperationImpl;
@@ -38,6 +38,7 @@ import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.webservice.constants.CoreWebserviceMessageConstants;
 import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
 import com.kms.katalon.core.webservice.exception.WebServiceException;
+import com.kms.katalon.core.webservice.helper.WebServiceCommonHelper;
 
 public class SoapClient extends BasicRequestor {
 
@@ -145,8 +146,6 @@ public class SoapClient extends BasicRequestor {
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
         }
 
-        ResponseObject responseObject = new ResponseObject();
-
         URL oURL = new URL(endPoint);
         HttpURLConnection con = (HttpURLConnection) oURL.openConnection(getProxy());
         if (isHttps) {
@@ -162,13 +161,51 @@ public class SoapClient extends BasicRequestor {
         OutputStream reqStream = con.getOutputStream();
         reqStream.write(request.getSoapBody().getBytes());
 
-        InputStream resStream = con.getInputStream();
-        String responseText = IOUtils.getStringFromReader(new InputStreamReader(resStream));
+        long startTime = System.currentTimeMillis();
+        int statusCode = con.getResponseCode();
+        long waitingTime = System.currentTimeMillis() - startTime;
+        
+        long headerLength = WebServiceCommonHelper.calculateHeaderLength(con);
+        long contentDownloadTime = 0L;
+        StringBuffer sb = new StringBuffer();
 
+        char[] buffer = new char[1024];
+        long bodyLength = 0L;
+        try (InputStream inputStream = (statusCode >= 400) ? con.getErrorStream() : con.getInputStream()) {
+            if (inputStream != null) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                int len = 0;
+                startTime = System.currentTimeMillis();
+                while ((len = reader.read(buffer)) != -1) {
+                    contentDownloadTime += System.currentTimeMillis() - startTime;
+                    sb.append(buffer, 0, len);
+                    bodyLength += len;
+                    startTime = System.currentTimeMillis();
+                }
+            }
+        }
+        
+        ResponseObject responseObject = new ResponseObject(sb.toString());
+        
+        String bodyLengthHeader = responseObject.getHeaderFields()
+                .entrySet()
+                .stream()
+                .filter(entry -> entry.getKey().equals("Content-Length"))
+                .map(entry -> entry.getValue().get(0))
+                .findFirst()
+                .orElse("");
+        
+        if (!StringUtils.isEmpty(bodyLengthHeader)) {
+            bodyLength =  Long.parseLong(bodyLengthHeader, 10); 
+        }
         // SOAP is HTTP-XML protocol
         responseObject.setContentType(APPLICATION_XML);
-        responseObject.setResponseText(responseText);
-        responseObject.setStatusCode(con.getResponseCode());
+        responseObject.setStatusCode(statusCode);
+        responseObject.setResponseBodySize(bodyLength);
+        responseObject.setResponseHeaderSize(headerLength);
+        responseObject.setWaitingTime(waitingTime);
+        responseObject.setContentDownloadTime(contentDownloadTime);
+        
         return responseObject;
     }
 
