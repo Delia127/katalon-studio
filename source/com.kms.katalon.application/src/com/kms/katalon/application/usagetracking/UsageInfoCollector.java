@@ -40,6 +40,7 @@ public class UsageInfoCollector {
                 usageInfo.getNewTestCaseCreatedCount());
         jsTraits.addProperty(UsagePropertyConstant.PROPERTY_NEW_PROJECT_CREATED, usageInfo.getNewProjectCreatedCount());
         jsTraits.addProperty(UsagePropertyConstant.PROPERTY_SESSION_ID, KatalonApplication.SESSION_ID);
+        jsTraits.addProperty(UsagePropertyConstant.PROPERTY_TRIGGERED_BY, usageInfo.getTriggeredBy());
 
         jsObject.add("traits", jsTraits);
         jsObject.addProperty("userId", usageInfo.getEmail());
