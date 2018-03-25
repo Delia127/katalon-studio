@@ -36,9 +36,9 @@ import org.apache.http.util.EntityUtils;
 import org.eclipse.core.runtime.Platform;
 
 import com.google.gson.Gson;
+import com.kms.katalon.application.utils.ApplicationInfo;
+import com.kms.katalon.application.utils.ApplicationProxyUtil;
 import com.kms.katalon.console.constants.ConsoleStringConstants;
-import com.kms.katalon.console.utils.ApplicationInfo;
-import com.kms.katalon.console.utils.ProxyUtil;
 import com.kms.katalon.core.webservice.support.UrlEncoder;
 import com.kms.katalon.zendesk.ZendeskTicket.ZendeskCollaborator;
 import com.kms.katalon.zendesk.ZendeskTicket.ZendeskTicketComment;
@@ -186,7 +186,7 @@ public class ZendeskHTTPRequestHelper {
     }
 
     private static void addProxy(HttpClientBuilder builder) throws IOException {
-        Proxy proxy = ProxyUtil.getProxy();
+        Proxy proxy = ApplicationProxyUtil.getProxy();
         if (proxy != Proxy.NO_PROXY && proxy.address() instanceof InetSocketAddress) {
             InetSocketAddress socketAddress = (InetSocketAddress) proxy.address();
             builder.setProxy(

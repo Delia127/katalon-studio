@@ -8,6 +8,8 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.ui.di.UISynchronize;
 
+import com.kms.katalon.application.usagetracking.UsageActionTrigger;
+import com.kms.katalon.application.usagetracking.UsageInfoCollector;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.exceptions.JobCancelException;
@@ -57,7 +59,6 @@ public class ExecuteTestCaseJob extends Job {
             startLauncher();
             monitor.worked(1);
 
-            monitor.done();
             return Status.OK_STATUS;
         } catch (JobCancelException e) {
             return Status.CANCEL_STATUS;
@@ -71,6 +72,9 @@ public class ExecuteTestCaseJob extends Job {
                 }
             });
             return Status.CANCEL_STATUS;
+        } finally {
+            monitor.done();
+            UsageInfoCollector.collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.RUN_SCRIPT));
         }
     }
 

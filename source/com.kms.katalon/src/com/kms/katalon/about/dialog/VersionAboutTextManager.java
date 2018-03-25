@@ -10,7 +10,7 @@ import org.eclipse.swt.custom.StyledText;
 import org.eclipse.ui.internal.about.AboutItem;
 import org.eclipse.ui.internal.about.AboutTextManager;
 
-import com.kms.katalon.console.utils.VersionUtil;
+import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.constants.MessageConstants;
 
 @SuppressWarnings({ "restriction" })

@@ -21,10 +21,10 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.application.constants.ApplicationMessageConstants;
+import com.kms.katalon.application.utils.ApplicationProxyUtil;
 import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
-import com.kms.katalon.console.constants.ConsoleMessageConstants;
-import com.kms.katalon.console.utils.ProxyUtil;
 import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.network.ProxyOption;
@@ -241,7 +241,7 @@ public class ProxyConfigurationPreferencesPage extends PreferencePage {
             proxyInfo = ProxyPreferences.getProxyInformation();
             cboProxyOption.setText(ProxyOption.valueOf(proxyInfo.getProxyOption()).getDisplayName());
         } else {
-            proxyInfo = ProxyUtil.getProxyInformation();
+            proxyInfo = ApplicationProxyUtil.getProxyInformation();
             cboProxyOption.setText(proxyInfo.getProxyOption());
         }
         cboProxyServerType.setText(proxyInfo.getProxyServerType());
@@ -251,9 +251,9 @@ public class ProxyConfigurationPreferencesPage extends PreferencePage {
         txtPass.setText(proxyInfo.getPassword());
 
         String proxyOption = cboProxyOption.getText();
-        if (ConsoleMessageConstants.NO_PROXY.equals(proxyOption)) {
+        if (ApplicationMessageConstants.NO_PROXY.equals(proxyOption)) {
             selectNoProxyOption();
-        } else if (ConsoleMessageConstants.USE_SYSTEM_PROXY.equals(proxyOption)) {
+        } else if (ApplicationMessageConstants.USE_SYSTEM_PROXY.equals(proxyOption)) {
             selectSystemProxyOption();
         } else {
             chkRequireAuthentication.setEnabled(true);

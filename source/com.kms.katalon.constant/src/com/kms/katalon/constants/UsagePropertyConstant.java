@@ -20,7 +20,9 @@ public interface UsagePropertyConstant {
     public static final String PROPERTY_NEW_PROJECT_CREATED = "new_project_created";
 
     public static final String PROPERTY_SESSION_ID = "sessionId";
-    
+
+    public static final String PROPERTY_TRIGGERED_BY = "triggeredBy";
+
     public static final String KEY_ORG_TIME = "orgTime";
 
     public static final String KEY_NUM_TEST_CASE = "ntc";

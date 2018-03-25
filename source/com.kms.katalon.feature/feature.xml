@@ -2285,7 +2285,7 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-         
+
    <plugin
          id="com.kms.katalon.composer.testlistener"
          download-size="0"
@@ -2302,6 +2302,13 @@
 
    <plugin
          id="com.kms.katalon.selenium.ide"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.kms.katalon.application"
          download-size="0"
          install-size="0"
          version="0.0.0"

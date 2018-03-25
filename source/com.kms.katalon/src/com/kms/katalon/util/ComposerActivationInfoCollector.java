@@ -8,22 +8,23 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.window.Window;
 
 import com.kms.katalon.activation.dialog.ActivationDialog;
+import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.usagetracking.UsageActionTrigger;
+import com.kms.katalon.application.usagetracking.UsageInfoCollector;
+import com.kms.katalon.application.utils.ActivationInfoCollector;
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.impl.handler.CommandCaller;
 import com.kms.katalon.composer.intro.FunctionsIntroductionDialog;
 import com.kms.katalon.composer.intro.FunctionsIntroductionFinishDialog;
 import com.kms.katalon.composer.project.constants.CommandId;
-import com.kms.katalon.console.constants.ConsoleStringConstants;
-import com.kms.katalon.console.utils.ActivationInfoCollector;
-import com.kms.katalon.console.utils.ApplicationInfo;
 import com.kms.katalon.logging.LogUtil;
-import com.kms.katalon.usagetracking.UsageInfoCollector;
 
 public class ComposerActivationInfoCollector extends ActivationInfoCollector {
 
     private static final long RANDOM_MIN = 78364164096L;
 
     private static final long RANDOM_MAX = 2821109907455L;
-    
+
     private ComposerActivationInfoCollector() {
         super();
     }
@@ -32,9 +33,9 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
         if (isActivated()) {
             return true;
         }
-        // Send anonymous info
-        Executors.newSingleThreadExecutor()
-                .submit(() -> UsageInfoCollector.colllect(UsageInfoCollector.getAnonymousUsageInfo()));
+        // Send anonymous info for the first time using
+        Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector
+                .collect(UsageInfoCollector.getAnonymousUsageInfo(UsageActionTrigger.OPEN_FIRST_TIME)));
         int result = new ActivationDialog(null).open();
         if (result == Window.CANCEL) {
             return false;
@@ -57,7 +58,7 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
     }
 
     public static String genRequestActivationInfo() {
-        String requestCodePropName = ConsoleStringConstants.REQUEST_CODE_PROP_NAME;
+        String requestCodePropName = ApplicationStringConstants.REQUEST_CODE_PROP_NAME;
         String requestActivationCode = ApplicationInfo.getAppProperty(requestCodePropName);
 
         if (requestActivationCode == null || requestActivationCode.trim().length() < 1) {

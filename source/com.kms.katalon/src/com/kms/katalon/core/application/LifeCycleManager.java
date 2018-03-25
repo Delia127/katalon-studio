@@ -30,6 +30,9 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.addons.CommandBindingRemover;
+import com.kms.katalon.application.usagetracking.UsageActionTrigger;
+import com.kms.katalon.application.usagetracking.UsageInfoCollector;
+import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.handlers.CloseHandler;
@@ -43,13 +46,11 @@ import com.kms.katalon.composer.initializer.ContentAssistProposalInitializer;
 import com.kms.katalon.composer.initializer.DefaultTextFontInitializer;
 import com.kms.katalon.composer.initializer.DisplayInitializer;
 import com.kms.katalon.composer.initializer.ProblemViewImageInitializer;
-import com.kms.katalon.console.utils.VersionUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
-import com.kms.katalon.usagetracking.UsageInfoCollector;
 import com.kms.katalon.util.ComposerActivationInfoCollector;
 
 @SuppressWarnings("restriction")
@@ -104,9 +105,8 @@ public class LifeCycleManager {
 
             @Override
             public void partClosed(IWorkbenchPartReference partRef) {
-                EventBrokerSingleton.getInstance()
-                        .getEventBroker()
-                        .post(EventConstants.ECLIPSE_EDITOR_CLOSED, partRef.getPart(true));
+                EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.ECLIPSE_EDITOR_CLOSED,
+                        partRef.getPart(true));
             }
 
             @Override
@@ -188,7 +188,9 @@ public class LifeCycleManager {
                         return;
                     }
                     alertNewVersion();
-                    startCollectUsageInfo();
+
+                    Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector
+                            .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.OPEN_APPLICATION)));
 
                 } catch (Exception e) {
                     logError(e);
@@ -204,36 +206,17 @@ public class LifeCycleManager {
         if (!checkNewVersion) {
             return;
         }
-        Executors.newSingleThreadExecutor().submit(new Runnable() {
-
-            @Override
-            public void run() {
-                if (!VersionUtil.hasNewVersion()) {
-                    return;
+        Executors.newSingleThreadExecutor().submit(() -> {
+            if (!VersionUtil.hasNewVersion()) {
+                return;
+            }
+            Display.getDefault().syncExec(() -> {
+                boolean wantDownload = MessageDialog.openConfirm(null, MessageConstants.DIA_UPDATE_NEW_VERSION_TITLE,
+                        MessageConstants.DIA_UPDATE_NEW_VERSION_MESSAGE);
+                if (wantDownload) {
+                    VersionUtil.gotoDownloadPage();
                 }
-                Display.getDefault().syncExec(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        boolean wantDownload = MessageDialog.openConfirm(null,
-                                MessageConstants.DIA_UPDATE_NEW_VERSION_TITLE,
-                                MessageConstants.DIA_UPDATE_NEW_VERSION_MESSAGE);
-                        if (wantDownload) {
-                            VersionUtil.gotoDownloadPage();
-                        }
-                    }
-
-                });
-            }
-        });
-    }
-
-    private void startCollectUsageInfo() {
-        Executors.newSingleThreadExecutor().submit(new Runnable() {
-            @Override
-            public void run() {
-                UsageInfoCollector.colllect(UsageInfoCollector.getActivatedUsageInfo());
-            }
+            });
         });
     }
 

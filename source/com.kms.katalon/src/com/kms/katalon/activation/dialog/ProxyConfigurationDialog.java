@@ -19,9 +19,9 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-import com.kms.katalon.console.constants.ConsoleMessageConstants;
-import com.kms.katalon.console.constants.ConsoleStringConstants;
-import com.kms.katalon.console.utils.ProxyUtil;
+import com.kms.katalon.application.constants.ApplicationMessageConstants;
+import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.utils.ApplicationProxyUtil;
 import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.core.network.ProxyInformation;
 
@@ -70,16 +70,16 @@ public class ProxyConfigurationDialog extends TitleAreaDialog {
         gdComboProxyOption.widthHint = 320;
         gdComboProxyOption.heightHint = 18;
         cboProxyOption.setLayoutData(gdComboProxyOption);
-        cboProxyOption.setItems(new String[] { ConsoleMessageConstants.NO_PROXY,
-                ConsoleMessageConstants.USE_SYSTEM_PROXY, ConsoleMessageConstants.MANUAL_CONFIG_PROXY });
+        cboProxyOption.setItems(new String[] { ApplicationMessageConstants.NO_PROXY,
+                ApplicationMessageConstants.USE_SYSTEM_PROXY, ApplicationMessageConstants.MANUAL_CONFIG_PROXY });
         cboProxyOption.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 if (e.getSource() == cboProxyOption) {
                     String selectText = cboProxyOption.getText();
-                    if (ConsoleMessageConstants.NO_PROXY.equals(selectText)) {
+                    if (ApplicationMessageConstants.NO_PROXY.equals(selectText)) {
                         selectNoProxyOption();
-                    } else if (ConsoleMessageConstants.USE_SYSTEM_PROXY.equals(selectText)) {
+                    } else if (ApplicationMessageConstants.USE_SYSTEM_PROXY.equals(selectText)) {
                         selectSystemProxyOption();
                     } else {
                         selectManualConfigProxyOption();
@@ -97,8 +97,8 @@ public class ProxyConfigurationDialog extends TitleAreaDialog {
         gdComboProxyServerType.heightHint = 18;
         cboProxyServerType.setLayoutData(gdComboProxyServerType);
         cboProxyServerType.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
-        cboProxyServerType.setItems(new String[] { ConsoleStringConstants.HTTP_PROXY_TYPE,
-                ConsoleStringConstants.HTTPS_PROXY_TYPE, ConsoleStringConstants.SOCKS_PROXY_TYPE });
+        cboProxyServerType.setItems(new String[] { ApplicationStringConstants.HTTP_PROXY_TYPE,
+                ApplicationStringConstants.HTTPS_PROXY_TYPE, ApplicationStringConstants.SOCKS_PROXY_TYPE });
 
         Label lblAddress = new Label(innerComposite, SWT.NONE);
         lblAddress.setText(MessageConstants.LBL_ADDRESS);
@@ -211,7 +211,7 @@ public class ProxyConfigurationDialog extends TitleAreaDialog {
         txtPort.setEnabled(true);
         txtAddress.setEnabled(true);
         chkRequireAuthentication.setEnabled(true);
-        cboProxyServerType.setText(ConsoleStringConstants.HTTP_PROXY_TYPE);
+        cboProxyServerType.setText(ApplicationStringConstants.HTTP_PROXY_TYPE);
         if (!chkRequireAuthentication.getSelection()) {
             txtUsername.setEnabled(false);
             txtUsername.setText("");
@@ -221,7 +221,7 @@ public class ProxyConfigurationDialog extends TitleAreaDialog {
     }
 
     private void initialize() {
-        ProxyInformation proxyInfo = ProxyUtil.getProxyInformation();
+        ProxyInformation proxyInfo = ApplicationProxyUtil.getProxyInformation();
 
         cboProxyOption.setText(proxyInfo.getProxyOption());
         cboProxyServerType.setText(proxyInfo.getProxyServerType());
@@ -231,9 +231,9 @@ public class ProxyConfigurationDialog extends TitleAreaDialog {
         txtPass.setText(proxyInfo.getPassword());
 
         String proxyOption = cboProxyOption.getText();
-        if (ConsoleMessageConstants.NO_PROXY.equals(proxyOption)) {
+        if (ApplicationMessageConstants.NO_PROXY.equals(proxyOption)) {
             selectNoProxyOption();
-        } else if (ConsoleMessageConstants.USE_SYSTEM_PROXY.equals(proxyOption)) {
+        } else if (ApplicationMessageConstants.USE_SYSTEM_PROXY.equals(proxyOption)) {
             selectSystemProxyOption();
         } else {
             chkRequireAuthentication.setEnabled(true);
@@ -262,7 +262,7 @@ public class ProxyConfigurationDialog extends TitleAreaDialog {
         proxyInfo.setProxyServerPort(txtPort.getText());
         proxyInfo.setUsername(txtUsername.getText());
         proxyInfo.setPassword(txtPass.getText());
-        ProxyUtil.saveProxyInformation(proxyInfo);
+        ApplicationProxyUtil.saveProxyInformation(proxyInfo);
 
         super.okPressed();
     }

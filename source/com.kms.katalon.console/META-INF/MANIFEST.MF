@@ -3,8 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: com.kms.katalon.console
 Bundle-SymbolicName: com.kms.katalon.console;singleton:=true
 Bundle-Version: 1.0.0.qualifier
-Bundle-ClassPath: .,
- resources/lib/proxy-vole-1.0.4-SNAPSHOT-jar-with-dependencies.jar
+Bundle-ClassPath: .
 Bundle-Vendor: KMS
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.equinox.app,
@@ -22,9 +21,9 @@ Require-Bundle: org.eclipse.equinox.app,
  com.kms.katalon.controller,
  org.eclipse.jdt.launching,
  com.kms.katalon.custom,
- com.kms.katalon.core
+ com.kms.katalon.core,
+ com.kms.katalon.application
 Export-Package: com.kms.katalon.console.addons,
  com.kms.katalon.console.application,
- com.kms.katalon.console.constants,
- com.kms.katalon.console.utils
+ com.kms.katalon.console.constants
 Bundle-ActivationPolicy: lazy

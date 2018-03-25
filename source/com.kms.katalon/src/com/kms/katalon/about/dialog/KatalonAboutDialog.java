@@ -46,8 +46,8 @@ import org.eclipse.ui.internal.about.InstallationDialog;
 import org.eclipse.ui.menus.CommandContributionItem;
 import org.eclipse.ui.menus.CommandContributionItemParameter;
 
-import com.kms.katalon.console.utils.VersionInfo;
-import com.kms.katalon.console.utils.VersionUtil;
+import com.kms.katalon.application.utils.VersionInfo;
+import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.constants.MessageConstants;
 
 /**

@@ -70,5 +70,6 @@ Require-Bundle: org.eclipse.e4.core.contexts,
  com.kms.katalon.core.mobile,
  org.apache.commons.lang3,
  org.eclipse.jdt.launching,
- com.kms.katalon.util
+ com.kms.katalon.util,
+ com.kms.katalon.application
 Bundle-Activator: com.kms.katalon.execution.addon.ExecutionBundleActivator

@@ -1,4 +1,4 @@
-package com.kms.katalon.console.utils;
+package com.kms.katalon.application.utils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,7 +12,8 @@ import java.util.Properties;
 import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.FrameworkUtil;
 
-import com.kms.katalon.console.constants.ConsoleStringConstants;
+import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.logging.LogManager;
 import com.kms.katalon.logging.LogMode;
 import com.kms.katalon.logging.LogUtil;
@@ -56,11 +57,11 @@ public class ApplicationInfo {
     }
 
     public static String versionNo() {
-        return getAboutMappingsProperties().getProperty(ABOUT_VERSION_NUMBER_KEY, ConsoleStringConstants.EMPTY);
+        return getAboutMappingsProperties().getProperty(ABOUT_VERSION_NUMBER_KEY, GlobalStringConstants.EMPTY);
     }
 
     public static String buildNo() {
-        return getAboutMappingsProperties().getProperty(ABOUT_BUILD_NUMBER_KEY, ConsoleStringConstants.EMPTY);
+        return getAboutMappingsProperties().getProperty(ABOUT_BUILD_NUMBER_KEY, GlobalStringConstants.EMPTY);
     }
 
     public static String installLocation() {
@@ -71,14 +72,14 @@ public class ApplicationInfo {
         } catch (URISyntaxException e) {
             // do nothing
         }
-        return ConsoleStringConstants.EMPTY;
+        return ApplicationStringConstants.EMPTY;
     }
 
     /**
      * @return <code>.katalon</code> directory (in user home) location
      */
     public static String userDirLocation() {
-        return ConsoleStringConstants.APP_USER_DIR_LOCATION;
+        return ApplicationStringConstants.APP_USER_DIR_LOCATION;
     }
 
     public static void setAppInfoIntoUserHomeDir() {
@@ -86,17 +87,17 @@ public class ApplicationInfo {
         String buildNo = buildNo();
 
         getAppProperties();
-        System.setProperty(ConsoleStringConstants.APP_VERSION_NUMBER_KEY, version);
-        logInfo(ConsoleStringConstants.APP_VERSION_NUMBER_KEY + "=" + version);
-        logInfo(ConsoleStringConstants.APP_BUILD_NUMBER_KEY + "=" + buildNo);
+        System.setProperty(ApplicationStringConstants.APP_VERSION_NUMBER_KEY, version);
+        logInfo(ApplicationStringConstants.APP_VERSION_NUMBER_KEY + "=" + version);
+        logInfo(ApplicationStringConstants.APP_BUILD_NUMBER_KEY + "=" + buildNo);
 
-        if (version.equals(getAppProperty(ConsoleStringConstants.APP_VERSION_NUMBER_KEY))
-                && buildNo.equals(getAppProperty(ConsoleStringConstants.APP_BUILD_NUMBER_KEY))) {
+        if (version.equals(getAppProperty(ApplicationStringConstants.APP_VERSION_NUMBER_KEY))
+                && buildNo.equals(getAppProperty(ApplicationStringConstants.APP_BUILD_NUMBER_KEY))) {
             return;
         }
 
-        setAppProperty(ConsoleStringConstants.APP_VERSION_NUMBER_KEY, version, false);
-        setAppProperty(ConsoleStringConstants.APP_BUILD_NUMBER_KEY, buildNo, false);
+        setAppProperty(ApplicationStringConstants.APP_VERSION_NUMBER_KEY, version, false);
+        setAppProperty(ApplicationStringConstants.APP_BUILD_NUMBER_KEY, buildNo, false);
         saveAppProperties();
     }
 
@@ -105,7 +106,7 @@ public class ApplicationInfo {
             return appProperties;
         }
 
-        File appPropFile = new File(ConsoleStringConstants.APP_INFO_FILE_LOCATION);
+        File appPropFile = new File(ApplicationStringConstants.APP_INFO_FILE_LOCATION);
         File katalonDir = new File(userDirLocation());
         if (!appPropFile.exists()) {
             if (!katalonDir.exists()) {
@@ -150,7 +151,7 @@ public class ApplicationInfo {
         if (appProperties == null) {
             return;
         }
-        try (FileOutputStream out = new FileOutputStream(ConsoleStringConstants.APP_INFO_FILE_LOCATION)) {
+        try (FileOutputStream out = new FileOutputStream(ApplicationStringConstants.APP_INFO_FILE_LOCATION)) {
             appProperties.store(out, installLocation());
         } catch (Exception ex) {
             LogUtil.logError(ex);
