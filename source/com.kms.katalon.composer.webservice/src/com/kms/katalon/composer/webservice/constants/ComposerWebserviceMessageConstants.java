@@ -81,6 +81,10 @@ public class ComposerWebserviceMessageConstants extends NLS {
 
     public static String LBL_PASSWORD;
 
+    public static String LBL_FILE_PATH;
+
+    public static String LBL_FILE_SIZE;
+
     public static String CHK_SHOW_PASSWORD;
 
     public static String BTN_UPDATE_TO_HEADERS;
@@ -131,8 +135,20 @@ public class ComposerWebserviceMessageConstants extends NLS {
 
     public static String PA_WARNING_UNSUPORTED_PRIVATE_KEY_FILE;
 
+    public static String BYTES_UNIT;
+
+    public static String KILOBYTES_UNIT;
+
+    public static String MEGABYTES_UNIT;
+
+    public static String MSG_SPECIFIED_FILE_NOT_EXIST_WARN;
+
     // TextBodyEditor
     public static String PA_MSG_UNABLE_TO_OPEN_BODY_EDITOR;
+    
+    public static String PARAM_TABLE_MENU_ITEM_ADD;
+    
+    public static String PARAM_TABLE_MENU_ITEM_REMOVE;
 
     public static String PA_LBL_WRAP_LINE;
 
