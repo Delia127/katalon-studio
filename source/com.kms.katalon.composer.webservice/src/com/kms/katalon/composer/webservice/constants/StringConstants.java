@@ -17,6 +17,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_LBL_HTTP_BODY = ComposerWebserviceMessageConstants.PA_LBL_HTTP_BODY;
     public static final String VIEW_ERROR_MSG_FAILED_TO_LOAD_OBJ_REPOSITORY = ComposerWebserviceMessageConstants.VIEW_ERROR_MSG_FAILED_TO_LOAD_OBJ_REPOSITORY;
     public static final String PA_TOOLTIP_DOUBLE_CLICK_FOR_QUICK_INSERT = ComposerWebserviceMessageConstants.PA_TOOLTIP_DOUBLE_CLICK_FOR_QUICK_INSERT;
+    public static final String PA_URL_W3_HTTP_STATUS = "https://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html";
 
 	// RestRequestObjectPart
     public static final String PA_TITLE_REST = ComposerWebserviceMessageConstants.PA_TITLE_REST;

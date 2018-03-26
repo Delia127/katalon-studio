@@ -76,6 +76,8 @@ public class GlobalStringConstants {
 
     public static final String CR_EOL = "\n";
 
+    public static final String CR_COLON = ":";
+
     /** RFC 4180 defines line breaks as CRLF */
     public static final String CRLF = "\r\n";
     
@@ -223,6 +225,10 @@ public class GlobalStringConstants {
     public static final String ANDROID = GlobalMessageConstants.ANDROID;
 
     public static final String IOS = GlobalMessageConstants.IOS;
+
+    public static final String ELAPSED = GlobalMessageConstants.ELAPSED;
+
+    public static final String SIZE = GlobalMessageConstants.SIZE;
 
     // Entity name
     public static final String ROOT_FOLDER_NAME_TEST_CASE = GlobalMessageConstants.ROOT_FOLDER_NAME_TEST_CASE;

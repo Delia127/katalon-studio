@@ -92,6 +92,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String TAB_AUTHORIZATION;
 
     public static String TAB_RESPONSE;
+    
+    public static String TAB_VERIFICATION_LOG;
 
     public static String LBL_RESPONSE_HEADER;
 
@@ -147,6 +149,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String PARAM_TABLE_MENU_ITEM_ADD;
     
     public static String PARAM_TABLE_MENU_ITEM_REMOVE;
+
+    public static String PA_LBL_WRAP_LINE;
 
     static {
         // initialize resource bundle

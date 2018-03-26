@@ -62,6 +62,10 @@ CTabFolder CTabFolder {
 	swt-unselected-tabs-color: #F6F6F6;
 }
 
+#DefaultCTabFolder CTabFolder {
+    swt-selected-tab-fill: #FFFFFF;
+}
+
 #PerspectiveSwitcher  {
 	eclipse-perspective-keyline-color: rgb(170, 176, 191) rgb(170, 176, 191);
 }

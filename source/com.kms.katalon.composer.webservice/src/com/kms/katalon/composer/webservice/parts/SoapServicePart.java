@@ -37,6 +37,7 @@ import org.eclipse.jface.text.rules.FastPartitioner;
 import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -54,7 +55,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
@@ -134,8 +134,6 @@ public class SoapServicePart extends WebServicePart {
                                 @Override
                                 public void run() {
                                     try {
-                                        tabResponse.getParent().setSelection(tabResponse);
-
                                         String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
                                         ResponseObject responseObject = WebServiceController.getInstance().sendRequest(
                                                 getWSRequestObject(), projectDir, ProxyPreferences.getProxyInformation());
@@ -254,7 +252,7 @@ public class SoapServicePart extends WebServicePart {
     }
 
     @Override
-    protected void addTabBody(TabFolder parent) {
+    protected void addTabBody(CTabFolder parent) {
         super.addTabBody(parent);
         tabBody.setText(StringConstants.PA_LBL_XML_REQ_MSG);
         Composite tabComposite = (Composite) tabBody.getControl();
@@ -357,10 +355,9 @@ public class SoapServicePart extends WebServicePart {
     }
 
     @Override
-    protected void addTabResponse(TabFolder parent) {
-        super.addTabResponse(parent);
-        Composite tabComposite = (Composite) tabResponse.getControl();
-        responseBody = createXMLSourceViewer(tabComposite);
+    protected void createResponseComposite(Composite parent) {
+        super.createResponseComposite(parent);
+        responseBody = createXMLSourceViewer(responseBodyComposite);
         responseBody.setEditable(false);
     }
 

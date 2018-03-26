@@ -157,24 +157,46 @@ public class RestfulClient extends BasicRequestor {
             return null;
         }
 
+        long startTime = System.currentTimeMillis();
         int statusCode = conn.getResponseCode();
+        long waitingTime = System.currentTimeMillis() - startTime;
+        long contentDownloadTime = 0L;
         StringBuffer sb = new StringBuffer();
 
         char[] buffer = new char[1024];
+        long bodyLength = 0L;
         try (InputStream inputStream = (statusCode >= 400) ? conn.getErrorStream() : conn.getInputStream()) {
             if (inputStream != null) {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
                 int len = 0;
+                startTime = System.currentTimeMillis();
                 while ((len = reader.read(buffer)) != -1) {
+                    contentDownloadTime += System.currentTimeMillis() - startTime;
                     sb.append(buffer, 0, len);
+                    bodyLength += len;
+                    startTime = System.currentTimeMillis();
                 }
             }
         }
+
+        long headerLength = conn.getHeaderFields().entrySet().stream().mapToLong(e -> {
+            String key = e.getKey();
+            if (StringUtils.isEmpty(key)) {
+                return 0L;
+            }
+            long length = key.getBytes().length;
+            length += e.getValue().stream().mapToLong(v -> v.getBytes().length).sum();
+            return length;
+        }).sum();
 
         ResponseObject responseObject = new ResponseObject(sb.toString());
         responseObject.setContentType(conn.getContentType());
         responseObject.setHeaderFields(conn.getHeaderFields());
         responseObject.setStatusCode(statusCode);
+        responseObject.setResponseBodySize(bodyLength);
+        responseObject.setResponseHeaderSize(headerLength);
+        responseObject.setWaitingTime(waitingTime);
+        responseObject.setContentDownloadTime(contentDownloadTime);
 
         conn.disconnect();
 
