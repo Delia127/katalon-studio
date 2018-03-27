@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public enum HttpBodyType {
     TEXT("text"),
-    URL_ENCODED(""),
+    URL_ENCODED("x-www-form-urlencoded"),
     FORM_DATA("form_data"),
     FILE("file");
     
