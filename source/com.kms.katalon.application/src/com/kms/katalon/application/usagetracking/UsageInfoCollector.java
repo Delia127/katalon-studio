@@ -43,6 +43,7 @@ public class UsageInfoCollector {
         jsTraits.addProperty(UsagePropertyConstant.PROPERTY_SESSION_ID, KatalonApplication.SESSION_ID);
         jsTraits.addProperty(UsagePropertyConstant.PROPERTY_TRIGGERED_BY, usageInfo.getTriggeredBy());
         jsTraits.addProperty(UsagePropertyConstant.PROPERTY_RUNNING_MODE, usageInfo.getRunningMode());
+        jsTraits.addProperty(UsagePropertyConstant.PROPERTY_MAC_ADDRESS, usageInfo.getMacAddress());
 
         jsObject.add("traits", jsTraits);
         jsObject.addProperty("userId", usageInfo.getEmail());
@@ -92,7 +93,9 @@ public class UsageInfoCollector {
 
     public static UsageInformation getActivatedUsageInfo(UsageActionTrigger actionTrigger, RunningMode runningMode) {
         String email = ApplicationInfo.getAppProperty(EMAIL_KEY);
-        UsageInformation usageInfo = UsageInformation.createActivatedInfo(email, KatalonApplication.SESSION_ID);
+        UsageInformation usageInfo = UsageInformation.createActivatedInfo(email, 
+                KatalonApplication.SESSION_ID,
+                KatalonApplication.MAC_ADDRESS);
         Date orgTime = restorePreviousUsageInfo(usageInfo);
         List<String> projectPaths = getRecentProjects();
         usageInfo.setVersion(ApplicationInfo.versionNo() + " build " + ApplicationInfo.buildNo());
@@ -109,7 +112,8 @@ public class UsageInfoCollector {
     }
 
     public static UsageInformation getAnonymousUsageInfo(UsageActionTrigger actionTrigger, RunningMode runningMode) {
-        UsageInformation usageInfo = UsageInformation.createAnonymousInfo(KatalonApplication.SESSION_ID);
+        UsageInformation usageInfo = UsageInformation.createAnonymousInfo(KatalonApplication.SESSION_ID,
+                KatalonApplication.MAC_ADDRESS);
         usageInfo.setVersion(ApplicationInfo.versionNo() + " build " + ApplicationInfo.buildNo());
         usageInfo.setTriggeredBy(actionTrigger.getAction());
         usageInfo.setRunningMode(runningMode.getMode());
