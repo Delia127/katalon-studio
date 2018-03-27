@@ -3,6 +3,7 @@ package com.kms.katalon.core.webui.common;
 import java.awt.Rectangle;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -28,6 +29,7 @@ import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.core.testobject.TestObjectProperty;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
+import com.kms.katalon.core.webui.common.XPathBuilder.PropertyType;
 import com.kms.katalon.core.webui.constants.CoreWebuiMessageConstants;
 import com.kms.katalon.core.webui.constants.StringConstants;
 import com.kms.katalon.core.webui.driver.DriverFactory;
@@ -487,6 +489,10 @@ public class WebUiCommonHelper extends KeywordHelper {
                 return null;
         }
     }
+    
+    public static By buildUnionLocator(TestObject to) {
+        return buildXpath(to, XPathBuilder.AggregationType.UNION);
+    }
 
     public static String getSelectorValue(TestObject to) {
         SelectorMethod selectorMethod = to.getSelectorMethod();
@@ -513,8 +519,12 @@ public class WebUiCommonHelper extends KeywordHelper {
     }
 
     private static By buildXpath(TestObject to) {
+        return buildXpath(to, XPathBuilder.AggregationType.INTERSECT);
+    }
+    
+    private static By buildXpath(TestObject to, XPathBuilder.AggregationType aggregationType) {
         XPathBuilder xpathBuilder = new XPathBuilder(to.getActiveProperties());
-        return By.xpath(xpathBuilder.build()); 
+        return By.xpath(xpathBuilder.build(aggregationType));
     }
 
     public static String getBrowserAndVersion(WebDriver webDriver) {
@@ -693,6 +703,84 @@ public class WebUiCommonHelper extends KeywordHelper {
                 Thread.sleep(500);
                 timeCount += 0.5;
                 miliseconds = System.currentTimeMillis();
+            }
+            // heuristic
+            if (!objectInsideShadowDom) {
+                defaultLocator = WebUiCommonHelper.buildUnionLocator(testObject);
+                List<WebElement> webElements = webDriver.findElements(defaultLocator);
+                if (webElements != null && webElements.size() > 0) {
+                    int maxNumberOfMatchingAttributes = 0;
+                    int bestMatchIndex = 0;
+                    int currentIndex = 0;
+                    for (WebElement webElement : webElements) {
+                        List<TestObjectProperty> expectedProperties = testObject.getProperties();
+                        int numberOfMatchingAttributes = 0;
+                        for (TestObjectProperty expectedProperty : expectedProperties) {
+                            String propertyName = expectedProperty.getName();
+                            if (XPathBuilder.PropertyType.nameOf(propertyName).equals(XPathBuilder.PropertyType.TAG)) {
+                                String expectedTag = expectedProperty.getValue();
+                                String actualTag = webElement.getTagName();
+                                if (expectedTag.equalsIgnoreCase(actualTag)) {
+                                    numberOfMatchingAttributes++;
+                                }
+                            }
+                            if (XPathBuilder.PropertyType.nameOf(propertyName).equals(XPathBuilder.PropertyType.ATTRIBUTE)) {
+                                numberOfMatchingAttributes++;
+                                String expectedPropertyValue = expectedProperty.getValue();
+                                String actualPropertyValue = webElement.getAttribute(propertyName);
+                                switch (expectedProperty.getCondition()) {
+                                    case EQUALS:
+                                        if (expectedPropertyValue.equals(actualPropertyValue)) {
+                                            numberOfMatchingAttributes++;
+                                        }
+                                        break;
+                                    case NOT_EQUAL:
+                                        if (!expectedPropertyValue.equals(actualPropertyValue)) {
+                                            numberOfMatchingAttributes++;
+                                        }
+                                        break;
+                                    case CONTAINS:
+                                        if (expectedPropertyValue.contains(actualPropertyValue)) {
+                                            numberOfMatchingAttributes++;
+                                        }
+                                        break;
+                                    case NOT_CONTAIN:
+                                        if (!expectedPropertyValue.contains(actualPropertyValue)) {
+                                            numberOfMatchingAttributes++;
+                                        }
+                                        break;
+                                    case STARTS_WITH:
+                                        if (expectedPropertyValue.startsWith(actualPropertyValue)) {
+                                            numberOfMatchingAttributes++;
+                                        }
+                                        break;
+                                    case ENDS_WITH:
+                                        if (expectedPropertyValue.endsWith(actualPropertyValue)) {
+                                            numberOfMatchingAttributes++;
+                                        }
+                                        break;
+                                    case MATCHES_REGEX:
+                                        if (expectedPropertyValue.matches(actualPropertyValue)) {
+                                            numberOfMatchingAttributes++;
+                                        }
+                                        break;
+                                    case NOT_MATCH_REGEX:
+                                        if (!expectedPropertyValue.matches(actualPropertyValue)) {
+                                            numberOfMatchingAttributes++;
+                                        }
+                                        break;
+                                    default:
+                                }
+                            }
+                        }
+                        if (numberOfMatchingAttributes > maxNumberOfMatchingAttributes) {
+                            bestMatchIndex = currentIndex;
+                        }
+                        currentIndex++;
+                    }
+                    WebElement bestMatchElement = webElements.get(bestMatchIndex);
+                    return Arrays.asList(bestMatchElement);
+                }
             }
         } catch (TimeoutException e) {
             // timeOut, do nothing
