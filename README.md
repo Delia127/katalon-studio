@@ -16,7 +16,7 @@
   Type command "mvn p2:site" and wait for maven BUILD SUCCESS. 
   Type command "mvn -Djetty.port=9999 jetty:run" to start maven local repo for Katalon
 
-- Go to `/source/com.kms.katalon.p2site`, execute `mvn -Djetty.port=9999 jetty:run`.
+- Go to `/source/com.kms.katalon.p2site`, execute `mvn -Djetty.port=33333 jetty:run`.
 
 - Open Eclipse with workspace point to folder "source" you've just checked out in first step, import all sub projects inside it: File->Import-General->Existing Projects into Workspace
 
