@@ -3,7 +3,9 @@ package com.kms.katalon.core.testobject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RequestObject extends TestObject {
+import com.kms.katalon.core.testobject.impl.HttpTextBodyContent;
+
+public class RequestObject extends TestObject implements HttpMessage {
 
     private String name;
 
@@ -11,6 +13,7 @@ public class RequestObject extends TestObject {
 
     private List<TestObjectProperty> httpHeaderProperties;
 
+    @Deprecated
     private String httpBody = "";
 
     private String wsdlAddress = "";
@@ -26,6 +29,8 @@ public class RequestObject extends TestObject {
     private String soapServiceFunction = "";
 
     private List<TestObjectProperty> restParameters;
+
+    private HttpBodyContent bodyContent;
 
     private String objectId;
 
@@ -114,6 +119,7 @@ public class RequestObject extends TestObject {
      * Get the http body for this request object
      * 
      * @return the http body for this request object as a String
+     * @deprecated Deprecated from 5.4. Please use {@link #setBodyContent(HttpBodyContent)} instead.
      */
     public String getHttpBody() {
         return httpBody;
@@ -123,8 +129,10 @@ public class RequestObject extends TestObject {
      * Set the http body for this request object
      * 
      * @param httpBody the new http body for this request object as a String
+     * @deprecated Deprecated from 5.4. Please use {@link #setBodyContent(HttpBodyContent)} instead.
      */
     public void setHttpBody(String httpBody) {
+        this.bodyContent = new HttpTextBodyContent(httpBody);
         this.httpBody = httpBody;
     }
 
@@ -260,5 +268,26 @@ public class RequestObject extends TestObject {
      */
     public void setSoapServiceFunction(String soapServiceFunction) {
         this.soapServiceFunction = soapServiceFunction;
+    }
+
+    /**
+     * Gets the body content of request.
+     * 
+     * @see {@link HttpTextBodyContent}
+     * @since 5.4
+     */
+    @Override
+    public HttpBodyContent getBodyContent() {
+        return bodyContent;
+    }
+
+    /**
+     * Sets the body content for this request.
+     * @param bodyContent an implementation of {@link HttpBodyContent}
+     * 
+     * @see {@link HttpTextBodyContent}
+     */
+    public void setBodyContent(HttpBodyContent bodyContent) {
+        this.bodyContent = bodyContent;
     }
 }

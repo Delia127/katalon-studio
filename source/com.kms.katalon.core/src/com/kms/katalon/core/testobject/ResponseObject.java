@@ -1,5 +1,7 @@
 package com.kms.katalon.core.testobject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Collections;
@@ -17,14 +19,18 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
-public class ResponseObject implements PerformanceResourceTiming {
+public class ResponseObject implements PerformanceResourceTiming, HttpMessage {
 
-    private String contentType = "text";
+    private static final String DF_CHARSET = "UTF-8";
 
+    private String contentType = "text/plain";
+
+    @Deprecated
     private String responseText;
 
     private int statusCode;
@@ -38,6 +44,10 @@ public class ResponseObject implements PerformanceResourceTiming {
     private long waitingTime;
     
     private long contentDownloadTime;
+    
+    private String contentCharset;
+
+    private HttpBodyContent responseBodyContent;
 
     public ResponseObject() {
     }
@@ -76,14 +86,18 @@ public class ResponseObject implements PerformanceResourceTiming {
      * Get the raw response text
      * 
      * @return the raw response text
+     * @throws IOException if content could not be parsed to String.
      */
-    public String getResponseText() {
-        return responseText;
+    public String getResponseText() throws IOException {
+        ByteArrayOutputStream outstream = new ByteArrayOutputStream();
+        responseBodyContent.writeTo(outstream);
+        return outstream.toString(getContentCharset());
     }
 
     /**
      * Set the raw response text
      * 
+     * @deprecated from 5.4
      * @param responseText the new raw response text
      */
     public void setResponseText(String responseText) {
@@ -245,5 +259,30 @@ public class ResponseObject implements PerformanceResourceTiming {
     
     public void setContentDownloadTime(long contentDownloadTime) {
         this.contentDownloadTime = contentDownloadTime;
+    }
+
+    @Override
+    public HttpBodyContent getBodyContent() {
+        return responseBodyContent;
+    }
+    
+    public void setBodyContent(HttpBodyContent bodyContent) {
+        this.responseBodyContent = bodyContent;
+    }
+
+    /**
+     * @return Returns the Charset specified in the Content-Type of this response or the "UTF-8" charset as a default.
+     * 
+     * @since 5.4
+     */
+    public String getContentCharset() {
+        if (StringUtils.isEmpty(contentCharset)) {
+            return DF_CHARSET;
+        }
+        return contentCharset;
+    }
+
+    public void setContentCharset(String contentCharset) {
+        this.contentCharset = contentCharset;
     }
 }

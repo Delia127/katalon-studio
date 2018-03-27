@@ -116,11 +116,12 @@ public class RestServicePart extends WebServicePart {
                                 if (monitor.isCanceled()) {
                                     return;
                                 }
+
+
+                                String bodyContent = responseObject.getResponseText();
                                 Display.getDefault().asyncExec(() -> {
                                     setResponseStatus(responseObject);
                                     responseHeader.setDocument(createDocument(getPrettyHeaders(responseObject)));
-
-                                    String bodyContent = responseObject.getResponseText();
 
                                     if (bodyContent == null) {
                                         return;
