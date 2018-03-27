@@ -23,6 +23,8 @@ public interface UsagePropertyConstant {
 
     public static final String PROPERTY_TRIGGERED_BY = "triggeredBy";
 
+    public static final String PROPERTY_RUNNING_MODE = "runningMode";
+
     public static final String KEY_ORG_TIME = "orgTime";
 
     public static final String KEY_NUM_TEST_CASE = "ntc";

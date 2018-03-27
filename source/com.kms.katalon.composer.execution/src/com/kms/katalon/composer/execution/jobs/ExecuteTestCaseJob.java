@@ -8,6 +8,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.ui.di.UISynchronize;
 
+import com.kms.katalon.application.RunningMode;
 import com.kms.katalon.application.usagetracking.UsageActionTrigger;
 import com.kms.katalon.application.usagetracking.UsageInfoCollector;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
@@ -74,7 +75,8 @@ public class ExecuteTestCaseJob extends Job {
             return Status.CANCEL_STATUS;
         } finally {
             monitor.done();
-            UsageInfoCollector.collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.RUN_SCRIPT));
+            UsageInfoCollector
+                    .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.RUN_SCRIPT, RunningMode.GUI));
         }
     }
 

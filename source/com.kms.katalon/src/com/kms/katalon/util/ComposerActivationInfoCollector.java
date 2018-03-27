@@ -8,6 +8,7 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.window.Window;
 
 import com.kms.katalon.activation.dialog.ActivationDialog;
+import com.kms.katalon.application.RunningMode;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.usagetracking.UsageActionTrigger;
 import com.kms.katalon.application.usagetracking.UsageInfoCollector;
@@ -34,8 +35,8 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
             return true;
         }
         // Send anonymous info for the first time using
-        Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector
-                .collect(UsageInfoCollector.getAnonymousUsageInfo(UsageActionTrigger.OPEN_FIRST_TIME)));
+        Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector.collect(
+                UsageInfoCollector.getAnonymousUsageInfo(UsageActionTrigger.OPEN_FIRST_TIME, RunningMode.GUI)));
         int result = new ActivationDialog(null).open();
         if (result == Window.CANCEL) {
             return false;

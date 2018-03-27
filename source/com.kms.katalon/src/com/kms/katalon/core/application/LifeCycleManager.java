@@ -30,6 +30,7 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.addons.CommandBindingRemover;
+import com.kms.katalon.application.RunningMode;
 import com.kms.katalon.application.usagetracking.UsageActionTrigger;
 import com.kms.katalon.application.usagetracking.UsageInfoCollector;
 import com.kms.katalon.application.utils.VersionUtil;
@@ -190,7 +191,8 @@ public class LifeCycleManager {
                     alertNewVersion();
 
                     Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector
-                            .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.OPEN_APPLICATION)));
+                            .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.OPEN_APPLICATION,
+                                    RunningMode.GUI)));
 
                 } catch (Exception e) {
                     logError(e);
