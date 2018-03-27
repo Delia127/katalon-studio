@@ -6,7 +6,7 @@
 - Go to Installation Details and uninstall EGit 4.6
 
 - Install these plugins:
-  + Groovy-Eclipse at `/source/com.kms.katalon.p2site`
+  + Groovy-Eclipse at `/source/com.kms.katalon.p2site` (Install New Software with `file://<path_to_that_directory>)
   + EGit 4.4 at http://192.168.35.33:9998/egit/updates-4.4.1/
 
 - Installed Maven found at https://maven.apache.org/download.cgi, update PATH environment variable to include <Maven Home>\bin folder. Make sure you can execute "mvn" command from a console (terminal/cmd) window
