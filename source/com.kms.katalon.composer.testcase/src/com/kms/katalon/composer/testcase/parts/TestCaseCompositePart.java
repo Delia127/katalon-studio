@@ -491,6 +491,10 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
     public TestCasePart getChildTestCasePart() {
         return childTestCasePart;
     }
+    
+    public void loadTreeTableInput() {
+        setScriptContentToManual();
+    }
 
     public MPart getChildManualPart() {
         return childTestCasePart.getMPart();
