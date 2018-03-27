@@ -1,4 +1,3 @@
-[![Katalon Logo](http://katalon.kms-technology.com/assets/images/katalon_logo.png)](http://katalon.kms-technology.com)
 ##  Development environment build
 - Check out source code from Git to your local, please make sure you have all Katalon plug-ins (sub projects with prefix names "com.kms.katalon...") under "source" folder
 
