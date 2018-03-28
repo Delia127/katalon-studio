@@ -20,10 +20,6 @@ import org.apache.http.message.BasicNameValuePair;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.jface.text.Document;
-import org.eclipse.jface.text.DocumentEvent;
-import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -48,6 +44,7 @@ import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.editor.HttpBodyEditorComposite;
+import com.kms.katalon.composer.webservice.response.body.ResponseBodyEditorsComposite;
 import com.kms.katalon.composer.webservice.view.ExpandableComposite;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.WebServiceController;
@@ -80,8 +77,7 @@ public class RestServicePart extends WebServicePart {
                 }
 
                 // clear previous response
-                responseHeader.setDocument(new Document());
-                responseBody.setDocument(new Document());
+                mirrorEditor.setText("");
 
                 String requestURL = wsApiControl.getRequestURL().trim();
                 if (isInvalidURL(requestURL)) {
@@ -118,15 +114,14 @@ public class RestServicePart extends WebServicePart {
                                 }
                                 Display.getDefault().asyncExec(() -> {
                                     setResponseStatus(responseObject);
-                                    responseHeader.setDocument(createDocument(getPrettyHeaders(responseObject)));
-
+                                    mirrorEditor.setText(getPrettyHeaders(responseObject));
                                     String bodyContent = responseObject.getResponseText();
 
                                     if (bodyContent == null) {
                                         return;
                                     }
-
-                                    responseBody.setDocument(createDocument(bodyContent));
+                                    responseBodyEditor.setInput(responseObject);
+                                    
                                 });
                             } catch (Exception e) {
                                 throw new InvocationTargetException(e);
@@ -290,7 +285,6 @@ public class RestServicePart extends WebServicePart {
     protected void addTabBody(CTabFolder parent) {
         super.addTabBody(parent);
         Composite tabComposite = (Composite) tabBody.getControl();
-        // requestBody = createSourceViewer(tabComposite, new GridData(SWT.FILL, SWT.FILL, true, true));
         requestBodyEditor = new HttpBodyEditorComposite(tabComposite, SWT.NONE, this);
         requestBodyEditor.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
     }
@@ -298,8 +292,8 @@ public class RestServicePart extends WebServicePart {
     @Override
     protected void createResponseComposite(Composite parent) {
         super.createResponseComposite(parent);
-        responseBody = createSourceViewer(responseBodyComposite, new GridData(SWT.FILL, SWT.FILL, true, true));
-        responseBody.setEditable(false);
+        responseBodyEditor = new ResponseBodyEditorsComposite(responseBodyComposite, SWT.NONE);
+        responseBodyEditor.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
     }
 
     @Override
@@ -307,23 +301,6 @@ public class RestServicePart extends WebServicePart {
         SourceViewer sv = super.createSourceViewer(parent, layoutData);
         sv.configure(new SourceViewerConfiguration());
         return sv;
-    }
-
-    private IDocument createDocument(String documentContent) {
-        IDocument document = new Document(documentContent);
-        document.addDocumentListener(new IDocumentListener() {
-
-            @Override
-            public void documentChanged(DocumentEvent event) {
-                setDirty();
-            }
-
-            @Override
-            public void documentAboutToBeChanged(DocumentEvent event) {
-                // do nothing
-            }
-        });
-        return document;
     }
 
     @Override
@@ -358,7 +335,6 @@ public class RestServicePart extends WebServicePart {
             }
 
             wsApiControl.getRequestURLControl().setText(uriBuilder.build().toString());
-
             String restRequestMethod = clone.getRestRequestMethod();
             int index = Arrays.asList(WebServiceRequestEntity.REST_REQUEST_METHODS).indexOf(restRequestMethod);
             wsApiControl.getRequestMethodControl().select(index < 0 ? 0 : index);
@@ -375,7 +351,6 @@ public class RestServicePart extends WebServicePart {
             updateHeaders(clone);
 
             requestBodyEditor.setInput(clone);
-
             tabBody.getControl().setEnabled(isBodySupported());
             dirtyable.setDirty(false);
 
