@@ -112,6 +112,40 @@ public class XPathBuilder {
 
         return getXpathSelectorValue(xpaths, aggregationType);
     }
+    
+    public List<String> buildTextConditions() {
+        
+        predicates = new ArrayList<>();
+        
+        if (properties != null && !properties.isEmpty()) {
+            for (TestObjectProperty p : properties) {
+                String propertyName = p.getName();
+                String propertyValue = p.getValue();
+                ConditionType conditionType = p.getCondition();
+                switch (PropertyType.nameOf(propertyName)) {
+                    case TEXT:
+                        String textExpression = buildExpression("text()", propertyValue, conditionType);
+                        String dotExpression = buildExpression(".", propertyValue, conditionType);
+                        predicates.add(String.format("(%s or %s)", textExpression, dotExpression));
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        
+        List<String> xpaths = new ArrayList<>();
+
+        if (!predicates.isEmpty()) {
+            StringBuilder propertyBuilder = new StringBuilder();
+            propertyBuilder.append("//*[")
+                    .append(StringUtils.join(predicates, " or "))
+                    .append("]");
+            xpaths.add(propertyBuilder.toString());
+        }
+        
+        return xpaths;
+    }
 
     private String getXpathSelectorValue(List<String> xpathList, AggregationType aggregationType) {
         String xpathString;
