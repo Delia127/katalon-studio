@@ -1,7 +1,10 @@
 package com.kms.katalon.core.webui.common;
 
+import java.util.AbstractMap;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -113,38 +116,38 @@ public class XPathBuilder {
         return getXpathSelectorValue(xpaths, aggregationType);
     }
     
-    public List<String> buildTextConditions() {
+    public List<Entry<String, String>> buildXpathBasedLocators() {
         
-        predicates = new ArrayList<>();
+        List<Entry<String, String>> locators = new ArrayList<>();
         
         if (properties != null && !properties.isEmpty()) {
             for (TestObjectProperty p : properties) {
                 String propertyName = p.getName();
                 String propertyValue = p.getValue();
                 ConditionType conditionType = p.getCondition();
+                Entry entry;
                 switch (PropertyType.nameOf(propertyName)) {
                     case TEXT:
                         String textExpression = buildExpression("text()", propertyValue, conditionType);
                         String dotExpression = buildExpression(".", propertyValue, conditionType);
-                        predicates.add(String.format("(%s or %s)", textExpression, dotExpression));
+                        String predicate = String.format("(%s or %s)", textExpression, dotExpression);
+                        String locator = "//*[" + predicate + "]";
+                        entry = new AbstractMap.SimpleEntry<>(propertyName, locator);
+                        break;
+                    case XPATH:
+                        entry = new AbstractMap.SimpleEntry<>(propertyName, propertyValue);
                         break;
                     default:
+                        entry = null;
                         break;
+                }
+                if (entry != null) {
+                    locators.add(entry);
                 }
             }
         }
         
-        List<String> xpaths = new ArrayList<>();
-
-        if (!predicates.isEmpty()) {
-            StringBuilder propertyBuilder = new StringBuilder();
-            propertyBuilder.append("//*[")
-                    .append(StringUtils.join(predicates, " or "))
-                    .append("]");
-            xpaths.add(propertyBuilder.toString());
-        }
-        
-        return xpaths;
+        return locators;
     }
 
     private String getXpathSelectorValue(List<String> xpathList, AggregationType aggregationType) {

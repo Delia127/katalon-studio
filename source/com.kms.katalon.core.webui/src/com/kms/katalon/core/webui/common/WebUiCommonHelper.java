@@ -2,13 +2,15 @@ package com.kms.katalon.core.webui.common;
 
 import java.awt.Rectangle;
 import java.text.MessageFormat;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,6 +26,8 @@ import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.helper.KeywordHelper;
@@ -40,6 +44,7 @@ import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.core.webui.exception.WebElementNotFoundException;
 
 public class WebUiCommonHelper extends KeywordHelper {
+    
     public static final String CSS_LOCATOR_PROPERTY_NAME = "css";
     
     public static final String XPATH_LOCATOR_PROPERTY_NAME = "xpath";
@@ -53,6 +58,11 @@ public class WebUiCommonHelper extends KeywordHelper {
     public static final String WEB_ELEMENT_XPATH = "xpath";
 
     private static KeywordLogger logger = KeywordLogger.getInstance();
+    
+    private static Cache<String, WebElement> webElementsCache = CacheBuilder.newBuilder()
+            .maximumSize(10)
+            .expireAfterAccess(10, TimeUnit.MINUTES)
+            .build();
 
     public static boolean isTextPresent(WebDriver webDriver, String text, boolean isRegex)
             throws WebDriverException, IllegalArgumentException {
@@ -532,9 +542,12 @@ public class WebUiCommonHelper extends KeywordHelper {
         return By.xpath(xpathBuilder.build(aggregationType));
     }
     
-    private static List<By> buildTextConditionXpaths(TestObject to) {
+    private static List<Entry<String, By>> buildXpathsFromXpathBasedConditions(TestObject to) {
         XPathBuilder xpathBuilder = new XPathBuilder(to.getProperties());
-        return xpathBuilder.buildTextConditions().stream().map(xpath -> By.xpath(xpath)).collect(Collectors.toList());
+        return xpathBuilder.buildXpathBasedLocators()
+                .stream()
+                .map(entry -> new AbstractMap.SimpleEntry<>(entry.getKey(), By.xpath(entry.getValue())))
+                .collect(Collectors.toList());
     }
 
     public static String getBrowserAndVersion(WebDriver webDriver) {
@@ -654,6 +667,20 @@ public class WebUiCommonHelper extends KeywordHelper {
         boolean isSwitchToParentFrame = false;
         try {
             WebDriver webDriver = DriverFactory.getWebDriver();
+            
+            String key = getKeyForWebElementsCache(webDriver, testObject);
+            WebElement webElement = webElementsCache.getIfPresent(key);
+            if (webElement != null) {
+                try {
+                    webElement.getTagName(); // check if not stale
+                    logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_RETRIEVING_WEB_ELEMENT_FROM_CACHE, testObject.getObjectId()));
+                    return Arrays.asList(webElement);
+                } catch (Exception e) {
+                    // stale
+                    webElementsCache.invalidate(key);
+                }
+            }
+            
             final boolean objectInsideShadowDom = testObject.getParentObject() != null
                     && testObject.isParentObjectShadowRoot();
             By defaultLocator = null;
@@ -729,6 +756,10 @@ public class WebUiCommonHelper extends KeywordHelper {
         }
         return Collections.emptyList();
     }
+    
+    private static String getKeyForWebElementsCache(WebDriver webDriver, TestObject testObject) {
+        return webDriver.hashCode() + "-" + webDriver.getWindowHandle() + "-" + testObject.getObjectId();
+    }
 
     private static List<WebElement> findWebElementsUsingHeuristicMethod(
             WebDriver webDriver, 
@@ -744,48 +775,56 @@ public class WebUiCommonHelper extends KeywordHelper {
             return Collections.emptyList();
         }
         WebElement bestMatchElement = findBestMatchElement(webDriver, testObject, webElements);
+        
+        String key = getKeyForWebElementsCache(webDriver, testObject);
+        webElementsCache.put(key, bestMatchElement);
+        
         return Arrays.asList(bestMatchElement);
     }
 
     private static WebElement findBestMatchElement(WebDriver webDriver, TestObject testObject, List<WebElement> webElements) {
-        Map<WebElement, Integer> matchesLookup = webElements
+        Map<WebElement, List<String>> matchesLookup = webElements
                 .stream()
                 .collect(Collectors.toMap(
                         Function.identity(), 
-                        webElement -> countMatchingAttributes(testObject, webElement)));
-        List<By> textConditionLocators = buildTextConditionXpaths(testObject);
-        for (By textConditionLocator : textConditionLocators) {
-            List<WebElement> webElementsMatchingTextCondition = webDriver.findElements(textConditionLocator);
+                        webElement -> getSatisfiedConditions(testObject, webElement)));
+        List<Entry<String, By>> xpaths = buildXpathsFromXpathBasedConditions(testObject);
+        for (Entry<String, By> entry : xpaths) {
+            String propertyName = entry.getKey();
+            By locator = entry.getValue();
+            List<WebElement> webElementsMatchingTextCondition = webDriver.findElements(locator);
             for (WebElement webElement : webElementsMatchingTextCondition) {
-                Integer numberOfMatches = matchesLookup.get(webElement);
-                if (numberOfMatches != null) { // should always true, just in case
-                    matchesLookup.put(webElement, numberOfMatches++);
+                List<String> matches = matchesLookup.get(webElement);
+                if (matches != null) { // should always true, just in case
+                    matches.add(propertyName);
                 }
             }
         }
-        WebElement bestMatchElement = Collections.max(matchesLookup.entrySet(), (left, right) -> left.getValue() - right.getValue()).getKey();
+        Entry<WebElement, List<String>> bestMatchEntry = Collections.max(
+                matchesLookup.entrySet(), 
+                (left, right) -> left.getValue().size() - right.getValue().size());
+        WebElement bestMatchElement = bestMatchEntry.getKey();
+        List<String> matchingAttributes = bestMatchEntry.getValue();
+        logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_USING_HEURISTIC_METHOD, testObject.getObjectId(), matchingAttributes));
         return bestMatchElement;
     }
 
-    private static int countMatchingAttributes(TestObject testObject, WebElement webElement) {
+    private static List<String> getSatisfiedConditions(TestObject testObject, WebElement webElement) {
         List<TestObjectProperty> expectedProperties = testObject.getProperties();
-        int numberOfMatchingAttributes = 0;
+        List<String> satisfiedConditions = new ArrayList<>();
         for (TestObjectProperty expectedProperty : expectedProperties) {
             String propertyName = expectedProperty.getName();
             PropertyType propertyType = XPathBuilder.PropertyType.nameOf(propertyName);
+            boolean matches;
             switch (propertyType) {
                 case TAG:
                     String expectedTag = expectedProperty.getValue();
                     String actualTag = webElement.getTagName();
-                    if (expectedTag.equalsIgnoreCase(actualTag)) {
-                        numberOfMatchingAttributes++;
-                    }
+                    matches = expectedTag.equalsIgnoreCase(actualTag);
                     break;
                 case ATTRIBUTE:
-                    numberOfMatchingAttributes++;
                     String expectedPropertyValue = expectedProperty.getValue();
                     String actualPropertyValue = webElement.getAttribute(propertyName);
-                    boolean matches;
                     switch (expectedProperty.getCondition()) {
                         case EQUALS:
                             matches = expectedPropertyValue.equals(actualPropertyValue);
@@ -815,15 +854,16 @@ public class WebUiCommonHelper extends KeywordHelper {
                             matches = false;
                             break;
                     }
-                    if (matches) {
-                        numberOfMatchingAttributes++;
-                    }
                     break;
                 default:
+                    matches = false;
                     break;
             }
+            if (matches) {
+                satisfiedConditions.add(propertyName);
+            }
         }
-        return numberOfMatchingAttributes;
+        return satisfiedConditions;
     }
 
     @SuppressWarnings("unused")
