@@ -12,7 +12,8 @@ Require-Bundle: com.google.gson,
  com.kms.katalon.constant,
  org.apache.commons.lang3,
  org.eclipse.core.runtime,
- com.kms.katalon.core
+ com.kms.katalon.core,
+ com.kms.katalon.util
 Export-Package: com.kms.katalon.application,
  com.kms.katalon.application.constants,
  com.kms.katalon.application.usagetracking,

@@ -27,6 +27,8 @@ public class UsageInformation {
 
     private String sessionId;
 
+    private String macAddress;
+
     private String triggeredBy;
 
     private String runningMode;
@@ -153,17 +155,27 @@ public class UsageInformation {
         this.runningMode = runningMode;
     }
 
-    public static UsageInformation createAnonymousInfo(String sessionId) {
+    public String getMacAddress() {
+        return macAddress;
+    }
+
+    public void setMacAddress(String macAddress) {
+        this.macAddress = macAddress;
+    }
+
+    public static UsageInformation createAnonymousInfo(String sessionId, String macAddress) {
         UsageInformation anonymous = new UsageInformation();
         anonymous.setEmail(ANONYMOUS);
         anonymous.setSessionId(sessionId);
+        anonymous.setMacAddress(macAddress);
         return anonymous;
     }
 
-    public static UsageInformation createActivatedInfo(String email, String sessionId) {
+    public static UsageInformation createActivatedInfo(String email, String sessionId, String macAddress) {
         UsageInformation activatedUser = new UsageInformation();
         activatedUser.setEmail(email);
         activatedUser.setSessionId(sessionId);
+        activatedUser.setMacAddress(macAddress);
         return activatedUser;
     }
 }
