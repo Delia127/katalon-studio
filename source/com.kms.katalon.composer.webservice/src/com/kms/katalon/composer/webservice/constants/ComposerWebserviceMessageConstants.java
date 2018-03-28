@@ -152,6 +152,10 @@ public class ComposerWebserviceMessageConstants extends NLS {
 
     public static String MSG_CANNOT_OPEN_REQUEST;
     
+    public static String LBL_SENDING_REQUEST;
+    
+    public static String LBL_BODY_NOT_SUPPORTED;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerWebserviceMessageConstants.class);

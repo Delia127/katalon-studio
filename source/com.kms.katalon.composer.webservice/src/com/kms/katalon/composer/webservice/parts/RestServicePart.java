@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.webservice.parts;
 
+//import java.awt.Label;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -40,6 +41,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
@@ -63,6 +65,8 @@ public class RestServicePart extends WebServicePart {
     private URIBuilder uriBuilder;
 
     private ProgressMonitorDialogWithThread progress;
+    
+    private Label lblBodyNotSupported;
 
     @Override
     protected void createAPIControls(Composite parent) {
@@ -100,6 +104,7 @@ public class RestServicePart extends WebServicePart {
                     Shell activeShell = Display.getCurrent().getActiveShell();
                     progress = new ProgressMonitorDialogWithThread(Display.getCurrent().getActiveShell());
                     progress.setOpenOnRun(false);
+                    displayResponseContentBasedOnSendingState(true);
                     progress.run(true, true, new IRunnableWithProgress() {
 
                         @Override
@@ -112,12 +117,14 @@ public class RestServicePart extends WebServicePart {
                                 String projectDir = ProjectController.getInstance()
                                         .getCurrentProject()
                                         .getFolderLocation();
+                                
                                 final ResponseObject responseObject = WebServiceController.getInstance().sendRequest(
                                         getWSRequestObject(), projectDir, ProxyPreferences.getProxyInformation());
 
                                 if (monitor.isCanceled()) {
                                     return;
                                 }
+                                
                                 Display.getDefault().asyncExec(() -> {
                                     setResponseStatus(responseObject);
                                     responseHeader.setDocument(createDocument(getPrettyHeaders(responseObject)));
@@ -132,9 +139,9 @@ public class RestServicePart extends WebServicePart {
                                 });
                             } catch (Exception e) {
                                 LoggerSingleton.logError(e);
-                                ErrorDialog.openError(activeShell, StringConstants.ERROR_TITLE,
+                                UISynchronizeService.syncExec(() -> ErrorDialog.openError(activeShell, StringConstants.ERROR_TITLE,
                                         ComposerWebserviceMessageConstants.PART_MSG_CANNOT_SEND_THE_TEST_REQUEST,
-                                        new Status(Status.ERROR, WS_BUNDLE_NAME, e.getMessage(), e));
+                                        new Status(Status.ERROR, WS_BUNDLE_NAME, e.getMessage(), e)));
                             } finally {
                                 UISynchronizeService.syncExec(() -> wsApiControl.setSendButtonState(false));
                                 monitor.done();
@@ -144,6 +151,7 @@ public class RestServicePart extends WebServicePart {
                 } catch (InvocationTargetException | InterruptedException ex) {
                     LoggerSingleton.logError(ex);
                 }
+                displayResponseContentBasedOnSendingState(false);
             }
         });
 
@@ -155,6 +163,36 @@ public class RestServicePart extends WebServicePart {
                 updateParamsTable(text.getText());
             }
         });
+        
+        wsApiControl.addRequestMethodSelectionListener(new SelectionAdapter() {
+            
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                setTabBodyContentBasedOnRequestMethod();
+            }
+        });
+    }
+    
+    private void setTabBodyContentBasedOnRequestMethod() {
+        GridData gdLblBodyNotSupported = (GridData) lblBodyNotSupported.getLayoutData();
+        GridData gdRequestBodyEditor = (GridData) requestBodyEditor.getLayoutData();
+        
+        if (isBodySupported()) {
+            gdLblBodyNotSupported.exclude = true;
+            lblBodyNotSupported.setVisible(false);
+            gdRequestBodyEditor.exclude = false;
+            requestBodyEditor.setVisible(true);
+        } else {
+            gdLblBodyNotSupported.exclude = false;
+            lblBodyNotSupported.setVisible(true);
+            lblBodyNotSupported.setText(
+                    String.format(ComposerWebserviceMessageConstants.LBL_BODY_NOT_SUPPORTED, 
+                                    wsApiControl.getRequestMethod()));
+            gdRequestBodyEditor.exclude = true;
+            requestBodyEditor.setVisible(false);
+        }
+        
+        lblBodyNotSupported.getParent().requestLayout();
     }
 
     private void updateParamsTable(String newUrl) {
@@ -288,9 +326,16 @@ public class RestServicePart extends WebServicePart {
     protected void addTabBody(CTabFolder parent) {
         super.addTabBody(parent);
         Composite tabComposite = (Composite) tabBody.getControl();
+        
+        Composite tabBodyComposite = new Composite(tabComposite, SWT.NONE);
+        tabBodyComposite.setLayout(new GridLayout());
+        
         // requestBody = createSourceViewer(tabComposite, new GridData(SWT.FILL, SWT.FILL, true, true));
-        requestBodyEditor = new HttpBodyEditorComposite(tabComposite, SWT.NONE, this);
+        requestBodyEditor = new HttpBodyEditorComposite(tabBodyComposite, SWT.NONE, this);
         requestBodyEditor.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        
+        lblBodyNotSupported = new Label(tabBodyComposite, SWT.NONE);
+        lblBodyNotSupported.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
     }
 
     @Override
@@ -372,9 +417,11 @@ public class RestServicePart extends WebServicePart {
 
             updateHeaders(clone);
 
+          
             requestBodyEditor.setInput(clone);
 
-            tabBody.getControl().setEnabled(isBodySupported());
+            setTabBodyContentBasedOnRequestMethod();
+            
             dirtyable.setDirty(false);
 
             if (isOldVersion) {
