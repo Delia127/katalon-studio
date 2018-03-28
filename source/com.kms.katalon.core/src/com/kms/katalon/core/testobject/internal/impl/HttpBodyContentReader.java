@@ -1,16 +1,25 @@
 package com.kms.katalon.core.testobject.internal.impl;
 
+import java.io.FileNotFoundException;
+import java.text.MessageFormat;
+
+import org.apache.commons.lang.StringUtils;
+
+import com.kms.katalon.core.exception.KatalonRuntimeException;
 import com.kms.katalon.core.testobject.HttpBodyContent;
 import com.kms.katalon.core.testobject.impl.HttpBodyType;
+import com.kms.katalon.core.testobject.impl.HttpFileBodyContent;
 import com.kms.katalon.core.testobject.impl.HttpTextBodyContent;
 import com.kms.katalon.core.util.internal.JsonUtil;
+import com.kms.katalon.core.util.internal.PathUtil;
 
 public class HttpBodyContentReader {
     private HttpBodyContentReader() {
         // Disable default constructor
     }
 
-    public static HttpBodyContent fromSource(String httpBodyType, String httpBodyContent) {
+    public static HttpBodyContent fromSource(String httpBodyType, String httpBodyContent, String projectDir)
+            throws KatalonRuntimeException {
         switch (HttpBodyType.fromType(httpBodyType)) {
             case TEXT:
                 InternalTextBodyContent textBodyContent = JsonUtil.fromJson(httpBodyContent,
@@ -18,8 +27,18 @@ public class HttpBodyContentReader {
                 return new HttpTextBodyContent(textBodyContent.getText(), textBodyContent.getCharset(),
                         textBodyContent.getContentType());
             case FILE:
-                // TODO: KAT-3026
-                break;
+                InternalFileBodyContent fileBodyContent = JsonUtil.fromJson(httpBodyContent,
+                        InternalFileBodyContent.class);
+                try {
+                    String filePath = fileBodyContent.getFilePath();
+                    String absoluteFilePath = filePath;
+                    if (StringUtils.isNotEmpty(filePath)) {
+                        absoluteFilePath = PathUtil.relativeToAbsolutePath(filePath, projectDir);
+                    }
+                    return new HttpFileBodyContent(absoluteFilePath);
+                } catch (IllegalArgumentException | FileNotFoundException e) {
+                    throw new KatalonRuntimeException(e);
+                }
             case FORM_DATA:
                 // TODO: KAT-3024
                 break;
@@ -29,7 +48,7 @@ public class HttpBodyContentReader {
             default:
                 break;
         }
-        return null;
+        throw new KatalonRuntimeException(MessageFormat.format("There is no implementation for {0}", httpBodyType));
     }
 
     private interface InternalHttpBodyContent {
@@ -74,6 +93,35 @@ public class HttpBodyContentReader {
             return text;
         }
 
+    }
+
+    private class InternalFileBodyContent implements InternalHttpBodyContent {
+
+        private String filePath;
+
+        private long fileSize;
+
+        private String contentType = "";
+
+        @Override
+        public String getContentType() {
+            return contentType;
+        }
+
+        @Override
+        public long getContentLength() {
+            return fileSize;
+        }
+
+        @Override
+        public String getCharset() {
+            // Nothing to do
+            return null;
+        }
+
+        public String getFilePath() {
+            return filePath;
+        }
     }
 
 }

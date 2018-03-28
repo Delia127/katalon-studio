@@ -101,6 +101,7 @@ public class HttpTextBodyContent implements HttpBodyContent {
     @Override
     public void writeTo(OutputStream outstream) throws IOException {
         outstream.write(bytes);
+        outstream.flush();
     }
 
     public String getText() {

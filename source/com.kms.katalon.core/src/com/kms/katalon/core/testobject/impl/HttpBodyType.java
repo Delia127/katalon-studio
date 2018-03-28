@@ -9,7 +9,7 @@ public enum HttpBodyType {
     FILE("file");
     
     private final String type;
-    
+
     private HttpBodyType(String type) {
         this.type = type;
     }
@@ -17,7 +17,7 @@ public enum HttpBodyType {
     public String getType() {
         return type;
     }
-    
+
     public static HttpBodyType fromType(String type) {
         return Arrays.asList(values()).stream()
             .filter(bodyType -> bodyType.getType().equals(type))
