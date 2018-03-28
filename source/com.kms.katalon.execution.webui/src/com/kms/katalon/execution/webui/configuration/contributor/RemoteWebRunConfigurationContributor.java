@@ -94,7 +94,7 @@ public class RemoteWebRunConfigurationContributor extends WebUIRunConfigurationC
             remoteWebDriverUrl = getRemoteWebDriverUrl(runConfigurationData);
             remoteWebDriverType = getRemoteWebDriverType(runConfigurationData);
         }
-        return getRunConfiguration(projectDir);
+        return super.getRunConfiguration(projectDir, runConfigurationDescription);
     }
 
     @Override
