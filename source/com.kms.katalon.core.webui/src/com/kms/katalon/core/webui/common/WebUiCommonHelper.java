@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -60,10 +62,28 @@ public class WebUiCommonHelper extends KeywordHelper {
     private static KeywordLogger logger = KeywordLogger.getInstance();
     
     // cache elements found with heuristic method
-    private static Cache<String, WebElement> webElementsCache = CacheBuilder.newBuilder()
-            .maximumSize(10) // to preserve memory
-            .expireAfterAccess(10, TimeUnit.MINUTES) // to preserve memory
-            .build();
+    private static Cache<String, WebElement> webElementsCache;
+    
+    static {
+        final int MAX_AGE = 10;
+        webElementsCache = CacheBuilder.newBuilder()
+                .maximumSize(10) // to preserve memory
+                .expireAfterAccess(MAX_AGE, TimeUnit.MINUTES) // to preserve memory
+                .build();
+        Runnable task = new Runnable() {
+            
+            @Override
+            public void run() {
+                try {
+                    webElementsCache.cleanUp();
+                } catch (Exception ignored) {
+                    
+                }
+            }
+        };
+        ScheduledExecutorService scheduledPool = Executors.newSingleThreadScheduledExecutor();
+        scheduledPool.scheduleAtFixedRate(task, MAX_AGE, 1, TimeUnit.MINUTES);
+    }
 
     public static boolean isTextPresent(WebDriver webDriver, String text, boolean isRegex)
             throws WebDriverException, IllegalArgumentException {
