@@ -59,9 +59,10 @@ public class WebUiCommonHelper extends KeywordHelper {
 
     private static KeywordLogger logger = KeywordLogger.getInstance();
     
+    // cache elements found with heuristic method
     private static Cache<String, WebElement> webElementsCache = CacheBuilder.newBuilder()
-            .maximumSize(10)
-            .expireAfterAccess(10, TimeUnit.MINUTES)
+            .maximumSize(10) // to preserve memory
+            .expireAfterAccess(10, TimeUnit.MINUTES) // to preserve memory
             .build();
 
     public static boolean isTextPresent(WebDriver webDriver, String text, boolean isRegex)
@@ -504,8 +505,11 @@ public class WebUiCommonHelper extends KeywordHelper {
         }
     }
     
-    public static By buildUnionLocator(TestObject to) {
-        return buildXpath(to, XPathBuilder.AggregationType.UNION);
+    /**
+     * Build a locator to find all elements satisfying at least one condition (regardless it is active or not)
+     */
+    public static By buildUnionXpath(TestObject to) {
+        return buildXpath(to, XPathBuilder.AggregationType.UNION, to.getProperties());
     }
 
     public static String getSelectorValue(TestObject to) {
@@ -532,16 +536,21 @@ public class WebUiCommonHelper extends KeywordHelper {
         return null;
     }
 
+    /**
+     * Build a locator to find all elements satisfying all active conditions
+     */
     private static By buildXpath(TestObject to) {
-        return buildXpath(to, XPathBuilder.AggregationType.INTERSECT);
+        return buildXpath(to, XPathBuilder.AggregationType.INTERSECT, to.getActiveProperties());
     }
     
-    private static By buildXpath(TestObject to, XPathBuilder.AggregationType aggregationType) {
-        List<TestObjectProperty> properties = aggregationType.equals(XPathBuilder.AggregationType.INTERSECT) ? to.getActiveProperties() : to.getProperties();
+    private static By buildXpath(TestObject to, XPathBuilder.AggregationType aggregationType, List<TestObjectProperty> properties) {
         XPathBuilder xpathBuilder = new XPathBuilder(properties);
         return By.xpath(xpathBuilder.build(aggregationType));
     }
     
+    /**
+     * Build locators, each corresponds to a single condition ("text" or "xpath")
+     */
     private static List<Entry<String, By>> buildXpathsFromXpathBasedConditions(TestObject to) {
         XPathBuilder xpathBuilder = new XPathBuilder(to.getProperties());
         return xpathBuilder.buildXpathBasedLocators()
@@ -668,16 +677,21 @@ public class WebUiCommonHelper extends KeywordHelper {
         try {
             WebDriver webDriver = DriverFactory.getWebDriver();
             
+            // get element from cache (in case element is found with heuristic method)
             String key = getKeyForWebElementsCache(webDriver, testObject);
             WebElement webElement = webElementsCache.getIfPresent(key);
             if (webElement != null) {
                 try {
-                    webElement.getTagName(); // check if not stale
+                    webElement.getTagName(); // trigger Selenium's stale check
                     logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_RETRIEVING_WEB_ELEMENT_FROM_CACHE, testObject.getObjectId()));
                     return Arrays.asList(webElement);
                 } catch (Exception e) {
                     // stale
-                    webElementsCache.invalidate(key);
+                    try {
+                        webElementsCache.invalidate(key);
+                    } catch (Exception ignored) {
+                        // never let heuristic method ruin the party
+                    }
                 }
             }
             
@@ -741,6 +755,7 @@ public class WebUiCommonHelper extends KeywordHelper {
                 timeCount += 0.5;
                 miliseconds = System.currentTimeMillis();
             }
+            // when normal method fails
             List<WebElement> webElements = findWebElementsUsingHeuristicMethod(webDriver, objectInsideShadowDom, testObject);
             if (webElements != null && webElements.size() > 0) {
                 return webElements;
@@ -757,6 +772,7 @@ public class WebUiCommonHelper extends KeywordHelper {
         return Collections.emptyList();
     }
     
+    // generate key for webElementsCache
     private static String getKeyForWebElementsCache(WebDriver webDriver, TestObject testObject) {
         return webDriver.hashCode() + "-" + webDriver.getWindowHandle() + "-" + testObject.getObjectId();
     }
@@ -769,7 +785,7 @@ public class WebUiCommonHelper extends KeywordHelper {
         if (objectInsideShadowDom) {
             return Collections.emptyList();
         }
-        By unionLocator = WebUiCommonHelper.buildUnionLocator(testObject);
+        By unionLocator = WebUiCommonHelper.buildUnionXpath(testObject);
         List<WebElement> webElements = webDriver.findElements(unionLocator);
         if (webElements == null || webElements.isEmpty()) {
             return Collections.emptyList();
@@ -788,6 +804,8 @@ public class WebUiCommonHelper extends KeywordHelper {
                 .collect(Collectors.toMap(
                         Function.identity(), 
                         webElement -> getSatisfiedConditions(testObject, webElement)));
+        
+        // get statisfied conditions (for "text" and "xpath")
         List<Entry<String, By>> xpaths = buildXpathsFromXpathBasedConditions(testObject);
         for (Entry<String, By> entry : xpaths) {
             String propertyName = entry.getKey();
@@ -809,6 +827,12 @@ public class WebUiCommonHelper extends KeywordHelper {
         return bestMatchElement;
     }
 
+    /**
+     * Only for tag and attribute conditions
+     * @param testObject
+     * @param webElement
+     * @return
+     */
     private static List<String> getSatisfiedConditions(TestObject testObject, WebElement webElement) {
         List<TestObjectProperty> expectedProperties = testObject.getProperties();
         List<String> satisfiedConditions = new ArrayList<>();

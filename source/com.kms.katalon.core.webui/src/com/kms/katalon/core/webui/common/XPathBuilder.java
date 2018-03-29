@@ -1,7 +1,6 @@
 package com.kms.katalon.core.webui.common;
 
 import java.util.AbstractMap;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
@@ -18,7 +17,7 @@ public class XPathBuilder {
         INTERSECT
     }
 
-    private static final String XPATH_INTERSECTION_FORMULA = "%s[count(. | %s) = count(%s)]";
+    private static final String XPATH_INTERSECT_FORMULA = "%s[count(. | %s) = count(%s)]";
 
     private static final String XPATH_CONDITION_TYPE_NOT_MATCHES = "not(matches(%s, '%s'))";
 
@@ -48,23 +47,32 @@ public class XPathBuilder {
         this.properties = properties;
     }
     
+    /**
+     * convenient function to avoid changing signature
+     * @return
+     */
     public String build() {
         return build(AggregationType.INTERSECT);
     }
 
+    /**
+     * Union: "or" of all XPath locators, each contains a single condition
+     * @param aggregationType
+     * @return
+     */
     public String build(AggregationType aggregationType) {
         
         boolean isIntersect = aggregationType.equals(AggregationType.INTERSECT);
         boolean isUnion = !isIntersect;
         
-        boolean hasTag = false;
+        boolean hasTagCondition = false;
         tag = "*";
         predicates = new ArrayList<>();
         xpath = StringUtils.EMPTY;
 
         if (properties != null && !properties.isEmpty()) {
             for (TestObjectProperty p : properties) {
-                if (isUnion || p.isActive()) {
+                if (isUnion || p.isActive()) { // if union, use all properties
                     String propertyName = p.getName();
                     String propertyValue = p.getValue();
                     ConditionType conditionType = p.getCondition();
@@ -73,7 +81,7 @@ public class XPathBuilder {
                             predicates.add(buildExpression("@" + propertyName, propertyValue, conditionType));
                             break;
                         case TAG:
-                            hasTag = true;
+                            hasTagCondition = true;
                             tag = propertyValue;
                             break;
                         case TEXT:
@@ -99,7 +107,7 @@ public class XPathBuilder {
 
         if (!predicates.isEmpty()) {
             StringBuilder propertyBuilder = new StringBuilder();
-            final String operator = isIntersect ? " and " : " or ";
+            final String operator = isIntersect ? " and " : " or "; // intersect = and, union = or 
             final String xpathTag = isIntersect ? tag : "*";
             propertyBuilder.append("//")
                     .append(xpathTag)
@@ -109,11 +117,11 @@ public class XPathBuilder {
             xpaths.add(propertyBuilder.toString());
         }
         
-        if (isUnion && hasTag) { // union
+        if (isUnion && hasTagCondition) { // union
             xpaths.add("//" + tag);
         }
 
-        return getXpathSelectorValue(xpaths, aggregationType);
+        return combineXpathLocators(xpaths, aggregationType);
     }
     
     public List<Entry<String, String>> buildXpathBasedLocators() {
@@ -125,7 +133,7 @@ public class XPathBuilder {
                 String propertyName = p.getName();
                 String propertyValue = p.getValue();
                 ConditionType conditionType = p.getCondition();
-                Entry entry;
+                Entry<String, String> entry;
                 switch (PropertyType.nameOf(propertyName)) {
                     case TEXT:
                         String textExpression = buildExpression("text()", propertyValue, conditionType);
@@ -150,7 +158,7 @@ public class XPathBuilder {
         return locators;
     }
 
-    private String getXpathSelectorValue(List<String> xpathList, AggregationType aggregationType) {
+    private String combineXpathLocators(List<String> xpathList, AggregationType aggregationType) {
         String xpathString;
         if (aggregationType.equals(AggregationType.INTERSECT)) {
             StringBuilder xpathStringBuilder = new StringBuilder();
@@ -159,7 +167,7 @@ public class XPathBuilder {
                     xpathStringBuilder.append(xpath);
                 } else {
                     String existingXpath = xpathStringBuilder.toString();
-                    xpathStringBuilder = new StringBuilder(String.format(XPATH_INTERSECTION_FORMULA, existingXpath, xpath, xpath));
+                    xpathStringBuilder = new StringBuilder(String.format(XPATH_INTERSECT_FORMULA, existingXpath, xpath, xpath));
                 }
             }
             xpathString = xpathStringBuilder.toString();
