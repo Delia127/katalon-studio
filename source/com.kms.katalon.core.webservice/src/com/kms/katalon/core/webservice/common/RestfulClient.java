@@ -199,7 +199,7 @@ public class RestfulClient extends BasicRequestor {
         responseObject.setWaitingTime(waitingTime);
         responseObject.setContentDownloadTime(contentDownloadTime);
         
-        String contentTypeHeader = conn.getHeaderField(RequestHeaderConstants.CONTENT_TYPE);
+        String contentTypeHeader = StringUtils.defaultString(conn.getHeaderField(RequestHeaderConstants.CONTENT_TYPE));
         String contentType = contentTypeHeader;
         String charset = "UTF-8";
         if (contentTypeHeader.contains("charset")) {

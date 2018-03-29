@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.text.MessageFormat;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.text.StrSubstitutor;
 
 import com.kms.katalon.core.exception.KatalonRuntimeException;
 import com.kms.katalon.core.testobject.HttpBodyContent;
@@ -18,19 +19,21 @@ public class HttpBodyContentReader {
         // Disable default constructor
     }
 
-    public static HttpBodyContent fromSource(String httpBodyType, String httpBodyContent, String projectDir)
+    public static HttpBodyContent fromSource(String httpBodyType, String httpBodyContent, String projectDir,
+            StrSubstitutor substitutor)
             throws KatalonRuntimeException {
         switch (HttpBodyType.fromType(httpBodyType)) {
             case TEXT:
                 InternalTextBodyContent textBodyContent = JsonUtil.fromJson(httpBodyContent,
                         InternalTextBodyContent.class);
-                return new HttpTextBodyContent(textBodyContent.getText(), textBodyContent.getCharset(),
+                return new HttpTextBodyContent(
+                        substitutor.replace(textBodyContent.getText()), textBodyContent.getCharset(),
                         textBodyContent.getContentType());
             case FILE:
                 InternalFileBodyContent fileBodyContent = JsonUtil.fromJson(httpBodyContent,
                         InternalFileBodyContent.class);
                 try {
-                    String filePath = fileBodyContent.getFilePath();
+                    String filePath = substitutor.replace(fileBodyContent.getFilePath());
                     String absoluteFilePath = filePath;
                     if (StringUtils.isNotEmpty(filePath)) {
                         absoluteFilePath = PathUtil.relativeToAbsolutePath(filePath, projectDir);
