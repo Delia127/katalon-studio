@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.webservice.response.body;
 
+import java.io.IOException;
+
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -29,7 +31,11 @@ public class PreviewEditor extends Composite implements ResponseBodyEditor {
     public void setContentBody(ResponseObject responseOb) {
         if (responseOb != null) {
             this.responseObjects = responseOb;
-            browser.setText(responseObjects.getResponseText());
+            try {
+                browser.setText(responseObjects.getResponseText());
+            } catch (IOException e) {
+                // TODO KAT-3025
+            }
         }
     }
 

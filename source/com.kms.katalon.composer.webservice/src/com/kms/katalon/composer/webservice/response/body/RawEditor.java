@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.webservice.response.body;
 
+import java.io.IOException;
+
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 
@@ -28,7 +30,11 @@ public class RawEditor extends Composite implements ResponseBodyEditor {
     public void setContentBody(ResponseObject responseOb) {
         if (responseOb != null) {
             this.responseObject = responseOb;
-            mirrorEditor.setText(responseOb.getResponseText());
+            try {
+                mirrorEditor.setText(responseOb.getResponseText());
+            } catch (IOException e) {
+                // TODO KAT-3025
+            }
         }
     }
 
