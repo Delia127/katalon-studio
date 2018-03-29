@@ -58,6 +58,9 @@ Require-Bundle: net.sf.supercsv.super-csv,
  atu.testrecorder.screen-recorder,
  org.eclipse.core.runtime,
  com.google.guava,
- com.kms.katalon.util
+ com.kms.katalon.util,
+ org.apache.httpcomponents.httpclient,
+ org.apache.httpcomponents.httpcore,
+ org.apache.httpcomponents.httpmime
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
