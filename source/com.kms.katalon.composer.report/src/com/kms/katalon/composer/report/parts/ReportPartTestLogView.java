@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -972,7 +973,7 @@ public class ReportPartTestLogView {
 
         if (selectedLogRecord != null && selectedLogRecord.getDescription() != null
                 && !selectedLogRecord.getDescription().isEmpty()) {
-            txtSTestCaseDescription.setText(selectedLogRecord.getDescription());
+            txtSTestCaseDescription.setText(StringEscapeUtils.unescapeJava(selectedLogRecord.getDescription()));
             enableMargin(txtSTestCaseDescription, true);
         } else {
             txtSTestCaseDescription.setText("");
@@ -1075,7 +1076,7 @@ public class ReportPartTestLogView {
         }
 
         if (selectedLogRecord != null && StringUtils.isNotEmpty(selectedLogRecord.getDescription())) {
-            txtSTLDescription.setText(selectedLogRecord.getDescription());
+            txtSTLDescription.setText(StringEscapeUtils.unescapeJava(selectedLogRecord.getDescription()));
             enableMargin(txtSTLDescription, true);
         } else {
             txtSTLDescription.setText("");
