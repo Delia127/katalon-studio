@@ -283,6 +283,8 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
 
     protected Composite responseBodyComposite;
 
+    private Composite responseMessageComposite;
+
     @PostConstruct
     public void createComposite(Composite parent, MPart part) {
         this.mPart = part;
@@ -686,8 +688,10 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
     }
 
     protected void createResponseComposite(Composite parent) {
+        
         responseComposite = new Composite(parent, SWT.NONE);
         responseComposite.setLayout(new GridLayout());
+        responseComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         Label lblResponse = new Label(responseComposite, SWT.NONE);
         lblResponse.setText(ComposerWebserviceMessageConstants.TAB_RESPONSE);
@@ -696,6 +700,18 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
         createResponseStatusComposite();
 
         createResponseDetailsTabs();
+        
+        responseMessageComposite = new Composite(parent, SWT.NONE);
+        GridLayout glMessageComposite = new GridLayout();
+        glMessageComposite.marginTop = 20;
+        responseMessageComposite.setLayout(glMessageComposite);
+        responseMessageComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        
+        Label lblSendingRequest = new Label(responseMessageComposite, SWT.NONE);
+        lblSendingRequest.setText(ComposerWebserviceMessageConstants.LBL_SENDING_REQUEST);
+        ControlUtils.setFontToBeBold(lblSendingRequest);
+        
+        displayResponseContentBasedOnSendingState(false);
     }
 
     private void createResponseDetailsTabs() {
@@ -802,6 +818,25 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
         lblReponseLengthDetails.setForeground(ColorUtil.getTextLinkColor());
     }
 
+    protected void displayResponseContentBasedOnSendingState(boolean isSendingRequest) {
+        GridData gdResponseMessageComposite = (GridData) responseMessageComposite.getLayoutData();
+        GridData gdResponseComposite = (GridData) responseComposite.getLayoutData();
+        
+        if (isSendingRequest) {
+            gdResponseMessageComposite.exclude = false;
+            responseMessageComposite.setVisible(true);
+            gdResponseComposite.exclude = true;
+            responseComposite.setVisible(false);
+        } else {
+            gdResponseMessageComposite.exclude = true;
+            responseMessageComposite.setVisible(false);
+            gdResponseComposite.exclude = false;
+            responseComposite.setVisible(true);
+        }
+        
+        responseComposite.getParent().requestLayout();
+    }
+    
     protected void setResponseStatus(ResponseObject responseObject) {
         int statusCode = responseObject.getStatusCode();
         lblStatusCodeDetails.setBackground(getBackgroundColorForStatusCode(statusCode));
