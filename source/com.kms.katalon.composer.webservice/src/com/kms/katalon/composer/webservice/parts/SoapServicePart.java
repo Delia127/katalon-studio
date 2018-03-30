@@ -65,6 +65,7 @@ import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
+import com.kms.katalon.composer.webservice.soap.response.body.SoapResponseBodyEditorsComposite;
 import com.kms.katalon.composer.webservice.util.WSDLHelper;
 import com.kms.katalon.composer.webservice.view.xml.ColorManager;
 import com.kms.katalon.composer.webservice.view.xml.XMLConfiguration;
@@ -83,6 +84,8 @@ public class SoapServicePart extends WebServicePart {
     private static final String[] FILTER_EXTS = new String[] { "*.xml; *.wsdl; *.txt" };
 
     private static final String[] FILTER_NAMES = new String[] { "XML content files (*.xml, *.wsdl, *.txt)" };
+
+    protected SoapResponseBodyEditorsComposite soapResponseBodyEditor;
 
     private CCombo ccbOperation;
 
@@ -112,8 +115,7 @@ public class SoapServicePart extends WebServicePart {
                 }
 
                 // clear previous response
-                responseHeader.setDocument(new Document());
-                responseBody.setDocument(new Document());
+                mirrorEditor.setText("");
 
                 String requestURL = wsApiControl.getRequestURL().trim();
                 if (isInvalidURL(requestURL) || ccbOperation.getText().isEmpty()) {
@@ -134,24 +136,24 @@ public class SoapServicePart extends WebServicePart {
                                 @Override
                                 public void run() {
                                     try {
-                                        String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
+                                        String projectDir = ProjectController.getInstance()
+                                                .getCurrentProject()
+                                                .getFolderLocation();
                                         ResponseObject responseObject = WebServiceController.getInstance().sendRequest(
-                                                getWSRequestObject(), projectDir, ProxyPreferences.getProxyInformation());
+                                                getWSRequestObject(), projectDir,
+                                                ProxyPreferences.getProxyInformation());
 
-                                        responseHeader.setDocument(createXMLDocument(getPrettyHeaders(responseObject)));
+                                        Display.getDefault().asyncExec(() -> {
+                                            String bodyContent = responseObject.getResponseText();
 
-                                        String bodyContent = responseObject.getResponseText();
+                                            setResponseStatus(responseObject);
+                                            mirrorEditor.setText(getPrettyHeaders(responseObject));
+                                            if (bodyContent == null) {
+                                                return;
+                                            }
+                                            soapResponseBodyEditor.setInput(responseObject);
 
-                                        if (bodyContent == null) {
-                                            return;
-                                        }
-
-                                        try {
-                                            bodyContent = formatXMLContent(bodyContent);
-                                        } catch (DocumentException | IOException e) {
-                                            // The responded message has issue with syntax, then reuse raw message.
-                                        }
-                                        responseBody.setDocument(createXMLDocument(bodyContent));
+                                        });
                                     } catch (Exception e) {
                                         LoggerSingleton.logError(e);
                                         ErrorDialog.openError(activeShell, StringConstants.ERROR_TITLE,
@@ -357,8 +359,8 @@ public class SoapServicePart extends WebServicePart {
     @Override
     protected void createResponseComposite(Composite parent) {
         super.createResponseComposite(parent);
-        responseBody = createXMLSourceViewer(responseBodyComposite);
-        responseBody.setEditable(false);
+        soapResponseBodyEditor = new SoapResponseBodyEditorsComposite(responseBodyComposite, SWT.NONE);
+        soapResponseBodyEditor.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
     }
 
     @Override

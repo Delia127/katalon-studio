@@ -58,6 +58,8 @@ public class RestServicePart extends WebServicePart {
 
     private URIBuilder uriBuilder;
 
+    protected ResponseBodyEditorsComposite responseBodyEditor;
+
     private ProgressMonitorDialogWithThread progress;
 
     @Override
@@ -121,7 +123,7 @@ public class RestServicePart extends WebServicePart {
                                         return;
                                     }
                                     responseBodyEditor.setInput(responseObject);
-                                    
+
                                 });
                             } catch (Exception e) {
                                 throw new InvocationTargetException(e);

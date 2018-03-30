@@ -12,7 +12,7 @@ public class RawEditor extends Composite implements ResponseBodyEditor {
 
     private ResponseObject responseObject;
 
-    RawEditor(Composite parent, int style) {
+    public RawEditor(Composite parent, int style) {
         super(parent, style);
 
         GridLayout gridLayout = new GridLayout();

@@ -238,13 +238,7 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
 
     protected HttpBodyEditorComposite requestBodyEditor;
 
-    protected ResponseBodyEditorsComposite responseBodyEditor;
-
-    protected SourceViewer responseHeader;
-
     protected MirrorEditor mirrorEditor;
-
-    protected SourceViewer responseBody;
 
     protected CTabItem tabAuthorization;
 
@@ -722,15 +716,8 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
         GridLayout glHeader = new GridLayout();
         glHeader.marginWidth = glHeader.marginHeight = 0;
         responseHeaderComposite.setLayout(glHeader);
-        if (isSOAP()) {
-            responseHeader = createSourceViewer(responseHeaderComposite, new GridData(SWT.FILL, SWT.FILL, true, true));
-            responseHeader.setEditable(false);
-        } else {
-            // Just apply for REST, SOAP need a new ticket.
-            responseHeaderComposite.setBackground(ColorUtil.getBlackBackgroundColor());
-            mirrorEditor = new MirrorEditor(responseHeaderComposite, SWT.NONE);
-            mirrorEditor.setEditable(false);
-        }
+        mirrorEditor = new MirrorEditor(responseHeaderComposite, SWT.NONE);
+        mirrorEditor.setEditable(false);
     }
 
     private void createResponseBody(CTabFolder reponseDetailsTabFolder) {
