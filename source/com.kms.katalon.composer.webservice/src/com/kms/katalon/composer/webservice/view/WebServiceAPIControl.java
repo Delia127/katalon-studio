@@ -7,7 +7,6 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
@@ -41,38 +40,26 @@ public class WebServiceAPIControl extends Composite {
     }
 
     private void createControl() {
-        GridLayout gridLayout = new GridLayout(2, false);
+        GridLayout gridLayout = new GridLayout(3, false);
         gridLayout.marginHeight = 0;
         gridLayout.marginWidth = 0;
         gridLayout.verticalSpacing = 0;
         setLayout(gridLayout);
         setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-        Composite fieldsComposite = new Composite(this, SWT.BORDER);
-        GridLayout glFieldsComp = new GridLayout(3, false);
-        glFieldsComp.marginHeight = 0;
-        glFieldsComp.marginWidth = 0;
-        glFieldsComp.verticalSpacing = 0;
-        fieldsComposite.setLayout(glFieldsComp);
-        fieldsComposite.setBackground(ColorUtil.getWhiteBackgroundColor());
-        GridData gdFieldsComp = new GridData(SWT.FILL, SWT.FILL, true, true);
-        gdFieldsComp.heightHint = DEFAULT_HEIGHT;
-        fieldsComposite.setLayoutData(gdFieldsComp);
-
-        cbRequestMethod = new CCombo(fieldsComposite, SWT.FLAT | SWT.READ_ONLY);
-        GridData gdRequestMethod = new GridData(SWT.CENTER, SWT.CENTER, false, false);
+        cbRequestMethod = new CCombo(this, SWT.BORDER | SWT.READ_ONLY);
+        cbRequestMethod.setBackground(ColorUtil.getWhiteBackgroundColor());
+        GridData gdRequestMethod = new GridData(SWT.FILL, SWT.CENTER, false, false);
         gdRequestMethod.widthHint = 100;
+        gdRequestMethod.heightHint = 22;
         cbRequestMethod.setLayoutData(gdRequestMethod);
 
-        Label separator = new Label(fieldsComposite, SWT.SEPARATOR | SWT.VERTICAL);
-        GridData gdSeparator = new GridData(SWT.CENTER, SWT.CENTER, false, true);
-        gdSeparator.heightHint = 18;
-        separator.setLayoutData(gdSeparator);
-
-        txtRequestURL = new Text(fieldsComposite, SWT.NONE);
-        txtRequestURL.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
+        txtRequestURL = new Text(this, SWT.BORDER);
+        GridData gdRequestURL = new GridData(SWT.FILL, SWT.CENTER, true, true);
+        gdRequestURL.heightHint = 20;
+        txtRequestURL.setLayoutData(gdRequestURL);
         txtRequestURL.setMessage(StringConstants.PA_LBL_URL);
-
+      
         ToolBar toolbar = new ToolBar(this, SWT.RIGHT | SWT.RIGHT);
         btnSend = new ToolItem(toolbar, SWT.FLAT);
         setSendButtonState(false);
