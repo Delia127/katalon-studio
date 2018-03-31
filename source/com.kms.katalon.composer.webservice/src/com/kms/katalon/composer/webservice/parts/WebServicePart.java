@@ -397,7 +397,7 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
         addTabAuthorization(tabFolder);
         addTabHeaders(tabFolder);
         addTabBody(tabFolder);
-        addTabVerification(tabFolder);
+//        addTabVerification(tabFolder);
 
         tabFolder.setSelection(0);
     }
@@ -723,9 +723,9 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
 
         createResponseHeader(reponseDetailsTabFolder);
 
-        CTabItem responseVerificationLogTab = new CTabItem(reponseDetailsTabFolder, SWT.NONE);
-        responseVerificationLogTab.setText(ComposerWebserviceMessageConstants.TAB_VERIFICATION_LOG);
-
+//        CTabItem responseVerificationLogTab = new CTabItem(reponseDetailsTabFolder, SWT.NONE);
+//        responseVerificationLogTab.setText(ComposerWebserviceMessageConstants.TAB_VERIFICATION_LOG);
+//
         reponseDetailsTabFolder.setSelection(0);
     }
 
