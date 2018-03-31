@@ -898,7 +898,7 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
             @Override
             protected void setValue(Object element, Object value) {
                 if (!isHttpHeader) {
-                    handleParamNameChanged(element, value);
+                    handleRequestParamNameChanged(element, value);
                 } else {
                     super.setValue(element, value);
                 }
@@ -919,7 +919,7 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
             @Override
             protected void setValue(Object element, Object value) {
                 if (!isHttpHeader) {
-                    handleParamValueChanged(element, value);
+                    handleRequestParamValueChanged(element, value);
                 } else {
                     super.setValue(element, value);
                 }
@@ -944,10 +944,10 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
         return tblNameValue;
     }
 
-    protected void handleParamNameChanged(Object element, Object value) {
+    protected void handleRequestParamNameChanged(Object element, Object value) {
     };
 
-    protected void handleParamValueChanged(Object element, Object value) {
+    protected void handleRequestParamValueChanged(Object element, Object value) {
     };
 
     protected void deleteSelectedParams() {

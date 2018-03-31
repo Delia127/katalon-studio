@@ -54,4 +54,5 @@ Require-Bundle: com.kms.katalon.composer.explorer,
  org.apache.commons.lang3,
  com.kms.katalon,
  org.apache.httpcomponents.httpclient,
- com.google.gson
+ com.google.gson,
+ com.kms.katalon.util
