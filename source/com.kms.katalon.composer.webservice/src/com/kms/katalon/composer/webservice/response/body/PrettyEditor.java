@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.webservice.response.body;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -109,7 +110,12 @@ public class PrettyEditor extends Composite implements ResponseBodyEditor {
     @Override
     public void setContentBody(ResponseObject responseObject) {
         textBodyContent = new TextBodyContent();
-        textBodyContent.setText(responseObject.getResponseText());
+        try {
+            textBodyContent.setText(responseObject.getResponseText());
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         textBodyContent.setContentType(responseObject.getContentType());
 
         mirrorEditor.setText(textBodyContent.getText());

@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.webservice.response.body;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -94,7 +95,11 @@ public class ResponseBodyEditorsComposite extends Composite {
 
     public void setInput(ResponseObject responseOb) {
         this.responseObject = new ResponseObject();
-        this.responseObject.setResponseText(responseOb.getResponseText());
+        try {
+            this.responseObject.setResponseText(responseOb.getResponseText());
+        } catch (IOException e1) {
+            // TODO 
+        }
         this.responseObject.setContentType(StringUtils.substringBefore(responseOb.getContentType(), ";"));
 
         this.selectedEditorMode = detectEditorMode(responseObject.getContentType());

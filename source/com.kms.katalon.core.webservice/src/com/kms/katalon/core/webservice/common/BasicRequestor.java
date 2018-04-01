@@ -26,6 +26,7 @@ import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.ConditionType;
 import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.TestObjectProperty;
+import com.kms.katalon.core.testobject.impl.HttpFormDataBodyContent;
 import com.kms.katalon.core.util.internal.ProxyUtil;
 import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
 import com.kms.katalon.core.webservice.exception.WebServiceException;
@@ -108,7 +109,15 @@ public abstract class BasicRequestor implements Requestor {
                         authorizationValue));
             }
         }
-        headers.forEach(header -> con.setRequestProperty(header.getName(), header.getValue()));
+        
+        headers.forEach(header -> {
+            if (request.getBodyContent() instanceof HttpFormDataBodyContent 
+                    && header.getName().equalsIgnoreCase("Content-Type")) {
+                con.setRequestProperty(header.getName(), request.getBodyContent().getContentType());
+            } else {
+                con.setRequestProperty(header.getName(), header.getValue());
+            }
+        });
     }
 
     private String getRequestUrl(RequestObject request) {
