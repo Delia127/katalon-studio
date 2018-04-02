@@ -266,11 +266,18 @@ public class ObjectRepository {
             requestObject.setHttpBody(reqElement.elementText("httpBody"));
 
             String httpBodyType = reqElement.elementText("httpBodyType");
-            String httpBodyContent = reqElement.elementText("httpBodyContent");
-            requestObject.setBodyContent(HttpBodyContentReader.fromSource(httpBodyType, httpBodyContent, projectDir));
+            if (isBodySupported(requestObject)) {
+                String httpBodyContent = reqElement.elementText("httpBodyContent");
+                requestObject.setBodyContent(HttpBodyContentReader.fromSource(httpBodyType, httpBodyContent, projectDir));
+            }
         }
 
         return requestObject;
+    }
+    
+    private static boolean isBodySupported(RequestObject requestObject) {
+        return !(requestObject.getRestRequestMethod().equals("GET") ||
+                requestObject.getRestRequestMethod().equals("POST"));
     }
 
     private static List<TestObjectProperty> parseProperties(List<Object> objects) {
