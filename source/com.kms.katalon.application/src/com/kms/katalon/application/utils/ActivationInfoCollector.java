@@ -51,21 +51,13 @@ public class ActivationInfoCollector {
         return Objects.hash(hostName);
     }
 
-    private static String collectActivationInfo(String userName, String pass) throws UnknownHostException {
-        String katVersion = ApplicationInfo.versionNo() + " build " + ApplicationInfo.buildNo();
-        String osType = Platform.getOSArch().contains("64") ? "64" : "32";
-
-        JsonObject traits = new JsonObject();
+    private static String collectActivationInfo(String userName, String pass) {
+        JsonObject traits = traitsWithAppInfo();
         // Need to escape Java string for password and single quote character for EcmaScript
         // NOTE that StringEscapeUtils.escapeEcmaScript() will do the same as StringEscapeUtils.escapeJava()
         // and escape single quote (') and slash (/) also. But we do not want to escape slash in Java
         traits.addProperty("password", StringEscapeUtils.escapeJava(pass).replace("'", "\\'"));
-        traits.addProperty("host_name", InetAddress.getLocalHost().getHostName());
-        traits.addProperty("os", Platform.getOS());
-        traits.addProperty("os_type", osType);
-        traits.addProperty("kat_version", katVersion);
-        traits.addProperty("kat_type", System.getProperty("sun.arch.data.model"));
-        traits.addProperty(UsagePropertyConstant.PROPERTY_SESSION_ID, KatalonApplication.SESSION_ID);
+        
 
         JsonObject activationObject = new JsonObject();
         activationObject.addProperty("userId", userName);
@@ -75,6 +67,27 @@ public class ActivationInfoCollector {
         // They will encode single quote (') character as \u0027
         // The better way is use JsonObject.toString()
         return activationObject.toString();
+    }
+
+    public static JsonObject traitsWithAppInfo() {
+        JsonObject traits = new JsonObject();
+        String katVersion = ApplicationInfo.versionNo() + " build " + ApplicationInfo.buildNo();
+        String osType = Platform.getOSArch().contains("64") ? "64" : "32";
+        String host = "";
+        try {
+            host = InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException ignored) {
+            host = "unknown";
+        }
+        
+        traits.addProperty("host_name", host);
+        traits.addProperty("os", Platform.getOS());
+        traits.addProperty("os_type", osType);
+        traits.addProperty("kat_version", katVersion);
+        traits.addProperty("kat_type", System.getProperty("sun.arch.data.model"));
+        traits.addProperty(UsagePropertyConstant.PROPERTY_SESSION_ID, KatalonApplication.SESSION_ID);
+        traits.addProperty(UsagePropertyConstant.PROPERTY_MAC_ADDRESS, KatalonApplication.MAC_ADDRESS);
+        return traits;
     }
 
     public static boolean activate(String userName, String pass, StringBuilder errorMessage) {

@@ -11,6 +11,7 @@ import java.util.List;
 import com.google.gson.JsonObject;
 import com.kms.katalon.application.KatalonApplication;
 import com.kms.katalon.application.RunningMode;
+import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.application.utils.FileUtil;
 import com.kms.katalon.application.utils.ServerAPICommunicationUtil;
@@ -29,7 +30,7 @@ public class UsageInfoCollector {
 
     public static void collect(UsageInformation usageInfo) {
         JsonObject jsObject = new JsonObject();
-        JsonObject jsTraits = new JsonObject();
+        JsonObject jsTraits = ActivationInfoCollector.traitsWithAppInfo();
         jsTraits.addProperty(UsagePropertyConstant.PROPERTY_KAT_VERSION, usageInfo.getVersion());
         jsTraits.addProperty(UsagePropertyConstant.PROPERTY_PROJECT, usageInfo.getProjectCount());
         jsTraits.addProperty(UsagePropertyConstant.PROPERTY_TEST_CASE, usageInfo.getTestCaseCount());
