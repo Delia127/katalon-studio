@@ -592,7 +592,7 @@ public interface IImageKeys {
     public static final String VIDEO_16 = "video_16.png"; //$NON-NLS-1$
     
     public static final String IMPORT_16 = "import_16.png"; //$NON-NLS-1$
-    
+
     public static final String CHECK_16 = "check_16.png"; //$NON-NLS-1$
 
     public static final String FIT_SCREEN_16 = "fit_screen_16.png"; //$NON-NLS-1$
