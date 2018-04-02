@@ -69,8 +69,8 @@ public class NewSampleProjectHandler {
         SampleProjectProvider.getInstance().extractSampleWebUIProject(sampleProjectType, projectLocation);
         FileUtils.forceDelete(ProjectController.getInstance().getProjectFile(projectLocation));
 
-        ProjectEntity newProject = NewProjectHandler.createNewProject(projectName, projectParentLocation,
-                projectDescription);
+        ProjectEntity newProject = ProjectController.getInstance().newProjectEntity(projectName, projectDescription, 
+                projectParentLocation, true);
         if (newProject == null) {
             return;
         }

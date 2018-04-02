@@ -54,6 +54,7 @@ public class FolderFileServiceManager {
             initRootFolder(FileServiceConstant.getReportRootFolderLocation(project.getFolderLocation()));
             initRootFolder(FileServiceConstant.getCheckpointRootFolderLocation(project.getFolderLocation()));
             initRootFolder(FileServiceConstant.getTestListenerRootFolderLocation(project.getFolderLocation()));
+            initRootFolder(FileServiceConstant.getProfileFolderLocation(project.getFolderLocation()));
         }
     }
 
@@ -581,5 +582,22 @@ public class FolderFileServiceManager {
     public static FolderEntity saveFolder(FolderEntity folder) throws Exception {
         EntityService.getInstance().saveIntergratedFolderMetadataEntity(folder);
         return folder;
+    }
+
+    public static FolderEntity getProfileRoot(ProjectEntity project) throws DALException {
+        try {
+            FolderEntity folder = getFolder(FileServiceConstant.getProfileFolderLocation(project.getFolderLocation()),
+                    project);
+
+            if (folder != null) {
+                folder.setProject(project);
+                folder.setFolderType(FolderType.PROFILE);
+                return folder;
+            }
+
+            return null;
+        } catch (Exception e) {
+            throw new DALException(e);
+        }
     }
 }

@@ -74,7 +74,9 @@ public class CToolBarManagerRenderer extends ToolBarManagerRenderer {
     private ToolBar createToolbar(final MUIElement element, Composite parent) {
         int orientation = getOrientation(element);
         int style = orientation | SWT.WRAP | SWT.FLAT;
-        if (!ToolbarProcessor.KATALON_TOOLBAR_ID.equals(element.getElementId())) {
+        String elementId = element.getElementId();
+        if (!ToolbarProcessor.KATALON_MAIN_TOOLBAR_ID.equals(elementId)
+                && !ToolbarProcessor.KATALON_EXECUTION_TOOLBAR_ID.equals(elementId)) {
             style = style | SWT.RIGHT;
         }
         ToolBarManager manager = getManager((MToolBar) element);
@@ -126,7 +128,9 @@ public class CToolBarManagerRenderer extends ToolBarManagerRenderer {
         }
 
         // For other toolbars, use as default
-        if (!ToolbarProcessor.KATALON_TOOLBAR_ID.equals(container.getElementId())) {
+        String elementId = container.getElementId();
+        if (!ToolbarProcessor.KATALON_MAIN_TOOLBAR_ID.equals(elementId)
+                && !ToolbarProcessor.KATALON_EXECUTION_TOOLBAR_ID.equals(elementId)) {
             super.processContents(container);
             return;
         }

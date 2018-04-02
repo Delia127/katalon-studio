@@ -16,6 +16,7 @@ import com.kms.katalon.composer.components.impl.tree.KeywordTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.PackageTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.ReportCollectionTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.ReportTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.ProfileRootTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestListenerFolderTreeEntity;
@@ -425,6 +426,7 @@ public class TreeEntityUtil {
         treeEntities.add(new FolderTreeEntity(folderController.getKeywordRoot(project), null));
         treeEntities.add(new TestListenerFolderTreeEntity(folderController.getTestListenerRoot(project), null));
         treeEntities.add(new FolderTreeEntity(folderController.getReportRoot(project), null));
+        treeEntities.add(new ProfileRootTreeEntity(folderController.getProfileRoot(project), null));
         return treeEntities;
     }
 

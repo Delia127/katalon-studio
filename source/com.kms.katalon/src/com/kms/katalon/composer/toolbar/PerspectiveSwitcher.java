@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.perspective;
+package com.kms.katalon.composer.toolbar;
 
 import java.net.MalformedURLException;
 

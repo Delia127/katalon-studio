@@ -24,7 +24,9 @@ public class ToolbarProcessor {
 
     public static final String KATALON_TOOLITEM_NEW_ID = "com.kms.katalon.composer.toolbar.new";
 
-    public static final String KATALON_TOOLBAR_ID = "com.kms.katalon.composer.toolbar";
+    public static final String KATALON_MAIN_TOOLBAR_ID = "com.kms.katalon.composer.toolbar";
+    
+    public static final String KATALON_EXECUTION_TOOLBAR_ID = "com.kms.katalon.composer.toolbar.execution";
 
     private static final String INDEX_KEY = "index";
 
@@ -35,7 +37,7 @@ public class ToolbarProcessor {
 
     @Execute
     public void run(@Optional IEclipseContext context, MApplication app) {
-        MUIElement uiElement = modelService.find(KATALON_TOOLBAR_ID, app);
+        MUIElement uiElement = modelService.find(KATALON_MAIN_TOOLBAR_ID, app);
         if (uiElement == null) {
             return;
         }

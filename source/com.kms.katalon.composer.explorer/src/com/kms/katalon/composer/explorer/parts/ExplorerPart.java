@@ -304,7 +304,7 @@ public class ExplorerPart {
                 if (activePart == null || !IdConstants.EXPLORER_PART_ID.equals(activePart.getElementId())) {
                     partService.activate(partService.findPart(IdConstants.EXPLORER_PART_ID));
                 }
-                selectionService.setSelection(((IStructuredSelection) treeViewer.getSelection()).toArray());
+                selectionService.setSelection(treeViewer.getStructuredSelection().toArray());
             }
         });
 

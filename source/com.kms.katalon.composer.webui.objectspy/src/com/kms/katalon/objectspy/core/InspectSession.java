@@ -133,7 +133,8 @@ public class InspectSession implements Runnable {
         Map<String, IDriverConnector> driverConnectors = new HashMap<String, IDriverConnector>(1);
         driverConnectors.put(DriverFactory.WEB_UI_DRIVER_PROPERTY, webUIDriverConnector);
 
-        RunConfiguration.setExecutionSetting(ExecutionUtil.getExecutionProperties(executionSetting, driverConnectors));
+        RunConfiguration
+                .setExecutionSetting(ExecutionUtil.getExecutionProperties(executionSetting, driverConnectors, null));
         options = createDriverOptions(webUIDriverType);
 
         if (webUiDriverType == WebUIDriverType.IE_DRIVER) {

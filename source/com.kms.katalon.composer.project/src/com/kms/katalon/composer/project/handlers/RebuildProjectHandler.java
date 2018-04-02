@@ -3,7 +3,7 @@ package com.kms.katalon.composer.project.handlers;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -33,10 +33,11 @@ public class RebuildProjectHandler {
                 protected IStatus run(IProgressMonitor monitor) {
                     try {
                         monitor.beginTask(StringConstants.HAND_REBUILDING_PROJ, 10);
+                        SubMonitor progress = SubMonitor.convert(monitor, 10);
                         ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
                         GroovyUtil.initGroovyProjectClassPath(ProjectController.getInstance().getCurrentProject(),
                                 FolderController.getInstance().getTestCaseRoot(projectEntity), false,
-                                new SubProgressMonitor(monitor, 10));
+                                progress.newChild(10));
                         return Status.OK_STATUS;
                     } catch (Exception e) {
                         return Status.CANCEL_STATUS;

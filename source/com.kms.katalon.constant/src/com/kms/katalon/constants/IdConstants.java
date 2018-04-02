@@ -125,6 +125,10 @@ public interface IdConstants {
 
     // Test Suite Part: key of TestSuiteEntity in content part
     public static final String TESTSUITE_CONTEXT_OBJECT_KEY = "testSuite";
+    
+    // Execution Profile content (GlobalVariable part)
+    public static final String EXECUTION_PROFILE_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID
+            + ".executionProfile";
 
     // Command ID
     public static final String SAVE_COMMAND_ID = "com.kms.katalon.command.save";

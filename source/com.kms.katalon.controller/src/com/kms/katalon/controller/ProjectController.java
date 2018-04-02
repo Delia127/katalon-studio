@@ -13,10 +13,11 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
 import com.kms.katalon.custom.factory.CustomMethodNodeFactory;
+import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.dal.state.DataProviderState;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.util.Util;
@@ -47,9 +48,10 @@ public class ProjectController extends EntityController {
     public ProjectEntity addNewProject(String name, String description, String projectLocation) throws Exception {
         ProjectEntity newProject = getDataProviderSetting().getProjectDataProvider().addNewProject(name, description,
                 DEFAULT_PAGELOAD_TIMEOUT, projectLocation);
-        addRecentProject(newProject);
         GlobalVariableController.getInstance().generateGlobalVariableLibFile(newProject, null);
         KeywordController.getInstance().parseAllCustomKeywordsWithoutRefreshing(newProject);
+
+        addRecentProject(newProject);
         return newProject;
     }
 
@@ -57,7 +59,7 @@ public class ProjectController extends EntityController {
         try {
             if (monitor == null) monitor = new NullProgressMonitor();
 
-            ProjectEntity project = getDataProviderSetting().getProjectDataProvider().getProjectWithoutClasspath(projectPk);
+            ProjectEntity project = getDataProviderSetting().getProjectDataProvider().openProjectWithoutClasspath(projectPk);
 
             if (project != null) {
                 monitor.beginTask("Initialzing project's working space...", 10);
@@ -65,14 +67,15 @@ public class ProjectController extends EntityController {
                     project.setUUID(Util.generateGuid());
                     updateProject(project);
                 }
+                SubMonitor progress = SubMonitor.convert(monitor, 100);
                 DataProviderState.getInstance().setCurrentProject(project);
                 GroovyUtil.initGroovyProject(project, FolderController.getInstance().getTestCaseRoot(project),
-                        new SubProgressMonitor(monitor, 4, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK));
+                        progress.newChild(40, SubMonitor.SUPPRESS_SUBTASK));
                 addRecentProject(project);
                 GlobalVariableController.getInstance().generateGlobalVariableLibFile(project,
-                        new SubProgressMonitor(monitor, 2, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK));
+                        progress.newChild(20, SubMonitor.SUPPRESS_SUBTASK));
                 KeywordController.getInstance().parseAllCustomKeywords(project,
-                        new SubProgressMonitor(monitor, 4, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK));
+                        progress.newChild(40, SubMonitor.SUPPRESS_SUBTASK));
             }
             return project;
         } finally {
@@ -88,7 +91,7 @@ public class ProjectController extends EntityController {
     }
 
     public ProjectEntity openProject(String projectPk) throws Exception {
-        ProjectEntity project = getDataProviderSetting().getProjectDataProvider().getProject(projectPk);
+        ProjectEntity project = getDataProviderSetting().getProjectDataProvider().openProject(projectPk);
         if (project != null) {
             DataProviderState.getInstance().setCurrentProject(project);
             addRecentProject(project);
@@ -99,7 +102,7 @@ public class ProjectController extends EntityController {
     }
 
     public void closeProject(String projectPk, IProgressMonitor monitor) throws Exception {
-        ProjectEntity project = getDataProviderSetting().getProjectDataProvider().getProjectWithoutClasspath(projectPk);
+        ProjectEntity project = getDataProviderSetting().getProjectDataProvider().openProjectWithoutClasspath(projectPk);
         if (project != null) {
             GroovyUtil.getGroovyProject(project).close(monitor);
         }
@@ -153,7 +156,7 @@ public class ProjectController extends EntityController {
                     if (projectFolder.exists() && projectFolder.isDirectory() && projectFile.exists()
                             && projectFile.isFile()) {
                         ProjectEntity project = getDataProviderSetting().getProjectDataProvider()
-                                .getProjectWithoutClasspath(projectFile.getAbsolutePath());
+                                .getProject(projectFile.getAbsolutePath());
                         if (project.getName().equals(recentProject.getName())) {
                             resultList.add(recentProject);
                         }
@@ -258,5 +261,9 @@ public class ProjectController extends EntityController {
 
     public File getProjectFile(String folderLocation) {
         return getDataProviderSetting().getProjectDataProvider().getProjectFile(folderLocation);
+    }
+    
+    public ProjectEntity newProjectEntity(String name, String description, String location, boolean legacy) throws DALException {
+        return getDataProviderSetting().getProjectDataProvider().newProjectEntity(name, description, location, legacy);
     }
 }

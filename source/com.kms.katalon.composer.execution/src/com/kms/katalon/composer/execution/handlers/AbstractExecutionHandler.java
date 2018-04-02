@@ -40,6 +40,7 @@ import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.execution.ExecutionProfileManager;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.exceptions.JobCancelException;
 import com.kms.katalon.composer.execution.jobs.ExecuteTestCaseJob;
@@ -53,6 +54,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.execution.configuration.AbstractRunConfiguration;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.exception.ExecutionException;
@@ -205,10 +207,12 @@ public abstract class AbstractExecutionHandler {
         String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
 
         try {
-            IRunConfiguration runConfiguration = getRunConfigurationForExecution(projectDir);
+            AbstractRunConfiguration runConfiguration = (AbstractRunConfiguration) getRunConfigurationForExecution(
+                    projectDir);
             if (runConfiguration == null) {
                 return;
             }
+            runConfiguration.setExecutionProfile(ExecutionProfileManager.getInstance().getSelectedProfile());
             execute(launchMode, runConfiguration);
         } catch (InterruptedException ignored) {}
     }

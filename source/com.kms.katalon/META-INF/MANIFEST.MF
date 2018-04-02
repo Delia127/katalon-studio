@@ -45,7 +45,7 @@ Require-Bundle: org.eclipse.e4.core.di,
  org.eclipse.equinox.app,
  com.google.gson,
  org.eclipse.core.expressions,
- com.kms.katalon.support.testing.katserver;bundle-version="1.0.0",
+ com.kms.katalon.support.testing.katserver,
  com.kms.katalon.console,
  org.eclipse.e4.ui.css.swt,
  com.kms.katalon.composer.resources,
@@ -60,7 +60,7 @@ Require-Bundle: org.eclipse.e4.core.di,
  org.eclipse.e4.core.di.extensions,
  org.eclipse.e4.ui.css.core,
  org.apache.commons.io,
- com.kms.katalon.selenium.ide;bundle-version="1.0.0"
+ com.kms.katalon.selenium.ide
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: javax.annotation,
