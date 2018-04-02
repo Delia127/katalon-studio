@@ -24,6 +24,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
+import com.kms.katalon.core.testobject.impl.HttpTextBodyContent;
+
 public class ResponseObject implements PerformanceResourceTiming, HttpMessage {
 
     private static final String DF_CHARSET = "UTF-8";
@@ -101,6 +103,7 @@ public class ResponseObject implements PerformanceResourceTiming, HttpMessage {
      * @param responseText the new raw response text
      */
     public void setResponseText(String responseText) {
+        responseBodyContent = new HttpTextBodyContent(responseText);
         this.responseText = responseText;
     }
 
