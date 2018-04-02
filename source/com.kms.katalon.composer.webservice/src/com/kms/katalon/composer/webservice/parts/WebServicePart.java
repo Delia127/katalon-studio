@@ -458,6 +458,9 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
                 renderAuthenticationUI(ccbAuthType.getText());
             }
         });
+        
+        ccbAuthType.select(0);
+        renderAuthenticationUI(ccbAuthType.getText());
     }
 
     /**
@@ -1349,6 +1352,7 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
         if (StringUtils.isBlank(authType)) {
             ccbAuthType.select(0);
         }
+        sComposite.setMinSize(mainComposite.computeSize(MIN_PART_WIDTH, SWT.DEFAULT));
     }
 
 }
