@@ -48,6 +48,7 @@ import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
 import com.kms.katalon.core.mobile.keyword.internal.MobileDriverFactory
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 
 @Action(value = "toggleAirplaneMode")
 public class ToggleAirplaneModeKeyword extends MobileAbstractKeyword {
@@ -68,7 +69,7 @@ public class ToggleAirplaneModeKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public void toggleAirplaneMode(String mode, FailureHandling flowControl) throws StepFailedException {
-        KeywordMain.runKeyword({
+        MobileKeywordMain.runKeyword({
             AppiumDriver<?> driver = getAnyAppiumDriver()
             String context = driver.getContext()
             try {
@@ -107,6 +108,6 @@ public class ToggleAirplaneModeKeyword extends MobileAbstractKeyword {
                 driver.context(context)
             }
 
-        }, flowControl, StringConstants.KW_MSG_CANNOT_TOGGLE_AIRPLANE_MODE)
+        }, flowControl, true, StringConstants.KW_MSG_CANNOT_TOGGLE_AIRPLANE_MODE)
     }
 }

@@ -366,4 +366,26 @@ public class GroovyCompilationHelper {
         }
         return unit;
     }
+    
+    public static ICompilationUnit createGroovyTypeFromString(IPackageFragment parentPackage, String typeName, String content) throws CoreException {
+
+        createType(parentPackage, typeName, ImportType.KEYWORD_IMPORTS);
+        
+        GroovyCompilationUnit unit = (GroovyCompilationUnit) parentPackage.getCompilationUnit(getCompilationUnitName(typeName));
+        try {
+            unit.becomeWorkingCopy(null);
+            
+            ISourceRange sourceRange = unit.getSourceRange();
+            
+            ReplaceEdit replaceEdit = new ReplaceEdit(0, sourceRange.getLength(), content);         
+            unit.applyTextEdit(replaceEdit, null);
+
+            unit.commitWorkingCopy(true, null);
+        } finally {
+            if (unit != null) {
+                unit.discardWorkingCopy();
+            }
+        }
+        return unit;
+    }
 }

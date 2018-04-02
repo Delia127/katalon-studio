@@ -44,6 +44,7 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 
 @Action(value = "uncheckElement")
 public class UncheckElementKeyword extends MobileAbstractKeyword {
@@ -65,8 +66,8 @@ public class UncheckElementKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public void uncheckElement(TestObject to, int timeout, FailureHandling flowControl) throws StepFailedException {
-        KeywordMain.runKeyword({
+        MobileKeywordMain.runKeyword({
             MobileElementCommonHelper.uncheckElement(to, timeout)
-        }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_UNCHECK_ELEMENT_X, to.getObjectId()) : StringConstants.KW_MSG_FAILED_TO_UNCHECK_ELEMENT)
+        }, flowControl, true, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_UNCHECK_ELEMENT_X, to.getObjectId()) : StringConstants.KW_MSG_FAILED_TO_UNCHECK_ELEMENT)
     }
 }

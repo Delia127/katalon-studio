@@ -45,6 +45,7 @@ import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
 import com.kms.katalon.core.mobile.keyword.internal.MobileDriverFactory
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 
 @Action(value = "getDeviceModel")
 public class GetDeviceModelKeyword extends MobileAbstractKeyword {
@@ -65,10 +66,10 @@ public class GetDeviceModelKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public String getDeviceModel(FailureHandling flowControl) throws StepFailedException {
-        return KeywordMain.runKeyword({
+        return MobileKeywordMain.runKeyword({
             String model = MobileDriverFactory.getDeviceModel()
             logger.logPassed(model)
             return model
-        }, flowControl, StringConstants.KW_MSG_CANNOT_GET_DEVICE_MODEL)
+        }, flowControl, true, StringConstants.KW_MSG_CANNOT_GET_DEVICE_MODEL)
     }
 }

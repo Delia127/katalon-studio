@@ -64,7 +64,8 @@ public class ConsoleMain {
      */
     public static int launch(String[] arguments) {
         ConsoleExecutor consoleExecutor = new ConsoleExecutor();
-        OptionParser parser = createParser(consoleExecutor);
+        ApplicationConfigOptions applicationConfigOptions = new ApplicationConfigOptions();
+        OptionParser parser = createParser(consoleExecutor, applicationConfigOptions);
         try {
             OptionSet options = parser.parse(arguments);
             Map<String, String> consoleOptionValueMap = new HashMap<String, String>();
@@ -74,6 +75,14 @@ public class ConsoleMain {
                         consoleOptionValueMap);
                 List<String> addedArguments = buildArgumentsForPropertiesFile(arguments, consoleOptionValueMap);
                 options = parser.parse(addedArguments.toArray(new String[addedArguments.size()]));
+            }
+            
+            // Set option value to application configuration
+            for (ConsoleOption<?> opt : applicationConfigOptions.getConsoleOptionList()) {
+                String optionName = opt.getOption();
+                if (options.hasArgument(optionName)) {
+                    applicationConfigOptions.setArgumentValue(opt, String.valueOf(options.valueOf(optionName)));
+                }
             }
 
             ProjectEntity project = findProject(options);
@@ -105,7 +114,8 @@ public class ConsoleMain {
         return addedArguments;
     }
 
-    private static OptionParser createParser(ConsoleExecutor executor) {
+    private static OptionParser createParser(ConsoleExecutor executor, ApplicationConfigOptions 
+            applicationConfigOptions) {
         OptionParser parser = new OptionParser(false);
         parser.allowsUnrecognizedOptions();
 
@@ -114,6 +124,15 @@ public class ConsoleMain {
         // Accept all of katalon console arguments
         acceptConsoleOptionList(parser, new ConsoleMainOptionContributor().getConsoleOptionList());
         acceptConsoleOptionList(parser, executor.getAllConsoleOptions());
+
+        OptionSpecBuilder configSpec = parser.accepts(applicationConfigOptions.getConfigOption());
+        applicationConfigOptions.getConsoleOptionList().stream().forEach(consoleOption -> {
+            OptionSpecBuilder optionSpecBuilder = parser.accepts(consoleOption.getOption()).availableIf(configSpec);
+            if (consoleOption.hasArgument()) {
+                optionSpecBuilder.withRequiredArg().ofType(consoleOption.getArgumentType());
+            }
+        });
+
         return parser;
     }
 

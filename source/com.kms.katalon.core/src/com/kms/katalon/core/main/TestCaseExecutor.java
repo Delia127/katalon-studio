@@ -187,7 +187,9 @@ public class TestCaseExecutor {
 
             testCaseContext.setTestCaseVariables(variableBinding.getVariables());
 
-            eventManager.publicEvent(ExecutionListenerEvent.BEFORE_TEST_CASE, new Object[] { testCaseContext });
+            if (testCaseContext.isMainTestCase()) {
+                eventManager.publicEvent(ExecutionListenerEvent.BEFORE_TEST_CASE, new Object[] { testCaseContext });
+            }
 
             testCaseResult = invokeTestSuiteMethod(SetupTestCase.class.getName(), StringConstants.LOG_SETUP_ACTION,
                     false, testCaseResult);
@@ -205,7 +207,9 @@ public class TestCaseExecutor {
         } finally {
             testCaseContext.setTestCaseStatus(testCaseResult.getTestStatus().getStatusValue().name());
 
-            eventManager.publicEvent(ExecutionListenerEvent.AFTER_TEST_CASE, new Object[] { testCaseContext });
+            if (testCaseContext.isMainTestCase()) {
+                eventManager.publicEvent(ExecutionListenerEvent.AFTER_TEST_CASE, new Object[] { testCaseContext });
+            }
 
             logger.endTest(testCase.getTestCaseId(), null);
 

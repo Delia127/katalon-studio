@@ -949,6 +949,37 @@ public class WebUiBuiltInKeywords extends BuiltinKeywords {
     public static void setText(TestObject to, String text) throws StepFailedException {
         KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "setText", to,text)
     }
+    
+    /**
+     * Set encrypted text into an input field. It also clears the previous value of the input field.
+     * To encrypt raw text, go to Help/Encrypt Text
+     * @param to
+     *       represent a web element
+     * @param encryptedText
+     *       the encrypted text
+     * @param flowControl
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_TEXT)
+    public static void setEncryptedText(TestObject to, String encryptedText, FailureHandling flowControl) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "setEncryptedText", to, encryptedText, flowControl)
+    }
+    
+    /**
+     * Set encrypted text into an input field. It also clears the previous value of the input field.
+     * To encrypt raw text, go to Help/Encrypt Text
+     * @param to
+     *       represent a web element
+     * @param encryptedText
+     *       the encrypted text
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_TEXT)
+    public static void setEncryptedText(TestObject to, String encryptedText) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_WEB, "setEncryptedText", to, encryptedText)
+    }
 
     /**
      * Set the value of an input field, as though you type it in. It also clears the previous value of the input field.

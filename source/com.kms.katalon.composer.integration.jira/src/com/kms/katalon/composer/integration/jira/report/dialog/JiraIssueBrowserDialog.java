@@ -2,6 +2,7 @@ package com.kms.katalon.composer.integration.jira.report.dialog;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.security.GeneralSecurityException;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.jface.dialogs.Dialog;
@@ -22,6 +23,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.jira.JiraUIComponent;
 import com.kms.katalon.composer.integration.jira.constant.ComposerJiraIntegrationMessageConstant;
 import com.kms.katalon.core.logging.model.TestCaseLogRecord;
+import com.kms.katalon.integration.jira.JiraIntegrationException;
 import com.kms.katalon.integration.jira.issue.IssueHTMLLinkProvider;
 
 public class JiraIssueBrowserDialog extends Dialog implements JiraUIComponent {
@@ -71,7 +73,7 @@ public class JiraIssueBrowserDialog extends Dialog implements JiraUIComponent {
     private void setInput() {
         try {
             browser.setUrl(htmlLinkProvider.getLoginHTMLLink());
-        } catch (IOException | URISyntaxException e) {
+        } catch (IOException | URISyntaxException | GeneralSecurityException e) {
             LoggerSingleton.logError(e);
         }
     }
@@ -114,12 +116,12 @@ public class JiraIssueBrowserDialog extends Dialog implements JiraUIComponent {
                         return;
                     }
                     getNewIssueKey(location);
-                } catch (IOException | URISyntaxException e) {
+                } catch (IOException | URISyntaxException | GeneralSecurityException e) {
                     LoggerSingleton.logError(e);
                 }
             }
 
-            private void login() throws IOException, URISyntaxException {
+            private void login() throws IOException, URISyntaxException, GeneralSecurityException {
                 if (isLoginDashboard()) {
                     loginForServer();
                 } else {
@@ -127,7 +129,7 @@ public class JiraIssueBrowserDialog extends Dialog implements JiraUIComponent {
                 }
             }
 
-            private void getNewIssueKey(String location) throws IOException {
+            private void getNewIssueKey(String location) throws IOException, GeneralSecurityException {
                 String createdIssueURLPrefix = getHTMLIssueURLPrefix();
                 if (location.startsWith(createdIssueURLPrefix)) {
                     browser.removeLocationListener(this);
@@ -138,11 +140,11 @@ public class JiraIssueBrowserDialog extends Dialog implements JiraUIComponent {
         });
     }
 
-    private boolean isLoginDashboard() throws IOException, URISyntaxException {
+    private boolean isLoginDashboard() throws IOException, URISyntaxException, GeneralSecurityException {
         return htmlLinkProvider.getLoginHTMLLink().equals(browser.getUrl());
     }
 
-    private boolean isLoginPage() throws IOException, URISyntaxException {
+    private boolean isLoginPage() throws IOException, URISyntaxException, GeneralSecurityException {
         return htmlLinkProvider.getLoginHTMLLink().startsWith(browser.getUrl());
     }
 
@@ -156,7 +158,7 @@ public class JiraIssueBrowserDialog extends Dialog implements JiraUIComponent {
                     .append("document.getElementById(\"remember-me\").checked = true;\n")
                     .append("document.getElementById(\"login\").click();\n");
             browser.execute(waitAndExec("remember-me", js.toString()));
-        } catch (IOException e) {
+        } catch (IOException | JiraIntegrationException e) {
             LoggerSingleton.logError(e);
         }
     }
@@ -171,7 +173,7 @@ public class JiraIssueBrowserDialog extends Dialog implements JiraUIComponent {
                     .append("document.getElementById(\"login-form-remember-me\").checked = true;\n")
                     .append("document.getElementById(\"login-form-submit\").click();\n");
             browser.execute(waitAndExec("login-form-submit", js.toString()));
-        } catch (IOException e) {
+        } catch (IOException | JiraIntegrationException e) {
             LoggerSingleton.logError(e);
         }
     }

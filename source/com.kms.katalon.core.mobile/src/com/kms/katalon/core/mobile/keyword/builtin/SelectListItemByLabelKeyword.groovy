@@ -44,6 +44,7 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 
 @Action(value = "selectListItemByLabel")
 public class SelectListItemByLabelKeyword extends MobileAbstractKeyword {
@@ -66,9 +67,9 @@ public class SelectListItemByLabelKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public void selectListItemByLabel(TestObject to, String label, int timeout, FailureHandling flowControl) throws StepFailedException {
-        KeywordMain.runKeyword({
+        MobileKeywordMain.runKeyword({
             MobileElementCommonHelper.selectListItemByLabel(to, label, timeout, flowControl)
-        }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_SELECT_ELEMENT_BY_LABEL_OF_OBJ, [label, to.getObjectId()] as Object[])
+        }, flowControl, true, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_SELECT_ELEMENT_BY_LABEL_OF_OBJ, [label, to.getObjectId()] as Object[])
         : MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_SELECT_ELEMENT_BY_LABEL, label))
     }
 }

@@ -90,6 +90,8 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.VIDEO_16);
         ImageManager.registerImage(IImageKeys.IMPORT_16);
         ImageManager.registerImage(IImageKeys.CHECK_16);
+        ImageManager.registerImage(IImageKeys.FIT_SCREEN_16);
+        ImageManager.registerImage(IImageKeys.FULL_SIZE_16);
     }
 
     private void registerSubToolbarImages() {
@@ -171,6 +173,10 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.IMG_TEST_OBJECT_16);
         ImageManager.registerImage(IImageKeys.LBL_TEST_OBJECT_16);
         ImageManager.registerImage(IImageKeys.LNK_TEST_OBJECT_16);
+        ImageManager.registerImage(IImageKeys.WS_POST_METHOD_16);
+        ImageManager.registerImage(IImageKeys.WS_GET_METHOD_16);
+        ImageManager.registerImage(IImageKeys.WS_PUT_METHOD_16);
+        ImageManager.registerImage(IImageKeys.WS_DELETE_METHOD_16);
         ImageManager.registerImage(IImageKeys.RBT_TEST_OBJECT_16);
         ImageManager.registerImage(IImageKeys.TXT_TEST_OBJECT_16);
 

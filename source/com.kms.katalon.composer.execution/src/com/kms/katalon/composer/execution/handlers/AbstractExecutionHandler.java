@@ -61,7 +61,6 @@ import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
-import com.kms.katalon.execution.util.ExecutionUtil;
 
 @SuppressWarnings("restriction")
 public abstract class AbstractExecutionHandler {
@@ -139,7 +138,6 @@ public abstract class AbstractExecutionHandler {
     public void execute(ParameterizedCommand command) {
         try {
             execute(getLaunchMode(command));
-            ExecutionUtil.saveExecutionCommand(command.getCommand().getId());
         } catch (ExecutionException e) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR, e.getMessage());
         } catch (SWTException e) {

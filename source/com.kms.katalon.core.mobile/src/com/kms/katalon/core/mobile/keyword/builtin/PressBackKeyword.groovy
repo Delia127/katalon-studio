@@ -44,6 +44,7 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 
 @Action(value = "pressBack")
 public class PressBackKeyword extends MobileAbstractKeyword {
@@ -63,7 +64,7 @@ public class PressBackKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public void pressBack(FailureHandling flowControl) throws StepFailedException {
-        KeywordMain.runKeyword({
+        MobileKeywordMain.runKeyword({
             AppiumDriver<?> driver = getAnyAppiumDriver()
             String context = driver.getContext()
             try {
@@ -71,13 +72,13 @@ public class PressBackKeyword extends MobileAbstractKeyword {
                 if (driver instanceof AndroidDriver) {
                     ((AndroidDriver) driver).pressKeyCode(AndroidKeyCode.BACK)
                 } else {
-                    KeywordMain.stepFailed(StringConstants.KW_MSG_UNSUPPORT_ACT_FOR_THIS_DEVICE, flowControl, null)
+                    MobileKeywordMain.stepFailed(StringConstants.KW_MSG_UNSUPPORT_ACT_FOR_THIS_DEVICE, flowControl, null, true)
                     return
                 }
             } finally {
                 driver.context(context)
             }
             logger.logPassed(StringConstants.KW_LOG_PASSED_PRESS_BACK_BTN)
-        }, flowControl, StringConstants.KW_MSG_CANNOT_PRESS_BACK_BTN)
+        }, flowControl, true, StringConstants.KW_MSG_CANNOT_PRESS_BACK_BTN)
     }
 }

@@ -313,6 +313,14 @@ public interface IImageKeys {
     public static final String LBL_TEST_OBJECT_16 = "entity/lbl_test_object_16.png"; //$NON-NLS-1$
 
     public static final String LNK_TEST_OBJECT_16 = "entity/lnk_test_object_16.png"; //$NON-NLS-1$
+    
+    public static final String WS_GET_METHOD_16 = "entity/ws_get_16.png";
+
+    public static final String WS_POST_METHOD_16 = "entity/ws_post_16.png";
+
+    public static final String WS_PUT_METHOD_16 = "entity/ws_put_16.png";
+
+    public static final String WS_DELETE_METHOD_16 = "entity/ws_delete_16.png";
 
     public static final String RBT_TEST_OBJECT_16 = "entity/rbt_test_object_16.png"; //$NON-NLS-1$
 
@@ -586,6 +594,10 @@ public interface IImageKeys {
     public static final String IMPORT_16 = "import_16.png"; //$NON-NLS-1$
     
     public static final String CHECK_16 = "check_16.png"; //$NON-NLS-1$
+
+    public static final String FIT_SCREEN_16 = "fit_screen_16.png"; //$NON-NLS-1$
+
+    public static final String FULL_SIZE_16 = "full_size_16.png"; //$NON-NLS-1$
     
     // End Common
 

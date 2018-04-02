@@ -10,9 +10,6 @@ import java.util.Map;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.qas.api.internal.util.json.JsonArray;
 import org.qas.api.internal.util.json.JsonException;
 import org.qas.api.internal.util.json.JsonObject;
@@ -368,7 +365,7 @@ public class QTestIntegrationTestCaseManager {
             throws QTestIOException {
 
         try {
-            String url = QTestSettingStore.getServerUrl(projectDir);
+            String url = QTestSettingStore.getServerUrl(QTestSettingStore.isEncryptionEnabled(projectDir), projectDir);
 
             return new URL(url + "/p/" + Long.toString(qTestProject.getId()) + "/portal/project#id="
                     + Long.toString(testCase.getId()) + "&object=" + QTestTestCase.getType() + "&tab=testdesign");
