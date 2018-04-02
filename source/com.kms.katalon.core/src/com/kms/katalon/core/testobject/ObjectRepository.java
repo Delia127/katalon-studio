@@ -275,8 +275,8 @@ public class ObjectRepository {
                     .setHttpHeaderProperties(parseProperties(reqElement.elements("httpHeaderProperties"), substitutor));
             requestObject.setHttpBody(reqElement.elementText("httpBody"));
 
-            if ("POST".equals(requestMethod) || "PUT".equals(requestMethod)) {
-                String httpBodyType = reqElement.elementText("httpBodyType");
+            String httpBodyType = reqElement.elementText("httpBodyType");
+            if (isBodySupported(requestObject)) {
                 String httpBodyContent = reqElement.elementText("httpBodyContent");
                 requestObject.setBodyContent(
                         HttpBodyContentReader.fromSource(httpBodyType, httpBodyContent, projectDir, substitutor));
@@ -284,6 +284,11 @@ public class ObjectRepository {
         }
 
         return requestObject;
+    }
+    
+    private static boolean isBodySupported(RequestObject requestObject) {
+        return !(requestObject.getRestRequestMethod().equals("GET") ||
+                requestObject.getRestRequestMethod().equals("POST"));
     }
 
     private static List<TestObjectProperty> parseProperties(List<Object> objects) {
