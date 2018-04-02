@@ -67,6 +67,7 @@ import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageCo
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.soap.response.body.SoapResponseBodyEditorsComposite;
 import com.kms.katalon.composer.webservice.util.WSDLHelper;
+import com.kms.katalon.composer.webservice.util.WebServiceUtil;
 import com.kms.katalon.composer.webservice.view.xml.ColorManager;
 import com.kms.katalon.composer.webservice.view.xml.XMLConfiguration;
 import com.kms.katalon.composer.webservice.view.xml.XMLPartitionScanner;
@@ -373,6 +374,7 @@ public class SoapServicePart extends WebServicePart {
         originalWsObject.setHttpHeaderProperties(httpHeaders);
 
         originalWsObject.setSoapBody(requestBody.getTextWidget().getText());
+        updateIconURL(WebServiceUtil.getRequestMethodIcon(originalWsObject.getServiceType(), originalWsObject.getSoapRequestMethod()));
     }
 
     @Override

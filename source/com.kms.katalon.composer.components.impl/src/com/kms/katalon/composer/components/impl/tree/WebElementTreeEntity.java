@@ -1,5 +1,11 @@
 package com.kms.katalon.composer.components.impl.tree;
 
+import static com.kms.katalon.entity.repository.WebServiceRequestEntity.DELETE_METHOD;
+import static com.kms.katalon.entity.repository.WebServiceRequestEntity.GET_METHOD;
+import static com.kms.katalon.entity.repository.WebServiceRequestEntity.POST_METHOD;
+import static com.kms.katalon.entity.repository.WebServiceRequestEntity.PUT_METHOD;
+import static com.kms.katalon.entity.repository.WebServiceRequestEntity.SOAP;
+import static com.kms.katalon.entity.repository.WebServiceRequestEntity.SOAP12;
 import java.io.File;
 
 import org.apache.commons.lang.StringUtils;
@@ -55,7 +61,37 @@ public class WebElementTreeEntity extends AbstractTreeEntity {
     @Override
     public Image getImage() throws Exception {
         if (webElement instanceof WebServiceRequestEntity) {
-            return ImageConstants.IMG_16_WS_TEST_OBJECT;
+            WebServiceRequestEntity wsEntity = (WebServiceRequestEntity) webElement;
+            // REST
+            if (wsEntity.getServiceType().equals(WebServiceRequestEntity.SERVICE_TYPES[1])) {
+                switch (((WebServiceRequestEntity) webElement).getRestRequestMethod()) {
+                    case GET_METHOD:
+                        return ImageConstants.IMG_16_WS_GET_METHOD;
+                    case POST_METHOD:
+                        return ImageConstants.IMG_16_WS_POST_METHOD;
+                    case PUT_METHOD:
+                        return ImageConstants.IMG_16_WS_PUT_METHOD;
+                    case DELETE_METHOD:
+                        return ImageConstants.IMG_16_WS_DELETE_METHOD;
+                    default:
+                        return ImageConstants.IMG_16_WS_GET_METHOD;
+                }
+            }
+            // SOAP
+            if (wsEntity.getServiceType().equals(WebServiceRequestEntity.SERVICE_TYPES[0])) {
+                switch (((WebServiceRequestEntity) webElement).getSoapRequestMethod()) {
+                    case GET_METHOD:
+                        return ImageConstants.IMG_16_WS_SOAP_GET_METHOD;
+                    case POST_METHOD:
+                        return ImageConstants.IMG_16_WS_SOAP_POST_METHOD;
+                    case SOAP:
+                        return ImageConstants.IMG_16_WS_SOAP_METHOD;
+                    case SOAP12:
+                        return ImageConstants.IMG_16_WS_SOAP12_METHOD;
+                    default:
+                        return ImageConstants.IMG_16_WS_GET_METHOD;
+                }
+            }
         }
         WebElementEntity webElement = (WebElementEntity) getObject();
         switch (HTMLTags.getElementType(webElement.getPropertyValue(WebElementPropertyEntity.TAG_PROPERTY), 

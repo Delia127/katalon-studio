@@ -188,6 +188,8 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
 
     private static final String TXT_MSG_OPTIONAL = ComposerWebserviceMessageConstants.PA_TXT_MSG_OPTIONAL;
 
+    private static final String ICON_URI_FOR_PART = "IconUriForPart";
+
     private static final String RSA_SHA1 = RequestHeaderConstants.SIGNATURE_METHOD_RSA_SHA1;
 
     private static final String HMAC_SHA1 = RequestHeaderConstants.SIGNATURE_METHOD_HMAC_SHA1;
@@ -1301,6 +1303,16 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
         if (StringUtils.isBlank(authType)) {
             ccbAuthType.select(0);
         }
+    }
+
+    public void updateIconURL(String imageURL) {
+        MPartStack stack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
+        int index = stack.getChildren().indexOf(mPart);
+        MPart mPart = (MPart) stack.getChildren().get(index);
+
+        // Work around to update Icon URL for MPart.
+        mPart.getTransientData().put(ICON_URI_FOR_PART, imageURL);
+        mPart.setIconURI(imageURL);
     }
 
 }

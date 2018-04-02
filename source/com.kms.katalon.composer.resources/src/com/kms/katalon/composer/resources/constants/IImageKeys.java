@@ -312,6 +312,22 @@ public interface IImageKeys {
 
     public static final String LNK_TEST_OBJECT_16 = "entity/lnk_test_object_16.png"; //$NON-NLS-1$
 
+    public static final String WS_GET_METHOD_16 = "entity/ws_get_16.png";
+
+    public static final String WS_POST_METHOD_16 = "entity/ws_post_16.png";
+
+    public static final String WS_PUT_METHOD_16 = "entity/ws_put_16.png";
+
+    public static final String WS_DELETE_METHOD_16 = "entity/ws_delete_16.png";
+
+    public static final String WS_SOAP_METHOD_16 = "entity/ws_soap_method_16.png";
+
+    public static final String WS_SOAP12_METHOD_16 = "entity/ws_soap12_method_16.png";
+
+    public static final String WS_SOAP_GET_METHOD_16 = "entity/ws_soap_get_16.png";
+
+    public static final String WS_SOAP_POST_METHOD_16 = "entity/ws_soap_post_16.png";
+
     public static final String RBT_TEST_OBJECT_16 = "entity/rbt_test_object_16.png"; //$NON-NLS-1$
 
     public static final String TXT_TEST_OBJECT_16 = "entity/txt_test_object_16.png"; //$NON-NLS-1$
