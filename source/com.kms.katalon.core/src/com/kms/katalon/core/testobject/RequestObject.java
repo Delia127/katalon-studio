@@ -290,4 +290,5 @@ public class RequestObject extends TestObject implements HttpMessage {
     public void setBodyContent(HttpBodyContent bodyContent) {
         this.bodyContent = bodyContent;
     }
+
 }
