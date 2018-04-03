@@ -13,4 +13,11 @@ public class UrlEncodedBodyParameter {
     public String getValue() {
         return value;
     }
+    
+    public static UrlEncodedBodyParameter create(String name, String value) {
+        UrlEncodedBodyParameter bodyParameter = new UrlEncodedBodyParameter();
+        bodyParameter.name = name;
+        bodyParameter.value = value;
+        return bodyParameter;
+    }
 }
