@@ -27,19 +27,15 @@ public class RawEditor extends Composite implements ResponseBodyEditor {
     }
 
     @Override
-    public void setContentBody(ResponseObject responseOb) {
+    public void setContentBody(ResponseObject responseOb) throws IOException {
         if (responseOb != null) {
             this.responseObject = responseOb;
-            try {
-                mirrorEditor.setText(responseOb.getResponseText());
-            } catch (IOException e) {
-                // TODO KAT-3025
-            }
+            mirrorEditor.setText(responseOb.getResponseText());
         }
     }
 
     @Override
-    public void switchModeContentBody(ResponseObject responseOb) {
+    public void switchModeContentBody(ResponseObject responseOb) throws IOException {
         if (responseObject == null) {
             setContentBody(responseOb);
         } else {

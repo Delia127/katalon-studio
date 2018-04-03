@@ -206,6 +206,8 @@ public class SoapClient extends BasicRequestor {
         responseObject.setWaitingTime(waitingTime);
         responseObject.setContentDownloadTime(contentDownloadTime);
         
+        setBodyContent(con, sb, responseObject);
+        
         return responseObject;
     }
 

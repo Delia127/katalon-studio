@@ -58,9 +58,11 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
+import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.dialogs.ProgressMonitorDialogWithThread;
 import com.kms.katalon.composer.components.impl.util.KeyEventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
@@ -75,6 +77,7 @@ import com.kms.katalon.constants.GlobalMessageConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.WebServiceController;
 import com.kms.katalon.core.testobject.ResponseObject;
+import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.core.webservice.common.BasicRequestor;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
@@ -87,6 +90,8 @@ public class SoapServicePart extends WebServicePart {
     private static final String[] FILTER_NAMES = new String[] { "XML content files (*.xml, *.wsdl, *.txt)" };
 
     protected SoapResponseBodyEditorsComposite soapResponseBodyEditor;
+    
+    private ProgressMonitorDialogWithThread progress;
 
     private CCombo ccbOperation;
 
@@ -123,56 +128,68 @@ public class SoapServicePart extends WebServicePart {
                     return;
                 }
 
+                if (wsApiControl.getSendingState()) {
+                    progress.getProgressMonitor().setCanceled(true);
+                    wsApiControl.setSendButtonState(false);
+                    return;
+                }
+
                 try {
-                    Shell activeShell = Display.getCurrent().getActiveShell();
-                    new ProgressMonitorDialogWithThread(activeShell).run(true, true, new IRunnableWithProgress() {
+                    wsApiControl.setSendButtonState(true);
+                    progress = new ProgressMonitorDialogWithThread(Display.getCurrent().getActiveShell());
+                    progress.setOpenOnRun(false);
+                    displayResponseContentBasedOnSendingState(true);
+                    progress.run(true, true, new IRunnableWithProgress() {
 
                         @Override
                         public void run(IProgressMonitor monitor)
                                 throws InvocationTargetException, InterruptedException {
-                            monitor.beginTask(ComposerWebserviceMessageConstants.PART_MSG_SENDING_TEST_REQUEST,
-                                    IProgressMonitor.UNKNOWN);
-                            Display.getDefault().asyncExec(new Runnable() {
+                            try {
+                                monitor.beginTask(ComposerWebserviceMessageConstants.PART_MSG_SENDING_TEST_REQUEST,
+                                        IProgressMonitor.UNKNOWN);
 
-                                @Override
-                                public void run() {
-                                    try {
-                                        String projectDir = ProjectController.getInstance()
-                                                .getCurrentProject()
-                                                .getFolderLocation();
-                                        ResponseObject responseObject = WebServiceController.getInstance().sendRequest(
-                                                getWSRequestObject(), projectDir,
-                                                ProxyPreferences.getProxyInformation());
+                                String projectDir = ProjectController.getInstance()
+                                        .getCurrentProject()
+                                        .getFolderLocation();
 
-                                        Display.getDefault().asyncExec(() -> {
-                                            String bodyContent = responseObject.getResponseText();
+                                final ResponseObject responseObject = WebServiceController.getInstance().sendRequest(
+                                        getWSRequestObject(), projectDir, ProxyPreferences.getProxyInformation());
 
-                                            setResponseStatus(responseObject);
-                                            mirrorEditor.setText(getPrettyHeaders(responseObject));
-                                            if (bodyContent == null) {
-                                                return;
-                                            }
-                                            soapResponseBodyEditor.setInput(responseObject);
-
-                                        });
-                                    } catch (Exception e) {
-                                        LoggerSingleton.logError(e);
-                                        ErrorDialog.openError(activeShell, StringConstants.ERROR_TITLE,
-                                                ComposerWebserviceMessageConstants.PART_MSG_CANNOT_SEND_THE_TEST_REQUEST,
-                                                new Status(Status.ERROR, WS_BUNDLE_NAME, e.getMessage(), e));
-                                    } finally {
-                                        monitor.done();
-                                    }
+                                if (monitor.isCanceled()) {
+                                    return;
                                 }
-                            });
+
+                                String bodyContent = responseObject.getResponseText();
+                                Display.getDefault().asyncExec(() -> {
+                                    setResponseStatus(responseObject);
+                                    mirrorEditor.setText(getPrettyHeaders(responseObject));
+                                    if (bodyContent == null) {
+                                        return;
+                                    }
+                                    soapResponseBodyEditor.setInput(responseObject);
+
+                                });
+                            } catch (Exception e) {
+                                throw new InvocationTargetException(e);
+                            } finally {
+                                UISynchronizeService.syncExec(() -> wsApiControl.setSendButtonState(false));
+                                monitor.done();
+                            }
                         }
                     });
-                } catch (InvocationTargetException | InterruptedException ex) {
-                    LoggerSingleton.logError(ex);
-                }
+                } catch (InvocationTargetException ex) {
+                    Throwable target = ex.getTargetException();
+                    if (target == null) {
+                        return;
+                    }
+                    LoggerSingleton.logError(target);
+                    MultiStatusErrorDialog.showErrorDialog(
+                            ComposerWebserviceMessageConstants.PART_MSG_CANNOT_SEND_THE_TEST_REQUEST,
+                            target.getMessage(), ExceptionsUtil.getStackTraceForThrowable(target));
+                } catch (InterruptedException ignored) {}
+                displayResponseContentBasedOnSendingState(false);
             }
         });
-
         Composite operationComposite = new Composite(parent, SWT.NONE);
         GridLayout glOperation = new GridLayout(3, false);
         glOperation.marginWidth = 0;

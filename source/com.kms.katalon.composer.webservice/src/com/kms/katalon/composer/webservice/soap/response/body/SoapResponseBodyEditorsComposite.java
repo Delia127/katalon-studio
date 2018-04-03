@@ -3,6 +3,9 @@ package com.kms.katalon.composer.webservice.soap.response.body;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -11,13 +14,19 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.osgi.framework.FrameworkUtil;
 
+import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.webservice.constants.StringConstants;
+import com.kms.katalon.composer.webservice.constants.TextContentType;
 import com.kms.katalon.composer.webservice.response.body.RawEditor;
 import com.kms.katalon.composer.webservice.response.body.ResponseBodyEditor;
 import com.kms.katalon.core.testobject.ResponseObject;
 
 public class SoapResponseBodyEditorsComposite extends Composite {
 
+    protected final String WS_BUNDLE_NAME = FrameworkUtil.getBundle(SoapResponseBodyEditorsComposite.class).getSymbolicName();
+    
     private Map<SoapEditorMode, ResponseBodyEditor> bodyEditors = new HashMap<>();
 
     private Map<SoapEditorMode, Button> bodySelectionButtons = new HashMap<>();
@@ -31,6 +40,10 @@ public class SoapResponseBodyEditorsComposite extends Composite {
     private ResponseObject responseObject;
 
     private SoapEditorMode selectedEditorMode;
+    
+    private final String PRETTY_MODE_DEFAULT_CONTENT_TYPE = TextContentType.XML.getContentType().toString();
+
+    private final String PRETTY_MODE_DEFAULT_INITAL_MESSAGE = StringUtils.EMPTY;
 
     private enum SoapEditorMode {
         PRETTY, RAW
@@ -71,26 +84,36 @@ public class SoapResponseBodyEditorsComposite extends Composite {
         bodyEditors.put(SoapEditorMode.RAW, rawEditor);
 
         handleControlModifyListeners();
+        ResponseObject defaultResponseOb = new ResponseObject();
+        defaultResponseOb.setContentType(PRETTY_MODE_DEFAULT_CONTENT_TYPE);
+        defaultResponseOb.setResponseText(PRETTY_MODE_DEFAULT_INITAL_MESSAGE);
+        setInput(defaultResponseOb);
     }
 
     public void setInput(ResponseObject responseOb) {
-        this.responseObject = new ResponseObject();
-        this.responseObject.setResponseText(responseOb.getResponseText());
+        try {
+            this.responseObject = new ResponseObject();
+            this.responseObject.setResponseText(responseOb.getResponseText());
 
-        this.selectedEditorMode = SoapEditorMode.PRETTY;
-        
-        // Mark radio is selected.
-        bodySelectionButtons.entrySet().forEach(e -> e.getValue().setSelection(false));
-        Button selectedButton = bodySelectionButtons.get(selectedEditorMode);
-        selectedButton.setSelection(true);
-        
-        // Init body content.
-        for (ResponseBodyEditor childEditor : bodyEditors.values()) {
-            childEditor.setContentBody(responseObject);
+            this.selectedEditorMode = SoapEditorMode.PRETTY;
+
+            // Mark radio is selected.
+            bodySelectionButtons.entrySet().forEach(e -> e.getValue().setSelection(false));
+            Button selectedButton = bodySelectionButtons.get(selectedEditorMode);
+            selectedButton.setSelection(true);
+
+            // Init body content.
+            for (ResponseBodyEditor childEditor : bodyEditors.values()) {
+                childEditor.setContentBody(responseObject);
+            }
+            Composite selectedEditor = (Composite) bodyEditors.get(selectedEditorMode);
+            slBodyContent.topControl = selectedEditor;
+            selectedEditor.getParent().layout();
+        } catch (Exception ex) {
+            LoggerSingleton.logError(ex);
+            ErrorDialog.openError(getShell(), StringConstants.ERROR_TITLE, "There was problem while parsing the response object.",
+                    new Status(Status.ERROR, WS_BUNDLE_NAME, ex.getMessage(), ex));
         }
-        Composite selectedEditor = (Composite) bodyEditors.get(selectedEditorMode);
-        slBodyContent.topControl = selectedEditor;
-        selectedEditor.getParent().layout();
     }
 
     private void handleControlModifyListeners() {
@@ -99,12 +122,19 @@ public class SoapResponseBodyEditorsComposite extends Composite {
             public void widgetSelected(SelectionEvent e) {
                 Button source = (Button) e.getSource();
                 if (source.getSelection()) {
-                    selectedEditorMode = SoapEditorMode.valueOf(source.getText().toUpperCase());
-                    ResponseBodyEditor editorComposite = bodyEditors.get(selectedEditorMode);
-                    editorComposite.switchModeContentBody(responseObject);
+                    try {
+                        selectedEditorMode = SoapEditorMode.valueOf(source.getText().toUpperCase());
+                        ResponseBodyEditor editorComposite = bodyEditors.get(selectedEditorMode);
+                        editorComposite.switchModeContentBody(responseObject);
 
-                    slBodyContent.topControl = (Composite) editorComposite;
-                    ((Composite) editorComposite).getParent().layout();
+                        slBodyContent.topControl = (Composite) editorComposite;
+                        ((Composite) editorComposite).getParent().layout();
+                    } catch (Exception ex) {
+                        LoggerSingleton.logError(ex);
+                        ErrorDialog.openError(getShell(), StringConstants.ERROR_TITLE,
+                                "There was problem while parsing the response object.",
+                                new Status(Status.ERROR, WS_BUNDLE_NAME, ex.getMessage(), ex));
+                    }
                 }
             };
         };

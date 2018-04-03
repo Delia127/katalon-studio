@@ -192,21 +192,10 @@ public class RestfulClient extends BasicRequestor {
         responseObject.setWaitingTime(waitingTime);
         responseObject.setContentDownloadTime(contentDownloadTime);
         
-        String contentTypeHeader = conn.getHeaderField(RequestHeaderConstants.CONTENT_TYPE);
-        String contentType = contentTypeHeader;
-        String charset = "UTF-8";
-        if (contentTypeHeader.contains("charset")) {
-            //Content-Type: [content-type]; charset=[charset]
-            charset = contentTypeHeader.split(";")[1].split("=")[1].trim();
-            responseObject.setContentCharset(charset);
-            contentType = contentTypeHeader.split(";")[0].trim();
-        }
-
-        HttpTextBodyContent textBodyContent = new HttpTextBodyContent(sb.toString(), charset, contentType);
-        responseObject.setBodyContent(textBodyContent);
-
+        setBodyContent(conn, sb, responseObject);
         conn.disconnect();
 
         return responseObject;
     }
+
 }

@@ -108,14 +108,9 @@ public class PrettyEditor extends Composite implements ResponseBodyEditor {
     }
 
     @Override
-    public void setContentBody(ResponseObject responseObject) {
+    public void setContentBody(ResponseObject responseObject) throws IOException {
         textBodyContent = new TextBodyContent();
-        try {
-            textBodyContent.setText(responseObject.getResponseText());
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        textBodyContent.setText(responseObject.getResponseText());
         textBodyContent.setContentType(responseObject.getContentType());
 
         mirrorEditor.setText(textBodyContent.getText());
@@ -124,7 +119,7 @@ public class PrettyEditor extends Composite implements ResponseBodyEditor {
     }
 
     @Override
-    public void switchModeContentBody(ResponseObject responseObject) {
+    public void switchModeContentBody(ResponseObject responseObject) throws IOException {
         if (responseObject != null) {
             if (textBodyContent == null) {
                 setContentBody(responseObject);

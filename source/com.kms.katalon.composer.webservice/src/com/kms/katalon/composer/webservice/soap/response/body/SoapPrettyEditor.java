@@ -1,5 +1,8 @@
 package com.kms.katalon.composer.webservice.soap.response.body;
 
+import java.io.IOException;
+import java.util.logging.Logger;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -81,18 +84,18 @@ public class SoapPrettyEditor extends Composite implements ResponseBodyEditor {
     }
 
     @Override
-    public void setContentBody(ResponseObject responseObject) {
+    public void setContentBody(ResponseObject responseObject) throws IOException {
         textBodyContent = new TextBodyContent();
         textBodyContent.setText(responseObject.getResponseText());
-        textBodyContent.setContentType(responseObject.getContentType());
 
+        textBodyContent.setContentType(responseObject.getContentType());
         mirrorEditor.setText(textBodyContent.getText());
         mirrorEditor.changeMode(TextContentType.XML.getText());
         mirrorEditor.beautify();
     }
 
     @Override
-    public void switchModeContentBody(ResponseObject responseObject) {
+    public void switchModeContentBody(ResponseObject responseObject) throws IOException {
         if (responseObject != null) {
             if (textBodyContent == null) {
                 setContentBody(responseObject);

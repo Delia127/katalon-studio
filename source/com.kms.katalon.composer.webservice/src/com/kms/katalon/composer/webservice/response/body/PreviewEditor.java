@@ -28,19 +28,15 @@ public class PreviewEditor extends Composite implements ResponseBodyEditor {
     }
 
     @Override
-    public void setContentBody(ResponseObject responseOb) {
+    public void setContentBody(ResponseObject responseOb) throws IOException {
         if (responseOb != null) {
             this.responseObjects = responseOb;
-            try {
-                browser.setText(responseObjects.getResponseText());
-            } catch (IOException e) {
-                // TODO KAT-3025
-            }
+            browser.setText(responseObjects.getResponseText());
         }
     }
 
     @Override
-    public void switchModeContentBody(ResponseObject responseOb) {
+    public void switchModeContentBody(ResponseObject responseOb) throws IOException {
         if (responseObjects == null) {
             setContentBody(responseOb);
         } else {

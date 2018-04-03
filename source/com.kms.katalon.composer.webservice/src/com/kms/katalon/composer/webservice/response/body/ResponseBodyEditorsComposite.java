@@ -1,10 +1,11 @@
 package com.kms.katalon.composer.webservice.response.body;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -13,12 +14,16 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.osgi.framework.FrameworkUtil;
 
+import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.constants.TextContentType;
 import com.kms.katalon.core.testobject.ResponseObject;
 
 public class ResponseBodyEditorsComposite extends Composite {
-
+    protected final String WS_BUNDLE_NAME = FrameworkUtil.getBundle(ResponseBodyEditorsComposite.class).getSymbolicName();
+    
     private Map<EditorMode, ResponseBodyEditor> bodyEditors = new HashMap<>();
 
     private Map<EditorMode, Button> bodySelectionButtons = new HashMap<>();
@@ -94,28 +99,30 @@ public class ResponseBodyEditorsComposite extends Composite {
     }
 
     public void setInput(ResponseObject responseOb) {
-        this.responseObject = new ResponseObject();
         try {
+            this.responseObject = new ResponseObject();
             this.responseObject.setResponseText(responseOb.getResponseText());
-        } catch (IOException e1) {
-            // TODO 
+            this.responseObject.setContentType(StringUtils.substringBefore(responseOb.getContentType(), ";"));
+            this.selectedEditorMode = detectEditorMode(responseObject.getContentType());
+
+            // Mark radio is selected.
+            bodySelectionButtons.entrySet().forEach(e -> e.getValue().setSelection(false));
+            Button selectedButton = bodySelectionButtons.get(selectedEditorMode);
+            selectedButton.setSelection(true);
+
+            // Init body content.
+            for (ResponseBodyEditor childEditor : bodyEditors.values()) {
+                childEditor.setContentBody(responseObject);
+            }
+            Composite selectedEditor = (Composite) bodyEditors.get(selectedEditorMode);
+            slBodyContent.topControl = selectedEditor;
+            selectedEditor.getParent().layout();
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            ErrorDialog.openError(getShell(), StringConstants.ERROR_TITLE,
+                    "There was problem while parsing the response object.",
+                    new Status(Status.ERROR, WS_BUNDLE_NAME, e.getMessage(), e));
         }
-        this.responseObject.setContentType(StringUtils.substringBefore(responseOb.getContentType(), ";"));
-
-        this.selectedEditorMode = detectEditorMode(responseObject.getContentType());
-
-        // Mark radio is selected.
-        bodySelectionButtons.entrySet().forEach(e -> e.getValue().setSelection(false));
-        Button selectedButton = bodySelectionButtons.get(selectedEditorMode);
-        selectedButton.setSelection(true);
-
-        // Init body content.
-        for (ResponseBodyEditor childEditor : bodyEditors.values()) {
-            childEditor.setContentBody(responseObject);
-        }
-        Composite selectedEditor = (Composite) bodyEditors.get(selectedEditorMode);
-        slBodyContent.topControl = selectedEditor;
-        selectedEditor.getParent().layout();
     }
 
     private EditorMode detectEditorMode(String contentType) {
@@ -136,12 +143,20 @@ public class ResponseBodyEditorsComposite extends Composite {
             public void widgetSelected(SelectionEvent e) {
                 Button source = (Button) e.getSource();
                 if (source.getSelection()) {
-                    selectedEditorMode = EditorMode.valueOf(source.getText().toUpperCase());
-                    ResponseBodyEditor editorComposite = bodyEditors.get(selectedEditorMode);
-                    editorComposite.switchModeContentBody(responseObject);
+                    try {
+                        selectedEditorMode = EditorMode.valueOf(source.getText().toUpperCase());
+                        ResponseBodyEditor editorComposite = bodyEditors.get(selectedEditorMode);
+                        editorComposite.switchModeContentBody(responseObject);
 
-                    slBodyContent.topControl = (Composite) editorComposite;
-                    ((Composite) editorComposite).getParent().layout();
+                        slBodyContent.topControl = (Composite) editorComposite;
+                        ((Composite) editorComposite).getParent().layout();
+                        
+                    } catch (Exception ex) {
+                        LoggerSingleton.logError(ex);
+                        ErrorDialog.openError(getShell(), StringConstants.ERROR_TITLE,
+                                "There was problem while parsing the response object.",
+                                new Status(Status.ERROR, WS_BUNDLE_NAME, ex.getMessage(), ex));
+                    }
                 }
             };
         };
