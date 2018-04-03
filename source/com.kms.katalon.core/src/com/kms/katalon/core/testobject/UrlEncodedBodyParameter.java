@@ -6,6 +6,11 @@ public class UrlEncodedBodyParameter {
     
     private String value;
 
+    public UrlEncodedBodyParameter(String name, String value) {
+        this.name = name;
+        this.value = value;
+    }
+    
     public String getName() {
         return name;
     }
@@ -14,10 +19,10 @@ public class UrlEncodedBodyParameter {
         return value;
     }
     
-    public static UrlEncodedBodyParameter create(String name, String value) {
-        UrlEncodedBodyParameter bodyParameter = new UrlEncodedBodyParameter();
-        bodyParameter.name = name;
-        bodyParameter.value = value;
-        return bodyParameter;
-    }
+//    public static UrlEncodedBodyParameter create(String name, String value) {
+//        UrlEncodedBodyParameter bodyParameter = new UrlEncodedBodyParameter();
+//        bodyParameter.name = name;
+//        bodyParameter.value = value;
+//        return bodyParameter;
+//    }
 }
