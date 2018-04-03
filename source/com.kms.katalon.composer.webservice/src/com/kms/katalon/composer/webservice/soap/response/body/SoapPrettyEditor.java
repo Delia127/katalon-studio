@@ -47,6 +47,8 @@ public class SoapPrettyEditor extends Composite implements ResponseBodyEditor {
             @Override
             public void onDocumentReady() {
                 handleControlModifyListener();
+                mirrorEditor.changeMode(TextContentType.XML.getText());
+                mirrorEditor.beautify();
             }
         });
         Composite bottomComposite = new Composite(this, SWT.NONE);

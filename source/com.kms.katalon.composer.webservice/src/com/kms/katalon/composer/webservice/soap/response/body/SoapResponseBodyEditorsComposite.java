@@ -78,7 +78,12 @@ public class SoapResponseBodyEditorsComposite extends Composite {
         this.responseObject.setResponseText(responseOb.getResponseText());
 
         this.selectedEditorMode = SoapEditorMode.PRETTY;
-
+        
+        // Mark radio is selected.
+        bodySelectionButtons.entrySet().forEach(e -> e.getValue().setSelection(false));
+        Button selectedButton = bodySelectionButtons.get(selectedEditorMode);
+        selectedButton.setSelection(true);
+        
         // Init body content.
         for (ResponseBodyEditor childEditor : bodyEditors.values()) {
             childEditor.setContentBody(responseObject);
