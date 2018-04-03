@@ -10,27 +10,29 @@ import java.util.List;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 
 import com.kms.katalon.core.testobject.FormDataBodyParameter;
 import com.kms.katalon.core.testobject.HttpBodyContent;
 
-public class HttpFormDataBodyContent implements HttpBodyContent {
+import groovy.xml.Entity;
 
-    private static final String CONTENT_TYPE = "multipart/form-data;boundary=kat";
+public class HttpFormDataBodyContent implements HttpBodyContent {
     
-    private static final String CHARSET = "UTF-8";
-    
-    private static final String BOUNDARY = "kat";
+    private static final String DEFAULT_CHARSET = "US-ASCII";
     
     private MultipartEntityBuilder multipartEntityBuilder;
     
     private HttpEntity multipartEntity;
+
+    private String charset;
     
     public HttpFormDataBodyContent(List<FormDataBodyParameter> parameters) throws FileNotFoundException {
+        this.charset = DEFAULT_CHARSET;
+        
         multipartEntityBuilder = MultipartEntityBuilder.create();
         multipartEntityBuilder.setContentType(ContentType.MULTIPART_FORM_DATA);
-        multipartEntityBuilder.setCharset(Charset.forName(CHARSET));
         for (FormDataBodyParameter parameter : parameters) {
             if (parameter.getType().equals(FormDataBodyParameter.PARAM_TYPE_FILE)) {
                 multipartEntityBuilder.addBinaryBody(
@@ -42,13 +44,13 @@ public class HttpFormDataBodyContent implements HttpBodyContent {
                 multipartEntityBuilder.addTextBody(parameter.getName(), parameter.getValue());
             }
         }
-        multipartEntityBuilder.setBoundary(BOUNDARY);
+        
         multipartEntity = multipartEntityBuilder.build();
     }
     
     @Override
     public String getContentType() {
-        return CONTENT_TYPE;
+        return multipartEntity.getContentType().getValue();
     }
 
     @Override
@@ -73,4 +75,7 @@ public class HttpFormDataBodyContent implements HttpBodyContent {
         multipartEntity.writeTo(outstream);
     }
 
+    public String getCharset() {
+        return charset;
+    }
 }

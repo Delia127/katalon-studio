@@ -16,17 +16,27 @@ import com.kms.katalon.core.testobject.UrlEncodedBodyParameter;
 
 public class HttpUrlEncodedBodyContent implements HttpBodyContent {
 
-    private static final String CONTENT_TYPE = "application/x-www-form-urlencoded";
+    private static final String DEFAULT_CONTENT_TYPE = "application/x-www-form-urlencoded";
     
-    private static final String CHARSET = "UTF-8";
+    private static final String DEFAULT_CHARSET = "UTF-8";
     
     private UrlEncodedFormEntity urlEncodedFormEntity;
     
-    public HttpUrlEncodedBodyContent(List<UrlEncodedBodyParameter> parameters) throws UnsupportedEncodingException {
+    private String charset;
+    
+    public HttpUrlEncodedBodyContent(List<UrlEncodedBodyParameter> parameters) 
+            throws UnsupportedEncodingException {
+        this(parameters, DEFAULT_CHARSET);
+    }
+    
+    public HttpUrlEncodedBodyContent(List<UrlEncodedBodyParameter> parameters, String charset) 
+            throws UnsupportedEncodingException {
+        this.charset = charset;
+        
         List<NameValuePair> nameValuePairs = toNameValuePairs(parameters);
         
-        urlEncodedFormEntity = new UrlEncodedFormEntity(nameValuePairs);
-        urlEncodedFormEntity.setContentType(CONTENT_TYPE);
+        urlEncodedFormEntity = new UrlEncodedFormEntity(nameValuePairs, charset);
+        urlEncodedFormEntity.setContentType(DEFAULT_CONTENT_TYPE);
     }
     
     private List<NameValuePair> toNameValuePairs(List<UrlEncodedBodyParameter> parameters) {
@@ -37,7 +47,7 @@ public class HttpUrlEncodedBodyContent implements HttpBodyContent {
     
     @Override
     public String getContentType() {
-        return CONTENT_TYPE;
+        return DEFAULT_CONTENT_TYPE;
     }
 
     @Override
@@ -62,6 +72,6 @@ public class HttpUrlEncodedBodyContent implements HttpBodyContent {
     }
     
     public String getCharset() {
-        return CHARSET;
+        return charset;
     }
 }

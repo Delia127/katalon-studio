@@ -56,7 +56,7 @@ public class HttpBodyContentReader {
                 try {
                     List<FormDataBodyParameter> bindedFormDataParameters = formDataBodyContent.getParameters()
                             .stream()
-                            .map(p -> FormDataBodyParameter.create(substitutor.replace(p.getName()),
+                            .map(p -> new FormDataBodyParameter(substitutor.replace(p.getName()),
                                     substitutor.replace(p.getValue()), p.getType()))
                             .collect(Collectors.toList());
                     return new HttpFormDataBodyContent(bindedFormDataParameters);
@@ -70,7 +70,7 @@ public class HttpBodyContentReader {
                 try {
                     List<UrlEncodedBodyParameter> bindedUrlEncodedParameters = urlEncodedBodyContent.getParameters()
                             .stream()
-                            .map(u -> UrlEncodedBodyParameter.create(substitutor.replace(u.getName()),
+                            .map(u -> new UrlEncodedBodyParameter(substitutor.replace(u.getName()),
                                     substitutor.replace(u.getValue())))
                             .collect(Collectors.toList());
                     return new HttpUrlEncodedBodyContent(bindedUrlEncodedParameters);
