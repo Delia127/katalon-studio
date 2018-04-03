@@ -5,8 +5,10 @@ import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.text.StrSubstitutor;
 
 import com.google.gson.reflect.TypeToken;
 import com.kms.katalon.core.exception.KatalonRuntimeException;
@@ -21,25 +23,24 @@ import com.kms.katalon.core.testobject.impl.HttpUrlEncodedBodyContent;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.core.util.internal.PathUtil;
 
-
 public class HttpBodyContentReader {
     private HttpBodyContentReader() {
         // Disable default constructor
     }
 
-    public static HttpBodyContent fromSource(String httpBodyType, String httpBodyContent, String projectDir)
-            throws KatalonRuntimeException {
+    public static HttpBodyContent fromSource(String httpBodyType, String httpBodyContent, String projectDir,
+            StrSubstitutor substitutor) throws KatalonRuntimeException {
         switch (HttpBodyType.fromType(httpBodyType)) {
             case TEXT:
                 InternalTextBodyContent textBodyContent = JsonUtil.fromJson(httpBodyContent,
                         InternalTextBodyContent.class);
-                return new HttpTextBodyContent(textBodyContent.getText(), textBodyContent.getCharset(),
-                        textBodyContent.getContentType());
+                return new HttpTextBodyContent(substitutor.replace(textBodyContent.getText()),
+                        textBodyContent.getCharset(), textBodyContent.getContentType());
             case FILE:
                 InternalFileBodyContent fileBodyContent = JsonUtil.fromJson(httpBodyContent,
                         InternalFileBodyContent.class);
                 try {
-                    String filePath = fileBodyContent.getFilePath();
+                    String filePath = substitutor.replace(fileBodyContent.getFilePath());
                     String absoluteFilePath = filePath;
                     if (StringUtils.isNotEmpty(filePath)) {
                         absoluteFilePath = PathUtil.relativeToAbsolutePath(filePath, projectDir);
@@ -49,18 +50,30 @@ public class HttpBodyContentReader {
                     throw new KatalonRuntimeException(e);
                 }
             case FORM_DATA:
-                InternalParameterizedBodyContent<FormDataBodyParameter> formDataBodyContent = JsonUtil.fromJson(httpBodyContent,
-                        new TypeToken<InternalParameterizedBodyContent<FormDataBodyParameter>>(){}.getType());
+                InternalParameterizedBodyContent<FormDataBodyParameter> formDataBodyContent = JsonUtil.fromJson(
+                        httpBodyContent,
+                        new TypeToken<InternalParameterizedBodyContent<FormDataBodyParameter>>() {}.getType());
                 try {
-                    return new HttpFormDataBodyContent(formDataBodyContent.getParameters());
+                    List<FormDataBodyParameter> bindedFormDataParameters = formDataBodyContent.getParameters()
+                            .stream()
+                            .map(p -> FormDataBodyParameter.create(substitutor.replace(p.getName()),
+                                    substitutor.replace(p.getValue()), p.getType()))
+                            .collect(Collectors.toList());
+                    return new HttpFormDataBodyContent(bindedFormDataParameters);
                 } catch (FileNotFoundException e) {
                     throw new KatalonRuntimeException(e);
                 }
             case URL_ENCODED:
-                InternalParameterizedBodyContent<UrlEncodedBodyParameter> urlEncodedBodyContent = JsonUtil.fromJson(httpBodyContent,
-                        new TypeToken<InternalParameterizedBodyContent<UrlEncodedBodyParameter>>(){}.getType());
+                InternalParameterizedBodyContent<UrlEncodedBodyParameter> urlEncodedBodyContent = JsonUtil.fromJson(
+                        httpBodyContent,
+                        new TypeToken<InternalParameterizedBodyContent<UrlEncodedBodyParameter>>() {}.getType());
                 try {
-                    return new HttpUrlEncodedBodyContent(urlEncodedBodyContent.getParameters());
+                    List<UrlEncodedBodyParameter> bindedUrlEncodedParameters = urlEncodedBodyContent.getParameters()
+                            .stream()
+                            .map(u -> UrlEncodedBodyParameter.create(substitutor.replace(u.getName()),
+                                    substitutor.replace(u.getValue())))
+                            .collect(Collectors.toList());
+                    return new HttpUrlEncodedBodyContent(bindedUrlEncodedParameters);
                 } catch (UnsupportedEncodingException e) {
                     throw new KatalonRuntimeException(e);
                 }
@@ -142,15 +155,15 @@ public class HttpBodyContentReader {
             return filePath;
         }
     }
-    
+
     private class InternalParameterizedBodyContent<P> implements InternalHttpBodyContent {
 
         private String contentType;
-        
+
         private String charset;
-        
+
         private List<P> parameters = new ArrayList<>();
-        
+
         @Override
         public String getContentType() {
             return contentType;
@@ -165,7 +178,7 @@ public class HttpBodyContentReader {
         public String getCharset() {
             return charset;
         }
-        
+
         public List<P> getParameters() {
             return parameters;
         }
