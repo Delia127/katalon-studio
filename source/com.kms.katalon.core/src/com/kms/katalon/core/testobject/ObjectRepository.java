@@ -21,6 +21,7 @@ import org.dom4j.io.SAXReader;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.logging.KeywordLogger;
+import com.kms.katalon.core.testobject.internal.impl.HttpBodyContentReader;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 
 public class ObjectRepository {
@@ -119,7 +120,7 @@ public class ObjectRepository {
                     MessageFormat.format(StringConstants.TO_LOG_WARNING_TEST_OBJ_DOES_NOT_EXIST, testObjectId));
             return null;
         }
-        return readTestObjectFile(testObjectId, objectFile);
+        return readTestObjectFile(testObjectId, objectFile, RunConfiguration.getProjectDir());
     }
 
     /**
@@ -161,7 +162,7 @@ public class ObjectRepository {
         return testObject;
     }
 
-    public static TestObject readTestObjectFile(String testObjectId, File objectFile) {
+    public static TestObject readTestObjectFile(String testObjectId, File objectFile, String projectDir) {
         try {
             Element rootElement = new SAXReader().read(objectFile).getRootElement();
             String elementName = rootElement.getName();
@@ -170,7 +171,7 @@ public class ObjectRepository {
             }
 
             if (WEB_SERVICES_TYPE_NAME.equals(elementName)) {
-                return findRequestObject(testObjectId, rootElement);
+                return findRequestObject(testObjectId, rootElement, projectDir);
             }
             return null;
         } catch (DocumentException e) {
@@ -189,7 +190,7 @@ public class ObjectRepository {
             String imagePath = imagePathElement.getText();
             testObject.setImagePath(imagePath);
         }
-        
+
         Element relativeImagePathElement = element.element("useRalativeImagePath");
         if (relativeImagePathElement != null) {
             String useRelavitePathString = relativeImagePathElement.getText();
@@ -204,7 +205,8 @@ public class ObjectRepository {
         Element propertySelectorCollection = element.element(PROPERTY_SELECTOR_COLLECTION);
         if (propertySelectorCollection != null) {
             List<?> selectorEntry = propertySelectorCollection.elements(PROPERTY_ENTRY);
-            if (selectorEntry != null) {selectorEntry.forEach(entry -> {
+            if (selectorEntry != null) {
+                selectorEntry.forEach(entry -> {
                     Element selectorMethodElement = ((Element) entry);
                     SelectorMethod entryKey = SelectorMethod.valueOf(selectorMethodElement.elementText(PROPERTY_KEY));
                     String entryValue = selectorMethodElement.elementText(PROPERTY_VALUE);
@@ -229,7 +231,6 @@ public class ObjectRepository {
             objectProperty.setValue(propertyValue);
             objectProperty.setActive(isPropertySelected);
 
-
             // Check if this element is inside a frame
             if (Arrays.asList(PARENT_FRAME_ATTRS).contains(propertyName) && isPropertySelected) {
                 TestObject parentObject = findTestObject(propertyValue);
@@ -245,7 +246,7 @@ public class ObjectRepository {
     }
 
     @SuppressWarnings("unchecked")
-    private static RequestObject findRequestObject(String requestObjectId, Element reqElement) {
+    public static RequestObject findRequestObject(String requestObjectId, Element reqElement, String projectDir) {
         RequestObject requestObject = new RequestObject(requestObjectId);
         requestObject.setName(reqElement.elementText("name"));
 
@@ -263,9 +264,20 @@ public class ObjectRepository {
             requestObject.setRestParameters(parseProperties(reqElement.elements("restParameters")));
             requestObject.setHttpHeaderProperties(parseProperties(reqElement.elements("httpHeaderProperties")));
             requestObject.setHttpBody(reqElement.elementText("httpBody"));
+
+            String httpBodyType = reqElement.elementText("httpBodyType");
+            if (isBodySupported(requestObject)) {
+                String httpBodyContent = reqElement.elementText("httpBodyContent");
+                requestObject.setBodyContent(HttpBodyContentReader.fromSource(httpBodyType, httpBodyContent, projectDir));
+            }
         }
 
         return requestObject;
+    }
+    
+    private static boolean isBodySupported(RequestObject requestObject) {
+        return !(requestObject.getRestRequestMethod().equals("GET") ||
+                requestObject.getRestRequestMethod().equals("POST"));
     }
 
     private static List<TestObjectProperty> parseProperties(List<Object> objects) {

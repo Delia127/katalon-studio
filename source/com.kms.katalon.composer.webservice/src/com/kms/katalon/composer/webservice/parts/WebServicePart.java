@@ -279,6 +279,8 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
 
     protected Composite responseBodyComposite;
 
+    private Composite responseMessageComposite;
+
     @PostConstruct
     public void createComposite(Composite parent, MPart part) {
         this.mPart = part;
@@ -391,7 +393,7 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
         addTabAuthorization(tabFolder);
         addTabHeaders(tabFolder);
         addTabBody(tabFolder);
-        addTabVerification(tabFolder);
+//        addTabVerification(tabFolder);
 
         tabFolder.setSelection(0);
     }
@@ -452,6 +454,9 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
                 renderAuthenticationUI(ccbAuthType.getText());
             }
         });
+        
+        ccbAuthType.select(0);
+        renderAuthenticationUI(ccbAuthType.getText());
     }
 
     /**
@@ -682,8 +687,10 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
     }
 
     protected void createResponseComposite(Composite parent) {
+        
         responseComposite = new Composite(parent, SWT.NONE);
         responseComposite.setLayout(new GridLayout());
+        responseComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         Label lblResponse = new Label(responseComposite, SWT.NONE);
         lblResponse.setText(ComposerWebserviceMessageConstants.TAB_RESPONSE);
@@ -692,6 +699,18 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
         createResponseStatusComposite();
 
         createResponseDetailsTabs();
+        
+        responseMessageComposite = new Composite(parent, SWT.NONE);
+        GridLayout glMessageComposite = new GridLayout();
+        glMessageComposite.marginTop = 20;
+        responseMessageComposite.setLayout(glMessageComposite);
+        responseMessageComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        
+        Label lblSendingRequest = new Label(responseMessageComposite, SWT.NONE);
+        lblSendingRequest.setText(ComposerWebserviceMessageConstants.LBL_SENDING_REQUEST);
+        ControlUtils.setFontToBeBold(lblSendingRequest);
+        
+        displayResponseContentBasedOnSendingState(false);
     }
 
     private void createResponseDetailsTabs() {
@@ -703,9 +722,9 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
 
         createResponseHeader(reponseDetailsTabFolder);
 
-        CTabItem responseVerificationLogTab = new CTabItem(reponseDetailsTabFolder, SWT.NONE);
-        responseVerificationLogTab.setText(ComposerWebserviceMessageConstants.TAB_VERIFICATION_LOG);
-
+//        CTabItem responseVerificationLogTab = new CTabItem(reponseDetailsTabFolder, SWT.NONE);
+//        responseVerificationLogTab.setText(ComposerWebserviceMessageConstants.TAB_VERIFICATION_LOG);
+//
         reponseDetailsTabFolder.setSelection(0);
     }
 
@@ -791,6 +810,25 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
         lblReponseLengthDetails.setForeground(ColorUtil.getTextLinkColor());
     }
 
+    protected void displayResponseContentBasedOnSendingState(boolean isSendingRequest) {
+        GridData gdResponseMessageComposite = (GridData) responseMessageComposite.getLayoutData();
+        GridData gdResponseComposite = (GridData) responseComposite.getLayoutData();
+        
+        if (isSendingRequest) {
+            gdResponseMessageComposite.exclude = false;
+            responseMessageComposite.setVisible(true);
+            gdResponseComposite.exclude = true;
+            responseComposite.setVisible(false);
+        } else {
+            gdResponseMessageComposite.exclude = true;
+            responseMessageComposite.setVisible(false);
+            gdResponseComposite.exclude = false;
+            responseComposite.setVisible(true);
+        }
+        
+        responseComposite.getParent().requestLayout();
+    }
+    
     protected void setResponseStatus(ResponseObject responseObject) {
         int statusCode = responseObject.getStatusCode();
         lblStatusCodeDetails.setBackground(getBackgroundColorForStatusCode(statusCode));
@@ -852,7 +890,7 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
             @Override
             protected void setValue(Object element, Object value) {
                 if (!isHttpHeader) {
-                    handleParamNameChanged(element, value);
+                    handleRequestParamNameChanged(element, value);
                 } else {
                     super.setValue(element, value);
                 }
@@ -873,7 +911,7 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
             @Override
             protected void setValue(Object element, Object value) {
                 if (!isHttpHeader) {
-                    handleParamValueChanged(element, value);
+                    handleRequestParamValueChanged(element, value);
                 } else {
                     super.setValue(element, value);
                 }
@@ -898,10 +936,10 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
         return tblNameValue;
     }
 
-    protected void handleParamNameChanged(Object element, Object value) {
+    protected void handleRequestParamNameChanged(Object element, Object value) {
     };
 
-    protected void handleParamValueChanged(Object element, Object value) {
+    protected void handleRequestParamValueChanged(Object element, Object value) {
     };
 
     protected void deleteSelectedParams() {
@@ -1303,6 +1341,7 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
         if (StringUtils.isBlank(authType)) {
             ccbAuthType.select(0);
         }
+        sComposite.setMinSize(mainComposite.computeSize(MIN_PART_WIDTH, SWT.DEFAULT));
     }
 
     public void updateIconURL(String imageURL) {
