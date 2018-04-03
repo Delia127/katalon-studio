@@ -231,6 +231,7 @@ public class SoapServicePart extends WebServicePart {
                                         if (servFuncs.size() > 0) {
                                             ccbOperation.select(0);
                                         }
+                                        setDirty();
                                     } catch (WSDLException e) {
                                         LoggerSingleton.logError(e);
                                         MessageDialog.openError(activeShell, StringConstants.ERROR_TITLE,
