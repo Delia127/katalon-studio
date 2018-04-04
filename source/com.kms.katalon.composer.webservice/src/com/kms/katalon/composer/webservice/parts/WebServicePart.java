@@ -237,8 +237,6 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
 
     protected SourceViewer requestBody;
 
-    protected HttpBodyEditorComposite requestBodyEditor;
-
     protected MirrorEditor mirrorEditor;
 
     protected CTabItem tabAuthorization;
@@ -1351,6 +1349,10 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
         // Work around to update Icon URL for MPart.
         mPart.getTransientData().put(ICON_URI_FOR_PART, imageURL);
         mPart.setIconURI(imageURL);
+    }
+    
+    public void updateDirty(boolean dirty) {
+        dirtyable.setDirty(dirty);
     }
 
 }

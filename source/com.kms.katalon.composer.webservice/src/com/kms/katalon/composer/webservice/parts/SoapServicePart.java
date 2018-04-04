@@ -1,6 +1,5 @@
 package com.kms.katalon.composer.webservice.parts;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
@@ -14,7 +13,6 @@ import java.util.stream.Collectors;
 
 import javax.wsdl.WSDLException;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.dom4j.DocumentException;
@@ -24,7 +22,6 @@ import org.dom4j.io.XMLWriter;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.bindings.keys.IKeyLookup;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -39,10 +36,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.MenuDetectEvent;
-import org.eclipse.swt.events.MenuDetectListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -50,30 +43,22 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.widgets.ToolItem;
 
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.dialogs.ProgressMonitorDialogWithThread;
-import com.kms.katalon.composer.components.impl.util.KeyEventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
-import com.kms.katalon.composer.resources.constants.IImageKeys;
-import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
+import com.kms.katalon.composer.webservice.editor.SoapRequestMessageEditor;
 import com.kms.katalon.composer.webservice.soap.response.body.SoapResponseBodyEditorsComposite;
 import com.kms.katalon.composer.webservice.util.WSDLHelper;
 import com.kms.katalon.composer.webservice.util.WebServiceUtil;
 import com.kms.katalon.composer.webservice.view.xml.ColorManager;
 import com.kms.katalon.composer.webservice.view.xml.XMLConfiguration;
 import com.kms.katalon.composer.webservice.view.xml.XMLPartitionScanner;
-import com.kms.katalon.constants.GlobalMessageConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.WebServiceController;
 import com.kms.katalon.core.testobject.ResponseObject;
@@ -94,6 +79,8 @@ public class SoapServicePart extends WebServicePart {
     private ProgressMonitorDialogWithThread progress;
 
     private CCombo ccbOperation;
+    
+    protected SoapRequestMessageEditor requestBodyEditor;
 
     @Override
     protected void createAPIControls(Composite parent) {
@@ -277,102 +264,8 @@ public class SoapServicePart extends WebServicePart {
         super.addTabBody(parent);
         tabBody.setText(StringConstants.PA_LBL_XML_REQ_MSG);
         Composite tabComposite = (Composite) tabBody.getControl();
-
-        ToolBar toolbar = new ToolBar(tabComposite, SWT.FLAT | SWT.RIGHT);
-
-        // TODO This feature will be added later
-        // Start - Load From Operation
-        // ToolItem tiLoadFromOperation = new ToolItem(toolbar, SWT.PUSH);
-        // tiLoadFromOperation.setText(ComposerWebserviceMessageConstants.BTN_LOAD_FROM_OPERATION);
-        // tiLoadFromOperation.setImage(ImageManager.getImage(IImageKeys.REFRESH_16));
-        // tiLoadFromOperation.addSelectionListener(new SelectionAdapter() {
-        //
-        // @Override
-        // public void widgetSelected(SelectionEvent e) {
-        // if (!warningIfBodyNotEmpty()) {
-        // return;
-        // }
-        // // Generate SOAP input message from selected Operation
-        // try {
-        // String soapMessageText = WSDLHelper.generateInputSOAPMessageText(wsApiControl.getRequestURL(),
-        // getAuthorizationHeaderValue(), wsApiControl.getRequestMethod(), ccbOperation.getText());
-        // requestBody.getTextWidget().setText(formatXMLContent(soapMessageText));
-        // setDirty();
-        // } catch (Exception ex) {
-        // ErrorDialog.openError(null, StringConstants.ERROR_TITLE,
-        // ComposerWebserviceMessageConstants.PART_MSG_CANNOT_FORMAT_THE_XML_CONTENT,
-        // new Status(IStatus.ERROR, WS_BUNDLE_NAME, ex.getMessage(), ex));
-        // }
-        // }
-        // });
-        // End - Load From Operation
-
-        ToolItem tiLoadFromFile = new ToolItem(toolbar, SWT.PUSH);
-        tiLoadFromFile.setText(ComposerWebserviceMessageConstants.BTN_LOAD_FROM_FILE);
-        tiLoadFromFile.setImage(ImageManager.getImage(IImageKeys.ATTACHMENT_16));
-        tiLoadFromFile.addSelectionListener(new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                if (!warningIfBodyNotEmpty()) {
-                    return;
-                }
-                // Load body template from file
-                FileDialog dialog = new FileDialog(toolbar.getShell());
-                dialog.setFilterNames(FILTER_NAMES);
-                dialog.setFilterExtensions(FILTER_EXTS);
-                dialog.setFilterPath(ProjectController.getInstance().getCurrentProject().getFolderLocation());
-                String filePath = dialog.open();
-                if (StringUtils.isEmpty(filePath)) {
-                    return;
-                }
-                try {
-                    String xmlContent = FileUtils.readFileToString(new File(filePath));
-                    requestBody.setDocument(createXMLDocument(xmlContent));
-                    setDirty();
-                } catch (IOException ex) {
-                    LoggerSingleton.logError(ex);
-                }
-            }
-        });
-
-        requestBody = createXMLSourceViewer(tabComposite);
-        StyledText requestBodyWidget = requestBody.getTextWidget();
-
-        Menu requestBodyContextMenu = requestBodyWidget.getMenu();
-        new MenuItem(requestBodyContextMenu, SWT.SEPARATOR);
-        MenuItem miFormat = new MenuItem(requestBodyContextMenu, SWT.PUSH);
-        miFormat.setText(getLabelWithHotKeys(GlobalMessageConstants.FORMAT,
-                new String[] { IKeyLookup.M1_NAME, IKeyLookup.SHIFT_NAME, "F" }));
-        miFormat.addSelectionListener(new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                formatRequestBody();
-            }
-        });
-
-        requestBodyWidget.addMenuDetectListener(new MenuDetectListener() {
-
-            @Override
-            public void menuDetected(MenuDetectEvent e) {
-                miFormat.setEnabled(requestBodyWidget.getEditable() && !requestBodyWidget.getText().isEmpty());
-            }
-        });
-
-        requestBodyWidget.addKeyListener(new KeyAdapter() {
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-                if (!requestBodyWidget.getEditable() || !requestBodyWidget.isFocusControl()) {
-                    return;
-                }
-
-                if (KeyEventUtil.isKeysPressed(e, new String[] { IKeyLookup.M1_NAME, IKeyLookup.SHIFT_NAME, "F" })) {
-                    formatRequestBody();
-                }
-            }
-        });
+        requestBodyEditor = new SoapRequestMessageEditor(tabComposite, SWT.NONE, this);
+        requestBodyEditor.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
     }
 
     @Override
@@ -391,7 +284,7 @@ public class SoapServicePart extends WebServicePart {
         tblHeaders.removeEmptyProperty();
         originalWsObject.setHttpHeaderProperties(httpHeaders);
 
-        originalWsObject.setSoapBody(requestBody.getTextWidget().getText());
+        originalWsObject.setSoapBody(requestBodyEditor.getHttpBodyContent());
         updateIconURL(WebServiceUtil.getRequestMethodIcon(originalWsObject.getServiceType(), originalWsObject.getSoapRequestMethod()));
     }
 
@@ -412,7 +305,8 @@ public class SoapServicePart extends WebServicePart {
         populateOAuth1FromHeader();
         renderAuthenticationUI(ccbAuthType.getText());
 
-        requestBody.setDocument(createXMLDocument(originalWsObject.getSoapBody()));
+//        requestBody.setDocument(createXMLDocument(originalWsObject.getSoapBody()));
+        requestBodyEditor.setInput((WebServiceRequestEntity)originalWsObject.clone());
         dirtyable.setDirty(false);
     }
 

@@ -1,7 +1,6 @@
 package com.kms.katalon.composer.webservice.soap.response.body;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -24,8 +23,6 @@ public class SoapPrettyEditor extends Composite implements ResponseBodyEditor {
     private TextBodyContent textBodyContent;
 
     private MirrorEditor mirrorEditor;
-
-    Composite tbBodyType;
 
     // List of TextContentType by name
     private static final String[] TEXT_MODE_NAMES;
@@ -59,9 +56,6 @@ public class SoapPrettyEditor extends Composite implements ResponseBodyEditor {
         bottomLayout.marginWidth = bottomLayout.marginHeight = 0;
         bottomComposite.setLayout(bottomLayout);
         bottomComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-
-        tbBodyType = new Composite(bottomComposite, SWT.NONE);
-        tbBodyType.setLayout(new GridLayout(TEXT_MODE_NAMES.length, false));
 
         chckWrapLine = new Button(bottomComposite, SWT.CHECK);
         chckWrapLine.setText(ComposerWebserviceMessageConstants.PA_LBL_WRAP_LINE);
