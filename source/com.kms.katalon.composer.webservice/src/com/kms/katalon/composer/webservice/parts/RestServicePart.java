@@ -14,6 +14,7 @@ import java.util.stream.IntStream;
 
 import javax.annotation.PreDestroy;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -67,6 +68,8 @@ public class RestServicePart extends WebServicePart {
     private Label lblBodyNotSupported;
     
     private ModifyListener requestURLModifyListener;
+    
+    private boolean allowEditParamsTable = true;
 
     @Override
     protected void createAPIControls(Composite parent) {
@@ -201,24 +204,26 @@ public class RestServicePart extends WebServicePart {
     }
 
     private void updateParamsTable(String newUrl) {
-        params = extractRestParameters(newUrl);
+        try {
+            params = extractRestParameters(newUrl);
+            allowEditParamsTable = true;
+        } catch (MalformedURLException e) {
+            urlBuilder = null;
+            params = new ArrayList<>();
+            allowEditParamsTable = false;
+        }
         tblParams.setInput(params);
         tblParams.refresh();
     }
 
-    private List<WebElementPropertyEntity> extractRestParameters(String url) {
+    private List<WebElementPropertyEntity> extractRestParameters(String url) throws MalformedURLException {
         List<WebElementPropertyEntity> paramEntities;
-        try {
-            urlBuilder = new URLBuilder(url);
-            List<NameValuePair> params = urlBuilder.getQueryParams();
-            paramEntities = params.stream()
-                    .map(param -> new WebElementPropertyEntity(param.getName(), param.getValue()))
-                    .collect(Collectors.toList());
-
-        } catch (MalformedURLException e) {
-            paramEntities = Collections.emptyList();
-        }
-
+        urlBuilder = new URLBuilder(url);
+        List<NameValuePair> params = urlBuilder.getQueryParams();
+        paramEntities = params.stream()
+                .map(param -> new WebElementPropertyEntity(param.getName(), param.getValue()))
+                .collect(Collectors.toList());
+        
         return paramEntities;
     }
 
@@ -271,7 +276,9 @@ public class RestServicePart extends WebServicePart {
         tblParams.setInput(unselectedParamProperties);
         tblParams.refresh();
 
-        updateRequestUrlWithNewParams(unselectedParamProperties);
+        if (allowEditParamsTable) {
+            updateRequestUrlWithNewParams(unselectedParamProperties);
+        }
     }
     
     private void updateRequestUrlWithNewParams(List<WebElementPropertyEntity> paramProperties) {
@@ -297,7 +304,7 @@ public class RestServicePart extends WebServicePart {
     @Override
     protected void handleRequestParamNameChanged(Object element, Object value) {
         if (element != null && element instanceof WebElementPropertyEntity && value != null
-                && value instanceof String) {
+                && value instanceof String && allowEditParamsTable) {
 
             WebElementPropertyEntity paramProperty = (WebElementPropertyEntity) element;
             paramProperty.setName((String) value);
@@ -311,7 +318,7 @@ public class RestServicePart extends WebServicePart {
     @Override
     protected void handleRequestParamValueChanged(Object element, Object value) {
         if (element != null && element instanceof WebElementPropertyEntity && value != null
-                && value instanceof String) {
+                && value instanceof String && allowEditParamsTable) {
 
             WebElementPropertyEntity paramProperty = (WebElementPropertyEntity) element;
             paramProperty.setValue((String) value);
@@ -330,6 +337,7 @@ public class RestServicePart extends WebServicePart {
         // requestBody = createSourceViewer(tabComposite, new GridData(SWT.FILL, SWT.FILL, true, true));
         requestBodyEditor = new HttpBodyEditorComposite(tabComposite, SWT.NONE, this);
         requestBodyEditor.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+//        requestBodyEditor.setInput(originalWsObject);
         
         lblBodyNotSupported = new Label(tabComposite, SWT.NONE);
         lblBodyNotSupported.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
@@ -358,19 +366,25 @@ public class RestServicePart extends WebServicePart {
         originalWsObject.setHttpHeaderProperties(tblHeaders.getInput());
 
         // originalWsObject.setHttpBody(requestBody.getTextWidget().getText());
-        originalWsObject.setHttpBodyType(requestBodyEditor.getHttpBodyType());
-        originalWsObject.setHttpBodyContent(requestBodyEditor.getHttpBodyContent());
+        if (isBodySupported()) {
+            originalWsObject.setHttpBodyType(requestBodyEditor.getHttpBodyType());
+            originalWsObject.setHttpBodyContent(requestBodyEditor.getHttpBodyContent());
+        } else {
+            originalWsObject.setHttpBodyType(null);
+            originalWsObject.setHttpBodyContent(StringUtils.EMPTY);
+        }
     }
 
     @Override
     protected void populateDataToUI() {
+        WebServiceRequestEntity clone = (WebServiceRequestEntity) originalWsObject.clone();
+        String restUrl = clone.getRestUrl();
+        boolean isOldVersion = !clone.getRestParameters().isEmpty();
+        
         try {
-            WebServiceRequestEntity clone = (WebServiceRequestEntity) originalWsObject.clone();
-            String restUrl = clone.getRestUrl();
             urlBuilder = new URLBuilder(restUrl);
-
+            
             // Fix for back compatibility with already existing project (KAT-2930)
-            boolean isOldVersion = !clone.getRestParameters().isEmpty();
             if (isOldVersion) {
                 tempPropList = new ArrayList<WebElementPropertyEntity>(clone.getRestParameters());
                 List<NameValuePair> params = tempPropList.stream()
@@ -378,37 +392,40 @@ public class RestServicePart extends WebServicePart {
                         .collect(Collectors.toList());
                 clone.setRestParameters(Collections.emptyList());
                 urlBuilder.addParameters(params);
+               
             }
-
-            wsApiControl.getRequestURLControl().setText(urlBuilder.build().toString());
-            String restRequestMethod = clone.getRestRequestMethod();
-            int index = Arrays.asList(WebServiceRequestEntity.REST_REQUEST_METHODS).indexOf(restRequestMethod);
-            wsApiControl.getRequestMethodControl().select(index < 0 ? 0 : index);
-
-            tempPropList = new ArrayList<WebElementPropertyEntity>(clone.getHttpHeaderProperties());
-            httpHeaders.clear();
-            httpHeaders.addAll(tempPropList);
-            tblHeaders.refresh();
-
-            populateBasicAuthFromHeader();
-            populateOAuth1FromHeader();
-            renderAuthenticationUI(ccbAuthType.getText());
-
-            updateHeaders(clone);
-
-          
-            requestBodyEditor.setInput(clone);
-
-            setTabBodyContentBasedOnRequestMethod();
             
-            dirtyable.setDirty(false);
-
-            if (isOldVersion) {
-                originalWsObject = clone;
-                // save();
-            }
+            wsApiControl.getRequestURLControl().setText(urlBuilder.build().toString());
+            allowEditParamsTable = true;
         } catch (MalformedURLException e) {
-            // ignore
+            wsApiControl.getRequestURLControl().setText(restUrl);
+            allowEditParamsTable = false;
+        }
+
+        String restRequestMethod = clone.getRestRequestMethod();
+        int index = Arrays.asList(WebServiceRequestEntity.REST_REQUEST_METHODS).indexOf(restRequestMethod);
+        wsApiControl.getRequestMethodControl().select(index < 0 ? 0 : index);
+
+        tempPropList = new ArrayList<WebElementPropertyEntity>(clone.getHttpHeaderProperties());
+        httpHeaders.clear();
+        httpHeaders.addAll(tempPropList);
+        tblHeaders.refresh();
+
+        populateBasicAuthFromHeader();
+        populateOAuth1FromHeader();
+        renderAuthenticationUI(ccbAuthType.getText());
+
+        updateHeaders(clone);
+
+        requestBodyEditor.setInput(clone);
+
+        setTabBodyContentBasedOnRequestMethod();
+        
+        dirtyable.setDirty(false);
+
+        if (isOldVersion) {
+            originalWsObject = clone;
+            // save();
         }
     }
 

@@ -105,7 +105,6 @@ import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.webservice.components.MirrorEditor;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
-import com.kms.katalon.composer.webservice.editor.HttpBodyEditorComposite;
 import com.kms.katalon.composer.webservice.support.PropertyNameEditingSupport;
 import com.kms.katalon.composer.webservice.support.PropertyValueEditingSupport;
 import com.kms.katalon.composer.webservice.view.ParameterTable;
@@ -1156,6 +1155,7 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
             eventBroker.post(EventConstants.EXPLORER_REFRESH, null);
             dirtyable.setDirty(false);
         } catch (Exception e) {
+            LoggerSingleton.logError(e);
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, e.getMessage());
         }
     }
