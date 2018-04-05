@@ -54,6 +54,7 @@ public class SoapPrettyEditor extends Composite implements ResponseBodyEditor {
         Composite bottomComposite = new Composite(this, SWT.NONE);
         GridLayout bottomLayout = new GridLayout(2, false);
         bottomLayout.marginWidth = bottomLayout.marginHeight = 0;
+        bottomLayout.marginBottom = 10;
         bottomComposite.setLayout(bottomLayout);
         bottomComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
