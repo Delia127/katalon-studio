@@ -286,7 +286,7 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
 
         parent.setLayout(new FillLayout());
 
-        sComposite = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
+        sComposite = new ScrolledComposite(parent, SWT.NONE);
         sComposite.setExpandHorizontal(true);
         sComposite.setExpandVertical(true);
         sComposite.setBackground(ColorUtil.getCompositeBackgroundColor());
