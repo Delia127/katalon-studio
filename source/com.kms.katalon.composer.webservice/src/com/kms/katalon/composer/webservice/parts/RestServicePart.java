@@ -43,6 +43,7 @@ import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageCo
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.editor.HttpBodyEditorComposite;
 import com.kms.katalon.composer.webservice.response.body.ResponseBodyEditorsComposite;
+import com.kms.katalon.composer.webservice.util.WebServiceUtil;
 import com.kms.katalon.composer.webservice.view.ExpandableComposite;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.WebServiceController;
@@ -356,10 +357,12 @@ public class RestServicePart extends WebServicePart {
 
         tblHeaders.removeEmptyProperty();
         originalWsObject.setHttpHeaderProperties(tblHeaders.getInput());
-
-        // originalWsObject.setHttpBody(requestBody.getTextWidget().getText());
-        originalWsObject.setHttpBodyType(requestBodyEditor.getHttpBodyType());
-        originalWsObject.setHttpBodyContent(requestBodyEditor.getHttpBodyContent());
+        
+        if (requestBodyEditor.getHttpBodyType() != null) {
+            originalWsObject.setHttpBodyType(requestBodyEditor.getHttpBodyType());
+            originalWsObject.setHttpBodyContent(requestBodyEditor.getHttpBodyContent());
+        }
+        updateIconURL(WebServiceUtil.getRequestMethodIcon(originalWsObject.getServiceType(), originalWsObject.getRestRequestMethod()));
     }
 
     @Override
