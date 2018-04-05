@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.webservice.response.body;
+package com.kms.katalon.composer.webservice.soap.response.body;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,36 +19,37 @@ import org.osgi.framework.FrameworkUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.constants.TextContentType;
+import com.kms.katalon.composer.webservice.response.body.RawEditor;
+import com.kms.katalon.composer.webservice.response.body.ResponseBodyEditor;
 import com.kms.katalon.core.testobject.ResponseObject;
 
-public class ResponseBodyEditorsComposite extends Composite {
-    protected final String WS_BUNDLE_NAME = FrameworkUtil.getBundle(ResponseBodyEditorsComposite.class).getSymbolicName();
-    
-    private Map<EditorMode, ResponseBodyEditor> bodyEditors = new HashMap<>();
+public class SoapResponseBodyEditorsComposite extends Composite {
 
-    private Map<EditorMode, Button> bodySelectionButtons = new HashMap<>();
+    protected final String WS_BUNDLE_NAME = FrameworkUtil.getBundle(SoapResponseBodyEditorsComposite.class).getSymbolicName();
+    
+    private Map<SoapEditorMode, ResponseBodyEditor> bodyEditors = new HashMap<>();
+
+    private Map<SoapEditorMode, Button> bodySelectionButtons = new HashMap<>();
 
     private Button prettyRadio;
 
     private Button rawRadio;
 
-    private Button previewRadio;
-
     private StackLayout slBodyContent;
 
     private ResponseObject responseObject;
 
-    private EditorMode selectedEditorMode;
-
-    private enum EditorMode {
-        PRETTY, RAW, PREVIEW
-    };
-
-    private final String PRETTY_MODE_DEFAULT_CONTENT_TYPE = TextContentType.HTML.getContentType().toString();
+    private SoapEditorMode selectedEditorMode;
+    
+    private final String PRETTY_MODE_DEFAULT_CONTENT_TYPE = TextContentType.XML.getContentType().toString();
 
     private final String PRETTY_MODE_DEFAULT_INITAL_MESSAGE = StringUtils.EMPTY;
 
-    public ResponseBodyEditorsComposite(Composite parent, int style) {
+    private enum SoapEditorMode {
+        PRETTY, RAW
+    };
+
+    public SoapResponseBodyEditorsComposite(Composite parent, int style) {
 
         super(parent, style);
         setLayout(new GridLayout());
@@ -68,30 +69,21 @@ public class ResponseBodyEditorsComposite extends Composite {
         Composite tbBodyType = new Composite(bodyTypeComposite, SWT.NONE);
         tbBodyType.setLayout(new GridLayout(3, false));
         prettyRadio = new Button(tbBodyType, SWT.RADIO);
-        prettyRadio.setText(EditorMode.PRETTY.toString().toLowerCase());
-        bodySelectionButtons.put(EditorMode.PRETTY, prettyRadio);
+        prettyRadio.setText(SoapEditorMode.PRETTY.toString().toLowerCase());
+        bodySelectionButtons.put(SoapEditorMode.PRETTY, prettyRadio);
 
-        PrettyEditor prettyEditor = new PrettyEditor(bodyContentComposite, SWT.NONE);
-        bodyEditors.put(EditorMode.PRETTY, prettyEditor);
+        SoapPrettyEditor mirrorEditor = new SoapPrettyEditor(bodyContentComposite, SWT.NONE);
+        bodyEditors.put(SoapEditorMode.PRETTY, mirrorEditor);
 
         // Raw Mode
         rawRadio = new Button(tbBodyType, SWT.RADIO);
-        rawRadio.setText(EditorMode.RAW.toString().toLowerCase());
-        bodySelectionButtons.put(EditorMode.RAW, rawRadio);
+        rawRadio.setText(SoapEditorMode.RAW.toString().toLowerCase());
+        bodySelectionButtons.put(SoapEditorMode.RAW, rawRadio);
 
         RawEditor rawEditor = new RawEditor(bodyContentComposite, SWT.NONE);
-        bodyEditors.put(EditorMode.RAW, rawEditor);
-
-        // Preview Mode
-        previewRadio = new Button(tbBodyType, SWT.RADIO);
-        previewRadio.setText(EditorMode.PREVIEW.toString().toLowerCase());
-        bodySelectionButtons.put(EditorMode.PREVIEW, previewRadio);
-
-        PreviewEditor previewEditor = new PreviewEditor(bodyContentComposite, SWT.NONE);
-        bodyEditors.put(EditorMode.PREVIEW, previewEditor);
+        bodyEditors.put(SoapEditorMode.RAW, rawEditor);
 
         handleControlModifyListeners();
-
         ResponseObject defaultResponseOb = new ResponseObject();
         defaultResponseOb.setContentType(PRETTY_MODE_DEFAULT_CONTENT_TYPE);
         defaultResponseOb.setResponseText(PRETTY_MODE_DEFAULT_INITAL_MESSAGE);
@@ -102,8 +94,8 @@ public class ResponseBodyEditorsComposite extends Composite {
         try {
             this.responseObject = new ResponseObject();
             this.responseObject.setResponseText(responseOb.getResponseText());
-            this.responseObject.setContentType(StringUtils.substringBefore(responseOb.getContentType(), ";"));
-            this.selectedEditorMode = detectEditorMode(responseObject.getContentType());
+
+            this.selectedEditorMode = SoapEditorMode.PRETTY;
 
             // Mark radio is selected.
             bodySelectionButtons.entrySet().forEach(e -> e.getValue().setSelection(false));
@@ -117,24 +109,11 @@ public class ResponseBodyEditorsComposite extends Composite {
             Composite selectedEditor = (Composite) bodyEditors.get(selectedEditorMode);
             slBodyContent.topControl = selectedEditor;
             selectedEditor.getParent().layout();
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
-            ErrorDialog.openError(getShell(), StringConstants.ERROR_TITLE,
-                    "There was problem while parsing the response object.",
-                    new Status(Status.ERROR, WS_BUNDLE_NAME, e.getMessage(), e));
+        } catch (Exception ex) {
+            LoggerSingleton.logError(ex);
+            ErrorDialog.openError(getShell(), StringConstants.ERROR_TITLE, "There was problem while parsing the response object.",
+                    new Status(Status.ERROR, WS_BUNDLE_NAME, ex.getMessage(), ex));
         }
-    }
-
-    private EditorMode detectEditorMode(String contentType) {
-        if (StringUtils.isNotEmpty(contentType)) {
-            if (contentType.startsWith(TextContentType.XML.getContentType())
-                    || contentType.startsWith(TextContentType.JAVASCRIPT.getContentType())
-                    || contentType.startsWith(TextContentType.JSON.getContentType())
-                    || contentType.startsWith(TextContentType.HTML.getContentType())) {
-                return EditorMode.PRETTY;
-            }
-        }
-        return EditorMode.PREVIEW;
     }
 
     private void handleControlModifyListeners() {
@@ -144,13 +123,12 @@ public class ResponseBodyEditorsComposite extends Composite {
                 Button source = (Button) e.getSource();
                 if (source.getSelection()) {
                     try {
-                        selectedEditorMode = EditorMode.valueOf(source.getText().toUpperCase());
+                        selectedEditorMode = SoapEditorMode.valueOf(source.getText().toUpperCase());
                         ResponseBodyEditor editorComposite = bodyEditors.get(selectedEditorMode);
                         editorComposite.switchModeContentBody(responseObject);
 
                         slBodyContent.topControl = (Composite) editorComposite;
                         ((Composite) editorComposite).getParent().layout();
-                        
                     } catch (Exception ex) {
                         LoggerSingleton.logError(ex);
                         ErrorDialog.openError(getShell(), StringConstants.ERROR_TITLE,

@@ -178,6 +178,11 @@ public class MirrorEditor extends Composite {
             (new SettingOptionsThread(browser, command)).start();
         }
     }
+    
+    public String getText() {
+        String command = "return editor.getValue();";
+        return browser.evaluate(command).toString();
+    }
 
     private void onDocumentReady() {
         if (documentReadyHandler != null) {

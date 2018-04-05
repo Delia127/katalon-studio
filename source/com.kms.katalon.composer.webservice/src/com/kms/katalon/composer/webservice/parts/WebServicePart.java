@@ -106,7 +106,6 @@ import com.kms.katalon.composer.webservice.components.MirrorEditor;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.editor.HttpBodyEditorComposite;
-import com.kms.katalon.composer.webservice.response.body.ResponseBodyEditorsComposite;
 import com.kms.katalon.composer.webservice.support.PropertyNameEditingSupport;
 import com.kms.katalon.composer.webservice.support.PropertyValueEditingSupport;
 import com.kms.katalon.composer.webservice.view.ParameterTable;
@@ -188,6 +187,8 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
 
     private static final String TXT_MSG_OPTIONAL = ComposerWebserviceMessageConstants.PA_TXT_MSG_OPTIONAL;
 
+    private static final String ICON_URI_FOR_PART = "IconUriForPart";
+
     private static final String RSA_SHA1 = RequestHeaderConstants.SIGNATURE_METHOD_RSA_SHA1;
 
     private static final String HMAC_SHA1 = RequestHeaderConstants.SIGNATURE_METHOD_HMAC_SHA1;
@@ -236,15 +237,7 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
 
     protected SourceViewer requestBody;
 
-    protected HttpBodyEditorComposite requestBodyEditor;
-
-    protected ResponseBodyEditorsComposite responseBodyEditor;
-
-    protected SourceViewer responseHeader;
-
     protected MirrorEditor mirrorEditor;
-
-    protected SourceViewer responseBody;
 
     protected CTabItem tabAuthorization;
 
@@ -741,15 +734,8 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
         GridLayout glHeader = new GridLayout();
         glHeader.marginWidth = glHeader.marginHeight = 0;
         responseHeaderComposite.setLayout(glHeader);
-        if (isSOAP()) {
-            responseHeader = createSourceViewer(responseHeaderComposite, new GridData(SWT.FILL, SWT.FILL, true, true));
-            responseHeader.setEditable(false);
-        } else {
-            // Just apply for REST, SOAP need a new ticket.
-            responseHeaderComposite.setBackground(ColorUtil.getBlackBackgroundColor());
-            mirrorEditor = new MirrorEditor(responseHeaderComposite, SWT.NONE);
-            mirrorEditor.setEditable(false);
-        }
+        mirrorEditor = new MirrorEditor(responseHeaderComposite, SWT.NONE);
+        mirrorEditor.setEditable(false);
     }
 
     private void createResponseBody(CTabFolder reponseDetailsTabFolder) {
@@ -1353,6 +1339,20 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
             ccbAuthType.select(0);
         }
         sComposite.setMinSize(mainComposite.computeSize(MIN_PART_WIDTH, SWT.DEFAULT));
+    }
+
+    public void updateIconURL(String imageURL) {
+        MPartStack stack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
+        int index = stack.getChildren().indexOf(mPart);
+        MPart mPart = (MPart) stack.getChildren().get(index);
+
+        // Work around to update Icon URL for MPart.
+        mPart.getTransientData().put(ICON_URI_FOR_PART, imageURL);
+        mPart.setIconURI(imageURL);
+    }
+    
+    public void updateDirty(boolean dirty) {
+        dirtyable.setDirty(dirty);
     }
 
 }

@@ -56,7 +56,11 @@ import com.kms.katalon.util.collections.NameValuePair;
 
 public class RestServicePart extends WebServicePart {
 
+    protected HttpBodyEditorComposite requestBodyEditor;
+
     private URLBuilder urlBuilder;
+
+    protected ResponseBodyEditorsComposite responseBodyEditor;
 
     private ProgressMonitorDialogWithThread progress;
     
@@ -140,7 +144,7 @@ public class RestServicePart extends WebServicePart {
                                         return;
                                     }
                                     responseBodyEditor.setInput(responseObject);
-                                    
+
                                 });
                             } catch (Exception e) {
                                 throw new InvocationTargetException(e);
@@ -187,9 +191,8 @@ public class RestServicePart extends WebServicePart {
         } else {
             gdLblBodyNotSupported.exclude = false;
             lblBodyNotSupported.setVisible(true);
-            lblBodyNotSupported.setText(
-                    String.format(ComposerWebserviceMessageConstants.LBL_BODY_NOT_SUPPORTED, 
-                                    wsApiControl.getRequestMethod()));
+            lblBodyNotSupported.setText(String.format(ComposerWebserviceMessageConstants.LBL_BODY_NOT_SUPPORTED,
+                    wsApiControl.getRequestMethod()));
             gdRequestBodyEditor.exclude = true;
             requestBodyEditor.setVisible(false);
         }
@@ -263,9 +266,8 @@ public class RestServicePart extends WebServicePart {
 
         List<WebElementPropertyEntity> paramProperties = tblParams.getInput();
         List<WebElementPropertyEntity> unselectedParamProperties = new ArrayList<>();
-        IntStream.range(0, paramProperties.size())
-            .filter(i -> !selectionIndexSet.contains(i))
-            .forEach(i -> unselectedParamProperties.add(paramProperties.get(i)));
+        IntStream.range(0, paramProperties.size()).filter(i -> !selectionIndexSet.contains(i)).forEach(
+                i -> unselectedParamProperties.add(paramProperties.get(i)));
         tblParams.setInput(unselectedParamProperties);
         tblParams.refresh();
 
@@ -294,11 +296,9 @@ public class RestServicePart extends WebServicePart {
 
     @Override
     protected void handleRequestParamNameChanged(Object element, Object value) {
-        if (element != null && 
-                element instanceof WebElementPropertyEntity &&
-                value != null &&
-                value instanceof String) {
-            
+        if (element != null && element instanceof WebElementPropertyEntity && value != null
+                && value instanceof String) {
+
             WebElementPropertyEntity paramProperty = (WebElementPropertyEntity) element;
             paramProperty.setName((String) value);
             tblParams.refresh();
@@ -310,11 +310,9 @@ public class RestServicePart extends WebServicePart {
 
     @Override
     protected void handleRequestParamValueChanged(Object element, Object value) {
-        if (element != null &&
-                element instanceof WebElementPropertyEntity &&
-                value != null &&
-                value instanceof String) {
-           
+        if (element != null && element instanceof WebElementPropertyEntity && value != null
+                && value instanceof String) {
+
             WebElementPropertyEntity paramProperty = (WebElementPropertyEntity) element;
             paramProperty.setValue((String) value);
             tblParams.refresh();
@@ -419,10 +417,6 @@ public class RestServicePart extends WebServicePart {
         httpHeaders.clear();
         httpHeaders.addAll(tempPropList);
         tblHeaders.refresh();
-    }
-
-    public void updateDirty(boolean dirty) {
-        dirtyable.setDirty(dirty);
     }
 
     @PreDestroy

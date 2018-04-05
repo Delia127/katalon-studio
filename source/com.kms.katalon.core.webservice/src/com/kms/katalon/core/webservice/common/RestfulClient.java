@@ -20,6 +20,7 @@ import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.testobject.TestObjectProperty;
 import com.kms.katalon.core.testobject.impl.HttpTextBodyContent;
 import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
+import com.kms.katalon.core.webservice.helper.WebServiceCommonHelper;
 import com.kms.katalon.core.webservice.support.UrlEncoder;
 
 public class RestfulClient extends BasicRequestor {
@@ -180,15 +181,7 @@ public class RestfulClient extends BasicRequestor {
             }
         }
 
-        long headerLength = conn.getHeaderFields().entrySet().stream().mapToLong(e -> {
-            String key = e.getKey();
-            if (StringUtils.isEmpty(key)) {
-                return 0L;
-            }
-            long length = key.getBytes().length;
-            length += e.getValue().stream().mapToLong(v -> v.getBytes().length).sum();
-            return length;
-        }).sum();
+        long headerLength = WebServiceCommonHelper.calculateHeaderLength(conn);
 
         ResponseObject responseObject = new ResponseObject(sb.toString());
         responseObject.setContentType(conn.getContentType());
@@ -199,21 +192,10 @@ public class RestfulClient extends BasicRequestor {
         responseObject.setWaitingTime(waitingTime);
         responseObject.setContentDownloadTime(contentDownloadTime);
         
-        String contentTypeHeader = StringUtils.defaultString(conn.getHeaderField(RequestHeaderConstants.CONTENT_TYPE));
-        String contentType = contentTypeHeader;
-        String charset = "UTF-8";
-        if (contentTypeHeader.contains("charset")) {
-            //Content-Type: [content-type]; charset=[charset]
-            charset = contentTypeHeader.split(";")[1].split("=")[1].trim();
-            responseObject.setContentCharset(charset);
-            contentType = contentTypeHeader.split(";")[0].trim();
-        }
-
-        HttpTextBodyContent textBodyContent = new HttpTextBodyContent(sb.toString(), charset, contentType);
-        responseObject.setBodyContent(textBodyContent);
-
+        setBodyContent(conn, sb, responseObject);
         conn.disconnect();
 
         return responseObject;
     }
+
 }

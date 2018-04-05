@@ -25,8 +25,10 @@ import com.google.api.client.http.GenericUrl;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.ConditionType;
 import com.kms.katalon.core.testobject.RequestObject;
+import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.testobject.TestObjectProperty;
 import com.kms.katalon.core.testobject.impl.HttpFormDataBodyContent;
+import com.kms.katalon.core.testobject.impl.HttpTextBodyContent;
 import com.kms.katalon.core.util.internal.ProxyUtil;
 import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
 import com.kms.katalon.core.webservice.exception.WebServiceException;
@@ -196,6 +198,21 @@ public abstract class BasicRequestor implements Requestor {
         }
 
         return null;
+    }
+    
+    protected void setBodyContent(HttpURLConnection conn, StringBuffer sb, ResponseObject responseObject) {
+        String contentTypeHeader = conn.getHeaderField(RequestHeaderConstants.CONTENT_TYPE);
+        String contentType = contentTypeHeader;
+        String charset = "UTF-8";
+        if (contentTypeHeader.contains("charset")) {
+            // Content-Type: [content-type]; charset=[charset]
+            charset = contentTypeHeader.split(";")[1].split("=")[1].trim();
+            responseObject.setContentCharset(charset);
+            contentType = contentTypeHeader.split(";")[0].trim();
+        }
+
+        HttpTextBodyContent textBodyContent = new HttpTextBodyContent(sb.toString(), charset, contentType);
+        responseObject.setBodyContent(textBodyContent);
     }
 
 }

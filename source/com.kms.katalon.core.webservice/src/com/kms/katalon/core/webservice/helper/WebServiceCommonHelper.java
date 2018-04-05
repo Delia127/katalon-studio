@@ -1,12 +1,16 @@
 package com.kms.katalon.core.webservice.helper;
 
-import groovy.lang.Binding;
-import groovy.lang.GroovyShell;
+import java.net.HttpURLConnection;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.webservice.constants.StringConstants;
+
+import groovy.lang.Binding;
+import groovy.lang.GroovyShell;
 
 public class WebServiceCommonHelper {
 	public static final KeywordLogger logger = KeywordLogger.getInstance();
@@ -154,4 +158,18 @@ public class WebServiceCommonHelper {
 		return shell.evaluate(groovyScript.toString());
 	}
 
-	}
+    public static long calculateHeaderLength(HttpURLConnection conn) {
+        long headerLength = conn.getHeaderFields().entrySet().stream().mapToLong(e -> {
+            String key = e.getKey();
+            if (StringUtils.isEmpty(key)) {
+                return 0L;
+            }
+            long length = key.getBytes().length;
+            length += e.getValue().stream().mapToLong(v -> v.getBytes().length).sum();
+            return length;
+        }).sum();
+
+        return headerLength;
+    }
+
+}
