@@ -112,14 +112,14 @@ public class SoapServicePart extends WebServicePart {
 
                 String requestURL = wsApiControl.getRequestURL().trim();
                 if (isInvalidURL(requestURL)) {
-                    LoggerSingleton.logError("URL is invalid.");
-                    MessageDialog.openError(null, StringConstants.ERROR, "URL is invalid !");
+                    LoggerSingleton.logError("URL is invalid");
+                    MessageDialog.openError(null, StringConstants.ERROR, "URL is invalid");
                     return;
                 }
                 
                 if (ccbOperation.getText().isEmpty()) {
-                    LoggerSingleton.logError("Service Function is empty.");
-                    MessageDialog.openError(null, StringConstants.ERROR, "Service Function is empty. !");
+                    LoggerSingleton.logError("Service Function is empty");
+                    MessageDialog.openError(null, StringConstants.ERROR, "Service Function is empty");
                     return;
                 }
 
