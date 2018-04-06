@@ -56,8 +56,15 @@ public class HttpBodyContentReader {
                 try {
                     List<FormDataBodyParameter> bindedFormDataParameters = formDataBodyContent.getParameters()
                             .stream()
-                            .map(p -> new FormDataBodyParameter(substitutor.replace(p.getName()),
-                                    substitutor.replace(p.getValue()), p.getType()))
+                            .map(p -> {
+                                String value = substitutor.replace(p.getValue());
+                                if (p.getType().equals(FormDataBodyParameter.PARAM_TYPE_FILE)
+                                        && StringUtils.isNotEmpty(value)) { //value is a file path
+                                    // convert to absolute path if possible
+                                    value = PathUtil.relativeToAbsolutePath(value, projectDir); 
+                                }
+                                return new FormDataBodyParameter(substitutor.replace(p.getName()), value, p.getType());
+                            })
                             .collect(Collectors.toList());
                     return new HttpFormDataBodyContent(bindedFormDataParameters);
                 } catch (FileNotFoundException e) {
