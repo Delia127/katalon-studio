@@ -360,18 +360,22 @@ public class RestServicePart extends WebServicePart {
     @Override
     protected void preSaving() {
         originalWsObject.setRestUrl(wsApiControl.getRequestURL());
-        originalWsObject.setRestRequestMethod(wsApiControl.getRequestMethod());
+        String requestMethod = wsApiControl.getRequestMethod();
+        originalWsObject.setRestRequestMethod(requestMethod);
 
         tblHeaders.removeEmptyProperty();
         originalWsObject.setHttpHeaderProperties(tblHeaders.getInput());
 
-        if (requestBodyEditor.getHttpBodyType() != null) {
+        if (isBodySupported(requestMethod) && requestBodyEditor.getHttpBodyType() != null) {
             originalWsObject.setHttpBodyType(requestBodyEditor.getHttpBodyType());
             originalWsObject.setHttpBodyContent(requestBodyEditor.getHttpBodyContent());
         }
-        
-        originalWsObject.setHttpBody(requestBody.getTextWidget().getText());
+
         updateIconURL(WebServiceUtil.getRequestMethodIcon(originalWsObject.getServiceType(), originalWsObject.getRestRequestMethod()));
+    }
+
+    private boolean isBodySupported(String requestMethod) {
+        return !("GET".equals(requestMethod) || "DELETE".equals(requestMethod));
     }
 
     @Override
