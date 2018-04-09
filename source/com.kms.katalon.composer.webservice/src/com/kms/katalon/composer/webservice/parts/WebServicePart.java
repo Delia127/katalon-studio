@@ -197,8 +197,6 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
 
     private static final int MIN_PART_WIDTH = 400;
 
-    private static final String ICON_URI_FOR_PART = "IconUriForPart";
-
     @Inject
     protected MApplication application;
 
@@ -1357,16 +1355,6 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
     
     public void updateDirty(boolean dirty) {
         dirtyable.setDirty(dirty);
-    }
-    
-    public void updateIconURL(String imageURL) {
-        MPartStack stack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
-        int index = stack.getChildren().indexOf(mPart);
-        MPart mPart = (MPart) stack.getChildren().get(index);
-        
-        //Work around to update Icon URL for MPart.
-        mPart.getTransientData().put(ICON_URI_FOR_PART, imageURL);
-        mPart.setIconURI(imageURL);
     }
 
 }
