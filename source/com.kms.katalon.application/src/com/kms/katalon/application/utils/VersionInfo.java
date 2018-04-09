@@ -54,6 +54,4 @@ public class VersionInfo {
     public void setBuildNumber(int buildNumber) {
         this.buildNumber = buildNumber;
     }
-    
-    
 }

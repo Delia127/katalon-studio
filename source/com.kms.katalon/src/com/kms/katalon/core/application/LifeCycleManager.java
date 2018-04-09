@@ -15,10 +15,7 @@ import org.eclipse.e4.ui.model.application.ui.basic.MTrimmedWindow;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.lifecycle.PostContextCreate;
 import org.eclipse.e4.ui.workbench.modeling.ISaveHandler;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.search.ui.NewSearchUI;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IWorkbenchCommandConstants;
 import org.eclipse.ui.IWorkbenchPartReference;
@@ -49,8 +46,6 @@ import com.kms.katalon.composer.initializer.DisplayInitializer;
 import com.kms.katalon.composer.initializer.ProblemViewImageInitializer;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.constants.MessageConstants;
-import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 import com.kms.katalon.util.ComposerActivationInfoCollector;
 
@@ -180,45 +175,31 @@ public class LifeCycleManager {
             public void handleEvent(Event event) {
                 try {
                     startUpGUIMode();
-                    if (VersionUtil.isInternalBuild()) {
-                        return;
-                    }
-                    if (!(ComposerActivationInfoCollector.checkActivation())) {
-                        eventBroker.send(EventConstants.PROJECT_CLOSE, null);
-                        PlatformUI.getWorkbench().close();
-                        return;
-                    }
-                    alertNewVersion();
 
-                    Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector
-                            .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.OPEN_APPLICATION,
-                                    RunningMode.GUI)));
+                    if (checkActivation(eventBroker)) {
+                        eventBroker.post(EventConstants.ACTIVATION_CHECKED, null);
+                    }
 
                 } catch (Exception e) {
                     logError(e);
                 }
             }
-        });
-    }
 
-    private void alertNewVersion() {
-        IPreferenceStore prefStore = PlatformUI.getPreferenceStore();
-        boolean checkNewVersion = prefStore.contains(PreferenceConstants.GENERAL_AUTO_CHECK_NEW_VERSION)
-                ? prefStore.getBoolean(PreferenceConstants.GENERAL_AUTO_CHECK_NEW_VERSION) : true;
-        if (!checkNewVersion) {
-            return;
-        }
-        Executors.newSingleThreadExecutor().submit(() -> {
-            if (!VersionUtil.hasNewVersion()) {
-                return;
-            }
-            Display.getDefault().syncExec(() -> {
-                boolean wantDownload = MessageDialog.openConfirm(null, MessageConstants.DIA_UPDATE_NEW_VERSION_TITLE,
-                        MessageConstants.DIA_UPDATE_NEW_VERSION_MESSAGE);
-                if (wantDownload) {
-                    VersionUtil.gotoDownloadPage();
+            private boolean checkActivation(final IEventBroker eventBroker) {
+                if (VersionUtil.isInternalBuild()) {
+                    return true;
                 }
-            });
+                if (!(ComposerActivationInfoCollector.checkActivation())) {
+                    eventBroker.send(EventConstants.PROJECT_CLOSE, null);
+                    PlatformUI.getWorkbench().close();
+                    return false;
+                }
+
+                Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector
+                        .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.OPEN_APPLICATION,
+                                RunningMode.GUI)));
+                return true;
+            }
         });
     }
 

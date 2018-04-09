@@ -30,5 +30,4 @@ public class KatalonApplication {
         }
         return StringUtils.defaultString(macAdress, UNKNOWN_HOST);
     }
-
 }
