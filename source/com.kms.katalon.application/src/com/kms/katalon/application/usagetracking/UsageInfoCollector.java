@@ -15,6 +15,7 @@ import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.application.utils.FileUtil;
 import com.kms.katalon.application.utils.ServerAPICommunicationUtil;
+import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.constants.UsagePropertyConstant;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -29,6 +30,9 @@ public class UsageInfoCollector {
     private static final String EMAIL_KEY = "email";
 
     public static void collect(UsageInformation usageInfo) {
+        if (VersionUtil.isInternalBuild()) {
+           return;
+        }
         JsonObject jsObject = new JsonObject();
         JsonObject jsTraits = ActivationInfoCollector.traitsWithAppInfo();
         jsTraits.addProperty(UsagePropertyConstant.PROPERTY_KAT_VERSION, usageInfo.getVersion());
