@@ -79,6 +79,7 @@
 		<module>com.kms.katalon.product</module>
 		<module>com.kms.katalon.selenium-standalone</module>
 		<module>com.kms.katalon.target</module>
+		<module>com.kms.katalon.application</module>
 		<module>com.kms.katalon</module>
 		<module>com.kms.katalon.support.testing.katserver</module>
 		<module>com.kms.katalon.selenium.ide</module>

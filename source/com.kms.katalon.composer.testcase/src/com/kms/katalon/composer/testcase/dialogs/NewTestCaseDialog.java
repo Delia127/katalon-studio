@@ -11,10 +11,10 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.application.utils.EntityTrackingHelper;
 import com.kms.katalon.composer.components.impl.dialogs.CommonNewEntityDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
-import com.kms.katalon.console.utils.EntityTrackingHelper;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;

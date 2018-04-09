@@ -1,4 +1,4 @@
-package com.kms.katalon.console.utils;
+package com.kms.katalon.application.utils;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -21,7 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.kms.katalon.console.constants.ConsoleMessageConstants;
+import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.logging.LogUtil;
 
 public class ServerAPICommunicationUtil {
@@ -41,9 +41,9 @@ public class ServerAPICommunicationUtil {
             throws IOException, GeneralSecurityException {
         HttpURLConnection connection = null;
         try {
-            connection = createConnection(method, getAPIUrl() + function, ProxyUtil.getProxy());
+            connection = createConnection(method, getAPIUrl() + function, ApplicationProxyUtil.getProxy());
             String result = sendAndReceiveData(connection, jsonData);
-            LogUtil.printOutputLine(ConsoleMessageConstants.REQUEST_COMPLETED);
+            LogUtil.printOutputLine(ApplicationMessageConstants.REQUEST_COMPLETED);
             return result;
         } catch (Exception ex) {
             LogUtil.logError(ex);
@@ -57,18 +57,18 @@ public class ServerAPICommunicationUtil {
     
     public static String retryInvoke(String method, String function, String jsonData)
             throws IOException, GeneralSecurityException {
-        LogUtil.printAndLogError(null, ConsoleMessageConstants.REQUEST_FAILED_AND_RETRY);
+        LogUtil.printAndLogError(null, ApplicationMessageConstants.REQUEST_FAILED_AND_RETRY);
         HttpURLConnection connection = null;
         try {
-            connection = createConnection(method, getAPIUrl() + function, ProxyUtil.getRetryProxy());
+            connection = createConnection(method, getAPIUrl() + function, ApplicationProxyUtil.getRetryProxy());
             String result = sendAndReceiveData(connection, jsonData);
-            LogUtil.printOutputLine(ConsoleMessageConstants.REQUEST_COMPLETED);
+            LogUtil.printOutputLine(ApplicationMessageConstants.REQUEST_COMPLETED);
             return result;
         } catch (IOException e) {
             LogUtil.logError(e);
             throw e;
         } catch (URISyntaxException e) {
-            LogUtil.printAndLogError(null, ConsoleMessageConstants.REQUEST_FAILED);
+            LogUtil.printAndLogError(null, ApplicationMessageConstants.REQUEST_FAILED);
             LogUtil.logError(e);
             return StringUtils.EMPTY;
         } finally {

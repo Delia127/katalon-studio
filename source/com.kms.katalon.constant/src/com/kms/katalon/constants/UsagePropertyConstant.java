@@ -18,7 +18,15 @@ public interface UsagePropertyConstant {
     public static final String PROPERTY_NEW_TEST_CASE_CREATED = "new_test_case_created";
     
     public static final String PROPERTY_NEW_PROJECT_CREATED = "new_project_created";
-    
+
+    public static final String PROPERTY_SESSION_ID = "sessionId";
+
+    public static final String PROPERTY_TRIGGERED_BY = "triggeredBy";
+
+    public static final String PROPERTY_RUNNING_MODE = "runningMode";
+
+    public static final String PROPERTY_MAC_ADDRESS = "macAddress";
+
     public static final String KEY_ORG_TIME = "orgTime";
 
     public static final String KEY_NUM_TEST_CASE = "ntc";

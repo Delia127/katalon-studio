@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.application.utils.EntityTrackingHelper;
 import com.kms.katalon.composer.components.impl.transfer.TreeEntityTransfer;
 import com.kms.katalon.composer.components.impl.tree.CheckpointTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
@@ -40,7 +41,6 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.transfer.TransferMoveFlag;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.folder.constants.StringConstants;
-import com.kms.katalon.console.utils.EntityTrackingHelper;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.CheckpointController;
 import com.kms.katalon.controller.FolderController;

@@ -38,6 +38,9 @@ import org.eclipse.ui.PlatformUI;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.application.RunningMode;
+import com.kms.katalon.application.usagetracking.UsageActionTrigger;
+import com.kms.katalon.application.usagetracking.UsageInfoCollector;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.ExecutionProfileManager;
@@ -309,6 +312,9 @@ public abstract class AbstractExecutionHandler {
                     });
 
                     return Status.CANCEL_STATUS;
+                } finally {
+                    UsageInfoCollector.collect(
+                            UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.RUN_SCRIPT, RunningMode.GUI));
                 }
             }
         };
