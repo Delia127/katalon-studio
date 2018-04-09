@@ -165,6 +165,9 @@ public class RecordHandler {
             return;
         }
         final TestCasePart testCasePart = testCaseCompositePart.getChildTestCasePart();
+        if (testCasePart.getTreeTableInput() == null) {
+            testCaseCompositePart.loadTreeTableInput();
+        }
         Job job = new Job(StringConstants.JOB_GENERATE_SCRIPT_MESSAGE) {
             @Override
             protected IStatus run(IProgressMonitor monitor) {

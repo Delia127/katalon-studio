@@ -30,5 +30,8 @@ public class ImageConstants {
     public static final Image IMG_16_ARROW_DOWN = ImageManager.getImage(IImageKeys.CHEVRON_DOWN_16);
 
     public static final Image IMG_16_ARROW_RIGHT = ImageManager.getImage(IImageKeys.CHEVRON_RIGHT_16);
+    
+    // TestSuiteRunConfigLabelProvider
+    public static final Image IMG_16_PROFILE = ImageManager.getImage(IImageKeys.PROFILE_ENTITY_16);
 
 }

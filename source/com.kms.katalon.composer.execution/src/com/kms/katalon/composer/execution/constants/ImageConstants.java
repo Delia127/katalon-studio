@@ -65,5 +65,7 @@ public class ImageConstants {
     
     // GenerateCommandDialog
     public static final Image IMG_16_EDIT = ImageManager.getImage(IImageKeys.EDIT_16);
+    
+    public static final Image IMG_16_PROFILE = ImageManager.getImage(IImageKeys.PROFILE_ENTITY_16);
 
 }

@@ -116,9 +116,10 @@ public final class EntityService {
                 com.kms.katalon.entity.testdata.InternalDataColumnEntity.class,
                 com.kms.katalon.entity.testsuite.TestSuiteEntity.class,
                 com.kms.katalon.entity.variable.VariableEntity.class,
-                com.kms.katalon.entity.link.TestSuiteTestCaseLink.class, com.kms.katalon.entity.link.VariableLink.class,
+                com.kms.katalon.entity.link.TestSuiteTestCaseLink.class, 
+                com.kms.katalon.entity.link.VariableLink.class,
                 com.kms.katalon.entity.repository.WebServiceRequestEntity.class,
-                com.kms.katalon.dal.fileservice.entity.GlobalVariableWrapper.class,
+                com.kms.katalon.entity.global.ExecutionProfileEntity.class,
                 com.kms.katalon.entity.global.GlobalVariableEntity.class,
                 com.kms.katalon.entity.integration.IntegratedEntity.class,
                 com.kms.katalon.entity.file.IntegratedFileEntity.class,
@@ -175,6 +176,9 @@ public final class EntityService {
 
     public synchronized FileEntity loadEntityFromFile(String path) throws Exception {
         File file = new File(path);
+        if (!file.exists()) {
+            return null;
+        }
         FileEntity entity = (FileEntity) unmarshaller.unmarshal(file);
         setEntityTimeAttributes(path, entity);
         return entity;

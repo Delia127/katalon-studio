@@ -4,7 +4,7 @@ import java.io.File;
 
 import com.kms.katalon.constants.GlobalMessageConstants;
 import com.kms.katalon.dal.fileservice.constants.StringConstants;
-import com.kms.katalon.dal.fileservice.entity.GlobalVariableWrapper;
+import com.kms.katalon.entity.global.ExecutionProfileEntity;
 
 public class FileServiceConstant {
     public static final String TEST_CASE_ROOT_FOLDER_NAME = StringConstants.FS_ROOT_FOLDER_NAME_TEST_CASE;
@@ -65,8 +65,12 @@ public class FileServiceConstant {
         return projectFolder + File.separator + GlobalMessageConstants.ROOT_FOLDER_NAME_TEST_LISTENER;
     }
 
-    public static String getGlobalVariableFileLocation(String projectFolder) {
+    public static String getLegacyGlobalVariableFileLocation(String projectFolder) {
         return projectFolder + File.separator + GLOBAL_VARIABLE_FILE_NAME
-                + GlobalVariableWrapper.getGlobalVariableFileExtension();
+                + ExecutionProfileEntity.getGlobalVariableFileExtension();
+    }
+    
+    public static String getProfileFolderLocation(String projectFolder) {
+        return projectFolder + File.separator + "Profiles";
     }
 }

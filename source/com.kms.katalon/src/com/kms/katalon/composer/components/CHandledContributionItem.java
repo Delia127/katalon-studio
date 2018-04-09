@@ -44,8 +44,8 @@ public class CHandledContributionItem extends HandledContributionItem {
         if (item instanceof ToolItem) {
             iconImage = getImage(disabledURI);
             ToolItem toolItem = (ToolItem) item;
-            toolItem.setToolTipText(getModel().getTooltip());
-            toolItem.setText(getModel().getLabel());
+            toolItem.setToolTipText(getModel().getLabel());
+            toolItem.setText("");
             toolItem.setDisabledImage(iconImage);
             item.setData(DISABLED_URI, disabledURI);
         }

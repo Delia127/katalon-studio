@@ -27,8 +27,10 @@ public class TestSuiteRunConfigLabelProvider extends TypeCheckStyleCellTableLabe
     public static final int RUN_WITH_COLUMN_IDX = 2;
 
     public static final int RUN_WITH_DATA_COLUMN_IDX = 3;
+    
+    public static final int PROFILE_COLUMN_IDX = 4;
 
-    public static final int RUN_COLUMN_IDX = 4;
+    public static final int RUN_COLUMN_IDX = 5;
 
     private static final Image IMG_16_WARN_TABLE_ITEM = ImageManager.getImage(IImageKeys.WARNING_16);
 
@@ -51,6 +53,8 @@ public class TestSuiteRunConfigLabelProvider extends TypeCheckStyleCellTableLabe
                 return element.isRunEnabled() ? ImageConstants.IMG_16_CHECKED : ImageConstants.IMG_16_UNCHECKED;
             case RUN_WITH_COLUMN_IDX:
                 return getImageForRunConfigurationColumn(element);
+            case PROFILE_COLUMN_IDX:
+                return ImageConstants.IMG_16_PROFILE;
             default:
                 return null;
         }
@@ -93,7 +97,8 @@ public class TestSuiteRunConfigLabelProvider extends TypeCheckStyleCellTableLabe
             case RUN_WITH_COLUMN_IDX:
                 RunConfigurationDescription configuration = runConfiguration;
                 return configuration != null ? configuration.getRunConfigurationId() : StringUtils.EMPTY;
-            case RUN_COLUMN_IDX:
+            case PROFILE_COLUMN_IDX:
+                return runConfiguration.getProfileName();
             default:
                 return StringUtils.EMPTY;
         }

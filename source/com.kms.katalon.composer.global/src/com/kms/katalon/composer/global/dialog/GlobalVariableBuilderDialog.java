@@ -384,7 +384,10 @@ public class GlobalVariableBuilderDialog extends AbstractDialog {
 
     @Override
     public Point getInitialLocation(Point initialSize) {
-        return new Point(this.location.x - initialSize.x - 10, this.location.y);
+        if (location != null) {
+            return new Point(this.location.x - initialSize.x - 10, this.location.y);
+        }
+        return super.getInitialLocation(initialSize);
     }
 
     @Override

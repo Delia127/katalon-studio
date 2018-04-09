@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import com.kms.katalon.entity.file.FileEntity;
+import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.execution.entity.IExecutedEntity;
 import com.kms.katalon.execution.exception.ExecutionException;
 
@@ -29,4 +30,6 @@ public interface IRunConfiguration {
     public IRunConfiguration cloneConfig() throws IOException, ExecutionException;
 
     boolean allowsRecording();
+    
+    ExecutionProfileEntity getExecutionProfile();
 }

@@ -6,7 +6,8 @@ import java.util.Map.Entry;
 import java.util.logging.LogRecord;
 import java.util.logging.XMLFormatter;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+
 
 public class CustomXmlFormatter extends XMLFormatter {
     @Override

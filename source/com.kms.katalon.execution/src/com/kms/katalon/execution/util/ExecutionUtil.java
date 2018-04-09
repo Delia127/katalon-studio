@@ -21,13 +21,11 @@ import org.apache.commons.io.FileUtils;
 
 import com.google.gson.Gson;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
-import com.kms.katalon.entity.report.ReportEntity;
-import com.kms.katalon.entity.report.ReportTestCaseEntity;
+import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.collector.RunConfigurationCollector;
 import com.kms.katalon.execution.configuration.IDriverConnector;
@@ -114,12 +112,16 @@ public class ExecutionUtil {
     }
 
     public static Map<String, Object> getExecutionProperties(IExecutionSetting executionSetting,
-            Map<String, IDriverConnector> driverConnectors) {
+            Map<String, IDriverConnector> driverConnectors, ExecutionProfileEntity executionProfile) {
         Map<String, Object> propertyMap = new LinkedHashMap<String, Object>();
 
         Map<String, Object> executionProperties = new LinkedHashMap<String, Object>();
 
-        executionProperties.put(RunConfiguration.EXECUTION_GENERAL_PROPERTY, executionSetting.getGeneralProperties());
+        Map<String, Object> generalProperties = executionSetting.getGeneralProperties();
+        if (executionProfile != null) {
+            generalProperties.put(RunConfiguration.EXECUTION_PROFILE_PROPERTY, executionProfile.getName());
+        }
+        executionProperties.put(RunConfiguration.EXECUTION_GENERAL_PROPERTY, generalProperties);
 
         executionProperties.put(RunConfiguration.EXECUTION_DRIVER_PROPERTY,
                 getDriverExecutionProperties(driverConnectors));
