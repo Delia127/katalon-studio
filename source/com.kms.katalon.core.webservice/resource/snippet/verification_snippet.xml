@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<snippets>
+<snippet>
+<name>import</name>
+<script>
+<![CDATA[
+import internal.GlobalVariable as GlobalVariable
+import com.kms.katalon.core.webservice.keyword.WSBuiltInKeywords as WS
+]]>
+</script>
+</snippet>
+
+<snippet>
+<name>Get a global variable</name>
+<script>
+<![CDATA[
+GlobalVariable.variable = 'new value'
+]]>
+</script>
+</snippet>
+	
+<snippet>
+<name>Response body: Contains string</name>
+<script>
+<![CDATA[
+assertThat(response.getResponseText()).contains('Katalon Test Project')
+]]>
+</script>
+</snippet>
+
+<snippet>
+<name>Response body: Convert to JSON Object </name>
+<script>
+<![CDATA[
+def jsonSlurper = new JsonSlurper()
+
+def jsonResponse = jsonSlurper.parseText(response.getResponseText())
+]]>
+</script>
+</snippet>
+
+</snippets>

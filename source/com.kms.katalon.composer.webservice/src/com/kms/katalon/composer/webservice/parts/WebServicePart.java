@@ -31,9 +31,11 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.bindings.keys.IKeyLookup;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentCommand;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IAutoEditStrategy;
@@ -52,6 +54,7 @@ import org.eclipse.jface.window.DefaultToolTip;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
@@ -88,15 +91,15 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
-import org.eclipse.ui.IPropertyListener;
-import org.eclipse.ui.ISaveablePart;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
+import com.kms.katalon.composer.components.controls.ToolBarForMPart;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
@@ -105,6 +108,7 @@ import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.impl.util.KeyEventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
+import com.kms.katalon.composer.components.services.PartServiceSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.parts.SavableCompositePart;
@@ -116,8 +120,8 @@ import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.editor.HttpBodyEditorComposite;
 import com.kms.katalon.composer.webservice.support.PropertyNameEditingSupport;
 import com.kms.katalon.composer.webservice.support.PropertyValueEditingSupport;
-import com.kms.katalon.composer.webservice.util.WSRequestPartService;
 import com.kms.katalon.composer.webservice.view.ParameterTable;
+import com.kms.katalon.composer.webservice.view.WSRequestPartUI;
 import com.kms.katalon.composer.webservice.view.WebServiceAPIControl;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
@@ -129,6 +133,8 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.util.internal.Base64;
 import com.kms.katalon.core.webservice.common.PrivateKeyReader;
+import com.kms.katalon.core.webservice.common.ScriptSnippet;
+import com.kms.katalon.core.webservice.common.VerificationScriptSnippetFactory;
 import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
@@ -199,6 +205,10 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
     private static final String RSA_SHA1 = RequestHeaderConstants.SIGNATURE_METHOD_RSA_SHA1;
 
     private static final String HMAC_SHA1 = RequestHeaderConstants.SIGNATURE_METHOD_HMAC_SHA1;
+    
+    private static final String SHOW_SNIPPETS = ComposerWebserviceMessageConstants.SHOW_SNIPPETS;
+    
+    private static final String HIDE_SNIPPETS = ComposerWebserviceMessageConstants.HIDE_SNIPPETS;
 
     protected static final String OAUTH_1_0 = RequestHeaderConstants.AUTHORIZATION_TYPE_OAUTH_1_0;
     
@@ -213,6 +223,9 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
 
     @Inject
     protected IStylingEngine styleEngine;
+    
+    @Inject
+    protected EPartService partService;
 
     protected MCompositePart mPart;
     
@@ -280,46 +293,26 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
 
     protected List<WebElementPropertyEntity> oauth1Headers = new ArrayList<WebElementPropertyEntity>();
     
+    protected List<ScriptSnippet> verificationScriptSnippets = new ArrayList<>();
+    
+    protected ScriptSnippet verificationScriptImport;
+    
     @Inject
     protected MDirtyable dirtyable;
 
     private Label lblStatusCodeDetails, lblReponseTimeDetails, lblReponseLengthDetails;
-    
-    protected MPart topLeftPart;
-    
-    protected MPart responsePart;
-    
-    protected MPart authorizationPart;
-    
-    protected MPart headersPart;
-    
-    protected MPart bodyPart;
-    
-    protected MPart verificationPart;
 
     protected Composite responseBodyComposite;
-    
-    protected Composite topLeftPartComposite;
-    
-    protected Composite responsePartComposite;
-
-    protected Composite authorizationPartComposite;
-    
-    protected Composite headersPartComposite;
-    
-    protected Composite bodyPartComposite;
-    
-    protected Composite verificationPartComposite;
-    
-    protected Composite topLeftPartInnerComposite;
-    
-    protected File tempScriptFile;
     
     protected GroovyEditor verificationScriptEditor;
     
     protected Composite parent;
     
     protected Composite responseMessageComposite;
+
+    private MPart scriptEditorPart;
+    
+    private WSRequestPartUI ui;
     
     public WebServiceRequestEntity getOriginalWsObject() {
         return originalWsObject;
@@ -328,41 +321,56 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
     public void setOriginalWsObject(WebServiceRequestEntity originalWsObject) {
         this.originalWsObject = originalWsObject;
     }
-
-    public File getTempScriptFile() {
-        return tempScriptFile;
-    }
-
-    public void setTempScriptFile(File tempScriptFile) {
-        this.tempScriptFile = tempScriptFile;
-    }
-
+    
     @PostConstruct
     public void createComposite(Composite parent, MCompositePart part) {
         this.mPart = part;
         new HelpToolBarForMPart(part, DocumentationMessageConstants.TEST_OBJECT_WEB_SERVICES);
         this.originalWsObject = (WebServiceRequestEntity) part.getObject();
         this.parent = parent;
+        
+        verificationScriptSnippets = VerificationScriptSnippetFactory.getSnippets();
+        verificationScriptImport = VerificationScriptSnippetFactory.getSnippetImport();
     }
     
     public Composite getComposite() {
         return parent;
     }
     
-    public void initComponents() {
-        initChildPartsAndChildPartComposites();
+    public void initComponents(WSRequestPartUI wsRequestPartUI) {
+        this.ui = wsRequestPartUI;
         
-        verificationScriptEditor = (GroovyEditor)GroovyEditorUtil.getEditor(verificationPart);
+        new ToolBarForVerificationPart(ui.getVerificationPart());
+        
+        scriptEditorPart = ui.getScriptEditorPart();
+        verificationScriptEditor = (GroovyEditor)GroovyEditorUtil.getEditor(scriptEditorPart);
+        if (StringUtils.isBlank(originalWsObject.getVerificationScript())) {
+            insertImportsForVerificationScript();
+        }
        
-        topLeftPartInnerComposite = new Composite(topLeftPartComposite, SWT.NONE);
-        topLeftPartInnerComposite.setLayout(new GridLayout());
+        Composite apiControlsPartComposite = ui.getApiControlsPartComposite();
+        Composite apiControlsPartInnerComposite = new Composite(apiControlsPartComposite, SWT.NONE);
+        apiControlsPartInnerComposite.setLayout(new GridLayout());
         
-        createAPIControls(topLeftPartInnerComposite);
+        createAPIControls(apiControlsPartInnerComposite);
         
-        createParamsComposite(topLeftPartInnerComposite);
+        createParamsComposite(apiControlsPartInnerComposite);
         
         createTabsComposite();
         
+//        Composite snippetPartComposite = ui.getSnippetPartComposite();
+////        Composite snippetPartInnerComposite = new Composite(snippetPartComposite, SWT.NONE);
+////        snippetPartInnerComposite.setLayout(new GridLayout(2, false));
+////        
+//        createSnippetComposite(snippetPartComposite);
+        createSnippetComposite();
+        
+//        Composite verificationToolbarPartComposite = ui.getVerificationToolbarPartComposite();
+//        Composite verificationToolbarPartInnerComposite = new Composite(verificationToolbarPartComposite, SWT.NONE);
+//        verificationToolbarPartInnerComposite.setLayout(new GridLayout());
+//        createVerificationToolbarComposite(verificationToolbarPartInnerComposite);
+        
+        Composite responsePartComposite = ui.getResponsePartComposite();
         Composite responsePartInnerComposite = new Composite(responsePartComposite, SWT.NONE);
         GridLayout glResponse = new GridLayout(2, false);
         glResponse.marginWidth = glResponse.marginHeight = 0;
@@ -377,25 +385,23 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
         populateDataToUI();
         registerListeners();
     }
+    
+    private void insertImportsForVerificationScript() {
+        StringBuilder importBuilder = new StringBuilder()
+                .append(verificationScriptImport.getScript())
+                .append("\n");
 
-    private void initChildPartsAndChildPartComposites() {
-        topLeftPart = WSRequestPartService.getTopLeftPart(mPart);
-        topLeftPartComposite = WSRequestPartService.getPartComposite(topLeftPart);
-        
-        authorizationPart = WSRequestPartService.getAuthorizationPart(mPart);
-        authorizationPartComposite = WSRequestPartService.getPartComposite(authorizationPart);
-        
-        headersPart = WSRequestPartService.getHeadersPart(mPart);
-        headersPartComposite = WSRequestPartService.getPartComposite(headersPart);
-        
-        bodyPart = WSRequestPartService.getBodyPart(mPart);
-        bodyPartComposite = WSRequestPartService.getPartComposite(bodyPart);
-        
-        verificationPart = WSRequestPartService.getVerificationPart(mPart);
-        verificationPartComposite = WSRequestPartService.getPartComposite(verificationPart);
-        
-        responsePart = WSRequestPartService.getResponsePart(mPart);
-        responsePartComposite = WSRequestPartService.getPartComposite(responsePart);
+        insertVerificationScript(0, importBuilder.toString());
+    }
+    
+    private void insertVerificationScript(int offset, String script) {
+        try {
+            GroovyEditorUtil.insertScript(verificationScriptEditor, offset, script);
+        } catch (MalformedTreeException e) {
+            LoggerSingleton.logError(e);
+        } catch (BadLocationException e) {
+            LoggerSingleton.logError(e);
+        }
     }
 
     protected void createAPIControls(Composite parent) {
@@ -452,7 +458,7 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
     }
 
     protected void createTabsComposite() {
-        CTabFolder tabFolder = WSRequestPartService.getTabFolder(mPart);
+        CTabFolder tabFolder = ui.getTabFolder();
         tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         styleEngine.setId(tabFolder.getParent(), "DefaultCTabFolder");
 //        styleEngine.setId(parent, "DefaultCTabFolder");
@@ -466,7 +472,68 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
         tabFolder.setSelection(0);
     }
 
-   
+    private void createSnippetComposite() {
+  
+//        FontData[] fontData = parent.getFont().getFontData();
+//        fontData[0].setHeight(8);
+//        parent.setFont(new Font(Display.getCurrent(), fontData));
+//        parent.setLayout(new GridLayout(2, false));
+        Composite snippetPartComposite = ui.getSnippetPartComposite();
+        
+        Composite snippetPartInnerComposite = new Composite(snippetPartComposite, SWT.NONE);
+        snippetPartInnerComposite.setLayout(new GridLayout(2, false));
+        
+        int fontSize = 8;
+        
+        Label separator = new Label(snippetPartInnerComposite, SWT.SEPARATOR | SWT.SHADOW_IN | SWT.VERTICAL);
+        separator.setLayoutData(new GridData(GridData.FILL_VERTICAL));
+        
+        Composite snippetComposite = new Composite(snippetPartInnerComposite, SWT.NONE);
+        snippetComposite.setLayout(new GridLayout());
+        snippetComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        
+        Label lblInstruction = new Label(snippetComposite, SWT.WRAP);
+        lblInstruction.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        ControlUtils.setFontSize(lblInstruction, fontSize);
+        lblInstruction.setText(ComposerWebserviceMessageConstants.LBL_VERIFICATION_INSTRUCTION);
+        
+        CLabel lblSnippetHeading = new CLabel(snippetComposite, SWT.NONE);
+        lblSnippetHeading.setTopMargin(10);
+        ControlUtils.setFontSize(lblSnippetHeading, fontSize);
+        ControlUtils.setFontToBeBold(lblSnippetHeading);
+        lblSnippetHeading.setText(ComposerWebserviceMessageConstants.LBL_SNIPPET_HEADING);
+        
+        ScrolledComposite scrolledComposite = new ScrolledComposite(snippetComposite, SWT.V_SCROLL);
+        scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        scrolledComposite.setBackground(parent.getBackground());
+        
+        Composite composite = new Composite(scrolledComposite, SWT.NONE);
+        composite.setLayout(new GridLayout());
+        composite.setBackground(parent.getBackground());
+        
+        Color snippetLblColor = new Color(composite.getDisplay(), 0, 0, 255);
+        for (ScriptSnippet snippet : verificationScriptSnippets) {
+            CLabel lblSnippet = new CLabel(composite, SWT.NONE);
+            ControlUtils.setFontSize(lblSnippet, fontSize);
+            lblSnippet.setForeground(snippetLblColor);
+            lblSnippet.setText(snippet.getName());
+            lblSnippet.setCursor(Display.getCurrent().getSystemCursor(SWT.CURSOR_HAND));
+            lblSnippet.setBackground(parent.getBackground());
+            lblSnippet.setBottomMargin(5);
+            lblSnippet.addListener(SWT.MouseDown, e -> {
+                IEditorInput editorInput = verificationScriptEditor.getEditorInput();
+                IDocument document = verificationScriptEditor.getDocumentProvider().getDocument(editorInput);
+                
+                StringBuilder scriptBuilder = new StringBuilder("\n").append(snippet.getScript()).append("\n");
+                
+                insertVerificationScript(document.getLength(), scriptBuilder.toString());
+            });
+        }
+        snippetLblColor.dispose();
+        
+        composite.setSize(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+        scrolledComposite.setContent(composite);
+    }
 
     protected CTabItem createTab(CTabFolder parent, CTabItem tab, String title) {
         tab = new CTabItem(parent, SWT.NONE);
@@ -480,8 +547,9 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
     }
 
     protected void addTabAuthorization(CTabFolder parent) {
-        tabAuthorization = WSRequestPartService.getAuthorizationTab(parent);
+        tabAuthorization = ui.getAuthorizationTab();
 
+        Composite authorizationPartComposite = ui.getAuthorizationPartComposite();
         Composite formComposite = new Composite(authorizationPartComposite, SWT.NONE);
         formComposite.setLayout(new GridLayout(2, false));
         GridData gdForm = new GridData(SWT.LEFT, SWT.FILL, true, true, 1, 1);
@@ -716,7 +784,8 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
     }
 
     protected void addTabHeaders(CTabFolder parent) {
-        tabHeaders = WSRequestPartService.getHeadersTab(parent);
+        tabHeaders = ui.getHeadersTab();
+        Composite headersPartComposite = ui.getHeadersPartComposite();
         Composite headersPartInnerComposite = new Composite(headersPartComposite, SWT.NONE);
         headersPartInnerComposite.setLayout(new GridLayout());
         ToolBar toolbar = createAddRemoveToolBar(headersPartInnerComposite, new SelectionAdapter() {
@@ -745,11 +814,11 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
     }
 
     protected void addTabBody(CTabFolder parent) {
-        tabBody = WSRequestPartService.getBodyTab(parent);
+        tabBody = ui.getBodyTab();
     }
     
     protected void addTabVerification(CTabFolder parent) {
-        tabVerification = WSRequestPartService.getVerificationTab(parent);
+        tabVerification = ui.getVerificationTab();
     }
 
     protected void createResponseComposite(Composite parent) {
@@ -1134,6 +1203,7 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
                 @Override
                 public void documentChanged(DocumentEvent event) {
                    GroovyEditorUtil.showProblems(verificationScriptEditor);
+                   WebServicePart.this.dirtyable.setDirty(true);
                 }
     
                 @Override
@@ -1142,17 +1212,17 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
                 }
             });
         
-        verificationScriptEditor.addPropertyListener(new IPropertyListener() {
-            @Override
-            public void propertyChanged(Object source, int propId) {
-                if (source instanceof GroovyEditor && propId == ISaveablePart.PROP_DIRTY) {
-                    if (verificationScriptEditor.isDirty()) {
-                        WebServicePart.this.dirtyable.setDirty(true);
-                        tabVerification.setText(StringConstants.PA_LBL_VERIFICATION);
-                    } 
-                }
-            }
-        });
+//        verificationScriptEditor.addPropertyListener(new IPropertyListener() {
+//            @Override
+//            public void propertyChanged(Object source, int propId) {
+//                if (source instanceof GroovyEditor && propId == ISaveablePart.PROP_DIRTY) {
+//                    if (verificationScriptEditor.isDirty()) {
+//                        WebServicePart.this.dirtyable.setDirty(true);
+//                        tabVerification.setText(StringConstants.PA_LBL_VERIFICATION);
+//                    } 
+//                }
+//            }
+//        });
     }
 
     @Override
@@ -1238,7 +1308,7 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
     @Persist
     public void save() {
         try {
-            updateVerificationScript();
+            saveVerificationScript();
             preSaving();
 
             ObjectRepositoryController.getInstance().updateTestObject(originalWsObject);
@@ -1251,14 +1321,14 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
         }
     }
     
-    private void updateVerificationScript() {        
+    private void saveVerificationScript() {        
         IEditorInput input = verificationScriptEditor.getEditorInput();
         IDocument document = verificationScriptEditor.getDocumentProvider().getDocument(input);
         if (document != null) {
             String script = document.get();
             originalWsObject.setVerificationScript(script);
         }
-        GroovyEditorUtil.saveEditor(verificationPart);
+        GroovyEditorUtil.saveEditor(scriptEditorPart);
     }
 
     public WebServiceRequestEntity getWSRequestObject() {
@@ -1456,12 +1526,42 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
     @Override
     public List<MPart> getChildParts() {
         return Arrays.asList(
-                    topLeftPart, 
-                    headersPart, 
-                    authorizationPart, 
-                    bodyPart, 
-                    verificationPart, 
-                    responsePart
+                    ui.getApiControlsPart(), 
+                    ui.getHeadersPart(), 
+                    ui.getAuthorizationPart(), 
+                    ui.getBodyPart(), 
+                    ui.getScriptEditorPart(),
+                    ui.getSnippetPart(),
+                    ui.getResponsePart()
                 );
+    }
+    
+    private class ToolBarForVerificationPart extends ToolBarForMPart {
+
+        public ToolBarForVerificationPart(MPart part) {
+            super(part);
+            ToolItem toolItem = new ToolItem(this, SWT.PUSH);
+            toolItem.setImage(null);
+            toolItem.setText(HIDE_SNIPPETS);
+            toolItem.addSelectionListener(new SelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    MPart snippetPart = ui.getSnippetPart();
+                    if (HIDE_SNIPPETS.equals(toolItem.getText())) {
+                        partService.hidePart(snippetPart, false);
+
+                        toolItem.setText(SHOW_SNIPPETS);
+                    } else {
+                        partService.activate(snippetPart);
+                        createSnippetComposite();
+
+                        toolItem.setText(HIDE_SNIPPETS);
+
+                        ui.getVerificationPartComposite().layout(true, true);
+                    }
+                }
+            });
+        }
+
     }
 }

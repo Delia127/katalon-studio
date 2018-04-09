@@ -152,9 +152,18 @@ public class ComposerWebserviceMessageConstants extends NLS {
 
     public static String MSG_CANNOT_OPEN_REQUEST;
     
+   
     public static String LBL_SENDING_REQUEST;
     
     public static String LBL_BODY_NOT_SUPPORTED;
+    
+    public static String LBL_VERIFICATION_INSTRUCTION;
+            
+    public static String LBL_SNIPPET_HEADING;
+    
+    public static String HIDE_SNIPPETS;
+            
+    public static String SHOW_SNIPPETS;
     
     static {
         // initialize resource bundle

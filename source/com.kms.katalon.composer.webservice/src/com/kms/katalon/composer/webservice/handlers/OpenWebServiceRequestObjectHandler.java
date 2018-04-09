@@ -6,8 +6,11 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -16,8 +19,9 @@ import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
-import com.kms.katalon.composer.webservice.util.WSRequestPartService;
+import com.kms.katalon.composer.webservice.view.WSRequestPartUI;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 
 public class OpenWebServiceRequestObjectHandler {
@@ -44,9 +48,19 @@ public class OpenWebServiceRequestObjectHandler {
         });
     }
 
+    @Inject
+    @Optional
+    private void getNotifications(
+            @UIEventTopic(EventConstants.WEBSERVICE_REQUEST_OBJECT_OPEN) WebServiceRequestEntity entity) {
+        openRequestObject(entity);
+    }
+    
     public void openRequestObject(WebServiceRequestEntity requestObject) {
         try {
-            WSRequestPartService.openPart(requestObject);
+            MPartStack stack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
+            if (stack != null) {
+                WSRequestPartUI.create(requestObject, stack);
+            }
         } catch (IOException | CoreException e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(null, StringConstants.ERROR_TITLE, StringConstants.MSG_CANNOT_OPEN_REQUEST);
