@@ -85,6 +85,14 @@ public class ImageConstants {
     public static final Image IMG_16_WS_DELETE_METHOD = ImageManager.getImage(IImageKeys.WS_DELETE_METHOD_16);
 
     public static final Image IMG_16_WS_PUT_METHOD = ImageManager.getImage(IImageKeys.WS_PUT_METHOD_16);
+    
+    public static final Image IMG_16_WS_SOAP_METHOD = ImageManager.getImage(IImageKeys.WS_SOAP_METHOD_16);
+    
+    public static final Image IMG_16_WS_SOAP12_METHOD = ImageManager.getImage(IImageKeys.WS_SOAP12_METHOD_16);
+    
+    public static final Image IMG_16_WS_SOAP_GET_METHOD = ImageManager.getImage(IImageKeys.WS_SOAP_GET_METHOD_16);
+    
+    public static final Image IMG_16_WS_SOAP_POST_METHOD = ImageManager.getImage(IImageKeys.WS_SOAP_POST_METHOD_16);
 
     public static final Image IMG_16_RBT_TEST_OBJECT = ImageManager.getImage(IImageKeys.RBT_TEST_OBJECT_16);
 

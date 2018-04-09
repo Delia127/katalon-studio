@@ -154,6 +154,10 @@ public class ColorUtil {
     public static Color getTextWhiteColor() {
         return display.getSystemColor(SWT.COLOR_WHITE);
     }
+    
+    public static Color getTextLinkColor() {
+        return display.getSystemColor(SWT.COLOR_LINK_FOREGROUND);
+    }
 
     public static Color getTextErrorColor() {
         return display.getSystemColor(SWT.COLOR_RED);

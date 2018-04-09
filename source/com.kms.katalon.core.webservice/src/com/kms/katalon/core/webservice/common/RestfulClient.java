@@ -18,7 +18,9 @@ import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.testobject.TestObjectProperty;
+import com.kms.katalon.core.testobject.impl.HttpTextBodyContent;
 import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
+import com.kms.katalon.core.webservice.helper.WebServiceCommonHelper;
 import com.kms.katalon.core.webservice.support.UrlEncoder;
 
 public class RestfulClient extends BasicRequestor {
@@ -101,7 +103,7 @@ public class RestfulClient extends BasicRequestor {
 
         // Send post request
         OutputStream os = httpConnection.getOutputStream();
-        os.write((request.getHttpBody() == null ? "" : request.getHttpBody()).getBytes());
+        request.getBodyContent().writeTo(os);
         os.flush();
         os.close();
 
@@ -157,27 +159,43 @@ public class RestfulClient extends BasicRequestor {
             return null;
         }
 
+        long startTime = System.currentTimeMillis();
         int statusCode = conn.getResponseCode();
+        long waitingTime = System.currentTimeMillis() - startTime;
+        long contentDownloadTime = 0L;
         StringBuffer sb = new StringBuffer();
 
         char[] buffer = new char[1024];
+        long bodyLength = 0L;
         try (InputStream inputStream = (statusCode >= 400) ? conn.getErrorStream() : conn.getInputStream()) {
             if (inputStream != null) {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
                 int len = 0;
+                startTime = System.currentTimeMillis();
                 while ((len = reader.read(buffer)) != -1) {
+                    contentDownloadTime += System.currentTimeMillis() - startTime;
                     sb.append(buffer, 0, len);
+                    bodyLength += len;
+                    startTime = System.currentTimeMillis();
                 }
             }
         }
+
+        long headerLength = WebServiceCommonHelper.calculateHeaderLength(conn);
 
         ResponseObject responseObject = new ResponseObject(sb.toString());
         responseObject.setContentType(conn.getContentType());
         responseObject.setHeaderFields(conn.getHeaderFields());
         responseObject.setStatusCode(statusCode);
-
+        responseObject.setResponseBodySize(bodyLength);
+        responseObject.setResponseHeaderSize(headerLength);
+        responseObject.setWaitingTime(waitingTime);
+        responseObject.setContentDownloadTime(contentDownloadTime);
+        
+        setBodyContent(conn, sb, responseObject);
         conn.disconnect();
 
         return responseObject;
     }
+
 }

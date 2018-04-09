@@ -3,9 +3,11 @@ package com.kms.katalon.composer.webservice.handlers;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UIEventTopic;
+import org.eclipse.e4.ui.internal.workbench.PartServiceImpl;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
@@ -36,10 +38,10 @@ public class OpenWebServiceRequestObjectHandler {
     MApplication application;
 
     @Inject
-    EPartService partService;
-
-    @Inject
     EModelService modelService;
+    
+    @Inject
+    IEclipseContext context;
 
     // @Inject
     @PostConstruct
@@ -63,6 +65,7 @@ public class OpenWebServiceRequestObjectHandler {
     }
 
     public void excute(WebServiceRequestEntity requestObject) {
+        EPartService partService = getPartService();
         if (requestObject != null) {
             String partId = EntityPartUtil.getTestObjectPartId(requestObject.getId());
             MPartStack stack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
@@ -77,6 +80,10 @@ public class OpenWebServiceRequestObjectHandler {
                     mPart.setContributionURI(WEBSERVICE_REST_OBJECT_PART_URI);
                 }
                 mPart.setCloseable(true);
+                mPart.setIconURI(WebServiceUtil.getRequestMethodIcon(requestObject.getServiceType(),
+                        WebServiceRequestEntity.SOAP.equals(requestObject.getServiceType())
+                                                            ? requestObject.getSoapRequestMethod() 
+                                                              :requestObject.getRestRequestMethod()));
                 mPart.setIconURI(WebServiceUtil.getRequestMethodIcon(requestObject.getServiceType(), requestObject.getRestRequestMethod()));
                 mPart.setTooltip(requestObject.getIdForDisplay());
                 mPart.getTags().add(EPartService.REMOVE_ON_HIDE_TAG);
@@ -87,8 +94,17 @@ public class OpenWebServiceRequestObjectHandler {
                 mPart.setObject(requestObject);
             }
             partService.showPart(mPart, PartState.ACTIVATE);
+            
             stack.setSelectedElement(mPart);
         }
+    }
+    
+    private EPartService getPartService() {
+        EPartService partService = (EPartService) context.getActive(PartServiceImpl.class);
+        if (partService == null) {
+            partService = context.getActive(EPartService.class);
+        }
+        return partService;
     }
 
 }

@@ -26,13 +26,14 @@ public class WebServiceController extends EntityController {
         return (WebServiceController) _instance;
     }
 
-    private RequestObject getRequestObject(WebServiceRequestEntity entity) {
-        return (RequestObject) ObjectRepository.readTestObjectFile(entity.getIdForDisplay(), new File(entity.getId()));
+    private RequestObject getRequestObject(WebServiceRequestEntity entity, String projectDir) {
+        return (RequestObject) ObjectRepository.readTestObjectFile(entity.getIdForDisplay(), new File(entity.getId()),
+                projectDir);
     }
 
     public ResponseObject sendRequest(WebServiceRequestEntity entity, String projectDir,
             ProxyInformation proxyInformation) throws Exception {
-        RequestObject requestObject = getRequestObject(entity);
+        RequestObject requestObject = getRequestObject(entity, projectDir);
         return ServiceRequestFactory.getInstance(requestObject, projectDir, proxyInformation).send(requestObject);
     }
 }
