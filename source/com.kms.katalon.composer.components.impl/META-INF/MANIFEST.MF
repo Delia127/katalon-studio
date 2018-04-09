@@ -36,6 +36,7 @@ Require-Bundle: com.kms.katalon.entity;bundle-version="1.0.0",
  org.apache.lucene.core,
  org.javalite.common,
  org.apache.commons.lang3
+ com.kms.katalon.util
 Export-Package: com.kms.katalon.composer.components.impl.command,
  com.kms.katalon.composer.components.impl.constants,
  com.kms.katalon.composer.components.impl.control,
@@ -51,3 +52,4 @@ Export-Package: com.kms.katalon.composer.components.impl.command,
  com.kms.katalon.composer.components.impl.tree,
  com.kms.katalon.composer.components.impl.util,
  com.kms.katalon.composer.components.impl.wizard
+Import-Package: org.eclipse.e4.ui.services

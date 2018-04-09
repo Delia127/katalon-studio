@@ -26,13 +26,6 @@ public class CustomRunConfigurationContributor implements IRunConfigurationContr
     public IRunConfiguration getRunConfiguration(String projectDir) throws IOException, ExecutionException {
         return new CustomRunConfiguration(projectDir, name);
     }
-    
-    @Override
-    public IRunConfiguration getRunConfiguration(String projectDir,
-            RunConfigurationDescription runConfigurationDescription) throws IOException, ExecutionException,
-            InterruptedException {
-        return getRunConfiguration(projectDir);
-    }
 
     @Override
     public int getPreferredOrder() {

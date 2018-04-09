@@ -44,6 +44,7 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 
 @Action(value = "getElementHeight")
 public class GetElementHeightKeyword extends MobileAbstractKeyword {
@@ -65,8 +66,8 @@ public class GetElementHeightKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public int getElementHeight(TestObject to, int timeout, FailureHandling flowControl) throws StepFailedException {
-        return KeywordMain.runKeywordAndReturnInt({
+        return MobileKeywordMain.runKeywordAndReturnInt({
             return MobileElementCommonHelper.getElementHeight(to, timeout)
-        }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_GET_HEIGHT_OF_ELEMENT_X, to.getObjectId()) : StringConstants.KW_MSG_FAILED_TO_GET_HEIGHT_OF_ELEMENT)
+        }, flowControl, true, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_GET_HEIGHT_OF_ELEMENT_X, to.getObjectId()) : StringConstants.KW_MSG_FAILED_TO_GET_HEIGHT_OF_ELEMENT)
     }
 }

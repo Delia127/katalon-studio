@@ -24,6 +24,7 @@ public class ConsoleOptionBuilder {
         contributor.getConsoleOptions(description).forEach(opt -> {
             argsMap.put(opt.getOption(), String.valueOf(opt.getValue()));
         });
+        argsMap.put("executionProfile", description.getProfileName());
         return argsMap;
     }
 }

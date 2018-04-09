@@ -45,6 +45,7 @@ import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.selenium.util.SeleniumKeysUtil;
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 
 @Action(value = "setText")
 public class SetTextKeyword extends MobileAbstractKeyword {
@@ -67,18 +68,18 @@ public class SetTextKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public void setText(TestObject to, String text, int timeout, FailureHandling flowControl) throws StepFailedException {
-        KeywordMain.runKeyword({
+        MobileKeywordMain.runKeyword({
             KeywordHelper.checkTestObjectParameter(to)
             timeout = KeywordHelper.checkTimeout(timeout)
             WebElement element = findElement(to, timeout * 1000)
             if (element == null) {
-                KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_OBJ_NOT_FOUND, to.getObjectId()), flowControl, null)
+                MobileKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_OBJ_NOT_FOUND, to.getObjectId()), flowControl, null, true)
                 return
             }
             element.clear()
             element.sendKeys(text.toString())
             String readableText = SeleniumKeysUtil.getReadableText(text)
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_TEXT_HAS_BEEN_SET_TO_ELEMENT, [readableText, to.getObjectId()] as Object[]))
-        }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_SET_ELEMENT_TEXT, to.getObjectId()) : StringConstants.KW_MSG_FAILED_TO_SET_ELEMENT_TEXT)
+        }, flowControl, true, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_SET_ELEMENT_TEXT, to.getObjectId()) : StringConstants.KW_MSG_FAILED_TO_SET_ELEMENT_TEXT)
     }
 }

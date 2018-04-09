@@ -77,7 +77,8 @@ public class CustomTestExecutionEntry extends TestExecutionEntryItem {
 
     @Override
     public RunConfigurationDescription toConfigurationEntity(RunConfigurationDescription previousDescription) {
-        return RunConfigurationDescription.from(groupName, getName(),  Collections.emptyMap());
+        return RunConfigurationDescription.from(groupName, getName(), Collections.emptyMap(),
+                previousDescription.getProfileName());
     }
 
     @Override

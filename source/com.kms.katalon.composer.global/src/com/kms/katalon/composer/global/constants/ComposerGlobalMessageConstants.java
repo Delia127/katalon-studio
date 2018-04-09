@@ -42,6 +42,15 @@ public class ComposerGlobalMessageConstants extends NLS {
     public static String PA_WARN_MSG_INVALID_VAR_NAME;
 
     public static String PA_WARN_MSG_DUPLICATE_VAR_NAME;
+    
+    // RenameExecutionProfileDialog
+    public static String DIA_TITLE_RENAME_EXECUTION_PROFILE;
+    
+    // NewExecutionProfileDialog
+    public static String DIA_TITLE_NEW_EXECUTION_PROFILE;
+    
+    // NewExecutionProfilePopupMenu
+    public static String ITEM_LBL_NEW_EXECUTION_PROFILE;
 
     static {
         // initialize resource bundle

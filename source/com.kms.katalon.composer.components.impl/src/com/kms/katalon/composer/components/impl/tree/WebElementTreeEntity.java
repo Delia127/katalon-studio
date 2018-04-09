@@ -60,9 +60,9 @@ public class WebElementTreeEntity extends AbstractTreeEntity {
 
     @Override
     public Image getImage() throws Exception {
+
         if (webElement instanceof WebServiceRequestEntity) {
             WebServiceRequestEntity wsEntity = (WebServiceRequestEntity) webElement;
-            // REST
             if (wsEntity.getServiceType().equals(WebServiceRequestEntity.SERVICE_TYPES[1])) {
                 switch (((WebServiceRequestEntity) webElement).getRestRequestMethod()) {
                     case GET_METHOD:
@@ -91,10 +91,12 @@ public class WebElementTreeEntity extends AbstractTreeEntity {
                     default:
                         return ImageConstants.IMG_16_WS_GET_METHOD;
                 }
+            } else {
+                return ImageConstants.IMG_16_WS_TEST_OBJECT;
             }
         }
         WebElementEntity webElement = (WebElementEntity) getObject();
-        switch (HTMLTags.getElementType(webElement.getPropertyValue(WebElementPropertyEntity.TAG_PROPERTY), 
+        switch (HTMLTags.getElementType(webElement.getPropertyValue(WebElementPropertyEntity.TAG_PROPERTY),
                 webElement.getPropertyValue(WebElementPropertyEntity.TYPE_PROPERTY))) {
             case HTMLTags.TAG_A:
                 return ImageConstants.IMG_16_LNK_TEST_OBJECT;
@@ -184,7 +186,7 @@ public class WebElementTreeEntity extends AbstractTreeEntity {
     @Override
     public void loadAllDescentdantEntities() throws Exception {
     }
-    
+
     public boolean canAddToObjectSpy() {
         if (webElement instanceof WebServiceRequestEntity) {
             return false;

@@ -44,6 +44,7 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 
 @Action(value = "getCurrentOrientation")
 public class GetCurrentOrientationKeyword extends MobileAbstractKeyword {
@@ -64,7 +65,7 @@ public class GetCurrentOrientationKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public String getCurrentOrientation(FailureHandling flowControl) throws StepFailedException {
-        KeywordMain.runKeyword({
+        MobileKeywordMain.runKeyword({
             AppiumDriver driver = getAnyAppiumDriver()
             String context = driver.getContext()
             try {
@@ -76,6 +77,6 @@ public class GetCurrentOrientationKeyword extends MobileAbstractKeyword {
                 driver.context(context)
             }
             return null
-        }, flowControl, StringConstants.KW_MSG_UNABLE_GET_ORIENTATION)
+        }, flowControl, true, StringConstants.KW_MSG_UNABLE_GET_ORIENTATION)
     }
 }

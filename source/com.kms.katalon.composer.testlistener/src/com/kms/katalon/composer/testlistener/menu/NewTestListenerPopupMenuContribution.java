@@ -6,17 +6,14 @@ import javax.inject.Inject;
 
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.ui.di.AboutToShow;
-import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.menu.MHandledMenuItem;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuElement;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
-import org.eclipse.e4.ui.workbench.modeling.ISelectionListener;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.menu.MenuFactory;
 import com.kms.katalon.composer.testlistener.constant.ComposerTestListenerMessageConstants;
 import com.kms.katalon.composer.testlistener.handler.TestListenerTreeRootCatcher;
-import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.helper.ConstantsHelper;
 
 @SuppressWarnings("restriction")
@@ -29,19 +26,6 @@ public class NewTestListenerPopupMenuContribution extends TestListenerTreeRootCa
 
     @Inject
     private ESelectionService selectionService;
-
-    @Inject
-    public void init() {
-        selectionService.addSelectionListener(new ISelectionListener() {
-            @Override
-            public void selectionChanged(MPart part, Object selection) {
-                if (IdConstants.EXPLORER_PART_ID.equals(part.getElementId())) {
-                    selectionService.setSelection(null);
-                    selectionService.setSelection(selection);
-                }
-            }
-        });
-    }
 
     @AboutToShow
     public void aboutToShow(List<MMenuElement> menuItems) {

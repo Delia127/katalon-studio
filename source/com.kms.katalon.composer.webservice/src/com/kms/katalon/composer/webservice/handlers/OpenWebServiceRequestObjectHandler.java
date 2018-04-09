@@ -84,6 +84,7 @@ public class OpenWebServiceRequestObjectHandler {
                         WebServiceRequestEntity.SOAP.equals(requestObject.getServiceType())
                                                             ? requestObject.getSoapRequestMethod() 
                                                               :requestObject.getRestRequestMethod()));
+                mPart.setIconURI(WebServiceUtil.getRequestMethodIcon(requestObject.getServiceType(), requestObject.getRestRequestMethod()));
                 mPart.setTooltip(requestObject.getIdForDisplay());
                 mPart.getTags().add(EPartService.REMOVE_ON_HIDE_TAG);
                 stack.getChildren().add(mPart);

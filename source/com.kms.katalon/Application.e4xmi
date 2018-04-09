@@ -154,7 +154,10 @@
       <children xsi:type="menu:ToolControl" xmi:id="_1-cu4OJUEeSyVPtKyNklew" elementId="PerspectiveSpacer" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.renderers.swt/org.eclipse.e4.ui.workbench.renderers.swt.LayoutModifierToolControl">
         <tags>stretch</tags>
       </children>
-      <children xsi:type="menu:ToolControl" xmi:id="_-DNO4CSUEeWwuK4yOgypdw" elementId="com.kms.katalon.composer.perspective.switcher" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.perspective.PerspectiveSwitcher"/>
+      <children xsi:type="menu:ToolBar" xmi:id="_0VqIAP_uEee_QpQDO6n5bw" elementId="com.kms.katalon.composer.toolbar.execution">
+        <tags>NoMove</tags>
+      </children>
+      <children xsi:type="menu:ToolControl" xmi:id="_-DNO4CSUEeWwuK4yOgypdw" elementId="com.kms.katalon.composer.toolbar.switcher" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.toolbar.PerspectiveSwitcher"/>
     </trimBars>
     <trimBars xmi:id="_D8Z7cNa4EeS1ha7mm6JZag" elementId="com.kms.katalon.trimbar.right" side="Right">
       <children xsi:type="menu:ToolControl" xmi:id="_Fy2fsNa4EeS1ha7mm6JZag" elementId="com.kms.katalon.partstack.outline(com.kms.katalon.composer.window.main).(com.kms.katalon.composer.perspective.keyword)" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.addons.swt/org.eclipse.e4.ui.workbench.addons.minmax.TrimStack">

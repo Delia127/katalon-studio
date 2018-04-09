@@ -370,6 +370,7 @@ public class RestServicePart extends WebServicePart {
             originalWsObject.setHttpBodyContent(requestBodyEditor.getHttpBodyContent());
         }
         
+        originalWsObject.setHttpBody(requestBody.getTextWidget().getText());
         updateIconURL(WebServiceUtil.getRequestMethodIcon(originalWsObject.getServiceType(), originalWsObject.getRestRequestMethod()));
     }
 

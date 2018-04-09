@@ -44,6 +44,7 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 
 @Action(value = "waitForElementAttributeValue")
 public class WaitForElementAttributeValueKeyword extends MobileAbstractKeyword {
@@ -67,7 +68,7 @@ public class WaitForElementAttributeValueKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public boolean waitForElementAttributeValue(TestObject to, String attributeName, String attributeValue, int timeout, FailureHandling flowControl) {
-        KeywordMain.runKeyword({
+        MobileKeywordMain.runKeyword({
             try {
                 KeywordHelper.checkTestObjectParameter(to)
                 KeywordLogger.getInstance().logInfo(StringConstants.COMM_LOG_INFO_CHECKING_ATTRIBUTE_NAME)
@@ -96,6 +97,6 @@ public class WaitForElementAttributeValueKeyword extends MobileAbstractKeyword {
                 logger.logWarning(MessageFormat.format(StringConstants.KW_LOG_FAILED_WAIT_FOR_OBJ_X_HAS_ATTRIBUTE_Y_VALUE_Z, to.getObjectId(), attributeName, attributeValue))
             }
             return false
-        }, flowControl, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_WAIT_OBJ_X_ATTRIBUTE_Y_VALUE_Z, to.getObjectId(), attributeName, attributeValue) : StringConstants.KW_MSG_CANNOT_WAIT_OBJ_ATTRIBUTE_VALUE)
+        }, flowControl, true, (to != null) ? MessageFormat.format(StringConstants.KW_MSG_CANNOT_WAIT_OBJ_X_ATTRIBUTE_Y_VALUE_Z, to.getObjectId(), attributeName, attributeValue) : StringConstants.KW_MSG_CANNOT_WAIT_OBJ_ATTRIBUTE_VALUE)
     }
 }

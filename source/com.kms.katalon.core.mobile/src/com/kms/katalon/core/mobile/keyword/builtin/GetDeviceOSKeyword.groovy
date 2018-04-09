@@ -45,6 +45,7 @@ import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
 import com.kms.katalon.core.mobile.keyword.internal.MobileDriverFactory
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 
 @Action(value = "getDeviceOS")
 public class GetDeviceOSKeyword extends MobileAbstractKeyword {
@@ -64,10 +65,10 @@ public class GetDeviceOSKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public String getDeviceOS(FailureHandling flowControl) throws StepFailedException {
-        return KeywordMain.runKeyword({
+        return MobileKeywordMain.runKeyword({
             String osName = MobileDriverFactory.getDeviceOS()
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_DEVICE_OS_NAME, osName))
             return osName
-        }, flowControl, StringConstants.KW_MSG_CANNOT_GET_OS_NAME)
+        }, flowControl, true, StringConstants.KW_MSG_CANNOT_GET_OS_NAME)
     }
 }

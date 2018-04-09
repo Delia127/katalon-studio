@@ -78,4 +78,6 @@ public class ImageConstants {
 
     public static final Image IMG_RESTORE = ImageManager.getImage(IImageKeys.RESTORE_16);
 
+    // ExecutionToolControl
+    public static final Image IMG_PROFILE = ImageManager.getImage(IImageKeys.PROFILE_16);
 }

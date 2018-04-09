@@ -1,13 +1,13 @@
-[![Katalon Logo](http://katalon.kms-technology.com/assets/images/katalon_logo.png)](http://katalon.kms-technology.com)
 ##  Development environment build
 - Check out source code from Git to your local, please make sure you have all Katalon plug-ins (sub projects with prefix names "com.kms.katalon...") under "source" folder
 
-- Get Eclipse RCP version 4.4.2 at https://eclipse.org/downloads/packages/eclipse-rcp-and-rap-developers/lunasr2
+- Get Eclipse RCP version 4.6.0 at https://www.eclipse.org/downloads/packages/release/neon/3
 
-- Open the downloaded Eclipse, click on menu Help/Install New Software and installed all the plugins in these repos:
-  + http://download.eclipse.org/eclipse/updates/4.4/R-4.4.2-201502041700/
-  + http://dist.springsource.org/snapshot/GRECLIPSE/e4.4
-  + http://download.eclipse.org/egit/updates
+- Go to Installation Details and uninstall EGit 4.6
+
+- Install these plugins:
+  + Groovy-Eclipse at `/source/com.kms.katalon.p2site` (Install New Software with `file://<path_to_that_directory>)
+  + EGit 4.4 at http://192.168.35.33:9998/egit/updates-4.4.1/
 
 - Installed Maven found at https://maven.apache.org/download.cgi, update PATH environment variable to include <Maven Home>\bin folder. Make sure you can execute "mvn" command from a console (terminal/cmd) window
 
@@ -15,6 +15,8 @@
   Go to Katalon source\com.kms.katalon.repo.
   Type command "mvn p2:site" and wait for maven BUILD SUCCESS. 
   Type command "mvn -Djetty.port=9999 jetty:run" to start maven local repo for Katalon
+
+- Go to `/source/com.kms.katalon.p2site`, execute `mvn -Djetty.port=33333 jetty:run`.
 
 - Open Eclipse with workspace point to folder "source" you've just checked out in first step, import all sub projects inside it: File->Import-General->Existing Projects into Workspace
 

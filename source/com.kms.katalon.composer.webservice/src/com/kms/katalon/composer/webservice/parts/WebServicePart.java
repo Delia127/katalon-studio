@@ -25,6 +25,7 @@ import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.services.IStylingEngine;
+import org.eclipse.e4.ui.workbench.IPresentationEngine;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.jface.bindings.keys.IKeyLookup;
@@ -196,6 +197,8 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
 
     private static final int MIN_PART_WIDTH = 400;
 
+    private static final String ICON_URI_FOR_PART = "IconUriForPart";
+
     @Inject
     protected MApplication application;
 
@@ -329,7 +332,8 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
     }
 
     protected void createAPIControls(Composite parent) {
-        wsApiControl = new WebServiceAPIControl(parent, isSOAP());
+        String endPoint = isSOAP() ? originalWsObject.getWsdlAddress() : originalWsObject.getRestUrl();
+        wsApiControl = new WebServiceAPIControl(parent, isSOAP(), endPoint);
         wsApiControl.addRequestMethodSelectionListener(new SelectionAdapter() {
 
             @Override
@@ -1353,6 +1357,16 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
     
     public void updateDirty(boolean dirty) {
         dirtyable.setDirty(dirty);
+    }
+    
+    public void updateIconURL(String imageURL) {
+        MPartStack stack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
+        int index = stack.getChildren().indexOf(mPart);
+        MPart mPart = (MPart) stack.getChildren().get(index);
+        
+        //Work around to update Icon URL for MPart.
+        mPart.getTransientData().put(ICON_URI_FOR_PART, imageURL);
+        mPart.setIconURI(imageURL);
     }
 
 }

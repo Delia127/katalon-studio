@@ -6,6 +6,7 @@ public class EventConstants {
 
     // Workspace events
     public static final String WORKSPACE_CREATED = "WORKSPACE/CREATED";
+
     public static final String WORKSPACE_CLOSED = "WORKSPACE/CLOSE";
 
     // Project Events
@@ -228,6 +229,14 @@ public class EventConstants {
 
     public static final String GLOBAL_VARIABLE_SHOW_REFERENCES = "GLOBAL_VARIABLE/SHOW_REFERENCES";
 
+    public static final String EXECUTION_PROFILE_CREATED = "EXECUTION_PROFILE/CREATED";
+
+    public static final String EXECUTION_PROFILE_UPDATED = "EXECUTION_PROFILE/UPDATED";
+
+    public static final String EXECUTION_PROFILE_RENAMED = "EXECUTION_PROFILE/RENAMED";
+
+    public static final String EXECUTION_PROFILE_DELETED = "EXECUTION_PROFILE/DELETED";
+
     // Checkpoint Events
     public static final String CHECKPOINT_NEW = "CHECKPOINT/NEW";
 
@@ -260,4 +269,7 @@ public class EventConstants {
     public static final String KATALON_GENERATE_COMMAND = "KATALON/GENERATE_COMMAND";
 
     public static final String SETTINGS_PAGE_CHANGE = "SETTINGS/PAGE_CHANGE";
+    
+    // Execution Profile Event
+    public static final String PROFILE_SELECTED_PROIFE_CHANGED = "PROFILE/SELECTED_PROFILE_CHANGE";
 }
