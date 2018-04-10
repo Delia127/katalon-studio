@@ -10,6 +10,8 @@ import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 public interface TestSuiteCollectionDataProvider {
     TestSuiteCollectionEntity get(String id) throws DALException;
+    
+    List<TestSuiteCollectionEntity> getAll(ProjectEntity project) throws DALException;
 
     void delete(String id) throws DALException;
 

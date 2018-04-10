@@ -21,9 +21,11 @@ import com.kms.katalon.composer.global.dialog.ExecutionProfileNameDialog;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.controller.TestSuiteCollectionController;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 
 public class RenameExecutionProfileHandler {
 
@@ -69,10 +71,15 @@ public class RenameExecutionProfileHandler {
             String newName = dialog.getNewName();
             ExecutionProfileEntity renamedProfile = GlobalVariableController.getInstance()
                     .renameExecutionProfile(newName, selectedProfile);
+            List<TestSuiteCollectionEntity> updatedTestSuiteCollections = TestSuiteCollectionController.getInstance()
+                    .updateProfileNameInAllTestSuiteCollections(project, profileName, newName);
             selectedTreeEntity.setObject(renamedProfile);
 
             eventBroker.post(EventConstants.EXECUTION_PROFILE_RENAMED, renamedProfile);
             eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, selectedTreeEntity.getParent());
+
+            updatedTestSuiteCollections.forEach(tsc-> eventBroker.post(EventConstants.TEST_SUITE_COLLECTION_UPDATED,
+                    new Object[]{ tsc.getId(), tsc}));
         } catch (Exception e) {
             MultiStatusErrorDialog.showErrorDialog(
                     MessageFormat.format("Unable to rename execution profile '{0}'", selectedProfile.getName()),
