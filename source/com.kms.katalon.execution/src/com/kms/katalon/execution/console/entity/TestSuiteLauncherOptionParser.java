@@ -3,6 +3,8 @@ package com.kms.katalon.execution.console.entity;
 import java.text.MessageFormat;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
@@ -95,6 +97,9 @@ public class TestSuiteLauncherOptionParser extends ReportableLauncherOptionParse
             AbstractRunConfiguration runConfig = (AbstractRunConfiguration) createRunConfiguration(project, testSuite,
                     browserTypeOption.getValue());
             String profileName = executionProfileOption.getValue();
+            if (StringUtils.isBlank(profileName)) {
+                profileName = ExecutionProfileEntity.DF_PROFILE_NAME;
+            }
             ExecutionProfileEntity executionProfile = GlobalVariableController.getInstance()
                     .getExecutionProfile(profileName, project);
             if (executionProfile == null) {
