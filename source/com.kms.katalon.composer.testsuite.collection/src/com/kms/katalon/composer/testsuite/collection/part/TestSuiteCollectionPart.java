@@ -403,7 +403,7 @@ public class TestSuiteCollectionPart extends EventServiceAdapter implements Tabl
         tblclmnNo.setText(StringConstants.NO_);
         tbvcNo.setLabelProvider(
                 new TestSuiteRunConfigLabelProvider(this, TestSuiteRunConfigLabelProvider.NO_COLUMN_IDX));
-        tableLayout.setColumnData(tblclmnNo, new ColumnWeightData(1, 30));
+        tableLayout.setColumnData(tblclmnNo, new ColumnWeightData(1, 50));
 
         TableViewerColumn tbvcId = new TableViewerColumn(tableViewer, SWT.NONE);
         TableColumn tblclmnId = tbvcId.getColumn();
