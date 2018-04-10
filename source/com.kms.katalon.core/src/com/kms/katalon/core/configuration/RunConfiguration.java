@@ -86,6 +86,8 @@ public class RunConfiguration {
 
     public static final String TERMINATE_DRIVER_AFTER_TEST_SUITE = "terminateDriverAfterTestSuite";
 
+    public static final String EXECUTION_PROFILE_PROPERTY = "executionProfile";
+
     private static String settingFilePath;
 
     private static final ThreadLocal<Map<String, Object>> localExecutionSettingMapStorage = new ThreadLocal<Map<String, Object>>() {
@@ -467,14 +469,27 @@ public class RunConfiguration {
         }
         return (boolean) generalProperties.getOrDefault(TERMINATE_DRIVER_AFTER_TEST_SUITE, false);
     }
-    
+
+    /**
+     * Returns name of selected execution profile. Default value is 'default' profile.
+     * 
+     * @since 5.4
+     */
+    public static String getExecutionProfile() {
+        Map<String, Object> generalProperties = getExecutionGeneralProperties();
+        if (generalProperties == null) {
+            return "default";
+        }
+        return (String) generalProperties.getOrDefault(EXECUTION_PROFILE_PROPERTY, "default");
+    }
+
     private static Map<String, Object> getReportProperties() {
         Map<String, Object> generalProperties = getExecutionGeneralProperties();
         if (generalProperties == null) {
             return Collections.emptyMap();
         }
-        return (Map<String, Object>) generalProperties
-                .getOrDefault(StringConstants.CONF_PROPERTY_REPORT, Collections.emptyMap());
+        return (Map<String, Object>) generalProperties.getOrDefault(StringConstants.CONF_PROPERTY_REPORT,
+                Collections.emptyMap());
     }
 
     public static String getReportFolder() {
@@ -482,8 +497,10 @@ public class RunConfiguration {
     }
 
     public static VideoRecorderSetting getRecorderSetting() {
-        return JsonUtil.fromJson(JsonUtil.toJson(
-                getReportProperties().getOrDefault(StringConstants.CONF_PROPERTY_VIDEO_RECORDER_OPTION, StringUtils.EMPTY)),
-                VideoRecorderSetting.class);
+        return JsonUtil
+                .fromJson(
+                        JsonUtil.toJson(getReportProperties()
+                                .getOrDefault(StringConstants.CONF_PROPERTY_VIDEO_RECORDER_OPTION, StringUtils.EMPTY)),
+                        VideoRecorderSetting.class);
     }
 }

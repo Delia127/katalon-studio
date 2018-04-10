@@ -44,6 +44,7 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 
 @Action(value = "takeScreenshot")
 public class TakeScreenshotKeyword extends MobileAbstractKeyword {
@@ -79,14 +80,14 @@ public class TakeScreenshotKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public String takeScreenshot(String fileName, FailureHandling flowControl) throws StepFailedException {
-        return KeywordMain.runKeyword({
+        return MobileKeywordMain.runKeyword({
             AppiumDriver<?> driver = getAnyAppiumDriver()
             String context = driver.getContext()
             try {
                 internalSwitchToNativeContext(driver)
                 File tempFile = driver.getScreenshotAs(OutputType.FILE)
                 if (!tempFile.exists()) {
-                    KeywordMain.stepFailed(StringConstants.KW_MSG_UNABLE_TO_TAKE_SCREENSHOT, flowControl, null)
+                    MobileKeywordMain.stepFailed(StringConstants.KW_MSG_UNABLE_TO_TAKE_SCREENSHOT, flowControl, null, true)
                     return
                 }
                 try{
@@ -103,6 +104,6 @@ public class TakeScreenshotKeyword extends MobileAbstractKeyword {
             } finally {
                 driver.context(context)
             }
-        }, flowControl, StringConstants.KW_MSG_UNABLE_TO_TAKE_SCREENSHOT)
+        }, flowControl, false, StringConstants.KW_MSG_UNABLE_TO_TAKE_SCREENSHOT)
     }
 }

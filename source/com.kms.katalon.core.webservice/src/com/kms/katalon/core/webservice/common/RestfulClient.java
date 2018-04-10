@@ -18,7 +18,9 @@ import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.testobject.TestObjectProperty;
+import com.kms.katalon.core.testobject.impl.HttpTextBodyContent;
 import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
+import com.kms.katalon.core.webservice.helper.WebServiceCommonHelper;
 import com.kms.katalon.core.webservice.support.UrlEncoder;
 
 public class RestfulClient extends BasicRequestor {
@@ -101,7 +103,7 @@ public class RestfulClient extends BasicRequestor {
 
         // Send post request
         OutputStream os = httpConnection.getOutputStream();
-        os.write((request.getHttpBody() == null ? "" : request.getHttpBody()).getBytes());
+        request.getBodyContent().writeTo(os);
         os.flush();
         os.close();
 
@@ -179,15 +181,7 @@ public class RestfulClient extends BasicRequestor {
             }
         }
 
-        long headerLength = conn.getHeaderFields().entrySet().stream().mapToLong(e -> {
-            String key = e.getKey();
-            if (StringUtils.isEmpty(key)) {
-                return 0L;
-            }
-            long length = key.getBytes().length;
-            length += e.getValue().stream().mapToLong(v -> v.getBytes().length).sum();
-            return length;
-        }).sum();
+        long headerLength = WebServiceCommonHelper.calculateHeaderLength(conn);
 
         ResponseObject responseObject = new ResponseObject(sb.toString());
         responseObject.setContentType(conn.getContentType());
@@ -197,9 +191,11 @@ public class RestfulClient extends BasicRequestor {
         responseObject.setResponseHeaderSize(headerLength);
         responseObject.setWaitingTime(waitingTime);
         responseObject.setContentDownloadTime(contentDownloadTime);
-
+        
+        setBodyContent(conn, sb, responseObject);
         conn.disconnect();
 
         return responseObject;
     }
+
 }

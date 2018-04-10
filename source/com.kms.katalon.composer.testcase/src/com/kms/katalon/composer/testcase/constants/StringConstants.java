@@ -445,4 +445,17 @@ public class StringConstants extends GlobalStringConstants {
 
     // ClosureBuilderDialog
     public static final String LABEL_PARAMETER_LIST = ComposerTestcaseMessageConstants.LABEL_PARAMETER_LIST;
+
+    // TextEncryptionDialog
+    public static final String DIA_TITLE_TEXT_ENCRYPTION = ComposerTestcaseMessageConstants.DIA_TITLE_TEXT_ENCRYPTION;
+    
+    public static final String LBL_RAW_TEXT = ComposerTestcaseMessageConstants.LBL_RAW_TEXT;
+    
+    public static final String LBL_ENCRYPTED_TEXT = ComposerTestcaseMessageConstants.LBL_ENCRYPTED_TEXT;
+    
+    public static final String BTN_INSERT = ComposerTestcaseMessageConstants.BTN_INSERT;
+    
+    public static final String BTN_COPY_AND_CLOSE = ComposerTestcaseMessageConstants.BTN_COPY_AND_CLOSE;
+    
+    public static final String BTN_CANCEL = ComposerTestcaseMessageConstants.BTN_CANCEL;
 }

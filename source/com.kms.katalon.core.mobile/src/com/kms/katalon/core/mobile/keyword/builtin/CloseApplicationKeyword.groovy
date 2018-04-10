@@ -45,6 +45,7 @@ import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
 import com.kms.katalon.core.mobile.keyword.internal.MobileDriverFactory
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 
 @Action(value = "closeApplication")
 public class CloseApplicationKeyword extends MobileAbstractKeyword {
@@ -65,9 +66,9 @@ public class CloseApplicationKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public void closeApplication(FailureHandling flowControl) throws StepFailedException {
-        KeywordMain.runKeyword({
+        MobileKeywordMain.runKeyword({
             MobileDriverFactory.closeDriver()
             logger.logPassed(StringConstants.KW_LOG_PASSED_CLOSE_APP)
-        }, flowControl, StringConstants.KW_MSG_UNABLE_TO_CLOSE_APPLICATION)
+        }, flowControl, false, StringConstants.KW_MSG_UNABLE_TO_CLOSE_APPLICATION)
     }
 }

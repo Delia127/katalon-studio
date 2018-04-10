@@ -2,15 +2,21 @@ package com.kms.katalon.dal;
 
 import java.io.File;
 
+import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.project.ProjectEntity;
 
 public interface IProjectDataProvider {
+    public ProjectEntity newProjectEntity(String name, String description, String projectLocation, boolean legacy)
+            throws DALException;
+    
 	public ProjectEntity addNewProject(String name, String description, short pageLoadTimeout, String projectValue)
 			throws Exception;
-
-	public ProjectEntity getProject(String projectValue) throws Exception;
 	
-	public ProjectEntity getProjectWithoutClasspath(String projectValue) throws Exception;
+	public ProjectEntity getProject(String projectFileLocation) throws DALException;
+
+	public ProjectEntity openProject(String projectValue) throws Exception;
+	
+	public ProjectEntity openProjectWithoutClasspath(String projectValue) throws Exception;
 
 	public ProjectEntity updateProject(String name, String description, String projectValue, short pageLoadTimeout)
 			throws Exception;

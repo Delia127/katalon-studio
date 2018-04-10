@@ -6,6 +6,8 @@ import java.text.DecimalFormat;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -32,7 +34,7 @@ public class FileBodyEditor extends HttpBodyEditor {
 
     private final DecimalFormat format = new DecimalFormat("#.##");
 
-    private Text txtProjectLocation;
+    private Text txtFilePath;
 
     private Button btnFolderChooser;
 
@@ -63,9 +65,9 @@ public class FileBodyEditor extends HttpBodyEditor {
 
     @Override
     public String getContentData() {
-        fileBodyContent.setFilePath(txtProjectLocation.getText());
+        fileBodyContent.setFilePath(txtFilePath.getText());
         fileBodyContent.setFileSize(fileSize);
-        String type = MimetypesFileTypeMapUtil.getContentType(FilenameUtils.getExtension(txtProjectLocation.getText()));
+        String type = MimetypesFileTypeMapUtil.getContentType(FilenameUtils.getExtension(txtFilePath.getText()));
         
         setContentTypeUpdated(!StringUtils.isEmpty(type));
         if (StringUtils.isNotEmpty(type)) {
@@ -91,7 +93,7 @@ public class FileBodyEditor extends HttpBodyEditor {
         }
 
         if (fileBodyContent.getFilePath() != null) {
-            txtProjectLocation.setText(fileBodyContent.getFilePath());
+            txtFilePath.setText(fileBodyContent.getFilePath());
             size.setText(fommatFileSize(fileBodyContent.getContentLength()));
             size.getParent().layout();
         }
@@ -109,21 +111,15 @@ public class FileBodyEditor extends HttpBodyEditor {
         Label filePathLabel = new Label(this, SWT.NONE);
         filePathLabel.setText(StringConstants.LBL_FILE_PATH);
 
-        txtProjectLocation = new Text(this, SWT.BORDER);
-        txtProjectLocation.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        GridData gridData = new GridData();
-        gridData.widthHint = 500;
-        txtProjectLocation.setLayoutData(gridData);
-        txtProjectLocation.setText(currentProjectFolder);
+        txtFilePath = new Text(this, SWT.BORDER);
+        txtFilePath.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        txtFilePath.setMessage(currentProjectFolder);
 
         btnFolderChooser = new Button(this, SWT.FLAT);
         btnFolderChooser.setText(StringConstants.DIA_BTN_BROWSE);
 
         fileSizeLabel = new Label(this, SWT.NONE);
         fileSizeLabel.setText(StringConstants.LBL_FILE_SIZE);
-        GridData gData = new GridData();
-        gData.widthHint = 70;
-        fileSizeLabel.setLayoutData(gData);
 
         size = new Label(this, SWT.NONE);
     }
@@ -143,7 +139,7 @@ public class FileBodyEditor extends HttpBodyEditor {
                 }
 
                 String type = MimetypesFileTypeMapUtil.getContentType(FilenameUtils.getExtension(getRelativePath(path)));
-                if (!txtProjectLocation.getText().equals(path) && StringUtils.isNotEmpty(type)) {
+                if (!txtFilePath.getText().equals(path) && StringUtils.isNotEmpty(type)) {
                     fileBodyContent.setContentType(type);
                     setContentTypeUpdated(true);
                 }
@@ -153,12 +149,20 @@ public class FileBodyEditor extends HttpBodyEditor {
                 String savePath = (file.isAbsolute() && path.contains(currentProjectFolder)) 
                                     ? getRelativePath(path): path;
                                     
-                txtProjectLocation.setText(savePath);
+                txtFilePath.setText(savePath);
                 if (file.exists() && file.isFile()) {
                     fileSize = file.length();
                     size.setText(fommatFileSize(fileSize));
                     size.getParent().layout();
                 }
+            }
+        });
+        
+        txtFilePath.addModifyListener(new ModifyListener() {
+            
+            @Override
+            public void modifyText(ModifyEvent e) {
+                FileBodyEditor.this.fireModifyEvent();
             }
         });
     }

@@ -32,7 +32,8 @@ public abstract class MobileTestExecutionDriverEntry extends TestExecutionDriver
         if (previousDescription != null && previousDescription.getRunConfigurationId().equals(getName())) {
             runConfigurationData.clear();
         }
-        return RunConfigurationDescription.from(groupName, getName(), runConfigurationData);
+        return RunConfigurationDescription.from(groupName, getName(), runConfigurationData,
+                previousDescription.getProfileName());
     }
 
     @Override
@@ -73,7 +74,8 @@ public abstract class MobileTestExecutionDriverEntry extends TestExecutionDriver
 
         Map<String, String> newValueMap = new HashMap<>(runConfigurationData);
         MobileDeviceInfo device = deviceSelectionDialog.getDevice();
-        newValueMap.put(MobileRunConfigurationContributor.DEVICE_DISPLAY_NAME_CONFIGURATION_KEY, device.getDisplayName());
+        newValueMap.put(MobileRunConfigurationContributor.DEVICE_DISPLAY_NAME_CONFIGURATION_KEY,
+                device.getDisplayName());
         newValueMap.put(MobileRunConfigurationContributor.DEVICE_ID_CONFIGURATION_KEY, device.getDeviceId());
         return newValueMap;
     }

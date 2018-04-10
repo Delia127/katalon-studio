@@ -293,6 +293,8 @@ public class ComposerExecutionMessageConstants extends NLS {
     public static String DIA_LBL_RUN_WITH;
 
     public static String DIA_LBL_RUN_CONFIGURATION;
+    
+    public static String DIA_LBL_PROFILE;
 
     public static String DIA_MSG_CONFIGURATION_IS_REQUIRED;
 
@@ -306,6 +308,14 @@ public class ComposerExecutionMessageConstants extends NLS {
     
     //MailSettingPage
     public static String PREF_CHECK_ENABLE_AUTHENTICATION_ENCRYPTION;
+    
+    //ExecutionToolControl
+    public static String TOOLTIP_CONTROL_EXECUTION_PROFILE;
+    
+    // ExecutionProfileSectionDialog
+    public static String DIA_TITLE_EXECUTION_PROILE;
+    
+    public static String PA_MSG_UNABLE_TO_SELECT_EXECUTION_PROFILES;
 
     static {
         // initialize resource bundle

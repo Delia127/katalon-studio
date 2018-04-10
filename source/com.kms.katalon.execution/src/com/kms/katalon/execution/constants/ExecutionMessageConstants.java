@@ -110,6 +110,8 @@ public class ExecutionMessageConstants extends NLS {
     public static String PREF_DEFAULT_EMAIL_SUBJECT;
 
     public static String CONSOLE_CANNOT_START_EXECUTION;
+
+    public static String LBL_DEFAULT_EXECUTION;
     
     // ConsoleOptionBuilder
     public static String CONSOLE_RUN_CONFIGURATION_NOT_FOUND;
@@ -119,6 +121,9 @@ public class ExecutionMessageConstants extends NLS {
     
     //ConsoleMain
     public static String MNG_PRT_INVALID_PROPERTY_FILE_ARG;
+    
+    // TestSuiteLauncherOptionParser
+    public static String CONSOLE_MSG_PROFILE_NOT_FOUND;
 
     static {
         // initialize resource bundle

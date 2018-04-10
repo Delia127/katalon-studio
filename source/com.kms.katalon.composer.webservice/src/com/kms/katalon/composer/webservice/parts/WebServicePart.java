@@ -108,16 +108,15 @@ import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.impl.util.KeyEventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
-import com.kms.katalon.composer.components.services.PartServiceSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.parts.SavableCompositePart;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
+import com.kms.katalon.composer.webservice.components.MirrorEditor;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
-import com.kms.katalon.composer.webservice.editor.HttpBodyEditorComposite;
 import com.kms.katalon.composer.webservice.support.PropertyNameEditingSupport;
 import com.kms.katalon.composer.webservice.support.PropertyValueEditingSupport;
 import com.kms.katalon.composer.webservice.view.ParameterTable;
@@ -202,6 +201,8 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
 
     private static final String TXT_MSG_OPTIONAL = ComposerWebserviceMessageConstants.PA_TXT_MSG_OPTIONAL;
 
+    private static final String ICON_URI_FOR_PART = "IconUriForPart";
+
     private static final String RSA_SHA1 = RequestHeaderConstants.SIGNATURE_METHOD_RSA_SHA1;
 
     private static final String HMAC_SHA1 = RequestHeaderConstants.SIGNATURE_METHOD_HMAC_SHA1;
@@ -211,6 +212,8 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
     private static final String HIDE_SNIPPETS = ComposerWebserviceMessageConstants.HIDE_SNIPPETS;
 
     protected static final String OAUTH_1_0 = RequestHeaderConstants.AUTHORIZATION_TYPE_OAUTH_1_0;
+    
+    private static final int MIN_PART_WIDTH = 400;
     
     @Inject
     protected MApplication application;
@@ -255,11 +258,7 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
 
     protected SourceViewer requestBody;
 
-    protected HttpBodyEditorComposite requestBodyEditor;
-
-    protected SourceViewer responseHeader;
-
-    protected SourceViewer responseBody;
+    protected MirrorEditor mirrorEditor;
 
     protected CTabItem tabAuthorization;
 
@@ -307,8 +306,6 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
     protected GroovyEditor verificationScriptEditor;
     
     protected Composite parent;
-    
-    protected Composite responseMessageComposite;
 
     private MPart scriptEditorPart;
     
@@ -322,6 +319,8 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
         this.originalWsObject = originalWsObject;
     }
     
+    private Composite responseMessageComposite;
+
     @PostConstruct
     public void createComposite(Composite parent, MCompositePart part) {
         this.mPart = part;
@@ -358,11 +357,6 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
         
         createTabsComposite();
         
-//        Composite snippetPartComposite = ui.getSnippetPartComposite();
-////        Composite snippetPartInnerComposite = new Composite(snippetPartComposite, SWT.NONE);
-////        snippetPartInnerComposite.setLayout(new GridLayout(2, false));
-////        
-//        createSnippetComposite(snippetPartComposite);
         createSnippetComposite();
         
 //        Composite verificationToolbarPartComposite = ui.getVerificationToolbarPartComposite();
@@ -372,6 +366,7 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
         
         Composite responsePartComposite = ui.getResponsePartComposite();
         Composite responsePartInnerComposite = new Composite(responsePartComposite, SWT.NONE);
+
         GridLayout glResponse = new GridLayout(2, false);
         glResponse.marginWidth = glResponse.marginHeight = 0;
         responsePartInnerComposite.setLayout(glResponse);
@@ -405,7 +400,8 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
     }
 
     protected void createAPIControls(Composite parent) {
-        wsApiControl = new WebServiceAPIControl(parent, isSOAP());
+        String endPoint = isSOAP() ? originalWsObject.getWsdlAddress() : originalWsObject.getRestUrl();
+        wsApiControl = new WebServiceAPIControl(parent, isSOAP(), endPoint);
         wsApiControl.addRequestMethodSelectionListener(new SelectionAdapter() {
 
             @Override
@@ -466,8 +462,7 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
         addTabAuthorization(tabFolder);
         addTabHeaders(tabFolder);
         addTabBody(tabFolder);
-        addTabVerification(tabFolder);
-        createResponseComposite(tabFolder);
+//        addTabVerification(tabFolder);
 
         tabFolder.setSelection(0);
     }
@@ -586,6 +581,9 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
                 renderAuthenticationUI(ccbAuthType.getText());
             }
         });
+        
+        ccbAuthType.select(0);
+        renderAuthenticationUI(ccbAuthType.getText());
     }
 
     /**
@@ -853,15 +851,17 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
         reponseDetailsTabFolder.setLayoutData(new GridData(GridData.FILL_BOTH));
         styleEngine.setId(responseComposite, "DefaultCTabFolder");
 
-        CTabItem responseBodyTab = new CTabItem(reponseDetailsTabFolder, SWT.NONE);
-        responseBodyTab.setText(ComposerWebserviceMessageConstants.LBL_RESPONSE_BODY);
+        createResponseBody(reponseDetailsTabFolder);
 
-        responseBodyComposite = new Composite(reponseDetailsTabFolder, SWT.NONE);
-        responseBodyTab.setControl(responseBodyComposite);
-        GridLayout glBody = new GridLayout();
-        glBody.marginWidth = glBody.marginHeight = 0;
-        responseBodyComposite.setLayout(glBody);
+        createResponseHeader(reponseDetailsTabFolder);
 
+//        CTabItem responseVerificationLogTab = new CTabItem(reponseDetailsTabFolder, SWT.NONE);
+//        responseVerificationLogTab.setText(ComposerWebserviceMessageConstants.TAB_VERIFICATION_LOG);
+//
+        reponseDetailsTabFolder.setSelection(0);
+    }
+
+    private void createResponseHeader(CTabFolder reponseDetailsTabFolder) {
         CTabItem responseHeaderTab = new CTabItem(reponseDetailsTabFolder, SWT.NONE);
         responseHeaderTab.setText(ComposerWebserviceMessageConstants.LBL_RESPONSE_HEADER);
 
@@ -870,14 +870,19 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
         GridLayout glHeader = new GridLayout();
         glHeader.marginWidth = glHeader.marginHeight = 0;
         responseHeaderComposite.setLayout(glHeader);
+        mirrorEditor = new MirrorEditor(responseHeaderComposite, SWT.NONE);
+        mirrorEditor.setEditable(false);
+    }
 
-        responseHeader = createSourceViewer(responseHeaderComposite, new GridData(SWT.FILL, SWT.FILL, true, true));
-        responseHeader.setEditable(false);
-        
-        CTabItem responseVerificationLogTab = new CTabItem(reponseDetailsTabFolder, SWT.NONE);
-        responseVerificationLogTab.setText(ComposerWebserviceMessageConstants.TAB_VERIFICATION_LOG);
+    private void createResponseBody(CTabFolder reponseDetailsTabFolder) {
+        CTabItem responseBodyTab = new CTabItem(reponseDetailsTabFolder, SWT.NONE);
+        responseBodyTab.setText(ComposerWebserviceMessageConstants.LBL_RESPONSE_BODY);
 
-        reponseDetailsTabFolder.setSelection(0);
+        responseBodyComposite = new Composite(reponseDetailsTabFolder, SWT.NONE);
+        responseBodyTab.setControl(responseBodyComposite);
+        GridLayout glBody = new GridLayout();
+        glBody.marginWidth = glBody.marginHeight = 0;
+        responseBodyComposite.setLayout(glBody);
     }
 
     private void createResponseStatusComposite() {
@@ -1018,7 +1023,7 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
             @Override
             protected void setValue(Object element, Object value) {
                 if (!isHttpHeader) {
-                    handleParamNameChanged(element, value);
+                    handleRequestParamNameChanged(element, value);
                 } else {
                     super.setValue(element, value);
                 }
@@ -1039,7 +1044,7 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
             @Override
             protected void setValue(Object element, Object value) {
                 if (!isHttpHeader) {
-                    handleParamValueChanged(element, value);
+                    handleRequestParamValueChanged(element, value);
                 } else {
                     super.setValue(element, value);
                 }
@@ -1064,10 +1069,10 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
         return tblNameValue;
     }
 
-    protected void handleParamNameChanged(Object element, Object value) {
+    protected void handleRequestParamNameChanged(Object element, Object value) {
     };
 
-    protected void handleParamValueChanged(Object element, Object value) {
+    protected void handleRequestParamValueChanged(Object element, Object value) {
     };
 
     protected void deleteSelectedParams() {
@@ -1317,6 +1322,7 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
             eventBroker.post(EventConstants.EXPLORER_REFRESH, null);
             dirtyable.setDirty(false);
         } catch (Exception e) {
+            LoggerSingleton.logError(e);
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, e.getMessage());
         }
     }
@@ -1507,7 +1513,7 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
         StringBuilder sb = new StringBuilder();
         reponseObject.getHeaderFields().forEach((key, value) -> sb.append((key == null) ? "" : key + ": ")
                 .append(StringUtils.join(value, "\t"))
-                .append("\n"));
+                .append("\r\n"));
         return sb.toString();
     }
 
@@ -1521,6 +1527,23 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
         if (StringUtils.isBlank(authType)) {
             ccbAuthType.select(0);
         }
+        
+        ui.getAuthorizationPartComposite().layout(true, true);
+//        sComposite.setMinSize(mainComposite.computeSize(MIN_PART_WIDTH, SWT.DEFAULT));
+    }
+
+    public void updateIconURL(String imageURL) {
+        MPartStack stack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
+        int index = stack.getChildren().indexOf(mPart);
+        MPart mPart = (MPart) stack.getChildren().get(index);
+
+        // Work around to update Icon URL for MPart.
+        mPart.getTransientData().put(ICON_URI_FOR_PART, imageURL);
+        mPart.setIconURI(imageURL);
+    }
+    
+    public void updateDirty(boolean dirty) {
+        dirtyable.setDirty(dirty);
     }
 
     @Override

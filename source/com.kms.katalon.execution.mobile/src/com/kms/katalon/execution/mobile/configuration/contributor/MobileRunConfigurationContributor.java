@@ -83,7 +83,7 @@ public abstract class MobileRunConfigurationContributor implements IRunConfigura
             RunConfigurationDescription runConfigurationDescription)
             throws IOException, ExecutionException, InterruptedException {
         deviceName = getDeviceId(runConfigurationDescription);
-        return getRunConfiguration(projectDir);
+        return IRunConfigurationContributor.super.getRunConfiguration(projectDir, runConfigurationDescription);
     }
 
     private String getDeviceId(RunConfigurationDescription runConfigurationDescription) {

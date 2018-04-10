@@ -32,7 +32,6 @@ import com.kms.katalon.core.exception.StepFailedException
 import com.kms.katalon.core.helper.KeywordHelper
 import com.kms.katalon.core.keyword.BuiltinKeywords
 import com.kms.katalon.core.keyword.internal.KeywordExecutor
-import com.kms.katalon.core.keyword.internal.KeywordMain
 import com.kms.katalon.core.keyword.internal.SupportLevel
 import com.kms.katalon.core.logging.KeywordLogger
 import com.kms.katalon.core.mobile.constants.StringConstants
@@ -44,6 +43,7 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 
 @Action(value = "checkElement")
 public class CheckElementKeyword extends MobileAbstractKeyword {
@@ -66,8 +66,8 @@ public class CheckElementKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public void checkElement(TestObject to, int timeout, FailureHandling flowControl) throws StepFailedException {
-        KeywordMain.runKeyword({
+        MobileKeywordMain.runKeyword({
             MobileElementCommonHelper.checkElement(to, timeout)
-        }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_CHECK_ELEMENT_X, to.getObjectId()) : StringConstants.KW_MSG_FAILED_TO_CHECK_ELEMENT)
+        }, flowControl, true, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_CHECK_ELEMENT_X, to.getObjectId()) : StringConstants.KW_MSG_FAILED_TO_CHECK_ELEMENT)
     }
 }

@@ -354,10 +354,16 @@ public class CoreWebuiMessageConstants extends NLS {
     public static String KW_LOG_INFO_CLEARING_OBJ_TXT;
 
     public static String KW_LOG_INFO_SETTING_OBJ_TXT_TO_VAL;
+    
+    public static String KW_LOG_INFO_SETTING_OBJ_TXT_TO_ENCRYPTED_VAL;
 
     public static String KW_LOG_PASSED_TXT_IS_SET_ON_OBJ;
+    
+    public static String KW_LOG_PASSED_ENCRYPTED_TXT_IS_SET_ON_OBJ;
 
     public static String KW_MSG_CANNOT_SET_TXT_X_OF_OBJ_Y;
+    
+    public static String KW_MSG_CANNOT_SET_ENCRYPTED_TEXT_FOR_OBJECT;
 
     public static String KW_MSG_CANNOT_SET_TXT;
 

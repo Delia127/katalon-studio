@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.kms.katalon.dal.IFolderDataProvider;
+import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.dal.fileservice.manager.EntityFileServiceManager;
 import com.kms.katalon.dal.fileservice.manager.FolderFileServiceManager;
 import com.kms.katalon.entity.file.FileEntity;
@@ -118,5 +119,10 @@ public class FolderFileServiceDataProvider implements IFolderDataProvider {
     @Override
     public List<TestCaseEntity> getTestCaseChildren(FolderEntity parentFolder) throws Exception {
         return FolderFileServiceManager.getChildTestCasesOfFolder(parentFolder);
+    }
+
+    @Override
+    public FolderEntity getProfileRoot(ProjectEntity project) throws DALException {
+        return FolderFileServiceManager.getProfileRoot(project);
     }
 }

@@ -173,7 +173,7 @@ public interface IImageKeys {
 
     public static final String PLAY_24 = "toolbar/play_24.png"; //$NON-NLS-1$
 
-    public static final String RECORD_24 = "toolbar/record_24.png"; //$NON-NLS-1$
+    public static final String RECORD_WEB_24 = "toolbar/web_oject_record_24.png"; //$NON-NLS-1$
 
     public static final String REDO_24 = "toolbar/redo_24.png"; //$NON-NLS-1$
 
@@ -245,6 +245,8 @@ public interface IImageKeys {
     public static final String SAVE_DISABLED_16 = "toolbar/save_disabled_16.png"; //$NON-NLS-1$
 
     public static final String SAVE_ALL_DISABLED_16 = "toolbar/save_all_disabled_16.png"; //$NON-NLS-1$
+    
+    public static final String PROFILE_16 = "toolbar/profile_16.png";
     // End Toolbar
 
     // Test Case steps
@@ -312,6 +314,22 @@ public interface IImageKeys {
 
     public static final String LNK_TEST_OBJECT_16 = "entity/lnk_test_object_16.png"; //$NON-NLS-1$
 
+    public static final String WS_GET_METHOD_16 = "entity/ws_get_16.png"; //$NON-NLS-1$
+
+    public static final String WS_POST_METHOD_16 = "entity/ws_post_16.png"; //$NON-NLS-1$
+
+    public static final String WS_PUT_METHOD_16 = "entity/ws_put_16.png"; //$NON-NLS-1$
+
+    public static final String WS_DELETE_METHOD_16 = "entity/ws_delete_16.png"; //$NON-NLS-1$
+
+    public static final String WS_SOAP_METHOD_16 = "entity/ws_soap_method_16.png"; //$NON-NLS-1$
+
+    public static final String WS_SOAP12_METHOD_16 = "entity/ws_soap12_method_16.png"; //$NON-NLS-1$
+
+    public static final String WS_SOAP_GET_METHOD_16 = "entity/ws_soap_get_16.png"; //$NON-NLS-1$
+
+    public static final String WS_SOAP_POST_METHOD_16 = "entity/ws_soap_post_16.png"; //$NON-NLS-1$
+
     public static final String RBT_TEST_OBJECT_16 = "entity/rbt_test_object_16.png"; //$NON-NLS-1$
 
     public static final String TXT_TEST_OBJECT_16 = "entity/txt_test_object_16.png"; //$NON-NLS-1$
@@ -333,6 +351,10 @@ public interface IImageKeys {
     public static final String TEST_DATA_16 = "entity/test_data_16.png"; //$NON-NLS-1$
 
     public static final String KEYWORD_16 = "entity/keyword_16.png"; //$NON-NLS-1$
+    
+    public static final String PROFILE_FOLDER_ENTITY_16 = "entity/profile_16.png"; //$NON-NLS-1$
+    
+    public static final String PROFILE_ENTITY_16 = "entity/entity_global_variable_16.png"; //$NON-NLS-1$
     // End Entity
 
     // Sub-toolbar
@@ -578,6 +600,12 @@ public interface IImageKeys {
     public static final String VIDEO_16 = "video_16.png"; //$NON-NLS-1$
     
     public static final String IMPORT_16 = "import_16.png"; //$NON-NLS-1$
+
+    public static final String CHECK_16 = "check_16.png"; //$NON-NLS-1$
+
+    public static final String FIT_SCREEN_16 = "fit_screen_16.png"; //$NON-NLS-1$
+
+    public static final String FULL_SIZE_16 = "full_size_16.png"; //$NON-NLS-1$
     
     // End Common
 

@@ -2,8 +2,10 @@
 <html>
 <head>
 <link rel="stylesheet" href="lib/codemirror.css">
+<link rel="stylesheet" href="addon/display/fullscreen.css"/>
 <link rel="stylesheet" href="addon/fold/foldgutter.css" />
 <script src="lib/codemirror.js"></script>
+<script src="lib/util/formatting.js"></script>
 <script src="addon/mode/loadmode.js"></script>
 <script src="mode/meta.js"></script>
 <script src="addon/fold/foldcode.js"></script>
@@ -13,6 +15,8 @@
 <script src="addon/fold/indent-fold.js"></script>
 <script src="addon/fold/markdown-fold.js"></script>
 <script src="addon/fold/comment-fold.js"></script>
+<script src="addon/display/fullscreen.js"></script>
+
 <style>
 .CodeMirror {
 	font-size: 13px;
@@ -38,6 +42,7 @@ body {
 		lineWrapping: true,
 		matchBrackets : true,
 		foldGutter: true,
+		fullScreen: true,
 	    gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
 	})
 	
@@ -45,9 +50,9 @@ body {
 		if (typeof handleEditorChanged != "undefined") {
 			handleEditorChanged();
 		}
+		
 	});
 	
-	editor.setSize(null, screen.availHeight);
 	changeMode(editor, "text/plain");
 	
 	function changeMode(editor, val) {

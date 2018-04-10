@@ -54,6 +54,12 @@ public class ImageConstants {
 
     // TestSuiteCollectionTreeEntity
     public static final Image IMG_16_TEST_SUITE_COLLECTION = ImageManager.getImage(IImageKeys.TEST_SUITE_COLLECTION_16);
+    
+    // ProfileRootTreeEntity
+    public static final Image IMG_16_PROFILE_FOLDER_ENTITY = ImageManager.getImage(IImageKeys.PROFILE_FOLDER_ENTITY_16);
+    
+    // ProfileTreeEntity
+    public static final Image IMG_16_PROFILE_ENTITY = ImageManager.getImage(IImageKeys.PROFILE_ENTITY_16);
 
     // WebElementTreeEntity
     public static final Image IMG_16_TEST_OBJECT = ImageManager.getImage(IImageKeys.TEST_OBJECT_16);
@@ -71,6 +77,22 @@ public class ImageConstants {
     public static final Image IMG_16_LBL_TEST_OBJECT = ImageManager.getImage(IImageKeys.LBL_TEST_OBJECT_16);
 
     public static final Image IMG_16_LNK_TEST_OBJECT = ImageManager.getImage(IImageKeys.LNK_TEST_OBJECT_16);
+    
+    public static final Image IMG_16_WS_GET_METHOD = ImageManager.getImage(IImageKeys.WS_GET_METHOD_16);
+
+    public static final Image IMG_16_WS_POST_METHOD = ImageManager.getImage(IImageKeys.WS_POST_METHOD_16);
+
+    public static final Image IMG_16_WS_DELETE_METHOD = ImageManager.getImage(IImageKeys.WS_DELETE_METHOD_16);
+
+    public static final Image IMG_16_WS_PUT_METHOD = ImageManager.getImage(IImageKeys.WS_PUT_METHOD_16);
+    
+    public static final Image IMG_16_WS_SOAP_METHOD = ImageManager.getImage(IImageKeys.WS_SOAP_METHOD_16);
+    
+    public static final Image IMG_16_WS_SOAP12_METHOD = ImageManager.getImage(IImageKeys.WS_SOAP12_METHOD_16);
+    
+    public static final Image IMG_16_WS_SOAP_GET_METHOD = ImageManager.getImage(IImageKeys.WS_SOAP_GET_METHOD_16);
+    
+    public static final Image IMG_16_WS_SOAP_POST_METHOD = ImageManager.getImage(IImageKeys.WS_SOAP_POST_METHOD_16);
 
     public static final Image IMG_16_RBT_TEST_OBJECT = ImageManager.getImage(IImageKeys.RBT_TEST_OBJECT_16);
 
@@ -126,4 +148,7 @@ public class ImageConstants {
     public static final Image IMG_16_EXECUTE = ImageManager.getImage(IImageKeys.PLAY_16);
 
     public static final Image IMG_24_EXECUTE = ImageManager.getImage(IImageKeys.PLAY_24);
+    
+    // CDropdownBox
+    public static final Image IMG_16_CHECK = ImageManager.getImage(IImageKeys.CHECK_16);
 }

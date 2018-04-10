@@ -32,6 +32,7 @@ Export-Package: com.kms.katalon.core.annotation,
  com.kms.katalon.core.testdata,
  com.kms.katalon.core.testdata.reader,
  com.kms.katalon.core.testobject,
+ com.kms.katalon.core.testobject.impl,
  com.kms.katalon.core.util;uses:="org.apache.poi.ss.util,org.apache.poi.xssf.usermodel,org.apache.poi.hssf.usermodel",
  com.kms.katalon.core.util.internal
 Require-Bundle: net.sf.supercsv.super-csv,
@@ -57,6 +58,10 @@ Require-Bundle: net.sf.supercsv.super-csv,
  atu.testrecorder.screen-recorder,
  org.eclipse.core.runtime,
  com.google.guava,
- com.kms.katalon.util
+ com.kms.katalon.util,
+ org.apache.httpcomponents.httpclient,
+ org.apache.httpcomponents.httpcore,
+ org.apache.httpcomponents.httpmime,
+ org.apache.commons.lang3
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .

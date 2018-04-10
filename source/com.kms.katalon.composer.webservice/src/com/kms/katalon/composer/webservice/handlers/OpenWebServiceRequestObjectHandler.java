@@ -6,13 +6,13 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
-import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
@@ -30,10 +30,10 @@ public class OpenWebServiceRequestObjectHandler {
     MApplication application;
 
     @Inject
-    EPartService partService;
-
-    @Inject
     EModelService modelService;
+    
+    @Inject
+    IEclipseContext context;
 
     @PostConstruct
     public void registerEventHandler(IEventBroker eventBroker) {

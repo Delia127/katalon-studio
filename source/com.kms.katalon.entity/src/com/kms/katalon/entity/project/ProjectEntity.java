@@ -18,6 +18,8 @@ public class ProjectEntity extends IntegratedFileEntity {
     private List<String> recentExpandedTreeEntityIds;
 
     private List<String> recentOpenedTreeEntityIds;
+    
+    private String migratedVersion;
 
     public String getUUID() {
         return UUID;
@@ -77,5 +79,13 @@ public class ProjectEntity extends IntegratedFileEntity {
 
     public void setRecentOpenedTreeEntityIds(List<String> recentOpenedTreeEntityIds) {
         this.recentOpenedTreeEntityIds = recentOpenedTreeEntityIds;
+    }
+
+    public String getMigratedVersion() {
+        return migratedVersion;
+    }
+
+    public void setMigratedVersion(String migratedVersion) {
+        this.migratedVersion = migratedVersion;
     }
 }

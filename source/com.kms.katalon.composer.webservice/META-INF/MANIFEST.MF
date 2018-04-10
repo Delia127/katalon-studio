@@ -58,4 +58,6 @@ Require-Bundle: com.kms.katalon.composer.explorer,
  com.kms.katalon.groovy,
  org.codehaus.groovy.eclipse.ui,
  org.eclipse.jdt.groovy.core,
- org.eclipse.jdt.core
+ org.eclipse.jdt.core,
+ com.google.gson,
+ com.kms.katalon.util
