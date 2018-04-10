@@ -59,7 +59,7 @@ public class KobitonPreferencesProvider {
 
             } catch (Exception e) {
                 throw new RuntimeException(
-                        "Authentication kobiton system failed:  Please check username and password again.", e);
+                        "Authentication kobiton system failed !", e);
             }
         }
 
