@@ -28,7 +28,7 @@ public class UpdateManager {
 
     private static final String UPDATE_SITE_ARGUMENT = "updateSite";
 
-    private static final String SERVER_UPDATE_URL = "https://s3.amazonaws.com/katalon/update/";
+    private static final String SERVER_UPDATE_URL = "https://s3.amazonaws.com/katalon/update";
 
     private static final String LATEST_VERSION_INFO = "latest_version.json";
 
@@ -126,7 +126,7 @@ public class UpdateManager {
     }
 
     public String getServerUrl() {
-        return StringUtils.defaultString(getUpdateSiteArgument(), SERVER_UPDATE_URL);
+        return StringUtils.defaultIfEmpty(getUpdateSiteArgument(), SERVER_UPDATE_URL);
     }
 
     public String getLatestVersionUrl() {

@@ -38,6 +38,11 @@ public class CheckForUpdatesJob extends Job implements UpdateComponent {
     @Override
     protected IStatus run(IProgressMonitor monitor) {
         monitor.beginTask("Checking for Updates...", 100);
+        if (VersionUtil.isInternalBuild()) {
+            updateResult = new CheckForUpdateResult();
+            updateResult.setUpdateResult(UpdateResultValue.UP_TO_DATE);
+            return Status.OK_STATUS;
+        }
 
         UpdateManager updateManager = getUpdateManager();
 
@@ -48,8 +53,7 @@ public class CheckForUpdatesJob extends Job implements UpdateComponent {
 
             lastestUpdateVersion = JsonUtil.fromJson(outputStream.toString(), LastestVersionInfo.class);
             LastestVersionInfo localLatestVersion = updateManager.getLocalLatestVersion();
-            if (!VersionUtil.isInternalBuild()
-                    || !LastestVersionInfo.isNewer(lastestUpdateVersion.getLatestVersion(),
+            if (!LastestVersionInfo.isNewer(lastestUpdateVersion.getLatestVersion(),
                             VersionUtil.getCurrentVersion().getVersion())
                     || isLatestVersionIgnored(lastestUpdateVersion, localLatestVersion)) {
                 updateResult = new CheckForUpdateResult();
