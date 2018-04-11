@@ -3,6 +3,8 @@ package com.kms.katalon.composer.update.download;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.ConnectException;
+import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
 import java.net.URLConnection;
 import java.security.GeneralSecurityException;
@@ -64,8 +66,7 @@ public class FileDownloader {
         InputStream inputStream = null;
         URLConnection connection = null;
         try {
-            connection = NetworkUtils.createURLConnection(url,
-                    ProxyUtil.getProxy(ProxyPreferences.getProxyInformation()));
+            connection = createConnection(url);
             inputStream = connection.getInputStream();
 
             byte data[] = new byte[1024 * 4];
@@ -92,6 +93,17 @@ public class FileDownloader {
             } catch (IOException ignored) {}
 
             IOUtils.close(connection);
+        }
+    }
+
+    private HttpURLConnection createConnection(String url) throws IOException, GeneralSecurityException,
+                    URISyntaxException {
+        try {
+            return NetworkUtils.createURLConnection(url,
+                ProxyUtil.getProxy(ProxyPreferences.getProxyInformation()));
+        } catch (ConnectException e) {
+            return NetworkUtils.createURLConnection(url,
+                            ProxyUtil.getSystemProxy());
         }
     }
 }

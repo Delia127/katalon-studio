@@ -28,7 +28,7 @@ public class UpdateManager {
 
     private static final String UPDATE_SITE_ARGUMENT = "updateSite";
 
-    private static final String SERVER_UPDATE_URL = "https://s3.amazonaws.com/katalon/update";
+    private static final String SERVER_UPDATE_URL = "https://s3.amazonaws.com/katalon/update/";
 
     private static final String LATEST_VERSION_INFO = "latest_version.json";
 
@@ -129,20 +129,24 @@ public class UpdateManager {
         return StringUtils.defaultIfEmpty(getUpdateSiteArgument(), SERVER_UPDATE_URL);
     }
 
+    private String addLatestSlash(String rawUrl) {
+        return rawUrl.endsWith("/") ? rawUrl : rawUrl + "/";
+    }
+
     public String getLatestVersionUrl() {
-        return getServerUrl() + "/" + LATEST_VERSION_INFO;
+        return addLatestSlash(getServerUrl()) + LATEST_VERSION_INFO;
     }
 
     public String getVersionUrl(String versionLocation, String platform) {
-        return versionLocation + "/" + platform;
+        return addLatestSlash(versionLocation) + platform;
     }
 
     public String getAppInfoVersionUrl(String versionLocation, String platform) {
-        return getVersionUrl(versionLocation, platform) + "/" + APP_INFO;
+        return addLatestSlash(getVersionUrl(versionLocation, platform)) + APP_INFO;
     }
 
     public String getFileInfoVersionUrl(String versionLocation, String platform, String fileName) {
-        return getVersionUrl(versionLocation, platform) + "/" + fileName;
+        return addLatestSlash(getVersionUrl(versionLocation, platform)) + fileName;
     }
 
     public Proxy getProxy() throws URISyntaxException, IOException {

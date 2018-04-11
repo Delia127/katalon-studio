@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.jobs.Job;
 
 import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.impl.util.PlatformUtil;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.update.UpdateComponent;
 import com.kms.katalon.composer.update.UpdateException;
 import com.kms.katalon.composer.update.UpdateManager;
@@ -67,6 +68,7 @@ public class CheckForUpdatesJob extends Job implements UpdateComponent {
                 return Status.OK_STATUS;
             }
         } catch (IOException | UpdateException e) {
+            LoggerSingleton.logError(e);
             updateResult = new CheckForUpdateResult();
             updateResult.setUpdateResult(UpdateResultValue.APPLIED_LEGACY_MECHANISM);
             return Status.OK_STATUS;

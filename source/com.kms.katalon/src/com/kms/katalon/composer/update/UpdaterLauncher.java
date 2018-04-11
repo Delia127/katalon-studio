@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import org.eclipse.jdt.launching.JavaRuntime;
 
+import com.kms.katalon.composer.components.impl.util.PlatformUtil;
 import com.kms.katalon.composer.update.models.ExecInfo;
 
 public class UpdaterLauncher implements UpdateComponent {
@@ -48,7 +49,8 @@ public class UpdaterLauncher implements UpdateComponent {
 
         getUpdateManager().saveExecInfo(execInfo);
 
-        String[] commands = new String[] { "./java", "-jar", updateJarFile };
+        String javaExec = PlatformUtil.isWindows() ? "java" : "./java";
+        String[] commands = new String[] { javaExec, "-jar", updateJarFile };
 
         new File(updateJarFile).setReadable(true);
         new File(updateJarFile).setWritable(true);
