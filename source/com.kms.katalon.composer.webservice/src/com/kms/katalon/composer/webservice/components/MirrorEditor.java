@@ -93,8 +93,8 @@ public class MirrorEditor extends Composite {
     private File initHTMLTemplateFile() {
         File templateFile = null;
         try {
-            File codeMirrorTempFolder = new File(ProjectController.getInstance().getNonremovableTempDir(),
-                    "editor/codemirror");
+            File codeMirrorTempFolder = new File(ClassPathResolver.getConfigurationFolder(),
+                    "resources/template/editor/codemirror");
             if (!codeMirrorTempFolder.exists() || ArrayUtils.isEmpty(codeMirrorTempFolder.listFiles())) {
                 codeMirrorTempFolder.mkdirs();
 
