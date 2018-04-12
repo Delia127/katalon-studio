@@ -27,6 +27,17 @@ public class TestSuiteCollectionFileServiceDataProvider implements TestSuiteColl
             throw new DALException(e);
         }
     }
+    
+    @Override
+    public List<TestSuiteCollectionEntity> getAll(ProjectEntity project) throws DALException {
+        try {
+            List<TestSuiteCollectionEntity> allTestSuiteCollections = EntityFileServiceManager.getDescendants(
+                    FolderFileServiceManager.getTestSuiteRoot(project), TestSuiteCollectionEntity.class);
+            return allTestSuiteCollections;
+        } catch (Exception e) {
+            throw new DALException(e);
+        }
+    }
 
     @Override
     public TestSuiteCollectionEntity get(String testSuiteCollectionId) throws DALException {
