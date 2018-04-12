@@ -437,6 +437,7 @@ public class WelcomeRightPart extends Composite {
 
         CLabel stepDetails = new CLabel(parent, SWT.NONE);
         stepDetails.setImage(stepDetailsImage);
+        stepDetails.setLeftMargin(45);
         stepDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
     }
 
