@@ -2,6 +2,7 @@ package com.kms.katalon.composer.update.models;
 
 import java.util.Arrays;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 public class LastestVersionInfo {
@@ -47,8 +48,17 @@ public class LastestVersionInfo {
         int[] thisVer = Arrays.stream(StringUtils.split(version, '.')).mapToInt(Integer::parseInt).toArray();
 
         int[] thatVer = Arrays.stream(StringUtils.split(comparedVersion, '.')).mapToInt(Integer::parseInt).toArray();
+        
+        int maxLength = Math.max(thisVer.length, thatVer.length);
+        while (thisVer.length < maxLength) {
+            thisVer = ArrayUtils.add(thisVer, 0);
+        }
+        
+        while (thatVer.length < maxLength) {
+            thatVer = ArrayUtils.add(thatVer, 0);
+        }
 
-        for (int i = 0; i < thisVer.length; i++) {
+        for (int i = 0; i < maxLength; i++) {
             if (thisVer[i] == thatVer[i]) {
                 continue;
             }
