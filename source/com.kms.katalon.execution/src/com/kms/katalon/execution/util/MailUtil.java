@@ -128,8 +128,12 @@ public class MailUtil {
             email.send();
         } finally {
             if (attachment != null) {
-                File zipFile = new File(attachment.getURL().toURI());
-                FileUtils.forceDelete(zipFile);
+                try {
+                    File zipFile = new File(attachment.getURL().toURI());
+                    FileUtils.forceDelete(zipFile);
+                } catch (IOException e) {
+                    LogUtil.logError(e);
+                }
             }
         }
     }
