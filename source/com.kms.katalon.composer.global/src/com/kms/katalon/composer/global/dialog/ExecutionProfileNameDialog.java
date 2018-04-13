@@ -81,7 +81,7 @@ public class ExecutionProfileNameDialog extends TitleAreaDialog {
 
     @Override
     protected Point getInitialSize() {
-        return new Point(400, 200);
+        return getShell().computeSize(400, SWT.DEFAULT, true);
     }
 
     @Override
