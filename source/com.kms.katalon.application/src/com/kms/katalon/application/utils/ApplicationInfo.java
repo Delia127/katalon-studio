@@ -10,7 +10,6 @@ import java.nio.file.Paths;
 import java.util.Properties;
 
 import org.eclipse.core.runtime.Platform;
-import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
@@ -47,8 +46,8 @@ public class ApplicationInfo {
         aboutMappingsProperties = new Properties();
 
         try {
-            aboutMappingsProperties.load(
-                    FrameworkUtil.getBundle(ApplicationInfo.class).getResource(ABOUT_MAPPINGS_FILE_NAME).openStream());
+            aboutMappingsProperties.load(Platform.getBundle("com.kms.katalon").getResource(ABOUT_MAPPINGS_FILE_NAME)
+                            .openStream());
         } catch (IOException e) {
             LogUtil.logError(e);
         }
