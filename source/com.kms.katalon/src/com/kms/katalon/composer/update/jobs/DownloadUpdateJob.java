@@ -3,6 +3,7 @@ package com.kms.katalon.composer.update.jobs;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.MessageFormat;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -35,9 +36,9 @@ public class DownloadUpdateJob extends Job implements UpdateComponent {
     protected IStatus run(IProgressMonitor monitor) {
         try {
             SubMonitor subMonitor = SubMonitor.convert(monitor);
-            subMonitor.beginTask(null, 100);
+            subMonitor.beginTask("", 100);
 
-            SubMonitor downloadMonitor = subMonitor.split(80, SubMonitor.SUPPRESS_SETTASKNAME);
+            SubMonitor downloadMonitor = subMonitor.split(80, SubMonitor.SUPPRESS_NONE);
             downloadMonitor.beginTask("Downloading Update Files...", 100);
 
             // Clean download directory
@@ -57,9 +58,13 @@ public class DownloadUpdateJob extends Job implements UpdateComponent {
                 }
 
                 int subWork = Math.round(((float) fileInfo.getSize() / totalSize) * 100);
-                SubMonitor downloadFileMonitor = downloadMonitor.split(subWork);
+                SubMonitor downloadFileMonitor = downloadMonitor.newChild(subWork, SubMonitor.SUPPRESS_BEGINTASK);
                 downloadFileMonitor.beginTask("", 100);
-                downloadFile(fileInfo, new DownloadProgressListenerImpl(downloadFileMonitor));
+                try {
+                    downloadFile(fileInfo, new DownloadProgressListenerImpl(downloadFileMonitor, fileInfo));
+                } catch (InterruptedException e) {
+                    return Status.CANCEL_STATUS;
+                }
 
                 downloadFileMonitor.done();
             }
@@ -109,7 +114,7 @@ public class DownloadUpdateJob extends Job implements UpdateComponent {
     }
 
     private void downloadFile(FileInfo fileInfo, DownloadProgressListenerImpl downloadProgressListener)
-            throws UpdateException {
+            throws UpdateException, InterruptedException {
         UpdateManager updateManager = getUpdateManager();
         File localFileInfo;
         String fileInfoUrl;
@@ -128,7 +133,7 @@ public class DownloadUpdateJob extends Job implements UpdateComponent {
             FileDownloader fileDownloader = new FileDownloader(fileInfo.getSize());
             fileDownloader.addListener(downloadProgressListener);
 
-            fileDownloader.download(fileInfoUrl, outputStream);
+            fileDownloader.download(fileInfoUrl, outputStream, downloadProgressListener.getMonitor());
 
         } catch (IOException e) {
             throw new UpdateException(e);
@@ -139,14 +144,31 @@ public class DownloadUpdateJob extends Job implements UpdateComponent {
 
         private SubMonitor monitor;
 
-        public DownloadProgressListenerImpl(SubMonitor monitor) {
+        private int currentWork = 0;
+
+        private FileInfo fileInfo;
+
+        public SubMonitor getMonitor() {
+            return monitor;
+        }
+
+        public DownloadProgressListenerImpl(SubMonitor monitor, FileInfo fileInfo) {
             this.monitor = monitor;
+            this.fileInfo = fileInfo;
         }
 
         @Override
         public void onProgressUpdate(long progress, long fileSize, long speedInKps) {
-            int workingRemaining = Math.round(((float) (fileSize - progress) / fileSize) * 100);
-            monitor.setWorkRemaining(workingRemaining);
+            int work = Math.round(((float) (progress) / fileSize) * 100);
+            int nextWork = work - currentWork;
+            if (nextWork > 0) {
+                monitor.worked(nextWork);
+                String subTaskName = MessageFormat.format("Downloading {0}...({1})", 
+                        fileInfo.getLocation(),
+                        FileUtils.byteCountToDisplaySize(speedInKps) + "/s");
+                monitor.subTask(subTaskName);
+            }
+            currentWork = work;
         }
 
     }

@@ -50,12 +50,12 @@ public class CheckForUpdatesJob extends Job implements UpdateComponent {
         LastestVersionInfo lastestUpdateVersion;
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             FileDownloader downloader = new FileDownloader(FileDownloader.UNKNOWN_SIZE);
-            downloader.download(updateManager.getLatestVersionUrl(), outputStream);
+            downloader.download(updateManager.getLatestVersionUrl(), outputStream, monitor);
 
             lastestUpdateVersion = JsonUtil.fromJson(outputStream.toString(), LastestVersionInfo.class);
             LastestVersionInfo localLatestVersion = updateManager.getLocalLatestVersion();
             if (!LastestVersionInfo.isNewer(lastestUpdateVersion.getLatestVersion(),
-                            VersionUtil.getCurrentVersion().getVersion())
+                    VersionUtil.getCurrentVersion().getVersion())
                     || isLatestVersionIgnored(lastestUpdateVersion, localLatestVersion)) {
                 updateResult = new CheckForUpdateResult();
                 updateResult.setUpdateResult(UpdateResultValue.UP_TO_DATE);
@@ -72,12 +72,14 @@ public class CheckForUpdatesJob extends Job implements UpdateComponent {
             updateResult = new CheckForUpdateResult();
             updateResult.setUpdateResult(UpdateResultValue.APPLIED_LEGACY_MECHANISM);
             return Status.OK_STATUS;
+        } catch (InterruptedException e) {
+            return Status.CANCEL_STATUS;
         }
         monitor.worked(40);
 
         try {
             monitor.setTaskName("Fetching new update info...");
-            AppInfo latestAppInfo = downloadLastestAppInfo(lastestUpdateVersion);
+            AppInfo latestAppInfo = downloadLastestAppInfo(lastestUpdateVersion, monitor);
             updateManager.saveAppInfo(latestAppInfo);
             monitor.worked(40);
 
@@ -99,6 +101,8 @@ public class CheckForUpdatesJob extends Job implements UpdateComponent {
                     new UpdateException(e));
         } catch (UpdateException e) {
             return new Status(Status.ERROR, "com.kms.katalon", "Unable to connect to katalon update server", e);
+        } catch (InterruptedException e) {
+            return Status.CANCEL_STATUS;
         } finally {
             monitor.done();
         }
@@ -107,18 +111,19 @@ public class CheckForUpdatesJob extends Job implements UpdateComponent {
 
     private boolean isLatestVersionIgnored(LastestVersionInfo lastestUpdateVersion,
             LastestVersionInfo localLatestVersion) {
-        return lastestUpdateVersion.getLatestVersion().equals(lastestUpdateVersion.getLatestVersion())
+        return lastestUpdateVersion.getLatestVersion().equals(localLatestVersion.getLatestVersion())
                 && localLatestVersion.isLatestVersionIgnored();
     }
 
-    private AppInfo downloadLastestAppInfo(LastestVersionInfo lastestUpdateVersion) throws UpdateException {
+    private AppInfo downloadLastestAppInfo(LastestVersionInfo lastestUpdateVersion, IProgressMonitor monitor)
+            throws UpdateException, InterruptedException {
         UpdateManager updateManger = getUpdateManager();
 
         String latestVersionAppInfoUrl = updateManger
                 .getAppInfoVersionUrl(lastestUpdateVersion.getLatestUpdateLocation(), PlatformUtil.getPlatform());
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             FileDownloader downloader = new FileDownloader(FileDownloader.UNKNOWN_SIZE);
-            downloader.download(latestVersionAppInfoUrl, outputStream);
+            downloader.download(latestVersionAppInfoUrl, outputStream, monitor);
 
             return JsonUtil.fromJson(outputStream.toString(), AppInfo.class);
         } catch (IOException e) {

@@ -88,12 +88,10 @@ public class CheckForUpdatesHandler implements UpdateComponent {
                             if (!silenceMode) {
                                 UISynchronizeService.syncExec(() -> showUpToDateDialog());
                             }
-
                         });
                         break;
                     default:
                         break;
-
                 }
             }
 
@@ -114,14 +112,16 @@ public class CheckForUpdatesHandler implements UpdateComponent {
                 updateJob.addJobChangeListener(new JobChangeAdapter() {
                     @Override
                     public void done(IJobChangeEvent event) {
-                        Thread thread = new Thread(() -> {
-                            try {
-                                // Wait for Download Update dialog closes
-                                TimeUnit.MILLISECONDS.sleep(DIALOG_CLOSED_DELAY_MILLIS);
-                            } catch (InterruptedException ignored) {}
-                            UISynchronizeService.syncExec(() -> onNewUpdateAlreadyDialog(newUpdateResult));
-                        });
-                        thread.start();
+                        if (event.getResult().isOK()) {
+                            Thread thread = new Thread(() -> {
+                                try {
+                                    // Wait for Download Update dialog closes
+                                    TimeUnit.MILLISECONDS.sleep(DIALOG_CLOSED_DELAY_MILLIS);
+                                } catch (InterruptedException ignored) {}
+                                UISynchronizeService.syncExec(() -> onNewUpdateAlreadyDialog(newUpdateResult));
+                            });
+                            thread.start();
+                        }
                     }
                 });
 

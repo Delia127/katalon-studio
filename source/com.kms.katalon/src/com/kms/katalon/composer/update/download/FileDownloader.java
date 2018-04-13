@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
+import org.eclipse.core.runtime.IProgressMonitor;
 
 import com.kms.katalon.composer.update.UpdateException;
 import com.kms.katalon.composer.update.util.NetworkUtils;
@@ -19,10 +20,10 @@ import com.kms.katalon.core.util.internal.ProxyUtil;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
 
 public class FileDownloader {
-    
+
     public static final long UNKNOWN_SIZE = -1L;
 
-    public static final long NOTIFICATION_DELAY = 200L;
+    public static final long NOTIFICATION_DELAY = 500L;
 
     private final long fileSizeInBytes;
 
@@ -62,7 +63,8 @@ public class FileDownloader {
         }).start();
     }
 
-    public void download(String url, OutputStream os) throws UpdateException {
+    public void download(String url, OutputStream os, IProgressMonitor monitor)
+            throws UpdateException, InterruptedException {
         InputStream inputStream = null;
         URLConnection connection = null;
         try {
@@ -76,6 +78,9 @@ public class FileDownloader {
             long startDownloadTime = System.currentTimeMillis();
 
             while ((count = inputStream.read(data)) != -1) {
+                if (monitor.isCanceled()) {
+                    throw new InterruptedException();
+                }
                 progress += count;
 
                 os.write(data, 0, count);
@@ -96,14 +101,12 @@ public class FileDownloader {
         }
     }
 
-    private HttpURLConnection createConnection(String url) throws IOException, GeneralSecurityException,
-                    URISyntaxException {
+    private HttpURLConnection createConnection(String url)
+            throws IOException, GeneralSecurityException, URISyntaxException {
         try {
-            return NetworkUtils.createURLConnection(url,
-                ProxyUtil.getProxy(ProxyPreferences.getProxyInformation()));
+            return NetworkUtils.createURLConnection(url, ProxyUtil.getProxy(ProxyPreferences.getProxyInformation()));
         } catch (ConnectException e) {
-            return NetworkUtils.createURLConnection(url,
-                            ProxyUtil.getSystemProxy());
+            return NetworkUtils.createURLConnection(url, ProxyUtil.getSystemProxy());
         }
     }
 }
