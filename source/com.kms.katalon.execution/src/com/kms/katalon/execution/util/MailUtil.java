@@ -12,6 +12,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.activation.FileDataSource;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.mail.DefaultAuthenticator;
@@ -115,9 +117,15 @@ public class MailUtil {
 
         HtmlEmail email = initEmail(conf);
         EmailAttachment attachment = null;
+        File attachedFile = null;
         if (conf.isSendAttachmentEnable()) {
             attachment = attach(conf.getAttachmentOptions(), suiteLogRecord);
-            email.attach(attachment);
+            attachedFile = new File(attachment.getURL().toURI());
+            email.attach(
+                    new FileDataSource(attachedFile), 
+                    attachment.getName(),
+                    attachment.getDescription(),
+                    attachment.getDisposition());
         }
 
         // Set HTML formatted message
@@ -129,8 +137,7 @@ public class MailUtil {
         } finally {
             if (attachment != null) {
                 try {
-                    File zipFile = new File(attachment.getURL().toURI());
-                    FileUtils.forceDelete(zipFile);
+                    FileUtils.forceDelete(attachedFile);
                 } catch (IOException e) {
                     LogUtil.logError(e);
                 }
