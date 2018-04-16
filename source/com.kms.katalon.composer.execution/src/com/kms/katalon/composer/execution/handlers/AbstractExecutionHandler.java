@@ -115,7 +115,8 @@ public abstract class AbstractExecutionHandler {
                 if (composerStack == null)
                     return false;
 
-                if (composerStack.isVisible() && composerStack.getSelectedElement() != null) {
+                if (composerStack.isVisible() && composerStack instanceof MPart
+                        && composerStack.getSelectedElement() != null) {
                     MPart part = (MPart) composerStack.getSelectedElement();
                     String partElementId = part.getElementId();
                     if (partElementId.startsWith(IdConstants.TEST_CASE_PARENT_COMPOSITE_PART_ID_PREFIX)

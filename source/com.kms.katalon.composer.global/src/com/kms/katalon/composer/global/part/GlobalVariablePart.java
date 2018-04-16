@@ -55,6 +55,7 @@ import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.operation.OperationExecutor;
+import com.kms.katalon.composer.components.part.IComposerPart;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.components.util.ColumnViewerUtil;
 import com.kms.katalon.composer.global.constants.StringConstants;
@@ -72,7 +73,7 @@ import com.kms.katalon.entity.global.GlobalVariableEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.groovy.util.GroovyRefreshUtil;
 
-public class GlobalVariablePart extends CPart implements EventHandler, TableViewerProvider {
+public class GlobalVariablePart extends CPart implements EventHandler, TableViewerProvider, IComposerPart {
 
     private Table table;
 
@@ -625,5 +626,10 @@ public class GlobalVariablePart extends CPart implements EventHandler, TableView
     @Override
     public void performOperation(AbstractOperation operation) {
         executeOperation(operation);
+    }
+
+    @Override
+    public String getEntityId() {
+        return executionProfile.getIdForDisplay();
     }
 }

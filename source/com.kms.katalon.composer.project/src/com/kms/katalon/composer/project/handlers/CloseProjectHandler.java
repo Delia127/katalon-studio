@@ -58,6 +58,7 @@ public class CloseProjectHandler {
         if (project != null) {
             if (partService.saveAll(true)) {
                 closeProject(partService, eventBroker, project);
+
                 return true;
             } else {
                 return false;
@@ -71,20 +72,21 @@ public class CloseProjectHandler {
         return ProjectController.getInstance().getCurrentProject() != null
                 && !LauncherManager.getInstance().isAnyLauncherRunning();
     }
-    
+
     // TODO: Need to keep part stack in eclipse context
     @Execute
     public void execute(Shell shell) {
         if (partService.saveAll(true)) {
             LauncherManager.getInstance().removeAllTerminated();
             closeProject(partService, eventBroker, ProjectController.getInstance().getCurrentProject());
-            
+
             eventBroker.send(EventConstants.EXPLORER_RELOAD_DATA, null);
             eventBroker.send(EventConstants.GLOBAL_VARIABLE_REFRESH, null);
             eventBroker.post(EventConstants.CONSOLE_LOG_RESET, null);
 
             // minimize console part stack
-            MPartStack consolePartStack = (MPartStack) modelService.find(IdConstants.CONSOLE_PART_STACK_ID, application);
+            MPartStack consolePartStack = (MPartStack) modelService.find(IdConstants.CONSOLE_PART_STACK_ID,
+                    application);
             consolePartStack.getTags().add(IPresentationEngine.MINIMIZED);
 
             // minimize job progress
@@ -95,13 +97,12 @@ public class CloseProjectHandler {
             partService.activate((MPart) modelService.find(IdConstants.WELCOME_PART_ID, application));
         }
     }
-    
+
     private static void closeProject(EPartService partService, IEventBroker eventBroker, ProjectEntity project) {
         PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().saveAllEditors(false);
         // Find and close all opened editor parts which is managed by PartService
         for (MPart p : partService.getParts()) {
-            if (p.getElementId().startsWith("com.kms.katalon.composer.content.")
-                    && p.getElementId().endsWith(")")
+            if (p.getElementId().startsWith("com.kms.katalon.composer.content.") && p.getElementId().endsWith(")")
                     || "org.eclipse.e4.ui.compatibility.editor".equals(p.getElementId())) {
                 partService.hidePart(p, true);
             }

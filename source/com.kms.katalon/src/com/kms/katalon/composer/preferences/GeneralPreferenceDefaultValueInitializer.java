@@ -7,7 +7,7 @@ import org.eclipse.ui.PlatformUI;
 import com.kms.katalon.constants.PreferenceConstants;
 
 public class GeneralPreferenceDefaultValueInitializer extends AbstractPreferenceInitializer {
-    public static final boolean AUTO_RESTORE_PREVIOUS_SESSION = false;
+    public static final boolean AUTO_RESTORE_PREVIOUS_SESSION = true;
 
     @Override
     public void initializeDefaultPreferences() {

@@ -17,6 +17,7 @@ import com.kms.katalon.composer.components.impl.tree.PackageTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.ReportCollectionTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.ReportTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.ProfileRootTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.ProfileTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestListenerFolderTreeEntity;
@@ -27,6 +28,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.controller.CheckpointController;
 import com.kms.katalon.controller.FolderController;
+import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
@@ -38,6 +40,7 @@ import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
+import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.report.ReportEntity;
@@ -192,6 +195,11 @@ public class TreeEntityUtil {
                 createSelectedTreeEntityHierachy(testSuiteCollectionEntity.getParentFolder(), testSuiteRootFolder));
     }
 
+    public static ProfileTreeEntity getProfileTreeEntity(ExecutionProfileEntity profile,
+            ProfileRootTreeEntity treeRoot) {
+        return new ProfileTreeEntity(profile, treeRoot);
+    }
+
     /**
      * Get readable keyword name by capitalized and separated the words.
      * <p>
@@ -273,7 +281,8 @@ public class TreeEntityUtil {
                     || StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_TEST_SUITE)
                     || StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_REPORT)
                     || StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_KEYWORD)
-                    || StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_CHECKPOINT)) {
+                    || StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_CHECKPOINT)
+                    || StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_PROFILES)) {
                 // Folder
                 FolderEntity folder = FolderController.getInstance().getFolderByDisplayId(project, id);
                 if (folder == null) {
@@ -295,6 +304,8 @@ public class TreeEntityUtil {
                     rootFolder = FolderController.getInstance().getReportRoot(project);
                 } else if (FolderType.CHECKPOINT.equals(folder.getFolderType())) {
                     rootFolder = FolderController.getInstance().getCheckpointRoot(project);
+                } else if (FolderType.PROFILE.equals(folder.getFolderType())) {
+                    rootFolder = FolderController.getInstance().getProfileRoot(project);
                 }
 
                 if (rootFolder != null) {
@@ -405,6 +416,16 @@ public class TreeEntityUtil {
                 CheckpointEntity cp = CheckpointController.getInstance().getByDisplayedId(id);
                 if (cp != null) {
                     treeEntities.add(getCheckpointTreeEntity(cp));
+                }
+            }
+
+            if (StringUtils.startsWith(id, StringConstants.ROOT_FOLDER_NAME_PROFILES)) {
+                // Checkpoint
+                ExecutionProfileEntity profile = GlobalVariableController.getInstance().getExecutionProfile(
+                        id.replaceFirst(StringConstants.ROOT_FOLDER_NAME_PROFILES + "/", ""), project);
+                if (profile != null) {
+                    treeEntities.add(getProfileTreeEntity(profile,
+                            new ProfileRootTreeEntity(FolderController.getInstance().getProfileRoot(project), null)));
                 }
             }
         }

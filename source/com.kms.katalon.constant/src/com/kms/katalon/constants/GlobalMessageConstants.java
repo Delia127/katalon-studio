@@ -169,6 +169,8 @@ public class GlobalMessageConstants extends NLS {
 
     public static String ROOT_FOLDER_NAME_CHECKPOINT;
 
+    public static String ROOT_FOLDER_NAME_PROFILES;
+
     public static String ROOT_FOLDER_NAME_TEST_LISTENER;
 
     public static String FILE_NAME_GLOBAL_VARIABLE;
