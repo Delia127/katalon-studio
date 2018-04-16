@@ -17,6 +17,7 @@ import com.kms.katalon.composer.mobile.dialog.IosDeviceSelectionDialog;
 import com.kms.katalon.composer.mobile.dialog.MobileDeviceSelectionDialog;
 import com.kms.katalon.core.driver.DriverType;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
+import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.testsuite.RunConfigurationDescription;
 import com.kms.katalon.execution.mobile.configuration.contributor.MobileRunConfigurationContributor;
 import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
@@ -33,7 +34,7 @@ public abstract class MobileTestExecutionDriverEntry extends TestExecutionDriver
             runConfigurationData.clear();
         }
         return RunConfigurationDescription.from(groupName, getName(), runConfigurationData,
-                previousDescription.getProfileName());
+                (previousDescription == null) ? ExecutionProfileEntity.DF_PROFILE_NAME: previousDescription.getProfileName());
     }
 
     @Override
