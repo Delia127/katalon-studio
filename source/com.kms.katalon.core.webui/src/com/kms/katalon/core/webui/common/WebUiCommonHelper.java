@@ -2,21 +2,12 @@ package com.kms.katalon.core.webui.common;
 
 import java.awt.Rectangle;
 import java.text.MessageFormat;
-import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -28,8 +19,6 @@ import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.helper.KeywordHelper;
@@ -39,14 +28,12 @@ import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.core.testobject.TestObjectProperty;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
-import com.kms.katalon.core.webui.common.XPathBuilder.PropertyType;
 import com.kms.katalon.core.webui.constants.CoreWebuiMessageConstants;
 import com.kms.katalon.core.webui.constants.StringConstants;
 import com.kms.katalon.core.webui.driver.DriverFactory;
 import com.kms.katalon.core.webui.exception.WebElementNotFoundException;
 
 public class WebUiCommonHelper extends KeywordHelper {
-    
     public static final String CSS_LOCATOR_PROPERTY_NAME = "css";
     
     public static final String XPATH_LOCATOR_PROPERTY_NAME = "xpath";
@@ -60,30 +47,6 @@ public class WebUiCommonHelper extends KeywordHelper {
     public static final String WEB_ELEMENT_XPATH = "xpath";
 
     private static KeywordLogger logger = KeywordLogger.getInstance();
-    
-    // cache elements found with heuristic method
-    private static Cache<String, WebElement> webElementsCache;
-    
-    static {
-        final int MAX_AGE = 10;
-        webElementsCache = CacheBuilder.newBuilder()
-                .maximumSize(10) // to preserve memory
-                .expireAfterAccess(MAX_AGE, TimeUnit.MINUTES) // to preserve memory
-                .build();
-        Runnable task = new Runnable() {
-            
-            @Override
-            public void run() {
-                try {
-                    webElementsCache.cleanUp();
-                } catch (Exception ignored) {
-                    
-                }
-            }
-        };
-        ScheduledExecutorService scheduledPool = Executors.newSingleThreadScheduledExecutor();
-        scheduledPool.scheduleAtFixedRate(task, MAX_AGE, 1, TimeUnit.MINUTES);
-    }
 
     public static boolean isTextPresent(WebDriver webDriver, String text, boolean isRegex)
             throws WebDriverException, IllegalArgumentException {
@@ -524,13 +487,6 @@ public class WebUiCommonHelper extends KeywordHelper {
                 return null;
         }
     }
-    
-    /**
-     * Build a locator to find all elements satisfying at least one condition (regardless it is active or not)
-     */
-    public static By buildUnionXpath(TestObject to) {
-        return buildXpath(to, XPathBuilder.AggregationType.UNION, to.getProperties());
-    }
 
     public static String getSelectorValue(TestObject to) {
         SelectorMethod selectorMethod = to.getSelectorMethod();
@@ -556,27 +512,9 @@ public class WebUiCommonHelper extends KeywordHelper {
         return null;
     }
 
-    /**
-     * Build a locator to find all elements satisfying all active conditions
-     */
     private static By buildXpath(TestObject to) {
-        return buildXpath(to, XPathBuilder.AggregationType.INTERSECT, to.getActiveProperties());
-    }
-    
-    private static By buildXpath(TestObject to, XPathBuilder.AggregationType aggregationType, List<TestObjectProperty> properties) {
-        XPathBuilder xpathBuilder = new XPathBuilder(properties);
-        return By.xpath(xpathBuilder.build(aggregationType));
-    }
-    
-    /**
-     * Build locators, each corresponds to a single condition ("text" or "xpath")
-     */
-    private static List<Entry<String, By>> buildXpathsFromXpathBasedConditions(TestObject to) {
-        XPathBuilder xpathBuilder = new XPathBuilder(to.getProperties());
-        return xpathBuilder.buildXpathBasedLocators()
-                .stream()
-                .map(entry -> new AbstractMap.SimpleEntry<>(entry.getKey(), By.xpath(entry.getValue())))
-                .collect(Collectors.toList());
+        XPathBuilder xpathBuilder = new XPathBuilder(to.getActiveProperties());
+        return By.xpath(xpathBuilder.build()); 
     }
 
     public static String getBrowserAndVersion(WebDriver webDriver) {
@@ -696,25 +634,6 @@ public class WebUiCommonHelper extends KeywordHelper {
         boolean isSwitchToParentFrame = false;
         try {
             WebDriver webDriver = DriverFactory.getWebDriver();
-            
-            // get element from cache (in case element is found with heuristic method)
-            String key = getKeyForWebElementsCache(webDriver, testObject);
-            WebElement webElement = webElementsCache.getIfPresent(key);
-            if (webElement != null) {
-                try {
-                    webElement.getTagName(); // trigger Selenium's stale check
-                    logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_RETRIEVING_WEB_ELEMENT_FROM_CACHE, testObject.getObjectId()));
-                    return Arrays.asList(webElement);
-                } catch (Exception e) {
-                    // stale
-                    try {
-                        webElementsCache.invalidate(key);
-                    } catch (Exception ignored) {
-                        // never let heuristic method ruin the party
-                    }
-                }
-            }
-            
             final boolean objectInsideShadowDom = testObject.getParentObject() != null
                     && testObject.isParentObjectShadowRoot();
             By defaultLocator = null;
@@ -775,11 +694,6 @@ public class WebUiCommonHelper extends KeywordHelper {
                 timeCount += 0.5;
                 miliseconds = System.currentTimeMillis();
             }
-            // when normal method fails
-            List<WebElement> webElements = findWebElementsUsingHeuristicMethod(webDriver, objectInsideShadowDom, testObject);
-            if (webElements != null && webElements.size() > 0) {
-                return webElements;
-            }
         } catch (TimeoutException e) {
             // timeOut, do nothing
         } catch (InterruptedException e) {
@@ -790,124 +704,6 @@ public class WebUiCommonHelper extends KeywordHelper {
             }
         }
         return Collections.emptyList();
-    }
-    
-    // generate key for webElementsCache
-    private static String getKeyForWebElementsCache(WebDriver webDriver, TestObject testObject) {
-        return webDriver.hashCode() + "-" + webDriver.getWindowHandle() + "-" + testObject.getObjectId();
-    }
-
-    private static List<WebElement> findWebElementsUsingHeuristicMethod(
-            WebDriver webDriver, 
-            boolean objectInsideShadowDom,
-            TestObject testObject) {
-        
-        if (objectInsideShadowDom) {
-            return Collections.emptyList();
-        }
-        By unionLocator = WebUiCommonHelper.buildUnionXpath(testObject);
-        List<WebElement> webElements = webDriver.findElements(unionLocator);
-        if (webElements == null || webElements.isEmpty()) {
-            return Collections.emptyList();
-        }
-        WebElement bestMatchElement = findBestMatchElement(webDriver, testObject, webElements);
-        
-        String key = getKeyForWebElementsCache(webDriver, testObject);
-        webElementsCache.put(key, bestMatchElement);
-        
-        return Arrays.asList(bestMatchElement);
-    }
-
-    private static WebElement findBestMatchElement(WebDriver webDriver, TestObject testObject, List<WebElement> webElements) {
-        Map<WebElement, List<String>> matchesLookup = webElements
-                .stream()
-                .collect(Collectors.toMap(
-                        Function.identity(), 
-                        webElement -> getSatisfiedConditions(testObject, webElement)));
-        
-        // get statisfied conditions (for "text" and "xpath")
-        List<Entry<String, By>> xpaths = buildXpathsFromXpathBasedConditions(testObject);
-        for (Entry<String, By> entry : xpaths) {
-            String propertyName = entry.getKey();
-            By locator = entry.getValue();
-            List<WebElement> webElementsMatchingTextCondition = webDriver.findElements(locator);
-            for (WebElement webElement : webElementsMatchingTextCondition) {
-                List<String> matches = matchesLookup.get(webElement);
-                if (matches != null) { // should always true, just in case
-                    matches.add(propertyName);
-                }
-            }
-        }
-        Entry<WebElement, List<String>> bestMatchEntry = Collections.max(
-                matchesLookup.entrySet(), 
-                (left, right) -> left.getValue().size() - right.getValue().size());
-        WebElement bestMatchElement = bestMatchEntry.getKey();
-        List<String> matchingAttributes = bestMatchEntry.getValue();
-        logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_USING_HEURISTIC_METHOD, testObject.getObjectId(), matchingAttributes));
-        return bestMatchElement;
-    }
-
-    /**
-     * Only for tag and attribute conditions
-     * @param testObject
-     * @param webElement
-     * @return
-     */
-    private static List<String> getSatisfiedConditions(TestObject testObject, WebElement webElement) {
-        List<TestObjectProperty> expectedProperties = testObject.getProperties();
-        List<String> satisfiedConditions = new ArrayList<>();
-        for (TestObjectProperty expectedProperty : expectedProperties) {
-            String propertyName = expectedProperty.getName();
-            PropertyType propertyType = XPathBuilder.PropertyType.nameOf(propertyName);
-            boolean matches;
-            switch (propertyType) {
-                case TAG:
-                    String expectedTag = expectedProperty.getValue();
-                    String actualTag = webElement.getTagName();
-                    matches = expectedTag.equalsIgnoreCase(actualTag);
-                    break;
-                case ATTRIBUTE:
-                    String expectedPropertyValue = expectedProperty.getValue();
-                    String actualPropertyValue = webElement.getAttribute(propertyName);
-                    switch (expectedProperty.getCondition()) {
-                        case EQUALS:
-                            matches = expectedPropertyValue.equals(actualPropertyValue);
-                            break;
-                        case NOT_EQUAL:
-                            matches = !expectedPropertyValue.equals(actualPropertyValue);
-                            break;
-                        case CONTAINS:
-                            matches = expectedPropertyValue.contains(actualPropertyValue);
-                            break;
-                        case NOT_CONTAIN:
-                            matches = !expectedPropertyValue.contains(actualPropertyValue);
-                            break;
-                        case STARTS_WITH:
-                            matches = expectedPropertyValue.startsWith(actualPropertyValue);
-                            break;
-                        case ENDS_WITH:
-                            matches = expectedPropertyValue.endsWith(actualPropertyValue);
-                            break;
-                        case MATCHES_REGEX:
-                            matches = expectedPropertyValue.matches(actualPropertyValue);
-                            break;
-                        case NOT_MATCH_REGEX:
-                            matches = !expectedPropertyValue.matches(actualPropertyValue);
-                            break;
-                        default:
-                            matches = false;
-                            break;
-                    }
-                    break;
-                default:
-                    matches = false;
-                    break;
-            }
-            if (matches) {
-                satisfiedConditions.add(propertyName);
-            }
-        }
-        return satisfiedConditions;
     }
 
     @SuppressWarnings("unused")
