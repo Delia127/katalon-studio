@@ -102,6 +102,8 @@
       </children>
       <children xsi:type="menu:Menu" xmi:id="_hQQH7hYMEeSUMbyEN2kbFQ" elementId="com.kms.katalon.composer.menu.help" label="Help">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_hQQH7xYMEeSUMbyEN2kbFQ" label="About" tooltip="" command="_hQQH5hYMEeSUMbyEN2kbFQ"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_bv02QDdbEeiyIrMgpAUQAg" elementId="com.kms.katalon.handledmenuitem.checkForUpdates" label="Check for Updates..." command="_VC7xYDdkEeiyIrMgpAUQAg"/>
+        <children xsi:type="menu:MenuSeparator" xmi:id="_QCrHEDdlEeiyIrMgpAUQAg" elementId="com.kms.katalon.menuseparator.1"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_dj8ScGgxEeatJ4Re1SnNtw" elementId="com.kms.katalon.handledmenuitem.welcome" label="Katalon Help" tooltip="" command="_jm89wGgxEeatJ4Re1SnNtw"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_iImwQGp9EeakEakFblwi9Q" elementId="com.kms.katalon.handledmenuitem.functionsintroduction" label="Quick Guide" tooltip="" command="_agaP0Gp9EeakEakFblwi9Q"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_YU7NEOxNEeal34fhcBE7BQ" elementId="com.kms.katalon.handledmenuitem.reportIssue" label="Report Issue" tooltip="" command="_blPuUOxNEeal34fhcBE7BQ"/>
@@ -191,6 +193,7 @@
   <handlers xmi:id="_MI5sEPKjEeaEMap8QCd-4Q" elementId="com.kms.katalon.handler.preferences" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.PreferenceHandler" command="_H0WtsPKjEeaEMap8QCd-4Q"/>
   <handlers xmi:id="_8BcpwKP-EeenLui14LsBfQ" elementId="com.kms.katalon.handler.importSettings" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.ImportSettingsHandler" command="_AKimEKP_EeenLui14LsBfQ"/>
   <handlers xmi:id="_yY33IOBxEeejXLn7_j51hg" elementId="com.kms.katalon.handler.importSeleniumIde" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.ImportSeleniumIdeHandler" command="_2sDjkOBxEeejXLn7_j51hg"/>
+  <handlers xmi:id="_dA0N8DdkEeiyIrMgpAUQAg" elementId="com.kms.katalon.handler.checkForUpdates" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.CheckForUpdatesHandler" command="_VC7xYDdkEeiyIrMgpAUQAg"/>
   <bindingTables xmi:id="_GQOAAAONEeWmYfckKw0_5w" elementId="com.kms.katalon.bindingtable.window" bindingContext="_mWGB8AQqEeWyKYoESvUc1g">
     <bindings xmi:id="_RvI6YAONEeWmYfckKw0_5w" elementId="com.kms.katalon.keybinding.search" keySequence="M1+H" command="_N5ChkARIEeWyKYoESvUc1g">
       <tags>type:user</tags>
@@ -217,6 +220,7 @@
   <commands xmi:id="_H0WtsPKjEeaEMap8QCd-4Q" elementId="com.kms.katalon.command.katalonpreferences" commandName="Katalon Preferences"/>
   <commands xmi:id="_AKimEKP_EeenLui14LsBfQ" elementId="com.kms.katalon.command.importSettings" commandName="Import Settings"/>
   <commands xmi:id="_2sDjkOBxEeejXLn7_j51hg" elementId="com.kms.katalon.command.importSeleniumIde" commandName="Import Selenium IDE"/>
+  <commands xmi:id="_VC7xYDdkEeiyIrMgpAUQAg" elementId="com.kms.katalon.command.checkForUpdates" commandName="Check for Updates"/>
   <addons xmi:id="_hQQH0hYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_hQQH0xYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_hQQH1BYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>
@@ -227,4 +231,5 @@
   <addons xmi:id="_efHPkNn6EeWQyuuwTERZYg" elementId="com.kms.katalon.addons.PerspectiveResetAddon" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.addons.PerspectiveResetAddon"/>
   <addons xmi:id="_s3AskJDxEea1OZrYaBxRZA" elementId="com.kms.katalon.addon.CustomJFaceDialogMessageImages" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.addons.CustomJFaceDialogMessageImages"/>
   <addons xmi:id="_MsrW0PfuEeagEZnDjERnuw" elementId="com.kms.katalon.addon.defaultwindow" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.addons.ApplicationDefaultSelectedWindowAddon"/>
+  <addons xmi:id="_F4kxIDx0Eei_id8nxKK9lw" elementId="com.kms.katalon.addon.contextServiceRegistry" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.addons.ContextServiceRegistryAddon"/>
 </application:Application>

@@ -261,6 +261,8 @@ public interface IdConstants {
 
     public static final String MENU_CMD_ID_HELP_ABOUT = "org.eclipse.ui.help.aboutAction";
 
+    public static final String MENU_CMD_ID_QUITE = "com.kms.katalon.composer.quit";
+
     // Left Part Stack
     public static final String COMPOSER_PARTSTACK_EXPLORER_ID = "com.kms.katalon.composer.partstack.explorer";
 

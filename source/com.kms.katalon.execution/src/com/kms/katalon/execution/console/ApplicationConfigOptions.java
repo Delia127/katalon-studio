@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import com.kms.katalon.execution.console.entity.ConsoleOption;
 import com.kms.katalon.execution.console.entity.ConsoleOptionContributor;
 import com.kms.katalon.execution.console.entity.PreferenceOptionContributor;
+import com.kms.katalon.execution.preferences.KobitonConsoleOptionContributor;
 import com.kms.katalon.execution.preferences.ProxyConsoleOptionContributor;
 
 public class ApplicationConfigOptions implements ConsoleOptionContributor {
@@ -23,7 +24,7 @@ public class ApplicationConfigOptions implements ConsoleOptionContributor {
     public ApplicationConfigOptions() {
         preferenceOptions = new ArrayList<>();
         preferenceOptions.add(new ProxyConsoleOptionContributor());
-
+        preferenceOptions.add(new KobitonConsoleOptionContributor());
         optionNameIndexedByPreference = new LinkedHashMap<>();
         preferenceOptions.stream().forEach(p -> {
             p.getConsoleOptionList()

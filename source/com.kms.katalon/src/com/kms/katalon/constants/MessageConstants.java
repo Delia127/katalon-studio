@@ -118,7 +118,7 @@ public class MessageConstants extends NLS {
     public static String DIALOG_OFFLINE_TITLE;
 
     public static String BTN_CLOSE_TILE;
-    
+
     public static String LINK_ACTIVATION_LINK;
 
     public static String LBL_ACTIVATE_CODE;
@@ -248,15 +248,29 @@ public class MessageConstants extends NLS {
     public static String PA_LBL_TUTORIALS_URL;
 
     public static String HAND_IMPORT_SETTINGS_MSG;
-    
+
     public static String HAND_IMPORT_SETTINGS_MSG_ERROR;
-    
+
     public static String HAND_IMPORT_SETTINGS_MSG_SUCCESSFULL;
-    
+
     public static String URL_KATALON_DISCUSSION_FORUM;
-    
+
     public static String HAND_IMPORT_SELENIUM_IDE_MSG_ERROR;
-    
+
+    // CheckForUpdateHandler
+    public static String HAND_MSG_UP_TO_DATE;
+
+    public static String HAND_MSG_UNABLE_TO_INSTALL_NEW_UPDATE;
+
+    // InstallUpdateConfirmationDialog
+    public static String DIA_LBL_UPDATE_ALREADY_TO_INSTALL;
+
+    public static String DIA_BTN_INSTALL_AND_RELAUNCH;
+
+    public static String DIA_BTN_NO_THANKS;
+
+    public static String DIA_TITLE_KS_UPDATE;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, MessageConstants.class);
