@@ -172,10 +172,6 @@ public class CoreWebuiMessageConstants extends NLS {
     public static String KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID_SUCCESS;
 
     public static String KW_LOG_INFO_FINDING_WEB_ELEMENT_WITH_X_BY_Y_FAIL_TRY_AGAIN;
-    
-    public static String KW_LOG_INFO_RETRIEVING_WEB_ELEMENT_FROM_CACHE;
-    
-    public static String KW_LOG_INFO_FINDING_WEB_ELEMENT_USING_HEURISTIC_METHOD;
 
     public static String KW_EXC_WEB_ELEMENT_W_ID_DOES_NOT_HAVE_SATISFY_PROP;
 
