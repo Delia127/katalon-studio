@@ -111,14 +111,6 @@ public class ProjectSessionHandler {
     }
 
     private void restoreOpenedEntities() throws Exception {
-        MPart testExplorerPart = getTestExplorerPart();
-        if (testExplorerPart == null) {
-            return;
-        }
-
-        // Need to activate ExplorerPart before open any entity
-        partService.activate(testExplorerPart);
-
         Job job = new Job("Restoring Previous Session") {
 
             @Override
