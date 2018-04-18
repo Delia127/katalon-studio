@@ -26,7 +26,8 @@ Require-Bundle: com.kms.katalon.entity;bundle-version="1.0.0",
  com.kms.katalon.execution;bundle-version="1.0.0",
  com.kms.katalon.core.webui,
  com.kms.katalon.execution.webui,
- com.google.gson
+ com.google.gson,
+ com.kms.katalon.util
 Import-Package: com.kms.katalon.dal,
  com.kms.katalon.dal.setting,
  com.kms.katalon.dal.state,
