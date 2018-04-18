@@ -1,15 +1,22 @@
 package com.kms.katalon.entity.webservice;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class TextBodyContent implements HttpBodyContent {
     
+    private static final String DF_CONTENT_TYPE = "text/plain";
+
     private String text;
     
-    private String contentType = "text/plain";
+    private String contentType = DF_CONTENT_TYPE;
     
     private String charset = "UTF-8";
 
     @Override
     public String getContentType() {
+        if (StringUtils.isEmpty(contentType)) {
+            return DF_CONTENT_TYPE;
+        }
         return contentType;
     }
 
