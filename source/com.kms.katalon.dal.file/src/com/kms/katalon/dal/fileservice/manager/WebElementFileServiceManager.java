@@ -39,23 +39,20 @@ public class WebElementFileServiceManager {
         if (entity != null && entity instanceof WebElementEntity) {
             if (entity instanceof WebServiceRequestEntity) {
                 WebServiceRequestEntity requestEntity = (WebServiceRequestEntity) entity;
-                if (isVersionOlderThan5_4_1(requestEntity)) {
-                    migrateWSRequestEntityToVersion5_4_1(requestEntity);
-                }
+                migrateWSRequestEntityToVersion5_4_1(requestEntity);
             }
             return (WebElementEntity) entity;
         }
         return null;
     }
     
-    private static boolean isVersionOlderThan5_4_1(WebServiceRequestEntity requestEntity) {
-        String migratedVersion = requestEntity.getMigratedVersion();
-        return migratedVersion == null;
-    }
-    
     private static void migrateWSRequestEntityToVersion5_4_1(WebServiceRequestEntity requestEntity) throws Exception {
+        if (!StringUtils.isBlank(requestEntity.getMigratedVersion())) {
+            return;
+        }
+        
         if (WebServiceRequestEntity.RESTFUL.equals(requestEntity.getServiceType())) {
-            if (StringUtils.isBlank(requestEntity.getHttpBodyType())) { // migrated from v5.3.1
+            if (!requestEntity.getRestParameters().isEmpty()) {
                 String restUrl = requestEntity.getRestUrl();
                 try {
                     URLBuilder urlBuilder = new URLBuilder(restUrl);
@@ -72,14 +69,15 @@ public class WebElementFileServiceManager {
                     requestEntity.setRestParameters(Collections.emptyList());
                 } catch (MalformedURLException ignored) {
                 }
-                
+            }
+            
+            if (StringUtils.isBlank(requestEntity.getHttpBodyType()) 
+                    && !StringUtils.isBlank(requestEntity.getHttpBody())) {
                 String httpBody = requestEntity.getHttpBody();
-                if (!StringUtils.isBlank(httpBody)) {
-                    requestEntity.setHttpBodyType("text");
-                    TextBodyContent bodyContent = new TextBodyContent();
-                    bodyContent.setText(httpBody);
-                    requestEntity.setHttpBodyContent(JsonUtil.toJson(bodyContent));
-                }
+                requestEntity.setHttpBodyType("text");
+                TextBodyContent bodyContent = new TextBodyContent();
+                bodyContent.setText(httpBody);
+                requestEntity.setHttpBodyContent(JsonUtil.toJson(bodyContent));
             }
             
             requestEntity.setMigratedVersion("5.4.1");
