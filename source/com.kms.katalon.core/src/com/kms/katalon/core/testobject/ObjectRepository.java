@@ -22,6 +22,7 @@ import org.dom4j.io.SAXReader;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.logging.KeywordLogger;
+import com.kms.katalon.core.testobject.impl.HttpTextBodyContent;
 import com.kms.katalon.core.testobject.internal.impl.HttpBodyContentReader;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 
@@ -276,7 +277,13 @@ public class ObjectRepository {
             requestObject.setHttpBody(reqElement.elementText("httpBody"));
 
             String httpBodyType = reqElement.elementText("httpBodyType");
-            if (isBodySupported(requestObject)) {
+            if (StringUtils.isBlank(httpBodyType)) {
+                // migrated from 5.3.1 (KAT-3200)
+                httpBodyType = "text";
+                String body = reqElement.elementText("httpBody");
+                HttpTextBodyContent httpBodyContent = new HttpTextBodyContent(body);
+                requestObject.setBodyContent(httpBodyContent);
+            } else if (isBodySupported(requestObject)) {
                 String httpBodyContent = reqElement.elementText("httpBodyContent");
                 requestObject.setBodyContent(
                         HttpBodyContentReader.fromSource(httpBodyType, httpBodyContent, projectDir, substitutor));

@@ -39,8 +39,8 @@ public class WebElementFileServiceManager {
         if (entity != null && entity instanceof WebElementEntity) {
             if (entity instanceof WebServiceRequestEntity) {
                 WebServiceRequestEntity requestEntity = (WebServiceRequestEntity) entity;
-                if (isVersionOlderThan5_4(requestEntity)) {
-                    migrateWSRequestEntityToVersion5_4(requestEntity);
+                if (isVersionOlderThan5_4_1(requestEntity)) {
+                    migrateWSRequestEntityToVersion5_4_1(requestEntity);
                 }
             }
             return (WebElementEntity) entity;
@@ -48,38 +48,41 @@ public class WebElementFileServiceManager {
         return null;
     }
     
-    private static boolean isVersionOlderThan5_4(WebServiceRequestEntity requestEntity) {
+    private static boolean isVersionOlderThan5_4_1(WebServiceRequestEntity requestEntity) {
         String migratedVersion = requestEntity.getMigratedVersion();
         return migratedVersion == null;
     }
     
-    private static void migrateWSRequestEntityToVersion5_4(WebServiceRequestEntity requestEntity) throws Exception {
+    private static void migrateWSRequestEntityToVersion5_4_1(WebServiceRequestEntity requestEntity) throws Exception {
         if (WebServiceRequestEntity.RESTFUL.equals(requestEntity.getServiceType())) {
-            String restUrl = requestEntity.getRestUrl();
-            try {
-                URLBuilder urlBuilder = new URLBuilder(restUrl);
+            if (StringUtils.isBlank(requestEntity.getHttpBodyType())) { // migrated from v5.3.1
+                String restUrl = requestEntity.getRestUrl();
+                try {
+                    URLBuilder urlBuilder = new URLBuilder(restUrl);
+                    
+                    List<WebElementPropertyEntity> paramProperties = requestEntity.getRestParameters();
+                    requestEntity.setRestParameters(Collections.emptyList());
+                    List<NameValuePair> params = paramProperties
+                            .stream()
+                            .map(pr -> new NameValuePair(pr.getName(), pr.getValue()))
+                            .collect(Collectors.toList());
+                    
+                    urlBuilder.addParameters(params);
+                    requestEntity.setRestUrl(urlBuilder.build().toString());
+                    requestEntity.setRestParameters(Collections.emptyList());
+                } catch (MalformedURLException ignored) {
+                }
                 
-                List<WebElementPropertyEntity> paramProperties = requestEntity.getRestParameters();
-                requestEntity.setRestParameters(Collections.emptyList());
-                List<NameValuePair> params = paramProperties
-                        .stream()
-                        .map(pr -> new NameValuePair(pr.getName(), pr.getValue()))
-                        .collect(Collectors.toList());
-                
-                urlBuilder.addParameters(params);
-                requestEntity.setRestUrl(urlBuilder.build().toString());
-            } catch (MalformedURLException ignored) {
+                String httpBody = requestEntity.getHttpBody();
+                if (!StringUtils.isBlank(httpBody)) {
+                    requestEntity.setHttpBodyType("text");
+                    TextBodyContent bodyContent = new TextBodyContent();
+                    bodyContent.setText(httpBody);
+                    requestEntity.setHttpBodyContent(JsonUtil.toJson(bodyContent));
+                }
             }
             
-            String httpBody = requestEntity.getHttpBody();
-            if (!StringUtils.isBlank(httpBody)) {
-                requestEntity.setHttpBodyType("text");
-                TextBodyContent bodyContent = new TextBodyContent();
-                bodyContent.setText(httpBody);
-                requestEntity.setHttpBodyContent(JsonUtil.toJson(bodyContent));
-            }
-            
-            requestEntity.setMigratedVersion("5.4");
+            requestEntity.setMigratedVersion("5.4.1");
             saveNewTestObject(requestEntity);
         }
     }
