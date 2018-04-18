@@ -2,6 +2,8 @@ package com.kms.katalon.composer.webservice.constants;
 
 import java.util.Arrays;
 
+import org.apache.commons.lang3.StringUtils;
+
 public enum TextContentType {
     TEXT("Text", "text/plain"),
     JSON("JSON", "application/json"),
@@ -31,7 +33,7 @@ public enum TextContentType {
     }
 
     public static TextContentType evaluateContentType(String contentType) {
-        switch (contentType) {
+        switch (StringUtils.defaultString(contentType)) {
             case "application/json":
             case "application/ld+json":
                 return TextContentType.JSON;
