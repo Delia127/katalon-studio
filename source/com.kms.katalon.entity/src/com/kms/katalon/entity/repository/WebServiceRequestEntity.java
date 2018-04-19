@@ -55,6 +55,8 @@ public class WebServiceRequestEntity extends WebElementEntity {
     private String restRequestMethod = "";
 
     private List<WebElementPropertyEntity> restParameters;
+    
+    private String migratedVersion;
 
     public String getSoapRequestMethod() {
         return soapRequestMethod;
@@ -175,5 +177,13 @@ public class WebServiceRequestEntity extends WebElementEntity {
 
     public void setHttpBodyContent(String httpBodyContent) {
         this.httpBodyContent = httpBodyContent;
+    }
+
+    public String getMigratedVersion() {
+        return migratedVersion;
+    }
+
+    public void setMigratedVersion(String migratedVersion) {
+        this.migratedVersion = migratedVersion;
     }
 }
