@@ -207,6 +207,7 @@ public abstract class BasicRequestor implements Requestor {
         if (contentTypeHeader != null && contentTypeHeader.contains("charset")) {
             // Content-Type: [content-type]; charset=[charset]
             charset = contentTypeHeader.split(";")[1].split("=")[1].trim();
+            charset = StringUtils.remove(charset, '"');
             responseObject.setContentCharset(charset);
             contentType = contentTypeHeader.split(";")[0].trim();
         }
