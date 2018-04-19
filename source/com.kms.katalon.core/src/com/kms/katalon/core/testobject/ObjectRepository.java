@@ -2,7 +2,9 @@ package com.kms.katalon.core.testobject;
 
 import static com.kms.katalon.core.constants.StringConstants.ID_SEPARATOR;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -285,14 +287,23 @@ public class ObjectRepository {
                 requestObject.setBodyContent(httpBodyContent);
             } else if (isBodySupported(requestObject)) {
                 String httpBodyContent = reqElement.elementText("httpBodyContent");
-                requestObject.setBodyContent(
-                        HttpBodyContentReader.fromSource(httpBodyType, httpBodyContent, projectDir, substitutor));
+                HttpBodyContent bodyContent = HttpBodyContentReader.fromSource(httpBodyType, httpBodyContent,
+                        projectDir, substitutor);
+                requestObject.setBodyContent(bodyContent);
+
+                // Backward compatible with 5.3.1
+                ByteArrayOutputStream outstream = new ByteArrayOutputStream();
+                try {
+                    bodyContent.writeTo(outstream);
+                    requestObject.setHttpBody(outstream.toString());
+                } catch (IOException ignored) {
+                }
             }
         }
 
         return requestObject;
     }
-    
+
     private static boolean isBodySupported(RequestObject requestObject) {
         String restRequestMethod = requestObject.getRestRequestMethod();
         return !("GET".contains(restRequestMethod) || "DELETE".equals(restRequestMethod));
