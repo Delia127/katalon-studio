@@ -1,11 +1,18 @@
 package com.kms.katalon.core.testobject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.kms.katalon.core.testobject.impl.HttpFileBodyContent;
+import com.kms.katalon.core.testobject.impl.HttpFormDataBodyContent;
 import com.kms.katalon.core.testobject.impl.HttpTextBodyContent;
+import com.kms.katalon.core.testobject.impl.HttpUrlEncodedBodyContent;
 
 public class RequestObject extends TestObject implements HttpMessage {
+
+    private static final String DF_CHARSET = "UTF-8";
 
     private String name;
 
@@ -122,6 +129,12 @@ public class RequestObject extends TestObject implements HttpMessage {
      * @deprecated Deprecated from 5.4. Please use {@link #setBodyContent(HttpBodyContent)} instead.
      */
     public String getHttpBody() {
+        ByteArrayOutputStream outstream = new ByteArrayOutputStream();
+        try {
+            bodyContent.writeTo(outstream);
+            return outstream.toString(DF_CHARSET);
+        } catch (IOException ignored) {
+        }
         return httpBody;
     }
 
@@ -286,6 +299,9 @@ public class RequestObject extends TestObject implements HttpMessage {
      * @param bodyContent an implementation of {@link HttpBodyContent}
      * 
      * @see {@link HttpTextBodyContent}
+     * @see {@link HttpFileBodyContent}
+     * @see {@link HttpFormDataBodyContent}
+     * @see {@link HttpUrlEncodedBodyContent}
      */
     public void setBodyContent(HttpBodyContent bodyContent) {
         this.bodyContent = bodyContent;
