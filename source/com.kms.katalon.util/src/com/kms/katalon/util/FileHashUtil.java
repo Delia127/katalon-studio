@@ -16,4 +16,12 @@ public class FileHashUtil {
                 .printHexBinary(md.digest())
                 .toUpperCase();
     }
+
+    public static String hash(String s, String algorithm) throws NoSuchAlgorithmException, IOException {
+        MessageDigest md = MessageDigest.getInstance(algorithm);
+        md.update(s.getBytes());
+        return DatatypeConverter
+                .printHexBinary(md.digest())
+                .toUpperCase();
+    }
 }
