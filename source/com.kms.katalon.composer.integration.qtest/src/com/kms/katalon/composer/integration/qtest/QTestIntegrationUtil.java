@@ -331,7 +331,7 @@ public class QTestIntegrationUtil {
                         .getQTestModuleByFolderEntity(entity.getParentFolder());
 
                 // Cannot upload test case under root module.
-                return (module == null || module.getParentId() > 0);
+                return (module == null || module.getId() > 0);
             } else {
                 return false;
             }
