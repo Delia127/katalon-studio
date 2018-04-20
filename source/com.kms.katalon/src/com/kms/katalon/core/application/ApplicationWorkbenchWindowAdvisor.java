@@ -66,20 +66,20 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
                 appPersistedState.remove("memento");
             }
 
-            // Re-shape Editor Area
-            List<MUIElement> sharedElements = application.getChildren().get(0).getSharedElements();
-            for (MUIElement element : sharedElements) {
-                if (IdConstants.SHARE_AREA_ID.equals(element.getElementId())) {
-                    ((MArea) element).getChildren().clear();
-                    MPartStack contentPartStack = MBasicFactory.INSTANCE.createPartStack();
-                    contentPartStack.setElementId(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID);
-                    contentPartStack.setParent((MElementContainer<MUIElement>) element);
-                    contentPartStack.setContainerData("100");
-                    contentPartStack.getTags().add("NoAutoCollapse");
-                    ((MArea) element).setSelectedElement(contentPartStack);
-                    break;
-                }
-            }
+//            // Re-shape Editor Area
+//            List<MUIElement> sharedElements = application.getChildren().get(0).getSharedElements();
+//            for (MUIElement element : sharedElements) {
+//                if (IdConstants.SHARE_AREA_ID.equals(element.getElementId())) {
+//                    ((MArea) element).getChildren().clear();
+//                    MPartStack contentPartStack = MBasicFactory.INSTANCE.createPartStack();
+//                    contentPartStack.setElementId(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID);
+//                    contentPartStack.setParent((MElementContainer<MUIElement>) element);
+//                    contentPartStack.setContainerData("100");
+//                    contentPartStack.getTags().add("NoAutoCollapse");
+//                    ((MArea) element).setSelectedElement(contentPartStack);
+//                    break;
+//                }
+//            }
         }
     }
 

@@ -98,6 +98,15 @@ public class OpenProjectHandler {
         doOpenProject(shell, projectPk, sync, eventBroker, partService, modelService, application);
     }
 
+    @Inject
+    @Optional
+    private void restoreOpenProjectEventHandler(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
+            @UIEventTopic(EventConstants.PROJECT_OPEN_LATEST) final String projectPk) throws InvocationTargetException,
+            InterruptedException {
+        doOpenProject(shell, projectPk, sync, eventBroker, partService, modelService, application);
+        eventBroker.post(EventConstants.PROJECT_RESTORE_SESSION, null);
+    }
+
     public static void doOpenProject(Shell shell, final String projectPk, final UISynchronize syncService,
             final IEventBroker eventBrokerService, EPartService partService, final EModelService modelService,
             final MApplication application) throws InvocationTargetException, InterruptedException {

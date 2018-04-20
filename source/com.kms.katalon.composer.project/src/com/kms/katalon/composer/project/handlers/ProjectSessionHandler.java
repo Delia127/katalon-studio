@@ -9,9 +9,14 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
@@ -21,6 +26,7 @@ import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.impl.control.CTreeViewer;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
@@ -41,6 +47,9 @@ public class ProjectSessionHandler {
 
     @Inject
     private MApplication application;
+
+    @Inject
+    private UISynchronize sync;
 
     @CanExecute
     public boolean canExecute() {
@@ -66,7 +75,7 @@ public class ProjectSessionHandler {
             }
         });
 
-        eventBroker.subscribe(EventConstants.PROJECT_OPENED, new EventHandler() {
+        eventBroker.subscribe(EventConstants.PROJECT_RESTORE_SESSION, new EventHandler() {
 
             @Override
             public void handleEvent(Event event) {
@@ -90,27 +99,53 @@ public class ProjectSessionHandler {
         }
 
         viewer.getControl().setRedraw(false);
-        viewer.setExpandedElements(TreeEntityUtil.getExpandedTreeEntitiesFromIds(
-                getProject().getRecentExpandedTreeEntityIds()).toArray());
+
+        Object[] expandedEntities = TreeEntityUtil
+                .getExpandedTreeEntitiesFromIds(getProject().getRecentExpandedTreeEntityIds()).toArray();
+        for (Object expanded : expandedEntities) {
+            if (expanded != null) {
+                viewer.setExpandedState(expanded, true);
+            }
+        }
         viewer.getControl().setRedraw(true);
     }
 
     private void restoreOpenedEntities() throws Exception {
-        MPart testExplorerPart = getTestExplorerPart();
-        if (testExplorerPart == null) {
-            return;
-        }
+        Job job = new Job("Restoring Previous Session") {
 
-        // Need to activate ExplorerPart before open any entity
-        partService.activate(testExplorerPart);
+            @Override
+            protected IStatus run(IProgressMonitor monitor) {
+                try {
+                    List<ITreeEntity> treeEntities = TreeEntityUtil
+                            .getOpenedTreeEntitiesFromIds(getProject().getRecentOpenedTreeEntityIds());
 
-        List<ITreeEntity> treeEntities = TreeEntityUtil.getOpenedTreeEntitiesFromIds(getProject().getRecentOpenedTreeEntityIds());
-        Thread.sleep(1000);
-        for (ITreeEntity entity : treeEntities) {
-            if (entity != null && entity.getObject() != null) {
-                eventBroker.send(EventConstants.EXPLORER_OPEN_SELECTED_ITEM, entity.getObject());
+                    monitor.beginTask("Restoring Previous Session...", treeEntities.size());
+                    for (ITreeEntity entity : treeEntities) {
+                        if (monitor.isCanceled()) {
+                            return Status.CANCEL_STATUS;
+                        }
+                        if (entity != null && entity.getObject() != null) {
+                            sync.syncExec(() -> {
+                                try {
+                                    eventBroker.post(EventConstants.EXPLORER_OPEN_SELECTED_ITEM, entity.getObject());
+                                } catch (Exception ex) {
+                                    LoggerSingleton.logError(ex);
+                                }
+                            });
+                        }
+                        monitor.worked(1);
+                    }
+                    return Status.OK_STATUS;
+                } catch (Exception e) {
+                    LoggerSingleton.logError(e);
+                    return Status.CANCEL_STATUS;
+                } finally {
+                    monitor.done();
+                }
             }
-        }
+        };
+        job.setUser(true);
+        job.schedule();
     }
 
     private void rememberExpandedTreeEntities() throws Exception {

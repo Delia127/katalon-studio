@@ -14,7 +14,7 @@ public class TestListenerTreeEntity extends AbstractTreeEntity {
 
     public static final String[] SEARCH_TAGS = new String[] { "id", "name" };
 
-    protected TestListenerTreeEntity(TestListenerEntity entity, TestListenerFolderTreeEntity parentTreeEntity) {
+    public TestListenerTreeEntity(TestListenerEntity entity, TestListenerFolderTreeEntity parentTreeEntity) {
         super(entity, parentTreeEntity);
     }
 
