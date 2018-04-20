@@ -20,12 +20,16 @@ public class KatalonApplication {
 
     public static final String SESSION_ID;
 
-    public static final String MAC_ADDRESS;
+    private static final String MAC_ADDRESS;
+
+    public static final String USER_KEY;
 
     static {
         SESSION_ID = UUID.randomUUID().toString();
 
-        MAC_ADDRESS = hashMacAndHostName();
+        MAC_ADDRESS = getMacAddress();
+        
+        USER_KEY = hashMacAndHostName();
     }
     
     private static String hashMacAndHostName() {
