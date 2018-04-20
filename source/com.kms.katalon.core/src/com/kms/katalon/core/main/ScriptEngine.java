@@ -239,6 +239,7 @@ public class ScriptEngine extends GroovyScriptEngine {
                 importCustomizer.addStaticImport(TestDataFactory.class.getName(), FIND_TEST_DATA_METHOD_NAME);
                 importCustomizer.addStaticImport(ObjectRepository.class.getName(), FIND_TEST_OBJECT_METHOD_NAME);
                 importCustomizer.addStaticImport(TestCaseFactory.class.getName(), FIND_TEST_CASE_METHOD_NAME);
+                importCustomizer.addImport("GlobalVariable", "internal.GlobalVariable");
                 collectingVariableConfig.addCompilationCustomizers(importCustomizer);
             }
             return collectingVariableConfig;
