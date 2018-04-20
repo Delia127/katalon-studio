@@ -86,7 +86,7 @@ public class ActivationInfoCollector {
         traits.addProperty("kat_version", katVersion);
         traits.addProperty("kat_type", System.getProperty("sun.arch.data.model"));
         traits.addProperty(UsagePropertyConstant.PROPERTY_SESSION_ID, KatalonApplication.SESSION_ID);
-        traits.addProperty(UsagePropertyConstant.PROPERTY_MAC_ADDRESS, KatalonApplication.MAC_ADDRESS);
+        traits.addProperty(UsagePropertyConstant.PROPERTY_USER_KEY, KatalonApplication.USER_KEY);
         return traits;
     }
 
