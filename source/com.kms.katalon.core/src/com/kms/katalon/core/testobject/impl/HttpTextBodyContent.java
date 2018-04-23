@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.IllegalCharsetNameException;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -68,7 +69,12 @@ public class HttpTextBodyContent implements HttpBodyContent {
         this.contentType = contentType;
 
         if (StringUtils.isNotEmpty(text)) {
-            Charset charsetObject = Charset.forName(StringUtils.defaultString(charset, DF_CHARSET));
+            Charset charsetObject;
+            try {
+                charsetObject = Charset.forName(StringUtils.defaultString(charset, DF_CHARSET));
+            } catch (IllegalCharsetNameException e) {
+                charsetObject = Charset.forName(DF_CHARSET);
+            }
             this.bytes = text.getBytes(charsetObject);
         } else {
             this.bytes = new byte[0];
