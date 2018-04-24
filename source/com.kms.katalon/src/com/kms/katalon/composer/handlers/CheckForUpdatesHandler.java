@@ -27,6 +27,8 @@ import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.StringConstants;
+import com.kms.katalon.core.appium.driver.AppiumDriverManager;
+import com.kms.katalon.core.webui.util.WebDriverCleanerUtil;
 
 public class CheckForUpdatesHandler implements UpdateComponent {
 
@@ -151,15 +153,18 @@ public class CheckForUpdatesHandler implements UpdateComponent {
         if (dialog.open() == InstallUpdateConfirmationDialog.OK) {
             try {
                 Thread t = new Thread(() -> {
-                    // start Katalon Updater
-                    UpdaterLauncher updaterLauncher;
                     try {
-                        updaterLauncher = new UpdaterLauncher(newUpdateResult.getLatestVersionInfo().getLatestVersion(),
+                        // Clean driver
+                        WebDriverCleanerUtil.cleanup();
+                        AppiumDriverManager.cleanup();
+
+                        // start Katalon Updater
+                        UpdaterLauncher updaterLauncher = new UpdaterLauncher(newUpdateResult.getLatestVersionInfo().getLatestVersion(),
                                 newUpdateResult.getCurrentAppInfo().getVersion());
 
                         updaterLauncher.startUpdaterLauncher();
                     } catch (IOException | InterruptedException e) {
-
+                        LoggerSingleton.logError(e);
                     }
                 });
                 t.setDaemon(true);
