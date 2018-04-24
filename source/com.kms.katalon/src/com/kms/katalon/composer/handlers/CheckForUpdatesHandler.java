@@ -38,7 +38,7 @@ public class CheckForUpdatesHandler implements UpdateComponent {
     }
 
     public void checkForUpdate(boolean silenceMode) {
-        CheckForUpdatesJob job = new CheckForUpdatesJob();
+        CheckForUpdatesJob job = new CheckForUpdatesJob(silenceMode);
         job.setUser(!silenceMode);
         job.addJobChangeListener(new JobChangeAdapter() {
             @Override
