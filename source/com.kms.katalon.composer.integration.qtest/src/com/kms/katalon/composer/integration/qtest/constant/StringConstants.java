@@ -79,7 +79,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String JOB_TITLE_UPLOAD_TEST_RESULT = ComposerIntegrationQtestMessageConstants.JOB_TITLE_UPLOAD_TEST_RESULT;
     public static final String JOB_TASK_UPLOAD_TEST_RESULT = ComposerIntegrationQtestMessageConstants.JOB_TASK_UPLOAD_TEST_RESULT;
     public static final String JOB_SUB_TASK_UPLOAD_TEST_RESULT = ComposerIntegrationQtestMessageConstants.JOB_SUB_TASK_UPLOAD_TEST_RESULT;
-
+    public static final String JOB_TASK_UNABLE_TO_UPLOAD_TEST_RESULTS = ComposerIntegrationQtestMessageConstants.JOB_TASK_UNABLE_TO_UPLOAD_TEST_RESULTS;
     // UploadTestSuiteJob
     public static final String JOB_TASK_UPLOAD_TEST_SUITE = ComposerIntegrationQtestMessageConstants.JOB_TASK_UPLOAD_TEST_SUITE;
     public static final String DIA_TITLE_TEST_SUITE_DUPLICATION = ComposerIntegrationQtestMessageConstants.DIA_TITLE_TEST_SUITE_DUPLICATION;

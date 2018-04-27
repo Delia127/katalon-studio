@@ -369,6 +369,8 @@ public class ComposerIntegrationQtestMessageConstants extends NLS {
     public static String DIA_LABEL_INCLUDE_ATTACH_IF_FAILS;
 
     public static String CM_TEST_RESULT;
+    
+    public static String JOB_TASK_UNABLE_TO_UPLOAD_TEST_RESULTS;
 
     static {
         // initialize resource bundle
