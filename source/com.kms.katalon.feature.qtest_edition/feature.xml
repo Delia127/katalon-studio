@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="com.kms.katalon.feature"
+      id="com.kms.katalon.feature.qtest_edition"
       label="Feature"
       version="1.0.0.qualifier"
       provider-name="KMS">
@@ -2294,6 +2294,27 @@
 
    <plugin
          id="org.apache.commons.compress"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.kms.katalon.composer.integration.qtest"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.kms.katalon.integration.qtest"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.qas.qtest.sdk-java"
          download-size="0"
          install-size="0"
          version="0.0.0"
