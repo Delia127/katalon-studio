@@ -370,7 +370,7 @@ public class ComposerIntegrationQtestMessageConstants extends NLS {
 
     public static String CM_TEST_RESULT;
     
-    public static String JOB_TASK_UNABLE_TO_UPLOAD_TEST_RESULTS;
+    public static String JOB_TASK_UNABLE_TO_UPLOAD_TEST_RESULTS_REASON;
 
     static {
         // initialize resource bundle

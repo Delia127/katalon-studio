@@ -188,7 +188,7 @@ public class UploadTestCaseResultJob extends QTestJob {
             
             if (!errorStatuses.isEmpty()) {
                 StringBuilder errorMsgBuilder = new StringBuilder()
-                        .append(StringConstants.JOB_TASK_UNABLE_TO_UPLOAD_TEST_RESULTS)
+                        .append(StringConstants.JOB_TASK_UNABLE_TO_UPLOAD_TEST_RESULTS_REASON)
                         .append("\n")
                         .append(StringUtils.join(failedTestResultUploads, '\n'));
               

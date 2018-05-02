@@ -64,14 +64,8 @@ public class QTestAPIRequestHelper {
         } catch (IOException e) {
             if (con != null) {
                 try {
-                    if (con.getResponseCode() == 400) {
-                        throw new QTestAPIConnectionException(con.getResponseCode(), e.getMessage()
-                                + "\n. Body = [" + body + "]\n."
-                                + QTestMessageConstants.QTEST_CHECK_APPROVED_TEST_CASE);
-                    } else {
-                        throw new QTestAPIConnectionException(con.getResponseCode(), e.getMessage()
-                                + "\n. Body = [" + body + "]");
-                    }
+                    throw new QTestAPIConnectionException(con.getResponseCode(), e.getMessage()
+                            + "\n. Body = [" + body + "]");
                 } catch (IOException ex) {
                     throw new QTestAPIConnectionException(ex.getMessage());
                 }

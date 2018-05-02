@@ -12,6 +12,4 @@ public class QTestMessageConstants extends GlobalStringConstants {
     public static final String QTEST_INVALID_JSON_FORMAT = "The response message is not valid JSON format: {0}";
 
     public static final String QTEST_PROJECT_NOT_FOUND = "Cannot find qTest project. Please select a qTest project on qTest setting page.";
-
-    public static final String QTEST_CHECK_APPROVED_TEST_CASE = "Please check if the test case has been approved.";
 }
