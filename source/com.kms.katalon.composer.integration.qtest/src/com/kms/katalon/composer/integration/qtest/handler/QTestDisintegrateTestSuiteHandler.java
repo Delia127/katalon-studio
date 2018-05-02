@@ -14,14 +14,18 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.job.DisintegrateTestSuiteJob;
+import com.kms.katalon.composer.integration.qtest.model.TestSuiteRepo;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.file.IntegratedFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
+import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.integration.qtest.QTestIntegrationProjectManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestSuiteManager;
+import com.kms.katalon.integration.qtest.entity.QTestProject;
 import com.kms.katalon.integration.qtest.entity.QTestSuite;
 import com.kms.katalon.integration.qtest.exception.QTestInvalidFormatException;
 
@@ -30,12 +34,12 @@ public class QTestDisintegrateTestSuiteHandler extends AbstractQTestHandler {
     @Inject
     private ESelectionService selectionService;
 
-    //Represents a list of test suite that each one can be dis-integrated.
+    // Represents a list of test suite that each one can be dis-integrated.
     private List<TestSuiteEntity> fTestSuites;
 
     /**
      * @return true if the selected test suite has at least one {@link QTestSuite} that had been uploaded. Otherwise,
-     *         false.
+     * false.
      */
     @CanExecute
     public boolean canExecute() {
@@ -95,9 +99,32 @@ public class QTestDisintegrateTestSuiteHandler extends AbstractQTestHandler {
                 StringConstants.VIEW_CONFIRM_DISINTEGRATE_TEST_SUITE)) {
             return;
         }
-        
-        DisintegrateTestSuiteJob job = new DisintegrateTestSuiteJob(fTestSuites);
-        job.schedule();
+        try {
+            ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
+            Object selectedEntity = getFirstSelectedObject(selectionService);
+            if (selectedEntity instanceof FolderEntity) {
+                //Remove repo in project settings.
+                FolderEntity folderEntity = (FolderEntity) selectedEntity;
+                String folderId = folderEntity.getIdForDisplay();
+                TestSuiteRepo repo = QTestIntegrationUtil.getTestSuiteRepo(folderEntity, projectEntity);
+                
+                IntegratedEntity folderIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(folderEntity);
+                IntegratedEntity integratedProjectEntity = QTestIntegrationUtil.getIntegratedEntity(projectEntity);
+                List<TestSuiteRepo> testSuiteRepositories = QTestIntegrationUtil.getTestSuiteRepositories(projectEntity, QTestIntegrationProjectManager
+                        .getQTestProjectsByIntegratedEntity(integratedProjectEntity));
+                testSuiteRepositories.remove(repo);
+                
+                if (repo != null && repo.getFolderId().equals(folderId)) {
+                    removeTestSuiteRepoFromProject(folderId, repo.getQTestProject());
+                    saveFolder(folderEntity, folderIntegratedEntity);
+                }
+            }
+
+            DisintegrateTestSuiteJob job = new DisintegrateTestSuiteJob(fTestSuites);
+            job.schedule();
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
     }
 
     /**
@@ -106,7 +133,7 @@ public class QTestDisintegrateTestSuiteHandler extends AbstractQTestHandler {
      * @param testSuite
      * @return
      * @throws QTestInvalidFormatException
-     *             : thrown if the test suite is invalid qTest integrated information.
+     * : thrown if the test suite is invalid qTest integrated information.
      */
     private List<QTestSuite> getUploadedQTestSuites(TestSuiteEntity testSuite) throws QTestInvalidFormatException {
         List<QTestSuite> qTestSuites = QTestIntegrationTestSuiteManager
@@ -120,5 +147,39 @@ public class QTestDisintegrateTestSuiteHandler extends AbstractQTestHandler {
         }
 
         return uploadedQTestSuites;
+    }
+
+    /**
+     * Removes test case folder that's id equals with the given <code>folderId</code> from the current
+     * {@link ProjectEntity}.
+     * 
+     * @param folderId
+     * @param qTestProject
+     * @throws Exception
+     */
+    private void removeTestSuiteRepoFromProject(String folderId, QTestProject qTestProject) throws Exception {
+        ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
+        IntegratedEntity projectIntegratedEntity = QTestIntegrationUtil.getIntegratedEntity(projectEntity);
+        List<QTestProject> qTestProjects = QTestIntegrationProjectManager
+                .getQTestProjectsByIntegratedEntity(projectIntegratedEntity);
+
+        for (QTestProject systemQTestProject : qTestProjects) {
+            if (systemQTestProject.equals(qTestProject)) {
+                systemQTestProject.getTestSuiteFolderIds().remove(folderId);
+            }
+        }
+        IntegratedEntity projectNewIntegratedEntity = QTestIntegrationProjectManager
+                .getIntegratedEntityByQTestProjects(qTestProjects);
+
+        projectEntity = (ProjectEntity) QTestIntegrationUtil.updateFileIntegratedEntity(projectEntity,
+                projectNewIntegratedEntity);
+
+        ProjectController.getInstance().updateProject(projectEntity);
+    }
+
+    private void saveFolder(FolderEntity folderEntity, IntegratedEntity folderIntegratedEntity) throws Exception {
+        folderEntity.getIntegratedEntities().remove(folderIntegratedEntity);
+
+        FolderController.getInstance().saveFolder(folderEntity);
     }
 }

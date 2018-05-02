@@ -769,6 +769,12 @@ public class QTestIntegrationUtil {
     
     public static boolean isIntegrated(IntegratedFileEntity integratedFileEntity, ProjectEntity currentProject)
             throws Exception {
+        
+        if ((QTestIntegrationUtil.getTestSuiteRepo(integratedFileEntity, currentProject) != null
+                        && (integratedFileEntity instanceof FolderEntity)) && QTestIntegrationUtil.getIntegratedEntity(integratedFileEntity) != null) {
+            return true;
+        }
+            
         if (QTestIntegrationUtil.getTestCaseRepo(integratedFileEntity, currentProject) == null
                 && (QTestIntegrationUtil.getTestSuiteRepo(integratedFileEntity, currentProject) == null
                         || !(integratedFileEntity instanceof TestSuiteEntity))) {
