@@ -52,6 +52,7 @@ public class AddMailRecipientDialog extends Dialog {
         GridLayout gridLayout = (GridLayout) container.getLayout();
         gridLayout.horizontalSpacing = 20;
         gridLayout.numColumns = 2;
+        gridLayout.marginHeight = 5;
 
         Label lblNewLabel = new Label(container, SWT.NONE);
         lblNewLabel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
