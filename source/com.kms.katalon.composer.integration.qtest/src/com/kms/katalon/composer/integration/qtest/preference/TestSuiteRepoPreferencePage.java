@@ -36,9 +36,12 @@ import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.dialog.TestSuiteRepoDialog;
 import com.kms.katalon.composer.integration.qtest.model.TestSuiteRepo;
 import com.kms.katalon.composer.integration.qtest.preference.provider.TestSuiteRepoTableLabelProvider;
+import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.integration.IntegratedEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.integration.qtest.QTestIntegrationFolderManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationProjectManager;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
 
@@ -283,6 +286,18 @@ public class TestSuiteRepoPreferencePage extends AbstractQTestIntegrationPage {
                     qTestProject.getTestSuiteFolderIds().add(repo.getFolderId());
                 }
             }
+            
+            // update integrated entity of folderEntity
+            try {
+                FolderEntity folderEntity = FolderController.getInstance().getFolderByDisplayId(projectEntity,
+                        repo.getFolderId());
+                if (folderEntity != null) {
+                    saveFolder(folderEntity, repo.getQTestProject());
+                }
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+                continue;
+            }
         }
 
         qTestProjects.clear();
@@ -301,6 +316,19 @@ public class TestSuiteRepoPreferencePage extends AbstractQTestIntegrationPage {
 
         try {
             ProjectController.getInstance().updateProject(currentProject);
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
+    }
+    
+    private void saveFolder(FolderEntity folderEntity, QTestProject qTestProject) {
+        IntegratedEntity folderNewIntegratedEntity = QTestIntegrationFolderManager
+                .getFolderIntegratedEntityByQTestProject(qTestProject);
+        folderEntity = (FolderEntity) QTestIntegrationUtil.updateFileIntegratedEntity(folderEntity,
+                folderNewIntegratedEntity);
+
+        try {
+            FolderController.getInstance().saveFolder(folderEntity);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }

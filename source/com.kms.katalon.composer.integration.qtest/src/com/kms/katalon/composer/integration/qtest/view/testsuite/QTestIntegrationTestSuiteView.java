@@ -418,6 +418,8 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
                             StringConstants.VIEW_CONFIRM_DISINTEGRATE_TEST_SUITE)) {
                 IStructuredSelection selection = (IStructuredSelection) testSuiteParentTableViewer.getSelection();
                 QTestSuite selectedQTestSuite = (QTestSuite) selection.getFirstElement();
+                
+                testSuiteEntity.getIntegratedEntities().remove(QTestIntegrationUtil.getIntegratedEntity(testSuiteEntity));
 
                 selectedQTestSuite.setId(0);
                 selectedQTestSuite.setPid("");
@@ -555,7 +557,7 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
         IStructuredSelection selection = (IStructuredSelection) testSuiteParentTableViewer.getSelection();
 
         QTestSuite qTestSuite = (QTestSuite) selection.getFirstElement();
-
+        
         if (qTestSuite == null) {
             btnUpload.setEnabled(false);
             btnDisintegrate.setEnabled(false);
@@ -574,10 +576,18 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
                 }
 
             } else {
-                btnUpload.setEnabled(true);
-                btnDisintegrate.setEnabled(false);
-                btnNavigate.setEnabled(false);
-                btnSetDefault.setEnabled(false);
+                try {
+                    ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+                    TestSuiteRepo testSuiteRepo = QTestIntegrationUtil.getTestSuiteRepo(testSuiteEntity,
+                            currentProject);
+
+                    btnUpload.setEnabled(true && testSuiteRepo != null);
+                    btnDisintegrate.setEnabled(false);
+                    btnNavigate.setEnabled(false);
+                    btnSetDefault.setEnabled(false);
+                } catch (Exception e) {
+                    LoggerSingleton.logError(e);
+                }
             }
 
         }
@@ -591,6 +601,8 @@ public class QTestIntegrationTestSuiteView extends AbstractTestSuiteIntegrationV
             txtParentID.setText("");
             txtPID.setText("");
         }
+        
+       
     }
 
     private List<QTestSuite> getQTestSuites() {
