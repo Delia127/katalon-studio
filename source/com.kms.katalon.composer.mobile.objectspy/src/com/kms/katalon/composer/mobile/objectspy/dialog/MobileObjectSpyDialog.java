@@ -1010,11 +1010,10 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
                 Throwable targetException = ((InvocationTargetException) ex).getTargetException();
                 String message = (targetException instanceof java.util.concurrent.ExecutionException)
                         ? targetException.getCause().getMessage() : targetException.getMessage();
-                MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
-                        StringConstants.DIA_ERROR_MSG_CANNOT_START_APP_ON_CURRENT_DEVICE + ": " + message);
+
                 MessageDialogWithLink.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
                         StringConstants.DIA_ERROR_MSG_CANNOT_START_APP_ON_CURRENT_DEVICE + ": " + message
-                                + " <a href=\"" + StringConstants.URL_TROUBLESHOOTING_MOBILE_TESTING + "\">"
+                                + "\n<a href=\"" + StringConstants.URL_TROUBLESHOOTING_MOBILE_TESTING + "\">"
                                 + StringConstants.APPIUM_INSTALLATION_GUIDE_MSG + "</a>");
                 LoggerSingleton.logError(targetException);
             }

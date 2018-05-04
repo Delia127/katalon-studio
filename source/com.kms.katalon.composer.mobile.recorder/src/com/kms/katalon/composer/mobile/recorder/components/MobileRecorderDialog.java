@@ -844,7 +844,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
                 Throwable targetException = ((InvocationTargetException) ex).getTargetException();
                 String message = (targetException instanceof java.util.concurrent.ExecutionException)
                         ? targetException.getCause().getMessage() : targetException.getMessage();
-                MessageDialogWithLink.openError(Display.getCurrent().getActiveShell(), MobileRecorderStringConstants.ERROR, MobileRecoderMessagesConstants.MSG_ERR_CANNOT_START_APP + ": " + message + " <a href=\"" + MobileRecorderStringConstants.URL_TROUBLESHOOTING_MOBILE_TESTING + "\">" + MobileRecorderStringConstants.APPIUM_INSTALLATION_GUIDE_MSG + "</a>");
+                MessageDialogWithLink.openError(Display.getCurrent().getActiveShell(), MobileRecorderStringConstants.ERROR, MobileRecoderMessagesConstants.MSG_ERR_CANNOT_START_APP + ": " + message + "\n<a href=\"" + MobileRecorderStringConstants.URL_TROUBLESHOOTING_MOBILE_TESTING + "\">" + MobileRecorderStringConstants.APPIUM_INSTALLATION_GUIDE_MSG + "</a>");
             }
 
             // Enable start button and show error dialog if application cannot start
