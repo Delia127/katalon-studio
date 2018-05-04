@@ -212,6 +212,10 @@ public class GlobalMessageConstants extends NLS {
     public static String ELAPSED;
 
     public static String SIZE;
+    
+    public static String APPIUM_INSTALLATION_GUIDE_MSG;
+
+    public static String URL_TROUBLESHOOTING_MOBILE_TESTING;
 
     static {
         // initialize resource bundle

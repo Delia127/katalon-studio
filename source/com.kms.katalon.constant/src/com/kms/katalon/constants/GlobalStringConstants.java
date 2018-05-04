@@ -307,4 +307,9 @@ public class GlobalStringConstants {
     public static final String CREATED_DATE = GlobalMessageConstants.CREATED_DATE;
 
     public static final String MODIFIED_DATE = GlobalMessageConstants.MODIFIED_DATE;
+
+    public static final String APPIUM_INSTALLATION_GUIDE_MSG = GlobalMessageConstants.APPIUM_INSTALLATION_GUIDE_MSG;
+    
+    public static final String URL_TROUBLESHOOTING_MOBILE_TESTING = GlobalMessageConstants.URL_TROUBLESHOOTING_MOBILE_TESTING;
+
 }

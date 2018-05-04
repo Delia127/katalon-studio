@@ -66,6 +66,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Widget;
 
 import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
+import com.kms.katalon.composer.components.dialogs.MessageDialogWithLink;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.dialogs.ProgressMonitorDialogWithThread;
@@ -1011,6 +1012,10 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
                         ? targetException.getCause().getMessage() : targetException.getMessage();
                 MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
                         StringConstants.DIA_ERROR_MSG_CANNOT_START_APP_ON_CURRENT_DEVICE + ": " + message);
+                MessageDialogWithLink.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
+                        StringConstants.DIA_ERROR_MSG_CANNOT_START_APP_ON_CURRENT_DEVICE + ": " + message
+                                + " <a href=\"" + StringConstants.URL_TROUBLESHOOTING_MOBILE_TESTING + "\">"
+                                + StringConstants.APPIUM_INSTALLATION_GUIDE_MSG + "</a>");
                 LoggerSingleton.logError(targetException);
             }
 
