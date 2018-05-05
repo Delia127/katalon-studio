@@ -28,6 +28,8 @@ import com.kms.katalon.logging.LogUtil;
  * </ul>
  */
 public class ApplicationInfo {
+    public static final String DEV_PROFILE = "dev";
+
     private static final String ABOUT_MAPPINGS_FILE_NAME = "about.mappings";
 
     private static final String ABOUT_BUILD_NUMBER_KEY = "0";
@@ -66,7 +68,7 @@ public class ApplicationInfo {
     }
 
     public static String profile() {
-        return getAboutMappingsProperties().getProperty(ABOUT_PROFILE_KEY, GlobalStringConstants.DEV_PROFILE);
+        return getAboutMappingsProperties().getProperty(ABOUT_PROFILE_KEY, DEV_PROFILE);
     }
 
     public static String installLocation() {
