@@ -34,6 +34,8 @@ public class ApplicationInfo {
 
     private static final String ABOUT_VERSION_NUMBER_KEY = "1";
 
+    private static final String ABOUT_PROFILE_KEY = "2";
+
     private static Properties aboutMappingsProperties;
 
     private static Properties appProperties;
@@ -61,6 +63,10 @@ public class ApplicationInfo {
 
     public static String buildNo() {
         return getAboutMappingsProperties().getProperty(ABOUT_BUILD_NUMBER_KEY, GlobalStringConstants.EMPTY);
+    }
+
+    public static String profile() {
+        return getAboutMappingsProperties().getProperty(ABOUT_PROFILE_KEY, GlobalStringConstants.DEV_PROFILE);
     }
 
     public static String installLocation() {
