@@ -32,6 +32,8 @@ public class EventConstants {
 
     public static final String PROJECT_RESTORE_SESSION = "PROJECT/RESTORE_SESSION";
 
+    public static final String PROJECT_RESTORE_SESSION_COMPLETED = "PROJECT/RESTORE_SESSION_COMPLETED";
+
     public static final String PROJECT_SETTINGS = "PROJECT/SETTINGS";
 
     public static final String PROJECT_INDEX = "PROJECT/INDEX";

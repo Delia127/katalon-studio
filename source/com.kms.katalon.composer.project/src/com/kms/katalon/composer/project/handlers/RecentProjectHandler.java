@@ -73,7 +73,7 @@ public class RecentProjectHandler {
                 String latestOpenedProject = store.getString(ProjectPreferenceConstants.LATEST_OPENED_PROJECT);
                 if (StringUtils.isNotEmpty(latestOpenedProject)) {
                     // Open project
-                    eventBroker.post(EventConstants.PROJECT_OPEN_LATEST, latestOpenedProject);
+                    eventBroker.send(EventConstants.PROJECT_OPEN_LATEST, latestOpenedProject);
                 }
             }
         } catch (Exception e) {
