@@ -6,7 +6,8 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-ClassPath: .
 Bundle-Vendor: KMS
 Bundle-Localization: plugin
-Export-Package: com.kms.katalon.composer.components,
+Export-Package: com.kms.katalon.activation.dialog,
+ com.kms.katalon.composer.components,
  com.kms.katalon.composer.handlers,
  com.kms.katalon.composer.parts,
  com.kms.katalon.constants,

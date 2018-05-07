@@ -114,6 +114,10 @@ public class ActivationInfoCollector {
 
         return activatedResult;
     }
+    
+    public static boolean qTestActivate(String qTestUserName, String qTestCode, StringBuilder errorMessage) {
+        return false;
+    }
 
     public static boolean activate(String activationCode, StringBuilder errorMessage) {
         try {
