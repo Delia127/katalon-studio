@@ -47,7 +47,7 @@ public class SourceLocator extends JavaSourceLookupDirector {
                     }
                 }
                 
-                if (stackFrame.getThis() != null) {
+                if (stackFrame.getDeclaringTypeName() != null) {
                     IJavaProject javaProject = JavaCore.create(GroovyUtil.getGroovyProject(ProjectController.getInstance().getCurrentProject()));
                     return JavaDebugUtils.findElement(stackFrame.getDeclaringTypeName(), javaProject);
                 }
