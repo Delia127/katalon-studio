@@ -3,9 +3,18 @@ node {
         checkout scm
     }  
     stage('Prepare') {
-        sh '''
-            cd source
-            mvn clean verify
-        '''
+    	if (env.BRANCH_NAME == 'release') {
+    		sh '''
+	            cd source
+	            mvn clean verify -Pprod
+	        '''
+    	} else {
+    		sh '''
+	            cd source
+	            mvn clean verify
+	        '''
+    	}
+
+        
     }
 }
