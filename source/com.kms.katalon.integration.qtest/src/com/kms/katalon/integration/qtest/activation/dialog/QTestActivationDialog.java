@@ -23,11 +23,11 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.activation.dialog.ProxyConfigurationDialog;
-import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.constants.ImageConstants;
 import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.integration.qtest.constants.QTestMessageConstants;
+import com.kms.katalon.integration.qtest.helper.QTestActivationHelper;
 import com.kms.katalon.logging.LogUtil;
 
 public class QTestActivationDialog extends Dialog {
@@ -200,7 +200,7 @@ public class QTestActivationDialog extends Dialog {
             @Override
             public void run() {
                 StringBuilder errorMessage = new StringBuilder();
-                boolean result = ActivationInfoCollector.qTestActivate(txtQTestUserName.getText(), txtQtestCode.getText(),
+                boolean result = QTestActivationHelper.qTestOnlineActivate(txtQTestUserName.getText(), txtQtestCode.getText(),
                         errorMessage);
                 lblError.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_RED));
                 if (result == true) {

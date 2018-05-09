@@ -11,7 +11,8 @@ Export-Package: com.kms.katalon.activation.dialog,
  com.kms.katalon.composer.handlers,
  com.kms.katalon.composer.parts,
  com.kms.katalon.constants,
- com.kms.katalon.core.application
+ com.kms.katalon.core.application,
+ com.kms.katalon.util
 Require-Bundle: org.eclipse.e4.core.di,
  com.kms.katalon.constant,
  org.eclipse.e4.ui.workbench,

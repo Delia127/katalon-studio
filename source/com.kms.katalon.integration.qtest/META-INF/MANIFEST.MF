@@ -42,5 +42,7 @@ Require-Bundle: com.kms.katalon.entity,
  org.eclipse.e4.ui.model.workbench,
  org.eclipse.e4.core.di,
  com.kms.katalon.composer.components.impl,
- com.kms.katalon.composer.components
+ com.kms.katalon.composer.components,
+ com.auth0.java-jwt,
+ org.apache.commons.codec
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

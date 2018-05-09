@@ -39,9 +39,9 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
     }
 
     public static boolean checkActivation(final IEventBroker eventBroker) {
-        if (isActivated()) {
-            return true;
-        }
+//        if (isActivated()) {
+//            return true;
+//        }
         // Send anonymous info for the first time using
         Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector.collect(
                 UsageInfoCollector.getAnonymousUsageInfo(UsageActionTrigger.OPEN_FIRST_TIME, RunningMode.GUI)));

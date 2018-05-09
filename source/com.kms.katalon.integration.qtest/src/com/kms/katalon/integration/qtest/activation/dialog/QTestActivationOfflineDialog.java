@@ -2,7 +2,6 @@ package com.kms.katalon.integration.qtest.activation.dialog;
 
 import java.awt.Desktop;
 import java.net.URI;
-import java.util.Random;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -26,22 +25,17 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-import com.kms.katalon.application.constants.ApplicationStringConstants;
-import com.kms.katalon.application.utils.ActivationInfoCollector;
-import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.ImageConstants;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.integration.qtest.constants.QTestMessageConstants;
+import com.kms.katalon.integration.qtest.helper.QTestActivationHelper;
 import com.kms.katalon.logging.LogUtil;
+import com.kms.katalon.util.ComposerActivationInfoCollector;
 
 public class QTestActivationOfflineDialog extends Dialog {
 
-    private static final long RANDOM_MIN = 78364164096L;
-
-    private static final long RANDOM_MAX = 2821109907455L;
-    
     private Button btnActivate;
 
     private Text txtActivationRequest;
@@ -72,7 +66,7 @@ public class QTestActivationOfflineDialog extends Dialog {
 
         Link lblMessage = new Link(body, SWT.WRAP);
         lblMessage.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
-        lblMessage.setText(StringConstants.LBL_ACTIVATE_OFFLINE_HELP);
+        lblMessage.setText(QTestMessageConstants.OFFLINE_ACTIVATION_HINT);
         lblMessage.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -92,7 +86,7 @@ public class QTestActivationOfflineDialog extends Dialog {
         GridData gdActivationRequest = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
         gdActivationRequest.heightHint = ControlUtils.DF_CONTROL_HEIGHT;
         txtActivationRequest.setLayoutData(gdActivationRequest);
-        txtActivationRequest.setText(genRequestActivationInfo());
+        txtActivationRequest.setText(ComposerActivationInfoCollector.genRequestActivationInfo());
         txtActivationRequest.setBackground(ColorUtil.getDisabledItemBackgroundColor());
 
         new Label(body, SWT.NONE);
@@ -148,7 +142,7 @@ public class QTestActivationOfflineDialog extends Dialog {
                 @Override
                 public void run() {
                     StringBuilder errorMessage = new StringBuilder();
-                    boolean result = ActivationInfoCollector.activate(txtActivationCode.getText().trim(), errorMessage);
+                    boolean result = QTestActivationHelper.qTestactivate(txtActivationCode.getText().trim(), errorMessage);
                     lblError.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_RED));
                     if (result == true) {
                         setReturnCode(Window.OK);
@@ -188,22 +182,4 @@ public class QTestActivationOfflineDialog extends Dialog {
         processActivate();
     }
     
-    //Todo: Thai check again
-    public String genRequestActivationInfo() {
-        String requestCodePropName = ApplicationStringConstants.REQUEST_CODE_PROP_NAME;
-        String requestActivationCode = ApplicationInfo.getAppProperty(requestCodePropName);
-
-        if (requestActivationCode == null || requestActivationCode.trim().length() < 1) {
-            requestActivationCode = genRequestActivateOfflineCode();
-            ApplicationInfo.setAppProperty(requestCodePropName, requestActivationCode, true);
-        }
-        return requestActivationCode;
-    }
-    
-   
-    private String genRequestActivateOfflineCode() {
-        Random random = new Random();
-        long num = RANDOM_MIN + (long) ((RANDOM_MAX - RANDOM_MIN) * random.nextFloat());
-        return Long.toString(num, 36).toUpperCase();
-    }
 }

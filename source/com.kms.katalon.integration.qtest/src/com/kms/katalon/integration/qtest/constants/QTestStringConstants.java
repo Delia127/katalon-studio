@@ -15,4 +15,8 @@ public class QTestStringConstants {
 	
 	public static final String RQ_DF_VALUE_USER_AGENT = "Mozilla/5.0";
 	public static final String RQ_DF_VALUE_CONTENT_TYPE = "application/json";
+	
+    public static final String DEFAULT_HOST_NAME = "can.not.get.host.name";
+    public static final String KMS_SIGNED_THE_TOKEN_ISSUER = "https://www.katalon.com/";
+    public static final String REQUEST_CODE_PAYLOAD_PROPERTY = "request_code";
 }
