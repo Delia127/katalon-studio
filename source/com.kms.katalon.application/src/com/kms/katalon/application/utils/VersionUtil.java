@@ -13,7 +13,7 @@ public class VersionUtil {
     public static boolean hasNewVersion() {
         VersionInfo currentVersion = getCurrentVersion();
         return !currentVersion.equals(getLatestVersion());
-    }
+    } 
 
     public static VersionInfo getCurrentVersion() {
         VersionInfo curVersion = new VersionInfo();
@@ -53,7 +53,8 @@ public class VersionUtil {
     }
     
     public static boolean isInternalBuild() {
-        VersionInfo version = VersionUtil.getCurrentVersion();
-        return VersionInfo.MINIMUM_VERSION.equals(version.getVersion()) || version.getBuildNumber() == 0;
+        String profile = ApplicationInfo.profile();
+        return ApplicationInfo.DEV_PROFILE.equals(profile);
+        // return VersionInfo.MINIMUM_VERSION.equals(version.getVersion()) || version.getBuildNumber() == 0;
     }
 }
