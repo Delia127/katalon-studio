@@ -16,6 +16,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.osgi.service.event.Event;
 
+import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
 import com.kms.katalon.composer.components.impl.handler.CommandCaller;
@@ -194,9 +195,11 @@ public class CheckForUpdatesHandler implements UpdateComponent {
                         WebDriverCleanerUtil.cleanup();
                         AppiumDriverManager.cleanup();
 
+                        String latestVersion = newUpdateResult.getLatestVersionInfo().getLatestVersion();
+                        ActivationInfoCollector.markActivatedViaUpgradation(latestVersion);
+
                         // start Katalon Updater
-                        UpdaterLauncher updaterLauncher = new UpdaterLauncher(
-                                newUpdateResult.getLatestVersionInfo().getLatestVersion(),
+                        UpdaterLauncher updaterLauncher = new UpdaterLauncher(latestVersion,
                                 newUpdateResult.getCurrentAppInfo().getVersion());
 
                         updaterLauncher.startUpdaterLauncher();
