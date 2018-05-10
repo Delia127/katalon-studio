@@ -219,8 +219,14 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                     }
 
                     // Copy child file to user's report folder
-                    FileUtils.copyFile(reportChildSourceFile,
-                            new File(userReportFolder, fileName + "." + fileExtension));
+                    if (reportChildSourceFile.isFile()) {
+                        FileUtils.copyFile(reportChildSourceFile,
+                                new File(userReportFolder, fileName + "." + fileExtension));
+                    } else if (reportChildSourceFile.isDirectory()) {
+                        File newCoppiedFolder = new File(userReportFolder, fileName);
+                        newCoppiedFolder.mkdirs();
+                        FileUtils.copyDirectory(reportChildSourceFile, newCoppiedFolder);
+                    }
                 }
             }
         } catch (IOException ex) {
