@@ -4,7 +4,9 @@ import java.io.File;
 
 import org.codehaus.jdt.groovy.model.GroovyCompilationUnit;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.internal.debug.core.JavaDebugUtils;
 import org.eclipse.jdt.internal.debug.core.model.JDIStackFrame;
 import org.eclipse.jdt.internal.launching.JavaSourceLookupDirector;
 
@@ -43,6 +45,11 @@ public class SourceLocator extends JavaSourceLookupDirector {
                             return scriptFile;
                         }
                     }
+                }
+                
+                if (stackFrame.getThis() != null) {
+                    IJavaProject javaProject = JavaCore.create(GroovyUtil.getGroovyProject(ProjectController.getInstance().getCurrentProject()));
+                    return JavaDebugUtils.findElement(stackFrame.getDeclaringTypeName(), javaProject);
                 }
             } catch (Exception e) {
                 // cannot find test case, let the super do this.
