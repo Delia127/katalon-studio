@@ -79,16 +79,17 @@ public class Application implements IApplication {
         }
 
         Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector.collect(
-                UsageInfoCollector.getAnonymousUsageInfo(UsageActionTrigger.OPEN_FIRST_TIME, RunningMode.CONSOLE)));
+                UsageInfoCollector.getAnonymousUsageInfo(UsageActionTrigger.OPEN_APPLICATION, RunningMode.CONSOLE)));
 
-        String[] emailPass = getEmailAndPassword(arguments);
-        String email = emailPass[0], password = emailPass[1];
-        StringBuilder errorMessage = new StringBuilder();
-        if (email == null || password == null || !ActivationInfoCollector.activate(email, password, errorMessage)) {
-            LogUtil.printErrorLine(email == null || password == null ? ConsoleMessageConstants.KATALON_NOT_ACTIVATED
-                    : errorMessage.toString());
-            return false;
-        }
+        //KAT-3257: Remove activation process when using console mode.
+//        String[] emailPass = getEmailAndPassword(arguments);
+//        String email = emailPass[0], password = emailPass[1];
+//        StringBuilder errorMessage = new StringBuilder();
+//        if (email == null || password == null || !ActivationInfoCollector.activate(email, password, errorMessage)) {
+//            LogUtil.printErrorLine(email == null || password == null ? ConsoleMessageConstants.KATALON_NOT_ACTIVATED
+//                    : errorMessage.toString());
+//            return false;
+//        }
         return true;
     }
 
