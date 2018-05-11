@@ -34,16 +34,19 @@ public class CommandBindingInitializer extends WorkbenchUtilizer implements Appl
         if (table == null) {
             return;
         }
-//        Command command = getService(ICommandService.class).getCommand(TextEditorCommand.DELETE.editorCommandId);
-//        Binding binding = table.getBestSequenceFor(ParameterizedCommand.generateCommand(command, null));
-//        if (binding == null) {
-//            addBindingAndSave(bindingService);
-//        } else {
-//            if (binding.getTriggerSequence() == null) {
-//                bindingService.removeBinding(binding);
-//                addBindingAndSave(bindingService);
-//            }
-//        }
+        Command command = getService(ICommandService.class).getCommand(TextEditorCommand.DELETE.editorCommandId);
+        if (command == null) {
+            return;
+        }
+        Binding binding = table.getBestSequenceFor(ParameterizedCommand.generateCommand(command, null));
+        if (binding == null) {
+            addBindingAndSave(bindingService);
+        } else {
+            if (binding.getTriggerSequence() == null) {
+                bindingService.removeBinding(binding);
+                addBindingAndSave(bindingService);
+            }
+        }
     }
 
     private void addBindingAndSave(BindingService bindingService) {
