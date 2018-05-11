@@ -9,6 +9,8 @@ public class ApplicationStringConstants extends GlobalStringConstants {
 
     public static final String ARG_PASSWORD = "password";
 
+    public static final String ACTIVATION_CODE = "activationCode";
+
     public static final String REQUEST_CODE_PROP_NAME = "activatedRequestCode";
 
     // Proxy Configuration

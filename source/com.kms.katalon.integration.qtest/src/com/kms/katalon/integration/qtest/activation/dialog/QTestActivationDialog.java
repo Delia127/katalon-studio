@@ -41,19 +41,20 @@ public class QTestActivationDialog extends Dialog {
     private Text txtQtestCode;
 
     private Label lblError;
+
+    private boolean expiredActivation = false;
     
     private boolean allowOfflineActivation = true;
-
-    public QTestActivationDialog(Shell parentShell) {
-        super(parentShell);
-    }
+    
+    private Composite linkComposite;
 
     public boolean isAllowOfflineActivation() {
         return allowOfflineActivation;
     }
 
-    public void setAllowOfflineActivation(boolean allowOfflineActivation) {
-        this.allowOfflineActivation = allowOfflineActivation;
+    public QTestActivationDialog(Shell parentShell, boolean expiredActivation) {
+        super(parentShell);
+        this.expiredActivation = expiredActivation;
     }
 
     @Override
@@ -69,6 +70,13 @@ public class QTestActivationDialog extends Dialog {
         glContainer.verticalSpacing = 0;
         container.setLayout(glContainer);
 
+        if (expiredActivation) {
+            Label warningMsgReactivation = new Label(container, SWT.NONE);
+            warningMsgReactivation.setText(QTestMessageConstants.REACTIVATION_EXPIRED_LICENSE_WARNING);
+            warningMsgReactivation.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_RED));
+            GridData gd = new GridData(SWT.CENTER, SWT.CENTER, false, false, 2, 1);
+            warningMsgReactivation.setLayoutData(gd);
+        }
         Label lblUsername = new Label(container, SWT.NONE);
         GridData gdLblUsername = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
         gdLblUsername.widthHint = 100;
@@ -105,31 +113,39 @@ public class QTestActivationDialog extends Dialog {
         GridData gdComposite = new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1);
         composite.setLayoutData(gdComposite);
         composite.setLayout(new GridLayout(9, false));
+        
+        Composite btnComposite = new Composite(composite, SWT.NONE);
+        GridData btnCompositeGd = new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1);
+        btnComposite.setLayoutData(btnCompositeGd);
+        btnComposite.setLayout(new GridLayout(9, false));
 
-        btnClear = new Button(composite, SWT.NONE);
+        btnClear = new Button(btnComposite, SWT.NONE);
         GridData gdBtnClear = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         gdBtnClear.heightHint = 26;
         gdBtnClear.widthHint = 62;
         btnClear.setLayoutData(gdBtnClear);
         btnClear.setText(StringConstants.BTN_CLEAR_TILE);
 
-        btnActivate = new Button(composite, SWT.NONE);
+        btnActivate = new Button(btnComposite, SWT.NONE);
         GridData gdBtnActivate = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
         gdBtnActivate.heightHint = 26;
         gdBtnActivate.widthHint = 72;
         btnActivate.setLayoutData(gdBtnActivate);
         btnActivate.setText(StringConstants.BTN_ACTIVATE_TILE);
 
+        linkComposite = new Composite(composite, SWT.NONE);
+        GridData linkCompositeGd = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1);
+        linkComposite.setLayoutData(linkCompositeGd);
+        linkComposite.setLayout(new GridLayout(4, false));
+        
         if (isAllowOfflineActivation()) {
-            Label lblNewLabel = new Label(composite, SWT.NONE);
-            lblNewLabel.setText(StringConstants.SEPARATE_LINK);
             addOfflineActivationLink(composite);
         }
         
-        Label lblNewLabel = new Label(composite, SWT.NONE);
+        Label lblNewLabel = new Label(linkComposite, SWT.NONE);
         lblNewLabel.setText(StringConstants.SEPARATE_LINK);
 
-        Link linkConfigProxy = new Link(composite, SWT.NONE);
+        Link linkConfigProxy = new Link(linkComposite, SWT.NONE);
         linkConfigProxy.setText(MessageConstants.CONFIG_PROXY);
         linkConfigProxy.addMouseListener(new MouseAdapter() {
             @Override
@@ -167,7 +183,7 @@ public class QTestActivationDialog extends Dialog {
     }
 
     private void addOfflineActivationLink(Composite composite) {
-        Link linkOfflineActivation = new Link(composite, SWT.NONE);
+        Link linkOfflineActivation = new Link(linkComposite, SWT.NONE);
         linkOfflineActivation.setText(StringConstants.LINK_OPEN_ACTIVATE_FORM_OFFLINE);
         linkOfflineActivation.addMouseListener(new MouseAdapter() {
             @Override
@@ -186,7 +202,7 @@ public class QTestActivationDialog extends Dialog {
     }
 
     private boolean isFullFillActivateInfo() {
-        return txtQTestUserName.getText().trim().length() > 0 && txtQtestCode.getText().trim().length() > 0;
+        return txtQtestCode.getText().trim().length() > 0;
     }
 
     protected void processActivate() {

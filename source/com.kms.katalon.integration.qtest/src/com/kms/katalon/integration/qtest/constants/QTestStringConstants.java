@@ -19,4 +19,16 @@ public class QTestStringConstants {
     public static final String DEFAULT_HOST_NAME = "can.not.get.host.name";
     public static final String KMS_SIGNED_THE_TOKEN_ISSUER = "https://www.katalon.com/";
     public static final String REQUEST_CODE_PAYLOAD_PROPERTY = "request_code";
+    public static final String IS_OFFLINE_ACTIVATION_CODE_PAYLOAY_PROPERTY = "offline";
+    public static final String HTTPS = "https";
+    public static final String HTTP_USER_AGENT = "User-Agent";
+    public static final String DEFAULT_USER_AGENT = "Katalon Studio";
+    public static final String SSL = "SSL";
+    public static final String USERNAME = "username";
+    public static final String ACTIVATIONCODE ="activationCode";
+
+    public static final String QTEST_ACTIVATION_PUBLIC_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQClVi5Gck1X4uD9EfpQvPNe4utl"
+                                                            + "Rgw9GWhCQNa4gcya6SG3UKwgDvNGyiD3J6w4xM97NUGmDJw7INTKNikVmBjXpTRK"
+                                                            + "q/rWlSUpSkOYB9XT/pNvPf2G8U5qOMnXokGmW5r6GIVuYu6OrhAcAh0nSKYxt/vy" + "LtIvt1SFDkD320fOBwIDAQAB";
+    
 }

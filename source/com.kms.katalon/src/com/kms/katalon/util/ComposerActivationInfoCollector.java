@@ -39,14 +39,15 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
     }
 
     public static boolean checkActivation(final IEventBroker eventBroker) {
-//        if (isActivated()) {
-//            return true;
-//        }
+        Bundle qtestBundle = Platform.getBundle(IdConstants.QTEST_INTEGRATION_BUNDLE_ID);
+
+        if (isActivated() && qtestBundle == null) {
+            return true;
+        }
         // Send anonymous info for the first time using
         Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector.collect(
                 UsageInfoCollector.getAnonymousUsageInfo(UsageActionTrigger.OPEN_FIRST_TIME, RunningMode.GUI)));
 
-        Bundle qtestBundle = Platform.getBundle(IdConstants.QTEST_INTEGRATION_BUNDLE_ID);
         if (qtestBundle != null) {
             eventBroker.subscribe(EventConstants.ACTIVATION_QTEST_INTEGRATION_CHECK_COMPLETED,
                     new EventServiceAdapter() {
