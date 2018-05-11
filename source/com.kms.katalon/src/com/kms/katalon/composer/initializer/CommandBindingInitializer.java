@@ -2,7 +2,10 @@ package com.kms.katalon.composer.initializer;
 
 import java.io.IOException;
 
+import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ParameterizedCommand;
+import org.eclipse.e4.ui.bindings.internal.BindingTable;
+import org.eclipse.e4.ui.bindings.internal.BindingTableManager;
 import org.eclipse.jface.bindings.Binding;
 import org.eclipse.jface.bindings.TriggerSequence;
 import org.eclipse.jface.bindings.keys.KeyBinding;
@@ -24,18 +27,50 @@ public class CommandBindingInitializer extends WorkbenchUtilizer implements Appl
 
     private static final String TEXT_EDITOR_CONTEXT_ID = "org.eclipse.ui.textEditorScope";
 
+    public void resetDeleteKeyBinding() {
+        BindingService bindingService = (BindingService) getService(IBindingService.class);
+        BindingTableManager tableManager = getService(BindingTableManager.class);
+        BindingTable table = tableManager.getTable(TEXT_EDITOR_CONTEXT_ID);
+        if (table == null) {
+            return;
+        }
+//        Command command = getService(ICommandService.class).getCommand(TextEditorCommand.DELETE.editorCommandId);
+//        Binding binding = table.getBestSequenceFor(ParameterizedCommand.generateCommand(command, null));
+//        if (binding == null) {
+//            addBindingAndSave(bindingService);
+//        } else {
+//            if (binding.getTriggerSequence() == null) {
+//                bindingService.removeBinding(binding);
+//                addBindingAndSave(bindingService);
+//            }
+//        }
+    }
+
+    private void addBindingAndSave(BindingService bindingService) {
+        try {
+            bindingService.addBinding(TextEditorCommand.DELETE.newKeyBinding(bindingService, getCommandService()));
+            saveActiveBinding(bindingService);
+        } catch (ParseException e) {
+            LoggerSingleton.logError(e);
+        }
+    }
+
+    private void saveActiveBinding(BindingService bindingService) {
+        try {
+            bindingService.savePreferences(bindingService.getActiveScheme(),
+                    bindingService.getActiveBindings().toArray(new Binding[0]));
+        } catch (IOException e) {
+            LoggerSingleton.logError(e);
+        }
+    }
+
     @Override
     public void setup() {
         BindingService bindingService = (BindingService) getService(IBindingService.class);
 
         activeExplorerCommands(bindingService);
 
-        try {
-            bindingService.savePreferences(bindingService.getActiveScheme(), bindingService.getActiveBindings()
-                    .toArray(new Binding[0]));
-        } catch (IOException e) {
-            LoggerSingleton.logError(e);
-        }
+        saveActiveBinding(bindingService);
     }
 
     private ICommandService getCommandService() {

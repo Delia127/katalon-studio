@@ -114,6 +114,7 @@ public class LifeCycleManager {
                 }
                 if (IdConstants.GROOVY_EDITOR_URI.equals(partRef.getId())) {
                     EventUtil.post(EventConstants.PROPERTIES_ENTITY, null);
+                    new CommandBindingInitializer().resetDeleteKeyBinding();
                 }
             }
 
