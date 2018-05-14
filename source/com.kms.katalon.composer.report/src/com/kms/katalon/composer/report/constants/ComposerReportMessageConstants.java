@@ -107,6 +107,9 @@ public class ComposerReportMessageConstants extends NLS {
     
     public static String REPORT_MSG_UPLOADING_TO_ANALYTICS_SUCCESSFULLY;
 
+    // OpenReportHandler
+    public static String HAND_WARN_MSG_EXECUTION_IS_RUNNING;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerReportMessageConstants.class);
