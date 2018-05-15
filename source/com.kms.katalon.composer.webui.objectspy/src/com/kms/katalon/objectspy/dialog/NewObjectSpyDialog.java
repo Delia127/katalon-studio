@@ -45,6 +45,7 @@ import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
+import com.kms.katalon.composer.components.impl.util.PlatformUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
@@ -127,12 +128,11 @@ public class NewObjectSpyDialog extends Dialog
     public NewObjectSpyDialog(Shell parentShell, Logger logger, IEventBroker eventBroker) throws Exception {
         super(parentShell);
         boolean onTop = getPreferenceStore().getBoolean(ObjectSpyPreferenceConstants.WEBUI_OBJECTSPY_PIN_WINDOW);
-        if (onTop) {
-            setShellStyle(SWT.SHELL_TRIM | SWT.ON_TOP | SWT.CENTER);
+        if (onTop && !PlatformUtil.isLinux()) {
+            setShellStyle(SWT.SHELL_TRIM | SWT.CENTER | SWT.ON_TOP);
         } else {
             setShellStyle(SWT.SHELL_TRIM | SWT.CENTER);
         }
-
         this.shell = getShell();
         this.logger = logger;
         this.eventBroker = eventBroker;

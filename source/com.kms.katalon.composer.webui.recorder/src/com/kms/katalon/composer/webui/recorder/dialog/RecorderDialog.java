@@ -100,6 +100,7 @@ import com.kms.katalon.composer.components.impl.control.DropdownGroup;
 import com.kms.katalon.composer.components.impl.control.DropdownItemSelectionListener;
 import com.kms.katalon.composer.components.impl.control.DropdownToolItemSelectionListener;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
+import com.kms.katalon.composer.components.impl.util.PlatformUtil;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
@@ -250,7 +251,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     @Override
     protected int getShellStyle() {
         boolean onTop = store.getBoolean(RecorderPreferenceConstants.WEBUI_RECORDER_PIN_WINDOW);
-        if (onTop) {
+        if (onTop && !PlatformUtil.isLinux()) {
             return SWT.SHELL_TRIM | SWT.ON_TOP | SWT.CENTER;
         } else {
             return SWT.SHELL_TRIM | SWT.CENTER;
