@@ -15,6 +15,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import com.kms.katalon.core.constants.CoreMessageConstants;
@@ -142,6 +143,9 @@ public class TestSuiteXMLLogParser {
                 if (isMalformXmlLine(cleanContentBuilder, line)) {
                     // skip this
                     continue;
+                }
+                if (line.startsWith(LOG_FILE_END_TAG)) {
+                    line = line.replaceFirst(LOG_FILE_END_TAG, StringUtils.EMPTY);
                 }
                 cleanContentBuilder.append(line).append("\n");
             }
