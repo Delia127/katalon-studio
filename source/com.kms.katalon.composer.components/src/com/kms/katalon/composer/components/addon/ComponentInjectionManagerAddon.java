@@ -3,6 +3,8 @@ package com.kms.katalon.composer.components.addon;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.di.UISynchronize;
@@ -27,9 +29,6 @@ public class ComponentInjectionManagerAddon {
 	@Inject
 	private IEventBroker eventBroker;
 	
-	@Inject
-	private EPartService partService;
-	
 	@Inject 
 	private ESelectionService selectionService;
 	
@@ -46,7 +45,6 @@ public class ComponentInjectionManagerAddon {
 	public void initHandlers() {
 		LoggerSingleton.getInstance().setLogger(logger);
 		EventBrokerSingleton.getInstance().setEventBroker(eventBroker);
-		PartServiceSingleton.getInstance().setPartService(partService);
 		SelectionServiceSingleton.getInstance().setSelectionService(selectionService);
 		ModelServiceSingleton.getInstance().setModelService(modelService);
 		ApplicationSingleton.getInstance().setApplication(application);

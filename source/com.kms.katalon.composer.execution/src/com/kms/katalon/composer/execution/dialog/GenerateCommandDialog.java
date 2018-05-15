@@ -690,6 +690,7 @@ public class GenerateCommandDialog extends AbstractDialog {
                 .getGroup(runConfigurationDescription.getGroupName());
         if (group == null) {
             resetLabel(lblRunConfiguration, ComposerExecutionMessageConstants.DIA_TITLE_RUN_CONFIG_SELECTION);
+            return null;
         }
         Optional<TestExecutionItem> executionItemOpt = group.getItem(runConfigurationId);
         if (!executionItemOpt.isPresent()) {

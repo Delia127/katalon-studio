@@ -231,7 +231,7 @@ public class TestCaseRepoDialog extends Dialog {
 
     @Override
     protected Point getInitialSize() {
-        return new Point(500, 200);
+        return new Point(500, super.getInitialSize().y);
     }
 
     @Override

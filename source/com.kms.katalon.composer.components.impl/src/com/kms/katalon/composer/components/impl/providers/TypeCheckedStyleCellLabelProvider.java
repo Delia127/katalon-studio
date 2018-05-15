@@ -154,9 +154,11 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
         if (image != null) {
             int y = eventBounds.y + Math.max(0, (eventBounds.height - image.getBounds().height) / 2);
             gc.drawImage(image, eventBounds.x + startX, y);
-            startX += getSpace() + Math.max(0, image.getBounds().width - eventBounds.width);
+            if (eventBounds.width != 0) {
+                startX += Math.max(0, image.getBounds().width - eventBounds.width);
+            }
         }
-        return startX;
+        return startX + getSpace();
     }
 
     protected Rectangle getTextBounds(Rectangle originalBounds) {

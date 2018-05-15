@@ -211,7 +211,6 @@ public class SoapServicePart extends WebServicePart {
         Button btnLoadFromWSDL = new Button(operationComposite, SWT.FLAT);
         btnLoadFromWSDL.setText(StringConstants.LBL_LOAD_FROM_WSDL);
         GridData gdBtnLoadFromWSDL = new GridData(SWT.CENTER, SWT.FILL, false, false);
-        gdBtnLoadFromWSDL.widthHint = 100; // same width with send button
         btnLoadFromWSDL.setLayoutData(gdBtnLoadFromWSDL);
         btnLoadFromWSDL.addSelectionListener(new SelectionAdapter() {
 

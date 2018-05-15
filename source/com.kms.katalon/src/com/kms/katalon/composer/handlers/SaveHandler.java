@@ -20,7 +20,7 @@ public class SaveHandler extends AbstractHandler {
 
     @Override
     public boolean canExecute() {
-        MPart part = partService.getActivePart();
+        MPart part = getPartService().getActivePart();
         if (getCompositeParentPart(part) != null) {
             return true;
         } else if (part != null) {
@@ -31,7 +31,7 @@ public class SaveHandler extends AbstractHandler {
 
     private MultipleTabsCompositePart getCompositeParentPart(MPart part) {
         MultipleTabsCompositePart parentCompositePart = null;
-        for (MPart dirtyPart : partService.getDirtyParts()) {
+        for (MPart dirtyPart : getPartService().getDirtyParts()) {
             if (dirtyPart.getObject() instanceof MultipleTabsCompositePart) {
                 MultipleTabsCompositePart compositePart = (MultipleTabsCompositePart) dirtyPart.getObject();
                 if (compositePart.getChildParts() != null && compositePart.getChildParts().contains(part)) {
@@ -44,7 +44,7 @@ public class SaveHandler extends AbstractHandler {
 
     @Override
     public void execute() {
-        MPart part = partService.getActivePart();
+        MPart part = getPartService().getActivePart();
         try {
             MultipleTabsCompositePart parentCompositePart = getCompositeParentPart(part);
             if (parentCompositePart != null) {
@@ -56,7 +56,7 @@ public class SaveHandler extends AbstractHandler {
                     GroovyEditorUtil.saveEditor(part);
                     eventBroker.post(EventConstants.ECLIPSE_EDITOR_SAVED, part);
                 } else {
-                    partService.savePart(part, false);
+                    getPartService().savePart(part, false);
                 }
             }
 

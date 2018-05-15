@@ -133,7 +133,7 @@ public class TestSuiteRepoDialog extends Dialog {
 
     @Override
     protected Point getInitialSize() {
-        return new Point(500, 165);
+        return new Point(500, super.getInitialSize().y);
     }
 
     @Override

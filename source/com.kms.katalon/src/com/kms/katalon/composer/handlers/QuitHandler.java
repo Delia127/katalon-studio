@@ -57,14 +57,14 @@ public class QuitHandler extends AbstractHandler {
             return false;
         }
         EventBrokerSingleton.getInstance().getEventBroker().send(EventConstants.WORKSPACE_CLOSED, null);
-        if (partService.saveAll(true)) {
+        if (getPartService() != null && getPartService().saveAll(true)) {
             prefs.setValue(PreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION, confirm.getToggleState());
             saveLastestOpenedProject();
             eventBroker.send(EventConstants.PROJECT_CLOSE, null);
             // prevent null pointer when inject IWorkbench
             return workbench.close();
         }
-        return false;
+        return workbench.close();
     }
 
     private static void saveLastestOpenedProject() {

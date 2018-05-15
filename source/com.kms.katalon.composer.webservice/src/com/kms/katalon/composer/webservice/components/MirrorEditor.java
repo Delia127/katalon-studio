@@ -64,7 +64,7 @@ public class MirrorEditor extends Composite {
         this.setLayout(gridLayout);
         this.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-        browser = new Browser(this, style);
+        browser = new Browser(this, SWT.NONE);
         browser.setLayoutData(new GridData(GridData.FILL_BOTH));
         browser.setJavascriptEnabled(true);
 
