@@ -61,4 +61,14 @@ public class ProcessUtil {
             }
         }
     }
+    
+    public static void killProcessOnWindows(String processName) throws InterruptedException, IOException {
+        ProcessBuilder pb = new ProcessBuilder("taskkill", "/f", "/im", processName, "/t");
+        pb.start().waitFor();
+    }
+
+    public static void killProcessOnUnix(String processName) throws InterruptedException, IOException {
+        ProcessBuilder pb = new ProcessBuilder("killall", processName);
+        pb.start().waitFor();
+    }
 }

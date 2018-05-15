@@ -331,7 +331,7 @@ public class QTestIntegrationUtil {
                         .getQTestModuleByFolderEntity(entity.getParentFolder());
 
                 // Cannot upload test case under root module.
-                return (module == null || module.getParentId() > 0);
+                return (module == null || module.getId() > 0);
             } else {
                 return false;
             }
@@ -769,6 +769,12 @@ public class QTestIntegrationUtil {
     
     public static boolean isIntegrated(IntegratedFileEntity integratedFileEntity, ProjectEntity currentProject)
             throws Exception {
+        
+        if ((QTestIntegrationUtil.getTestSuiteRepo(integratedFileEntity, currentProject) != null
+                        && (integratedFileEntity instanceof FolderEntity)) && QTestIntegrationUtil.getIntegratedEntity(integratedFileEntity) != null) {
+            return true;
+        }
+            
         if (QTestIntegrationUtil.getTestCaseRepo(integratedFileEntity, currentProject) == null
                 && (QTestIntegrationUtil.getTestSuiteRepo(integratedFileEntity, currentProject) == null
                         || !(integratedFileEntity instanceof TestSuiteEntity))) {

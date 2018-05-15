@@ -169,6 +169,8 @@ public class GlobalMessageConstants extends NLS {
 
     public static String ROOT_FOLDER_NAME_CHECKPOINT;
 
+    public static String ROOT_FOLDER_NAME_PROFILES;
+
     public static String ROOT_FOLDER_NAME_TEST_LISTENER;
 
     public static String FILE_NAME_GLOBAL_VARIABLE;
@@ -210,6 +212,10 @@ public class GlobalMessageConstants extends NLS {
     public static String ELAPSED;
 
     public static String SIZE;
+    
+    public static String APPIUM_INSTALLATION_GUIDE_MSG;
+
+    public static String URL_TROUBLESHOOTING_MOBILE_TESTING;
 
     static {
         // initialize resource bundle

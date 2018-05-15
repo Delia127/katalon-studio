@@ -2,7 +2,9 @@ package com.kms.katalon.core.testobject;
 
 import static com.kms.katalon.core.constants.StringConstants.ID_SEPARATOR;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,6 +24,7 @@ import org.dom4j.io.SAXReader;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.logging.KeywordLogger;
+import com.kms.katalon.core.testobject.impl.HttpTextBodyContent;
 import com.kms.katalon.core.testobject.internal.impl.HttpBodyContentReader;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 
@@ -276,16 +279,31 @@ public class ObjectRepository {
             requestObject.setHttpBody(reqElement.elementText("httpBody"));
 
             String httpBodyType = reqElement.elementText("httpBodyType");
-            if (isBodySupported(requestObject)) {
+            if (StringUtils.isBlank(httpBodyType)) {
+                // migrated from 5.3.1 (KAT-3200)
+                httpBodyType = "text";
+                String body = reqElement.elementText("httpBody");
+                HttpTextBodyContent httpBodyContent = new HttpTextBodyContent(body);
+                requestObject.setBodyContent(httpBodyContent);
+            } else if (isBodySupported(requestObject)) {
                 String httpBodyContent = reqElement.elementText("httpBodyContent");
-                requestObject.setBodyContent(
-                        HttpBodyContentReader.fromSource(httpBodyType, httpBodyContent, projectDir, substitutor));
+                HttpBodyContent bodyContent = HttpBodyContentReader.fromSource(httpBodyType, httpBodyContent,
+                        projectDir, substitutor);
+                requestObject.setBodyContent(bodyContent);
+
+                // Backward compatible with 5.3.1
+                ByteArrayOutputStream outstream = new ByteArrayOutputStream();
+                try {
+                    bodyContent.writeTo(outstream);
+                    requestObject.setHttpBody(outstream.toString());
+                } catch (IOException ignored) {
+                }
             }
         }
 
         return requestObject;
     }
-    
+
     private static boolean isBodySupported(RequestObject requestObject) {
         String restRequestMethod = requestObject.getRestRequestMethod();
         return !("GET".contains(restRequestMethod) || "DELETE".equals(restRequestMethod));

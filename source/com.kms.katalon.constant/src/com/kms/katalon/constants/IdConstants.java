@@ -33,7 +33,7 @@ public interface IdConstants {
 
     public static final String DEBUG_TOOL_ITEM_ID = "com.kms.katalon.composer.execution.handledtoolitem.debug";
 
-    public static final String PERSPECTIVE_SWITCHER_TOOL_CONTROL_ID = "com.kms.katalon.composer.perspective.switcher";
+    public static final String PERSPECTIVE_SWITCHER_TOOL_CONTROL_ID = "com.kms.katalon.composer.toolbar.switcher";
 
     // Composer PartStack content
     public static final String COMPOSER_CONTENT_PARTSTACK_ID = "com.kms.katalon.composer.content";
@@ -260,6 +260,8 @@ public interface IdConstants {
     public static final String MENU_CMD_ID_WINDOW_RESET_PERSPECTIVE = "com.kms.katalon.composer.command.window.resetPerspective";
 
     public static final String MENU_CMD_ID_HELP_ABOUT = "org.eclipse.ui.help.aboutAction";
+
+    public static final String MENU_CMD_ID_QUITE = "com.kms.katalon.composer.quit";
 
     // Left Part Stack
     public static final String COMPOSER_PARTSTACK_EXPLORER_ID = "com.kms.katalon.composer.partstack.explorer";

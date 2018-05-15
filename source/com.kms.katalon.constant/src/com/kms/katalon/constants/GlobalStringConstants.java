@@ -245,6 +245,10 @@ public class GlobalStringConstants {
 
     public static final String ROOT_FOLDER_NAME_CHECKPOINT = GlobalMessageConstants.ROOT_FOLDER_NAME_CHECKPOINT;
 
+    public static final String ROOT_FOLDER_NAME_PROFILES = GlobalMessageConstants.ROOT_FOLDER_NAME_PROFILES;
+
+    public static final String ROOT_FOLDER_NAME_TEST_LISTENER = GlobalMessageConstants.ROOT_FOLDER_NAME_TEST_LISTENER;
+
     public static final String FILE_NAME_GLOBAL_VARIABLE = GlobalMessageConstants.FILE_NAME_GLOBAL_VARIABLE;
     
     // Entity keyword
@@ -303,4 +307,9 @@ public class GlobalStringConstants {
     public static final String CREATED_DATE = GlobalMessageConstants.CREATED_DATE;
 
     public static final String MODIFIED_DATE = GlobalMessageConstants.MODIFIED_DATE;
+
+    public static final String APPIUM_INSTALLATION_GUIDE_MSG = GlobalMessageConstants.APPIUM_INSTALLATION_GUIDE_MSG;
+    
+    public static final String URL_TROUBLESHOOTING_MOBILE_TESTING = GlobalMessageConstants.URL_TROUBLESHOOTING_MOBILE_TESTING;
+
 }

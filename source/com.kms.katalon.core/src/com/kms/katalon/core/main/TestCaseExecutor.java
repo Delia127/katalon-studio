@@ -80,8 +80,8 @@ public class TestCaseExecutor {
         this.testSuiteExecutor = testSuiteExecutor;
     }
 
-    public TestCaseExecutor(TestCaseBinding testCaseBinding, ScriptEngine engine,
-            ExecutionEventManager eventManager, InternalTestCaseContext testCaseContext, boolean doCleanUp) {
+    public TestCaseExecutor(TestCaseBinding testCaseBinding, ScriptEngine engine, ExecutionEventManager eventManager,
+            InternalTestCaseContext testCaseContext, boolean doCleanUp) {
         this.testCaseBinding = testCaseBinding;
         this.engine = engine;
         this.testCase = TestCaseFactory.findTestCase(testCaseBinding.getTestCaseId());
@@ -91,8 +91,8 @@ public class TestCaseExecutor {
         this.testCaseContext = testCaseContext;
     }
 
-    public TestCaseExecutor(TestCaseBinding testCaseBinding, ScriptEngine engine,
-            ExecutionEventManager eventManager, InternalTestCaseContext testCaseContext) {
+    public TestCaseExecutor(TestCaseBinding testCaseBinding, ScriptEngine engine, ExecutionEventManager eventManager,
+            InternalTestCaseContext testCaseContext) {
         this(testCaseBinding, engine, eventManager, testCaseContext, false);
     }
 
@@ -236,7 +236,9 @@ public class TestCaseExecutor {
             if (errorCollector.containsErrors() && ignoredIfFailed) {
                 Throwable firstError = errorCollector.getFirstError();
                 TestStatus testStatus = new TestStatus();
-                testStatus.setStatusValue(TestStatusValue.ERROR);
+                TestStatusValue errorType = ErrorCollector.isErrorFailed(firstError) ? TestStatusValue.FAILED
+                        : TestStatusValue.ERROR;
+                testStatus.setStatusValue(errorType);
                 String errorMessage = ExceptionsUtil.getMessageForThrowable(firstError);
                 testStatus.setStackTrace(errorMessage);
                 testCaseResult.setTestStatus(testStatus);

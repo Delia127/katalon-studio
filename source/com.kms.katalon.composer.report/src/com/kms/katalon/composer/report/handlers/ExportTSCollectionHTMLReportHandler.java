@@ -73,15 +73,17 @@ public class ExportTSCollectionHTMLReportHandler {
                     String reportRelativeLocation = item.getReportLocation();
                     String reportDirLocation = projectDirLocation + File.separator + reportRelativeLocation;
                     TestSuiteLogRecord testSuiteLogRecord = ReportUtil.generate(reportDirLocation);
-
+                    int reportDirLocationHashCode = reportDirLocation.toString().hashCode();
+                    
                     String htmlFileName = StringUtils.substringAfterLast(reportRelativeLocation,
-                            StringConstants.ENTITY_ID_SEPARATOR) + ReportEntity.EXTENSION_HTML_REPORT;
+                            StringConstants.ENTITY_ID_SEPARATOR) + reportDirLocationHashCode + ReportEntity.EXTENSION_HTML_REPORT;
+                    
                     File htmlFile = new File(reportDirLocation + File.separator + htmlFileName);
                     if (!htmlFile.exists()) {
                         if (testSuiteLogRecord == null) {
                             throw new FileNotFoundException(htmlFile.getPath());
                         }
-                        ReportUtil.writeHtmlReport(testSuiteLogRecord, new File(reportDirLocation));
+                        ReportUtil.writeHtmlReportAppendHashCodeToName(testSuiteLogRecord, new File(reportDirLocation), reportDirLocationHashCode);
                     }
                     FileUtils.copyFileToDirectory(htmlFile, destDir);
 

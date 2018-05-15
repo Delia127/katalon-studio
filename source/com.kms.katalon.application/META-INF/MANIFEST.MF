@@ -1,0 +1,23 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Core Application
+Bundle-SymbolicName: com.kms.katalon.application;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: KMS
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: com.google.gson,
+ com.kms.katalon.controller,
+ com.kms.katalon.logging,
+ com.kms.katalon.entity,
+ com.kms.katalon.constant,
+ org.apache.commons.lang3,
+ org.eclipse.core.runtime,
+ com.kms.katalon.core,
+ com.kms.katalon.util
+Export-Package: com.kms.katalon.application,
+ com.kms.katalon.application.constants,
+ com.kms.katalon.application.usagetracking,
+ com.kms.katalon.application.utils
+Bundle-ClassPath: resources/lib/proxy-vole-1.0.4-SNAPSHOT-jar-with-dependencies.jar,
+ .
+Bundle-ActivationPolicy: lazy

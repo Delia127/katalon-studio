@@ -1,6 +1,10 @@
-package com.kms.katalon.usagetracking;
+package com.kms.katalon.application.usagetracking;
+
+import java.util.Map;
 
 public class UsageInformation {
+    public static String ANONYMOUS = "anonymous";
+
     private String email;
 
     private String version;
@@ -16,10 +20,24 @@ public class UsageInformation {
     private int newTestcaseCount = 0;
 
     private int newTestRunCount = 0;
-    
+
     private int newProjectCreatedCount = 0;
-    
+
     private int newTestCaseCreatedCount = 0;
+
+    private String sessionId;
+
+    private String userKey;
+
+    private String triggeredBy;
+
+    private String runningMode;
+
+    private Map<String, Object> extra;
+
+    private UsageInformation() {
+        // Disable default constructor
+    }
 
     public String getEmail() {
         return email;
@@ -101,4 +119,63 @@ public class UsageInformation {
         this.newTestCaseCreatedCount = newTestCaseCreatedCount;
     }
 
+    public Map<String, Object> getExtra() {
+        return extra;
+    }
+
+    public void setExtra(Map<String, Object> extra) {
+        this.extra = extra;
+    }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    public boolean isAnonymous() {
+        return ANONYMOUS.equals(getEmail());
+    }
+
+    public String getTriggeredBy() {
+        return triggeredBy;
+    }
+
+    public void setTriggeredBy(String triggeredBy) {
+        this.triggeredBy = triggeredBy;
+    }
+
+    public String getRunningMode() {
+        return runningMode;
+    }
+
+    public void setRunningMode(String runningMode) {
+        this.runningMode = runningMode;
+    }
+
+    public static UsageInformation createAnonymousInfo(String sessionId, String userKey) {
+        UsageInformation anonymous = new UsageInformation();
+        anonymous.setEmail(ANONYMOUS);
+        anonymous.setSessionId(sessionId);
+        anonymous.setUserKey(userKey);
+        return anonymous;
+    }
+
+    public static UsageInformation createActivatedInfo(String email, String sessionId, String userKey) {
+        UsageInformation activatedUser = new UsageInformation();
+        activatedUser.setEmail(email);
+        activatedUser.setSessionId(sessionId);
+        activatedUser.setUserKey(userKey);
+        return activatedUser;
+    }
+
+    public String getUserKey() {
+        return userKey;
+    }
+
+    public void setUserKey(String userKey) {
+        this.userKey = userKey;
+    }
 }

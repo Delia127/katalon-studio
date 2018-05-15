@@ -1,11 +1,16 @@
 package com.kms.katalon.dal.fileservice.manager;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 
+import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.dal.exception.InvalidNameException;
 import com.kms.katalon.dal.fileservice.EntityService;
 import com.kms.katalon.dal.fileservice.FileServiceConstant;
@@ -19,8 +24,11 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
+import com.kms.katalon.entity.webservice.TextBodyContent;
 import com.kms.katalon.groovy.reference.TestArtifactScriptRefactor;
 import com.kms.katalon.groovy.util.GroovyRefreshUtil;
+import com.kms.katalon.util.URLBuilder;
+import com.kms.katalon.util.collections.NameValuePair;
 
 public class WebElementFileServiceManager {
     public static WebElementEntity getWebElement(String webElementFileLocation) throws Exception {
@@ -29,11 +37,54 @@ public class WebElementFileServiceManager {
             entity = EntityFileServiceManager.get(new File(webElementFileLocation));
         }
         if (entity != null && entity instanceof WebElementEntity) {
+            if (entity instanceof WebServiceRequestEntity) {
+                WebServiceRequestEntity requestEntity = (WebServiceRequestEntity) entity;
+                migrateWSRequestEntityToVersion5_4_1(requestEntity);
+            }
             return (WebElementEntity) entity;
         }
         return null;
     }
-
+    
+    private static void migrateWSRequestEntityToVersion5_4_1(WebServiceRequestEntity requestEntity) throws Exception {
+        if (!StringUtils.isBlank(requestEntity.getMigratedVersion())) {
+            return;
+        }
+        
+        if (WebServiceRequestEntity.RESTFUL.equals(requestEntity.getServiceType())) {
+            if (!requestEntity.getRestParameters().isEmpty()) {
+                String restUrl = requestEntity.getRestUrl();
+                try {
+                    URLBuilder urlBuilder = new URLBuilder(restUrl);
+                    
+                    List<WebElementPropertyEntity> paramProperties = requestEntity.getRestParameters();
+                    requestEntity.setRestParameters(Collections.emptyList());
+                    List<NameValuePair> params = paramProperties
+                            .stream()
+                            .map(pr -> new NameValuePair(pr.getName(), pr.getValue()))
+                            .collect(Collectors.toList());
+                    
+                    urlBuilder.addParameters(params);
+                    requestEntity.setRestUrl(urlBuilder.build().toString());
+                    requestEntity.setRestParameters(Collections.emptyList());
+                } catch (MalformedURLException ignored) {
+                }
+            }
+            
+            if (StringUtils.isBlank(requestEntity.getHttpBodyType()) 
+                    && !StringUtils.isBlank(requestEntity.getHttpBody())) {
+                String httpBody = requestEntity.getHttpBody();
+                requestEntity.setHttpBodyType("text");
+                TextBodyContent bodyContent = new TextBodyContent();
+                bodyContent.setText(httpBody);
+                requestEntity.setHttpBodyContent(JsonUtil.toJson(bodyContent));
+            }
+            
+            requestEntity.setMigratedVersion("5.4.1");
+            saveNewTestObject(requestEntity);
+        }
+    }
+    
     /**
      * Save a NEW Test Object entity
      * 

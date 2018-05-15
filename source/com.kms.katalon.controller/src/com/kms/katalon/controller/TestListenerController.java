@@ -18,6 +18,10 @@ public class TestListenerController extends EntityController {
         return (TestListenerController) _instance;
     }
 
+    public TestListenerEntity getTestListener(String name, FolderEntity folder) throws DALException {
+        return getTestListeners(folder).stream().filter(l -> l.getName().equals(name)).findFirst().orElse(null);
+    }
+
     public List<TestListenerEntity> getTestListeners(FolderEntity folder) throws DALException {
         return getDataProviderSetting().getTestListenerDataProvider().getTestListeners(folder);
     }

@@ -1,4 +1,4 @@
-package com.kms.katalon.console.utils;
+package com.kms.katalon.application.utils;
 
 
 public class VersionInfo {
@@ -54,6 +54,4 @@ public class VersionInfo {
     public void setBuildNumber(int buildNumber) {
         this.buildNumber = buildNumber;
     }
-    
-    
 }

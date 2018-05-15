@@ -281,6 +281,14 @@ public class ReportUtil {
 
     public static void writeHtmlReport(TestSuiteLogRecord suiteLogEntity, File logFolder)
             throws IOException, URISyntaxException {
+        StringBuilder htmlSb = prepareHtmlContent(suiteLogEntity);
+
+        // Write main HTML Report
+        FileUtils.writeStringToFile(new File(logFolder, logFolder.getName() + ".html"), htmlSb.toString());
+    }
+
+    private static StringBuilder prepareHtmlContent(TestSuiteLogRecord suiteLogEntity)
+            throws IOException, URISyntaxException {
         List<String> strings = new ArrayList<String>();
 
         JsSuiteModel jsSuiteModel = new JsSuiteModel(suiteLogEntity, strings);
@@ -290,9 +298,14 @@ public class ReportUtil {
         readFileToStringBuilder(ResourceLoader.HTML_TEMPLATE_FILE, htmlSb);
         htmlSb.append(generateVars(strings, suiteLogEntity, sbModel));
         readFileToStringBuilder(ResourceLoader.HTML_TEMPLATE_CONTENT, htmlSb);
+        return htmlSb;
+    }
+    
+    public static void writeHtmlReportAppendHashCodeToName(TestSuiteLogRecord suiteLogEntity, File logFolder, int reportDirLocationHashCode)
+            throws IOException, URISyntaxException {
+        StringBuilder htmlSb = prepareHtmlContent(suiteLogEntity);
 
-        // Write main HTML Report
-        FileUtils.writeStringToFile(new File(logFolder, logFolder.getName() + ".html"), htmlSb.toString());
+        FileUtils.writeStringToFile(new File(logFolder, logFolder.getName() + reportDirLocationHashCode + ".html"), htmlSb.toString());
     }
 
     public static void writeCSVReport(TestSuiteLogRecord suiteLogEntity, File logFolder) throws IOException {

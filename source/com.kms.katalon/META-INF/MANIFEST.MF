@@ -61,7 +61,11 @@ Require-Bundle: org.eclipse.e4.core.di,
  org.eclipse.e4.core.di.extensions,
  org.eclipse.e4.ui.css.core,
  org.apache.commons.io,
- com.kms.katalon.selenium.ide
+ com.kms.katalon.selenium.ide,
+ com.kms.katalon.application,
+ org.apache.commons.compress,
+ com.kms.katalon.core.webui,
+ com.kms.katalon.core.appium
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: javax.annotation,

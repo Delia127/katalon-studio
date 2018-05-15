@@ -49,7 +49,7 @@ public class TestStepDescriptionBuilderDialog extends TitleAreaDialog {
     @Override
     protected Point getInitialSize() {
         Point initSize = super.getInitialSize();
-        return new Point(initSize.x, 250);
+        return new Point(initSize.x, Math.max(250, initSize.y));
     }
 
     @Override

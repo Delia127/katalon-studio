@@ -4,7 +4,7 @@
 <head>
     <title>REPORT_TITLE</title>
     <style media="all" type="text/css">
-    html,body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:.8em;color:#000;background:#fff;margin:0;padding:0;height:100%;overflow:hidden}
+    html,body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:.8em;color:#000;background:#fff;margin:0;padding:0;height:100%;overflow-y:auto}
     .hidden-content{display:none;color:#000;text-align:center}
     .flex-row-container{display:flex;flex-direction:row;justify-content:space-between;align-items:stretch;align-content:center}
     .tsc-header{height:60px;background-color:#333;padding:0 15px}

@@ -4,6 +4,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
@@ -121,6 +122,8 @@ public class UploadTestCaseResultJob extends QTestJob {
             TestSuiteEntity testSuiteEntity = ReportController.getInstance().getTestSuiteByReport(reportEntity);
 
             monitor.beginTask(StringConstants.JOB_TASK_UPLOAD_TEST_RESULT, uploadedPreviewLst.size());
+            List<IStatus> errorStatuses = new ArrayList<>();
+            List<String> failedTestResultUploads = new ArrayList<>();
             for (QTestLogUploadedPreview uploadedItem : uploadedPreviewLst) {
                 if (monitor.isCanceled()) {
                     throw new OperationCanceledException();
@@ -177,10 +180,25 @@ public class UploadTestCaseResultJob extends QTestJob {
                     uploadedTestCaseLogs.add(uploadedItem.getTestCaseLogRecord());
                 } catch (Exception e) {
                     LoggerSingleton.logError(e);
-                    return StatusUtil.getErrorStatus(getClass(), e);
+                    errorStatuses.add(StatusUtil.getErrorStatus(getClass(), e));
+                    failedTestResultUploads.add(uploadedItem.getQTestCase().getName());
                 }
                 monitor.worked(1);
             }
+            
+            if (!errorStatuses.isEmpty()) {
+                StringBuilder errorMsgBuilder = new StringBuilder()
+                        .append(StringConstants.JOB_TASK_UNABLE_TO_UPLOAD_TEST_RESULTS_REASON)
+                        .append("\n")
+                        .append(StringUtils.join(failedTestResultUploads, '\n'));
+              
+                return StatusUtil.getMultiStatus(
+                        getClass(), 
+                        errorStatuses.toArray(new Status[errorStatuses.size()]),
+                        errorMsgBuilder.toString(),
+                        null);
+            }
+            
             return Status.OK_STATUS;
         } catch (OperationCanceledException ex) {
             return Status.CANCEL_STATUS;

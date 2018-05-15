@@ -8,6 +8,8 @@ public class EventConstants {
     public static final String WORKSPACE_CREATED = "WORKSPACE/CREATED";
 
     public static final String WORKSPACE_CLOSED = "WORKSPACE/CLOSE";
+    
+    public static final String ACTIVATION_CHECKED = "ACTIVATION/CHECKED";
 
     // Project Events
     public static final String PROJECT_ALL = "PROJECT/*";
@@ -25,6 +27,12 @@ public class EventConstants {
     public static final String PROJECT_UPDATED = "PROJECT/UPDATED";
 
     public static final String PROJECT_SAVE_SESSION = "PROJECT/SAVE_SESSION";
+
+    public static final String PROJECT_OPEN_LATEST = "PROJECT/OPEN_LATEST";
+
+    public static final String PROJECT_RESTORE_SESSION = "PROJECT/RESTORE_SESSION";
+
+    public static final String PROJECT_RESTORE_SESSION_COMPLETED = "PROJECT/RESTORE_SESSION_COMPLETED";
 
     public static final String PROJECT_SETTINGS = "PROJECT/SETTINGS";
 

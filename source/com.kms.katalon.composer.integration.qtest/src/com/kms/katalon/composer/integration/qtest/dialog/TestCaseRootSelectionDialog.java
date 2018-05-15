@@ -3,7 +3,6 @@ package com.kms.katalon.composer.integration.qtest.dialog;
 import java.util.Arrays;
 
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -12,6 +11,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -25,7 +25,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 
+import com.kms.katalon.composer.components.impl.constants.ImageConstants;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 import com.kms.katalon.composer.integration.qtest.dialog.provider.TestCaseRootSelectionTreeContentProvider;
 import com.kms.katalon.composer.integration.qtest.dialog.provider.TestCaseRootSelectionTreeLabelProvider;
@@ -35,6 +37,9 @@ import com.kms.katalon.integration.qtest.entity.QTestProject;
 import com.kms.katalon.integration.qtest.setting.QTestSettingCredential;
 
 public class TestCaseRootSelectionDialog extends Dialog {
+    
+    private static final int FONT_SIZE_SMALL = 8;
+    
     private Composite container;
     private QTestModule moduleRoot;
     private TreeViewer treeViewer;
@@ -52,6 +57,8 @@ public class TestCaseRootSelectionDialog extends Dialog {
 
     private QTestProject qTestProject;
     private Label lblStatus;
+
+    private Composite warningComposite;
 
     public void setQTestProject(QTestProject qTestProject) {
         this.qTestProject = qTestProject;
@@ -100,6 +107,21 @@ public class TestCaseRootSelectionDialog extends Dialog {
 
         treeViewer.setContentProvider(new TestCaseRootSelectionTreeContentProvider());
         treeViewer.setLabelProvider(new TestCaseRootSelectionTreeLabelProvider());
+        
+        warningComposite = new Composite(container, SWT.NONE);
+        warningComposite.setLayout(new GridLayout(2, false));
+        warningComposite.setLayoutData(new GridData(SWT.FILL, SWT.END, true, false, 1, 1));
+        warningComposite.setVisible(false);
+        
+        CLabel lblWarningIcon = new CLabel(warningComposite, SWT.NONE);
+        lblWarningIcon.setImage(ImageConstants.IMG_20_WARNING_MSG);
+        lblWarningIcon.setRightMargin(8);
+        
+        Label lblWarningMsg = new Label(warningComposite, SWT.WRAP);
+        lblWarningMsg.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        lblWarningMsg.setText(StringConstants.DIA_MSG_USER_CHOOSES_TEST_CASE_ROOT);
+        ControlUtils.setFontSize(lblWarningMsg, FONT_SIZE_SMALL);
+        
         return container;
     }
 
@@ -136,6 +158,11 @@ public class TestCaseRootSelectionDialog extends Dialog {
         } else {
             selectedModule = (QTestModule) selection.getFirstElement();
             getButton(OK).setEnabled(true);
+            if (selectedModule != moduleRoot) {
+                warningComposite.setVisible(false);
+            } else {
+                warningComposite.setVisible(true);
+            }
         }
     }
 
@@ -188,10 +215,14 @@ public class TestCaseRootSelectionDialog extends Dialog {
 
     @Override
     protected void okPressed() {
-        if (selectedModule.getParentId() <= 0) {
-            MessageDialog.openWarning(null, StringConstants.WARN, StringConstants.DIA_MSG_USER_CHOOSES_TEST_CASE_ROOT);
-        }
+//        if (selectedModule == moduleRoot) {
+//            MessageDialog.openWarning(null, StringConstants.WARN, StringConstants.DIA_MSG_USER_CHOOSES_TEST_CASE_ROOT);
+//        }
         super.okPressed();
     }
 
+    @Override
+    protected boolean isResizable() {
+        return true;
+    }
 }

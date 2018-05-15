@@ -5,7 +5,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -395,30 +394,13 @@ public class RestServicePart extends WebServicePart {
     @Override
     protected void populateDataToUI() {
         WebServiceRequestEntity clone = (WebServiceRequestEntity) originalWsObject.clone();
-        String restUrl = clone.getRestUrl();
-        boolean isOldVersion = !clone.getRestParameters().isEmpty();
-        
-        try {
-            urlBuilder = new URLBuilder(restUrl);
-            
-            // Fix for back compatibility with already existing project (KAT-2930)
-            if (isOldVersion) {
-                tempPropList = new ArrayList<WebElementPropertyEntity>(clone.getRestParameters());
-                List<NameValuePair> params = tempPropList.stream()
-                        .map(pr -> new NameValuePair(pr.getName(), pr.getValue()))
-                        .collect(Collectors.toList());
-                clone.setRestParameters(Collections.emptyList());
-                urlBuilder.addParameters(params);
-               
-            }
-            
-            wsApiControl.getRequestURLControl().setText(urlBuilder.build().toString());
-            allowEditParamsTable = true;
-        } catch (MalformedURLException e) {
-            wsApiControl.getRequestURLControl().setText(restUrl);
-            allowEditParamsTable = false;
-        }
 
+        String restUrl = clone.getRestUrl();
+        
+        wsApiControl.getRequestURLControl().setText(restUrl);
+        
+        updateParamsTable(restUrl);
+        
         String restRequestMethod = clone.getRestRequestMethod();
         int index = Arrays.asList(WebServiceRequestEntity.REST_REQUEST_METHODS).indexOf(restRequestMethod);
         wsApiControl.getRequestMethodControl().select(index < 0 ? 0 : index);
@@ -440,10 +422,10 @@ public class RestServicePart extends WebServicePart {
         
         dirtyable.setDirty(false);
 
-        if (isOldVersion) {
-            originalWsObject = clone;
-            // save();
-        }
+//        if (isOldVersion) {
+//            originalWsObject = clone;
+//            // save();
+//        }
     }
 
     public void updateHeaders(WebServiceRequestEntity cloneWS) {

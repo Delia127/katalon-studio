@@ -1,4 +1,4 @@
-package com.kms.katalon.console.utils;
+package com.kms.katalon.application.utils;
 
 import java.awt.Desktop;
 import java.net.URI;
