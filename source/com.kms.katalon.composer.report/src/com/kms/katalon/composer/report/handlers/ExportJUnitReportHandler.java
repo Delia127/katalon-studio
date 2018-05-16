@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Shell;
 
@@ -63,7 +64,7 @@ public class ExportJUnitReportHandler {
                     destReportName = report.getName() + File.separator + destReportName;
                 }
                 FileUtils.copyFile(junitFile, new File(destDir, destReportName));
-                Desktop.getDesktop().open(destDir);
+                Program.launch(destDir.toURI().toString());
             } catch (Exception e) {
                 LoggerSingleton.logError(e);
                 exceptions.add(e.getMessage());

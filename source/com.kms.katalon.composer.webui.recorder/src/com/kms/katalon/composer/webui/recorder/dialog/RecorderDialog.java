@@ -1,11 +1,9 @@
 package com.kms.katalon.composer.webui.recorder.dialog;
 
-import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.BindException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -72,6 +70,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -185,7 +184,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     private static final String RECORD_TOOL_ITEM_LABEL = StringConstants.DIA_TOOLITEM_RECORD;
 
-	private static final String INPUT_PASSWORD_FIELD_PATTERN = "password";
+    private static final String INPUT_PASSWORD_FIELD_PATTERN = "password";
 
     private static Point MIN_DIALOG_SIZE = new Point(500, 600);
 
@@ -394,11 +393,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     private void runIEAddonInstaller() throws IOException {
         String ieAddonSetupPath = getResourcesDirectory().getAbsolutePath() + relativePathToIEAddonSetup;
-        Desktop desktop = Desktop.getDesktop();
-        if (!Desktop.isDesktopSupported()) {
-            return;
-        }
-        desktop.open(new File(ieAddonSetupPath));
+        Program.launch(new File(ieAddonSetupPath).toURI().toString());
     }
 
     private void resetInput() {
@@ -1051,7 +1046,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 for (IHTMLAction htmlAction : htmlActions) {
                     actionNames.add(TreeEntityUtil.getReadableKeywordName(htmlAction.getName()));
                 }
-                
+
                 return new ComboBoxCellEditor((Composite) getViewer().getControl(),
                         actionNames.toArray(new String[actionNames.size()]));
             }
@@ -1071,14 +1066,17 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                             && actionMapping.getData() != null) {
                         StringBuilder displayString = new StringBuilder("["); //$NON-NLS-1$
                         boolean isFirst = true;
-                        boolean isMasked = actionMapping.getTargetElement() != null && INPUT_PASSWORD_FIELD_PATTERN.equals(actionMapping.getTargetElement().getTypeProperty());  
+                        boolean isMasked = actionMapping.getTargetElement() != null && INPUT_PASSWORD_FIELD_PATTERN
+                                .equals(actionMapping.getTargetElement().getTypeProperty());
                         for (HTMLActionParamValueType dataObject : actionMapping.getData()) {
                             if (!isFirst) {
                                 displayString.append(", "); //$NON-NLS-1$
                             } else {
                                 isFirst = false;
                             }
-                            String finalText = isMasked ? StringUtils.repeat("*", dataObject.getValueToDisplay().length() - 2) : dataObject.getValueToDisplay();
+                            String finalText = isMasked
+                                    ? StringUtils.repeat("*", dataObject.getValueToDisplay().length() - 2)
+                                    : dataObject.getValueToDisplay();
                             displayString.append(finalText);
                         }
                         displayString.append("]"); //$NON-NLS-1$
@@ -1351,8 +1349,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                             @Override
                             public void run() {
                                 MessageDialogWithToggle messageDialogWithToggle = MessageDialogWithToggle
-                                        .openInformation(getShell(),
-                                                StringConstants.HAND_ACTIVE_BROWSERS_DIA_TITLE,
+                                        .openInformation(getShell(), StringConstants.HAND_ACTIVE_BROWSERS_DIA_TITLE,
                                                 StringConstants.DIALOG_RUNNING_INSTANT_IE_MESSAGE,
                                                 StringConstants.HAND_ACTIVE_BROWSERS_DIA_TOOGLE_MESSAGE, false, null,
                                                 null);
@@ -1391,10 +1388,10 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
                     private void openBrowserToAddonUrl() throws IOException, URISyntaxException {
                         String url = getAddonUrl(webUIDriverType);
-                        if (url == null || !Desktop.isDesktopSupported()) {
+                        if (url == null) {
                             return;
                         }
-                        Desktop.getDesktop().browse(new URI(url));
+                        Program.launch(url);
                     }
 
                     private String getAddonUrl(final WebUIDriverType webUIDriverType) {

@@ -16,6 +16,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -174,7 +175,7 @@ public class ActivationDialog extends Dialog {
             @Override
             public void mouseUp(MouseEvent e) {
                 try {
-                    Desktop.getDesktop().browse(new URI(StringConstants.FORGOT_PASS_LINK));
+                    Program.launch(StringConstants.FORGOT_PASS_LINK);
                 } catch (Exception ex) {
                     LogUtil.logError(ex);
                 }
@@ -184,7 +185,7 @@ public class ActivationDialog extends Dialog {
             @Override
             public void mouseUp(MouseEvent e) {
                 try {
-                    Desktop.getDesktop().browse(new URI(StringConstants.REGISTER_LINK));
+                    Program.launch(StringConstants.REGISTER_LINK);
                 } catch (Exception ex) {
                     LogUtil.logError(ex);
                 }

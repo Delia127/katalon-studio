@@ -1,11 +1,9 @@
 package com.kms.katalon.objectspy.dialog;
 
-import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.BindException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -31,6 +29,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
@@ -380,10 +379,10 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
 
     private void openBrowserToAddonUrl(WebUIDriverType webUIDriverType) throws IOException, URISyntaxException {
         String url = getAddonUrl(webUIDriverType);
-        if (url == null || !Desktop.isDesktopSupported()) {
+        if (url == null) {
             return;
         }
-        Desktop.getDesktop().browse(new URI(url));
+        Program.launch(url);
     }
 
     protected void showMessageForStartingInstantIE() {
@@ -514,11 +513,7 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
 
     private void runIEAddonInstaller() throws IOException {
         String ieAddonSetupPath = getResourcesDirectory().getAbsolutePath() + relativePathToIEAddonSetup;
-        Desktop desktop = Desktop.getDesktop();
-        if (!Desktop.isDesktopSupported()) {
-            return;
-        }
-        desktop.open(new File(ieAddonSetupPath));
+        Program.launch(new File(ieAddonSetupPath).toURI().toString());
     }
 
     private File getResourcesDirectory() throws IOException {

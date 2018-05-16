@@ -21,6 +21,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -162,7 +163,7 @@ public class KobitonAuthenticationDialog extends Dialog {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 try {
-                    Desktop.getDesktop().browse(new URI(e.text));
+                    Program.launch(e.text);
                 } catch (Exception ex) {
                     LoggerSingleton.logError(ex);
                 }

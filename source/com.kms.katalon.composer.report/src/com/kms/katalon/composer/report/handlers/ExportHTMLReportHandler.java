@@ -8,6 +8,7 @@ import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Shell;
 
@@ -47,7 +48,7 @@ public class ExportHTMLReportHandler {
 						}
 						FileUtils.copyFile(htmlFile, new File(exportDirectory,
                                 report.getDisplayName() + ReportEntity.EXTENSION_HTML_REPORT));
-						Desktop.getDesktop().open(exportDirectory);
+						Program.launch(exportDirectory.toURI().toString());
 					}
 				} catch (Throwable e) {
 					LoggerSingleton.logError(e);

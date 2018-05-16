@@ -9,6 +9,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
@@ -42,8 +43,8 @@ public class HelpToolItem extends ToolItem {
             return;
         }
         try {
-            Desktop.getDesktop().browse(new URI(url));
-        } catch (IOException | URISyntaxException exception) {
+            Program.launch(url);
+        } catch (IllegalArgumentException exception) {
             LoggerSingleton.logError(exception);
         }
     }

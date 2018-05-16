@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.eclipse.swt.program.Program;
+
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.entity.report.ReportEntity;
 
@@ -25,8 +27,8 @@ public abstract class TestCaseIntegrationColumn implements IntegrationColumnCont
             return;
         }
         try {
-            Desktop.getDesktop().browse(new URI(url));
-        } catch (IOException | URISyntaxException exception) {
+            Program.launch(url);
+        } catch (IllegalArgumentException exception) {
             LoggerSingleton.logError(exception);
         }
     }
