@@ -79,7 +79,7 @@ public class NewObjectSpyDialog extends Dialog
 
     private static final String DIA_BOUNDS_SET = "DIALOG_BOUNDS_SET";
 
-    private static final Point MIN_SIZE = new Point(500, 720);
+    private static final Point MIN_SIZE = new Point(550, 720);
 
     private static final int CAPTURED_OBJECT_VIEW_MIN_SIZE = 100;
 
@@ -192,7 +192,8 @@ public class NewObjectSpyDialog extends Dialog
         bottomComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         bottomComposite.setLayout(bottomLayout);
 
-        new HelpCompositeForDialog(bottomComposite, DocumentationMessageConstants.DIALOG_OBJECT_SPY_WEB_UI) {
+        HelpCompositeForDialog helpComposite = new HelpCompositeForDialog(bottomComposite,
+                DocumentationMessageConstants.DIALOG_OBJECT_SPY_WEB_UI) {
 
             @Override
             protected GridLayout createLayout() {
@@ -203,6 +204,8 @@ public class NewObjectSpyDialog extends Dialog
                 return layout;
             }
         };
+        
+        helpComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 
         verifyView = new ObjectVerifyAndHighlightView();
         verifyView.createVerifyAndHighlightView(bottomComposite, GridData.FILL_HORIZONTAL);
