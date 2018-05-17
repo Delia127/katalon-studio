@@ -66,6 +66,8 @@ public class SpyObjectHandler {
                 Shell shell = getShell(activeShell);
                 objectSpyDialog = new NewObjectSpyDialog(shell, LoggerSingleton.getInstance().getLogger(), eventBroker);
                 objectSpyDialog.setBlockOnOpen(false);
+            } else {
+                objectSpyDialog.getShell().forceActive();
             }
             objectSpyDialog.open();
             if (selectedObjects != null) {

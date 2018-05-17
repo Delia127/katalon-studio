@@ -112,6 +112,8 @@ public class RecordHandler {
             if (recordDialog == null || recordDialog.isDisposed()) {
                 shell = getShell(Display.getCurrent().getActiveShell());
                 recordDialog = new RecorderDialog(shell, LoggerSingleton.getInstance().getLogger(), eventBroker);
+            } else {
+                recordDialog.getShell().forceActive();
             }
 
             int responseCode = recordDialog.open();
