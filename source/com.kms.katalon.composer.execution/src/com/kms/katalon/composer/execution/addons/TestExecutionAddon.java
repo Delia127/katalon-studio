@@ -32,6 +32,7 @@ import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jdt.internal.debug.core.model.JDIStackFrame;
 import org.eclipse.ui.IWorkbenchPartReference;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.osgi.service.event.Event;
@@ -160,8 +161,12 @@ public class TestExecutionAddon implements EventHandler {
     }
 
     private void registerPartListeners() {
-        PlatformUI.getWorkbench()
-                .getActiveWorkbenchWindow()
+        IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench()
+                .getActiveWorkbenchWindow();
+        if (activeWorkbenchWindow == null) {
+            return;
+        }
+        activeWorkbenchWindow
                 .getPartService()
                 .addPartListener(new PartListenerAdapter() {
                     @Override
@@ -193,9 +198,16 @@ public class TestExecutionAddon implements EventHandler {
     }
 
     private void activeDebugHandlers() {
-        IHandlerService handlerService = (IHandlerService) PlatformUI.getWorkbench()
-                .getActiveWorkbenchWindow()
+        IWorkbenchWindow activeWorkbenchWindow =  PlatformUI.getWorkbench()
+                .getActiveWorkbenchWindow();
+        if (activeWorkbenchWindow == null) {
+            return;
+        }
+        IHandlerService handlerService = (IHandlerService) activeWorkbenchWindow
                 .getService(IHandlerService.class);
+        if (handlerService == null) {
+            return;
+        }
         handlerService.activateHandler(STEP_INTO_COMMAND, new StepIntoCommandHandler());
         handlerService.activateHandler(STEP_OVER_COMMAND, new StepOverCommandHandler());
         handlerService.activateHandler(STEP_RETURN_COMMAND, new StepReturnCommandHandler());
