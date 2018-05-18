@@ -9,6 +9,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import com.google.common.io.BaseEncoding;
 import com.kms.katalon.core.logging.model.ILogRecord;
 import com.kms.katalon.core.logging.model.MessageLogRecord;
@@ -55,7 +57,8 @@ public class JsStepModel extends JsModel {
         props.add(new JsModelProperty("Type", EMPTY_STRING_INDEX, null));
         props.add(new JsModelProperty("name", stepName, listStrings));
         props.add(new JsModelProperty("timeout", EMPTY_STRING_INDEX, null));
-        props.add(new JsModelProperty("doc", stepLogEntity.getDescription(), listStrings));
+        props.add(new JsModelProperty("doc", 
+                StringEscapeUtils.unescapeJava(stepLogEntity.getDescription()), listStrings));
         props.add(new JsModelProperty("args", EMPTY_STRING_INDEX, null));
 
         // The Status
