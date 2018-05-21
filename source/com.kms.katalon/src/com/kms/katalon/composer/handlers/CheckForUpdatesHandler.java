@@ -188,15 +188,14 @@ public class CheckForUpdatesHandler implements UpdateComponent {
         InstallUpdateConfirmationDialog dialog = new InstallUpdateConfirmationDialog(
                 Display.getCurrent().getActiveShell());
         if (dialog.open() == InstallUpdateConfirmationDialog.OK) {
+            final String latestVersion = newUpdateResult.getLatestVersionInfo().getLatestVersion();
             try {
                 Thread t = new Thread(() -> {
                     try {
                         // Clean driver
                         WebDriverCleanerUtil.cleanup();
                         AppiumDriverManager.cleanup();
-
-                        String latestVersion = newUpdateResult.getLatestVersionInfo().getLatestVersion();
-                        ActivationInfoCollector.markActivatedViaUpgradation(latestVersion);
+                        
 
                         // start Katalon Updater
                         UpdaterLauncher updaterLauncher = new UpdaterLauncher(latestVersion,
@@ -210,6 +209,7 @@ public class CheckForUpdatesHandler implements UpdateComponent {
                 t.setDaemon(true);
                 t.start();
 
+                ActivationInfoCollector.markActivatedViaUpgradation(latestVersion);
                 // quit Katalon
                 new CommandCaller().call(IdConstants.QUIT_COMMAND_ID);
             } catch (CommandException e) {
