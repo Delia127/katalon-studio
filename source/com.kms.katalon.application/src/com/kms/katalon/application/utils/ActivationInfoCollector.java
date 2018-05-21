@@ -5,7 +5,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Objects;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.Platform;
 
 import com.google.gson.JsonObject;
@@ -28,10 +30,9 @@ public class ActivationInfoCollector {
             return false;
         }
         try {
-            String fullVersion = ApplicationInfo.versionNo() + "." + ApplicationInfo.buildNo();
             String updatedVersion = ApplicationInfo
                     .getAppProperty(ApplicationStringConstants.UPDATED_VERSION_PROP_NAME);
-            if (fullVersion.equals(updatedVersion)) {
+            if ( ApplicationInfo.versionNo().equals(updatedVersion)) {
                 setActivatedVal();
                 return true;
             }
@@ -160,6 +161,18 @@ public class ActivationInfoCollector {
     }
 
     public static void markActivatedViaUpgradation(String versionNumber) {
-        ApplicationInfo.setAppProperty(ApplicationStringConstants.UPDATED_VERSION_PROP_NAME, versionNumber, true);
+        ApplicationInfo.setAppProperty(ApplicationStringConstants.UPDATED_VERSION_PROP_NAME, 
+                getVersionNo(versionNumber), true);
+    }
+    
+    private static String getVersionNo(String versionNumber) {
+        if (versionNumber == null) {
+            return versionNumber;
+        }
+        String[] numbers = versionNumber.split("\\.");
+        while (numbers.length < 3) {
+            numbers = ArrayUtils.add(numbers, "0");
+        }
+        return StringUtils.join(ArrayUtils.subarray(numbers, 0, 3), ".");
     }
 }
