@@ -32,7 +32,7 @@ public class ActivationInfoCollector {
         try {
             String updatedVersion = ApplicationInfo
                     .getAppProperty(ApplicationStringConstants.UPDATED_VERSION_PROP_NAME);
-            if ( ApplicationInfo.versionNo().equals(updatedVersion)) {
+            if (ApplicationInfo.versionNo().equals(getVersionNo(updatedVersion))) {
                 setActivatedVal();
                 return true;
             }
