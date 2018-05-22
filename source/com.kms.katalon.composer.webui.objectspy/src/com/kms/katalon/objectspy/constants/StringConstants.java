@@ -139,4 +139,17 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String PREF_LBL_ACTIVE_BROWSER_PORT_DO_NOT_SHOW_WARNING_DIALOG = ObjectspyMessageConstants.PREF_LBL_ACTIVE_BROWSER_PORT_DO_NOT_SHOW_WARNING_DIALOG;
 
+    public static final String DIA_MSG_RESOLVE_CONFLICT_DES = ObjectspyMessageConstants.DIA_MSG_RESOLVE_CONFLICT_DES;
+
+    public static final String DIA_MSG_RESOLVE_CONFLICT_TITLE = ObjectspyMessageConstants.DIA_MSG_RESOLVE_CONFLICT_TITLE;
+
+    public static final String DIA_MSG_RADIO_DUPLICATE = ObjectspyMessageConstants.DIA_MSG_RADIO_DUPLICATE;
+
+    public static final String DIA_MSG_RADIO_MERGE = ObjectspyMessageConstants.DIA_MSG_RADIO_MERGE;
+
+    public static final String DIA_MSG_RADIO_REPLACE = ObjectspyMessageConstants.DIA_MSG_RADIO_REPLACE;
+
+    public static final String DIA_MSG_SELECT_ALL_BTN = ObjectspyMessageConstants.DIA_MSG_SELECT_ALL_BTN;
+
+    public static final String DIA_MSG_DE_SELECT_ALL_BTN = ObjectspyMessageConstants.DIA_MSG_DE_SELECT_ALL_BTN;
 }
