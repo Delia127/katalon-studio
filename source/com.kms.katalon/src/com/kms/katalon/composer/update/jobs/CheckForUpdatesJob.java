@@ -57,7 +57,7 @@ public class CheckForUpdatesJob extends Job implements UpdateComponent {
 
             lastestUpdateVersion = JsonUtil.fromJson(outputStream.toString(), LastestVersionInfo.class);
             LastestVersionInfo localLatestVersion = updateManager.getLocalLatestVersion();
-            if (!LastestVersionInfo.isNewer(lastestUpdateVersion.getLatestVersion(),
+            if (!VersionUtil.isNewer(lastestUpdateVersion.getLatestVersion(),
                     VersionUtil.getCurrentVersion().getVersion())
                     || isIgnoredInSilenceMode(lastestUpdateVersion, localLatestVersion)) {
                 updateResult = new CheckForUpdateResult();
