@@ -8,6 +8,8 @@ import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 public interface ITestCaseDataProvider {
     public TestCaseEntity saveNewTestCase(TestCaseEntity newTestCase) throws Exception;
+    
+    public TestCaseEntity saveTempTestCase(TestCaseEntity newTestCase) throws Exception;
 
     public TestCaseEntity getTestCase(String testCaseValue) throws Exception;
 
@@ -30,4 +32,6 @@ public interface ITestCaseDataProvider {
     public TestCaseEntity getTestCaseByScriptFilePath(String scriptFilePath) throws Exception;
 
     public List<TestSuiteEntity> getTestCaseReferences(TestCaseEntity testCase) throws Exception;
+
+    public void deleteTempTestCase(TestCaseEntity testCase);
 }

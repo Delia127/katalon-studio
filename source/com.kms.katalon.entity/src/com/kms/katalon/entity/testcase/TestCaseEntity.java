@@ -24,6 +24,8 @@ public class TestCaseEntity extends IntegratedFileEntity {
     private String testCaseGuid;
 
     private byte[] scriptContents;
+    
+    private boolean isTemp = false;
 
     public TestCaseEntity() {
         variables = new ArrayList<VariableEntity>();
@@ -121,5 +123,13 @@ public class TestCaseEntity extends IntegratedFileEntity {
 
     public void addVariables(List<VariableEntity> variablesToAdd) {
         variables.addAll(variablesToAdd);
+    }
+
+    public boolean isTemp() {
+        return isTemp;
+    }
+
+    public void setTemp(boolean isTemp) {
+        this.isTemp = isTemp;
     }
 }

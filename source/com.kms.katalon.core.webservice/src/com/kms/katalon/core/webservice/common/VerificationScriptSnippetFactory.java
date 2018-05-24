@@ -16,20 +16,19 @@ import com.kms.katalon.core.exception.KatalonRuntimeException;
 
 public class VerificationScriptSnippetFactory {
     
-    private static final String SNIPPET_NODE_NAME = "snippet";
+    private static final String SNIPPET_NODE = "snippet";
     
-    private static final String SNIPPET_NAME = "name";
+    private static final String SNIPPET_NAME_NODE = "name";
     
-    private static final String SNIPPET_SCRIPT = "script";
+    private static final String SNIPPET_SCRIPT_NODE = "script";
     
-    private static final String SNIPPET_IMPORT_NAME = "import";
+    private static final String SNIPPET_IMPORT_NODE = "import";
     
     private static List<ScriptSnippet> snippets = new ArrayList<>();
     
     private static ScriptSnippet snippetImport;
     
     private static List<ScriptSnippet> loadSnippets() {
-//        List<ScriptSnippet> snippets = new ArrayList<>();
         
         URL url = FileLocator.find(FrameworkUtil.getBundle(
                 VerificationScriptSnippetFactory.class),
@@ -41,13 +40,13 @@ public class VerificationScriptSnippetFactory {
             Document document = reader.read(url);
             Element rootElement = document.getRootElement();
             
-            for (Object snippetObj : rootElement.elements(SNIPPET_NODE_NAME)) {
+            for (Object snippetObj : rootElement.elements(SNIPPET_NODE)) {
                 Element snippetElement = (Element) snippetObj;
-                String snippetName = snippetElement.elementText(SNIPPET_NAME);
-                String snippetScript = snippetElement.element(SNIPPET_SCRIPT).getText().trim();
+                String snippetName = snippetElement.elementText(SNIPPET_NAME_NODE);
+                String snippetScript = snippetElement.element(SNIPPET_SCRIPT_NODE).getText().trim();
                 ScriptSnippet snippet = new ScriptSnippet(snippetName, snippetScript);
                 
-                if (snippet.getName().equals(SNIPPET_IMPORT_NAME)) {
+                if (snippet.getName().equals(SNIPPET_IMPORT_NODE)) {
                     snippetImport = snippet;
                 } else {
                     snippets.add(snippet);

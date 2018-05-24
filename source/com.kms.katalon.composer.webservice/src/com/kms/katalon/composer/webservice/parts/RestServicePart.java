@@ -96,9 +96,8 @@ public class RestServicePart extends WebServicePart {
                     save();
                 }
 
-                // clear previous response
-                mirrorEditor.setText("");
-
+                clearPreviousResponse();
+                
                 String requestURL = wsApiControl.getRequestURL().trim();
                 if (isInvalidURL(requestURL)) {
                     return;
@@ -148,6 +147,8 @@ public class RestServicePart extends WebServicePart {
                                     responseBodyEditor.setInput(responseObject);
 
                                 });
+                               
+                                executeVerificationScriptIfNotEmpty(responseObject);
                             } catch (Exception e) {
                                 throw new InvocationTargetException(e);
                             } finally {

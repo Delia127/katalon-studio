@@ -481,4 +481,7 @@ public class StringConstants {
 
     // KeywordLoader
     public static final String KW_MSG_LIST_KEYWORD_CLASS_FAILED_X = CoreMessageConstants.KW_MSG_LIST_KEYWORD_CLASS_FAILED_X;
+
+    // Web Service Verification Run Configuration
+    public static final String WS_RESPONSE_OBJECT = "responseObject";
 }

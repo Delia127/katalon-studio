@@ -12,6 +12,7 @@ import org.eclipse.e4.core.di.annotations.Creatable;
 import com.kms.katalon.controller.constants.StringConstants;
 import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.entity.util.Util;
@@ -21,6 +22,8 @@ import com.kms.katalon.groovy.util.GroovyUtil;
 @Creatable
 public class TestCaseController extends EntityController {
     private static EntityController _instance;
+    
+    private static final String TEMP_TEST_CASE = "TempTestCase";
 
     private TestCaseController() {
         super();
@@ -69,6 +72,26 @@ public class TestCaseController extends EntityController {
         newTestCase.setProject(parentFolder.getProject());
         return newTestCase;
     }
+    
+    public TestCaseEntity newTempTestCase(ProjectEntity project) throws Exception {
+        TestCaseEntity tempTestCase = new TestCaseEntity();
+        tempTestCase.setTestCaseGuid(Util.generateGuid());
+        tempTestCase.setName(generateTempTestCaseName());
+        tempTestCase.setProject(project);
+        tempTestCase.setTemp(true);
+        
+        return getDataProviderSetting().getTestCaseDataProvider().saveTempTestCase(tempTestCase);
+    }
+    
+    private String generateTempTestCaseName() {
+        StringBuilder nameBuilder = new StringBuilder();
+        nameBuilder
+            .append(TEMP_TEST_CASE)
+            .append("_")
+            .append(System.currentTimeMillis());
+        
+        return nameBuilder.toString();
+    }
 
     /**
      * Save a NEW Test Case entity.<br>
@@ -92,6 +115,10 @@ public class TestCaseController extends EntityController {
 
     public void deleteTestCase(TestCaseEntity testCase) throws Exception {
         getDataProviderSetting().getTestCaseDataProvider().deleteTestCase(testCase);
+    }
+    
+    public void deleteTempTestCase(TestCaseEntity testCase) {
+        getDataProviderSetting().getTestCaseDataProvider().deleteTempTestCase(testCase);
     }
 
     public TestCaseEntity updateTestCase(TestCaseEntity testCase) throws Exception {

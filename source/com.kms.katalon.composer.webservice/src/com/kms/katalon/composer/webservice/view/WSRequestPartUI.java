@@ -291,7 +291,7 @@ public class WSRequestPartUI {
         Composite verificationPartComposite = getVerificationPartComposite();
         
         int verificationPartWidth = verificationPartComposite.getSize().x;
-        long snippetPartWeight = Math.round(((double) 300 / verificationPartWidth) * 1000);
+        long snippetPartWeight = Math.round(((double) 250 / verificationPartWidth) * 1000);
         long editorPartWeight = 1000 - snippetPartWeight;
         
         snippetPart.setContainerData(String.valueOf(snippetPartWeight));

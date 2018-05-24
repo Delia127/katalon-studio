@@ -75,6 +75,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.internal.win32.NONCLIENTMETRICSW;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.program.Program;
@@ -110,9 +111,11 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
 import com.kms.katalon.composer.parts.SavableCompositePart;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
+import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
 import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
 import com.kms.katalon.composer.webservice.components.MirrorEditor;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
@@ -129,6 +132,7 @@ import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.util.internal.Base64;
 import com.kms.katalon.core.webservice.common.PrivateKeyReader;
@@ -138,6 +142,7 @@ import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
+import com.kms.katalon.execution.webservice.VerificationScriptExecutor;
 
 public abstract class WebServicePart implements SavableCompositePart, EventHandler, IComposerPartEvent {
     
@@ -145,6 +150,8 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
 
     private static final Font FONT_COURIER_NEW_12 = new Font(Display.getCurrent(), "Courier New", 12, SWT.NORMAL);
 
+    private static final Font FONT_CONSOLAS_10 = new Font(Display.getCurrent(), "Consolas", 10, SWT.NORMAL);
+    
     protected static final String TAB_SPACE = "    ";
 
     private static final char RAW_PASSWORD_CHAR_MASK = '\0';
@@ -306,6 +313,8 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
     protected GroovyEditor verificationScriptEditor;
     
     protected Composite parent;
+    
+    protected Text txtVerificationLog;
 
     private MPart scriptEditorPart;
     
@@ -320,6 +329,10 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
     }
     
     private Composite responseMessageComposite;
+
+    protected Label lblVerificationResultStatus;
+
+    private Composite verificationResultComposite;
 
     @PostConstruct
     public void createComposite(Composite parent, MCompositePart part) {
@@ -397,6 +410,29 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
         } catch (BadLocationException e) {
             LoggerSingleton.logError(e);
         }
+    }
+    
+    protected String getVerificationScript() {
+        IEditorInput input = verificationScriptEditor.getEditorInput();
+        IDocument document = verificationScriptEditor.getDocumentProvider().getDocument(input);
+        if (document != null) {
+            String script = document.get();
+            return script;
+        } else {
+            return StringUtils.EMPTY;
+        }
+    }
+    
+    protected void executeVerificationScriptIfNotEmpty(ResponseObject responseObject) throws Exception {
+        String verificationScript = getVerificationScript();
+        if (!isEmptyScript(verificationScript)) {
+            VerificationScriptExecutor executor = new VerificationScriptExecutor();
+            executor.execute(verificationScript, responseObject);
+        }
+    }
+    
+    private boolean isEmptyScript(String script) {
+        return GroovyWrapperParser.parseGroovyScriptAndGetFirstStatement(script) == null;
     }
 
     protected void createAPIControls(Composite parent) {
@@ -498,23 +534,25 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
         ControlUtils.setFontToBeBold(lblSnippetHeading);
         lblSnippetHeading.setText(ComposerWebserviceMessageConstants.LBL_SNIPPET_HEADING);
         
-        ScrolledComposite scrolledComposite = new ScrolledComposite(snippetComposite, SWT.V_SCROLL);
+        ScrolledComposite scrolledComposite = new ScrolledComposite(snippetComposite, SWT.H_SCROLL | SWT.V_SCROLL);
         scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         scrolledComposite.setBackground(parent.getBackground());
         
         Composite composite = new Composite(scrolledComposite, SWT.NONE);
         composite.setLayout(new GridLayout());
+        composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         composite.setBackground(parent.getBackground());
         
         Color snippetLblColor = new Color(composite.getDisplay(), 0, 0, 255);
         for (ScriptSnippet snippet : verificationScriptSnippets) {
-            CLabel lblSnippet = new CLabel(composite, SWT.NONE);
+            CLabel lblSnippet = new CLabel(composite, SWT.WRAP);
             ControlUtils.setFontSize(lblSnippet, fontSize);
             lblSnippet.setForeground(snippetLblColor);
             lblSnippet.setText(snippet.getName());
             lblSnippet.setCursor(Display.getCurrent().getSystemCursor(SWT.CURSOR_HAND));
             lblSnippet.setBackground(parent.getBackground());
             lblSnippet.setBottomMargin(5);
+            lblSnippet.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
             lblSnippet.addListener(SWT.MouseDown, e -> {
                 IEditorInput editorInput = verificationScriptEditor.getEditorInput();
                 IDocument document = verificationScriptEditor.getDocumentProvider().getDocument(editorInput);
@@ -854,6 +892,8 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
         createResponseBody(reponseDetailsTabFolder);
 
         createResponseHeader(reponseDetailsTabFolder);
+        
+        createResponseVerificationResult(reponseDetailsTabFolder);
 
 //        CTabItem responseVerificationLogTab = new CTabItem(reponseDetailsTabFolder, SWT.NONE);
 //        responseVerificationLogTab.setText(ComposerWebserviceMessageConstants.TAB_VERIFICATION_LOG);
@@ -883,6 +923,34 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
         GridLayout glBody = new GridLayout();
         glBody.marginWidth = glBody.marginHeight = 0;
         responseBodyComposite.setLayout(glBody);
+    }
+    
+    private void createResponseVerificationResult(CTabFolder responseDetailsTabFolder) {
+        CTabItem verificationResultTab = new CTabItem(responseDetailsTabFolder, SWT.NONE);
+        verificationResultTab.setText("Verification Log");
+        
+        verificationResultComposite = new Composite(responseDetailsTabFolder, SWT.NONE);
+        verificationResultTab.setControl(verificationResultComposite);
+        
+        GridLayout glVerificationResult = new GridLayout();
+        glVerificationResult.marginWidth = glVerificationResult.marginHeight = 0;
+        verificationResultComposite.setLayout(glVerificationResult);
+        
+        Composite resultStatusComposite = new Composite(verificationResultComposite, SWT.NONE);
+        GridLayout glResultStatus = new GridLayout(2, false);
+        resultStatusComposite.setLayout(glResultStatus);
+        
+        Label lblVerificationResult = new Label(resultStatusComposite, SWT.NONE);
+        lblVerificationResult.setText("Result: ");
+        
+        lblVerificationResultStatus = new Label(resultStatusComposite, SWT.NONE);
+        lblVerificationResultStatus.setForeground(ColorUtil.getTextWhiteColor());
+        
+        txtVerificationLog = new Text(verificationResultComposite, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
+        txtVerificationLog.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        txtVerificationLog.setEditable(false);
+        txtVerificationLog.setBackground(ColorUtil.getWhiteBackgroundColor());
+        txtVerificationLog.setFont(FONT_CONSOLAS_10);
     }
 
     private void createResponseStatusComposite() {
@@ -980,6 +1048,14 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
             return ColorUtil.getWarningLogBackgroundColor();
         }
         return ColorUtil.getErrorLogBackgroundColor();
+    }
+    
+    protected void clearPreviousResponse() {
+        mirrorEditor.setText("");
+        
+        txtVerificationLog.setText("");
+        
+        lblVerificationResultStatus.setText("");
     }
 
     protected ParameterTable createKeyValueTable(Composite containerComposite, boolean isHttpHeader) {
@@ -1200,6 +1276,8 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
     protected void registerListeners() {
         eventBroker.subscribe(EventConstants.TEST_OBJECT_UPDATED, this);
         eventBroker.subscribe(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, this);
+        eventBroker.subscribe(EventConstants.WS_VERIFICATION_LOG_UPDATED, this);
+        eventBroker.subscribe(EventConstants.WS_VERIFICATION_EXECUTION_FINISHED, this);
         
         IFileEditorInput editorInput = (IFileEditorInput) verificationScriptEditor.getEditorInput();
         verificationScriptEditor.getDocumentProvider()
@@ -1294,6 +1372,31 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
             } catch (Exception e) {
                 LoggerSingleton.logError(e);
             }
+        }
+        
+        if (EventConstants.WS_VERIFICATION_LOG_UPDATED.equals(event.getTopic())) {
+            txtVerificationLog.append(eventData + "\n");
+        }
+        
+        if (EventConstants.WS_VERIFICATION_EXECUTION_FINISHED.equals(event.getTopic())) {
+            TestStatusValue value = (TestStatusValue) eventData;
+            setVerificationResultStatus(value);
+        }
+    }
+    
+    private void setVerificationResultStatus(TestStatusValue value) {
+        lblVerificationResultStatus.setText(value.toString());
+        lblVerificationResultStatus.setBackground(getBackgroundColorForVerificationResultStatus(value));
+        verificationResultComposite.layout(true, true);
+    }
+
+    private Color getBackgroundColorForVerificationResultStatus(TestStatusValue value) {
+        if (TestStatusValue.PASSED.equals(value)) {
+            return ColorUtil.getPassedLogBackgroundColor();
+        } else if (TestStatusValue.WARNING.equals(value)) {
+            return ColorUtil.getWarningLogBackgroundColor();
+        } else {
+            return ColorUtil.getErrorLogBackgroundColor();
         }
     }
 

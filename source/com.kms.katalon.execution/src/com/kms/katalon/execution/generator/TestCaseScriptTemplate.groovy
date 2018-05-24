@@ -13,6 +13,7 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testcase.TestCaseBinding
 import com.kms.katalon.entity.testcase.TestCaseEntity
 import com.kms.katalon.execution.configuration.IRunConfiguration
+import com.kms.katalon.execution.console.entity.BooleanConsoleOption
 import com.kms.katalon.execution.util.ExecutionUtil
 import com.kms.katalon.groovy.constant.GroovyConstants;
 import com.kms.katalon.groovy.util.GroovyStringUtil;
@@ -31,7 +32,9 @@ class TestCaseScriptTemplate {
 RunConfiguration.setExecutionSettingFile('<%= executionConfigFilePath %>')
 
 TestCaseMain.beforeStart()
-<% if (rawScript == null) { %>
+<% if (isTemp) { %>
+         TestCaseMain.runTempTestCase('<%= testCaseId %>', <%= testCaseBinding %>, FailureHandling.STOP_ON_FAILURE <%= isQuitDriversAfterRun ? ", true" : ", false" %>, <%= isQuitDriversAfterRun %>)
+<% } else if (rawScript == null) { %>
         TestCaseMain.runTestCase('<%= testCaseId %>', <%= testCaseBinding %>, FailureHandling.STOP_ON_FAILURE <%= isQuitDriversAfterRun ? ", true" : "" %>, <%= isQuitDriversAfterRun %>)
     <% } else { %>
         TestCaseMain.runTestCaseRawScript(
@@ -62,6 +65,8 @@ TestCaseMain.beforeStart()
         importNames.addAll(driverCleaners)
 
         String testCaseId = testCase.getIdForDisplay()
+        
+        boolean isTempTestCase = testCase.isTemp()
 
         def binding = [
             "importNames"     : importNames,
@@ -70,7 +75,8 @@ TestCaseMain.beforeStart()
             "executionConfigFilePath" : GroovyStringUtil.escapeGroovy(config.getExecutionSetting().getSettingFilePath()),
             "isQuitDriversAfterRun" : ExecutionUtil.isQuitDriversAfterExecutingTestCase(),
             "driverCleaners" : driverCleaners,
-            "rawScript" : config.getExecutionSetting().getRawScript()
+            "rawScript" : config.getExecutionSetting().getRawScript(),
+            "isTemp": isTempTestCase
         ]
 
         def engine = new GStringTemplateEngine()

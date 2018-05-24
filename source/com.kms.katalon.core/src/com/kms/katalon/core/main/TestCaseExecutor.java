@@ -81,14 +81,23 @@ public class TestCaseExecutor {
     }
 
     public TestCaseExecutor(TestCaseBinding testCaseBinding, ScriptEngine engine, ExecutionEventManager eventManager,
-            InternalTestCaseContext testCaseContext, boolean doCleanUp) {
+            InternalTestCaseContext testCaseContext, boolean doCleanUp, boolean isTemp) {
         this.testCaseBinding = testCaseBinding;
         this.engine = engine;
-        this.testCase = TestCaseFactory.findTestCase(testCaseBinding.getTestCaseId());
+        if (!isTemp) {
+            this.testCase = TestCaseFactory.findTestCase(testCaseBinding.getTestCaseId());
+        } else {
+            this.testCase = TestCaseFactory.findTempTestCase(testCaseBinding.getTestCaseId());
+        }
         this.doCleanUp = doCleanUp;
         this.eventManager = eventManager;
 
         this.testCaseContext = testCaseContext;
+    }
+    
+    public TestCaseExecutor(TestCaseBinding testCaseBinding, ScriptEngine engine, ExecutionEventManager eventManager,
+            InternalTestCaseContext testCaseContext, boolean doCleanUp) {
+        this(testCaseBinding, engine, eventManager, testCaseContext, doCleanUp, false);
     }
 
     public TestCaseExecutor(TestCaseBinding testCaseBinding, ScriptEngine engine, ExecutionEventManager eventManager,
@@ -133,7 +142,6 @@ public class TestCaseExecutor {
             onSetupError(e);
             return false;
         }
-
         try {
             variableBinding = collectTestCaseVariables();
         } catch (CompilationFailedException e) {
