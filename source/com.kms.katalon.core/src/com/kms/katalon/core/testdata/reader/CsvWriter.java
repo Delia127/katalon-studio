@@ -1,8 +1,10 @@
 package com.kms.katalon.core.testdata.reader;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
@@ -69,7 +71,7 @@ public class CsvWriter {
 
     public static void writeCsvReport(TestSuiteLogRecord suiteLog, File file, List<ILogRecord> filteredTestCaseRecords,
             boolean stepsIncluded) throws IOException {
-        ICsvListWriter csvWriter = new CsvListWriter(new FileWriter(file), CsvPreference.STANDARD_PREFERENCE);
+        ICsvListWriter csvWriter = new CsvListWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8), CsvPreference.STANDARD_PREFERENCE);
 
         try {
             // Test Suite
@@ -117,7 +119,7 @@ public class CsvWriter {
     public static void writeArraysToCsv(String[] header, List<Object[]> datas, File csvFile) throws IOException {
         ICsvListWriter csvWriter = null;
         try {
-            csvWriter = new CsvListWriter(new FileWriter(csvFile), CsvPreference.STANDARD_PREFERENCE);
+            csvWriter = new CsvListWriter(new OutputStreamWriter(new FileOutputStream(csvFile), StandardCharsets.UTF_8), CsvPreference.STANDARD_PREFERENCE);
             csvWriter.writeHeader(header);
             for (Object[] arr : datas) {
                 csvWriter.write(Arrays.asList(arr), SUMMARY_PROCESSORS);
