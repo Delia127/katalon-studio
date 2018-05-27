@@ -1,7 +1,6 @@
 package com.kms.katalon.execution.generator
 
-import groovy.text.GStringTemplateEngine
-import groovy.transform.CompileStatic
+import org.apache.commons.lang3.StringUtils
 
 import com.kms.katalon.core.configuration.RunConfiguration
 import com.kms.katalon.core.driver.internal.DriverCleanerCollector
@@ -12,12 +11,14 @@ import com.kms.katalon.core.main.TestCaseMain
 import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testcase.TestCaseBinding
 import com.kms.katalon.entity.testcase.TestCaseEntity
+import com.kms.katalon.entity.testcase.WSVerificationTestCaseEntity
 import com.kms.katalon.execution.configuration.IRunConfiguration
-import com.kms.katalon.execution.console.entity.BooleanConsoleOption
 import com.kms.katalon.execution.util.ExecutionUtil
 import com.kms.katalon.groovy.constant.GroovyConstants;
 import com.kms.katalon.groovy.util.GroovyStringUtil;
-import com.kms.katalon.groovy.util.GroovyUtil;
+
+import groovy.text.GStringTemplateEngine
+import groovy.transform.CompileStatic
 
 @CompileStatic
 class TestCaseScriptTemplate {
@@ -32,8 +33,8 @@ class TestCaseScriptTemplate {
 RunConfiguration.setExecutionSettingFile('<%= executionConfigFilePath %>')
 
 TestCaseMain.beforeStart()
-<% if (isTemp) { %>
-         TestCaseMain.runTempTestCase('<%= testCaseId %>', <%= testCaseBinding %>, FailureHandling.STOP_ON_FAILURE <%= isQuitDriversAfterRun ? ", true" : ", false" %>, <%= isQuitDriversAfterRun %>)
+<% if (!wsVerificationScript.isEmpty()) { %>
+         TestCaseMain.runWSVerificationScript('<%= wsVerificationScript %>', FailureHandling.STOP_ON_FAILURE, true)
 <% } else if (rawScript == null) { %>
         TestCaseMain.runTestCase('<%= testCaseId %>', <%= testCaseBinding %>, FailureHandling.STOP_ON_FAILURE <%= isQuitDriversAfterRun ? ", true" : "" %>, <%= isQuitDriversAfterRun %>)
     <% } else { %>
@@ -66,7 +67,12 @@ TestCaseMain.beforeStart()
 
         String testCaseId = testCase.getIdForDisplay()
         
-        boolean isTempTestCase = testCase.isTemp()
+        String wsVerificationScript
+        if (testCase instanceof WSVerificationTestCaseEntity) {
+            wsVerificationScript  = GroovyStringUtil.escapeGroovy(((WSVerificationTestCaseEntity) testCase).getScript())
+        } else {
+            wsVerificationScript = StringUtils.EMPTY
+        }
 
         def binding = [
             "importNames"     : importNames,
@@ -76,7 +82,7 @@ TestCaseMain.beforeStart()
             "isQuitDriversAfterRun" : ExecutionUtil.isQuitDriversAfterExecutingTestCase(),
             "driverCleaners" : driverCleaners,
             "rawScript" : config.getExecutionSetting().getRawScript(),
-            "isTemp": isTempTestCase
+            "wsVerificationScript": wsVerificationScript
         ]
 
         def engine = new GStringTemplateEngine()

@@ -160,17 +160,24 @@ public class KeywordLogger {
         nestedLevel++;
         getLogger().log(new XmlLogRecord(LogLevel.START.getLevel(), StringConstants.LOG_START_TEST + " : " + name,
                 nestedLevel, attributes));
+        setCurrentKeywordStack(keywordStack);
+    }
+    
+    private void setCurrentKeywordStack(Stack<KeywordStackElement> newKeywordStack) {
         if (currentKeywordStack != null) {
             keywordStacksContainer.push(currentKeywordStack);
         }
-        this.currentKeywordStack = keywordStack;
+        this.currentKeywordStack = newKeywordStack;
     }
-
+    
     public void endTest(String name, Map<String, String> attributes) {
         nestedLevel--;
         getLogger().log(new XmlLogRecord(LogLevel.END.getLevel(), StringConstants.LOG_END_TEST + " : " + name,
                 nestedLevel, attributes));
-
+        restorePreviousKeywordStack();
+    }
+    
+    private void restorePreviousKeywordStack() {
         if (!keywordStacksContainer.isEmpty()) {
             currentKeywordStack = keywordStacksContainer.pop();
         } else {

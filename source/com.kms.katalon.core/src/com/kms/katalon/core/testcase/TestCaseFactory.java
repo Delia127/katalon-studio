@@ -72,32 +72,7 @@ public class TestCaseFactory {
         throw new IllegalArgumentException(MessageFormat.format(StringConstants.TEST_CASE_FACTORY_MSG_TC_NOT_EXISTED,
                 testCaseId));
     }
-    
-    public static TestCase findTempTestCase(final String testCaseId) {
-        if (testCaseId == null) {
-            throw new IllegalArgumentException(StringConstants.TEST_CASE_FACTORY_MSG_ID_IS_NULL);
-        }
-        
-        File testCaseMetaFile = new File(getTempTestCaseMetaFilePath(testCaseId));
-        if (testCaseMetaFile.exists()) {
-            return readTestCase(testCaseId, testCaseMetaFile);
-        }
-        
-        throw new IllegalArgumentException(MessageFormat.format(StringConstants.TEST_CASE_FACTORY_MSG_TC_NOT_EXISTED,
-                testCaseId));
-    }
-    
-    private static String getTempTestCaseMetaFilePath(String testCaseId) {
-        return new StringBuilder()
-                .append(getProjectDirPath())
-                .append(File.separator)
-                .append(TEMP_TEST_CASE_META_ROOT_FOLDER_NAME)
-                .append(File.separator)
-                .append(testCaseId)
-                .append(TEST_CASE_META_FILE_EXTENSION)
-                .toString();
-    }
-    
+
     private static TestCase readTestCase(String testCaseId, File testCaseMetaFile) {
         try {
             SAXReader reader = new SAXReader();
@@ -106,13 +81,6 @@ public class TestCaseFactory {
             TestCase testCase = new TestCase(testCaseId);
             testCase.setDescription(rootElement.element(DESCRIPTION_NODE_NAME).getText());
             testCase.setTag(rootElement.element(TAG_NODE_NAME).getText());
-            
-            Element tempNode = rootElement.element(TEMP_NODE_NAME);
-            if (tempNode != null) {
-                boolean isTempTestCase = Boolean.parseBoolean(tempNode.getText());
-                testCase.setTemp(isTempTestCase);
-            }
-            
             List<Variable> variables = new ArrayList<Variable>();
             for (Object variableObject : rootElement.elements(VARIABLE_NODE_NAME)) {
                 Element variableElement = (Element) variableObject;
@@ -190,31 +158,8 @@ public class TestCaseFactory {
         }
         return StringUtils.EMPTY;
     }
-    
-    /* package */ static String getScriptPathByTempTestCaseId(String testCaseId) {
-        String scriptPath = new StringBuilder()
-                .append(getProjectDirPath())
-                .append(File.separator)
-                .append(TEMP_TEST_CASE_META_ROOT_FOLDER_NAME)
-                .append(File.separator)
-                .append(testCaseId)
-                .append(".")
-                .append(TEST_CASE_SCRIPT_FILE_EXTENSION)
-                .toString();
-        
-        File testCaseScriptFile = new File(scriptPath);
-        if (!testCaseScriptFile.exists()) {
-            return StringUtils.EMPTY;
-        } else {
-            return testCaseScriptFile.getAbsolutePath();
-        }
-    }
 
     /* package */static String getScriptClassNameByTestCaseId(String testCaseId) throws IOException {
         return FilenameUtils.getBaseName(getScriptPathByTestCaseId(testCaseId));
-    }
-    
-    /* package */ static String getScriptClassNameByTempTestCaseId(String testCaseId) {
-        return FilenameUtils.getBaseName(getScriptPathByTempTestCaseId(testCaseId));
     }
 }

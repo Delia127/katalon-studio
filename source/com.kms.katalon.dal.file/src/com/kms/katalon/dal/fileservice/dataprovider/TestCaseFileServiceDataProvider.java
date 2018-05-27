@@ -17,11 +17,6 @@ public class TestCaseFileServiceDataProvider implements ITestCaseDataProvider {
     }
 
     @Override
-    public TestCaseEntity saveTempTestCase(TestCaseEntity tempTestCase) throws Exception {
-        return TestCaseFileServiceManager.saveTempTestCase(tempTestCase);
-    }
-
-    @Override
     public TestCaseEntity getTestCase(String testCasePk) throws Exception {
         return TestCaseFileServiceManager.getTestCase(testCasePk);
     }
@@ -45,11 +40,6 @@ public class TestCaseFileServiceDataProvider implements ITestCaseDataProvider {
     @Override
     public void deleteTestCase(TestCaseEntity testCase) throws Exception {
         TestCaseFileServiceManager.deleteTestCase(testCase);
-    }
-    
-    @Override
-    public void deleteTempTestCase(TestCaseEntity testCase) {
-        TestCaseFileServiceManager.deleteTempTestCase(testCase);
     }
 
     @Override

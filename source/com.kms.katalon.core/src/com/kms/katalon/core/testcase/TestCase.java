@@ -14,7 +14,6 @@ public class TestCase {
     private TestData testData;
     private List<Variable> variables;
     private String tag;
-    private boolean isTemp;
     
     /*package*/ TestCase(String testCaseId) {
         this.setTestCaseId(testCaseId);
@@ -29,20 +28,11 @@ public class TestCase {
     }
 
     public String getGroovyScriptPath() throws IOException {
-        if (!isTemp()) {
-            return TestCaseFactory.getScriptPathByTestCaseId(testCaseId);
-        } else {
-            return TestCaseFactory.getScriptPathByTempTestCaseId(testCaseId);
-        }
+        return TestCaseFactory.getScriptPathByTestCaseId(testCaseId);
     }
     
     public String getGroovyScriptClassName() throws IOException {
-        if (!isTemp()) {
-            return TestCaseFactory.getScriptClassNameByTestCaseId(testCaseId);
-        } else {
-            return TestCaseFactory.getScriptClassNameByTempTestCaseId(testCaseId);
-        }
-       
+        return TestCaseFactory.getScriptClassNameByTestCaseId(testCaseId);
     }
     
     public String getTestCaseId() {
@@ -58,25 +48,7 @@ public class TestCase {
     }
     
     public String getMetaFilePath() {
-        StringBuilder pathBuilder = new StringBuilder();
-        if (!isTemp) {
-            return pathBuilder
-                    .append(TestCaseFactory.getProjectDirPath())
-                    .append(File.separator)
-                    .append(testCaseId)
-                    .append(TestCaseFactory.TEST_CASE_META_FILE_EXTENSION)
-                    .toString()
-                    .replace("/", "\\");
-        } else {
-            return pathBuilder
-                    .append(TestCaseFactory.getProjectDirPath())
-                    .append(File.separator) 
-                    .append(TestCaseFactory.TEMP_TEST_CASE_META_ROOT_FOLDER_NAME)
-                    .append(File.separator)
-                    .append(testCaseId)
-                    .append(TestCaseFactory.TEST_CASE_META_FILE_EXTENSION)
-                    .toString();
-        }
+        return (TestCaseFactory.getProjectDirPath()  + File.separator + testCaseId + TestCaseFactory.TEST_CASE_META_FILE_EXTENSION).replace("/", "\\");
     }
 
 	public List<Variable> getVariables() {
@@ -101,13 +73,5 @@ public class TestCase {
 
     /* package */ void setTag(String tag) {
         this.tag = tag;
-    }
-
-    public boolean isTemp() {
-        return isTemp;
-    }
-
-    public void setTemp(boolean isTemp) {
-        this.isTemp = isTemp;
     }
 }

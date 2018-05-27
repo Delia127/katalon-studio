@@ -181,19 +181,19 @@ public class WebServiceRequestEntity extends WebElementEntity {
         this.httpBodyContent = httpBodyContent;
     }
 
-    public String getVerificationScript() {
-        return verificationScript;
-    }
-
-    public void setVerificationScript(String verificationScript) {
-        this.verificationScript = verificationScript;
-    }
-    
     public String getMigratedVersion() {
         return migratedVersion;
     }
 
     public void setMigratedVersion(String migratedVersion) {
         this.migratedVersion = migratedVersion;
+    }
+
+    public String getVerificationScript() {
+        return verificationScript;
+    }
+
+    public void setVerificationScript(String verificationScript) {
+        this.verificationScript = verificationScript;
     }
 }

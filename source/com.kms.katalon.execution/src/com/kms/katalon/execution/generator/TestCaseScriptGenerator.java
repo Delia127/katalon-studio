@@ -48,12 +48,7 @@ public class TestCaseScriptGenerator {
 	public String createTestCaseBinding() throws Exception {
 		StringBuilder bindingBuilder = new StringBuilder();
 		StringBuilder syntaxErrorCollector = new StringBuilder();
-		String testCaseId;
-		if (!testCase.isTemp()) {
-		    testCaseId = testCase.getRelativePathForUI().replace(File.separator, "/");
-		} else {
-		    testCaseId = testCase.getName();
-		}
+		String testCaseId = testCase.getRelativePathForUI().replace(File.separator, "/");
 		bindingBuilder.append("new TestCaseBinding('" + testCaseId + "', [:])");
 
 		if (syntaxErrorCollector.toString().isEmpty()) {

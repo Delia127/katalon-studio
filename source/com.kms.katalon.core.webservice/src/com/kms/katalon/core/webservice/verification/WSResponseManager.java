@@ -15,18 +15,39 @@ import com.kms.katalon.core.testobject.impl.HttpTextBodyContent;
 
 public class WSResponseManager {
     
-    public static ResponseObject getCurrentResponse() throws Exception {
-        String responseObjectJson = (String) RunConfiguration.getProperty(StringConstants.WS_RESPONSE_OBJECT);
+    private ResponseObject response;
+    
+    private static WSResponseManager instance;
+    
+    private WSResponseManager() {
         
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(HttpBodyContent.class, new HttpBodyContentInstanceCreator())
-                .create();
+    }
+    
+    public static WSResponseManager getInstance() {
+        if (instance == null) {
+            instance = new WSResponseManager();
+        }
+        return instance;
+    }
+    
+    public ResponseObject getCurrentResponse() throws Exception {
+        if (response == null) {
+            String responseObjectJson = (String) RunConfiguration.getProperty(StringConstants.WS_RESPONSE_OBJECT);
+            
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(HttpBodyContent.class, new HttpBodyContentInstanceCreator())
+                    .create();
+            
+            response = gson.fromJson(responseObjectJson, ResponseObject.class);
+            HttpBodyContent textBodyContent = new HttpTextBodyContent(response.getResponseBodyContent());
+            response.setBodyContent(textBodyContent);
+        }
         
-        ResponseObject responseObject = gson.fromJson(responseObjectJson, ResponseObject.class);
-        HttpBodyContent textBodyContent = new HttpTextBodyContent(responseObject.getResponseBodyContent());
-        responseObject.setBodyContent(textBodyContent);
-        
-        return responseObject;
+        return response;
+    }
+    
+    public void setCurrentResponse(ResponseObject responseObject) {
+        response = responseObject;
     }
     
     private static class HttpBodyContentInstanceCreator implements InstanceCreator<HttpBodyContent> {

@@ -86,13 +86,11 @@ public class TestCaseMain {
                 .execute(flowControl);
     }
     
-    public static TestResult runTempTestCase(String testCaseId, TestCaseBinding testCaseBinding,
-            FailureHandling flowControl, boolean isMain, boolean doCleanUp) throws InterruptedException {
+    public static TestResult runWSVerificationScript(String verificationScript, FailureHandling flowControl,
+            boolean doCleanUp) throws InterruptedException {
         Thread.sleep(DELAY_TIME);
-        InternalTestCaseContext testCaseContext = new InternalTestCaseContext(testCaseId);
-        testCaseContext.setMainTestCase(isMain);
-        return new TestCaseExecutor(testCaseBinding, engine, eventManager, testCaseContext, doCleanUp, true)
-                .execute(flowControl);
+        return new WSVerificationExecutor(verificationScript, engine, eventManager, doCleanUp
+                ).execute(flowControl);
     }
 
     public static TestResult runTestCaseRawScript(String testScript, String testCaseId, TestCaseBinding testCaseBinding,

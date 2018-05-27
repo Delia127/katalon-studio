@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.execution.exception.ExecutionException;
-import com.kms.katalon.core.constants.StringConstants;
 
 public class WSVerificationRunConfiguration extends AbstractRunConfiguration {
 

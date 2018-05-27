@@ -81,23 +81,14 @@ public class TestCaseExecutor {
     }
 
     public TestCaseExecutor(TestCaseBinding testCaseBinding, ScriptEngine engine, ExecutionEventManager eventManager,
-            InternalTestCaseContext testCaseContext, boolean doCleanUp, boolean isTemp) {
+            InternalTestCaseContext testCaseContext, boolean doCleanUp) {
         this.testCaseBinding = testCaseBinding;
         this.engine = engine;
-        if (!isTemp) {
-            this.testCase = TestCaseFactory.findTestCase(testCaseBinding.getTestCaseId());
-        } else {
-            this.testCase = TestCaseFactory.findTempTestCase(testCaseBinding.getTestCaseId());
-        }
+        this.testCase = TestCaseFactory.findTestCase(testCaseBinding.getTestCaseId());
         this.doCleanUp = doCleanUp;
         this.eventManager = eventManager;
 
         this.testCaseContext = testCaseContext;
-    }
-    
-    public TestCaseExecutor(TestCaseBinding testCaseBinding, ScriptEngine engine, ExecutionEventManager eventManager,
-            InternalTestCaseContext testCaseContext, boolean doCleanUp) {
-        this(testCaseBinding, engine, eventManager, testCaseContext, doCleanUp, false);
     }
 
     public TestCaseExecutor(TestCaseBinding testCaseBinding, ScriptEngine engine, ExecutionEventManager eventManager,

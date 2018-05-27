@@ -33,8 +33,6 @@ import com.kms.katalon.groovy.reference.TestArtifactScriptRefactor;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
 public class TestCaseFileServiceManager {
-    
-    private static final String TEMP_TEST_CASE_META_ROOT_FOLDER_NAME = "Libs";
 
     public static String getAvailableName(FolderEntity parentFolder, String name) throws Exception {
         if (parentFolder != null) {
@@ -75,26 +73,7 @@ public class TestCaseFileServiceManager {
 
         return newTestCase;
     }
-    
-    public static TestCaseEntity saveTempTestCase(TestCaseEntity tempTestCase) throws Exception {
-        String location = getTempTestCaseLocation(tempTestCase);
-        EntityService.getInstance().saveEntity(tempTestCase, location);
-        return tempTestCase;
-    }
-    
-    private static String getTempTestCaseLocation(TestCaseEntity tempTestCase) {
-        StringBuilder locationBuilder = new StringBuilder();
-        locationBuilder
-            .append(tempTestCase.getProject().getFolderLocation())
-            .append(File.separator)
-            .append(TEMP_TEST_CASE_META_ROOT_FOLDER_NAME)
-            .append(File.separator)
-            .append(tempTestCase.getName())
-            .append(tempTestCase.getFileExtension());
-        
-        return locationBuilder.toString();
-    }
-    
+
     public static TestCaseEntity getTestCase(String testCasePk) throws Exception {
         FileEntity entity = EntityFileServiceManager.get(new File(testCasePk));
         if (entity instanceof TestCaseEntity) {
@@ -406,14 +385,6 @@ public class TestCaseFileServiceManager {
             FolderFileServiceManager.refreshFolder(testCase.getParentFolder());
         } else {
             throw new NoEntityException("");
-        }
-    }
-    
-    public static void deleteTempTestCase(TestCaseEntity testCase) {
-        String location = getTempTestCaseLocation(testCase);
-        File testCaseMetaFile = new File(location);
-        if (testCaseMetaFile != null) {
-            testCaseMetaFile.delete();
         }
     }
 
