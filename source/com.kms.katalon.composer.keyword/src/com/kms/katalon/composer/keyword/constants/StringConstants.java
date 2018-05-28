@@ -39,6 +39,15 @@ public class StringConstants extends GlobalStringConstants {
     // NewPackagePopupMenuContribution
     public static final String MENU_CONTEXT_NEW_PACKAGE = PACKAGE;
 
+    // ImportFolderPopupMenuContribution
+    public static final String MENU_CONTEXT_IMPORT_FOLDER = FOLDER;
+
+    // ImportJarPopupMenuContribution
+    public static final String MENU_CONTEXT_IMPORT_JAR = JAR;
+
+    // ImportGitPopupMenuContribution
+    public static final String MENU_CONTEXT_IMPORT_GIT = GIT;
+
     // NewRenamePackageDialog
     public static final String DIA_TITLE_PACKAGE = ComposerKeywordMessageConstants.DIA_TITLE_PACKAGE;
 

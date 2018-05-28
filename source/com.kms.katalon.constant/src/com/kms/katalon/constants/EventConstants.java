@@ -178,6 +178,12 @@ public class EventConstants {
     public static final String KEYWORD_NEW = "KEYWORD/NEW";
 
     public static final String PACKAGE_NEW = "PACKAGE/NEW";
+    
+    public static final String FOLDER_IMPORT = "FOLDER/IMPORT";
+
+    public static final String JAR_IMPORT = "JAR/IMPORT";
+
+    public static final String GIT_IMPORT = "GIT/IMPORT";
 
     // Import Events
     public static final String IMPORT_DUPLICATE_ENTITY_RESULT = "IMPORT/DUPLICATE_ENTITY_RESULT";

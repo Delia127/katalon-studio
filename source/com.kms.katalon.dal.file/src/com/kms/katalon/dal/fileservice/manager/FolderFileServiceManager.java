@@ -207,6 +207,10 @@ public class FolderFileServiceManager {
     public static List<FileEntity> getChildren(FolderEntity folder) throws Exception {
         return EntityFileServiceManager.getChildren(folder, FileEntity.class);
     }
+    
+    public static List<File> getFileChildren(FolderEntity folder) throws Exception {
+        return EntityFileServiceManager.getFileChildren(folder);
+    }
 
     public static List<FolderEntity> getChildFoldersOfFolder(FolderEntity folder) throws Exception {
         return EntityFileServiceManager.getChildren(folder, FolderEntity.class);
@@ -559,6 +563,8 @@ public class FolderFileServiceManager {
             case DATAFILE:
             case CHECKPOINT:
                 return EntityFileServiceManager.copyFolder(folder, destinationFolder);
+            case KEYWORD:
+                return EntityFileServiceManager.copyKeywordFolder(folder, destinationFolder);
             default:
                 break;
         }

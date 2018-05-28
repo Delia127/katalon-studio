@@ -51,6 +51,8 @@ public class KatalonCommands {
     private static final String COMMAND_NAME_NEW = ComposerComponentsImplMessageConstants.COMMAND_NAME_NEW;
 
     private static final String COMMAND_NAME_OPEN = ComposerComponentsImplMessageConstants.COMMAND_NAME_OPEN;
+    
+    private static final String COMMAND_NAME_IMPORT = ComposerComponentsImplMessageConstants.COMMAND_NAME_IMPORT;
 
     private static final String COMMAND_NAME_SPY_WEB_OBJECT = ComposerComponentsImplMessageConstants.COMMAND_NAME_SPY_WEB_OBJECT;
 
@@ -77,6 +79,12 @@ public class KatalonCommands {
     private static final String KEYWORD = GlobalStringConstants.KEYWORD;
 
     private static final String PACKAGE = GlobalStringConstants.PACKAGE;
+    
+    private static final String FOLDER = GlobalStringConstants.FOLDER;
+
+    private static final String GIT = GlobalStringConstants.GIT;
+
+    private static final String JAR = GlobalStringConstants.JAR;
 
     private static final String KATALON_QA_URL = ComposerComponentsImplMessageConstants.KATALON_QA_URL;
 
@@ -198,6 +206,7 @@ public class KatalonCommands {
                 .addChild(KCommand.create(COMMAND_NAME_NEW + CHECKPOINT).setEventName(EventConstants.CHECKPOINT_NEW));
         rootCommand.addChild(KCommand.create(COMMAND_NAME_NEW + KEYWORD).setEventName(EventConstants.KEYWORD_NEW));
         rootCommand.addChild(KCommand.create(COMMAND_NAME_NEW + PACKAGE).setEventName(EventConstants.PACKAGE_NEW));
+        rootCommand.addChild(KCommand.create(COMMAND_NAME_IMPORT + FOLDER)).setEventName(EventConstants.FOLDER_IMPORT);
 
         // Project Settings
         rootCommand.addChild(KCommand.create(PROJECT_SETTINGS).setEventName(EventConstants.PROJECT_SETTINGS));

@@ -151,6 +151,10 @@ public class GlobalStringConstants {
     // Tool-bar
     public static final String FOLDER = GlobalMessageConstants.FOLDER;
 
+    public static final String JAR = GlobalMessageConstants.JAR;
+
+    public static final String GIT = GlobalMessageConstants.GIT;
+
     public static final String PACKAGE = GlobalMessageConstants.PACKAGE;
 
     public static final String DEFAULT_PACKAGE_NAME = GlobalMessageConstants.DEFAULT_PACKAGE_NAME;
