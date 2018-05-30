@@ -24,7 +24,7 @@ public class NetworkUtils {
         if (uc instanceof HttpsURLConnection) {
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
 
-            ((HttpsURLConnection) uc).setHostnameVerifier(getHostnameVerifier());
+           // ((HttpsURLConnection) uc).setHostnameVerifier(getHostnameVerifier());
         }
         // Set User-Agent for each request to help managing from S3
         // (such as filter out which is valid request or count the download...)
