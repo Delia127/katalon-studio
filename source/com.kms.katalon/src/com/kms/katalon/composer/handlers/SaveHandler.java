@@ -1,14 +1,9 @@
 package com.kms.katalon.composer.handlers;
 
-import java.util.concurrent.Executors;
-
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 
-import com.kms.katalon.application.RunningMode;
-import com.kms.katalon.application.usagetracking.UsageActionTrigger;
-import com.kms.katalon.application.usagetracking.UsageInfoCollector;
 import com.kms.katalon.composer.components.impl.handler.AbstractHandler;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.parts.MultipleTabsCompositePart;
@@ -59,9 +54,6 @@ public class SaveHandler extends AbstractHandler {
                     partService.savePart(part, false);
                 }
             }
-
-            Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector
-                    .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.SAVE_ALL, RunningMode.GUI)));
 
         } catch (Exception e) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
