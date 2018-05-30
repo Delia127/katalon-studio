@@ -28,23 +28,11 @@ public class GeneralPreferenceDefaultValueInitializer extends AbstractPreference
     
     public void applyDefaultValues() {
         IPreferenceStore prefStore = PlatformUI.getPreferenceStore();
-        if (isFirstTimeSetup()) {
-            prefStore.setValue(PreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION,
-                    AUTO_RESTORE_PREVIOUS_SESSION);
-            prefStore.setValue(PreferenceConstants.GENERAL_AUTO_CHECK_NEW_VERSION, true);
-            prefStore.setValue(PreferenceConstants.GENERAL_SHOW_HELP_AT_START_UP, true);
-            prefStore.setValue(PreferenceConstants.GENERAL_LAST_HELP_SELECTED_TAB, 1);
-            prefStore.setValue(PreferenceConstants.PREF_FIRST_TIME_SETUP_COMPLETED, true);
-            save();
-        }
-    }
-    
-    public boolean isFirstTimeSetup() {
-        IPreferenceStore prefStore = PlatformUI.getPreferenceStore();
-        if (prefStore.contains(PreferenceConstants.PREF_FIRST_TIME_SETUP_COMPLETED)) {
-            return prefStore.getBoolean(PreferenceConstants.PREF_FIRST_TIME_SETUP_COMPLETED);
-        }
-        return false;
+        prefStore.setValue(PreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION,
+                AUTO_RESTORE_PREVIOUS_SESSION);
+        prefStore.setValue(PreferenceConstants.GENERAL_AUTO_CHECK_NEW_VERSION, true);
+        prefStore.setValue(PreferenceConstants.GENERAL_SHOW_HELP_AT_START_UP, true);
+        prefStore.setValue(PreferenceConstants.GENERAL_LAST_HELP_SELECTED_TAB, 1);
     }
     
     public void save() {

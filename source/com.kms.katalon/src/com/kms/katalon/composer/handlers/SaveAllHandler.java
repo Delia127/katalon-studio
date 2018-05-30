@@ -28,8 +28,9 @@ public class SaveAllHandler {
             partService.saveAll(false);
             PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().saveAllEditors(false);
         } finally {
-            Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector
-                    .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.SAVE_ALL, RunningMode.GUI)));
+            // Removed due to KAT-3318
+//            Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector
+//                    .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.SAVE_ALL, RunningMode.GUI)));
         }
     }
 }
