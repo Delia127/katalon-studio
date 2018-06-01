@@ -49,12 +49,12 @@ public class CloneHandler {
         dlg.open();
     }
 
-    @Inject
-    @Optional
-    private void gitCloneSuccessEventHandler(@UIEventTopic(GitEventConstants.CLONE_FINISHED) final File destination)
-            throws InvocationTargetException, InterruptedException {
-        openOrCreateNewProjectAtDestination(destination);
-    }
+//    @Inject
+//    @Optional
+//    private void gitCloneSuccessEventHandler(@UIEventTopic(GitEventConstants.CLONE_FINISHED) final File destination)
+//            throws InvocationTargetException, InterruptedException {
+//        openOrCreateNewProjectAtDestination(destination);
+//    }
 
     private static void openOrCreateNewProjectAtDestination(final File destinationFolder) {
         File projectFile = OpenProjectHandler.getProjectFile(destinationFolder);

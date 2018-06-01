@@ -332,7 +332,15 @@ public class EntityFileServiceManager {
             EntityService.getInstance().saveEntity(clonedFolder);
 
             for (File entity : FolderFileServiceManager.getFileChildren(folder)) {
+                if (entity.isDirectory()) {
+                    FolderEntity tmpFolder = FolderFileServiceManager.getFolder(entity.getAbsolutePath());
+                    if (tmpFolder.getLocation() == null) {
+                        tmpFolder.setName(entity.getAbsolutePath());
+                    }
+                    copyKeywordFolder(tmpFolder, clonedFolder);
+                } else {
                     Files.copy(Paths.get(entity.getPath()), Paths.get(clonedFolder.getLocation()+ File.separator + entity.getName()));
+                }
             }
             return clonedFolder;
         }

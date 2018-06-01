@@ -181,7 +181,11 @@ public class EventConstants {
     
     public static final String FOLDER_IMPORT = "FOLDER/IMPORT";
 
+    public static final String FOLDER_EXPORT = "FOLDER/EXPORT";
+
     public static final String JAR_IMPORT = "JAR/IMPORT";
+
+    public static final String JAR_EXPORT = "JAR/EXPORT";
 
     public static final String GIT_IMPORT = "GIT/IMPORT";
 

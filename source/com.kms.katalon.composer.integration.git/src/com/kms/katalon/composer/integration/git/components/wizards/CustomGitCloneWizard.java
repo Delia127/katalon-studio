@@ -67,6 +67,8 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.integration.git.constants.GitEventConstants;
 import com.kms.katalon.composer.integration.git.constants.GitStringConstants;
+import com.kms.katalon.controller.FolderController;
+import com.kms.katalon.entity.folder.FolderEntity;
 
 @SuppressWarnings("restriction")
 public class CustomGitCloneWizard extends Wizard {
@@ -226,10 +228,9 @@ public class CustomGitCloneWizard extends Wizard {
      *
      * @param gitRepositoryInfo
      * @return if clone was successful
-     * @throws URISyntaxException
-     * @throws InterruptedException
+     * @throws Exception 
      */
-    protected boolean performClone(GitRepositoryInfo gitRepositoryInfo) throws URISyntaxException, InterruptedException {
+    protected boolean performClone(GitRepositoryInfo gitRepositoryInfo) throws Exception {
         URIish uri = new URIish(gitRepositoryInfo.getCloneUri());
         UserPasswordCredentials credentials = gitRepositoryInfo.getCredentials();
         setWindowTitle(NLS.bind(UIText.GitCloneWizard_jobName, uri.toString()));

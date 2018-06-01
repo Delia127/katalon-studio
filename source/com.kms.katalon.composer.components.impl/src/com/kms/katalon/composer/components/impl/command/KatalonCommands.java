@@ -53,6 +53,8 @@ public class KatalonCommands {
     private static final String COMMAND_NAME_OPEN = ComposerComponentsImplMessageConstants.COMMAND_NAME_OPEN;
     
     private static final String COMMAND_NAME_IMPORT = ComposerComponentsImplMessageConstants.COMMAND_NAME_IMPORT;
+    
+    private static final String COMMAND_NAME_EXPORT = ComposerComponentsImplMessageConstants.COMMAND_NAME_EXPORT;
 
     private static final String COMMAND_NAME_SPY_WEB_OBJECT = ComposerComponentsImplMessageConstants.COMMAND_NAME_SPY_WEB_OBJECT;
 
@@ -206,6 +208,7 @@ public class KatalonCommands {
                 .addChild(KCommand.create(COMMAND_NAME_NEW + CHECKPOINT).setEventName(EventConstants.CHECKPOINT_NEW));
         rootCommand.addChild(KCommand.create(COMMAND_NAME_NEW + KEYWORD).setEventName(EventConstants.KEYWORD_NEW));
         rootCommand.addChild(KCommand.create(COMMAND_NAME_NEW + PACKAGE).setEventName(EventConstants.PACKAGE_NEW));
+        rootCommand.addChild(KCommand.create(COMMAND_NAME_EXPORT + FOLDER)).setEventName(EventConstants.FOLDER_EXPORT);
         rootCommand.addChild(KCommand.create(COMMAND_NAME_IMPORT + FOLDER)).setEventName(EventConstants.FOLDER_IMPORT);
 
         // Project Settings

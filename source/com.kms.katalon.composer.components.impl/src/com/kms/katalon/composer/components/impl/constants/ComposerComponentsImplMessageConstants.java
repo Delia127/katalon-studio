@@ -127,6 +127,8 @@ public class ComposerComponentsImplMessageConstants extends NLS {
 
     public static String COMMAND_NAME_IMPORT;
 
+    public static String COMMAND_NAME_EXPORT;
+
     public static String COMMAND_NAME_SPY_WEB_OBJECT;
 
     public static String COMMAND_NAME_SPY_MOBILE_OBJECT;

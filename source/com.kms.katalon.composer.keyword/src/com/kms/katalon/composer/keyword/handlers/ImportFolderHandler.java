@@ -53,6 +53,7 @@ public class ImportFolderHandler {
             }
             
             File importedFolder = new File(selectedFolder);
+            FolderEntity keywordFolderTreeRoot = FolderController.getInstance().getKeywordRoot(ProjectController.getInstance().getCurrentProject());
             if (importedFolder != null && importedFolder.exists() && importedFolder.isDirectory()) {
                 copyKeywordsDirectory(shell, keywordFolderTreeRoot, importedFolder);
             }
@@ -65,29 +66,6 @@ public class ImportFolderHandler {
 
     @Inject
     @Optional
-    private void catchKeywordFolderTreeEntitiesRoot(
-            @UIEventTopic(EventConstants.EXPLORER_RELOAD_INPUT) List<Object> treeEntities) {
-
-        keywordFolderTreeRoot = treeEntities.stream().filter(object -> {
-            try {
-                Object entityObject;
-                entityObject = ((ITreeEntity) object).getObject();
-                if (entityObject instanceof FolderEntity) {
-                    FolderEntity folder = (FolderEntity) entityObject;
-                    if (folder.getFolderType() == FolderType.KEYWORD) {
-                        return true;
-                    }
-                }
-                return false;
-            } catch (Exception e) {
-                LoggerSingleton.logError(e);
-                return false;
-            }
-        }).map(object -> (FolderTreeEntity) object).findAny().orElse(null);
-    }
-
-    @Inject
-    @Optional
     private void execute(@UIEventTopic(EventConstants.FOLDER_IMPORT) Object eventData) {
         if (!canExecute()) {
             return;
@@ -95,21 +73,13 @@ public class ImportFolderHandler {
         execute(Display.getCurrent().getActiveShell());
     }
 
-    private void copyKeywordsDirectory(Shell shell, ITreeEntity selectedTreeEntity, File importedFolder)
+    private void copyKeywordsDirectory(Shell shell, FolderEntity targetFolder, File importedFolder)
             throws Exception {
 
         // source folder
-        FolderEntity sourceFolder = FolderController.getInstance().getFolder(importedFolder.getAbsolutePath());
+        FolderEntity sourceFolder = FolderController.getInstance().getFolder(importedFolder.getPath());
+        sourceFolder.getLocation();
         sourceFolder.setFolderType(FolderType.KEYWORD);
-        sourceFolder.setName(importedFolder.getName());
-        FolderEntity parentFolder = FolderController.getInstance()
-                .getFolder(importedFolder.getParentFile().getAbsolutePath());
-        parentFolder.setName(importedFolder.getParentFile().getAbsolutePath());
-        sourceFolder.setParentFolder(parentFolder);
-
-        // target folder
-        FolderEntity targetFolder = ((FolderTreeEntity) selectedTreeEntity).getObject();
-
         FolderController.getInstance().copyFolder(sourceFolder, targetFolder);
         ITreeEntity keywordRootFolder = new FolderTreeEntity(
                 FolderController.getInstance().getKeywordRoot(ProjectController.getInstance().getCurrentProject()),

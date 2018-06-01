@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.egit.core.RepositoryUtil;
 import org.eclipse.egit.ui.Activator;
 import org.eclipse.egit.ui.UIPreferences;
 import org.eclipse.egit.ui.internal.UIText;
@@ -32,12 +31,14 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.dialogs.WorkingSetGroup;
+
+import com.kms.katalon.controller.FolderController;
+import com.kms.katalon.controller.ProjectController;
 
 /**
  * Wizard page that allows the user entering the location of a repository to be
@@ -152,26 +153,6 @@ public class CustomCloneDestinationPage extends WizardPage {
                 checkPage();
             }
         });
-        final Button b = new Button(p, SWT.PUSH);
-        b.setText(UIText.CloneDestinationPage_browseButton);
-        b.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(final SelectionEvent e) {
-                final FileDialog d;
-
-                d = new FileDialog(getShell(), SWT.APPLICATION_MODAL | SWT.SAVE);
-                if (directoryText.getText().length() > 0) {
-                    final File file = new File(directoryText.getText()).getAbsoluteFile();
-                    d.setFilterPath(file.getParent());
-                    d.setFileName(file.getName());
-                }
-                final String r = d.open();
-                if (r != null) {
-                    directoryText.setText(r);
-                }
-            }
-        });
-
         newLabel(g, UIText.CloneDestinationPage_promptInitialBranch + ":"); //$NON-NLS-1$
         initialBranch = new ComboViewer(g, SWT.DROP_DOWN | SWT.READ_ONLY);
         initialBranch.getCombo().setLayoutData(createFieldGridData());
@@ -390,9 +371,15 @@ public class CustomCloneDestinationPage extends WizardPage {
             // update repo-related selection only if it changed
             final String n = validatedRepoSelection.getURI().getHumanishName();
             setDescription(NLS.bind(UIText.CloneDestinationPage_description, n));
-            String defaultRepoDir = RepositoryUtil.getDefaultRepositoryDir();
+            String defaultRepoDir = "";
+            try {
+                defaultRepoDir = FolderController.getInstance().getKeywordRoot(ProjectController.getInstance().getCurrentProject()).getLocation();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             File parentDir = new File(defaultRepoDir);
             directoryText.setText(new File(parentDir, n).getAbsolutePath());
+            directoryText.setEnabled(false);
         }
 
         validatedSelectedBranches = branches;
