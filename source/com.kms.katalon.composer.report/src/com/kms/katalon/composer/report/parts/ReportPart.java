@@ -19,6 +19,7 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.UIEvents;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -84,6 +85,7 @@ import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.report.constants.ComposerReportMessageConstants;
 import com.kms.katalon.composer.report.constants.ImageConstants;
 import com.kms.katalon.composer.report.constants.StringConstants;
+import com.kms.katalon.composer.report.dialog.AdvancedSearchTestLogDialog;
 import com.kms.katalon.composer.report.integration.ReportComposerIntegrationFactory;
 import com.kms.katalon.composer.report.lookup.LogRecordLookup;
 import com.kms.katalon.composer.report.parts.integration.ReportTestCaseIntegrationViewBuilder;
@@ -94,6 +96,7 @@ import com.kms.katalon.composer.report.provider.ReportTestCaseTableViewer;
 import com.kms.katalon.composer.report.provider.ReportTestCaseTableViewerFilter;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
+import com.kms.katalon.composer.testcase.dialogs.TextEncryptionDialog;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
@@ -109,6 +112,7 @@ import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
 import com.kms.katalon.integration.analytics.report.AnalyticsReportService;
+import com.kms.katalon.composer.integration.analytics.dialog.AuthenticationDialog;
 
 public class ReportPart implements EventHandler, IComposerPartEvent {
 
@@ -616,53 +620,58 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     }
 
     private void createKatalonAnalyticsMenu(ToolBar toolBar) {
-        btnUploadToAnalytics = new ToolItem(toolBar, SWT.DROP_DOWN);
+        btnUploadToAnalytics = new ToolItem(toolBar, SWT.NONE);
         btnUploadToAnalytics.setText(ComposerReportMessageConstants.BTN_KATALON_ANALYTICS);
         btnUploadToAnalytics.setImage(ImageManager.getImage(IImageKeys.KATALON_ANALYTICS_16));
         btnUploadToAnalytics.setEnabled(analyticsReportService.isIntegrationEnabled());
         
-        Menu uploadMenu = new Menu(btnUploadToAnalytics.getParent().getShell());
-        MenuItem newMenuItem = new MenuItem(uploadMenu, SWT.PUSH);
-        newMenuItem.setText("Upload");
-        newMenuItem.setID(0);
-        newMenuItem.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                try {
-                    new ProgressMonitorDialog(shell).run(true, true, new IRunnableWithProgress() {
-                        @Override
-                        public void run(IProgressMonitor monitor) {
-                            try {
-                                monitor.beginTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS, 2);
-                                monitor.subTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS_SENDING);
-                                analyticsReportService.upload(testSuiteLogRecord.getLogFolder());
-                                monitor.worked(1);
-                                monitor.subTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS_SUCCESSFULLY);
-                                monitor.worked(2);
-                            } catch (AnalyticsApiExeception ex) {
-                                LoggerSingleton.logError(ex);
-                                MultiStatusErrorDialog.showErrorDialog(ex, ComposerReportMessageConstants.REPORT_ERROR_MSG_UNABLE_TO_UPLOAD_REPORT, ex.getMessage());
-                            }
-                        }
-                    });
-                } catch (InvocationTargetException | InterruptedException ex) {
-                    LoggerSingleton.logError(ex);
-                    MultiStatusErrorDialog.showErrorDialog(ex, ComposerReportMessageConstants.REPORT_ERROR_MSG_UNABLE_TO_UPLOAD_REPORT, ex.getMessage());
-                }
-            }
-        });
-        
-        btnUploadToAnalytics.setData(uploadMenu);
+//        Menu uploadMenu = new Menu(btnUploadToAnalytics.getParent().getShell());
+//        MenuItem newMenuItem = new MenuItem(uploadMenu, SWT.PUSH);
+//        newMenuItem.setText("Upload");
+//        newMenuItem.setID(0);
         btnUploadToAnalytics.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                Rectangle rect = btnUploadToAnalytics.getBounds();
-                Point pt = btnUploadToAnalytics.getParent().toDisplay(new Point(rect.x, rect.y));
-                uploadMenu.setLocation(pt.x, pt.y + rect.height);
-                uploadMenu.setVisible(true);
-                uploadMenu.setVisible(true);
+            	Shell shell = Display.getCurrent().getActiveShell();
+                AuthenticationDialog dialog = AuthenticationDialog.createDefault(shell);
+                dialog.setBlockOnOpen(true);
+                dialog.open();
+//                try {
+//                	
+//                	//                    new ProgressMonitorDialog(shell).run(true, true, new IRunnableWithProgress() {
+////                        @Override
+////                        public void run(IProgressMonitor monitor) {
+////                            try {
+////                                monitor.beginTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS, 2);
+////                                monitor.subTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS_SENDING);
+////                                analyticsReportService.upload(testSuiteLogRecord.getLogFolder());
+////                                monitor.worked(1);
+////                                monitor.subTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS_SUCCESSFULLY);
+////                                monitor.worked(2);
+////                            } catch (AnalyticsApiExeception ex) {
+////                                LoggerSingleton.logError(ex);
+////                                MultiStatusErrorDialog.showErrorDialog(ex, ComposerReportMessageConstants.REPORT_ERROR_MSG_UNABLE_TO_UPLOAD_REPORT, ex.getMessage());
+////                            }
+////                        }
+////                    });
+//                } catch (InvocationTargetException | InterruptedException ex) {
+//                    LoggerSingleton.logError(ex);
+//                    MultiStatusErrorDialog.showErrorDialog(ex, ComposerReportMessageConstants.REPORT_ERROR_MSG_UNABLE_TO_UPLOAD_REPORT, ex.getMessage());
+//                }
             }
         });
+        
+//        btnUploadToAnalytics.setData(uploadMenu);
+//        btnUploadToAnalytics.addSelectionListener(new SelectionAdapter() {
+//            @Override
+//            public void widgetSelected(SelectionEvent e) {
+//                Rectangle rect = btnUploadToAnalytics.getBounds();
+//                Point pt = btnUploadToAnalytics.getParent().toDisplay(new Point(rect.x, rect.y));
+//                uploadMenu.setLocation(pt.x, pt.y + rect.height);
+//                uploadMenu.setVisible(true);
+//                uploadMenu.setVisible(true);
+//            }
+//        });
     }
     
     private void filterTestLogBySearchedText() {
