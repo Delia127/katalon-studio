@@ -100,6 +100,7 @@ import com.kms.katalon.composer.components.impl.control.DropdownGroup;
 import com.kms.katalon.composer.components.impl.control.DropdownItemSelectionListener;
 import com.kms.katalon.composer.components.impl.control.DropdownToolItemSelectionListener;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
+import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
@@ -130,6 +131,8 @@ import com.kms.katalon.objectspy.constants.ObjectspyMessageConstants;
 import com.kms.katalon.objectspy.dialog.CapturedObjectsView;
 import com.kms.katalon.objectspy.dialog.GoToAddonStoreMessageDialog;
 import com.kms.katalon.objectspy.dialog.ObjectPropertiesView;
+import com.kms.katalon.objectspy.dialog.ObjectRepositoryService;
+import com.kms.katalon.objectspy.dialog.ObjectRepositoryService.SaveActionResult;
 import com.kms.katalon.objectspy.dialog.ObjectSpyEvent;
 import com.kms.katalon.objectspy.dialog.ObjectSpySelectorEditor;
 import com.kms.katalon.objectspy.dialog.ObjectSpyUrlView;
@@ -1557,8 +1560,26 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         if (addToObjectRepositoryDialog.open() != Window.OK) {
             return false;
         }
+        
         targetFolderSelectionResult = addToObjectRepositoryDialog.getDialogResult();
+
+        ObjectRepositoryService objectRepositoryService = new ObjectRepositoryService();
+        refeshExplorer(objectRepositoryService.saveObject(targetFolderSelectionResult), addToObjectRepositoryDialog.getSelectedParentFolderResult());
+        
         return true;
+    }
+    
+    private void refeshExplorer(SaveActionResult saveResult, FolderTreeEntity selectedParentFolder) {
+        // Refresh tree explorer
+        eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, selectedParentFolder);
+        
+        //Refesh updated object.
+        for (Object[] testObj : saveResult.getUpdatedTestObjectIds()) {
+            eventBroker.post(EventConstants.TEST_OBJECT_UPDATED, testObj);
+        }
+        if (saveResult.getNewSelectionOnExplorer() == null) {
+            return;
+        }
     }
 
     @Override
