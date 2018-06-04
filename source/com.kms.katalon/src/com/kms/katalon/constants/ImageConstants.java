@@ -14,6 +14,8 @@ public class ImageConstants {
     public static final Image IMG_USER_GUIDE = ImageManager.getImage(IImageKeys.USER_GUIDE_34);
 
     public static final Image IMG_TUTORIAL = ImageManager.getImage(IImageKeys.TUTORIAL_34);
+    
+    public static final Image IMG_BUSSINESS_SUPPORT = ImageManager.getImage(IImageKeys.BUSINESS_SUPPORT_34);
 
     public static final Image IMG_GRADIENT_LINE_SEPARATOR = ImageManager.getImage(IImageKeys.GRADIENT_LINE_SEPARATOR);
 
