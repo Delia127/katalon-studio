@@ -1,8 +1,6 @@
 package com.kms.katalon.composer.webui.recorder.handler;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -49,17 +47,14 @@ import com.kms.katalon.composer.webui.recorder.util.HTMLActionUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FolderController;
-import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
-import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.objectspy.dialog.SaveToObjectRepositoryDialog.SaveToObjectRepositoryDialogResult;
 import com.kms.katalon.objectspy.element.WebElement;
 import com.kms.katalon.objectspy.element.WebFrame;
 import com.kms.katalon.objectspy.element.WebPage;
-import com.kms.katalon.objectspy.util.WebElementUtils;
 
 public class RecordHandler {
 
@@ -71,8 +66,6 @@ public class RecordHandler {
 
     @Inject
     private IEventBroker eventBroker;
-
-    private Map<WebElement, FileEntity> entitySavedMap;
 
     @Inject
     private UISynchronize sync;
@@ -276,26 +269,33 @@ public class RecordHandler {
 
     private void addRecordedElements(List<WebPage> recordedElements,
             SaveToObjectRepositoryDialogResult folderSelectionResult, IProgressMonitor monitor) throws Exception {
-        entitySavedMap = new HashMap<>();
         for (WebPage pageElement : recordedElements) {
-            FolderEntity importedFolder = folderSelectionResult.createFolderForPageElement((WebPage) pageElement);
+            FolderEntity importedFolder = (FolderEntity) folderSelectionResult.getEntitySavedMap().get(pageElement);
             pageElement.setFolderAlias(importedFolder);
-            entitySavedMap.put(pageElement, importedFolder);
             for (WebElement childElement : ((WebFrame) pageElement).getChildren()) {
-                addRecordedElement(childElement, importedFolder, null);
+                addRecordedElement(childElement, importedFolder, folderSelectionResult);
             }
             monitor.worked(1);
         }
     }
 
-    private void addRecordedElement(WebElement element, FolderEntity parentFolder, WebElementEntity refElement)
+    private void addRecordedElement(WebElement element, FolderEntity parentFolder, SaveToObjectRepositoryDialogResult folderSelectionResult)
             throws Exception {
-        WebElementEntity importedElement = ObjectRepositoryController.getInstance().importWebElement(
-                WebElementUtils.convertWebElementToTestObject(element, refElement, parentFolder), parentFolder);
-        entitySavedMap.put(element, importedElement);
+        FileEntity entity = folderSelectionResult.getEntitySavedMap().entrySet().stream()
+                .filter(e -> {
+                    WebElement savedElement = e.getKey();
+                    WebPage savedRoot = savedElement.getRoot();
+                    if (savedRoot == null) {
+                        return false;
+                    }
+                    WebPage root = element.getRoot();
+                    return savedElement.getName().equals(element.getName())
+                            && root != null && savedRoot.getName().equals(root.getName());
+            }).map(e -> e.getValue()).findFirst().orElse(null);
+        element.setName(entity.getName());
         if (element instanceof WebFrame) {
             for (WebElement childElement : ((WebFrame) element).getChildren()) {
-                addRecordedElement(childElement, parentFolder, importedElement);
+                addRecordedElement(childElement, parentFolder, folderSelectionResult);
             }
         }
     }
