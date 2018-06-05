@@ -223,8 +223,8 @@ public class CapturedObjectsView extends Composite implements EventHandler, Even
             @Override
             public void mouseEnter(MouseEvent e) {
                 Point location = e.display.getCursorLocation();
-                infoTooltip.setLocation(location.x, location.y - e.y + lblInfo.getSize().y);
                 infoTooltip.setVisible(true);
+                infoTooltip.setLocation(location.x, location.y - e.y + lblInfo.getSize().y);
             }
 
             @Override

@@ -91,6 +91,10 @@ public class ComposerWebuiRecorderMessageConstants extends NLS {
 
     public static String PREF_LBL_PIN_RECORDER_WINDOW;
 
+    public static String DIA_ITEM_MOVE_UP;
+
+    public static String DIA_ITEM_MOVE_DOWN;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerWebuiRecorderMessageConstants.class);

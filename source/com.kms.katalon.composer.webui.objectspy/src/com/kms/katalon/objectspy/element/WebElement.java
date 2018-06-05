@@ -234,4 +234,17 @@ public class WebElement implements XPathProvider {
     public Map<SelectorMethod, String> getSelectorCollection() {
         return selectorCollection;
     }
+    
+    public WebPage getRoot() {
+        if (this instanceof WebPage) {
+            return (WebPage) this;
+        }
+        return getParent().getRoot();
+    }
+
+    public String getScriptId() {
+        WebPage root = getRoot();
+        
+        return root.getScriptId() + "/" + getName();
+    }
 }

@@ -28,10 +28,10 @@ public class AstTreeItemLabelProvider extends TypeCheckedStyleTreeCellLabelProvi
     @Override
     public CellLayoutInfo getCellLayoutInfo() {
         return new DefaultCellLayoutInfo() {
-            @Override
-            public int getSpace() {
-                return 10;
-            }
+//            @Override
+//            public int getSpace() {
+//                return 3;
+//            }
         };
     }
 

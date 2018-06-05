@@ -1,6 +1,5 @@
 package com.kms.katalon.composer.webui.recorder.handler;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,8 +35,6 @@ import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
-import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
-import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
@@ -123,28 +120,33 @@ public class RecordHandler {
             final SaveToObjectRepositoryDialogResult folderSelectionResult = recordDialog.getTargetFolderTreeEntity();
             final List<HTMLActionMapping> recordedActions = recordDialog.getActions();
             final List<WebPage> recordedElements = recordDialog.getElements();
+            if (recordedElements == null || recordedElements.isEmpty()) {
+                return;
+            }
             if (testCaseCompositePart == null) {
                 testCaseCompositePart = createNewTestCase();
             }
-            doGenerateTestScripts(testCaseCompositePart, folderSelectionResult, recordedActions, recordedElements);
+            doGenerateTestScripts(testCaseCompositePart, folderSelectionResult, recordedActions, recordedElements,
+                    recordDialog.getScriptWrapper());
         } catch (Exception e) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
                     StringConstants.HAND_ERROR_MSG_CANNOT_GEN_TEST_STEPS);
             LoggerSingleton.logError(e);
         } finally {
-             if (shell != null && !shell.isDisposed()) {
-                 shell.dispose();
-             }
+            if (shell != null && !shell.isDisposed()) {
+                shell.dispose();
+            }
         }
     }
-    
+
     private Shell getShell(Shell activeShell) {
         if (Platform.OS_WIN32.equals(Platform.getOS())) {
             return null;
         }
         Shell shell = new Shell();
         Rectangle activeShellSize = activeShell.getBounds();
-        shell.setLocation((activeShellSize.width - shell.getBounds().width) / 2, (activeShellSize.height - shell.getBounds().height) / 2);
+        shell.setLocation((activeShellSize.width - shell.getBounds().width) / 2,
+                (activeShellSize.height - shell.getBounds().height) / 2);
         return shell;
     }
 
@@ -162,7 +164,8 @@ public class RecordHandler {
 
     private void doGenerateTestScripts(final TestCaseCompositePart testCaseCompositePart,
             final SaveToObjectRepositoryDialogResult folderSelectionResult,
-            final List<HTMLActionMapping> recordedActions, final List<WebPage> recordedElements) {
+            final List<HTMLActionMapping> recordedActions, final List<WebPage> recordedElements,
+            ScriptNodeWrapper wrapper) {
         if (testCaseCompositePart == null) {
             return;
         }
@@ -176,14 +179,23 @@ public class RecordHandler {
                 try {
                     monitor.beginTask(StringConstants.JOB_GENERATE_SCRIPT_MESSAGE,
                             recordedActions.size() + recordedElements.size());
-                    final List<StatementWrapper> generatedStatementWrappers = generateStatementWrappersFromRecordedActions(
-                            recordedActions, recordedElements, testCasePart, folderSelectionResult, monitor);
+
+                    addRecordedElements(recordedElements, folderSelectionResult, monitor);
                     sync.syncExec(new Runnable() {
+                        @SuppressWarnings("unchecked")
                         @Override
                         public void run() {
                             try {
                                 testCasePart.addDefaultImports();
-                                testCasePart.addStatements(generatedStatementWrappers, NodeAddType.InserAfter);
+                                List<StatementWrapper> children = (List<StatementWrapper>) wrapper.getBlock().getAstChildren();
+                                
+                                // add close browser keyword
+                                String webUiKwAliasName = HTMLActionUtil.getWebUiKeywordClass().getAliasName();
+                                MethodCallExpressionWrapper methodCallExpressionWrapper = new MethodCallExpressionWrapper(webUiKwAliasName, "closeBrowser", wrapper);
+                                children.add(new ExpressionStatementWrapper(methodCallExpressionWrapper));
+
+                                testCasePart.getTreeTableInput().getMainClassNode().addImport(Keys.class);
+                                testCasePart.addStatements(children, NodeAddType.InserAfter);
                                 testCaseCompositePart.refreshScript();
                                 testCaseCompositePart.save();
                             } catch (Exception e) {
@@ -192,10 +204,13 @@ public class RecordHandler {
                         }
                     });
 
-                    FolderTreeEntity targetFolderTreeEntity = folderSelectionResult.getSelectedParentFolder();
-                    eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, targetFolderTreeEntity.getParent());
-                    eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, targetFolderTreeEntity);
-                    eventBroker.send(EventConstants.EXPLORER_EXPAND_TREE_ENTITY, targetFolderTreeEntity);
+                    if (folderSelectionResult != null) {
+                        FolderTreeEntity targetFolderTreeEntity = folderSelectionResult.getSelectedParentFolder();
+                        eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY,
+                                targetFolderTreeEntity.getParent());
+                        eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, targetFolderTreeEntity);
+                        eventBroker.send(EventConstants.EXPLORER_EXPAND_TREE_ENTITY, targetFolderTreeEntity);
+                    }
 
                     return Status.OK_STATUS;
                 } catch (final Exception e) {
@@ -259,6 +274,20 @@ public class RecordHandler {
         return true;
     }
 
+    private void addRecordedElements(List<WebPage> recordedElements,
+            SaveToObjectRepositoryDialogResult folderSelectionResult, IProgressMonitor monitor) throws Exception {
+        entitySavedMap = new HashMap<>();
+        for (WebPage pageElement : recordedElements) {
+            FolderEntity importedFolder = folderSelectionResult.createFolderForPageElement((WebPage) pageElement);
+            pageElement.setFolderAlias(importedFolder);
+            entitySavedMap.put(pageElement, importedFolder);
+            for (WebElement childElement : ((WebFrame) pageElement).getChildren()) {
+                addRecordedElement(childElement, importedFolder, null);
+            }
+            monitor.worked(1);
+        }
+    }
+
     private void addRecordedElement(WebElement element, FolderEntity parentFolder, WebElementEntity refElement)
             throws Exception {
         WebElementEntity importedElement = ObjectRepositoryController.getInstance().importWebElement(
@@ -271,88 +300,4 @@ public class RecordHandler {
         }
     }
 
-    private void addRecordedElements(List<WebPage> recordedElements,
-            SaveToObjectRepositoryDialogResult folderSelectionResult, IProgressMonitor monitor) throws Exception {
-        entitySavedMap = new HashMap<>();
-        for (WebElement pageElement : recordedElements) {
-            FolderEntity importedFolder = folderSelectionResult.createFolderForPageElement((WebPage) pageElement);
-            entitySavedMap.put(pageElement, importedFolder);
-            for (WebElement childElement : ((WebFrame) pageElement).getChildren()) {
-                addRecordedElement(childElement, importedFolder, null);
-            }
-            monitor.worked(1);
-        }
-    }
-
-    private List<StatementWrapper> generateStatementWrappersFromRecordedActions(List<HTMLActionMapping> recordedActions,
-            List<WebPage> recordedElements, TestCasePart testCasePart,
-            SaveToObjectRepositoryDialogResult folderSelectionResult, IProgressMonitor monitor) throws Exception {
-        monitor.subTask(StringConstants.JOB_ADDING_OBJECT);
-        addRecordedElements(recordedElements, folderSelectionResult, monitor);
-
-        monitor.subTask(StringConstants.JOB_GENERATE_STATEMENT_MESSAGE);
-        List<StatementWrapper> resultStatementWrappers = new ArrayList<StatementWrapper>();
-
-        ScriptNodeWrapper mainClassNode = testCasePart.getTreeTableInput().getMainClassNode();
-        
-        addAdditionalImports(mainClassNode);
-        // add open browser keyword
-        String webUiKwAliasName = HTMLActionUtil.getWebUiKeywordClass().getAliasName();
-        MethodCallExpressionWrapper methodCallExpressionWrapper = new MethodCallExpressionWrapper(webUiKwAliasName,
-                "openBrowser", mainClassNode);
-        ArgumentListExpressionWrapper arguments = methodCallExpressionWrapper.getArguments();
-        arguments.addExpression(new ConstantExpressionWrapper(""));
-
-        resultStatementWrappers.add(new ExpressionStatementWrapper(methodCallExpressionWrapper));
-
-        // add switch to window keyword if action in another window
-        recordedActions = addSwitchToWindowKeyword(recordedActions);
-
-        for (HTMLActionMapping action : recordedActions) {
-            WebElementEntity createdTestObject = null;
-            if (action.getTargetElement() != null
-                    && entitySavedMap.get(action.getTargetElement()) instanceof WebElementEntity) {
-                createdTestObject = (WebElementEntity) entitySavedMap.get(action.getTargetElement());
-            }
-            StatementWrapper generatedStatementWrapper = HTMLActionUtil.generateWebUiTestStep(action, createdTestObject,
-                    mainClassNode);
-            if (generatedStatementWrapper != null) {
-                resultStatementWrappers.add(generatedStatementWrapper);
-            }
-            monitor.worked(1);
-        }
-
-        // add close browser keyword
-        methodCallExpressionWrapper = new MethodCallExpressionWrapper(webUiKwAliasName, "closeBrowser", mainClassNode);
-        arguments = methodCallExpressionWrapper.getArguments();
-        resultStatementWrappers.add(new ExpressionStatementWrapper(methodCallExpressionWrapper));
-
-        return resultStatementWrappers;
-    }
-
-    private void addAdditionalImports(ScriptNodeWrapper mainClassNode) {
-        mainClassNode.addImport(Keys.class);
-    }
-
-    private List<HTMLActionMapping> addSwitchToWindowKeyword(List<HTMLActionMapping> recordedActions) {
-        List<HTMLActionMapping> newActions = new ArrayList<HTMLActionMapping>();
-        String currentWindowId = null;
-        for (HTMLActionMapping action : recordedActions) {
-            String newId = action.getWindowId();
-            if (newId != null) {
-                if (currentWindowId == null) {
-                    currentWindowId = newId;
-                } else if (!newId.equals(currentWindowId)) {
-                    HTMLActionMapping switchToWindowAction = HTMLActionUtil
-                            .createNewSwitchToWindowAction(HTMLActionUtil.getPageTitleForAction(action));
-                    newActions.add(switchToWindowAction);
-                    currentWindowId = newId;
-                }
-            } else {
-                currentWindowId = "";
-            }
-            newActions.add(action);
-        }
-        return newActions;
-    }
 }
