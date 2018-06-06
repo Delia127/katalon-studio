@@ -291,18 +291,6 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
         return null;
     }
 
-    private void addOpenBrowserKeyword() {
-        String webUiKwAliasName = HTMLActionUtil.getWebUiKeywordClass().getAliasName();
-        MethodCallExpressionWrapper methodCallExpressionWrapper = new MethodCallExpressionWrapper(webUiKwAliasName,
-                "openBrowser", treeTableInput.getMainClassNode());
-        ArgumentListExpressionWrapper arguments = methodCallExpressionWrapper.getArguments();
-        arguments.addExpression(new ConstantExpressionWrapper(""));
-        ExpressionStatementWrapper openBrowserStmt = new ExpressionStatementWrapper(methodCallExpressionWrapper);
-        treeTableInput.addNewAstObject(openBrowserStmt, null, NodeAddType.Add);
-        treeViewer.refresh();
-        treeViewer.setSelection(new StructuredSelection(getLatestNode()));
-    }
-
     @Override
     public void handleEvent(ObjectSpyEvent event, Object object) {
         switch (event) {
@@ -311,7 +299,7 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
                 break;
             case SELENIUM_SESSION_STARTED:
             case ADDON_SESSION_STARTED:
-                addOpenBrowserKeyword();
+                //addOpenBrowserKeyword();
                 //reset window ID
                 windowId = "";
                 break;

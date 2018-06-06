@@ -33,6 +33,8 @@ import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
@@ -113,9 +115,6 @@ public class RecordHandler {
             final SaveToObjectRepositoryDialogResult folderSelectionResult = recordDialog.getTargetFolderTreeEntity();
             final List<HTMLActionMapping> recordedActions = recordDialog.getActions();
             final List<WebPage> recordedElements = recordDialog.getElements();
-            if (recordedElements == null || recordedElements.isEmpty()) {
-                return;
-            }
             if (testCaseCompositePart == null) {
                 testCaseCompositePart = createNewTestCase();
             }
@@ -181,11 +180,17 @@ public class RecordHandler {
                             try {
                                 testCasePart.addDefaultImports();
                                 List<StatementWrapper> children = (List<StatementWrapper>) wrapper.getBlock().getAstChildren();
-                                
-                                // add close browser keyword
+
                                 String webUiKwAliasName = HTMLActionUtil.getWebUiKeywordClass().getAliasName();
-                                MethodCallExpressionWrapper methodCallExpressionWrapper = new MethodCallExpressionWrapper(webUiKwAliasName, "closeBrowser", wrapper);
-                                children.add(new ExpressionStatementWrapper(methodCallExpressionWrapper));
+                                MethodCallExpressionWrapper openBrowserExpressionWrapper = new MethodCallExpressionWrapper(webUiKwAliasName,
+                                        "openBrowser", wrapper);
+                                ArgumentListExpressionWrapper arguments = openBrowserExpressionWrapper.getArguments();
+                                arguments.addExpression(new ConstantExpressionWrapper(""));
+                                children.add(0, new ExpressionStatementWrapper(openBrowserExpressionWrapper));
+
+                                // add close browser keyword
+                                MethodCallExpressionWrapper closeBrowserExpressionWrapper = new MethodCallExpressionWrapper(webUiKwAliasName, "closeBrowser", wrapper);
+                                children.add(new ExpressionStatementWrapper(closeBrowserExpressionWrapper));
 
                                 testCasePart.getTreeTableInput().getMainClassNode().addImport(Keys.class);
                                 testCasePart.addStatements(children, NodeAddType.InserAfter);
