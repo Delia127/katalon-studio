@@ -361,18 +361,20 @@ public class ComposerTestcaseMessageConstants extends NLS {
     
     public static String LBL_ENCRYPTED_TEXT;
     
-    //Authentication Dialog    
+    public static String BTN_INSERT;
+    
+    public static String BTN_COPY_AND_CLOSE;
+    
+    public static String BTN_CANCEL;
+    
+  //Authentication Dialog    
     public static String LBL_USER_NAME;
     
     public static String LBL_PASSWORD;
     
     public static String AUTHENTICATION_DIALOG_TITLE;
     
-    public static String BTN_INSERT;
-    
-    public static String BTN_COPY_AND_CLOSE;
-    
-    public static String BTN_CANCEL;
+    public static String BTN_LOGIN;
     
     static {
         // initialize resource bundle

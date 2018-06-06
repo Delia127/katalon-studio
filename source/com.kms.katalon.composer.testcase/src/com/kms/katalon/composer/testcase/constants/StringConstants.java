@@ -451,19 +451,21 @@ public class StringConstants extends GlobalStringConstants {
     
     public static final String LBL_RAW_TEXT = ComposerTestcaseMessageConstants.LBL_RAW_TEXT;
     
-    public static final String LBL_ENCRYPTED_TEXT = ComposerTestcaseMessageConstants.LBL_ENCRYPTED_TEXT;
-    
-    // AuthenticationDialog
-    public static final String LBL_USER_NAME = ComposerTestcaseMessageConstants.LBL_USER_NAME;
-    
-    public static final String LBL_PASSWORD = ComposerTestcaseMessageConstants.LBL_PASSWORD;
-    
-    public static final String AUTHENTICATION_DIALOG_TITLE = ComposerTestcaseMessageConstants.AUTHENTICATION_DIALOG_TITLE;
-
+    public static final String LBL_ENCRYPTED_TEXT = ComposerTestcaseMessageConstants.LBL_ENCRYPTED_TEXT;    
     
     public static final String BTN_INSERT = ComposerTestcaseMessageConstants.BTN_INSERT;
     
     public static final String BTN_COPY_AND_CLOSE = ComposerTestcaseMessageConstants.BTN_COPY_AND_CLOSE;
     
     public static final String BTN_CANCEL = ComposerTestcaseMessageConstants.BTN_CANCEL;
+    
+ // AuthenticationDialog
+    public static final String LBL_USER_NAME = ComposerTestcaseMessageConstants.LBL_USER_NAME;
+    
+    public static final String LBL_PASSWORD = ComposerTestcaseMessageConstants.LBL_PASSWORD;
+    
+    public static final String AUTHENTICATION_DIALOG_TITLE = ComposerTestcaseMessageConstants.AUTHENTICATION_DIALOG_TITLE;
+    
+    public static final String BTN_LOGIN = ComposerTestcaseMessageConstants.BTN_LOGIN;
+    
 }

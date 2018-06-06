@@ -1,10 +1,18 @@
 package com.kms.katalon.composer.integration.analytics.dialog;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
@@ -23,37 +31,41 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.integration.analytics.constants.ComposerAnalyticsStringConstants;
+import com.kms.katalon.composer.integration.analytics.constants.ComposerIntegrationAnalyticsMessageConstants;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
+import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
+import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
+import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
+import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
+import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 import com.kms.katalon.util.CryptoUtil;
+import com.kms.katalon.controller.ProjectController;
 
 public class AuthenticationDialog extends Dialog {
     
-    private Text username;
+    private Text email;
     
     private Text password;
     
-    private String encryptedText;
-    
-    private Button btnInsert;
-    
-    private Button btnCopyAndClose;
+    private Button btnLogin;
     
     private Button btnCancel;
     
-    private boolean isManualMode;
-
-    private AuthenticationDialog(Shell parentShell, boolean isManualMode) {
-        super(parentShell);
-        this.isManualMode = isManualMode;
-    }
+    private AnalyticsSettingStore analyticsSettingStore;
     
-    public static AuthenticationDialog createDialogForManualModeCellEditor(Shell parentShell) {
-        return new AuthenticationDialog(parentShell, true);
+    private List<AnalyticsTeam> teams = new ArrayList<>();
+
+    private AuthenticationDialog(Shell parentShell) {
+        super(parentShell);
+        analyticsSettingStore = new AnalyticsSettingStore(
+                ProjectController.getInstance().getCurrentProject().getFolderLocation());
     }
     
     public static AuthenticationDialog createDefault(Shell parentShell) {
-        return new AuthenticationDialog(parentShell, false);
+        return new AuthenticationDialog(parentShell);
     }
     
     @Override
@@ -70,8 +82,8 @@ public class AuthenticationDialog extends Dialog {
         
         Label lblusername = new Label(inputComposite, SWT.NONE);
         lblusername.setText(StringConstants.LBL_USER_NAME);
-        username = new Text(inputComposite, SWT.BORDER);
-        username.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        email = new Text(inputComposite, SWT.BORDER);
+        email.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         
         Label lblpassword = new Label(inputComposite, SWT.NONE);
         lblpassword.setText(StringConstants.LBL_PASSWORD);
@@ -82,16 +94,10 @@ public class AuthenticationDialog extends Dialog {
         buttonComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false));
         buttonComposite.setLayout(new GridLayout(2, false));
         
-        if (isManualMode) {
-            btnInsert = new Button(buttonComposite, SWT.FLAT);
-            btnInsert.setText(StringConstants.BTN_INSERT);
-            btnInsert.setEnabled(false);
-        } else {
-            btnCopyAndClose = new Button(buttonComposite, SWT.FLAT);
-            btnCopyAndClose.setText(StringConstants.BTN_COPY_AND_CLOSE);
-            btnCopyAndClose.setEnabled(false);
-        }
-        
+        btnLogin = new Button(buttonComposite, SWT.FLAT);
+        btnLogin.setText(StringConstants.BTN_LOGIN);
+        btnLogin.setEnabled(false);
+
         btnCancel = new Button(buttonComposite, SWT.FLAT);
         btnCancel.setText(StringConstants.BTN_CANCEL);
         
@@ -99,46 +105,52 @@ public class AuthenticationDialog extends Dialog {
         return body;
     }
     
+    private void updateDataStore(String email, String password) {
+        try {
+            boolean encryptionEnabled = false;
+            analyticsSettingStore.enableIntegration(true);
+            analyticsSettingStore.setServerEndPoint(analyticsSettingStore.getServerEndpoint(encryptionEnabled), encryptionEnabled);
+            analyticsSettingStore.setEmail(email, encryptionEnabled);
+            analyticsSettingStore.setPassword(password, encryptionEnabled);
+        } catch (IOException | GeneralSecurityException e) {
+            LoggerSingleton.logError(e);
+            MultiStatusErrorDialog.showErrorDialog(e, ComposerAnalyticsStringConstants.ERROR, e.getMessage());
+        }
+    }
+    
     private void addControlListeners() {
-        username.addModifyListener(new ModifyListener() {
-
-            @Override
-            public void modifyText(ModifyEvent e) {
-                handleGenerateEncryptedText();
-                if (!StringUtils.isBlank(encryptedText)) {
-                    if (isManualMode) {
-                        btnInsert.setEnabled(true);
-                    } else {
-                        btnCopyAndClose.setEnabled(true);
-                    }
-                } else {
-                    if (isManualMode) {
-                        btnInsert.setEnabled(false);
-                    } else {
-                        btnCopyAndClose.setEnabled(false);
-                    }
-                }
-            }
+    	
+        email.addModifyListener(new ModifyListener() {
+	        @Override
+	        public void modifyText(ModifyEvent e) {
+	            handleEnteredUsername();
+	            if (!StringUtils.isBlank(email.getText()) && !StringUtils.isBlank(password.getText())) {
+	                    btnLogin.setEnabled(true);
+	            } else {
+	                    btnLogin.setEnabled(false);
+	            }
+	        }
         });
         
-        if (isManualMode) {
-            btnInsert.addSelectionListener(new SelectionAdapter() {
-                @Override
-                public void widgetSelected(SelectionEvent e) {
-                    handleGenerateEncryptedText();
-                    closeDialog();
-                }
-            });
-        } else {
-            btnCopyAndClose.addSelectionListener(new SelectionAdapter() {
-                @Override
-                public void widgetSelected(SelectionEvent e) {
-                    handleGenerateEncryptedText();
-                    handleCopyEncryptedText();
-                    closeDialog();
-                }
-            });
-        }
+        password.addModifyListener(new ModifyListener() {
+	        @Override
+	        public void modifyText(ModifyEvent e) {
+	            handleEnteredPassword();
+	            if (!StringUtils.isBlank(email.getText()) && !StringUtils.isBlank(password.getText())) {
+	                    btnLogin.setEnabled(true);
+	            } else {
+	                    btnLogin.setEnabled(false);
+	            }
+	        }
+        });
+    
+        btnLogin.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+            	handleLogin();
+            }
+        });
+
         
         btnCancel.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -164,34 +176,76 @@ public class AuthenticationDialog extends Dialog {
         shell.setText(StringConstants.AUTHENTICATION_DIALOG_TITLE);
     }
     
-    private void handleGenerateEncryptedText() {
-        String rawText = username.getText();
-        if (!StringUtils.isEmpty(rawText)) {
+    private void handleLogin(){
+    	 try {
+    		 String emailText = email.getText();
+    		 String passwordText = password.getText();
+             new ProgressMonitorDialog(getShell()).run(true, false, new IRunnableWithProgress() {
+                 @Override
+                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                     try {
+                         monitor.beginTask("Requesting token...", 2);
+                         monitor.subTask(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_CONNECTING_TO_SERVER);
+                         updateDataStore(emailText, passwordText);
+                         final AnalyticsTokenInfo tokenInfo = AnalyticsApiProvider.requestToken(analyticsSettingStore.getServerEndpoint(false), emailText,
+                                 passwordText);
+//                         monitor.worked(1);
+//                         monitor.subTask(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_GETTING_TEAMS);
+//                         final List<AnalyticsTeam> loaded = AnalyticsApiProvider.getTeams(serverUrl,
+//                                 tokenInfo.getAccess_token());
+//                         if (loaded != null && !loaded.isEmpty()) {
+//                             teams.addAll(loaded);
+//                         }
+                         // open Push dialog here
+//                         monitor.worked(1);
+//                         closeDialog();
+                         System.out.println("correct");
+                     } catch (Exception e) {
+                         throw new InvocationTargetException(e);
+                     } finally {
+                         monitor.done();
+                     }
+                 }
+             });
+         } catch (InvocationTargetException exception) {
+             final Throwable cause = exception.getCause();
+             if (cause instanceof AnalyticsApiExeception) {
+                 MessageDialog.openError(getShell(), ComposerAnalyticsStringConstants.ERROR, cause.getMessage());
+             } else {
+                 LoggerSingleton.logError(cause);
+             }
+         } catch (InterruptedException e) {
+             // Ignore this
+         }
+    }
+    
+    private void handleEnteredUsername() {
+        String enteredEmail = email.getText();
+        if (!StringUtils.isEmpty(enteredEmail)) {
             try {
-                CryptoUtil.CrytoInfo cryptoInfo = CryptoUtil.getDefault(rawText);
-                encryptedText = CryptoUtil.encode(cryptoInfo);
-                password.setText(encryptedText);
-            } catch (UnsupportedEncodingException | GeneralSecurityException e) {
+
+            } catch (Exception e) {
                 LoggerSingleton.logError(e);
             }
         } else {
-            password.setText(StringUtils.EMPTY);
-            encryptedText = password.getText();
         }
     }
     
-    private void handleCopyEncryptedText() {
-        Clipboard clipboard = new Clipboard(Display.getCurrent());
-        TextTransfer textTransfer = TextTransfer.getInstance();
-        clipboard.setContents(new Object[] { encryptedText }, new Transfer[] { textTransfer });
-        clipboard.dispose();
+    private void handleEnteredPassword() {
+        String enteredPassword = password.getText();
+        if (!StringUtils.isEmpty(enteredPassword)) {
+
+            try {
+
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+            }
+        } else {
+        }
     }
     
     private void closeDialog() {
         this.close();
     }
     
-    public String getEncryptedText() {
-        return encryptedText;
-    }
 }
