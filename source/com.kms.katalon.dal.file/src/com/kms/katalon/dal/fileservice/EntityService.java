@@ -305,17 +305,7 @@ public final class EntityService {
     }
 
     public String getAvailableName(String folderPk, String name, boolean isFile) {
-        List<String> fileNames = getDuplicatedNameExistBefore(folderPk, isFile);
         String newName = name;
-        if (fileNames.contains(newName.toLowerCase())) {
-            for (int i = 1; fileNames.contains(newName.toLowerCase()); i++) {
-                newName = name + " (" + i + ")";
-            }
-        }
-        return newName;
-    }
-
-    private List<String> getDuplicatedNameExistBefore(String folderPk, boolean isFile) {
         File parentFolder = new File(folderPk);
         List<String> fileNames = new ArrayList<String>();
         if (parentFolder.exists() && parentFolder.isDirectory()) {
@@ -328,15 +318,9 @@ public final class EntityService {
                 }
             }
         }
-        return fileNames;
-    }
-    
-    public String getAvailablePackageName(String folderPk, String name, boolean isFile) {
-        String newName = name;
-        List<String> fileNames = getDuplicatedNameExistBefore(folderPk, isFile);
         if (fileNames.contains(newName.toLowerCase())) {
             for (int i = 1; fileNames.contains(newName.toLowerCase()); i++) {
-                newName = name + i;
+                newName = name + " (" + i + ")";
             }
         }
         return newName;
