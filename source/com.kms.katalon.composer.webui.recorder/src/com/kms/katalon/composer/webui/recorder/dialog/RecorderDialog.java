@@ -150,6 +150,8 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     private static final int ANY_PORT_NUMBER = 0;
 
     private static final String RECORD_TOOL_ITEM_LABEL = StringConstants.DIA_TOOLITEM_RECORD;
+    
+    private static final int HORIZONTAL_SASH_FORM_WIDTH = 5;
 
     private static Point MIN_DIALOG_SIZE = new Point(600, 600);
 
@@ -368,7 +370,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     }
 
     private void resetInput() {
-        elements.clear();
+        //elements.clear();
         recordedActions.clear();
         // actionTableViewer.refresh();
     }
@@ -457,7 +459,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         glHtmlDomComposite.horizontalSpacing = 0;
         leftPanelComposite.setLayout(glHtmlDomComposite);
 
-        createRightPanel(leftPanelComposite);
+        createStepsPanel(leftPanelComposite);
 
         Composite rightPanelComposite = new Composite(hSashForm, SWT.NONE);
         GridLayout glObjectComposite = new GridLayout();
@@ -469,7 +471,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         glObjectComposite.horizontalSpacing = 0;
         rightPanelComposite.setLayout(glObjectComposite);
 
-        createLeftPanel(rightPanelComposite);
+        createObjectsPanel(rightPanelComposite);
 
         hSashForm.setWeights(new int[] { 10, 0 });
 
@@ -483,8 +485,6 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     @Override
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
-       // newShell.setMinimumSize(MIN_DIALOG_SIZE);
-        //newShell.setSize(MIN_DIALOG_SIZE);
     }
 
     private void initializeInput() {
@@ -494,7 +494,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         getTreeTableInput().refresh();
     }
 
-    private void createLeftPanel(Composite parent) {
+    private void createObjectsPanel(Composite parent) {
         capturedObjectComposite = new CapturedObjectsView(parent, SWT.NONE, eventBroker);
         Sash sash = new Sash(parent, SWT.HORIZONTAL);
         GridData layoutData = new GridData(SWT.FILL, SWT.TOP, true, false);
@@ -516,13 +516,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             }
         });
         objectPropertiesView = new ObjectPropertiesView(parent, SWT.NONE);
-        objectPropertiesView.setRefreshCapturedObjectsTree(new Runnable() {
-
-            @Override
-            public void run() {
-                capturedObjectComposite.refreshTree(null);
-            }
-        });
+        objectPropertiesView.setRefreshCapturedObjectsTree(() ->capturedObjectComposite.refreshTree(null));
 
         ObjectSpySelectorEditor selectorEditor = new ObjectSpySelectorEditor();
         selectorEditor.createObjectSelectorEditor(parent);
@@ -560,22 +554,31 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                int[] sashFormWeights = new int[] { 10, 0 };
                 String showOrHide = StringConstants.DIA_TITLE_SHOW + StringConstants.DIA_TITLE_CAPTURED_OBJECTS + " >>";
-                hSashForm.setSashWidth(0);
+                int[] sashFormWeights;
+                int sashWidth;
+                Point currentSize = hSashForm.getSize();
+                Point shellSize = getShell().getSize();
+                int widthDiff;
                 if (tltmCapturedObjects.getText().contains(StringConstants.DIA_TITLE_SHOW)) {
+                    widthDiff = currentSize.x * 100 / 55 + HORIZONTAL_SASH_FORM_WIDTH - currentSize.x;
                     sashFormWeights = new int[] { 55, 45 };
                     showOrHide = "<< " + StringConstants.DIA_TITLE_HIDE + StringConstants.DIA_TITLE_CAPTURED_OBJECTS;
-                    hSashForm.setSashWidth(5);
+                    sashWidth = HORIZONTAL_SASH_FORM_WIDTH;
+                } else {
+                    widthDiff = (currentSize.x - HORIZONTAL_SASH_FORM_WIDTH) * 55 / 100 - currentSize.x;
+                    sashFormWeights = new int[] { 10, 0 };
+                    sashWidth = 0;
                 }
                 tltmCapturedObjects.setText(showOrHide);
                 hSashForm.setWeights(sashFormWeights);
-                getShell().pack();
+                hSashForm.setSashWidth(sashWidth);
+                getShell().setSize(shellSize.x + widthDiff, shellSize.y);
             }
         });
     }
 
-    private void createRightPanel(Composite parent) {
+    private void createStepsPanel(Composite parent) {
         Composite labelComposite = new Composite(parent, SWT.NONE);
         GridLayout glLabelComposite = new GridLayout(2, false);
         glLabelComposite.marginWidth = 0;
@@ -650,8 +653,9 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
         Menu addMenu = new Menu(tltmAddStep.getParent().getShell());
         tltmAddStep.setData(addMenu);
-        TestCaseMenuUtil.fillActionMenu(TreeTableMenuItemConstants.AddAction.Add, selectionListener, addMenu);
-        
+        TestCaseMenuUtil.fillActionMenu(TreeTableMenuItemConstants.AddAction.Add, selectionListener, addMenu,
+                new int[] { TreeTableMenuItemConstants.METHOD_MENU_ITEM_ID });
+
         tltmRecent = new ToolItem(toolbar, SWT.DROP_DOWN);
         tltmRecent.setText(ComposerTestcaseMessageConstants.PA_BTN_TIP_RECENT);
         tltmRecent.setImage(ImageConstants.IMG_16_RECENT);

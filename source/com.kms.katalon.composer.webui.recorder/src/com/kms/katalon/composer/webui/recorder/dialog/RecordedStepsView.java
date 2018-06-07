@@ -28,9 +28,6 @@ import com.kms.katalon.composer.testcase.ast.treetable.AstBuiltInKeywordTreeTabl
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
-import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
-import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
-import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
@@ -96,14 +93,14 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
         TreeColumnLayout treeColumnLayout = new TreeColumnLayout();
         compositeTable.setLayout(treeColumnLayout);
 
-        addTreeTableColumn(treeViewer, treeColumnLayout, StringConstants.PA_COL_ITEM, 150, 30,
+        addTreeTableColumn(treeViewer, treeColumnLayout, StringConstants.PA_COL_ITEM, 150, 20,
                 new AstTreeItemLabelProvider(), new ItemColumnEditingSupport(treeViewer, this));
         addTreeTableColumn(treeViewer, treeColumnLayout,
-                StringConstants.PA_COL_OBJ, 150, 30, new AstTreeLabelProvider(),
+                StringConstants.PA_COL_OBJ, 100, 20, new AstTreeLabelProvider(),
                 new CapturedElementEditingSupport(treeViewer, this));
-        addTreeTableColumn(treeViewer, treeColumnLayout, StringConstants.PA_COL_INPUT, 150, 30,
+        addTreeTableColumn(treeViewer, treeColumnLayout, StringConstants.PA_COL_INPUT, 100, 20,
                 new AstTreeLabelProvider(), new InputColumnEditingSupport(treeViewer, this));
-        addTreeTableColumn(treeViewer, treeColumnLayout, StringConstants.PA_COL_OUTPUT, 80, 8,
+        addTreeTableColumn(treeViewer, treeColumnLayout, StringConstants.PA_COL_OUTPUT, 80, 0,
                 new AstTreeLabelProvider(), new OutputColumnEditingSupport(treeViewer, this));
 
         treeViewer.setContentProvider(new AstTreeTableContentProvider());
@@ -290,6 +287,7 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
         }
         return null;
     }
+
 
     @Override
     public void handleEvent(ObjectSpyEvent event, Object object) {

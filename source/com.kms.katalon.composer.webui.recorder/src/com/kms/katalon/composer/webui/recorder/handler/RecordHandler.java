@@ -106,6 +106,7 @@ public class RecordHandler {
                 recordDialog = new RecorderDialog(shell, LoggerSingleton.getInstance().getLogger(), eventBroker);
             } else {
                 recordDialog.getShell().forceActive();
+                return;
             }
 
             int responseCode = recordDialog.open();
@@ -178,9 +179,14 @@ public class RecordHandler {
                         @Override
                         public void run() {
                             try {
-                                testCasePart.addDefaultImports();
                                 List<StatementWrapper> children = (List<StatementWrapper>) wrapper.getBlock().getAstChildren();
+                                if (children.isEmpty()) {
+                                    return;
+                                }
+                                testCasePart.addDefaultImports();
+                                testCasePart.getTreeTableInput().getMainClassNode().addImport(Keys.class);
 
+                                // add open browser keyword at the beginning of generated steps
                                 String webUiKwAliasName = HTMLActionUtil.getWebUiKeywordClass().getAliasName();
                                 MethodCallExpressionWrapper openBrowserExpressionWrapper = new MethodCallExpressionWrapper(webUiKwAliasName,
                                         "openBrowser", wrapper);
@@ -188,12 +194,12 @@ public class RecordHandler {
                                 arguments.addExpression(new ConstantExpressionWrapper(""));
                                 children.add(0, new ExpressionStatementWrapper(openBrowserExpressionWrapper));
 
-                                // add close browser keyword
+                                // add close browser keyword at the end of generated steps
                                 MethodCallExpressionWrapper closeBrowserExpressionWrapper = new MethodCallExpressionWrapper(webUiKwAliasName, "closeBrowser", wrapper);
                                 children.add(new ExpressionStatementWrapper(closeBrowserExpressionWrapper));
 
-                                testCasePart.getTreeTableInput().getMainClassNode().addImport(Keys.class);
-                                testCasePart.addStatements(children, NodeAddType.InserAfter);
+                                // append generated steps at the end of test case's steps
+                                testCasePart.addStatements(children, NodeAddType.Add, true);
                                 testCaseCompositePart.refreshScript();
                                 testCaseCompositePart.save();
                             } catch (Exception e) {

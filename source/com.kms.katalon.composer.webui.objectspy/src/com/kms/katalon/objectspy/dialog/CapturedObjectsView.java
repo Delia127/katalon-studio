@@ -240,10 +240,6 @@ public class CapturedObjectsView extends Composite implements EventHandler, Even
         }
     }
 
-    public void setInput(WebPage[] input) {
-        setTreeDataInput(input);
-    }
-
     public void setInput(List<WebPage> input) {
         setTreeDataInput(input);
     }

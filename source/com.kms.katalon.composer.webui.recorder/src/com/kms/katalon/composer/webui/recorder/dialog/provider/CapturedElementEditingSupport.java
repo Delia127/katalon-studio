@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Control;
 
 import com.kms.katalon.composer.components.dialogs.AbstractDialogCellEditor;
 import com.kms.katalon.composer.testcase.ast.treetable.AstAbstractKeywordTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstCallTestCaseKeywordTreeTableNode;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
 import com.kms.katalon.composer.testcase.support.TestObjectEditingSupport;
 import com.kms.katalon.composer.webui.recorder.ast.RecordedElementMethodCallWrapper;
@@ -27,7 +28,8 @@ public class CapturedElementEditingSupport extends TestObjectEditingSupport {
 
     @Override
     protected CellEditor getCellEditor(Object element) {
-        if (element instanceof AstAbstractKeywordTreeTableNode) {
+        if (element instanceof AstAbstractKeywordTreeTableNode
+                && !(element instanceof AstCallTestCaseKeywordTreeTableNode)) {
             CapturedTestObjectCellEditor capturedTestObjectCellEditor = new CapturedTestObjectCellEditor(
                     (Composite) getViewer().getControl(), (AstAbstractKeywordTreeTableNode) element);
             return capturedTestObjectCellEditor;
@@ -37,7 +39,9 @@ public class CapturedElementEditingSupport extends TestObjectEditingSupport {
 
     @Override
     protected void setValue(Object element, Object value) {
-        if (element instanceof AstAbstractKeywordTreeTableNode && value instanceof WebElement) {
+        if (element instanceof AstAbstractKeywordTreeTableNode 
+                && !(element instanceof AstCallTestCaseKeywordTreeTableNode) 
+                && value instanceof WebElement) {
             AstAbstractKeywordTreeTableNode node = (AstAbstractKeywordTreeTableNode) element;
             ExpressionWrapper exprs = (ExpressionWrapper) node.getTestObject();
             node.setTestObject(new RecordedElementMethodCallWrapper(exprs.getParent(), (WebElement) value));
