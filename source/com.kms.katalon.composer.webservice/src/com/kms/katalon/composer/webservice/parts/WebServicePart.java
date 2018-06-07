@@ -19,6 +19,7 @@ import org.apache.http.impl.EnglishReasonPhraseCatalog;
 import org.codehaus.groovy.eclipse.editor.GroovyEditor;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Persist;
@@ -512,7 +513,7 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
         Composite snippetPartInnerComposite = new Composite(snippetPartComposite, SWT.NONE);
         snippetPartInnerComposite.setLayout(new GridLayout(2, false));
         
-        int fontSize = 8;
+        int fontSize = Platform.getOS().equals(Platform.OS_MACOSX) ? 11 : 9;
         
         Label separator = new Label(snippetPartInnerComposite, SWT.SEPARATOR | SWT.SHADOW_IN | SWT.VERTICAL);
         separator.setLayoutData(new GridData(GridData.FILL_VERTICAL));
@@ -925,7 +926,7 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
     
     private void createResponseVerificationResult(CTabFolder responseDetailsTabFolder) {
         CTabItem verificationResultTab = new CTabItem(responseDetailsTabFolder, SWT.NONE);
-        verificationResultTab.setText("Verification Log");
+        verificationResultTab.setText(ComposerWebserviceMessageConstants.LBL_RESPONSE_VERIFICATION_LOG);
         
         verificationResultComposite = new Composite(responseDetailsTabFolder, SWT.NONE);
         verificationResultTab.setControl(verificationResultComposite);
@@ -939,7 +940,7 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
         resultStatusComposite.setLayout(glResultStatus);
         
         Label lblVerificationResult = new Label(resultStatusComposite, SWT.NONE);
-        lblVerificationResult.setText("Result: ");
+        lblVerificationResult.setText(ComposerWebserviceMessageConstants.LBL_RESPONSE_VERIFICATION_RESULT);
         
         lblVerificationResultStatus = new Label(resultStatusComposite, SWT.NONE);
         lblVerificationResultStatus.setForeground(ColorUtil.getTextWhiteColor());

@@ -21,7 +21,7 @@ import internal.GlobalVariable as GlobalVariable
 <name>Get current response </name>
 <script>
 <![CDATA[
-ResponseObject response = WSResponseManager.getCurrentResponse()
+ResponseObject response = WSResponseManager.getInstance().getCurrentResponse()
 ]]>
 </script>
 </snippet>
