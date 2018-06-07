@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.integration.git.components.wizards;
+package com.kms.katalon.composer.keyword.git;
 
 import java.io.File;
 import java.io.IOException;
@@ -65,8 +65,11 @@ import org.eclipse.ui.IWorkingSet;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
-import com.kms.katalon.composer.integration.git.constants.GitEventConstants;
+import com.kms.katalon.composer.integration.git.components.wizards.CustomRepositorySelectionPage;
+import com.kms.katalon.composer.integration.git.components.wizards.CustomSourceBranchPage;
 import com.kms.katalon.composer.integration.git.constants.GitStringConstants;
+import com.kms.katalon.composer.keyword.constants.GitEventConstants;
+import com.kms.katalon.controller.ProjectController;
 
 @SuppressWarnings("restriction")
 public class CustomGitCloneWizard extends Wizard {
@@ -226,10 +229,9 @@ public class CustomGitCloneWizard extends Wizard {
      *
      * @param gitRepositoryInfo
      * @return if clone was successful
-     * @throws URISyntaxException
-     * @throws InterruptedException
+     * @throws Exception 
      */
-    protected boolean performClone(GitRepositoryInfo gitRepositoryInfo) throws URISyntaxException, InterruptedException {
+    protected boolean performClone(GitRepositoryInfo gitRepositoryInfo) throws Exception {
         URIish uri = new URIish(gitRepositoryInfo.getCloneUri());
         UserPasswordCredentials credentials = gitRepositoryInfo.getCredentials();
         setWindowTitle(NLS.bind(UIText.GitCloneWizard_jobName, uri.toString()));
@@ -243,13 +245,18 @@ public class CustomGitCloneWizard extends Wizard {
             allSelected = validSource.isAllSelected();
             selectedBranches = validSource.getSelectedBranches();
         }
-        final File workdir = cloneDestination.getDestinationFile();
+        
+        String tempDir = ProjectController.getInstance().getTempDir();
+        
+        final File workdir = new File(tempDir, "git_tmp");
+        
         final Ref ref = cloneDestination.getInitialBranch();
         final String remoteName = cloneDestination.getRemote();
 
         boolean created = workdir.exists();
-        if (!created)
+        if (!created) {
             created = workdir.mkdirs();
+        }
 
         if (!created || !workdir.isDirectory()) {
             final String errorMessage = NLS.bind(UIText.GitCloneWizard_errorCannotCreate, workdir.getPath());
@@ -458,7 +465,7 @@ public class CustomGitCloneWizard extends Wizard {
                 if (!event.getResult().isOK()) {
                     return;
                 }
-                EventBrokerSingleton.getInstance().getEventBroker().post(GitEventConstants.CLONE_FINISHED, destination);
+                EventBrokerSingleton.getInstance().getEventBroker().post(GitEventConstants.KEYWORD_CLONE_FINISHED, destination);
             }
         });
         job.setUser(true);

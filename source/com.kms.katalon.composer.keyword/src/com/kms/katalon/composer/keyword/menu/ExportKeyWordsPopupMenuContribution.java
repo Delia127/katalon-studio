@@ -15,8 +15,8 @@ import org.osgi.framework.FrameworkUtil;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.PackageTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.keyword.constants.StringConstants;
 import com.kms.katalon.composer.keyword.handlers.ExportFolderHandler;
-import com.kms.katalon.composer.keyword.handlers.ExportJarHandler;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
@@ -71,10 +71,6 @@ public class ExportKeyWordsPopupMenuContribution {
                 folderMenuItem.setContributionURI(CM_EXPORT_COMPOSER_BUNDLE_URI + ExportFolderHandler.class.getName());
                 importMenu.getChildren().add(folderMenuItem);
 
-                MDirectMenuItem gitMenuItem = getGitMenuItem();
-                gitMenuItem.setContributionURI(CM_EXPORT_COMPOSER_BUNDLE_URI + ExportJarHandler.class.getName());
-                importMenu.getChildren().add(gitMenuItem);
-
                 if (importMenu.getChildren().size() > 0) {
                     menuItems.add(0, importMenu);
                 }
@@ -87,22 +83,16 @@ public class ExportKeyWordsPopupMenuContribution {
     private MMenu getExportMenu() {
         MMenu dynamicItem = modelService.createModelElement(MMenu.class);
         // Import
-        dynamicItem.setLabel("Export");
+        dynamicItem.setLabel(StringConstants.MSG_EXPORT);
         dynamicItem.setContributorURI(CONTRIBUTOR_URI);
         return dynamicItem;
     }
 
     private MDirectMenuItem getFolderMenuItem() {
         MDirectMenuItem dynamicItem = modelService.createModelElement(MDirectMenuItem.class);
-        dynamicItem.setLabel("Folder");
+        dynamicItem.setLabel(StringConstants.FOLDER);
         dynamicItem.setContributorURI(CONTRIBUTOR_URI);
         return dynamicItem;
     }
 
-    private MDirectMenuItem getGitMenuItem() {
-        MDirectMenuItem dynamicItem = modelService.createModelElement(MDirectMenuItem.class);
-        dynamicItem.setLabel("Git");
-        dynamicItem.setContributorURI(CONTRIBUTOR_URI);
-        return dynamicItem;
-    }
 }

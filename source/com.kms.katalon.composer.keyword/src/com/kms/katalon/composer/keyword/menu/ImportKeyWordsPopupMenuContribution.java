@@ -14,6 +14,7 @@ import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.keyword.constants.StringConstants;
 import com.kms.katalon.composer.keyword.handlers.ImportFolderHandler;
 import com.kms.katalon.composer.keyword.handlers.ImportGitHandler;
 import com.kms.katalon.constants.IdConstants;
@@ -77,23 +78,23 @@ public class ImportKeyWordsPopupMenuContribution {
 
     private MMenu getImportMenu() {
         MMenu dynamicItem = modelService.createModelElement(MMenu.class);
-        // Import
-        dynamicItem.setLabel("Import");
+        dynamicItem.setLabel(StringConstants.MSG_IMPORT);
         dynamicItem.setContributorURI(CONTRIBUTOR_URI);
         return dynamicItem;
     }
 
     private MDirectMenuItem getFolderMenuItem() {
         MDirectMenuItem dynamicItem = modelService.createModelElement(MDirectMenuItem.class);
-        dynamicItem.setLabel("Folder");
+        dynamicItem.setLabel(StringConstants.FOLDER);
         dynamicItem.setContributorURI(CONTRIBUTOR_URI);
         return dynamicItem;
     }
 
     private MDirectMenuItem getGitMenuItem() {
         MDirectMenuItem dynamicItem = modelService.createModelElement(MDirectMenuItem.class);
-        dynamicItem.setLabel("Git");
+        dynamicItem.setLabel(StringConstants.GIT);
         dynamicItem.setContributorURI(CONTRIBUTOR_URI);
         return dynamicItem;
     }
+
 }
