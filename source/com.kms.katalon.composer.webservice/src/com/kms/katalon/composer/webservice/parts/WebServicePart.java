@@ -426,7 +426,7 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
         String verificationScript = getVerificationScript();
         if (!isEmptyScript(verificationScript)) {
             VerificationScriptExecutor executor = new VerificationScriptExecutor();
-            executor.execute(verificationScript, responseObject);
+            executor.execute(originalWsObject.getId(), verificationScript, responseObject);
         }
     }
     
@@ -1374,12 +1374,21 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
         }
         
         if (EventConstants.WS_VERIFICATION_LOG_UPDATED.equals(event.getTopic())) {
-            txtVerificationLog.append(eventData + "\n");
+            Object[] data = (Object[]) eventData;
+            String testObjectId = (String) data[0];
+            String logLine = (String) data[1];
+            if (originalWsObject.getId().equals(testObjectId)) {
+                txtVerificationLog.append(logLine + "\n");
+            }
         }
         
         if (EventConstants.WS_VERIFICATION_EXECUTION_FINISHED.equals(event.getTopic())) {
-            TestStatusValue value = (TestStatusValue) eventData;
-            setVerificationResultStatus(value);
+            Object[] data = (Object[]) eventData;
+            String testObjectId = (String) data[0];
+            TestStatusValue testStatusValue = (TestStatusValue) data[1];
+            if (originalWsObject.getId().equals(testObjectId)) {
+                setVerificationResultStatus(testStatusValue);
+            }
         }
     }
     
