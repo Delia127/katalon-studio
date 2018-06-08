@@ -2,7 +2,7 @@ node {
     stage('Check out') {
         checkout scm
     }  
-    stage('Prepare') {
+    stage('Build') {
     	if (env.BRANCH_NAME == 'release') {
     		sh '''
 	            cd source
