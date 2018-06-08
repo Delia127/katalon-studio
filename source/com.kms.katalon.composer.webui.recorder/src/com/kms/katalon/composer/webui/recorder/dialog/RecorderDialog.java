@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
+import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -36,6 +37,8 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -67,6 +70,7 @@ import com.kms.katalon.composer.components.impl.control.Dropdown;
 import com.kms.katalon.composer.components.impl.control.DropdownGroup;
 import com.kms.katalon.composer.components.impl.control.DropdownItemSelectionListener;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
+import com.kms.katalon.composer.components.impl.handler.WorkbenchUtilizer;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
@@ -150,10 +154,10 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     private static final int ANY_PORT_NUMBER = 0;
 
     private static final String RECORD_TOOL_ITEM_LABEL = StringConstants.DIA_TOOLITEM_RECORD;
-    
+
     private static final int HORIZONTAL_SASH_FORM_WIDTH = 5;
 
-    private static Point MIN_DIALOG_SIZE = new Point(600, 600);
+    private static Point MIN_DIALOG_SIZE = new Point(600, 800);
 
     private HTMLElementRecorderServer server;
 
@@ -370,7 +374,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     }
 
     private void resetInput() {
-        //elements.clear();
+        // elements.clear();
         recordedActions.clear();
         // actionTableViewer.refresh();
     }
@@ -516,7 +520,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             }
         });
         objectPropertiesView = new ObjectPropertiesView(parent, SWT.NONE);
-        objectPropertiesView.setRefreshCapturedObjectsTree(() ->capturedObjectComposite.refreshTree(null));
+        objectPropertiesView.setRefreshCapturedObjectsTree(() -> capturedObjectComposite.refreshTree(null));
 
         ObjectSpySelectorEditor selectorEditor = new ObjectSpySelectorEditor();
         selectorEditor.createObjectSelectorEditor(parent);
@@ -535,11 +539,11 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
         this.addListener(verifyView,
                 Arrays.asList(ObjectSpyEvent.ADDON_SESSION_STARTED, ObjectSpyEvent.SELENIUM_SESSION_STARTED));
-        this.addListener(recordStepsView, 
+        this.addListener(recordStepsView,
                 Arrays.asList(ObjectSpyEvent.ADDON_SESSION_STARTED, ObjectSpyEvent.SELENIUM_SESSION_STARTED));
 
         objectPropertiesView.addListener(recordStepsView, Arrays.asList(ObjectSpyEvent.ELEMENT_NAME_CHANGED));
-        
+
         recordStepsView.setCapturedObjectsView(capturedObjectComposite);
     }
 
@@ -548,7 +552,8 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         rightToolBar.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, true, false, 1, 1));
 
         ToolItem tltmCapturedObjects = new ToolItem(rightToolBar, SWT.PUSH);
-        tltmCapturedObjects.setText(StringConstants.DIA_TITLE_SHOW + StringConstants.DIA_TITLE_CAPTURED_OBJECTS + " >>");
+        tltmCapturedObjects
+                .setText(StringConstants.DIA_TITLE_SHOW + StringConstants.DIA_TITLE_CAPTURED_OBJECTS + " >>");
         tltmCapturedObjects.setToolTipText(StringConstants.DIA_TOOLTIP_SHOW_HIDE_CAPTURED_OBJECTS);
         tltmCapturedObjects.addSelectionListener(new SelectionAdapter() {
 
@@ -561,12 +566,12 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 Point shellSize = getShell().getSize();
                 int widthDiff;
                 if (tltmCapturedObjects.getText().contains(StringConstants.DIA_TITLE_SHOW)) {
-                    widthDiff = currentSize.x * 100 / 55 + HORIZONTAL_SASH_FORM_WIDTH - currentSize.x;
-                    sashFormWeights = new int[] { 55, 45 };
+                    widthDiff = currentSize.x * 100 / 60 + HORIZONTAL_SASH_FORM_WIDTH - currentSize.x;
+                    sashFormWeights = new int[] { 60, 40 };
                     showOrHide = "<< " + StringConstants.DIA_TITLE_HIDE + StringConstants.DIA_TITLE_CAPTURED_OBJECTS;
                     sashWidth = HORIZONTAL_SASH_FORM_WIDTH;
                 } else {
-                    widthDiff = (currentSize.x - HORIZONTAL_SASH_FORM_WIDTH) * 55 / 100 - currentSize.x;
+                    widthDiff = (currentSize.x - HORIZONTAL_SASH_FORM_WIDTH) * 60 / 100 - currentSize.x;
                     sashFormWeights = new int[] { 10, 0 };
                     sashWidth = 0;
                 }
@@ -574,6 +579,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 hSashForm.setWeights(sashFormWeights);
                 hSashForm.setSashWidth(sashWidth);
                 getShell().setSize(shellSize.x + widthDiff, shellSize.y);
+                tltmCapturedObjects.getParent().layout(true);
             }
         });
     }
@@ -592,16 +598,20 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
         createActionToolbar(labelComposite);
 
-        Composite compositeSteps = new Composite(parent, SWT.NONE);
+        SashForm compositeSteps = new SashForm(parent, SWT.VERTICAL);
         compositeSteps.setLayoutData(new GridData(GridData.FILL_BOTH));
-        GridLayout glCompositeSteps = new GridLayout(1, false);
-        glCompositeSteps.marginWidth = 0;
-        glCompositeSteps.marginHeight = 0;
-        compositeSteps.setLayout(glCompositeSteps);
 
-        createStepButtons(compositeSteps);
+        Composite compositeStepsTab = new Composite(compositeSteps, SWT.NONE);
+        compositeStepsTab.setLayoutData(new GridData(GridData.FILL_BOTH));
+        GridLayout glStepsTab = new GridLayout(1, false);
+        glStepsTab.marginWidth = 0;
+        glStepsTab.marginHeight = 0;
+        glStepsTab.marginBottom = 0;
+        compositeStepsTab.setLayout(glStepsTab);
 
-        Composite tableComposite = new Composite(compositeSteps, SWT.None);
+        createStepButtons(compositeStepsTab);
+
+        Composite tableComposite = new Composite(compositeStepsTab, SWT.None);
         GridLayout layout = new GridLayout();
         layout.marginWidth = 0;
         layout.marginHeight = 0;
@@ -610,6 +620,24 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
         recordStepsView = new RecordedStepsView();
         recordStepsView.createContent(tableComposite);
+
+        CTabFolder bottomTabFolder = new CTabFolder(compositeSteps, SWT.NONE);
+
+        CTabItem variablesTabItem = new CTabItem(bottomTabFolder, SWT.NONE);
+        variablesTabItem.setText("Variables");
+        Composite cp = recordStepsView.createVariableTab(bottomTabFolder);
+        cp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        variablesTabItem.setControl(cp);
+        
+        CTabItem logTabItem = new CTabItem(bottomTabFolder, SWT.NONE);
+        logTabItem.setText("Logs");
+
+        bottomTabFolder.setSelection(variablesTabItem);
+
+        compositeSteps.setWeights(new int[] { 60, 40 });
+
+        IStylingEngine styleEngine = WorkbenchUtilizer.getService(IStylingEngine.class);
+        styleEngine.setId(compositeSteps, "DefaultCTabFolder");
     }
 
     private ToolItem tltmAddStep, tltmRemoveStep, tltmUp, tltmDown, tltmRecent;
@@ -1141,20 +1169,21 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         if (addToObjectRepositoryDialog.open() != Window.OK) {
             return false;
         }
-        
+
         targetFolderSelectionResult = addToObjectRepositoryDialog.getDialogResult();
 
         ObjectRepositoryService objectRepositoryService = new ObjectRepositoryService();
-        refeshExplorer(objectRepositoryService.saveObject(targetFolderSelectionResult), addToObjectRepositoryDialog.getSelectedParentFolderResult());
-        
+        refeshExplorer(objectRepositoryService.saveObject(targetFolderSelectionResult),
+                addToObjectRepositoryDialog.getSelectedParentFolderResult());
+
         return true;
     }
-    
+
     private void refeshExplorer(SaveActionResult saveResult, FolderTreeEntity selectedParentFolder) {
         // Refresh tree explorer
         eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, selectedParentFolder);
-        
-        //Refesh updated object.
+
+        // Refesh updated object.
         for (Object[] testObj : saveResult.getUpdatedTestObjectIds()) {
             eventBroker.post(EventConstants.TEST_OBJECT_UPDATED, testObj);
         }

@@ -454,7 +454,7 @@ public class TestCaseTreeTableInput {
         final List<AstTreeTableNode> astTreeTableNodes = new ArrayList<AstTreeTableNode>();
         mainClassTreeNode = new AstScriptTreeTableNode(mainClassNodeWrapper, null);
         astTreeTableNodes.add(mainClassTreeNode);
-        reloadTestCaseVariables();
+        reloadTestCaseVariables(parentPart.getVariables());
         treeTableViewer.setInput(astTreeTableNodes);
     }
 
@@ -471,17 +471,12 @@ public class TestCaseTreeTableInput {
         return expandedElements;
     }
 
-    public void reloadTestCaseVariables() {
+    public void reloadTestCaseVariables(VariableEntity[] variables) {
         mainClassNodeWrapper.clearFields();
-        TestCaseEntity testCase = parentPart.getTestCase();
-        if (testCase == null) {
-            return;
-        }
-        String testCaseId = testCase.getIdForDisplay();
-        for (VariableEntity variable : parentPart.getVariables()) {
+        for (VariableEntity variable : variables) {
             FieldNodeWrapper field = new FieldNodeWrapper(variable.getName(), Object.class, mainClassNodeWrapper);
             ExpressionWrapper expression = GroovyWrapperParser
-                    .parseGroovyScriptAndGetFirstExpression(variable.getDefaultValue(), testCaseId);
+                    .parseGroovyScriptAndGetFirstExpression(variable.getDefaultValue());
             if (expression != null) {
                 expression.setParent(field);
                 field.setInitialValueExpression(expression);

@@ -15,6 +15,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
@@ -32,6 +33,7 @@ import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStateme
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
 import com.kms.katalon.composer.testcase.parts.ITestCasePart;
+import com.kms.katalon.composer.testcase.parts.TestCaseVariableView;
 import com.kms.katalon.composer.testcase.providers.AstTreeItemLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstTreeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstTreeTableContentProvider;
@@ -63,6 +65,8 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
 
     private String windowId;
 
+    private TestCaseVariableView variableView;
+
     public CTreeViewer getTreeTable() {
         return treeViewer;
     }
@@ -93,12 +97,12 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
         TreeColumnLayout treeColumnLayout = new TreeColumnLayout();
         compositeTable.setLayout(treeColumnLayout);
 
-        addTreeTableColumn(treeViewer, treeColumnLayout, StringConstants.PA_COL_ITEM, 150, 20,
+        addTreeTableColumn(treeViewer, treeColumnLayout, StringConstants.PA_COL_ITEM, 200, 0,
                 new AstTreeItemLabelProvider(), new ItemColumnEditingSupport(treeViewer, this));
         addTreeTableColumn(treeViewer, treeColumnLayout,
-                StringConstants.PA_COL_OBJ, 100, 20, new AstTreeLabelProvider(),
+                StringConstants.PA_COL_OBJ, 150, 0, new AstTreeLabelProvider(),
                 new CapturedElementEditingSupport(treeViewer, this));
-        addTreeTableColumn(treeViewer, treeColumnLayout, StringConstants.PA_COL_INPUT, 100, 20,
+        addTreeTableColumn(treeViewer, treeColumnLayout, StringConstants.PA_COL_INPUT, 150, 0,
                 new AstTreeLabelProvider(), new InputColumnEditingSupport(treeViewer, this));
         addTreeTableColumn(treeViewer, treeColumnLayout, StringConstants.PA_COL_OUTPUT, 80, 0,
                 new AstTreeLabelProvider(), new OutputColumnEditingSupport(treeViewer, this));
@@ -164,19 +168,18 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
 
     @Override
     public void setDirty(boolean isDirty) {
-        // do nothing
+        treeTableInput.reloadTestCaseVariables(getVariables());
     }
 
     @Override
     public void addVariables(VariableEntity[] variables) {
         // TODO Auto-generated method stub
-
+        variableView.addVariable(variables);
     }
 
     @Override
     public VariableEntity[] getVariables() {
-        // TODO Auto-generated method stub
-        return null;
+        return variableView.getVariables();
     }
 
     @Override
@@ -304,5 +307,14 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
             default:
                 break;
         }
+    }
+    
+    public Composite createVariableTab(Composite parent) {
+        variableView = new TestCaseVariableView(this);
+        Composite component = variableView.createComponents(parent);
+        GridLayout gl = (GridLayout) component.getLayout();
+        gl.marginWidth = 0;
+        gl.marginHeight = 0;
+        return component;
     }
 }

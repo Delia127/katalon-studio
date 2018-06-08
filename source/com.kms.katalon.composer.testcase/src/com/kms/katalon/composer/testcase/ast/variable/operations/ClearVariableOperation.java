@@ -12,11 +12,11 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 
-import com.kms.katalon.composer.testcase.parts.TestCaseVariablePart;
+import com.kms.katalon.composer.testcase.parts.TableActionOperator;
 import com.kms.katalon.entity.variable.VariableEntity;
 
 public class ClearVariableOperation extends AbstractOperation {
-    private TestCaseVariablePart testCaseVariablePart;
+    private TableActionOperator testCaseVariablePart;
 
     private TableViewer tableViewer;
 
@@ -24,7 +24,7 @@ public class ClearVariableOperation extends AbstractOperation {
 
     private List<VariableEntity> deletedVariableList;
 
-    public ClearVariableOperation(TestCaseVariablePart testCaseVariablePart) {
+    public ClearVariableOperation(TableActionOperator testCaseVariablePart) {
         super(ClearVariableOperation.class.getName());
         this.testCaseVariablePart = testCaseVariablePart;
         this.tableViewer = testCaseVariablePart.getTableViewer();

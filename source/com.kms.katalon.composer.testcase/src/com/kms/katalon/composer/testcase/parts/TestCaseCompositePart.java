@@ -735,7 +735,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
         childTestCaseVariablesPart.loadVariables();
         TestCaseTreeTableInput treeTableInput = childTestCasePart.getTreeTableInput();
         if (treeTableInput != null) {
-            treeTableInput.reloadTestCaseVariables();
+            treeTableInput.reloadTestCaseVariables(childTestCasePart.getVariables());
         }
         updatePart(testCase);
         childTestCaseIntegrationPart.loadInput();
@@ -822,7 +822,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
         if (childTestCasePart.getTreeTableInput() == null) {
             setScriptContentToManual();
         }
-        childTestCasePart.getTreeTableInput().reloadTestCaseVariables();
+        childTestCasePart.getTreeTableInput().reloadTestCaseVariables(childTestCasePart.getVariables());
         childTestCaseIntegrationPart.loadInput();
 
         updateDirty();
