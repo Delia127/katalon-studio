@@ -301,6 +301,9 @@ public class ObjectRepository {
             }
         }
 
+        String verificationScript = reqElement.elementText("verificationScript");
+        requestObject.setVerificationScript(verificationScript);
+        
         return requestObject;
     }
 

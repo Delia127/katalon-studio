@@ -23,7 +23,9 @@ public class TestCaseFactory {
     private static final String TEST_CASE_META_ROOT_FOLDER_NAME = "Test Cases";
 
     private static final String TEST_CASE_ID_PREFIX = TEST_CASE_META_ROOT_FOLDER_NAME + ID_SEPARATOR;
-
+    
+    static final String TEMP_TEST_CASE_META_ROOT_FOLDER_NAME = "Libs";
+    
     private static final String TEST_CASE_SCRIPT_ROOT_FOLDER_NAME = "Scripts";
 
     private static final String TEST_CASE_SCRIPT_ID_PREFIX = TEST_CASE_SCRIPT_ROOT_FOLDER_NAME + ID_SEPARATOR;
@@ -37,6 +39,8 @@ public class TestCaseFactory {
     private static final String TAG_NODE_NAME = "tag";
 
     private static final String VARIABLE_NODE_NAME = "variable";
+    
+    private static final String TEMP_NODE_NAME = "temp";
 
     private static final String VARIABLE_NAME_PROPERTY = "name";
 

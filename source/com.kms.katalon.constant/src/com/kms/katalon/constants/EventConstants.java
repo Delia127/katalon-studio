@@ -280,4 +280,9 @@ public class EventConstants {
     
     // Execution Profile Event
     public static final String PROFILE_SELECTED_PROIFE_CHANGED = "PROFILE/SELECTED_PROFILE_CHANGE";
+    
+    // WS Verification Events
+    public static final String WS_VERIFICATION_LOG_UPDATED = "WS_VERIFICATION/LOG_UPDATED";
+    
+    public static final String WS_VERIFICATION_EXECUTION_FINISHED = "WS_VERIFICATION/EXECUTION_FINISHED";
 }
