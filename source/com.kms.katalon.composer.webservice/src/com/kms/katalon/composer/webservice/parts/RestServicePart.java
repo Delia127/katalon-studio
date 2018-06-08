@@ -65,7 +65,7 @@ public class RestServicePart extends WebServicePart {
     private ProgressMonitorDialogWithThread progress;
     
     private Label lblBodyNotSupported;
-    
+
     private ModifyListener requestURLModifyListener;
     
     private boolean allowEditParamsTable = true;
@@ -96,9 +96,8 @@ public class RestServicePart extends WebServicePart {
                     save();
                 }
 
-                // clear previous response
-                mirrorEditor.setText("");
-
+                clearPreviousResponse();
+                
                 String requestURL = wsApiControl.getRequestURL().trim();
                 if (isInvalidURL(requestURL)) {
                     return;
@@ -148,6 +147,8 @@ public class RestServicePart extends WebServicePart {
                                     responseBodyEditor.setInput(responseObject);
 
                                 });
+                               
+                                executeVerificationScriptIfNotEmpty(responseObject);
                             } catch (Exception e) {
                                 throw new InvocationTargetException(e);
                             } finally {
@@ -156,6 +157,7 @@ public class RestServicePart extends WebServicePart {
                             }
                         }
                     });
+
                 } catch (InvocationTargetException ex) {
                     Throwable target = ex.getTargetException();
                     if (target == null) {
@@ -179,6 +181,14 @@ public class RestServicePart extends WebServicePart {
                 setTabBodyContentBasedOnRequestMethod();
             }
         });
+        
+        wsApiControl.addRequestMethodSelectionListener(new SelectionAdapter() {
+            
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                setTabBodyContentBasedOnRequestMethod();
+            }
+        });
     }
     
     private void setTabBodyContentBasedOnRequestMethod() {
@@ -193,8 +203,9 @@ public class RestServicePart extends WebServicePart {
         } else {
             gdLblBodyNotSupported.exclude = false;
             lblBodyNotSupported.setVisible(true);
-            lblBodyNotSupported.setText(String.format(ComposerWebserviceMessageConstants.LBL_BODY_NOT_SUPPORTED,
-                    wsApiControl.getRequestMethod()));
+            lblBodyNotSupported.setText(
+                    String.format(ComposerWebserviceMessageConstants.LBL_BODY_NOT_SUPPORTED, 
+                                    wsApiControl.getRequestMethod()));
             gdRequestBodyEditor.exclude = true;
             requestBodyEditor.setVisible(false);
         }
@@ -333,12 +344,16 @@ public class RestServicePart extends WebServicePart {
         super.addTabBody(parent);
         Composite tabComposite = (Composite) tabBody.getControl();
         
-        // requestBody = createSourceViewer(tabComposite, new GridData(SWT.FILL, SWT.FILL, true, true));
-        requestBodyEditor = new HttpBodyEditorComposite(tabComposite, SWT.NONE, this);
-        requestBodyEditor.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-//        requestBodyEditor.setInput(originalWsObject);
+        Composite tabBodyComposite = new Composite(tabComposite, SWT.NONE);
+        tabBodyComposite.setLayout(new GridLayout());
         
-        lblBodyNotSupported = new Label(tabComposite, SWT.NONE);
+        // requestBody = createSourceViewer(tabComposite, new GridData(SWT.FILL, SWT.FILL, true, true));
+        requestBodyEditor = new HttpBodyEditorComposite(tabBodyComposite, SWT.NONE, this);
+        requestBodyEditor.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        
+        lblBodyNotSupported = new Label(tabBodyComposite, SWT.NONE);
+//        requestBodyEditor.setInput(originalWsObject);
+
         lblBodyNotSupported.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
     }
 

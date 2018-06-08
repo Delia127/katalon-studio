@@ -69,7 +69,7 @@ import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
 import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
-import com.kms.katalon.composer.parts.MultipleTabsCompositePart;
+import com.kms.katalon.composer.parts.SavableCompositePart;
 import com.kms.katalon.composer.testcase.actions.KatalonFormatAction;
 import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
@@ -96,7 +96,7 @@ import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
 @SuppressWarnings("restriction")
-public class TestCaseCompositePart implements EventHandler, MultipleTabsCompositePart, IComposerPartEvent {
+public class TestCaseCompositePart implements EventHandler, SavableCompositePart, IComposerPartEvent {
 
     public static final int CHILD_TEST_CASE_EDITOR_PART_INDEX = 1;
 
