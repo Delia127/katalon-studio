@@ -3,7 +3,7 @@ node {
 	// FIXME: Workaround since checkout process in local is too slow 
 	sh '''
 	    if [ ! -f "Jenkinsfile" ]; then
-                cp -r "/Users/katalon/Katalon Studio/katalon/" .
+                cp -r "/Users/katalon/katalon/" .
             fi
 	''' 
         checkout scm
