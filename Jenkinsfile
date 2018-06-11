@@ -1,5 +1,10 @@
 node {
     stage('Check out') {
+	sh '''
+	    if [ ! -f "Jenkinsfile" ]; then
+                cp -r "/Users/katalon/Katalon Studio/katalon/" .
+            fi
+	''' 
         checkout scm
     }  
     stage('Build') {    
