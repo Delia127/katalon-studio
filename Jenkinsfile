@@ -2,7 +2,7 @@ node {
     stage('Check out') {
 	sh '''
 	    if [ ! -f "Jenkinsfile" ]; then
-                cp -r "/Users/katalon/Katalon Studio/katalon/" . | true
+                cp -rf "/Users/katalon/Katalon Studio/katalon/" . | true
             fi
 	''' 
         checkout scm
