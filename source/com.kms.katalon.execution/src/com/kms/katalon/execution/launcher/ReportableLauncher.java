@@ -28,6 +28,7 @@ import com.kms.katalon.core.testdata.reader.CsvWriter;
 import com.kms.katalon.core.util.internal.PathUtil;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.execution.configuration.AbstractRunConfiguration;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.constants.StringConstants;
@@ -96,6 +97,10 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                         getExecutedEntity().getSourceId(), String.valueOf(rerun.getPreviousRerunTimes() + 1)));
 
                 IRunConfiguration newConfig = getRunConfig().cloneConfig();
+                if (getRunConfig() instanceof AbstractRunConfiguration && 
+                        newConfig instanceof AbstractRunConfiguration) {
+                    ((AbstractRunConfiguration) newConfig).setExecutionProfile(getRunConfig().getExecutionProfile());
+                }
                 newConfig.build(testSuite, newTestSuiteExecutedEntity);
                 ReportableLauncher rerunLauncher = clone(newConfig);
                 rerunLauncher.getManager().addLauncher(rerunLauncher);
@@ -219,8 +224,14 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                     }
 
                     // Copy child file to user's report folder
-                    FileUtils.copyFile(reportChildSourceFile,
-                            new File(userReportFolder, fileName + "." + fileExtension));
+                    if (reportChildSourceFile.isFile()) {
+                        FileUtils.copyFile(reportChildSourceFile,
+                                new File(userReportFolder, fileName + "." + fileExtension));
+                    } else if (reportChildSourceFile.isDirectory()) {
+                        File newCoppiedFolder = new File(userReportFolder, fileName);
+                        newCoppiedFolder.mkdirs();
+                        FileUtils.copyDirectory(reportChildSourceFile, newCoppiedFolder);
+                    }
                 }
             }
         } catch (IOException ex) {

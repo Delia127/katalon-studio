@@ -74,7 +74,8 @@ TestCaseMain.startTestSuite('<%= testSuite.getIdForDisplay() %>', suitePropertie
             RunConfiguration.class.getName(),
             buildStaticImportName(TestCaseFactory.class.getName(), METHOD_FIND_TEST_CASE),
             buildStaticImportName(ObjectRepository.class.getName(), METHOD_FIND_TEST_OBJECT),
-            buildStaticImportName(TestDataFactory.class.getName(), METHOD_FIND_TEST_DATA)
+            buildStaticImportName(TestDataFactory.class.getName(), METHOD_FIND_TEST_DATA),
+            "internal.GlobalVariable as GlobalVariable"
         ]
 
         def driverCleaners = []

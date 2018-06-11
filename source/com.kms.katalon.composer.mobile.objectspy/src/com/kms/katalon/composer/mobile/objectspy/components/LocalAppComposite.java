@@ -21,12 +21,14 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.impl.dialogs.ProgressMonitorDialogWithThread;
@@ -61,6 +63,8 @@ public class LocalAppComposite extends Composite {
     private List<MobileDeviceInfo> deviceInfos = new ArrayList<>();
     
     private MobileDeviceInfo selectedDevice = null;
+
+    private Link linkLabel;
 
     public LocalAppComposite(Composite parent, MobileAppDialog parentDialog,
             MobileObjectSpyPreferencesHelper preferencesHelper, int style) {
@@ -105,6 +109,18 @@ public class LocalAppComposite extends Composite {
             }
         });
 
+        linkLabel = new Link(this, SWT.NONE);
+        linkLabel.setText(
+                StringConstants.MSG_NO_DEVICES + " <a href=\"" + StringConstants.NO_DEVICES_TROUBLESHOOTING_GUIDE_LINK
+                        + "\">" + StringConstants.MSG_WRAPPED_NO_DEVICES_TROUBLESHOOTING_GUIDE + "</a>");
+
+        linkLabel.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Program.launch(e.text);
+            }
+        });
+        linkLabel.setVisible(false);
         Composite appFileChooserComposite = new Composite(this, SWT.NONE);
         appFileChooserComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         GridLayout glAppFileChooserComposite = new GridLayout(3, false);
@@ -182,6 +198,7 @@ public class LocalAppComposite extends Composite {
                             cbbDevices.setItems(devices.toArray(new String[] {}));
                             cbbDevices.select(Math.max(0, devices.indexOf(cbbDevices.getText())));
                         }
+                        setLinkLabelVisible(devices.isEmpty());
                     }
                 });
 
@@ -288,5 +305,11 @@ public class LocalAppComposite extends Composite {
             return false;
         }
         return true;
+    }
+    private void setLinkLabelVisible(boolean visible) {
+        linkLabel.setVisible(visible);
+        ((GridData) linkLabel.getLayoutData()).exclude = !visible;
+        linkLabel.pack();
+        linkLabel.getParent().layout(true, true);
     }
 }

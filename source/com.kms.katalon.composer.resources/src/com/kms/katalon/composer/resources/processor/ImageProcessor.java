@@ -321,6 +321,7 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.FAQ_34);
         ImageManager.registerImage(IImageKeys.USER_GUIDE_34);
         ImageManager.registerImage(IImageKeys.TUTORIAL_34);
+        ImageManager.registerImage(IImageKeys.BUSINESS_SUPPORT_34);
         ImageManager.registerImage(IImageKeys.KATALON_LOGO_202);
         ImageManager.registerImage(IImageKeys.RECENT_PROJECT_FILE_29);
         ImageManager.registerImage(IImageKeys.SAMPLE_WEB_UI_PROJECT_72);

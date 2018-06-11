@@ -13,6 +13,7 @@ import org.apache.commons.lang.StringUtils;
 import com.kms.katalon.application.RunningMode;
 import com.kms.katalon.application.usagetracking.UsageActionTrigger;
 import com.kms.katalon.application.usagetracking.UsageInfoCollector;
+import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.collector.ConsoleOptionCollector;
 import com.kms.katalon.execution.console.entity.ConsoleOption;
@@ -70,8 +71,15 @@ public class ConsoleExecutor {
         LauncherManager launcherManager = LauncherManager.getInstance();
         launcherManager.addLauncher(launcherOption.getConsoleLauncher(projectEntity, launcherManager));
 
-        Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector
-                .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.RUN_SCRIPT, RunningMode.CONSOLE)));
+        Executors.newSingleThreadExecutor().submit(() -> {
+            if (ActivationInfoCollector.isActivated()) {
+                UsageInfoCollector.collect(
+                        UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.RUN_SCRIPT, RunningMode.CONSOLE));
+            } else {
+                UsageInfoCollector.collect(
+                        UsageInfoCollector.getAnonymousUsageInfo(UsageActionTrigger.RUN_SCRIPT, RunningMode.CONSOLE));
+            }
+        });
     }
 
     private void setValueForOptionalOptions(List<ConsoleOptionContributor> optionContributors, OptionSet optionSet)

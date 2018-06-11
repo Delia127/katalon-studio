@@ -300,8 +300,20 @@ public class GroovyUtil {
         // Add class path for external jars
         File driversDir = driversFolder.getRawLocation().toFile();
         for (File jarFile : driversDir.listFiles()) {
+            IClasspathEntry oldEntry = null;
             if (jarFile.isFile() && jarFile.getName().endsWith(".jar")) {
-                addJarFileToClasspath(jarFile, entries);
+                for (IClasspathEntry e : javaProject.getRawClasspath()) {
+                    if (e.getEntryKind() == IClasspathEntry.CPE_LIBRARY 
+                            && e.getPath().toFile().getAbsolutePath().equals(jarFile.getAbsolutePath())) {
+                        oldEntry = e;
+                        break;
+                    }
+                }
+                if (oldEntry != null) {
+                    addJarFileToClasspath(jarFile, oldEntry, entries);
+                } else {
+                    addJarFileToClasspath(jarFile, entries);
+                }
             }
         }
 
@@ -425,6 +437,18 @@ public class GroovyUtil {
     private static void addJarFileToClasspath(File jarFile, List<IClasspathEntry> entries) {
         if (checkRequiredBundleLocation(jarFile, entries)) {
             IClasspathEntry entry = JavaCore.newLibraryEntry(new Path(jarFile.getAbsolutePath()), null, null);
+            if (entry != null && !entries.contains(entry)) {
+                entries.add(entry);
+            }
+        }
+    }
+    
+    private static void addJarFileToClasspath(File jarFile, IClasspathEntry oldEntry, List<IClasspathEntry> entries) {
+        if (checkRequiredBundleLocation(jarFile, entries)) {
+            IClasspathEntry entry = JavaCore.newLibraryEntry(new Path(jarFile.getAbsolutePath()), 
+                    oldEntry.getSourceAttachmentPath(), 
+                    oldEntry.getSourceAttachmentRootPath(), 
+                    oldEntry.getAccessRules(), oldEntry.getExtraAttributes(), oldEntry.isExported());
             if (entry != null && !entries.contains(entry)) {
                 entries.add(entry);
             }

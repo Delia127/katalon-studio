@@ -13,8 +13,6 @@ node {
 	            cd source
 	            mvn clean verify
 	        '''
-    	}
-
-        
+    	}       
     }
 }

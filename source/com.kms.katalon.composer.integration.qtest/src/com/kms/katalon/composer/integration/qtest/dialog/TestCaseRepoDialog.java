@@ -231,7 +231,7 @@ public class TestCaseRepoDialog extends Dialog {
 
     @Override
     protected Point getInitialSize() {
-        return new Point(500, 200);
+        return new Point(500, super.getInitialSize().y);
     }
 
     @Override
@@ -349,5 +349,10 @@ public class TestCaseRepoDialog extends Dialog {
         } else {
             getButton(OK).setEnabled(true);
         }
+    }
+
+    @Override
+    protected void setShellStyle(int newShellStyle) {
+        super.setShellStyle(newShellStyle | SWT.RESIZE);
     }
 }
