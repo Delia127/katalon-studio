@@ -6,12 +6,12 @@ node {
     	if (env.BRANCH_NAME == 'release') {
     		sh '''
 	            cd source
-	            mvn clean verify -Pprod
+	            $(which mvn) clean verify -Pprod
 	        '''
     	} else {
     		sh '''
 	            cd source
-	            mvn clean verify
+	            $(which mvn) clean verify
 	        '''
     	}
 
