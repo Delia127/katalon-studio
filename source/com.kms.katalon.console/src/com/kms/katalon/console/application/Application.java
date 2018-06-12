@@ -1,16 +1,14 @@
 package com.kms.katalon.console.application;
 
 import java.util.Map;
-import java.util.concurrent.Executors;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
+import org.greenrobot.eventbus.EventBus;
 import org.osgi.framework.BundleException;
 
 import com.kms.katalon.application.RunningMode;
-import com.kms.katalon.application.usagetracking.UsageActionTrigger;
-import com.kms.katalon.application.usagetracking.UsageInfoCollector;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.application.utils.VersionUtil;
@@ -18,10 +16,12 @@ import com.kms.katalon.console.addons.MacOSAddon;
 import com.kms.katalon.console.constants.ConsoleMessageConstants;
 import com.kms.katalon.console.constants.ConsoleStringConstants;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.core.event.EventBusSingleton;
 import com.kms.katalon.custom.addon.CustomBundleActivator;
 import com.kms.katalon.execution.console.ConsoleMain;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
 import com.kms.katalon.logging.LogUtil;
+import com.kms.katalon.tracking.facade.TrackingFacade;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -61,8 +61,10 @@ public class Application implements IApplication {
 
     public static int runConsole(String[] arguments) {
         // Set this to allow application to return it's own exit code instead of Eclipse's exit code
+       
         System.setProperty(IApplicationContext.EXIT_DATA_PROPERTY, "");
         try {
+            init();
             if (!VersionUtil.isInternalBuild() && !checkConsoleActivation(arguments)) {
                 return LauncherResult.RETURN_CODE_PASSED;
             }
@@ -73,14 +75,21 @@ public class Application implements IApplication {
         }
     }
 
+    private static void init() {
+        EventBusSingleton.getInstance().setEventBus(EventBus.builder().installDefaultEventBus());
+        
+        TrackingFacade trackingFacade = new TrackingFacade();
+        trackingFacade.init(RunningMode.CONSOLE);
+    }
+    
     public static boolean checkConsoleActivation(String[] arguments) {
         if (ActivationInfoCollector.isActivated()) {
             return true;
         }
 
-        Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector.collect(
-                UsageInfoCollector.getAnonymousUsageInfo(UsageActionTrigger.OPEN_APPLICATION, RunningMode.CONSOLE)));
-
+//        Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector.collect(
+//                UsageInfoCollector.getAnonymousUsageInfo(UsageActionTrigger.OPEN_APPLICATION, RunningMode.CONSOLE)));
+        
         //KAT-3257: Remove activation process when using console mode.
 //        String[] emailPass = getEmailAndPassword(arguments);
 //        String email = emailPass[0], password = emailPass[1];

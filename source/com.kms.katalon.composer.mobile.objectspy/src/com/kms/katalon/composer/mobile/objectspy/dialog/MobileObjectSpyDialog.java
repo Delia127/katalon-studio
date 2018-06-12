@@ -64,7 +64,10 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Widget;
+import org.greenrobot.eventbus.EventBus;
 
+import com.kms.katalon.application.usagetracking.TrackingEvent;
+import com.kms.katalon.application.usagetracking.UsageActionTrigger;
 import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
 import com.kms.katalon.composer.components.dialogs.MessageDialogWithLink;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
@@ -96,6 +99,7 @@ import com.kms.katalon.composer.mobile.objectspy.viewer.CapturedObjectTableViewe
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ObjectRepositoryController;
+import com.kms.katalon.core.event.EventBusSingleton;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.core.mobile.keyword.internal.GUIObject;
 import com.kms.katalon.entity.folder.FolderEntity;
@@ -1004,6 +1008,10 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
             // If no exception, application has been successful started, enable more features
             btnCapture.setEnabled(true);
             btnStop.setEnabled(true);
+            
+            // send event for tracking
+            EventBus eventBus = EventBusSingleton.getInstance().getEventBus();
+            eventBus.post(new TrackingEvent(UsageActionTrigger.SPY, "mobile"));
         } catch (InvocationTargetException | InterruptedException ex) {
             // If user intentionally cancel the progress, don't need to show error message
             if (ex instanceof InvocationTargetException) {

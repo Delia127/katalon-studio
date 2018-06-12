@@ -1,20 +1,19 @@
 package com.kms.katalon.composer.handlers;
 
-import java.util.concurrent.Executors;
-
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
+import org.greenrobot.eventbus.EventBus;
 
-import com.kms.katalon.application.RunningMode;
+import com.kms.katalon.application.usagetracking.TrackingEvent;
 import com.kms.katalon.application.usagetracking.UsageActionTrigger;
-import com.kms.katalon.application.usagetracking.UsageInfoCollector;
 import com.kms.katalon.composer.components.impl.handler.AbstractHandler;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.parts.MultipleTabsCompositePart;
 import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.StringConstants;
+import com.kms.katalon.core.event.EventBusSingleton;
 
 public class SaveHandler extends AbstractHandler {
 
@@ -60,14 +59,20 @@ public class SaveHandler extends AbstractHandler {
                 }
             }
 
-            Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector
-                    .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.SAVE_ALL, RunningMode.GUI)));
+            sendEventForTracking();
+//            Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector
+//                    .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.SAVE_ALL, RunningMode.GUI)));
 
         } catch (Exception e) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
                     StringConstants.HAND_SAVE_DIA_MSG);
             LoggerSingleton.logError(e);
         }
+    }
+    
+    private void sendEventForTracking() {
+        EventBus eventBus = EventBusSingleton.getInstance().getEventBus();
+        eventBus.post(new TrackingEvent(UsageActionTrigger.SAVE, null));
     }
 
 }

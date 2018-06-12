@@ -15,8 +15,14 @@ import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.greenrobot.eventbus.EventBus;
 
+import com.kms.katalon.application.RunningMode;
+import com.kms.katalon.application.usagetracking.TrackingEvent;
+import com.kms.katalon.application.usagetracking.UsageActionTrigger;
+import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.event.EventBusSingleton;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.collector.ConsoleOptionCollector;
 import com.kms.katalon.execution.console.entity.ConsoleMainOptionContributor;
@@ -86,6 +92,7 @@ public class ConsoleMain {
             }
 
             ProjectEntity project = findProject(options);
+            sendEventForTracking();
             setDefaultExecutionPropertiesOfProject(project, consoleOptionValueMap);
             consoleExecutor.execute(project, options);
 
@@ -103,6 +110,14 @@ public class ConsoleMain {
         } finally {
             LauncherManager.getInstance().removeAllTerminated();
         }
+    }
+    
+    private static void sendEventForTracking() {
+        EventBus eventBus = EventBusSingleton.getInstance().getEventBus();
+        eventBus.post(new TrackingEvent(UsageActionTrigger.OPEN_APPLICATION, new HashMap<String, Object>() {{
+            put("isAnonymous", !ActivationInfoCollector.isActivated());
+            put("runningMode", RunningMode.CONSOLE.getMode());
+        }}));
     }
 
     private static List<String> buildArgumentsForPropertiesFile(String[] arguments,

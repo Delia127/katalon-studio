@@ -71,5 +71,7 @@ Require-Bundle: org.eclipse.e4.core.contexts,
  org.apache.commons.lang3,
  org.eclipse.jdt.launching,
  com.kms.katalon.util,
- com.kms.katalon.application
+ com.kms.katalon.application,
+ com.kms.katalon.composer.components,
+ org.greenrobot.eventbus
 Bundle-Activator: com.kms.katalon.execution.addon.ExecutionBundleActivator
