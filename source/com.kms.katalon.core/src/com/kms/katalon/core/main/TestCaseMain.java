@@ -85,6 +85,13 @@ public class TestCaseMain {
         return new TestCaseExecutor(testCaseBinding, engine, eventManager, testCaseContext, doCleanUp)
                 .execute(flowControl);
     }
+    
+    public static TestResult runWSVerificationScript(String verificationScript, FailureHandling flowControl,
+            boolean doCleanUp) throws InterruptedException {
+        Thread.sleep(DELAY_TIME);
+        return new WSVerificationExecutor(verificationScript, engine, eventManager, doCleanUp
+                ).execute(flowControl);
+    }
 
     public static TestResult runTestCaseRawScript(String testScript, String testCaseId, TestCaseBinding testCaseBinding,
             FailureHandling flowControl) throws InterruptedException {

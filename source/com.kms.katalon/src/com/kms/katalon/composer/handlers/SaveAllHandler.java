@@ -11,6 +11,7 @@ import com.kms.katalon.application.usagetracking.TrackingEvent;
 import com.kms.katalon.application.usagetracking.UsageActionTrigger;
 import com.kms.katalon.core.event.EventBusSingleton;
 
+
 public class SaveAllHandler {
 
     @CanExecute
@@ -23,14 +24,11 @@ public class SaveAllHandler {
 
     @Execute
     void execute(EPartService partService) {
-        try {
-            partService.saveAll(false);
-            PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().saveAllEditors(false);
-        } finally {
+        partService.saveAll(false);
+        PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().saveAllEditors(false);
 //            Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector
 //                    .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.SAVE_ALL, RunningMode.GUI)));
-            sendEventForTracking();
-        }
+        sendEventForTracking();
     }
     
     private void sendEventForTracking() {

@@ -16,6 +16,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String PA_LBL_HTTP_HEADER;
 
     public static String PA_LBL_HTTP_BODY;
+    
+    public static String PA_LBL_VERIFICATION;
 
     public static String VIEW_ERROR_MSG_FAILED_TO_LOAD_OBJ_REPOSITORY;
 
@@ -152,13 +154,20 @@ public class ComposerWebserviceMessageConstants extends NLS {
 
     public static String PA_LBL_WRAP_LINE;
 
-
     public static String MSG_CANNOT_OPEN_REQUEST;
     
     public static String LBL_SENDING_REQUEST;
     
     public static String LBL_BODY_NOT_SUPPORTED;
-
+    
+    public static String LBL_VERIFICATION_INSTRUCTION;
+            
+    public static String LBL_SNIPPET_HEADING;
+    
+    public static String HIDE_SNIPPETS;
+            
+    public static String SHOW_SNIPPETS;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerWebserviceMessageConstants.class);

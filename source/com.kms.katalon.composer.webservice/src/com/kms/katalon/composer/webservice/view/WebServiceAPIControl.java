@@ -60,6 +60,7 @@ public class WebServiceAPIControl extends Composite {
         gdRequestURL.heightHint = 20;
         txtRequestURL.setLayoutData(gdRequestURL);
         txtRequestURL.setMessage(StringConstants.PA_LBL_URL);
+
         if (!StringUtils.trim(url).isEmpty()) {
             txtRequestURL.setText(url);
         }

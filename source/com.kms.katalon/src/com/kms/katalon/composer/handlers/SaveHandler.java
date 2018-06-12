@@ -9,7 +9,7 @@ import com.kms.katalon.application.usagetracking.TrackingEvent;
 import com.kms.katalon.application.usagetracking.UsageActionTrigger;
 import com.kms.katalon.composer.components.impl.handler.AbstractHandler;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.parts.MultipleTabsCompositePart;
+import com.kms.katalon.composer.parts.SavableCompositePart;
 import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.StringConstants;
@@ -28,11 +28,11 @@ public class SaveHandler extends AbstractHandler {
         return false;
     }
 
-    private MultipleTabsCompositePart getCompositeParentPart(MPart part) {
-        MultipleTabsCompositePart parentCompositePart = null;
+    private SavableCompositePart getCompositeParentPart(MPart part) {
+        SavableCompositePart parentCompositePart = null;
         for (MPart dirtyPart : partService.getDirtyParts()) {
-            if (dirtyPart.getObject() instanceof MultipleTabsCompositePart) {
-                MultipleTabsCompositePart compositePart = (MultipleTabsCompositePart) dirtyPart.getObject();
+            if (dirtyPart.getObject() instanceof SavableCompositePart) {
+                SavableCompositePart compositePart = (SavableCompositePart) dirtyPart.getObject();
                 if (compositePart.getChildParts() != null && compositePart.getChildParts().contains(part)) {
                     return compositePart;
                 }
@@ -45,7 +45,7 @@ public class SaveHandler extends AbstractHandler {
     public void execute() {
         MPart part = partService.getActivePart();
         try {
-            MultipleTabsCompositePart parentCompositePart = getCompositeParentPart(part);
+            SavableCompositePart parentCompositePart = getCompositeParentPart(part);
             if (parentCompositePart != null) {
                 if (parentCompositePart.getChildParts().contains(part)) {
                     parentCompositePart.save();

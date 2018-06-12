@@ -40,6 +40,8 @@ public class RequestObject extends TestObject implements HttpMessage {
     private HttpBodyContent bodyContent;
 
     private String objectId;
+    
+    private String verificationScript;
 
     public RequestObject(String objectId) {
         this.objectId = objectId;
@@ -305,6 +307,14 @@ public class RequestObject extends TestObject implements HttpMessage {
      */
     public void setBodyContent(HttpBodyContent bodyContent) {
         this.bodyContent = bodyContent;
+    }
+
+    public String getVerificationScript() {
+        return verificationScript;
+    }
+
+    public void setVerificationScript(String verificationScript) {
+        this.verificationScript = verificationScript;
     }
 
 }

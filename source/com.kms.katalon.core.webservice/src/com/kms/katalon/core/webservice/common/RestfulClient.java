@@ -68,7 +68,7 @@ public class RestfulClient extends BasicRequestor {
         URL url = new URL(request.getRestUrl());
         HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection(getProxy());
         if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith(HTTPS)) {
-            ((HttpsURLConnection) httpConnection).setHostnameVerifier(getHostnameVerifier());
+            //((HttpsURLConnection) httpConnection).setHostnameVerifier(getHostnameVerifier());
         }
         httpConnection.setRequestMethod(request.getRestRequestMethod());
 
@@ -92,7 +92,7 @@ public class RestfulClient extends BasicRequestor {
         URL url = new URL(request.getRestUrl());
         HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection(getProxy());
         if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith(HTTPS)) {
-            ((HttpsURLConnection) httpConnection).setHostnameVerifier(getHostnameVerifier());
+            //((HttpsURLConnection) httpConnection).setHostnameVerifier(getHostnameVerifier());
         }
         httpConnection.setRequestMethod(request.getRestRequestMethod());
 
@@ -123,7 +123,7 @@ public class RestfulClient extends BasicRequestor {
         URL url = new URL(request.getRestUrl());
         HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection(getProxy());
         if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith(HTTPS)) {
-            ((HttpsURLConnection) httpConnection).setHostnameVerifier(getHostnameVerifier());
+            //((HttpsURLConnection) httpConnection).setHostnameVerifier(getHostnameVerifier());
         }
 
         httpConnection.setRequestMethod(request.getRestRequestMethod());
