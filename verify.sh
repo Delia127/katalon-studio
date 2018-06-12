@@ -2,16 +2,15 @@
 
 BRANCH="$1"
 
-PACKAGE_FOLDER="source/com.kms.katalon.product/target/products"
 PRODUCT_NAME="Katalon Studio"
 VOLUME_DIR="/Volumes/${PRODUCT_NAME}"
-MAC_DIR="${PACKAGE_FOLDER}"
-MAC_DMG="${MAC_DIR}/${PRODUCT_NAME}.dmg"
-MAC_APP="${MAC_DIR}/${PRODUCT_NAME}.app"
+PACKAGE_DIR="/Users/katalon/Public/Katalon Studio/${BRANCH}"
+MAC_DMG="${PRODUCT_NAME}.dmg"
+MAC_APP="${PRODUCT_NAME}.app"
 
 echo "Installing ${PRODUCT_NAME} ..."
 hdiutil unmount "${VOLUME_DIR}"
-hdiutil mount "${MAC_DMG}"
+hdiutil mount "${PACKAGE_DIR}/${MAC_DMG}"
 
 rm -rf "/Applications/${MAC_APP}"
 cp -R "${VOLUME_DIR}/${MAC_APP}" /Applications
