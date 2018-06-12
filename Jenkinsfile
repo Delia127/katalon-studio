@@ -22,4 +22,9 @@ node {
 	        '''
     	}       
     }
+    stage('Package') {
+        sh '''
+            sudo ./package.sh
+        '''
+    }
 }
