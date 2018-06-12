@@ -27,7 +27,7 @@ node {
 
         if (env.BRANCH_NAME == 'release') {
                 sh '''
-                    sudo ./package.sh ${JOB_BASE_NAME}
+                    sudo ./verify.sh ${JOB_BASE_NAME}
                 '''
         }
     }
