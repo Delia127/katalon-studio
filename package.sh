@@ -3,13 +3,16 @@
 PACKAGE_FOLDER="source/com.kms.katalon.product/target/products"
 PRODUCT_NAME="Katalon Studio"
 
+WINDOWS_32_FILE="${PACKAGE_FOLDER}/${PRODUCT_NAME} Windows 32.zip"
+WINDOWS_64_FILE="${PACKAGE_FOLDER}/${PRODUCT_NAME} Windows 64.zip"
+
 LINUX_64_NAME="${PRODUCT_NAME} Linux 64"
 LINUX_64_DIR="${PACKAGE_FOLDER}/${LINUX_64_NAME}"
 LINUX_64_FILE="${LINUX_64_DIR}.tar.gz"
 
 MAC_NAME="${PRODUCT_NAME} MacOS"
-MAC_DIR="${PACKAGE_FOLDER}/${MAC_NAME}"
-MAC_FILE="${MAC_DIR}.tar.gz"
+MAC_DIR="${PACKAGE_FOLDER}"
+MAC_FILE="${MAC_DIR}/${MAC_NAME}.tar.gz"
 MAC_APP="${MAC_DIR}/${PRODUCT_NAME}.app"
 MAC_PACKAGE="${MAC_DIR}/${PRODUCT_NAME}.dmg"
 
@@ -35,8 +38,7 @@ echo "Process Linux package ... Done"
 
 # Process MacOS package
 echo "Process MacOS package ..."
-mkdir "${MAC_DIR}"
-tar -zxf "${MAC_FILE}" -C "${MAC_DIR}"
+tar -zxf "${MAC_FILE}" -C ${MAC_DIR}
 
 chmod +x "${KATALON_MAC}"
 chmod +x "${CHROME_DRIVER_MAC}"
@@ -46,9 +48,22 @@ echo "Grant executed permission for Katalon and browser drivers ... Done"
 codesign --verbose --force --deep --sign "FCF6BDE36FE92C01A8DCCADCFA6F3392DDC45D6C" --timestamp=none "${MAC_APP}"
 echo "Codesigning ... Done"
 
-dropdmg --config-name "Katalon Studio" "${MAC_APP}"
-mv "${MAC_PACKAGE}" "${PACKAGE_FOLDER}"
+/usr/local/bin/dropdmg --config-name "Katalon Studio" "${MAC_APP}"
 echo "DMG packaging ... Done"
-
-rm -r "${MAC_DIR}"
+rm -r "${MAC_APP}"
 echo "Process MacOS package ... Done"
+
+# Distribute packages to shared folder
+DISTRIBUTION_FOLDER="/Users/katalon/Public/Katalon Studio"
+BRANCH_FOLDER="${DISTRIBUTION_FOLDER}/${1}" # JOB_BASE_NAME
+
+if [ ! -d "${BRANCH_FOLDER}" ]; then
+  mkdir "${BRANCH_FOLDER}"
+fi
+
+cp "${LINUX_64_FILE}" "${BRANCH_FOLDER}/"
+mv "${MAC_PACKAGE}" "${BRANCH_FOLDER}/"
+cp "${WINDOWS_32_FILE}" "${BRANCH_FOLDER}/"
+cp "${WINDOWS_64_FILE}" "${BRANCH_FOLDER}/"
+ 
+echo "Distribute packages ... Done"
