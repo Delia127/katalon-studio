@@ -24,7 +24,13 @@ node {
     }
     stage('Package') {
         sh '''
-            sudo ./package.sh
+            sudo ./package.sh ${JOB_BASE_NAME}
         '''
+
+        if (env.BRANCH_NAME == 'release') {
+                sh '''
+                    sudo ./package.sh ${JOB_BASE_NAME}
+                '''
+        }
     }
 }
