@@ -254,9 +254,10 @@ public class CustomGitCloneWizard extends Wizard {
         final String remoteName = cloneDestination.getRemote();
 
         boolean created = workdir.exists();
-        if (!created) {
-            created = workdir.mkdirs();
+        if (workdir.exists()) {
+            org.apache.commons.io.FileUtils.deleteDirectory(workdir);
         }
+        created = workdir.mkdirs();
 
         if (!created || !workdir.isDirectory()) {
             final String errorMessage = NLS.bind(UIText.GitCloneWizard_errorCannotCreate, workdir.getPath());

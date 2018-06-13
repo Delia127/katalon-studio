@@ -322,7 +322,7 @@ public class EntityFileServiceManager {
             File fFolder = new File(destinationFolder.getLocation() + File.separator + folder.getName());
             if (fFolder.exists()) {
                 // if folder existed, put a prefix "- Copy" into its name
-                String name = EntityService.getInstance().getAvailablePackageName(destinationFolder.getLocation(),
+                String name = EntityService.getInstance().getAvailableName(destinationFolder.getLocation(),
                         folder.getName() + Util.STRING_DUPLICATE_OF_PACKAGE_NAME, false);
                 clonedFolder.setName(name);
             }

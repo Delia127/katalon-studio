@@ -38,6 +38,8 @@ public class ExportFolderHandler {
     @Inject
     private ESelectionService selectionService;
 
+    private final String DOT_DILIMETER = ".";
+    
     @CanExecute
     private boolean canExecute() {
         return ProjectController.getInstance().getCurrentProject() != null;
@@ -78,7 +80,10 @@ public class ExportFolderHandler {
     }
 
     private void exportKeywordsDirectory(Shell shell, Object selectedTreeEntity, File exportedFolder) throws Exception {
-
+        ITreeEntity keywordRootFolder = new FolderTreeEntity(
+                FolderController.getInstance().getKeywordRoot(ProjectController.getInstance().getCurrentProject()),
+                null);
+        
         // Destination folder
         FolderEntity outputFolder = FolderController.getInstance().getFolder(exportedFolder.getAbsolutePath());
         outputFolder.setFolderType(FolderType.KEYWORD);
@@ -91,24 +96,22 @@ public class ExportFolderHandler {
         FolderEntity sourceFolder = null;
 
         // Source folder
-        if (selectedTreeEntity instanceof FolderTreeEntity) {
-            sourceFolder = ((FolderTreeEntity) selectedTreeEntity).getObject();
-        } else if (selectedTreeEntity instanceof PackageTreeEntity) {
+        if (selectedTreeEntity instanceof PackageTreeEntity) {
             String packageName = ((PackageTreeEntity) selectedTreeEntity).getPackageName();
             String path = FolderController.getInstance()
                     .getKeywordRoot(ProjectController.getInstance().getCurrentProject())
-                    .getLocation() + File.separator + packageName;
+                    .getLocation() + File.separator + packageName.replace(DOT_DILIMETER, File.separator);
 
             sourceFolder = FolderController.getInstance().getFolder(path);
             sourceFolder.setFolderType(FolderType.KEYWORD);
-            sourceFolder.setName(packageName);
-            sourceFolder.setParentFolder((FolderEntity) ((PackageTreeEntity) selectedTreeEntity).getParent().getObject());
+            sourceFolder.setName(packageName.substring(packageName.lastIndexOf(DOT_DILIMETER) + 1, packageName.length()));       
+            sourceFolder.setParentFolder(FolderController.getInstance().getFolder(new File(path).getParent()));
+        } else {
+                sourceFolder = (FolderEntity)keywordRootFolder.getObject();
         }
 
         FolderController.getInstance().copyFolder(sourceFolder, outputFolder);
-        ITreeEntity keywordRootFolder = new FolderTreeEntity(
-                FolderController.getInstance().getKeywordRoot(ProjectController.getInstance().getCurrentProject()),
-                null);
+  
 
         eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, keywordRootFolder);
         eventBroker.post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, keywordRootFolder);

@@ -32,6 +32,7 @@ public class DuplicatedImportDialog extends AbstractDialog {
 
     public DuplicatedImportDialog(Shell parentShell, String fileName) {
         super(parentShell);
+        setBlockOnOpen(true);
         setDialogTitle(StringConstants.DIA_TITLE_IMPORT_KEYWORD);
         this.existedFileName = fileName;
         this.applyToAll = false;

@@ -175,9 +175,9 @@ public class ImportFolderHandler {
             return file.getName();
         }
 
+        timesOfDuplicate++;
         String testName = FilenameUtils.removeExtension(FilenameUtils.removeExtension(file.getName())) + "_"
                 + timesOfDuplicate;
-        timesOfDuplicate++;
 
         StringBuilder path = new StringBuilder(file.getAbsolutePath());
         path.replace(path.indexOf(file.getName()), path.length(),

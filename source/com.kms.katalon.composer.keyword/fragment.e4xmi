@@ -45,7 +45,7 @@
       <children xsi:type="menu:HandledMenuItem" xmi:id="_80JzgV_DEeintYngWAF35w" elementId="com.kms.katalon.composer.menu.file.importKeywords.folder" label="Folder" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/folder_16.png" command="_PXTsQF8tEeik14jXU-tU4w">
         <persistedState key="index" value="8"/>
       </children>
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_80Jzgl_DEeintYngWAF35w" elementId="com.kms.katalon.composer.menu.file.importKeywords.jar" label="Jar" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/keywords/jar_16.png" command="_866-gF_yEeintYngWAF35w">
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_80Jzgl_DEeintYngWAF35w" elementId="com.kms.katalon.composer.menu.file.importKeywords.jar" visible="false" label="Jar" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/keywords/jar_16.png" command="_866-gF_yEeintYngWAF35w">
         <persistedState key="index" value="9"/>
       </children>
       <children xsi:type="menu:HandledMenuItem" xmi:id="_80Jzg1_DEeintYngWAF35w" elementId="com.kms.katalon.composer.menu.file.importKeywords.git" label="Git" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/git_16.png" command="_5S_OgF_yEeintYngWAF35w">
@@ -55,10 +55,10 @@
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_GhLfUGMuEeiqcrEdLNJZww" featurename="children" parentElementId="com.kms.katalon.composer.menu.file" positionInList="index:11">
     <elements xsi:type="menu:Menu" xmi:id="_GhLfUWMuEeiqcrEdLNJZww" elementId="com.kms.katalon.composer.menu.file.exportKeywords" label="Export Keywords" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/keywords/export_keywords_16.png">
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_GhLfUmMuEeiqcrEdLNJZww" elementId="com.kms.katalon.composer.menu.file.exportKeywords.folder" label="Folder" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/folder_16.png">
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_GhLfUmMuEeiqcrEdLNJZww" elementId="com.kms.katalon.composer.menu.file.exportKeywords.folder" label="Folder" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/folder_16.png" command="_YagWMGR_Eeic6ZTVd_CcGw">
         <persistedState key="index" value="8"/>
       </children>
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_GhLfU2MuEeiqcrEdLNJZww" elementId="com.kms.katalon.composer.menu.file.exportKeywords.jar" label="Jar" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/keywords/jar_16.png" command="_zKfREGMlEeiqcrEdLNJZww">
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_GhLfU2MuEeiqcrEdLNJZww" elementId="com.kms.katalon.composer.menu.file.exportKeywords.jar" visible="false" label="Jar" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/keywords/jar_16.png" command="_zKfREGMlEeiqcrEdLNJZww">
         <persistedState key="index" value="9"/>
       </children>
     </elements>
