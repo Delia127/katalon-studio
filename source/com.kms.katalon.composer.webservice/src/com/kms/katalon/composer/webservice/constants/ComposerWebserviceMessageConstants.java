@@ -172,6 +172,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
             
     public static String SHOW_SNIPPETS;
     
+    public static String MENU_ITEM_TEST_REQUEST_AND_VERIFY;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerWebserviceMessageConstants.class);
