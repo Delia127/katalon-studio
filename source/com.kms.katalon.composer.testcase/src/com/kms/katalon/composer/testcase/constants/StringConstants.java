@@ -460,7 +460,9 @@ public class StringConstants extends GlobalStringConstants {
     public static final String BTN_CANCEL = ComposerTestcaseMessageConstants.BTN_CANCEL;
     
  // AuthenticationDialog
-    public static final String LBL_USER_NAME = ComposerTestcaseMessageConstants.LBL_USER_NAME;
+    public static final String LBL_EMAIL = ComposerTestcaseMessageConstants.LBL_EMAIL;
+    
+    public static final String LBL_SERVER_URL = ComposerTestcaseMessageConstants.LBL_SERVER_URL;
     
     public static final String LBL_PASSWORD = ComposerTestcaseMessageConstants.LBL_PASSWORD;
     

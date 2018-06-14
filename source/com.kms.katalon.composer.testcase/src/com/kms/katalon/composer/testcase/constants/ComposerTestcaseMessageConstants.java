@@ -368,7 +368,9 @@ public class ComposerTestcaseMessageConstants extends NLS {
     public static String BTN_CANCEL;
     
   //Authentication Dialog    
-    public static String LBL_USER_NAME;
+    public static String LBL_EMAIL;
+    
+    public static String LBL_SERVER_URL;
     
     public static String LBL_PASSWORD;
     

@@ -1,7 +1,10 @@
 package com.kms.katalon.activation.dialog;
 
 import java.awt.Desktop;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.security.GeneralSecurityException;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.window.Window;
@@ -26,10 +29,17 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.application.utils.ActivationInfoCollector;
+import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.constants.ActivationPreferenceConstants;
 import com.kms.katalon.constants.ImageConstants;
 import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.StringConstants;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.logging.LogUtil;
+import com.kms.katalon.preferences.internal.PreferenceStoreManager;
+import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
+import com.kms.katalon.util.CryptoUtil;
 
 public class ActivationDialog extends Dialog {
 
@@ -241,6 +251,33 @@ public class ActivationDialog extends Dialog {
                 }
             }
         });
+        
+        setInitialKASettings();
+    }
+    
+    private ScopedPreferenceStore getPreferenceStore() {
+        return PreferenceStoreManager.getPreferenceStore(ActivationPreferenceConstants.ACTIVATION_INFO_STORAGE);
+    }
+
+    
+    public void setInitialKASettings() {
+        ScopedPreferenceStore preferenceStore = getPreferenceStore();
+        try {
+            preferenceStore.setValue(ActivationPreferenceConstants.ACTIVATION_INFO_EMAIL,
+                    CryptoUtil.encode(CryptoUtil.getDefault(txtUserName.getText())));
+            preferenceStore.setValue(ActivationPreferenceConstants.ACTIVATION_INFO_PASSWORD,
+                    CryptoUtil.encode(CryptoUtil.getDefault(txtPassword.getText())));
+        } catch (UnsupportedEncodingException e1) {
+            e1.printStackTrace();
+        } catch (GeneralSecurityException e1) {
+            e1.printStackTrace();
+        }        
+
+        try {
+            preferenceStore.save();
+        } catch (IOException e) {
+            LoggerSingleton.logError(e);
+        }
     }
 
     private void enableActivateButton() {

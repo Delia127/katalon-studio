@@ -2,8 +2,10 @@ package com.kms.katalon.composer.report.parts;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -12,8 +14,10 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UIEventTopic;
@@ -57,6 +61,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
@@ -81,6 +86,7 @@ import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.report.constants.ComposerReportMessageConstants;
 import com.kms.katalon.composer.report.constants.ImageConstants;
@@ -97,6 +103,7 @@ import com.kms.katalon.composer.report.provider.ReportTestCaseTableViewerFilter;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.testcase.dialogs.TextEncryptionDialog;
+import com.kms.katalon.constants.ActivationPreferenceConstants;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
@@ -110,8 +117,18 @@ import com.kms.katalon.core.util.internal.DateUtil;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.util.ExecutionUtil;
+import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
+import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
+import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
+import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 import com.kms.katalon.integration.analytics.report.AnalyticsReportService;
+import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
+import com.kms.katalon.preferences.internal.PreferenceStoreManager;
+import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
+import com.kms.katalon.util.CryptoUtil;
+import com.kms.katalon.composer.integration.analytics.constants.ComposerAnalyticsStringConstants;
+import com.kms.katalon.composer.integration.analytics.constants.ComposerIntegrationAnalyticsMessageConstants;
 import com.kms.katalon.composer.integration.analytics.dialog.AuthenticationDialog;
 
 public class ReportPart implements EventHandler, IComposerPartEvent {
@@ -618,60 +635,205 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
 
         updateStatusSearchLabel();
     }
+    
+    private List<AnalyticsTeam> getTeams(final String serverUrl, final String email, final String password,
+            AnalyticsTokenInfo tokenInfo) {
+        final List<AnalyticsTeam> teams = new ArrayList<>();
+        try {
+            new ProgressMonitorDialog(shell).run(true, false, new IRunnableWithProgress() {
+                @Override
+                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                    try {
+                        monitor.beginTask(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_RETRIEVING_TEAMS, 2);
+                        monitor.subTask(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_GETTING_TEAMS);
+                        final List<AnalyticsTeam> loaded = AnalyticsApiProvider.getTeams(serverUrl,
+                                tokenInfo.getAccess_token());
+                        if (loaded != null && !loaded.isEmpty()) {
+                            teams.addAll(loaded);
+                        }
+                        monitor.worked(1);
+                    } catch (Exception e) {
+                        throw new InvocationTargetException(e);
+                    } finally {
+                        monitor.done();
+                    }
+                }
+            });
+            return teams;
+        } catch (InvocationTargetException exception) {
+            final Throwable cause = exception.getCause();
+            if (cause instanceof AnalyticsApiExeception) {
+                MessageDialog.openError(shell, ComposerAnalyticsStringConstants.ERROR, cause.getMessage());
+            } else {
+                LoggerSingleton.logError(cause);
+            }
+        } catch (InterruptedException e) {
+            // Ignore this
+        }
+        return teams;
+    }
+    
+    private List<AnalyticsProject> getProjects(final String serverUrl, final String email, final String password,
+            final AnalyticsTeam team, AnalyticsTokenInfo tokenInfo) {
+        final List<AnalyticsProject> projects = new ArrayList<>();
+        try {
+            new ProgressMonitorDialog(shell).run(true, false, new IRunnableWithProgress() {
+                @Override
+                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                    try {
+                        monitor.beginTask(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_RETRIEVING_PROJECTS,
+                                2);
+                        monitor.subTask(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_GETTING_PROJECTS);
+                        final List<AnalyticsProject> loaded = AnalyticsApiProvider.getProjects(serverUrl, team,
+                                tokenInfo.getAccess_token());
+                        if (loaded != null && !loaded.isEmpty()) {
+                            projects.addAll(loaded);
+                        }
+                        monitor.worked(1);
+                    } catch (Exception e) {
+                        throw new InvocationTargetException(e);
+                    } finally {
+                        monitor.done();
+                    }
+                }
+            });
+            return projects;
+        } catch (InvocationTargetException exception) {
+            final Throwable cause = exception.getCause();
+            if (cause instanceof AnalyticsApiExeception) {
+                MessageDialog.openError(shell, ComposerAnalyticsStringConstants.ERROR, cause.getMessage());
+            } else {
+                LoggerSingleton.logError(cause);
+            }
+        } catch (InterruptedException e) {
+            // Ignore this
+        }
+        return projects;
+    }
+    
+    private ScopedPreferenceStore getPreferenceStore() {
+        return PreferenceStoreManager.getPreferenceStore(ActivationPreferenceConstants.ACTIVATION_INFO_STORAGE);
+    }
 
-    private void createKatalonAnalyticsMenu(ToolBar toolBar) {
-        btnUploadToAnalytics = new ToolItem(toolBar, SWT.NONE);
+
+    private void createKatalonAnalyticsMenu(ToolBar toolBar) {       
+        boolean isIntegrated = analyticsReportService.isIntegrationEnabled();
+        boolean encryptionEnabled = true;
+        
+        AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
+                ProjectController.getInstance().getCurrentProject().getFolderLocation());
+               
+        btnUploadToAnalytics = new ToolItem(toolBar, SWT.DROP_DOWN);
         btnUploadToAnalytics.setText(ComposerReportMessageConstants.BTN_KATALON_ANALYTICS);
         btnUploadToAnalytics.setImage(ImageManager.getImage(IImageKeys.KATALON_ANALYTICS_16));
-        btnUploadToAnalytics.setEnabled(analyticsReportService.isIntegrationEnabled());
         
-//        Menu uploadMenu = new Menu(btnUploadToAnalytics.getParent().getShell());
-//        MenuItem newMenuItem = new MenuItem(uploadMenu, SWT.PUSH);
-//        newMenuItem.setText("Upload");
-//        newMenuItem.setID(0);
-        btnUploadToAnalytics.addSelectionListener(new SelectionAdapter() {
+        Menu katalonAnalyticsMenu = new Menu(btnUploadToAnalytics.getParent().getShell());
+        MenuItem accessKAMenuItem = new MenuItem(katalonAnalyticsMenu, SWT.PUSH);
+        MenuItem uploadMenuItem = new MenuItem(katalonAnalyticsMenu, SWT.PUSH);
+        
+        accessKAMenuItem.setText("Access Analytics");
+        accessKAMenuItem.setID(0);
+        
+        accessKAMenuItem.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-            	Shell shell = Display.getCurrent().getActiveShell();
-                AuthenticationDialog dialog = AuthenticationDialog.createDefault(shell);
-                dialog.setBlockOnOpen(true);
-                dialog.open();
-//                try {
-//                	
-//                	//                    new ProgressMonitorDialog(shell).run(true, true, new IRunnableWithProgress() {
-////                        @Override
-////                        public void run(IProgressMonitor monitor) {
-////                            try {
-////                                monitor.beginTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS, 2);
-////                                monitor.subTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS_SENDING);
-////                                analyticsReportService.upload(testSuiteLogRecord.getLogFolder());
-////                                monitor.worked(1);
-////                                monitor.subTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS_SUCCESSFULLY);
-////                                monitor.worked(2);
-////                            } catch (AnalyticsApiExeception ex) {
-////                                LoggerSingleton.logError(ex);
-////                                MultiStatusErrorDialog.showErrorDialog(ex, ComposerReportMessageConstants.REPORT_ERROR_MSG_UNABLE_TO_UPLOAD_REPORT, ex.getMessage());
-////                            }
-////                        }
-////                    });
-//                } catch (InvocationTargetException | InterruptedException ex) {
-//                    LoggerSingleton.logError(ex);
-//                    MultiStatusErrorDialog.showErrorDialog(ex, ComposerReportMessageConstants.REPORT_ERROR_MSG_UNABLE_TO_UPLOAD_REPORT, ex.getMessage());
-//                }
+                try {
+                    if (isIntegrated) {
+                        // open KA web
+                        Program.launch(ComposerReportMessageConstants.KA_HOMEPAGE);
+                        
+//                        System.out.println("Open KA web");
+                    } else {
+                        int teamCount = 1;
+                        int projectCount = 0;
+                        boolean hasCredentials = true;
+                        List<AnalyticsTeam> teams = null;
+                        List<AnalyticsProject> projects = null;
+                        ScopedPreferenceStore preferenceStore = getPreferenceStore();
+                        String preferenceEmail = preferenceStore.getString(ActivationPreferenceConstants.ACTIVATION_INFO_EMAIL);
+                        String preferencePassword = preferenceStore.getString(ActivationPreferenceConstants.ACTIVATION_INFO_PASSWORD);
+                                
+                        try {
+                            String serverUrl = analyticsSettingStore.getServerEndpoint(encryptionEnabled);
+                            String analyticsEmail = analyticsSettingStore.getEmail(encryptionEnabled);
+                            String analyticsPassword = analyticsSettingStore
+                                    .getPassword(analyticsSettingStore.isEncryptionEnabled());
+                            if (analyticsPassword == StringUtils.EMPTY && preferencePassword != StringUtils.EMPTY){
+                                //set analytics store password and email using preference email and password
+                            }
+                            
+                            if (analyticsPassword == StringUtils.EMPTY){
+//                                no credential => email = currently used ks email
+//                                analyticsPassword = enter password (show detail authentication popup to ask)
+                            } else if (analyticsEmail != StringUtils.EMPTY && analyticsPassword != StringUtils.EMPTY){
+                                final AnalyticsTokenInfo tokenInfo = AnalyticsApiProvider.requestToken(serverUrl, analyticsEmail,
+                                        analyticsPassword);
+                                teams = getTeams(serverUrl, analyticsEmail, analyticsPassword, tokenInfo);
+                                teamCount = teams.size();
+                                if (teamCount == 1){
+                                    projects = getProjects(serverUrl, analyticsEmail, analyticsPassword, teams.get(0), tokenInfo);
+                                    projectCount = projects.size();
+                                } else {
+                                    // open select team/project dialog
+                                }
+                            } else {
+                                hasCredentials = false;
+                            }                            
+                           
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                        Program.launch(ComposerReportMessageConstants.KA_HOMEPAGE);
+                    }
+                } catch (Exception ex) {
+                    LoggerSingleton.logError(ex);
+                    MultiStatusErrorDialog.showErrorDialog(ex,
+                            ComposerReportMessageConstants.REPORT_ERROR_MSG_UNABLE_TO_UPLOAD_REPORT, ex.getMessage());
+                }
             }
         });
         
-//        btnUploadToAnalytics.setData(uploadMenu);
-//        btnUploadToAnalytics.addSelectionListener(new SelectionAdapter() {
-//            @Override
-//            public void widgetSelected(SelectionEvent e) {
-//                Rectangle rect = btnUploadToAnalytics.getBounds();
-//                Point pt = btnUploadToAnalytics.getParent().toDisplay(new Point(rect.x, rect.y));
-//                uploadMenu.setLocation(pt.x, pt.y + rect.height);
-//                uploadMenu.setVisible(true);
-//                uploadMenu.setVisible(true);
-//            }
-//        });
+        uploadMenuItem.setText("Upload Report");
+        uploadMenuItem.setID(1);
+        uploadMenuItem.setEnabled(isIntegrated);
+        uploadMenuItem.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                try {
+                    new ProgressMonitorDialog(shell).run(true, true, new IRunnableWithProgress() {
+                        @Override
+                        public void run(IProgressMonitor monitor) {
+                            try {
+                                monitor.beginTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS, 2);
+                                monitor.subTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS_SENDING);
+                                analyticsReportService.upload(testSuiteLogRecord.getLogFolder());
+                                monitor.worked(1);
+                                monitor.subTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS_SUCCESSFULLY);
+                                monitor.worked(2);
+                            } catch (AnalyticsApiExeception ex) {
+                                LoggerSingleton.logError(ex);
+                                MultiStatusErrorDialog.showErrorDialog(ex, ComposerReportMessageConstants.REPORT_ERROR_MSG_UNABLE_TO_UPLOAD_REPORT, ex.getMessage());
+                            }
+                        }
+                    });
+                } catch (InvocationTargetException | InterruptedException ex) {
+                    LoggerSingleton.logError(ex);
+                    MultiStatusErrorDialog.showErrorDialog(ex, ComposerReportMessageConstants.REPORT_ERROR_MSG_UNABLE_TO_UPLOAD_REPORT, ex.getMessage());
+                }
+            }
+        });
+        
+        btnUploadToAnalytics.setData(katalonAnalyticsMenu);
+        btnUploadToAnalytics.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Rectangle rect = btnUploadToAnalytics.getBounds();
+                Point pt = btnUploadToAnalytics.getParent().toDisplay(new Point(rect.x, rect.y));
+                katalonAnalyticsMenu.setLocation(pt.x, pt.y + rect.height);
+                katalonAnalyticsMenu.setVisible(true);
+                katalonAnalyticsMenu.setVisible(true);
+            }
+        });
     }
     
     private void filterTestLogBySearchedText() {

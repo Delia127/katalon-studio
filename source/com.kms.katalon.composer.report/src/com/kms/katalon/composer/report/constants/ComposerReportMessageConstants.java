@@ -106,6 +106,8 @@ public class ComposerReportMessageConstants extends NLS {
     public static String REPORT_MSG_UPLOADING_TO_ANALYTICS_SENDING;
     
     public static String REPORT_MSG_UPLOADING_TO_ANALYTICS_SUCCESSFULLY;
+    
+    public static String KA_HOMEPAGE;
 
     // OpenReportHandler
     public static String HAND_WARN_MSG_EXECUTION_IS_RUNNING;

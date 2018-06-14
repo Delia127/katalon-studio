@@ -79,9 +79,9 @@ public class ServerAPICommunicationUtil {
     }
     
     public static String getAPIUrl() {
-        if (VersionUtil.isInternalBuild()) {
-            return DEVELOPMENT_URL_API;
-        }
+//        if (VersionUtil.isInternalBuild()) {
+//            return DEVELOPMENT_URL_API;
+//        }
         return PRODUCTION_URL_API;
     }
 

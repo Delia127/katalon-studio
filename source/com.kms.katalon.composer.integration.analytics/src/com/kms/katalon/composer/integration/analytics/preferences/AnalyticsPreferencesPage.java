@@ -336,11 +336,20 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         chckEncrypt.setEnabled(isAnalyticsIntegrated);
         chckShowPassword.setEnabled(isAnalyticsIntegrated);
     }
+    
+    private boolean isIntegratedSuccessfully(){
+        boolean isAnalyticsIntegrated = enableAnalyticsIntegration.getSelection(); 
+        if (isAnalyticsIntegrated && !teams.isEmpty()){
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     private void updateDataStore() {
         try {
             boolean encryptionEnabled = chckEncrypt.getSelection();
-            analyticsSettingStore.enableIntegration(enableAnalyticsIntegration.getSelection());
+            analyticsSettingStore.enableIntegration(isIntegratedSuccessfully());
             analyticsSettingStore.setServerEndPoint(txtServerUrl.getText(), encryptionEnabled);
             analyticsSettingStore.setEmail(txtEmail.getText(), encryptionEnabled);
             analyticsSettingStore.setPassword(txtPassword.getText(), encryptionEnabled);

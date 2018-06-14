@@ -35,4 +35,5 @@ Require-Bundle: org.eclipse.e4.ui.model.workbench,
  com.kms.katalon.util
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
-Export-Package: com.kms.katalon.composer.integration.analytics.dialog
+Export-Package: com.kms.katalon.composer.integration.analytics.constants,
+ com.kms.katalon.composer.integration.analytics.dialog

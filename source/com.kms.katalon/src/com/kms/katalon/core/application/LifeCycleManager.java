@@ -189,9 +189,9 @@ public class LifeCycleManager {
             }
 
             private boolean checkActivation(final IEventBroker eventBroker) {
-                if (VersionUtil.isInternalBuild()) {
-                    return true;
-                }
+//                if (VersionUtil.isInternalBuild()) {
+//                    return true;
+//                }
                 if (!(ComposerActivationInfoCollector.checkActivation())) {
                     eventBroker.send(EventConstants.PROJECT_CLOSE, null);
                     PlatformUI.getWorkbench().close();
