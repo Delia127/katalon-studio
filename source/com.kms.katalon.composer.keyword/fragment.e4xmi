@@ -54,7 +54,7 @@
     </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_GhLfUGMuEeiqcrEdLNJZww" featurename="children" parentElementId="com.kms.katalon.composer.menu.file" positionInList="index:11">
-    <elements xsi:type="menu:Menu" xmi:id="_GhLfUWMuEeiqcrEdLNJZww" elementId="com.kms.katalon.composer.menu.file.exportKeywords" label="Export Keywords" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/keywords/export_keywords_16.png">
+    <elements xsi:type="menu:Menu" xmi:id="_GhLfUWMuEeiqcrEdLNJZww" elementId="com.kms.katalon.composer.menu.file.exportKeywords" visible="false" label="Export Keywords" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/keywords/export_keywords_16.png">
       <children xsi:type="menu:HandledMenuItem" xmi:id="_GhLfUmMuEeiqcrEdLNJZww" elementId="com.kms.katalon.composer.menu.file.exportKeywords.folder" label="Folder" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/folder_16.png" command="_YagWMGR_Eeic6ZTVd_CcGw">
         <persistedState key="index" value="8"/>
       </children>

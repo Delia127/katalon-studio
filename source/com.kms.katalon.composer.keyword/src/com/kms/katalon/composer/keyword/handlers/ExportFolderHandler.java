@@ -40,6 +40,8 @@ public class ExportFolderHandler {
 
     private final String DOT_DILIMETER = ".";
     
+    private final String OPEN_EXPLORER_CMD = "explorer.exe /select,";
+    
     @CanExecute
     private boolean canExecute() {
         return ProjectController.getInstance().getCurrentProject() != null;
@@ -110,13 +112,15 @@ public class ExportFolderHandler {
                 sourceFolder = (FolderEntity)keywordRootFolder.getObject();
         }
 
-        FolderController.getInstance().copyFolder(sourceFolder, outputFolder);
-  
+        FolderEntity copiedFolder = FolderController.getInstance().copyFolder(sourceFolder, outputFolder);
 
         eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, keywordRootFolder);
         eventBroker.post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, keywordRootFolder);
         eventBroker.post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, keywordRootFolder);
+        
         MessageDialog.openInformation(shell, StringConstants.INFO, "Export keyword folder successful !");
+        
+        Runtime.getRuntime().exec(OPEN_EXPLORER_CMD + outputFolder.getLocation() + File.separator + copiedFolder.getName());
 
     }
 }

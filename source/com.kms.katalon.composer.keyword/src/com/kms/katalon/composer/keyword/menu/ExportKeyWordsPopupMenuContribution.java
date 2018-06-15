@@ -13,12 +13,10 @@ import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
-import com.kms.katalon.composer.components.impl.tree.PackageTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.keyword.constants.StringConstants;
 import com.kms.katalon.composer.keyword.handlers.ExportFolderHandler;
 import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
@@ -54,44 +52,25 @@ public class ExportKeyWordsPopupMenuContribution {
             }
 
             Object selectedObject = selectedObjects[0];
-            
-            FolderEntity keywordRootFolder = FolderController.getInstance().getKeywordRoot(ProjectController.getInstance().getCurrentProject());
-            
-            
+
             if ((selectedObject instanceof FolderTreeEntity
                     && ((FolderTreeEntity) selectedObject).getObject() instanceof FolderEntity
-                    && FolderType.KEYWORD.equals(((FolderTreeEntity) selectedObject).getObject().getFolderType()))
-                    
-                    || ((selectedObject instanceof PackageTreeEntity) 
-                         && ((PackageTreeEntity) selectedObject).getParent().getObject().equals(keywordRootFolder))) {
+                    && FolderType.KEYWORD.equals(((FolderTreeEntity) selectedObject).getObject().getFolderType()))) {
 
-                MMenu importMenu = getExportMenu();
-                MDirectMenuItem folderMenuItem = getFolderMenuItem();
-
-                folderMenuItem.setContributionURI(CM_EXPORT_COMPOSER_BUNDLE_URI + ExportFolderHandler.class.getName());
-                importMenu.getChildren().add(folderMenuItem);
-
-                if (importMenu.getChildren().size() > 0) {
-                    menuItems.add(0, importMenu);
-                }
+                MDirectMenuItem importMenu = getExportMenu();
+                importMenu.setContributionURI(CM_EXPORT_COMPOSER_BUNDLE_URI + ExportFolderHandler.class.getName());
+                menuItems.add(0, importMenu);
             }
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
     }
 
-    private MMenu getExportMenu() {
-        MMenu dynamicItem = modelService.createModelElement(MMenu.class);
-        // Import
+    private MDirectMenuItem getExportMenu() {
+        MDirectMenuItem dynamicItem = modelService.createModelElement(MDirectMenuItem.class);
         dynamicItem.setLabel(StringConstants.MSG_EXPORT);
         dynamicItem.setContributorURI(CONTRIBUTOR_URI);
-        return dynamicItem;
-    }
 
-    private MDirectMenuItem getFolderMenuItem() {
-        MDirectMenuItem dynamicItem = modelService.createModelElement(MDirectMenuItem.class);
-        dynamicItem.setLabel(StringConstants.FOLDER);
-        dynamicItem.setContributorURI(CONTRIBUTOR_URI);
         return dynamicItem;
     }
 
