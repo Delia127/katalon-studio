@@ -12,6 +12,8 @@ public class MessageConstants extends NLS {
     public static String HAND_QUIT_DIA_MSG_AUTO_RESTORE_SESSION;
 
     public static String HAND_SAVE_DIA_MSG;
+    
+    public static String HAND_SAVE_ALL_DIA_MSG;
 
     public static String PAGE_GRP_ON_NEXT_STARTING_APP;
 
