@@ -40,7 +40,9 @@ public class ExportFolderHandler {
 
     private final String DOT_DILIMETER = ".";
     
-    private final String OPEN_EXPLORER_CMD = "explorer.exe /select,";
+    private final String OPEN_CONTAINING_FOLDER_WINDOW_CMD = "explorer.exe /select,";
+    
+    private final String OPEN_CONTAINING_FOLDER_MACOS_CMD = "open -R ";
     
     @CanExecute
     private boolean canExecute() {
@@ -120,7 +122,15 @@ public class ExportFolderHandler {
         
         MessageDialog.openInformation(shell, StringConstants.INFO, "Export keyword folder successful !");
         
-        Runtime.getRuntime().exec(OPEN_EXPLORER_CMD + outputFolder.getLocation() + File.separator + copiedFolder.getName());
-
+        String osName = System.getProperty("os.name");
+        String finalCommand = "";
+        
+        if (osName == null || osName.toLowerCase().contains("win")) {
+            finalCommand = OPEN_CONTAINING_FOLDER_WINDOW_CMD + outputFolder.getLocation() + File.separator + copiedFolder.getName();
+        } else {
+            finalCommand = OPEN_CONTAINING_FOLDER_MACOS_CMD + outputFolder.getLocation() + File.separator + copiedFolder.getName();
+        }
+        
+        Runtime.getRuntime().exec(finalCommand);
     }
 }

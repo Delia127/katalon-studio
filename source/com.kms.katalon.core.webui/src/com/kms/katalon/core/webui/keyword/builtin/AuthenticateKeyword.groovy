@@ -23,7 +23,8 @@ import com.kms.katalon.core.webui.util.WinRegistry
 import groovy.transform.CompileStatic
 
 @Action(value = "authenticate")
-public class AuthenticateKeyword extends WebUIAbstractKeyword {
+public class 
+ extends WebUIAbstractKeyword {
 
     @CompileStatic
     @Override

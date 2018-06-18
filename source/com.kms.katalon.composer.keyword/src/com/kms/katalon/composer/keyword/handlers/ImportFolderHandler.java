@@ -87,7 +87,7 @@ public class ImportFolderHandler {
         execute(Display.getCurrent().getActiveShell());
     }
 
-    public void copyFilesToKeywordsDirectory(Shell shell, File importedFolder, boolean isGit)
+    public void copyFilesToKeywordsDirectory(Shell shell, File importedFolder, boolean forGit)
             throws Exception {
 
         FolderEntity keywordRootFolder = FolderController.getInstance()
@@ -100,13 +100,13 @@ public class ImportFolderHandler {
             StringBuilder destinationKeywordFolder = new StringBuilder(keywordRootFolder.getLocation());
             destinationKeywordFolder.append(File.separator);
             String absolutePath = groovyFile.getAbsolutePath();
-            if (isGit) {
+            if (forGit) {
                 destinationKeywordFolder.append(absolutePath.substring(
                         absolutePath.indexOf(importedFolder.getName()) + importedFolder.getName().length() + 1,
                         absolutePath.length()));
             } else {
                 destinationKeywordFolder.append(
-                        absolutePath.substring(absolutePath.indexOf(importedFolder.getName()), absolutePath.length()));
+                        absolutePath.substring(absolutePath.indexOf(importedFolder.getName()) + importedFolder.getName().length(), absolutePath.length()));
             }
             if (new File(destinationKeywordFolder.toString()).exists()) {
                 // Open popup with the file name
@@ -142,7 +142,7 @@ public class ImportFolderHandler {
 
             FileUtils.copyFile(groovyFile, new File(destinationKeywordFolder.toString()));
         }
-        if (isGit) {
+        if (forGit) {
             writeActionToFile(modifiedFiles);
         }
     }
