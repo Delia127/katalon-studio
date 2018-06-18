@@ -347,7 +347,7 @@
 				<textField isStretchWithOverflow="true">
 					<reportElement positionType="Float" x="120" y="121" width="425" height="14" uuid="b987a4f7-62c8-4046-80b4-6739e9d6c4c4"/>
 					<textElement verticalAlignment="Middle">
-						<font size="9"/>
+						<font fontName="DejaVu Sans" size="9"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$P{TEST_SUITE}.getDescription().replace("\\n", System.lineSeparator())]]></textFieldExpression>
 				</textField>
