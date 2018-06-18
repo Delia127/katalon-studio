@@ -5,6 +5,12 @@ import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.ui.PlatformUI;
+import org.greenrobot.eventbus.EventBus;
+
+import com.kms.katalon.application.usagetracking.TrackingEvent;
+import com.kms.katalon.application.usagetracking.UsageActionTrigger;
+import com.kms.katalon.core.event.EventBusSingleton;
+
 
 public class SaveAllHandler {
 
@@ -20,5 +26,13 @@ public class SaveAllHandler {
     void execute(EPartService partService) {
         partService.saveAll(false);
         PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().saveAllEditors(false);
+//            Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector
+//                    .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.SAVE_ALL, RunningMode.GUI)));
+        sendEventForTracking();
+    }
+    
+    private void sendEventForTracking() {
+        EventBus eventBus = EventBusSingleton.getInstance().getEventBus();
+        eventBus.post(new TrackingEvent(UsageActionTrigger.SAVE_ALL, null));
     }
 }

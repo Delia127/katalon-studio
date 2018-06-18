@@ -65,7 +65,9 @@ Require-Bundle: org.eclipse.e4.core.di,
  com.kms.katalon.application,
  org.apache.commons.compress,
  com.kms.katalon.core.webui,
- com.kms.katalon.core.appium
+ com.kms.katalon.core.appium,
+ org.greenrobot.eventbus,
+ com.kms.katalon.tracking
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: javax.annotation,
