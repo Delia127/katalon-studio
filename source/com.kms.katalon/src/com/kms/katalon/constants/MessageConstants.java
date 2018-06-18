@@ -60,6 +60,8 @@ public class MessageConstants extends NLS {
     public static String PA_URL_GETTING_STARTED;
 
     public static String PA_LBL_USER_GUIDE;
+    
+    public static String PA_LBL_BUSINESS_SUPPORT;
 
     public static String PA_LBL_ARTICLES_DESCRIPTION;
 
@@ -256,6 +258,8 @@ public class MessageConstants extends NLS {
     public static String HAND_IMPORT_SETTINGS_MSG_SUCCESSFULL;
 
     public static String URL_KATALON_DISCUSSION_FORUM;
+    
+    public static String URL_KATALON_SUPPORT_SERVICE;
 
     public static String HAND_IMPORT_SELENIUM_IDE_MSG_ERROR;
 

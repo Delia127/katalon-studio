@@ -54,12 +54,16 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_URL_GETTING_STARTED = MessageConstants.PA_URL_GETTING_STARTED;
 
     public static final String PA_LBL_USER_GUIDE = MessageConstants.PA_LBL_USER_GUIDE;
+    
+    public static final String PA_LBL_BUSINESS_SUPPORT = MessageConstants.PA_LBL_BUSINESS_SUPPORT;
 
     public static final String PA_TOOLTIP_ARTICLES = MessageConstants.PA_TOOLTIP_ARTICLES;
 
     public static final String PA_LBL_ARTICLES_DESCRIPTION = MessageConstants.PA_LBL_ARTICLES_DESCRIPTION;
 
     public static final String PA_LBL_USER_GUIDE_URL = MessageConstants.PA_URL_USER_GUIDE;
+    
+    public static final String URL_KATALON_SUPPORT_SERVICE = MessageConstants.URL_KATALON_SUPPORT_SERVICE;
 
     public static final String PA_LBL_RECENT_PROJECT = MessageConstants.PA_LBL_RECENT_PROJECT;
 

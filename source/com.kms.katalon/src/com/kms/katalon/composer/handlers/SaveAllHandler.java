@@ -3,6 +3,7 @@ package com.kms.katalon.composer.handlers;
 import java.util.Collection;
 import java.util.concurrent.Executors;
 
+
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -10,6 +11,7 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
+
 
 import com.kms.katalon.application.RunningMode;
 import com.kms.katalon.application.usagetracking.UsageActionTrigger;

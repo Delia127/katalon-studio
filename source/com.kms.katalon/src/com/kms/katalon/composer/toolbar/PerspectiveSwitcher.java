@@ -32,6 +32,7 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.services.PartServiceSingleton;
 import com.kms.katalon.composer.components.util.ImageUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
@@ -130,6 +131,7 @@ public class PerspectiveSwitcher {
         MPerspective perspective = (MPerspective) toolItem.getData();
 
         MPerspectiveStack perspectiveStack = find(IdConstants.MAIN_PERSPECTIVE_STACK_ID, window);
+
         if (perspectiveStack == null) {
             return;
         }
@@ -172,6 +174,9 @@ public class PerspectiveSwitcher {
 
     @PostConstruct
     void createWidget(Composite parent, MToolControl toolControl) {
+        PartServiceSingleton.getInstance().setPartService(partService);
+        application.getContext().set(EPartService.class, partService);
+
         perspectiveToolControl = toolControl;
         Composite container = new Composite(parent, SWT.NONE);
         container.setLayout(new GridLayout(2, false));

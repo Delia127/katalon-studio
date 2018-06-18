@@ -92,6 +92,8 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.CHECK_16);
         ImageManager.registerImage(IImageKeys.FIT_SCREEN_16);
         ImageManager.registerImage(IImageKeys.FULL_SIZE_16);
+        ImageManager.registerImage(IImageKeys.CONFLICT_ELEMENT_STATUS_16);
+        ImageManager.registerImage(IImageKeys.NEW_ELEMENT_STATUS_16);
     }
 
     private void registerSubToolbarImages() {
@@ -321,6 +323,7 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.FAQ_34);
         ImageManager.registerImage(IImageKeys.USER_GUIDE_34);
         ImageManager.registerImage(IImageKeys.TUTORIAL_34);
+        ImageManager.registerImage(IImageKeys.BUSINESS_SUPPORT_34);
         ImageManager.registerImage(IImageKeys.KATALON_LOGO_202);
         ImageManager.registerImage(IImageKeys.RECENT_PROJECT_FILE_29);
         ImageManager.registerImage(IImageKeys.SAMPLE_WEB_UI_PROJECT_72);
