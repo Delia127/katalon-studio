@@ -323,7 +323,7 @@ public class TestCaseExecutor {
     }
 
     private Binding collectTestCaseVariables() {
-        Binding variableBinding = new Binding();
+        Binding variableBinding = new Binding(testCaseBinding != null ? testCaseBinding.getBindedValues() : Collections.emptyMap());
         engine.changeConfigForCollectingVariable();
 
         logger.logInfo(StringConstants.MAIN_LOG_INFO_START_EVALUATE_VARIABLE);

@@ -7,12 +7,17 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpres
 import com.kms.katalon.objectspy.element.WebElement;
 
 public class RecordedElementMethodCallWrapper extends MethodCallExpressionWrapper {
+
+    private WebElement webElement;
+
+    public void setWebElement(WebElement webElement) {
+        this.webElement = webElement;
+    }
+
     public RecordedElementMethodCallWrapper(ASTNodeWrapper parentNodeWrapper, WebElement webElement) {
         super(THIS_VARIABLE, MethodCallExpressionWrapper.FIND_TEST_OBJECT_METHOD_NAME, parentNodeWrapper);
         this.webElement = webElement;
     }
-
-    private WebElement webElement;
    
     @Override
     public String getText() {

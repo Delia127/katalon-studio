@@ -65,7 +65,7 @@ public class WebServiceAPIControl extends Composite {
             txtRequestURL.setText(url);
         }
       
-        ToolBar toolbar = new ToolBar(this, SWT.RIGHT | SWT.RIGHT);
+        ToolBar toolbar = new ToolBar(this, SWT.RIGHT);
         btnSend = new ToolItem(toolbar, SWT.FLAT);
         setSendButtonState(false);
         toolbar.setLayoutData(new GridData(SWT.CENTER, SWT.RIGHT, false, true));

@@ -6,7 +6,9 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.AbstractOperation;
@@ -194,6 +196,33 @@ public class TestCaseTreeTableInput {
             }
         }
         return selectedNodes;
+    }
+
+    public List<ASTNodeWrapper> getSelectedNodeWrappers() {
+        List<ASTNodeWrapper> selectedNodeWrappers = new ArrayList<>();
+        for (AstTreeTableNode node : getSelectedNodes()) {
+            selectedNodeWrappers.add(node.getASTObject());
+        }
+        return selectedNodeWrappers;
+    }
+
+    private int[] getIndex(AstTreeTableNode node) {
+        AstTreeTableNode parent = node.getParent();
+        int index = parent.getChildren().indexOf(node);
+        if (parent.getParent() == null) {
+            return new int[] { index };
+        }
+        return ArrayUtils.add(getIndex(node.getParent()), index);
+    }
+
+    public List<ASTNodeWrapper> getNodeWrappersFromFirstSelected() {
+        int[] selectedIndices = getIndex(getSelectedNode());
+        int fisrtSelected = selectedIndices[0];
+        return mainClassNodeWrapper.getBlock()
+                .getAstChildren()
+                .stream()
+                .skip(fisrtSelected)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -489,6 +518,10 @@ public class TestCaseTreeTableInput {
         removeRows(getSelectedNodes());
     }
 
+    public void clearRows() {
+        mainClassTreeNode.getChildren().clear();
+    }
+
     public void removeRows(List<AstTreeTableNode> treeTableNodes) {
         executeOperation(new RemoveAstTreeTableNodesOperation(treeTableNodes));
     }
@@ -660,6 +693,26 @@ public class TestCaseTreeTableInput {
     public static boolean isNodeMoveable(AstTreeTableNode astTreeTableNode) {
         return (!(astTreeTableNode.getASTObject() instanceof ComplexLastStatementWrapper)
                 && !(astTreeTableNode.getASTObject() instanceof ComplexChildStatementWrapper));
+    }
+    
+    public boolean canPaste() {
+        Clipboard clipboard = new Clipboard(Display.getCurrent());
+        Object data = clipboard.getContents(new ScriptTransfer());
+        if (data == null) {
+            return false;
+        }
+        String snippet = null;
+        if (data instanceof String) {
+            snippet = (String) data;
+        } else if (data instanceof ScriptTransferData[]) {
+             snippet = ((ScriptTransferData[]) data)[0].getScriptSnippet();
+        }
+        try {
+            ScriptNodeWrapper scriptNode = GroovyWrapperParser.parseGroovyScriptIntoNodeWrapper(snippet);
+            return scriptNode != null;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public void paste(AstTreeTableNode destinationNode, NodeAddType addType) {

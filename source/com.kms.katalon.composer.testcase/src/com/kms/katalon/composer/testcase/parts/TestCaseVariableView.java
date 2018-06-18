@@ -204,14 +204,14 @@ public class TestCaseVariableView implements TableActionOperator {
             }
         });
         TableColumn tblclmnName = tableViewerColumnName.getColumn();
-        tblclmnName.setWidth(200);
+        tblclmnName.setWidth(100);
         tblclmnName.setText(StringConstants.PA_COL_NAME);
 
         TableViewerColumn tableViewerColumnDefaultValueType = new TableViewerColumn(tableViewer, SWT.NONE);
         tableViewerColumnDefaultValueType.setEditingSupport(
                 new VariableDefaultValueTypeEditingSupport(tableViewer, this, defaultInputValueTypes));
         TableColumn tblclmnDefaultValueType = tableViewerColumnDefaultValueType.getColumn();
-        tblclmnDefaultValueType.setWidth(200);
+        tblclmnDefaultValueType.setWidth(100);
         tblclmnDefaultValueType.setText(StringConstants.PA_COL_DEFAULT_VALUE_TYPE);
         tableViewerColumnDefaultValueType.setLabelProvider(new ColumnLabelProvider() {
             @Override
@@ -239,7 +239,7 @@ public class TestCaseVariableView implements TableActionOperator {
         TableViewerColumn tableViewerColumnDefaultValue = new TableViewerColumn(tableViewer, SWT.NONE);
         tableViewerColumnDefaultValue.setEditingSupport(new VariableDefaultValueEditingSupport(tableViewer, this));
         TableColumn tblclmnDefaultValue = tableViewerColumnDefaultValue.getColumn();
-        tblclmnDefaultValue.setWidth(500);
+        tblclmnDefaultValue.setWidth(150);
         tblclmnDefaultValue.setText(StringConstants.PA_COL_DEFAULT_VALUE);
         tableViewerColumnDefaultValue.setLabelProvider(new ColumnLabelProvider() {
             @Override
@@ -268,7 +268,7 @@ public class TestCaseVariableView implements TableActionOperator {
             }
         });
         TableColumn tblColumnDescription = tableViewerColumnDescription.getColumn();
-        tblColumnDescription.setWidth(400);
+        tblColumnDescription.setWidth(120);
         tblColumnDescription.setText(StringConstants.PA_COL_DESCRIPTION);
 
         TableViewerColumn tableViewerColumnLogged = new TableViewerColumn(tableViewer, SWT.NONE);
@@ -324,7 +324,7 @@ public class TestCaseVariableView implements TableActionOperator {
             }
         });
         TableColumn tblColumnLogged = tableViewerColumnLogged.getColumn();
-        tblColumnLogged.setWidth(100);
+        tblColumnLogged.setWidth(50);
         tblColumnLogged.setText(ComposerTestcaseMessageConstants.PA_COL_MASKED);
         tblColumnLogged.setToolTipText(ComposerTestcaseMessageConstants.PA_COL_MASKED_TOOLTIP);
 

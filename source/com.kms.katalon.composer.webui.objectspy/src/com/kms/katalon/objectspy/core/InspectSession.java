@@ -15,6 +15,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
+import org.openqa.selenium.NoSuchWindowException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -189,18 +190,20 @@ public class InspectSession implements Runnable {
             }
             while (isRunFlag) {
                 try {
-                    Thread.sleep(5000);
-                    if (driver == null || ((RemoteWebDriver) driver).getSessionId() == null) {
+                    Thread.sleep(1000L);
+                    if (driver == null || driver.getTitle() == null) {
                         break;
                     }
                     driver.getWindowHandle();
+                } catch (NoSuchWindowException e) {
+                    break;
                 } catch (UnreachableBrowserException e) {
                     break;
                 } catch (WebDriverException e) {
                     if (e.getMessage().startsWith("chrome not reachable")) {
                         break;
                     }
-                    continue;
+                    return;
                 }
             }
         } catch (WebDriverException e) {
@@ -356,4 +359,9 @@ public class InspectSession implements Runnable {
     public WebDriver getWebDriver() {
         return driver;
     }
+
+    public WebUIDriverType getWebUiDriverType() {
+        return webUiDriverType;
+    }
+
 }

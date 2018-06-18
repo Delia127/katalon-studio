@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.webui.recorder.handler;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -19,6 +21,7 @@ import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.graphics.Rectangle;
@@ -29,16 +32,21 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.composer.components.impl.handler.WorkbenchUtilizer;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.BlockStatementWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
 import com.kms.katalon.composer.testcase.handlers.NewTestCaseHandler;
+import com.kms.katalon.composer.testcase.handlers.OpenTestCaseHandler;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
 import com.kms.katalon.composer.testcase.parts.TestCaseCompositePart;
 import com.kms.katalon.composer.testcase.parts.TestCasePart;
@@ -53,6 +61,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
+import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.objectspy.dialog.SaveToObjectRepositoryDialog.SaveToObjectRepositoryDialogResult;
 import com.kms.katalon.objectspy.element.WebElement;
 import com.kms.katalon.objectspy.element.WebFrame;
@@ -101,14 +110,25 @@ public class RecordHandler {
             if (testCaseCompositePart != null && !verifyTestCase(testCaseCompositePart)) {
                 return;
             }
+
+            List<? extends ASTNodeWrapper> wrapper = new ArrayList<>();
+            List<VariableEntity> variables = new ArrayList<>();
+            if (testCaseCompositePart != null) {
+                String scriptContent = new String(testCaseCompositePart.getOriginalTestCase().getScriptContents());
+
+                wrapper = GroovyWrapperParser.parseGroovyScriptIntoNodeWrapper(scriptContent)
+                        .getRunMethod()
+                        .getBlock()
+                        .getAstChildren();
+                variables = testCaseCompositePart.getTestCase().clone().getVariables();
+            }
             if (recordDialog == null || recordDialog.isDisposed()) {
                 shell = getShell(Display.getCurrent().getActiveShell());
-                recordDialog = new RecorderDialog(shell, LoggerSingleton.getInstance().getLogger(), eventBroker);
+                recordDialog = new RecorderDialog(shell, wrapper, variables);
             } else {
                 recordDialog.getShell().forceActive();
                 return;
             }
-
             int responseCode = recordDialog.open();
             if (responseCode != Window.OK) {
                 return;
@@ -116,11 +136,13 @@ public class RecordHandler {
             final SaveToObjectRepositoryDialogResult folderSelectionResult = recordDialog.getTargetFolderTreeEntity();
             final List<HTMLActionMapping> recordedActions = recordDialog.getActions();
             final List<WebPage> recordedElements = recordDialog.getElements();
-            if (testCaseCompositePart == null) {
+            boolean shouldOverride = true;
+            if (testCaseCompositePart == null || testCaseCompositePart.isDisposed()) {
                 testCaseCompositePart = createNewTestCase();
+                shouldOverride = false;
             }
             doGenerateTestScripts(testCaseCompositePart, folderSelectionResult, recordedActions, recordedElements,
-                    recordDialog.getScriptWrapper());
+                    recordDialog.getScriptWrapper(), recordDialog.getVariables(), shouldOverride);
         } catch (Exception e) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
                     StringConstants.HAND_ERROR_MSG_CANNOT_GEN_TEST_STEPS);
@@ -158,7 +180,7 @@ public class RecordHandler {
     private void doGenerateTestScripts(final TestCaseCompositePart testCaseCompositePart,
             final SaveToObjectRepositoryDialogResult folderSelectionResult,
             final List<HTMLActionMapping> recordedActions, final List<WebPage> recordedElements,
-            ScriptNodeWrapper wrapper) {
+            final ScriptNodeWrapper wrapper, final VariableEntity[] variables, final boolean shouldOverride) {
         if (testCaseCompositePart == null) {
             return;
         }
@@ -179,27 +201,44 @@ public class RecordHandler {
                         @Override
                         public void run() {
                             try {
-                                List<StatementWrapper> children = (List<StatementWrapper>) wrapper.getBlock().getAstChildren();
+                                List<StatementWrapper> children = (List<StatementWrapper>) wrapper.getBlock()
+                                        .getAstChildren();
                                 if (children.isEmpty()) {
                                     return;
                                 }
-                                testCasePart.addDefaultImports();
-                                testCasePart.getTreeTableInput().getMainClassNode().addImport(Keys.class);
+                                if (!shouldOverride) {
+                                    testCasePart.addDefaultImports();
+                                    testCasePart.getTreeTableInput().getMainClassNode().addImport(Keys.class);
 
-                                // add open browser keyword at the beginning of generated steps
-                                String webUiKwAliasName = HTMLActionUtil.getWebUiKeywordClass().getAliasName();
-                                MethodCallExpressionWrapper openBrowserExpressionWrapper = new MethodCallExpressionWrapper(webUiKwAliasName,
-                                        "openBrowser", wrapper);
-                                ArgumentListExpressionWrapper arguments = openBrowserExpressionWrapper.getArguments();
-                                arguments.addExpression(new ConstantExpressionWrapper(""));
-                                children.add(0, new ExpressionStatementWrapper(openBrowserExpressionWrapper));
+                                    // add open browser keyword at the beginning of generated steps
+                                    String webUiKwAliasName = HTMLActionUtil.getWebUiKeywordClass().getAliasName();
+                                    MethodCallExpressionWrapper openBrowserExpressionWrapper = new MethodCallExpressionWrapper(
+                                            webUiKwAliasName, "openBrowser", wrapper);
+                                    ArgumentListExpressionWrapper arguments = openBrowserExpressionWrapper
+                                            .getArguments();
+                                    arguments.addExpression(new ConstantExpressionWrapper(""));
+                                    children.add(0, new ExpressionStatementWrapper(openBrowserExpressionWrapper));
 
-                                // add close browser keyword at the end of generated steps
-                                MethodCallExpressionWrapper closeBrowserExpressionWrapper = new MethodCallExpressionWrapper(webUiKwAliasName, "closeBrowser", wrapper);
-                                children.add(new ExpressionStatementWrapper(closeBrowserExpressionWrapper));
+                                    // add close browser keyword at the end of generated steps
+                                    MethodCallExpressionWrapper closeBrowserExpressionWrapper = new MethodCallExpressionWrapper(
+                                            webUiKwAliasName, "closeBrowser", wrapper);
+                                    children.add(new ExpressionStatementWrapper(closeBrowserExpressionWrapper));
 
-                                // append generated steps at the end of test case's steps
-                                testCasePart.addStatements(children, NodeAddType.Add, true);
+                                    // append generated steps at the end of test case's steps
+                                    testCasePart.addStatements(children, NodeAddType.Add, true);
+                                    testCasePart.addVariables(variables);
+                                } else {
+                                    BlockStatementWrapper block = testCaseCompositePart.getChildTestCasePart()
+                                            .getTreeTableInput()
+                                            .getMainClassNode()
+                                            .getRunMethod()
+                                            .getBlock();
+                                    block.clearStaments();
+                                    // append generated steps at the end of test case's steps
+                                    testCasePart.addStatements(children, NodeAddType.Add, true);
+                                    testCasePart.deleteVariables(Arrays.asList(testCasePart.getVariables()));
+                                    testCasePart.addVariables(variables);
+                                }
                                 testCaseCompositePart.refreshScript();
                                 testCaseCompositePart.save();
                             } catch (Exception e) {
@@ -290,19 +329,18 @@ public class RecordHandler {
         }
     }
 
-    private void addRecordedElement(WebElement element, FolderEntity parentFolder, SaveToObjectRepositoryDialogResult folderSelectionResult)
-            throws Exception {
-        FileEntity entity = folderSelectionResult.getEntitySavedMap().entrySet().stream()
-                .filter(e -> {
-                    WebElement savedElement = e.getKey();
-                    WebPage savedRoot = savedElement.getRoot();
-                    if (savedRoot == null) {
-                        return false;
-                    }
-                    WebPage root = element.getRoot();
-                    return savedElement.getName().equals(element.getName())
-                            && root != null && savedRoot.getName().equals(root.getName());
-            }).map(e -> e.getValue()).findFirst().orElse(null);
+    private void addRecordedElement(WebElement element, FolderEntity parentFolder,
+            SaveToObjectRepositoryDialogResult folderSelectionResult) throws Exception {
+        FileEntity entity = folderSelectionResult.getEntitySavedMap().entrySet().stream().filter(e -> {
+            WebElement savedElement = e.getKey();
+            WebPage savedRoot = savedElement.getRoot();
+            if (savedRoot == null) {
+                return false;
+            }
+            WebPage root = element.getRoot();
+            return savedElement.getName().equals(element.getName()) && root != null
+                    && savedRoot.getName().equals(root.getName());
+        }).map(e -> e.getValue()).findFirst().orElse(null);
         element.setName(entity.getName());
         if (element instanceof WebFrame) {
             for (WebElement childElement : ((WebFrame) element).getChildren()) {

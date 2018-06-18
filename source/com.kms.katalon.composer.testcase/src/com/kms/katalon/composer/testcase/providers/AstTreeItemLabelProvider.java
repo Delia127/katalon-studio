@@ -1,7 +1,7 @@
 package com.kms.katalon.composer.testcase.providers;
 
 import org.eclipse.jface.viewers.ViewerCell;
-import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.graphics.Image;
 
 import com.kms.katalon.composer.components.impl.providers.CellLayoutInfo;
@@ -69,26 +69,19 @@ public class AstTreeItemLabelProvider extends TypeCheckedStyleTreeCellLabelProvi
     }
     
     @Override
-    public void update(ViewerCell cell) {
-        Object element = cell.getElement();
-        if (!(element instanceof AstTreeTableNode)) {
-            super.update(cell);
-            return;
+    protected StyleRange[] getStyleRanges(ViewerCell cell, AstTreeTableNode element) {
+        String text = cell.getText();
+        if (isDisabledStatement(element)) {
+            StyleRange disableText = new StyleRange();
+            disableText.start = 0;
+            disableText.length = text.length();
+            disableText.foreground = ColorUtil.getDisabledTextColor();
+            return new StyleRange[] {  disableText };
+        } else {
+            return new StyleRange[0];
         }
-        AstTreeTableNode treeNode = (AstTreeTableNode) element;
-        cell.setText(getText(treeNode));
-        cell.setImage(getImage(treeNode));
-        super.update(cell);
     }
-    
-    @Override
-    protected Color getBackground(Color background, AstTreeTableNode element) {
-    	if (isDisabledStatement(element)) {
-            return ColorUtil.getDisabledItemBackgroundColor();
-        }
-    	return super.getBackground(background, element);
-    }
-    
+
     private boolean isDisabledStatement(AstTreeTableNode treeNode) {
         return treeNode instanceof AstStatementTreeTableNode && ((AstStatementTreeTableNode) treeNode).isDisabled();
     }

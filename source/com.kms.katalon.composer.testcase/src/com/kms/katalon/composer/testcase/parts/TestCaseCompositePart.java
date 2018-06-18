@@ -174,6 +174,8 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
 
     private boolean parsingFailed;
 
+    private boolean disposed;
+
     public boolean isInitialized() {
         return isInitialized;
     }
@@ -766,6 +768,11 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
         MPartStack mStackPart = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
         mStackPart.getChildren().remove(compositePart);
         eventBroker.unsubscribe(this);
+        disposed = true;
+    }
+    
+    public boolean isDisposed() {
+        return disposed;
     }
 
     @PreDestroy

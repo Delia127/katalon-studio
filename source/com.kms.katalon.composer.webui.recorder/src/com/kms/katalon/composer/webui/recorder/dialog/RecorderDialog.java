@@ -10,21 +10,27 @@ import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.services.IStylingEngine;
-import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.jface.bindings.keys.IKeyLookup;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
@@ -66,12 +72,15 @@ import org.osgi.framework.Bundle;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.control.Dropdown;
 import com.kms.katalon.composer.components.impl.control.DropdownGroup;
 import com.kms.katalon.composer.components.impl.control.DropdownItemSelectionListener;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.impl.handler.WorkbenchUtilizer;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
+import com.kms.katalon.composer.components.impl.util.KeyEventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
@@ -80,31 +89,46 @@ import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
 import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
 import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants;
 import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants.AddAction;
+import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.BlockStatementWrapper;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
 import com.kms.katalon.composer.testcase.parts.decoration.DecoratedKeyword;
 import com.kms.katalon.composer.testcase.parts.decoration.KeywordDecorationService;
 import com.kms.katalon.composer.testcase.preferences.StoredKeyword;
 import com.kms.katalon.composer.testcase.preferences.TestCasePreferenceDefaultValueInitializer;
+import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
 import com.kms.katalon.composer.testcase.util.TestCaseMenuUtil;
 import com.kms.katalon.composer.webui.recorder.action.HTMLActionMapping;
+import com.kms.katalon.composer.webui.recorder.ast.RecordedElementMethodCallWrapper;
 import com.kms.katalon.composer.webui.recorder.constants.ComposerWebuiRecorderMessageConstants;
 import com.kms.katalon.composer.webui.recorder.constants.ImageConstants;
 import com.kms.katalon.composer.webui.recorder.constants.RecorderPreferenceConstants;
 import com.kms.katalon.composer.webui.recorder.constants.StringConstants;
 import com.kms.katalon.composer.webui.recorder.core.HTMLElementRecorderServer;
 import com.kms.katalon.composer.webui.recorder.core.RecordSession;
+import com.kms.katalon.composer.webui.recorder.core.RecordSession.BrowserStoppedListener;
 import com.kms.katalon.composer.webui.recorder.util.HTMLActionUtil;
 import com.kms.katalon.composer.webui.recorder.websocket.RecorderAddonSocket;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.GlobalMessageConstants;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.model.FailureHandling;
+import com.kms.katalon.core.testobject.TestObject;
+import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
+import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
+import com.kms.katalon.execution.webservice.RecordingScriptGenerator;
 import com.kms.katalon.objectspy.constants.ObjectspyMessageConstants;
 import com.kms.katalon.objectspy.dialog.CapturedObjectsView;
 import com.kms.katalon.objectspy.dialog.GoToAddonStoreMessageDialog;
@@ -123,6 +147,7 @@ import com.kms.katalon.objectspy.element.WebPage;
 import com.kms.katalon.objectspy.exception.IEAddonNotInstalledException;
 import com.kms.katalon.objectspy.util.BrowserUtil;
 import com.kms.katalon.objectspy.util.UtilitiesAddonUtil;
+import com.kms.katalon.objectspy.util.WebElementUtils;
 import com.kms.katalon.objectspy.util.Win32Helper;
 import com.kms.katalon.objectspy.util.WinRegistry;
 import com.kms.katalon.objectspy.websocket.AddonCommand;
@@ -155,13 +180,19 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     private static final String RECORD_TOOL_ITEM_LABEL = StringConstants.DIA_TOOLITEM_RECORD;
 
-    private static final int HORIZONTAL_SASH_FORM_WIDTH = 5;
+    private static final int HORIZONTAL_SASH_FORM_WIDTH = 2;
+
+    private static final String RECORD_SESSION_ID;
 
     private static Point MIN_DIALOG_SIZE = new Point(600, 800);
 
+    static {
+        RECORD_SESSION_ID = UUID.randomUUID().toString();
+    }
+
     private HTMLElementRecorderServer server;
 
-    private Logger logger;
+    private Logger logger = LoggerSingleton.getInstance().getLogger();
 
     private List<WebPage> elements;
 
@@ -179,15 +210,13 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     private SaveToObjectRepositoryDialogResult targetFolderSelectionResult;
 
-    private CapturedObjectsView capturedObjectComposite;
-
     private WebUIDriverType selectedBrowser;
 
     private Text txtStartUrl;
 
     private AddonSocket currentInstantSocket;
 
-    private IEventBroker eventBroker;
+    private IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
 
     private ScopedPreferenceStore store;
 
@@ -199,25 +228,44 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     private ObjectPropertiesView objectPropertiesView;
 
+    private CapturedObjectsView capturedObjectComposite;
+
+    private CTabFolder bottomTabFolder;
+
+    private int logTabItemIdex;
+
+    private List<? extends ASTNodeWrapper> nodeWrappers;
+
+    private List<VariableEntity> variables;
+
     /**
      * Create the dialog.
      * 
      * @param parentShell
      */
-    public RecorderDialog(Shell parentShell, Logger logger, IEventBroker eventBroker) {
+    public RecorderDialog(Shell parentShell, List<? extends ASTNodeWrapper> nodeWrappers,
+            List<VariableEntity> variables) {
         super(parentShell);
         store = PreferenceStoreManager.getPreferenceStore(RecorderPreferenceConstants.WEBUI_RECORDER_QUALIFIER);
         setDialogTitle(GlobalMessageConstants.WEB_RECORDER);
-        this.logger = logger;
         elements = new ArrayList<>();
         recordedActions = new ArrayList<HTMLActionMapping>();
         isPausing = false;
         disposed = false;
-        this.eventBroker = eventBroker;
+        registerEventListener();
+        startSocketServer();
+        this.nodeWrappers = nodeWrappers;
+        this.variables = variables;
+    }
+
+    private void registerEventListener() {
         eventBroker.subscribe(EventConstants.RECORDER_HTML_ACTION_CAPTURED, this);
         eventBroker.subscribe(EventConstants.RECORDER_ACTION_OBJECT_REORDERED, this);
         eventBroker.subscribe(EventConstants.WORKSPACE_CLOSED, this);
-        startSocketServer();
+        eventBroker.subscribe(EventConstants.WEBUI_VERIFICATION_EXECUTION_FINISHED, this);
+        eventBroker.subscribe(EventConstants.WEBUI_VERIFICATION_RUN_ALL_STEPS_CMD, this);
+        eventBroker.subscribe(EventConstants.WEBUI_VERIFICATION_RUN_SELECTED_STEPS_CMD, this);
+        eventBroker.subscribe(EventConstants.WEBUI_VERIFICATION_RUN_FROM_STEP_CMD, this);
     }
 
     @Override
@@ -383,6 +431,17 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         stopRecordSession();
         session = new RecordSession(server, webUiDriverType, ProjectController.getInstance().getCurrentProject(),
                 logger, txtStartUrl.getText());
+        session.addBrowserStoppedListener(new BrowserStoppedListener() {
+
+            @Override
+            public void onBrowserStopped() {
+                UISynchronizeService.syncExec(() -> {
+                    if (getShell() != null && !getShell().isDisposed()) {
+                        stop();
+                    }
+                });
+            }
+        });
         new Thread(session).start();
     }
 
@@ -527,7 +586,6 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
         ObjectVerifyAndHighlightView verifyView = new ObjectVerifyAndHighlightView();
         verifyView.createVerifyAndHighlightView(parent, GridData.FILL_HORIZONTAL);
-        capturedObjectComposite.setInput(elements);
 
         capturedObjectComposite.addListener(objectPropertiesView,
                 Arrays.asList(ObjectSpyEvent.SELECTED_ELEMENT_CHANGED));
@@ -621,18 +679,24 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         recordStepsView = new RecordedStepsView();
         recordStepsView.createContent(tableComposite);
 
-        CTabFolder bottomTabFolder = new CTabFolder(compositeSteps, SWT.NONE);
+        bottomTabFolder = new CTabFolder(compositeSteps, SWT.NONE);
 
         CTabItem variablesTabItem = new CTabItem(bottomTabFolder, SWT.NONE);
         variablesTabItem.setText("Variables");
-        Composite cp = recordStepsView.createVariableTab(bottomTabFolder);
-        cp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        variablesTabItem.setControl(cp);
-        
+        Composite variablesViewComposite = recordStepsView.createVariableTab(bottomTabFolder);
+        variablesViewComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        variablesTabItem.setControl(variablesViewComposite);
+
         CTabItem logTabItem = new CTabItem(bottomTabFolder, SWT.NONE);
         logTabItem.setText("Logs");
 
+        RecordedLogView logsView = new RecordedLogView();
+        Composite logsViewComposite = logsView.createLogsView(bottomTabFolder);
+        logTabItem.setControl(logsViewComposite);
+
         bottomTabFolder.setSelection(variablesTabItem);
+
+        logTabItemIdex = bottomTabFolder.indexOf(logTabItem);
 
         compositeSteps.setWeights(new int[] { 60, 40 });
 
@@ -642,23 +706,20 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     private ToolItem tltmAddStep, tltmRemoveStep, tltmUp, tltmDown, tltmRecent;
 
+    private ToolItem tltmPlay;
+
+    private boolean sendingState;
+
     private void createStepButtons(Composite compositeSteps) {
         Composite compositeToolbars = new Composite(compositeSteps, SWT.NONE);
         compositeToolbars.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        GridLayout layout = new GridLayout(1, false);
+        GridLayout layout = new GridLayout(2, false);
         layout.marginWidth = 0;
         layout.marginHeight = 0;
         compositeToolbars.setLayout(layout);
 
-        Composite compositeTableButtons = new Composite(compositeToolbars, SWT.NONE);
-        GridLayout glCompositeTableButtons = new GridLayout(4, false);
-        glCompositeTableButtons.marginHeight = 0;
-        glCompositeTableButtons.marginWidth = 0;
-        compositeTableButtons.setLayout(glCompositeTableButtons);
-        compositeTableButtons.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-
-        ToolBarManager toolBarManager = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
-        ToolBar toolbar = toolBarManager.createControl(compositeTableButtons);
+        ToolBar toolbar = new ToolBar(compositeToolbars, SWT.FLAT | SWT.RIGHT);
+        toolbar.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
         SelectionListener selectionListener = new SelectionAdapter() {
             @Override
@@ -704,6 +765,110 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         tltmDown.setText(StringConstants.DIA_ITEM_MOVE_DOWN);
         tltmDown.setImage(ImageConstants.IMG_16_MOVE_DOWN);
         tltmDown.addSelectionListener(selectionListener);
+
+        ToolBar playToolbar = new ToolBar(compositeToolbars, SWT.FLAT | SWT.RIGHT);
+        playToolbar.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
+        tltmPlay = new ToolItem(playToolbar, SWT.DROP_DOWN);
+        tltmPlay.setImage(ImageConstants.IMG_24_PLAY);
+        tltmPlay.addSelectionListener(selectionListener);
+
+        setPlayButtonState(false);
+    }
+
+    private void createRunScripContextMenu() {
+        if (tltmPlay.getData() instanceof Menu) {
+            ((Menu) tltmPlay.getData()).dispose();
+        }
+        Rectangle rect = tltmPlay.getBounds();
+
+        ToolBar playToolbar = tltmPlay.getParent();
+        Point pt = playToolbar.toDisplay(new Point(rect.x + rect.width, rect.y));
+
+        Menu playMenu = new Menu(playToolbar);
+        playMenu.setLocation(pt.x, pt.y + rect.height);
+        playMenu.setVisible(true);
+        playToolbar.setMenu(playMenu);
+
+        tltmPlay.setData(playMenu);
+
+        MenuItem runAllStepsItem = new MenuItem(playMenu, SWT.CHECK);
+        runAllStepsItem.setText(ControlUtils.createMenuItemText("Run all steps",
+                KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "E" })));
+        runAllStepsItem.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                runAllSteps();
+            }
+        });
+        runAllStepsItem.setSelection(true);
+
+        MenuItem runSelectedSteps = new MenuItem(playMenu, SWT.PUSH);
+        runSelectedSteps.setText(ControlUtils.createMenuItemText("Run selected steps",
+                KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, IKeyLookup.ALT_NAME, "E" })));
+        runSelectedSteps.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                runSelectedSteps();
+            }
+        });
+        if (recordStepsView.getTreeTable().getStructuredSelection().isEmpty()) {
+            runSelectedSteps.setEnabled(false);
+        }
+
+        MenuItem runFromSelectedStep = new MenuItem(playMenu, SWT.PUSH);
+        runFromSelectedStep.setText(ControlUtils.createMenuItemText("Run from selected step",
+                KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, IKeyLookup.SHIFT_NAME, "E" })));
+        runFromSelectedStep.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                runFromStep();
+            }
+        });
+        if (recordStepsView.getTreeTable().getStructuredSelection().isEmpty()) {
+            runFromSelectedStep.setEnabled(false);
+        }
+    }
+
+    private void runFromStep() {
+        ScriptNodeWrapper cloneScript = recordStepsView.getWrapper().clone();
+        cloneScript.setMainBlock(cloneScript.getBlock().clone());
+        BlockStatementWrapper block = cloneScript.getBlock();
+        block.clearStaments();
+        for (ASTNodeWrapper node : recordStepsView.getTreeTableInput().getNodeWrappersFromFirstSelected()) {
+            block.addChild(node.clone());
+        }
+        executeSelectedSteps(cloneScript);
+    }
+
+    private void runAllSteps() {
+        executeSelectedSteps(recordStepsView.getWrapper());
+    }
+
+    private void runSelectedSteps() {
+        ScriptNodeWrapper cloneScript = recordStepsView.getWrapper().clone();
+        cloneScript.setMainBlock(cloneScript.getBlock().clone());
+        BlockStatementWrapper block = cloneScript.getBlock();
+        block.clearStaments();
+        for (ASTNodeWrapper node : recordStepsView.getTreeTableInput().getSelectedNodeWrappers()) {
+            block.addChild(node.clone());
+        }
+        executeSelectedSteps(cloneScript);
+    }
+
+    public void setPlayButtonState(boolean sendingState) {
+        this.sendingState = sendingState;
+        if (this.sendingState) {
+            tltmPlay.setText("Stop");
+            tltmPlay.setImage(ImageConstants.IMG_24_STOP);
+        } else {
+            tltmPlay.setImage(ImageConstants.IMG_24_PLAY);
+            tltmPlay.setText("Run");
+        }
+        tltmPlay.getParent().getParent().layout(true, true);
+    }
+
+    public boolean getSendingState() {
+        return sendingState;
     }
 
     private void setRecentKeywordItemState() {
@@ -713,7 +878,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     public void performToolItemSelected(ToolItem toolItem, SelectionEvent selectionEvent) {
         getTreeTable().applyEditorValue();
         if (toolItem.equals(tltmAddStep)) {
-            openToolItemMenu(toolItem, selectionEvent);
+            openToolItemForAddMenu(toolItem, selectionEvent);
             return;
         }
         if (toolItem.equals(tltmRemoveStep)) {
@@ -726,10 +891,76 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         }
         if (toolItem.equals(tltmDown)) {
             getTreeTableInput().moveDown();
+            return;
         }
         if (toolItem.equals(tltmRecent)) {
             openRecentKeywordItems();
+            return;
         }
+        if (toolItem.equals(tltmPlay)) {
+            openToolItemForRunMenu(toolItem, selectionEvent);
+            return;
+        }
+    }
+
+    private RecordingScriptGenerator generator;
+
+    private void executeSelectedSteps(ScriptNodeWrapper nodeWrapper) {
+        if (sendingState) {
+            if (generator != null) {
+                generator.stopLauncher();
+            }
+            setPlayButtonState(false);
+            return;
+        }
+        setPlayButtonState(true);
+        if (session == null || session.getWebDriver() == null || !session.isRunning()) {
+            startBrowser();
+        }
+
+        Job job = new Job("Running Recorded Steps") {
+
+            @Override
+            protected IStatus run(IProgressMonitor monitor) {
+                try {
+                    while (session == null || session.getWebDriver() == null || !session.isRunning()) {
+                        Thread.sleep(200L);
+                    }
+                    UISynchronizeService.syncExec(() -> {
+                        pause();
+                        bottomTabFolder.setSelection(logTabItemIdex);
+                    });
+                    // Saved captured object to temporary directory and put it in RunConfigration as a property
+                    // to let the ObjectRepository.findTestObject can recognize captured objects instead of saved
+                    // objects.
+                    File recordSessionFolder = new File(ProjectController.getInstance().getTempDir(),
+                            "record/" + RECORD_SESSION_ID);
+                    recordSessionFolder.mkdirs();
+
+                    File capturedObjectsFile = new File(recordSessionFolder, "captured_objects.json");
+                    Map<String, TestObject> capturedObjectsCache = new HashMap<>();
+                    for (WebElement we : capturedObjectComposite.flattenWebElements()) {
+                        capturedObjectsCache.put(we.getScriptId(), WebElementUtils.buildTestObject(we));
+                    }
+                    FileUtils.write(capturedObjectsFile, JsonUtil.toJson(capturedObjectsCache));
+
+                    // Generate script and execute
+                    generator = new RecordingScriptGenerator(capturedObjectsFile.getAbsolutePath());
+                    StringBuilder stringBuilder = new StringBuilder();
+
+                    new GroovyWrapperParser(stringBuilder).parseGroovyAstIntoScript(nodeWrapper);
+                    generator.execute(stringBuilder.toString(), Arrays.asList(recordStepsView.getVariables()),
+                            session.getWebDriver(), session.getWebUiDriverType(),
+                            ProjectController.getInstance().getCurrentProject());
+                    return Status.OK_STATUS;
+                } catch (Exception ex) {
+                    UISynchronizeService.syncExec(() -> setPlayButtonState(false));
+                    return Status.CANCEL_STATUS;
+                }
+            }
+
+        };
+        job.schedule();
     }
 
     private Menu recentMenu;
@@ -803,7 +1034,6 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 break;
             case TreeTableMenuItemConstants.PASTE_MENU_ITEM_ID:
                 getTreeTableInput().paste(getTreeTableInput().getSelectedNode(), addType);
-                ;
                 break;
             case TreeTableMenuItemConstants.REMOVE_MENU_ITEM_ID:
                 getTreeTableInput().removeSelectedRows();
@@ -824,7 +1054,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         return recordStepsView.getTreeTableInput();
     }
 
-    private void openToolItemMenu(ToolItem toolItem, SelectionEvent selectionEvent) {
+    private void openToolItemForAddMenu(ToolItem toolItem, SelectionEvent selectionEvent) {
         if (selectionEvent.detail == SWT.ARROW && toolItem.getData() instanceof Menu) {
             Rectangle rect = toolItem.getBounds();
             Point pt = toolItem.getParent().toDisplay(new Point(rect.x, rect.y));
@@ -833,6 +1063,14 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             menu.setVisible(true);
         } else {
             recordStepsView.getTreeTableInput().addNewDefaultBuiltInKeyword(NodeAddType.Add);
+        }
+    }
+
+    private void openToolItemForRunMenu(ToolItem toolItem, SelectionEvent selectionEvent) {
+        if (selectionEvent.detail == SWT.ARROW) {
+            createRunScripContextMenu();
+        } else {
+            executeSelectedSteps(recordStepsView.getWrapper());
         }
     }
 
@@ -1159,13 +1397,15 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         }
     }
 
+    @SuppressWarnings("unchecked")
     private boolean addElementToObjectRepository(Shell shell) throws Exception {
         TreeViewer capturedTreeViewer = capturedObjectComposite.getTreeViewer();
         if (capturedTreeViewer.getTree().getItemCount() == 0) {
             return true;
         }
         SaveToObjectRepositoryDialog addToObjectRepositoryDialog = new SaveToObjectRepositoryDialog(shell, true,
-                getCloneCapturedObjects(elements), capturedTreeViewer.getExpandedElements());
+                getCloneCapturedObjects((List<WebPage>) capturedTreeViewer.getInput()),
+                capturedTreeViewer.getExpandedElements());
         if (addToObjectRepositoryDialog.open() != Window.OK) {
             return false;
         }
@@ -1391,6 +1631,17 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             case EventConstants.WORKSPACE_CLOSED:
                 cancelPressed();
                 return;
+            case EventConstants.WEBUI_VERIFICATION_EXECUTION_FINISHED:
+                setPlayButtonState(false);
+                return;
+            case EventConstants.WEBUI_VERIFICATION_RUN_ALL_STEPS_CMD:
+                runAllSteps();
+                return;
+            case EventConstants.WEBUI_VERIFICATION_RUN_SELECTED_STEPS_CMD:
+                runSelectedSteps();
+            case EventConstants.WEBUI_VERIFICATION_RUN_FROM_STEP_CMD:
+                runFromStep();
+
         }
     }
 
@@ -1412,7 +1663,115 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     @Override
     protected void setInput() {
-        // Do nothing for this
+        recordStepsView.addVariables(variables.toArray(new VariableEntity[variables.size()]));
+
+        Map<String, List<RecordedElementMethodCallWrapper>> keywordNodeMaps = getTestObjectReferences(nodeWrappers);
+
+        Map<String, WebElement> webElementIndex = new HashMap<>();
+        Map<String, WebPage> pageIndex = new HashMap<>();
+
+        List<WebElementEntity> webElementEntities = keywordNodeMaps.keySet().stream().map(testObjectId -> {
+            try {
+                return ObjectRepositoryController.getInstance().getWebElementByDisplayPk(testObjectId);
+            } catch (Exception ex) {
+                return null;
+            }
+        }).filter(we -> we != null).collect(Collectors.toList());
+        for (WebElementEntity entity : webElementEntities) {
+            FolderEntity folder = entity.getParentFolder();
+            WebPage webPage = pageIndex.getOrDefault(folder.getIdForDisplay(), null);
+            if (webPage == null) {
+                webPage = new WebPage(folder.getName());
+                pageIndex.put(folder.getIdForDisplay(), webPage);
+            }
+
+            WebElement we = webElementIndex.getOrDefault(entity.getIdForDisplay(), null);
+            if (we == null) {
+                we = WebElementUtils.createWebElementFromTestObject(entity, false, webPage, webElementIndex);
+            }
+
+            for (RecordedElementMethodCallWrapper refNode : keywordNodeMaps.get(entity.getIdForDisplay())) {
+                refNode.setWebElement(we);
+            }
+        }
+
+        recordStepsView.getTreeTableInput().addNewAstObjects(nodeWrappers, null, NodeAddType.Add);
+        recordStepsView.getTreeTableInput().refresh();
+
+        List<WebPage> allPages = pageIndex.entrySet().stream().map(e -> e.getValue()).collect(Collectors.toList());
+        elements = new ArrayList<>();
+        elements.addAll(allPages);
+        capturedObjectComposite.setInput(elements);
+        capturedObjectComposite.refreshTree(null);
+    }
+
+    private Map<String, List<RecordedElementMethodCallWrapper>> getTestObjectReferences(ASTNodeWrapper wrapper) {
+        if (wrapper instanceof RecordedElementMethodCallWrapper) {
+            return Collections.emptyMap();
+        }
+        Map<String, List<RecordedElementMethodCallWrapper>> keywordNodeIndex = new HashMap<>();
+        if (wrapper.hasAstChildren() && wrapper.getAstChildren() != null) {
+            merge(keywordNodeIndex, getTestObjectReferences(wrapper.getAstChildren()));
+        }
+        if (wrapper.getInput() instanceof MethodCallExpressionWrapper) {
+            MethodCallExpressionWrapper methodCall = (MethodCallExpressionWrapper) wrapper.getInput();
+            if (!methodCall.isFindTestObjectMethodCall()) {
+                return keywordNodeIndex;
+            }
+            String testObjectId = AstEntityInputUtil.getEntityRelativeIdFromMethodCall(methodCall);
+
+            try {
+                testObjectId = testObjectId.startsWith("Object Repository/") ? testObjectId
+                        : "Object Repository/" + testObjectId;
+                WebElementEntity entity = ObjectRepositoryController.getInstance()
+                        .getWebElementByDisplayPk(testObjectId);
+                if (entity != null) {
+                    List<RecordedElementMethodCallWrapper> refNodes = keywordNodeIndex
+                            .getOrDefault(entity.getIdForDisplay(), null);
+                    if (refNodes == null) {
+                        refNodes = new ArrayList<>();
+                    }
+                    RecordedElementMethodCallWrapper newWrapper = new RecordedElementMethodCallWrapper(
+                            wrapper.getParent(), null);
+
+                    wrapper.getParent().replaceChild(wrapper, newWrapper);
+                    refNodes.add(newWrapper);
+                    keywordNodeIndex.put(entity.getIdForDisplay(), refNodes);
+                }
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+            }
+        } else if (wrapper.getInput() instanceof ArgumentListExpressionWrapper) {
+            ArgumentListExpressionWrapper argumentList = (ArgumentListExpressionWrapper) wrapper.getInput();
+            merge(keywordNodeIndex, getTestObjectReferences(argumentList.getAstChildren()));
+        }
+        return keywordNodeIndex;
+
+    }
+
+    private void merge(Map<String, List<RecordedElementMethodCallWrapper>> keywordNodeIndex,
+            Map<String, List<RecordedElementMethodCallWrapper>> childNodeMap) {
+        childNodeMap.entrySet().stream().forEach(e -> {
+            String objectId = e.getKey();
+            List<RecordedElementMethodCallWrapper> newAstNodes = e.getValue();
+            if (keywordNodeIndex.containsKey(objectId)) {
+                List<RecordedElementMethodCallWrapper> currentAstNodes = keywordNodeIndex.get(objectId);
+                currentAstNodes.addAll(newAstNodes);
+                keywordNodeIndex.put(objectId, currentAstNodes);
+            } else {
+                keywordNodeIndex.put(objectId, newAstNodes);
+            }
+        });
+    }
+
+    private Map<String, List<RecordedElementMethodCallWrapper>> getTestObjectReferences(
+            List<? extends ASTNodeWrapper> nodes) {
+        Map<String, List<RecordedElementMethodCallWrapper>> keywordNodeIndex = new HashMap<>();
+        for (ASTNodeWrapper wrapper : nodes) {
+            Map<String, List<RecordedElementMethodCallWrapper>> childNodeMap = getTestObjectReferences(wrapper);
+            merge(keywordNodeIndex, childNodeMap);
+        }
+        return keywordNodeIndex;
     }
 
     private Map<ObjectSpyEvent, Set<EventListener<ObjectSpyEvent>>> eventListeners = new HashMap<>();
@@ -1432,5 +1791,9 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             listenerOnEvent.add(listener);
             eventListeners.put(e, listenerOnEvent);
         });
+    }
+
+    public VariableEntity[] getVariables() {
+        return recordStepsView.getVariables();
     }
 }

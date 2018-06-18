@@ -1,9 +1,13 @@
 package com.kms.katalon.composer.webui.recorder.dialog;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.jface.bindings.keys.IKeyLookup;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -14,20 +18,30 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
+import org.openqa.selenium.Keys;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.control.CTreeViewer;
+import com.kms.katalon.composer.components.impl.util.KeyEventUtil;
 import com.kms.katalon.composer.components.util.ColumnViewerUtil;
 import com.kms.katalon.composer.testcase.ast.treetable.AstBuiltInKeywordTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
+import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput;
@@ -46,6 +60,7 @@ import com.kms.katalon.composer.webui.recorder.ast.RecordedElementMethodCallWrap
 import com.kms.katalon.composer.webui.recorder.dialog.provider.CapturedElementEditingSupport;
 import com.kms.katalon.composer.webui.recorder.util.HTMLActionUtil;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.objectspy.dialog.CapturedObjectsView;
@@ -54,6 +69,8 @@ import com.kms.katalon.objectspy.element.WebElement;
 import com.kms.katalon.util.listener.EventListener;
 
 public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpyEvent> {
+    
+    private IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
 
     private TestCaseTreeTableInput treeTableInput;
 
@@ -74,6 +91,7 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
     public RecordedStepsView() {
         wrapper = new ScriptNodeWrapper();
         wrapper.addDefaultImports();
+        wrapper.addImport(Keys.class);
     }
     
     public void setCapturedObjectsView(CapturedObjectsView capturedObjectsView) {
@@ -130,6 +148,9 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
                 }
             }
         });
+        
+        
+        createTreeTableMenu();
 
         return compositeTable;
     }
@@ -163,7 +184,7 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
 
     @Override
     public TestCaseEntity getTestCase() {
-        return null;
+        return new TestCaseEntity();
     }
 
     @Override
@@ -173,7 +194,6 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
 
     @Override
     public void addVariables(VariableEntity[] variables) {
-        // TODO Auto-generated method stub
         variableView.addVariable(variables);
     }
 
@@ -226,6 +246,7 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
         treeTableInput.addNewAstObject(wrapper, null, NodeAddType.Add);
         treeViewer.refresh();
         treeViewer.setSelection(new StructuredSelection(getLatestNode()));
+        createTreeTableMenu();
     }
 
     private boolean preventDuplicatedActions(HTMLActionMapping newAction, AstBuiltInKeywordTreeTableNode latestNode,
@@ -291,6 +312,22 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
         return null;
     }
 
+    public List<AstTreeTableNode> getNodes() {
+        TreeItem[] items = treeViewer.getTree().getItems();
+        if (items == null || items.length == 0) {
+            return Collections.emptyList();
+        }
+        
+        List<AstTreeTableNode> nodes = new ArrayList<>();
+        for (TreeItem i : items) {
+            if (i.getData() instanceof AstTreeTableNode) {
+                nodes.add((AstTreeTableNode) i.getData());
+            }
+        }
+        
+        return nodes;
+    }
+
 
     @Override
     public void handleEvent(ObjectSpyEvent event, Object object) {
@@ -316,5 +353,229 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
         gl.marginWidth = 0;
         gl.marginHeight = 0;
         return component;
+    }
+    
+    public void removeTestStep() {
+        boolean hasSelection = !treeViewer.getStructuredSelection().isEmpty();
+        if (hasSelection) {
+            treeTableInput.removeSelectedRows();
+        }
+    }
+
+    public void copyTestStep() {
+        boolean hasSelection = !treeViewer.getStructuredSelection().isEmpty();
+        if (hasSelection) {
+            treeTableInput.copy(treeTableInput.getSelectedNodes());
+        }
+    }
+
+    public void cutTestStep() {
+        boolean hasSelection = !treeViewer.getStructuredSelection().isEmpty();
+        if (hasSelection) {
+            treeTableInput.cut(treeTableInput.getSelectedNodes());
+        }
+    }
+
+    public void pasteTestStep() {
+        if (treeTableInput.canPaste()) {
+            treeTableInput.paste(treeTableInput.getSelectedNode(), NodeAddType.Add);
+        }
+    }
+    
+    private void runFromFirstSelectedStep() {
+        boolean hasSelection = !treeViewer.getStructuredSelection().isEmpty();
+        if (hasSelection) {
+            eventBroker.post(EventConstants.WEBUI_VERIFICATION_RUN_FROM_STEP_CMD, null);
+        }
+    }
+
+    private void runSelectedSteps() {
+        boolean hasSelection = !treeViewer.getStructuredSelection().isEmpty();
+        if (hasSelection) {
+            eventBroker.post(EventConstants.WEBUI_VERIFICATION_RUN_SELECTED_STEPS_CMD, null);
+        }
+    }
+    
+    private void runAllSteps() {
+        eventBroker.post(EventConstants.WEBUI_VERIFICATION_RUN_ALL_STEPS_CMD, null);
+    }
+
+    private void createTreeTableMenu() {
+        final Tree tree = treeViewer.getTree();
+        tree.addListener(SWT.MenuDetect, new Listener() {
+
+            private SelectionListener selectionListener = new SelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    if (!(e.widget instanceof MenuItem)) {
+                        return;
+                    }
+                    MenuItem item = (MenuItem) e.widget;
+                    switch (item.getID()) {
+                        case TreeTableMenuItemConstants.COPY_MENU_ITEM_ID:
+                            copyTestStep();
+                            break;
+                        case TreeTableMenuItemConstants.CUT_MENU_ITEM_ID:
+                            cutTestStep();
+                            break;
+                        case TreeTableMenuItemConstants.PASTE_MENU_ITEM_ID:
+                            pasteTestStep();
+                            break;
+                        case TreeTableMenuItemConstants.REMOVE_MENU_ITEM_ID:
+                            removeTestStep();
+                            break;
+                        case TreeTableMenuItemConstants.ENABLE_MENU_ITEM_ID:
+                            getTreeTableInput().enable();
+                            break;
+                        case TreeTableMenuItemConstants.DISABLE_MENU_ITEM_ID:
+                            getTreeTableInput().disable();
+                            break;
+                        case TreeTableMenuItemConstants.RUN_FROM_THIS_STEP_ID:
+                            runFromFirstSelectedStep();
+                            break;
+                        case TreeTableMenuItemConstants.RUN_SELECTED_STEPS_ID:
+                            runAllSteps();
+                            break;
+                    }
+                }
+            };
+            private String createMenuItemLabel(String text, String keyCombination) {
+                return text + "\t" + keyCombination; //$NON-NLS-1$
+            }
+            @Override
+            public void handleEvent(org.eclipse.swt.widgets.Event event) {
+                Menu menu = tree.getMenu();
+                if (menu != null) {
+                    menu.dispose();
+                }
+
+                boolean hasSelection = tree.getSelectionCount() > 0;
+                menu = new Menu(tree);
+
+                MenuItem runFromThisStepMenuItem = new MenuItem(menu, SWT.PUSH);
+                runFromThisStepMenuItem.setText(createMenuItemLabel("Run from here",
+                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, IKeyLookup.SHIFT_NAME, "E" })));
+                runFromThisStepMenuItem.addSelectionListener(selectionListener);
+                runFromThisStepMenuItem.setID(TreeTableMenuItemConstants.RUN_FROM_THIS_STEP_ID);
+                runFromThisStepMenuItem.setEnabled(hasSelection);
+
+                MenuItem runSelectedStepsMenuItem = new MenuItem(menu, SWT.PUSH);
+                runSelectedStepsMenuItem.setText(createMenuItemLabel("Run selected steps",
+                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, IKeyLookup.ALT_NAME, "E" })));
+                runSelectedStepsMenuItem.addSelectionListener(selectionListener);
+                runSelectedStepsMenuItem.setID(TreeTableMenuItemConstants.RUN_SELECTED_STEPS_ID);
+                runSelectedStepsMenuItem.setEnabled(hasSelection);
+
+                new MenuItem(menu, SWT.SEPARATOR);
+
+                MenuItem removeMenuItem = new MenuItem(menu, SWT.PUSH);
+                removeMenuItem.setText(createMenuItemLabel(GlobalStringConstants.DELETE,
+                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.DEL_NAME })));
+                removeMenuItem.addSelectionListener(selectionListener);
+                removeMenuItem.setID(TreeTableMenuItemConstants.REMOVE_MENU_ITEM_ID);
+                removeMenuItem.setEnabled(hasSelection);
+
+                MenuItem copyMenuItem = new MenuItem(menu, SWT.PUSH);
+                copyMenuItem.setText(createMenuItemLabel(GlobalStringConstants.COPY,
+                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "C" }))); //$NON-NLS-1$
+                copyMenuItem.addSelectionListener(selectionListener);
+                copyMenuItem.setID(TreeTableMenuItemConstants.COPY_MENU_ITEM_ID);
+                copyMenuItem.setEnabled(hasSelection);
+
+                MenuItem cutMenuItem = new MenuItem(menu, SWT.PUSH);
+                cutMenuItem.setText(createMenuItemLabel(GlobalStringConstants.CUT,
+                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "X" }))); //$NON-NLS-1$
+                cutMenuItem.addSelectionListener(selectionListener);
+                cutMenuItem.setID(TreeTableMenuItemConstants.CUT_MENU_ITEM_ID);
+                cutMenuItem.setEnabled(hasSelection);
+
+                MenuItem pasteMenuItem = new MenuItem(menu, SWT.PUSH);
+                pasteMenuItem.setText(createMenuItemLabel(GlobalStringConstants.PASTE,
+                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "V" }))); //$NON-NLS-1$
+                pasteMenuItem.addSelectionListener(selectionListener);
+                pasteMenuItem.setID(TreeTableMenuItemConstants.PASTE_MENU_ITEM_ID);
+                pasteMenuItem.setEnabled(getTreeTableInput().canPaste());
+                
+                tree.setMenu(menu);
+
+//                addFailureHandlingSubMenu(menu);
+//;
+                new MenuItem(menu, SWT.SEPARATOR);
+
+                MenuItem disableMenuItem = new MenuItem(menu, SWT.PUSH);
+                disableMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_DISABLE,
+                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "/" }))); //$NON-NLS-1$
+                disableMenuItem.addSelectionListener(selectionListener);
+                disableMenuItem.setID(TreeTableMenuItemConstants.DISABLE_MENU_ITEM_ID);
+                disableMenuItem.setEnabled(hasSelection);
+
+                MenuItem enableMenuItem = new MenuItem(menu, SWT.PUSH);
+                enableMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_ENABLE,
+                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.ALT_NAME, IKeyLookup.M1_NAME, "/" }))); //$NON-NLS-1$
+                enableMenuItem.addSelectionListener(selectionListener);
+                enableMenuItem.setID(TreeTableMenuItemConstants.ENABLE_MENU_ITEM_ID);
+                enableMenuItem.setEnabled(hasSelection);
+            }
+        });
+        
+        tree.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                // Delete
+                if (e.keyCode == SWT.DEL) {
+                    removeTestStep();
+                    return;
+                }
+
+                if (((e.stateMask & SWT.MOD1) == SWT.MOD1)) {
+                    // Copy
+                    if (e.keyCode == 'c') {
+                        copyTestStep();
+                        return;
+                    }
+
+                    // Cut
+                    if (e.keyCode == 'x') {
+                        cutTestStep();
+                        return;
+                    }
+
+                    // Paste
+                    if (e.keyCode == 'v') {
+                        pasteTestStep();
+                        return;
+                    }
+
+                    // Enable
+                    if (e.keyCode == '/' && ((e.stateMask & SWT.ALT) == SWT.ALT)) {
+                        treeTableInput.enable();
+                        return;
+                    }
+
+                    // Disable
+                    if (e.keyCode == '/') {
+                        treeTableInput.disable();
+                        return;
+                    }
+
+                    // Run selected steps
+                    if (e.keyCode == 'e' && ((e.stateMask & SWT.ALT) == SWT.ALT)) {
+                        runSelectedSteps();
+                        return;
+                    }
+
+                    // Run from first selected steps
+                    if (e.keyCode == 'e' && ((e.stateMask & SWT.SHIFT) == SWT.SHIFT)) {
+                        runFromFirstSelectedStep();
+                        return;
+                    }
+
+                    if (e.keyCode == 'e') {
+                        runAllSteps();
+                    }
+                }
+            }
+        });
+        
     }
 }

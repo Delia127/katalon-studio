@@ -335,7 +335,9 @@ public class JobViewerPart implements EventHandler {
     private void draw() {
         try {
             for (ILauncher launcher : LauncherManager.getInstance().getAllLaunchers()) {
-                createJobComposite(listCompositeLauncher, (IDEObservableLauncher) launcher);
+                if (launcher instanceof IDEObservableLauncher) {
+                    createJobComposite(listCompositeLauncher, (IDEObservableLauncher) launcher);
+                }
             }
         } catch (Exception e) {
             LoggerSingleton.logError(e);
