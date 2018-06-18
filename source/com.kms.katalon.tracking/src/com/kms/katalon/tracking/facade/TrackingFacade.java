@@ -11,6 +11,7 @@ import com.kms.katalon.application.usagetracking.TrackingEvent;
 import com.kms.katalon.application.usagetracking.UsageActionTrigger;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.core.event.EventBusSingleton;
+import com.kms.katalon.tracking.core.TrackingManager;
 import com.kms.katalon.tracking.event.subscriber.GenerateCommandEventSubscriber;
 import com.kms.katalon.tracking.event.subscriber.KatalonOpenFirstTimeEventSubscriber;
 import com.kms.katalon.tracking.event.subscriber.KatalonStudioTrackEventSubscriber;
@@ -33,13 +34,14 @@ public class TrackingFacade {
     }
     
     public void scheduleCollectingStatistics(RunningMode runningMode) {
+        int trackingTime = TrackingManager.getInstance().getTrackingTime();
         Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
             EventBus eventBus = EventBusSingleton.getInstance().getEventBus();
             eventBus.post(new TrackingEvent(UsageActionTrigger.COLLECT_STATISTICS, new HashMap<String, Object>() {{
                 put("isAnonymous", !ActivationInfoCollector.isActivated());
                 put("runningMode", runningMode.getMode());
             }}));
-        }, 30, 30, TimeUnit.MINUTES);
+        }, trackingTime, trackingTime, TimeUnit.SECONDS);
     }
 
     public void registerSubscribers() {

@@ -27,7 +27,9 @@ Require-Bundle: com.kms.katalon.entity,
  com.kms.katalon.composer.components,
  org.greenrobot.eventbus,
  com.google.gson,
- com.kms.katalon.execution.webui
+ com.kms.katalon.execution.webui,
+ org.eclipse.core.runtime,
+ net.sf.jopt-simple.jopt-simple
 Export-Package: com.kms.katalon.tracking.collector,
  com.kms.katalon.tracking.event.subscriber,
  com.kms.katalon.tracking.facade,
