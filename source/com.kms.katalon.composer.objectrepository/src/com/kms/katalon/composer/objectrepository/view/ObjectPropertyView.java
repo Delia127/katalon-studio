@@ -29,6 +29,7 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -37,6 +38,7 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -381,19 +383,21 @@ public class ObjectPropertyView implements EventHandler {
         });
     }
 
-    private void createTestObjectDetailsComposite(Composite parent) {
+    private Composite createTestObjectDetailsComposite(Composite parent) {
         Composite compositeObjectDetails = new Composite(parent, SWT.NONE);
         compositeObjectDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
         GridLayout glCompositeObjectDetails = new GridLayout(1, false);
         glCompositeObjectDetails.verticalSpacing = 15;
         glCompositeObjectDetails.marginHeight = 0;
+        glCompositeObjectDetails.marginWidth = 10;
         compositeObjectDetails.setLayout(glCompositeObjectDetails);
-        compositeObjectDetails.setBackground(ColorUtil.getCompositeBackgroundColor());
 
         createSettingsComposite(compositeObjectDetails);
 
         createObjectPropertiesComposite(compositeObjectDetails);
+        
+        return compositeObjectDetails;
     }
 
     private void createObjectPropertiesComposite(Composite parent) {
@@ -437,7 +441,7 @@ public class ObjectPropertyView implements EventHandler {
 
         txtSelectorEditor = new StyledText(c, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
         GridData gdSelectorEditor = new GridData(SWT.FILL, SWT.FILL, true, true);
-        gdSelectorEditor.minimumHeight = 80;
+        gdSelectorEditor.heightHint = 100;
         txtSelectorEditor.setLayoutData(gdSelectorEditor);
     }
 
@@ -778,13 +782,18 @@ public class ObjectPropertyView implements EventHandler {
     }
 
     private void createControlGroup(Composite parent) {
-        Composite mainComposite = new Composite(parent, SWT.NONE);
+        ScrolledComposite mainComposite = new ScrolledComposite(parent, SWT.V_SCROLL);
         GridLayout glMainComposite = new GridLayout(1, false);
         glMainComposite.verticalSpacing = 10;
         mainComposite.setLayout(glMainComposite);
 
-        createTestObjectDetailsComposite(mainComposite);
+        Composite testObjectDetailsComposite = createTestObjectDetailsComposite(mainComposite);
 
+        mainComposite.setContent(testObjectDetailsComposite);
+        mainComposite.setMinSize(new Point(900, 750));
+        mainComposite.setExpandVertical(true);
+        mainComposite.setExpandHorizontal(true);
+        
         hookControlSelectListerners();
     }
 
