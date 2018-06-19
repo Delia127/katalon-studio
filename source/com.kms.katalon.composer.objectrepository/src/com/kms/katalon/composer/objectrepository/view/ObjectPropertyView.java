@@ -389,7 +389,7 @@ public class ObjectPropertyView implements EventHandler {
 
         GridLayout glCompositeObjectDetails = new GridLayout(1, false);
         glCompositeObjectDetails.verticalSpacing = 15;
-        glCompositeObjectDetails.marginHeight = 0;
+        glCompositeObjectDetails.marginHeight = 5;
         glCompositeObjectDetails.marginWidth = 10;
         compositeObjectDetails.setLayout(glCompositeObjectDetails);
 
@@ -782,7 +782,7 @@ public class ObjectPropertyView implements EventHandler {
     }
 
     private void createControlGroup(Composite parent) {
-        ScrolledComposite mainComposite = new ScrolledComposite(parent, SWT.V_SCROLL);
+        ScrolledComposite mainComposite = new ScrolledComposite(parent, SWT.V_SCROLL | SWT.H_SCROLL);
         GridLayout glMainComposite = new GridLayout(1, false);
         glMainComposite.verticalSpacing = 10;
         mainComposite.setLayout(glMainComposite);
