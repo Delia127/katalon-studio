@@ -5,7 +5,14 @@ public enum UsageActionTrigger {
     OPEN_APPLICATION("openApplication"),
     SAVE("save"),
     SAVE_ALL("saveAll"),
-    RUN_SCRIPT("runScript");    
+    RUN_SCRIPT("runScript"),
+    SPY("spy"),
+    RECORD("record"),
+    EXECUTE_TEST_CASE("executeTestCase"),
+    EXECUTE_TEST_SUITE("executeTestSuite"),
+    EXECUTE_TEST_SUITE_COLLECTION("executeTestSuiteCollection"),
+    GENERATE_CMD("generateCommand"),
+    COLLECT_STATISTICS("collectStatistics");
 
     private final String action;
 

@@ -90,9 +90,12 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.dialogs.ISelectionStatusValidator;
+import org.greenrobot.eventbus.EventBus;
 import org.osgi.framework.Bundle;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.application.usagetracking.TrackingEvent;
+import com.kms.katalon.application.usagetracking.UsageActionTrigger;
 import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
 import com.kms.katalon.composer.components.dialogs.AbstractDialogCellEditor;
 import com.kms.katalon.composer.components.impl.control.Dropdown;
@@ -125,6 +128,7 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.GlobalMessageConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.event.EventBusSingleton;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
 import com.kms.katalon.objectspy.constants.ObjectspyMessageConstants;
@@ -304,6 +308,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             tltmStop.setEnabled(true);
             resume();
             resetInput();
+            sendEventForTracking();
         } catch (final IEAddonNotInstalledException e) {
             stop();
             showMessageForMissingIEAddon();
@@ -317,6 +322,11 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             logger.error(e);
             MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE, e.getMessage());
         }
+    }
+    
+    private void sendEventForTracking() {
+        EventBus eventBus = EventBusSingleton.getInstance().getEventBus();
+        eventBus.post(new TrackingEvent(UsageActionTrigger.RECORD, "web"));
     }
 
     private void startInstantSession() throws Exception {
