@@ -21,7 +21,6 @@ import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
-import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.graphics.Rectangle;
@@ -32,28 +31,21 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
-import com.kms.katalon.composer.components.impl.handler.WorkbenchUtilizer;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
-import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
-import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
-import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.BlockStatementWrapper;
-import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
 import com.kms.katalon.composer.testcase.handlers.NewTestCaseHandler;
-import com.kms.katalon.composer.testcase.handlers.OpenTestCaseHandler;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
 import com.kms.katalon.composer.testcase.parts.TestCaseCompositePart;
 import com.kms.katalon.composer.testcase.parts.TestCasePart;
 import com.kms.katalon.composer.webui.recorder.action.HTMLActionMapping;
 import com.kms.katalon.composer.webui.recorder.constants.StringConstants;
 import com.kms.katalon.composer.webui.recorder.dialog.RecorderDialog;
-import com.kms.katalon.composer.webui.recorder.util.HTMLActionUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FolderController;
@@ -210,20 +202,6 @@ public class RecordHandler {
                                     testCasePart.addDefaultImports();
                                     testCasePart.getTreeTableInput().getMainClassNode().addImport(Keys.class);
 
-                                    // add open browser keyword at the beginning of generated steps
-                                    String webUiKwAliasName = HTMLActionUtil.getWebUiKeywordClass().getAliasName();
-                                    MethodCallExpressionWrapper openBrowserExpressionWrapper = new MethodCallExpressionWrapper(
-                                            webUiKwAliasName, "openBrowser", wrapper);
-                                    ArgumentListExpressionWrapper arguments = openBrowserExpressionWrapper
-                                            .getArguments();
-                                    arguments.addExpression(new ConstantExpressionWrapper(""));
-                                    children.add(0, new ExpressionStatementWrapper(openBrowserExpressionWrapper));
-
-                                    // add close browser keyword at the end of generated steps
-                                    MethodCallExpressionWrapper closeBrowserExpressionWrapper = new MethodCallExpressionWrapper(
-                                            webUiKwAliasName, "closeBrowser", wrapper);
-                                    children.add(new ExpressionStatementWrapper(closeBrowserExpressionWrapper));
-
                                     // append generated steps at the end of test case's steps
                                     testCasePart.addStatements(children, NodeAddType.Add, true);
                                     testCasePart.addVariables(variables);
@@ -331,6 +309,7 @@ public class RecordHandler {
 
     private void addRecordedElement(WebElement element, FolderEntity parentFolder,
             SaveToObjectRepositoryDialogResult folderSelectionResult) throws Exception {
+        // Replace test object name with it's linked WebElementEntity
         FileEntity entity = folderSelectionResult.getEntitySavedMap().entrySet().stream().filter(e -> {
             WebElement savedElement = e.getKey();
             WebPage savedRoot = savedElement.getRoot();
@@ -341,7 +320,10 @@ public class RecordHandler {
             return savedElement.getName().equals(element.getName()) && root != null
                     && savedRoot.getName().equals(root.getName());
         }).map(e -> e.getValue()).findFirst().orElse(null);
-        element.setName(entity.getName());
+        // If the entity doesn't exist that means user doesn't want to create new WebElementEntity
+        if (entity != null) {
+            element.setName(entity.getName());
+        }
         if (element instanceof WebFrame) {
             for (WebElement childElement : ((WebFrame) element).getChildren()) {
                 addRecordedElement(childElement, parentFolder, folderSelectionResult);

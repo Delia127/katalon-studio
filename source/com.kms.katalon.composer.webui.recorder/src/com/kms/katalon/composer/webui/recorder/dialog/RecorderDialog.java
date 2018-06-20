@@ -317,6 +317,9 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 startRecordSession(selectedBrowser);
                 invoke(ObjectSpyEvent.SELENIUM_SESSION_STARTED, session);
             }
+            if (!isPausing) {
+                recordStepsView.addSimpleKeyword("openBrowser");
+            }
 
             tltmPause.setEnabled(true);
             tltmStop.setEnabled(true);
@@ -436,7 +439,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             @Override
             public void onBrowserStopped() {
                 UISynchronizeService.syncExec(() -> {
-                    if (getShell() != null && !getShell().isDisposed()) {
+                    if (getShell() != null && !getShell().isDisposed() && session.isRunning()) {
                         stop();
                     }
                 });
@@ -708,7 +711,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     private ToolItem tltmPlay;
 
-    private boolean sendingState;
+    private boolean playingState;
 
     private void createStepButtons(Composite compositeSteps) {
         Composite compositeToolbars = new Composite(compositeSteps, SWT.NONE);
@@ -856,8 +859,8 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     }
 
     public void setPlayButtonState(boolean sendingState) {
-        this.sendingState = sendingState;
-        if (this.sendingState) {
+        this.playingState = sendingState;
+        if (this.playingState) {
             tltmPlay.setText("Stop");
             tltmPlay.setImage(ImageConstants.IMG_24_STOP);
         } else {
@@ -868,7 +871,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     }
 
     public boolean getSendingState() {
-        return sendingState;
+        return playingState;
     }
 
     private void setRecentKeywordItemState() {
@@ -906,13 +909,14 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     private RecordingScriptGenerator generator;
 
     private void executeSelectedSteps(ScriptNodeWrapper nodeWrapper) {
-        if (sendingState) {
+        if (playingState) {
             if (generator != null) {
                 generator.stopLauncher();
             }
             setPlayButtonState(false);
             return;
         }
+        pause();
         setPlayButtonState(true);
         if (session == null || session.getWebDriver() == null || !session.isRunning()) {
             startBrowser();
@@ -1258,6 +1262,9 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     public void stop() {
         try {
+            if (!isPausing) {
+                recordStepsView.addSimpleKeyword("closeBrowser");
+            }
             stopServer();
             stopRecordSession();
             closeInstantSession();
@@ -1639,9 +1646,10 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 return;
             case EventConstants.WEBUI_VERIFICATION_RUN_SELECTED_STEPS_CMD:
                 runSelectedSteps();
+                return;
             case EventConstants.WEBUI_VERIFICATION_RUN_FROM_STEP_CMD:
                 runFromStep();
-
+                return;
         }
     }
 

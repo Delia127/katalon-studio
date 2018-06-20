@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.webui.recorder.dialog;
 
+import java.io.UnsupportedEncodingException;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,12 +39,16 @@ import org.openqa.selenium.Keys;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.control.CTreeViewer;
 import com.kms.katalon.composer.components.impl.util.KeyEventUtil;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColumnViewerUtil;
 import com.kms.katalon.composer.testcase.ast.treetable.AstBuiltInKeywordTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
@@ -56,16 +62,19 @@ import com.kms.katalon.composer.testcase.support.ItemColumnEditingSupport;
 import com.kms.katalon.composer.testcase.support.OutputColumnEditingSupport;
 import com.kms.katalon.composer.webui.recorder.action.HTMLAction;
 import com.kms.katalon.composer.webui.recorder.action.HTMLActionMapping;
+import com.kms.katalon.composer.webui.recorder.action.HTMLActionParamValueType;
 import com.kms.katalon.composer.webui.recorder.ast.RecordedElementMethodCallWrapper;
 import com.kms.katalon.composer.webui.recorder.dialog.provider.CapturedElementEditingSupport;
 import com.kms.katalon.composer.webui.recorder.util.HTMLActionUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
+import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.objectspy.dialog.CapturedObjectsView;
 import com.kms.katalon.objectspy.dialog.ObjectSpyEvent;
 import com.kms.katalon.objectspy.element.WebElement;
+import com.kms.katalon.util.CryptoUtil;
 import com.kms.katalon.util.listener.EventListener;
 
 public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpyEvent> {
@@ -151,6 +160,8 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
         
         
         createTreeTableMenu();
+        
+        treeViewer.enableTooltipSupport();
 
         return compositeTable;
     }
@@ -236,7 +247,12 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
     private void addNode(HTMLActionMapping newAction) throws ClassNotFoundException {
         AstBuiltInKeywordTreeTableNode latestNode = getLatestNode();
         WebElement targetElement = newAction.getTargetElement();
-
+        if (targetElement != null) {
+            WebElementPropertyEntity property = targetElement.getProperty("type");
+            if (property != null && "password".equals(property.getValue())) {
+                secureSetTextAction(newAction);
+            }
+        }
         ExpressionStatementWrapper wrapper = (ExpressionStatementWrapper) HTMLActionUtil
                 .generateWebUiTestStep(newAction, targetElement, treeTableInput.getMainClassNode());
         if (targetElement != null && latestNode instanceof AstBuiltInKeywordTreeTableNode
@@ -246,7 +262,18 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
         treeTableInput.addNewAstObject(wrapper, null, NodeAddType.Add);
         treeViewer.refresh();
         treeViewer.setSelection(new StructuredSelection(getLatestNode()));
-        createTreeTableMenu();
+    }
+
+    private void secureSetTextAction(HTMLActionMapping newAction) {
+        newAction.setAction(HTMLAction.SetEncryptedText);
+        HTMLActionParamValueType passwordParam = newAction.getData()[0];
+        ConstantExpressionWrapper stringWrapper = (ConstantExpressionWrapper) passwordParam.getValue();
+        String password = stringWrapper.getValueAsString();
+        try {
+            stringWrapper.setValue(CryptoUtil.encode(CryptoUtil.getDefault(password)));
+        } catch (UnsupportedEncodingException | GeneralSecurityException e) {
+            LoggerSingleton.logError(e);
+        }
     }
 
     private boolean preventDuplicatedActions(HTMLActionMapping newAction, AstBuiltInKeywordTreeTableNode latestNode,
@@ -285,7 +312,9 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
 
     private boolean preventAddMultiSetTextAction(String latestKeywordName, String newActionName) {
         return HTMLAction.SetText.getMappedKeywordMethod().equals(latestKeywordName)
-                && HTMLAction.SetText.getName().equals(newActionName);
+                && HTMLAction.SetText.getName().equals(newActionName)
+                || HTMLAction.SetEncryptedText.getMappedKeywordMethod().equals(latestKeywordName)
+                && HTMLAction.SetEncryptedText.getName().equals(newActionName);
     }
 
     public AstBuiltInKeywordTreeTableNode getLatestNode() {
@@ -327,7 +356,18 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
         
         return nodes;
     }
-
+    
+    public void addSimpleKeyword(String keywordName) {
+        String webUiKwAliasName = HTMLActionUtil.getWebUiKeywordClass().getAliasName();
+        MethodCallExpressionWrapper methodCallExpressionWrapper = new MethodCallExpressionWrapper(webUiKwAliasName,
+                keywordName, treeTableInput.getMainClassNode());
+        ArgumentListExpressionWrapper arguments = methodCallExpressionWrapper.getArguments();
+        arguments.addExpression(new ConstantExpressionWrapper(""));
+        ExpressionStatementWrapper openBrowserStmt = new ExpressionStatementWrapper(methodCallExpressionWrapper);
+        treeTableInput.addNewAstObject(openBrowserStmt, null, NodeAddType.Add);
+        treeViewer.refresh();
+        treeViewer.setSelection(new StructuredSelection(getLatestNode()));
+    }
 
     @Override
     public void handleEvent(ObjectSpyEvent event, Object object) {
@@ -337,7 +377,6 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
                 break;
             case SELENIUM_SESSION_STARTED:
             case ADDON_SESSION_STARTED:
-                //addOpenBrowserKeyword();
                 //reset window ID
                 windowId = "";
                 break;
@@ -434,7 +473,7 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
                             runFromFirstSelectedStep();
                             break;
                         case TreeTableMenuItemConstants.RUN_SELECTED_STEPS_ID:
-                            runAllSteps();
+                            runSelectedSteps();
                             break;
                     }
                 }
