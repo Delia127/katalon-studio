@@ -65,4 +65,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String MEGABYTES_UNIT = ComposerWebserviceMessageConstants.MEGABYTES_UNIT;
     public static final String MSG_SPECIFIED_FILE_NOT_EXIST_WARN = ComposerWebserviceMessageConstants.MSG_SPECIFIED_FILE_NOT_EXIST_WARN;
     public static final String LBL_FILE_SIZE = ComposerWebserviceMessageConstants.LBL_FILE_SIZE;
+
+    public static final String MENU_ITEM_TEST_REQUEST_AND_VERIFY = ComposerWebserviceMessageConstants.MENU_ITEM_TEST_REQUEST_AND_VERIFY;
 }

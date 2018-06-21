@@ -12,6 +12,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String ERROR_TITLE = ERROR;
 
     public static final String HAND_SAVE_DIA_MSG = MessageConstants.HAND_SAVE_DIA_MSG;
+    
+    public static final String HAND_SAVE_ALL_DIA_MSG = MessageConstants.HAND_SAVE_ALL_DIA_MSG;
 
     // GeneralPreferencePage
     public static final String PAGE_GRP_ON_NEXT_STARTING_APP = MessageConstants.PAGE_GRP_ON_NEXT_STARTING_APP;

@@ -14,11 +14,13 @@ import com.kms.katalon.execution.entity.WSVerificationTestCaseExecutedEntity;
 import com.kms.katalon.execution.launcher.VerificationScriptLauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.ILauncherResult;
-import com.kms.katalon.execution.util.ExecutionProfileFactory;
+import com.kms.katalon.execution.util.ExecutionProfileStore;
 
 public class VerificationScriptExecutor {
     
     private static final String WS_VERIFICATION = "WSVerification_";
+    
+    private String executorId = String.valueOf(System.currentTimeMillis()); //unique id for each executor instance
     
     private IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
     
@@ -26,26 +28,32 @@ public class VerificationScriptExecutor {
     
     private WSVerificationTestCaseEntity testCaseEntity;
     
-    public void execute(String script, ResponseObject responseObject) throws Exception {
+    public void execute(String testObjectId, String script, ResponseObject responseObject) throws Exception {
+        
         testCaseEntity = createTestCaseEntity(script, responseObject);
         
-        WSVerificationRunConfiguration runConfig = new WSVerificationRunConfiguration(responseObject);
-        runConfig.setExecutionProfile(ExecutionProfileFactory.getInstance().getSelectedProfile());
+        WSVerificationRunConfiguration runConfig = new WSVerificationRunConfiguration(testObjectId, responseObject);
+        runConfig.setExecutionProfile(ExecutionProfileStore.getInstance().getSelectedProfile());
 
         runConfig.build(testCaseEntity, new WSVerificationTestCaseExecutedEntity(testCaseEntity));
 
         LauncherManager launcherManager = LauncherManager.getInstance();
-        launcher = new VerificationScriptLauncher(launcherManager, runConfig, new Runnable() {
+        launcher = new VerificationScriptLauncher(testObjectId, launcherManager, runConfig, new Runnable() {
             
             @Override
             public void run() {
                 ILauncherResult result = launcher.getResult();
                 TestStatusValue[] statusValues = result.getResultValues();
                 
-                eventBroker.post(EventConstants.WS_VERIFICATION_EXECUTION_FINISHED, statusValues[0]);
+                eventBroker.post(EventConstants.WS_VERIFICATION_EXECUTION_FINISHED,
+                        new Object[]{ testObjectId, statusValues[0]});
             }
         });
         launcherManager.addLauncher(launcher);
+    }
+    
+    public String getExecutorId() {
+        return executorId;
     }
     
     private WSVerificationTestCaseEntity createTestCaseEntity(String script, ResponseObject responseObject) throws Exception {
