@@ -296,8 +296,12 @@ public class StringConstants {
     public static final String CUSTOM_KEYWORD_CLASS_NAME = "CustomKeywords"; 
  
     public static final String GLOBAL_VARIABLE_CLASS_NAME = "GlobalVariable"; 
+    
+    public static final String INTERNAL_GLOBAL_VARIABLE_CLASS_NAME = "internal.GlobalVariable";
  
-    public static final String GLOBAL_VARIABLE_FILE_NAME = GENERATED_SCRIPT_FOLDER + File.separator + "GlobalVariable." + SCRIPT_FILE_EXT; 
+    public static final String GLOBAL_VARIABLE_FILE_NAME = GENERATED_SCRIPT_FOLDER + File.separator + "GlobalVariable." + SCRIPT_FILE_EXT;
+    
+    public static final String INTERNAL_GLOBAL_VARIABLE_FILE_NAME = GENERATED_SCRIPT_FOLDER + File.separator + "internal" + File.separator + "GlobalVariable." + SCRIPT_FILE_EXT;
 
     // TestDataFactory
     public static final String XML_LOG_TEST_DATA_CHECKING_TEST_DATA_ID = CoreMessageConstants.XML_LOG_TEST_DATA_CHECKING_TEST_DATA_ID;
