@@ -37,3 +37,5 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: com.kms.katalon.composer.integration.analytics.constants,
  com.kms.katalon.composer.integration.analytics.dialog
+Import-Package: com.kms.katalon.application.constants,
+ com.kms.katalon.application.utils

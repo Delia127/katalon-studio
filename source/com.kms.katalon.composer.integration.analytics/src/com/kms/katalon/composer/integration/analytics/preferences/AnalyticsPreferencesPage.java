@@ -380,6 +380,8 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                 String serverUrl = txtServerUrl.getText();
                 String email = txtEmail.getText();
                 String password = txtPassword.getText();
+                cbbTeams.setItems();
+                cbbProjects.setItems();
 
                 teams = getTeams(serverUrl, email, password, false);
                 if (teams != null && !teams.isEmpty()) {
@@ -394,7 +396,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                     cbbProjects.setItems(getProjectNames(projects).toArray(new String[projects.size()]));
                     cbbProjects.select(getDefaultProjectIndex());
                 }
-
             }
         });
 

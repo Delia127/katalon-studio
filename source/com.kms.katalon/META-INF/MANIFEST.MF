@@ -65,10 +65,11 @@ Require-Bundle: org.eclipse.e4.core.di,
  com.kms.katalon.application,
  org.apache.commons.compress,
  com.kms.katalon.core.webui,
- com.kms.katalon.core.appium
+ com.kms.katalon.core.appium,
+ com.kms.katalon.util
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
-Import-Package: com.kms.katalon.util,
+Import-Package: 
  javax.annotation,
  javax.inject;version="1.0.0",
  org.eclipse.e4.core.services.log,

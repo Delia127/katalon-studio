@@ -366,17 +366,30 @@ public class ComposerTestcaseMessageConstants extends NLS {
     public static String BTN_COPY_AND_CLOSE;
     
     public static String BTN_CANCEL;
-    
-  //Authentication Dialog    
+        
+    //Authentication Dialog    
     public static String LBL_EMAIL;
     
     public static String LBL_SERVER_URL;
     
     public static String LBL_PASSWORD;
     
-    public static String AUTHENTICATION_DIALOG_TITLE;
+    public static String LBL_INFORMATION;
     
-    public static String BTN_LOGIN;
+    public static String LBL_POLICY;
+    
+    public static String INTEGRATION_DIALOG_TITLE;
+    
+    public static String BTN_CONNECT;
+   
+    //UploadSelection Dialog
+    public static String BTN_UPLOAD;
+    
+    public static String ANALYTICS_DOCUMENTATION_LINK;
+    
+    public static String SELECTION_DIALOG_TITLE;
+    
+    public static String LBL_SELECTION_INFORMATION;
     
     static {
         // initialize resource bundle

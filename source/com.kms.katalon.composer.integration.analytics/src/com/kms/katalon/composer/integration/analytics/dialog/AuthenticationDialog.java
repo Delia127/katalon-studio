@@ -1,80 +1,102 @@
 package com.kms.katalon.composer.integration.analytics.dialog;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
-import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.integration.analytics.constants.ComposerAnalyticsStringConstants;
-import com.kms.katalon.composer.integration.analytics.constants.ComposerIntegrationAnalyticsMessageConstants;
+import com.kms.katalon.composer.resources.constants.IImageKeys;
+import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
-import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
-import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
-import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 
 public class AuthenticationDialog extends Dialog {
 
-    private Text email;
+    public static final int CONNECT_ID = 2;
 
+    public static final int CANCEL_ID = 3;
+
+    private Text email;
+    
     private Text password;
 
     private Text serverUrl;
+    
+    private Label lblHelp;
 
-    private Button btnLogin;
+    private Button btnConnect;
 
     private Button btnCancel;
 
     private AnalyticsSettingStore analyticsSettingStore;
 
-    private List<AnalyticsTeam> teams = new ArrayList<>();
+    private boolean showPassword;
 
-    private AuthenticationDialog(Shell parentShell) {
+    public AuthenticationDialog(Shell parentShell, boolean showPassword) {
         super(parentShell);
         analyticsSettingStore = new AnalyticsSettingStore(
                 ProjectController.getInstance().getCurrentProject().getFolderLocation());
+        this.showPassword = showPassword;
     }
 
-    public static AuthenticationDialog createDefault(Shell parentShell) {
-        return new AuthenticationDialog(parentShell);
+
+    @Override
+    protected void createButtonsForButtonBar(Composite parent) {
+        btnConnect = createButton(parent, CONNECT_ID, StringConstants.BTN_CONNECT, true);
+        btnCancel = createButton(parent, CANCEL_ID, StringConstants.BTN_CANCEL, false);
+        enableLogin();
+        addControlListeners();
     }
 
     @Override
     protected Control createDialogArea(Composite parent) {
         Composite body = new Composite(parent, SWT.NONE);
         GridData bodyGridData = new GridData(SWT.FILL, SWT.FILL, true, true);
-        bodyGridData.widthHint = 400;
+        bodyGridData.widthHint = 500;
         body.setLayoutData(bodyGridData);
         body.setLayout(new GridLayout(1, false));
 
+        Composite infoComposite = new Composite(body, SWT.NONE);
+        infoComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        infoComposite.setLayout(new GridLayout(2, false));
+
+        Label lblInformation = new Label(infoComposite, SWT.WRAP);
+        lblInformation.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, true, false, 1, 1));
+        lblInformation.setText(StringConstants.LBL_INFORMATION);
+
+        lblHelp = new Label(infoComposite, SWT.NONE);
+        GridData gdLblHelp = new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1);
+        lblHelp.setLayoutData(gdLblHelp);
+        lblHelp.setImage(ImageManager.getImage(IImageKeys.HELP_16));
+        lblHelp.setCursor(Display.getDefault().getSystemCursor(SWT.CURSOR_HAND));
+
         Composite inputComposite = new Composite(body, SWT.NONE);
-        inputComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        inputComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         inputComposite.setLayout(new GridLayout(2, false));
 
         Label lblServerUrl = new Label(inputComposite, SWT.NONE);
@@ -82,39 +104,48 @@ public class AuthenticationDialog extends Dialog {
         serverUrl = new Text(inputComposite, SWT.BORDER);
         serverUrl.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
-        Label lblusername = new Label(inputComposite, SWT.NONE);
-        lblusername.setText(StringConstants.LBL_EMAIL);
+        Label lblUsername = new Label(inputComposite, SWT.NONE);
+        lblUsername.setText(StringConstants.LBL_EMAIL);
         email = new Text(inputComposite, SWT.BORDER);
         email.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-
-        Label lblpassword = new Label(inputComposite, SWT.NONE);
-        lblpassword.setText(StringConstants.LBL_PASSWORD);
+      
+        Label lblPassword = new Label(inputComposite, SWT.NONE);
+        lblPassword.setText(StringConstants.LBL_PASSWORD);
+        GridData gdLblPassword = new GridData(SWT.FILL, SWT.FILL, false, false);
+        lblPassword.setLayoutData(gdLblPassword);
         password = new Text(inputComposite, SWT.PASSWORD + SWT.BORDER);
-        password.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        GridData gdPassword = new GridData(SWT.FILL, SWT.FILL, true, false);
+        password.setLayoutData(gdPassword);
 
-        Composite buttonComposite = new Composite(body, SWT.NONE);
-        buttonComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, false));
-        buttonComposite.setLayout(new GridLayout(2, false));
-
-        btnLogin = new Button(buttonComposite, SWT.FLAT);
-        btnLogin.setText(StringConstants.BTN_LOGIN);
-        btnLogin.setEnabled(false);
-
-        btnCancel = new Button(buttonComposite, SWT.FLAT);
-        btnCancel.setText(StringConstants.BTN_CANCEL);
+        Link linkPolicy = new Link(body, SWT.WRAP);
+        linkPolicy.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        linkPolicy.setText(StringConstants.LBL_POLICY);
+        linkPolicy.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+                Program.launch(event.text);
+            }
+        });
 
         try {
             serverUrl.setText(analyticsSettingStore.getServerEndpoint(true));
-            email.setText(analyticsSettingStore.getEmail(true));
             password.setText(analyticsSettingStore.getPassword(true));
+            if (analyticsSettingStore.getEmail(true).equals(StringUtils.EMPTY)) {
+                email.setText(ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL));
+            } else {
+                email.setText(analyticsSettingStore.getEmail(true));
+            }
         } catch (IOException e) {
             LoggerSingleton.logError(e);
         } catch (GeneralSecurityException e) {
             LoggerSingleton.logError(e);
         }
 
-        enableLogin();
-        addControlListeners();
+        gdLblPassword.exclude = !showPassword;
+        lblPassword.setVisible(showPassword);
+        gdPassword.exclude = !showPassword;
+        password.setVisible(showPassword);
+        
         return body;
     }
 
@@ -148,10 +179,10 @@ public class AuthenticationDialog extends Dialog {
             }
         });
 
-        btnLogin.addSelectionListener(new SelectionAdapter() {
+        btnConnect.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                handleLogin();
+               handleConnect();
             }
         });
 
@@ -161,11 +192,13 @@ public class AuthenticationDialog extends Dialog {
                 cancelPressed();
             }
         });
-    }
-
-    @Override
-    protected Control createButtonBar(Composite parent) {
-        return parent;
+        
+        lblHelp.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseUp(MouseEvent e) {
+                Program.launch(StringConstants.ANALYTICS_DOCUMENTATION_LINK);
+            }
+        });
     }
 
     @Override
@@ -176,88 +209,30 @@ public class AuthenticationDialog extends Dialog {
     @Override
     protected void configureShell(Shell shell) {
         super.configureShell(shell);
-        shell.setText(StringConstants.AUTHENTICATION_DIALOG_TITLE);
+        shell.setText(StringConstants.INTEGRATION_DIALOG_TITLE);
     }
 
     private void enableLogin() {
         if (!StringUtils.isBlank(email.getText()) && !StringUtils.isBlank(password.getText())) {
-            btnLogin.setEnabled(true);
+            btnConnect.setEnabled(true);
         } else {
-            btnLogin.setEnabled(false);
+            btnConnect.setEnabled(false);
         }
     }
 
-    private void handleLogin() {
-        try {
-            String emailText = email.getText();
-            String passwordText = password.getText();
-            new ProgressMonitorDialog(getShell()).run(true, false, new IRunnableWithProgress() {
-                @Override
-                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                    try {
-                        monitor.beginTask("Requesting token...", 2);
-                        monitor.subTask(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_CONNECTING_TO_SERVER);
-                        // updateDataStore(emailText, passwordText);
-                        UISynchronizeService.syncExec(() -> updateDataStore(emailText, passwordText));
-                        final AnalyticsTokenInfo tokenInfo = AnalyticsApiProvider
-                                .requestToken(analyticsSettingStore.getServerEndpoint(true), emailText, passwordText);
-
-                        // monitor.worked(1);
-                        // monitor.subTask(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_GETTING_TEAMS);
-                        // final List<AnalyticsTeam> loaded =
-                        // AnalyticsApiProvider.getTeams(serverUrl,
-                        // tokenInfo.getAccess_token());
-                        // if (loaded != null && !loaded.isEmpty()) {
-                        // teams.addAll(loaded);
-                        // }
-                        // open Push dialog here
-                        // monitor.worked(1);
-                        // closeDialog();
-                        System.out.println("correct");
-                    } catch (Exception e) {
-                        throw new InvocationTargetException(e);
-                    } finally {
-                        monitor.done();
-                    }
-                }
-            });
-        } catch (InvocationTargetException exception) {
-            final Throwable cause = exception.getCause();
-            if (cause instanceof AnalyticsApiExeception) {
-                MessageDialog.openError(getShell(), ComposerAnalyticsStringConstants.ERROR, cause.getMessage());
-            } else {
-                LoggerSingleton.logError(cause);
-            }
-        } catch (InterruptedException e) {
-            // Ignore this
-        }
+    private void handleConnect() {
+        String emailText = email.getText();
+        String passwordText = password.getText();
+        updateDataStore(emailText, passwordText);
+        closeDialog();
     }
 
     private void handleEnteredUsername() {
         enableLogin();
-        // String enteredEmail = email.getText();
-        // if (!StringUtils.isEmpty(enteredEmail)) {
-        // try {
-        //
-        // } catch (Exception e) {
-        // LoggerSingleton.logError(e);
-        // }
-        // } else {
-        // }
-
     }
 
     private void handleEnteredPassword() {
         enableLogin();
-        // String enteredPassword = password.getText();
-        // if (!StringUtils.isEmpty(enteredPassword)) {
-        // try {
-        //
-        // } catch (Exception e) {
-        // LoggerSingleton.logError(e);
-        // }
-        // } else {
-        // }
     }
 
     private void closeDialog() {

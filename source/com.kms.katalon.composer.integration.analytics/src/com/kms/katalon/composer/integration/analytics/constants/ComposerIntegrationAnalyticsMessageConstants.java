@@ -72,7 +72,16 @@ public class ComposerIntegrationAnalyticsMessageConstants extends NLS {
     public static String MSG_DLG_PRG_RETRIEVING_TEAMS;
 
     public static String MSG_DLG_PRG_GETTING_TEAMS;
-
+    
+    public static String REPORT_MSG_UPLOADING_TO_ANALYTICS;
+    
+    public static String REPORT_MSG_UPLOADING_TO_ANALYTICS_SENDING;
+    
+    public static String REPORT_MSG_UPLOADING_TO_ANALYTICS_SUCCESSFULLY;
+    
+    public static String REPORT_ERROR_MSG_UNABLE_TO_UPLOAD_REPORT;
+    
+   
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerIntegrationAnalyticsMessageConstants.class);
