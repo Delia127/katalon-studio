@@ -97,6 +97,10 @@ public class RecordHandler {
     @Execute
     public void execute() {
         Shell shell = null;
+        Shell activeShell = Display.getCurrent().getActiveShell();
+        if (activeShell == null) {
+            return;
+        }
         try {
             TestCaseCompositePart testCaseCompositePart = getSelectedTestCasePart();
             if (testCaseCompositePart != null && !verifyTestCase(testCaseCompositePart)) {
@@ -115,7 +119,7 @@ public class RecordHandler {
                 variables = testCaseCompositePart.getTestCase().clone().getVariables();
             }
             if (recordDialog == null || recordDialog.isDisposed()) {
-                shell = getShell(Display.getCurrent().getActiveShell());
+                shell = getShell(activeShell);
                 recordDialog = new RecorderDialog(shell, wrapper, variables);
             } else {
                 recordDialog.getShell().forceActive();
@@ -136,7 +140,7 @@ public class RecordHandler {
             doGenerateTestScripts(testCaseCompositePart, folderSelectionResult, recordedActions, recordedElements,
                     recordDialog.getScriptWrapper(), recordDialog.getVariables(), shouldOverride);
         } catch (Exception e) {
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
+            MessageDialog.openError(activeShell, StringConstants.ERROR_TITLE,
                     StringConstants.HAND_ERROR_MSG_CANNOT_GEN_TEST_STEPS);
             LoggerSingleton.logError(e);
         } finally {

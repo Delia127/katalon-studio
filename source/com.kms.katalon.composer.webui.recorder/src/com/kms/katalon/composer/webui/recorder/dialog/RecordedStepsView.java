@@ -43,6 +43,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColumnViewerUtil;
 import com.kms.katalon.composer.testcase.ast.treetable.AstBuiltInKeywordTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
+import com.kms.katalon.composer.testcase.components.KeywordTreeViewerToolTipSupport;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
@@ -57,6 +58,7 @@ import com.kms.katalon.composer.testcase.parts.TestCaseVariableView;
 import com.kms.katalon.composer.testcase.providers.AstTreeItemLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstTreeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstTreeTableContentProvider;
+import com.kms.katalon.composer.testcase.support.DescriptionColumnEditingSupport;
 import com.kms.katalon.composer.testcase.support.InputColumnEditingSupport;
 import com.kms.katalon.composer.testcase.support.ItemColumnEditingSupport;
 import com.kms.katalon.composer.testcase.support.OutputColumnEditingSupport;
@@ -133,6 +135,8 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
                 new AstTreeLabelProvider(), new InputColumnEditingSupport(treeViewer, this));
         addTreeTableColumn(treeViewer, treeColumnLayout, StringConstants.PA_COL_OUTPUT, 80, 0,
                 new AstTreeLabelProvider(), new OutputColumnEditingSupport(treeViewer, this));
+        addTreeTableColumn(treeViewer, treeColumnLayout, StringConstants.PA_COL_DESCRIPTION, 100, 0,
+                new AstTreeLabelProvider(), new DescriptionColumnEditingSupport(treeViewer, this));
 
         treeViewer.setContentProvider(new AstTreeTableContentProvider());
 
@@ -158,10 +162,11 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
             }
         });
         
-        
+
         createTreeTableMenu();
-        
+
         treeViewer.enableTooltipSupport();
+        KeywordTreeViewerToolTipSupport.enableFor(treeViewer);
 
         return compositeTable;
     }

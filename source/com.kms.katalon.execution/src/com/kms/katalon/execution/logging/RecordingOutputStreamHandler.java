@@ -17,10 +17,13 @@ public class RecordingOutputStreamHandler extends Thread implements IOutputStrea
     
     private IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
     
-    private InputStream is;
+    private final InputStream is;
     
-    private RecordingOutputStreamHandler(InputStream is) {
+    private final OutputType type;
+    
+    private RecordingOutputStreamHandler(InputStream is, OutputType type) {
         this.is = is;
+        this.type = type;
     }
     
     public void run() {
@@ -31,7 +34,7 @@ public class RecordingOutputStreamHandler extends Thread implements IOutputStrea
             br = new BufferedReader(isr);
             String line = null;
             while ((line = br.readLine()) != null) {
-                eventBroker.post(EventConstants.WEBUI_VERIFICATION_LOG_UPDATED, line);
+                println(line);
             }
         } catch (IOException e) {
             // Stream closed
@@ -42,17 +45,16 @@ public class RecordingOutputStreamHandler extends Thread implements IOutputStrea
     }
     
     public static RecordingOutputStreamHandler outputHandlerFrom(InputStream is) {
-        return new RecordingOutputStreamHandler(is);
+        return new RecordingOutputStreamHandler(is, OutputType.OUTPUT);
     }
     
     public static RecordingOutputStreamHandler errorHandlerFrom(InputStream is) {
-        return new RecordingOutputStreamHandler(is);
+        return new RecordingOutputStreamHandler(is, OutputType.ERROR);
     }
 
     @Override
     public void println(String line) throws IOException {
-        // TODO Auto-generated method stub
-        
+        eventBroker.post(EventConstants.WEBUI_VERIFICATION_LOG_UPDATED, RecordedOutputLine.newInstance(type, line));
     }
 
     @Override
@@ -61,4 +63,31 @@ public class RecordingOutputStreamHandler extends Thread implements IOutputStrea
         
     }
 
+    public static class RecordedOutputLine {
+        private final OutputType type;
+        
+        private final String text;
+        
+        private RecordedOutputLine(OutputType type, String text) {
+            this.type = type;
+            this.text = text;
+        }
+
+        public String getText() {
+            return text;
+        }
+
+        public OutputType getType() {
+            return type;
+        }
+        
+        public static RecordedOutputLine newInstance(OutputType type, String text) {
+            return new RecordedOutputLine(type, text);
+        }
+    }
+    
+    public static enum OutputType {
+        OUTPUT,
+        ERROR
+    }
 }
