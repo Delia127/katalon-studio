@@ -15,6 +15,7 @@ public class StringConstants extends GlobalStringConstants {
     public static final String PA_TITLE_HTTP = ComposerWebserviceMessageConstants.PA_TITLE_HTTP;
     public static final String PA_LBL_HTTP_HEADER = ComposerWebserviceMessageConstants.PA_LBL_HTTP_HEADER;
     public static final String PA_LBL_HTTP_BODY = ComposerWebserviceMessageConstants.PA_LBL_HTTP_BODY;
+    public static final String PA_LBL_VERIFICATION = ComposerWebserviceMessageConstants.PA_LBL_VERIFICATION;
     public static final String VIEW_ERROR_MSG_FAILED_TO_LOAD_OBJ_REPOSITORY = ComposerWebserviceMessageConstants.VIEW_ERROR_MSG_FAILED_TO_LOAD_OBJ_REPOSITORY;
     public static final String PA_TOOLTIP_DOUBLE_CLICK_FOR_QUICK_INSERT = ComposerWebserviceMessageConstants.PA_TOOLTIP_DOUBLE_CLICK_FOR_QUICK_INSERT;
     public static final String PA_URL_W3_HTTP_STATUS = "https://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html";
@@ -52,6 +53,10 @@ public class StringConstants extends GlobalStringConstants {
     public static final String LBL_LOAD_FROM_WSDL = ComposerWebserviceMessageConstants.LBL_LOAD_FROM_WSDL;
     public static final String MSG_CANNOT_PARSE_WSDL = ComposerWebserviceMessageConstants.MSG_CANNOT_PARSE_WSDL;
     public static final String MSG_FETCHING_FROM_WSDL = ComposerWebserviceMessageConstants.MSG_FETCHING_FROM_WSDL;     
+
+
+    public static final String MSG_CANNOT_OPEN_REQUEST = ComposerWebserviceMessageConstants.MSG_CANNOT_OPEN_REQUEST;
+
     public static final String DIA_BTN_BROWSE = BROWSE;
     public static final String LBL_FILE_PATH = ComposerWebserviceMessageConstants.LBL_FILE_PATH;
     
@@ -60,4 +65,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String MEGABYTES_UNIT = ComposerWebserviceMessageConstants.MEGABYTES_UNIT;
     public static final String MSG_SPECIFIED_FILE_NOT_EXIST_WARN = ComposerWebserviceMessageConstants.MSG_SPECIFIED_FILE_NOT_EXIST_WARN;
     public static final String LBL_FILE_SIZE = ComposerWebserviceMessageConstants.LBL_FILE_SIZE;
+
+    public static final String MENU_ITEM_TEST_REQUEST_AND_VERIFY = ComposerWebserviceMessageConstants.MENU_ITEM_TEST_REQUEST_AND_VERIFY;
 }

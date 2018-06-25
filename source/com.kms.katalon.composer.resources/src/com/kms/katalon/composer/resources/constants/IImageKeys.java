@@ -610,5 +610,10 @@ public interface IImageKeys {
     public static final String FULL_SIZE_16 = "full_size_16.png"; //$NON-NLS-1$
     
     // End Common
+    
+    // Conflict status
+    public static final String CONFLICT_ELEMENT_STATUS_16 = "element_conflict_16.png"; //$NON-NLS-1$
+
+    public static final String NEW_ELEMENT_STATUS_16 = "element_new_16.png";
 
 }

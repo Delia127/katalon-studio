@@ -32,7 +32,7 @@ public class TestCase {
     }
     
     public String getGroovyScriptClassName() throws IOException {
-       return TestCaseFactory.getScriptClassNameByTestCaseId(testCaseId);
+        return TestCaseFactory.getScriptClassNameByTestCaseId(testCaseId);
     }
     
     public String getTestCaseId() {

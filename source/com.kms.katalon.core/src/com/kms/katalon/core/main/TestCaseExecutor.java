@@ -133,7 +133,6 @@ public class TestCaseExecutor {
             onSetupError(e);
             return false;
         }
-
         try {
             variableBinding = collectTestCaseVariables();
         } catch (CompilationFailedException e) {

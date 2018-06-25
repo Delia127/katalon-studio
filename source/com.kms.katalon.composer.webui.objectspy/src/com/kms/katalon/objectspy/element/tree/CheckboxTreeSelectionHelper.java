@@ -200,8 +200,12 @@ public class CheckboxTreeSelectionHelper {
     public List<Object> getGrayedElements() {
         return Arrays.asList(viewer.getGrayedElements());
     }
-
-    public void checkAllItems() {
+    /**
+     * checked = true  : Check all items. </br>
+     * checked = false : Uncheck all items.</br>
+     * @param checked
+     */
+    public void setCheckAllItems(boolean checked) {
         Object input = viewer.getInput();
 
         if (input == null) {
@@ -218,15 +222,15 @@ public class CheckboxTreeSelectionHelper {
         }
 
         for (Object item : (List<?>) inputList) {
-            checkItem(item);
+            setCheckItem(item, checked);
         }
     }
 
-    public void checkItem(Object item) {
-        viewer.setChecked(item, true);
+    public void setCheckItem(Object item, boolean checked) {
+        viewer.setChecked(item, checked);
         List<Object> descendants = getDescendants(item);
         for (Object node : descendants) {
-            viewer.setChecked(node, true);
+            viewer.setChecked(node, checked);
         }
     }
 

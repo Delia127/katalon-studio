@@ -1,13 +1,13 @@
 package com.kms.katalon.composer.webui.recorder.handler;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -52,17 +52,13 @@ import com.kms.katalon.composer.webui.recorder.util.HTMLActionUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FolderController;
-import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.file.FileEntity;
-import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.objectspy.dialog.SaveToObjectRepositoryDialog.SaveToObjectRepositoryDialogResult;
 import com.kms.katalon.objectspy.element.WebElement;
-import com.kms.katalon.objectspy.element.WebFrame;
 import com.kms.katalon.objectspy.element.WebPage;
-import com.kms.katalon.objectspy.util.WebElementUtils;
 
 public class RecordHandler {
 
@@ -74,8 +70,6 @@ public class RecordHandler {
 
     @Inject
     private IEventBroker eventBroker;
-
-    private Map<WebElement, FileEntity> entitySavedMap;
 
     @Inject
     private UISynchronize sync;
@@ -132,19 +126,20 @@ public class RecordHandler {
                     StringConstants.HAND_ERROR_MSG_CANNOT_GEN_TEST_STEPS);
             LoggerSingleton.logError(e);
         } finally {
-             if (shell != null && !shell.isDisposed()) {
-                 shell.dispose();
-             }
+            if (shell != null && !shell.isDisposed()) {
+                shell.dispose();
+            }
         }
     }
-    
+
     private Shell getShell(Shell activeShell) {
         if (Platform.OS_WIN32.equals(Platform.getOS())) {
             return null;
         }
         Shell shell = new Shell();
         Rectangle activeShellSize = activeShell.getBounds();
-        shell.setLocation((activeShellSize.width - shell.getBounds().width) / 2, (activeShellSize.height - shell.getBounds().height) / 2);
+        shell.setLocation((activeShellSize.width - shell.getBounds().width) / 2,
+                (activeShellSize.height - shell.getBounds().height) / 2);
         return shell;
     }
 
@@ -259,42 +254,16 @@ public class RecordHandler {
         return true;
     }
 
-    private void addRecordedElement(WebElement element, FolderEntity parentFolder, WebElementEntity refElement)
-            throws Exception {
-        WebElementEntity importedElement = ObjectRepositoryController.getInstance().importWebElement(
-                WebElementUtils.convertWebElementToTestObject(element, refElement, parentFolder), parentFolder);
-        entitySavedMap.put(element, importedElement);
-        if (element instanceof WebFrame) {
-            for (WebElement childElement : ((WebFrame) element).getChildren()) {
-                addRecordedElement(childElement, parentFolder, importedElement);
-            }
-        }
-    }
-
-    private void addRecordedElements(List<WebPage> recordedElements,
-            SaveToObjectRepositoryDialogResult folderSelectionResult, IProgressMonitor monitor) throws Exception {
-        entitySavedMap = new HashMap<>();
-        for (WebElement pageElement : recordedElements) {
-            FolderEntity importedFolder = folderSelectionResult.createFolderForPageElement((WebPage) pageElement);
-            entitySavedMap.put(pageElement, importedFolder);
-            for (WebElement childElement : ((WebFrame) pageElement).getChildren()) {
-                addRecordedElement(childElement, importedFolder, null);
-            }
-            monitor.worked(1);
-        }
-    }
-
     private List<StatementWrapper> generateStatementWrappersFromRecordedActions(List<HTMLActionMapping> recordedActions,
             List<WebPage> recordedElements, TestCasePart testCasePart,
             SaveToObjectRepositoryDialogResult folderSelectionResult, IProgressMonitor monitor) throws Exception {
         monitor.subTask(StringConstants.JOB_ADDING_OBJECT);
-        addRecordedElements(recordedElements, folderSelectionResult, monitor);
 
         monitor.subTask(StringConstants.JOB_GENERATE_STATEMENT_MESSAGE);
         List<StatementWrapper> resultStatementWrappers = new ArrayList<StatementWrapper>();
 
         ScriptNodeWrapper mainClassNode = testCasePart.getTreeTableInput().getMainClassNode();
-        
+
         addAdditionalImports(mainClassNode);
         // add open browser keyword
         String webUiKwAliasName = HTMLActionUtil.getWebUiKeywordClass().getAliasName();
@@ -308,11 +277,15 @@ public class RecordHandler {
         // add switch to window keyword if action in another window
         recordedActions = addSwitchToWindowKeyword(recordedActions);
 
+        Map<WebElement, FileEntity> entitySavedMap = folderSelectionResult.getEntitySavedMap();
         for (HTMLActionMapping action : recordedActions) {
             WebElementEntity createdTestObject = null;
-            if (action.getTargetElement() != null
-                    && entitySavedMap.get(action.getTargetElement()) instanceof WebElementEntity) {
-                createdTestObject = (WebElementEntity) entitySavedMap.get(action.getTargetElement());
+
+            if (action.getTargetElement() != null) {
+                WebElement savedWebElement = getKeyWebElementByName(action.getTargetElement().getName(),
+                        entitySavedMap);
+                if (entitySavedMap.get(savedWebElement) instanceof WebElementEntity)
+                    createdTestObject = (WebElementEntity) entitySavedMap.get(savedWebElement);
             }
             StatementWrapper generatedStatementWrapper = HTMLActionUtil.generateWebUiTestStep(action, createdTestObject,
                     mainClassNode);
@@ -354,5 +327,14 @@ public class RecordHandler {
             newActions.add(action);
         }
         return newActions;
+    }
+
+    private WebElement getKeyWebElementByName(String webElementName, Map<WebElement, FileEntity> entitySavedMap) {
+        for (WebElement webElementObject : entitySavedMap.keySet()) {
+            if (webElementObject.getName().contains(StringUtils.trim(webElementName))) {
+                return webElementObject;
+            }
+        }
+        return new WebElement("empty");
     }
 }

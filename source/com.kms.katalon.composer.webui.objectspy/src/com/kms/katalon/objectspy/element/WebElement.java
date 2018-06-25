@@ -176,6 +176,16 @@ public class WebElement implements XPathProvider {
         clone.setProperties(new ArrayList<>(getProperties()));
         return clone;
     }
+    
+    public WebElement clone() {
+        WebElement clone = softClone();
+        List<WebElementPropertyEntity> cloneProperties = new ArrayList<>();
+        for (WebElementPropertyEntity webElementPropertyEntity : getProperties()) {
+            cloneProperties.add(webElementPropertyEntity.clone());
+        }
+        clone.setProperties(cloneProperties);
+        return clone;
+    }
 
     @Override
     public int hashCode() {

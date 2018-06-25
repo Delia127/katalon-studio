@@ -5,11 +5,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -58,7 +56,7 @@ import com.kms.katalon.objectspy.constants.ObjectSpyPreferenceConstants;
 import com.kms.katalon.objectspy.constants.ObjectspyMessageConstants;
 import com.kms.katalon.objectspy.constants.StringConstants;
 import com.kms.katalon.objectspy.core.HTMLElementCollector;
-import com.kms.katalon.objectspy.dialog.SaveToObjectRepositoryDialog.SaveToObjectRepositoryDialogResult;
+import com.kms.katalon.objectspy.dialog.ObjectRepositoryService.SaveActionResult;
 import com.kms.katalon.objectspy.element.WebElement;
 import com.kms.katalon.objectspy.element.WebElement.WebElementType;
 import com.kms.katalon.objectspy.element.WebFrame;
@@ -459,28 +457,22 @@ public class NewObjectSpyDialog extends Dialog
         if (addToObjectRepositoryDialog.open() != Window.OK) {
             return;
         }
-
-        Set<ITreeEntity> newSelectionOnExplorer = new HashSet<>();
-        SaveToObjectRepositoryDialogResult folderSelectionResult = addToObjectRepositoryDialog.getDialogResult();
-
-        List<WebPage> htmlElements = addToObjectRepositoryDialog.getWebPages();
-        for (WebElement checkedElement : htmlElements) {
-            if (!(checkedElement instanceof WebPage)) {
-                return;
-            }
-            WebPage pageElement = (WebPage) checkedElement;
-
-            FolderTreeEntity pageElementTreeFolder = folderSelectionResult.createTreeFolderForPageElement(pageElement);
-            newSelectionOnExplorer.add(pageElementTreeFolder);
-            for (WebElement childElement : pageElement.getChildren()) {
-                newSelectionOnExplorer.addAll(addCheckedElements(childElement, pageElementTreeFolder, null));
-            }
-        }
-
-        selectSelectedElements(capturedTreeViewer, htmlElements);
+        ObjectRepositoryService objectRepositoryService = new ObjectRepositoryService();
+        
+        SaveActionResult saveResult = objectRepositoryService.saveObject(addToObjectRepositoryDialog.getDialogResult());
+       
         // Refresh tree explorer
-        eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, folderSelectionResult.getSelectedParentFolder());
-        eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEMS, newSelectionOnExplorer.toArray());
+        eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, addToObjectRepositoryDialog.getSelectedParentFolderResult());
+        
+        //Refesh updated object.
+        for (Object[] testObj : saveResult.getUpdatedTestObjectIds()) {
+            eventBroker.post(EventConstants.TEST_OBJECT_UPDATED, testObj);
+        }
+        if (saveResult.getNewSelectionOnExplorer() == null) {
+            return;
+        }
+        selectSelectedElements(capturedTreeViewer, pages);
+        eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEMS, saveResult.getNewSelectionOnExplorer().toArray());
     }
 
     private void selectSelectedElements(TreeViewer capturedTreeViewer, List<WebPage> htmlElements) {

@@ -65,7 +65,10 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
+import org.greenrobot.eventbus.EventBus;
 
+import com.kms.katalon.application.usagetracking.TrackingEvent;
+import com.kms.katalon.application.usagetracking.UsageActionTrigger;
 import com.kms.katalon.composer.components.dialogs.MessageDialogWithLink;
 import com.kms.katalon.composer.components.impl.control.CTreeViewer;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
@@ -101,6 +104,7 @@ import com.kms.katalon.composer.mobile.recorder.constants.MobileRecorderImageCon
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecorderStringConstants;
 import com.kms.katalon.composer.mobile.recorder.exceptions.MobileRecordException;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
+import com.kms.katalon.core.event.EventBusSingleton;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.core.mobile.keyword.internal.AndroidProperties;
@@ -838,6 +842,10 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
             targetElementChanged(null);
             recordedActions.add(buildStartAppActionMapping());
             actionTableViewer.refresh();
+            
+            //send event for tracking
+            EventBus eventBus = EventBusSingleton.getInstance().getEventBus();
+            eventBus.post(new TrackingEvent(UsageActionTrigger.RECORD, "mobile"));
         } catch (InvocationTargetException | InterruptedException ex) {
             // If user intentionally cancel the progress, don't need to show error message
             if (ex instanceof InvocationTargetException) {

@@ -5,6 +5,8 @@ import java.text.MessageFormat;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.kms.katalon.core.constants.StringConstants;
 
@@ -90,4 +92,8 @@ public class JsonUtil {
         }
     }
 
+    public static JsonObject toJsonObject(Object src) {
+        Gson gson = new Gson();
+        return gson.toJsonTree(src).getAsJsonObject();
+    }
 }

@@ -43,6 +43,7 @@ public class TestCaseMain {
 
         // Load GlobalVariable class
         loadGlobalVariableClass(classLoader);
+        loadInternalGlobalVariableClass(classLoader);
         loadCustomKeywordsClass(classLoader);
 
         eventManager = ExecutionEventManager.getInstance();
@@ -66,7 +67,18 @@ public class TestCaseMain {
             }
         }
     }
+    
+    private static void loadInternalGlobalVariableClass(GroovyClassLoader cl) {
+        try {
+            cl.loadClass(StringConstants.INTERNAL_GLOBAL_VARIABLE_CLASS_NAME);
+        } catch (ClassNotFoundException ex) {
+            try {
+                cl.parseClass(new File(RunConfiguration.getProjectDir(), StringConstants.INTERNAL_GLOBAL_VARIABLE_FILE_NAME));
+            } catch (CompilationFailedException | IOException ignored) {
 
+            }
+        }
+    }
     public static TestResult runTestCase(String testCaseId, TestCaseBinding testCaseBinding,
             FailureHandling flowControl) throws InterruptedException {
         return runTestCase(testCaseId, testCaseBinding, flowControl, true, true);
@@ -84,6 +96,13 @@ public class TestCaseMain {
         testCaseContext.setMainTestCase(isMain);
         return new TestCaseExecutor(testCaseBinding, engine, eventManager, testCaseContext, doCleanUp)
                 .execute(flowControl);
+    }
+    
+    public static TestResult runWSVerificationScript(String verificationScript, FailureHandling flowControl,
+            boolean doCleanUp) throws InterruptedException {
+        Thread.sleep(DELAY_TIME);
+        return new WSVerificationExecutor(verificationScript, engine, eventManager, doCleanUp
+                ).execute(flowControl);
     }
 
     public static TestResult runTestCaseRawScript(String testScript, String testCaseId, TestCaseBinding testCaseBinding,
