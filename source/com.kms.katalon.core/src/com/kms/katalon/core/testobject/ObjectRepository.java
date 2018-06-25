@@ -291,13 +291,13 @@ public class ObjectRepository {
                         projectDir, substitutor);
                 requestObject.setBodyContent(bodyContent);
 
-                // Backward compatible with 5.3.1
-                ByteArrayOutputStream outstream = new ByteArrayOutputStream();
-                try {
-                    bodyContent.writeTo(outstream);
-                    requestObject.setHttpBody(outstream.toString());
-                } catch (IOException ignored) {
-                }
+                //Backward compatible with 5.3.1
+//                ByteArrayOutputStream outstream = new ByteArrayOutputStream();
+//                try {
+//                    bodyContent.writeTo(outstream);
+//                    requestObject.setHttpBody(outstream.toString());
+//                } catch (IOException ignored) {
+//                }
             }
         }
 
