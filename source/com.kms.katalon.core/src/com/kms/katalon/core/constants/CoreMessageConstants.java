@@ -295,6 +295,9 @@ public class CoreMessageConstants extends NLS {
     public static String EXEC_LOG_START_RECORDING_VIDEO;
 
     public static String EXEC_LOG_VIDEO_RECORDING_COMPLETED;
+    
+    //Web Service Verification
+    public static String WS_VERIFICATION_SUCCESS;
 
     static {
         // initialize resource bundle

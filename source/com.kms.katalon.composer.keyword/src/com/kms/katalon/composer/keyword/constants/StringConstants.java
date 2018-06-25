@@ -39,6 +39,15 @@ public class StringConstants extends GlobalStringConstants {
     // NewPackagePopupMenuContribution
     public static final String MENU_CONTEXT_NEW_PACKAGE = PACKAGE;
 
+    // ImportFolderPopupMenuContribution
+    public static final String MENU_CONTEXT_IMPORT_FOLDER = FOLDER;
+
+    // ImportJarPopupMenuContribution
+    public static final String MENU_CONTEXT_IMPORT_JAR = JAR;
+
+    // ImportGitPopupMenuContribution
+    public static final String MENU_CONTEXT_IMPORT_GIT = GIT;
+
     // NewRenamePackageDialog
     public static final String DIA_TITLE_PACKAGE = ComposerKeywordMessageConstants.DIA_TITLE_PACKAGE;
 
@@ -77,4 +86,18 @@ public class StringConstants extends GlobalStringConstants {
     public static final String HAND_ERROR_MSG_EXCEED_PKG_NAME_LENGTH = ComposerKeywordMessageConstants.HAND_ERROR_MSG_EXCEED_PKG_NAME_LENGTH;
     
     public static final String HAND_ERROR_MSG_EXCEED_CLASS_NAME_LENGTH = ComposerKeywordMessageConstants.HAND_ERROR_MSG_EXCEED_CLASS_NAME_LENGTH;
+    
+    public static final String DIA_TITLE_IMPORT_KEYWORD = ComposerKeywordMessageConstants.DIA_TITLE_KEYWORD;
+    
+    public static final String DIA_BTN_APPLY_THIS_ACTION_TO_ALL = ComposerKeywordMessageConstants.DIA_BTN_APPLY_THIS_ACTION_TO_ALL;
+    
+    public static final String DIA_BTN_OVERWRITE = ComposerKeywordMessageConstants.DIA_BTN_OVERWRITE;
+    
+    public static final String DIA_BTN_SKIP = ComposerKeywordMessageConstants.DIA_BTN_SKIP;
+    
+    public static final String DIA_BTN_KEEP_BOTH = ComposerKeywordMessageConstants.DIA_BTN_KEEP_BOTH;
+    
+    public static final String MSG_IMPORT= ComposerKeywordMessageConstants.MSG_IMPORT;
+
+    public static final String MSG_EXPORT = ComposerKeywordMessageConstants.MSG_EXPORT;
 }

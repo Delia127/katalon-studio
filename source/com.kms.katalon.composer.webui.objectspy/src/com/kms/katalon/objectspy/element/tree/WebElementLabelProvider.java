@@ -21,7 +21,7 @@ public class WebElementLabelProvider extends CellLabelProvider {
         cell.setImage(getImage(cell.getElement()));
     }
 
-    private Image getImage(Object element) {
+    public Image getImage(Object element) {
         if (!(element instanceof WebElement)) {
             return null;
         }

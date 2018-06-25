@@ -142,7 +142,7 @@ public class GroovyUtil {
         SubProgressMonitor subProgressDescription = null;
         SubProgressMonitor subProgressClasspath = null;
         if (monitor != null) {
-            monitor.beginTask("Initialzing project's classpath...", 10);
+            monitor.beginTask("Initializing project's classpath...", 10);
             subProgressDescription = new SubProgressMonitor(monitor, 1,
                     SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK);
             subProgressClasspath = new SubProgressMonitor(monitor, 9, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK);

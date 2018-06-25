@@ -92,6 +92,8 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.CHECK_16);
         ImageManager.registerImage(IImageKeys.FIT_SCREEN_16);
         ImageManager.registerImage(IImageKeys.FULL_SIZE_16);
+        ImageManager.registerImage(IImageKeys.CONFLICT_ELEMENT_STATUS_16);
+        ImageManager.registerImage(IImageKeys.NEW_ELEMENT_STATUS_16);
     }
 
     private void registerSubToolbarImages() {

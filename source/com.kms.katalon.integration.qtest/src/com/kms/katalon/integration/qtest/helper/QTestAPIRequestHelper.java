@@ -10,9 +10,10 @@ import java.net.URL;
 
 import org.apache.commons.io.IOUtils;
 
+import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.integration.qtest.QTestIntegrationAuthenticationManager;
-import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
 import com.kms.katalon.integration.qtest.constants.QTestMessageConstants;
+import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
 import com.kms.katalon.integration.qtest.credential.IQTestToken;
 import com.kms.katalon.integration.qtest.exception.QTestAPIConnectionException;
 import com.kms.katalon.integration.qtest.exception.QTestException;
@@ -141,7 +142,7 @@ public class QTestAPIRequestHelper {
     public static String getResponse(InputStream inputStream) throws IOException {
         BufferedReader reader = null;
         try {
-            reader = new BufferedReader(new InputStreamReader(inputStream));
+            reader = new BufferedReader(new InputStreamReader(inputStream, StringConstants.DF_CHARSET));
             StringBuffer response = new StringBuffer();
             String inputLine;
             while ((inputLine = reader.readLine()) != null) {

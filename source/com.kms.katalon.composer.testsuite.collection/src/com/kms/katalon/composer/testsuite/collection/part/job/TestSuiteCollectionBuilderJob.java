@@ -2,6 +2,7 @@ package com.kms.katalon.composer.testsuite.collection.part.job;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -10,10 +11,11 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
+import org.greenrobot.eventbus.EventBus;
 
 import com.kms.katalon.application.RunningMode;
+import com.kms.katalon.application.usagetracking.TrackingEvent;
 import com.kms.katalon.application.usagetracking.UsageActionTrigger;
-import com.kms.katalon.application.usagetracking.UsageInfoCollector;
 import com.kms.katalon.composer.components.impl.dialogs.MissingMobileDriverWarningDialog;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -24,6 +26,7 @@ import com.kms.katalon.composer.testsuite.collection.part.launcher.IDETestSuiteC
 import com.kms.katalon.composer.testsuite.collection.part.launcher.SubIDELauncher;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
+import com.kms.katalon.core.event.EventBusSingleton;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -102,6 +105,9 @@ public class TestSuiteCollectionBuilderJob extends Job {
             TestSuiteCollectionLauncher launcher = new IDETestSuiteCollectionLauncher(executedEntity, launcherManager,
                     tsLaunchers, testSuiteCollectionEntity.getExecutionMode(), reportCollection);
             launcherManager.addLauncher(launcher);
+            
+            sendEventForTrackingTestSuiteColletionExecution();
+            
             reportController.updateReportCollection(reportCollection);
             return Status.OK_STATUS;
         } catch (DALException e) {
@@ -109,9 +115,17 @@ public class TestSuiteCollectionBuilderJob extends Job {
             return Status.CANCEL_STATUS;
         } finally {
             monitor.done();
-            UsageInfoCollector
-                    .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.RUN_SCRIPT, RunningMode.GUI));
+//            UsageInfoCollector
+//                    .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.RUN_SCRIPT, RunningMode.GUI));
         }
+    }
+    
+    private void sendEventForTrackingTestSuiteColletionExecution() {
+        EventBus eventBus = EventBusSingleton.getInstance().getEventBus();
+        eventBus.post(new TrackingEvent(UsageActionTrigger.EXECUTE_TEST_SUITE_COLLECTION, new HashMap<String, Object>() {{
+            put("isAnonymous", false);
+            put("runningMode", RunningMode.GUI.getMode());
+        }}));
     }
 
     private boolean checkInstallWebDriver(TestSuiteRunConfiguration tsRunConfig) {
