@@ -268,6 +268,12 @@
       		</properties>
         </profile>
         <profile>
+        	<id>stag</id>
+            <properties>
+        		<build.profile>stag</build.profile>
+      		</properties>
+        </profile>
+        <profile>
         	<id>prod</id>
             <properties>
         		<build.profile>prod</build.profile>

@@ -1,4 +1,4 @@
-package com.kms.katalon.application.utils;
+version com.kms.katalon.application.utils;
 
 import java.awt.Desktop;
 import java.net.URI;
@@ -56,10 +56,14 @@ public class VersionUtil {
         }
     }
     
-    public static boolean isInternalBuild() {
+    public static boolean isDevelopmentBuild() {
         String profile = ApplicationInfo.profile();
         return ApplicationInfo.DEV_PROFILE.equals(profile);
-        // return VersionInfo.MINIMUM_VERSION.equals(version.getVersion()) || version.getBuildNumber() == 0;
+    }
+
+    public static boolean isStagingBuild() {
+        String profile = ApplicationInfo.profile();
+        return ApplicationInfo.STAG_PROFILE.equals(profile) || ApplicationInfo.DEV_PROFILE.equals(profile);
     }
 
     public static boolean isNewer(String version, String comparedVersion) {
