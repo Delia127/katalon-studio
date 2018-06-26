@@ -20,8 +20,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -454,16 +452,9 @@ public class TestCaseTreeTableInput {
     // refresh treetable root
     public void reloadTreeTableNodes() throws InvocationTargetException, InterruptedException {
         final List<AstTreeTableNode> astTreeTableNodes = new ArrayList<AstTreeTableNode>();
-        new ProgressMonitorDialog(Display.getCurrent().getActiveShell()).run(true, false, new IRunnableWithProgress() {
-            @Override
-            public void run(IProgressMonitor monitor) {
-                monitor.beginTask(StringConstants.LOADING_TABLE_PROGRESS_NAME, IProgressMonitor.UNKNOWN);
-                mainClassTreeNode = new AstScriptTreeTableNode(mainClassNodeWrapper, null);
-                astTreeTableNodes.add(mainClassTreeNode);
-                reloadTestCaseVariables();
-                monitor.done();
-            }
-        });
+        mainClassTreeNode = new AstScriptTreeTableNode(mainClassNodeWrapper, null);
+        astTreeTableNodes.add(mainClassTreeNode);
+        reloadTestCaseVariables();
         treeTableViewer.setInput(astTreeTableNodes);
     }
 

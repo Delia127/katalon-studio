@@ -70,6 +70,8 @@ public class RecordSession extends InspectSession {
         }
         final AddonSocket firefoxAddonSocket = socketServer
                 .getAddonSocketByBrowserName(webUiDriverType.toString());
-        firefoxAddonSocket.sendMessage(new AddonMessage(AddonCommand.START_RECORD));
+        if (firefoxAddonSocket != null) {
+            firefoxAddonSocket.sendMessage(new AddonMessage(AddonCommand.START_RECORD));
+        }
     }
 }

@@ -23,11 +23,11 @@ import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.objectspy.dialog.SaveToObjectRepositoryDialog.ConflictOptions;
 import com.kms.katalon.objectspy.dialog.SaveToObjectRepositoryDialog.SaveToObjectRepositoryDialogResult;
+import com.kms.katalon.objectspy.element.ConflictWebElementWrapper;
 import com.kms.katalon.objectspy.element.WebElement;
 import com.kms.katalon.objectspy.element.WebElement.WebElementType;
 import com.kms.katalon.objectspy.element.WebFrame;
 import com.kms.katalon.objectspy.element.WebPage;
-import com.kms.katalon.objectspy.element.ConflictWebElementWrapper;
 import com.kms.katalon.objectspy.util.WebElementUtils;
 
 public class ObjectRepositoryService {
@@ -142,7 +142,7 @@ public class ObjectRepositoryService {
         ConflictOptions selectedConflictOption = dialogResult.getSelectedConflictOption();
         Map<WebElement, FileEntity> entitySavedMap = dialogResult.getEntitySavedMap();
         
-        WebElement newWebElement = ((ConflictWebElementWrapper) wrapElement).getOriginalWebElement();
+        WebElement newWebElement = ((ConflictWebElementWrapper) wrapElement).getOriginalWebElement().clone();
 
         // Build destination folder path.
         String folderPath = ProjectController.getInstance().getCurrentProject().getFolderLocation() + File.separator
@@ -172,17 +172,17 @@ public class ObjectRepositoryService {
                             WebElementUtils.convertWebElementToTestObject(newWebElement, null, conflictedFolderEntity),
                             conflictedFolderEntity);
 
-                    entitySavedMap.put(newWebElement, importedWebElement);
+                    entitySavedMap.put(wrapElement.getOriginalWebElement(), importedWebElement);
                     break;
 
                 case REPLACE_EXISTING_OBJECT:
                     oldWebElementEntity.setWebElementProperties(newWebElement.getProperties());
-                    entitySavedMap.put(newWebElement, oldWebElementEntity);
+                    entitySavedMap.put(wrapElement.getOriginalWebElement(), oldWebElementEntity);
                     break;
 
                 case MERGE_CHANGE_TO_EXISTING_OBJECT:
-                    Set<WebElementPropertyEntity> mergedProperties = new LinkedHashSet();
-                    mergedProperties.addAll(newWebElement.getProperties());
+                    Set<WebElementPropertyEntity> mergedProperties = new LinkedHashSet<>();
+                    mergedProperties.addAll(wrapElement.getOriginalWebElement().getProperties());
                     
                     //uncheck all properties of old web element.
                     for(WebElementPropertyEntity wProperty: oldWebElementEntity.getWebElementProperties()) {
@@ -190,7 +190,7 @@ public class ObjectRepositoryService {
                     }
                     mergedProperties.addAll(oldWebElementEntity.getWebElementProperties());
                     oldWebElementEntity.setWebElementProperties(new ArrayList<>(mergedProperties));
-                    entitySavedMap.put(newWebElement, oldWebElementEntity);
+                    entitySavedMap.put(wrapElement.getOriginalWebElement(), oldWebElementEntity);
                     break;
 
                 default:

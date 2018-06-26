@@ -223,8 +223,8 @@ public class CapturedObjectsView extends Composite implements EventHandler, Even
             @Override
             public void mouseEnter(MouseEvent e) {
                 Point location = e.display.getCursorLocation();
-                infoTooltip.setLocation(location.x, location.y - e.y + lblInfo.getSize().y);
                 infoTooltip.setVisible(true);
+                infoTooltip.setLocation(location.x, location.y - e.y + lblInfo.getSize().y);
             }
 
             @Override
@@ -238,10 +238,6 @@ public class CapturedObjectsView extends Composite implements EventHandler, Even
         if (treeViewer != null && ControlUtils.isReady(treeViewer.getControl())) {
             treeViewer.setInput(input);
         }
-    }
-
-    public void setInput(WebPage[] input) {
-        setTreeDataInput(input);
     }
 
     public void setInput(List<WebPage> input) {

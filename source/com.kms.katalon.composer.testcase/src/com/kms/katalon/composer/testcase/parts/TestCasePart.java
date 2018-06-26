@@ -209,6 +209,14 @@ public class TestCasePart extends CPart implements EventHandler, ITestCasePart {
     public void addStatements(List<StatementWrapper> statements, NodeAddType addType) {
         getTreeTableInput().addNewAstObjects(statements, getTreeTableInput().getSelectedNode(), addType);
     }
+    
+    public void addStatements(List<StatementWrapper> statements, NodeAddType addType, boolean commitEditting) {
+        getTreeTableInput().addNewAstObjects(statements, getTreeTableInput().getSelectedNode(), addType);
+        if (commitEditting) {
+            getTestCaseTreeTable().applyEditorValue();
+        }
+    }
+
 
     @Override
     public TestCaseEntity getTestCase() {

@@ -26,7 +26,6 @@ public class ImageConstants {
 
     public static final Image IMG_16_UNWATCH = ImageManager.getImage(IImageKeys.UNWATCH_16);
 
-    // RecorderDialog
     public static final Image IMG_16_CHROME = ImageManager.getImage(IImageKeys.CHROME_16);
 
     public static final Image IMG_16_FIREFOX = ImageManager.getImage(IImageKeys.FIREFOX_16);
@@ -39,4 +38,9 @@ public class ImageConstants {
 
     public static final Image IMG_24_IE = ImageManager.getImage(IImageKeys.IE_24);
 
+    public static final Image IMG_16_RECENT = ImageManager.getImage(IImageKeys.RECENT_16);
+
+    public static final Image IMG_16_MOVE_UP = ImageManager.getImage(IImageKeys.MOVE_UP_16);
+    
+    public static final Image IMG_16_MOVE_DOWN = ImageManager.getImage(IImageKeys.MOVE_DOWN_16);
 }
