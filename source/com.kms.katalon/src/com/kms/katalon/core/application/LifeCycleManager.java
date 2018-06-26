@@ -193,7 +193,7 @@ public class LifeCycleManager {
             }
 
             private boolean checkActivation(final IEventBroker eventBroker) {
-                if (VersionUtil.isInternalBuild()) {
+                if (VersionUtil.isDevelopmentBuild()) {
                     return true;
                 }
                 if (!(ComposerActivationInfoCollector.checkActivation())) {

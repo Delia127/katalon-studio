@@ -65,7 +65,7 @@ public class Application implements IApplication {
         System.setProperty(IApplicationContext.EXIT_DATA_PROPERTY, "");
         try {
             init();
-            if (!VersionUtil.isInternalBuild() && !checkConsoleActivation(arguments)) {
+            if (!VersionUtil.isDevelopmentBuild() && !checkConsoleActivation(arguments)) {
                 return LauncherResult.RETURN_CODE_PASSED;
             }
             return ConsoleMain.launch(arguments);

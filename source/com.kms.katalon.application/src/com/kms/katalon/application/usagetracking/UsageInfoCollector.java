@@ -30,9 +30,10 @@ public class UsageInfoCollector {
     private static final String EMAIL_KEY = "email";
 
     public static void collect(UsageInformation usageInfo) {
-        if (VersionUtil.isInternalBuild()) {
+        if (VersionUtil.isDevelopmentBuild()) {
            return;
         }
+
         JsonObject jsObject = new JsonObject();
         JsonObject jsTraits = ActivationInfoCollector.traitsWithAppInfo();
         jsTraits.addProperty(UsagePropertyConstant.PROPERTY_KAT_VERSION, usageInfo.getVersion());

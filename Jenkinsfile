@@ -18,7 +18,7 @@ node {
     	} else {
     		sh '''
 		    cd source
-		    /usr/local/bin/mvn clean verify
+		    /usr/local/bin/mvn clean verify -Pstag
 	        '''
     	}       
     }
