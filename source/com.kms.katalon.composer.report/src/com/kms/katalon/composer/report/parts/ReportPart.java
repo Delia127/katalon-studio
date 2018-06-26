@@ -60,6 +60,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
@@ -85,6 +86,7 @@ import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.integration.analytics.constants.ComposerAnalyticsStringConstants;
 import com.kms.katalon.composer.integration.analytics.constants.ComposerIntegrationAnalyticsMessageConstants;
 import com.kms.katalon.composer.integration.analytics.dialog.AuthenticationDialog;
 import com.kms.katalon.composer.integration.analytics.dialog.UploadSelectionDialog;
@@ -116,6 +118,7 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.util.ExecutionUtil;
+import com.kms.katalon.integration.analytics.constants.IntegrationAnalyticsMessages;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
@@ -658,7 +661,8 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         } catch (InvocationTargetException exception) {
             final Throwable cause = exception.getCause();
             if (cause instanceof AnalyticsApiExeception) {
-//                MessageDialog.openError(shell, ComposerAnalyticsStringConstants.ERROR, cause.getMessage());
+                // MessageDialog.openError(shell,
+                // ComposerAnalyticsStringConstants.ERROR, cause.getMessage());
             } else {
                 LoggerSingleton.logError(cause);
             }
@@ -696,7 +700,8 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         } catch (InvocationTargetException exception) {
             final Throwable cause = exception.getCause();
             if (cause instanceof AnalyticsApiExeception) {
-//                MessageDialog.openError(shell, ComposerAnalyticsStringConstants.ERROR, cause.getMessage());
+                // MessageDialog.openError(shell,
+                // ComposerAnalyticsStringConstants.ERROR, cause.getMessage());
             } else {
                 LoggerSingleton.logError(cause);
             }
@@ -731,58 +736,54 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         accessKAMenuItem.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                try {
-                    if (isIntegrated) {
-                        // open KA web
-                        // Program.launch(ComposerReportMessageConstants.KA_HOMEPAGE);
-                        System.out.println("Integrated");
-                    } else {
-                        int teamCount = 1;
-                        int projectCount = 0;
-                        boolean authenticationDialogOpened = false;
-                        List<AnalyticsTeam> teams = null;
-                        List<AnalyticsProject> projects = null;
-                        ScopedPreferenceStore preferenceStore = getPreferenceStore();
-                        String preferenceEmail = preferenceStore
-                                .getString(ActivationPreferenceConstants.ACTIVATION_INFO_EMAIL);
-                        String preferencePassword = preferenceStore
-                                .getString(ActivationPreferenceConstants.ACTIVATION_INFO_PASSWORD);
-                        try {
-                            String serverUrl = analyticsSettingStore
-                                    .getServerEndpoint(analyticsSettingStore.isEncryptionEnabled());
-                            String analyticsEmail = analyticsSettingStore
-                                    .getEmail(analyticsSettingStore.isEncryptionEnabled());
-                            String analyticsPassword = analyticsSettingStore
+                // try {
+                if (isIntegrated) {
+                    // open KA web
+                    Program.launch(ComposerReportMessageConstants.KA_HOMEPAGE);
+                } else {
+                    int teamCount = 1;
+                    int projectCount = 0;
+                    boolean authenticationDialogOpened = false;
+                    List<AnalyticsTeam> teams = null;
+                    List<AnalyticsProject> projects = null;
+                    ScopedPreferenceStore preferenceStore = getPreferenceStore();
+                    String preferenceEmail = preferenceStore
+                            .getString(ActivationPreferenceConstants.ACTIVATION_INFO_EMAIL);
+                    String preferencePassword = preferenceStore
+                            .getString(ActivationPreferenceConstants.ACTIVATION_INFO_PASSWORD);
+                    try {
+                        String serverUrl = analyticsSettingStore
+                                .getServerEndpoint(analyticsSettingStore.isEncryptionEnabled());
+                        String analyticsEmail = analyticsSettingStore
+                                .getEmail(analyticsSettingStore.isEncryptionEnabled());
+                        String analyticsPassword = analyticsSettingStore
+                                .getPassword(analyticsSettingStore.isEncryptionEnabled());
+
+                        if (analyticsPassword.equals(StringUtils.EMPTY)
+                                && !preferencePassword.equals(StringUtils.EMPTY)) {
+                            // get credentials from preference store
+                            analyticsSettingStore.setEmail(preferenceEmail, encryptionEnabled);
+                            analyticsSettingStore.setPassword(preferencePassword, encryptionEnabled);
+                            analyticsSettingStore.enableIntegration(true);
+                            analyticsSettingStore.enableEncryption(encryptionEnabled);
+                        }
+
+                        if (analyticsPassword.equals(StringUtils.EMPTY)) {
+                            // no credentials -> set credentials by using pop up
+                            AuthenticationDialog authenticationDialog = new AuthenticationDialog(shell, true);
+                            authenticationDialog.open();
+                            authenticationDialogOpened = true;
+                            analyticsPassword = analyticsSettingStore
                                     .getPassword(analyticsSettingStore.isEncryptionEnabled());
-                            AnalyticsTokenInfo tokenInfo = null;
+                            analyticsEmail = analyticsSettingStore
+                                    .getEmail(analyticsSettingStore.isEncryptionEnabled());
+                        }
 
-                            if (analyticsPassword.equals(StringUtils.EMPTY)
-                                    && !preferencePassword.equals(StringUtils.EMPTY)) {
-                                System.out.println("credentials from store");
-                                // get credentials from preference store
-                                analyticsSettingStore.setEmail(preferenceEmail, encryptionEnabled);
-                                analyticsSettingStore.setPassword(preferencePassword, encryptionEnabled);
-                                analyticsSettingStore.enableIntegration(true);
-                                analyticsSettingStore.enableEncryption(encryptionEnabled);
-                            }
-
-                            if (analyticsPassword.equals(StringUtils.EMPTY)) {
-                                System.out.println("no credentials");
-                                // no credentials -> set credentials by using
-                                // pop up
-                                AuthenticationDialog authenticationDialog = new AuthenticationDialog(shell, true);
-                                authenticationDialog.open();
-                                authenticationDialogOpened = true;
-                                analyticsPassword = analyticsSettingStore
-                                        .getPassword(analyticsSettingStore.isEncryptionEnabled());
-                                analyticsEmail = analyticsSettingStore
-                                        .getEmail(analyticsSettingStore.isEncryptionEnabled());
-                            }
-
-                            final String email = analyticsEmail;
-                            final String password = analyticsPassword;
-                            final AnalyticsTokenInfo[] tokenInfos = new AnalyticsTokenInfo[1];
-                            if (!analyticsPassword.equals(StringUtils.EMPTY)) {
+                        final String email = analyticsEmail;
+                        final String password = analyticsPassword;
+                        final AnalyticsTokenInfo[] tokenInfos = new AnalyticsTokenInfo[1];
+                        if (!analyticsPassword.equals(StringUtils.EMPTY)) {
+                            try {
                                 new ProgressMonitorDialog(shell).run(true, false, new IRunnableWithProgress() {
                                     @Override
                                     public void run(IProgressMonitor monitor)
@@ -795,63 +796,59 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                                                     password);
                                             monitor.worked(1);
                                         } catch (Exception e) {
-                                            tokenInfos[0] = null;
+                                            throw new InvocationTargetException(e);
                                         }
                                     }
                                 });
-                            }
-
-                            tokenInfo = tokenInfos[0];
-                            // always have token now unless the info is wrong
-                            if (tokenInfo != null) {
-                                teams = getTeams(serverUrl, analyticsEmail, analyticsPassword, tokenInfo);
-                                teamCount = teams.size();
-                                if (teamCount == 1) {
-                                    projects = getProjects(serverUrl, analyticsEmail, analyticsPassword, teams.get(0),
-                                            tokenInfo);
-                                    projectCount = projects.size();
-                                    UploadSelectionDialog uploadSelectionDialog = new UploadSelectionDialog(shell, teams, projects);
-                                    if (projectCount > 0) {
-                                        System.out.println("project > 0");
-                                        if (uploadSelectionDialog.open() == UploadSelectionDialog.UPLOAD_ID){
-                                            // upload
-                                        } else {
-                                            // show cancel message
-                                        }
-                                    } else if (authenticationDialogOpened) {
-                                        // create default project and upload
-                                        createDefaultProject(analyticsSettingStore, serverUrl, teams.get(0), tokenInfo);
-                                        analyticsSettingStore.enableIntegration(true);
-                                        uploadToKA();
-                                    } else {
-                                        AuthenticationDialog authenticationDialog = new AuthenticationDialog(shell,
-                                                false);
-                                        if (authenticationDialog.open() == AuthenticationDialog.CONNECT_ID) {
-                                            // create default project and upload on connect click
-                                            createDefaultProject(analyticsSettingStore, serverUrl, teams.get(0),
-                                                    tokenInfo);
-                                            analyticsSettingStore.enableIntegration(true);
-                                            uploadToKA();
-                                        }
-                                    }
-                                } else {
-                                    // open dialog 2 and upload on upload click
-                                }
-                            } else {
+                            } catch (Exception ex) {
                                 // show error dialog
                                 analyticsSettingStore.setPassword(StringUtils.EMPTY, true);
-                                System.out.println("token info = null");
+                                analyticsSettingStore.enableIntegration(false);
+                                throw new AnalyticsApiExeception(
+                                        new Throwable(IntegrationAnalyticsMessages.MSG_REQUEST_TOKEN_ERROR));
                             }
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                            analyticsSettingStore.enableIntegration(false);
                         }
-                        // Program.launch(ComposerReportMessageConstants.KA_HOMEPAGE);
+
+                        // always have token now unless the info is wrong
+                        teams = getTeams(serverUrl, analyticsEmail, analyticsPassword, tokenInfos[0]);
+                        teamCount = teams.size();
+                        projects = getProjects(serverUrl, analyticsEmail, analyticsPassword, teams.get(0),
+                                tokenInfos[0]);
+                        projectCount = projects.size();
+                        UploadSelectionDialog uploadSelectionDialog = new UploadSelectionDialog(shell, teams, projects);
+                        if (projectCount > 0 || teamCount > 1) {
+                            analyticsSettingStore.enableIntegration(true);
+                            int returnCode = uploadSelectionDialog.open();
+                            if (returnCode == UploadSelectionDialog.UPLOAD_ID) {
+                                uploadToKA();
+                            } else {
+                                analyticsSettingStore.enableIntegration(false);
+                            }
+                        } else if (authenticationDialogOpened) {
+                            // create default project and upload
+                            createDefaultProject(analyticsSettingStore, serverUrl, teams.get(0), tokenInfos[0]);
+                            analyticsSettingStore.enableIntegration(true);
+                            uploadToKA();
+                        } else {
+                            AuthenticationDialog authenticationDialog = new AuthenticationDialog(shell, false);
+                            int returnCode = authenticationDialog.open();
+                            if (returnCode == AuthenticationDialog.CONNECT_ID) {
+                                createDefaultProject(analyticsSettingStore, serverUrl, teams.get(0), tokenInfos[0]);
+                                analyticsSettingStore.enableIntegration(true);
+                                uploadToKA();
+                            }
+                        }
+                        Program.launch(ComposerReportMessageConstants.KA_HOMEPAGE);
+                    } catch (Exception ex) {
+                        LoggerSingleton.logError(ex);
+                        MessageDialog.openError(Display.getCurrent().getActiveShell(),
+                                ComposerAnalyticsStringConstants.ERROR, ex.getMessage());
+                        try {
+                            analyticsSettingStore.enableIntegration(false);
+                        } catch (IOException e1) {
+                            LoggerSingleton.logError(e1);
+                        }
                     }
-                } catch (Exception ex) {
-                    LoggerSingleton.logError(ex);
-                    MultiStatusErrorDialog.showErrorDialog(ex,
-                            ComposerReportMessageConstants.REPORT_ERROR_MSG_UNABLE_TO_UPLOAD_REPORT, ex.getMessage());
                 }
             }
         });

@@ -224,6 +224,7 @@ public class AuthenticationDialog extends Dialog {
         String emailText = email.getText();
         String passwordText = password.getText();
         updateDataStore(emailText, passwordText);
+        setReturnCode(CONNECT_ID);
         closeDialog();
     }
 
