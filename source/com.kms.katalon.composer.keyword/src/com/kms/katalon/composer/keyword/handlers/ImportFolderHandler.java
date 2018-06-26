@@ -106,7 +106,7 @@ public class ImportFolderHandler {
                         absolutePath.length()));
             } else {
                 destinationKeywordFolder.append(
-                        absolutePath.substring(absolutePath.indexOf(importedFolder.getName()) + importedFolder.getName().length(), absolutePath.length()));
+                        absolutePath.substring(absolutePath.indexOf(importedFolder.getName()), absolutePath.length()));
             }
             if (new File(destinationKeywordFolder.toString()).exists()) {
                 // Open popup with the file name
