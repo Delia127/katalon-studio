@@ -22,6 +22,9 @@ public class RecordSession extends InspectSession {
 
     private static final String CHROME_EXTENSION_RELATIVE_PATH = File.separator + "Chrome" + File.separator
             + RECORDER_ADDON_NAME;
+    
+    private static final String CHROME_EXTENSION_RELATIVE_PATH2 = File.separator + "Chrome" + File.separator
+            + RECORDER_ADDON_NAME + File.separator + "KR";
 
     private static final String RECORDER_APPLICATION_DATA_FOLDER = System.getProperty("user.home") + File.separator
             + "AppData" + File.separator + "Local" + File.separator + "KMS" + File.separator + "qAutomate"
@@ -38,8 +41,10 @@ public class RecordSession extends InspectSession {
     }
 
     protected String getChromeExtensionPath() {
-        return CHROME_EXTENSION_RELATIVE_PATH;
-    }
+        //return CHROME_EXTENSION_RELATIVE_PATH;
+    	return CHROME_EXTENSION_RELATIVE_PATH2;
+    }   
+    
     
     @Override
     protected File getChromeExtensionFile() throws IOException {

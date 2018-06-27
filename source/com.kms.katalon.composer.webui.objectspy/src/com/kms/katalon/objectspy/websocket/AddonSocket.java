@@ -30,6 +30,7 @@ import com.kms.katalon.objectspy.util.HTMLElementUtil;
 import com.kms.katalon.objectspy.util.WebElementUtils;
 import com.kms.katalon.objectspy.websocket.messages.AddonMessage;
 import com.kms.katalon.objectspy.websocket.messages.BrowserInfoMessageData;
+import com.kms.katalon.objectspy.websocket.messages.StartInspectAddonMessage;
 
 @ClientEndpoint
 @ServerEndpoint(value = "/")
@@ -47,6 +48,10 @@ public class AddonSocket {
     protected static final String ELEMENT_KEY = "element";
 
     private static final String ELEMENT_MAP_KEY = "elementsMap";
+    
+    protected static final String ELEMENT_ACTION_KEY = "elementAction";
+    
+    private static final String PURPOSE_KEY = "purpose";
 
     private Session session;
 
@@ -67,9 +72,13 @@ public class AddonSocket {
         setupSession();
         socketServer = AddonSocketServer.getInstance();
         socketServer.addActiveSocket(this);
-        sendMessage(new AddonMessage(AddonCommand.REQUEST_BROWSER_INFO));
+        sendMessage(new AddonMessage(AddonCommand.REQUEST_BROWSER_INFO));               
     }
-
+    
+    protected void startItsPurpose(){    	
+    	sendMessage(new StartInspectAddonMessage());
+        System.out.println("WS: Start inspecting");        
+    }
     private void setupSession() {
         session.setMaxTextMessageBufferSize(DEFAULT_MAX_TEXT_MESSAGE_SIZE);
     }
@@ -89,6 +98,7 @@ public class AddonSocket {
 
     @OnMessage
     public void onWebSocketText(String message) {
+    	System.out.println(message);
         if (message.indexOf(EQUALS) == -1) {
             handleCommandMessage(message);
             return;
@@ -98,8 +108,7 @@ public class AddonSocket {
 
     protected void handleOldElementMessage(String message) {
         try {
-            String key = HTMLElementUtil.decodeURIComponent(message.substring(0, message.indexOf(EQUALS)));
-
+            String key = HTMLElementUtil.decodeURIComponent(message.substring(0, message.indexOf(EQUALS)));           
             switch (key) {
                 case ELEMENT_KEY:
                     addNewElement(message.substring(message.indexOf(EQUALS) + 1, message.length()));
@@ -107,6 +116,10 @@ public class AddonSocket {
                 case ELEMENT_MAP_KEY:
                     updateHTMLDOM(message);
                     break;
+                case PURPOSE_KEY:             
+                	System.out.println("Client has responded with a purpose");
+                	startItsPurpose();
+                	break;
             }
         } catch (UnsupportedEncodingException e) {
             LoggerSingleton.logError(e);

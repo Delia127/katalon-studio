@@ -300,7 +300,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 invoke(ObjectSpyEvent.ADDON_SESSION_STARTED, currentInstantSocket);
             } else {
                 startServer();
-                startRecordSession(selectedBrowser);
+                startRecordSession(selectedBrowser);                                                                                  	
                 invoke(ObjectSpyEvent.SELENIUM_SESSION_STARTED, session);
             }
 
@@ -339,6 +339,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         }
         Win32Helper.switchFocusToBrowser(selectedBrowser);
         currentInstantSocket.sendMessage(new AddonMessage(AddonCommand.START_RECORD));
+        System.out.println("START RECORD message sent");
     }
 
     private void closeInstantSession() {
@@ -442,7 +443,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         }
         stopServer();
         try {
-            server = new HTMLElementRecorderServer(port, logger, this);
+            server = new HTMLElementRecorderServer(port, logger, this, RecorderAddonSocket.class);                      
             server.start();
         } catch (BindException e) {
             MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE,

@@ -17,7 +17,6 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -45,7 +44,6 @@ import org.osgi.framework.Bundle;
 
 import com.kms.katalon.application.usagetracking.TrackingEvent;
 import com.kms.katalon.application.usagetracking.UsageActionTrigger;
-import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.control.Dropdown;
 import com.kms.katalon.composer.components.impl.control.DropdownGroup;
 import com.kms.katalon.composer.components.impl.control.DropdownItemSelectionListener;
@@ -236,7 +234,7 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
             server.stop();
         }
         try {
-            server = new HTMLElementCaptureServer(port, logger, elementCollector);
+            server = new HTMLElementCaptureServer(port, logger, elementCollector, AddonSocket.class);
             server.start();
         } catch (BindException e) {
             MessageDialog.openError(shell, StringConstants.ERROR_TITLE,
