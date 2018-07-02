@@ -50,9 +50,11 @@ public class GitHandler {
                                         File git_tmp = new File(tempDir, "git_tmp");
 
                                         ImportFolderHandler importHandler = new ImportFolderHandler();
-
                                         importHandler.copyFilesToKeywordsDirectory(
-                                                Display.getCurrent().getActiveShell(), git_tmp, true);
+                                                Display.getCurrent().getActiveShell(), git_tmp,
+                                                event.getProperty(GitEventConstants.COMMIT_ID).toString(),
+                                                event.getProperty(GitEventConstants.REPO_URL).toString());
+
                                         if (git_tmp.exists()) {
                                             FileUtils.deleteDirectory(git_tmp);
                                         }
