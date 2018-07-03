@@ -38,9 +38,12 @@ Require-Bundle: org.eclipse.e4.ui.model.workbench,
  com.kms.katalon.composer.explorer,
  org.apache.commons.io,
  org.eclipse.ui.ide,
- org.eclipse.debug.core
+ org.eclipse.debug.core,
+ org.apache.commons.lang3,
+ org.eclipse.osgi.services,
+ com.kms.katalon.composer.resources,
+ com.kms.katalon
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: javax.annotation;version="1.2.0",
- javax.inject;version="1.0.0",
- org.apache.commons.lang3.exception;version="3.1.0"
+ javax.inject;version="1.0.0"
 Bundle-ActivationPolicy: lazy

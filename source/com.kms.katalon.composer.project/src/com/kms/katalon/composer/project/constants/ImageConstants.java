@@ -13,4 +13,6 @@ public class ImageConstants {
 
     public static final Image API_ICON = ImageManager.getImage(IImageKeys.TEMPLATE_API_16);
 
+    public static final Image IMG_PROJECT_16 = ImageManager.getImage(IImageKeys.PROJECT_16);
+
 }

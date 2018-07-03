@@ -2,7 +2,9 @@ package com.kms.katalon.composer.project.handlers;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -94,6 +96,19 @@ public class OpenProjectHandler {
             }
         }
         return null;
+    }
+
+    public static List<File> getProjectFiles(File projectDirectory) {
+        List<File> childProjectFiles = new ArrayList<>();
+        for (File file : projectDirectory.listFiles()) {
+            if (file.isDirectory()) {
+                File projectFile = getProjectFile(file);
+                if (projectFile != null) {
+                    childProjectFiles.add(projectFile);
+                }
+            }
+        }
+        return childProjectFiles;
     }
 
     @Inject

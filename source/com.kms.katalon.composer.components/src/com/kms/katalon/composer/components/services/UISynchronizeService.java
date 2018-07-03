@@ -25,4 +25,8 @@ public class UISynchronizeService {
 	public static void syncExec(Runnable runnable) {
 	    getInstance().getSync().syncExec(runnable);
 	}
+	
+	public static void asyncExec(Runnable runnable) {
+        getInstance().getSync().asyncExec(runnable);
+    }
 }
