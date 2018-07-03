@@ -43,6 +43,7 @@ public class TestCaseMain {
 
         // Load GlobalVariable class
         loadGlobalVariableClass(classLoader);
+        loadInternalGlobalVariableClass(classLoader);
         loadCustomKeywordsClass(classLoader);
 
         eventManager = ExecutionEventManager.getInstance();
@@ -66,7 +67,18 @@ public class TestCaseMain {
             }
         }
     }
+    
+    private static void loadInternalGlobalVariableClass(GroovyClassLoader cl) {
+        try {
+            cl.loadClass(StringConstants.INTERNAL_GLOBAL_VARIABLE_CLASS_NAME);
+        } catch (ClassNotFoundException ex) {
+            try {
+                cl.parseClass(new File(RunConfiguration.getProjectDir(), StringConstants.INTERNAL_GLOBAL_VARIABLE_FILE_NAME));
+            } catch (CompilationFailedException | IOException ignored) {
 
+            }
+        }
+    }
     public static TestResult runTestCase(String testCaseId, TestCaseBinding testCaseBinding,
             FailureHandling flowControl) throws InterruptedException {
         return runTestCase(testCaseId, testCaseBinding, flowControl, true, true);

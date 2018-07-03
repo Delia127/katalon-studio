@@ -47,3 +47,5 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: javax.annotation;version="1.2.0",
  javax.inject;version="1.0.0"
 Bundle-ActivationPolicy: lazy
+Export-Package: com.kms.katalon.composer.integration.git.components.wizards,
+ com.kms.katalon.composer.integration.git.constants

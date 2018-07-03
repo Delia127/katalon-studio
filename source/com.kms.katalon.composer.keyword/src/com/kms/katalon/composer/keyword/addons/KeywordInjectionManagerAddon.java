@@ -9,6 +9,7 @@ import com.kms.katalon.composer.components.impl.transfer.TreeEntityTransfer;
 import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
 import com.kms.katalon.composer.keyword.handlers.DeleteKeywordAndPackageHandler;
 import com.kms.katalon.composer.keyword.handlers.EditorSavedHandler;
+import com.kms.katalon.composer.keyword.handlers.GitHandler;
 import com.kms.katalon.composer.keyword.handlers.OpenKeywordHandler;
 import com.kms.katalon.composer.keyword.handlers.PastePackageHandler;
 import com.kms.katalon.composer.keyword.handlers.RefreshKeywordHandler;
@@ -28,6 +29,7 @@ public class KeywordInjectionManagerAddon {
         ContextInjectionFactory.make(RefreshPackageHandler.class, context);
         ContextInjectionFactory.make(RefreshKeywordHandler.class, context);
         ContextInjectionFactory.make(EditorSavedHandler.class, context);
+        ContextInjectionFactory.make(GitHandler.class, context);
 		TransferTypeCollection.getInstance().addTreeEntityTransferType(TreeEntityTransfer.getInstance());
     }
 }
