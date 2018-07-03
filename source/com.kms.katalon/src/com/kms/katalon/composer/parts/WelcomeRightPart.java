@@ -481,7 +481,7 @@ public class WelcomeRightPart extends Composite {
         glHolder.horizontalSpacing = 30;
         glHolder.verticalSpacing = 30;
         recentsProjectHolder.setLayout(glHolder);
-        recentsProjectHolder.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, true, true));
+        recentsProjectHolder.setLayoutData(new GridData(SWT.CENTER, SWT.TOP, true, false));
 
         populateRecentProjects();
     }
