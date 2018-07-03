@@ -94,23 +94,22 @@ public class AnalyticsApiProvider {
 
     public static List<AnalyticsTeam> getTeams(String serverUrl, String accessToken) throws AnalyticsApiExeception {
         try {
-            URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_API_TEAMS);
+            URI uri = getApiURI(serverUrl, AnalyticsStringConstants.ANALYTICS_USERS_ME);
             HttpClientProxyBuilder httpClientProxyBuilder = create(ProxyPreferences.getProxyInformation());
             HttpClient httpClient = httpClientProxyBuilder.getClientBuilder().build();
             URIBuilder uriBuilder = new URIBuilder(uri);
-            uriBuilder.setParameter("sort", "name,asc");
             HttpGet httpGet = new HttpGet(uriBuilder.build().toASCIIString());
             httpGet.setHeader(HEADER_AUTHORIZATION, HEADER_VALUE_AUTHORIZATION_PREFIX + accessToken);
             HttpResponse httpResponse = httpClient.execute(httpGet);
             String responseString = EntityUtils.toString(httpResponse.getEntity());
             Gson gson = new GsonBuilder().create();
             AnalyticsTeamPage teamPage = gson.fromJson(responseString, AnalyticsTeamPage.class);
-            return teamPage.getContent();
+            return teamPage.getTeams();
         } catch (Exception e) {
             throw new AnalyticsApiExeception(e);
         }
     }
-
+    
     public static List<AnalyticsProject> getProjects(String serverUrl, AnalyticsTeam team, String accessToken)
             throws AnalyticsApiExeception {
         try {

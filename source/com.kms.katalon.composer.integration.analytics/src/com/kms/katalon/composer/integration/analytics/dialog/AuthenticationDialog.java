@@ -1,10 +1,15 @@
 package com.kms.katalon.composer.integration.analytics.dialog;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.security.GeneralSecurityException;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -29,24 +34,29 @@ import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.analytics.constants.ComposerAnalyticsStringConstants;
+import com.kms.katalon.composer.integration.analytics.constants.ComposerIntegrationAnalyticsMessageConstants;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.integration.analytics.constants.IntegrationAnalyticsMessages;
+import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
+import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 
 public class AuthenticationDialog extends Dialog {
 
     public static final int CONNECT_ID = 2;
 
-    public static final int CANCEL_ID = 3;
+    public static final int CANCEL_ID = 1;
 
-    private Text email;
     
+    private Text email;
+
     private Text password;
 
     private Text serverUrl;
-    
+
     private Label lblHelp;
 
     private Button btnConnect;
@@ -54,6 +64,8 @@ public class AuthenticationDialog extends Dialog {
     private Button btnCancel;
 
     private AnalyticsSettingStore analyticsSettingStore;
+    
+    private AnalyticsTokenInfo tokenInfo;
 
     private boolean showPassword;
 
@@ -63,7 +75,6 @@ public class AuthenticationDialog extends Dialog {
                 ProjectController.getInstance().getCurrentProject().getFolderLocation());
         this.showPassword = showPassword;
     }
-
 
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
@@ -108,7 +119,7 @@ public class AuthenticationDialog extends Dialog {
         lblUsername.setText(StringConstants.LBL_EMAIL);
         email = new Text(inputComposite, SWT.BORDER);
         email.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-      
+
         Label lblPassword = new Label(inputComposite, SWT.NONE);
         lblPassword.setText(StringConstants.LBL_PASSWORD);
         GridData gdLblPassword = new GridData(SWT.FILL, SWT.FILL, false, false);
@@ -145,7 +156,7 @@ public class AuthenticationDialog extends Dialog {
         lblPassword.setVisible(showPassword);
         gdPassword.exclude = !showPassword;
         password.setVisible(showPassword);
-        
+
         return body;
     }
 
@@ -182,7 +193,7 @@ public class AuthenticationDialog extends Dialog {
         btnConnect.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-               handleConnect();
+                handleConnect();
             }
         });
 
@@ -192,7 +203,7 @@ public class AuthenticationDialog extends Dialog {
                 cancelPressed();
             }
         });
-        
+
         lblHelp.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseUp(MouseEvent e) {
@@ -223,9 +234,47 @@ public class AuthenticationDialog extends Dialog {
     private void handleConnect() {
         String emailText = email.getText();
         String passwordText = password.getText();
+        String serverUrlText = serverUrl.getText();
         updateDataStore(emailText, passwordText);
         setReturnCode(CONNECT_ID);
-        closeDialog();
+        AnalyticsTokenInfo tokenInfo = requestToken(getShell(), serverUrlText, emailText, passwordText);
+        setTokenInfo(tokenInfo);
+        if (tokenInfo != null){
+          closeDialog();
+        }
+    }
+
+    private AnalyticsTokenInfo requestToken(Shell shell, String serverUrl, String email, String password) {
+        final AnalyticsTokenInfo[] tokenInfo = new AnalyticsTokenInfo[1];
+        try {
+            new ProgressMonitorDialog(shell).run(true, false, new IRunnableWithProgress() {
+                @Override
+                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                    try {
+                        monitor.beginTask(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_CONNECTING_TO_SERVER,
+                                2);
+                        tokenInfo[0] = AnalyticsApiProvider.requestToken(serverUrl, email,
+                                password);
+                        monitor.worked(1);
+                    } catch (Exception e) {
+                        throw new InvocationTargetException(e);
+                    }
+                }
+            });
+        } catch (Exception ex) {
+            // show error dialog
+            LoggerSingleton.logError(ex);
+            try {
+                analyticsSettingStore.setPassword(StringUtils.EMPTY, true);
+                analyticsSettingStore.enableIntegration(false);
+            } catch (IOException | GeneralSecurityException e) {
+                // TODO Auto-generated catch block
+                LoggerSingleton.logError(e);
+            }
+            MessageDialog.openError(Display.getCurrent().getActiveShell(),
+                    ComposerAnalyticsStringConstants.ERROR, IntegrationAnalyticsMessages.MSG_REQUEST_TOKEN_ERROR);
+        }
+        return tokenInfo[0];
     }
 
     private void handleEnteredUsername() {
@@ -238,6 +287,14 @@ public class AuthenticationDialog extends Dialog {
 
     private void closeDialog() {
         this.close();
+    }
+
+    public AnalyticsTokenInfo getTokenInfo() {
+        return tokenInfo;
+    }
+
+    public void setTokenInfo(AnalyticsTokenInfo tokenInfo) {
+        this.tokenInfo = tokenInfo;
     }
 
 }

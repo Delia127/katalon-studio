@@ -286,14 +286,8 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                 }
 
                 if (teams != null && teams.size() > 0) {
-                    AnalyticsTeam team = teams.get(getDefaultTeamIndex());
-                    projects = getProjects(analyticsSettingStore.getServerEndpoint(encryptionEnabled), 
-                            analyticsSettingStore.getEmail(encryptionEnabled),
-                            password, team, false);
-                    if (projects != null && !projects.isEmpty()) {
-                        cbbProjects.setItems(getProjectNames(projects).toArray(new String[projects.size()]));
-                        cbbProjects.select(getDefaultProjectIndex());
-                    }
+                    setProjectsBasedOnTeam(teams,analyticsSettingStore.getServerEndpoint(encryptionEnabled),
+                            analyticsSettingStore.getEmail(encryptionEnabled), password);
                 }
             }
 
@@ -388,14 +382,8 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                     cbbTeams.setItems(getTeamNames(teams).toArray(new String[teams.size()]));
                     cbbTeams.select(getDefaultTeamIndex());
                 }
-
-                AnalyticsTeam team = teams.get(getDefaultTeamIndex());
-
-                projects = getProjects(serverUrl, email, password, team, false);
-                if (projects != null && !projects.isEmpty()) {
-                    cbbProjects.setItems(getProjectNames(projects).toArray(new String[projects.size()]));
-                    cbbProjects.select(getDefaultProjectIndex());
-                }
+                
+                setProjectsBasedOnTeam(teams, serverUrl, email, password);
             }
         });
 
@@ -406,14 +394,10 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                     String serverUrl = txtServerUrl.getText();
                     String email = txtEmail.getText();
                     String password = txtPassword.getText();
-
+                    
                     analyticsSettingStore.setTeam(teams.get(cbbTeams.getSelectionIndex()));
-                    AnalyticsTeam team = teams.get(getDefaultTeamIndex());
-                    projects = getProjects(serverUrl, email, password, team, false);
-                    if (projects != null && !projects.isEmpty()) {
-                        cbbProjects.setItems(getProjectNames(projects).toArray(new String[projects.size()]));
-                        cbbProjects.select(getDefaultProjectIndex());
-                    }
+                    setProjectsBasedOnTeam(teams, serverUrl, email, password);
+
                 } catch (IOException ex) {
                     LoggerSingleton.logError(ex);
                     MultiStatusErrorDialog.showErrorDialog(ex, ComposerAnalyticsStringConstants.ERROR, ex.getMessage());
@@ -463,6 +447,21 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             }
         });
 
+    }
+    
+    private void setProjectsBasedOnTeam(List<AnalyticsTeam> teams, String serverUrl, String email, String password){
+        AnalyticsTeam team = teams.get(getDefaultTeamIndex());
+        projects = getProjects(serverUrl, email, password, team, false);
+        if (projects != null && !projects.isEmpty()) {
+            cbbProjects.setItems(getProjectNames(projects).toArray(new String[projects.size()]));
+            cbbProjects.select(getDefaultProjectIndex());
+        }
+        String role = team.getRole();
+        if(role.equals("USER")){
+            btnCreate.setEnabled(false);
+        } else {
+            btnCreate.setEnabled(true);
+        }
     }
 
     private List<AnalyticsProject> getProjects(final String serverUrl, final String email, final String password,

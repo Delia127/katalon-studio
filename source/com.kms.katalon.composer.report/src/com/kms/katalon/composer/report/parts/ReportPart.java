@@ -758,6 +758,9 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                                 .getEmail(analyticsSettingStore.isEncryptionEnabled());
                         String analyticsPassword = analyticsSettingStore
                                 .getPassword(analyticsSettingStore.isEncryptionEnabled());
+                        final AnalyticsTokenInfo[] tokenInfos = new AnalyticsTokenInfo[1];
+                        final boolean[] hasTokens = new boolean[1];
+                        hasTokens[0] = false;
 
                         if (analyticsPassword.equals(StringUtils.EMPTY)
                                 && !preferencePassword.equals(StringUtils.EMPTY)) {
@@ -771,7 +774,11 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                         if (analyticsPassword.equals(StringUtils.EMPTY)) {
                             // no credentials -> set credentials by using pop up
                             AuthenticationDialog authenticationDialog = new AuthenticationDialog(shell, true);
-                            authenticationDialog.open();
+                            int resultCode = authenticationDialog.open();
+                            if (resultCode == AuthenticationDialog.CANCEL_ID) {
+                                return;
+                            }
+                            tokenInfos[0] = authenticationDialog.getTokenInfo();
                             authenticationDialogOpened = true;
                             analyticsPassword = analyticsSettingStore
                                     .getPassword(analyticsSettingStore.isEncryptionEnabled());
@@ -781,8 +788,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
 
                         final String email = analyticsEmail;
                         final String password = analyticsPassword;
-                        final AnalyticsTokenInfo[] tokenInfos = new AnalyticsTokenInfo[1];
-                        if (!analyticsPassword.equals(StringUtils.EMPTY)) {
+                        if (!analyticsPassword.equals(StringUtils.EMPTY) && authenticationDialogOpened == false) {
                             try {
                                 new ProgressMonitorDialog(shell).run(true, false, new IRunnableWithProgress() {
                                     @Override
@@ -809,13 +815,13 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                             }
                         }
 
-                        // always have token now unless the info is wrong
+                        // always have token now
                         teams = getTeams(serverUrl, analyticsEmail, analyticsPassword, tokenInfos[0]);
                         teamCount = teams.size();
-                        projects = getProjects(serverUrl, analyticsEmail, analyticsPassword, teams.get(0),
+                        projects = getProjects(serverUrl, analyticsEmail, analyticsPassword, teams.get(1),
                                 tokenInfos[0]);
                         projectCount = projects.size();
-                        UploadSelectionDialog uploadSelectionDialog = new UploadSelectionDialog(shell, teams, projects);
+                        UploadSelectionDialog uploadSelectionDialog = new UploadSelectionDialog(shell, teams);
                         if (projectCount > 0 || teamCount > 1) {
                             analyticsSettingStore.enableIntegration(true);
                             int returnCode = uploadSelectionDialog.open();
@@ -823,6 +829,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                                 uploadToKA();
                             } else {
                                 analyticsSettingStore.enableIntegration(false);
+                                return;
                             }
                         } else if (authenticationDialogOpened) {
                             // create default project and upload
@@ -836,6 +843,9 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                                 createDefaultProject(analyticsSettingStore, serverUrl, teams.get(0), tokenInfos[0]);
                                 analyticsSettingStore.enableIntegration(true);
                                 uploadToKA();
+                            } else {
+                                analyticsSettingStore.enableIntegration(false);
+                                return;
                             }
                         }
                         Program.launch(ComposerReportMessageConstants.KA_HOMEPAGE);
