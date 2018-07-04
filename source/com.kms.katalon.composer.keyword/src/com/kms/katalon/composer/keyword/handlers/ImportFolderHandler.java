@@ -120,8 +120,6 @@ public class ImportFolderHandler {
             StringBuilder destinationKeywordFolder = new StringBuilder(keywordRootFolder.getLocation());
             destinationKeywordFolder.append(File.separator);
             String absolutePath = groovyFile.getAbsolutePath();
-            String relativePath = PathUtil.absoluteToRelativePath(absolutePath,
-                    ProjectController.getInstance().getCurrentProject().getFolderLocation());
             if (StringUtils.isNotEmpty(repoUrl)) {
                 destinationKeywordFolder.append(absolutePath.substring(
                         absolutePath.indexOf(importedFolder.getName()) + importedFolder.getName().length() + 1,
@@ -130,6 +128,9 @@ public class ImportFolderHandler {
                 destinationKeywordFolder.append(
                         absolutePath.substring(absolutePath.indexOf(importedFolder.getName()), absolutePath.length()));
             }
+            
+            String relativePath = PathUtil.absoluteToRelativePath(destinationKeywordFolder.toString(),
+                    ProjectController.getInstance().getCurrentProject().getFolderLocation());
 
             if (new File(destinationKeywordFolder.toString()).exists()) {
                 // Open popup with the file name
