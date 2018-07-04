@@ -51,7 +51,7 @@ public class AddonSocket {
     
     protected static final String ELEMENT_ACTION_KEY = "elementAction";
     
-    private static final String PURPOSE_KEY = "purpose";
+    private static final String SELENIUM_SOCKET_KEY = "SeleniumSocket";
 
     private Session session;
 
@@ -75,7 +75,7 @@ public class AddonSocket {
         sendMessage(new AddonMessage(AddonCommand.REQUEST_BROWSER_INFO));               
     }
     
-    protected void startItsPurpose(){    	
+    protected void seleniumSocketResponder(){    	
     	sendMessage(new StartInspectAddonMessage());
         System.out.println("WS: Start inspecting");        
     }
@@ -98,7 +98,6 @@ public class AddonSocket {
 
     @OnMessage
     public void onWebSocketText(String message) {
-    	System.out.println(message);
         if (message.indexOf(EQUALS) == -1) {
             handleCommandMessage(message);
             return;
@@ -116,9 +115,9 @@ public class AddonSocket {
                 case ELEMENT_MAP_KEY:
                     updateHTMLDOM(message);
                     break;
-                case PURPOSE_KEY:             
-                	System.out.println("Client has responded with a purpose");
-                	startItsPurpose();
+                case SELENIUM_SOCKET_KEY:             
+                	System.out.println("Client is a Selenium Socket");
+                	seleniumSocketResponder();
                 	break;
             }
         } catch (UnsupportedEncodingException e) {

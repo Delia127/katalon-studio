@@ -20,6 +20,7 @@ function treeHTML(element, object, currentWindow) {
     }
 
     var xpath = neighborXpathsGenerator.getXpathsByNeighbors(element, false)[0];
+    //var xpath = ku_locatorBuilders.build(element);
 	
 	if(xpath != null ) {
         object['xpath'] = xpath

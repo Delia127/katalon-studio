@@ -68,6 +68,7 @@ function startRecorder() {
     if (runMode !== RUN_MODE_IDLE) {
         stop();
     }
+    
     console.log("Starting Recorder")
     $('document').ready(function() {
         startRecord();

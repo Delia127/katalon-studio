@@ -12,8 +12,12 @@
         "all_frames": true,
         "matches": ["http://*/*", "https://*/*"],
         "match_about_blank": true,
-        "js": ["jquery-3.2.1.min.js", "jquery.color.js", "constants.js", "neighbor-xpaths-generator.js", "chrome_variables_default.js", "chrome_variables_init.js", "chrome_common.js",
-            "common.js", "record_common.js", "chrome_setup.js", "dom_inspector.js", "dom_collector.js", "dom_recorder.js", "process_element.js", "main.js"]
+        "js": ["jquery-3.2.1.min.js", "jquery.color.js", "constants.js", "neighbor-xpaths-generator.js", 
+            "chrome_variables_default.js", "chrome_variables_init.js", "chrome_common.js",
+            "common.js", "record_common.js", "chrome_setup.js", "dom_inspector.js", "dom_collector.js",           
+            "ku-locatorBuilders.js", "ku-recorder.js", "ku-recorder-handlers.js",
+            "dom_recorder.js",   
+            "process_element.js", "main.js"]
         }
     ],
     "background": {

@@ -20,7 +20,7 @@ var selfWindowId = -1;
 var contentWindowId;
 var notificationCount = 0;
 
-var recorder = new BackgroundRecorder();
+var bg_recorder = new BackgroundRecorder();
 
 /* flags */
 var isRecording = false;
@@ -113,8 +113,8 @@ browser.runtime.onMessage.addListener(function contentWindowIdListener(message) 
         selfWindowId = message.selfWindowId;
         contentWindowId = message.commWindowId;
         extCommand.setContentWindowId(contentWindowId);
-        recorder.setOpenedWindow(contentWindowId);
-        recorder.setSelfWindowId(selfWindowId);
+        bg_recorder.setOpenedWindow(contentWindowId);
+        bg_recorder.setSelfWindowId(selfWindowId);
         browser.runtime.onMessage.removeListener(contentWindowIdListener);
     }
 })

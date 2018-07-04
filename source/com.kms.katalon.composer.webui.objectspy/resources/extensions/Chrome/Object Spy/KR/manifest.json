@@ -50,8 +50,11 @@
             "all_frames": true,
             "matches": ["<all_urls>"],
             "match_about_blank": true,
-            "js": ["katalon/jquery-3.2.1.min.js", "katalon/jquery.color.js", "katalon/constants.js", "katalon/chrome_variables_default.js", "chrome_variables_init.js", "katalon/chrome_common.js",
-                "katalon/common.js", "katalon/record_common.js", "katalon/chrome_setup.js", "katalon/dom_inspector.js", "katalon/dom_collector.js", "katalon/dom_recorder.js", "katalon/process_element.js", "katalon/main.js"]
+            "js": ["katalon/jquery-3.2.1.min.js", "katalon/jquery.color.js", "katalon/neighbor-xpaths-generator.js", "katalon/constants.js",
+                "katalon/chrome_common.js", "katalon/chrome_variables_default.js", "chrome_variables_init.js", 
+                "katalon/ku-locatorBuilders.js", "katalon/common.js", "katalon/record_common.js", "katalon/chrome_setup.js", "katalon/dom_inspector.js", 
+                "katalon/dom_collector.js", "katalon/ku-recorder.js", "katalon/ku-recorder-handlers.js",
+                "katalon/dom_recorder.js", "katalon/process_element.js", "katalon/main.js"]
         },
         {
             "matches": ["<all_urls>"],
@@ -63,7 +66,8 @@
 
     "background":
     {
-        "scripts": ["common/browser-polyfill.js", "background/background.js", "background/kar.js", "katalon/constants.js", "katalon/chrome_variables_default.js", "chrome_variables_init.js", "katalon/chrome_common.js", "katalon/background.js"]
+        "scripts": ["common/browser-polyfill.js", "background/background.js", "background/kar.js", 
+            "katalon/constants.js", "katalon/chrome_variables_default.js", "chrome_variables_init.js", "katalon/chrome_common.js", "katalon/background.js"]
     },
 
     "browser_action":

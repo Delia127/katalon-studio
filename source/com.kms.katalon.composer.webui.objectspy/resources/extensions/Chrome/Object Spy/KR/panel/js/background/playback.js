@@ -133,7 +133,7 @@ window.onload = function() {
 
         isRecording = !isRecording;
         if (isRecording) {
-            recorder.attach();
+            bg_recorder.attach();
             notificationCount = 0;
             // KAT-BEGIN focus on window when recording
             if (contentWindowId) {
@@ -152,7 +152,7 @@ window.onload = function() {
             // KAT-END
         }
         else {
-            recorder.detach();
+            bg_recorder.detach();
             browser.tabs.query({windowId: extCommand.getContentWindowId(), url: "<all_urls>"})
             .then(function(tabs) {
                 for(let tab of tabs) {
@@ -170,7 +170,7 @@ window.onload = function() {
         emptyNode(document.getElementById("logcontainer"));
         document.getElementById("result-runs").textContent = "0";
         document.getElementById("result-failures").textContent = "0";
-        recorder.detach();
+        bg_recorder.detach();
         initAllSuite();
         setCaseScrollTop(getSelectedCase());
         // KAT-BEGIN focus on window when playing test case
@@ -198,7 +198,7 @@ window.onload = function() {
         emptyNode(document.getElementById("logcontainer"));
         document.getElementById("result-runs").textContent = "0";
         document.getElementById("result-failures").textContent = "0";
-        recorder.detach();
+        bg_recorder.detach();
         initAllSuite();
         // KAT-BEGIN focus on window when playing test suite
         if (contentWindowId) {
@@ -214,7 +214,7 @@ window.onload = function() {
         emptyNode(document.getElementById("logcontainer"));
         document.getElementById("result-runs").textContent = "0";
         document.getElementById("result-failures").textContent = "0";
-        recorder.detach();
+        bg_recorder.detach();
         initAllSuite();
         // KAT-BEGIN focus on window when playing test suite
         if (contentWindowId) {
@@ -695,7 +695,7 @@ document.addEventListener("dblclick", function(event) {
     while (temp.tagName.toLowerCase() != "body") {
         if (/records-(\d)+/.test(temp.id)) {
             var index = temp.id.split("-")[1];
-            recorder.detach();
+            bg_recorder.detach();
             executeCommand(index);
         }
         if (temp.id == "command-grid") {

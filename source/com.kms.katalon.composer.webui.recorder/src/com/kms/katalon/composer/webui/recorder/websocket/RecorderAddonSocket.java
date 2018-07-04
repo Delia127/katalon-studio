@@ -35,7 +35,7 @@ public class RecorderAddonSocket extends AddonSocket {
         }
     }
     
-    protected void startItsPurpose(){
+    protected void seleniumSocketResponder(){
         sendMessage(new AddonMessage(AddonCommand.START_RECORD));
         System.out.println("WS: Start recording");        
     }

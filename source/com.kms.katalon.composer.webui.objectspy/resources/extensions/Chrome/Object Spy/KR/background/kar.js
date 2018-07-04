@@ -14,14 +14,14 @@ chrome.runtime.onInstalled.addListener(function(details) {
     if (details.reason === 'install') {
         _gaq.push(['_trackEvent', 'app', 'install']);
         _gaq.push(['_trackEvent', 'app', 'open-landing-page']);
-        chrome.tabs.create({'url': 'https://www.katalon.com/automation-recorder'});
+        //chrome.tabs.create({'url': 'https://www.katalon.com/automation-recorder'});
     } else if (details.reason === 'update') {
         _gaq.push(['_trackEvent', 'app', 'update']);
         var previousVersion = details.previousVersion;
         var previousMajorVersion = previousVersion.substring(0, previousVersion.indexOf('.'));
         if (previousMajorVersion === '1') {
             _gaq.push(['_trackEvent', 'app', 'open-landing-page']);
-            chrome.tabs.create({'url': 'https://www.katalon.com/automation-recorder'});
+            //chrome.tabs.create({'url': 'https://www.katalon.com/automation-recorder'});
         }
     }
 });

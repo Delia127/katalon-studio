@@ -43,7 +43,7 @@ var injectIntoTab = function(tab, scripts) {
 }
 
 chrome.runtime.onInstalled.addListener(function(details) {
-    // Get all windows
+/*     // Get all windows
     chrome.windows.getAll({
         populate : true
     }, function(windows) {
@@ -65,7 +65,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
             }
         }
     });
-    setCurrentWindow();
+    setCurrentWindow(); */
 });
 
 function processXHTTPAction(request, callback) {
@@ -225,8 +225,7 @@ function tryToConnect() {
             }
             tempSocket.onopen = function(event) {
                 console.log("Connected to Katalon Studio");
-                clientSocket = tempSocket;
-                clientSocket.send(ADDON_READY);
+                clientSocket = tempSocket;                
                 clientSocket.onclose = function(event) {
                     console.log("Connection closed - Try to connect again...");
                     clientSocket = null;
@@ -260,10 +259,12 @@ function handleServerMessage(message) {
                 browserName : CHROME
             }
         }
-        clientSocket.send(JSON.stringify(message));		
+        clientSocket.send(JSON.stringify(message));
 		getKatalonServerPort(function(port) {
+            // If port is not 50000 then this client is a Selenium Socket client
+            // send the message back to KS to notify
 			if(port != parseInt(katalonServerPortConst)){
-				clientSocket.send(PURPOSE_TRIGGER);
+				clientSocket.send(SELENIUM_SOCKET_KEY + "=true");
 			}
 		});
         break;
