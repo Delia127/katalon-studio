@@ -357,6 +357,9 @@ class KURecorder {
             return false;
         }
         
+        if(selectedElement.contentEditable && selectedElement.contentEditable == 'true'){
+            return false;
+        }
         return elementTag != 'select' && elementTag != 'option' && elementTag != 'textarea';
     }
 
