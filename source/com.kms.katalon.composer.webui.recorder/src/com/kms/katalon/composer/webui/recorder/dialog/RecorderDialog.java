@@ -70,7 +70,6 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.osgi.framework.Bundle;
 import org.osgi.service.event.EventHandler;
-import org.yaml.snakeyaml.composer.Composer;
 
 import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
@@ -494,15 +493,15 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     private void pause() {
         isPauseRecording = true;
-        tltmPauseAndResume.setToolTipText("Pause recording");
-        tltmPauseAndResume.setImage(ImageConstants.IMG_24_PLAY);
+        tltmPauseAndResume.setToolTipText("Resume recording");
+        tltmPauseAndResume.setImage(ImageConstants.IMG_24_RESUME_RECORDING);
         toolBar.getParent().layout();
     }
 
     private void resume() {
         isPauseRecording = false;
-        tltmPauseAndResume.setToolTipText("Resume recording");
-        tltmPauseAndResume.setImage(ImageConstants.IMG_24_PAUSE);
+        tltmPauseAndResume.setToolTipText("Pause recording");
+        tltmPauseAndResume.setImage(ImageConstants.IMG_24_PAUSE_RECORDING);
         toolBar.getParent().layout();
     }
 
@@ -1151,7 +1150,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
         tltmPauseAndResume = new ToolItem(toolBar, SWT.PUSH);
         tltmPauseAndResume.setToolTipText(ComposerWebuiRecorderMessageConstants.DIA_TOOLTIP_PAUSE_RECORDING);
-        tltmPauseAndResume.setImage(ImageConstants.IMG_24_PAUSE);
+        tltmPauseAndResume.setImage(ImageConstants.IMG_24_PAUSE_RECORDING);
         tltmPauseAndResume.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -1166,7 +1165,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         tltmPauseAndResume.setEnabled(false);
 
         tltmStop = new ToolItem(toolBar, SWT.PUSH);
-        tltmStop.setImage(ImageConstants.IMG_24_STOP);
+        tltmStop.setImage(ImageConstants.IMG_24_STOP_RECORDING);
         tltmStop.setToolTipText(ComposerWebuiRecorderMessageConstants.DIA_TOOLTIP_STOP_RECORDING);
         tltmStop.addSelectionListener(new SelectionAdapter() {
             @Override

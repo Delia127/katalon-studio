@@ -615,5 +615,14 @@ public interface IImageKeys {
     public static final String CONFLICT_ELEMENT_STATUS_16 = "element_conflict_16.png"; //$NON-NLS-1$
 
     public static final String NEW_ELEMENT_STATUS_16 = "element_new_16.png";
+    
+    // Recorder
+    public static final String START_RECORDING_24 = "recorder/start_recording_24.png"; //$NON-NLS-1$
+
+    public static final String PAUSE_RECORDING_24 = "recorder/pause_recording_24.png"; //$NON-NLS-1$
+
+    public static final String RESUME_RECORDING_24 = "recorder/resume_recording_24.png"; //$NON-NLS-1$
+
+    public static final String STOP_RECORDING_24 = "recorder/stop_recording_24.png"; //$NON-NLS-1$
 
 }
