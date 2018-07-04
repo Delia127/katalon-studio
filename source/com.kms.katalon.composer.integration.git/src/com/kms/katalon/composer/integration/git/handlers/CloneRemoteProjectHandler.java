@@ -52,7 +52,7 @@ import com.kms.katalon.composer.project.handlers.NewProjectHandler;
 import com.kms.katalon.composer.project.handlers.OpenProjectHandler;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
-import com.kms.katalon.composer.samples.SampleProject;
+import com.kms.katalon.composer.samples.SampleRemoteProject;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -86,7 +86,7 @@ public class CloneRemoteProjectHandler {
                     public void handleEvent(Event event) {
                         Object[] objects = getObjects(event);
 
-                        SampleProject sample = (SampleProject) objects[0];
+                        SampleRemoteProject sample = (SampleRemoteProject) objects[0];
                         String projectLocation = (String) objects[1];
 
                         File workdir = new File(projectLocation);
@@ -99,7 +99,7 @@ public class CloneRemoteProjectHandler {
                                 try {
                                     monitor.beginTask("Cloning remote project...", 100);
 
-                                    URIish uri = new URIish(sample.getHref());
+                                    URIish uri = new URIish(sample.getSourceUrl());
                                     final Repository db = FileRepositoryBuilder.create(new File("/tmp")); //$NON-NLS-1$
                                     Collection<Ref> refs = new ArrayList<>();
                                     try (Git git = new Git(db)) {
@@ -112,7 +112,7 @@ public class CloneRemoteProjectHandler {
                                         }
                                     }
                                     monitor.worked(30);
-                                    CloneOperation cloneOp = new CloneOperation(uri, false, refs, workdir, "master",
+                                    CloneOperation cloneOp = new CloneOperation(uri, false, refs, workdir, sample.getDefaultBranch(),
                                             "origin", FETCH_TIMEOUT_IN_MILLIS);
                                     cloneOp.run(monitor);
 

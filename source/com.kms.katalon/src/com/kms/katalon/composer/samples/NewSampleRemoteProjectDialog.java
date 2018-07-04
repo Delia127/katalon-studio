@@ -28,7 +28,7 @@ public class NewSampleRemoteProjectDialog extends TitleAreaDialog {
     private static final String DEFAULT_PROJECT_LOCATION = System.getProperty("user.home") + File.separator
             + StringConstants.APP_NAME;
 
-    private SampleProject sampleProject;
+    private SampleRemoteProject sampleProject;
 
     private Text txtSourceURL;
 
@@ -38,7 +38,7 @@ public class NewSampleRemoteProjectDialog extends TitleAreaDialog {
     
     private String selectedProjectLocation;
 
-    public NewSampleRemoteProjectDialog(Shell parentShell, SampleProject sampleProject) {
+    public NewSampleRemoteProjectDialog(Shell parentShell, SampleRemoteProject sampleProject) {
         super(parentShell);
         this.sampleProject = sampleProject;
     }
@@ -85,7 +85,7 @@ public class NewSampleRemoteProjectDialog extends TitleAreaDialog {
     }
 
     protected void setInput() {
-        txtSourceURL.setText(sampleProject.getHref());
+        txtSourceURL.setText(sampleProject.getSourceUrl());
         String suggestedProjectLocation = getSuggestedName();
         
         txtProjectLocation.setText(suggestedProjectLocation);

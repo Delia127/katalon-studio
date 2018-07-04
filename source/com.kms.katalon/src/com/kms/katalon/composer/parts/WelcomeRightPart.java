@@ -2,13 +2,15 @@ package com.kms.katalon.composer.parts;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -37,6 +39,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
@@ -49,7 +52,7 @@ import com.kms.katalon.composer.project.handlers.NewSampleProjectHandler;
 import com.kms.katalon.composer.project.menu.RecentProjectParameterizedCommandBuilder;
 import com.kms.katalon.composer.project.template.SampleProjectProvider;
 import com.kms.katalon.composer.samples.NewSampleRemoteProjectDialog;
-import com.kms.katalon.composer.samples.SampleProject;
+import com.kms.katalon.composer.samples.SampleRemoteProject;
 import com.kms.katalon.composer.samples.SampleRemoteProjectProvider;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.ImageConstants;
@@ -320,11 +323,10 @@ public class WelcomeRightPart extends Composite {
         holder.setLayout(glHolder);
         holder.setLayoutData(new GridData(SWT.CENTER, SWT.TOP, true, false));
 
-        List<List<File>> tempImageFiles = new ArrayList<>();
         thread = new Thread(() -> {
             SampleRemoteProjectProvider sampleRemoteProjectProvider = new SampleRemoteProjectProvider();
-            List<SampleProject> sampleProjects = sampleRemoteProjectProvider.getSampleProjects();
-            
+            List<SampleRemoteProject> sampleProjects = sampleRemoteProjectProvider.getSampleProjects();
+
             List<Composite> composites = new ArrayList<>();
             UISynchronizeService.syncExec(() -> {
                 samplesContent.setRedraw(false);
@@ -332,9 +334,9 @@ public class WelcomeRightPart extends Composite {
                     addDefaultSampleProjects(holder);
                 }
                 Composite latestComposite = null;
-                for (SampleProject sample : sampleProjects) {
-                    latestComposite = addProjectBlock(holder, sample.getThumbnail(), ImageConstants.IMG_GITHUB_LOGO,
-                            sample.getName(), sample.getDescription(), new MouseAdapter() {
+                for (SampleRemoteProject sample : sampleProjects) {
+                    latestComposite = addProjectBlock(holder, getDefaultImage(sample),
+                            ImageConstants.IMG_GITHUB_LOGO, sample.getName(), sample.getName(), new MouseAdapter() {
 
                                 @Override
                                 public void mouseUp(MouseEvent e) {
@@ -351,8 +353,8 @@ public class WelcomeRightPart extends Composite {
                     composites.add(latestComposite);
                 }
 
-               addProjectBlock(holder, ImageConstants.IMG_SAMPLE_MORE,
-                        MessageConstants.LBL_MORE_PROJECT, MessageConstants.LBL_MORE_PROJECT_TOOLTIP, new MouseAdapter() {
+                addProjectBlock(holder, ImageConstants.IMG_SAMPLE_MORE, MessageConstants.LBL_MORE_PROJECT,
+                        MessageConstants.LBL_MORE_PROJECT_TOOLTIP, new MouseAdapter() {
 
                             @Override
                             public void mouseUp(MouseEvent e) {
@@ -364,12 +366,8 @@ public class WelcomeRightPart extends Composite {
                 samplesContent.setRedraw(true);
             });
 
-            for (SampleProject sample : sampleProjects) {
-                tempImageFiles.add(sampleRemoteProjectProvider.getThumbnailStreams(sample));
-            }
-
             sampleProjects.parallelStream().forEach(sample -> {
-                List<File> imageFiles = sampleRemoteProjectProvider.getThumbnailStreams(sample);
+                Map<Integer, File> imageFiles = sampleRemoteProjectProvider.getThumbnailFiles(sample);
 
                 int index = sampleProjects.indexOf(sample);
                 Composite composite = composites.get(index);
@@ -386,7 +384,7 @@ public class WelcomeRightPart extends Composite {
                         lblIcon.addDisposeListener(new DisposeListener() {
                             @Override
                             public void widgetDisposed(DisposeEvent e) {
-                                imageFiles.forEach(f -> FileUtils.deleteQuietly(f));
+                                imageFiles.entrySet().forEach(entry -> FileUtils.deleteQuietly(entry.getValue()));
                             }
                         });
                     }
@@ -394,7 +392,7 @@ public class WelcomeRightPart extends Composite {
             });
         });
         thread.start();
-        
+
         this.addDisposeListener(new DisposeListener() {
             @Override
             public void widgetDisposed(DisposeEvent e) {
@@ -403,6 +401,19 @@ public class WelcomeRightPart extends Composite {
                 }
             }
         });
+    }
+
+    private Image getDefaultImage(SampleRemoteProject sampleRemoteProject) {
+        switch (sampleRemoteProject.getType()) {
+            case MOBILE:
+                return ImageConstants.IMG_SAMPLE_MOBILE_PROJECT;
+            case WEBUI:
+                return ImageConstants.IMG_SAMPLE_WEB_UI_PROJECT;
+            case WS:
+                return ImageConstants.IMG_SAMPLE_WEB_SERVICE_PROJECT;
+            default:
+                return ImageConstants.IMG_SAMPLE_REMOTE;
+        }
     }
 
     private void addDefaultSampleProjects(Composite holder) {
@@ -451,26 +462,24 @@ public class WelcomeRightPart extends Composite {
                 });
     }
 
-    public Image createImage(Display display, List<File> streams) {
-        ImageDataProvider dataProvider = new ImageDataProvider() {
+    public Image createImage(Display display, Map<Integer, File> allImageFiles) {
+        Map<Integer, Image> allImages = allImageFiles.entrySet()
+                .stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> {
+                    try {
+                        return new Image(display, new FileInputStream(e.getValue()));
+                    } catch (IOException ex) {
+                        return ImageConstants.IMG_SAMPLE_REMOTE;
+                    }
+                }));
+        ImageDataProvider dateProvider = new ImageDataProvider() {
 
             @Override
             public ImageData getImageData(int zoom) {
-                try {
-                    Image thumbnailSmall = new Image(display, new FileInputStream(streams.get(0)));
-
-                    Image thumbnailLarge = new Image(display, new FileInputStream(streams.get(1)));
-                    if (zoom == 200) {
-                        return thumbnailLarge.getImageData();
-                    }
-                    return thumbnailSmall.getImageData();
-                } catch (FileNotFoundException e) {
-                    return null;
-                }
+                return allImages.get(zoom).getImageData();
             }
         };
-
-        return new Image(display, dataProvider);
+        return new Image(display, dateProvider);
     }
 
     private void createRecentsTabContent() {
@@ -615,14 +624,16 @@ public class WelcomeRightPart extends Composite {
         glTextComposite.marginBottom = 5;
         textComposite.setLayout(glTextComposite);
 
-        Label lblText = new Label(textComposite, SWT.WRAP);
-        lblText.setAlignment(SWT.CENTER);
+        Text lblText = new Text(textComposite, SWT.WRAP | SWT.CENTER);
         lblText.setText(label);
         lblText.setToolTipText(tooltip);
         lblText.setForeground(TEXT_COLOR);
-        lblText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         ControlUtils.setFontStyle(lblText, SWT.NORMAL, FONT_SIZE_MEDIUM);
+        GridData gridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
+        gridData.heightHint = 2 * lblText.getLineHeight();
+        lblText.setLayoutData(gridData);
         lblText.addMouseListener(action);
+        lblText.getLineCount();
         return c;
     }
 
