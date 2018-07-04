@@ -257,7 +257,10 @@ public class WebElement implements XPathProvider {
 
     public String getScriptId() {
         WebPage root = getRoot();
-        
+        if (root == this) {
+            return "Object Repository/" + getName(); 
+        }
+
         return savedEntity != null ? savedEntity.getIdForDisplay() : root.getScriptId() + "/" + getName();
     }
 

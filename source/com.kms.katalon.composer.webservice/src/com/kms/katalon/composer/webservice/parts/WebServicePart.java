@@ -19,6 +19,7 @@ import org.apache.http.impl.EnglishReasonPhraseCatalog;
 import org.codehaus.groovy.eclipse.editor.GroovyEditor;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Persist;
@@ -75,7 +76,6 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.internal.win32.NONCLIENTMETRICSW;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.program.Program;
@@ -111,7 +111,6 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.components.util.ColorUtil;
-import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
 import com.kms.katalon.composer.parts.SavableCompositePart;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
@@ -514,7 +513,7 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
         Composite snippetPartInnerComposite = new Composite(snippetPartComposite, SWT.NONE);
         snippetPartInnerComposite.setLayout(new GridLayout(2, false));
         
-        int fontSize = 8;
+        int fontSize = Platform.getOS().equals(Platform.OS_MACOSX) ? 11 : 9;
         
         Label separator = new Label(snippetPartInnerComposite, SWT.SEPARATOR | SWT.SHADOW_IN | SWT.VERTICAL);
         separator.setLayoutData(new GridData(GridData.FILL_VERTICAL));
@@ -927,7 +926,7 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
     
     private void createResponseVerificationResult(CTabFolder responseDetailsTabFolder) {
         CTabItem verificationResultTab = new CTabItem(responseDetailsTabFolder, SWT.NONE);
-        verificationResultTab.setText("Verification Log");
+        verificationResultTab.setText(ComposerWebserviceMessageConstants.LBL_RESPONSE_VERIFICATION_LOG);
         
         verificationResultComposite = new Composite(responseDetailsTabFolder, SWT.NONE);
         verificationResultTab.setControl(verificationResultComposite);
@@ -941,7 +940,7 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
         resultStatusComposite.setLayout(glResultStatus);
         
         Label lblVerificationResult = new Label(resultStatusComposite, SWT.NONE);
-        lblVerificationResult.setText("Result: ");
+        lblVerificationResult.setText(ComposerWebserviceMessageConstants.LBL_RESPONSE_VERIFICATION_RESULT);
         
         lblVerificationResultStatus = new Label(resultStatusComposite, SWT.NONE);
         lblVerificationResultStatus.setForeground(ColorUtil.getTextWhiteColor());

@@ -177,25 +177,4 @@ public class WebServiceCommonHelper {
 
         return headerLength;
     }
-    
-    public static ResponseObject createResponseObjectFromJson(String responseObjectJson) throws Exception {
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(HttpBodyContent.class, new HttpBodyContentInstanceCreator())
-                .create();
-        
-        ResponseObject response = gson.fromJson(responseObjectJson, ResponseObject.class);
-        HttpBodyContent textBodyContent = new HttpTextBodyContent(response.getResponseBodyContent());
-        response.setBodyContent(textBodyContent);
-        
-        return response;
-    }
-    
-    private static class HttpBodyContentInstanceCreator implements InstanceCreator<HttpBodyContent> {
-
-        @Override
-        public HttpBodyContent createInstance(Type type) {
-            return new HttpTextBodyContent(StringUtils.EMPTY);
-        }
-        
-    }
 }

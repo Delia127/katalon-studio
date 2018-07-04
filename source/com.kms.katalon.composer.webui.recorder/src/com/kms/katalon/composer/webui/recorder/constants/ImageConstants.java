@@ -43,4 +43,8 @@ public class ImageConstants {
     public static final Image IMG_16_MOVE_UP = ImageManager.getImage(IImageKeys.MOVE_UP_16);
     
     public static final Image IMG_16_MOVE_DOWN = ImageManager.getImage(IImageKeys.MOVE_DOWN_16);
+    
+    public static final Image IMG_16_PLAY = ImageManager.getImage(IImageKeys.PLAY_16);
+    
+    public static final Image IMG_16_STOP = ImageManager.getImage(IImageKeys.STOP_16);
 }

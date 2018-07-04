@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Control;
 
 import com.kms.katalon.composer.components.dialogs.AbstractDialogCellEditor;
 import com.kms.katalon.composer.testcase.ast.treetable.AstAbstractKeywordTreeTableNode;
+import com.kms.katalon.composer.testcase.ast.treetable.AstBuiltInKeywordTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstCallTestCaseKeywordTreeTableNode;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrapper;
 import com.kms.katalon.composer.testcase.support.TestObjectEditingSupport;
@@ -58,8 +59,11 @@ public class CapturedElementEditingSupport extends TestObjectEditingSupport {
 
     private class CapturedTestObjectCellEditor extends AbstractDialogCellEditor {
 
+        private AstAbstractKeywordTreeTableNode selectedNode;
+
         protected CapturedTestObjectCellEditor(Composite parent, AstAbstractKeywordTreeTableNode e) {
             super(parent, e.getTestObjectText());
+            selectedNode = e;
         }
 
         @Override
@@ -68,7 +72,7 @@ public class CapturedElementEditingSupport extends TestObjectEditingSupport {
             @SuppressWarnings("unchecked")
             List<WebElement> webElements = input != null ? (List<WebElement>) input : Collections.emptyList();
             CapturedElementBrowserDialog dialog = new CapturedElementBrowserDialog(getParentShell(),
-                    webElements, null);
+                    webElements, getSelectedWebElement());
             if (dialog.open() == CapturedElementBrowserDialog.OK) {
                 return dialog.getReturnValue();
             }
@@ -85,6 +89,21 @@ public class CapturedElementEditingSupport extends TestObjectEditingSupport {
                 webElementName = ((RecordedElementMethodCallWrapper) value).getWebElement().getName();
             }
             super.updateContents(webElementName);
+        }
+        
+        private WebElement getSelectedWebElement() {
+            if (selectedNode == null) {
+                return null;
+            }
+            if (selectedNode instanceof AstBuiltInKeywordTreeTableNode) {
+                AstBuiltInKeywordTreeTableNode kwNode = (AstBuiltInKeywordTreeTableNode) selectedNode;
+                Object testObjectMethodCall = kwNode.getTestObject();
+                if (testObjectMethodCall instanceof RecordedElementMethodCallWrapper) {
+                    RecordedElementMethodCallWrapper methodCallExprs = (RecordedElementMethodCallWrapper) testObjectMethodCall;
+                    return methodCallExprs.getWebElement();
+                }
+            }
+            return null;
         }
     }
 }

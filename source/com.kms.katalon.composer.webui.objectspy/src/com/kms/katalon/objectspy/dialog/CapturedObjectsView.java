@@ -1,5 +1,6 @@
 package com.kms.katalon.objectspy.dialog;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -311,5 +312,26 @@ public class CapturedObjectsView extends Composite implements EventHandler, Even
             treeViewer.setSelection(new StructuredSelection(selectedElement), true);
         }
     }
+
+    @SuppressWarnings("unchecked")
+    public List<WebElement> flattenWebElements() {
+        List<WebElement> elements = new ArrayList<>();
+        for (WebPage page : (List<WebPage>) treeViewer.getInput()) {
+            elements.addAll(fattenElements(page));
+        }
+        return elements;
+    }
+
+    private List<WebElement> fattenElements(WebElement element) {
+        List<WebElement> elements = new ArrayList<>();
+        elements.add(element);
+
+        if (element instanceof WebFrame) {
+            WebFrame frame = (WebFrame) element;
+            frame.getChildren().forEach(child -> elements.addAll(fattenElements(child)));
+        }
+        return elements;
+    }
+
 
 }

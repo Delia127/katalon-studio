@@ -174,6 +174,8 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
 
     private boolean parsingFailed;
 
+    private boolean disposed;
+
     public boolean isInitialized() {
         return isInitialized;
     }
@@ -735,7 +737,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
         childTestCaseVariablesPart.loadVariables();
         TestCaseTreeTableInput treeTableInput = childTestCasePart.getTreeTableInput();
         if (treeTableInput != null) {
-            treeTableInput.reloadTestCaseVariables();
+            treeTableInput.reloadTestCaseVariables(childTestCasePart.getVariables());
         }
         updatePart(testCase);
         childTestCaseIntegrationPart.loadInput();
@@ -766,6 +768,11 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
         MPartStack mStackPart = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
         mStackPart.getChildren().remove(compositePart);
         eventBroker.unsubscribe(this);
+        disposed = true;
+    }
+    
+    public boolean isDisposed() {
+        return disposed;
     }
 
     @PreDestroy
@@ -822,7 +829,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
         if (childTestCasePart.getTreeTableInput() == null) {
             setScriptContentToManual();
         }
-        childTestCasePart.getTreeTableInput().reloadTestCaseVariables();
+        childTestCasePart.getTreeTableInput().reloadTestCaseVariables(childTestCasePart.getVariables());
         childTestCaseIntegrationPart.loadInput();
 
         updateDirty();

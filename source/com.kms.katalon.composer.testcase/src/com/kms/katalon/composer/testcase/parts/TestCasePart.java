@@ -329,6 +329,8 @@ public class TestCasePart extends CPart implements EventHandler, ITestCasePart {
                 eventBroker.send(openEventName, webElementEntity);
             }
         };
+
+        new MenuItem(menu, SWT.SEPARATOR);
         if (testObjects.size() == 1) {
             handleWhenSelectOnlyOne(menu, testObjects.get(0), openTestCase, openTestObject);
             return;

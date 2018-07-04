@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.webui.recorder.handler;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -32,11 +34,10 @@ import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
-import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
-import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
-import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
-import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.BlockStatementWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
 import com.kms.katalon.composer.testcase.handlers.NewTestCaseHandler;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
@@ -45,7 +46,6 @@ import com.kms.katalon.composer.testcase.parts.TestCasePart;
 import com.kms.katalon.composer.webui.recorder.action.HTMLActionMapping;
 import com.kms.katalon.composer.webui.recorder.constants.StringConstants;
 import com.kms.katalon.composer.webui.recorder.dialog.RecorderDialog;
-import com.kms.katalon.composer.webui.recorder.util.HTMLActionUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FolderController;
@@ -53,6 +53,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
+import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.objectspy.dialog.SaveToObjectRepositoryDialog.SaveToObjectRepositoryDialogResult;
 import com.kms.katalon.objectspy.element.WebElement;
 import com.kms.katalon.objectspy.element.WebFrame;
@@ -96,19 +97,34 @@ public class RecordHandler {
     @Execute
     public void execute() {
         Shell shell = null;
+        Shell activeShell = Display.getCurrent().getActiveShell();
+        if (activeShell == null) {
+            return;
+        }
         try {
             TestCaseCompositePart testCaseCompositePart = getSelectedTestCasePart();
             if (testCaseCompositePart != null && !verifyTestCase(testCaseCompositePart)) {
                 return;
             }
+
+            List<? extends ASTNodeWrapper> wrapper = new ArrayList<>();
+            List<VariableEntity> variables = new ArrayList<>();
+            if (testCaseCompositePart != null) {
+                String scriptContent = new String(testCaseCompositePart.getOriginalTestCase().getScriptContents());
+
+                wrapper = GroovyWrapperParser.parseGroovyScriptIntoNodeWrapper(scriptContent)
+                        .getRunMethod()
+                        .getBlock()
+                        .getAstChildren();
+                variables = testCaseCompositePart.getTestCase().clone().getVariables();
+            }
             if (recordDialog == null || recordDialog.isDisposed()) {
-                shell = getShell(Display.getCurrent().getActiveShell());
-                recordDialog = new RecorderDialog(shell, LoggerSingleton.getInstance().getLogger(), eventBroker);
+                shell = getShell(activeShell);
+                recordDialog = new RecorderDialog(shell, wrapper, variables);
             } else {
                 recordDialog.getShell().forceActive();
                 return;
             }
-
             int responseCode = recordDialog.open();
             if (responseCode != Window.OK) {
                 return;
@@ -116,13 +132,15 @@ public class RecordHandler {
             final SaveToObjectRepositoryDialogResult folderSelectionResult = recordDialog.getTargetFolderTreeEntity();
             final List<HTMLActionMapping> recordedActions = recordDialog.getActions();
             final List<WebPage> recordedElements = recordDialog.getElements();
-            if (testCaseCompositePart == null) {
+            boolean shouldOverride = true;
+            if (testCaseCompositePart == null || testCaseCompositePart.isDisposed()) {
                 testCaseCompositePart = createNewTestCase();
+                shouldOverride = false;
             }
             doGenerateTestScripts(testCaseCompositePart, folderSelectionResult, recordedActions, recordedElements,
-                    recordDialog.getScriptWrapper());
+                    recordDialog.getScriptWrapper(), recordDialog.getVariables(), shouldOverride);
         } catch (Exception e) {
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
+            MessageDialog.openError(activeShell, StringConstants.ERROR_TITLE,
                     StringConstants.HAND_ERROR_MSG_CANNOT_GEN_TEST_STEPS);
             LoggerSingleton.logError(e);
         } finally {
@@ -158,7 +176,7 @@ public class RecordHandler {
     private void doGenerateTestScripts(final TestCaseCompositePart testCaseCompositePart,
             final SaveToObjectRepositoryDialogResult folderSelectionResult,
             final List<HTMLActionMapping> recordedActions, final List<WebPage> recordedElements,
-            ScriptNodeWrapper wrapper) {
+            final ScriptNodeWrapper wrapper, final VariableEntity[] variables, final boolean shouldOverride) {
         if (testCaseCompositePart == null) {
             return;
         }
@@ -179,27 +197,30 @@ public class RecordHandler {
                         @Override
                         public void run() {
                             try {
-                                List<StatementWrapper> children = (List<StatementWrapper>) wrapper.getBlock().getAstChildren();
+                                List<StatementWrapper> children = (List<StatementWrapper>) wrapper.getBlock()
+                                        .getAstChildren();
                                 if (children.isEmpty()) {
                                     return;
                                 }
-                                testCasePart.addDefaultImports();
-                                testCasePart.getTreeTableInput().getMainClassNode().addImport(Keys.class);
+                                if (!shouldOverride) {
+                                    testCasePart.addDefaultImports();
+                                    testCasePart.getTreeTableInput().getMainClassNode().addImport(Keys.class);
 
-                                // add open browser keyword at the beginning of generated steps
-                                String webUiKwAliasName = HTMLActionUtil.getWebUiKeywordClass().getAliasName();
-                                MethodCallExpressionWrapper openBrowserExpressionWrapper = new MethodCallExpressionWrapper(webUiKwAliasName,
-                                        "openBrowser", wrapper);
-                                ArgumentListExpressionWrapper arguments = openBrowserExpressionWrapper.getArguments();
-                                arguments.addExpression(new ConstantExpressionWrapper(""));
-                                children.add(0, new ExpressionStatementWrapper(openBrowserExpressionWrapper));
-
-                                // add close browser keyword at the end of generated steps
-                                MethodCallExpressionWrapper closeBrowserExpressionWrapper = new MethodCallExpressionWrapper(webUiKwAliasName, "closeBrowser", wrapper);
-                                children.add(new ExpressionStatementWrapper(closeBrowserExpressionWrapper));
-
-                                // append generated steps at the end of test case's steps
-                                testCasePart.addStatements(children, NodeAddType.Add, true);
+                                    // append generated steps at the end of test case's steps
+                                    testCasePart.addStatements(children, NodeAddType.Add, true);
+                                    testCasePart.addVariables(variables);
+                                } else {
+                                    BlockStatementWrapper block = testCaseCompositePart.getChildTestCasePart()
+                                            .getTreeTableInput()
+                                            .getMainClassNode()
+                                            .getRunMethod()
+                                            .getBlock();
+                                    block.clearStaments();
+                                    // append generated steps at the end of test case's steps
+                                    testCasePart.addStatements(children, NodeAddType.Add, true);
+                                    testCasePart.deleteVariables(Arrays.asList(testCasePart.getVariables()));
+                                    testCasePart.addVariables(variables);
+                                }
                                 testCaseCompositePart.refreshScript();
                                 testCaseCompositePart.save();
                             } catch (Exception e) {
@@ -290,20 +311,23 @@ public class RecordHandler {
         }
     }
 
-    private void addRecordedElement(WebElement element, FolderEntity parentFolder, SaveToObjectRepositoryDialogResult folderSelectionResult)
-            throws Exception {
-        FileEntity entity = folderSelectionResult.getEntitySavedMap().entrySet().stream()
-                .filter(e -> {
-                    WebElement savedElement = e.getKey();
-                    WebPage savedRoot = savedElement.getRoot();
-                    if (savedRoot == null) {
-                        return false;
-                    }
-                    WebPage root = element.getRoot();
-                    return savedElement.getName().equals(element.getName())
-                            && root != null && savedRoot.getName().equals(root.getName());
-            }).map(e -> e.getValue()).findFirst().orElse(null);
-        element.setName(entity.getName());
+    private void addRecordedElement(WebElement element, FolderEntity parentFolder,
+            SaveToObjectRepositoryDialogResult folderSelectionResult) throws Exception {
+        // Replace test object name with it's linked WebElementEntity
+        FileEntity entity = folderSelectionResult.getEntitySavedMap().entrySet().stream().filter(e -> {
+            WebElement savedElement = e.getKey();
+            WebPage savedRoot = savedElement.getRoot();
+            if (savedRoot == null) {
+                return false;
+            }
+            WebPage root = element.getRoot();
+            return savedElement.getName().equals(element.getName()) && root != null
+                    && savedRoot.getName().equals(root.getName());
+        }).map(e -> e.getValue()).findFirst().orElse(null);
+        // If the entity doesn't exist that means user doesn't want to create new WebElementEntity
+        if (entity != null) {
+            element.setName(entity.getName());
+        }
         if (element instanceof WebFrame) {
             for (WebElement childElement : ((WebFrame) element).getChildren()) {
                 addRecordedElement(childElement, parentFolder, folderSelectionResult);

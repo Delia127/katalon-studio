@@ -14,7 +14,7 @@ import com.kms.katalon.execution.entity.WSVerificationTestCaseExecutedEntity;
 import com.kms.katalon.execution.launcher.VerificationScriptLauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.ILauncherResult;
-import com.kms.katalon.execution.util.ExecutionProfileFactory;
+import com.kms.katalon.execution.util.ExecutionProfileStore;
 
 public class VerificationScriptExecutor {
     
@@ -30,7 +30,7 @@ public class VerificationScriptExecutor {
         testCaseEntity = createTestCaseEntity(script, responseObject);
         
         WSVerificationRunConfiguration runConfig = new WSVerificationRunConfiguration(responseObject);
-        runConfig.setExecutionProfile(ExecutionProfileFactory.getInstance().getSelectedProfile());
+        runConfig.setExecutionProfile(ExecutionProfileStore.getInstance().getSelectedProfile());
 
         runConfig.build(testCaseEntity, new WSVerificationTestCaseExecutedEntity(testCaseEntity));
 

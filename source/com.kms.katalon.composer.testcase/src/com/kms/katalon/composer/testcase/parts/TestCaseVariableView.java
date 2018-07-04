@@ -2,17 +2,13 @@ package com.kms.katalon.composer.testcase.parts;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.inject.Inject;
-
-import org.eclipse.e4.ui.di.Persist;
-import org.eclipse.e4.ui.model.application.ui.MGenericTile;
-import org.eclipse.e4.ui.model.application.ui.basic.MCompositePart;
-import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.operations.IUndoableOperation;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
@@ -47,7 +43,6 @@ import com.kms.katalon.composer.components.impl.support.TypeCheckedEditingSuppor
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.util.ColumnViewerUtil;
-import com.kms.katalon.composer.parts.CPart;
 import com.kms.katalon.composer.testcase.ast.variable.operations.ChangeVariableMaskedOperation;
 import com.kms.katalon.composer.testcase.ast.variable.operations.ClearVariableOperation;
 import com.kms.katalon.composer.testcase.ast.variable.operations.DeleteVariableOperation;
@@ -66,12 +61,11 @@ import com.kms.katalon.composer.testcase.support.VariableDefaultValueTypeEditing
 import com.kms.katalon.composer.testcase.support.VariableDescriptionEditingSupport;
 import com.kms.katalon.composer.testcase.support.VariableNameEditingSupport;
 import com.kms.katalon.composer.testcase.util.AstValueUtil;
-import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.execution.util.SyntaxUtil;
 import com.kms.katalon.groovy.constant.GroovyConstants;
 
-public class TestCaseVariablePart extends CPart implements TableActionOperator {
+public class TestCaseVariableView implements TableActionOperator {
     private static final String DEFAULT_VARIABLE_NAME = "variable";
 
     private static final InputValueType[] defaultInputValueTypes = { InputValueType.String, InputValueType.Number,
@@ -79,44 +73,17 @@ public class TestCaseVariablePart extends CPart implements TableActionOperator {
             InputValueType.TestObject, InputValueType.TestData, InputValueType.Property, InputValueType.List,
             InputValueType.Map };
 
-    private Composite parent;
-
-    private MPart mpart;
-
     private CTableViewer tableViewer;
 
-    private TestCaseCompositePart parentTestCaseCompositePart;
+    private List<VariableEntity> variables = new ArrayList<>();
 
-    private List<VariableEntity> variables;
-
-    @Inject
-    private EPartService partService;
-
-    @PostConstruct
-    public void init(Composite parent, MPart mpart) {
-        this.parent = parent;
-        this.mpart = mpart;
-        this.variables = new ArrayList<VariableEntity>();
-        if (mpart.getParent().getParent() instanceof MGenericTile
-                && ((MGenericTile<?>) mpart.getParent().getParent()) instanceof MCompositePart) {
-            MCompositePart compositePart = (MCompositePart) (MGenericTile<?>) mpart.getParent().getParent();
-            if (compositePart.getObject() instanceof TestCaseCompositePart) {
-                parentTestCaseCompositePart = ((TestCaseCompositePart) compositePart.getObject());
-            }
-        }
-        initialize(mpart, partService);
-        createComponents();
+    private ITestCasePart testCasePart;
+    
+    public TestCaseVariableView(ITestCasePart testCasePart) {
+        this.testCasePart = testCasePart;
     }
 
-    @PreDestroy
-    @Override
-    public void dispose() {
-        super.dispose();
-    }
-
-    private void createComponents() {
-        parent.setLayout(new FillLayout(SWT.HORIZONTAL));
-
+    public Composite createComponents(Composite parent) {
         final Composite container = new Composite(parent, SWT.NONE);
         container.setLayout(new GridLayout(1, false));
 
@@ -237,14 +204,14 @@ public class TestCaseVariablePart extends CPart implements TableActionOperator {
             }
         });
         TableColumn tblclmnName = tableViewerColumnName.getColumn();
-        tblclmnName.setWidth(200);
+        tblclmnName.setWidth(100);
         tblclmnName.setText(StringConstants.PA_COL_NAME);
 
         TableViewerColumn tableViewerColumnDefaultValueType = new TableViewerColumn(tableViewer, SWT.NONE);
         tableViewerColumnDefaultValueType.setEditingSupport(
                 new VariableDefaultValueTypeEditingSupport(tableViewer, this, defaultInputValueTypes));
         TableColumn tblclmnDefaultValueType = tableViewerColumnDefaultValueType.getColumn();
-        tblclmnDefaultValueType.setWidth(200);
+        tblclmnDefaultValueType.setWidth(100);
         tblclmnDefaultValueType.setText(StringConstants.PA_COL_DEFAULT_VALUE_TYPE);
         tableViewerColumnDefaultValueType.setLabelProvider(new ColumnLabelProvider() {
             @Override
@@ -272,7 +239,7 @@ public class TestCaseVariablePart extends CPart implements TableActionOperator {
         TableViewerColumn tableViewerColumnDefaultValue = new TableViewerColumn(tableViewer, SWT.NONE);
         tableViewerColumnDefaultValue.setEditingSupport(new VariableDefaultValueEditingSupport(tableViewer, this));
         TableColumn tblclmnDefaultValue = tableViewerColumnDefaultValue.getColumn();
-        tblclmnDefaultValue.setWidth(500);
+        tblclmnDefaultValue.setWidth(150);
         tblclmnDefaultValue.setText(StringConstants.PA_COL_DEFAULT_VALUE);
         tableViewerColumnDefaultValue.setLabelProvider(new ColumnLabelProvider() {
             @Override
@@ -301,7 +268,7 @@ public class TestCaseVariablePart extends CPart implements TableActionOperator {
             }
         });
         TableColumn tblColumnDescription = tableViewerColumnDescription.getColumn();
-        tblColumnDescription.setWidth(400);
+        tblColumnDescription.setWidth(120);
         tblColumnDescription.setText(StringConstants.PA_COL_DESCRIPTION);
 
         TableViewerColumn tableViewerColumnLogged = new TableViewerColumn(tableViewer, SWT.NONE);
@@ -353,15 +320,18 @@ public class TestCaseVariablePart extends CPart implements TableActionOperator {
                 if (element.isMasked() == newMasked) {
                     return;
                 }
-                executeOperation(new ChangeVariableMaskedOperation(TestCaseVariablePart.this, element, newMasked));
+                executeOperation(new ChangeVariableMaskedOperation(TestCaseVariableView.this, element, newMasked));
             }
         });
         TableColumn tblColumnLogged = tableViewerColumnLogged.getColumn();
-        tblColumnLogged.setWidth(100);
+        tblColumnLogged.setWidth(50);
         tblColumnLogged.setText(ComposerTestcaseMessageConstants.PA_COL_MASKED);
         tblColumnLogged.setToolTipText(ComposerTestcaseMessageConstants.PA_COL_MASKED_TOOLTIP);
 
         tableViewer.setContentProvider(new ArrayContentProvider());
+        loadVariables(Collections.emptyList());
+        
+        return container;
     }
 
     private void addVariable() {
@@ -438,24 +408,11 @@ public class TestCaseVariablePart extends CPart implements TableActionOperator {
         executeOperation(new DownVariableOperation(this));
     }
 
-    public void setDirty(boolean isDirty) {
-        mpart.setDirty(isDirty);
-        parentTestCaseCompositePart.getChildTestCasePart().getTreeTableInput().reloadTestCaseVariables(getVariables());
-        parentTestCaseCompositePart.updateDirty();
-    }
-
-    public void loadVariables() {
-        TestCaseEntity testCase = parentTestCaseCompositePart.getTestCase();
-        if (testCase != null && testCase.getVariables() != null) {
-            variables.clear();
-            variables.addAll(testCase.getVariables());
-            tableViewer.setInput(variables);
-            tableViewer.refresh();
-        }
-    }
-
-    public MPart getMPart() {
-        return this.mpart;
+    public void loadVariables(List<VariableEntity> newVariables) {
+        variables.clear();
+        variables.addAll(newVariables);
+        tableViewer.setInput(variables);
+        tableViewer.refresh();
     }
 
     public VariableEntity[] getVariables() {
@@ -516,31 +473,17 @@ public class TestCaseVariablePart extends CPart implements TableActionOperator {
         }
     }
 
-    @Persist
-    private boolean doSave() {
+    @Override
+    public IStatus executeOperation(IUndoableOperation operation) {
         try {
-            parentTestCaseCompositePart.save();
-            return true;
-        } catch (Exception e) {
-            LoggerSingleton.logError(e);
+            return operation.execute(new NullProgressMonitor(), null);
+        } catch (ExecutionException e) {
+            return null;
         }
-        return false;
-    }
-
-    public TestCaseCompositePart getParentTestCaseCompositePart() {
-        return parentTestCaseCompositePart;
     }
 
     @Override
-    public void createPartControl(Composite parent) {
-        // TODO Auto-generated method stub
-
+    public void setDirty(boolean dirty) {
+        testCasePart.setDirty(dirty);
     }
-
-    @Override
-    public void setFocus() {
-        // TODO Auto-generated method stub
-
-    }
-
 }

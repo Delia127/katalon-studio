@@ -182,8 +182,7 @@ public class ObjectRepositoryService {
 
                 case MERGE_CHANGE_TO_EXISTING_OBJECT:
                     Set<WebElementPropertyEntity> mergedProperties = new LinkedHashSet<>();
-                    mergedProperties.addAll(wrapElement.getOriginalWebElement().getProperties());
-                    
+                    mergedProperties.addAll(newWebElement.getProperties());
                     //uncheck all properties of old web element.
                     for(WebElementPropertyEntity wProperty: oldWebElementEntity.getWebElementProperties()) {
                         wProperty.setIsSelected(false);
