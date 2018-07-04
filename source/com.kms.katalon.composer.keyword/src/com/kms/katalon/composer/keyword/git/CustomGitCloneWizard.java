@@ -8,6 +8,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -466,7 +467,10 @@ public class CustomGitCloneWizard extends Wizard {
                 if (!event.getResult().isOK()) {
                     return;
                 }
-                EventBrokerSingleton.getInstance().getEventBroker().post(GitEventConstants.KEYWORD_CLONE_FINISHED, destination);
+                HashMap<String, String> repInfo = new HashMap<>();
+                repInfo.put(GitEventConstants.REPO_URL, repositoryInfo.getCloneUri());
+                repInfo.put(GitEventConstants.COMMIT_ID, validSource.getHEAD().getObjectId().getName());
+                EventBrokerSingleton.getInstance().getEventBroker().post(GitEventConstants.KEYWORD_CLONE_FINISHED, repInfo);
             }
         });
         job.setUser(true);
