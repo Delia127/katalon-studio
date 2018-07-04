@@ -324,7 +324,7 @@ class KURecorder {
         if (selectedElement.tagName.toLowerCase() == 'select') {
             action["actionData"] = {};
             action["actionData"]["oldValue"] = selectedElement.oldValue
-            action["actionData"]["newValue"] = rec_getSelectValues(selectedElement);
+            action["actionData"]["newValue"] = this.rec_getSelectValues(selectedElement);
             selectedElement.oldValue = action["actionData"]["newValue"];            
         } else if (selectedElement.contentEditable && selectedElement.contentEditable == 'true'){
             action["actionData"] = selectedElement.innerHTML;
@@ -356,9 +356,7 @@ class KURecorder {
             }
             return false;
         }
-        if(selectedElement.contentEditable && selectedElement.contentEditable == 'true'){
-            return false;
-        }
+        
         return elementTag != 'select' && elementTag != 'option' && elementTag != 'textarea';
     }
 
@@ -411,7 +409,7 @@ class KURecorder {
     }
     rec_windowFocus(selectedElement) {
         if (selectedElement.tagName.toLowerCase() == 'select') {
-            selectedElement.oldValue = rec_getSelectValues(selectedElement);
+            selectedElement.oldValue = this.rec_getSelectValues(selectedElement);
             selectedElement.onfocus = null;
         }
     }    

@@ -230,7 +230,7 @@ KURecorder.addEventHandler('dragAndDrop', 'mouseup', function (event) {
                 var eventTarget = event.target;
                 if (event.button == 0 && !preventClick && event.isTrusted) {
                     if (!preventClickTwice) {
-                        var clickType = this.rec_getMouseButton(event);
+                        var clickType = this.rec_getMouseButton(event);                       
                         if (this.rec_isElementMouseUpEventRecordable(event.target, clickType)) {                                                        
                             this.processOnClickTarget(event.target, clickType);
                         }                       
