@@ -280,4 +280,7 @@ public class EventConstants {
     
     // Execution Profile Event
     public static final String PROFILE_SELECTED_PROIFE_CHANGED = "PROFILE/SELECTED_PROFILE_CHANGE";
+    
+    // Analytics Preference Event
+    public static final String IS_INTEGRATED = "SETTINGS/INTERGRATION/KATALON_ANALYTICS";
 }

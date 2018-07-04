@@ -50,7 +50,6 @@ public class AuthenticationDialog extends Dialog {
 
     public static final int CANCEL_ID = 1;
 
-    
     private Text email;
 
     private Text password;
@@ -64,7 +63,7 @@ public class AuthenticationDialog extends Dialog {
     private Button btnCancel;
 
     private AnalyticsSettingStore analyticsSettingStore;
-    
+
     private AnalyticsTokenInfo tokenInfo;
 
     private boolean showPassword;
@@ -139,16 +138,15 @@ public class AuthenticationDialog extends Dialog {
         });
 
         try {
-            serverUrl.setText(analyticsSettingStore.getServerEndpoint(true));
-            password.setText(analyticsSettingStore.getPassword(true));
-            if (analyticsSettingStore.getEmail(true).equals(StringUtils.EMPTY)) {
+            boolean encryptionEnabled = analyticsSettingStore.isEncryptionEnabled();
+            serverUrl.setText(analyticsSettingStore.getServerEndpoint(encryptionEnabled));
+            password.setText(analyticsSettingStore.getPassword(encryptionEnabled));
+            if (analyticsSettingStore.getEmail(encryptionEnabled).equals(StringUtils.EMPTY)) {
                 email.setText(ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL));
             } else {
-                email.setText(analyticsSettingStore.getEmail(true));
+                email.setText(analyticsSettingStore.getEmail(encryptionEnabled));
             }
-        } catch (IOException e) {
-            LoggerSingleton.logError(e);
-        } catch (GeneralSecurityException e) {
+        } catch (IOException | GeneralSecurityException e) {
             LoggerSingleton.logError(e);
         }
 
@@ -238,9 +236,14 @@ public class AuthenticationDialog extends Dialog {
         updateDataStore(emailText, passwordText);
         setReturnCode(CONNECT_ID);
         AnalyticsTokenInfo tokenInfo = requestToken(getShell(), serverUrlText, emailText, passwordText);
+        try {
+            analyticsSettingStore.setToken(tokenInfo.getAccess_token(), true);
+        } catch (IOException | GeneralSecurityException e) {
+            LoggerSingleton.logError(e);
+        }
         setTokenInfo(tokenInfo);
-        if (tokenInfo != null){
-          closeDialog();
+        if (tokenInfo != null) {
+            closeDialog();
         }
     }
 
@@ -253,8 +256,7 @@ public class AuthenticationDialog extends Dialog {
                     try {
                         monitor.beginTask(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_CONNECTING_TO_SERVER,
                                 2);
-                        tokenInfo[0] = AnalyticsApiProvider.requestToken(serverUrl, email,
-                                password);
+                        tokenInfo[0] = AnalyticsApiProvider.requestToken(serverUrl, email, password);
                         monitor.worked(1);
                     } catch (Exception e) {
                         throw new InvocationTargetException(e);
@@ -271,8 +273,8 @@ public class AuthenticationDialog extends Dialog {
                 // TODO Auto-generated catch block
                 LoggerSingleton.logError(e);
             }
-            MessageDialog.openError(Display.getCurrent().getActiveShell(),
-                    ComposerAnalyticsStringConstants.ERROR, IntegrationAnalyticsMessages.MSG_REQUEST_TOKEN_ERROR);
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), ComposerAnalyticsStringConstants.ERROR,
+                    IntegrationAnalyticsMessages.MSG_REQUEST_TOKEN_ERROR);
         }
         return tokenInfo[0];
     }

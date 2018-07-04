@@ -3,6 +3,7 @@ package com.kms.katalon.composer.report.parts;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -85,6 +86,7 @@ import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.integration.analytics.constants.ComposerAnalyticsStringConstants;
 import com.kms.katalon.composer.integration.analytics.constants.ComposerIntegrationAnalyticsMessageConstants;
@@ -187,6 +189,8 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     private Composite compositeTestCaseFilterSelection;
 
     private AnalyticsReportService analyticsReportService = new AnalyticsReportService();
+
+    private MenuItem uploadMenuItem;
 
     private final class MapDataKeyLabelProvider extends ColumnLabelProvider {
         @Override
@@ -716,7 +720,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     }
 
     private void createKatalonAnalyticsMenu(ToolBar toolBar) {
-        boolean isIntegrated = analyticsReportService.isIntegrationEnabled();
+        // boolean isIntegrated = analyticsReportService.isIntegrationEnabled();
         boolean encryptionEnabled = true;
 
         AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
@@ -728,7 +732,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
 
         Menu katalonAnalyticsMenu = new Menu(btnUploadToAnalytics.getParent().getShell());
         MenuItem accessKAMenuItem = new MenuItem(katalonAnalyticsMenu, SWT.PUSH);
-        MenuItem uploadMenuItem = new MenuItem(katalonAnalyticsMenu, SWT.PUSH);
+        uploadMenuItem = new MenuItem(katalonAnalyticsMenu, SWT.PUSH);
 
         accessKAMenuItem.setText("Access Analytics");
         accessKAMenuItem.setID(0);
@@ -737,9 +741,16 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 // try {
-                if (isIntegrated) {
+                if (analyticsReportService.isIntegrationEnabled()) {
                     // open KA web
-                    Program.launch(ComposerReportMessageConstants.KA_HOMEPAGE);
+                    String tokenInfo;
+                    try {
+                        tokenInfo = analyticsSettingStore.getToken(encryptionEnabled);
+                        Program.launch("https://localhost:8444/from-ks?token=" + tokenInfo);
+                    } catch (IOException | GeneralSecurityException e1) {
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
+                    }
                 } else {
                     int teamCount = 1;
                     int projectCount = 0;
@@ -800,6 +811,8 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                                                     2);
                                             tokenInfos[0] = AnalyticsApiProvider.requestToken(serverUrl, email,
                                                     password);
+                                            analyticsSettingStore.setToken(tokenInfos[0].getAccess_token(),
+                                                    encryptionEnabled);
                                             monitor.worked(1);
                                         } catch (Exception e) {
                                             throw new InvocationTargetException(e);
@@ -818,7 +831,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                         // always have token now
                         teams = getTeams(serverUrl, analyticsEmail, analyticsPassword, tokenInfos[0]);
                         teamCount = teams.size();
-                        projects = getProjects(serverUrl, analyticsEmail, analyticsPassword, teams.get(1),
+                        projects = getProjects(serverUrl, analyticsEmail, analyticsPassword, teams.get(0),
                                 tokenInfos[0]);
                         projectCount = projects.size();
                         UploadSelectionDialog uploadSelectionDialog = new UploadSelectionDialog(shell, teams);
@@ -848,7 +861,11 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                                 return;
                             }
                         }
-                        Program.launch(ComposerReportMessageConstants.KA_HOMEPAGE);
+                        Program.launch("https://localhost:8444/from-ks?token=" + tokenInfos[0].getAccess_token());
+//                        Program.launch("https://localhost:8444/from-ks?" + "teamId=" + 
+//                        analyticsSettingStore.getTeam().getId() + "&projectId=" + 
+//                        analyticsSettingStore.getProject().getId() +"&type=EXECUTION&token="
+//                        + tokenInfos[0].getAccess_token());
                     } catch (Exception ex) {
                         LoggerSingleton.logError(ex);
                         MessageDialog.openError(Display.getCurrent().getActiveShell(),
@@ -865,7 +882,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
 
         uploadMenuItem.setText("Upload Report");
         uploadMenuItem.setID(1);
-        uploadMenuItem.setEnabled(isIntegrated);
+        uploadMenuItem.setEnabled(analyticsReportService.isIntegrationEnabled());
         uploadMenuItem.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -925,6 +942,9 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                         monitor.beginTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS, 2);
                         monitor.subTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS_SENDING);
                         analyticsReportService.upload(testSuiteLogRecord.getLogFolder());
+                        UISynchronizeService.syncExec(() -> {
+                            uploadMenuItem.setEnabled(analyticsReportService.isIntegrationEnabled());
+                        });
                         monitor.worked(1);
                         monitor.subTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS_SUCCESSFULLY);
                         monitor.worked(2);
@@ -1328,6 +1348,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     private void registerListeners() {
         eventBroker.subscribe(EventConstants.REPORT_UPDATED, this);
         eventBroker.subscribe(EventConstants.REPORT_RENAMED, this);
+        eventBroker.subscribe(EventConstants.IS_INTEGRATED, this);
     }
 
     public MPart getMPart() {
@@ -1387,6 +1408,9 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         if (event.getTopic().equals(EventConstants.REPORT_RENAMED)) {
             handleReportRenamed(event);
             return;
+        }
+        if (event.getTopic().equals(EventConstants.IS_INTEGRATED)) {
+            uploadMenuItem.setEnabled(analyticsReportService.isIntegrationEnabled());
         }
     }
 

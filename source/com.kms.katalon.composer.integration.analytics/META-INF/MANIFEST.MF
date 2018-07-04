@@ -32,7 +32,8 @@ Require-Bundle: org.eclipse.e4.ui.model.workbench,
  com.kms.katalon.entity,
  com.kms.katalon.composer.testcase,
  org.apache.commons.lang,
- com.kms.katalon.util
+ com.kms.katalon.util,
+ org.eclipse.e4.core.services
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Export-Package: com.kms.katalon.composer.integration.analytics.constants,

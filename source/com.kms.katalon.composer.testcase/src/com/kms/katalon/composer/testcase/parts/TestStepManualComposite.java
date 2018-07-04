@@ -36,8 +36,10 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
@@ -104,6 +106,10 @@ public class TestStepManualComposite {
     private Tree childTableTree;
 
     private ToolItem tltmAddStep, tltmRemoveStep, tltmUp, tltmDown, tltmRecent;
+    
+    private Label spacer;
+    
+    private Button btnViewKA;
 
     private TestCaseSelectionListener selectionListener;
 
@@ -188,6 +194,8 @@ public class TestStepManualComposite {
 
             ToolBarManager toolBarManager = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
             toolbar = toolBarManager.createControl(compositeTableButtons);
+            spacer = new Label(compositeTableButtons, SWT.None);
+            btnViewKA = new Button(compositeTableButtons, SWT.NONE);
         } else { // for ClosureDialog
             ToolBarManager toolBarManager = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
             toolbar = toolBarManager.createControl(parent);
@@ -222,6 +230,9 @@ public class TestStepManualComposite {
         tltmDown.setText(StringConstants.PA_BTN_TIP_MOVE_DOWN);
         tltmDown.setImage(ImageConstants.IMG_16_MOVE_DOWN);
         tltmDown.addSelectionListener(selectionListener);
+        
+        spacer.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        btnViewKA.setText("View Katalon Analytics");
 
         Composite compositeTable = new Composite(compositeSteps == null ? parent : compositeSteps, SWT.NONE);
         compositeTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
