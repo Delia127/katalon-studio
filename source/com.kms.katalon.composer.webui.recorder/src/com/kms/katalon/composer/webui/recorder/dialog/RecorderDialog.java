@@ -493,14 +493,14 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     private void pause() {
         isPauseRecording = true;
-        tltmPauseAndResume.setToolTipText("Resume recording");
+        tltmPauseAndResume.setToolTipText(ComposerWebuiRecorderMessageConstants.DIA_TOOLTIP_RESUME_RECORDING);
         tltmPauseAndResume.setImage(ImageConstants.IMG_24_RESUME_RECORDING);
         toolBar.getParent().layout();
     }
 
     private void resume() {
         isPauseRecording = false;
-        tltmPauseAndResume.setToolTipText("Pause recording");
+        tltmPauseAndResume.setToolTipText(ComposerWebuiRecorderMessageConstants.DIA_TOOLTIP_PAUSE_RECORDING);
         tltmPauseAndResume.setImage(ImageConstants.IMG_24_PAUSE_RECORDING);
         toolBar.getParent().layout();
     }
@@ -1701,9 +1701,13 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     @Override
     protected void setInput() {
         if (testCaseEntity != null) {
-            boolean continueRecording = MessageDialog.openQuestion(getShell(), StringConstants.CONFIRMATION,
-                    String.format("Do you want to continue recording '%s'?", testCaseEntity.getName()));
-            if (!continueRecording) {
+            MessageDialog dialog = new MessageDialog(getShell(), StringConstants.CONFIRMATION, null,
+                    MessageFormat.format(ComposerWebuiRecorderMessageConstants.DIA_CONFIRM_CONTINUE_RECORDING,
+                            testCaseEntity.getName()),
+                    MessageDialog.CONFIRM, MessageDialog.OK,
+                    ComposerWebuiRecorderMessageConstants.DIA_CONFIRM_ACCEPT_CONTINUE_RECORDING,
+                    ComposerWebuiRecorderMessageConstants.DIA_CONFIRM_DECLINE_CONTINUE_RECORDING);
+            if (dialog.open() != MessageDialog.OK) {
                 variables = Collections.emptyList();
                 nodeWrappers.clear();
             }

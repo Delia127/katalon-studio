@@ -113,6 +113,12 @@ public class ComposerWebuiRecorderMessageConstants extends NLS {
 
     public static String JOB_RUNNING_RECORDED_STEPS;
 
+    public static String DIA_CONFIRM_CONTINUE_RECORDING;
+
+    public static String DIA_CONFIRM_ACCEPT_CONTINUE_RECORDING;
+
+    public static String DIA_CONFIRM_DECLINE_CONTINUE_RECORDING;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerWebuiRecorderMessageConstants.class);
