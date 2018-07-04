@@ -136,6 +136,7 @@ public class UploadSelectionDialog extends Dialog {
                     if (createdProject != null) {
                         try {
                             analyticsSettingStore.setProject(createdProject);
+                            analyticsSettingStore.setTeam(team);
                             if (projects == null) {
                                 return;
                             }
@@ -323,6 +324,11 @@ public class UploadSelectionDialog extends Dialog {
 
     private void handleUpload() {
         try {
+            AnalyticsTeam team = null;
+            if (teams != null && teams.size() > 0) {
+                team = teams.get(getDefaultTeamIndex());
+            }
+            analyticsSettingStore.setTeam(team);
             analyticsSettingStore.setProject(
                     cbbProjects.getSelectionIndex() != -1 ? projects.get(cbbProjects.getSelectionIndex()) : null);
         } catch (IOException e1) {

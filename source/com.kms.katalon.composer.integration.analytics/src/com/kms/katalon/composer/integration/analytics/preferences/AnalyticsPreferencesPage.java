@@ -351,6 +351,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             analyticsSettingStore.setEmail(txtEmail.getText(), encryptionEnabled);
             analyticsSettingStore.setPassword(txtPassword.getText(), encryptionEnabled);
             analyticsSettingStore.enableEncryption(encryptionEnabled);
+            analyticsSettingStore.setTeam(teams.get(cbbTeams.getSelectionIndex()));
             analyticsSettingStore.setProject(
                     cbbProjects.getSelectionIndex() != -1 ? projects.get(cbbProjects.getSelectionIndex()) : null);
             analyticsSettingStore.setAutoSubmit(cbxAutoSubmit.getSelection());

@@ -746,10 +746,9 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                     String tokenInfo;
                     try {
                         tokenInfo = analyticsSettingStore.getToken(encryptionEnabled);
-                        Program.launch("https://localhost:8444/from-ks?token=" + tokenInfo);
+                        Program.launch(ComposerReportMessageConstants.KA_HOMEPAGE + "token=" + tokenInfo);
                     } catch (IOException | GeneralSecurityException e1) {
-                        // TODO Auto-generated catch block
-                        e1.printStackTrace();
+                        LoggerSingleton.logError(e1);;
                     }
                 } else {
                     int teamCount = 1;
@@ -861,11 +860,10 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                                 return;
                             }
                         }
-                        Program.launch("https://localhost:8444/from-ks?token=" + tokenInfos[0].getAccess_token());
-//                        Program.launch("https://localhost:8444/from-ks?" + "teamId=" + 
-//                        analyticsSettingStore.getTeam().getId() + "&projectId=" + 
-//                        analyticsSettingStore.getProject().getId() +"&type=EXECUTION&token="
-//                        + tokenInfos[0].getAccess_token());
+                        Program.launch(ComposerReportMessageConstants.KA_HOMEPAGE + "teamId=" + 
+                        analyticsSettingStore.getTeam().getId() + "&projectId=" + 
+                        analyticsSettingStore.getProject().getId() +"&type=EXECUTION&token="
+                        + tokenInfos[0].getAccess_token());
                     } catch (Exception ex) {
                         LoggerSingleton.logError(ex);
                         MessageDialog.openError(Display.getCurrent().getActiveShell(),
@@ -917,6 +915,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                         AnalyticsProject analyticsProject = AnalyticsApiProvider.createProject(serverUrl,
                                 currentProjectName, team, tokenInfo.getAccess_token());
                         analyticsSettingStore.setProject(analyticsProject);
+                        analyticsSettingStore.setTeam(team);
                         monitor.worked(1);
                     } catch (AnalyticsApiExeception | IOException ex) {
                         LoggerSingleton.logError(ex);
