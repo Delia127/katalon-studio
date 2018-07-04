@@ -583,7 +583,7 @@ public class WelcomeRightPart extends Composite {
         c.setLayout(gl);
         GridData ld = new GridData(SWT.FILL, SWT.TOP, true, true);
         ld.widthHint = 210;
-        ld.heightHint = 180;
+        ld.heightHint = 190;
         c.setLayoutData(ld);
         c.setCursor(CURSOR_HAND);
         c.addMouseListener(action);
