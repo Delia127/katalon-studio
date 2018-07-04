@@ -109,6 +109,7 @@ public class RecordHandler {
 
             List<? extends ASTNodeWrapper> wrapper = new ArrayList<>();
             List<VariableEntity> variables = new ArrayList<>();
+            TestCaseEntity testCaseEntity = null;
             if (testCaseCompositePart != null) {
                 String scriptContent = new String(testCaseCompositePart.getOriginalTestCase().getScriptContents());
 
@@ -116,11 +117,12 @@ public class RecordHandler {
                         .getRunMethod()
                         .getBlock()
                         .getAstChildren();
+                testCaseEntity = testCaseCompositePart.getTestCase();
                 variables = testCaseCompositePart.getTestCase().clone().getVariables();
             }
             if (recordDialog == null || recordDialog.isDisposed()) {
                 shell = getShell(activeShell);
-                recordDialog = new RecorderDialog(shell, wrapper, variables);
+                recordDialog = new RecorderDialog(shell, testCaseEntity, wrapper, variables);
             } else {
                 recordDialog.getShell().forceActive();
                 return;

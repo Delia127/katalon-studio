@@ -70,6 +70,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.osgi.framework.Bundle;
 import org.osgi.service.event.EventHandler;
+import org.yaml.snakeyaml.composer.Composer;
 
 import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
@@ -126,6 +127,7 @@ import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
 import com.kms.katalon.execution.webservice.RecordingScriptGenerator;
@@ -198,13 +200,13 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     private List<HTMLActionMapping> recordedActions;
 
-    private boolean isPausing;
+    private boolean isPauseRecording;
 
     private TableViewer actionTableViewer;
 
     private ToolBar toolBar;
 
-    private ToolItem toolItemBrowserDropdown, tltmPause, tltmStop;
+    private ToolItem toolItemBrowserDropdown, tltmPauseAndResume, tltmStop;
 
     private RecordSession session;
 
@@ -238,24 +240,27 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     private List<VariableEntity> variables;
 
+    private TestCaseEntity testCaseEntity;
+
     /**
      * Create the dialog.
      * 
      * @param parentShell
      */
-    public RecorderDialog(Shell parentShell, List<? extends ASTNodeWrapper> nodeWrappers,
+    public RecorderDialog(Shell parentShell, TestCaseEntity testCaseEntity, List<? extends ASTNodeWrapper> nodeWrappers,
             List<VariableEntity> variables) {
         super(parentShell);
         store = PreferenceStoreManager.getPreferenceStore(RecorderPreferenceConstants.WEBUI_RECORDER_QUALIFIER);
         setDialogTitle(GlobalMessageConstants.WEB_RECORDER);
         elements = new ArrayList<>();
         recordedActions = new ArrayList<HTMLActionMapping>();
-        isPausing = false;
+        isPauseRecording = false;
         disposed = false;
         registerEventListener();
         startSocketServer();
         this.nodeWrappers = nodeWrappers;
         this.variables = variables;
+        this.testCaseEntity = testCaseEntity;
     }
 
     private void registerEventListener() {
@@ -317,11 +322,11 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 startRecordSession(selectedBrowser);
                 invoke(ObjectSpyEvent.SELENIUM_SESSION_STARTED, session);
             }
-            if (!isPausing) {
+            if (!isPauseRecording) {
                 recordStepsView.addSimpleKeyword("openBrowser");
             }
 
-            tltmPause.setEnabled(true);
+            tltmPauseAndResume.setEnabled(true);
             tltmStop.setEnabled(true);
             resume();
             resetInput();
@@ -488,14 +493,16 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     }
 
     private void pause() {
-        isPausing = true;
-        tltmPause.setImage(ImageConstants.IMG_24_PLAY);
+        isPauseRecording = true;
+        tltmPauseAndResume.setToolTipText("Pause recording");
+        tltmPauseAndResume.setImage(ImageConstants.IMG_24_PLAY);
         toolBar.getParent().layout();
     }
 
     private void resume() {
-        isPausing = false;
-        tltmPause.setImage(ImageConstants.IMG_24_PAUSE);
+        isPauseRecording = false;
+        tltmPauseAndResume.setToolTipText("Resume recording");
+        tltmPauseAndResume.setImage(ImageConstants.IMG_24_PAUSE);
         toolBar.getParent().layout();
     }
 
@@ -774,6 +781,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         tltmPlay = new ToolItem(playToolbar, SWT.DROP_DOWN);
         tltmPlay.setImage(ImageConstants.IMG_24_PLAY);
         tltmPlay.addSelectionListener(selectionListener);
+        tltmPlay.setToolTipText(ComposerWebuiRecorderMessageConstants.DIA_ITEM_RUN_ALL_STEPS);
 
         setPlayButtonState(false);
     }
@@ -795,8 +803,9 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         tltmPlay.setData(playMenu);
 
         MenuItem runAllStepsItem = new MenuItem(playMenu, SWT.CHECK);
-        runAllStepsItem.setText(ControlUtils.createMenuItemText("Run all steps",
-                KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "E" })));
+        runAllStepsItem
+                .setText(ControlUtils.createMenuItemText(ComposerWebuiRecorderMessageConstants.DIA_ITEM_RUN_ALL_STEPS,
+                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "E" })));
         runAllStepsItem.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -806,8 +815,9 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         runAllStepsItem.setSelection(true);
 
         MenuItem runSelectedSteps = new MenuItem(playMenu, SWT.PUSH);
-        runSelectedSteps.setText(ControlUtils.createMenuItemText("Run selected steps",
-                KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, IKeyLookup.ALT_NAME, "E" })));
+        runSelectedSteps.setText(
+                ControlUtils.createMenuItemText(ComposerWebuiRecorderMessageConstants.DIA_ITEM_RUN_SELECTED_STEPS,
+                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, IKeyLookup.ALT_NAME, "E" })));
         runSelectedSteps.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -819,7 +829,8 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         }
 
         MenuItem runFromSelectedStep = new MenuItem(playMenu, SWT.PUSH);
-        runFromSelectedStep.setText(ControlUtils.createMenuItemText("Run from selected step",
+        runFromSelectedStep.setText(ControlUtils.createMenuItemText(
+                ComposerWebuiRecorderMessageConstants.DIA_ITEM_RUN_FROM_SELECTED_STEP,
                 KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, IKeyLookup.SHIFT_NAME, "E" })));
         runFromSelectedStep.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -861,11 +872,11 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     public void setPlayButtonState(boolean sendingState) {
         this.playingState = sendingState;
         if (this.playingState) {
-            tltmPlay.setText("Stop");
+            tltmPlay.setText(StringConstants.STOP);
             tltmPlay.setImage(ImageConstants.IMG_24_STOP);
         } else {
             tltmPlay.setImage(ImageConstants.IMG_24_PLAY);
-            tltmPlay.setText("Run");
+            tltmPlay.setText(StringConstants.RUN);
         }
         tltmPlay.getParent().getParent().layout(true, true);
     }
@@ -908,21 +919,28 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     private RecordingScriptGenerator generator;
 
+    private boolean shouldResumeRecordingAfterRunning = false;
+
     private void executeSelectedSteps(ScriptNodeWrapper nodeWrapper) {
         if (playingState) {
             if (generator != null) {
                 generator.stopLauncher();
             }
             setPlayButtonState(false);
+            if (shouldResumeRecordingAfterRunning) {
+                resume();
+                shouldResumeRecordingAfterRunning = false;
+            }
             return;
         }
+        shouldResumeRecordingAfterRunning = !isPauseRecording;
         pause();
         setPlayButtonState(true);
         if (session == null || session.getWebDriver() == null || !session.isRunning()) {
             startBrowser();
         }
 
-        Job job = new Job("Running Recorded Steps") {
+        Job job = new Job(ComposerWebuiRecorderMessageConstants.JOB_RUNNING_RECORDED_STEPS) {
 
             @Override
             protected IStatus run(IProgressMonitor monitor) {
@@ -959,6 +977,10 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                     return Status.OK_STATUS;
                 } catch (Exception ex) {
                     UISynchronizeService.syncExec(() -> setPlayButtonState(false));
+                    if (shouldResumeRecordingAfterRunning) {
+                        resume();
+                        shouldResumeRecordingAfterRunning = false;
+                    }
                     return Status.CANCEL_STATUS;
                 }
             }
@@ -1108,6 +1130,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         toolBar.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 
         toolItemBrowserDropdown = new ToolItem(toolBar, SWT.DROP_DOWN);
+        toolItemBrowserDropdown.setToolTipText(ComposerWebuiRecorderMessageConstants.DIA_TOOLTIP_START_RECORDING);
         toolItemBrowserDropdown.setImage(getWebUIDriverToolItemImage(getWebUIDriver()));
         Dropdown dropdown = new Dropdown(getShell());
         createDropdownContent(dropdown);
@@ -1126,12 +1149,13 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             }
         });
 
-        tltmPause = new ToolItem(toolBar, SWT.PUSH);
-        tltmPause.setImage(ImageConstants.IMG_24_PAUSE);
-        tltmPause.addSelectionListener(new SelectionAdapter() {
+        tltmPauseAndResume = new ToolItem(toolBar, SWT.PUSH);
+        tltmPauseAndResume.setToolTipText(ComposerWebuiRecorderMessageConstants.DIA_TOOLTIP_PAUSE_RECORDING);
+        tltmPauseAndResume.setImage(ImageConstants.IMG_24_PAUSE);
+        tltmPauseAndResume.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                if (isPausing) {
+                if (isPauseRecording) {
                     resume();
                 } else {
                     pause();
@@ -1139,10 +1163,11 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             }
 
         });
-        tltmPause.setEnabled(false);
+        tltmPauseAndResume.setEnabled(false);
 
         tltmStop = new ToolItem(toolBar, SWT.PUSH);
         tltmStop.setImage(ImageConstants.IMG_24_STOP);
+        tltmStop.setToolTipText(ComposerWebuiRecorderMessageConstants.DIA_TOOLTIP_STOP_RECORDING);
         tltmStop.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent event) {
@@ -1262,7 +1287,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     public void stop() {
         try {
-            if (!isPausing) {
+            if (!isPauseRecording) {
                 recordStepsView.addSimpleKeyword("closeBrowser");
             }
             stopServer();
@@ -1273,7 +1298,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE, e.getMessage());
         }
         resume();
-        tltmPause.setEnabled(false);
+        tltmPauseAndResume.setEnabled(false);
         tltmStop.setEnabled(false);
     }
 
@@ -1477,7 +1502,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     }
 
     public void addNewActionMapping(final HTMLActionMapping newAction) {
-        if (isPausing || !HTMLActionUtil.verifyActionMapping(newAction, recordedActions)) {
+        if (isPauseRecording || !HTMLActionUtil.verifyActionMapping(newAction, recordedActions)) {
             return;
         }
         WebElement targetElement = newAction.getTargetElement();
@@ -1640,6 +1665,11 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 return;
             case EventConstants.WEBUI_VERIFICATION_EXECUTION_FINISHED:
                 setPlayButtonState(false);
+
+                if (shouldResumeRecordingAfterRunning) {
+                    resume();
+                    shouldResumeRecordingAfterRunning = false;
+                }
                 return;
             case EventConstants.WEBUI_VERIFICATION_RUN_ALL_STEPS_CMD:
                 runAllSteps();
@@ -1671,6 +1701,14 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     @Override
     protected void setInput() {
+        if (testCaseEntity != null) {
+            boolean continueRecording = MessageDialog.openQuestion(getShell(), StringConstants.CONFIRMATION,
+                    String.format("Do you want to continue recording '%s'?", testCaseEntity.getName()));
+            if (!continueRecording) {
+                variables = Collections.emptyList();
+                nodeWrappers.clear();
+            }
+        }
         recordStepsView.addVariables(variables.toArray(new VariableEntity[variables.size()]));
 
         Map<String, List<RecordedElementMethodCallWrapper>> keywordNodeMaps = getTestObjectReferences(nodeWrappers);

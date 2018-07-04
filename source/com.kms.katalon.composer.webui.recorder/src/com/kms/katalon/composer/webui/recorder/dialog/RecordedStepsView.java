@@ -66,6 +66,7 @@ import com.kms.katalon.composer.webui.recorder.action.HTMLAction;
 import com.kms.katalon.composer.webui.recorder.action.HTMLActionMapping;
 import com.kms.katalon.composer.webui.recorder.action.HTMLActionParamValueType;
 import com.kms.katalon.composer.webui.recorder.ast.RecordedElementMethodCallWrapper;
+import com.kms.katalon.composer.webui.recorder.constants.ComposerWebuiRecorderMessageConstants;
 import com.kms.katalon.composer.webui.recorder.dialog.provider.CapturedElementEditingSupport;
 import com.kms.katalon.composer.webui.recorder.util.HTMLActionUtil;
 import com.kms.katalon.constants.EventConstants;
@@ -497,14 +498,14 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
                 menu = new Menu(tree);
 
                 MenuItem runFromThisStepMenuItem = new MenuItem(menu, SWT.PUSH);
-                runFromThisStepMenuItem.setText(createMenuItemLabel("Run from here",
+                runFromThisStepMenuItem.setText(createMenuItemLabel(ComposerWebuiRecorderMessageConstants.DIA_ITEM_RUN_FROM_HERE,
                         KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, IKeyLookup.SHIFT_NAME, "E" })));
                 runFromThisStepMenuItem.addSelectionListener(selectionListener);
                 runFromThisStepMenuItem.setID(TreeTableMenuItemConstants.RUN_FROM_THIS_STEP_ID);
                 runFromThisStepMenuItem.setEnabled(hasSelection);
 
                 MenuItem runSelectedStepsMenuItem = new MenuItem(menu, SWT.PUSH);
-                runSelectedStepsMenuItem.setText(createMenuItemLabel("Run selected steps",
+                runSelectedStepsMenuItem.setText(createMenuItemLabel(ComposerWebuiRecorderMessageConstants.DIA_ITEM_RUN_SELECTED_STEPS,
                         KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, IKeyLookup.ALT_NAME, "E" })));
                 runSelectedStepsMenuItem.addSelectionListener(selectionListener);
                 runSelectedStepsMenuItem.setID(TreeTableMenuItemConstants.RUN_SELECTED_STEPS_ID);
