@@ -293,6 +293,11 @@ public class EventConstants {
     
     // WS Verification Events
     public static final String WS_VERIFICATION_LOG_UPDATED = "WS_VERIFICATION/LOG_UPDATED";
-    
+
     public static final String WS_VERIFICATION_EXECUTION_FINISHED = "WS_VERIFICATION/EXECUTION_FINISHED";
+
+    // Git Events
+    public static final String GIT_CLONE_AND_OPEN_FINISHED = "GIT/CLONE_AND_OPEN_FINISHED";
+
+    public static final String GIT_CLONE_REMOTE_PROJECT = "GIT/CLONE_REMOTE_PROJECT";
 }

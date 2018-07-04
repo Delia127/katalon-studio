@@ -343,6 +343,8 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.TAB_MIDDLE_ACTIVE);
         ImageManager.registerImage(IImageKeys.TAB_LAST_INACTIVE);
         ImageManager.registerImage(IImageKeys.TAB_LAST_ACTIVE);
+        ImageManager.registerImage(IImageKeys.SAMPLE_REMOTE_PROJECT_72);
+        ImageManager.registerImage(IImageKeys.GITHUB_LOGO_55);
     }
 
     private void registerIntroImages() {
