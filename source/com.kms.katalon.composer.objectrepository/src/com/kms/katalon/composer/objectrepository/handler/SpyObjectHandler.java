@@ -26,6 +26,7 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.objectspy.dialog.NewObjectSpyDialog;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class SpyObjectHandler {
 
@@ -66,6 +67,7 @@ public class SpyObjectHandler {
                 Shell shell = getShell(activeShell);
                 objectSpyDialog = new NewObjectSpyDialog(shell, LoggerSingleton.getInstance().getLogger(), eventBroker);
                 objectSpyDialog.setBlockOnOpen(false);
+                Trackings.trackOpenSpy("web");
             } else {
                 objectSpyDialog.getShell().forceActive();
             }

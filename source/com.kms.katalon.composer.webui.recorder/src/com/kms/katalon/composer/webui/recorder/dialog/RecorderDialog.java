@@ -159,6 +159,7 @@ import com.kms.katalon.objectspy.websocket.AddonSocketServer;
 import com.kms.katalon.objectspy.websocket.messages.AddonMessage;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
+import com.kms.katalon.tracking.service.Trackings;
 import com.kms.katalon.util.listener.EventListener;
 import com.kms.katalon.util.listener.EventManager;
 import com.sun.jna.platform.win32.User32;
@@ -1809,7 +1810,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     protected void setInput() {
         // Do nothing for this
     }
-
+    
     private Map<ObjectSpyEvent, Set<EventListener<ObjectSpyEvent>>> eventListeners = new HashMap<>();
 
     @Override

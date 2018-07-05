@@ -68,6 +68,7 @@ import com.kms.katalon.objectspy.websocket.AddonSocket;
 import com.kms.katalon.objectspy.websocket.AddonSocketServer;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
+import com.kms.katalon.tracking.service.Trackings;
 import com.kms.katalon.util.listener.EventListener;
 
 @SuppressWarnings("restriction")
@@ -461,6 +462,8 @@ public class NewObjectSpyDialog extends Dialog
         
         SaveActionResult saveResult = objectRepositoryService.saveObject(addToObjectRepositoryDialog.getDialogResult());
        
+        Trackings.trackSaveSpy("web", saveResult.getUpdatedTestObjectIds().size());
+        
         // Refresh tree explorer
         eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, addToObjectRepositoryDialog.getSelectedParentFolderResult());
         
@@ -610,7 +613,9 @@ public class NewObjectSpyDialog extends Dialog
         if (urlView != null) {
             urlView.save();
         }
-        return super.close();
+        boolean result = super.close();
+        Trackings.trackCloseSpy("web");
+        return result;
     }
 
     @Override

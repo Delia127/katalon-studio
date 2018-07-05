@@ -57,6 +57,7 @@ import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class OpenMobileRecorderHandler {
     private MobileRecorderDialog recorderDialog;
@@ -112,6 +113,7 @@ public class OpenMobileRecorderHandler {
                 return false;
             }
             recorderDialog = new MobileRecorderDialog(activeShell);
+            Trackings.trackOpenRecord("mobile");
             if (recorderDialog.open() != Window.OK) {
                 return false;
             }

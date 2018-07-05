@@ -59,6 +59,7 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.objectspy.dialog.SaveToObjectRepositoryDialog.SaveToObjectRepositoryDialogResult;
 import com.kms.katalon.objectspy.element.WebElement;
 import com.kms.katalon.objectspy.element.WebPage;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class RecordHandler {
 
@@ -106,6 +107,7 @@ public class RecordHandler {
             if (recordDialog == null || recordDialog.isDisposed()) {
                 shell = getShell(Display.getCurrent().getActiveShell());
                 recordDialog = new RecorderDialog(shell, LoggerSingleton.getInstance().getLogger(), eventBroker);
+                Trackings.trackOpenRecord("web");
             } else {
                 recordDialog.getShell().forceActive();
             }

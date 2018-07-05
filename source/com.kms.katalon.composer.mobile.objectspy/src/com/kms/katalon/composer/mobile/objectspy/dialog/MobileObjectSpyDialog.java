@@ -104,6 +104,7 @@ import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.core.mobile.keyword.internal.GUIObject;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class MobileObjectSpyDialog extends Dialog implements MobileElementInspectorDialog, MobileAppDialog {
 
@@ -1097,7 +1098,9 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         } catch (IOException e) {
             LoggerSingleton.logError(e);
         }
-        return super.close();
+        boolean result = super.close();
+        Trackings.trackCloseSpy("mobile");
+        return result;
     }
 
     @Override

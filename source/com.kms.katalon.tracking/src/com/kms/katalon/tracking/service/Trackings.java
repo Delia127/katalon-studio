@@ -100,23 +100,29 @@ public class Trackings {
                 "type", type);
     }
     
-//    public static void trackSaveSpy(String type, int numberOfSavedObjects) {
-//        JsonObject propertiesObject = new JsonObject();
-//        propertiesObject.addProperty("action", "saveSpy");
-//        propertiesObject.addProperty("type", type);
-//        propertiesObject.addProperty("numberOfSavedObjects", numberOfSavedObjects);
-//        
-//        TrackInfo trackInfo = TrackInfo
-//                .create()
-//                .eventName(TrackEvents.KATALON_STUDIO_USED)
-//                .properties(propertiesObject);
-//        
-//        trackingService.track(trackInfo);
-//    }
+    public static void trackSaveSpy(String type, int numberOfSavedObjects) {
+        JsonObject propertiesObject = new JsonObject();
+        propertiesObject.addProperty("action", "saveSpy");
+        propertiesObject.addProperty("type", type);
+        propertiesObject.addProperty("numberOfSavedObjects", numberOfSavedObjects);
+        
+        TrackInfo trackInfo = TrackInfo
+                .create()
+                .eventName(TrackEvents.KATALON_STUDIO_USED)
+                .properties(propertiesObject);
+        
+        trackingService.track(trackInfo);
+    }
     
     public static void trackCloseSpy(String type) {
         trackAction(
                 "closeSpy",
+                "type", type);
+    }
+    
+    public static void trackOpenRecord(String type) {
+        trackAction(
+                "openRecord",
                 "type", type);
     }
     
