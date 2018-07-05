@@ -10,7 +10,11 @@ public class ImageConstants {
     // RecorderDialog
     public static final Image IMG_24_RECORD = ImageManager.getImage(IImageKeys.RECORD_WEB_24);
 
-    public static final Image IMG_24_PAUSE = ImageManager.getImage(IImageKeys.PAUSE_24);
+    public static final Image IMG_24_PAUSE_RECORDING = ImageManager.getImage(IImageKeys.PAUSE_RECORDING_24);
+
+    public static final Image IMG_24_STOP_RECORDING = ImageManager.getImage(IImageKeys.STOP_RECORDING_24);
+
+    public static final Image IMG_24_RESUME_RECORDING = ImageManager.getImage(IImageKeys.RESUME_RECORDING_24);
 
     public static final Image IMG_24_STOP = ImageManager.getImage(IImageKeys.STOP_24);
 

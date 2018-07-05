@@ -19,6 +19,14 @@ public class ImageProcessor {
         registerEntityImages();
         registerSubToolbarImages();
         registerCommonImages();
+        registerRecorderImages();
+    }
+
+    private void registerRecorderImages() {
+        ImageManager.registerImage(IImageKeys.START_RECORDING_24);
+        ImageManager.registerImage(IImageKeys.PAUSE_RECORDING_24);
+        ImageManager.registerImage(IImageKeys.RESUME_RECORDING_24);
+        ImageManager.registerImage(IImageKeys.STOP_RECORDING_24);
     }
 
     private void registerCommonImages() {
