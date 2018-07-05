@@ -6,6 +6,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.eclipse.e4.core.services.log.Logger;
+import org.openqa.selenium.WebDriverException;
 import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
@@ -94,5 +95,14 @@ public class RecordSession extends InspectSession {
     
     public void addBrowserStoppedListener(BrowserStoppedListener listener) {
         browserStoppedListeners.add(listener);
+    }
+
+    public boolean isDriverRunning() {
+        try {
+            getWebDriver().getWindowHandle();
+            return true;
+        } catch (WebDriverException e) {
+            return false;
+        }
     }
 }

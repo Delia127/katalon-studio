@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="com.kms.katalon.target" sequenceNumber="405">
+<?pde version="3.8"?><target name="com.kms.katalon.target" sequenceNumber="407">
 <locations>
 <location includeAllPlatforms="true" includeConfigurePhase="false" includeMode="slicer" includeSource="true" type="InstallableUnit">
 <unit id="org.codehaus.groovy23.feature.feature.group" version="2.9.2.xx-201611170128-e46"/>
@@ -106,6 +106,7 @@
 <unit id="jaxb-api" version="2.2.11"/>
 <unit id="org.eclipse.jetty.websocket.server" version="9.3.9.v20160517"/>
 <unit id="org.apache.xerces.impl" version="2.11.0"/>
+<unit id="org.greenrobot.eventbus" version="3.1.1"/>
 <unit id="org.apache.commons.beanutils" version="1.9.2"/>
 <unit id="org.apache.commons.codec" version="1.7.0"/>
 <unit id="dom4j" version="1.6.1"/>
@@ -197,7 +198,6 @@
 <plugin id="javax.servlet.jsp.source"/>
 <plugin id="javax.servlet.source"/>
 <plugin id="javax.websocket-api"/>
-<plugin id="javax.websocket-api"/>
 <plugin id="javax.ws.rs"/>
 <plugin id="javax.xml"/>
 <plugin id="javax.xml.jaxp-api"/>
@@ -247,16 +247,16 @@
 <plugin id="org.apache.felix.gogo.shell"/>
 <plugin id="org.apache.felix.gogo.shell.source"/>
 <plugin id="org.apache.httpcomponents.httpclient" version="4.5.1"/>
-<plugin id="org.apache.httpcomponents.httpcore" version="4.3.3.v201411290715"/>
 <plugin id="org.apache.httpcomponents.httpcore" version="4.4.4"/>
+<plugin id="org.apache.httpcomponents.httpcore" version="4.3.3.v201411290715"/>
 <plugin id="org.apache.httpcomponents.httpmime"/>
 <plugin id="org.apache.jasper.glassfish"/>
 <plugin id="org.apache.jasper.glassfish.source"/>
 <plugin id="org.apache.log4j"/>
 <plugin id="org.apache.lucene.analysis"/>
 <plugin id="org.apache.lucene.analysis.source"/>
-<plugin id="org.apache.lucene.core" version="6.3.0"/>
 <plugin id="org.apache.lucene.core" version="3.5.0.v20120725-1805"/>
+<plugin id="org.apache.lucene.core" version="6.3.0"/>
 <plugin id="org.apache.lucene.core.source"/>
 <plugin id="org.apache.poi"/>
 <plugin id="org.apache.poi.ooxml"/>
@@ -277,8 +277,8 @@
 <plugin id="org.codehaus.groovy" version="2.3.10.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse" version="2.9.2.xx-201611170128-e46"/>
-<plugin id="org.codehaus.groovy.eclipse.ant" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.ant" version="2.9.2.xx-201608111517-e46"/>
+<plugin id="org.codehaus.groovy.eclipse.ant" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.astviews" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.astviews" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.codeassist.completion" version="2.9.2.xx-201611170128-e46"/>
@@ -291,12 +291,12 @@
 <plugin id="org.codehaus.groovy.eclipse.core" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.dsl" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.dsl" version="2.9.2.xx-201608111517-e46"/>
-<plugin id="org.codehaus.groovy.eclipse.quickfix" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.quickfix" version="2.9.2.xx-201608111517-e46"/>
+<plugin id="org.codehaus.groovy.eclipse.quickfix" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.refactoring" version="2.9.2.xx-201608111517-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.refactoring" version="2.9.2.xx-201611170128-e46"/>
-<plugin id="org.codehaus.groovy.eclipse.ui" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.eclipse.ui" version="2.9.2.xx-201608111517-e46"/>
+<plugin id="org.codehaus.groovy.eclipse.ui" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.codehaus.groovy.m2eclipse"/>
 <plugin id="org.dom4j"/>
 <plugin id="org.eclipse.aether.api"/>
@@ -565,8 +565,8 @@
 <plugin id="org.eclipse.help.webapp"/>
 <plugin id="org.eclipse.help.webapp.source"/>
 <plugin id="org.eclipse.jdt"/>
-<plugin id="org.eclipse.jdt.annotation" version="1.1.100.v20160418-1457"/>
 <plugin id="org.eclipse.jdt.annotation" version="2.1.0.v20160418-1457"/>
+<plugin id="org.eclipse.jdt.annotation" version="1.1.100.v20160418-1457"/>
 <plugin id="org.eclipse.jdt.apt.core"/>
 <plugin id="org.eclipse.jdt.apt.pluggable.core"/>
 <plugin id="org.eclipse.jdt.apt.ui"/>
@@ -578,8 +578,8 @@
 <plugin id="org.eclipse.jdt.debug"/>
 <plugin id="org.eclipse.jdt.debug.ui"/>
 <plugin id="org.eclipse.jdt.doc.user"/>
-<plugin id="org.eclipse.jdt.groovy.core" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.eclipse.jdt.groovy.core" version="2.9.2.xx-201608111517-e46"/>
+<plugin id="org.eclipse.jdt.groovy.core" version="2.9.2.xx-201611170128-e46"/>
 <plugin id="org.eclipse.jdt.junit"/>
 <plugin id="org.eclipse.jdt.junit.core"/>
 <plugin id="org.eclipse.jdt.junit.runtime"/>
@@ -1031,6 +1031,7 @@
 <plugin id="org.eclipse.xsd.edit"/>
 <plugin id="org.everit.osgi.bundles.javax.sql"/>
 <plugin id="org.gradle.toolingapi"/>
+<plugin id="org.greenrobot.eventbus"/>
 <plugin id="org.hamcrest.core"/>
 <plugin id="org.hamcrest.library"/>
 <plugin id="org.hibernate.common.hibernate-commons-annotations"/>
@@ -1042,8 +1043,8 @@
 <plugin id="org.jboss.logging.jboss-logging-annotations"/>
 <plugin id="org.jboss.spec.javax.transaction.jboss-transaction-api_1.2_spec"/>
 <plugin id="org.json"/>
-<plugin id="org.jsoup" version="1.7.2.v201411291515"/>
 <plugin id="org.jsoup" version="1.7.2"/>
+<plugin id="org.jsoup" version="1.7.2.v201411291515"/>
 <plugin id="org.junit" version="4.12.0"/>
 <plugin id="org.kohsuke.args4j"/>
 <plugin id="org.mozilla.javascript"/>
@@ -1051,8 +1052,8 @@
 <plugin id="org.objectweb.asm" version="5.0.1.v201404251740"/>
 <plugin id="org.objectweb.asm.all.debug"/>
 <plugin id="org.objectweb.asm.commons"/>
-<plugin id="org.objectweb.asm.tree" version="5.0.1"/>
 <plugin id="org.objectweb.asm.tree" version="5.0.1.v201404251740"/>
+<plugin id="org.objectweb.asm.tree" version="5.0.1"/>
 <plugin id="org.postgresql.jdbc41"/>
 <plugin id="org.qas.qtest.sdk-java"/>
 <plugin id="org.sat4j.core"/>

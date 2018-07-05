@@ -22,7 +22,7 @@ import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 
 public class WebServiceAPIControl extends Composite {
 
-    private static final int DEFAULT_HEIGHT = 20;
+    //private static final int DEFAULT_HEIGHT = 20;
 
     private static final int DEFAULT_REQUEST_METHOD_SELECTION_INDEX = 0;
 
@@ -71,13 +71,8 @@ public class WebServiceAPIControl extends Composite {
             txtRequestURL.setText(url);
         }
       
-<<<<<<< HEAD
-        ToolBar toolbar = new ToolBar(this, SWT.RIGHT);
-        btnSend = new ToolItem(toolbar, SWT.FLAT);
-=======
         ToolBar toolbar = new ToolBar(this, SWT.RIGHT | SWT.RIGHT);
         btnSend = new ToolItem(toolbar, SWT.DROP_DOWN);
->>>>>>> origin/Release-5.5.0
         setSendButtonState(false);
         
         

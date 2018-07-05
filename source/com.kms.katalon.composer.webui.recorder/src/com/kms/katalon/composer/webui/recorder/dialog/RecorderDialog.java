@@ -68,8 +68,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
-import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
-import org.eclipse.ui.dialogs.ISelectionStatusValidator;
 import org.greenrobot.eventbus.EventBus;
 import org.osgi.framework.Bundle;
 import org.osgi.service.event.EventHandler;
@@ -1677,7 +1675,11 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             case EventConstants.WEBUI_VERIFICATION_EXECUTION_FINISHED:
                 setPlayButtonState(false);
 
-                if (shouldResumeRecordingAfterRunning) {
+                try {
+                    Thread.sleep(1000L);
+                } catch (InterruptedException ignored) {
+                }
+                if (shouldResumeRecordingAfterRunning && session.isRunning() && session.isDriverRunning()) {
                     resume();
                     shouldResumeRecordingAfterRunning = false;
                 }

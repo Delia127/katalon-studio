@@ -20,7 +20,6 @@ import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.execution.configuration.ExistingRunConfiguration;
 import com.kms.katalon.execution.entity.WSVerificationTestCaseExecutedEntity;
 import com.kms.katalon.execution.launcher.RecordingScriptLauncher;
-import com.kms.katalon.execution.launcher.VerificationScriptLauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.ILauncherResult;
 import com.kms.katalon.execution.util.ExecutionProfileStore;
@@ -31,7 +30,7 @@ public class RecordingScriptGenerator {
 
     private IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
 
-    private VerificationScriptLauncher launcher;
+    private RecordingScriptLauncher launcher;
 
     private String capturedTestObjectsCacheFile;
 
