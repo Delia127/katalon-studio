@@ -26,6 +26,10 @@ public class ImageConstants {
     public static final Image IMG_SAMPLE_MOBILE_PROJECT = ImageManager.getImage(IImageKeys.SAMPLE_MOBILE_PROJECT_72);
 
     public static final Image IMG_SAMPLE_MORE = ImageManager.getImage(IImageKeys.SAMPLE_MORE_72);
+    
+    public static final Image IMG_SAMPLE_REMOTE = ImageManager.getImage(IImageKeys.SAMPLE_REMOTE_PROJECT_72);
+    
+    public static final Image IMG_GITHUB_LOGO = ImageManager.getImage(IImageKeys.GITHUB_LOGO_55);
 
     public static final Image IMG_SAMPLE_WEB_SERVICE_PROJECT = ImageManager
             .getImage(IImageKeys.SAMPLE_WEB_SERVICES_PROJECT_72);

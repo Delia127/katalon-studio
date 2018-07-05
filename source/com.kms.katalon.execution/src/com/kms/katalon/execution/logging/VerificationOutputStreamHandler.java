@@ -20,8 +20,11 @@ public class VerificationOutputStreamHandler extends Thread implements IOutputSt
     
     private InputStream is;
     
-    private VerificationOutputStreamHandler(InputStream is) {
+    private String testObjectId;
+    
+    private VerificationOutputStreamHandler(String testObjectId, InputStream is) {
         this.is = is;
+        this.testObjectId = testObjectId;
     }
     
     public void run() {
@@ -32,7 +35,7 @@ public class VerificationOutputStreamHandler extends Thread implements IOutputSt
             br = new BufferedReader(isr);
             String line = null;
             while ((line = br.readLine()) != null) {
-                eventBroker.post(EventConstants.WS_VERIFICATION_LOG_UPDATED, line);
+                eventBroker.post(EventConstants.WS_VERIFICATION_LOG_UPDATED, new Object[] {testObjectId, line});
             }
         } catch (IOException e) {
             // Stream closed
@@ -42,12 +45,12 @@ public class VerificationOutputStreamHandler extends Thread implements IOutputSt
         }
     }
     
-    public static VerificationOutputStreamHandler outputHandlerFrom(InputStream is) {
-        return new VerificationOutputStreamHandler(is);
+    public static VerificationOutputStreamHandler outputHandlerFrom(String testObjectId, InputStream is) {
+        return new VerificationOutputStreamHandler(testObjectId, is);
     }
     
-    public static VerificationOutputStreamHandler errorHandlerFrom(InputStream is) {
-        return new VerificationOutputStreamHandler(is);
+    public static VerificationOutputStreamHandler errorHandlerFrom(String testObjectId, InputStream is) {
+        return new VerificationOutputStreamHandler(testObjectId, is);
     }
 
     @Override

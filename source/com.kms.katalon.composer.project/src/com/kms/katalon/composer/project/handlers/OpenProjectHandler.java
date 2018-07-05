@@ -2,6 +2,9 @@ package com.kms.katalon.composer.project.handlers;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -25,7 +28,11 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Shell;
+import org.greenrobot.eventbus.EventBus;
 
+import com.kms.katalon.application.RunningMode;
+import com.kms.katalon.application.usagetracking.TrackingEvent;
+import com.kms.katalon.application.usagetracking.UsageActionTrigger;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -33,6 +40,7 @@ import com.kms.katalon.composer.project.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.event.EventBusSingleton;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 
@@ -90,6 +98,19 @@ public class OpenProjectHandler {
         return null;
     }
 
+    public static List<File> getProjectFiles(File projectDirectory) {
+        List<File> childProjectFiles = new ArrayList<>();
+        for (File file : projectDirectory.listFiles()) {
+            if (file.isDirectory()) {
+                File projectFile = getProjectFile(file);
+                if (projectFile != null) {
+                    childProjectFiles.add(projectFile);
+                }
+            }
+        }
+        return childProjectFiles;
+    }
+
     @Inject
     @Optional
     private void openProjectEventHandler(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
@@ -104,7 +125,16 @@ public class OpenProjectHandler {
             @UIEventTopic(EventConstants.PROJECT_OPEN_LATEST) final String projectPk) throws InvocationTargetException,
             InterruptedException {
         doOpenProject(shell, projectPk, sync, eventBroker, partService, modelService, application);
+        sendEventForTracking();
         eventBroker.post(EventConstants.PROJECT_RESTORE_SESSION, null);
+    }
+    
+    private void sendEventForTracking() {
+        EventBus eventBus = EventBusSingleton.getInstance().getEventBus();
+        eventBus.post(new TrackingEvent(UsageActionTrigger.OPEN_APPLICATION, new HashMap<String, Object>() {{
+            put("isAnonymous", false);
+            put("runningMode", RunningMode.GUI.getMode());
+        }}));
     }
 
     public static void doOpenProject(Shell shell, final String projectPk, final UISynchronize syncService,

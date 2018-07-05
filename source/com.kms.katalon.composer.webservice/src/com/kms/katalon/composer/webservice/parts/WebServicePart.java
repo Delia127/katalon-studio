@@ -101,6 +101,7 @@ import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
 import com.kms.katalon.composer.components.controls.ToolBarForMPart;
+import com.kms.katalon.composer.components.impl.control.DropdownToolItemSelectionListener;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
@@ -422,17 +423,12 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
         }
     }
     
-    protected void executeVerificationScriptIfNotEmpty(ResponseObject responseObject) throws Exception {
+    protected void executeVerificationScript(ResponseObject responseObject) throws Exception {
         String verificationScript = getVerificationScript();
-        if (!isEmptyScript(verificationScript)) {
-            VerificationScriptExecutor executor = new VerificationScriptExecutor();
-            executor.execute(verificationScript, responseObject);
-        }
+        VerificationScriptExecutor executor = new VerificationScriptExecutor();
+        executor.execute(originalWsObject.getId(), verificationScript, responseObject);
     }
-    
-    private boolean isEmptyScript(String script) {
-        return GroovyWrapperParser.parseGroovyScriptAndGetFirstStatement(script) == null;
-    }
+
 
     protected void createAPIControls(Composite parent) {
         String endPoint = isSOAP() ? originalWsObject.getWsdlAddress() : originalWsObject.getRestUrl();
@@ -465,7 +461,35 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
                 setDirty();
             }
         });
+        
+        wsApiControl.addSendSelectionListener(new DropdownToolItemSelectionListener() {
+            
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+                if (event.detail == SWT.ARROW) {
+                    showDropdown(event);
+                } else {
+                    sendRequest(false);
+                }
+            }
+
+            @Override
+            protected Menu getMenu() {
+                return wsApiControl.getSendMenu();
+            }
+            
+        });
+        
+        wsApiControl.addSendAndVerifySelectionListener(new SelectionAdapter() {
+            
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+                sendRequest(true);
+            }
+        });
     }
+
+    protected abstract void sendRequest(boolean runVerificationScript);
 
     protected abstract void createParamsComposite(Composite parent);
 
@@ -1374,12 +1398,21 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
         }
         
         if (EventConstants.WS_VERIFICATION_LOG_UPDATED.equals(event.getTopic())) {
-            txtVerificationLog.append(eventData + "\n");
+            Object[] data = (Object[]) eventData;
+            String testObjectId = (String) data[0];
+            String logLine = (String) data[1];
+            if (originalWsObject.getId().equals(testObjectId)) {
+                txtVerificationLog.append(logLine + "\n");
+            }
         }
         
         if (EventConstants.WS_VERIFICATION_EXECUTION_FINISHED.equals(event.getTopic())) {
-            TestStatusValue value = (TestStatusValue) eventData;
-            setVerificationResultStatus(value);
+            Object[] data = (Object[]) eventData;
+            String testObjectId = (String) data[0];
+            TestStatusValue testStatusValue = (TestStatusValue) data[1];
+            if (originalWsObject.getId().equals(testObjectId)) {
+                setVerificationResultStatus(testStatusValue);
+            }
         }
     }
     

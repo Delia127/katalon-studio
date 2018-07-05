@@ -10,10 +10,13 @@ import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.execution.exception.ExecutionException;
 
 public class WSVerificationRunConfiguration extends AbstractRunConfiguration {
-
+    
+    private String testObjectId;
+    
     private ResponseObject responseObject;
     
-    public WSVerificationRunConfiguration(ResponseObject responseObject) {
+    public WSVerificationRunConfiguration(String testObjectId, ResponseObject responseObject) {
+        this.testObjectId = testObjectId;
         this.responseObject = responseObject;
     }
     
@@ -24,7 +27,7 @@ public class WSVerificationRunConfiguration extends AbstractRunConfiguration {
 
     @Override
     public IRunConfiguration cloneConfig() throws IOException, ExecutionException {
-        return new WSVerificationRunConfiguration(responseObject);
+        return new WSVerificationRunConfiguration(testObjectId, responseObject);
     }
     
     @Override
@@ -32,5 +35,9 @@ public class WSVerificationRunConfiguration extends AbstractRunConfiguration {
         Map<String, Object> properties = super.getProperties();
         properties.put(StringConstants.WS_RESPONSE_OBJECT, JsonUtil.toJson(responseObject));
         return properties;
+    }
+    
+    public String getTestObjectId() {
+        return testObjectId;
     }
 }

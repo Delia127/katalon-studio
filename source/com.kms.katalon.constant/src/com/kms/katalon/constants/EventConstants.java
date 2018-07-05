@@ -178,6 +178,16 @@ public class EventConstants {
     public static final String KEYWORD_NEW = "KEYWORD/NEW";
 
     public static final String PACKAGE_NEW = "PACKAGE/NEW";
+    
+    public static final String FOLDER_IMPORT = "FOLDER/IMPORT";
+
+    public static final String FOLDER_EXPORT = "FOLDER/EXPORT";
+
+    public static final String JAR_IMPORT = "JAR/IMPORT";
+
+    public static final String JAR_EXPORT = "JAR/EXPORT";
+
+    public static final String GIT_IMPORT = "GIT/IMPORT";
 
     // Import Events
     public static final String IMPORT_DUPLICATE_ENTITY_RESULT = "IMPORT/DUPLICATE_ENTITY_RESULT";
@@ -283,7 +293,7 @@ public class EventConstants {
     
     // WS Verification Events
     public static final String WS_VERIFICATION_LOG_UPDATED = "WS_VERIFICATION/LOG_UPDATED";
-    
+
     public static final String WS_VERIFICATION_EXECUTION_FINISHED = "WS_VERIFICATION/EXECUTION_FINISHED";
     
     // WebUI Recording Events
@@ -300,4 +310,9 @@ public class EventConstants {
     public static final String WEBUI_VERIFICATION_RUN_SELECTED_STEPS_CMD = "WEBUI_VERIFICATION/RUN_SELECTED_STEPS_CMD";
 
     public static final String WEBUI_VERIFICATION_RUN_FROM_STEP_CMD = "WEBUI_VERIFICATION/RUN_FROM_STEP_CMD";
+
+    // Git Events
+    public static final String GIT_CLONE_AND_OPEN_FINISHED = "GIT/CLONE_AND_OPEN_FINISHED";
+
+    public static final String GIT_CLONE_REMOTE_PROJECT = "GIT/CLONE_REMOTE_PROJECT";
 }

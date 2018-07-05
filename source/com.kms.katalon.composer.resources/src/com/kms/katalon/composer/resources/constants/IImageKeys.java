@@ -62,6 +62,10 @@ public interface IImageKeys {
     public static final String TAB_LAST_INACTIVE = "welcome/tab_last_inactive.png"; //$NON-NLS-1$
 
     public static final String TAB_LAST_ACTIVE = "welcome/tab_last_active.png"; //$NON-NLS-1$
+    
+    public static final String SAMPLE_REMOTE_PROJECT_72 = "welcome/sample_remote_project.png"; //$NON-NLS-1$
+
+    public static final String GITHUB_LOGO_55 = "welcome/github_logo_55.png"; //$NON-NLS-1$
     // End Welcome
 
     // For Dialog

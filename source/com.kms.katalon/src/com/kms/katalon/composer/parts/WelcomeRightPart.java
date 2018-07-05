@@ -1,17 +1,27 @@
 package com.kms.katalon.composer.parts;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.commands.common.CommandException;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.StackLayout;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -19,6 +29,8 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.ImageDataProvider;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.program.Program;
@@ -27,16 +39,22 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.handler.CommandCaller;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.project.handlers.NewSampleProjectHandler;
 import com.kms.katalon.composer.project.menu.RecentProjectParameterizedCommandBuilder;
 import com.kms.katalon.composer.project.template.SampleProjectProvider;
+import com.kms.katalon.composer.samples.NewSampleRemoteProjectDialog;
+import com.kms.katalon.composer.samples.SampleRemoteProject;
+import com.kms.katalon.composer.samples.SampleRemoteProjectProvider;
+import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.ImageConstants;
 import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.PreferenceConstants;
@@ -84,6 +102,8 @@ public class WelcomeRightPart extends Composite {
 
     private static final int TAB_RECENTS_ID = 3;
 
+    private IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
+
     private StackLayout stackLayout;
 
     private Composite tabComposite;
@@ -107,6 +127,8 @@ public class WelcomeRightPart extends Composite {
     private CLabel tabRecents;
 
     private CommandCaller commandCaller = new CommandCaller();
+
+    private Thread thread;
 
     private static final SelectionAdapter linkSelectionAdapter = new SelectionAdapter() {
 
@@ -295,12 +317,106 @@ public class WelcomeRightPart extends Composite {
         samplesContent = createContentComposite(tabContentCompositeStack);
 
         Composite holder = new Composite(samplesContent, SWT.NONE);
-        GridLayout glHolder = new GridLayout(2, true);
+        GridLayout glHolder = new GridLayout(3, true);
         glHolder.horizontalSpacing = 30;
         glHolder.verticalSpacing = 30;
         holder.setLayout(glHolder);
-        holder.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, true, true));
+        holder.setLayoutData(new GridData(SWT.CENTER, SWT.TOP, true, false));
 
+        thread = new Thread(() -> {
+            SampleRemoteProjectProvider sampleRemoteProjectProvider = new SampleRemoteProjectProvider();
+            List<SampleRemoteProject> sampleProjects = sampleRemoteProjectProvider.getSampleProjects();
+
+            List<Composite> composites = new ArrayList<>();
+            UISynchronizeService.syncExec(() -> {
+                samplesContent.setRedraw(false);
+                if (sampleProjects.size() <= 0) {
+                    addDefaultSampleProjects(holder);
+                }
+                Composite latestComposite = null;
+                for (SampleRemoteProject sample : sampleProjects) {
+                    latestComposite = addProjectBlock(holder, getDefaultImage(sample),
+                            ImageConstants.IMG_GITHUB_LOGO, sample.getName(), sample.getName(), new MouseAdapter() {
+
+                                @Override
+                                public void mouseUp(MouseEvent e) {
+                                    NewSampleRemoteProjectDialog dialog = new NewSampleRemoteProjectDialog(getShell(),
+                                            sample);
+                                    if (dialog.open() != NewSampleRemoteProjectDialog.OK) {
+                                        return;
+                                    }
+                                    String projectLocation = dialog.getSelectedProjectLocation();
+                                    eventBroker.post(EventConstants.GIT_CLONE_REMOTE_PROJECT,
+                                            new Object[] { sample, projectLocation });
+                                }
+                            });
+                    composites.add(latestComposite);
+                }
+
+                addProjectBlock(holder, ImageConstants.IMG_SAMPLE_MORE, MessageConstants.LBL_MORE_PROJECT,
+                        MessageConstants.LBL_MORE_PROJECT_TOOLTIP, new MouseAdapter() {
+
+                            @Override
+                            public void mouseUp(MouseEvent e) {
+                                Program.launch(MessageConstants.LBL_MORE_PROJECT_URL);
+                            }
+                        });
+
+                samplesContent.layout(true, true);
+                samplesContent.setRedraw(true);
+            });
+
+            sampleProjects.parallelStream().forEach(sample -> {
+                Map<Integer, File> imageFiles = sampleRemoteProjectProvider.getThumbnailFiles(sample);
+
+                int index = sampleProjects.indexOf(sample);
+                Composite composite = composites.get(index);
+                UISynchronizeService.asyncExec(() -> {
+                    if (isDisposed()) {
+                        return;
+                    }
+                    Label lblIcon = (Label) composite.getData("icon");
+                    if (imageFiles != null && imageFiles.size() > 0) {
+                        composite.setRedraw(false);
+                        lblIcon.setImage(createImage(getDisplay(), imageFiles));
+                        composite.setRedraw(true);
+
+                        lblIcon.addDisposeListener(new DisposeListener() {
+                            @Override
+                            public void widgetDisposed(DisposeEvent e) {
+                                imageFiles.entrySet().forEach(entry -> FileUtils.deleteQuietly(entry.getValue()));
+                            }
+                        });
+                    }
+                });
+            });
+        });
+        thread.start();
+
+        this.addDisposeListener(new DisposeListener() {
+            @Override
+            public void widgetDisposed(DisposeEvent e) {
+                if (thread != null && !thread.isInterrupted()) {
+                    thread.interrupt();
+                }
+            }
+        });
+    }
+
+    private Image getDefaultImage(SampleRemoteProject sampleRemoteProject) {
+        switch (sampleRemoteProject.getType()) {
+            case MOBILE:
+                return ImageConstants.IMG_SAMPLE_MOBILE_PROJECT;
+            case WEBUI:
+                return ImageConstants.IMG_SAMPLE_WEB_UI_PROJECT;
+            case WS:
+                return ImageConstants.IMG_SAMPLE_WEB_SERVICE_PROJECT;
+            default:
+                return ImageConstants.IMG_SAMPLE_REMOTE;
+        }
+    }
+
+    private void addDefaultSampleProjects(Composite holder) {
         addProjectBlock(holder, ImageConstants.IMG_SAMPLE_WEB_UI_PROJECT, MessageConstants.PA_LBL_SAMPLE_WEB_UI_PROJECT,
                 MessageConstants.PA_TOOLTIP_SAMPLE_WEB_UI_PROJECT, new MouseAdapter() {
 
@@ -344,14 +460,26 @@ public class WelcomeRightPart extends Composite {
                         }
                     }
                 });
-        addProjectBlock(holder, ImageConstants.IMG_SAMPLE_MORE, MessageConstants.LBL_MORE_PROJECT,
-                MessageConstants.LBL_MORE_PROJECT_TOOLTIP, new MouseAdapter() {
+    }
 
-                    @Override
-                    public void mouseUp(MouseEvent e) {
-                        Program.launch(MessageConstants.LBL_MORE_PROJECT_URL);
+    public Image createImage(Display display, Map<Integer, File> allImageFiles) {
+        Map<Integer, Image> allImages = allImageFiles.entrySet()
+                .stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> {
+                    try {
+                        return new Image(display, new FileInputStream(e.getValue()));
+                    } catch (IOException ex) {
+                        return ImageConstants.IMG_SAMPLE_REMOTE;
                     }
-                });
+                }));
+        ImageDataProvider dateProvider = new ImageDataProvider() {
+
+            @Override
+            public ImageData getImageData(int zoom) {
+                return allImages.get(zoom).getImageData();
+            }
+        };
+        return new Image(display, dateProvider);
     }
 
     private void createRecentsTabContent() {
@@ -362,7 +490,7 @@ public class WelcomeRightPart extends Composite {
         glHolder.horizontalSpacing = 30;
         glHolder.verticalSpacing = 30;
         recentsProjectHolder.setLayout(glHolder);
-        recentsProjectHolder.setLayoutData(new GridData(SWT.CENTER, SWT.FILL, true, true));
+        recentsProjectHolder.setLayoutData(new GridData(SWT.CENTER, SWT.TOP, true, false));
 
         populateRecentProjects();
     }
@@ -421,7 +549,7 @@ public class WelcomeRightPart extends Composite {
         gl.marginWidth = 0;
         gl.marginTop = 30;
         c.setLayout(gl);
-        c.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        c.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
         CLabel stepNumber = new CLabel(c, SWT.NONE);
         stepNumber.setImage(stepNumberImage);
@@ -441,38 +569,72 @@ public class WelcomeRightPart extends Composite {
         stepDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
     }
 
-    private void addProjectBlock(Composite parent, Image icon, String label, String tooltip, MouseAdapter action) {
+    private Composite addProjectBlock(Composite parent, Image icon, String label, String tooltip, MouseAdapter action) {
+        return addProjectBlock(parent, icon, null, label, tooltip, action);
+    }
+
+    private Composite addProjectBlock(Composite parent, Image icon, Image subIcon, String label, String tooltip,
+            MouseAdapter action) {
         if (parent == null || parent.isDisposed()) {
-            return;
+            return null;
         }
         Composite c = new Composite(parent, SWT.BORDER);
         GridLayout gl = new GridLayout();
-        gl.marginHeight = 20;
-        gl.marginWidth = 30;
         c.setLayout(gl);
-        GridData ld = new GridData(SWT.FILL, SWT.CENTER, true, false);
+        GridData ld = new GridData(SWT.FILL, SWT.TOP, true, true);
         ld.widthHint = 210;
-        ld.heightHint = 180;
+        ld.heightHint = 190;
         c.setLayoutData(ld);
         c.setCursor(CURSOR_HAND);
         c.addMouseListener(action);
         c.setToolTipText(tooltip);
 
-        Label lblIcon = new Label(c, SWT.NONE);
+        Composite imageComposite = new Composite(c, SWT.NONE);
+        GridData layoutData = new GridData(SWT.FILL, SWT.FILL, true, true);
+        layoutData.heightHint = 120;
+        imageComposite.setLayoutData(layoutData);
+        imageComposite.setLayout(new GridLayout());
+        imageComposite.addMouseListener(action);
+
+        if (subIcon != null) {
+            Label lblSubIcon = new Label(imageComposite, SWT.NONE);
+            lblSubIcon.setAlignment(SWT.RIGHT);
+            lblSubIcon.setImage(subIcon);
+            lblSubIcon.setToolTipText(tooltip);
+            lblSubIcon.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, true, false));
+            lblSubIcon.addMouseListener(action);
+        }
+
+        Label lblIcon = new Label(imageComposite, SWT.NONE);
         lblIcon.setAlignment(SWT.CENTER);
         lblIcon.setImage(icon);
         lblIcon.setToolTipText(tooltip);
-        lblIcon.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, true));
+        lblIcon.setLayoutData(new GridData(SWT.CENTER, SWT.BOTTOM, true, true));
         lblIcon.addMouseListener(action);
+        c.setData("icon", lblIcon);
 
-        Label lblText = new Label(c, SWT.WRAP);
-        lblText.setAlignment(SWT.CENTER);
+        Composite textComposite = new Composite(c, SWT.NONE);
+        GridData gdTextComposite = new GridData(SWT.FILL, SWT.BOTTOM, true, true);
+        gdTextComposite.heightHint = 60;
+        textComposite.setLayoutData(gdTextComposite);
+        textComposite.addMouseListener(action);
+
+        GridLayout glTextComposite = new GridLayout();
+        glTextComposite.marginWidth = 30;
+        glTextComposite.marginBottom = 5;
+        textComposite.setLayout(glTextComposite);
+
+        Text lblText = new Text(textComposite, SWT.WRAP | SWT.CENTER);
         lblText.setText(label);
         lblText.setToolTipText(tooltip);
         lblText.setForeground(TEXT_COLOR);
-        lblText.setLayoutData(new GridData(SWT.CENTER, SWT.TOP, true, true));
         ControlUtils.setFontStyle(lblText, SWT.NORMAL, FONT_SIZE_MEDIUM);
+        GridData gridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
+        gridData.heightHint = 2 * lblText.getLineHeight();
+        lblText.setLayoutData(gridData);
         lblText.addMouseListener(action);
+        lblText.getLineCount();
+        return c;
     }
 
     private void clearRecentProjectBlocks() {

@@ -200,6 +200,10 @@ public class SlackUtil {
     public String fmtItalic(String msg) {
         return "_" + msg + "_";
     }
+    
+    public boolean isSlackEnabled() {
+        return PREFERENCE.getBoolean(SlackPreferenceConstants.SLACK_ENABLED);
+    }
 
     /**
      * Slack responded message status

@@ -2,6 +2,7 @@ package com.kms.katalon.composer.execution.handlers;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -35,12 +36,13 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
+import org.greenrobot.eventbus.EventBus;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.application.RunningMode;
+import com.kms.katalon.application.usagetracking.TrackingEvent;
 import com.kms.katalon.application.usagetracking.UsageActionTrigger;
-import com.kms.katalon.application.usagetracking.UsageInfoCollector;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.ExecutionProfileManager;
@@ -54,6 +56,7 @@ import com.kms.katalon.composer.testsuite.parts.TestSuiteCompositePart;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.event.EventBusSingleton;
 import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
@@ -140,6 +143,7 @@ public abstract class AbstractExecutionHandler {
     @Execute
     public void execute(ParameterizedCommand command) {
         try {
+            LaunchMode launchMode = getLaunchMode(command);
             execute(getLaunchMode(command));
         } catch (ExecutionException e) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR, e.getMessage());
@@ -281,6 +285,8 @@ public abstract class AbstractExecutionHandler {
                         LauncherManager launcherManager = LauncherManager.getInstance();
                         ILauncher launcher = new IDELauncher(launcherManager, runConfig, launchMode);
                         launcherManager.addLauncher(launcher);
+                        
+                        sendEventForTrackingTestSuiteExecution(launchMode, runConfig);
 
                         monitor.worked(1);
 
@@ -313,13 +319,22 @@ public abstract class AbstractExecutionHandler {
 
                     return Status.CANCEL_STATUS;
                 } finally {
-                    UsageInfoCollector.collect(
-                            UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.RUN_SCRIPT, RunningMode.GUI));
+//                    UsageInfoCollector.collect(
+//                            UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.RUN_SCRIPT, RunningMode.GUI));
                 }
             }
         };
         job.setUser(true);
         job.schedule();
+    }
+    
+    private void sendEventForTrackingTestSuiteExecution(LaunchMode launchMode, IRunConfiguration runConfig) {
+        EventBus eventBus = EventBusSingleton.getInstance().getEventBus();
+        eventBus.post(new TrackingEvent(UsageActionTrigger.EXECUTE_TEST_SUITE, new HashMap<String, Object>() {{
+            put("isAnonymous", false);
+            put("runningMode", RunningMode.GUI.getMode());
+            put("launchMode", launchMode.toString());
+        }}));
     }
 
     /**
