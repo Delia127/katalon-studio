@@ -53,6 +53,7 @@ KURecorder.addEventHandler('type', 'input', function (event) {
 
 // © Chen-Chieh Ping, SideeX Team
 KURecorder.addEventHandler('doubleClickAt', 'dblclick', function (event) {
+    clearTimeout(this.waitUntilDoubleClickIsConfirmed);
     this.processOnDbClickTarget(event.target);
 }, true);
 // END
@@ -218,28 +219,32 @@ KURecorder.addEventHandler('dragAndDrop', 'mouseup', function (event) {
         } else {
             delete this.clickLocator;
             delete this.mouseup;
-            var x = event.clientX - this.mousedown.clientX;
-            var y = event.clientY - this.mousedown.clientY;
-            var self = this;
-            if (this.mousedown && this.mousedown.target !== event.target && !(x + y)) {
-                // this.record("mouseDown", this.ku_locatorBuilders.buildAll(this.mousedown.target), '');
-                // this.record("mouseUp", this.ku_locatorBuilders.buildAll(event.target), '');    
-            } else if (this.mousedown && this.mousedown.target === event.target) {
-                var self = this;
-                var target = this.ku_locatorBuilders.buildAll(this.mousedown.target);
-                var eventTarget = event.target;
-                if (event.button == 0 && !preventClick && event.isTrusted) {
-                    if (!preventClickTwice) {
-                        var clickType = this.rec_getMouseButton(event);                       
-                        if (this.rec_isElementMouseUpEventRecordable(event.target, clickType)) {                                                        
-                            this.processOnClickTarget(event.target, clickType);
-                        }                       
-                        preventClickTwice = true;
+            if (this.mousedown) {
+                var mouseDownTemp = this.mousedown;
+                var mouseDownTempTarget = this.mousedown.target;
+                this.waitUntilDoubleClickIsConfirmed = setTimeout(function (){
+                    if (mouseDownTempTarget !== event.target && !(x + y)) {
+                        var x = event.clientX - this.mouseDownTemp.clientX;
+                        var y = event.clientY - this.mouseDownTemp.clientY;
+                        var self = this;
                     }
-                    setTimeout(function () { preventClickTwice = false; }, 30);
-                }
+                    // this.record("mouseDown", this.ku_locatorBuilders.buildAll(this.mousedown.target), '');
+                    // this.record("mouseUp", this.ku_locatorBuilders.buildAll(event.target), '');    
+                    else if (mouseDownTempTarget === event.target) {
+                        var self = this;
+                        if (event.button == 0 && !preventClick && event.isTrusted) {
+                            if (!preventClickTwice) {
+                                var clickType = this.rec_getMouseButton(event);
+                                if (this.rec_isElementMouseUpEventRecordable(event.target, clickType)) {
+                                    this.processOnClickTarget(event.target, clickType);
+                                }
+                                preventClickTwice = true;
+                            }
+                            setTimeout(function () { preventClickTwice = false; }, 30);
+                        }
+                    }
+                }.bind(this), 200);
             }
-
         }
         delete this.mousedown;
         delete this.selectMousedown;
@@ -508,7 +513,7 @@ KURecorder.addEventHandler('select', 'change', function (event) {
             } else {
                 var options = event.target.options;
                 for (var i = 0; i < options.length; i++) {
-                    if (options[i]._wasSelected == null) {}
+                    if (options[i]._wasSelected == null) { }
 
                     if (options[i]._wasSelected != options[i].selected) {
                         options[i]._wasSelected = options[i].selected;
