@@ -220,7 +220,8 @@
   <commands xmi:id="_blPuUOxNEeal34fhcBE7BQ" elementId="com.kms.katalon.command.reportIssue" commandName="reportIssueCommand"/>
   <commands xmi:id="_nGeSINxwEeaEL7_gfQD4GQ" elementId="com.kms.katalon.command.commandpalette" commandName="Command Palette"/>
   <commands xmi:id="_H0WtsPKjEeaEMap8QCd-4Q" elementId="com.kms.katalon.command.katalonpreferences" commandName="Katalon Preferences"/>
-  <commands xmi:id="_AKimEKP_EeenLui14LsBfQ" elementId="com.kms.katalon.command.importSettings" commandName="Import Settings"/>
+  <commands xmi:id="_bn1BsF84Eeik14jXU-tU4w" elementId="com.kms.katalon.command.importSettings" commandName="Import Settings"/>
+  <commands xmi:id="_AKimEKP_EeenLui14LsBfQ" elementId="com.kms.katalon.command.importKeywords" commandName="Import Keywords"/>
   <commands xmi:id="_2sDjkOBxEeejXLn7_j51hg" elementId="com.kms.katalon.command.importSeleniumIde" commandName="Import Selenium IDE"/>
   <commands xmi:id="_VC7xYDdkEeiyIrMgpAUQAg" elementId="com.kms.katalon.command.checkForUpdates" commandName="Check for Updates"/>
   <commands xmi:id="_CeYPQFdcEeiRfOF4k51oXA" elementId="com.kms.katalon.command.service" commandName="openSupportServicePageCommand"/>

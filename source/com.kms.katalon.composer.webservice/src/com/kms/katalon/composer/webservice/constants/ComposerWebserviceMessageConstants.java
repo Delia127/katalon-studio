@@ -100,6 +100,10 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String LBL_RESPONSE_HEADER;
 
     public static String LBL_RESPONSE_BODY;
+    
+    public static String LBL_RESPONSE_VERIFICATION_LOG;
+    
+    public static String LBL_RESPONSE_VERIFICATION_RESULT;
 
     public static String BASIC_AUTH;
 
@@ -167,6 +171,8 @@ public class ComposerWebserviceMessageConstants extends NLS {
     public static String HIDE_SNIPPETS;
             
     public static String SHOW_SNIPPETS;
+    
+    public static String MENU_ITEM_TEST_REQUEST_AND_VERIFY;
     
     static {
         // initialize resource bundle

@@ -2,13 +2,13 @@ package com.kms.katalon.execution.util;
 
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
 
-public class ExecutionProfileFactory {
+public class ExecutionProfileStore {
 
     private ExecutionProfileEntity selectedProfile;
     
-    private static ExecutionProfileFactory instance;
+    private static ExecutionProfileStore instance;
     
-    private ExecutionProfileFactory() {}
+    private ExecutionProfileStore() {}
     
     public ExecutionProfileEntity getSelectedProfile() {
         return selectedProfile;
@@ -18,9 +18,9 @@ public class ExecutionProfileFactory {
         this.selectedProfile = selectedProfile;
     }
     
-    public static ExecutionProfileFactory getInstance() {
+    public static ExecutionProfileStore getInstance() {
         if (instance == null) {
-            instance = new ExecutionProfileFactory();
+            instance = new ExecutionProfileStore();
         }
         return instance;
     }

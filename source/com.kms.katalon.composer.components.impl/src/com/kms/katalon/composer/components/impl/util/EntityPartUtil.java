@@ -112,7 +112,7 @@ public class EntityPartUtil {
         MPartStack mStackPart = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
         MPart mPart = (MPart) modelService.find(partId, application);
         if (mPart != null) {
-            if (mPart.getToolbar() != null) {
+            if (mPart.getToolbar() != null && mPart.getToolbar().getWidget() != null) {
                 // dispose the help icon
                 ((ToolBar) mPart.getToolbar().getWidget()).dispose();
             }

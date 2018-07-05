@@ -28,11 +28,15 @@ public class VerificationScriptLauncher extends ConsoleLauncher {
     
     private Runnable processFinishedRunnable;
     
-    public VerificationScriptLauncher(LauncherManager manager, 
+    private String testObjectId;
+    
+    public VerificationScriptLauncher(String testObjectId,
+            LauncherManager manager, 
             IRunConfiguration runConfig, 
             Runnable processFinishedRunnable) {
         
         super(manager, runConfig);
+        this.testObjectId = testObjectId;
         this.processFinishedRunnable = processFinishedRunnable;
     }
 
@@ -59,7 +63,7 @@ public class VerificationScriptLauncher extends ConsoleLauncher {
             });
             thread.start();
             
-            return new VerificationProcess(systemProcess);
+            return new VerificationProcess(testObjectId, systemProcess);
         } catch (IOException ex) {
             throw new ExecutionException(ex);
         }

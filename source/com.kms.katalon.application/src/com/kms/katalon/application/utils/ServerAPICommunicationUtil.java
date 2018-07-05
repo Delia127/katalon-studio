@@ -160,6 +160,7 @@ public class ServerAPICommunicationUtil {
         HttpURLConnection uc = null;
         uc = (HttpURLConnection) url.openConnection(proxy);
         //uc.setHostnameVerifier(getHostnameVerifier());
+
         uc.setRequestMethod(method);
         uc.setRequestProperty("Content-Type", "application/json");
         uc.setUseCaches(false);

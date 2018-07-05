@@ -9,7 +9,7 @@ import org.osgi.service.event.Event;
 import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
-import com.kms.katalon.execution.util.ExecutionProfileFactory;
+import com.kms.katalon.execution.util.ExecutionProfileStore;
 
 public class ExecutionProfileManager {
 
@@ -29,7 +29,7 @@ public class ExecutionProfileManager {
             public void handleEvent(Event event) {
                 if (EventConstants.PROFILE_SELECTED_PROIFE_CHANGED.equals(event.getTopic())) {
                     selectedProfile = (ExecutionProfileEntity) getObject(event);
-                    ExecutionProfileFactory.getInstance().setSelectedProfile(selectedProfile);
+                    ExecutionProfileStore.getInstance().setSelectedProfile(selectedProfile);
                 }
             }
 
@@ -37,7 +37,7 @@ public class ExecutionProfileManager {
     }
 
     public ExecutionProfileEntity getSelectedProfile() {
-        return ExecutionProfileFactory.getInstance().getSelectedProfile();
+        return ExecutionProfileStore.getInstance().getSelectedProfile();
     }
 
     public static ExecutionProfileManager getInstance() {

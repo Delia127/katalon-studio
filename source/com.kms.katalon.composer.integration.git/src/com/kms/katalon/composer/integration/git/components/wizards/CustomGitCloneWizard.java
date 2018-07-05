@@ -116,6 +116,7 @@ public class CustomGitCloneWizard extends Wizard {
      * the search result to initialize the clone wizard with.
      */
     public CustomGitCloneWizard(IRepositorySearchResult searchResult) {
+        this.currentSearchResult = searchResult;
         setNeedsProgressMonitor(true);
         validSource = new CustomSourceBranchPage() {
 
@@ -202,7 +203,11 @@ public class CustomGitCloneWizard extends Wizard {
 
     @Override
     final public void addPages() {
-        addPage(new CustomRepositorySelectionPage());
+        if (this.currentSearchResult instanceof CustomRepositorySelectionPage) {
+            addPage((IWizardPage) this.currentSearchResult);
+        } else {
+            addPage(new CustomRepositorySelectionPage());
+        }
         addPage(validSource);
         addPage(cloneDestination);
     }

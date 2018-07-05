@@ -8,6 +8,8 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
@@ -33,6 +35,10 @@ public class WebServiceAPIControl extends Composite {
     private GridData layoutData;
 
     private boolean sendingState;
+    
+    private Menu menuSend;
+    
+    private MenuItem mniSendAndVerify;
 
     public WebServiceAPIControl(Composite parent, boolean isSOAP, String url) {
         super(parent, SWT.NONE);
@@ -66,12 +72,22 @@ public class WebServiceAPIControl extends Composite {
         }
       
         ToolBar toolbar = new ToolBar(this, SWT.RIGHT | SWT.RIGHT);
-        btnSend = new ToolItem(toolbar, SWT.FLAT);
+        btnSend = new ToolItem(toolbar, SWT.DROP_DOWN);
         setSendButtonState(false);
+        
+        
+        menuSend = new Menu(btnSend.getParent().getShell());
+        mniSendAndVerify = new MenuItem(menuSend, SWT.PUSH);
+        mniSendAndVerify.setText(StringConstants.MENU_ITEM_TEST_REQUEST_AND_VERIFY);
+        mniSendAndVerify.setID(0);
+        
+        btnSend.setData(menuSend);
+        
         toolbar.setLayoutData(new GridData(SWT.CENTER, SWT.RIGHT, false, true));
+
         // gdBtnSend.widthHint = 100;
     }
-
+    
     public void addRequestMethodModifyListener(ModifyListener modifyListener) {
         if (modifyListener == null) {
             return;
@@ -98,6 +114,13 @@ public class WebServiceAPIControl extends Composite {
             return;
         }
         btnSend.addSelectionListener(selectionListener);
+    }
+    
+    public void addSendAndVerifySelectionListener(SelectionListener selectionListener) {
+        if (selectionListener == null) {
+            return;
+        }
+        mniSendAndVerify.addSelectionListener(selectionListener);
     }
 
     private void setInput(boolean isSOAP) {
@@ -159,5 +182,8 @@ public class WebServiceAPIControl extends Composite {
     public boolean getSendingState() {
         return sendingState;
     }
-
+    
+    public Menu getSendMenu() {
+        return menuSend;
+    }
 }
