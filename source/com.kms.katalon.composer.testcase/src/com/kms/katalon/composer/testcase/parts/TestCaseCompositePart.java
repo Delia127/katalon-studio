@@ -94,6 +94,7 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.groovy.util.GroovyUtil;
+import com.kms.katalon.tracking.service.Trackings;
 
 @SuppressWarnings("restriction")
 public class TestCaseCompositePart implements EventHandler, SavableCompositePart, IComposerPartEvent {
@@ -316,10 +317,16 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
                             return;
                         }
 
-                        if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_EDITOR_PART_INDEX
-                                && childTestCasePart.isManualScriptChanged()) {
-                            setChildEditorContents(scriptNode);
+                        if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_EDITOR_PART_INDEX) {
+                            Trackings.trackOpenObject("testCaseScript");
+                            if (childTestCasePart.isManualScriptChanged()) {
+                                setChildEditorContents(scriptNode);
+                            }
                             return;
+                        }
+                        
+                        if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_VARIABLE_PART_INDEX) {
+                            Trackings.trackOpenObject("testCaseVariable");
                         }
 
                         if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_PROPERTIES_PART_INDEX) {

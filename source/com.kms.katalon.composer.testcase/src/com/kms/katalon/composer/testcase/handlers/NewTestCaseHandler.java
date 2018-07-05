@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.testcase.handlers;
 
+import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -18,7 +19,10 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.greenrobot.eventbus.EventBus;
 
+import com.kms.katalon.application.usagetracking.TrackingEvent;
+import com.kms.katalon.application.usagetracking.UsageActionTrigger;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -29,6 +33,7 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestCaseController;
+import com.kms.katalon.core.event.EventBusSingleton;
 import com.kms.katalon.entity.dal.exception.FilePathTooLongException;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
@@ -97,13 +102,22 @@ public class NewTestCaseHandler {
                     StringConstants.HAND_ERROR_MSG_UNABLE_TO_CREATE_TEST_CASE);
             return null;
         }
-
+        
+        sendEventForTracking();
+        
         eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
         eventBroker.send(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, parentTreeEntity);
         eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM,
                 new TestCaseTreeEntity(testCaseEntity, parentTreeEntity));
         eventBroker.send(EventConstants.TESTCASE_OPEN, testCaseEntity);
         return testCaseEntity;
+    }
+    
+    private static void sendEventForTracking() {
+        EventBus eventBus = EventBusSingleton.getInstance().getEventBus();
+        eventBus.post(new TrackingEvent(UsageActionTrigger.NEW_OBJECT, new HashMap<String, Object>() {{
+            put("type", "testCase");
+        }}));
     }
 
     public static ITreeEntity findParentTreeEntity(Object[] selectedObjects) throws Exception {

@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.folder.handlers;
 
+import java.util.HashMap;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -11,7 +13,10 @@ import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
+import org.greenrobot.eventbus.EventBus;
 
+import com.kms.katalon.application.usagetracking.TrackingEvent;
+import com.kms.katalon.application.usagetracking.UsageActionTrigger;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
@@ -21,6 +26,7 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.event.EventBusSingleton;
 import com.kms.katalon.entity.dal.exception.FilePathTooLongException;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
@@ -93,7 +99,15 @@ public class NewFolderHandler {
         FolderTreeEntity newFolderTreeEntity = new FolderTreeEntity(newEntity, parentTreeEntity);
         eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
         eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, newFolderTreeEntity);
+        sendEventForTracking();
         return newFolderTreeEntity;
+    }
+    
+    private void sendEventForTracking() {
+        EventBus eventBus = EventBusSingleton.getInstance().getEventBus();
+        eventBus.post(new TrackingEvent(UsageActionTrigger.NEW_OBJECT, new HashMap<String, Object>() {{
+            put("type", "folder");
+        }}));
     }
 
     private boolean isFirstSelectedObjectValid(Object[] selectedObjects) {

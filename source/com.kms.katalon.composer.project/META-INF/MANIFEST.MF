@@ -33,7 +33,8 @@ Require-Bundle: org.eclipse.e4.core.di,
  com.kms.katalon.composer.util,
  com.kms.katalon.dal,
  com.kms.katalon.core,
- org.greenrobot.eventbus
+ org.greenrobot.eventbus,
+ com.kms.katalon.tracking
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: javax.annotation;version="1.2.0"
 Export-Package: com.kms.katalon.composer.project.constants,

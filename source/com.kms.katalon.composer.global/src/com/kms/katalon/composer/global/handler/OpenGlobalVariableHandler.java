@@ -10,6 +10,7 @@ import com.kms.katalon.composer.global.part.GlobalVariablePart;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class OpenGlobalVariableHandler extends OpenFileEntityHandler<ExecutionProfileEntity> {
     private static final String GL_VARIABLE_COLLECTION_BUNDLE_URI = "bundleclass://"
@@ -22,6 +23,12 @@ public class OpenGlobalVariableHandler extends OpenFileEntityHandler<ExecutionPr
     @Override
     protected void initialize() {
         super.initialize();
+    }
+    
+    @Override
+    protected void execute(ExecutionProfileEntity profileEntity) {
+        super.execute(profileEntity);
+        Trackings.trackOpenObject("profile");
     }
 
     @Override

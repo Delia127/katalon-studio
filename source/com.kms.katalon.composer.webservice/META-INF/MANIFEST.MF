@@ -61,4 +61,5 @@ Require-Bundle: com.kms.katalon.composer.explorer,
  org.eclipse.jdt.core,
  com.google.gson,
  com.kms.katalon.util,
- com.kms.katalon.composer.testcase
+ com.kms.katalon.composer.testcase,
+ com.kms.katalon.tracking

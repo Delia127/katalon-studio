@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="com.kms.katalon.tracking.osgi.service">
+   <implementation class="com.kms.katalon.tracking.osgi.service.ServiceConsumer"/>
+   <reference bind="setA" cardinality="1..1" interface="com.kms.katalon.tracking.osgi.service.IProjectStatisticsCollector" name="IProjectStatisticsCollector" policy="static" unbind="unsetA"/>
+</scr:component>

@@ -2,17 +2,25 @@ package com.kms.katalon.composer.intro;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
+import org.greenrobot.eventbus.EventBus;
 
+import com.kms.katalon.application.usagetracking.TrackingEvent;
+import com.kms.katalon.application.usagetracking.UsageActionTrigger;
 import com.kms.katalon.composer.components.impl.wizard.IWizardPage;
 import com.kms.katalon.composer.components.impl.wizard.SimpleWizardDialog;
 import com.kms.katalon.constants.ImageConstants;
 import com.kms.katalon.constants.StringConstants;
+import com.kms.katalon.core.event.EventBusSingleton;
 
 public class FunctionsIntroductionDialog extends SimpleWizardDialog {
 
@@ -25,6 +33,10 @@ public class FunctionsIntroductionDialog extends SimpleWizardDialog {
     public FunctionsIntroductionDialog(Shell parentShell) {
         super(parentShell);
     }
+    
+    private Button btnBack;
+    
+    private Button btnNext;
 
     @Override
     protected void initializeBounds() {
@@ -48,13 +60,45 @@ public class FunctionsIntroductionDialog extends SimpleWizardDialog {
         GridLayout layout = new GridLayout();
         buttonBarComposite.setLayout(layout);
 
-        createButton(buttonBarComposite, BACK_BUTTON_ID, StringConstants.WZ_SETUP_BTN_BACK);
-        createButton(buttonBarComposite, NEXT_BUTTON_ID, StringConstants.WZ_SETUP_BTN_NEXT);
+        btnBack = createButton(buttonBarComposite, BACK_BUTTON_ID, StringConstants.WZ_SETUP_BTN_BACK);
+        btnNext = createButton(buttonBarComposite, NEXT_BUTTON_ID, StringConstants.WZ_SETUP_BTN_NEXT);
         createButton(buttonBarComposite, FINISH_BUTTON_ID, StringConstants.DIA_CLOSE);
         layout.numColumns = buttonMap.size();
+        registerEventListeners();
         return buttonBarComposite;
     }
 
+    private void registerEventListeners() {
+        btnBack.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                sendEventForTracking("back");
+            }
+        });
+        
+        btnNext.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+               sendEventForTracking("next");
+            }
+        });
+    }
+    
+    private void sendEventForTracking(String userClick) {
+        EventBus eventBus = EventBusSingleton.getInstance().getEventBus();
+        
+        eventBus.post(new TrackingEvent(UsageActionTrigger.QUICK_OVERVIEW, new HashMap<String, Object>() {{
+            put("userClick", userClick);
+        }}));
+    }
+
+    @Override
+    public boolean close() {
+        boolean returnValue = super.close();
+        sendEventForTracking("close");
+        return returnValue;
+    }
+    
     @Override
     protected void setInput() {
         super.setInput();

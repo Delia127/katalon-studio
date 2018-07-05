@@ -12,7 +12,9 @@ public enum UsageActionTrigger {
     EXECUTE_TEST_SUITE("executeTestSuite"),
     EXECUTE_TEST_SUITE_COLLECTION("executeTestSuiteCollection"),
     GENERATE_CMD("generateCommand"),
-    COLLECT_STATISTICS("collectStatistics");
+    COLLECT_STATISTICS("collectStatistics"),
+    QUICK_OVERVIEW("quickOverview"),
+    NEW_OBJECT("newObject");
 
     private final String action;
 

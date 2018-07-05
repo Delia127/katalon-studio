@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.objectrepository.handler;
 
+import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -20,7 +21,9 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.greenrobot.eventbus.EventBus;
 
+import com.kms.katalon.application.usagetracking.UsageActionTrigger;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -31,6 +34,7 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.event.EventBusSingleton;
 import com.kms.katalon.entity.dal.exception.FilePathTooLongException;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
@@ -106,6 +110,8 @@ public class NewTestObjectHandler {
                         StringConstants.HAND_ERROR_MSG_UNABLE_TO_CREATE_TEST_OBJ);
                 return;
             }
+            
+            sendEventForTracking();
 
             eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
             eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, new WebElementTreeEntity(webElement,
@@ -118,6 +124,13 @@ public class NewTestObjectHandler {
             MessageDialog.openError(parentShell, StringConstants.ERROR_TITLE,
                     StringConstants.HAND_ERROR_MSG_UNABLE_TO_CREATE_TEST_OBJ);
         }
+    }
+    
+    private static void sendEventForTracking() {
+        EventBus eventBus = EventBusSingleton.getInstance().getEventBus();
+//        eventBus.post(new TrackingEvent(UsageActionTrigger.NEW_OBJECT, new HashMap<String, Object>() {{
+//            put("type", "testObject");
+//        }}));
     }
 
 	public static ITreeEntity getParentTreeEntity(Object[] selectedObjects) throws Exception {

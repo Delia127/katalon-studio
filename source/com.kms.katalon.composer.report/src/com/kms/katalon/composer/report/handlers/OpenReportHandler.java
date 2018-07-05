@@ -29,6 +29,7 @@ import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherStatus;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class OpenReportHandler {
     private static final String REPORT_PART_URI = "bundleclass://com.kms.katalon.composer.report/"
@@ -97,6 +98,8 @@ public class OpenReportHandler {
             partService.activate(mPart);
 
             stack.setSelectedElement(mPart);
+            
+            Trackings.trackOpenObject("report");
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error",

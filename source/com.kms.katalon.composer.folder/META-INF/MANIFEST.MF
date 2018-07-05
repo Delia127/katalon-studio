@@ -27,7 +27,9 @@ Require-Bundle: com.kms.katalon.composer.explorer;bundle-version="1.0.0",
  org.eclipse.core.runtime,
  com.kms.katalon.dal,
  com.kms.katalon.console,
- com.kms.katalon.application
+ com.kms.katalon.application,
+ org.greenrobot.eventbus,
+ com.kms.katalon.core
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: javax.annotation;version="1.2.0",

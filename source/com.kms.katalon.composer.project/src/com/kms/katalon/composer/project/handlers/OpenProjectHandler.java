@@ -41,6 +41,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.event.EventBusSingleton;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class OpenProjectHandler {
     @Inject
@@ -110,7 +111,8 @@ public class OpenProjectHandler {
             @UIEventTopic(EventConstants.PROJECT_OPEN_LATEST) final String projectPk) throws InvocationTargetException,
             InterruptedException {
         doOpenProject(shell, projectPk, sync, eventBroker, partService, modelService, application);
-        sendEventForTracking();
+//        sendEventForTracking();
+        Trackings.trackOpenApplication(ProjectController.getInstance().getCurrentProject(), false);
         eventBroker.post(EventConstants.PROJECT_RESTORE_SESSION, null);
     }
     
@@ -146,6 +148,7 @@ public class OpenProjectHandler {
                                 if (project != null) {
                                     // Set project name on window title
                                     OpenProjectHandler.updateProjectTitle(project, modelService, application);
+                                    Trackings.trackOpenObject("project");
                                 }
                                 eventBrokerService.post(EventConstants.EXPLORER_RELOAD_INPUT,
                                         TreeEntityUtil.getAllTreeEntity(project));

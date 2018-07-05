@@ -8,7 +8,6 @@ import org.eclipse.equinox.app.IApplicationContext;
 import org.greenrobot.eventbus.EventBus;
 import org.osgi.framework.BundleException;
 
-import com.kms.katalon.application.RunningMode;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.application.utils.VersionUtil;
@@ -21,7 +20,6 @@ import com.kms.katalon.custom.addon.CustomBundleActivator;
 import com.kms.katalon.execution.console.ConsoleMain;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
 import com.kms.katalon.logging.LogUtil;
-import com.kms.katalon.tracking.facade.TrackingFacade;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -78,8 +76,8 @@ public class Application implements IApplication {
     private static void init() {
         EventBusSingleton.getInstance().setEventBus(EventBus.builder().installDefaultEventBus());
         
-        TrackingFacade trackingFacade = new TrackingFacade();
-        trackingFacade.init(RunningMode.CONSOLE);
+//        TrackingFacade trackingFacade = new TrackingFacade();
+//        trackingFacade.init(RunningMode.CONSOLE);
     }
     
     public static boolean checkConsoleActivation(String[] arguments) {

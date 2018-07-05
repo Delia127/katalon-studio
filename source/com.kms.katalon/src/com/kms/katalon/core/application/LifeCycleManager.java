@@ -27,8 +27,6 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.addons.CommandBindingRemover;
-import com.kms.katalon.application.RunningMode;
-import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.handlers.CloseHandler;
@@ -46,7 +44,6 @@ import com.kms.katalon.composer.initializer.ProblemViewImageInitializer;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
-import com.kms.katalon.tracking.facade.TrackingFacade;
 import com.kms.katalon.util.ComposerActivationInfoCollector;
 
 @SuppressWarnings("restriction")
@@ -180,8 +177,8 @@ public class LifeCycleManager {
                 try {
                     startUpGUIMode();
             
-                    TrackingFacade trackingFacade = new TrackingFacade();
-                    trackingFacade.init(RunningMode.GUI);
+//                    TrackingFacade trackingFacade = new TrackingFacade();
+//                    trackingFacade.init(RunningMode.GUI);
                     
                     if (checkActivation(eventBroker)) {
                         eventBroker.post(EventConstants.ACTIVATION_CHECKED, null);
@@ -193,9 +190,9 @@ public class LifeCycleManager {
             }
 
             private boolean checkActivation(final IEventBroker eventBroker) {
-                if (VersionUtil.isInternalBuild()) {
-                    return true;
-                }
+//                if (VersionUtil.isInternalBuild()) {
+//                    return true;
+//                }
                 if (!(ComposerActivationInfoCollector.checkActivation())) {
                     eventBroker.send(EventConstants.PROJECT_CLOSE, null);
                     PlatformUI.getWorkbench().close();
