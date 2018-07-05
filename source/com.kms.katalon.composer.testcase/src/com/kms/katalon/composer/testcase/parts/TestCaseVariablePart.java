@@ -71,7 +71,7 @@ import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.execution.util.SyntaxUtil;
 import com.kms.katalon.groovy.constant.GroovyConstants;
 
-public class TestCaseVariablePart extends CPart {
+public class TestCaseVariablePart extends CPart implements TableActionOperator {
     private static final String DEFAULT_VARIABLE_NAME = "variable";
 
     private static final InputValueType[] defaultInputValueTypes = { InputValueType.String, InputValueType.Number,
@@ -440,7 +440,7 @@ public class TestCaseVariablePart extends CPart {
 
     public void setDirty(boolean isDirty) {
         mpart.setDirty(isDirty);
-        parentTestCaseCompositePart.getChildTestCasePart().getTreeTableInput().reloadTestCaseVariables();
+        parentTestCaseCompositePart.getChildTestCasePart().getTreeTableInput().reloadTestCaseVariables(getVariables());
         parentTestCaseCompositePart.updateDirty();
     }
 

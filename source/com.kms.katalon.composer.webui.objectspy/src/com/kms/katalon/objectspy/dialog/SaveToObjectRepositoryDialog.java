@@ -59,7 +59,6 @@ import com.kms.katalon.objectspy.constants.StringConstants;
 import com.kms.katalon.objectspy.element.ConflictWebElementWrapper;
 import com.kms.katalon.objectspy.element.WebElement;
 import com.kms.katalon.objectspy.element.WebElement.WebElementType;
-import com.kms.katalon.objectspy.element.WebFrame;
 import com.kms.katalon.objectspy.element.WebPage;
 import com.kms.katalon.objectspy.element.tree.CheckboxTreeSelectionHelper;
 import com.kms.katalon.objectspy.element.tree.ConflictStatusWebElementLabelProvider;

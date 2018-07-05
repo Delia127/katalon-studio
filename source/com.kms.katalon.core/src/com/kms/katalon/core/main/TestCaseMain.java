@@ -101,8 +101,14 @@ public class TestCaseMain {
     public static TestResult runWSVerificationScript(String verificationScript, FailureHandling flowControl,
             boolean doCleanUp) throws InterruptedException {
         Thread.sleep(DELAY_TIME);
-        return new WSVerificationExecutor(verificationScript, engine, eventManager, doCleanUp
-                ).execute(flowControl);
+        return new WSVerificationExecutor(verificationScript, engine, eventManager, doCleanUp).execute(flowControl);
+    }
+
+    public static TestResult runWSVerificationScript(TestCaseBinding testCaseBinding, String verificationScript,
+            FailureHandling flowControl, boolean doCleanUp) throws InterruptedException {
+        Thread.sleep(DELAY_TIME);
+        return new WSVerificationExecutor(testCaseBinding, verificationScript, engine, eventManager, doCleanUp)
+                .execute(flowControl);
     }
 
     public static TestResult runTestCaseRawScript(String testScript, String testCaseId, TestCaseBinding testCaseBinding,

@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrSubstitutor;
@@ -21,12 +22,14 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import com.google.common.reflect.TypeToken;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.testobject.impl.HttpTextBodyContent;
 import com.kms.katalon.core.testobject.internal.impl.HttpBodyContentReader;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
+import com.kms.katalon.core.util.internal.JsonUtil;
 
 public class ObjectRepository {
 
@@ -63,6 +66,8 @@ public class ObjectRepository {
     private static final String PROPERTY_ENTRY = "entry";
 
     private static final String PROPERTY_KEY = "key";
+    
+    private static Map<String, TestObject> recordedTestObjects;
 
     /**
      * Returns test object id of a its relative id.
@@ -142,8 +147,17 @@ public class ObjectRepository {
             logger.logWarning(StringConstants.TO_LOG_WARNING_TEST_OBJ_NULL);
             return null;
         }
+
         String testObjectId = getTestObjectId(testObjectRelativeId);
         logger.logInfo(MessageFormat.format(StringConstants.TO_LOG_INFO_FINDING_TEST_OBJ_W_ID, testObjectId));
+
+        // Read test objects cached in temporary in record session.
+        Map<String, TestObject> testObjectsCached = getCapturedTestObjects();
+
+        if (testObjectRelativeId != null && testObjectsCached.containsKey(testObjectRelativeId)) {
+            return testObjectsCached.get(testObjectRelativeId);
+        }
+
         File objectFile = new File(RunConfiguration.getProjectDir(), testObjectId + WEBELEMENT_FILE_EXTENSION);
         if (!objectFile.exists()) {
             logger.logWarning(
@@ -151,6 +165,25 @@ public class ObjectRepository {
             return null;
         }
         return readTestObjectFile(testObjectId, objectFile, RunConfiguration.getProjectDir(), variables);
+    }
+
+    private static Map<String, TestObject> getCapturedTestObjects() {
+        if (recordedTestObjects != null) {
+            return recordedTestObjects;
+        }
+        try {
+            String capturedObjectCacheFilePath = StringUtils
+                    .defaultString(RunConfiguration.getCapturedObjectsCacheFile());
+            if (!capturedObjectCacheFilePath.isEmpty()) {
+                File capturedObjectCacheFile = new File(capturedObjectCacheFilePath);
+                recordedTestObjects = JsonUtil.fromJson(
+                        FileUtils.readFileToString(capturedObjectCacheFile, StringConstants.DF_CHARSET),
+                        new TypeToken<Map<String, TestObject>>() {}.getType());
+            }
+        } catch (IOException ignored) {
+            recordedTestObjects = Collections.emptyMap();
+        }
+        return recordedTestObjects;
     }
 
     public static TestObject readTestObjectFile(String testObjectId, File objectFile, String projectDir) {
@@ -303,7 +336,7 @@ public class ObjectRepository {
 
         String verificationScript = reqElement.elementText("verificationScript");
         requestObject.setVerificationScript(verificationScript);
-        
+
         return requestObject;
     }
 

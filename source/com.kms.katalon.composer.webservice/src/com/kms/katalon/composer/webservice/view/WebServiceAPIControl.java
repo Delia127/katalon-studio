@@ -22,7 +22,7 @@ import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 
 public class WebServiceAPIControl extends Composite {
 
-    private static final int DEFAULT_HEIGHT = 20;
+    //private static final int DEFAULT_HEIGHT = 20;
 
     private static final int DEFAULT_REQUEST_METHOD_SELECTION_INDEX = 0;
 

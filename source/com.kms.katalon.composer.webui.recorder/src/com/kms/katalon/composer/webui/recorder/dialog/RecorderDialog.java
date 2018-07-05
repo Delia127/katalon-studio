@@ -10,61 +10,47 @@ import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
-import org.eclipse.jdt.internal.ui.dialogs.StatusInfo;
+import org.eclipse.e4.ui.services.IStylingEngine;
+import org.eclipse.jface.bindings.keys.IKeyLookup;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
-import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.resource.FontDescriptor;
-import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
-import org.eclipse.jface.viewers.ColumnWeightData;
-import org.eclipse.jface.viewers.ComboBoxCellEditor;
-import org.eclipse.jface.viewers.EditingSupport;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.dnd.DND;
-import org.eclipse.swt.dnd.DragSource;
-import org.eclipse.swt.dnd.DragSourceEvent;
-import org.eclipse.swt.dnd.DragSourceListener;
-import org.eclipse.swt.dnd.DropTarget;
-import org.eclipse.swt.dnd.DropTargetEvent;
-import org.eclipse.swt.dnd.TableDropTargetEffect;
-import org.eclipse.swt.dnd.TextTransfer;
-import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -74,22 +60,14 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Sash;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
-import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
-import org.eclipse.ui.dialogs.ISelectionStatusValidator;
 import org.greenrobot.eventbus.EventBus;
 import org.osgi.framework.Bundle;
 import org.osgi.service.event.EventHandler;
@@ -97,40 +75,65 @@ import org.osgi.service.event.EventHandler;
 import com.kms.katalon.application.usagetracking.TrackingEvent;
 import com.kms.katalon.application.usagetracking.UsageActionTrigger;
 import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
-import com.kms.katalon.composer.components.dialogs.AbstractDialogCellEditor;
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.control.Dropdown;
 import com.kms.katalon.composer.components.impl.control.DropdownGroup;
 import com.kms.katalon.composer.components.impl.control.DropdownItemSelectionListener;
-import com.kms.katalon.composer.components.impl.control.DropdownToolItemSelectionListener;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
+import com.kms.katalon.composer.components.impl.handler.WorkbenchUtilizer;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
-import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
+import com.kms.katalon.composer.components.impl.util.KeyEventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
-import com.kms.katalon.composer.components.util.ColumnViewerUtil;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
+import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
+import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
+import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants;
+import com.kms.katalon.composer.testcase.constants.TreeTableMenuItemConstants.AddAction;
+import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.BlockStatementWrapper;
+import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput;
+import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
+import com.kms.katalon.composer.testcase.parts.decoration.DecoratedKeyword;
+import com.kms.katalon.composer.testcase.parts.decoration.KeywordDecorationService;
+import com.kms.katalon.composer.testcase.preferences.StoredKeyword;
+import com.kms.katalon.composer.testcase.preferences.TestCasePreferenceDefaultValueInitializer;
+import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
+import com.kms.katalon.composer.testcase.util.TestCaseMenuUtil;
 import com.kms.katalon.composer.webui.recorder.action.HTMLActionMapping;
-import com.kms.katalon.composer.webui.recorder.action.HTMLActionParamValueType;
-import com.kms.katalon.composer.webui.recorder.action.HTMLSynchronizeAction;
-import com.kms.katalon.composer.webui.recorder.action.HTMLValidationAction;
-import com.kms.katalon.composer.webui.recorder.action.IHTMLAction;
+import com.kms.katalon.composer.webui.recorder.ast.RecordedElementMethodCallWrapper;
 import com.kms.katalon.composer.webui.recorder.constants.ComposerWebuiRecorderMessageConstants;
 import com.kms.katalon.composer.webui.recorder.constants.ImageConstants;
 import com.kms.katalon.composer.webui.recorder.constants.RecorderPreferenceConstants;
 import com.kms.katalon.composer.webui.recorder.constants.StringConstants;
 import com.kms.katalon.composer.webui.recorder.core.HTMLElementRecorderServer;
 import com.kms.katalon.composer.webui.recorder.core.RecordSession;
+import com.kms.katalon.composer.webui.recorder.core.RecordSession.BrowserStoppedListener;
 import com.kms.katalon.composer.webui.recorder.util.HTMLActionUtil;
 import com.kms.katalon.composer.webui.recorder.websocket.RecorderAddonSocket;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.GlobalMessageConstants;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.model.FailureHandling;
+import com.kms.katalon.core.testobject.TestObject;
+import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.core.event.EventBusSingleton;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
+import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.entity.testcase.TestCaseEntity;
+import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
+import com.kms.katalon.execution.webservice.RecordingScriptGenerator;
 import com.kms.katalon.objectspy.constants.ObjectspyMessageConstants;
 import com.kms.katalon.objectspy.dialog.CapturedObjectsView;
 import com.kms.katalon.objectspy.dialog.GoToAddonStoreMessageDialog;
@@ -146,11 +149,10 @@ import com.kms.katalon.objectspy.dialog.SaveToObjectRepositoryDialog.SaveToObjec
 import com.kms.katalon.objectspy.element.WebElement;
 import com.kms.katalon.objectspy.element.WebFrame;
 import com.kms.katalon.objectspy.element.WebPage;
-import com.kms.katalon.objectspy.element.tree.WebElementLabelProvider;
-import com.kms.katalon.objectspy.element.tree.WebElementTreeContentProvider;
 import com.kms.katalon.objectspy.exception.IEAddonNotInstalledException;
 import com.kms.katalon.objectspy.util.BrowserUtil;
 import com.kms.katalon.objectspy.util.UtilitiesAddonUtil;
+import com.kms.katalon.objectspy.util.WebElementUtils;
 import com.kms.katalon.objectspy.util.Win32Helper;
 import com.kms.katalon.objectspy.util.WinRegistry;
 import com.kms.katalon.objectspy.websocket.AddonCommand;
@@ -181,51 +183,45 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     private static final int ANY_PORT_NUMBER = 0;
 
-    private static final String TABLE_COLUMN_ELEMENT_TITLE = StringConstants.DIA_COL_ELEMENT;
-
-    private static final String TABLE_COLUMN_ACTION_DATA_TITLE = StringConstants.DIA_COL_ACTION_DATA;
-
-    private static final String TABLE_COLUMN_ACTION_TITLE = StringConstants.DIA_COL_ACTION;
-
-    private static final String TABLE_COLUMN_NO_TITLE = StringConstants.DIA_COL_NO;
-
     private static final String RECORD_TOOL_ITEM_LABEL = StringConstants.DIA_TOOLITEM_RECORD;
 
-	private static final String INPUT_PASSWORD_FIELD_PATTERN = "password";
+    private static final int HORIZONTAL_SASH_FORM_WIDTH = 2;
 
-    private static Point MIN_DIALOG_SIZE = new Point(500, 600);
+    private static final String RECORD_SESSION_ID;
+
+    private static Point MIN_DIALOG_SIZE = new Point(600, 800);
+
+    static {
+        RECORD_SESSION_ID = UUID.randomUUID().toString();
+    }
 
     private HTMLElementRecorderServer server;
 
-    private Logger logger;
+    private Logger logger = LoggerSingleton.getInstance().getLogger();
 
     private List<WebPage> elements;
 
     private List<HTMLActionMapping> recordedActions;
 
-    private boolean isPausing;
+    private boolean isPauseRecording;
 
     private TableViewer actionTableViewer;
 
     private ToolBar toolBar;
 
-    private ToolItem toolItemBrowserDropdown, tltmPause, tltmStop;
+    private ToolItem toolItemBrowserDropdown, tltmPauseAndResume, tltmStop;
 
     private RecordSession session;
 
     private SaveToObjectRepositoryDialogResult targetFolderSelectionResult;
 
-    private CapturedObjectsView capturedObjectComposite;
-
     private WebUIDriverType selectedBrowser;
-
-    private ToolItem tltmDelete;
 
     private Text txtStartUrl;
 
     private AddonSocket currentInstantSocket;
 
-    private IEventBroker eventBroker;
+    private IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
 
     private ScopedPreferenceStore store;
 
@@ -233,25 +229,51 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     private boolean disposed;
 
+    private RecordedStepsView recordStepsView;
+
+    private ObjectPropertiesView objectPropertiesView;
+
+    private CapturedObjectsView capturedObjectComposite;
+
+    private CTabFolder bottomTabFolder;
+
+    private int logTabItemIdex;
+
+    private List<? extends ASTNodeWrapper> nodeWrappers;
+
+    private List<VariableEntity> variables;
+
+    private TestCaseEntity testCaseEntity;
+
     /**
      * Create the dialog.
      * 
      * @param parentShell
      */
-    public RecorderDialog(Shell parentShell, Logger logger, IEventBroker eventBroker) {
+    public RecorderDialog(Shell parentShell, TestCaseEntity testCaseEntity, List<? extends ASTNodeWrapper> nodeWrappers,
+            List<VariableEntity> variables) {
         super(parentShell);
         store = PreferenceStoreManager.getPreferenceStore(RecorderPreferenceConstants.WEBUI_RECORDER_QUALIFIER);
         setDialogTitle(GlobalMessageConstants.WEB_RECORDER);
-        this.logger = logger;
         elements = new ArrayList<>();
         recordedActions = new ArrayList<HTMLActionMapping>();
-        isPausing = false;
+        isPauseRecording = false;
         disposed = false;
-        this.eventBroker = eventBroker;
+        registerEventListener();
+        startSocketServer();
+        this.nodeWrappers = nodeWrappers;
+        this.variables = variables;
+        this.testCaseEntity = testCaseEntity;
+    }
+
+    private void registerEventListener() {
         eventBroker.subscribe(EventConstants.RECORDER_HTML_ACTION_CAPTURED, this);
         eventBroker.subscribe(EventConstants.RECORDER_ACTION_OBJECT_REORDERED, this);
         eventBroker.subscribe(EventConstants.WORKSPACE_CLOSED, this);
-        startSocketServer();
+        eventBroker.subscribe(EventConstants.WEBUI_VERIFICATION_EXECUTION_FINISHED, this);
+        eventBroker.subscribe(EventConstants.WEBUI_VERIFICATION_RUN_ALL_STEPS_CMD, this);
+        eventBroker.subscribe(EventConstants.WEBUI_VERIFICATION_RUN_SELECTED_STEPS_CMD, this);
+        eventBroker.subscribe(EventConstants.WEBUI_VERIFICATION_RUN_FROM_STEP_CMD, this);
     }
 
     @Override
@@ -303,8 +325,11 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 startRecordSession(selectedBrowser);
                 invoke(ObjectSpyEvent.SELENIUM_SESSION_STARTED, session);
             }
+            if (!isPauseRecording) {
+                recordStepsView.addSimpleKeyword("openBrowser");
+            }
 
-            tltmPause.setEnabled(true);
+            tltmPauseAndResume.setEnabled(true);
             tltmStop.setEnabled(true);
             resume();
             resetInput();
@@ -414,15 +439,26 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     }
 
     private void resetInput() {
-        elements.clear();
+        // elements.clear();
         recordedActions.clear();
-        actionTableViewer.refresh();
+        // actionTableViewer.refresh();
     }
 
     private void startRecordSession(WebUIDriverType webUiDriverType) throws Exception {
         stopRecordSession();
         session = new RecordSession(server, webUiDriverType, ProjectController.getInstance().getCurrentProject(),
                 logger, txtStartUrl.getText());
+        session.addBrowserStoppedListener(new BrowserStoppedListener() {
+
+            @Override
+            public void onBrowserStopped() {
+                UISynchronizeService.syncExec(() -> {
+                    if (getShell() != null && !getShell().isDisposed() && session.isRunning()) {
+                        stop();
+                    }
+                });
+            }
+        });
         new Thread(session).start();
     }
 
@@ -466,14 +502,16 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     }
 
     private void pause() {
-        isPausing = true;
-        tltmPause.setImage(ImageConstants.IMG_24_PLAY);
+        isPauseRecording = true;
+        tltmPauseAndResume.setToolTipText(ComposerWebuiRecorderMessageConstants.DIA_TOOLTIP_RESUME_RECORDING);
+        tltmPauseAndResume.setImage(ImageConstants.IMG_24_RESUME_RECORDING);
         toolBar.getParent().layout();
     }
 
     private void resume() {
-        isPausing = false;
-        tltmPause.setImage(ImageConstants.IMG_24_PAUSE);
+        isPauseRecording = false;
+        tltmPauseAndResume.setToolTipText(ComposerWebuiRecorderMessageConstants.DIA_TOOLTIP_PAUSE_RECORDING);
+        tltmPauseAndResume.setImage(ImageConstants.IMG_24_PAUSE_RECORDING);
         toolBar.getParent().layout();
     }
 
@@ -492,32 +530,32 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         bodyComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         hSashForm = new SashForm(bodyComposite, SWT.NONE);
-        hSashForm.setSashWidth(5);
+        hSashForm.setSashWidth(0);
 
-        Composite objectComposite = new Composite(hSashForm, SWT.NONE);
-        GridLayout gl_objectComposite = new GridLayout();
-        gl_objectComposite.marginLeft = 5;
-        gl_objectComposite.marginWidth = 0;
-        gl_objectComposite.marginBottom = 0;
-        gl_objectComposite.marginHeight = 0;
-        gl_objectComposite.verticalSpacing = 0;
-        gl_objectComposite.horizontalSpacing = 0;
-        objectComposite.setLayout(gl_objectComposite);
+        Composite leftPanelComposite = new Composite(hSashForm, SWT.NONE);
+        GridLayout glHtmlDomComposite = new GridLayout();
+        glHtmlDomComposite.marginBottom = 5;
+        glHtmlDomComposite.marginRight = 0;
+        glHtmlDomComposite.marginWidth = 0;
+        glHtmlDomComposite.marginHeight = 0;
+        glHtmlDomComposite.horizontalSpacing = 0;
+        leftPanelComposite.setLayout(glHtmlDomComposite);
 
-        createLeftPanel(objectComposite);
+        createStepsPanel(leftPanelComposite);
 
-        Composite htmlDomComposite = new Composite(hSashForm, SWT.NONE);
-        GridLayout gl_htmlDomComposite = new GridLayout();
-        gl_htmlDomComposite.marginBottom = 5;
-        gl_htmlDomComposite.marginRight = 5;
-        gl_htmlDomComposite.marginWidth = 0;
-        gl_htmlDomComposite.marginHeight = 0;
-        gl_htmlDomComposite.horizontalSpacing = 0;
-        htmlDomComposite.setLayout(gl_htmlDomComposite);
+        Composite rightPanelComposite = new Composite(hSashForm, SWT.NONE);
+        GridLayout glObjectComposite = new GridLayout();
+        glObjectComposite.marginLeft = 5;
+        glObjectComposite.marginWidth = 0;
+        glObjectComposite.marginBottom = 0;
+        glObjectComposite.marginHeight = 0;
+        glObjectComposite.verticalSpacing = 0;
+        glObjectComposite.horizontalSpacing = 0;
+        rightPanelComposite.setLayout(glObjectComposite);
 
-        createRightPanel(htmlDomComposite);
+        createObjectsPanel(rightPanelComposite);
 
-        hSashForm.setWeights(new int[] { 0, 10 });
+        hSashForm.setWeights(new int[] { 10, 0 });
 
         txtStartUrl.setFocus();
 
@@ -529,16 +567,16 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     @Override
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
-        newShell.setMinimumSize(MIN_DIALOG_SIZE);
-        newShell.setSize(MIN_DIALOG_SIZE);
     }
 
     private void initializeInput() {
         txtStartUrl.setText(store.getString(RecorderPreferenceConstants.WEBUI_RECORDER_DEFAULT_URL));
         txtStartUrl.selectAll();
+
+        getTreeTableInput().refresh();
     }
 
-    private void createLeftPanel(Composite parent) {
+    private void createObjectsPanel(Composite parent) {
         capturedObjectComposite = new CapturedObjectsView(parent, SWT.NONE, eventBroker);
         Sash sash = new Sash(parent, SWT.HORIZONTAL);
         GridData layoutData = new GridData(SWT.FILL, SWT.TOP, true, false);
@@ -559,21 +597,14 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 capturedObjectComposite.getParent().layout();
             }
         });
-        ObjectPropertiesView objectPropertiesView = new ObjectPropertiesView(parent, SWT.NONE);
-        objectPropertiesView.setRefreshCapturedObjectsTree(new Runnable() {
-
-            @Override
-            public void run() {
-                capturedObjectComposite.refreshTree(null);
-            }
-        });
+        objectPropertiesView = new ObjectPropertiesView(parent, SWT.NONE);
+        objectPropertiesView.setRefreshCapturedObjectsTree(() -> capturedObjectComposite.refreshTree(null));
 
         ObjectSpySelectorEditor selectorEditor = new ObjectSpySelectorEditor();
         selectorEditor.createObjectSelectorEditor(parent);
 
         ObjectVerifyAndHighlightView verifyView = new ObjectVerifyAndHighlightView();
         verifyView.createVerifyAndHighlightView(parent, GridData.FILL_HORIZONTAL);
-        capturedObjectComposite.setInput(elements);
 
         capturedObjectComposite.addListener(objectPropertiesView,
                 Arrays.asList(ObjectSpyEvent.SELECTED_ELEMENT_CHANGED));
@@ -585,662 +616,501 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
         this.addListener(verifyView,
                 Arrays.asList(ObjectSpyEvent.ADDON_SESSION_STARTED, ObjectSpyEvent.SELENIUM_SESSION_STARTED));
-        // objectPropertiesView.addListener(this, Arrays.asList(ObjectSpyEvent.REQUEST_DIALOG_RESIZE));
-    }
+        this.addListener(recordStepsView,
+                Arrays.asList(ObjectSpyEvent.ADDON_SESSION_STARTED, ObjectSpyEvent.SELENIUM_SESSION_STARTED));
 
-    private void createDeleteItem(Item deleteMenuItem) {
-        deleteMenuItem.setText(StringConstants.DELETE);
-        deleteMenuItem.addListener(SWT.Selection, new Listener() {
-            @Override
-            public void handleEvent(Event event) {
-                deleteSelectedItems();
-            }
-        });
-    }
+        objectPropertiesView.addListener(recordStepsView, Arrays.asList(ObjectSpyEvent.ELEMENT_NAME_CHANGED));
 
-    private void deleteSelectedItems() {
-        if (!(actionTableViewer.getSelection() instanceof IStructuredSelection)) {
-            return;
-        }
-        IStructuredSelection selection = (IStructuredSelection) actionTableViewer.getSelection();
-        if (selection.isEmpty()) {
-            return;
-        }
-        List<HTMLActionMapping> selectedActionMappings = Arrays.asList(selection.toArray())
-                .stream()
-                .filter(selectedObject -> selectedObject instanceof HTMLActionMapping)
-                .map(selectedObject -> (HTMLActionMapping) selectedObject)
-                .collect(Collectors.toList());
-        HTMLActionMapping lastSelectedElement = selectedActionMappings.get(selectedActionMappings.size() - 1);
-        int lastSelectedElementIndex = recordedActions.indexOf(lastSelectedElement);
-        HTMLActionMapping nextFocusedElement = (lastSelectedElementIndex >= recordedActions.size() - 1) ? null
-                : recordedActions.get(lastSelectedElementIndex + 1);
-        recordedActions.removeAll(selectedActionMappings);
-        actionTableViewer.refresh();
-        if (recordedActions.isEmpty()) {
-            return;
-        }
-        if (nextFocusedElement == null) {
-            nextFocusedElement = recordedActions.get(recordedActions.size() - 1);
-        }
-        actionTableViewer.setSelection(new StructuredSelection(nextFocusedElement));
-    }
-
-    private void createAddActionItem(Item addActionMenuItem) {
-        addActionMenuItem.setText(StringConstants.DIA_MENU_ADD_BASIC_ACTION);
-        addActionMenuItem.addListener(SWT.Selection, new Listener() {
-            @Override
-            public void handleEvent(Event event) {
-                addDefaultAction(getFirstSelectedHTMLAction());
-            }
-        });
-    }
-
-    private void createAddValidationPointItem(Item addValidationPointMenuItem) {
-        addValidationPointMenuItem.setText(StringConstants.DIA_MENU_ADD_VALIDATION_POINT);
-        addValidationPointMenuItem.addListener(SWT.Selection, new Listener() {
-            @Override
-            public void handleEvent(Event event) {
-                HTMLActionMapping firstSelectedHTMLAction = getFirstSelectedHTMLAction();
-                addValidationPoint(firstSelectedHTMLAction != null ? firstSelectedHTMLAction.getTargetElement() : null,
-                        firstSelectedHTMLAction);
-            }
-        });
-    }
-
-    private void createAddSynchronizationItem(Item addSynchronizationPointMenuItem) {
-        addSynchronizationPointMenuItem.setText(StringConstants.DIA_MENU_ADD_SYNCHRONIZE_POINT);
-        addSynchronizationPointMenuItem.addListener(SWT.Selection, new Listener() {
-            @Override
-            public void handleEvent(Event event) {
-                HTMLActionMapping firstSelectedHTMLAction = getFirstSelectedHTMLAction();
-                addSynchonizationPoint(
-                        firstSelectedHTMLAction != null ? firstSelectedHTMLAction.getTargetElement() : null,
-                        firstSelectedHTMLAction);
-            }
-        });
-    }
-
-    private HTMLActionMapping getFirstSelectedHTMLAction() {
-        ISelection selection = actionTableViewer.getSelection();
-        if (!(selection instanceof IStructuredSelection)) {
-            return null;
-        }
-
-        IStructuredSelection structuredSelection = (IStructuredSelection) selection;
-        Object firstElement = structuredSelection.getFirstElement();
-        if (firstElement instanceof HTMLActionMapping) {
-            return (HTMLActionMapping) firstElement;
-        }
-        return null;
-    }
-
-    protected void addContextMenuForActionTable() {
-        actionTableViewer.getTable().addListener(SWT.MenuDetect, new Listener() {
-            @Override
-            public void handleEvent(org.eclipse.swt.widgets.Event event) {
-                Menu menu = actionTableViewer.getTable().getMenu();
-                if (menu != null) {
-                    menu.dispose();
-                }
-
-                Point point = Display.getCurrent().map(null, actionTableViewer.getTable(), event.x, event.y);
-                if (actionTableViewer.getTable().getItem(point) == null) {
-                    return;
-                }
-
-                menu = new Menu(actionTableViewer.getTable());
-                createDeleteActionContextMenu(menu);
-                createAddValidationPointContextMenu(menu);
-                createAddSynchronizePointContextMenu(menu);
-                actionTableViewer.getTable().setMenu(menu);
-            }
-
-            private void createDeleteActionContextMenu(Menu menu) {
-                MenuItem deleteMenuItem = new MenuItem(menu, SWT.PUSH);
-                createDeleteItem(deleteMenuItem);
-            }
-
-            private void createAddValidationPointContextMenu(Menu menu) {
-                MenuItem addValidationPointMenuItem = new MenuItem(menu, SWT.PUSH);
-                createAddValidationPointItem(addValidationPointMenuItem);
-            }
-
-            private void createAddSynchronizePointContextMenu(Menu menu) {
-                MenuItem addSynchronizationPointMenuItem = new MenuItem(menu, SWT.PUSH);
-                createAddSynchronizationItem(addSynchronizationPointMenuItem);
-            }
-        });
-    }
-
-    private void hookDragEvent() {
-        int operations = DND.DROP_MOVE;
-
-        DragSource dragSource = new DragSource(actionTableViewer.getTable(), operations);
-        dragSource.setTransfer(new Transfer[] { TextTransfer.getInstance() });
-
-        dragSource.addDragListener(new DragSourceListener() {
-            @Override
-            public void dragStart(DragSourceEvent event) {
-                if (actionTableViewer.getSelection() instanceof IStructuredSelection) {
-                    IStructuredSelection selection = (IStructuredSelection) actionTableViewer.getSelection();
-                    if (selection.size() == 1 && selection.getFirstElement() instanceof HTMLActionMapping) {
-                        event.doit = true;
-                        return;
-                    }
-                }
-                event.doit = false;
-            }
-
-            @Override
-            public void dragSetData(DragSourceEvent event) {
-                IStructuredSelection selection = (IStructuredSelection) actionTableViewer.getSelection();
-                HTMLActionMapping actionMapping = (HTMLActionMapping) selection.getFirstElement();
-                int actionMappingIndex = recordedActions.indexOf(actionMapping);
-                if (actionMappingIndex >= 0 && actionMappingIndex < recordedActions.size()) {
-                    event.data = String.valueOf(actionMappingIndex);
-                }
-            }
-
-            @Override
-            public void dragFinished(DragSourceEvent event) {
-                // do nothing
-            }
-
-        });
-    }
-
-    private void hookDropEvent() {
-        DropTarget dt = new DropTarget(actionTableViewer.getTable(), DND.DROP_MOVE);
-        dt.setTransfer(new Transfer[] { TextTransfer.getInstance() });
-        dt.addDropListener(new TableDropTargetEffect(actionTableViewer.getTable()) {
-            @Override
-            public void drop(DropTargetEvent event) {
-                if (event.data instanceof String) {
-                    try {
-                        int actionMappingIndex = Integer.valueOf((String) event.data);
-                        if (actionMappingIndex < 0 && actionMappingIndex > recordedActions.size()) {
-                            return;
-                        }
-                        HTMLActionMapping sourceActionMapping = recordedActions.get(actionMappingIndex);
-                        HTMLActionMapping destinationActionMapping = getHoveredActionMapping(event);
-                        if (destinationActionMapping == null && recordedActions.indexOf(destinationActionMapping) < 0) {
-                            return;
-                        }
-                        recordedActions.remove(actionMappingIndex);
-                        int destinationIndex = recordedActions.indexOf(destinationActionMapping);
-                        if (getFeedBackByLocation(event) != DND.FEEDBACK_INSERT_BEFORE) {
-                            destinationIndex++;
-                        }
-                        recordedActions.add(destinationIndex, sourceActionMapping);
-                        actionTableViewer.refresh();
-                    } catch (NumberFormatException e) {
-                        LoggerSingleton.logError(e);
-                    }
-                }
-            }
-
-            @Override
-            public void dragOver(DropTargetEvent event) {
-                event.feedback = DND.FEEDBACK_EXPAND | DND.FEEDBACK_SCROLL;
-                event.feedback |= getFeedBackByLocation(event);
-            }
-
-            private int getFeedBackByLocation(DropTargetEvent event) {
-                Point point = Display.getCurrent().map(null, actionTableViewer.getTable(), event.x, event.y);
-                TableItem tableItem = actionTableViewer.getTable().getItem(point);
-                if (tableItem != null) {
-                    Rectangle bounds = tableItem.getBounds();
-                    if (point.y < bounds.y + bounds.height / 3) {
-                        return DND.FEEDBACK_INSERT_BEFORE;
-                    } else if (point.y > bounds.y + 2 * bounds.height / 3) {
-                        return DND.FEEDBACK_INSERT_AFTER;
-                    }
-                }
-                return DND.FEEDBACK_SELECT;
-            }
-
-            private HTMLActionMapping getHoveredActionMapping(DropTargetEvent event) {
-                Point point = Display.getCurrent().map(null, actionTableViewer.getTable(), event.x, event.y);
-                TableItem treeItem = actionTableViewer.getTable().getItem(point);
-                return (treeItem != null && treeItem.getData() instanceof HTMLActionMapping)
-                        ? (HTMLActionMapping) treeItem.getData() : null;
-            }
-        });
-    }
-
-    private void addValidationPoint(WebElement element, HTMLActionMapping selectedHTMLActionMapping) {
-        String windowId = (selectedHTMLActionMapping != null) ? selectedHTMLActionMapping.getWindowId() : null;
-        int addIndex = (selectedHTMLActionMapping != null) ? recordedActions.indexOf(selectedHTMLActionMapping) + 1
-                : recordedActions.size();
-        addAction(HTMLActionUtil.getDefaultValidationAction(), element, windowId, addIndex);
-    }
-
-    // private void addValidationPoint(WebElement element) {
-    // addValidationPoint(element,
-    // recordedActions.size() > 0 ? recordedActions.get(recordedActions.size() - 1) : null);
-    // }
-
-    private void addSynchonizationPoint(WebElement element, HTMLActionMapping selectedHTMLActionMapping) {
-        String windowId = (selectedHTMLActionMapping != null) ? selectedHTMLActionMapping.getWindowId() : null;
-        int addIndex = (selectedHTMLActionMapping != null) ? recordedActions.indexOf(selectedHTMLActionMapping) + 1
-                : recordedActions.size();
-        addAction(HTMLActionUtil.getDefaultSynchronizeAction(), element, windowId, addIndex);
-    }
-
-    // private void addSynchonizationPoint(WebElement element) {
-    // addSynchonizationPoint(element,
-    // recordedActions.size() > 0 ? recordedActions.get(recordedActions.size() - 1) : null);
-    // }
-
-    private void addDefaultAction(HTMLActionMapping selectedHTMLActionMapping) {
-        IHTMLAction defaultHTMLAction = HTMLActionUtil.getAllHTMLActions().get(0);
-        addAction(defaultHTMLAction,
-                selectedHTMLActionMapping != null ? selectedHTMLActionMapping.getTargetElement() : null,
-                selectedHTMLActionMapping != null ? selectedHTMLActionMapping.getWindowId() : null,
-                selectedHTMLActionMapping != null ? recordedActions.indexOf(selectedHTMLActionMapping) + 1
-                        : Math.max(0, recordedActions.size() - 1));
-    }
-
-    private void addAction(IHTMLAction newAction, WebElement element, String windowId, int selectedActionIndex) {
-        if (newAction == null) {
-            return;
-        }
-        HTMLActionMapping newActionMapping = new HTMLActionMapping(newAction,
-                (newAction.hasElement()) ? element : null);
-        newActionMapping.setWindowId(windowId);
-        if (selectedActionIndex >= 0 && selectedActionIndex < recordedActions.size()) {
-            recordedActions.add(selectedActionIndex, newActionMapping);
-        } else {
-            recordedActions.add(newActionMapping);
-        }
-        actionTableViewer.refresh();
-        actionTableViewer.setSelection(new StructuredSelection(newActionMapping));
-        actionTableViewer.getTable().setFocus();
+        recordStepsView.setCapturedObjectsView(capturedObjectComposite);
     }
 
     private void createActionToolbar(Composite parent) {
-        Composite tbComposite = new Composite(parent, SWT.NONE);
-        GridLayout layout = new GridLayout(2, false);
-        layout.marginHeight = 0;
-        layout.marginWidth = 0;
-        tbComposite.setLayout(layout);
-        tbComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-
-        ToolBar actionToolBar = new ToolBar(tbComposite, SWT.FLAT | SWT.RIGHT);
-        actionToolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
-
-        ToolItem tltmAdd = new ToolItem(actionToolBar, SWT.DROP_DOWN);
-        tltmAdd.setImage(ImageConstants.IMG_16_ADD);
-        tltmAdd.setText(StringConstants.ADD);
-        tltmAdd.addSelectionListener(new DropdownToolItemSelectionListener() {
-            @Override
-            protected Menu getMenu() {
-                Menu addMenu = new Menu(getShell());
-
-                MenuItem addActionItem = new MenuItem(addMenu, SWT.PUSH);
-                createAddActionItem(addActionItem);
-
-                MenuItem addValidationPointItem = new MenuItem(addMenu, SWT.PUSH);
-                createAddValidationPointItem(addValidationPointItem);
-
-                MenuItem addSynchronizationPointItem = new MenuItem(addMenu, SWT.PUSH);
-                createAddSynchronizationItem(addSynchronizationPointItem);
-                return addMenu;
-            }
-        });
-
-        tltmDelete = new ToolItem(actionToolBar, SWT.PUSH);
-        tltmDelete.setImage(ImageConstants.IMG_16_DELETE);
-        tltmDelete.setDisabledImage(ImageConstants.IMG_16_DELETE_DISABLED);
-        tltmDelete.setEnabled(false);
-        createDeleteItem(tltmDelete);
-
-        ToolBar rightToolBar = new ToolBar(tbComposite, SWT.FLAT | SWT.RIGHT);
-        rightToolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
+        ToolBar rightToolBar = new ToolBar(parent, SWT.FLAT | SWT.RIGHT);
+        rightToolBar.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, true, false, 1, 1));
 
         ToolItem tltmCapturedObjects = new ToolItem(rightToolBar, SWT.PUSH);
-        tltmCapturedObjects.setText(StringConstants.DIA_TITLE_SHOW + StringConstants.DIA_TITLE_CAPTURED_OBJECTS);
+        tltmCapturedObjects
+                .setText(StringConstants.DIA_TITLE_SHOW + StringConstants.DIA_TITLE_CAPTURED_OBJECTS + " >>");
         tltmCapturedObjects.setToolTipText(StringConstants.DIA_TOOLTIP_SHOW_HIDE_CAPTURED_OBJECTS);
         tltmCapturedObjects.addSelectionListener(new SelectionAdapter() {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                int[] sashFormWeights = new int[] { 0, 10 };
-                String showOrHide = StringConstants.DIA_TITLE_SHOW + StringConstants.DIA_TITLE_CAPTURED_OBJECTS;
-
+                String showOrHide = StringConstants.DIA_TITLE_SHOW + StringConstants.DIA_TITLE_CAPTURED_OBJECTS + " >>";
+                int[] sashFormWeights;
+                int sashWidth;
+                Point currentSize = hSashForm.getSize();
+                Point shellSize = getShell().getSize();
+                int widthDiff;
                 if (tltmCapturedObjects.getText().contains(StringConstants.DIA_TITLE_SHOW)) {
-                    sashFormWeights = new int[] { 5, 5 };
-                    showOrHide = StringConstants.DIA_TITLE_HIDE + StringConstants.DIA_TITLE_CAPTURED_OBJECTS;
+                    widthDiff = currentSize.x * 100 / 60 + HORIZONTAL_SASH_FORM_WIDTH - currentSize.x;
+                    sashFormWeights = new int[] { 60, 40 };
+                    showOrHide = "<< " + StringConstants.DIA_TITLE_HIDE + StringConstants.DIA_TITLE_CAPTURED_OBJECTS;
+                    sashWidth = HORIZONTAL_SASH_FORM_WIDTH;
+                } else {
+                    widthDiff = (currentSize.x - HORIZONTAL_SASH_FORM_WIDTH) * 60 / 100 - currentSize.x;
+                    sashFormWeights = new int[] { 10, 0 };
+                    sashWidth = 0;
                 }
                 tltmCapturedObjects.setText(showOrHide);
                 hSashForm.setWeights(sashFormWeights);
-                getShell().pack();
+                hSashForm.setSashWidth(sashWidth);
+                getShell().setSize(shellSize.x + widthDiff, shellSize.y);
+                tltmCapturedObjects.getParent().layout(true);
             }
         });
     }
 
-    private boolean isAnyTableItemSelected() {
-        if (actionTableViewer == null) {
-            return false;
-        }
+    private void createStepsPanel(Composite parent) {
+        Composite labelComposite = new Composite(parent, SWT.NONE);
+        GridLayout glLabelComposite = new GridLayout(2, false);
+        glLabelComposite.marginWidth = 0;
+        glLabelComposite.marginHeight = 0;
+        labelComposite.setLayout(glLabelComposite);
 
-        ISelection selection = actionTableViewer.getSelection();
-        return selection != null && !selection.isEmpty();
-    }
-
-    private void createRightPanel(Composite parent) {
-        Label lblRecordedActions = new Label(parent, SWT.NONE);
+        Label lblRecordedActions = new Label(labelComposite, SWT.NONE);
         lblRecordedActions.setFont(getFontBold(lblRecordedActions));
         lblRecordedActions.setText(StringConstants.DIA_LBL_RECORED_ACTIONS);
+        labelComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-        createActionToolbar(parent);
+        createActionToolbar(labelComposite);
 
-        Composite tableComposite = new Composite(parent, SWT.None);
+        SashForm compositeSteps = new SashForm(parent, SWT.VERTICAL);
+        compositeSteps.setLayoutData(new GridData(GridData.FILL_BOTH));
+
+        Composite compositeStepsTab = new Composite(compositeSteps, SWT.NONE);
+        compositeStepsTab.setLayoutData(new GridData(GridData.FILL_BOTH));
+        GridLayout glStepsTab = new GridLayout(1, false);
+        glStepsTab.marginWidth = 0;
+        glStepsTab.marginHeight = 0;
+        glStepsTab.marginBottom = 0;
+        compositeStepsTab.setLayout(glStepsTab);
+
+        createStepButtons(compositeStepsTab);
+
+        Composite tableComposite = new Composite(compositeStepsTab, SWT.None);
+        GridLayout layout = new GridLayout();
+        layout.marginWidth = 0;
+        layout.marginHeight = 0;
+        tableComposite.setLayout(layout);
         tableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-        actionTableViewer = new TableViewer(tableComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
-        actionTableViewer.getTable().setHeaderVisible(true);
-        actionTableViewer.getTable().setLinesVisible(true);
-        ColumnViewerToolTipSupport.enableFor(actionTableViewer);
+        recordStepsView = new RecordedStepsView();
+        recordStepsView.createContent(tableComposite);
 
-        ColumnViewerUtil.setTableActivation(actionTableViewer);
+        bottomTabFolder = new CTabFolder(compositeSteps, SWT.NONE);
 
-        TableViewerColumn tableViewerColumnNo = new TableViewerColumn(actionTableViewer, SWT.NONE);
-        TableColumn tableViewerNo = tableViewerColumnNo.getColumn();
-        tableViewerNo.setText(TABLE_COLUMN_NO_TITLE);
+        CTabItem variablesTabItem = new CTabItem(bottomTabFolder, SWT.NONE);
+        variablesTabItem.setText("Variables");
+        Composite variablesViewComposite = recordStepsView.createVariableTab(bottomTabFolder);
+        variablesViewComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        variablesTabItem.setControl(variablesViewComposite);
 
-        TableViewerColumn tableViewerColumnAction = new TableViewerColumn(actionTableViewer, SWT.NONE);
-        TableColumn tableColumnAction = tableViewerColumnAction.getColumn();
-        tableColumnAction.setText(TABLE_COLUMN_ACTION_TITLE);
+        CTabItem logTabItem = new CTabItem(bottomTabFolder, SWT.NONE);
+        logTabItem.setText("Logs");
 
-        TableViewerColumn tableViewerColumnActionData = new TableViewerColumn(actionTableViewer, SWT.NONE);
-        TableColumn tableColumnActionData = tableViewerColumnActionData.getColumn();
-        tableColumnActionData.setText(TABLE_COLUMN_ACTION_DATA_TITLE);
+        RecordedLogView logsView = new RecordedLogView();
+        Composite logsViewComposite = logsView.createLogsView(bottomTabFolder);
+        logTabItem.setControl(logsViewComposite);
 
-        TableViewerColumn tableViewerColumnElement = new TableViewerColumn(actionTableViewer, SWT.NONE);
-        TableColumn tableColumnElement = tableViewerColumnElement.getColumn();
-        tableColumnElement.setText(TABLE_COLUMN_ELEMENT_TITLE);
+        bottomTabFolder.setSelection(variablesTabItem);
 
-        TableColumnLayout tableLayout = new TableColumnLayout();
-        tableLayout.setColumnData(tableViewerNo, new ColumnWeightData(0, 40));
-        tableLayout.setColumnData(tableColumnAction, new ColumnWeightData(20, 70));
-        tableLayout.setColumnData(tableColumnActionData, new ColumnWeightData(30, 140));
-        tableLayout.setColumnData(tableColumnElement, new ColumnWeightData(30, 100));
+        logTabItemIdex = bottomTabFolder.indexOf(logTabItem);
 
-        tableComposite.setLayout(tableLayout);
+        compositeSteps.setWeights(new int[] { 60, 40 });
 
-        actionTableViewer.setContentProvider(ArrayContentProvider.getInstance());
+        IStylingEngine styleEngine = WorkbenchUtilizer.getService(IStylingEngine.class);
+        styleEngine.setId(compositeSteps, "DefaultCTabFolder");
+    }
 
-        tableViewerColumnNo.setLabelProvider(new ColumnLabelProvider() {
+    private ToolItem tltmAddStep, tltmRemoveStep, tltmUp, tltmDown, tltmRecent;
+
+    private ToolItem tltmPlay;
+
+    private boolean playingState;
+
+    private void createStepButtons(Composite compositeSteps) {
+        Composite compositeToolbars = new Composite(compositeSteps, SWT.NONE);
+        compositeToolbars.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        GridLayout layout = new GridLayout(2, false);
+        layout.marginWidth = 0;
+        layout.marginHeight = 0;
+        compositeToolbars.setLayout(layout);
+
+        ToolBar toolbar = new ToolBar(compositeToolbars, SWT.FLAT | SWT.RIGHT);
+        toolbar.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
+        SelectionListener selectionListener = new SelectionAdapter() {
             @Override
-            public String getText(Object element) {
-                if (element instanceof HTMLActionMapping) {
-                    return String.valueOf(recordedActions.indexOf(element) + 1);
-                }
-                return StringUtils.EMPTY;
-            }
-        });
-
-        tableViewerColumnAction.setLabelProvider(new ColumnLabelProvider() {
-            @Override
-            public String getText(Object element) {
-                if (element instanceof HTMLActionMapping && ((HTMLActionMapping) element).getAction() != null) {
-                    return TreeEntityUtil.getReadableKeywordName(((HTMLActionMapping) element).getAction().getName());
-                }
-                return StringUtils.EMPTY;
-            }
-
-            @Override
-            public String getToolTipText(Object element) {
-                if (element instanceof HTMLActionMapping && ((HTMLActionMapping) element).getAction() != null) {
-                    return StringUtils.defaultIfEmpty(((HTMLActionMapping) element).getAction().getDescription(), null);
-                }
-                return StringUtils.defaultIfEmpty(super.getToolTipText(element), null);
-            }
-
-        });
-
-        tableViewerColumnAction.setEditingSupport(new EditingSupport(actionTableViewer) {
-            private List<String> actionNames = new ArrayList<String>();
-
-            private List<IHTMLAction> htmlActions = new ArrayList<IHTMLAction>();
-
-            @Override
-            protected void setValue(Object element, Object value) {
-                if (!(value instanceof Integer)) {
+            public void widgetSelected(SelectionEvent e) {
+                Object item = e.getSource();
+                if (item instanceof ToolItem) {
+                    performToolItemSelected((ToolItem) e.getSource(), e);
                     return;
                 }
-
-                HTMLActionMapping actionMapping = (HTMLActionMapping) element;
-                int selectionIndex = (int) value;
-                if (selectionIndex < 0 || selectionIndex >= htmlActions.size()) {
-                    return;
-                }
-                IHTMLAction newAction = htmlActions.get(selectionIndex);
-                if (!actionMapping.getAction().getName().equals(newAction.getName())) {
-                    actionMapping.setAction(newAction);
-                    actionTableViewer.refresh(actionMapping);
+                if (item instanceof MenuItem) {
+                    performMenuItemSelected((MenuItem) e.getSource());
                 }
             }
+        };
 
+        tltmAddStep = new ToolItem(toolbar, SWT.DROP_DOWN);
+        tltmAddStep.setText(StringConstants.ADD);
+        tltmAddStep.setImage(ImageConstants.IMG_16_ADD);
+        tltmAddStep.addSelectionListener(selectionListener);
+
+        Menu addMenu = new Menu(tltmAddStep.getParent().getShell());
+        tltmAddStep.setData(addMenu);
+        TestCaseMenuUtil.fillActionMenu(TreeTableMenuItemConstants.AddAction.Add, selectionListener, addMenu,
+                new int[] { TreeTableMenuItemConstants.METHOD_MENU_ITEM_ID });
+
+        tltmRecent = new ToolItem(toolbar, SWT.DROP_DOWN);
+        tltmRecent.setText(ComposerTestcaseMessageConstants.PA_BTN_TIP_RECENT);
+        tltmRecent.setImage(ImageConstants.IMG_16_RECENT);
+        tltmRecent.addSelectionListener(selectionListener);
+        setRecentKeywordItemState();
+
+        tltmRemoveStep = new ToolItem(toolbar, SWT.NONE);
+        tltmRemoveStep.setText(StringConstants.REMOVE);
+        tltmRemoveStep.setImage(ImageConstants.IMG_16_DELETE);
+        tltmRemoveStep.addSelectionListener(selectionListener);
+
+        tltmUp = new ToolItem(toolbar, SWT.NONE);
+        tltmUp.setText(StringConstants.DIA_ITEM_MOVE_UP);
+        tltmUp.setImage(ImageConstants.IMG_16_MOVE_UP);
+        tltmUp.addSelectionListener(selectionListener);
+
+        tltmDown = new ToolItem(toolbar, SWT.NONE);
+        tltmDown.setText(StringConstants.DIA_ITEM_MOVE_DOWN);
+        tltmDown.setImage(ImageConstants.IMG_16_MOVE_DOWN);
+        tltmDown.addSelectionListener(selectionListener);
+
+        ToolBar playToolbar = new ToolBar(compositeToolbars, SWT.FLAT | SWT.RIGHT);
+        playToolbar.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
+        tltmPlay = new ToolItem(playToolbar, SWT.DROP_DOWN);
+        tltmPlay.setImage(ImageConstants.IMG_24_PLAY);
+        tltmPlay.addSelectionListener(selectionListener);
+        tltmPlay.setToolTipText(ComposerWebuiRecorderMessageConstants.DIA_ITEM_RUN_ALL_STEPS);
+
+        setPlayButtonState(false);
+    }
+
+    private void createRunScripContextMenu() {
+        if (tltmPlay.getData() instanceof Menu) {
+            ((Menu) tltmPlay.getData()).dispose();
+        }
+        Rectangle rect = tltmPlay.getBounds();
+
+        ToolBar playToolbar = tltmPlay.getParent();
+        Point pt = playToolbar.toDisplay(new Point(rect.x + rect.width, rect.y));
+
+        Menu playMenu = new Menu(playToolbar);
+        playMenu.setLocation(pt.x, pt.y + rect.height);
+        playMenu.setVisible(true);
+        playToolbar.setMenu(playMenu);
+
+        tltmPlay.setData(playMenu);
+
+        MenuItem runAllStepsItem = new MenuItem(playMenu, SWT.CHECK);
+        runAllStepsItem
+                .setText(ControlUtils.createMenuItemText(ComposerWebuiRecorderMessageConstants.DIA_ITEM_RUN_ALL_STEPS,
+                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "E" })));
+        runAllStepsItem.addSelectionListener(new SelectionAdapter() {
             @Override
-            protected Object getValue(Object element) {
-                HTMLActionMapping actionMapping = (HTMLActionMapping) element;
-                for (int i = 0; i < htmlActions.size(); i++) {
-                    if (actionMapping.getAction().getName().equals(htmlActions.get(i).getName())) {
-                        return i;
-                    }
-                }
-                return 0;
-            }
-
-            @Override
-            protected CellEditor getCellEditor(Object element) {
-                actionNames.clear();
-                htmlActions.clear();
-                IHTMLAction action = ((HTMLActionMapping) element).getAction();
-                if (action instanceof HTMLSynchronizeAction) {
-                    htmlActions.addAll(HTMLActionUtil.getAllHTMLSynchronizeActions());
-                } else if (action instanceof HTMLValidationAction) {
-                    htmlActions.addAll(HTMLActionUtil.getAllHTMLValidationActions());
-                } else {
-                    htmlActions.addAll(HTMLActionUtil.getAllHTMLActions());
-                }
-
-                // remove duplicate keyword
-                Map<String, IHTMLAction> keywords = new LinkedHashMap<>();
-                for (int i = 0; i < htmlActions.size(); ++i) {
-                    action = htmlActions.get(i);
-                    if (!keywords.containsKey(action.getName())) {
-                        keywords.put(action.getName(), htmlActions.get(i));
-                    }
-                }
-                htmlActions.clear();
-                htmlActions.addAll(keywords.values());
-                htmlActions.sort((action1, action2) -> action1.getName().compareTo(action2.getName()));
-
-                for (IHTMLAction htmlAction : htmlActions) {
-                    actionNames.add(TreeEntityUtil.getReadableKeywordName(htmlAction.getName()));
-                }
-                
-                return new ComboBoxCellEditor((Composite) getViewer().getControl(),
-                        actionNames.toArray(new String[actionNames.size()]));
-            }
-
-            @Override
-            protected boolean canEdit(Object element) {
-                return (element instanceof HTMLActionMapping && ((HTMLActionMapping) element).getAction() != null);
+            public void widgetSelected(SelectionEvent e) {
+                runAllSteps();
             }
         });
+        runAllStepsItem.setSelection(true);
 
-        tableViewerColumnActionData.setLabelProvider(new ColumnLabelProvider() {
+        MenuItem runSelectedSteps = new MenuItem(playMenu, SWT.PUSH);
+        runSelectedSteps.setText(
+                ControlUtils.createMenuItemText(ComposerWebuiRecorderMessageConstants.DIA_ITEM_RUN_SELECTED_STEPS,
+                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, IKeyLookup.ALT_NAME, "E" })));
+        runSelectedSteps.addSelectionListener(new SelectionAdapter() {
             @Override
-            public String getText(Object element) {
-                if (element instanceof HTMLActionMapping && ((HTMLActionMapping) element).getAction() != null) {
-                    HTMLActionMapping actionMapping = (HTMLActionMapping) element;
-                    if (actionMapping.getAction() != null && actionMapping.getAction().hasInput()
-                            && actionMapping.getData() != null) {
-                        StringBuilder displayString = new StringBuilder("["); //$NON-NLS-1$
-                        boolean isFirst = true;
-                        boolean isMasked = actionMapping.getTargetElement() != null && INPUT_PASSWORD_FIELD_PATTERN.equals(actionMapping.getTargetElement().getTypeProperty());  
-                        for (HTMLActionParamValueType dataObject : actionMapping.getData()) {
-                            if (!isFirst) {
-                                displayString.append(", "); //$NON-NLS-1$
-                            } else {
-                                isFirst = false;
-                            }
-                            String finalText = isMasked ? StringUtils.repeat("*", dataObject.getValueToDisplay().length() - 2) : dataObject.getValueToDisplay();
-                            displayString.append(finalText);
-                        }
-                        displayString.append("]"); //$NON-NLS-1$
-                        return displayString.toString();
-                    }
-                }
-                return StringUtils.EMPTY;
+            public void widgetSelected(SelectionEvent e) {
+                runSelectedSteps();
             }
         });
+        if (recordStepsView.getTreeTable().getStructuredSelection().isEmpty()) {
+            runSelectedSteps.setEnabled(false);
+        }
 
-        tableViewerColumnActionData.setEditingSupport(new EditingSupport(actionTableViewer) {
+        MenuItem runFromSelectedStep = new MenuItem(playMenu, SWT.PUSH);
+        runFromSelectedStep.setText(ControlUtils.createMenuItemText(
+                ComposerWebuiRecorderMessageConstants.DIA_ITEM_RUN_FROM_SELECTED_STEP,
+                KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, IKeyLookup.SHIFT_NAME, "E" })));
+        runFromSelectedStep.addSelectionListener(new SelectionAdapter() {
             @Override
-            protected void setValue(Object element, Object value) {
-                if (value instanceof HTMLActionParamValueType[]) {
-                    ((HTMLActionMapping) element).setData((HTMLActionParamValueType[]) value);
-                    actionTableViewer.refresh(element);
-                }
-            }
-
-            @Override
-            protected Object getValue(Object element) {
-                return ((HTMLActionMapping) element).getData();
-            }
-
-            @Override
-            protected CellEditor getCellEditor(Object element) {
-                final HTMLActionMapping actionMapping = (HTMLActionMapping) element;
-                return new AbstractDialogCellEditor(actionTableViewer.getTable(),
-                        actionMapping.getData() instanceof Object[] ? Arrays.toString(actionMapping.getData()) : "") { //$NON-NLS-1$
-                    @Override
-                    protected Object openDialogBox(Control cellEditorWindow) {
-                        HTMLActionDataBuilderDialog dialog = new HTMLActionDataBuilderDialog(getShell(), actionMapping);
-                        int returnCode = dialog.open();
-                        if (returnCode == Window.OK) {
-                            return dialog.getActionData();
-                        }
-                        return null;
-                    }
-                };
-            }
-
-            @Override
-            protected boolean canEdit(Object element) {
-                if (element instanceof HTMLActionMapping && ((HTMLActionMapping) element).getAction() != null) {
-                    HTMLActionMapping actionMapping = (HTMLActionMapping) element;
-                    if (actionMapping.getAction() != null && actionMapping.getAction().hasInput()) {
-                        return true;
-                    }
-                }
-                return false;
+            public void widgetSelected(SelectionEvent e) {
+                runFromStep();
             }
         });
+        if (recordStepsView.getTreeTable().getStructuredSelection().isEmpty()) {
+            runFromSelectedStep.setEnabled(false);
+        }
+    }
 
-        tableViewerColumnElement.setLabelProvider(new ColumnLabelProvider() {
+    private void runFromStep() {
+        ScriptNodeWrapper cloneScript = recordStepsView.getWrapper().clone();
+        cloneScript.setMainBlock(cloneScript.getBlock().clone());
+        BlockStatementWrapper block = cloneScript.getBlock();
+        block.clearStaments();
+        for (ASTNodeWrapper node : recordStepsView.getTreeTableInput().getNodeWrappersFromFirstSelected()) {
+            block.addChild(node.clone());
+        }
+        executeSelectedSteps(cloneScript);
+    }
+
+    private void runAllSteps() {
+        executeSelectedSteps(recordStepsView.getWrapper());
+    }
+
+    private void runSelectedSteps() {
+        ScriptNodeWrapper cloneScript = recordStepsView.getWrapper().clone();
+        cloneScript.setMainBlock(cloneScript.getBlock().clone());
+        BlockStatementWrapper block = cloneScript.getBlock();
+        block.clearStaments();
+        for (ASTNodeWrapper node : recordStepsView.getTreeTableInput().getSelectedNodeWrappers()) {
+            block.addChild(node.clone());
+        }
+        executeSelectedSteps(cloneScript);
+    }
+
+    public void setPlayButtonState(boolean sendingState) {
+        this.playingState = sendingState;
+        if (this.playingState) {
+            tltmPlay.setText(StringConstants.STOP);
+            tltmPlay.setImage(ImageConstants.IMG_24_STOP);
+        } else {
+            tltmPlay.setImage(ImageConstants.IMG_24_PLAY);
+            tltmPlay.setText(StringConstants.RUN);
+        }
+        tltmPlay.getParent().getParent().layout(true, true);
+    }
+
+    public boolean getSendingState() {
+        return playingState;
+    }
+
+    private void setRecentKeywordItemState() {
+        tltmRecent.setEnabled(!TestCasePreferenceDefaultValueInitializer.getRecentKeywords().isEmpty());
+    }
+
+    public void performToolItemSelected(ToolItem toolItem, SelectionEvent selectionEvent) {
+        getTreeTable().applyEditorValue();
+        if (toolItem.equals(tltmAddStep)) {
+            openToolItemForAddMenu(toolItem, selectionEvent);
+            return;
+        }
+        if (toolItem.equals(tltmRemoveStep)) {
+            getTreeTableInput().removeSelectedRows();
+            return;
+        }
+        if (toolItem.equals(tltmUp)) {
+            getTreeTableInput().moveUp();
+            return;
+        }
+        if (toolItem.equals(tltmDown)) {
+            getTreeTableInput().moveDown();
+            return;
+        }
+        if (toolItem.equals(tltmRecent)) {
+            openRecentKeywordItems();
+            return;
+        }
+        if (toolItem.equals(tltmPlay)) {
+            openToolItemForRunMenu(toolItem, selectionEvent);
+            return;
+        }
+    }
+
+    private RecordingScriptGenerator generator;
+
+    private boolean shouldResumeRecordingAfterRunning = false;
+
+    private void executeSelectedSteps(ScriptNodeWrapper nodeWrapper) {
+        if (playingState) {
+            if (generator != null) {
+                generator.stopLauncher();
+            }
+            setPlayButtonState(false);
+            if (shouldResumeRecordingAfterRunning) {
+                resume();
+                shouldResumeRecordingAfterRunning = false;
+            }
+            return;
+        }
+        shouldResumeRecordingAfterRunning = !isPauseRecording;
+        pause();
+        setPlayButtonState(true);
+        if (session == null || session.getWebDriver() == null || !session.isRunning()) {
+            startBrowser();
+        }
+
+        Job job = new Job(ComposerWebuiRecorderMessageConstants.JOB_RUNNING_RECORDED_STEPS) {
+
             @Override
-            public String getText(Object element) {
-                if (!(element instanceof HTMLActionMapping) || ((HTMLActionMapping) element).getAction() == null
-                        || !((HTMLActionMapping) element).getAction().hasElement()) {
-                    return StringUtils.EMPTY;
+            protected IStatus run(IProgressMonitor monitor) {
+                try {
+                    while (session == null || session.getWebDriver() == null || !session.isRunning()) {
+                        Thread.sleep(200L);
+                    }
+                    UISynchronizeService.syncExec(() -> {
+                        pause();
+                        bottomTabFolder.setSelection(logTabItemIdex);
+                    });
+                    // Saved captured object to temporary directory and put it in RunConfigration as a property
+                    // to let the ObjectRepository.findTestObject can recognize captured objects instead of saved
+                    // objects.
+                    File recordSessionFolder = new File(ProjectController.getInstance().getTempDir(),
+                            "record/" + RECORD_SESSION_ID);
+                    recordSessionFolder.mkdirs();
+
+                    File capturedObjectsFile = new File(recordSessionFolder, "captured_objects.json");
+                    Map<String, TestObject> capturedObjectsCache = new HashMap<>();
+                    for (WebElement we : capturedObjectComposite.flattenWebElements()) {
+                        capturedObjectsCache.put(we.getScriptId(), WebElementUtils.buildTestObject(we));
+                    }
+                    FileUtils.write(capturedObjectsFile, JsonUtil.toJson(capturedObjectsCache));
+
+                    // Generate script and execute
+                    generator = new RecordingScriptGenerator(capturedObjectsFile.getAbsolutePath());
+                    StringBuilder stringBuilder = new StringBuilder();
+
+                    new GroovyWrapperParser(stringBuilder).parseGroovyAstIntoScript(nodeWrapper);
+                    generator.execute(stringBuilder.toString(), Arrays.asList(recordStepsView.getVariables()),
+                            session.getWebDriver(), session.getWebUiDriverType(),
+                            ProjectController.getInstance().getCurrentProject());
+                    return Status.OK_STATUS;
+                } catch (Exception ex) {
+                    UISynchronizeService.syncExec(() -> setPlayButtonState(false));
+                    if (shouldResumeRecordingAfterRunning) {
+                        resume();
+                        shouldResumeRecordingAfterRunning = false;
+                    }
+                    return Status.CANCEL_STATUS;
                 }
-                HTMLActionMapping actionMapping = (HTMLActionMapping) element;
-                if (actionMapping.getTargetElement() != null) {
-                    return actionMapping.getTargetElement().getName();
-                }
-                return StringConstants.NULL;
+            }
+
+        };
+        job.schedule();
+    }
+
+    private Menu recentMenu;
+
+    private void openRecentKeywordItems() {
+        List<StoredKeyword> recentKeywords = TestCasePreferenceDefaultValueInitializer.getRecentKeywords();
+        if (recentKeywords.isEmpty()) {
+            return;
+        }
+        if (recentMenu != null && !recentMenu.isDisposed()) {
+            recentMenu.dispose();
+        }
+        recentMenu = new Menu(tltmRecent.getParent());
+        recentKeywords.forEach(keyword -> {
+            addRecentMenuItem(keyword);
+        });
+        Rectangle rect = tltmRecent.getBounds();
+        Point pt = tltmRecent.getParent().toDisplay(new Point(rect.x, rect.y));
+        recentMenu.setLocation(pt.x, pt.y + rect.height);
+        recentMenu.setVisible(true);
+    }
+
+    private void addRecentMenuItem(StoredKeyword keyword) {
+        MenuItem recentMenuItem = new MenuItem(recentMenu, SWT.PUSH);
+        final DecoratedKeyword decoratedKeyword = KeywordDecorationService.getDecoratedKeyword(keyword);
+        recentMenuItem.setText(decoratedKeyword.getLabel());
+        recentMenuItem.setToolTipText(decoratedKeyword.getTooltip());
+        recentMenuItem.setImage(decoratedKeyword.getImage());
+
+        recentMenuItem.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                TestCaseTreeTableInput treeTableInput = recordStepsView.getTreeTableInput();
+                AstTreeTableNode destination = treeTableInput.getSelectedNode();
+                treeTableInput.addNewAstObject(
+                        decoratedKeyword.newStep(treeTableInput.getParentNodeForNewMethodCall(destination)),
+                        destination, NodeAddType.Add);
             }
         });
+    }
 
-        tableViewerColumnElement.setEditingSupport(new EditingSupport(actionTableViewer) {
-            @Override
-            protected void setValue(Object element, Object value) {
-                if (value instanceof WebElement) {
-                    HTMLActionMapping actionMapping = (HTMLActionMapping) element;
-                    WebElement newElement = (WebElement) value;
-                    if (!(newElement.equals(actionMapping.getTargetElement()))) {
-                        actionMapping.setTargetElement(newElement);
-                        actionTableViewer.refresh(actionMapping);
-                    }
+    public void performMenuItemSelected(MenuItem menuItem) {
+        getTreeTable().applyEditorValue();
+        NodeAddType addType = NodeAddType.Add;
+        Object value = menuItem.getData(TreeTableMenuItemConstants.MENU_ITEM_ACTION_KEY);
+        if (value instanceof AddAction) {
+            switch ((AddAction) value) {
+                case Add:
+                    addType = NodeAddType.Add;
+                    break;
+                case InsertAfter:
+                    addType = NodeAddType.InserAfter;
+                    break;
+                case InsertBefore:
+                    addType = NodeAddType.InserBefore;
+                    break;
+            }
+        }
+        switch (menuItem.getID()) {
+            case TreeTableMenuItemConstants.CHANGE_FAILURE_HANDLING_MENU_ITEM_ID:
+                Object failureHandlingValue = menuItem.getData(TreeTableMenuItemConstants.FAILURE_HANDLING_KEY);
+                if (failureHandlingValue instanceof FailureHandling) {
+                    getTreeTableInput().changeFailureHandling((FailureHandling) failureHandlingValue);
                 }
-            }
+                break;
+            case TreeTableMenuItemConstants.COPY_MENU_ITEM_ID:
+                getTreeTableInput().copy(getTreeTableInput().getSelectedNodes());
+                break;
+            case TreeTableMenuItemConstants.CUT_MENU_ITEM_ID:
+                getTreeTableInput().cut(getTreeTableInput().getSelectedNodes());
+                break;
+            case TreeTableMenuItemConstants.PASTE_MENU_ITEM_ID:
+                getTreeTableInput().paste(getTreeTableInput().getSelectedNode(), addType);
+                break;
+            case TreeTableMenuItemConstants.REMOVE_MENU_ITEM_ID:
+                getTreeTableInput().removeSelectedRows();
+                break;
+            case TreeTableMenuItemConstants.ENABLE_MENU_ITEM_ID:
+                getTreeTableInput().enable();
+                break;
+            case TreeTableMenuItemConstants.DISABLE_MENU_ITEM_ID:
+                getTreeTableInput().disable();
+                break;
+            default:
+                getTreeTableInput().addNewAstObject(menuItem.getID(), getTreeTableInput().getSelectedNode(), addType);
+                break;
+        }
+    }
 
-            @Override
-            protected Object getValue(Object element) {
-                return ((HTMLActionMapping) element).getTargetElement();
-            }
+    private TestCaseTreeTableInput getTreeTableInput() {
+        return recordStepsView.getTreeTableInput();
+    }
 
-            @Override
-            protected CellEditor getCellEditor(Object element) {
-                WebElement htmlElement = ((HTMLActionMapping) element).getTargetElement();
-                return new AbstractDialogCellEditor(actionTableViewer.getTable(),
-                        htmlElement != null ? htmlElement.getName() : StringConstants.NULL) {
-                    @Override
-                    protected Object openDialogBox(Control cellEditorWindow) {
-                        ElementTreeSelectionDialog treeDialog = new ElementTreeSelectionDialog(getShell(),
-                                new WebElementLabelProvider(), new WebElementTreeContentProvider());
-                        treeDialog.setInput(elements);
-                        treeDialog.setInitialSelection(getValue());
-                        treeDialog.setAllowMultiple(false);
-                        treeDialog.setTitle(StringConstants.DIA_TITLE_CAPTURED_OBJECTS);
-                        treeDialog.setMessage(StringConstants.DIA_MESSAGE_SELECT_ELEMENT);
+    private void openToolItemForAddMenu(ToolItem toolItem, SelectionEvent selectionEvent) {
+        if (selectionEvent.detail == SWT.ARROW && toolItem.getData() instanceof Menu) {
+            Rectangle rect = toolItem.getBounds();
+            Point pt = toolItem.getParent().toDisplay(new Point(rect.x, rect.y));
+            Menu menu = (Menu) toolItem.getData();
+            menu.setLocation(pt.x, pt.y + rect.height);
+            menu.setVisible(true);
+        } else {
+            recordStepsView.getTreeTableInput().addNewDefaultBuiltInKeyword(NodeAddType.Add);
+        }
+    }
 
-                        treeDialog.setValidator(new ISelectionStatusValidator() {
+    private void openToolItemForRunMenu(ToolItem toolItem, SelectionEvent selectionEvent) {
+        if (selectionEvent.detail == SWT.ARROW) {
+            createRunScripContextMenu();
+        } else {
+            executeSelectedSteps(recordStepsView.getWrapper());
+        }
+    }
 
-                            @Override
-                            public IStatus validate(Object[] selection) {
-                                if (selection.length == 1 && !(selection[0] instanceof WebPage)) {
-                                    return new StatusInfo();
-                                }
-                                return new StatusInfo(IStatus.ERROR, StringConstants.DIA_ERROR_MESSAGE_SELECT_ELEMENT);
-                            }
-                        });
-                        if (treeDialog.open() == Window.OK) {
-                            return treeDialog.getFirstResult();
-                        }
-                        return null;
-                    }
-                };
-            }
-
-            @Override
-            protected boolean canEdit(Object element) {
-                if (element instanceof HTMLActionMapping && ((HTMLActionMapping) element).getAction() != null) {
-                    HTMLActionMapping actionMapping = (HTMLActionMapping) element;
-                    if (actionMapping.getAction() != null && actionMapping.getAction().hasElement()) {
-                        return true;
-                    }
-                }
-                return false;
-            }
-        });
-        actionTableViewer.setInput(recordedActions);
-        addContextMenuForActionTable();
-        hookDragEvent();
-        hookDropEvent();
-
-        actionTableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-
-            @Override
-            public void selectionChanged(SelectionChangedEvent event) {
-                tltmDelete.setEnabled(isAnyTableItemSelected());
-                StructuredSelection selection = (StructuredSelection) event.getSelection();
-                HTMLActionMapping actionMapping = (HTMLActionMapping) selection.getFirstElement();
-                if (actionMapping != null) {
-                    WebElement element = actionMapping.getTargetElement();
-                    if (element != null) {
-                        eventBroker.send(EventConstants.RECORDER_ACTION_SELECTED, element);
-                    }
-                }
-            }
-        });
+    private ColumnViewer getTreeTable() {
+        return recordStepsView.getTreeTable();
     }
 
     private void createToolbar(Composite parent) {
@@ -1269,6 +1139,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         toolBar.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 
         toolItemBrowserDropdown = new ToolItem(toolBar, SWT.DROP_DOWN);
+        toolItemBrowserDropdown.setToolTipText(ComposerWebuiRecorderMessageConstants.DIA_TOOLTIP_START_RECORDING);
         toolItemBrowserDropdown.setImage(getWebUIDriverToolItemImage(getWebUIDriver()));
         Dropdown dropdown = new Dropdown(getShell());
         createDropdownContent(dropdown);
@@ -1287,12 +1158,13 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             }
         });
 
-        tltmPause = new ToolItem(toolBar, SWT.PUSH);
-        tltmPause.setImage(ImageConstants.IMG_24_PAUSE);
-        tltmPause.addSelectionListener(new SelectionAdapter() {
+        tltmPauseAndResume = new ToolItem(toolBar, SWT.PUSH);
+        tltmPauseAndResume.setToolTipText(ComposerWebuiRecorderMessageConstants.DIA_TOOLTIP_PAUSE_RECORDING);
+        tltmPauseAndResume.setImage(ImageConstants.IMG_24_PAUSE_RECORDING);
+        tltmPauseAndResume.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                if (isPausing) {
+                if (isPauseRecording) {
                     resume();
                 } else {
                     pause();
@@ -1300,10 +1172,11 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             }
 
         });
-        tltmPause.setEnabled(false);
+        tltmPauseAndResume.setEnabled(false);
 
         tltmStop = new ToolItem(toolBar, SWT.PUSH);
-        tltmStop.setImage(ImageConstants.IMG_24_STOP);
+        tltmStop.setImage(ImageConstants.IMG_24_STOP_RECORDING);
+        tltmStop.setToolTipText(ComposerWebuiRecorderMessageConstants.DIA_TOOLTIP_STOP_RECORDING);
         tltmStop.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent event) {
@@ -1363,8 +1236,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                             @Override
                             public void run() {
                                 MessageDialogWithToggle messageDialogWithToggle = MessageDialogWithToggle
-                                        .openInformation(getShell(),
-                                                StringConstants.HAND_ACTIVE_BROWSERS_DIA_TITLE,
+                                        .openInformation(getShell(), StringConstants.HAND_ACTIVE_BROWSERS_DIA_TITLE,
                                                 StringConstants.DIALOG_RUNNING_INSTANT_IE_MESSAGE,
                                                 StringConstants.HAND_ACTIVE_BROWSERS_DIA_TOOGLE_MESSAGE, false, null,
                                                 null);
@@ -1424,6 +1296,9 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     public void stop() {
         try {
+            if (!isPauseRecording) {
+                recordStepsView.addSimpleKeyword("closeBrowser");
+            }
             stopServer();
             stopRecordSession();
             closeInstantSession();
@@ -1432,7 +1307,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE, e.getMessage());
         }
         resume();
-        tltmPause.setEnabled(false);
+        tltmPauseAndResume.setEnabled(false);
         tltmStop.setEnabled(false);
     }
 
@@ -1563,27 +1438,33 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         }
     }
 
+    @SuppressWarnings("unchecked")
     private boolean addElementToObjectRepository(Shell shell) throws Exception {
         TreeViewer capturedTreeViewer = capturedObjectComposite.getTreeViewer();
+        if (capturedTreeViewer.getTree().getItemCount() == 0) {
+            return true;
+        }
         SaveToObjectRepositoryDialog addToObjectRepositoryDialog = new SaveToObjectRepositoryDialog(shell, true,
-                getCloneCapturedObjects(elements), capturedTreeViewer.getExpandedElements());
+                getCloneCapturedObjects((List<WebPage>) capturedTreeViewer.getInput()),
+                capturedTreeViewer.getExpandedElements());
         if (addToObjectRepositoryDialog.open() != Window.OK) {
             return false;
         }
-        
+
         targetFolderSelectionResult = addToObjectRepositoryDialog.getDialogResult();
 
         ObjectRepositoryService objectRepositoryService = new ObjectRepositoryService();
-        refeshExplorer(objectRepositoryService.saveObject(targetFolderSelectionResult), addToObjectRepositoryDialog.getSelectedParentFolderResult());
-        
+        refeshExplorer(objectRepositoryService.saveObject(targetFolderSelectionResult),
+                addToObjectRepositoryDialog.getSelectedParentFolderResult());
+
         return true;
     }
-    
+
     private void refeshExplorer(SaveActionResult saveResult, FolderTreeEntity selectedParentFolder) {
         // Refresh tree explorer
         eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, selectedParentFolder);
-        
-        //Refesh updated object.
+
+        // Refesh updated object.
         for (Object[] testObj : saveResult.getUpdatedTestObjectIds()) {
             eventBroker.post(EventConstants.TEST_OBJECT_UPDATED, testObj);
         }
@@ -1630,22 +1511,23 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     }
 
     public void addNewActionMapping(final HTMLActionMapping newAction) {
-        if (isPausing || !HTMLActionUtil.verifyActionMapping(newAction, recordedActions)) {
+        if (isPauseRecording || !HTMLActionUtil.verifyActionMapping(newAction, recordedActions)) {
             return;
         }
-        if (newAction.getTargetElement() != null) {
-            addNewElement(newAction.getTargetElement(), newAction);
+        WebElement targetElement = newAction.getTargetElement();
+        if (targetElement != null) {
+            addNewElement(targetElement, newAction);
         }
         recordedActions.add(newAction);
         UISynchronizeService.syncExec(new Runnable() {
             @Override
             public void run() {
-                actionTableViewer.refresh();
-                actionTableViewer.reveal(newAction);
+                try {
+                    recordStepsView.addNewStep(newAction);
+                } catch (ClassNotFoundException ignored) {}
                 capturedObjectComposite.getTreeViewer().refresh();
-                WebElement targetElement = newAction.getTargetElement();
                 if (targetElement != null) {
-                    capturedObjectComposite.getTreeViewer().reveal(targetElement);
+                    capturedObjectComposite.getTreeViewer().setSelection(new StructuredSelection(targetElement), true);
                 }
             }
         });
@@ -1761,6 +1643,10 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         return disposed;
     }
 
+    public ScriptNodeWrapper getScriptWrapper() {
+        return recordStepsView.getWrapper();
+    }
+
     @Override
     public void handleEvent(org.osgi.service.event.Event event) {
         Object dataObject = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
@@ -1786,6 +1672,27 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             case EventConstants.WORKSPACE_CLOSED:
                 cancelPressed();
                 return;
+            case EventConstants.WEBUI_VERIFICATION_EXECUTION_FINISHED:
+                setPlayButtonState(false);
+
+                try {
+                    Thread.sleep(1000L);
+                } catch (InterruptedException ignored) {
+                }
+                if (shouldResumeRecordingAfterRunning && session.isRunning() && session.isDriverRunning()) {
+                    resume();
+                    shouldResumeRecordingAfterRunning = false;
+                }
+                return;
+            case EventConstants.WEBUI_VERIFICATION_RUN_ALL_STEPS_CMD:
+                runAllSteps();
+                return;
+            case EventConstants.WEBUI_VERIFICATION_RUN_SELECTED_STEPS_CMD:
+                runSelectedSteps();
+                return;
+            case EventConstants.WEBUI_VERIFICATION_RUN_FROM_STEP_CMD:
+                runFromStep();
+                return;
         }
     }
 
@@ -1807,7 +1714,127 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     @Override
     protected void setInput() {
-        // Do nothing for this
+        if (testCaseEntity != null) {
+            MessageDialog dialog = new MessageDialog(getShell(), StringConstants.CONFIRMATION, null,
+                    MessageFormat.format(ComposerWebuiRecorderMessageConstants.DIA_CONFIRM_CONTINUE_RECORDING,
+                            testCaseEntity.getName()),
+                    MessageDialog.CONFIRM, MessageDialog.OK,
+                    ComposerWebuiRecorderMessageConstants.DIA_CONFIRM_ACCEPT_CONTINUE_RECORDING,
+                    ComposerWebuiRecorderMessageConstants.DIA_CONFIRM_DECLINE_CONTINUE_RECORDING);
+            if (dialog.open() != MessageDialog.OK) {
+                variables = Collections.emptyList();
+                nodeWrappers.clear();
+            }
+        }
+        recordStepsView.addVariables(variables.toArray(new VariableEntity[variables.size()]));
+
+        Map<String, List<RecordedElementMethodCallWrapper>> keywordNodeMaps = getTestObjectReferences(nodeWrappers);
+
+        Map<String, WebElement> webElementIndex = new HashMap<>();
+        Map<String, WebPage> pageIndex = new HashMap<>();
+
+        List<WebElementEntity> webElementEntities = keywordNodeMaps.keySet().stream().map(testObjectId -> {
+            try {
+                return ObjectRepositoryController.getInstance().getWebElementByDisplayPk(testObjectId);
+            } catch (Exception ex) {
+                return null;
+            }
+        }).filter(we -> we != null).collect(Collectors.toList());
+        for (WebElementEntity entity : webElementEntities) {
+            FolderEntity folder = entity.getParentFolder();
+            WebPage webPage = pageIndex.getOrDefault(folder.getIdForDisplay(), null);
+            if (webPage == null) {
+                webPage = new WebPage(folder.getName());
+                pageIndex.put(folder.getIdForDisplay(), webPage);
+            }
+
+            WebElement we = webElementIndex.getOrDefault(entity.getIdForDisplay(), null);
+            if (we == null) {
+                we = WebElementUtils.createWebElementFromTestObject(entity, false, webPage, webElementIndex);
+            }
+
+            for (RecordedElementMethodCallWrapper refNode : keywordNodeMaps.get(entity.getIdForDisplay())) {
+                refNode.setWebElement(we);
+            }
+        }
+
+        recordStepsView.getTreeTableInput().addNewAstObjects(nodeWrappers, null, NodeAddType.Add);
+        recordStepsView.getTreeTableInput().refresh();
+
+        List<WebPage> allPages = pageIndex.entrySet().stream().map(e -> e.getValue()).collect(Collectors.toList());
+        elements = new ArrayList<>();
+        elements.addAll(allPages);
+        capturedObjectComposite.setInput(elements);
+        capturedObjectComposite.refreshTree(null);
+    }
+
+    private Map<String, List<RecordedElementMethodCallWrapper>> getTestObjectReferences(ASTNodeWrapper wrapper) {
+        if (wrapper instanceof RecordedElementMethodCallWrapper) {
+            return Collections.emptyMap();
+        }
+        Map<String, List<RecordedElementMethodCallWrapper>> keywordNodeIndex = new HashMap<>();
+        if (wrapper.hasAstChildren() && wrapper.getAstChildren() != null) {
+            merge(keywordNodeIndex, getTestObjectReferences(wrapper.getAstChildren()));
+        }
+        if (wrapper.getInput() instanceof MethodCallExpressionWrapper) {
+            MethodCallExpressionWrapper methodCall = (MethodCallExpressionWrapper) wrapper.getInput();
+            if (!methodCall.isFindTestObjectMethodCall()) {
+                return keywordNodeIndex;
+            }
+            String testObjectId = AstEntityInputUtil.getEntityRelativeIdFromMethodCall(methodCall);
+
+            try {
+                testObjectId = testObjectId.startsWith("Object Repository/") ? testObjectId
+                        : "Object Repository/" + testObjectId;
+                WebElementEntity entity = ObjectRepositoryController.getInstance()
+                        .getWebElementByDisplayPk(testObjectId);
+                if (entity != null) {
+                    List<RecordedElementMethodCallWrapper> refNodes = keywordNodeIndex
+                            .getOrDefault(entity.getIdForDisplay(), null);
+                    if (refNodes == null) {
+                        refNodes = new ArrayList<>();
+                    }
+                    RecordedElementMethodCallWrapper newWrapper = new RecordedElementMethodCallWrapper(
+                            wrapper.getParent(), null);
+
+                    wrapper.getParent().replaceChild(wrapper, newWrapper);
+                    refNodes.add(newWrapper);
+                    keywordNodeIndex.put(entity.getIdForDisplay(), refNodes);
+                }
+            } catch (Exception e) {
+                LoggerSingleton.logError(e);
+            }
+        } else if (wrapper.getInput() instanceof ArgumentListExpressionWrapper) {
+            ArgumentListExpressionWrapper argumentList = (ArgumentListExpressionWrapper) wrapper.getInput();
+            merge(keywordNodeIndex, getTestObjectReferences(argumentList.getAstChildren()));
+        }
+        return keywordNodeIndex;
+
+    }
+
+    private void merge(Map<String, List<RecordedElementMethodCallWrapper>> keywordNodeIndex,
+            Map<String, List<RecordedElementMethodCallWrapper>> childNodeMap) {
+        childNodeMap.entrySet().stream().forEach(e -> {
+            String objectId = e.getKey();
+            List<RecordedElementMethodCallWrapper> newAstNodes = e.getValue();
+            if (keywordNodeIndex.containsKey(objectId)) {
+                List<RecordedElementMethodCallWrapper> currentAstNodes = keywordNodeIndex.get(objectId);
+                currentAstNodes.addAll(newAstNodes);
+                keywordNodeIndex.put(objectId, currentAstNodes);
+            } else {
+                keywordNodeIndex.put(objectId, newAstNodes);
+            }
+        });
+    }
+
+    private Map<String, List<RecordedElementMethodCallWrapper>> getTestObjectReferences(
+            List<? extends ASTNodeWrapper> nodes) {
+        Map<String, List<RecordedElementMethodCallWrapper>> keywordNodeIndex = new HashMap<>();
+        for (ASTNodeWrapper wrapper : nodes) {
+            Map<String, List<RecordedElementMethodCallWrapper>> childNodeMap = getTestObjectReferences(wrapper);
+            merge(keywordNodeIndex, childNodeMap);
+        }
+        return keywordNodeIndex;
     }
 
     private Map<ObjectSpyEvent, Set<EventListener<ObjectSpyEvent>>> eventListeners = new HashMap<>();
@@ -1827,5 +1854,9 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             listenerOnEvent.add(listener);
             eventListeners.put(e, listenerOnEvent);
         });
+    }
+
+    public VariableEntity[] getVariables() {
+        return recordStepsView.getVariables();
     }
 }
