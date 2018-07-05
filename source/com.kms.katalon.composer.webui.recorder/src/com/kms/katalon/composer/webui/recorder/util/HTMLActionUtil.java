@@ -17,7 +17,6 @@ import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStateme
 import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
 import com.kms.katalon.composer.testcase.model.InputValueEditorProvider;
 import com.kms.katalon.composer.testcase.model.InputValueType;
-import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
 import com.kms.katalon.composer.testcase.util.AstInputValueTypeOptionsProvider;
 import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
 import com.kms.katalon.composer.testcase.util.TestCaseEntityUtil;
@@ -28,7 +27,7 @@ import com.kms.katalon.composer.webui.recorder.action.HTMLSynchronizeAction;
 import com.kms.katalon.composer.webui.recorder.action.HTMLValidationAction;
 import com.kms.katalon.composer.webui.recorder.action.IHTMLAction;
 import com.kms.katalon.composer.webui.recorder.action.IHTMLAction.HTMLActionParam;
-import com.kms.katalon.composer.webui.recorder.util.HTMLActionJsonParser.HTMLActionJson;
+import com.kms.katalon.composer.webui.recorder.ast.RecordedElementMethodCallWrapper;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testobject.TestObject;
@@ -36,7 +35,6 @@ import com.kms.katalon.core.webui.keyword.WebUiBuiltInKeywords;
 import com.kms.katalon.custom.keyword.KeywordClass;
 import com.kms.katalon.custom.keyword.KeywordMethod;
 import com.kms.katalon.custom.keyword.KeywordParameter;
-import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.groovy.util.GroovyStringUtil;
 import com.kms.katalon.objectspy.element.WebElement;
@@ -74,8 +72,8 @@ public class HTMLActionUtil {
         return method;
     }
 
-    public static StatementWrapper generateWebUiTestStep(HTMLActionMapping actionMapping,
-            WebElementEntity createdTestObject, ASTNodeWrapper parentClassNode) throws ClassNotFoundException {
+    public static StatementWrapper generateWebUiTestStep(HTMLActionMapping actionMapping, WebElement webElement,
+            ASTNodeWrapper parentClassNode) throws ClassNotFoundException {
         KeywordMethod method = getMethodInActionMapping(actionMapping);
         if (method == null) {
             return null;
@@ -90,8 +88,8 @@ public class HTMLActionUtil {
             Class<?> argumentClass = method.getParameters()[i].getType();
             ExpressionWrapper generatedExression = null;
             if (argumentClass.getName().equals(TestObject.class.getName())) {
-                generatedExression = AstEntityInputUtil.createNewFindTestObjectMethodCall(
-                        (createdTestObject != null) ? createdTestObject.getIdForDisplay() : null, parentClassNode);
+                generatedExression = new RecordedElementMethodCallWrapper(parentClassNode,
+                        webElement);
             } else if (argumentClass.getName().equals(FailureHandling.class.getName())) {
                 generatedExression = AstKeywordsInputUtil.getNewFailureHandlingPropertyExpression(null);
             } else {

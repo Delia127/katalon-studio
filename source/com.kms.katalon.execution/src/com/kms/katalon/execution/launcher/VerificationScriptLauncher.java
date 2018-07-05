@@ -1,28 +1,16 @@
 package com.kms.katalon.execution.launcher;
 
 import java.io.IOException;
-import java.util.Map;
 
-import org.eclipse.e4.core.services.events.IEventBroker;
-
-import com.google.common.base.Function;
-import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.core.testobject.ResponseObject;
-import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.exception.ExecutionException;
-import com.kms.katalon.execution.launcher.listener.LauncherEvent;
-import com.kms.katalon.execution.launcher.listener.LauncherListener;
-import com.kms.katalon.execution.launcher.listener.LauncherNotifiedObject;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.process.ILaunchProcess;
 import com.kms.katalon.execution.launcher.process.LaunchProcessor;
 import com.kms.katalon.execution.launcher.process.VerificationProcess;
-
-import net.bytebuddy.asm.Advice.This;
 
 public class VerificationScriptLauncher extends ConsoleLauncher {
     
@@ -62,11 +50,14 @@ public class VerificationScriptLauncher extends ConsoleLauncher {
                 }
             });
             thread.start();
-            
-            return new VerificationProcess(testObjectId, systemProcess);
+            return onCreateLaunchProcess(systemProcess);
         } catch (IOException ex) {
             throw new ExecutionException(ex);
         }
+    }
+
+    protected ILaunchProcess onCreateLaunchProcess(Process systemProcess) {
+        return new VerificationProcess(testObjectId, systemProcess);
     }
     
     @Override

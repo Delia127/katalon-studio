@@ -113,7 +113,7 @@ public class OpenMobileRecorderHandler {
                 return false;
             }
             recorderDialog = new MobileRecorderDialog(activeShell);
-            Trackings.trackOpenRecord("mobile");
+            Trackings.trackOpenMobileRecord();
             if (recorderDialog.open() != Window.OK) {
                 return false;
             }

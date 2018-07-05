@@ -12,6 +12,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import com.kms.katalon.core.testobject.SelectorMethod;
+import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 
 public class WebElement implements XPathProvider {
@@ -43,6 +44,8 @@ public class WebElement implements XPathProvider {
     private SelectorMethod selectorMethod = SelectorMethod.BASIC;
 
     private Map<SelectorMethod, String> selectorCollection = new HashMap<>();
+    
+    private FileEntity savedEntity;
 
     public WebElement(String name) {
         this.name = name;
@@ -243,5 +246,29 @@ public class WebElement implements XPathProvider {
 
     public Map<SelectorMethod, String> getSelectorCollection() {
         return selectorCollection;
+    }
+    
+    public WebPage getRoot() {
+        if (this instanceof WebPage) {
+            return (WebPage) this;
+        }
+        return getParent().getRoot();
+    }
+
+    public String getScriptId() {
+        WebPage root = getRoot();
+        if (root == this) {
+            return "Object Repository/" + getName(); 
+        }
+
+        return savedEntity != null ? savedEntity.getIdForDisplay() : root.getScriptId() + "/" + getName();
+    }
+
+    public FileEntity getSavedEntity() {
+        return savedEntity;
+    }
+
+    public void setSavedEntity(FileEntity savedEntity) {
+        this.savedEntity = savedEntity;
     }
 }

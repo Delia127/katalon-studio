@@ -1,10 +1,14 @@
 package com.kms.katalon.objectspy.element;
 
+import com.kms.katalon.entity.folder.FolderEntity;
+
 public class WebPage extends WebFrame {
 
     public WebPage(String name) {
         super(name, WebElementType.PAGE);
     }
+    
+    private FolderEntity folderAlias;
 
     @Override
     public String getTag() {
@@ -39,4 +43,16 @@ public class WebPage extends WebFrame {
         return super.equals(object);
     }
 
+    public FolderEntity getFolderAlias() {
+        return folderAlias;
+    }
+
+    public void setFolderAlias(FolderEntity folderAlias) {
+        this.folderAlias = folderAlias;
+    }
+
+    @Override
+    public String getScriptId() {
+        return folderAlias != null ? folderAlias.getIdForDisplay() : getName();
+    }
 }

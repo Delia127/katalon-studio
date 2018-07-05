@@ -34,7 +34,7 @@ RunConfiguration.setExecutionSettingFile('<%= executionConfigFilePath %>')
 
 TestCaseMain.beforeStart()
 <% if (!wsVerificationScript.isEmpty()) { %>
-         TestCaseMain.runWSVerificationScript('<%= wsVerificationScript %>', FailureHandling.STOP_ON_FAILURE, true)
+         TestCaseMain.runWSVerificationScript(<%= testCaseBinding %>, '<%= wsVerificationScript %>', FailureHandling.STOP_ON_FAILURE, true)
 <% } else if (rawScript == null) { %>
         TestCaseMain.runTestCase('<%= testCaseId %>', <%= testCaseBinding %>, FailureHandling.STOP_ON_FAILURE <%= isQuitDriversAfterRun ? ", true" : "" %>, <%= isQuitDriversAfterRun %>)
     <% } else { %>

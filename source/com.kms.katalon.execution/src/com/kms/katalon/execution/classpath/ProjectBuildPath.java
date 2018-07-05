@@ -16,6 +16,7 @@ import com.kms.katalon.core.keyword.internal.IKeywordContributor;
 import com.kms.katalon.core.keyword.internal.KeywordContributorCollection;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.selenium.TempClass;
+import com.kms.katalon.util.CryptoUtil;
 
 public class ProjectBuildPath {
     private static final String EXTERNAL_DRIVERS_FOLDER = "Drivers";
@@ -76,6 +77,7 @@ public class ProjectBuildPath {
         }
         bundlePaths.add(new BundleBuildPath(FrameworkUtil.getBundle(AppiumDriverManager.class)));
         bundlePaths.add(new BundleBuildPath(FrameworkUtil.getBundle(TempClass.class)));
+        bundlePaths.add(new BundleBuildPath(FrameworkUtil.getBundle(CryptoUtil.class)));
         return bundlePaths;
     }
     

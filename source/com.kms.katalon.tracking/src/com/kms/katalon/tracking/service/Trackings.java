@@ -120,10 +120,39 @@ public class Trackings {
                 "type", type);
     }
     
-    public static void trackOpenRecord(String type) {
+    public static void trackOpenWebRecord(Boolean continueRecording) {
+        if (continueRecording != null) {
+            trackAction(
+                    "openRecord",
+                    "type", "web",
+                    "continue", continueRecording.toString());
+        } else {
+            trackAction(
+                    "openRecord",
+                    "type", "web");
+        }
+    }
+    
+    public static void trackOpenMobileRecord() {
         trackAction(
                 "openRecord",
-                "type", type);
+                "type", "mobile");
+    }
+    
+    public static void trackCloseRecord(String type, String closeButton, int numberOfTestSteps) {
+        if ("ok".equals(closeButton)) {
+            trackAction(
+                "closeRecord",
+                "type", type,
+                "closePopup", closeButton,
+                "numberOfTestSteps", String.valueOf(numberOfTestSteps));
+        } else {
+            trackAction(
+                "closeRecord",
+                "type", type,
+                "closePopup", closeButton
+            );
+        }
     }
     
     private static void runAsync(Runnable task) {

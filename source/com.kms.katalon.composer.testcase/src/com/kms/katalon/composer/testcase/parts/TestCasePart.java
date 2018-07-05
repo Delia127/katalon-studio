@@ -209,6 +209,14 @@ public class TestCasePart extends CPart implements EventHandler, ITestCasePart {
     public void addStatements(List<StatementWrapper> statements, NodeAddType addType) {
         getTreeTableInput().addNewAstObjects(statements, getTreeTableInput().getSelectedNode(), addType);
     }
+    
+    public void addStatements(List<StatementWrapper> statements, NodeAddType addType, boolean commitEditting) {
+        getTreeTableInput().addNewAstObjects(statements, getTreeTableInput().getSelectedNode(), addType);
+        if (commitEditting) {
+            getTestCaseTreeTable().applyEditorValue();
+        }
+    }
+
 
     @Override
     public TestCaseEntity getTestCase() {
@@ -321,6 +329,8 @@ public class TestCasePart extends CPart implements EventHandler, ITestCasePart {
                 eventBroker.send(openEventName, webElementEntity);
             }
         };
+
+        new MenuItem(menu, SWT.SEPARATOR);
         if (testObjects.size() == 1) {
             handleWhenSelectOnlyOne(menu, testObjects.get(0), openTestCase, openTestObject);
             return;
