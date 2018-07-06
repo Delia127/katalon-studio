@@ -1,4 +1,4 @@
-// The followings are the only changes
+// TODO: Remove dom_recorder.js entirely ? 
 function startRecord() {
     ku_recorder.attach();    
     /* rec_setupEventListeners();

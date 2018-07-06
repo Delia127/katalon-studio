@@ -262,13 +262,11 @@ function handleServerMessage(message) {
                 }
             }
             clientSocket.send(JSON.stringify(message));
-            getKatalonServerPort(function (port) {
-                // If port is not 50000 then this client is a Selenium Socket client
-                // send the message back to KS to notify
-                if (port != parseInt(katalonServerPortConst)) {
-                    clientSocket.send(SELENIUM_SOCKET_KEY + "=true");
-                }
-            });
+            // if window.activeSign does not exist then KU is being loaded within a WebDriver
+            if (!window.activeSign) {
+                clientSocket.send(SELENIUM_SOCKET + "=true");
+            }
+
             break;
         case START_INSPECT:
             startAddon(RUN_MODE_OBJECT_SPY, jsonMessage.data);

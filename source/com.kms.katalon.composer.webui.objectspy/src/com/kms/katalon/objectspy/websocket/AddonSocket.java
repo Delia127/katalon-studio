@@ -51,7 +51,7 @@ public class AddonSocket {
     
     protected static final String ELEMENT_ACTION_KEY = "elementAction";
     
-    private static final String SELENIUM_SOCKET_KEY = "SeleniumSocket";
+    private static final String SELENIUM_SOCKET_KEY = "SELENIUM_SOCKET";
 
     private Session session;
 
