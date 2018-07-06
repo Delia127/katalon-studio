@@ -140,10 +140,7 @@
 <plugin id="ch.qos.logback.slf4j"/>
 <plugin id="classmate"/>
 <plugin id="com.fasterxml.jackson.core.jackson-annotations"/>
-<plugin id="com.fasterxml.jackson.core.jackson-annotations"/>
 <plugin id="com.fasterxml.jackson.core.jackson-core"/>
-<plugin id="com.fasterxml.jackson.core.jackson-core"/>
-<plugin id="com.fasterxml.jackson.core.jackson-databind"/>
 <plugin id="com.fasterxml.jackson.core.jackson-databind"/>
 <plugin id="com.google.code.findbugs.jsr305"/>
 <plugin id="com.google.gerrit.common"/>
