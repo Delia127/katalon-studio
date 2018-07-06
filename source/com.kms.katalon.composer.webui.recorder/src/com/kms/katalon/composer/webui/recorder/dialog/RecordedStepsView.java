@@ -166,7 +166,6 @@ public class RecordedStepsView implements ITestCasePart, EventListener<ObjectSpy
 
         createTreeTableMenu();
 
-        treeViewer.enableTooltipSupport();
         KeywordTreeViewerToolTipSupport.enableFor(treeViewer);
 
         return compositeTable;
