@@ -1,17 +1,13 @@
 package com.kms.katalon.composer.integration.analytics.preferences;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
@@ -41,7 +37,6 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
-import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 
@@ -281,11 +276,13 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
             String password = analyticsSettingStore.getPassword(analyticsSettingStore.isEncryptionEnabled());
             if (enableAnalyticsIntegration.getSelection()) {
-                teams = getTeams(analyticsSettingStore.getServerEndpoint(encryptionEnabled),
-                        analyticsSettingStore.getEmail(encryptionEnabled), password, false);
+                AnalyticsTokenInfo tokenInfo = AnalyticsApiProvider.getToken(analyticsSettingStore.getServerEndpoint(encryptionEnabled),
+                        analyticsSettingStore.getEmail(encryptionEnabled), password, new ProgressMonitorDialog(getShell()), analyticsSettingStore);
+                teams = AnalyticsApiProvider.getTeams(analyticsSettingStore.getServerEndpoint(encryptionEnabled),
+                        analyticsSettingStore.getEmail(encryptionEnabled), password, tokenInfo, new ProgressMonitorDialog(getShell()));
                 if (teams != null && !teams.isEmpty()) {
-                    cbbTeams.setItems(getTeamNames(teams).toArray(new String[teams.size()]));
-                    cbbTeams.select(getDefaultTeamIndex());
+                    cbbTeams.setItems(AnalyticsApiProvider.getTeamNames(teams).toArray(new String[teams.size()]));
+                    cbbTeams.select(AnalyticsApiProvider.getDefaultTeamIndex(analyticsSettingStore, teams));
                 }
 
                 if (teams != null && teams.size() > 0) {
@@ -383,11 +380,14 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                 String password = txtPassword.getText();
                 cbbTeams.setItems();
                 cbbProjects.setItems();
-
-                teams = getTeams(serverUrl, email, password, false);
+                AnalyticsTokenInfo tokenInfo = AnalyticsApiProvider.getToken(serverUrl,
+                        email, password, new ProgressMonitorDialog(getShell()), analyticsSettingStore);
+                teams = AnalyticsApiProvider.getTeams(serverUrl,
+                        email, password, tokenInfo, new ProgressMonitorDialog(getShell()));
+                teams = AnalyticsApiProvider.getTeams(serverUrl, email, password, tokenInfo, new ProgressMonitorDialog(getShell()));
                 if (teams != null && !teams.isEmpty()) {
-                    cbbTeams.setItems(getTeamNames(teams).toArray(new String[teams.size()]));
-                    cbbTeams.select(getDefaultTeamIndex());
+                    cbbTeams.setItems(AnalyticsApiProvider.getTeamNames(teams).toArray(new String[teams.size()]));
+                    cbbTeams.select(AnalyticsApiProvider.getDefaultTeamIndex(analyticsSettingStore, teams));
                 }
 
                 setProjectsBasedOnTeam(teams, serverUrl, email, password);
@@ -421,7 +421,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
                 AnalyticsTeam team = null;
                 if (teams != null && teams.size() > 0) {
-                    team = teams.get(getDefaultTeamIndex());
+                    team = teams.get(AnalyticsApiProvider.getDefaultTeamIndex(analyticsSettingStore, teams));
                 }
 
                 NewProjectDialog dialog = new NewProjectDialog(btnCreate.getDisplay().getActiveShell(), serverUrl,
@@ -431,12 +431,13 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                     if (createdProject != null) {
                         try {
                             analyticsSettingStore.setProject(createdProject);
-                            projects = getProjects(serverUrl, email, password, team, false);
+                            AnalyticsTokenInfo tokenInfo = AnalyticsApiProvider.getToken(serverUrl, email, password, new ProgressMonitorDialog(getShell()), analyticsSettingStore);
+                            projects = AnalyticsApiProvider.getProjects(serverUrl, email, password, team, tokenInfo, new ProgressMonitorDialog(getShell()));
                             if (projects == null) {
                                 return;
                             }
-                            cbbProjects.setItems(getProjectNames(projects).toArray(new String[projects.size()]));
-                            cbbProjects.select(getDefaultProjectIndex());
+                            cbbProjects.setItems(AnalyticsApiProvider.getProjectNames(projects).toArray(new String[projects.size()]));
+                            cbbProjects.select(AnalyticsApiProvider.getDefaultProjectIndex(analyticsSettingStore, projects));
                         } catch (IOException ex) {
                             LoggerSingleton.logError(ex);
                             MultiStatusErrorDialog.showErrorDialog(ex, ComposerAnalyticsStringConstants.ERROR,
@@ -457,11 +458,12 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
     }
 
     private void setProjectsBasedOnTeam(List<AnalyticsTeam> teams, String serverUrl, String email, String password) {
-        AnalyticsTeam team = teams.get(getDefaultTeamIndex());
-        projects = getProjects(serverUrl, email, password, team, false);
+        AnalyticsTeam team = teams.get(AnalyticsApiProvider.getDefaultTeamIndex(analyticsSettingStore, teams));
+        AnalyticsTokenInfo tokenInfo = AnalyticsApiProvider.getToken(serverUrl, email, password, new ProgressMonitorDialog(getShell()), analyticsSettingStore);
+        projects = AnalyticsApiProvider.getProjects(serverUrl, email, password, team, tokenInfo, new ProgressMonitorDialog(getShell()));
         if (projects != null && !projects.isEmpty()) {
-            cbbProjects.setItems(getProjectNames(projects).toArray(new String[projects.size()]));
-            cbbProjects.select(getDefaultProjectIndex());
+            cbbProjects.setItems(AnalyticsApiProvider.getProjectNames(projects).toArray(new String[projects.size()]));
+            cbbProjects.select(AnalyticsApiProvider.getDefaultProjectIndex(analyticsSettingStore, projects));
         }
         String role = team.getRole();
         if (role.equals("USER")) {
@@ -469,141 +471,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         } else {
             btnCreate.setEnabled(true);
         }
-    }
-
-    private List<AnalyticsProject> getProjects(final String serverUrl, final String email, final String password,
-            final AnalyticsTeam team, final boolean isUpdateStatus) {
-        final List<AnalyticsProject> projects = new ArrayList<>();
-        try {
-            new ProgressMonitorDialog(getShell()).run(true, false, new IRunnableWithProgress() {
-                @Override
-                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                    try {
-                        monitor.beginTask(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_RETRIEVING_PROJECTS,
-                                2);
-                        monitor.subTask(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_CONNECTING_TO_SERVER);
-                        final AnalyticsTokenInfo tokenInfo = AnalyticsApiProvider.requestToken(serverUrl, email,
-                                password);
-                        analyticsSettingStore.setToken(tokenInfo.getAccess_token(), true);
-                        monitor.worked(1);
-                        monitor.subTask(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_GETTING_PROJECTS);
-                        final List<AnalyticsProject> loaded = AnalyticsApiProvider.getProjects(serverUrl, team,
-                                tokenInfo.getAccess_token());
-                        if (loaded != null && !loaded.isEmpty()) {
-                            projects.addAll(loaded);
-                        }
-                        monitor.worked(1);
-                    } catch (Exception e) {
-                        throw new InvocationTargetException(e);
-                    } finally {
-                        monitor.done();
-                    }
-                }
-            });
-            return projects;
-        } catch (InvocationTargetException exception) {
-            final Throwable cause = exception.getCause();
-            if (cause instanceof AnalyticsApiExeception) {
-                MessageDialog.openError(getShell(), ComposerAnalyticsStringConstants.ERROR, cause.getMessage());
-            } else {
-                LoggerSingleton.logError(cause);
-            }
-        } catch (InterruptedException e) {
-            // Ignore this
-        }
-        return null;
-    }
-
-    private List<AnalyticsTeam> getTeams(final String serverUrl, final String email, final String password,
-            final boolean isUpdateStatus) {
-        final List<AnalyticsTeam> teams = new ArrayList<>();
-        try {
-            new ProgressMonitorDialog(getShell()).run(true, false, new IRunnableWithProgress() {
-                @Override
-                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                    try {
-                        monitor.beginTask(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_RETRIEVING_TEAMS, 2);
-                        monitor.subTask(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_CONNECTING_TO_SERVER);
-                        final AnalyticsTokenInfo tokenInfo = AnalyticsApiProvider.requestToken(serverUrl, email,
-                                password);
-                        analyticsSettingStore.setToken(tokenInfo.getAccess_token(), true);
-                        monitor.worked(1);
-                        monitor.subTask(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_GETTING_TEAMS);
-                        final List<AnalyticsTeam> loaded = AnalyticsApiProvider.getTeams(serverUrl,
-                                tokenInfo.getAccess_token());
-                        if (loaded != null && !loaded.isEmpty()) {
-                            teams.addAll(loaded);
-                        }
-                        monitor.worked(1);
-                    } catch (Exception e) {
-                        throw new InvocationTargetException(e);
-                    } finally {
-                        monitor.done();
-                    }
-                }
-            });
-            return teams;
-        } catch (InvocationTargetException exception) {
-            final Throwable cause = exception.getCause();
-            if (cause instanceof AnalyticsApiExeception) {
-                MessageDialog.openError(getShell(), ComposerAnalyticsStringConstants.ERROR, cause.getMessage());
-            } else {
-                LoggerSingleton.logError(cause);
-            }
-        } catch (InterruptedException e) {
-            // Ignore this
-        }
-        return null;
-    }
-
-    private List<String> getProjectNames(List<AnalyticsProject> projects) {
-        List<String> names = new ArrayList<>();
-        projects.forEach(p -> names.add(p.getName()));
-        return names;
-    }
-
-    private List<String> getTeamNames(List<AnalyticsTeam> projects) {
-        List<String> names = new ArrayList<>();
-        projects.forEach(p -> names.add(p.getName()));
-        return names;
-    }
-
-    private int getDefaultProjectIndex() {
-        int selectionIndex = 0;
-
-        try {
-            AnalyticsProject storedProject = analyticsSettingStore.getProject();
-            if (storedProject != null && storedProject.getId() != null) {
-                for (int i = 0; i < projects.size(); i++) {
-                    AnalyticsProject p = projects.get(i);
-                    if (p.getId() == storedProject.getId()) {
-                        selectionIndex = i;
-                    }
-                }
-            }
-        } catch (IOException e) {
-            // do nothing
-        }
-        return selectionIndex;
-    }
-
-    private int getDefaultTeamIndex() {
-        int selectionIndex = 0;
-
-        try {
-            AnalyticsTeam storedProject = analyticsSettingStore.getTeam();
-            if (storedProject != null && storedProject.getId() != null && teams != null) {
-                for (int i = 0; i < teams.size(); i++) {
-                    AnalyticsTeam p = teams.get(i);
-                    if (p.getId() == storedProject.getId()) {
-                        selectionIndex = i;
-                    }
-                }
-            }
-        } catch (IOException e) {
-            // do nothing
-        }
-        return selectionIndex;
     }
 
     protected boolean isInitialized() {

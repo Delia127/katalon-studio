@@ -1,17 +1,12 @@
 package com.kms.katalon.composer.integration.analytics.dialog;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -34,7 +29,6 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
-import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 
@@ -94,7 +88,8 @@ public class UploadSelectionDialog extends Dialog {
         cbbProjects.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         btnCreate = new Button(projectComposite, SWT.NONE);
         btnCreate.setText("New Project");
-        if (teams.get(getDefaultTeamIndex()).getRole().equals("USER")){
+        if (teams.get(AnalyticsApiProvider.getDefaultTeamIndex(analyticsSettingStore, teams)).getRole()
+                .equals("USER")) {
             btnCreate.setEnabled(false);
         }
 
@@ -126,11 +121,11 @@ public class UploadSelectionDialog extends Dialog {
                 AnalyticsTeam team = null;
 
                 if (teams != null && teams.size() > 0) {
-                    team = teams.get(getDefaultTeamIndex());
+                    team = teams.get(AnalyticsApiProvider.getDefaultTeamIndex(analyticsSettingStore, teams));
                 }
-                
-                NewProjectDialog dialog = new NewProjectDialog(btnCreate.getDisplay().getActiveShell(), results.get("serverUrl"),
-                        results.get("email"), results.get("password"), team);
+
+                NewProjectDialog dialog = new NewProjectDialog(btnCreate.getDisplay().getActiveShell(),
+                        results.get("serverUrl"), results.get("email"), results.get("password"), team);
                 if (dialog.open() == Dialog.OK) {
                     AnalyticsProject createdProject = dialog.getAnalyticsProject();
                     if (createdProject != null) {
@@ -140,8 +135,10 @@ public class UploadSelectionDialog extends Dialog {
                             if (projects == null) {
                                 return;
                             }
-                            cbbProjects.setItems(getProjectNames(projects).toArray(new String[projects.size()]));
-                            cbbProjects.select(getDefaultProjectIndex());
+                            cbbProjects.setItems(AnalyticsApiProvider.getProjectNames(projects)
+                                    .toArray(new String[projects.size()]));
+                            cbbProjects.select(
+                                    AnalyticsApiProvider.getDefaultProjectIndex(analyticsSettingStore, projects));
                         } catch (IOException ex) {
                             LoggerSingleton.logError(ex);
                             MultiStatusErrorDialog.showErrorDialog(ex, ComposerAnalyticsStringConstants.ERROR,
@@ -153,19 +150,19 @@ public class UploadSelectionDialog extends Dialog {
                 fillData();
             }
         });
-        
+
         btnCancel.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 cancelPressed();
             }
         });
-        
+
         cbbTeams.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 cbbProjects.setItems();
-                if (teams.get(cbbTeams.getSelectionIndex()).getRole().equals("USER")){
+                if (teams.get(cbbTeams.getSelectionIndex()).getRole().equals("USER")) {
                     btnCreate.setEnabled(false);
                 } else {
                     btnCreate.setEnabled(true);
@@ -181,55 +178,19 @@ public class UploadSelectionDialog extends Dialog {
         });
     }
 
-    private List<AnalyticsProject> getProjects(final String serverUrl, final String email, final String password,
-            final AnalyticsTeam team, final boolean isUpdateStatus) {
-        final List<AnalyticsProject> projects = new ArrayList<>();
-        try {
-            new ProgressMonitorDialog(getShell()).run(true, false, new IRunnableWithProgress() {
-                @Override
-                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                    try {
-                        monitor.beginTask(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_RETRIEVING_PROJECTS,
-                                2);
-                        monitor.subTask(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_CONNECTING_TO_SERVER);
-                        final AnalyticsTokenInfo tokenInfo = AnalyticsApiProvider.requestToken(serverUrl, email,
-                                password);
-                        monitor.worked(1);
-                        monitor.subTask(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_GETTING_PROJECTS);
-                        final List<AnalyticsProject> loaded = AnalyticsApiProvider.getProjects(serverUrl, team,
-                                tokenInfo.getAccess_token());
-                        if (loaded != null && !loaded.isEmpty()) {
-                            projects.addAll(loaded);
-                        }
-                        monitor.worked(1);
-                    } catch (Exception e) {
-                        throw new InvocationTargetException(e);
-                    } finally {
-                        monitor.done();
-                    }
-                }
-            });
-            return projects;
-        } catch (InvocationTargetException exception) {
-            final Throwable cause = exception.getCause();
-            if (cause instanceof AnalyticsApiExeception) {
-                MessageDialog.openError(getShell(), ComposerAnalyticsStringConstants.ERROR, cause.getMessage());
-            } else {
-                LoggerSingleton.logError(cause);
-            }
-        } catch (InterruptedException e) {
-            // Ignore this
-        }
-        return null;
-    }
-
     private void setProjectsBasedOnTeam(List<AnalyticsTeam> teams) {
-        AnalyticsTeam team = teams.get(getDefaultTeamIndex());
+        AnalyticsTeam team = teams.get(AnalyticsApiProvider.getDefaultTeamIndex(analyticsSettingStore, teams));
         HashMap<String, String> info = getInfo();
-        projects = getProjects(info.get("serverUrl"), info.get("email"), info.get("password"), team, false);
+        String serverUrl = info.get("serverUrl");
+        String email = info.get("email");
+        String password = info.get("password");
+        AnalyticsTokenInfo tokenInfo = AnalyticsApiProvider.getToken(serverUrl, email, password,
+                new ProgressMonitorDialog(getShell()), analyticsSettingStore);
+        projects = AnalyticsApiProvider.getProjects(serverUrl, email, password, team, tokenInfo,
+                new ProgressMonitorDialog(getShell()));
         if (projects != null && !projects.isEmpty()) {
-            cbbProjects.setItems(getProjectNames(projects).toArray(new String[projects.size()]));
-            cbbProjects.select(getDefaultProjectIndex());
+            cbbProjects.setItems(AnalyticsApiProvider.getProjectNames(projects).toArray(new String[projects.size()]));
+            cbbProjects.select(AnalyticsApiProvider.getDefaultProjectIndex(analyticsSettingStore, projects));
         }
     }
 
@@ -248,63 +209,13 @@ public class UploadSelectionDialog extends Dialog {
 
     private void fillData() {
         try {
-            cbbTeams.setItems(getTeamNames(teams).toArray(new String[teams.size()]));
-            cbbTeams.select(getDefaultTeamIndex());
+            cbbTeams.setItems(AnalyticsApiProvider.getTeamNames(teams).toArray(new String[teams.size()]));
+            cbbTeams.select(AnalyticsApiProvider.getDefaultTeamIndex(analyticsSettingStore, teams));
             setProjectsBasedOnTeam(teams);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MultiStatusErrorDialog.showErrorDialog(e, ComposerAnalyticsStringConstants.ERROR, e.getMessage());
         }
-    }
-
-    private List<String> getProjectNames(List<AnalyticsProject> projects) {
-        List<String> names = new ArrayList<>();
-        projects.forEach(p -> names.add(p.getName()));
-        return names;
-    }
-
-    private List<String> getTeamNames(List<AnalyticsTeam> projects) {
-        List<String> names = new ArrayList<>();
-        projects.forEach(p -> names.add(p.getName()));
-        return names;
-    }
-
-    private int getDefaultProjectIndex() {
-        int selectionIndex = 0;
-
-        try {
-            AnalyticsProject storedProject = analyticsSettingStore.getProject();
-            if (storedProject != null && storedProject.getId() != null) {
-                for (int i = 0; i < projects.size(); i++) {
-                    AnalyticsProject p = projects.get(i);
-                    if (p.getId() == storedProject.getId()) {
-                        selectionIndex = i;
-                    }
-                }
-            }
-        } catch (IOException e) {
-            // do nothing
-        }
-        return selectionIndex;
-    }
-
-    private int getDefaultTeamIndex() {
-        int selectionIndex = 0;
-
-        try {
-            AnalyticsTeam storedProject = analyticsSettingStore.getTeam();
-            if (storedProject != null && storedProject.getId() != null && teams != null) {
-                for (int i = 0; i < teams.size(); i++) {
-                    AnalyticsTeam p = teams.get(i);
-                    if (p.getId() == storedProject.getId()) {
-                        selectionIndex = i;
-                    }
-                }
-            }
-        } catch (IOException e) {
-            // do nothing
-        }
-        return selectionIndex;
     }
 
     @Override
@@ -326,14 +237,13 @@ public class UploadSelectionDialog extends Dialog {
         try {
             AnalyticsTeam team = null;
             if (teams != null && teams.size() > 0) {
-                team = teams.get(getDefaultTeamIndex());
+                team = teams.get(AnalyticsApiProvider.getDefaultTeamIndex(analyticsSettingStore, teams));
             }
             analyticsSettingStore.setTeam(team);
             analyticsSettingStore.setProject(
                     cbbProjects.getSelectionIndex() != -1 ? projects.get(cbbProjects.getSelectionIndex()) : null);
         } catch (IOException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+            LoggerSingleton.logError(e1);
         }
         setReturnCode(UPLOAD_ID);
         closeDialog();

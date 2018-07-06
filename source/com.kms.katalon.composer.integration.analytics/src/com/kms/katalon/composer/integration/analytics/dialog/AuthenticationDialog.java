@@ -1,15 +1,11 @@
 package com.kms.katalon.composer.integration.analytics.dialog;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.security.GeneralSecurityException;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -34,12 +30,10 @@ import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.analytics.constants.ComposerAnalyticsStringConstants;
-import com.kms.katalon.composer.integration.analytics.constants.ComposerIntegrationAnalyticsMessageConstants;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.testcase.constants.StringConstants;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.integration.analytics.constants.IntegrationAnalyticsMessages;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
@@ -235,48 +229,12 @@ public class AuthenticationDialog extends Dialog {
         String serverUrlText = serverUrl.getText();
         updateDataStore(emailText, passwordText);
         setReturnCode(CONNECT_ID);
-        AnalyticsTokenInfo tokenInfo = requestToken(getShell(), serverUrlText, emailText, passwordText);
-        try {
-            analyticsSettingStore.setToken(tokenInfo.getAccess_token(), true);
-        } catch (IOException | GeneralSecurityException e) {
-            LoggerSingleton.logError(e);
-        }
+        AnalyticsTokenInfo tokenInfo = AnalyticsApiProvider.getToken(serverUrlText, emailText, passwordText, new ProgressMonitorDialog(getShell()),
+                analyticsSettingStore);
         setTokenInfo(tokenInfo);
         if (tokenInfo != null) {
             closeDialog();
         }
-    }
-
-    private AnalyticsTokenInfo requestToken(Shell shell, String serverUrl, String email, String password) {
-        final AnalyticsTokenInfo[] tokenInfo = new AnalyticsTokenInfo[1];
-        try {
-            new ProgressMonitorDialog(shell).run(true, false, new IRunnableWithProgress() {
-                @Override
-                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                    try {
-                        monitor.beginTask(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_CONNECTING_TO_SERVER,
-                                2);
-                        tokenInfo[0] = AnalyticsApiProvider.requestToken(serverUrl, email, password);
-                        monitor.worked(1);
-                    } catch (Exception e) {
-                        throw new InvocationTargetException(e);
-                    }
-                }
-            });
-        } catch (Exception ex) {
-            // show error dialog
-            LoggerSingleton.logError(ex);
-            try {
-                analyticsSettingStore.setPassword(StringUtils.EMPTY, true);
-                analyticsSettingStore.enableIntegration(false);
-            } catch (IOException | GeneralSecurityException e) {
-                // TODO Auto-generated catch block
-                LoggerSingleton.logError(e);
-            }
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), ComposerAnalyticsStringConstants.ERROR,
-                    IntegrationAnalyticsMessages.MSG_REQUEST_TOKEN_ERROR);
-        }
-        return tokenInfo[0];
     }
 
     private void handleEnteredUsername() {

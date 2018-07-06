@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.testcase.parts;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +38,7 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
@@ -92,9 +95,15 @@ import com.kms.katalon.composer.testcase.treetable.transfer.ScriptTransferData;
 import com.kms.katalon.composer.testcase.util.TestCaseMenuUtil;
 import com.kms.katalon.composer.testcase.views.FocusCellOwnerDrawForManualTestcase;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.model.FailureHandling;
+import com.kms.katalon.core.webservice.support.UrlEncoder;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.execution.session.ExecutionSession;
+import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
+import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
+import com.kms.katalon.integration.analytics.report.AnalyticsReportService;
+import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 
 public class TestStepManualComposite {
     private ITestCasePart parentPart;
@@ -109,7 +118,7 @@ public class TestStepManualComposite {
     
     private Label spacer;
     
-    private Button btnViewKA;
+    private Button btnViewHistory;
 
     private TestCaseSelectionListener selectionListener;
 
@@ -118,6 +127,10 @@ public class TestStepManualComposite {
     private List<AstTreeTableNode> dragNodes;
 
     private CustomTreeViewerFocusCellManager focusCellManager;
+    
+    private AnalyticsReportService analyticsReportService = new AnalyticsReportService();
+    
+    private AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(ProjectController.getInstance().getCurrentProject().getFolderLocation());
 
     private Menu recentMenu;
 
@@ -194,8 +207,27 @@ public class TestStepManualComposite {
 
             ToolBarManager toolBarManager = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
             toolbar = toolBarManager.createControl(compositeTableButtons);
+            toolbar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+
             spacer = new Label(compositeTableButtons, SWT.None);
-            btnViewKA = new Button(compositeTableButtons, SWT.NONE);
+            spacer.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+
+            btnViewHistory = new Button(compositeTableButtons, SWT.NONE);
+            btnViewHistory.setText(ComposerTestcaseMessageConstants.BTN_TESTCASEHISTORY);
+            btnViewHistory.setVisible(analyticsReportService.isIntegrationEnabled());
+            
+            btnViewHistory.addSelectionListener(new SelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    try {
+                        Program.launch(createPath(analyticsSettingStore.getTeam(), analyticsSettingStore.getProject(), 
+                                parentPart.getTestCase().getIdForDisplay(), analyticsSettingStore.getToken(true)));
+                    } catch (IOException | GeneralSecurityException e1) {
+                        LoggerSingleton.logError(e1);
+                    }
+                }
+            });
+            
         } else { // for ClosureDialog
             ToolBarManager toolBarManager = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
             toolbar = toolBarManager.createControl(parent);
@@ -231,9 +263,6 @@ public class TestStepManualComposite {
         tltmDown.setImage(ImageConstants.IMG_16_MOVE_DOWN);
         tltmDown.addSelectionListener(selectionListener);
         
-        spacer.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-        btnViewKA.setText("View Katalon Analytics");
-
         Composite compositeTable = new Composite(compositeSteps == null ? parent : compositeSteps, SWT.NONE);
         compositeTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
@@ -283,6 +312,15 @@ public class TestStepManualComposite {
             hookDragEvent();
             hookDropEvent();
         }
+    }
+    
+    private String createPath(AnalyticsTeam team, AnalyticsProject project, String path, String tokenInfo){
+        String result = "";
+        result = ComposerTestcaseMessageConstants.KA_HOMEPAGE+ "teamId=" + team.getId() +
+                "&projectId=" + project.getId() + "&type=TEST_CASE" + "&path=" + UrlEncoder.encode(path) +
+                "&token=" + tokenInfo;
+        return result;
+        
     }
 
     private void addTreeTableColumn(TreeViewer parent, TreeColumnLayout treeColumnLayout, String headerText, int width,

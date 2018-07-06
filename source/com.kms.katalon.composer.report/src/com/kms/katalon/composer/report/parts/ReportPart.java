@@ -4,9 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -89,7 +89,6 @@ import com.kms.katalon.composer.components.part.IComposerPartEvent;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.integration.analytics.constants.ComposerAnalyticsStringConstants;
-import com.kms.katalon.composer.integration.analytics.constants.ComposerIntegrationAnalyticsMessageConstants;
 import com.kms.katalon.composer.integration.analytics.dialog.AuthenticationDialog;
 import com.kms.katalon.composer.integration.analytics.dialog.UploadSelectionDialog;
 import com.kms.katalon.composer.report.constants.ComposerReportMessageConstants;
@@ -120,7 +119,6 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.util.ExecutionUtil;
-import com.kms.katalon.integration.analytics.constants.IntegrationAnalyticsMessages;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
@@ -638,90 +636,11 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         updateStatusSearchLabel();
     }
 
-    private List<AnalyticsTeam> getTeams(final String serverUrl, final String email, final String password,
-            AnalyticsTokenInfo tokenInfo) {
-        final List<AnalyticsTeam> teams = new ArrayList<>();
-        try {
-            new ProgressMonitorDialog(shell).run(true, false, new IRunnableWithProgress() {
-                @Override
-                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                    try {
-                        monitor.beginTask(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_RETRIEVING_TEAMS, 2);
-                        monitor.subTask(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_GETTING_TEAMS);
-                        final List<AnalyticsTeam> loaded = AnalyticsApiProvider.getTeams(serverUrl,
-                                tokenInfo.getAccess_token());
-                        if (loaded != null && !loaded.isEmpty()) {
-                            teams.addAll(loaded);
-                        }
-                        monitor.worked(1);
-                    } catch (Exception e) {
-                        throw new InvocationTargetException(e);
-                    } finally {
-                        monitor.done();
-                    }
-                }
-            });
-            return teams;
-        } catch (InvocationTargetException exception) {
-            final Throwable cause = exception.getCause();
-            if (cause instanceof AnalyticsApiExeception) {
-                // MessageDialog.openError(shell,
-                // ComposerAnalyticsStringConstants.ERROR, cause.getMessage());
-            } else {
-                LoggerSingleton.logError(cause);
-            }
-        } catch (InterruptedException e) {
-            // Ignore this
-        }
-        return teams;
-    }
-
-    private List<AnalyticsProject> getProjects(final String serverUrl, final String email, final String password,
-            final AnalyticsTeam team, AnalyticsTokenInfo tokenInfo) {
-        final List<AnalyticsProject> projects = new ArrayList<>();
-        try {
-            new ProgressMonitorDialog(shell).run(true, false, new IRunnableWithProgress() {
-                @Override
-                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                    try {
-                        monitor.beginTask(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_RETRIEVING_PROJECTS,
-                                2);
-                        monitor.subTask(ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_GETTING_PROJECTS);
-                        final List<AnalyticsProject> loaded = AnalyticsApiProvider.getProjects(serverUrl, team,
-                                tokenInfo.getAccess_token());
-                        if (loaded != null && !loaded.isEmpty()) {
-                            projects.addAll(loaded);
-                        }
-                        monitor.worked(1);
-                    } catch (Exception e) {
-                        throw new InvocationTargetException(e);
-                    } finally {
-                        monitor.done();
-                    }
-                }
-            });
-            return projects;
-        } catch (InvocationTargetException exception) {
-            final Throwable cause = exception.getCause();
-            if (cause instanceof AnalyticsApiExeception) {
-                // MessageDialog.openError(shell,
-                // ComposerAnalyticsStringConstants.ERROR, cause.getMessage());
-            } else {
-                LoggerSingleton.logError(cause);
-            }
-        } catch (InterruptedException e) {
-            // Ignore this
-        }
-        return projects;
-    }
-
     private ScopedPreferenceStore getPreferenceStore() {
         return PreferenceStoreManager.getPreferenceStore(ActivationPreferenceConstants.ACTIVATION_INFO_STORAGE);
     }
 
     private void createKatalonAnalyticsMenu(ToolBar toolBar) {
-        // boolean isIntegrated = analyticsReportService.isIntegrationEnabled();
-        boolean encryptionEnabled = true;
 
         AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
                 ProjectController.getInstance().getCurrentProject().getFolderLocation());
@@ -734,146 +653,24 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         MenuItem accessKAMenuItem = new MenuItem(katalonAnalyticsMenu, SWT.PUSH);
         uploadMenuItem = new MenuItem(katalonAnalyticsMenu, SWT.PUSH);
 
-        accessKAMenuItem.setText("Access Analytics");
+        accessKAMenuItem.setText(ComposerReportMessageConstants.BTN_ACCESSKA);
         accessKAMenuItem.setID(0);
-
         accessKAMenuItem.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                // try {
                 if (analyticsReportService.isIntegrationEnabled()) {
                     // open KA web
                     String tokenInfo;
                     try {
-                        tokenInfo = analyticsSettingStore.getToken(encryptionEnabled);
+                        tokenInfo = analyticsSettingStore.getToken(true);
                         Program.launch(ComposerReportMessageConstants.KA_HOMEPAGE + "token=" + tokenInfo);
                     } catch (IOException | GeneralSecurityException e1) {
-                        LoggerSingleton.logError(e1);;
+                        LoggerSingleton.logError(e1);
+                        ;
                     }
                 } else {
-                    int teamCount = 1;
-                    int projectCount = 0;
-                    boolean authenticationDialogOpened = false;
-                    List<AnalyticsTeam> teams = null;
-                    List<AnalyticsProject> projects = null;
-                    ScopedPreferenceStore preferenceStore = getPreferenceStore();
-                    String preferenceEmail = preferenceStore
-                            .getString(ActivationPreferenceConstants.ACTIVATION_INFO_EMAIL);
-                    String preferencePassword = preferenceStore
-                            .getString(ActivationPreferenceConstants.ACTIVATION_INFO_PASSWORD);
-                    try {
-                        String serverUrl = analyticsSettingStore
-                                .getServerEndpoint(analyticsSettingStore.isEncryptionEnabled());
-                        String analyticsEmail = analyticsSettingStore
-                                .getEmail(analyticsSettingStore.isEncryptionEnabled());
-                        String analyticsPassword = analyticsSettingStore
-                                .getPassword(analyticsSettingStore.isEncryptionEnabled());
-                        final AnalyticsTokenInfo[] tokenInfos = new AnalyticsTokenInfo[1];
-                        final boolean[] hasTokens = new boolean[1];
-                        hasTokens[0] = false;
-
-                        if (analyticsPassword.equals(StringUtils.EMPTY)
-                                && !preferencePassword.equals(StringUtils.EMPTY)) {
-                            // get credentials from preference store
-                            analyticsSettingStore.setEmail(preferenceEmail, encryptionEnabled);
-                            analyticsSettingStore.setPassword(preferencePassword, encryptionEnabled);
-                            analyticsSettingStore.enableIntegration(true);
-                            analyticsSettingStore.enableEncryption(encryptionEnabled);
-                        }
-
-                        if (analyticsPassword.equals(StringUtils.EMPTY)) {
-                            // no credentials -> set credentials by using pop up
-                            AuthenticationDialog authenticationDialog = new AuthenticationDialog(shell, true);
-                            int resultCode = authenticationDialog.open();
-                            if (resultCode == AuthenticationDialog.CANCEL_ID) {
-                                return;
-                            }
-                            tokenInfos[0] = authenticationDialog.getTokenInfo();
-                            authenticationDialogOpened = true;
-                            analyticsPassword = analyticsSettingStore
-                                    .getPassword(analyticsSettingStore.isEncryptionEnabled());
-                            analyticsEmail = analyticsSettingStore
-                                    .getEmail(analyticsSettingStore.isEncryptionEnabled());
-                        }
-
-                        final String email = analyticsEmail;
-                        final String password = analyticsPassword;
-                        if (!analyticsPassword.equals(StringUtils.EMPTY) && authenticationDialogOpened == false) {
-                            try {
-                                new ProgressMonitorDialog(shell).run(true, false, new IRunnableWithProgress() {
-                                    @Override
-                                    public void run(IProgressMonitor monitor)
-                                            throws InvocationTargetException, InterruptedException {
-                                        try {
-                                            monitor.beginTask(
-                                                    ComposerIntegrationAnalyticsMessageConstants.MSG_DLG_PRG_CONNECTING_TO_SERVER,
-                                                    2);
-                                            tokenInfos[0] = AnalyticsApiProvider.requestToken(serverUrl, email,
-                                                    password);
-                                            analyticsSettingStore.setToken(tokenInfos[0].getAccess_token(),
-                                                    encryptionEnabled);
-                                            monitor.worked(1);
-                                        } catch (Exception e) {
-                                            throw new InvocationTargetException(e);
-                                        }
-                                    }
-                                });
-                            } catch (Exception ex) {
-                                // show error dialog
-                                analyticsSettingStore.setPassword(StringUtils.EMPTY, true);
-                                analyticsSettingStore.enableIntegration(false);
-                                throw new AnalyticsApiExeception(
-                                        new Throwable(IntegrationAnalyticsMessages.MSG_REQUEST_TOKEN_ERROR));
-                            }
-                        }
-
-                        // always have token now
-                        teams = getTeams(serverUrl, analyticsEmail, analyticsPassword, tokenInfos[0]);
-                        teamCount = teams.size();
-                        projects = getProjects(serverUrl, analyticsEmail, analyticsPassword, teams.get(0),
-                                tokenInfos[0]);
-                        projectCount = projects.size();
-                        UploadSelectionDialog uploadSelectionDialog = new UploadSelectionDialog(shell, teams);
-                        if (projectCount > 0 || teamCount > 1) {
-                            analyticsSettingStore.enableIntegration(true);
-                            int returnCode = uploadSelectionDialog.open();
-                            if (returnCode == UploadSelectionDialog.UPLOAD_ID) {
-                                uploadToKA();
-                            } else {
-                                analyticsSettingStore.enableIntegration(false);
-                                return;
-                            }
-                        } else if (authenticationDialogOpened) {
-                            // create default project and upload
-                            createDefaultProject(analyticsSettingStore, serverUrl, teams.get(0), tokenInfos[0]);
-                            analyticsSettingStore.enableIntegration(true);
-                            uploadToKA();
-                        } else {
-                            AuthenticationDialog authenticationDialog = new AuthenticationDialog(shell, false);
-                            int returnCode = authenticationDialog.open();
-                            if (returnCode == AuthenticationDialog.CONNECT_ID) {
-                                createDefaultProject(analyticsSettingStore, serverUrl, teams.get(0), tokenInfos[0]);
-                                analyticsSettingStore.enableIntegration(true);
-                                uploadToKA();
-                            } else {
-                                analyticsSettingStore.enableIntegration(false);
-                                return;
-                            }
-                        }
-                        Program.launch(ComposerReportMessageConstants.KA_HOMEPAGE + "teamId=" + 
-                        analyticsSettingStore.getTeam().getId() + "&projectId=" + 
-                        analyticsSettingStore.getProject().getId() +"&type=EXECUTION&token="
-                        + tokenInfos[0].getAccess_token());
-                    } catch (Exception ex) {
-                        LoggerSingleton.logError(ex);
-                        MessageDialog.openError(Display.getCurrent().getActiveShell(),
-                                ComposerAnalyticsStringConstants.ERROR, ex.getMessage());
-                        try {
-                            analyticsSettingStore.enableIntegration(false);
-                        } catch (IOException e1) {
-                            LoggerSingleton.logError(e1);
-                        }
-                    }
+                    // perform integrating
+                    startIntegrating(analyticsSettingStore);
                 }
             }
         });
@@ -899,6 +696,122 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                 katalonAnalyticsMenu.setVisible(true);
             }
         });
+    }
+
+    private HashMap<String, String> getCredentialInfo(AnalyticsTokenInfo[] tokenInfo,
+            AnalyticsSettingStore analyticsSettingStore) {
+        String authenticationDialogOpened = "false";
+        ScopedPreferenceStore preferenceStore = getPreferenceStore();
+        String preferenceEmail = preferenceStore.getString(ActivationPreferenceConstants.ACTIVATION_INFO_EMAIL);
+        String preferencePassword = preferenceStore.getString(ActivationPreferenceConstants.ACTIVATION_INFO_PASSWORD);
+        boolean encryptionEnabled = true;
+        HashMap<String, String> credentialInfo = new HashMap<String, String>();
+
+        try {
+            String serverUrl = analyticsSettingStore.getServerEndpoint(analyticsSettingStore.isEncryptionEnabled());
+            String analyticsEmail = analyticsSettingStore.getEmail(analyticsSettingStore.isEncryptionEnabled());
+            String analyticsPassword = analyticsSettingStore.getPassword(analyticsSettingStore.isEncryptionEnabled());
+            if (analyticsPassword.equals(StringUtils.EMPTY) && !preferencePassword.equals(StringUtils.EMPTY)) {
+                // get credentials from preference store
+                analyticsSettingStore.setEmail(preferenceEmail, encryptionEnabled);
+                analyticsSettingStore.setPassword(preferencePassword, encryptionEnabled);
+                analyticsSettingStore.enableIntegration(true);
+                analyticsSettingStore.enableEncryption(encryptionEnabled);
+            }
+
+            if (analyticsPassword.equals(StringUtils.EMPTY)) {
+                // no credentials -> get credentials by using pop up
+                AuthenticationDialog authenticationDialog = new AuthenticationDialog(shell, true);
+                int resultCode = authenticationDialog.open();
+                if (resultCode == AuthenticationDialog.CANCEL_ID) {
+                    return null;
+                }
+                tokenInfo[0] = authenticationDialog.getTokenInfo();
+                authenticationDialogOpened = "true";
+                analyticsPassword = analyticsSettingStore.getPassword(analyticsSettingStore.isEncryptionEnabled());
+                analyticsEmail = analyticsSettingStore.getEmail(analyticsSettingStore.isEncryptionEnabled());
+            }
+            credentialInfo.put("analyticsEmail", analyticsEmail);
+            credentialInfo.put("analyticsPassword", analyticsPassword);
+            credentialInfo.put("serverUrl", serverUrl);
+            credentialInfo.put("authenticationDialogOpened", authenticationDialogOpened);
+            return credentialInfo;
+        } catch (IOException | GeneralSecurityException e) {
+            LoggerSingleton.logError(e);
+            ;
+        }
+        return null;
+    }
+
+    private void startIntegrating(AnalyticsSettingStore analyticsSettingStore) {
+
+        int teamCount = 1;
+        int projectCount = 0;
+        List<AnalyticsTeam> teams = null;
+        List<AnalyticsProject> projects = null;
+        final AnalyticsTokenInfo[] tokenInfo = new AnalyticsTokenInfo[1];
+
+        final HashMap<String, String> credentialInfo = getCredentialInfo(tokenInfo, analyticsSettingStore);
+        String analyticsEmail = credentialInfo.get("analyticsEmail");
+        String analyticsPassword = credentialInfo.get("analyticsPassword");
+        String serverUrl = credentialInfo.get("serverUrl");
+        Boolean authenticationDialogOpened = Boolean.valueOf(credentialInfo.get("authenticationDialogOpened"));
+
+        if (!analyticsPassword.equals(StringUtils.EMPTY) && authenticationDialogOpened == false) {
+            tokenInfo[0] = AnalyticsApiProvider.getToken(serverUrl, analyticsEmail, analyticsPassword,
+                    new ProgressMonitorDialog(shell), analyticsSettingStore);
+        }
+
+        teams = AnalyticsApiProvider.getTeams(serverUrl, analyticsEmail, analyticsPassword, tokenInfo[0],
+                new ProgressMonitorDialog(shell));
+        teamCount = teams.size();
+        projects = AnalyticsApiProvider.getProjects(serverUrl, analyticsEmail, analyticsPassword, teams.get(0),
+                tokenInfo[0], new ProgressMonitorDialog(shell));
+        projectCount = projects.size();
+        UploadSelectionDialog uploadSelectionDialog = new UploadSelectionDialog(shell, teams);
+
+        try {
+            if (projectCount > 0 || teamCount > 1) {
+                analyticsSettingStore.enableIntegration(true);
+                int returnCode = uploadSelectionDialog.open();
+                if (returnCode == UploadSelectionDialog.UPLOAD_ID) {
+                    uploadToKA();
+                } else {
+                    analyticsSettingStore.enableIntegration(false);
+                    return;
+                }
+            } else if (authenticationDialogOpened) {
+                // create default project and upload
+                createDefaultProject(analyticsSettingStore, serverUrl, teams.get(0), tokenInfo[0]);
+                analyticsSettingStore.enableIntegration(true);
+                uploadToKA();
+            } else {
+                AuthenticationDialog authenticationDialog = new AuthenticationDialog(shell, false);
+                int returnCode = authenticationDialog.open();
+                if (returnCode == AuthenticationDialog.CONNECT_ID) {
+                    createDefaultProject(analyticsSettingStore, serverUrl, teams.get(0), tokenInfo[0]);
+                    analyticsSettingStore.enableIntegration(true);
+                    uploadToKA();
+                } else {
+                    analyticsSettingStore.enableIntegration(false);
+                    return;
+                }
+            }
+            Program.launch(
+                    ComposerReportMessageConstants.KA_HOMEPAGE + "teamId=" + analyticsSettingStore.getTeam().getId()
+                            + "&projectId=" + analyticsSettingStore.getProject().getId() + "&type=EXECUTION&token="
+                            + tokenInfo[0].getAccess_token());
+
+        } catch (Exception ex) {
+            LoggerSingleton.logError(ex);
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), ComposerAnalyticsStringConstants.ERROR,
+                    ex.getMessage());
+            try {
+                analyticsSettingStore.enableIntegration(false);
+            } catch (IOException e1) {
+                LoggerSingleton.logError(e1);
+            }
+        }
     }
 
     private void createDefaultProject(AnalyticsSettingStore analyticsSettingStore, String serverUrl, AnalyticsTeam team,
