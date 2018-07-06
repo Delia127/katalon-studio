@@ -73,6 +73,7 @@ import com.kms.katalon.objectspy.websocket.AddonSocketServer;
 import com.kms.katalon.objectspy.websocket.messages.StartInspectAddonMessage;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
+import com.kms.katalon.tracking.service.Trackings;
 import com.kms.katalon.util.listener.EventListener;
 import com.kms.katalon.util.listener.EventManager;
 import com.sun.jna.platform.win32.User32;
@@ -202,7 +203,8 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
             startInspectSession(browser);
 
             invoke(ObjectSpyEvent.SELENIUM_SESSION_STARTED, session);
-            sendEventForTracking();
+//            sendEventForTracking();
+            Trackings.trackSpy("web");
         } catch (final IEAddonNotInstalledException e) {
             stop();
             showMessageForMissingIEAddon();
@@ -506,7 +508,8 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
         Win32Helper.switchFocusToBrowser(browser);
         currentInstantSocket.sendMessage(new StartInspectAddonMessage());
         invoke(ObjectSpyEvent.ADDON_SESSION_STARTED, currentInstantSocket);
-        sendEventForTracking();
+//        sendEventForTracking();
+        Trackings.trackSpy("web");
     }
 
     protected void runInstantIE() throws Exception {

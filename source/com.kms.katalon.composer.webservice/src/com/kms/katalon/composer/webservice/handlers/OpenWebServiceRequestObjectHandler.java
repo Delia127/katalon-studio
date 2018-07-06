@@ -69,10 +69,10 @@ public class OpenWebServiceRequestObjectHandler {
             if (stack != null) {
                 if (mPart == null) {
                     WSRequestPartUI.create(requestObject, stack);
+                    Trackings.trackOpenObject("webServiceRequest");
                 } else {
                     stack.setSelectedElement(mPart);
                 }
-                Trackings.trackOpenObject("webServiceRequest");
             }
         } catch (IOException | CoreException e) {
             LoggerSingleton.logError(e);

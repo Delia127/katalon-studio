@@ -25,6 +25,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.event.EventBusSingleton;
 import com.kms.katalon.entity.dal.exception.FilePathTooLongException;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.tracking.service.Trackings;
 
 @SuppressWarnings("restriction")
 public class NewProjectHandler {
@@ -48,7 +49,7 @@ public class NewProjectHandler {
                 return;
             }
             eventBroker.send(EventConstants.PROJECT_CREATED, newProject);
-            sendEventForTracking();
+            Trackings.trackCreatingProject();
 
             // Open created project
             eventBroker.send(EventConstants.PROJECT_OPEN, newProject.getId());
@@ -78,12 +79,5 @@ public class NewProjectHandler {
                     StringConstants.HAND_ERROR_MSG_NEW_PROJ_LOCATION_INVALID);
         }
         return null;
-    }
-    
-    private static void sendEventForTracking() {
-        EventBus eventBus = EventBusSingleton.getInstance().getEventBus();
-        eventBus.post(new TrackingEvent(UsageActionTrigger.NEW_OBJECT, new HashMap<String, Object>() {{
-            put("type", "project");
-        }}));
     }
 }

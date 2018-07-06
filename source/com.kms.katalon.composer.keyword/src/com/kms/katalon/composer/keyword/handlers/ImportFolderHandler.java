@@ -46,6 +46,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.core.util.internal.PathUtil;
 import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.tracking.service.Trackings;
 import com.kms.katalon.util.FileHashUtil;
 
 public class ImportFolderHandler {
@@ -75,6 +76,7 @@ public class ImportFolderHandler {
 
             File importedFolder = new File(selectedFolder);
             if (importedFolder != null && importedFolder.exists() && importedFolder.isDirectory()) {
+                Trackings.trackImportKeywords("folder");
                 copyFilesToKeywordsDirectory(shell, importedFolder, StringUtils.EMPTY, StringUtils.EMPTY);
             }
 

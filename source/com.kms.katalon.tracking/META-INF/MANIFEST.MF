@@ -13,7 +13,8 @@ Require-Bundle: com.kms.katalon.logging,
  org.eclipse.core.runtime,
  net.sf.jopt-simple.jopt-simple,
  com.kms.katalon.entity
-Export-Package: com.kms.katalon.tracking.model,
+Export-Package: com.kms.katalon.tracking.core,
+ com.kms.katalon.tracking.model,
  com.kms.katalon.tracking.osgi.service,
  com.kms.katalon.tracking.service
 Service-Component: OSGI-INF/component.xml

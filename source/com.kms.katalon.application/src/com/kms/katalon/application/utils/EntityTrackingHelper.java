@@ -1,15 +1,8 @@
 package com.kms.katalon.application.utils;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.Executors;
 
-import org.greenrobot.eventbus.EventBus;
-
-import com.kms.katalon.application.usagetracking.TrackingEvent;
-import com.kms.katalon.application.usagetracking.UsageActionTrigger;
 import com.kms.katalon.constants.UsagePropertyConstant;
-import com.kms.katalon.core.event.EventBusSingleton;
 import com.kms.katalon.logging.LogUtil;
 
 public class EntityTrackingHelper {
@@ -34,26 +27,5 @@ public class EntityTrackingHelper {
                 ApplicationInfo.setAppProperty(key, String.valueOf(previousNumOfEntityCreated + 1), true);
             }
         });
-    }
-    
-    public static void trackCreatingEntity(String type) {
-        trackCreatingEntity(type, null);
-    }
-    
-    public static void trackCreatingEntity(String type, String... properties) {
-        Map<String, Object> eventData = new HashMap<String, Object>() {{
-            put("type", type);
-        }};
-        
-        if (properties != null) {
-            for (int i = 0; i < properties.length - 1; i += 2) {
-                String propertyKey = properties[i];
-                String propertyValue = properties[i + 1];
-                eventData.put(propertyKey, propertyValue);
-            }
-        }
-        
-        EventBus eventBus = EventBusSingleton.getInstance().getEventBus();
-        eventBus.post(new TrackingEvent(UsageActionTrigger.NEW_OBJECT, eventData));
     }
 }

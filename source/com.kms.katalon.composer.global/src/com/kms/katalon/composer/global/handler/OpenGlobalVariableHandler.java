@@ -2,6 +2,7 @@ package com.kms.katalon.composer.global.handler;
 
 import javax.annotation.PostConstruct;
 
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.composer.components.impl.handler.OpenFileEntityHandler;
@@ -27,8 +28,16 @@ public class OpenGlobalVariableHandler extends OpenFileEntityHandler<ExecutionPr
     
     @Override
     protected void execute(ExecutionProfileEntity profileEntity) {
+        String partId = getPartId(profileEntity);
+
+        MPart mPart = (MPart) getModelService().find(partId, getApplication());
+        boolean alreadyOpened = mPart != null;
+        
         super.execute(profileEntity);
-        Trackings.trackOpenObject("profile");
+        
+        if (!alreadyOpened) {
+            Trackings.trackOpenObject("profile");
+        }
     }
 
     @Override

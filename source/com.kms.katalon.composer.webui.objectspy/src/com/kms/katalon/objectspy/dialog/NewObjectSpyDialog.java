@@ -462,7 +462,7 @@ public class NewObjectSpyDialog extends Dialog
         
         SaveActionResult saveResult = objectRepositoryService.saveObject(addToObjectRepositoryDialog.getDialogResult());
        
-        Trackings.trackSaveSpy("web", saveResult.getUpdatedTestObjectIds().size());
+        Trackings.trackSaveSpy("web", saveResult.getSavedObjectCount());
         
         // Refresh tree explorer
         eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, addToObjectRepositoryDialog.getSelectedParentFolderResult());

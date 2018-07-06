@@ -242,6 +242,8 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     private List<VariableEntity> variables;
 
     private TestCaseEntity testCaseEntity;
+    
+    private boolean isOkPressed = false;
 
     /**
      * Create the dialog.
@@ -331,7 +333,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             tltmStop.setEnabled(true);
             resume();
             resetInput();
-            sendEventForTracking();
+            Trackings.trackRecord("web");
         } catch (final IEAddonNotInstalledException e) {
             stop();
             showMessageForMissingIEAddon();
@@ -345,11 +347,6 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             logger.error(e);
             MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE, e.getMessage());
         }
-    }
-    
-    private void sendEventForTracking() {
-        EventBus eventBus = EventBusSingleton.getInstance().getEventBus();
-        eventBus.post(new TrackingEvent(UsageActionTrigger.RECORD, "web"));
     }
 
     private void startInstantSession() throws Exception {
@@ -858,10 +855,12 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         for (ASTNodeWrapper node : recordStepsView.getTreeTableInput().getNodeWrappersFromFirstSelected()) {
             block.addChild(node.clone());
         }
+        Trackings.trackRecordRunSteps("from");
         executeSelectedSteps(cloneScript);
     }
 
     private void runAllSteps() {
+        Trackings.trackRecordRunSteps("all");
         executeSelectedSteps(recordStepsView.getWrapper());
     }
 
@@ -873,6 +872,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         for (ASTNodeWrapper node : recordStepsView.getTreeTableInput().getSelectedNodeWrappers()) {
             block.addChild(node.clone());
         }
+        Trackings.trackRecordRunSteps("selected");
         executeSelectedSteps(cloneScript);
     }
 
@@ -1423,22 +1423,24 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     @Override
     protected void okPressed() {
         Shell shell = getShell();
-        int actionCount = countAllActions();
+        int stepCount = countAllSteps();
+        isOkPressed = true;
         try {
             if (!addElementToObjectRepository(shell)) {
                 return;
             }
             super.okPressed();
             
-            Trackings.trackCloseRecord("web", "ok", actionCount);
             dispose();
+            
+            Trackings.trackCloseRecord("web", "ok", stepCount);
         } catch (Exception exception) {
             logger.error(exception);
             MessageDialog.openError(shell, StringConstants.ERROR_TITLE, exception.getMessage());
-        }
+        } 
     }
     
-    private int countAllActions() {
+    private int countAllSteps() {
         return recordStepsView.getTreeTable().getTree().getItemCount();
 //        return recordedActions.size();
     }
@@ -1482,7 +1484,11 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     public boolean close() {
         updateStore();
         disposed = true;
-        return super.close();
+        boolean result = super.close();
+        if (!isOkPressed) {
+            Trackings.trackCloseRecord("web", "cancel", 0);
+        }
+        return result;
     }
 
     private void updateStore() {

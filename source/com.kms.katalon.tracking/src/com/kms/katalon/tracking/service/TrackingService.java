@@ -2,6 +2,8 @@ package com.kms.katalon.tracking.service;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import com.google.gson.JsonObject;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
@@ -11,18 +13,20 @@ import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.tracking.model.TrackInfo;
 
 public class TrackingService {
+    
+    private ExecutorService executor = Executors.newFixedThreadPool(10);
 
     public void track(TrackInfo trackInfo) {
         
-        try {
-            String payload = buildEventPayload(trackInfo);
-        
-            sendEventPayload(payload);
-        } catch (IOException e) {
-            LogUtil.logError(e);
-        } catch (GeneralSecurityException e) {
-            LogUtil.logError(e);
-        }
+        executor.submit(() -> {
+            try {
+                String payload = buildEventPayload(trackInfo);
+            
+                sendEventPayload(payload);
+            } catch (Exception e) {
+                LogUtil.logError(e);
+            }
+        });
     }
 
     protected String buildEventPayload(TrackInfo trackInfo) {
@@ -70,7 +74,6 @@ public class TrackingService {
         
         private JsonObject addEventProperties(JsonObject payload, TrackInfo trackInfo) {
             payload.add("properties", trackInfo.getProperties());
-            
             return payload;
         }
         

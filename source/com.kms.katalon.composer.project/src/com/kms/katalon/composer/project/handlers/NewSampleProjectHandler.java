@@ -14,18 +14,15 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.widgets.Shell;
-import org.greenrobot.eventbus.EventBus;
 
-import com.kms.katalon.application.usagetracking.TrackingEvent;
-import com.kms.katalon.application.usagetracking.UsageActionTrigger;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.project.constants.ComposerProjectMessageConstants;
 import com.kms.katalon.composer.project.template.SampleProjectProvider;
 import com.kms.katalon.composer.project.views.NewProjectDialog;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.core.event.EventBusSingleton;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class NewSampleProjectHandler {
 
@@ -79,18 +76,13 @@ public class NewSampleProjectHandler {
             return;
         }
         eventBroker.send(EventConstants.PROJECT_CREATED, newProject);
-        sendEventForTracking(newProject, sampleProjectType);
+        trackCreatingSampleProject(newProject, sampleProjectType);
 
         // Open created project
         eventBroker.send(EventConstants.PROJECT_OPEN, newProject.getId());
     }
     
-    private static void sendEventForTracking(ProjectEntity project, String sampleProjectType) {
-        EventBus eventBus = EventBusSingleton.getInstance().getEventBus();
-        eventBus.post(new TrackingEvent(UsageActionTrigger.NEW_OBJECT, new HashMap<String, Object>() {{
-            put("type", "project");
-            put("sampleProjectId", project.getUUID());
-            put("sampleProjectType", sampleProjectType);
-        }}));
+    private static void trackCreatingSampleProject(ProjectEntity project, String sampleProjectType) {
+        Trackings.trackCreatingSampleProject(sampleProjectType, project.getUUID());
     }
 }

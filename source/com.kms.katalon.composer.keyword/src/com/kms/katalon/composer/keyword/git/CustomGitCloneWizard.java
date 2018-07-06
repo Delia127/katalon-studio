@@ -71,6 +71,7 @@ import com.kms.katalon.composer.integration.git.components.wizards.CustomSourceB
 import com.kms.katalon.composer.integration.git.constants.GitStringConstants;
 import com.kms.katalon.composer.keyword.constants.GitEventConstants;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.tracking.service.Trackings;
 
 @SuppressWarnings("restriction")
 public class CustomGitCloneWizard extends Wizard {
@@ -233,6 +234,7 @@ public class CustomGitCloneWizard extends Wizard {
      * @throws Exception 
      */
     protected boolean performClone(GitRepositoryInfo gitRepositoryInfo) throws Exception {
+        Trackings.trackImportKeywords("git");
         URIish uri = new URIish(gitRepositoryInfo.getCloneUri());
         UserPasswordCredentials credentials = gitRepositoryInfo.getCredentials();
         setWindowTitle(NLS.bind(UIText.GitCloneWizard_jobName, uri.toString()));

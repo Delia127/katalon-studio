@@ -2,7 +2,6 @@ package com.kms.katalon.composer.intro;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -12,15 +11,12 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
-import org.greenrobot.eventbus.EventBus;
 
-import com.kms.katalon.application.usagetracking.TrackingEvent;
-import com.kms.katalon.application.usagetracking.UsageActionTrigger;
 import com.kms.katalon.composer.components.impl.wizard.IWizardPage;
 import com.kms.katalon.composer.components.impl.wizard.SimpleWizardDialog;
 import com.kms.katalon.constants.ImageConstants;
 import com.kms.katalon.constants.StringConstants;
-import com.kms.katalon.core.event.EventBusSingleton;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class FunctionsIntroductionDialog extends SimpleWizardDialog {
 
@@ -72,30 +68,22 @@ public class FunctionsIntroductionDialog extends SimpleWizardDialog {
         btnBack.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                sendEventForTracking("back");
+                Trackings.trackQuickOverview("back");
             }
         });
         
         btnNext.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-               sendEventForTracking("next");
+                Trackings.trackQuickOverview("next");
             }
         });
-    }
-    
-    private void sendEventForTracking(String userClick) {
-        EventBus eventBus = EventBusSingleton.getInstance().getEventBus();
-        
-        eventBus.post(new TrackingEvent(UsageActionTrigger.QUICK_OVERVIEW, new HashMap<String, Object>() {{
-            put("userClick", userClick);
-        }}));
     }
 
     @Override
     public boolean close() {
         boolean returnValue = super.close();
-        sendEventForTracking("close");
+        Trackings.trackQuickOverview("close");;
         return returnValue;
     }
     

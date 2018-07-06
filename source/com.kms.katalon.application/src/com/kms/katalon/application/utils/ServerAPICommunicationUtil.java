@@ -25,8 +25,7 @@ import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.logging.LogUtil;
 
 public class ServerAPICommunicationUtil {
-//    private static final String DEVELOPMENT_URL_API = "https://backend-dev.katalon.com/api";
-    private static final String DEVELOPMENT_URL_API = "http://localhost:3000/api";
+    private static final String DEVELOPMENT_URL_API = "https://backend-dev.katalon.com/api";
 
     private static final String PRODUCTION_URL_API = "https://update.katalon.com/api";
 
@@ -155,12 +154,9 @@ public class ServerAPICommunicationUtil {
         sc.init(null, getTrustManagers(), new java.security.SecureRandom());
         HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
 
-//        HttpsURLConnection uc = null;
-//        uc = (HttpsURLConnection) url.openConnection(proxy);
-        HttpURLConnection uc = null;
-        uc = (HttpURLConnection) url.openConnection(proxy);
-        //uc.setHostnameVerifier(getHostnameVerifier());
-
+        HttpsURLConnection uc = null;
+        uc = (HttpsURLConnection) url.openConnection(proxy);
+        uc.setHostnameVerifier(getHostnameVerifier());
         uc.setRequestMethod(method);
         uc.setRequestProperty("Content-Type", "application/json");
         uc.setUseCaches(false);

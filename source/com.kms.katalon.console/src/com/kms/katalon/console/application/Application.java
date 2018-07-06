@@ -1,6 +1,8 @@
 package com.kms.katalon.console.application;
 
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.equinox.app.IApplication;
@@ -15,11 +17,14 @@ import com.kms.katalon.console.addons.MacOSAddon;
 import com.kms.katalon.console.constants.ConsoleMessageConstants;
 import com.kms.katalon.console.constants.ConsoleStringConstants;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.event.EventBusSingleton;
 import com.kms.katalon.custom.addon.CustomBundleActivator;
 import com.kms.katalon.execution.console.ConsoleMain;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
 import com.kms.katalon.logging.LogUtil;
+import com.kms.katalon.tracking.core.TrackingManager;
+import com.kms.katalon.tracking.service.Trackings;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -76,8 +81,11 @@ public class Application implements IApplication {
     private static void init() {
         EventBusSingleton.getInstance().setEventBus(EventBus.builder().installDefaultEventBus());
         
-//        TrackingFacade trackingFacade = new TrackingFacade();
-//        trackingFacade.init(RunningMode.CONSOLE);
+        int trackingTime = TrackingManager.getInstance().getTrackingTime();
+        Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
+            Trackings.trackProjectStatistics(ProjectController.getInstance().getCurrentProject(), 
+                    !ActivationInfoCollector.isActivated(), "console");
+        }, trackingTime, trackingTime, TimeUnit.SECONDS);
     }
     
     public static boolean checkConsoleActivation(String[] arguments) {

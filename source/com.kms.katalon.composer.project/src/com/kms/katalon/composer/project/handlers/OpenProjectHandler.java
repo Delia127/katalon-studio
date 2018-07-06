@@ -126,17 +126,9 @@ public class OpenProjectHandler {
             @UIEventTopic(EventConstants.PROJECT_OPEN_LATEST) final String projectPk) throws InvocationTargetException,
             InterruptedException {
         doOpenProject(shell, projectPk, sync, eventBroker, partService, modelService, application);
-//        sendEventForTracking();
-        Trackings.trackOpenApplication(ProjectController.getInstance().getCurrentProject(), false);
+
+        Trackings.trackOpenApplication(ProjectController.getInstance().getCurrentProject(), false, RunningMode.GUI.getMode());
         eventBroker.post(EventConstants.PROJECT_RESTORE_SESSION, null);
-    }
-    
-    private void sendEventForTracking() {
-        EventBus eventBus = EventBusSingleton.getInstance().getEventBus();
-        eventBus.post(new TrackingEvent(UsageActionTrigger.OPEN_APPLICATION, new HashMap<String, Object>() {{
-            put("isAnonymous", false);
-            put("runningMode", RunningMode.GUI.getMode());
-        }}));
     }
 
     public static void doOpenProject(Shell shell, final String projectPk, final UISynchronize syncService,

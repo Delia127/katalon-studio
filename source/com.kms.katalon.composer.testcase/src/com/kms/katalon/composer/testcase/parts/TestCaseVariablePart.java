@@ -2,7 +2,6 @@ package com.kms.katalon.composer.testcase.parts;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -14,8 +13,6 @@ import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.MGenericTile;
 import org.eclipse.e4.ui.model.application.ui.basic.MCompositePart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
-import org.eclipse.e4.ui.workbench.UIEvents;
-import org.eclipse.e4.ui.workbench.UIEvents.EventTags;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
@@ -43,12 +40,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
-import org.greenrobot.eventbus.EventBus;
-import org.osgi.service.event.Event;
-import org.osgi.service.event.EventHandler;
 
-import com.kms.katalon.application.usagetracking.TrackingEvent;
-import com.kms.katalon.application.usagetracking.UsageActionTrigger;
 import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.providers.TypeCheckStyleCellTableLabelProvider;
@@ -75,7 +67,6 @@ import com.kms.katalon.composer.testcase.support.VariableDefaultValueTypeEditing
 import com.kms.katalon.composer.testcase.support.VariableDescriptionEditingSupport;
 import com.kms.katalon.composer.testcase.support.VariableNameEditingSupport;
 import com.kms.katalon.composer.testcase.util.AstValueUtil;
-import com.kms.katalon.core.event.EventBusSingleton;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.execution.util.SyntaxUtil;
@@ -102,9 +93,6 @@ public class TestCaseVariablePart extends CPart implements TableActionOperator {
 
     @Inject
     private EPartService partService;
-    
-    @Inject
-    private IEventBroker eventBroker;
 
     @PostConstruct
     public void init(Composite parent, MPart mpart) {
@@ -119,8 +107,6 @@ public class TestCaseVariablePart extends CPart implements TableActionOperator {
             }
         }
         initialize(mpart, partService);
-        
-//        eventBroker.subscribe(UIEvents.UILifeCycle.BRINGTOTOP, this);
         
         createComponents();
     }
@@ -389,14 +375,7 @@ public class TestCaseVariablePart extends CPart implements TableActionOperator {
 
         executeOperation(new NewVariableOperation(this, newVariable));
         
-        sendEventForTrackingAddingVariable();
-    }
-    
-    private void sendEventForTrackingAddingVariable() {
-        EventBus eventBus = EventBusSingleton.getInstance().getEventBus();
-        eventBus.post(new TrackingEvent(UsageActionTrigger.NEW_OBJECT, new HashMap<String, Object>() {{
-            put("type", "variable");
-        }}));
+        Trackings.trackCreatingObject("testCaseVariable");
     }
 
     private String generateNewPropertyName() {
@@ -569,16 +548,5 @@ public class TestCaseVariablePart extends CPart implements TableActionOperator {
         // TODO Auto-generated method stub
 
     }
-
-//    @Override
-//    public void handleEvent(Event event) {
-//        if (event.getTopic().equals(UIEvents.UILifeCycle.BRINGTOTOP)) {
-//            Object element = event.getProperty(EventTags.ELEMENT);
-//            if (element == mpart) {
-//                Trackings.trackOpenObject("testCaseScript");
-//            }
-//        }
-//        
-//    }
 
 }

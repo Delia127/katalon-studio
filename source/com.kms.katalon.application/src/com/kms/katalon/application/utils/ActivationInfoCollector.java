@@ -105,15 +105,13 @@ public class ActivationInfoCollector {
         boolean activatedResult = false;
         try {
             String userInfo = collectActivationInfo(userName, pass);
-            markActivated(userName);
-            activatedResult = true;
-//            String result = ServerAPICommunicationUtil.post("/segment/identify", userInfo);
-//            if (result.equals(ApplicationMessageConstants.SEND_SUCCESS_RESPONSE)) {
-//                markActivated(userName);
-//                activatedResult = true;
-//            } else if (errorMessage != null) {
-//                errorMessage.append(ApplicationMessageConstants.ACTIVATE_INFO_INVALID);
-//            }
+            String result = ServerAPICommunicationUtil.post("/segment/identify", userInfo);
+            if (result.equals(ApplicationMessageConstants.SEND_SUCCESS_RESPONSE)) {
+                markActivated(userName);
+                activatedResult = true;
+            } else if (errorMessage != null) {
+                errorMessage.append(ApplicationMessageConstants.ACTIVATE_INFO_INVALID);
+            }
 
         } catch (IOException ex) {
             LogUtil.logError(ex, ApplicationMessageConstants.ACTIVATION_COLLECT_FAIL_MESSAGE);
