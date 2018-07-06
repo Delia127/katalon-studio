@@ -64,10 +64,7 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Widget;
-import org.greenrobot.eventbus.EventBus;
 
-import com.kms.katalon.application.usagetracking.TrackingEvent;
-import com.kms.katalon.application.usagetracking.UsageActionTrigger;
 import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
 import com.kms.katalon.composer.components.dialogs.MessageDialogWithLink;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
@@ -99,11 +96,11 @@ import com.kms.katalon.composer.mobile.objectspy.viewer.CapturedObjectTableViewe
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ObjectRepositoryController;
-import com.kms.katalon.core.event.EventBusSingleton;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.core.mobile.keyword.internal.GUIObject;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class MobileObjectSpyDialog extends Dialog implements MobileElementInspectorDialog, MobileAppDialog {
 
@@ -648,6 +645,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
                     FolderTreeEntity folderTreeEntity = dialog.getSelectedFolderTreeEntity();
                     FolderEntity folder = folderTreeEntity.getObject();
                     List<ITreeEntity> newTreeEntities = addElementsToRepository(folderTreeEntity, folder);
+                    Trackings.trackSaveSpy("mobile", newTreeEntities.size());
                     removeSelectedCapturedElements(
                             capturedObjectsTableViewer.getAllCheckedElements().toArray(new CapturedMobileElement[0]));
                     updateExplorerState(folderTreeEntity, newTreeEntities);
@@ -1010,8 +1008,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
             btnStop.setEnabled(true);
             
             // send event for tracking
-            EventBus eventBus = EventBusSingleton.getInstance().getEventBus();
-            eventBus.post(new TrackingEvent(UsageActionTrigger.SPY, "mobile"));
+            Trackings.trackSpy("mobile");
         } catch (InvocationTargetException | InterruptedException ex) {
             // If user intentionally cancel the progress, don't need to show error message
             if (ex instanceof InvocationTargetException) {
@@ -1097,7 +1094,9 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         } catch (IOException e) {
             LoggerSingleton.logError(e);
         }
-        return super.close();
+        boolean result = super.close();
+        Trackings.trackCloseSpy("mobile");
+        return result;
     }
 
     @Override

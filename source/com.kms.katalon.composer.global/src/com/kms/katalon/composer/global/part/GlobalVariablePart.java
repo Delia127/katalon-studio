@@ -72,6 +72,7 @@ import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.global.GlobalVariableEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.groovy.util.GroovyRefreshUtil;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class GlobalVariablePart extends CPart implements EventHandler, TableViewerProvider, IComposerPart {
 
@@ -235,6 +236,7 @@ public class GlobalVariablePart extends CPart implements EventHandler, TableView
 
     private void addNewVariable(GlobalVariableEntity variableEntity) {
         executeOperation(new AddNewVariableOperation(variableEntity));
+        Trackings.trackCreatingObject("profileVariable");
     }
 
     private void deleteSelectedVariables() {

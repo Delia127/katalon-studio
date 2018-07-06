@@ -2,7 +2,6 @@ package com.kms.katalon.composer.execution.handlers;
 
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -36,13 +35,9 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
-import org.greenrobot.eventbus.EventBus;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
-import com.kms.katalon.application.RunningMode;
-import com.kms.katalon.application.usagetracking.TrackingEvent;
-import com.kms.katalon.application.usagetracking.UsageActionTrigger;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.ExecutionProfileManager;
@@ -56,7 +51,6 @@ import com.kms.katalon.composer.testsuite.parts.TestSuiteCompositePart;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.core.event.EventBusSingleton;
 import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
@@ -67,6 +61,7 @@ import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
+import com.kms.katalon.tracking.service.Trackings;
 
 @SuppressWarnings("restriction")
 public abstract class AbstractExecutionHandler {
@@ -286,7 +281,7 @@ public abstract class AbstractExecutionHandler {
                         ILauncher launcher = new IDELauncher(launcherManager, runConfig, launchMode);
                         launcherManager.addLauncher(launcher);
                         
-                        sendEventForTrackingTestSuiteExecution(launchMode, runConfig);
+                        trackTestSuiteExecution(launchMode, runConfig);
 
                         monitor.worked(1);
 
@@ -328,13 +323,8 @@ public abstract class AbstractExecutionHandler {
         job.schedule();
     }
     
-    private void sendEventForTrackingTestSuiteExecution(LaunchMode launchMode, IRunConfiguration runConfig) {
-        EventBus eventBus = EventBusSingleton.getInstance().getEventBus();
-        eventBus.post(new TrackingEvent(UsageActionTrigger.EXECUTE_TEST_SUITE, new HashMap<String, Object>() {{
-            put("isAnonymous", false);
-            put("runningMode", RunningMode.GUI.getMode());
-            put("launchMode", launchMode.toString());
-        }}));
+    private void trackTestSuiteExecution(LaunchMode launchMode, IRunConfiguration runConfig) {
+        Trackings.trackExecuteTestSuiteInGuiMode(launchMode.toString());
     }
 
     /**

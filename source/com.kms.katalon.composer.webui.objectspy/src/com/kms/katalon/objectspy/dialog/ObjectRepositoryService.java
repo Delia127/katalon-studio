@@ -48,8 +48,13 @@ public class ObjectRepositoryService {
                 }
             }
         }
-
-        return new SaveActionResult(testObjectIds, newSelectionOnExplorer);
+        
+        int savedObjectCount = dialogResult.getEntitySavedMap().size();
+        if (!dialogResult.isCreateFolderAsPageNameAllowed()) {
+            savedObjectCount -= dialogResult.getAllSelectedPages().size();
+        }
+        
+        return new SaveActionResult(testObjectIds, newSelectionOnExplorer, savedObjectCount);
     }
 
     private Set<ITreeEntity> addNonConflictedWebElement(WebPage pageElement, WebElement selectedWebElement, SaveToObjectRepositoryDialogResult dialogResult) throws Exception {
@@ -214,11 +219,15 @@ public class ObjectRepositoryService {
         List<Object[]> updatedTestObjectIds;
 
         Set<ITreeEntity> newSelectionOnExplorer;
+        
+        int savedObjectCount;
 
         public SaveActionResult(List<Object[]> updatedTestObjectIds,
-                Set<ITreeEntity> newSelectionOnExplorer) {
+                Set<ITreeEntity> newSelectionOnExplorer,
+                int savedObjectCount) {
             this.updatedTestObjectIds = updatedTestObjectIds;
             this.newSelectionOnExplorer = newSelectionOnExplorer;
+            this.savedObjectCount = savedObjectCount;
         }
 
         public List<Object[]> getUpdatedTestObjectIds() {
@@ -227,6 +236,10 @@ public class ObjectRepositoryService {
 
         public Set<ITreeEntity> getNewSelectionOnExplorer() {
             return newSelectionOnExplorer;
+        }
+        
+        public int getSavedObjectCount() {
+            return savedObjectCount;
         }
     }
 

@@ -105,6 +105,8 @@ public class SaveToObjectRepositoryDialog extends TreeEntitySelectionDialog {
 
     private final int HIGHLIGHTED_LENGTH = "Highlighted".length();
     
+    private int selectedHtmlElementCount = 0;
+    
     public SaveToObjectRepositoryDialog(Shell parentShell, boolean isCheckable, List<WebPage> pages,
             Object[] expandedHTMLElements) {
         super(parentShell, new EntityLabelProvider(), new FolderProvider(),
@@ -454,6 +456,8 @@ public class SaveToObjectRepositoryDialog extends TreeEntitySelectionDialog {
                         MessageDialog.openWarning(getParentShell(), StringConstants.WARN,
                                 StringConstants.DIA_MSG_PLS_SELECT_ELEMENT);
                         return;
+                    } else {
+                        selectedHtmlElementCount = checkedHTMLElements.length;
                     }
 
                     removeUncheckedElements(wrapConflictStatusPages);
@@ -560,7 +564,7 @@ public class SaveToObjectRepositoryDialog extends TreeEntitySelectionDialog {
     public SaveToObjectRepositoryDialogResult getDialogResult() throws Exception {
         SaveToObjectRepositoryDialogResult dialogResult = new SaveToObjectRepositoryDialogResult(
                 createFolderAsPageNameAllowed, getClonePages(), (FolderTreeEntity) getFirstResult(),
-                selectedConflictOptions);
+                selectedConflictOptions, selectedHtmlElementCount);
         return dialogResult;
     }
 
@@ -598,14 +602,17 @@ public class SaveToObjectRepositoryDialog extends TreeEntitySelectionDialog {
         private ConflictOptions selectedConflictOption;
 
         private Map<WebElement, FileEntity> entitySavedMap;
+        
+        private int selectedHtmlElementCount;
 
         public SaveToObjectRepositoryDialogResult(boolean createFolderAsPageNameAllowed, List<ConflictWebElementWrapper> selectedPages,
-                FolderTreeEntity selectedParentFolder, ConflictOptions selectedConflictOption) {
+                FolderTreeEntity selectedParentFolder, ConflictOptions selectedConflictOption, int selectedHtmlElementCount) {
 
             this.createFolderAsPageNameAllowed = createFolderAsPageNameAllowed;
             this.selectedParentFolder = selectedParentFolder;
             this.allSelectedPages = selectedPages;
             this.selectedConflictOption = selectedConflictOption;
+            this.selectedHtmlElementCount = selectedHtmlElementCount;
             entitySavedMap = new HashMap<>();
         }
 
@@ -627,6 +634,10 @@ public class SaveToObjectRepositoryDialog extends TreeEntitySelectionDialog {
 
         public Map<WebElement, FileEntity> getEntitySavedMap() {
             return entitySavedMap;
+        }
+        
+        public int getSelectedHtmlElementCount() {
+            return selectedHtmlElementCount;
         }
     }
 }

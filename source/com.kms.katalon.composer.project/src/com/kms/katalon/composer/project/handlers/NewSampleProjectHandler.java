@@ -22,6 +22,7 @@ import com.kms.katalon.composer.project.views.NewProjectDialog;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class NewSampleProjectHandler {
 
@@ -75,8 +76,13 @@ public class NewSampleProjectHandler {
             return;
         }
         eventBroker.send(EventConstants.PROJECT_CREATED, newProject);
+        trackCreatingSampleProject(newProject, sampleProjectType);
 
         // Open created project
         eventBroker.send(EventConstants.PROJECT_OPEN, newProject.getId());
+    }
+    
+    private static void trackCreatingSampleProject(ProjectEntity project, String sampleProjectType) {
+        Trackings.trackCreatingSampleProject(sampleProjectType, project.getUUID());
     }
 }
