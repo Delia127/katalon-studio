@@ -12,7 +12,6 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.PlatformUI;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.handler.AbstractHandler;
@@ -20,6 +19,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.project.constants.ProjectPreferenceConstants;
 import com.kms.katalon.composer.project.handlers.CloseProjectHandler;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.controller.ProjectController;
@@ -46,7 +46,7 @@ public class QuitHandler extends AbstractHandler {
 
     @Execute
     public boolean openConfirmMessageDialog() {
-        IPreferenceStore prefs = PlatformUI.getPreferenceStore();
+        IPreferenceStore prefs = PreferenceStoreManager.getPreferenceStore(IdConstants.KATALON_GENERAL_BUNDLE_ID);
         IWorkbench workbench = getActiveWorkbench();
         MessageDialogWithToggle confirm = MessageDialogWithToggle.open(MessageDialogWithToggle.CONFIRM,
                 workbench.getDisplay().getActiveShell(), StringConstants.HAND_QUIT_DIA_TITLE,
