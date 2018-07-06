@@ -382,6 +382,9 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                 cbbProjects.setItems();
                 AnalyticsTokenInfo tokenInfo = AnalyticsApiProvider.getToken(serverUrl,
                         email, password, new ProgressMonitorDialog(getShell()), analyticsSettingStore);
+                if (tokenInfo == null){
+                    return;
+                }
                 teams = AnalyticsApiProvider.getTeams(serverUrl,
                         email, password, tokenInfo, new ProgressMonitorDialog(getShell()));
                 teams = AnalyticsApiProvider.getTeams(serverUrl, email, password, tokenInfo, new ProgressMonitorDialog(getShell()));

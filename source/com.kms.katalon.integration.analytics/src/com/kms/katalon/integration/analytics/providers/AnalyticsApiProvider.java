@@ -34,6 +34,7 @@ import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 
@@ -170,8 +171,8 @@ public class AnalyticsApiProvider {
         } catch (InvocationTargetException exception) {
             final Throwable cause = exception.getCause();
             if (cause instanceof AnalyticsApiExeception) {
-//                 MessageDialog.openError(shell,
-//                 ComposerAnalyticsStringConstants.ERROR, cause.getMessage());
+                 MessageDialog.openError(monitorDialog.getShell(),
+                 "Error", cause.getMessage());
             } else {
                 LoggerSingleton.logError(cause);
             }
@@ -208,8 +209,8 @@ public class AnalyticsApiProvider {
         } catch (InvocationTargetException exception) {
             final Throwable cause = exception.getCause();
             if (cause instanceof AnalyticsApiExeception) {
-                // MessageDialog.openError(shell,
-                // ComposerAnalyticsStringConstants.ERROR, cause.getMessage());
+                 MessageDialog.openError(monitorDialog.getShell(),
+                 "Error", cause.getMessage());
             } else {
                 LoggerSingleton.logError(cause);
             }
@@ -253,8 +254,8 @@ public class AnalyticsApiProvider {
             } catch (IOException | GeneralSecurityException e) {
                 LoggerSingleton.logError(e);
             }
-//           MessageDialog.openError(Display.getCurrent().getActiveShell(), ComposerAnalyticsStringConstants.ERROR,
-//            IntegrationAnalyticsMessages.MSG_REQUEST_TOKEN_ERROR);
+           MessageDialog.openError(monitorDialog.getShell(), "Error",
+            IntegrationAnalyticsMessages.MSG_REQUEST_TOKEN_ERROR);
         }
         return null;
     }
