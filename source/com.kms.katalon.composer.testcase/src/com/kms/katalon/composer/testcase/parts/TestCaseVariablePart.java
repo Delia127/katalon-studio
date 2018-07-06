@@ -8,6 +8,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.MGenericTile;
 import org.eclipse.e4.ui.model.application.ui.basic.MCompositePart;
@@ -70,6 +71,7 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.execution.util.SyntaxUtil;
 import com.kms.katalon.groovy.constant.GroovyConstants;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class TestCaseVariablePart extends CPart implements TableActionOperator {
     private static final String DEFAULT_VARIABLE_NAME = "variable";
@@ -105,8 +107,10 @@ public class TestCaseVariablePart extends CPart implements TableActionOperator {
             }
         }
         initialize(mpart, partService);
+        
         createComponents();
     }
+    
 
     @PreDestroy
     @Override
@@ -370,6 +374,8 @@ public class TestCaseVariablePart extends CPart implements TableActionOperator {
         newVariable.setDefaultValue("''");
 
         executeOperation(new NewVariableOperation(this, newVariable));
+        
+        Trackings.trackCreatingObject("testCaseVariable");
     }
 
     private String generateNewPropertyName() {

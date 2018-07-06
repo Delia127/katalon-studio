@@ -39,7 +39,6 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -123,10 +122,10 @@ import com.kms.katalon.constants.GlobalMessageConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.event.EventBusSingleton;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.core.util.internal.JsonUtil;
-import com.kms.katalon.core.event.EventBusSingleton;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
@@ -161,6 +160,7 @@ import com.kms.katalon.objectspy.websocket.AddonSocketServer;
 import com.kms.katalon.objectspy.websocket.messages.AddonMessage;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
+import com.kms.katalon.tracking.service.Trackings;
 import com.kms.katalon.util.listener.EventListener;
 import com.kms.katalon.util.listener.EventManager;
 import com.sun.jna.platform.win32.User32;
@@ -205,8 +205,6 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     private boolean isPauseRecording;
 
-    private TableViewer actionTableViewer;
-
     private ToolBar toolBar;
 
     private ToolItem toolItemBrowserDropdown, tltmPauseAndResume, tltmStop;
@@ -244,6 +242,8 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     private List<VariableEntity> variables;
 
     private TestCaseEntity testCaseEntity;
+    
+    private boolean isOkPressed = false;
 
     /**
      * Create the dialog.
@@ -333,7 +333,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             tltmStop.setEnabled(true);
             resume();
             resetInput();
-            sendEventForTracking();
+            Trackings.trackRecord("web");
         } catch (final IEAddonNotInstalledException e) {
             stop();
             showMessageForMissingIEAddon();
@@ -347,11 +347,6 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             logger.error(e);
             MessageDialog.openError(getParentShell(), StringConstants.ERROR_TITLE, e.getMessage());
         }
-    }
-    
-    private void sendEventForTracking() {
-        EventBus eventBus = EventBusSingleton.getInstance().getEventBus();
-        eventBus.post(new TrackingEvent(UsageActionTrigger.RECORD, "web"));
     }
 
     private void startInstantSession() throws Exception {
@@ -860,10 +855,12 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         for (ASTNodeWrapper node : recordStepsView.getTreeTableInput().getNodeWrappersFromFirstSelected()) {
             block.addChild(node.clone());
         }
+        Trackings.trackRecordRunSteps("from");
         executeSelectedSteps(cloneScript);
     }
 
     private void runAllSteps() {
+        Trackings.trackRecordRunSteps("all");
         executeSelectedSteps(recordStepsView.getWrapper());
     }
 
@@ -875,6 +872,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         for (ASTNodeWrapper node : recordStepsView.getTreeTableInput().getSelectedNodeWrappers()) {
             block.addChild(node.clone());
         }
+        Trackings.trackRecordRunSteps("selected");
         executeSelectedSteps(cloneScript);
     }
 
@@ -1425,17 +1423,26 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     @Override
     protected void okPressed() {
         Shell shell = getShell();
+        int stepCount = countAllSteps();
+        isOkPressed = true;
         try {
             if (!addElementToObjectRepository(shell)) {
                 return;
             }
-
             super.okPressed();
+            
             dispose();
+            
+            Trackings.trackCloseRecord("web", "ok", stepCount);
         } catch (Exception exception) {
             logger.error(exception);
             MessageDialog.openError(shell, StringConstants.ERROR_TITLE, exception.getMessage());
-        }
+        } 
+    }
+    
+    private int countAllSteps() {
+        return recordStepsView.getTreeTable().getTree().getItemCount();
+//        return recordedActions.size();
     }
 
     @SuppressWarnings("unchecked")
@@ -1477,7 +1484,11 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     public boolean close() {
         updateStore();
         disposed = true;
-        return super.close();
+        boolean result = super.close();
+        if (!isOkPressed) {
+            Trackings.trackCloseRecord("web", "cancel", 0);
+        }
+        return result;
     }
 
     private void updateStore() {
@@ -1667,7 +1678,6 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                     return;
                 }
                 replaceCapturedObjectInActionMapping(oldNewElement[0], oldNewElement[1]);
-                actionTableViewer.refresh();
                 return;
             case EventConstants.WORKSPACE_CLOSED:
                 cancelPressed();
@@ -1714,6 +1724,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     @Override
     protected void setInput() {
+        Boolean continueRecording = null;
         if (testCaseEntity != null) {
             MessageDialog dialog = new MessageDialog(getShell(), StringConstants.CONFIRMATION, null,
                     MessageFormat.format(ComposerWebuiRecorderMessageConstants.DIA_CONFIRM_CONTINUE_RECORDING,
@@ -1724,6 +1735,9 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             if (dialog.open() != MessageDialog.OK) {
                 variables = Collections.emptyList();
                 nodeWrappers.clear();
+                continueRecording = false;
+            } else {
+                continueRecording = true;
             }
         }
         recordStepsView.addVariables(variables.toArray(new VariableEntity[variables.size()]));
@@ -1766,6 +1780,8 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         elements.addAll(allPages);
         capturedObjectComposite.setInput(elements);
         capturedObjectComposite.refreshTree(null);
+        
+        Trackings.trackOpenWebRecord(continueRecording);
     }
 
     private Map<String, List<RecordedElementMethodCallWrapper>> getTestObjectReferences(ASTNodeWrapper wrapper) {
@@ -1836,7 +1852,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         }
         return keywordNodeIndex;
     }
-
+    
     private Map<ObjectSpyEvent, Set<EventListener<ObjectSpyEvent>>> eventListeners = new HashMap<>();
 
     @Override

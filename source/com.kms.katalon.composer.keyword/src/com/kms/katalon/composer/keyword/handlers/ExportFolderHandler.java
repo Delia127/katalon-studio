@@ -32,6 +32,7 @@ import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class ExportFolderHandler {
 
@@ -68,6 +69,7 @@ public class ExportFolderHandler {
 
             File exportedFolder = new File(selectedOutputPath);
             if (exportedFolder != null && exportedFolder.exists() && exportedFolder.isDirectory()) {
+                Trackings.trackExportKeywords();
                 exportKeywordsDirectory(shell, selectedObjects[0], exportedFolder);
             }
 

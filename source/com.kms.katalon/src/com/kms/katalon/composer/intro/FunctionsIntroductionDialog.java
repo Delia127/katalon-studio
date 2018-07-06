@@ -4,8 +4,11 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 
@@ -13,6 +16,7 @@ import com.kms.katalon.composer.components.impl.wizard.IWizardPage;
 import com.kms.katalon.composer.components.impl.wizard.SimpleWizardDialog;
 import com.kms.katalon.constants.ImageConstants;
 import com.kms.katalon.constants.StringConstants;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class FunctionsIntroductionDialog extends SimpleWizardDialog {
 
@@ -25,6 +29,10 @@ public class FunctionsIntroductionDialog extends SimpleWizardDialog {
     public FunctionsIntroductionDialog(Shell parentShell) {
         super(parentShell);
     }
+    
+    private Button btnBack;
+    
+    private Button btnNext;
 
     @Override
     protected void initializeBounds() {
@@ -48,13 +56,37 @@ public class FunctionsIntroductionDialog extends SimpleWizardDialog {
         GridLayout layout = new GridLayout();
         buttonBarComposite.setLayout(layout);
 
-        createButton(buttonBarComposite, BACK_BUTTON_ID, StringConstants.WZ_SETUP_BTN_BACK);
-        createButton(buttonBarComposite, NEXT_BUTTON_ID, StringConstants.WZ_SETUP_BTN_NEXT);
+        btnBack = createButton(buttonBarComposite, BACK_BUTTON_ID, StringConstants.WZ_SETUP_BTN_BACK);
+        btnNext = createButton(buttonBarComposite, NEXT_BUTTON_ID, StringConstants.WZ_SETUP_BTN_NEXT);
         createButton(buttonBarComposite, FINISH_BUTTON_ID, StringConstants.DIA_CLOSE);
         layout.numColumns = buttonMap.size();
+        registerEventListeners();
         return buttonBarComposite;
     }
 
+    private void registerEventListeners() {
+        btnBack.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Trackings.trackQuickOverview("back");
+            }
+        });
+        
+        btnNext.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Trackings.trackQuickOverview("next");
+            }
+        });
+    }
+
+    @Override
+    public boolean close() {
+        boolean returnValue = super.close();
+        Trackings.trackQuickOverview("close");;
+        return returnValue;
+    }
+    
     @Override
     protected void setInput() {
         super.setInput();

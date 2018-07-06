@@ -31,6 +31,7 @@ import com.kms.katalon.entity.dal.exception.FilePathTooLongException;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class NewTestSuiteHandler {
 
@@ -81,6 +82,8 @@ public class NewTestSuiteHandler {
                         StringConstants.HAND_ERROR_MSG_UNABLE_TO_CREATE_TEST_SUITE);
                 return;
             }
+            
+            Trackings.trackCreatingObject("testSuite");
 
             eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
             eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, new TestSuiteTreeEntity(testSuite,

@@ -2,7 +2,6 @@ package com.kms.katalon.composer.testsuite.collection.part.job;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -11,11 +10,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
-import org.greenrobot.eventbus.EventBus;
 
-import com.kms.katalon.application.RunningMode;
-import com.kms.katalon.application.usagetracking.TrackingEvent;
-import com.kms.katalon.application.usagetracking.UsageActionTrigger;
 import com.kms.katalon.composer.components.impl.dialogs.MissingMobileDriverWarningDialog;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -26,7 +21,6 @@ import com.kms.katalon.composer.testsuite.collection.part.launcher.IDETestSuiteC
 import com.kms.katalon.composer.testsuite.collection.part.launcher.SubIDELauncher;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
-import com.kms.katalon.core.event.EventBusSingleton;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -45,6 +39,7 @@ import com.kms.katalon.execution.launcher.TestSuiteCollectionLauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
 import com.kms.katalon.execution.mobile.exception.MobileSetupException;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class TestSuiteCollectionBuilderJob extends Job {
 
@@ -106,7 +101,7 @@ public class TestSuiteCollectionBuilderJob extends Job {
                     tsLaunchers, testSuiteCollectionEntity.getExecutionMode(), reportCollection);
             launcherManager.addLauncher(launcher);
             
-            sendEventForTrackingTestSuiteColletionExecution();
+            trackTestSuiteColletionExecution();
             
             reportController.updateReportCollection(reportCollection);
             return Status.OK_STATUS;
@@ -120,12 +115,8 @@ public class TestSuiteCollectionBuilderJob extends Job {
         }
     }
     
-    private void sendEventForTrackingTestSuiteColletionExecution() {
-        EventBus eventBus = EventBusSingleton.getInstance().getEventBus();
-        eventBus.post(new TrackingEvent(UsageActionTrigger.EXECUTE_TEST_SUITE_COLLECTION, new HashMap<String, Object>() {{
-            put("isAnonymous", false);
-            put("runningMode", RunningMode.GUI.getMode());
-        }}));
+    private void trackTestSuiteColletionExecution() {
+        Trackings.trackExecuteTestSuiteCollectionInGuiMode();
     }
 
     private boolean checkInstallWebDriver(TestSuiteRunConfiguration tsRunConfig) {

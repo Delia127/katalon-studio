@@ -20,6 +20,7 @@ import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.core.event.EventBusSingleton;
+import com.kms.katalon.tracking.service.Trackings;
 
 
 public class SaveAllHandler {
@@ -77,7 +78,8 @@ public class SaveAllHandler {
         } finally {
 //            Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector
 //                    .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.SAVE_ALL, RunningMode.GUI)));
-            sendEventForTracking();
+//            sendEventForTracking();
+            Trackings.trackSaveAll();
         }
     }
     

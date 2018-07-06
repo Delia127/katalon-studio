@@ -27,6 +27,7 @@ import com.kms.katalon.composer.webservice.view.WSRequestPartUI;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class OpenWebServiceRequestObjectHandler {
 
@@ -68,6 +69,7 @@ public class OpenWebServiceRequestObjectHandler {
             if (stack != null) {
                 if (mPart == null) {
                     WSRequestPartUI.create(requestObject, stack);
+                    Trackings.trackOpenObject("webServiceRequest");
                 } else {
                     stack.setSelectedElement(mPart);
                 }

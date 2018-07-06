@@ -65,10 +65,7 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
-import org.greenrobot.eventbus.EventBus;
 
-import com.kms.katalon.application.usagetracking.TrackingEvent;
-import com.kms.katalon.application.usagetracking.UsageActionTrigger;
 import com.kms.katalon.composer.components.dialogs.MessageDialogWithLink;
 import com.kms.katalon.composer.components.impl.control.CTreeViewer;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
@@ -104,7 +101,6 @@ import com.kms.katalon.composer.mobile.recorder.constants.MobileRecorderImageCon
 import com.kms.katalon.composer.mobile.recorder.constants.MobileRecorderStringConstants;
 import com.kms.katalon.composer.mobile.recorder.exceptions.MobileRecordException;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
-import com.kms.katalon.core.event.EventBusSingleton;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.core.mobile.keyword.internal.AndroidProperties;
@@ -115,6 +111,7 @@ import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.core.testobject.TestObjectProperty;
 import com.kms.katalon.execution.mobile.constants.StringConstants;
 import com.kms.katalon.integration.kobiton.entity.KobitonApplication;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class MobileRecorderDialog extends AbstractDialog implements MobileElementInspectorDialog, MobileAppDialog {
     private static final int DIALOG_MARGIN_OFFSET = 5;
@@ -166,7 +163,9 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         } catch (IOException e) {
             LoggerSingleton.logError(e);
         }
-        return super.close();
+        boolean result = super.close();
+        Trackings.trackCloseRecord("mobile", "cancel", 0);
+        return result;
     }
 
     @Override
@@ -288,7 +287,12 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
             return;
         }
         targetFolderEntity = dialog.getSelectedFolderTreeEntity();
+        
+        int recordedActionCount = getRecordedActions().size();
+        
         super.okPressed();
+        
+        Trackings.trackCloseRecord("mobile", "ok", recordedActionCount);
     }
 
     public List<MobileActionMapping> getRecordedActions() {
@@ -844,8 +848,7 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
             actionTableViewer.refresh();
             
             //send event for tracking
-            EventBus eventBus = EventBusSingleton.getInstance().getEventBus();
-            eventBus.post(new TrackingEvent(UsageActionTrigger.RECORD, "mobile"));
+            Trackings.trackRecord("mobile");
         } catch (InvocationTargetException | InterruptedException ex) {
             // If user intentionally cancel the progress, don't need to show error message
             if (ex instanceof InvocationTargetException) {

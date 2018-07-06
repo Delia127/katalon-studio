@@ -58,6 +58,7 @@ import com.kms.katalon.objectspy.dialog.SaveToObjectRepositoryDialog.SaveToObjec
 import com.kms.katalon.objectspy.element.WebElement;
 import com.kms.katalon.objectspy.element.WebFrame;
 import com.kms.katalon.objectspy.element.WebPage;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class RecordHandler {
 
