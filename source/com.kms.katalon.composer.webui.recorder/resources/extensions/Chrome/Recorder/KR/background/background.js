@@ -22,7 +22,7 @@ function openPanel(tab) {
 
     let contentWindowId = tab.windowId;
     if (master[contentWindowId] != undefined) {
-        browser.windows.update(master[contentWindowId], {
+        chrome.windows.update(master[contentWindowId], {
             focused: true
         }).catch(function(e) {
             master[contentWindowId] == undefined;
@@ -39,8 +39,8 @@ function openPanel(tab) {
     }, 1000);
 
     var f = function(height, width) {
-    browser.windows.create({
-        url: browser.runtime.getURL("panel/index.html"),
+    chrome.windows.create({
+        url: chrome.runtime.getURL("panel/index.html"),
         type: "popup",
         height: height,
         width: width
@@ -53,7 +53,7 @@ function openPanel(tab) {
                     clearInterval(interval);
                 }
 
-                browser.tabs.query({
+                chrome.tabs.query({
                     active: true,
                     windowId: panelWindowInfo.id,
                     status: "complete"
@@ -73,7 +73,7 @@ function openPanel(tab) {
             }, 200);
         });
     }).then(function bridge(panelWindowInfo){
-        return browser.tabs.sendMessage(panelWindowInfo.tabs[0].id, {
+        return chrome.tabs.sendMessage(panelWindowInfo.tabs[0].id, {
             selfWindowId: panelWindowInfo.id,
             commWindowId: contentWindowId
         });
@@ -85,70 +85,70 @@ function openPanel(tab) {
     getWindowSize(f);
 }
 
-browser.browserAction.onClicked.addListener(openPanel);
+chrome.browserAction.onClicked.addListener(openPanel);
 
-browser.windows.onRemoved.addListener(function(windowId) {
+chrome.windows.onRemoved.addListener(function(windowId) {
     let keys = Object.keys(master);
     for (let key of keys) {
         if (master[key] === windowId) {
             delete master[key];
             if (keys.length === 1) {
-                browser.contextMenus.removeAll();
+                chrome.contextMenus.removeAll();
             }
         }
     }
 });
 
 function createMenus() {
-    browser.contextMenus.create({
+    chrome.contextMenus.create({
         id: "verifyText",
         title: "verifyText",
         documentUrlPatterns: ["<all_urls>"],
         contexts: ["all"]
     });
-    browser.contextMenus.create({
+    chrome.contextMenus.create({
         id: "verifyTitle",
         title: "verifyTitle",
         documentUrlPatterns: ["<all_urls>"],
         contexts: ["all"]
     });
-    browser.contextMenus.create({
+    chrome.contextMenus.create({
         id: "verifyValue",
         title: "verifyValue",
         documentUrlPatterns: ["<all_urls>"],
         contexts: ["all"]
     });
-    browser.contextMenus.create({
+    chrome.contextMenus.create({
         id: "assertText",
         title: "assertText",
         documentUrlPatterns: ["<all_urls>"],
         contexts: ["all"]
     });
-    browser.contextMenus.create({
+    chrome.contextMenus.create({
         id: "assertTitle",
         title: "assertTitle",
         documentUrlPatterns: ["<all_urls>"],
         contexts: ["all"]
     });
-    browser.contextMenus.create({
+    chrome.contextMenus.create({
         id: "assertValue",
         title: "assertValue",
         documentUrlPatterns: ["<all_urls>"],
         contexts: ["all"]
     });
-    browser.contextMenus.create({
+    chrome.contextMenus.create({
         id: "storeText",
         title: "storeText",
         documentUrlPatterns: ["<all_urls>"],
         contexts: ["all"]
     });
-    browser.contextMenus.create({
+    chrome.contextMenus.create({
         id: "storeTitle",
         title: "storeTitle",
         documentUrlPatterns: ["<all_urls>"],
         contexts: ["all"]
     });
-    browser.contextMenus.create({
+    chrome.contextMenus.create({
         id: "storeValue",
         title: "storeValue",
         documentUrlPatterns: ["<all_urls>"],
@@ -157,18 +157,18 @@ function createMenus() {
 }
 
 var port;
-browser.contextMenus.onClicked.addListener(function(info, tab) {
+chrome.contextMenus.onClicked.addListener(function(info, tab) {
     port.postMessage({ cmd: info.menuItemId });
 });
 
-browser.runtime.onConnect.addListener(function(m) {
+chrome.runtime.onConnect.addListener(function(m) {
     port = m;
 });
 
 /* KAT-BEGIN remove showing sideex docs
-browser.runtime.onInstalled.addListener(function(details) {
+chrome.runtime.onInstalled.addListener(function(details) {
     if (details.reason == "install" || details.reason == "update") {
-        browser.tabs.create({url: "http://sideex.org"});
+        chrome.tabs.create({url: "http://sideex.org"});
     }
 })
 KAT-END */

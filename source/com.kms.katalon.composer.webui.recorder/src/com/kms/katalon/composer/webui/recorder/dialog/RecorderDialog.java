@@ -177,7 +177,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
 	public static final String DIA_INSTANT_BROWSER_CHROME_RECORDER_EXTENSION_PATH = "<Katalon build path>/Resources/extensions/Chrome/Recorder Packed"; //$NON-NLS-1$
 
-	public static final String RECORDER_FIREFOX_ADDON_URL = "https://addons.mozilla.org/en-US/firefox/addon/katalon-recorder/"; //$NON-NLS-1$
+	public static final String RECORDER_FIREFOX_ADDON_URL = "https://addons.mozilla.org/en-US/firefox/addon/katalon-automation-record/"; //$NON-NLS-1$
 
 	private static final int ANY_PORT_NUMBER = 0;
 
@@ -1328,6 +1328,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 		DropdownGroup activeBrowser = dropdown.addDropdownGroupItem(StringConstants.MENU_ITEM_ACTIVE_BROWSERS,
 				ImageManager.getImage(IImageKeys.ACTIVE_BROWSER_16));
 		addActiveBrowserItem(activeBrowser, WebUIDriverType.CHROME_DRIVER);
+		addActiveBrowserItem(activeBrowser, WebUIDriverType.FIREFOX_DRIVER);
 
 		if (Platform.OS_WIN32.equals(Platform.getOS())) {
 			addNewBrowserItem(newBrowser, WebUIDriverType.IE_DRIVER);

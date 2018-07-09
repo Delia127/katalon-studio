@@ -95,7 +95,7 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
 
     public static final String OBJECT_SPY_CHROME_ADDON_URL = "https://chrome.google.com/webstore/detail/katalon-utilities/ljdobmomdgdljniojadhoplhkpialdid"; //$NON-NLS-1$
 
-    public static final String OBJECT_SPY_FIREFOX_ADDON_URL = "https://addons.mozilla.org/en-US/firefox/addon/katalon-object-spy"; //$NON-NLS-1$
+    public static final String OBJECT_SPY_FIREFOX_ADDON_URL = "https://addons.mozilla.org/en-US/firefox/addon/katalon-automation-record"; //$NON-NLS-1$
 
     private Text txtStartUrl;
 
@@ -318,6 +318,7 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
         DropdownGroup activeBrowser = dropdown.addDropdownGroupItem(StringConstants.MENU_ITEM_ACTIVE_BROWSERS,
                 ImageConstants.IMG_16_ACTIVE_BROWSER);
         addActiveBrowserItem(activeBrowser, WebUIDriverType.CHROME_DRIVER);
+        addActiveBrowserItem(activeBrowser, WebUIDriverType.FIREFOX_DRIVER);
 
         if (Platform.OS_WIN32.equals(Platform.getOS())) {
             addNewBrowserItem(newBrowser, WebUIDriverType.IE_DRIVER);

@@ -66,9 +66,21 @@ class KURecorder {
 
 
         if (this.window.addEventListener) {
-            this.window.addEventListener("message", this.rec_receiveMessage, false);
+            function register() {
+                var listener = function (event) {
+                    self.rec_receiveMessage.call(self, event);
+                }
+                this.window.addEventListener("message", listener, false);
+            }
+            register.call(this);
         } else {
-            this.window.attachEvent("onmessage", this.rec_receiveMessage);
+            function register() {
+                var listener = function (event) {
+                    self.rec_receiveMessage.call(self, event);
+                }
+                this.window.attachEvent("onmessage", self.rec_receiveMessage);
+            }
+            register.call(this);
         }
         this.rec_navigateActionRecorded = false;
         this.rec_infoDiv; // parent div to contains information
@@ -93,9 +105,21 @@ class KURecorder {
         }
         delete this.eventListeners;
         if (this.window.addEventListener) {
-            this.window.removeEventListener("message", this.rec_receiveMessage);
+            function unregister() {
+                var listener = function (event) {
+                    self.rec_receiveMessage.call(self, event);
+                }
+                this.window.removeEventListener("message", listener, false);
+            }
+            register.call(this);
         } else {
-            this.window.detachEvent("onmessage", this.rec_receiveMessage);
+            function unregister() {
+                var listener = function (event) {
+                    self.rec_receiveMessage.call(self, event);
+                }
+                this.window.detachEvent("message", listener);
+            }
+            register.call(this);
         }
         this.rec_removeInfoDiv();
         this.rec_clearHoverElement();
@@ -137,14 +161,14 @@ class KURecorder {
     rec_receiveMessage (event) {
         // Check if sender is from any child frame belong to this window
         var childFrame = null;
-        var arrFrames = this.document.getElementsByTagName("IFRAME");
+        var arrFrames = this.window.document.getElementsByTagName("IFRAME");
         for (var i = 0; i < arrFrames.length; i++) {
             if (arrFrames[i].contentWindow === event.source) {
                 childFrame = arrFrames[i];
                 break;
             }
         }
-        arrFrames = this.document.getElementsByTagName("FRAME");
+        arrFrames = this.window.document.getElementsByTagName("FRAME");
         for (var i = 0; i < arrFrames.length; i++) {
             if (arrFrames[i].contentWindow === event.source) {
                 childFrame = arrFrames[i];
@@ -155,17 +179,16 @@ class KURecorder {
             return;
         }
 
-        if(typeof(object) === 'object'){
-            var object = JSON.parse(event.data);
-            var action = {};
-            action["actionName"] = "goIntoFrame";
-            action["actionData"] = "";
-            var json = mapDOMForRecord(action, childFrame, window);
-            if (json) {
-                this.rec_setParentJson(object, json);
-            }
-            this.rec_processObject(object);
-        }          
+        var object = JSON.parse(event.data);
+        var action = {};
+        action["actionName"] = "goIntoFrame";
+        action["actionData"] = "";
+        var json = mapDOMForRecord(action, childFrame, window);
+        if (json) 
+            this.rec_setParentJson(object, json);
+        
+        this.rec_processObject(object);
+        
     }
 
     rec_processObject (object) {

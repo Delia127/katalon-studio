@@ -13,12 +13,12 @@ var runData = {};
 var curTabID = 0;
 var curWinID = 0;
 
-chrome.tabs.onSelectionChanged.addListener(function (tabId, selectInfo) {
+chrome.tabs.onActivated.addListener(function(activeInfo) {
     if (clientSocket !== null) {
         return;
     }
-    curTabID = tabId;
-    curWinID = selectInfo.windowId;
+    curTabID = activeInfo.tabId;
+    curWinID = activeInfo.windowId;
 });
 
 chrome.windows.onFocusChanged.addListener(function (windowId) {
@@ -258,7 +258,7 @@ function handleServerMessage(message) {
             var message = {
                 command: BROWSER_INFO,
                 data: {
-                    browserName: CHROME
+                    browserName : bowser.name
                 }
             }
             clientSocket.send(JSON.stringify(message));

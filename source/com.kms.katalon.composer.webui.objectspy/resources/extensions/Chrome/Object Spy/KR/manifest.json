@@ -66,7 +66,7 @@
 
     "background":
     {
-        "scripts": ["common/browser-polyfill.js", "background/background.js", "background/kar.js", "chrome_variables_init.js",
+        "scripts": ["content/bowser.js","common/browser-polyfill.js", "background/background.js", "background/kar.js", "chrome_variables_init.js",
             "katalon/constants.js", "katalon/chrome_variables_default.js", "chrome_variables_init.js", "katalon/chrome_common.js", "katalon/background.js"]
     },
 
