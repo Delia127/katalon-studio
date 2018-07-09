@@ -135,7 +135,7 @@ public class AuthenticationDialog extends Dialog {
             boolean encryptionEnabled = analyticsSettingStore.isEncryptionEnabled();
             serverUrl.setText(analyticsSettingStore.getServerEndpoint(encryptionEnabled));
             password.setText(analyticsSettingStore.getPassword(encryptionEnabled));
-            if (analyticsSettingStore.getEmail(encryptionEnabled).equals(StringUtils.EMPTY)) {
+            if (StringUtils.isEmpty(analyticsSettingStore.getEmail(encryptionEnabled))) {
                 email.setText(ApplicationInfo.getAppProperty(ApplicationStringConstants.ARG_EMAIL));
             } else {
                 email.setText(analyticsSettingStore.getEmail(encryptionEnabled));

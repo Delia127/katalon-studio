@@ -117,7 +117,13 @@ public class UploadSelectionDialog extends Dialog {
         btnCreate.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                HashMap<String, String> results = getInfo();
+                HashMap<String, String> results = null;
+                try {
+                    results = getInfo(analyticsSettingStore.isEncryptionEnabled());
+                } catch (IOException e1) {
+                    LoggerSingleton.logError(e1);
+                    return;
+                }
                 AnalyticsTeam team = null;
 
                 if (teams != null && teams.size() > 0) {
@@ -180,7 +186,14 @@ public class UploadSelectionDialog extends Dialog {
 
     private void setProjectsBasedOnTeam(List<AnalyticsTeam> teams) {
         AnalyticsTeam team = teams.get(AnalyticsApiProvider.getDefaultTeamIndex(analyticsSettingStore, teams));
-        HashMap<String, String> info = getInfo();
+
+        HashMap<String, String> info = null;
+        try {
+            info = getInfo(analyticsSettingStore.isEncryptionEnabled());
+        } catch (IOException e) {
+            LoggerSingleton.logError(e);
+            return;
+        }
         String serverUrl = info.get("serverUrl");
         String email = info.get("email");
         String password = info.get("password");
@@ -194,12 +207,12 @@ public class UploadSelectionDialog extends Dialog {
         }
     }
 
-    private HashMap<String, String> getInfo() {
+    private HashMap<String, String> getInfo(boolean encryptionEnabled) {
         HashMap<String, String> results = new HashMap<String, String>();
         try {
-            results.put("serverUrl", analyticsSettingStore.getServerEndpoint(true));
-            results.put("email", analyticsSettingStore.getEmail(true));
-            results.put("password", analyticsSettingStore.getPassword(true));
+            results.put("serverUrl", analyticsSettingStore.getServerEndpoint(encryptionEnabled));
+            results.put("email", analyticsSettingStore.getEmail(encryptionEnabled));
+            results.put("password", analyticsSettingStore.getPassword(encryptionEnabled));
         } catch (IOException | GeneralSecurityException e) {
             e.printStackTrace();
             return null;

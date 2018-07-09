@@ -81,7 +81,10 @@ public class ComposerIntegrationAnalyticsMessageConstants extends NLS {
     
     public static String REPORT_ERROR_MSG_UNABLE_TO_UPLOAD_REPORT;
     
-   
+    public static String MUST_ENTER_REQUIRED_INFORMATION;
+    
+    public static String MUST_CONNECT_SUCCESSFULLY;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerIntegrationAnalyticsMessageConstants.class);

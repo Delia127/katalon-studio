@@ -5,8 +5,10 @@ import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -19,6 +21,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -30,6 +33,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.analytics.constants.ComposerAnalyticsStringConstants;
 import com.kms.katalon.composer.integration.analytics.constants.ComposerIntegrationAnalyticsMessageConstants;
 import com.kms.katalon.composer.integration.analytics.dialog.NewProjectDialog;
+import com.kms.katalon.constants.ActivationPreferenceConstants;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
@@ -39,6 +43,9 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
+import com.kms.katalon.preferences.internal.PreferenceStoreManager;
+import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
+import com.kms.katalon.util.CryptoUtil;
 
 public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp {
 
@@ -247,6 +254,18 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         if (!isInitialized()) {
             return true;
         }
+        if (cbbTeams.getSelectionIndex() == -1){
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), ComposerAnalyticsStringConstants.ERROR,
+                    ComposerIntegrationAnalyticsMessageConstants.MUST_CONNECT_SUCCESSFULLY);
+            return false;
+        }
+        
+        if (StringUtils.isEmpty(txtEmail.getText()) || StringUtils.isEmpty(txtPassword.getText()) || StringUtils.isEmpty(txtServerUrl.getText())){
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), ComposerAnalyticsStringConstants.ERROR,
+                    ComposerIntegrationAnalyticsMessageConstants.MUST_ENTER_REQUIRED_INFORMATION);
+            return false;
+        }
+            
         changeEnabled();
         updateDataStore();
         return super.performOk();
@@ -290,7 +309,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                             analyticsSettingStore.getEmail(encryptionEnabled), password);
                 }
             }
-
+            
             txtEmail.setText(analyticsSettingStore.getEmail(encryptionEnabled));
             txtPassword.setText(password);
             chckEncrypt.setSelection(analyticsSettingStore.isEncryptionEnabled());
@@ -300,6 +319,16 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             cbxAttachScreenshot.setSelection(analyticsSettingStore.isAttachScreenshot());
             cbxAttachLog.setSelection(analyticsSettingStore.isAttachLog());
             cbxAttachCaptureVideo.setSelection(analyticsSettingStore.isAttachCapturedVideos());
+            
+            ScopedPreferenceStore preferenceStore = PreferenceStoreManager.getPreferenceStore(ActivationPreferenceConstants.ACTIVATION_INFO_STORAGE);
+            String preferenceEmail = preferenceStore.getString(ActivationPreferenceConstants.ACTIVATION_INFO_EMAIL);
+            String preferencePassword = preferenceStore.getString(ActivationPreferenceConstants.ACTIVATION_INFO_PASSWORD);
+            
+            if(!StringUtils.isEmpty(preferenceEmail) && !StringUtils.isEmpty(preferencePassword)){
+                txtEmail.setText(CryptoUtil.decode(CryptoUtil.getDefault(preferenceEmail)));
+                txtPassword.setText(CryptoUtil.decode(CryptoUtil.getDefault(preferencePassword)));
+            }
+            
         } catch (IOException | GeneralSecurityException e) {
             LoggerSingleton.logError(e);
             MultiStatusErrorDialog.showErrorDialog(e, ComposerAnalyticsStringConstants.ERROR, e.getMessage());
@@ -378,6 +407,11 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                 String serverUrl = txtServerUrl.getText();
                 String email = txtEmail.getText();
                 String password = txtPassword.getText();
+                if (StringUtils.isEmpty(serverUrl) || StringUtils.isEmpty(email)|| StringUtils.isEmpty(password)){
+                    MessageDialog.openError(Display.getCurrent().getActiveShell(), ComposerAnalyticsStringConstants.ERROR,
+                            ComposerIntegrationAnalyticsMessageConstants.MUST_ENTER_REQUIRED_INFORMATION);
+                    return;
+                }
                 cbbTeams.setItems();
                 cbbProjects.setItems();
                 AnalyticsTokenInfo tokenInfo = AnalyticsApiProvider.getToken(serverUrl,

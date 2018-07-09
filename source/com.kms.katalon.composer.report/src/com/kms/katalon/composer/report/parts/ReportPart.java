@@ -119,6 +119,7 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.util.ExecutionUtil;
+import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
@@ -128,6 +129,7 @@ import com.kms.katalon.integration.analytics.report.AnalyticsReportService;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
+import com.kms.katalon.util.CryptoUtil;
 
 public class ReportPart implements EventHandler, IComposerPartEvent {
 
@@ -675,7 +677,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
             }
         });
 
-        uploadMenuItem.setText("Upload Report");
+        uploadMenuItem.setText(ComposerReportMessageConstants.BTN_UPLOAD);
         uploadMenuItem.setID(1);
         uploadMenuItem.setEnabled(analyticsReportService.isIntegrationEnabled());
         uploadMenuItem.addSelectionListener(new SelectionAdapter() {
@@ -711,16 +713,29 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
             String serverUrl = analyticsSettingStore.getServerEndpoint(analyticsSettingStore.isEncryptionEnabled());
             String analyticsEmail = analyticsSettingStore.getEmail(analyticsSettingStore.isEncryptionEnabled());
             String analyticsPassword = analyticsSettingStore.getPassword(analyticsSettingStore.isEncryptionEnabled());
-            if (analyticsPassword.equals(StringUtils.EMPTY) && !preferencePassword.equals(StringUtils.EMPTY)) {
-                // get credentials from preference store
-                analyticsSettingStore.setEmail(preferenceEmail, encryptionEnabled);
-                analyticsSettingStore.setPassword(preferencePassword, encryptionEnabled);
-                analyticsSettingStore.enableIntegration(true);
-                analyticsSettingStore.enableEncryption(encryptionEnabled);
+            
+            // if serverUrl is empty, get default 
+            if (StringUtils.isEmpty(serverUrl)){
+                serverUrl = AnalyticsStringConstants.ANALYTICS_SERVER_TARGET_ENDPOINT;
             }
 
-            if (analyticsPassword.equals(StringUtils.EMPTY)) {
-                // no credentials -> get credentials by using pop up
+            // set credentials from preference store to analytics setting store
+            if (StringUtils.isEmpty(analyticsPassword) && !StringUtils.isEmpty(preferencePassword)) {
+                analyticsEmail = CryptoUtil.decode(CryptoUtil.getDefault(preferenceEmail));
+                analyticsPassword = CryptoUtil.decode(CryptoUtil.getDefault(preferencePassword));
+                
+                analyticsSettingStore.enableEncryption(encryptionEnabled);
+                analyticsSettingStore.setEmail(analyticsEmail, encryptionEnabled);
+                analyticsSettingStore.setPassword(analyticsPassword, encryptionEnabled);
+                analyticsSettingStore.setServerEndPoint(serverUrl, encryptionEnabled);
+                analyticsSettingStore.enableIntegration(true);
+                
+                // empty preference store password
+                preferenceStore.setValue(ActivationPreferenceConstants.ACTIVATION_INFO_PASSWORD, StringUtils.EMPTY);
+            }
+            
+            // no credentials -> get credentials by using pop up
+            if (StringUtils.isEmpty(analyticsPassword) || StringUtils.isEmpty(analyticsEmail)) {
                 AuthenticationDialog authenticationDialog = new AuthenticationDialog(shell, true);
                 int resultCode = authenticationDialog.open();
                 if (resultCode == AuthenticationDialog.CANCEL_ID) {
@@ -731,6 +746,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                 analyticsPassword = analyticsSettingStore.getPassword(analyticsSettingStore.isEncryptionEnabled());
                 analyticsEmail = analyticsSettingStore.getEmail(analyticsSettingStore.isEncryptionEnabled());
             }
+            
             credentialInfo.put("analyticsEmail", analyticsEmail);
             credentialInfo.put("analyticsPassword", analyticsPassword);
             credentialInfo.put("serverUrl", serverUrl);
@@ -757,7 +773,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         String serverUrl = credentialInfo.get("serverUrl");
         Boolean authenticationDialogOpened = Boolean.valueOf(credentialInfo.get("authenticationDialogOpened"));
 
-        if (!analyticsPassword.equals(StringUtils.EMPTY) && authenticationDialogOpened == false) {
+        if (!StringUtils.isEmpty(analyticsPassword) && authenticationDialogOpened == false) {
             tokenInfo[0] = AnalyticsApiProvider.getToken(serverUrl, analyticsEmail, analyticsPassword,
                     new ProgressMonitorDialog(shell), analyticsSettingStore);
         }

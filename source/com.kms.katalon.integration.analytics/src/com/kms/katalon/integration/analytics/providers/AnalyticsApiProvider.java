@@ -119,7 +119,7 @@ public class AnalyticsApiProvider {
             throw new AnalyticsApiExeception(e);
         }
     }
-    
+
     public static List<AnalyticsProject> getProjects(String serverUrl, AnalyticsTeam team, String accessToken)
             throws AnalyticsApiExeception {
         try {
@@ -142,7 +142,7 @@ public class AnalyticsApiProvider {
             throw new AnalyticsApiExeception(e);
         }
     }
-    
+
     public static List<AnalyticsProject> getProjects(final String serverUrl, final String email, final String password,
             final AnalyticsTeam team, AnalyticsTokenInfo tokenInfo, ProgressMonitorDialog monitorDialog) {
         final List<AnalyticsProject> projects = new ArrayList<>();
@@ -151,8 +151,7 @@ public class AnalyticsApiProvider {
                 @Override
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                     try {
-                        monitor.beginTask(IntegrationAnalyticsMessages.MSG_DLG_PRG_RETRIEVING_PROJECTS,
-                                2);
+                        monitor.beginTask(IntegrationAnalyticsMessages.MSG_DLG_PRG_RETRIEVING_PROJECTS, 2);
                         monitor.subTask(IntegrationAnalyticsMessages.MSG_DLG_PRG_GETTING_PROJECTS);
                         final List<AnalyticsProject> loaded = AnalyticsApiProvider.getProjects(serverUrl, team,
                                 tokenInfo.getAccess_token());
@@ -171,8 +170,8 @@ public class AnalyticsApiProvider {
         } catch (InvocationTargetException exception) {
             final Throwable cause = exception.getCause();
             if (cause instanceof AnalyticsApiExeception) {
-                 MessageDialog.openError(monitorDialog.getShell(),
-                 "Error", cause.getMessage());
+                MessageDialog.openError(monitorDialog.getShell(), IntegrationAnalyticsMessages.ERROR,
+                        cause.getMessage());
             } else {
                 LoggerSingleton.logError(cause);
             }
@@ -181,7 +180,7 @@ public class AnalyticsApiProvider {
         }
         return projects;
     }
-    
+
     public static List<AnalyticsTeam> getTeams(final String serverUrl, final String email, final String password,
             AnalyticsTokenInfo tokenInfo, ProgressMonitorDialog monitorDialog) {
         final List<AnalyticsTeam> teams = new ArrayList<>();
@@ -209,8 +208,8 @@ public class AnalyticsApiProvider {
         } catch (InvocationTargetException exception) {
             final Throwable cause = exception.getCause();
             if (cause instanceof AnalyticsApiExeception) {
-                 MessageDialog.openError(monitorDialog.getShell(),
-                 "Error", cause.getMessage());
+                MessageDialog.openError(monitorDialog.getShell(), IntegrationAnalyticsMessages.ERROR,
+                        cause.getMessage());
             } else {
                 LoggerSingleton.logError(cause);
             }
@@ -219,25 +218,20 @@ public class AnalyticsApiProvider {
         }
         return teams;
     }
-    
-    public static AnalyticsTokenInfo getToken(String serverUrl, String email, String password, ProgressMonitorDialog monitorDialog,
-            AnalyticsSettingStore settingStore){
-        
+
+    public static AnalyticsTokenInfo getToken(String serverUrl, String email, String password,
+            ProgressMonitorDialog monitorDialog, AnalyticsSettingStore settingStore) {
+
         final AnalyticsTokenInfo[] tokenInfo = new AnalyticsTokenInfo[1];
         try {
             boolean encryptionEnabled = true;
             monitorDialog.run(true, false, new IRunnableWithProgress() {
                 @Override
-                public void run(IProgressMonitor monitor)
-                        throws InvocationTargetException, InterruptedException {
+                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                     try {
-                        monitor.beginTask(
-                                IntegrationAnalyticsMessages.MSG_DLG_PRG_CONNECTING_TO_SERVER,
-                                2);
-                        tokenInfo[0] = AnalyticsApiProvider.requestToken(serverUrl, email,
-                                password);
-                        settingStore.setToken(tokenInfo[0].getAccess_token(),
-                                encryptionEnabled);
+                        monitor.beginTask(IntegrationAnalyticsMessages.MSG_DLG_PRG_CONNECTING_TO_SERVER, 2);
+                        tokenInfo[0] = AnalyticsApiProvider.requestToken(serverUrl, email, password);
+                        settingStore.setToken(tokenInfo[0].getAccess_token(), encryptionEnabled);
                         monitor.worked(1);
                     } catch (Exception e) {
                         throw new InvocationTargetException(e);
@@ -254,8 +248,8 @@ public class AnalyticsApiProvider {
             } catch (IOException | GeneralSecurityException e) {
                 LoggerSingleton.logError(e);
             }
-           MessageDialog.openError(monitorDialog.getShell(), "Error",
-            IntegrationAnalyticsMessages.MSG_REQUEST_TOKEN_ERROR);
+            MessageDialog.openError(monitorDialog.getShell(), IntegrationAnalyticsMessages.ERROR,
+                    IntegrationAnalyticsMessages.MSG_REQUEST_TOKEN_ERROR);
         }
         return null;
     }
@@ -272,7 +266,8 @@ public class AnalyticsApiProvider {
         return names;
     }
 
-    public static int getDefaultProjectIndex(AnalyticsSettingStore analyticsSettingStore, List<AnalyticsProject> projects) {
+    public static int getDefaultProjectIndex(AnalyticsSettingStore analyticsSettingStore,
+            List<AnalyticsProject> projects) {
         int selectionIndex = 0;
 
         try {
@@ -309,7 +304,6 @@ public class AnalyticsApiProvider {
         }
         return selectionIndex;
     }
-
 
     public static AnalyticsProject createProject(String serverUrl, String projectName, AnalyticsTeam team,
             String accessToken) throws AnalyticsApiExeception {
