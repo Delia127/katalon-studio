@@ -59,6 +59,11 @@ public class QuitHandler extends AbstractHandler {
         EventBrokerSingleton.getInstance().getEventBroker().send(EventConstants.WORKSPACE_CLOSED, null);
         if (partService.saveAll(true)) {
             prefs.setValue(PreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION, confirm.getToggleState());
+            try {
+                ((IPersistentPreferenceStore) prefs).save();
+            } catch (IOException e) {
+                LoggerSingleton.logError(e);
+            }
             saveLastestOpenedProject();
             eventBroker.send(EventConstants.PROJECT_CLOSE, null);
             // prevent null pointer when inject IWorkbench
