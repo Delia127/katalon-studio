@@ -51,7 +51,9 @@ import com.kms.katalon.composer.codeassist.util.KatalonContextUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.preferences.TestCasePreferenceDefaultValueInitializer;
 import com.kms.katalon.controller.KeywordController;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.model.FailureHandling;
+import com.kms.katalon.execution.setting.TestCaseSettingStore;
 import com.kms.katalon.groovy.constant.GroovyConstants;
 
 @SuppressWarnings({ "restriction" })
@@ -379,7 +381,8 @@ public class KatalonMethodCompletionProposal extends ParameterGuessingProposal {
     }
 
     private ICompletionProposal getDefaultFailureHandlingProposal(ICompletionProposal[] guessingCompletionProposals) {
-        FailureHandling defaultFailureHandling = TestCasePreferenceDefaultValueInitializer.getDefaultFailureHandling();
+        FailureHandling defaultFailureHandling = new TestCaseSettingStore(
+                ProjectController.getInstance().getCurrentProject().getFolderLocation()).getDefaultFailureHandling();
 
         if (defaultFailureHandling == null)  {
             return guessingCompletionProposals[0];

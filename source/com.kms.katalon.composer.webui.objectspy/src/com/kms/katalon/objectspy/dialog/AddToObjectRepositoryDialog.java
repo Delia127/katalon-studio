@@ -36,7 +36,6 @@ import com.kms.katalon.composer.explorer.providers.EntityViewerFilter;
 import com.kms.katalon.composer.explorer.providers.FolderProvider;
 import com.kms.katalon.composer.folder.dialogs.NewFolderDialog;
 import com.kms.katalon.controller.FolderController;
-import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
@@ -44,10 +43,11 @@ import com.kms.katalon.objectspy.constants.StringConstants;
 import com.kms.katalon.objectspy.element.HTMLElement;
 import com.kms.katalon.objectspy.element.HTMLFrameElement;
 import com.kms.katalon.objectspy.element.HTMLPageElement;
+import com.kms.katalon.objectspy.element.WebPage;
 import com.kms.katalon.objectspy.element.tree.CheckboxTreeSelectionHelper;
 import com.kms.katalon.objectspy.element.tree.HTMLElementLabelProvider;
 import com.kms.katalon.objectspy.element.tree.HTMLElementTreeContentProvider;
-import com.kms.katalon.objectspy.util.HTMLElementUtil;
+import com.kms.katalon.objectspy.util.WebElementUtils;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
@@ -361,22 +361,21 @@ public class AddToObjectRepositoryDialog extends TreeEntitySelectionDialog {
             return selectedParentFolder;
         }
 
-        public FolderTreeEntity createTreeFolderForPageElement(HTMLPageElement pageElement) throws Exception {
+        public FolderTreeEntity createTreeFolderForPageElement(WebPage pageElement) throws Exception {
             if (createFolderAsPageNameAllowed) {
                 return new FolderTreeEntity(createFolderForPageElement(pageElement), selectedParentFolder);
             }
             return selectedParentFolder;
         }
 
-        public FolderEntity createFolderForPageElement(HTMLPageElement pageElement) throws Exception {
+        public FolderEntity createFolderForPageElement(WebPage pageElement) throws Exception {
             FolderEntity parentFolder = (FolderEntity) (getSelectedParentFolder()).getObject();
             return createFolderAsPageNameAllowed ? newPageWebElementAsFolder(parentFolder, pageElement) : parentFolder;
         }
 
-        private FolderEntity newPageWebElementAsFolder(FolderEntity parentFolder, HTMLPageElement pageElement)
+        private FolderEntity newPageWebElementAsFolder(FolderEntity parentFolder, WebPage pageElement)
                 throws Exception {
-            return ObjectRepositoryController.getInstance().importWebElementFolder(
-                    HTMLElementUtil.convertPageElementToFolderEntity(pageElement, parentFolder), parentFolder);
+            return WebElementUtils.convertWebPageToFolder(pageElement, parentFolder);
         }
     }
 }

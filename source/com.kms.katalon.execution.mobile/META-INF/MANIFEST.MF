@@ -3,15 +3,13 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Mobile Execution
 Bundle-SymbolicName: com.kms.katalon.execution.mobile;singleton:=true
 Bundle-Version: 1.0.0.qualifier
-Bundle-ClassPath: .
+Bundle-ClassPath: .,
+ resources/lib/EnvironmentVariables_0.0.1.201606022314.jar,
+ resources/lib/jna-3.0.9.jar
 Bundle-Vendor: KMS
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Import-Package: com.kms.katalon.preferences.internal,
- javax.annotation;version="1.2.0",
- javax.inject;version="1.0.0",
- org.eclipse.core.commands,
- org.eclipse.core.runtime,
- org.osgi.framework
+Import-Package: javax.annotation;version="1.2.0",
+ javax.inject;version="1.0.0"
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.swt,
  com.kms.katalon.constant,
@@ -24,11 +22,24 @@ Require-Bundle: org.eclipse.swt,
  org.apache.commons.lang,
  com.kms.katalon.core.appium,
  org.eclipse.osgi,
- com.kms.katalon.logging
+ com.kms.katalon.logging,
+ org.apache.httpcomponents.httpclient,
+ org.apache.httpcomponents.httpcore,
+ org.apache.commons.lang3,
+ org.eclipse.equinox.registry,
+ org.eclipse.core.runtime,
+ com.kms.katalon.preferences,
+ org.dom4j,
+ com.google.guava,
+ org.apache.commons.io,
+ com.kms.katalon.util,
+ com.kms.katalon.controller,
+ com.kms.katalon.dal
 Export-Package: com.kms.katalon.execution.mobile.configuration,
  com.kms.katalon.execution.mobile.configuration.contributor,
  com.kms.katalon.execution.mobile.configuration.providers,
  com.kms.katalon.execution.mobile.constants,
  com.kms.katalon.execution.mobile.device,
  com.kms.katalon.execution.mobile.driver,
- com.kms.katalon.execution.mobile.exception
+ com.kms.katalon.execution.mobile.exception,
+ com.kms.katalon.execution.mobile.util

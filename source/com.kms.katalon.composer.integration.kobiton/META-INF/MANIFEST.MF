@@ -24,6 +24,11 @@ Require-Bundle: org.eclipse.e4.ui.model.workbench,
  org.apache.commons.lang3,
  com.kms.katalon.composer.components.impl,
  com.kms.katalon.composer.resources,
- com.kms.katalon.core.webui
+ com.kms.katalon.core.webui,
+ com.kms.katalon.custom,
+ com.kms.katalon.core,
+ com.kms.katalon.composer.testsuite.collection,
+ com.kms.katalon.entity
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
+Export-Package: com.kms.katalon.composer.integration.kobiton.dialog

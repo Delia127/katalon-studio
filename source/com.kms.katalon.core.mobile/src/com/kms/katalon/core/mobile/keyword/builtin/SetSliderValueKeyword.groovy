@@ -3,7 +3,6 @@ package com.kms.katalon.core.mobile.keyword.builtin
 import groovy.transform.CompileStatic
 import io.appium.java_client.AppiumDriver
 import io.appium.java_client.MobileElement
-import io.appium.java_client.NetworkConnectionSetting
 import io.appium.java_client.android.AndroidDriver
 import io.appium.java_client.android.AndroidKeyCode
 import io.appium.java_client.ios.IOSDriver
@@ -45,6 +44,7 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 
 @Action(value = "setSliderValue")
 public class SetSliderValueKeyword extends MobileAbstractKeyword {
@@ -67,8 +67,8 @@ public class SetSliderValueKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public void setSliderValue(TestObject to, Number percent, int timeOut, FailureHandling flowControl) throws StepFailedException {
-        KeywordMain.runKeyword({
+        MobileKeywordMain.runKeyword({
             MobileElementCommonHelper.moveSlider(to, percent, timeOut)
-        }, flowControl, (to != null && percent != null) ? MessageFormat.format(StringConstants.KW_MSG_FAILED_SET_SLIDER_X_TO_Y, [to.getObjectId(), percent] as Object[]) : StringConstants.KW_MSG_FAILED_SET_SLIDER)
+        }, flowControl, true, (to != null && percent != null) ? MessageFormat.format(StringConstants.KW_MSG_FAILED_SET_SLIDER_X_TO_Y, [to.getObjectId(), percent] as Object[]) : StringConstants.KW_MSG_FAILED_SET_SLIDER)
     }
 }

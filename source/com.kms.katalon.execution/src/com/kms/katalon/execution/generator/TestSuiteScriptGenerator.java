@@ -1,7 +1,5 @@
 package com.kms.katalon.execution.generator;
 
-import groovy.lang.GroovyObject;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +19,8 @@ import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.util.SyntaxUtil;
 import com.kms.katalon.groovy.constant.GroovyConstants;
 import com.kms.katalon.groovy.util.GroovyUtil;
+
+import groovy.lang.GroovyObject;
 
 public class TestSuiteScriptGenerator {
     private static final String TEMPLATE_CLASS_NAME = IdConstants.KATALON_EXECUTION_BUNDLE_ID

@@ -11,6 +11,9 @@ import com.kms.katalon.integration.kobiton.driver.KobitonDriverConnector;
 import com.kms.katalon.integration.kobiton.entity.KobitonDevice;
 
 public class KobitonRunConfiguration extends RemoteWebRunConfiguration {
+    
+    public static final String KOBITON_DEVICE_PROPERTY = "kobitonDevice";
+
     KobitonDriverConnector kobitonDriverConnetor;
 
     public KobitonRunConfiguration(String projectDir) throws IOException {
@@ -31,7 +34,7 @@ public class KobitonRunConfiguration extends RemoteWebRunConfiguration {
     }
 
     public void setApiKey(String apiKey) {
-        kobitonDriverConnetor.setToken(apiKey);
+        kobitonDriverConnetor.setApiKey(apiKey);
     }
 
     public String getUserName() {

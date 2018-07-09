@@ -6,7 +6,8 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-ClassPath: .
 Bundle-Vendor: KMS
 Bundle-Localization: plugin
-Export-Package: com.kms.katalon.composer.handlers,
+Export-Package: com.kms.katalon.composer.components,
+ com.kms.katalon.composer.handlers,
  com.kms.katalon.composer.parts,
  com.kms.katalon.constants,
  com.kms.katalon.core.application
@@ -45,7 +46,7 @@ Require-Bundle: org.eclipse.e4.core.di,
  org.eclipse.equinox.app,
  com.google.gson,
  org.eclipse.core.expressions,
- com.kms.katalon.support.testing.katserver;bundle-version="1.0.0",
+ com.kms.katalon.support.testing.katserver,
  com.kms.katalon.console,
  org.eclipse.e4.ui.css.swt,
  com.kms.katalon.composer.resources,
@@ -58,7 +59,13 @@ Require-Bundle: org.eclipse.e4.core.di,
  org.apache.commons.validator,
  com.kms.katalon.core.webservice,
  org.eclipse.e4.core.di.extensions,
- org.eclipse.e4.ui.css.core
+ org.eclipse.e4.ui.css.core,
+ org.apache.commons.io,
+ com.kms.katalon.selenium.ide,
+ com.kms.katalon.application,
+ org.apache.commons.compress,
+ com.kms.katalon.core.webui,
+ com.kms.katalon.core.appium
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: javax.annotation,

@@ -5,6 +5,7 @@ import org.codehaus.groovy.ast.expr.ConstantExpression;
 
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ClassNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
 
 public class ConstantExpressionWrapper extends ExpressionWrapper {
     private Object value;
@@ -28,7 +29,11 @@ public class ConstantExpressionWrapper extends ExpressionWrapper {
 
     public ConstantExpressionWrapper(ConstantExpression constantExpression, ASTNodeWrapper parentNodeWrapper) {
         super(constantExpression, parentNodeWrapper);
-        setValue(constantExpression.getValue());
+        Object value = constantExpression.getValue();
+        if (value instanceof String) {
+            value = GroovyWrapperParser.unescapeJavaString((String) value);
+        }
+        setValue(value);
     }
 
     public ConstantExpressionWrapper(ConstantExpressionWrapper constantExpressionWrapper,

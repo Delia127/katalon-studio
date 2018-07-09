@@ -56,23 +56,31 @@ public class NewProjectDialog extends TitleAreaDialog {
     private boolean showError;
 
     private Button btnFolderChooser;
+    
+    private String title;
 
     public NewProjectDialog(Shell parentShell) {
         super(parentShell);
+        this.title = StringConstants.VIEW_TITLE_NEW_PROJ;
+    }
+    
+    public NewProjectDialog(Shell parentShell, String title) {
+        super(parentShell);
+        this.title = title;
     }
 
     public NewProjectDialog(Shell parentShell, ProjectEntity project) {
         super(parentShell);
         this.project = project;
+        this.title = StringConstants.VIEW_TITLE_PROJECT_PROPERTIES;
     }
 
     @Override
     protected Control createDialogArea(Composite parent) {
         Composite area = (Composite) super.createDialogArea(parent);
 
-        getShell().setText(
-                project == null ? StringConstants.VIEW_TITLE_NEW_PROJ : StringConstants.VIEW_TITLE_PROJECT_PROPERTIES);
-        setTitle(project == null ? StringConstants.VIEW_TITLE_NEW_PROJ : StringConstants.VIEW_TITLE_PROJECT_PROPERTIES);
+        getShell().setText(title);
+        setTitle(title);
         setMessage(StringConstants.VIEW_MSG_PLS_ENTER_PROJ_INFO);
 
         Composite container = new Composite(area, SWT.NONE);

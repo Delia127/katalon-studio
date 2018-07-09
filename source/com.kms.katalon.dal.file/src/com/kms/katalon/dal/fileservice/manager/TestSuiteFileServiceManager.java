@@ -1,9 +1,11 @@
 package com.kms.katalon.dal.fileservice.manager;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.kms.katalon.dal.TestSuiteCollectionDataProvider;
@@ -34,28 +36,41 @@ public class TestSuiteFileServiceManager {
 
     public static void deleteTestSuite(TestSuiteEntity testSuite) throws Exception {
         EntityFileServiceManager.delete(testSuite);
+        File script = getTestSuiteScriptFile(testSuite);
+        if (script.exists()) {
+            script.delete();
+        }
         FolderFileServiceManager.refreshFolder(testSuite.getParentFolder());
     }
 
     public static TestSuiteEntity updateTestSuite(TestSuiteEntity testSuite) throws Exception {
-        validateData(testSuite);
-        testSuite = resetParentForChildElement(testSuite);
-        // testSuite.setDateModified(new Date(System.currentTimeMillis()));
-        boolean nameChanged = nameChanged(testSuite);
-        if (nameChanged) {
-            // Remove old name in cache, it will be added again when saving
-            EntityService.getInstance().getEntityCache().remove(testSuite, true);
-        }
         EntityService.getInstance().saveEntity(testSuite);
-        if (nameChanged) {
-            updateTestSuiteReferences(testSuite);
-        }
-        FolderFileServiceManager.refreshFolder(testSuite.getParentFolder());
         return testSuite;
     }
 
+    public static TestSuiteEntity renameTestSuite(String newName, TestSuiteEntity testSuite) throws DALException {
+        try {
+            validateData(testSuite);
+            testSuite = resetParentForChildElement(testSuite);
+            // Remove old name in cache, it will be added again when saving
+            EntityService.getInstance().getEntityCache().remove(testSuite, true);
+            File script = getTestSuiteScriptFile(testSuite);
+            if (script.exists()) {
+                script.renameTo(new File(testSuite.getParentFolder().getLocation(), newName + ".groovy"));
+            }
+            testSuite.setName(newName);
+            EntityService.getInstance().saveEntity(testSuite);
+            updateTestSuiteReferences(testSuite);
+            FolderFileServiceManager.refreshFolder(testSuite.getParentFolder());
+            return testSuite;
+        } catch (Exception e) {
+            throw new DALException(e);
+        }
+    }
+
     private static void updateTestSuiteReferences(TestSuiteEntity testSuite) throws DALException {
-        TestSuiteCollectionDataProvider tsCollectionDataProvider = new FileServiceDataProviderSetting().getTestSuiteCollectionDataProvider();
+        TestSuiteCollectionDataProvider tsCollectionDataProvider = new FileServiceDataProviderSetting()
+                .getTestSuiteCollectionDataProvider();
         tsCollectionDataProvider.updateTestSuiteCollectionReferences(testSuite, testSuite.getProject());
     }
 
@@ -69,8 +84,8 @@ public class TestSuiteFileServiceManager {
             // check duplicate name
             File file = new File(testSuiteEntity.getLocation());
             if (file.exists()) {
-                throw new DuplicatedFileNameException(MessageFormat.format(
-                        StringConstants.MNG_EXC_EXISTED_TEST_SUITE_NAME, testSuiteEntity.getName()));
+                throw new DuplicatedFileNameException(MessageFormat
+                        .format(StringConstants.MNG_EXC_EXISTED_TEST_SUITE_NAME, testSuiteEntity.getName()));
             }
         }
     }
@@ -115,15 +130,24 @@ public class TestSuiteFileServiceManager {
 
     public static TestSuiteEntity copyTestSuite(TestSuiteEntity testSuite, FolderEntity destinationFolder)
             throws Exception {
-        return EntityFileServiceManager.copy(testSuite, destinationFolder);
+        TestSuiteEntity coppiedTestSuite = EntityFileServiceManager.copy(testSuite, destinationFolder);
+        File script = getTestSuiteScriptFile(testSuite);
+        if (script.exists()) {
+            FileUtils.copyFile(script, getTestSuiteScriptFile(coppiedTestSuite));
+        }
+        return coppiedTestSuite;
     }
 
     public static TestSuiteEntity moveTestSuite(TestSuiteEntity testSuite, FolderEntity destinationFolder)
             throws Exception {
-        //Maybe the testSuite parameter is cloned from the real, so we need to get the real one from system.
-        TestSuiteEntity cachedTestSuite = (TestSuiteEntity) EntityService.getInstance().getEntityByPath(
-                testSuite.getId());
+        // Maybe the testSuite parameter is cloned from the real, so we need to get the real one from system.
+        TestSuiteEntity cachedTestSuite = (TestSuiteEntity) EntityService.getInstance()
+                .getEntityByPath(testSuite.getId());
+        File script = getTestSuiteScriptFile(testSuite);
         cachedTestSuite = EntityFileServiceManager.move(cachedTestSuite, destinationFolder);
+        if (script.exists()) {
+            FileUtils.moveFile(script, getTestSuiteScriptFile(cachedTestSuite));
+        }
         updateTestSuiteReferences(cachedTestSuite);
         return cachedTestSuite;
     }
@@ -167,12 +191,12 @@ public class TestSuiteFileServiceManager {
         File folder = new File(testSuiteFolder);
         if (folder.exists() && folder.isDirectory()) {
             for (File file : folder.listFiles(EntityFileServiceManager.fileFilter)) {
-                if (file.isFile()
-                        && file.getName()
-                                .toLowerCase()
-                                .endsWith(TestSuiteEntity.getTestSuiteFileExtension().toLowerCase())) {
+                if (file.isFile() && file.getName()
+                        .toLowerCase()
+                        .endsWith(TestSuiteEntity.getTestSuiteFileExtension().toLowerCase())) {
                     FileEntity entity = EntityFileServiceManager.get(file);
-                    if (entity instanceof TestSuiteEntity && ((TestSuiteEntity) entity).getTestSuiteGuid().equals(guid)) {
+                    if (entity instanceof TestSuiteEntity
+                            && ((TestSuiteEntity) entity).getTestSuiteGuid().equals(guid)) {
                         return (TestSuiteEntity) entity;
                     }
                 } else if (file.isDirectory()) {
@@ -184,5 +208,22 @@ public class TestSuiteFileServiceManager {
             }
         }
         return null;
+    }
+
+    public static File getTestSuiteScriptFile(TestSuiteEntity testSuite) throws DALException {
+        return new File(testSuite.getProject().getFolderLocation(), testSuite.getIdForDisplay() + ".groovy");
+    }
+
+    public static File newTestSuiteScriptFile(TestSuiteEntity testSuite) throws DALException {
+        File script = getTestSuiteScriptFile(testSuite);
+        if (script.exists()) {
+            return script;
+        }
+        try {
+            script.createNewFile();
+        } catch (IOException e) {
+            throw new DALException(e);
+        }
+        return script;
     }
 }

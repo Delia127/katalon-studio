@@ -3,7 +3,7 @@ package com.kms.katalon.core.mobile.keyword.builtin
 import groovy.transform.CompileStatic
 import io.appium.java_client.AppiumDriver
 import io.appium.java_client.MobileElement
-import io.appium.java_client.NetworkConnectionSetting
+import io.appium.java_client.TouchAction
 import io.appium.java_client.android.AndroidDriver
 import io.appium.java_client.android.AndroidKeyCode
 import io.appium.java_client.ios.IOSDriver
@@ -45,6 +45,8 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
+import com.kms.katalon.core.mobile.keyword.internal.MobileDriverFactory
 
 @Action(value = "tap")
 public class TapKeyword extends MobileAbstractKeyword {
@@ -66,16 +68,18 @@ public class TapKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public void tap(TestObject to, int timeout, FailureHandling flowControl) throws StepFailedException {
-        KeywordMain.runKeyword({
+        MobileKeywordMain.runKeyword({
             KeywordHelper.checkTestObjectParameter(to)
             timeout = KeywordHelper.checkTimeout(timeout)
             WebElement element = findElement(to, timeout * 1000)
+            
             if (element == null){
-                KeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_OBJ_NOT_FOUND, to.getObjectId()), flowControl, null)
+                MobileKeywordMain.stepFailed(MessageFormat.format(StringConstants.KW_MSG_OBJ_NOT_FOUND, to.getObjectId()), flowControl, null, true)
                 return
             }
-            ((MobileElement) element).tap(1, 1)
+            TouchAction tap = new TouchAction(MobileDriverFactory.getDriver()).tap(element, 1, 1);
+            tap.perform();
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_TAPPED_ON_ELEMENT, to.getObjectId()))
-        }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_TAP_ON_ELEMENT_X, to.getObjectId()) : StringConstants.KW_MSG_FAILED_TO_TAP_ON_ELEMENT)
+        }, flowControl, true, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_TAP_ON_ELEMENT_X, to.getObjectId()) : StringConstants.KW_MSG_FAILED_TO_TAP_ON_ELEMENT)
     }
 }

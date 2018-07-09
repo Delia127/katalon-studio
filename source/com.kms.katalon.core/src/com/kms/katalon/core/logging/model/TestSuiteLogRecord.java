@@ -10,11 +10,10 @@ import java.util.Map;
 import org.apache.commons.io.FilenameUtils;
 
 import com.kms.katalon.core.configuration.RunConfiguration;
+import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 
 public class TestSuiteLogRecord extends AbstractLogRecord {
-    
-    private String deviceName;
 
     private String devicePlatform;
 
@@ -26,6 +25,7 @@ public class TestSuiteLogRecord extends AbstractLogRecord {
         super(name);
         this.logFolder = logFolder;
         runData = new HashMap<String, String>();
+        setType(ILogRecord.LOG_TYPE_TEST_SUITE);
     }
 
     public String getBrowser() {
@@ -71,11 +71,13 @@ public class TestSuiteLogRecord extends AbstractLogRecord {
     }
 
     public String getDeviceName() {
-        return deviceName;
+        return (getRunData().containsKey(StringConstants.XML_LOG_DEVICE_NAME_PROPERTY))
+                ? getRunData().get(StringConstants.XML_LOG_DEVICE_NAME_PROPERTY) : "";
     }
 
-    public void setDeviceName(String deviceName) {
-        this.deviceName = deviceName;
+    public String getDeviceId() {
+        return (getRunData().containsKey(StringConstants.XML_LOG_DEVICE_ID_PROPERTY))
+                ? getRunData().get(StringConstants.XML_LOG_DEVICE_ID_PROPERTY) : "";
     }
 
     public String getDevicePlatform() {
@@ -121,5 +123,20 @@ public class TestSuiteLogRecord extends AbstractLogRecord {
             logFiles.add(childFile);
         }
         return logFiles;
+    }
+
+    @Override
+    public String getSystemOutMsg() {
+        return getJUnitMessage();
+    }
+
+    @Override
+    public String getSystemErrorMsg() {
+        TestStatus status = getStatus();
+        String stackTrace = status.getStackTrace();
+        if (status.getStatusValue().isError()) {
+            return getJUnitMessage() + stackTrace;
+        }
+        return stackTrace;
     }
 }

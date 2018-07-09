@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+   <extension
+         point="com.kms.katalon.execution.runConfiguration">
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="com.kms.katalon.integration.analytics.preferences.AnalyticsPreferenceDefaultValueInitializer">
+      </initializer>
+   </extension>
+   <extension
+         point="com.kms.katalon.execution.integration">
+      <client
+            product="com.kms.katalon.integration.analytics.AnalyticsIntegrationContribution"
+            report="com.kms.katalon.integration.analytics.report.AnalyticsReportIntegration">
+      </client>
+   </extension>
+   
+</plugin>

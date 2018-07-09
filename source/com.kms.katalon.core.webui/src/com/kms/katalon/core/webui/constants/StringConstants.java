@@ -62,6 +62,7 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String CONF_PROPERTY_WAIT_FOR_IE_HANGING = "waitForIEHanging";
     public static final String CONF_PROPERTY_ENABLE_PAGE_LOAD_TIMEOUT = "enablePageLoadTimeout";
     public static final String CONF_PROPERTY_DEFAULT_PAGE_LOAD_TIMEOUT = "defaultPageLoadTimeout";
+    public static final String CONF_PROPERTY_ACTION_DELAY = "actionDelay";
     public static final String CONF_PROPERTY_IGNORE_PAGE_LOAD_TIMEOUT_EXCEPTION = "ignorePageLoadTimeoutException";
 	public static final String CONF_PROPERTY_EXECUTED_BROWSER = XML_LOG_BROWSER_TYPE_PROPERTY;
     public static final String CONF_PROPERTY_REMOTE_WEB_DRIVER_URL = "remoteWebDriverUrl";
@@ -195,8 +196,11 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     public static final String KW_EXC_TXT_IS_NULL = CoreWebuiMessageConstants.KW_EXC_TXT_IS_NULL;
     public static final String KW_LOG_INFO_CLEARING_OBJ_TXT = CoreWebuiMessageConstants.KW_LOG_INFO_CLEARING_OBJ_TXT;
     public static final String KW_LOG_INFO_SETTING_OBJ_TXT_TO_VAL = CoreWebuiMessageConstants.KW_LOG_INFO_SETTING_OBJ_TXT_TO_VAL;
+    public static final String KW_LOG_INFO_SETTING_OBJ_TXT_TO_ENCRYPTED_VAL = CoreWebuiMessageConstants.KW_LOG_INFO_SETTING_OBJ_TXT_TO_ENCRYPTED_VAL;
     public static final String KW_LOG_PASSED_TXT_IS_SET_ON_OBJ = CoreWebuiMessageConstants.KW_LOG_PASSED_TXT_IS_SET_ON_OBJ;
+    public static final String KW_LOG_PASSED_ENCRYPTED_TXT_IS_SET_ON_OBJ = CoreWebuiMessageConstants.KW_LOG_PASSED_ENCRYPTED_TXT_IS_SET_ON_OBJ;
     public static final String KW_MSG_CANNOT_SET_TXT_X_OF_OBJ_Y = CoreWebuiMessageConstants.KW_MSG_CANNOT_SET_TXT_X_OF_OBJ_Y;
+    public static final String KW_MSG_CANNOT_SET_ENCRYPTED_TEXT_FOR_OBJECT = CoreWebuiMessageConstants.KW_MSG_CANNOT_SET_ENCRYPTED_TEXT_FOR_OBJECT;
     public static final String KW_MSG_CANNOT_SET_TXT = CoreWebuiMessageConstants.KW_MSG_CANNOT_SET_TXT;
     public static final String KW_LOG_INFO_CHECKING_ON_OBJ = CoreWebuiMessageConstants.KW_LOG_INFO_CHECKING_ON_OBJ;
     public static final String KW_LOG_PASSED_OBJ_IS_CHECKED = CoreWebuiMessageConstants.KW_LOG_PASSED_OBJ_IS_CHECKED;
@@ -521,4 +525,6 @@ public class StringConstants extends com.kms.katalon.core.constants.StringConsta
     // WebMobileDriverFactory
     public static final String APPIUM_START_EXCEPTION_APPIUM_DIRECTORY_NOT_SET = CoreWebuiMessageConstants.APPIUM_START_EXCEPTION_APPIUM_DIRECTORY_NOT_SET;
     public static final String APPIUM_START_EXCEPTION_APPIUM_DIRECTORY_INVALID_CANNOT_FIND_APPIUM_JS = CoreWebuiMessageConstants.APPIUM_START_EXCEPTION_APPIUM_DIRECTORY_INVALID_CANNOT_FIND_APPIUM_JS;
+
+    public static final String SET_ENCRYPTED_TEXT_KEYWORD = "setEncryptedText";
 }

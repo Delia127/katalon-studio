@@ -2,12 +2,14 @@ package com.kms.katalon.execution.mobile.device;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
 
+import com.jorisaerts.eclipse.rcp.environment.environment.Environment;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.core.appium.constants.AppiumStringConstants;
 import com.kms.katalon.core.util.ConsoleCommandExecutor;
@@ -33,7 +35,7 @@ public abstract class MobileDeviceInfo {
     }
 
     public abstract String getDisplayName();
-    
+
     public abstract String getDeviceName();
 
     public abstract String getDeviceManufacturer();
@@ -43,6 +45,8 @@ public abstract class MobileDeviceInfo {
     public abstract String getDeviceOS();
 
     public abstract String getDeviceOSVersion();
+    
+    public abstract boolean isEmulator();
 
     protected static File getResourceFolder(String resourceFolderRelativePath) throws IOException {
         File bundleFile = FileLocator.getBundleFile(Platform.getBundle(IdConstants.KATALON_MOBILE_BUNDLE_ID));
@@ -77,11 +81,17 @@ public abstract class MobileDeviceInfo {
         return "";
     }
 
-    protected static void makeFileExecutable(File file) throws IOException, InterruptedException {
-        ConsoleCommandExecutor.runConsoleCommandAndCollectFirstResult(new String[] { CHMOD_COMMAND, X_FLAG,
-                file.getAbsolutePath() });
+    public static void makeFileExecutable(File file) throws IOException, InterruptedException {
+        ConsoleCommandExecutor
+                .runConsoleCommandAndCollectFirstResult(new String[] { CHMOD_COMMAND, X_FLAG, file.getAbsolutePath() });
     }
     
+    protected static void makeFolderExecutable(File file, boolean recursive) throws IOException, InterruptedException {
+        ConsoleCommandExecutor
+                .runConsoleCommandAndCollectFirstResult(new String[] { CHMOD_COMMAND, 
+                        recursive ? "-R " : "" +  X_FLAG, file.getAbsolutePath() });
+    }
+
     public Map<String, String> getDeviceSystemProperties() {
         Map<String, String> systemProperties = new HashMap<String, String>();
         systemProperties.put(AppiumStringConstants.CONF_EXECUTED_DEVICE_ID, getDeviceId());
@@ -92,4 +102,17 @@ public abstract class MobileDeviceInfo {
         systemProperties.put(AppiumStringConstants.CONF_EXECUTED_DEVICE_OS_VERSON, getDeviceOSVersion());
         return systemProperties;
     }
+    
+    protected Map<String, String> getEnvironmentVariables() throws IOException, InterruptedException {
+        return Collections.emptyMap();
+    }
+    
+    public void updateRuntimeEnvironmentVariables() throws IOException, InterruptedException {
+        Map<String, String> environmentVariables = getEnvironmentVariables();
+        if (environmentVariables == null || environmentVariables.isEmpty()) {
+            return;
+        }
+        environmentVariables.entrySet().forEach(e -> Environment.setenv(e.getKey(), e.getValue(), true));
+    }
+
 }

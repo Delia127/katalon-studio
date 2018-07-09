@@ -65,6 +65,22 @@ public class EntityFileServiceManager {
         }
         return null;
     }
+    
+    public static FolderEntity getFolder(File localFile) throws Exception {
+        if (localFile == null || !localFile.exists()) {
+            return null;
+        }
+        FolderEntity entity = null;
+        if (EntityService.getInstance().findEntityInCache(localFile.getAbsolutePath()) != null) {
+            entity = (FolderEntity) EntityService.getInstance().findEntityInCache(localFile.getAbsolutePath());
+        } else {
+            entity = new FolderEntity();
+            entity.setName(localFile.getName());
+        }
+        setParentFolder(entity, localFile);
+        EntityService.getInstance().getEntityCache().put(entity.getLocation(), entity);
+        return entity;
+    }
 
     private static FileEntity loadFolder(File folderFile) throws Exception {
         if (folderFile == null || !folderFile.exists() || !folderFile.isDirectory()) return null;
@@ -74,10 +90,14 @@ public class EntityFileServiceManager {
         if (folderMetaDataFile.exists()) {
             folderEntity = EntityService.getInstance().getEntityByPath(
                     folderMetaDataFile.getAbsolutePath());
-        } else {
-            folderEntity = new FolderEntity();
-            folderEntity.setName(folderFile.getName());
-        }
+            if (folderEntity instanceof FolderEntity) {
+                return folderEntity;
+            }
+        } 
+            
+        folderEntity = new FolderEntity();
+        folderEntity.setName(folderFile.getName());
+        
         return folderEntity;
     }
 

@@ -12,6 +12,8 @@ import org.eclipse.core.runtime.Platform;
 
 public class PlatformUtil {
 
+    private final static String OS = System.getProperty("os.name").toLowerCase();
+
     private static final String WINDOWS_10_VERSION_PREFIX = "10";
 
     private static final String REG_SZ = "REG_SZ"; //$NON-NLS-1$
@@ -91,7 +93,7 @@ public class PlatformUtil {
         }
         try {
             Process process = Runtime.getRuntime()
-                    .exec("reg query \"HKLM\\SOFTWARE\\RegisteredApplications\" /v \"" + browserName + "\"");
+                    .exec("reg query \"HKLM\\SOFTWARE\\RegisteredApplications\" /v \"" + browserName + "*\"");
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
             Optional<String> output = stdInput.lines()
                     .filter(line -> isNotEmpty(line))
@@ -123,4 +125,22 @@ public class PlatformUtil {
         }
     }
 
+    public static boolean isMac() {
+        return OS.contains("mac");
+    }
+
+    public static boolean isWindows() {
+        return OS.contains("windows");
+    }
+
+    public static boolean isLinux() {
+        return OS.contains("linux");
+    }
+
+    public static String getPlatform() {
+        return String.format("%s-%s", Platform.getOS(), getArch());
+    }
+    public static String getArch() {
+        return Platform.getOSArch();
+    }
 }

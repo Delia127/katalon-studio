@@ -3,7 +3,6 @@ package com.kms.katalon.integration.jira.entity;
 import java.net.URI;
 
 import com.atlassian.jira.rest.client.api.domain.BasicIssue;
-import com.atlassian.jira.rest.client.api.domain.Issue;
 
 public class JiraIssue extends BasicIssue {
 
@@ -27,13 +26,13 @@ public class JiraIssue extends BasicIssue {
         super(self, key, id);
     }
 
-    public Issue getFields() {
+    public ImprovedIssue getFields() {
         return fields;
     }
 
-    public void setFields(Issue fields) {
+    public void setFields(ImprovedIssue fields) {
         this.fields = fields;
     }
 
-    private Issue fields;
+    private ImprovedIssue fields;
 }

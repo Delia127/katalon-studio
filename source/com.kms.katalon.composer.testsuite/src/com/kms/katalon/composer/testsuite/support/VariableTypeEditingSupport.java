@@ -6,6 +6,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
+import org.eclipse.jface.viewers.StructuredSelection;
 
 import com.kms.katalon.composer.components.impl.support.TypeCheckedEditingSupport;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
@@ -77,6 +78,7 @@ public class VariableTypeEditingSupport extends TypeCheckedEditingSupport<Variab
         }
         variableLink.setType(variableType);
         getViewer().update(variableLink, null);
+        getViewer().setSelection(new StructuredSelection(variableLink));
         mpart.setDirty(true);
     }
 

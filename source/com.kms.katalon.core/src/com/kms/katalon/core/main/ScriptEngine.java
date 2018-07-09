@@ -1,5 +1,7 @@
 package com.kms.katalon.core.main;
 
+import static com.kms.katalon.core.constants.StringConstants.DF_CHARSET;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -65,7 +67,7 @@ public class ScriptEngine extends GroovyScriptEngine {
         setConfig(configurationProvider.getConfigForCollectingVariable());
     }
 
-    private GroovyClassLoader getExecutingScriptClassLoader() throws ClassNotFoundException {
+    public GroovyClassLoader getExecutingScriptClassLoader() throws ClassNotFoundException {
         if (executingScriptClassLoader == null) {
             executingScriptClassLoader = new GroovyClassLoader(getParentClassLoader(),
                     configurationProvider.getConfigForExecutingScript());
@@ -160,7 +162,8 @@ public class ScriptEngine extends GroovyScriptEngine {
 
     private GroovyCodeSource getGroovyCodeSource(final File file) {
         try {
-            return getGroovyCodeSource(FileUtils.readFileToString(file), file.toURI().toURL().toExternalForm());
+            return getGroovyCodeSource(FileUtils.readFileToString(file, DF_CHARSET),
+                    file.toURI().toURL().toExternalForm());
         } catch (IOException e) {
             return null;
         }
@@ -236,6 +239,7 @@ public class ScriptEngine extends GroovyScriptEngine {
                 importCustomizer.addStaticImport(TestDataFactory.class.getName(), FIND_TEST_DATA_METHOD_NAME);
                 importCustomizer.addStaticImport(ObjectRepository.class.getName(), FIND_TEST_OBJECT_METHOD_NAME);
                 importCustomizer.addStaticImport(TestCaseFactory.class.getName(), FIND_TEST_CASE_METHOD_NAME);
+                importCustomizer.addImport("GlobalVariable", "internal.GlobalVariable");
                 collectingVariableConfig.addCompilationCustomizers(importCustomizer);
             }
             return collectingVariableConfig;

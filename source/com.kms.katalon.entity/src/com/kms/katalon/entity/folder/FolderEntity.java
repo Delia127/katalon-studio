@@ -47,7 +47,9 @@ public class FolderEntity extends IntegratedFileEntity {
         WEBELEMENT("Object"),
         KEYWORD("Keyword"),
         REPORT("Report"),
-        CHECKPOINT("Checkpoint");
+        CHECKPOINT("Checkpoint"),
+        TESTLISTENER("Test listener"),
+        PROFILE("Profiles");
 
         private final String text;
 

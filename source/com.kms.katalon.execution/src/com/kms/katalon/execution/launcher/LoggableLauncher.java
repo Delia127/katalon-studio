@@ -2,6 +2,7 @@ package com.kms.katalon.execution.launcher;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.logging.XmlLogRecord;
@@ -12,12 +13,15 @@ import com.kms.katalon.execution.launcher.listener.LauncherEvent;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherResult;
 import com.kms.katalon.execution.logging.ILogCollection;
+import com.kms.katalon.execution.logging.LogEvaluator;
 import com.kms.katalon.execution.logging.SocketWatcher;
 
-public abstract class LoggableLauncher extends ProcessLauncher implements ILogCollection {
+public abstract class LoggableLauncher extends ProcessLauncher implements ILogCollection, LogEvaluator {
     private static final int DF_WATCHER_DELAY_TIME = 1;
 
     private List<XmlLogRecord> logRecords = new ArrayList<XmlLogRecord>();
+
+    private Stack<XmlLogRecord> startRecords = new Stack<>();
 
     /**
      * Returns the level of the current {@link XmlLogRecord}
@@ -55,10 +59,11 @@ public abstract class LoggableLauncher extends ProcessLauncher implements ILogCo
 
             switch (logLevel) {
                 case START:
+                    startRecords.push(record);
                     logDepth++;
                     break;
                 case END:
-                    if (isLogUnderTestCaseMainLevel()) {
+                    if (isLogUnderTestCaseMainLevel(runConfig, logDepth) && isStartTestCaseLog(startRecords.peek())) {
                         switch (currentTestCaseResult) {
                             case PASSED:
                                 launcherResult.increasePasses();
@@ -77,22 +82,20 @@ public abstract class LoggableLauncher extends ProcessLauncher implements ILogCo
                         currentTestCaseResult = LogLevel.NOT_RUN;
                     }
                     logDepth--;
+                    startRecords.pop();
 
                     if (logDepth == 0) {
                         watchdog.stop();
                     }
                     break;
                 default:
-                    if (LogLevel.getResultLogs().contains(logLevel) && isLogUnderTestCaseMainLevel()) {
+                    if (LogLevel.getResultLogs().contains(logLevel) && isLogUnderTestCaseMainLevel(runConfig, logDepth)
+                            && isStartTestCaseLog(startRecords.peek())) {
                         currentTestCaseResult = logLevel;
                     }
                     break;
             }
         }
-    }
-
-    private boolean isLogUnderTestCaseMainLevel() {
-        return logDepth == getRunConfig().getExecutionSetting().getExecutedEntity().mainTestCaseDepth() + 1;
     }
 
     /**
@@ -102,11 +105,22 @@ public abstract class LoggableLauncher extends ProcessLauncher implements ILogCo
         notifyLauncherChanged(LauncherEvent.UPDATE_RECORD, record);
     }
 
+    @Override
     public List<XmlLogRecord> getLogRecords() {
         return logRecords;
     }
 
     protected void clearRecords() {
         logRecords.clear();
+    }
+
+    @Override
+    protected void onStartExecutionComplete() {
+        super.onStartExecutionComplete();
+    }
+
+    @Override
+    protected void postExecutionComplete() {
+        super.postExecutionComplete();
     }
 }

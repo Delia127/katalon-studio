@@ -3,7 +3,6 @@ package com.kms.katalon.core.mobile.keyword.builtin
 import groovy.transform.CompileStatic
 import io.appium.java_client.AppiumDriver
 import io.appium.java_client.MobileElement
-import io.appium.java_client.NetworkConnectionSetting
 import io.appium.java_client.android.AndroidDriver
 import io.appium.java_client.android.AndroidKeyCode
 import io.appium.java_client.ios.IOSDriver
@@ -45,6 +44,7 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 
 @Action(value = "dragAndDrop")
 public class DragAndDropKeyword extends MobileAbstractKeyword {
@@ -68,8 +68,8 @@ public class DragAndDropKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public void dragAndDrop(TestObject fromObject, TestObject toObject, int timeout, FailureHandling flowControl) throws StepFailedException {
-        KeywordMain.runKeyword({
+        MobileKeywordMain.runKeyword({
             MobileElementCommonHelper.dragAndDrop(fromObject, toObject, timeout)
-        }, flowControl, (fromObject != null && toObject != null) ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_DRAG_AND_DROP_ELEMENT_X_TO_ELEMENT_Y, [fromObject.getObjectId(), toObject.getObjectId()] as Object[]) : StringConstants.KW_MSG_FAILED_TO_DRAG_AND_DROP_ELEMENT)
+        }, flowControl, true, (fromObject != null && toObject != null) ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_DRAG_AND_DROP_ELEMENT_X_TO_ELEMENT_Y, [fromObject.getObjectId(), toObject.getObjectId()] as Object[]) : StringConstants.KW_MSG_FAILED_TO_DRAG_AND_DROP_ELEMENT)
     }
 }

@@ -614,7 +614,7 @@ public class InternalTestDataPart extends TestDataMainPart {
 
         @Override
         public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-            input.remove(newRow);
+            input.remove(insertIndex);
             refresh();
             dirtyable.setDirty(true);
             return Status.OK_STATUS;
@@ -676,8 +676,7 @@ public class InternalTestDataPart extends TestDataMainPart {
                 if (dataRow.isLastRow()) {
                     continue;
                 }
-                OperationData insertData = addedDatas.get(rowIndex);
-                dataRow.getCells().remove(insertData.getColumnIndex());
+                dataRow.getCells().remove(index);
             }
             refresh();
             return Status.OK_STATUS;

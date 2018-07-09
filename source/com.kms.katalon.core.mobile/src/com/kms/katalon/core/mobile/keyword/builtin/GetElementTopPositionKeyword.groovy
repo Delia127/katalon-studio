@@ -3,7 +3,6 @@ package com.kms.katalon.core.mobile.keyword.builtin
 import groovy.transform.CompileStatic
 import io.appium.java_client.AppiumDriver
 import io.appium.java_client.MobileElement
-import io.appium.java_client.NetworkConnectionSetting
 import io.appium.java_client.android.AndroidDriver
 import io.appium.java_client.android.AndroidKeyCode
 import io.appium.java_client.ios.IOSDriver
@@ -45,6 +44,7 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 
 @Action(value = "getElementTopPosition")
 public class GetElementTopPositionKeyword extends MobileAbstractKeyword {
@@ -66,8 +66,8 @@ public class GetElementTopPositionKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public int getElementTopPosition(TestObject to, int timeout, FailureHandling flowControl) throws StepFailedException {
-        return KeywordMain.runKeywordAndReturnInt({
+        return MobileKeywordMain.runKeywordAndReturnInt({
             return MobileElementCommonHelper.getElementTopPosition(to, timeout, flowControl)
-        }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_GET_TOP_POSITION_OF_ELEMENT, to.getObjectId()) : StringConstants.KW_MSG_FAILED_TO_GET_TOP_POSITION)
+        }, flowControl, true, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_GET_TOP_POSITION_OF_ELEMENT, to.getObjectId()) : StringConstants.KW_MSG_FAILED_TO_GET_TOP_POSITION)
     }
 }

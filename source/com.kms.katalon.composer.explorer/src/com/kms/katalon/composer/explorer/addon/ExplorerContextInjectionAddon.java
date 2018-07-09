@@ -7,6 +7,7 @@ import org.eclipse.e4.core.contexts.IEclipseContext;
 
 import com.kms.katalon.composer.explorer.handlers.ReskinTextAreaHandler;
 import com.kms.katalon.composer.explorer.handlers.deletion.DeleteEntityHandlerRegister;
+import com.kms.katalon.composer.explorer.integration.LabelDecoratorRegistrationHandler;
 
 
 public class ExplorerContextInjectionAddon {
@@ -14,5 +15,6 @@ public class ExplorerContextInjectionAddon {
     public void initHandlers(IEclipseContext context) {
         ContextInjectionFactory.make(DeleteEntityHandlerRegister.class, context);
         ContextInjectionFactory.make(ReskinTextAreaHandler.class, context);
+        ContextInjectionFactory.make(LabelDecoratorRegistrationHandler.class, context);
     }
 }

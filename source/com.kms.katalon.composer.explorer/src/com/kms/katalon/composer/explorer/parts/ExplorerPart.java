@@ -4,6 +4,7 @@ import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPre
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -40,6 +41,7 @@ import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
@@ -64,6 +66,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IWorkbenchCommandConstants;
 
@@ -81,7 +84,6 @@ import com.kms.katalon.composer.explorer.constants.ExplorerPreferenceConstants;
 import com.kms.katalon.composer.explorer.constants.ImageConstants;
 import com.kms.katalon.composer.explorer.constants.StringConstants;
 import com.kms.katalon.composer.explorer.custom.AdvancedSearchDialog;
-import com.kms.katalon.composer.explorer.custom.EntityTooltip;
 import com.kms.katalon.composer.explorer.custom.SearchDropDownBox;
 import com.kms.katalon.composer.explorer.handlers.CopyHandler;
 import com.kms.katalon.composer.explorer.handlers.CutHandler;
@@ -215,51 +217,8 @@ public class ExplorerPart {
 
         application.getContext().set(ExplorerPart.class.getName(), this);
 
-        setViewer(new CTreeViewer(parent, SWT.BORDER | SWT.MULTI | SWT.VIRTUAL));
-        treeViewer.setUseHashlookup(true);
-        getViewer().getTree().setLayoutData(new GridData(GridData.FILL_BOTH));
+        createExplorerTreeViewer();
 
-        treeViewer.getTree().addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (((e.stateMask & SWT.CTRL) == SWT.CTRL)) {
-                    if (e.keyCode == 'c') {
-                        CopyHandler.getInstance().execute();
-                    }
-                }
-            }
-        });
-
-        treeViewer.getTree().addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseDown(MouseEvent e) {
-                MPart activePart = partService.getActivePart();
-                if (activePart == null || !IdConstants.EXPLORER_PART_ID.equals(activePart.getElementId())) {
-                    partService.activate(partService.findPart(IdConstants.EXPLORER_PART_ID));
-                }
-                selectionService.setSelection(((IStructuredSelection) treeViewer.getSelection()).toArray());
-            }
-        });
-
-        EntityProvider contentProvider = new EntityProvider();
-        getViewer().setContentProvider(contentProvider);
-        entityLabelProvider = new EntityLabelProvider();
-        getViewer().setLabelProvider(entityLabelProvider);
-
-        getViewer().addSelectionChangedListener(new ISelectionChangedListener() {
-            @Override
-            public void selectionChanged(SelectionChangedEvent event) {
-                if (selectionService != null) {
-                    selectionService.setSelection(((IStructuredSelection) event.getSelection()).toArray());
-                }
-            }
-        });
-
-        entityViewerFilter = new EntityViewerFilter(contentProvider);
-        getViewer().addFilter(entityViewerFilter);
-        treeViewer.getTree().setToolTipText(StringUtils.EMPTY);
-        EntityTooltip.createFor(treeViewer);
-        
         // label Search
         Canvas canvasSearch = new Canvas(searchComposite, SWT.NONE);
         canvasSearch.setLayout(new FillLayout(SWT.HORIZONTAL));
@@ -302,15 +261,77 @@ public class ExplorerPart {
             }
         });
 
+        activateHandler();
+
+        // loadSavedState(part);
+    }
+
+    private void createExplorerTreeViewerIfDisposed() {
+        if (treeViewer != null && !treeViewer.getTree().isDisposed()) {
+            return;
+        }
+
+        createExplorerTreeViewer();
+
+        if (treeEntities == null || treeEntities.isEmpty()) {
+            reloadTreeEventHandler(true);
+        } else {
+            getViewer().setInput(treeEntities);
+        }
+    }
+
+    private void createExplorerTreeViewer() {
+        setViewer(new CTreeViewer(parent, SWT.BORDER | SWT.MULTI | SWT.VIRTUAL));
+        Tree explorer = treeViewer.getTree();
+        treeViewer.setUseHashlookup(true);
+        explorer.setLayoutData(new GridData(GridData.FILL_BOTH));
+
+        explorer.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (((e.stateMask & SWT.CTRL) == SWT.CTRL)) {
+                    if (e.keyCode == 'c') {
+                        CopyHandler.getInstance().execute();
+                    }
+                }
+            }
+        });
+
+        explorer.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseDown(MouseEvent e) {
+                MPart activePart = partService.getActivePart();
+                if (activePart == null || !IdConstants.EXPLORER_PART_ID.equals(activePart.getElementId())) {
+                    partService.activate(partService.findPart(IdConstants.EXPLORER_PART_ID));
+                }
+                selectionService.setSelection(treeViewer.getStructuredSelection().toArray());
+            }
+        });
+
+        EntityProvider contentProvider = new EntityProvider();
+        getViewer().setContentProvider(contentProvider);
+        entityLabelProvider = new EntityLabelProvider();
+        getViewer().setLabelProvider(entityLabelProvider);
+
+        getViewer().addSelectionChangedListener(new ISelectionChangedListener() {
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                if (selectionService != null) {
+                    selectionService.setSelection(((IStructuredSelection) event.getSelection()).toArray());
+                }
+            }
+        });
+
+        entityViewerFilter = new EntityViewerFilter(contentProvider);
+        getViewer().addFilter(entityViewerFilter);
+        explorer.setToolTipText(StringUtils.EMPTY);
+        //EntityTooltip.createFor(treeViewer);
+
         hookDoubleClickEvent();
         hookDragEvent();
         hookDropEvent();
 
         menuService.registerContextMenu(getViewer().getControl(), EXPLORER_POPUPMENU_ID);
-
-        activateHandler();
-
-        // loadSavedState(part);
     }
 
     private void activateHandler() {
@@ -596,18 +617,40 @@ public class ExplorerPart {
     }
 
     private void refresh(Object object) {
-        treeViewer.getControl().setRedraw(false);
-        TreePath[] expandedTreePaths = getViewer().getExpandedTreePaths();
-        ISelection selection = getViewer().getSelection();
-        getViewer().collapseAll();
-        if (object == null) {
-            treeViewer.refresh();
-        } else {
-            treeViewer.refresh(object);
+        // This Refresh method might look dumb but work out of "Widget is disposed" issue.
+        createExplorerTreeViewerIfDisposed();
+        getViewer().getControl().setRedraw(false);
+
+        try {
+            ISelection selection = getViewer().getSelection();
+            if (object == null) {
+                // TreePath[] expandedTreePaths = getViewer().getExpandedTreePaths(); // This is a heavy way to get the
+                // expanded items
+                Object[] visibleExpandedElements = getViewer().getVisibleExpandedElements();
+
+                getViewer().collapseAll();
+
+                getViewer().refresh();
+
+                createExplorerTreeViewerIfDisposed();
+                getViewer().setExpandedElements(visibleExpandedElements);
+                // getViewer().setExpandedTreePaths(expandedTreePaths);
+            } else {
+                getViewer().refresh(object);
+            }
+
+            createExplorerTreeViewerIfDisposed();
+            if (selection != null && TreeSelection.EMPTY.equals(selection)) {
+                getViewer().setSelection(selection);
+            }
+        } catch (SWTException e) {
+            LoggerSingleton.logError(e);
+            createExplorerTreeViewerIfDisposed();
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
         }
-        getViewer().setExpandedTreePaths(expandedTreePaths);
-        getViewer().setSelection(selection);
-        treeViewer.getControl().setRedraw(true);
+
+        getViewer().getControl().setRedraw(true);
     }
 
     @Inject
@@ -774,9 +817,10 @@ public class ExplorerPart {
         } else {
             treeEntities.clear();
         }
-        for (Object o : input) {
-            treeEntities.add((ITreeEntity) o);
+        if (input == null) {
+            return;
         }
+        treeEntities.addAll(input.parallelStream().map(item -> (ITreeEntity) item).collect(Collectors.toList()));
     }
 
     @PreDestroy

@@ -56,6 +56,8 @@ public class GlobalStringConstants {
     
     // Path
     public static final String ENTITY_ID_SEPARATOR = "/";
+    
+    public static final String DF_CHARSET = "UTF-8";
 
     // Common character
     public static final String CR_DOT = ".";
@@ -74,8 +76,12 @@ public class GlobalStringConstants {
 
     public static final String CR_EOL = "\n";
 
+    public static final String CR_COLON = ":";
+
     /** RFC 4180 defines line breaks as CRLF */
     public static final String CRLF = "\r\n";
+    
+    public static final String CR_ECO_PASSWORD = "\u2022";
 
     // Common action use
     public static final String ADD = GlobalMessageConstants.ADD;
@@ -165,6 +171,8 @@ public class GlobalStringConstants {
 
     public static final String OBJECT_SPY = GlobalMessageConstants.OBJECT_SPY;
 
+    public static final String WEB_RECORDER = GlobalMessageConstants.WEB_RECORDER;
+
     public static final String RUN = GlobalMessageConstants.RUN;
 
     public static final String STOP = GlobalMessageConstants.STOP;
@@ -181,6 +189,8 @@ public class GlobalStringConstants {
     public static final String IMAGE = GlobalMessageConstants.IMAGE;
 
     public static final String DESCRIPTION = GlobalMessageConstants.DESCRIPTION;
+
+    public static final String SUMMARY = GlobalMessageConstants.SUMMARY;
 
     public static final String INFORMATION = GlobalMessageConstants.INFORMATION;
 
@@ -216,6 +226,10 @@ public class GlobalStringConstants {
 
     public static final String IOS = GlobalMessageConstants.IOS;
 
+    public static final String ELAPSED = GlobalMessageConstants.ELAPSED;
+
+    public static final String SIZE = GlobalMessageConstants.SIZE;
+
     // Entity name
     public static final String ROOT_FOLDER_NAME_TEST_CASE = GlobalMessageConstants.ROOT_FOLDER_NAME_TEST_CASE;
 
@@ -230,6 +244,10 @@ public class GlobalStringConstants {
     public static final String ROOT_FOLDER_NAME_REPORT = GlobalMessageConstants.ROOT_FOLDER_NAME_REPORT;
 
     public static final String ROOT_FOLDER_NAME_CHECKPOINT = GlobalMessageConstants.ROOT_FOLDER_NAME_CHECKPOINT;
+
+    public static final String ROOT_FOLDER_NAME_PROFILES = GlobalMessageConstants.ROOT_FOLDER_NAME_PROFILES;
+
+    public static final String ROOT_FOLDER_NAME_TEST_LISTENER = GlobalMessageConstants.ROOT_FOLDER_NAME_TEST_LISTENER;
 
     public static final String FILE_NAME_GLOBAL_VARIABLE = GlobalMessageConstants.FILE_NAME_GLOBAL_VARIABLE;
     
@@ -250,6 +268,8 @@ public class GlobalStringConstants {
 
     // Common value
     public static final String NULL = GlobalMessageConstants.NULL;
+    
+    public static final String APP_TEMP_DIR = System.getProperty("java.io.tmpdir") + File.separator + "Katalon";
 
     public static final String APP_USER_DIR_LOCATION = System.getProperty("user.home") + File.separator + ".katalon";
 
@@ -287,4 +307,9 @@ public class GlobalStringConstants {
     public static final String CREATED_DATE = GlobalMessageConstants.CREATED_DATE;
 
     public static final String MODIFIED_DATE = GlobalMessageConstants.MODIFIED_DATE;
+
+    public static final String APPIUM_INSTALLATION_GUIDE_MSG = GlobalMessageConstants.APPIUM_INSTALLATION_GUIDE_MSG;
+    
+    public static final String URL_TROUBLESHOOTING_MOBILE_TESTING = GlobalMessageConstants.URL_TROUBLESHOOTING_MOBILE_TESTING;
+
 }

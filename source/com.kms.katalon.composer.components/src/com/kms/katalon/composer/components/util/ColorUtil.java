@@ -19,13 +19,13 @@ public class ColorUtil {
 
     private static final String ERROR_LOG_BACKGROUND_COLOR = "#ec5c51";
 
-    private static final String WARNING_LOG_BACKGROUND_COLOR = "#fecc22";
+    private static final String WARNING_LOG_BACKGROUND_COLOR = "#ffd54f";
 
     private static final String INCOMPLETE_LOG_COLOR = "#997515";
 
-    private static final String FAILED_STATUS_BACKGROUND_COLOR = "#f19696";
+    public static final String FAILED_STATUS_BACKGROUND_COLOR = "#f19696";
 
-    private static final String INCOMPLETE_STATUS_BACKGROUND_COLOR = "#f2bc70";
+    public static final String INCOMPLETE_STATUS_BACKGROUND_COLOR = "#f2bc70";
 
     private static final String EXTRA_LIGHT_GRAY_COLOR = "#f6f6f6";
 
@@ -153,6 +153,10 @@ public class ColorUtil {
 
     public static Color getTextWhiteColor() {
         return display.getSystemColor(SWT.COLOR_WHITE);
+    }
+    
+    public static Color getTextLinkColor() {
+        return display.getSystemColor(SWT.COLOR_LINK_FOREGROUND);
     }
 
     public static Color getTextErrorColor() {

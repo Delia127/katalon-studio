@@ -11,8 +11,11 @@ Require-Bundle: org.codehaus.groovy,
  com.kms.katalon.core,
  wsdl4j,
  org.apache.commons.lang,
- org.eclipse.osgi
+ org.eclipse.osgi,
+ com.google.oauth-client.google-oauth-client,
+ com.google.http-client.google-http-client
 Export-Package: com.kms.katalon.core.webservice.common,
+ com.kms.katalon.core.webservice.constants,
  com.kms.katalon.core.webservice.contribution,
  com.kms.katalon.core.webservice.keyword,
  com.kms.katalon.core.webservice.setting,

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin>
-   <extension-point id="driverConnectorEditor" name="com.kms.katalon.composer.execution.driver.connector.editor" schema="schema/driverConnectorEditor.exsd"/>
+   <extension-point id="driverConnectorEditor" name="Driver Connector" schema="schema/driverConnectorEditor.exsd"/>
+   <extension-point id="tetSuiteExecutionItem" name="Execution Item" schema="schema/testSuiteExecutionItem.exsd"/>
 
    <extension
          id="com.kms.katalon.execution.fragment"
@@ -37,15 +38,6 @@
             id="org.eclipse.jdt.debug">
       </debugModelPresentation>
    </extension> 
-	<extension
-         point="com.kms.katalon.preferences.PreferencePages">
-      <page
-            category="com.kms.katalon.composer.preferences.GeneralPreferencePage"
-            class="com.kms.katalon.composer.execution.preferences.ExecutionPreferencePage"
-            id="com.kms.katalon.composer.execution"
-            name="Execution">
-      </page>
-   </extension>
    
    <extension point="com.kms.katalon.preferences.PreferencePages">
       <page
@@ -95,6 +87,12 @@
             class="com.kms.katalon.composer.execution.settings.MailSettingsPage"
             id="com.kms.katalon.composer.execution.mail"
             name="Email">
+      </page>
+      <page
+            category="com.kms.katalon.composer.execution.mail"
+            class="com.kms.katalon.composer.execution.settings.EmailTemplatePage"
+            id="com.kms.katalon.composer.execution.page.emailTemplate"
+            name="Template">
       </page>   
    </extension>
    <extension

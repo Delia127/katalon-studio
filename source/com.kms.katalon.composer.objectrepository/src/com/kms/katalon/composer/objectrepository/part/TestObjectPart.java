@@ -143,6 +143,7 @@ public class TestObjectPart extends CPart implements EventHandler, IComposerPart
         }
     }
 
+    @Override
     public void dispose() {
         eventBroker.unsubscribe(this);
         MPartStack mStackPart = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
@@ -190,12 +191,6 @@ public class TestObjectPart extends CPart implements EventHandler, IComposerPart
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
-    }
-
-    @PreDestroy
-    private void destroy() {
-        eventBroker.unsubscribe(this);
-        dispose();
     }
 
     private FolderTreeEntity getParentFolderTreeEntity(FolderEntity folderEntity, FolderEntity rootFolder) {
@@ -247,5 +242,8 @@ public class TestObjectPart extends CPart implements EventHandler, IComposerPart
     @PreDestroy
     public void onClose() {
         EventUtil.post(EventConstants.PROPERTIES_ENTITY, null);
+        objPropertyView.preDestroy();
+        eventBroker.unsubscribe(this);
+        dispose();
     }
 }

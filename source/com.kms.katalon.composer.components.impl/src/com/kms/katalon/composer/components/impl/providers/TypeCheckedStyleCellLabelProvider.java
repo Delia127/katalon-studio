@@ -149,12 +149,12 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
     }
 
     protected int drawImage(Event event, ViewerCell cell, GC gc, Image image) {
-        Rectangle eventBounds = event.getBounds();
+        Rectangle eventBounds = cell.getImageBounds();
         int startX = getLeftMargin();
         if (image != null) {
             int y = eventBounds.y + Math.max(0, (eventBounds.height - image.getBounds().height) / 2);
             gc.drawImage(image, eventBounds.x + startX, y);
-            startX = getSpace();
+            startX += getSpace() + Math.max(0, image.getBounds().width - eventBounds.width);
         }
         return startX;
     }
@@ -191,10 +191,18 @@ public abstract class TypeCheckedStyleCellLabelProvider<T> extends StyledCellLab
 
         TextLayout layout = getSharedTextLayout(event.display);
 
-        int textWidthDelta = deltaOfLastMeasure = updateTextLayout(layout, cell, applyColors);
+        int textWidthDelta = deltaOfLastMeasure = updateTextLayout(layout, cell, applyColors) + updateImageLayout(event, cell);
 
-        event.width += textWidthDelta + getRightMargin();
+        event.width += textWidthDelta + getRightMargin() + getSpace() + getLeftMargin();
     }
+    
+    /**
+     * Children may override this
+     */
+    protected int updateImageLayout(Event layout, ViewerCell cell) {
+        return 0;
+    }
+    
 
     protected boolean isCellNotExisted(ViewerCell cell) {
         return cell == null || cell.getViewerRow() == null;

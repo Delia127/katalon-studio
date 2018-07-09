@@ -3,7 +3,6 @@ package com.kms.katalon.core.mobile.keyword.builtin
 import groovy.transform.CompileStatic
 import io.appium.java_client.AppiumDriver
 import io.appium.java_client.MobileElement
-import io.appium.java_client.NetworkConnectionSetting
 import io.appium.java_client.android.AndroidDriver
 import io.appium.java_client.android.AndroidKeyCode
 import io.appium.java_client.ios.IOSDriver
@@ -45,6 +44,7 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 
 @Action(value = "tapAndHold")
 public class TapAndHoldKeyword extends MobileAbstractKeyword {
@@ -67,8 +67,8 @@ public class TapAndHoldKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public void tapAndHold(TestObject to, Number duration, int timeout, FailureHandling flowControl) throws StepFailedException {
-        KeywordMain.runKeyword({
+        MobileKeywordMain.runKeyword({
             MobileElementCommonHelper.tapAndHold(to, duration, timeout)
-        }, flowControl, (to != null && duration != null) ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_TAP_AND_HOLD_ON_ELEMENT_X_WITH_DURATION_Y, [to.getObjectId(), MobileElementCommonHelper.getStringForDuration(duration)] as Object[]) : StringConstants.KW_MSG_FAILED_TO_TAP_AND_HOLD_ON_ELEMENT)
+        }, flowControl, true, (to != null && duration != null) ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_TAP_AND_HOLD_ON_ELEMENT_X_WITH_DURATION_Y, [to.getObjectId(), MobileElementCommonHelper.getStringForDuration(duration)] as Object[]) : StringConstants.KW_MSG_FAILED_TO_TAP_AND_HOLD_ON_ELEMENT)
     }
 }

@@ -10,22 +10,27 @@ import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor;
 import org.eclipse.ui.part.FileEditorInput;
 
 import com.kms.katalon.composer.components.application.ApplicationSingleton;
 import com.kms.katalon.composer.components.part.IComposerPart;
 import com.kms.katalon.composer.components.services.ModelServiceSingleton;
+import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.CheckpointController;
 import com.kms.katalon.controller.ObjectRepositoryController;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.controller.TestDataController;
 import com.kms.katalon.controller.TestSuiteCollectionController;
 import com.kms.katalon.controller.TestSuiteController;
+import com.kms.katalon.core.util.internal.PathUtil;
 import com.kms.katalon.entity.IEntity;
 import com.kms.katalon.entity.checkpoint.CheckpointEntity;
+import com.kms.katalon.entity.file.TestListenerEntity;
 import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
@@ -33,7 +38,6 @@ import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
-import com.kms.katalon.groovy.util.GroovyStringUtil;
 
 @SuppressWarnings("restriction")
 public class EntityPartUtil {
@@ -67,6 +71,10 @@ public class EntityPartUtil {
 
     public static String getReportCollectionPartId(String reportCollectionId) {
         return IdConstants.REPORT_COLLECTION_CONTENT_PART_ID_PREFIX + "(" + reportCollectionId + ")";
+    }
+
+    public static String getExecutionProfilePartId(String executionProfileId) {
+        return IdConstants.EXECUTION_PROFILE_CONTENT_PART_ID_PREFIX + "(" + executionProfileId + ")";
     }
 
     public static void closePart(IEntity entity) {
@@ -104,6 +112,10 @@ public class EntityPartUtil {
         MPartStack mStackPart = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
         MPart mPart = (MPart) modelService.find(partId, application);
         if (mPart != null) {
+            if (mPart.getToolbar() != null) {
+                // dispose the help icon
+                ((ToolBar) mPart.getToolbar().getWidget()).dispose();
+            }
             mStackPart.getChildren().remove(mPart);
         }
     }
@@ -194,8 +206,14 @@ public class EntityPartUtil {
                     && !StringUtils.startsWith(((CompatibilityEditor) o).getModel().getElementId(),
                             IdConstants.TEST_CASE_PARENT_COMPOSITE_PART_ID_PREFIX)) {
                 GroovyEditor editor = (GroovyEditor) ((CompatibilityEditor) o).getEditor();
-                String kwFilePath = GroovyStringUtil.getKeywordsRelativeLocation(((FileEditorInput) editor.getEditorInput()).getPath());
-                ids.add(kwFilePath);
+                String filePath = ((FileEditorInput) editor.getEditorInput()).getPath().toOSString();
+                String relativePath = PathUtil.absoluteToRelativePath(filePath,
+                        ProjectController.getInstance().getCurrentProject().getFolderLocation());
+                if (relativePath.startsWith(GlobalStringConstants.ROOT_FOLDER_NAME_TEST_LISTENER)) {
+                    ids.add(relativePath.replace(TestListenerEntity.FILE_EXTENSION, ""));
+                } else {
+                    ids.add(relativePath);
+                }
             }
         }
         return ids;

@@ -13,6 +13,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.entity.file.FileEntity;
+import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.configuration.impl.DefaultExecutionSetting;
@@ -31,6 +32,8 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     protected IHostConfiguration hostConfiguration;
 
     protected DefaultExecutionSetting executionSetting;
+
+    private ExecutionProfileEntity executionProfile;
 
     public AbstractRunConfiguration() {
         initExecutionSetting();
@@ -130,7 +133,8 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
         if (executionSetting == null) {
             return propertyMap;
         }
-        propertyMap.putAll(ExecutionUtil.getExecutionProperties(executionSetting, getDriverConnectors()));
+        propertyMap.putAll(
+                ExecutionUtil.getExecutionProperties(executionSetting, getDriverConnectors(), executionProfile));
         IExecutedEntity executedEntity = executionSetting.getExecutedEntity();
         if (executedEntity == null) {
             return propertyMap;
@@ -178,7 +182,21 @@ public abstract class AbstractRunConfiguration implements IRunConfiguration {
     }
 
     @Override
-    public Map<String, String> getAdditionalEnvironmentVariables() throws IOException {
+    public Map<String, String> getAdditionalEnvironmentVariables() throws IOException, ExecutionException {
         return new HashMap<>();
+    }
+
+    @Override
+    public boolean allowsRecording() {
+        return false;
+    }
+
+    @Override
+    public ExecutionProfileEntity getExecutionProfile() {
+        return executionProfile;
+    }
+
+    public void setExecutionProfile(ExecutionProfileEntity executionProfile) {
+        this.executionProfile = executionProfile;
     }
 }

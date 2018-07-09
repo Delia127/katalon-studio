@@ -13,7 +13,8 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testcase.TestCaseBinding
 import com.kms.katalon.entity.testcase.TestCaseEntity
 import com.kms.katalon.execution.configuration.IRunConfiguration
-import com.kms.katalon.execution.util.ExecutionUtil;
+import com.kms.katalon.execution.util.ExecutionUtil
+import com.kms.katalon.groovy.constant.GroovyConstants;
 import com.kms.katalon.groovy.util.GroovyStringUtil;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
@@ -30,16 +31,12 @@ class TestCaseScriptTemplate {
 RunConfiguration.setExecutionSettingFile('<%= executionConfigFilePath %>')
 
 TestCaseMain.beforeStart()
-try {
-    <% if (rawScript == null) { %>
-	    TestCaseMain.runTestCase('<%= testCaseId %>', <%= testCaseBinding %>, FailureHandling.STOP_ON_FAILURE <%= isQuitDriversAfterRun ? ", true" : "" %>)
+<% if (rawScript == null) { %>
+        TestCaseMain.runTestCase('<%= testCaseId %>', <%= testCaseBinding %>, FailureHandling.STOP_ON_FAILURE <%= isQuitDriversAfterRun ? ", true" : "" %>, <%= isQuitDriversAfterRun %>)
     <% } else { %>
         TestCaseMain.runTestCaseRawScript(
-''' + executeRawTpl + ''', '<%= testCaseId %>', <%= testCaseBinding %>, FailureHandling.STOP_ON_FAILURE <%= isQuitDriversAfterRun ? ", true" : "" %>)
+''' + executeRawTpl + ''', '<%= testCaseId %>', <%= testCaseBinding %>, FailureHandling.STOP_ON_FAILURE <%= isQuitDriversAfterRun ? ", true" : "" %>, <%= isQuitDriversAfterRun %>)
     <% } %>
-} catch (Exception e) {
-    TestCaseMain.logError(e, '<%= testCaseId %>')
-}
 '''
 
     @CompileStatic
@@ -71,7 +68,7 @@ try {
             "testCaseId"      : testCaseId,
             "testCaseBinding" : testCaseBinding,
             "executionConfigFilePath" : GroovyStringUtil.escapeGroovy(config.getExecutionSetting().getSettingFilePath()),
-            "isQuitDriversAfterRun" : ExecutionUtil.isQuitDriversAfterExecuting(),
+            "isQuitDriversAfterRun" : ExecutionUtil.isQuitDriversAfterExecutingTestCase(),
             "driverCleaners" : driverCleaners,
             "rawScript" : config.getExecutionSetting().getRawScript()
         ]
@@ -79,7 +76,7 @@ try {
         def engine = new GStringTemplateEngine()
         Writable tempTestCaseContentWritable = engine.createTemplate(tpl).make(binding)
         if (file.canWrite()) {
-            file.write(tempTestCaseContentWritable.toString());
+            file.write(tempTestCaseContentWritable.toString(), GroovyConstants.DF_CHARSET);
         }
     }
 }

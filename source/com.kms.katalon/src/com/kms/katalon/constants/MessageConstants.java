@@ -57,7 +57,9 @@ public class MessageConstants extends NLS {
 
     public static String PA_URL_GETTING_STARTED;
 
-    public static String PA_LBL_ARTICLES;
+    public static String PA_LBL_USER_GUIDE;
+    
+    public static String PA_LBL_BUSINESS_SUPPORT;
 
     public static String PA_LBL_ARTICLES_DESCRIPTION;
 
@@ -69,7 +71,7 @@ public class MessageConstants extends NLS {
 
     public static String PA_TOOLTIP_ARTICLES;
 
-    public static String PA_URL_ARTICLES_STARTED;
+    public static String PA_URL_USER_GUIDE;
 
     public static String PA_LBL_RECENT_PROJECT;
 
@@ -93,6 +95,12 @@ public class MessageConstants extends NLS {
 
     public static String PROMT_ENTER_USERNAME_PASSWORD;
 
+    public static String URL_COMMON_STEP_RECORD;
+
+    public static String URL_COMMON_STEP_RUN;
+
+    public static String URL_COMMON_STEP_VIEW_LOGGER;
+
     public static String USERNAME_TITLE;
 
     public static String PASSSWORD_TITLE;
@@ -112,6 +120,8 @@ public class MessageConstants extends NLS {
     public static String DIALOG_OFFLINE_TITLE;
 
     public static String BTN_CLOSE_TILE;
+
+    public static String LINK_ACTIVATION_LINK;
 
     public static String LBL_ACTIVATE_CODE;
 
@@ -134,6 +144,8 @@ public class MessageConstants extends NLS {
     public static String KATALON_NOT_ACTIVATED;
 
     public static String PAGE_PREF_AUTO_CHECK_NEW_VERSION_TITLE;
+
+    public static String PAGE_PREF_SHOW_HELP_AT_START_UP;
 
     public static String VERSION_IS_UP_TODATE;
 
@@ -167,6 +179,24 @@ public class MessageConstants extends NLS {
 
     public static String LBL_ADDRESS;
 
+    public static String LBL_COMMON_STEP_RECORD_DESCRIPTION;
+
+    public static String LBL_COMMON_STEP_RECORD_PREFIX;
+
+    public static String LBL_COMMON_STEP_RECORD_URL_PREFIX;
+
+    public static String LBL_COMMON_STEP_RUN_DESCRIPTION;
+
+    public static String LBL_COMMON_STEP_RUN_PREFIX;
+
+    public static String LBL_COMMON_STEP_RUN_URL_PREFIX;
+
+    public static String LBL_COMMON_STEP_VIEW_LOGGER_DESCRIPTION;
+
+    public static String LBL_COMMON_STEP_VIEW_LOGGER_PREFIX;
+
+    public static String LBL_COMMON_STEP_VIEW_LOGGER_URL_PREFIX;
+
     public static String LBL_PORT;
 
     public static String CHK_TEXT_PROXY_SERVER_TYPE_REQUIRE_AUTHENTICATION;
@@ -196,6 +226,54 @@ public class MessageConstants extends NLS {
     public static String TOOLITEM_DLG_DELETE;
 
     public static String TOOLITEM_DLG_CLEAR;
+
+    public static String MSG_LINUX_GUI_NOT_SUPPORTED;
+
+    public static String LBL_MORE_PROJECT;
+
+    public static String LBL_MORE_PROJECT_TOOLTIP;
+
+    public static String LBL_MORE_PROJECT_URL;
+
+    public static String MSG_NO_RECENT_PROJECT;
+
+    public static String TAB_LBL_RECENTS;
+
+    public static String TAB_LBL_SAMPLE_PROJECTS;
+
+    public static String TAB_LBL_GETTING_STARTED;
+
+    public static String RELEASE_NOTE_URL;
+
+    public static String PA_LBL_TUTORIALS;
+
+    public static String PA_LBL_TUTORIALS_URL;
+
+    public static String HAND_IMPORT_SETTINGS_MSG;
+
+    public static String HAND_IMPORT_SETTINGS_MSG_ERROR;
+
+    public static String HAND_IMPORT_SETTINGS_MSG_SUCCESSFULL;
+
+    public static String URL_KATALON_DISCUSSION_FORUM;
+    
+    public static String URL_KATALON_SUPPORT_SERVICE;
+
+    public static String HAND_IMPORT_SELENIUM_IDE_MSG_ERROR;
+
+    // CheckForUpdateHandler
+    public static String HAND_MSG_UP_TO_DATE;
+
+    public static String HAND_MSG_UNABLE_TO_INSTALL_NEW_UPDATE;
+
+    // InstallUpdateConfirmationDialog
+    public static String DIA_LBL_UPDATE_ALREADY_TO_INSTALL;
+
+    public static String DIA_BTN_INSTALL_AND_RELAUNCH;
+
+    public static String DIA_BTN_NO_THANKS;
+
+    public static String DIA_TITLE_KS_UPDATE;
 
     static {
         // initialize resource bundle

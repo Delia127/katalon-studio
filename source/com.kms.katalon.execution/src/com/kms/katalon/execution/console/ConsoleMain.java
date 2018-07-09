@@ -21,6 +21,7 @@ import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.collector.ConsoleOptionCollector;
 import com.kms.katalon.execution.console.entity.ConsoleMainOptionContributor;
 import com.kms.katalon.execution.console.entity.ConsoleOption;
+import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.execution.exception.InvalidConsoleArgumentException;
 import com.kms.katalon.execution.launcher.ILauncher;
@@ -63,12 +64,11 @@ public class ConsoleMain {
      */
     public static int launch(String[] arguments) {
         ConsoleExecutor consoleExecutor = new ConsoleExecutor();
-        OptionParser parser = createParser(consoleExecutor);
+        ApplicationConfigOptions applicationConfigOptions = new ApplicationConfigOptions();
+        OptionParser parser = createParser(consoleExecutor, applicationConfigOptions);
         try {
             OptionSet options = parser.parse(arguments);
             Map<String, String> consoleOptionValueMap = new HashMap<String, String>();
-            ProjectEntity project = findProject(options);
-            setDefaultExecutionPropertiesOfProject(project, consoleOptionValueMap);
 
             if (options.has(PROPERTIES_FILE_OPTION)) {
                 readPropertiesFileAndSetToConsoleOptionValueMap(String.valueOf(options.valueOf(PROPERTIES_FILE_OPTION)),
@@ -76,6 +76,17 @@ public class ConsoleMain {
                 List<String> addedArguments = buildArgumentsForPropertiesFile(arguments, consoleOptionValueMap);
                 options = parser.parse(addedArguments.toArray(new String[addedArguments.size()]));
             }
+            
+            // Set option value to application configuration
+            for (ConsoleOption<?> opt : applicationConfigOptions.getConsoleOptionList()) {
+                String optionName = opt.getOption();
+                if (options.hasArgument(optionName)) {
+                    applicationConfigOptions.setArgumentValue(opt, String.valueOf(options.valueOf(optionName)));
+                }
+            }
+
+            ProjectEntity project = findProject(options);
+            setDefaultExecutionPropertiesOfProject(project, consoleOptionValueMap);
             consoleExecutor.execute(project, options);
 
             waitForExecutionToFinish(options);
@@ -103,7 +114,8 @@ public class ConsoleMain {
         return addedArguments;
     }
 
-    private static OptionParser createParser(ConsoleExecutor executor) {
+    private static OptionParser createParser(ConsoleExecutor executor, ApplicationConfigOptions 
+            applicationConfigOptions) {
         OptionParser parser = new OptionParser(false);
         parser.allowsUnrecognizedOptions();
 
@@ -112,6 +124,15 @@ public class ConsoleMain {
         // Accept all of katalon console arguments
         acceptConsoleOptionList(parser, new ConsoleMainOptionContributor().getConsoleOptionList());
         acceptConsoleOptionList(parser, executor.getAllConsoleOptions());
+
+        OptionSpecBuilder configSpec = parser.accepts(applicationConfigOptions.getConfigOption());
+        applicationConfigOptions.getConsoleOptionList().stream().forEach(consoleOption -> {
+            OptionSpecBuilder optionSpecBuilder = parser.accepts(consoleOption.getOption()).availableIf(configSpec);
+            if (consoleOption.hasArgument()) {
+                optionSpecBuilder.withRequiredArg().ofType(consoleOption.getArgumentType());
+            }
+        });
+
         return parser;
     }
 
@@ -131,16 +152,17 @@ public class ConsoleMain {
     }
 
     private static void setDefaultExecutionPropertiesOfProject(ProjectEntity project,
-            Map<String, String> consoleOptionValueMap) throws IOException {
+            Map<String, String> consoleOptionValueMap) throws IOException, InvalidConsoleArgumentException {
         ConsoleOptionCollector.getInstance().writeDefaultPropertyFile(project);
         readPropertiesFileAndSetToConsoleOptionValueMap(project.getFolderLocation() + File.separator
                 + ConsoleOptionCollector.DEFAULT_EXECUTION_PROPERTY_FILE_NAME, consoleOptionValueMap);
     }
 
     private static void readPropertiesFileAndSetToConsoleOptionValueMap(String fileLocation,
-            Map<String, String> consoleOptionValueMap) throws IOException {
-        if (validateFileLocation(fileLocation)) {
-            return;
+            Map<String, String> consoleOptionValueMap) throws IOException, InvalidConsoleArgumentException {
+        if (!validateFileLocation(fileLocation)) {
+            throw new InvalidConsoleArgumentException(
+                    MessageFormat.format(ExecutionMessageConstants.MNG_PRT_INVALID_PROPERTY_FILE_ARG, fileLocation));
         }
         try (InputStream input = new FileInputStream(fileLocation)) {
             Properties prop = new Properties();
@@ -165,7 +187,7 @@ public class ConsoleMain {
     }
 
     private static boolean validateFileLocation(String fileLocation) {
-        return StringUtils.isBlank(fileLocation) || !new File(fileLocation).exists();
+        return StringUtils.isNotBlank(fileLocation) && new File(fileLocation).exists();
     }
 
     private static void acceptConsoleOptionList(OptionParser parser, List<ConsoleOption<?>> consoleOptionList) {

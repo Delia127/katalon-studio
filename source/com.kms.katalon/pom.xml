@@ -40,6 +40,21 @@
 				<artifactId>maven-resources-plugin</artifactId>
 				<version>2.6</version>
 				<executions>
+					<execution>						
+						<id>copy-update-resources</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.parent.build.directory}/${resourcesDiretory}</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${project.basedir}/resources</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
 					<execution>
 						<id>process-about.mappings</id>
 						<phase>prepare-package</phase>

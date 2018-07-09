@@ -1,0 +1,1 @@
+Sample app for Android to test aumation capabilities

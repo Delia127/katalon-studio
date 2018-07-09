@@ -1,10 +1,14 @@
 package com.kms.katalon.composer.testsuite.listeners;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -34,12 +38,18 @@ import com.kms.katalon.composer.testsuite.dialogs.TestDataSelectionDialog;
 import com.kms.katalon.composer.testsuite.parts.TestSuitePartDataBindingView;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.controller.TestCaseController;
+import com.kms.katalon.core.testdata.TestData;
+import com.kms.katalon.core.testdata.TestDataFactory;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.link.TestCaseTestDataLink;
+import com.kms.katalon.entity.link.TestSuiteTestCaseLink;
 import com.kms.katalon.entity.link.VariableLink;
 import com.kms.katalon.entity.link.VariableLink.VariableType;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testdata.DataFileEntity;
+import com.kms.katalon.entity.variable.VariableEntity;
 
 public class TestDataToolItemListener extends SelectionAdapter {
 
@@ -95,6 +105,14 @@ public class TestDataToolItemListener extends SelectionAdapter {
         }
         if (ToolItemConstants.DOWN.equals(text)) {
             downTestDataLink();
+            return;
+        }
+        if (ToolItemConstants.MAP.equals(text)) {
+            mapTestDataLink();
+            return;
+        }
+        if (ToolItemConstants.MAPALL.equals(text)) {
+            mapAllTestDataLink();
             return;
         }
     }
@@ -332,6 +350,82 @@ public class TestDataToolItemListener extends SelectionAdapter {
                 return data.indexOf(arg1) - data.indexOf(arg0);
             }
         });
+
+    }
+
+    private void mapTestDataLink() {
+
+    }
+
+    private void mapAllTestDataLink() {
+        Map<String, String[]> columnNameHashmap = new LinkedHashMap<String, String[]>();
+        Map<String, TestCaseTestDataLink> dataLinkHashMap = new LinkedHashMap<String, TestCaseTestDataLink>();
+
+        ProjectEntity projectEntity = ProjectController.getInstance().getCurrentProject();
+
+        for (TestCaseTestDataLink dataLink : view.getSelectedTestCaseLink().getTestDataLinks()) {
+            try {
+                TestData testData = TestDataFactory.findTestDataForExternalBundleCaller(dataLink.getTestDataId(),
+                        projectEntity.getFolderLocation());
+                if (testData == null) {
+                    continue;
+                }
+
+                String[] columnNames = testData.getColumnNames();
+                if (columnNames != null) {
+                    columnNameHashmap.put(dataLink.getId(), columnNames);
+                    dataLinkHashMap.put(dataLink.getId(), dataLink);
+                }
+            } catch (Exception e) {
+                // Ignore it because user might not set data source for test
+                // data.
+            }
+        }
+
+        try {
+            TestSuiteTestCaseLink testCaseLink = view.getSelectedTestCaseLink();
+            TestCaseEntity testCaseEntity = TestCaseController.getInstance().getTestCaseByDisplayId(
+                    testCaseLink.getTestCaseId());
+
+            int matches = 0;
+            for (VariableLink variableLink : view.getSelectedTestCaseLink().getVariableLinks()) {
+
+                VariableEntity variable = TestCaseController.getInstance().getVariable(testCaseEntity,
+                        variableLink.getVariableId());
+                if (variable == null) {
+                    continue;
+                }
+
+                for (Entry<String, String[]> entry : columnNameHashmap.entrySet()) {
+                    boolean isFound = false;
+
+                    for (String columnName : entry.getValue()) {
+                        if (variable.getName().equalsIgnoreCase(columnName)) {
+                            TestCaseTestDataLink dataLink = dataLinkHashMap.get(entry.getKey());
+
+                            variableLink.setType(VariableType.DATA_COLUMN);
+                            variableLink.setTestDataLinkId(dataLink.getId());
+                            variableLink.setValue(columnName);
+                            matches++;
+                            isFound = true;
+                        }
+                    }
+
+                    if (isFound) {
+                        break;
+                    }
+                }
+            }
+
+            MessageDialog.openInformation(null, StringConstants.INFO,
+                    MessageFormat.format(StringConstants.LIS_INFO_MSG_MAP_DONE, Integer.toString(matches)));
+            if (matches > 0) {
+                view.refreshVariableTable();
+                view.setDirty(true);
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
     }
 
     private List<DataFileEntity> getTestDatasFromFolderTree(FolderTreeEntity folderTree) {

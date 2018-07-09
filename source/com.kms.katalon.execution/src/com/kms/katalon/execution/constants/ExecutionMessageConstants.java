@@ -59,6 +59,10 @@ public class ExecutionMessageConstants extends NLS {
 
     public static String MSG_PREPARE_REPORT_SIMPLE_HTML;
 
+    public static String MSG_PREPARE_REPORT_JSON;
+
+    public static String MSG_PREPARE_REPORT_JUNIT;
+
     public static String MSG_RP_ERROR_TO_EMAIL_REPORT;
 
     public static String MSG_RP_ERROR_TO_RERUN_TEST_SUITE;
@@ -102,6 +106,24 @@ public class ExecutionMessageConstants extends NLS {
     public static String LAU_MESSAGE_UNABLE_TO_EXECUTE_TEST_SUITE;
     
     public static String LAU_MESSAGE_EMPTY_TEST_SUITE;
+    
+    public static String PREF_DEFAULT_EMAIL_SUBJECT;
+
+    public static String CONSOLE_CANNOT_START_EXECUTION;
+
+    public static String LBL_DEFAULT_EXECUTION;
+    
+    // ConsoleOptionBuilder
+    public static String CONSOLE_RUN_CONFIGURATION_NOT_FOUND;
+
+    //MailUtil
+    public static String MSG_EMAIL_ATTACHMENT_EXCEEDS_SIZE;
+    
+    //ConsoleMain
+    public static String MNG_PRT_INVALID_PROPERTY_FILE_ARG;
+    
+    // TestSuiteLauncherOptionParser
+    public static String CONSOLE_MSG_PROFILE_NOT_FOUND;
 
     static {
         // initialize resource bundle

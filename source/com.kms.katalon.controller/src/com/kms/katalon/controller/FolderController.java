@@ -8,6 +8,7 @@ import java.util.List;
 import org.eclipse.e4.core.di.annotations.Creatable;
 
 import com.kms.katalon.constants.GlobalStringConstants;
+import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.IEntity;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
@@ -52,14 +53,7 @@ public class FolderController extends EntityController implements Serializable {
      * @return Returns list of test case entity
      */
     public List<TestCaseEntity> getTestCaseChildren(FolderEntity parentFolder) throws Exception {
-        List<FileEntity> childrenEntities = getDataProviderSetting().getFolderDataProvider().getChildren(parentFolder);
-        List<TestCaseEntity> childrentTestCases = new ArrayList<TestCaseEntity>();
-        for (FileEntity entity : childrenEntities) {
-            if (entity instanceof TestCaseEntity) {
-                childrentTestCases.add((TestCaseEntity) entity);
-            }
-        }
-        return childrentTestCases;
+        return getDataProviderSetting().getFolderDataProvider().getTestCaseChildren(parentFolder);
     }
 
     public List<Object> getAllDescentdantEntities(FolderEntity folder) throws Exception {
@@ -106,6 +100,10 @@ public class FolderController extends EntityController implements Serializable {
 
     public FolderEntity getReportRoot(ProjectEntity project) throws Exception {
         return getDataProviderSetting().getFolderDataProvider().getReportRoot(project);
+    }
+    
+    public FolderEntity getTestListenerRoot(ProjectEntity project) throws Exception {
+        return getDataProviderSetting().getFolderDataProvider().getTestListenerRoot(project);
     }
 
     public FolderEntity getCheckpointRoot(ProjectEntity project) throws Exception {
@@ -220,6 +218,10 @@ public class FolderController extends EntityController implements Serializable {
 
     public String getAvailableFolderName(FolderEntity parentFolder, String name) throws Exception {
         return getDataProviderSetting().getFolderDataProvider().getAvailableFolderName(parentFolder, name);
+    }
+
+    public FolderEntity getProfileRoot(ProjectEntity project) throws DALException {
+        return getDataProviderSetting().getFolderDataProvider().getProfileRoot(project);
     }
 
 }

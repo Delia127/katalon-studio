@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.ViewerCell;
@@ -106,13 +107,14 @@ public class ReportPartTestStepLabelProvider extends StyledCellLabelProvider {
             } else {
                 String testStepName = ((ILogRecord) element).getName();
                 if (logRecord instanceof TestStepLogRecord) {
-                    return ((TestStepLogRecord) logRecord).getIndexString() + ". " + testStepName;
+                    String indexString = ((TestStepLogRecord) logRecord).getIndexString();
+                    return (StringUtils.isNotEmpty(indexString) ? (indexString + ".") : "") + " " + testStepName;
                 } else {
                     return testStepName;
                 }
             }
         case CLMN_TEST_LOG_DESCRIPTION_IDX:
-            return (logRecord.getDescription() != null) ? logRecord.getDescription() : "";
+            return (logRecord.getDescription() != null) ? StringEscapeUtils.unescapeJava(logRecord.getDescription()) : "";
         case CLMN_TEST_LOG_ELAPSED_IDX:
             if (logRecord.getStartTime() > 0 && logRecord.getEndTime() > 0) {
                 return DateUtil.getElapsedTime(logRecord.getStartTime(), logRecord.getEndTime());

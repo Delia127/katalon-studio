@@ -14,20 +14,9 @@ import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.FileUtils;
 
-import com.kms.katalon.composer.components.application.ApplicationSingleton;
-import com.kms.katalon.composer.components.event.EventBrokerSingleton;
-import com.kms.katalon.composer.components.services.ModelServiceSingleton;
-import com.kms.katalon.composer.components.services.PartServiceSingleton;
-import com.kms.katalon.composer.components.services.UISynchronizeService;
-import com.kms.katalon.composer.project.constants.StringConstants;
-import com.kms.katalon.composer.project.handlers.OpenProjectHandler;
-import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
 
 public class SampleProjectProvider {
-    private static final String DEFAULT_SAMPLES_PROJECT_LOCATION = System.getProperty("user.home") + File.separator
-            + StringConstants.APP_NAME + File.separator + "Samples";
-
     private static final String RESOURCES_SAMPLE_PROJECTS_FOLDER = "resources" + File.separator + "samples";
 
     public static final String SAMPLE_WEB_UI = "WebUI";
@@ -47,10 +36,6 @@ public class SampleProjectProvider {
             instance = new SampleProjectProvider();
         }
         return instance;
-    }
-
-    private String getInstalledLocation(String projectName) {
-        return DEFAULT_SAMPLES_PROJECT_LOCATION + File.separator + projectName;
     }
 
     private String getResourcesLocation(String projectName) {
@@ -102,7 +87,7 @@ public class SampleProjectProvider {
         if (jarFile.isDirectory()) { // built by IDE
             return new FileInputStream(new File(jarFile, filePath).getAbsolutePath());
         } else {
-            try (JarFile jar = new JarFile(jarFile)){
+            try (JarFile jar = new JarFile(jarFile)) {
                 final Enumeration<JarEntry> entries = jar.entries();
                 String relativePath = filePath.replace(File.separator, "/");
                 while (entries.hasMoreElements()) {
@@ -118,31 +103,8 @@ public class SampleProjectProvider {
         }
     }
 
-    private void openSampleProject(String projectName) throws Exception {
-        String installedProjectFolder = getInstalledLocation(projectName);
-
-        ProjectController instance = ProjectController.getInstance();
-        if (instance.getProjectFile(installedProjectFolder) == null) {
-            extractProjectSource(projectName, installedProjectFolder);
-        }
-
-        OpenProjectHandler.doOpenProject(null, instance.getProjectFile(installedProjectFolder).getAbsolutePath(),
-                UISynchronizeService.getInstance().getSync(), EventBrokerSingleton.getInstance().getEventBroker(),
-                PartServiceSingleton.getInstance().getPartService(),
-                ModelServiceSingleton.getInstance().getModelService(),
-                ApplicationSingleton.getInstance().getApplication());
-    }
-
-    public void openSampleWebUIProject() throws Exception {
-        openSampleProject(SAMPLE_WEB_UI);
-    }
-
-    public void openSampleMobileProject() throws Exception {
-        openSampleProject(SAMPLE_MOBILE);
-    }
-
-    public void openSampleWebServiceProject() throws Exception {
-        openSampleProject(SAMPLE_WEB_SERVICE);
+    public void extractSampleWebUIProject(String projectType, String location) throws IOException {
+        extractProjectSource(projectType, location);
     }
 
 }

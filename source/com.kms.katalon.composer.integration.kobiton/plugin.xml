@@ -18,5 +18,10 @@
             name="Kobiton">
       </page>
    </extension>
-
+   <extension
+         point="com.kms.katalon.composer.mobile.mobileDriverIntegration">
+          <client
+                executionProvider="com.kms.katalon.composer.integration.kobiton.testsuite.KobitonIntegrationProvider">
+      </client>
+   </extension>
 </plugin>

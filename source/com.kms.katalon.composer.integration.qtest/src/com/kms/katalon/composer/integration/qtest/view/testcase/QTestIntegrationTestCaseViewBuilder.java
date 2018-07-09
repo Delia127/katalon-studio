@@ -12,5 +12,10 @@ public class QTestIntegrationTestCaseViewBuilder implements TestCaseIntegrationV
 	public AbstractTestCaseIntegrationView getIntegrationView(TestCaseEntity testCase, MPart mpart) {
 		return new QTestIntegrationTestCaseView(testCase, mpart);
 	}
+
+    @Override
+    public int preferredOrder() {
+        return 0;
+    }
 	
 }

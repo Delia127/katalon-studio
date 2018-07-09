@@ -21,9 +21,9 @@ Require-Bundle: org.eclipse.equinox.app,
  com.kms.katalon.controller,
  org.eclipse.jdt.launching,
  com.kms.katalon.custom,
- com.kms.katalon.core
+ com.kms.katalon.core,
+ com.kms.katalon.application
 Export-Package: com.kms.katalon.console.addons,
  com.kms.katalon.console.application,
- com.kms.katalon.console.constants,
- com.kms.katalon.console.utils
+ com.kms.katalon.console.constants
 Bundle-ActivationPolicy: lazy

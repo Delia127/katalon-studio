@@ -3,6 +3,8 @@ package com.kms.katalon.core.constants;
 import java.io.File;
 
 public class StringConstants {
+    public static final String DF_CHARSET = "UTF-8";
+
     public static final String ID_SEPARATOR = "/";
 
     // KeywordLogger
@@ -15,6 +17,10 @@ public class StringConstants {
     public static final String LOG_START_TEST_METHOD = "startTest";
 
     public static final String LOG_START_KEYWORD = "Start action";
+    
+    public static final String LOG_SETUP_ACTION = "setup action";
+    
+    public static final String LOG_TEAR_DOWN_ACTION = "tear down";
 
     public static final String LOG_START_KEYWORD_METHOD = "startKeyword";
 
@@ -25,6 +31,8 @@ public class StringConstants {
     public static final String LOG_END_TEST = "End Test Case";
 
     public static final String LOG_END_TEST_METHOD = "endTest";
+    
+    public static final String LOG_LISTENER_ACTION = "listener action";
 
     public static final String LOG_END_KEYWORD = "End action";
 
@@ -258,6 +266,8 @@ public class StringConstants {
 
     public static final String XML_LOG_DEVICE_ID_PROPERTY = "deviceId";
 
+    public static final String XML_LOG_DEVICE_NAME_PROPERTY = "deviceName";
+
     public static final String XML_LOG_DEVICE_PLATFORM_PROPERTY = "devicePlatform";
     
     public static final String XML_LOG_DEVICE_CONSOLE_PATH_PROPERTY = "deviceConsolePath";
@@ -375,6 +385,8 @@ public class StringConstants {
     public static final String CONF_PROPERTY_REPORT = "report";
 
     public static final String CONF_PROPERTY_SCREEN_CAPTURE_OPTION = "screenCaptureOption";
+
+    public static final String CONF_PROPERTY_VIDEO_RECORDER_OPTION = "videoRecorderOption";
 
     public static final String CONF_PROPERTY_DEFAULT_FAILURE_HANDLING = "defaultFailureHandling";
     

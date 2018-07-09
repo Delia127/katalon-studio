@@ -9,6 +9,8 @@ public class IntegrationKobitonMessages extends NLS {
 
     public static String MSG_ERR_MISSING_EXECUTION_INFO;
     
+    public static String MSG_ERR_KOBITON_DEVICE_NOT_FOUND;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, IntegrationKobitonMessages.class);

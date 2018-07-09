@@ -8,15 +8,10 @@ import org.codehaus.groovy.eclipse.editor.GroovyEditor;
 import org.codehaus.groovy.eclipse.editor.GroovyExtraInformationHover;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.Breakpoint;
 import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.core.model.IThread;
-import org.eclipse.debug.internal.ui.InstructionPointerManager;
-import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.debug.ui.IDebugEditorPresentation;
-import org.eclipse.debug.ui.IInstructionPointerPresentation;
-import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.jdt.internal.debug.core.model.JDIStackFrame;
 import org.eclipse.jdt.internal.debug.ui.JDIModelPresentation;
 import org.eclipse.jdt.ui.text.java.hover.IJavaEditorTextHover;
@@ -24,18 +19,17 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.TextViewer;
-import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
-import org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor;
+import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.eclipse.ui.texteditor.ITextEditor;
 
-import com.kms.katalon.composer.execution.trace.LogExceptionNavigator;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.execution.util.TestCaseEditorUtil;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.execution.logging.LogExceptionFilter;
@@ -50,21 +44,12 @@ public class DebugBreakpointView extends JDIModelPresentation implements IDebugE
 
     public static final String DBG_COMMAND_RESUME = "org.eclipse.debug.ui.commands.Resume";
 
-    private IInstructionPointerPresentation presentation = ((IInstructionPointerPresentation) DebugUITools.newDebugModelPresentation());
-
     @Override
     public IEditorInput getEditorInput(Object element) {
         try {
             if (element instanceof IFile) {
                 IFile file = (IFile) element;
-                String fileName = FilenameUtils.getBaseName(file.getName());
-                if (LogExceptionFilter.isTestCaseScript(fileName)) {
-                    AbstractTextEditor editor = getTestCaseEditorByScriptName(fileName);
-                    return (editor != null) ? editor.getEditorInput() : null;
-                }
-
-                return IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), file)
-                        .getEditorInput();
+                return new FileEditorInput(file);
             }
 
             if (element instanceof Breakpoint) {
@@ -75,9 +60,12 @@ public class DebugBreakpointView extends JDIModelPresentation implements IDebugE
                 Map<String, Object> attributes = marker.getAttributes();
                 String className = (String) attributes.get(DBG_STRING_TYPE_NAME);
                 if (LogExceptionFilter.isTestCaseScript(className)) {
-                    AbstractTextEditor editor = getTestCaseEditorByScriptName(className);
+                    AbstractTextEditor editor = TestCaseEditorUtil.getTestCaseEditorByScriptName(className);
                     if (editor != null) {
-                        goToLine(editor, (int) attributes.get(DBG_STRING_LINE_NUMBER));
+                        IRegion region = goToLine(editor, (int) attributes.get(DBG_STRING_LINE_NUMBER));
+                        if (region != null) {
+                            editor.selectAndReveal(region.getOffset(), region.getLength());
+                        }
                     }
                     // return null because Eclipse always opens default editor.
                     return null;
@@ -92,7 +80,7 @@ public class DebugBreakpointView extends JDIModelPresentation implements IDebugE
     @Override
     public String getEditorId(IEditorInput input, Object element) {
         try {
-            IEditorDescriptor descriptor = IDE.getEditorDescriptor(input.getName());
+            IEditorDescriptor descriptor = IDE.getEditorDescriptor(input.getName(), true, true);
 
             return (descriptor != null) ? descriptor.getId() : "";
         } catch (PartInitException e) {
@@ -176,53 +164,7 @@ public class DebugBreakpointView extends JDIModelPresentation implements IDebugE
         }
 
         addTextHover(editorPart, new DebugTextHover());
-        try {
-            String className = FilenameUtils.getBaseName(editorPart.getEditorInput().getName());
-            if (frame instanceof JDIStackFrame) {
-                JDIStackFrame jdiStackFrame = (JDIStackFrame) frame;
-                className = FilenameUtils.getBaseName(jdiStackFrame.getSourcePath());
-            }
-
-            String testCaseId = getTestCaseIdByClassName(className);
-            if (StringUtils.isNotEmpty(testCaseId)) {
-                TestCaseEntity testCase = TestCaseController.getInstance().getTestCaseByDisplayId(testCaseId);
-                AbstractTextEditor testScriptEditor = getTestScriptEditor(testCase);
-                addTextHover(testScriptEditor, new DebugTextHover());
-                positionEditor(testScriptEditor, frame);
-            }
-        } catch (Exception e) {
-            // If an exception occurs that means test case meta data
-            // file(.tc) does not exist.
-        }
-        addAnnotationForEditor((AbstractTextEditor) editorPart, frame);
-        return true;
-    }
-
-    private void addAnnotationForEditor(AbstractTextEditor textEditor, IStackFrame stackFrame) {
-        positionEditor(textEditor, stackFrame);
-        InstructionPointerManager.getDefault().removeAnnotations(textEditor);
-
-        Annotation annotation = presentation.getInstructionPointerAnnotation(textEditor, stackFrame);
-        InstructionPointerManager.getDefault().addAnnotation(textEditor, stackFrame, annotation);
-    }
-
-    private void positionEditor(ITextEditor editor, IStackFrame frame) {
-        try {
-            int charStart = frame.getCharStart();
-            if (charStart >= 0) {
-                editor.selectAndReveal(charStart, 0);
-                return;
-            }
-
-            int lineNumber = frame.getLineNumber() - 1; // Document line numbers are 0-based. Debug line numbers are
-                                                        // 1-based.
-            IRegion region = goToLine(editor, lineNumber);
-            if (region != null) {
-                editor.selectAndReveal(region.getOffset(), 0);
-            }
-        } catch (DebugException ignored) {
-            // Cannot select, ignore it
-        }
+        return false;
     }
 
     @Override
@@ -231,39 +173,27 @@ public class DebugBreakpointView extends JDIModelPresentation implements IDebugE
             return;
         }
 
-        GroovyEditor groovyEditor = (GroovyEditor) editorPart;
-        String className = groovyEditor.getGroovyCompilationUnit().getModuleNode().getMainClassName();
-        try {
-            AbstractTextEditor testCaseScriptEditor = getTestCaseEditorByScriptName(className);
-            if (testCaseScriptEditor != null) {
-                addTextHover(testCaseScriptEditor, new GroovyExtraInformationHover(true));
-            }
-        } catch (Exception ignored) {
-            // Ignore it
-        }
         addTextHover(editorPart, new GroovyExtraInformationHover(true));
-    }
-
-    private AbstractTextEditor getTestCaseEditorByScriptName(String fileName) throws Exception {
-        TestCaseEntity testCase = TestCaseController.getInstance().getTestCaseByScriptName(fileName);
-        return (testCase != null) ? getTestScriptEditor(testCase) : null;
-    }
-
-    private AbstractTextEditor getTestScriptEditor(TestCaseEntity testCase) {
-        MPart compatibilityEditorPart = new LogExceptionNavigator().getTestCaseGroovyEditor(testCase);
-        CompatibilityEditor compatibilityEditor = (CompatibilityEditor) compatibilityEditorPart.getObject();
-        return (AbstractTextEditor) compatibilityEditor.getEditor();
     }
 
     private void addTextHover(IEditorPart editorPart, IJavaEditorTextHover textHover) {
         if (!(editorPart instanceof GroovyEditor)) {
             return;
         }
+        String className = FilenameUtils.getBaseName(editorPart.getEditorInput().getName());
 
-        GroovyEditor groovyEditor = (GroovyEditor) editorPart;
+        try {
+            String testCaseId = getTestCaseIdByClassName(className);
 
-        TextViewer textViewer = (TextViewer) groovyEditor.getViewer();
-        textHover.setEditor(groovyEditor);
-        textViewer.setTextHover(textHover, "__dftl_partition_content_type", 0);
+            if (StringUtils.isNotEmpty(testCaseId)) {
+                GroovyEditor groovyEditor = (GroovyEditor) editorPart;
+
+                TextViewer textViewer = (TextViewer) groovyEditor.getViewer();
+                textHover.setEditor(groovyEditor);
+                textViewer.setTextHover(textHover, "__dftl_partition_content_type", 0);
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+        }
     }
 }

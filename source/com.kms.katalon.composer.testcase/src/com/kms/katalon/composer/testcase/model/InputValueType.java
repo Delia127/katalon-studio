@@ -192,10 +192,14 @@ public enum InputValueType implements InputValueEditorProvider {
             case Throwable:
                 return new ConstructorCallExpressionWrapper(ThrowStatementWrapper.DEFAULT_THROW_TYPE, parent);
             case Key:
-                parent.getScriptClass().addImport(Keys.class);
+                if (parent != null && parent.getScriptClass() != null) {
+                    parent.getScriptClass().addImport(Keys.class);
+                }
                 return new PropertyExpressionWrapper(Keys.class.getSimpleName(), "ENTER", parent);
             case Keys:
-                parent.getScriptClass().addImport(Keys.class);
+                if (parent != null && parent.getScriptClass() != null) {
+                    parent.getScriptClass().addImport(Keys.class);
+                }
                 return new MethodCallExpressionWrapper(Keys.class, "chord", parent);
             case Closure:
                 return new ClosureExpressionWrapper(new ParameterWrapper[0], parent);

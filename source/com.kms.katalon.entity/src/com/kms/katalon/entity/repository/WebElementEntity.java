@@ -2,7 +2,9 @@ package com.kms.katalon.entity.repository;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -15,9 +17,14 @@ import com.kms.katalon.entity.repository.WebElementPropertyEntity.MATCH_CONDITIO
 public class WebElementEntity extends FileEntity {
 
     private static final long serialVersionUID = 1L;
+
     public static final String ref_element = "ref_element";
+
     public static final String defaultElementGUID = "00000000-0000-0000-0000-000000000000";
+
     public static final String DEFAULT_EMPTY_STRING = "";
+
+    public static final String REF_ELEMENT_IS_SHADOW_ROOT = "ref_element_is_shadow_root";
 
     private String elementGuidId;
 
@@ -27,13 +34,19 @@ public class WebElementEntity extends FileEntity {
 
     private boolean useRalativeImagePath;
 
+    private WebElementSelectorMethod selectorMethod = WebElementSelectorMethod.BASIC;
+
+    private Map<WebElementSelectorMethod, String> selectorCollection;
+
     public WebElementEntity() {
         super();
         webElementProperties = new ArrayList<WebElementPropertyEntity>(0);
+        setSelectorCollection(new HashMap<>());
         elementGuidId = defaultElementGUID;
 
         name = DEFAULT_EMPTY_STRING;
         description = DEFAULT_EMPTY_STRING;
+        selectorCollection = new HashMap<>();
     }
 
     public String getElementGuidId() {
@@ -52,6 +65,7 @@ public class WebElementEntity extends FileEntity {
         this.webElementProperties = webElementProperties;
     }
 
+    @Override
     public WebElementEntity clone() {
         WebElementEntity newWebElement = (WebElementEntity) super.clone();
         newWebElement.setElementGuidId(UUID.randomUUID().toString());
@@ -66,6 +80,8 @@ public class WebElementEntity extends FileEntity {
         }
         newWebElement.setImagePath(getImagePath());
         newWebElement.setUseRalativeImagePath(getUseRalativeImagePath());
+        newWebElement.setSelectorMethod(getSelectorMethod());
+        newWebElement.setSelectorCollection(new HashMap<>(getSelectorCollection()));
         return newWebElement;
     }
 
@@ -78,6 +94,7 @@ public class WebElementEntity extends FileEntity {
         return getWebElementFileExtension();
     }
 
+    @Override
     public String getRelativePathForUI() {
         if (parentFolder != null) {
             return parentFolder.getRelativePath() + File.separator + this.name;
@@ -92,9 +109,8 @@ public class WebElementEntity extends FileEntity {
             return false;
         }
         WebElementEntity that = (WebElementEntity) obj;
-        isEquals = isEquals
-                && new EqualsBuilder().append(this.getWebElementProperties(), that.getWebElementProperties())
-                        .isEquals();
+        isEquals = isEquals && new EqualsBuilder()
+                .append(this.getWebElementProperties(), that.getWebElementProperties()).isEquals();
         return isEquals;
     }
 
@@ -125,5 +141,25 @@ public class WebElementEntity extends FileEntity {
     public String getPropertyValue(String propertyName) {
         WebElementPropertyEntity prop = getProperty(propertyName);
         return prop != null ? prop.getValue() : StringUtils.EMPTY;
+    }
+
+    public WebElementSelectorMethod getSelectorMethod() {
+        return selectorMethod;
+    }
+
+    public void setSelectorMethod(WebElementSelectorMethod selectorMethod) {
+        this.selectorMethod = selectorMethod;
+    }
+
+    public Map<WebElementSelectorMethod, String> getSelectorCollection() {
+        return selectorCollection;
+    }
+
+    public void setSelectorCollection(Map<WebElementSelectorMethod, String> selectorCollection) {
+        this.selectorCollection = selectorCollection;
+    }
+
+    public void setSelectorValue(WebElementSelectorMethod selectorMethod, String selectorValue) {
+        selectorCollection.put(selectorMethod, selectorValue);
     }
 }

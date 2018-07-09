@@ -2,7 +2,7 @@ package com.kms.katalon.composer.components.impl.util;
 
 import java.util.concurrent.Callable;
 
-import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -65,8 +65,59 @@ public class ControlUtils {
         ctrl.addMouseListener(mouseAdapter);
     }
 
+    public static Font getFontBold(Control control) {
+        return getFontStyle(control, SWT.BOLD);
+    }
+
+    public static Font getFontItalic(Control control) {
+        return getFontStyle(control, SWT.ITALIC);
+    }
+
+    public static Font getFontBoldItalic(Control control) {
+        return getFontStyle(control, SWT.BOLD | SWT.ITALIC);
+    }
+
+    /**
+     * Get font of the control
+     * 
+     * @param control the control to get the font
+     * @param style a bitwise combination of SWT.NORMAL, SWT.ITALIC and SWT.BOLD
+     * @return Font
+     */
+    public static Font getFontStyle(Control control, int style) {
+        return getFontStyle(control, style, -1);
+    }
+
+    /**
+     * Get font of the control
+     * 
+     * @param control the control to get the font
+     * @param style a bitwise combination of SWT.NORMAL, SWT.ITALIC and SWT.BOLD
+     * @param size font size. Use -1 if don't want to change the size.
+     * @return Font
+     */
+    public static Font getFontStyle(Control control, int style, int size) {
+        FontDescriptor fontDescriptor = FontDescriptor.createFrom(control.getFont());
+        if (size != -1) {
+            return fontDescriptor.setStyle(style).setHeight(size).createFont(control.getDisplay());
+        }
+        return fontDescriptor.setStyle(style).createFont(control.getDisplay());
+    }
+
     public static void setFontToBeBold(Control ctrl) {
-        ctrl.setFont(JFaceResources.getFontRegistry().getBold(""));
+        // ctrl.setFont(JFaceResources.getFontRegistry().getBold(""));
+        ctrl.setFont(getFontBold(ctrl));
+    }
+
+    /**
+     * Set font style to the control
+     * 
+     * @param control the control to set the font
+     * @param style a bitwise combination of SWT.NORMAL, SWT.ITALIC and SWT.BOLD
+     * @param size font size. Use -1 if don't want to change the size.
+     */
+    public static void setFontStyle(Control control, int style, int size) {
+        control.setFont(getFontStyle(control, style, size));
     }
 
     public static void setFontSize(Control ctrl, int height) {
@@ -177,10 +228,13 @@ public class ControlUtils {
         menuItem.setData(fileEntity);
         menuItem.addSelectionListener(selectionAdapter);
     }
-    
+
     private static String getFileEntityMenuItemLabel(FileEntity entity) {
         return ComposerComponentsImplMessageConstants.MENU_OPEN + " " + entity.getName();
     }
 
+    public static boolean isReady(Control control) {
+        return control != null && !control.isDisposed();
+    }
 
 }

@@ -11,6 +11,10 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 
+import com.kms.katalon.application.RunningMode;
+import com.kms.katalon.application.usagetracking.UsageActionTrigger;
+import com.kms.katalon.application.usagetracking.UsageInfoCollector;
+import com.kms.katalon.composer.components.impl.dialogs.MissingMobileDriverWarningDialog;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
@@ -33,9 +37,11 @@ import com.kms.katalon.execution.collector.RunConfigurationCollector;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.entity.TestSuiteCollectionExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
+import com.kms.katalon.execution.launcher.ReportableLauncher;
 import com.kms.katalon.execution.launcher.TestSuiteCollectionLauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
+import com.kms.katalon.execution.mobile.exception.MobileSetupException;
 
 public class TestSuiteCollectionBuilderJob extends Job {
 
@@ -59,7 +65,7 @@ public class TestSuiteCollectionBuilderJob extends Job {
             ReportCollectionEntity reportCollection = reportController.newReportCollection(project,
                     testSuiteCollectionEntity, executedEntity.getId());
 
-            List<SubIDELauncher> tsLaunchers = new ArrayList<>();
+            List<ReportableLauncher> tsLaunchers = new ArrayList<>();
             boolean cancelInstallWebDriver = false;
             for (TestSuiteRunConfiguration tsRunConfig : testSuiteCollectionEntity.getTestSuiteRunConfigurations()) {
                 if (!cancelInstallWebDriver) {
@@ -94,7 +100,7 @@ public class TestSuiteCollectionBuilderJob extends Job {
 
             LauncherManager launcherManager = LauncherManager.getInstance();
             TestSuiteCollectionLauncher launcher = new IDETestSuiteCollectionLauncher(executedEntity, launcherManager,
-                    tsLaunchers, testSuiteCollectionEntity.getExecutionMode());
+                    tsLaunchers, testSuiteCollectionEntity.getExecutionMode(), reportCollection);
             launcherManager.addLauncher(launcher);
             reportController.updateReportCollection(reportCollection);
             return Status.OK_STATUS;
@@ -103,6 +109,8 @@ public class TestSuiteCollectionBuilderJob extends Job {
             return Status.CANCEL_STATUS;
         } finally {
             monitor.done();
+            UsageInfoCollector
+                    .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.RUN_SCRIPT, RunningMode.GUI));
         }
     }
 
@@ -143,11 +151,16 @@ public class TestSuiteCollectionBuilderJob extends Job {
                     .getRunConfiguration(configuration.getRunConfigurationId(), projectDir, configuration);
             TestSuiteEntity testSuiteEntity = tsRunConfig.getTestSuiteEntity();
             runConfig.build(testSuiteEntity, new TestSuiteExecutedEntity(testSuiteEntity));
-            SubIDELauncher launcher = new SubIDELauncher(runConfig, LaunchMode.RUN);
+            SubIDELauncher launcher = new SubIDELauncher(runConfig, LaunchMode.RUN, configuration);
             reportCollection.getReportItemDescriptions()
                     .add(ReportItemDescription.from(launcher.getReportEntity().getIdForDisplay(), configuration));
             return launcher;
-        } catch (final Exception e) {
+        } catch (final MobileSetupException e) {
+            UISynchronizeService.syncExec(() -> MissingMobileDriverWarningDialog
+                    .showWarning(Display.getCurrent().getActiveShell(), e.getMessage()));
+            return null;
+        }
+        catch (final Exception e) {
             UISynchronizeService.syncExec(new Runnable() {
                 @Override
                 public void run() {

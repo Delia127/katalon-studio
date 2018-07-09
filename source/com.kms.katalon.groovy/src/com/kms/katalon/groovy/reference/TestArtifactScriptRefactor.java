@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.CoreException;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.groovy.constant.GroovyConstants;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
 public class TestArtifactScriptRefactor {
@@ -30,18 +31,26 @@ public class TestArtifactScriptRefactor {
 
     private String entityId;
 
-    private boolean hasRightBrackets;
-    
+    private boolean hasRightBracket;
+
+    private boolean hasRightQuote;
+
+    private boolean hasRightDoubleQuote;
+
     private boolean isFolder;
 
-    public TestArtifactScriptRefactor(FolderType parentType, String entityId, boolean hasRightBrackets) {
-        this(parentType, entityId, hasRightBrackets, false);
+    public TestArtifactScriptRefactor(FolderType parentType, String entityId, boolean hasRightBracket,
+            boolean hasRightQuote, boolean hasRightDoubleQuote) {
+        this(parentType, entityId, hasRightBracket, hasRightQuote, hasRightDoubleQuote, false);
     }
-    
-    public TestArtifactScriptRefactor(FolderType parentType, String entityId, boolean hasRightBrackets, boolean isFolder) {
+
+    public TestArtifactScriptRefactor(FolderType parentType, String entityId, boolean hasRightBracket,
+            boolean hasRightQuote, boolean hasRightDoubleQuote, boolean isFolder) {
         this.parentType = parentType;
         this.entityId = entityId;
-        this.hasRightBrackets = hasRightBrackets;
+        this.hasRightBracket = hasRightBracket;
+        this.hasRightQuote = hasRightQuote;
+        this.hasRightDoubleQuote = hasRightDoubleQuote;
         this.isFolder = isFolder;
     }
 
@@ -76,24 +85,16 @@ public class TestArtifactScriptRefactor {
         return s.substring(firstSeparatorIdx + (isFolder ? 0 : 1), s.length());
     }
 
-    private String buildBrackets(String s, String left, String right) {
-        String output = left + s;
-        if (hasRightBrackets) {
-            output += right;
-        }
-        return output;
-    }
-
     private String buildParentheses(String s) {
-        return buildBrackets(s, CR_LEFT_PARENTHESIS, CR_RIGHT_PARENTHESIS);
+        return CR_LEFT_PARENTHESIS + s + (hasRightBracket ? CR_RIGHT_PARENTHESIS : "");
     }
 
     private String buildQuote(String s) {
-        return buildBrackets(s, CR_PRIME, CR_PRIME);
+        return CR_PRIME + s + (hasRightQuote ? CR_PRIME : "");
     }
 
     private String buildDoubleQuotes(String s) {
-        return buildBrackets(s, CR_DOUBLE_PRIMES, CR_DOUBLE_PRIMES);
+        return CR_DOUBLE_PRIMES + s + (hasRightDoubleQuote ? CR_DOUBLE_PRIMES : "");
     }
 
     public List<String> getReferenceStrings() {
@@ -147,7 +148,7 @@ public class TestArtifactScriptRefactor {
             return;
         }
 
-        try (InputStream is = IOUtils.toInputStream(scriptContent)) {
+        try (InputStream is = IOUtils.toInputStream(scriptContent, GroovyConstants.DF_CHARSET)) {
             scriptFile.setContents(is, true, true, null);
             scriptFile.refreshLocal(IResource.DEPTH_ZERO, null);
         }
@@ -155,7 +156,7 @@ public class TestArtifactScriptRefactor {
 
     private String getScriptContent(IFile scriptFile) throws IOException, CoreException {
         try (InputStream scriptFileStreamContent = scriptFile.getContents()) {
-            return IOUtils.toString(scriptFileStreamContent);
+            return IOUtils.toString(scriptFileStreamContent, GroovyConstants.DF_CHARSET);
         }
     }
 
@@ -183,19 +184,19 @@ public class TestArtifactScriptRefactor {
         return findReferrers(GroovyUtil.getAllTestCaseScripts(projectEntity));
     }
 
-    public void updateReferenceForProject(String newScript, ProjectEntity projectEntity) throws IOException,
-            CoreException {
+    public void updateReferenceForProject(String newScript, ProjectEntity projectEntity)
+            throws IOException, CoreException {
         updateReferenceForTestCaseFolder(newScript, projectEntity);
         updateReferenceForCustomKeywords(newScript, projectEntity);
     }
 
-    public void updateReferenceForTestCaseFolder(String newScript, ProjectEntity projectEntity) throws IOException,
-            CoreException {
+    public void updateReferenceForTestCaseFolder(String newScript, ProjectEntity projectEntity)
+            throws IOException, CoreException {
         updateReferences(newScript, GroovyUtil.getAllTestCaseScripts(projectEntity));
     }
 
-    public void updateReferenceForCustomKeywords(String newScript, ProjectEntity projectEntity) throws IOException,
-            CoreException {
+    public void updateReferenceForCustomKeywords(String newScript, ProjectEntity projectEntity)
+            throws IOException, CoreException {
         updateReferences(newScript, GroovyUtil.getAllCustomKeywordsScripts(projectEntity));
     }
 
@@ -210,23 +211,23 @@ public class TestArtifactScriptRefactor {
     }
 
     public static TestArtifactScriptRefactor createForTestDataEntity(String testDataId) {
-        return new TestArtifactScriptRefactor(FolderType.DATAFILE, testDataId, true);
+        return new TestArtifactScriptRefactor(FolderType.DATAFILE, testDataId, true, true, true);
     }
 
     public static TestArtifactScriptRefactor createForTestCaseEntity(String testCaseId) {
-        return new TestArtifactScriptRefactor(FolderType.TESTCASE, testCaseId, true);
+        return new TestArtifactScriptRefactor(FolderType.TESTCASE, testCaseId, true, true, true);
     }
 
     public static TestArtifactScriptRefactor createForTestObjectEntity(String testObjectId) {
-        return new TestArtifactScriptRefactor(FolderType.WEBELEMENT, testObjectId, true);
+        return new TestArtifactScriptRefactor(FolderType.WEBELEMENT, testObjectId, false, true, true);
     }
 
     public static TestArtifactScriptRefactor createForCheckpointEntity(String checkpointId) {
-        return new TestArtifactScriptRefactor(FolderType.CHECKPOINT, checkpointId, true);
+        return new TestArtifactScriptRefactor(FolderType.CHECKPOINT, checkpointId, true, true, true);
     }
 
     public static TestArtifactScriptRefactor createForFolderEntity(FolderEntity folder) {
         return new TestArtifactScriptRefactor(folder.getFolderType(), folder.getIdForDisplay() + ENTITY_ID_SEPARATOR,
-        		false, true);
+                false, false, false, true);
     }
 }

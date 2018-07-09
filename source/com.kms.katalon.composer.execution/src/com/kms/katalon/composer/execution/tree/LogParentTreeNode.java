@@ -92,8 +92,8 @@ public class LogParentTreeNode extends LogChildTreeNode implements ILogParentTre
         }
         return parentIdxAsString + getIndex();
     }
-    
-    private int getIndex() {
+
+    public int getIndex() {
         int stepIndex = record.getIndex();
         if (stepIndex < 0) {
             stepIndex = 1;

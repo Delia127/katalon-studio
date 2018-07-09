@@ -33,7 +33,7 @@ public interface IdConstants {
 
     public static final String DEBUG_TOOL_ITEM_ID = "com.kms.katalon.composer.execution.handledtoolitem.debug";
 
-    public static final String PERSPECTIVE_SWITCHER_TOOL_CONTROL_ID = "com.kms.katalon.composer.perspective.switcher";
+    public static final String PERSPECTIVE_SWITCHER_TOOL_CONTROL_ID = "com.kms.katalon.composer.toolbar.switcher";
 
     // Composer PartStack content
     public static final String COMPOSER_CONTENT_PARTSTACK_ID = "com.kms.katalon.composer.content";
@@ -87,6 +87,8 @@ public interface IdConstants {
     public static final String TEST_CASE_INTEGRATION_PART_ID_SUFFIX = TEST_CASE_SUB_PART_STACK_ID_SUFFIX
             + ".integration";
 
+    public static final String TEST_CASE_PROPERTIES_PART_ID_SUFFIX = TEST_CASE_SUB_PART_STACK_ID_SUFFIX + ".properties";
+
     public static final String TEST_CASE_GENERAL_PART_ID_SUFFIX = TEST_CASE_SUB_PART_STACK_ID_SUFFIX + ".testCasePart";
 
     // Test Object Part content
@@ -101,6 +103,8 @@ public interface IdConstants {
             + ".integration";
 
     public static final String TEST_SUITE_MAIN_PART_ID_SUFFIX = TEST_SUITE_SUB_PART_STACK_ID_SUFFIX + ".testSuitePart";
+    
+    public static final String TEST_SUITE_SCRIPT_PART_ID_SUFFIX = TEST_SUITE_SUB_PART_STACK_ID_SUFFIX + ".editor";
 
     // Test Data Part content
     public static final String TESTDATA_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID + ".testdata";
@@ -121,6 +125,10 @@ public interface IdConstants {
 
     // Test Suite Part: key of TestSuiteEntity in content part
     public static final String TESTSUITE_CONTEXT_OBJECT_KEY = "testSuite";
+    
+    // Execution Profile content (GlobalVariable part)
+    public static final String EXECUTION_PROFILE_CONTENT_PART_ID_PREFIX = COMPOSER_CONTENT_PARTSTACK_ID
+            + ".executionProfile";
 
     // Command ID
     public static final String SAVE_COMMAND_ID = "com.kms.katalon.command.save";
@@ -252,6 +260,8 @@ public interface IdConstants {
     public static final String MENU_CMD_ID_WINDOW_RESET_PERSPECTIVE = "com.kms.katalon.composer.command.window.resetPerspective";
 
     public static final String MENU_CMD_ID_HELP_ABOUT = "org.eclipse.ui.help.aboutAction";
+
+    public static final String MENU_CMD_ID_QUITE = "com.kms.katalon.composer.quit";
 
     // Left Part Stack
     public static final String COMPOSER_PARTSTACK_EXPLORER_ID = "com.kms.katalon.composer.partstack.explorer";

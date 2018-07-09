@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin>
+   <extension-point id="mobileDriverIntegration" name="Mobile Driver Integration" schema="schema/mobileDriverIntegration.exsd"/>
 
    <extension
          id="com.kms.katalon.composer.mobile.fragment"
@@ -59,7 +60,7 @@
       </initializer>
    </extension>
    <extension
-         point="com.kms.katalon.composer.testsuite.collection.testSuiteExecutionItem">
+         point="com.kms.katalon.composer.execution.tetSuiteExecutionItem">
       <client
             item="com.kms.katalon.composer.mobile.execution.testsuite.MobileTestExecutionGroup">
       </client>

@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry exported="true" kind="lib" path="resources/lib/selenium-server-standalone-2.53.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="resources/lib/testng-6.11.jar"/>
+	<classpathentry exported="true" kind="lib" path="resources/lib/selenium-leg-rc-3.7.0.jar" sourcepath="/var/folders/rf/jskg2k1n61xdrfptl_x3hpxr0000gp/T/.org.sf.feeling.decompiler1517369617610/source/selenium-leg-rc-3.7.0-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="resources/lib/jna-4.1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="resources/lib/jna-platform-4.1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="resources/lib/selenium-server-standalone-3.7.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="output" path="bin"/>

@@ -28,6 +28,7 @@ import com.kms.katalon.core.testdata.reader.CsvWriter;
 import com.kms.katalon.core.util.internal.PathUtil;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.execution.configuration.AbstractRunConfiguration;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.constants.StringConstants;
@@ -41,11 +42,14 @@ import com.kms.katalon.execution.integration.ReportIntegrationContribution;
 import com.kms.katalon.execution.integration.ReportIntegrationFactory;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherStatus;
+import com.kms.katalon.execution.setting.EmailVariableBinding;
 import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.execution.util.MailUtil;
 import com.kms.katalon.logging.LogUtil;
 
 public abstract class ReportableLauncher extends LoggableLauncher {
+    private ReportEntity reportEntity;
+
     public ReportableLauncher(LauncherManager manager, IRunConfiguration runConfig) {
         super(manager, runConfig);
     }
@@ -73,7 +77,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 
             uploadReportToIntegratingProduct(suiteLogRecord);
 
-            sendReport();
+            sendReport(suiteLogRecord);
 
         } catch (Exception e) {
             writeError(MessageFormat.format(StringConstants.LAU_RPT_ERROR_TO_GENERATE_REPORT, e.getMessage()));
@@ -93,11 +97,16 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                         getExecutedEntity().getSourceId(), String.valueOf(rerun.getPreviousRerunTimes() + 1)));
 
                 IRunConfiguration newConfig = getRunConfig().cloneConfig();
+                if (getRunConfig() instanceof AbstractRunConfiguration && 
+                        newConfig instanceof AbstractRunConfiguration) {
+                    ((AbstractRunConfiguration) newConfig).setExecutionProfile(getRunConfig().getExecutionProfile());
+                }
                 newConfig.build(testSuite, newTestSuiteExecutedEntity);
                 ReportableLauncher rerunLauncher = clone(newConfig);
-                LauncherManager.getInstance().addLauncher(rerunLauncher);
+                rerunLauncher.getManager().addLauncher(rerunLauncher);
             } catch (Exception e) {
-                writeError(MessageFormat.format(StringConstants.MSG_RP_ERROR_TO_RERUN_TEST_SUITE, ExceptionUtils.getStackTrace(e)));
+                writeError(MessageFormat.format(StringConstants.MSG_RP_ERROR_TO_RERUN_TEST_SUITE,
+                        ExceptionUtils.getStackTrace(e)));
                 LogUtil.logError(e);
             }
         }
@@ -113,17 +122,18 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         }
     }
 
-    private void sendReport() {
+    private void sendReport(TestSuiteLogRecord testSuiteLogRecord) {
         try {
-            sendReportEmail();
+            sendReportEmail(testSuiteLogRecord);
         } catch (Exception e) {
-            writeError(MessageFormat.format(StringConstants.MSG_RP_ERROR_TO_EMAIL_REPORT, ExceptionUtils.getStackTrace(e)));
+            writeError(MessageFormat.format(StringConstants.MSG_RP_ERROR_TO_EMAIL_REPORT,
+                    ExceptionUtils.getStackTrace(e)));
             LogUtil.logError(e);
         }
     }
 
-    private void sendReportEmail() throws Exception {
-        
+    private void sendReportEmail(TestSuiteLogRecord testSuiteLogRecord) throws Exception {
+
         if (!(getExecutedEntity() instanceof TestSuiteExecutedEntity)) {
             return;
         }
@@ -138,19 +148,8 @@ public abstract class ReportableLauncher extends LoggableLauncher {
         writeLine(MessageFormat.format(StringConstants.LAU_PRT_SENDING_EMAIL_RPT_TO,
                 Arrays.toString(emailConfig.getTos())));
 
-        File testSuiteReportSourceFolder = new File(getRunConfig().getExecutionSetting().getFolderPath());
-
-        File csvFile = new File(testSuiteReportSourceFolder,
-                FilenameUtils.getBaseName(testSuiteReportSourceFolder.getName()) + ".csv");
-        
-        List<String> csvReports = new ArrayList<String>();
-
-        csvReports.add(csvFile.getAbsolutePath());
-
-        List<Object[]> suitesSummaryForEmail = collectSummaryData(csvReports);
-
         // Send report email
-        MailUtil.sendSummaryMail(emailConfig, csvFile, getReportFolder(), suitesSummaryForEmail);
+        MailUtil.sendSummaryMail(emailConfig, testSuiteLogRecord, new EmailVariableBinding(testSuiteLogRecord));
 
         writeLine(StringConstants.LAU_PRT_EMAIL_SENT);
     }
@@ -169,7 +168,7 @@ public abstract class ReportableLauncher extends LoggableLauncher {
             setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_GENERATE_REPORT);
             TestSuiteLogRecord suiteLog = ReportUtil.generate(getRunConfig().getExecutionSetting().getFolderPath());
             File reportFolder = getReportFolder();
-            
+
             setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_HTML);
             ReportUtil.writeHtmlReport(suiteLog, reportFolder);
 
@@ -178,7 +177,13 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 
             setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_SIMPLE_HTML);
             ReportUtil.writeSimpleHTMLReport(suiteLog, reportFolder);
-            
+
+            setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_JSON);
+            ReportUtil.writeJsonReport(suiteLog, reportFolder);
+
+            setStatus(LauncherStatus.PREPARE_REPORT, ExecutionMessageConstants.MSG_PREPARE_REPORT_JUNIT);
+            ReportUtil.writeJUnitReport(suiteLog, reportFolder);
+
             copyReport();
             return suiteLog;
         } catch (Exception e) {
@@ -219,8 +224,14 @@ public abstract class ReportableLauncher extends LoggableLauncher {
                     }
 
                     // Copy child file to user's report folder
-                    FileUtils.copyFile(reportChildSourceFile,
-                            new File(userReportFolder, fileName + "." + fileExtension));
+                    if (reportChildSourceFile.isFile()) {
+                        FileUtils.copyFile(reportChildSourceFile,
+                                new File(userReportFolder, fileName + "." + fileExtension));
+                    } else if (reportChildSourceFile.isDirectory()) {
+                        File newCoppiedFolder = new File(userReportFolder, fileName);
+                        newCoppiedFolder.mkdirs();
+                        FileUtils.copyDirectory(reportChildSourceFile, newCoppiedFolder);
+                    }
                 }
             }
         } catch (IOException ex) {
@@ -356,10 +367,22 @@ public abstract class ReportableLauncher extends LoggableLauncher {
 
     public ReportEntity getReportEntity() {
         try {
-            return ReportController.getInstance().getReportEntity(getTestSuite(), getId());
+            if (reportEntity == null) {
+                reportEntity = ReportController.getInstance().getReportEntity(getTestSuite(), getId());
+            }
+            return reportEntity;
         } catch (Exception e) {
             LogUtil.logError(e);
             return null;
         }
+    }
+
+    @Override
+    protected void onStartExecutionComplete() {
+        super.onStartExecutionComplete();
+    }
+
+    public void setReportEntity(ReportEntity reportEntity) {
+        this.reportEntity = reportEntity;
     }
 }

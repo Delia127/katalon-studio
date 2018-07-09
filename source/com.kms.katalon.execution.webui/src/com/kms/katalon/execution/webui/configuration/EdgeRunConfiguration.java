@@ -18,4 +18,9 @@ public class EdgeRunConfiguration extends WebUiRunConfiguration {
     public IRunConfiguration cloneConfig() throws IOException {
         return new EdgeRunConfiguration(projectDir);
     }
+
+    @Override
+    public boolean allowsRecording() {
+        return true;
+    }
 }

@@ -13,6 +13,8 @@ public class ComposerWebuiMessageConstants extends NLS {
 
     public static String PREF_LBL_DEFAULT_WAIT_FOR_IE_HANGING_TIMEOUT;
 
+    public static String LBL_ACTION_DELAY;
+
     public static String LBL_REMOTE_EXECUTION_MENU_ITEM;
 
     public static String LBL_REMOTE_SERVER_URL;
@@ -30,6 +32,8 @@ public class ComposerWebuiMessageConstants extends NLS {
     public static String LBL_DLG_REMOTE_SERVER_URL;
 
     public static String PREF_LBL_DEFAULT_PAGE_LOAD_TIMEOUT;
+
+    public static String PREF_LBL_CUSTOM_PAGE_LOAD_TIMEOUT;
 
     public static String PREF_LBL_ENABLE_DEFAULT_PAGE_LOAD_TIMEOUT;
 
@@ -50,6 +54,12 @@ public class ComposerWebuiMessageConstants extends NLS {
     public static String DIA_CONFIRM_INSTALL_WEBDRIVER;
 
     public static String DIA_CONFIRM_INSTALL_WEBDRIVER_TITLE;
+
+    public static String MSG_PROPERTY_NAME_IS_EXISTED;
+
+    public static String GRP_LBL_DEFAULT_SELECTED_PROPERTIES_FOR_CAPTURED_TEST_OBJECT;
+
+    public static String COL_LBL_DETECT_OBJECT_BY;
 
     static {
         // initialize resource bundle

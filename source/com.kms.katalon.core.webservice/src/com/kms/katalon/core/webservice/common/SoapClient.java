@@ -1,5 +1,6 @@
 package com.kms.katalon.core.webservice.common;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -20,7 +21,6 @@ import javax.wsdl.factory.WSDLFactory;
 import javax.wsdl.xml.WSDLReader;
 import javax.xml.namespace.QName;
 
-import org.apache.bsf.util.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.ibm.wsdl.BindingOperationImpl;
@@ -36,13 +36,33 @@ import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.webservice.constants.CoreWebserviceMessageConstants;
+import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
 import com.kms.katalon.core.webservice.exception.WebServiceException;
+import com.kms.katalon.core.webservice.helper.WebServiceCommonHelper;
 
 public class SoapClient extends BasicRequestor {
 
+    private static final String POST = RequestHeaderConstants.POST;
+
+    private static final String SSL = RequestHeaderConstants.SSL;
+
+    private static final String HTTPS = RequestHeaderConstants.HTTPS;
+
+    private static final String SOAP = RequestHeaderConstants.SOAP;
+
+    private static final String SOAP12 = RequestHeaderConstants.SOAP12;
+
+    private static final String SOAP_ACTION = RequestHeaderConstants.SOAP_ACTION;
+
+    private static final String CONTENT_TYPE = RequestHeaderConstants.CONTENT_TYPE;
+
+    private static final String TEXT_XML_CHARSET_UTF_8 = RequestHeaderConstants.CONTENT_TYPE_TEXT_XML_UTF_8;
+
+    private static final String APPLICATION_XML = RequestHeaderConstants.CONTENT_TYPE_APPLICATION_XML;
+
     private String serviceName;
 
-    private String protocol = "SOAP"; // Default is SOAP
+    private String protocol = SOAP; // Default is SOAP
 
     private String endPoint;
 
@@ -91,11 +111,11 @@ public class SoapClient extends BasicRequestor {
             }
 
             if (objBinding != null && objBinding instanceof SOAPBindingImpl) {
-                proc = "SOAP";
+                proc = SOAP;
                 endPoint = ((SOAPAddressImpl) port.getExtensibilityElements().get(0)).getLocationURI();
                 actionUri = ((SOAPOperation) operation.getExtensibilityElements().get(0)).getSoapActionURI();
             } else if (objBinding != null && objBinding instanceof SOAP12BindingImpl) {
-                proc = "SOAP12";
+                proc = SOAP12;
                 endPoint = ((SOAP12AddressImpl) port.getExtensibilityElements().get(0)).getLocationURI();
                 actionUri = ((SOAP12Operation) operation.getExtensibilityElements().get(0)).getSoapActionURI();
             } else if (objBinding != null && objBinding instanceof HTTPBindingImpl) {
@@ -111,7 +131,7 @@ public class SoapClient extends BasicRequestor {
     }
 
     private boolean isHttps(RequestObject request) {
-        return StringUtils.defaultString(request.getWsdlAddress()).toLowerCase().startsWith("https");
+        return StringUtils.defaultString(request.getWsdlAddress()).toLowerCase().startsWith(HTTPS);
     }
 
     @Override
@@ -119,34 +139,75 @@ public class SoapClient extends BasicRequestor {
             throws IOException, WSDLException, WebServiceException, GeneralSecurityException {
         this.requestObject = request;
         parseWsdl();
-        if (isHttps(request)) {
-            SSLContext sc = SSLContext.getInstance("SSL");
+        boolean isHttps = isHttps(request);
+        if (isHttps) {
+            SSLContext sc = SSLContext.getInstance(SSL);
             sc.init(null, getTrustManagers(), new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
         }
 
-        ResponseObject responseObject = new ResponseObject();
-
         URL oURL = new URL(endPoint);
         HttpURLConnection con = (HttpURLConnection) oURL.openConnection(getProxy());
-        if (isHttps(request)) {
-            ((HttpsURLConnection) con).setHostnameVerifier(getHostnameVerifier());
+        if (isHttps) {
+            //((HttpsURLConnection) con).setHostnameVerifier(getHostnameVerifier());
         }
-        con.setRequestMethod("POST");
+        con.setRequestMethod(POST);
         con.setDoOutput(true);
 
-        con.setRequestProperty("Content-type", "text/xml; charset=utf-8");
-        con.setRequestProperty("SOAPAction", actionUri);
+        con.setRequestProperty(CONTENT_TYPE, TEXT_XML_CHARSET_UTF_8);
+        con.setRequestProperty(SOAP_ACTION, actionUri);
+        setHttpConnectionHeaders(con, request);
 
         OutputStream reqStream = con.getOutputStream();
         reqStream.write(request.getSoapBody().getBytes());
 
-        InputStream resStream = con.getInputStream();
-        String responseText = IOUtils.getStringFromReader(new InputStreamReader(resStream));
+        long startTime = System.currentTimeMillis();
+        int statusCode = con.getResponseCode();
+        long waitingTime = System.currentTimeMillis() - startTime;
+        
+        long headerLength = WebServiceCommonHelper.calculateHeaderLength(con);
+        long contentDownloadTime = 0L;
+        StringBuffer sb = new StringBuffer();
 
+        char[] buffer = new char[1024];
+        long bodyLength = 0L;
+        try (InputStream inputStream = (statusCode >= 400) ? con.getErrorStream() : con.getInputStream()) {
+            if (inputStream != null) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                int len = 0;
+                startTime = System.currentTimeMillis();
+                while ((len = reader.read(buffer)) != -1) {
+                    contentDownloadTime += System.currentTimeMillis() - startTime;
+                    sb.append(buffer, 0, len);
+                    bodyLength += len;
+                    startTime = System.currentTimeMillis();
+                }
+            }
+        }
+        
+        ResponseObject responseObject = new ResponseObject(sb.toString());
+        
+        String bodyLengthHeader = responseObject.getHeaderFields()
+                .entrySet()
+                .stream()
+                .filter(entry -> entry.getKey().equals("Content-Length"))
+                .map(entry -> entry.getValue().get(0))
+                .findFirst()
+                .orElse("");
+        
+        if (!StringUtils.isEmpty(bodyLengthHeader)) {
+            bodyLength =  Long.parseLong(bodyLengthHeader, 10); 
+        }
         // SOAP is HTTP-XML protocol
-        responseObject.setContentType("application/xml");
-        responseObject.setResponseText(responseText);
+        responseObject.setContentType(APPLICATION_XML);
+        responseObject.setStatusCode(statusCode);
+        responseObject.setResponseBodySize(bodyLength);
+        responseObject.setResponseHeaderSize(headerLength);
+        responseObject.setWaitingTime(waitingTime);
+        responseObject.setContentDownloadTime(contentDownloadTime);
+        
+        setBodyContent(con, sb, responseObject);
+        
         return responseObject;
     }
 

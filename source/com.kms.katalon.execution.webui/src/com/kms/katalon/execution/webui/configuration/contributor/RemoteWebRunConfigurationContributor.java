@@ -2,6 +2,7 @@ package com.kms.katalon.execution.webui.configuration.contributor;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -90,11 +91,10 @@ public class RemoteWebRunConfigurationContributor extends WebUIRunConfigurationC
             throws IOException, ExecutionException, InterruptedException {
         if (runConfigurationDescription != null && runConfigurationDescription.getRunConfigurationData() != null) {
             Map<String, String> runConfigurationData = runConfigurationDescription.getRunConfigurationData();
-            remoteWebDriverUrl = runConfigurationData.get(REMOTE_CONFIGURATION_KEY);
-            remoteWebDriverType = RemoteWebDriverConnectorType
-                    .valueOf(runConfigurationData.get(REMOTE_CONFIGURATION_TYPE_KEY));
+            remoteWebDriverUrl = getRemoteWebDriverUrl(runConfigurationData);
+            remoteWebDriverType = getRemoteWebDriverType(runConfigurationData);
         }
-        return getRunConfiguration(projectDir);
+        return super.getRunConfiguration(projectDir, runConfigurationDescription);
     }
 
     @Override
@@ -122,5 +122,53 @@ public class RemoteWebRunConfigurationContributor extends WebUIRunConfigurationC
         if (consoleOption == REMOTE_WEB_DRIVER_CONNECTOR_TYPE_CONSOLE_OPTION) {
             remoteWebDriverType = RemoteWebDriverConnectorType.valueOf(argumentValue);
         }
+    }
+
+    @Override
+    public List<ConsoleOption<?>> getConsoleOptions(RunConfigurationDescription runConfigurationDescription) {
+        return Arrays.asList(new StringConsoleOption() {
+            @Override
+            public String getOption() {
+                return DriverFactory.REMOTE_WEB_DRIVER_TYPE;
+            }
+
+            @Override
+            public String getDefaultArgumentValue() {
+                return DEFAULT_REMOTE_WEB_DRIVER_CONNECTOR_TYPE.toString();
+            }
+
+            @Override
+            public boolean isRequired() {
+                return false;
+            };
+
+            @Override
+            public String getValue() {
+                return getRemoteWebDriverType(runConfigurationDescription.getRunConfigurationData()).name();
+            }
+        }, new StringConsoleOption() {
+            @Override
+            public String getOption() {
+                return DriverFactory.REMOTE_WEB_DRIVER_URL;
+            }
+
+            @Override
+            public boolean isRequired() {
+                return false;
+            };
+
+            @Override
+            public String getValue() {
+                return getRemoteWebDriverUrl(runConfigurationDescription.getRunConfigurationData());
+            }
+        });
+    }
+
+    private RemoteWebDriverConnectorType getRemoteWebDriverType(Map<String, String> runConfigurationData) {
+        return RemoteWebDriverConnectorType.valueOf(runConfigurationData.get(REMOTE_CONFIGURATION_TYPE_KEY));
+    }
+
+    private String getRemoteWebDriverUrl(Map<String, String> runConfigurationData) {
+        return runConfigurationData.get(REMOTE_CONFIGURATION_KEY);
     }
 }

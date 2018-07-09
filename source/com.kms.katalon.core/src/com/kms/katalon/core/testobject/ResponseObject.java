@@ -1,5 +1,7 @@
 package com.kms.katalon.core.testobject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Collections;
@@ -17,19 +19,37 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
-public class ResponseObject {
+import com.kms.katalon.core.testobject.impl.HttpTextBodyContent;
 
-    private String contentType = "text";
+public class ResponseObject implements PerformanceResourceTiming, HttpMessage {
 
+    private static final String DF_CHARSET = "UTF-8";
+
+    private String contentType = "text/plain";
+
+    @Deprecated
     private String responseText;
 
     private int statusCode;
 
     private Map<String, List<String>> headerFields;
+    
+    private long responseHeaderSize;
+    
+    private long responseBodySize;
+    
+    private long waitingTime;
+    
+    private long contentDownloadTime;
+    
+    private String contentCharset;
+
+    private HttpBodyContent responseBodyContent;
 
     public ResponseObject() {
     }
@@ -68,17 +88,22 @@ public class ResponseObject {
      * Get the raw response text
      * 
      * @return the raw response text
+     * @throws IOException if content could not be parsed to String.
      */
-    public String getResponseText() {
-        return responseText;
+    public String getResponseText() throws IOException {
+        ByteArrayOutputStream outstream = new ByteArrayOutputStream();
+        responseBodyContent.writeTo(outstream);
+        return outstream.toString(getContentCharset());
     }
 
     /**
      * Set the raw response text
      * 
+     * @deprecated from 5.4
      * @param responseText the new raw response text
      */
     public void setResponseText(String responseText) {
+        responseBodyContent = new HttpTextBodyContent(responseText);
         this.responseText = responseText;
     }
 
@@ -174,5 +199,93 @@ public class ResponseObject {
      */
     public void setStatusCode(int statusCode) {
         this.statusCode = statusCode;
+    }
+
+    /**
+     * Returns size (byte) as long value of the response.</br></br>
+     * Response size = Header size + Body size
+     * 
+     * @see #getResponseHeaderSize()
+     * @see #getResponseBodySize()
+     * 
+     */
+    public long getResponseSize() {
+        return getResponseHeaderSize() + getResponseBodySize();
+    }
+
+    /**
+     * Returns headers size (byte) as long value of the response.
+     * 
+     * @see #getResponseBodySize()
+     * @see #getResponseSize()
+     */
+    public long getResponseHeaderSize() {
+        return responseHeaderSize;
+    }
+
+    public void setResponseHeaderSize(long reponseHeaderSize) {
+        this.responseHeaderSize = reponseHeaderSize;
+    }
+
+    public long getResponseBodySize() {
+        return responseBodySize;
+    }
+
+    /**
+     * Returns body size (byte) as long value of the response.
+     * 
+     * @see #getResponseHeaderSize()
+     * @see #getResponseSize()
+     */
+    public void setResponseBodySize(long reponseBodySize) {
+        this.responseBodySize = reponseBodySize;
+    }
+
+    @Override
+    public long getElapsedTime() {
+        return getWaitingTime() + getContentDownloadTime();
+    }
+
+    @Override
+    public long getWaitingTime() {
+        return waitingTime;
+    }
+    
+    public void setWaitingTime(long waitingTime) {
+        this.waitingTime = waitingTime;
+    }
+
+    @Override
+    public long getContentDownloadTime() {
+        return contentDownloadTime;
+    }
+    
+    public void setContentDownloadTime(long contentDownloadTime) {
+        this.contentDownloadTime = contentDownloadTime;
+    }
+
+    @Override
+    public HttpBodyContent getBodyContent() {
+        return responseBodyContent;
+    }
+    
+    public void setBodyContent(HttpBodyContent bodyContent) {
+        this.responseBodyContent = bodyContent;
+    }
+
+    /**
+     * @return Returns the Charset specified in the Content-Type of this response or the "UTF-8" charset as a default.
+     * 
+     * @since 5.4
+     */
+    public String getContentCharset() {
+        if (StringUtils.isEmpty(contentCharset)) {
+            return DF_CHARSET;
+        }
+        return contentCharset;
+    }
+
+    public void setContentCharset(String contentCharset) {
+        this.contentCharset = contentCharset;
     }
 }

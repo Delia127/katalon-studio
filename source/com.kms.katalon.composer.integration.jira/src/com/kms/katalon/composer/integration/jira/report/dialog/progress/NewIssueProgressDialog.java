@@ -32,7 +32,11 @@ public class NewIssueProgressDialog extends JiraIssueProgressDialog {
                         checkCanceled(monitor);
                         monitor.worked(1);
 
-                        uploadTestCaseLog(handler, result);
+                        uploadTestCaseLog(logRecord, result.getJiraIssue());
+                        checkCanceled(monitor);
+                        monitor.worked(1);
+                        
+                        linkWithTestCaseJiraIssue(logRecord, result.getJiraIssue());
                         checkCanceled(monitor);
                         monitor.worked(1);
                         result.setComplete(true);

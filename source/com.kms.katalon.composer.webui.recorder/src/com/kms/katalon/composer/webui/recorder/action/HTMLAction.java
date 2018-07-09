@@ -9,9 +9,9 @@ public enum HTMLAction implements IHTMLAction {
             "Select the option with the given value"), Deselect("deselectOptionByValue",
             "De-select the option with the given value"), Check("check",
             "Check a toggle-button (check-box/radio-button)"), Uncheck("uncheck",
-            "Un-check a toggle-button (check-box/radio-button)"), Submit("submit", "Submit the form"), SetText(
+            "Un-check a toggle-button (check-box/radio-button)"), SetText(
             "setText", "Set text to the given element"), Navigate("navigateToUrl", "Navigate to the specified web page"), SwitchToWindow(
-            "switchToWindowTitle", "Switch to the window with given title");
+            "switchToWindowTitle", "Switch to the window with given title"), SendKeys("sendKeys", "Send keys to a specific element");
 
     private String description;
     private String mappedKeywordClassName;

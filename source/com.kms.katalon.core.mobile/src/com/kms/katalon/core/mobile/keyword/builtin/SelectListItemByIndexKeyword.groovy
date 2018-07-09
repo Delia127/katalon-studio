@@ -3,7 +3,6 @@ package com.kms.katalon.core.mobile.keyword.builtin
 import groovy.transform.CompileStatic
 import io.appium.java_client.AppiumDriver
 import io.appium.java_client.MobileElement
-import io.appium.java_client.NetworkConnectionSetting
 import io.appium.java_client.android.AndroidDriver
 import io.appium.java_client.android.AndroidKeyCode
 import io.appium.java_client.ios.IOSDriver
@@ -45,6 +44,7 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 
 @Action(value = "selectListItemByIndex")
 public class SelectListItemByIndexKeyword extends MobileAbstractKeyword {
@@ -67,9 +67,9 @@ public class SelectListItemByIndexKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public void selectListItemByIndex(TestObject to, int index, int timeout, FailureHandling flowControl) throws StepFailedException {
-        KeywordMain.runKeyword({
+        MobileKeywordMain.runKeyword({
             MobileElementCommonHelper.selectItemByIndex(to, index, timeout, flowControl)
-        }, flowControl, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_SELECT_ELEMENT_BY_INDEX_OF_OBJ, [index, to.getObjectId()] as Object[])
+        }, flowControl, true, to != null ? MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_SELECT_ELEMENT_BY_INDEX_OF_OBJ, [index, to.getObjectId()] as Object[])
         : MessageFormat.format(StringConstants.KW_MSG_FAILED_TO_SELECT_ELEMENT_BY_INDEX, index))
     }
 }

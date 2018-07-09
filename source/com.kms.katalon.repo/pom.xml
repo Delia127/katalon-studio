@@ -99,7 +99,7 @@
 									<id>org.eclipse.persistence:javax.persistence:2.1.0-RC1</id>
 								</artifact>
 								<artifact>
-									<id>org.qas.qtest:qtest-sdk-java:1.2.1</id>
+									<id>org.qas.qtest:qtest-sdk-java:1.4.5</id>
 								</artifact>
 								<artifact>
 									<id>net.sf.supercsv:super-csv:2.1.0</id>
@@ -117,20 +117,25 @@
 									<id>org.apache.xmlbeans:xmlbeans:2.6.0</id>
 								</artifact>
 								<artifact>
-									<id>com.google.code.gson:gson:2.3.1</id>
+									<id>com.google:gson:2.8.0</id>
+								</artifact>
+								<artifact>
+									<id>com.google:guava:23.0</id>
 								</artifact>
 								<artifact>
 									<id>wsdl4j:wsdl4j:1.6.2</id>
-								</artifact>
-								<artifact>
-									<id>io.appium:java-client:3.4.1</id>
-									<transitive>false</transitive>
 								</artifact>
 								<artifact>
 									<id>jaxen:jaxen:1.1.6</id>
 								</artifact>
 								<artifact>
 									<id>com.fasterxml.jackson.core:jackson-core:2.4.1</id>
+								</artifact>
+								<artifact>
+									<id>com.fasterxml.jackson.core:jackson-annotations:2.4.1</id>
+								</artifact>
+								<artifact>
+									<id>com.fasterxml.jackson.core:jackson-databind:2.4.1</id>
 								</artifact>
 								<artifact>
 									<id>org.jsoup:jsoup:1.7.2</id>
@@ -200,6 +205,43 @@
 								<artifact>
 									<id>org.apache.lucene:lucene-core:6.3.0</id>
 								</artifact>
+								<!-- https://developers.google.com/api-client-library/java/google-oauth-java-client/ -->
+								<artifact>
+									<id>com.google.oauth-client:google-oauth-client:1.22.0</id>
+								</artifact>
+								<artifact>
+									<id>javax.ws:javax.ws.rs:1.1.1</id>
+								</artifact>
+								<artifact>
+									<id>org.apache.commons:org.apache.commons.cli:1.0.0</id>
+								</artifact>
+								<artifact>
+									<id>org.apache.poi:org.apache.poi.ooxml.schemas:3.9.0</id>
+								</artifact>
+								<artifact>
+									<id>org.apache.poi:org.apache.poi.ooxml:3.9.0</id>
+								</artifact>
+								<artifact>
+									<id>org.apache.poi:org.apache.poi:3.9.0</id>
+								</artifact>
+								<artifact>
+									<id>org.dom4j:org.dom4j:1.6.1</id>
+								</artifact>
+								<artifact>
+									<id>org.apache.commons:org.apache.commons.lang3:3.1.0</id>
+								</artifact>
+								<artifact>
+                                    <id>atu.testrecorder:screen-recorder:2.1</id>
+                                </artifact>
+								<artifact>
+                                    <id>org.junit:junit:4.12</id>
+                                </artifact>
+								<artifact>
+                                    <id>org.beanshell:bsh:2.0b4</id>
+                                </artifact>
+								<artifact>
+                                    <id>org.apache.ant:ant-launcher:1.9.6</id>
+                                </artifact>
 							</artifacts>
 						</configuration>
 					</execution>

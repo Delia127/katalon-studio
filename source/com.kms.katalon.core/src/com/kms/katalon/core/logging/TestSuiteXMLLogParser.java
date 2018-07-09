@@ -15,6 +15,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import com.kms.katalon.core.constants.CoreMessageConstants;
@@ -143,6 +144,9 @@ public class TestSuiteXMLLogParser {
                     // skip this
                     continue;
                 }
+                if (line.startsWith(LOG_FILE_END_TAG)) {
+                    line = line.replaceFirst(LOG_FILE_END_TAG, StringUtils.EMPTY);
+                }
                 cleanContentBuilder.append(line).append("\n");
             }
             // note that Scanner suppresses exceptions
@@ -184,6 +188,10 @@ public class TestSuiteXMLLogParser {
     }
 
     private static void processStepMessageLog(XmlLogRecord xmlLogRecord, ILogRecord logRecord) {
+        if (logRecord instanceof TestSuiteLogRecord) {
+            // not adding any message log to test suite
+            return;
+        }
         MessageLogRecord messageLogRecord = new MessageLogRecord();
         messageLogRecord.setStartTime(xmlLogRecord.getMillis());
         messageLogRecord.setMessage(xmlLogRecord.getMessage());
@@ -229,12 +237,13 @@ public class TestSuiteXMLLogParser {
         try {
             testStepLogRecord
                     .setIndex(Integer.valueOf(xmlLogRecord.getProperties().get(StringConstants.XML_LOG_STEP_INDEX)));
-            testStepLogRecord.setIgnoredIfFailed(
-                    Boolean.valueOf(xmlLogRecord.getProperties().get(StringConstants.XML_LOG_IS_IGNORED_IF_FAILED)));
         } catch (NumberFormatException e) {
             // error with log, set -1 to indicate error
             testStepLogRecord.setIndex(-1);
         }
+
+        testStepLogRecord.setIgnoredIfFailed(
+                Boolean.valueOf(xmlLogRecord.getProperties().get(StringConstants.XML_LOG_IS_IGNORED_IF_FAILED)));
         Object object = stack.peekLast();
         if (object instanceof TestCaseLogRecord || object instanceof TestStepLogRecord) {
             ((ILogRecord) object).addChildRecord(testStepLogRecord);
@@ -276,9 +285,6 @@ public class TestSuiteXMLLogParser {
                 ? xmlLogRecord.getProperties().get(StringConstants.XML_LOG_ID_PROPERTY) : "");
         testSuiteLogRecord.setSource(xmlLogRecord.getProperties().containsKey(StringConstants.XML_LOG_SOURCE_PROPERTY)
                 ? xmlLogRecord.getProperties().get(StringConstants.XML_LOG_SOURCE_PROPERTY) : "");
-        testSuiteLogRecord
-                .setDeviceName(xmlLogRecord.getProperties().containsKey(StringConstants.XML_LOG_DEVICE_ID_PROPERTY)
-                        ? xmlLogRecord.getProperties().get(StringConstants.XML_LOG_DEVICE_ID_PROPERTY) : "");
         testSuiteLogRecord.setDevicePlatform(
                 xmlLogRecord.getProperties().containsKey(StringConstants.XML_LOG_DEVICE_PLATFORM_PROPERTY)
                         ? xmlLogRecord.getProperties().get(StringConstants.XML_LOG_DEVICE_PLATFORM_PROPERTY) : "");

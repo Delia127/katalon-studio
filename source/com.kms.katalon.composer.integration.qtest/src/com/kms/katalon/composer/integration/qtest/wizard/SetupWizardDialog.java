@@ -1,6 +1,7 @@
 package com.kms.katalon.composer.integration.qtest.wizard;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,7 +14,7 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
@@ -33,6 +34,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.composer.components.impl.control.CTableViewer;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.wizard.IWizardPage;
 import com.kms.katalon.composer.components.impl.wizard.SimpleWizardDialog;
@@ -49,6 +51,8 @@ import com.kms.katalon.composer.integration.qtest.wizard.page.FinishPage;
 import com.kms.katalon.composer.integration.qtest.wizard.page.OptionalSettingWizardPage;
 import com.kms.katalon.composer.integration.qtest.wizard.page.ProjectChoosingWizardPage;
 import com.kms.katalon.composer.integration.qtest.wizard.page.QTestModuleSelectionWizardPage;
+import com.kms.katalon.composer.integration.qtest.wizard.page.QTestWizardPage;
+import com.kms.katalon.composer.integration.qtest.wizard.page.TestStuctureMappingPage;
 import com.kms.katalon.composer.integration.qtest.wizard.page.TestCaseFolderSelectionWizardPage;
 import com.kms.katalon.composer.integration.qtest.wizard.page.TestSuiteFolderSelectionWizardPage;
 import com.kms.katalon.composer.integration.qtest.wizard.provider.WizardTableLabelProvider;
@@ -56,6 +60,7 @@ import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.controller.TestSuiteController;
+import com.kms.katalon.core.setting.ReportFormatType;
 import com.kms.katalon.entity.file.IntegratedFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.integration.IntegratedEntity;
@@ -69,8 +74,6 @@ import com.kms.katalon.integration.qtest.credential.IQTestToken;
 import com.kms.katalon.integration.qtest.entity.QTestModule;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
 import com.kms.katalon.integration.qtest.setting.QTestAttachmentSendingType;
-import com.kms.katalon.integration.qtest.setting.QTestReportFormatType;
-import com.kms.katalon.integration.qtest.setting.QTestResultSendingType;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 import com.kms.katalon.integration.qtest.setting.QTestVersion;
 
@@ -81,9 +84,11 @@ public class SetupWizardDialog extends SimpleWizardDialog {
     // Controls
     private Composite stepArea;
 
-    private TableViewer tableViewer;
+    private CTableViewer tableViewer;
 
     private Label lblStepHeader;
+
+    private TableViewerColumn pageViewerColumn;
 
     public SetupWizardDialog(Shell parentShell) {
         super(parentShell);
@@ -139,9 +144,12 @@ public class SetupWizardDialog extends SimpleWizardDialog {
         stepTreeComposite.setLayout(new GridLayout(1, false));
         stepTreeComposite.setBackground(ColorUtil.getWhiteBackgroundColor());
 
-        tableViewer = new TableViewer(stepTreeComposite, SWT.FULL_SELECTION);
+        tableViewer = new CTableViewer(stepTreeComposite, SWT.FULL_SELECTION);
         Table table = tableViewer.getTable();
         table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+
+        pageViewerColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+        pageViewerColumn.getColumn().setWidth(200);
 
         tableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
@@ -301,6 +309,7 @@ public class SetupWizardDialog extends SimpleWizardDialog {
         return Arrays.asList(new IWizardPage[] {
                 new AuthenticationWizardPage(),
                 new ProjectChoosingWizardPage(),
+                new TestStuctureMappingPage(),
                 new QTestModuleSelectionWizardPage(),
                 new TestCaseFolderSelectionWizardPage(),
                 new TestSuiteFolderSelectionWizardPage(),
@@ -312,7 +321,7 @@ public class SetupWizardDialog extends SimpleWizardDialog {
     @Override
     protected void setInput() {
         super.setInput();
-        tableViewer.setLabelProvider(new WizardTableLabelProvider(wizardManager));
+        pageViewerColumn.setLabelProvider(new WizardTableLabelProvider(wizardManager));
         tableViewer.setInput(wizardManager.getWizardPages());
     }
 
@@ -321,9 +330,11 @@ public class SetupWizardDialog extends SimpleWizardDialog {
         super.showPage(page);
         tableViewer.refresh(true);
 
-        lblStepHeader.setText(MessageFormat.format(StringConstants.WZ_SETUP_STEP_TITLE,
-                Integer.toString(wizardManager.getWizardPages().indexOf(page) + 1),
-                Integer.toString(wizardManager.getWizardPages().size()), page.getTitle()));
+        List<IWizardPage> wizardPages = wizardManager.getWizardPages();
+        String indexOfLastPage = ((QTestWizardPage) wizardPages.get(wizardPages.size() - 1)).getStepIndexAsString();
+        String indexOfCurrentPage = ((QTestWizardPage) page).getStepIndexAsString();
+        lblStepHeader.setText(MessageFormat.format(StringConstants.WZ_SETUP_STEP_TITLE, indexOfCurrentPage,
+                indexOfLastPage, page.getTitle()));
     }
 
     @Override
@@ -354,14 +365,12 @@ public class SetupWizardDialog extends SimpleWizardDialog {
                     projectDir);
             QTestSettingStore.saveSubmitToLatestVersion((boolean) sharedData.get(QTestSettingStore.SUBMIT_RESULT_TO_LATEST_VERSION),
                     projectDir);
-            QTestSettingStore.saveResultSendingType(
-                    (List<QTestResultSendingType>) sharedData.get(QTestSettingStore.SEND_RESULT_PROPERTY), projectDir);
             QTestSettingStore.saveAttachmentSendingType(
                     (List<QTestAttachmentSendingType>) sharedData.get(QTestSettingStore.SEND_ATTACHMENTS_PROPERTY),
                     projectDir);
             QTestSettingStore.saveFormatReportTypes(
-                    (List<QTestReportFormatType>) sharedData.get(QTestSettingStore.REPORT_FORMAT), projectDir);
-        } catch (IOException e) {
+                    (List<ReportFormatType>) sharedData.get(QTestSettingStore.REPORT_FORMAT), projectDir);
+        } catch (IOException | GeneralSecurityException e) {
             LoggerSingleton.logError(e);
         }
     }
@@ -545,6 +554,11 @@ public class SetupWizardDialog extends SimpleWizardDialog {
             @Override
             public QTestVersion getVersion() {
                 return (QTestVersion) sharedData.get(QTestSettingStore.QTEST_VERSION_PROPERTY);
+            }
+
+            @Override
+            public boolean isEncryptionEnabled() {
+                return (boolean) sharedData.get(QTestSettingStore.ENABLE_ENCRYPTION_PROPERTY);
             }
         };
     }

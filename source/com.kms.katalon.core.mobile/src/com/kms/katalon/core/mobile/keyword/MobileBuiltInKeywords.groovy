@@ -2,9 +2,7 @@ package com.kms.katalon.core.mobile.keyword;
 
 import groovy.transform.CompileStatic
 import io.appium.java_client.AppiumDriver
-import io.appium.java_client.DeviceActionShortcuts
 import io.appium.java_client.MobileElement
-import io.appium.java_client.NetworkConnectionSetting
 import io.appium.java_client.android.AndroidDriver
 import io.appium.java_client.android.AndroidKeyCode
 import io.appium.java_client.ios.IOSDriver
@@ -17,6 +15,7 @@ import org.apache.commons.io.FileUtils
 import org.apache.commons.lang.StringUtils
 import org.codehaus.groovy.transform.tailrec.VariableReplacedListener.*
 import org.openqa.selenium.Dimension
+import org.openqa.selenium.Keys
 import org.openqa.selenium.OutputType
 import org.openqa.selenium.Point
 import org.openqa.selenium.ScreenOrientation
@@ -47,7 +46,8 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     /**
      * Start up an application
      * @param appFile
-     *      absolute path of the application install file
+     *      The absolute path or relative path of the mobile application installation file.</br>
+     *      In case relative path is used, the base directory is the project location.
      * @param uninstallAfterCloseApp
      *      true if uninstalling the application automatically after run completed; otherwise, false
      * @param flowControl
@@ -62,7 +62,8 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     /**
      * Start up an application
      * @param appFile
-     *      absolute path of the application install file
+     *      The absolute path or relative path of the mobile application installation file.</br>
+     *      In case relative path is used, the base directory is the project location.
      * @param uninstallAfterCloseApp
      *      true if uninstalling the application automatically after run completed; otherwise, false
      * @throws StepFailedException
@@ -122,9 +123,9 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
      * @param startY
      *      starting y position
      * @param endX
-     *      ending x position
+     *      relative x position of startX
      * @param endY
-     *      ending y position
+     *      relative y position of startY
      * @param flowControl
      * @throws StepFailedException
      */
@@ -141,9 +142,9 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
      * @param startY
      *      starting y position
      * @param endX
-     *      ending x position
+     *      relative x position of startX
      * @param endY
-     *      ending y position
+     *      relative y position of startY
      * @throws StepFailedException
      */
     @CompileStatic
@@ -1731,5 +1732,70 @@ public class MobileBuiltInKeywords extends BuiltinKeywords {
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
     public static void selectListItemByIndex(TestObject to, int index, int timeout) throws StepFailedException {
         KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "selectListItemByIndex", to, index, timeout)
+    }
+
+    /**
+     * Verify text of an element.
+     *
+     * @param to
+     *          represent a mobile element.
+     * @param expectedText
+     *          text of the element to verify.
+     * @param flowControl
+     * @return true if the element has the desired text, otherwise false.
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyElementText(TestObject to, String expectedText, FailureHandling flowControl) throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "verifyElementText", to, expectedText, flowControl)
+    }
+
+    /**
+     * Verify text of an element.
+     *
+     * @param to
+     *          represent a mobile element.
+     * @param expectedText
+     *          text of the element to verify.
+     * @return true if the element has the desired text, otherwise false.
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static boolean verifyElementText(TestObject to, String expectedText) throws StepFailedException {
+        return (boolean) KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "verifyElementText", to, expectedText)
+    }
+
+    /**
+     * Simulates keystroke events on the specified element, as though you typed the value key-by-key.
+     *
+     * @param to
+     *          represent a mobile element.
+     * @param strokeKeys
+     *          the combination of keys to type
+     * @param flowControl
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void sendKeys(TestObject to, String strokeKeys, FailureHandling flowControl) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "sendKeys", to, strokeKeys, flowControl)
+    }
+
+    /**
+     * Simulates keystroke events on the specified element, as though you typed the value key-by-key.
+     *
+     * @param to
+     *          represent a mobile element.
+     * @param strokeKeys
+     *          the combination of keys to type
+     * @param flowControl
+     * @throws StepFailedException
+     */
+    @CompileStatic
+    @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_ELEMENT)
+    public static void sendKeys(TestObject to, String strokeKeys) throws StepFailedException {
+        KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_MOBILE, "sendKeys", to, strokeKeys)
     }
 }

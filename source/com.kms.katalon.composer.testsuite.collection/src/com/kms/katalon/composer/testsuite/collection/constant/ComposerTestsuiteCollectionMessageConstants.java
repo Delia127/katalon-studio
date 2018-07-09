@@ -33,8 +33,6 @@ public class ComposerTestsuiteCollectionMessageConstants extends NLS {
 
     public static String HDL_MSG_UNABLE_TO_CREATE_TEST_SUITE_COLLECTION;
 
-    public static String DIA_TITLE_RUN_CONFIG_SELECTION;
-
     public static String DIA_TITLE_TEST_COLLECTION_SUITE_PROPERTIES;
 
     public static String PA_LBL_LAST_UPDATED;
@@ -72,6 +70,12 @@ public class ComposerTestsuiteCollectionMessageConstants extends NLS {
     public static String MENU_OPEN;
 
     public static String HAND_UNDABLE_TO_OPEN_TEST_SUITE_COLLECTION;
+    
+    // ExecutionProfileEditingSupport
+    public static String PA_MSG_UNABLE_TO_SELECT_EXECUTION_PROFILES;
+    
+    // TestSuiteCollectionPart
+    public static String PA_TABLE_COLUMN_PROFILE;
 
     static {
         // initialize resource bundle

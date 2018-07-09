@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.IJavaProject;
@@ -13,9 +12,6 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.safety.Whitelist;
 
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
@@ -23,6 +19,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestCaseController;
+import com.kms.katalon.custom.factory.BuiltInMethodNodeFactory;
 import com.kms.katalon.custom.keyword.KeywordClass;
 import com.kms.katalon.custom.keyword.KeywordMethod;
 import com.kms.katalon.entity.integration.IntegratedEntity;
@@ -129,6 +126,7 @@ public class TestCaseEntityUtil {
                 IType builtinKeywordType = javaProject.findType(keywordType.getName());
                 List<KeywordMethod> builtInKeywordMethods = KeywordController.getInstance().getBuiltInKeywords(
                         keywordClassName, true);
+                builtInKeywordMethods.add(BuiltInMethodNodeFactory.findCallTestCaseMethod(keywordClassName));
                 for (KeywordMethod method : builtInKeywordMethods) {
                     IMethod builtInMethod = findBuiltinMethods(builtinKeywordType, method.getName(), javaProject);
                     if (builtInMethod != null) {

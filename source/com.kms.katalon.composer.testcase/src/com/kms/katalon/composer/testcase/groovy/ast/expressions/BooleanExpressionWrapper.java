@@ -30,10 +30,10 @@ public class BooleanExpressionWrapper extends ExpressionWrapper {
 
     public BooleanExpressionWrapper(BooleanExpression expression, ASTNodeWrapper parentNodeWrapper) {
         super(expression, parentNodeWrapper);
-        if (expression.getExpression() instanceof NotExpression) {
+        if (expression instanceof NotExpression) {
             this.isReverse = true;
             this.expression = ASTNodeWrapHelper.getExpressionNodeWrapperFromExpression(
-                    ((NotExpression) expression.getExpression()).getExpression(), this);
+                    ((NotExpression) expression).getExpression(), this);
             return;
         }
         this.expression = ASTNodeWrapHelper.getExpressionNodeWrapperFromExpression(expression.getExpression(), this);

@@ -1,5 +1,7 @@
 package com.kms.katalon.objectspy.constants;
 
+import java.net.URL;
+
 import org.eclipse.swt.graphics.Image;
 
 import com.kms.katalon.composer.resources.constants.IImageKeys;
@@ -87,4 +89,23 @@ public class ImageConstants {
 
     public static final Image IMG_24_HIGHLIGHT_DISABLED = ImageManager.getImage(IImageKeys.HIGHLIGHT_DISABLED_24);
 
+    public static final Image IMG_16_ADD = ImageManager.getImage(IImageKeys.ADD_16);
+
+    public static final Image IMG_16_DELETE = ImageManager.getImage(IImageKeys.DELETE_16);
+
+    public static final Image IMG_16_DELETE_DISABLED = ImageManager.getImage(IImageKeys.DELETE_DISABLED_16);
+
+    public static final Image IMG_16_CLEAR = ImageManager.getImage(IImageKeys.CLEAR_16);
+
+    public static final Image IMG_16_CLEAR_DISABLED = ImageManager.getImage(IImageKeys.CLEAR_DISABLED_16);
+
+    public static final Image IMG_16_CHECKBOX_CHECKED = ImageManager.getImage(IImageKeys.CHECKBOX_CHECKED_16);
+
+    public static final Image IMG_16_CHECKBOX_UNCHECKED = ImageManager.getImage(IImageKeys.CHECKBOX_UNCHECKED_16);
+
+    public static final Image IMG_16_HELP = ImageManager.getImage(IImageKeys.HELP_16);
+    
+    public static final Image IMG_16_INFO = ImageManager.getImage(IImageKeys.INFO_16);
+
+    public static final URL URL_16_LOADING = ImageManager.getImageURL(IImageKeys.LOADING_16);
 }

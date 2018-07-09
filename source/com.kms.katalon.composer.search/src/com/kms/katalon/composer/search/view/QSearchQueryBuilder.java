@@ -70,8 +70,8 @@ public class QSearchQueryBuilder {
         List<String> globalVariableFileNameReferencePatterns = new ArrayList<String>();
         globalVariableFileNameReferencePatterns.add(GROOVY_FILE_FORMAT);
 
-        return globalVariableFileNameReferencePatterns.toArray(new String[globalVariableFileNameReferencePatterns
-                .size()]);
+        return globalVariableFileNameReferencePatterns
+                .toArray(new String[globalVariableFileNameReferencePatterns.size()]);
     }
 
     /**
@@ -136,14 +136,14 @@ public class QSearchQueryBuilder {
 
         return null;
     }
-    
+
     public static String getSearchTextInScript(FileEntity entity) {
         TestArtifactScriptRefactor scriptReference = null;
         if (entity instanceof FolderEntity) {
             scriptReference = TestArtifactScriptRefactor.createForFolderEntity((FolderEntity) entity);
         } else {
             scriptReference = new TestArtifactScriptRefactor(entity.getParentFolder().getFolderType(),
-                    entity.getIdForDisplay(), true);
+                    entity.getIdForDisplay(), true, true, true);
         }
         StringBuilder searchTextBuilder = new StringBuilder();
         for (String potentialRef : scriptReference.getReferenceStrings()) {
@@ -167,7 +167,9 @@ public class QSearchQueryBuilder {
     public static QSearchQuery getTestCaseReferenceQuery(TestCaseTreeEntity testCaseTreeEntity, IProject groovyProject)
             throws Exception {
         TestCaseEntity testCaseEntity = (TestCaseEntity) testCaseTreeEntity.getObject();
-        if (testCaseEntity == null) return null;
+        if (testCaseEntity == null) {
+            return null;
+        }
 
         String testCaseId = testCaseEntity.getIdForDisplay();
         String searchTextMetaData = "(<testCaseId>" + Pattern.quote(testCaseId) + "</testCaseId>)";
@@ -190,7 +192,9 @@ public class QSearchQueryBuilder {
      */
     public static QSearchQuery getTestCaseFolderReferenceQuery(FolderEntity folderEntity, IProject groovyProject)
             throws Exception {
-        if (folderEntity == null) return null;
+        if (folderEntity == null) {
+            return null;
+        }
 
         String folderId = folderEntity.getIdForDisplay() + "/";
 
@@ -216,7 +220,9 @@ public class QSearchQueryBuilder {
     public static QSearchQuery getTestObjectReferenceQuery(WebElementTreeEntity testObjectTreeEntity,
             IProject groovyProject) throws Exception {
         WebElementEntity testObjectEntity = (WebElementEntity) testObjectTreeEntity.getObject();
-        if (testObjectEntity == null) return null;
+        if (testObjectEntity == null) {
+            return null;
+        }
 
         String testObjectId = testObjectEntity.getIdForDisplay();
 
@@ -240,7 +246,9 @@ public class QSearchQueryBuilder {
      */
     public static QSearchQuery getTestObjectFolderReferenceQuery(FolderEntity folderEntity, IProject groovyProject)
             throws Exception {
-        if (folderEntity == null) return null;
+        if (folderEntity == null) {
+            return null;
+        }
 
         String folderId = folderEntity.getIdForDisplay() + "/";
 
@@ -266,7 +274,9 @@ public class QSearchQueryBuilder {
     public static QSearchQuery getTestDataReferenceQuery(TestDataTreeEntity testDataTreeEntity, IProject groovyProject)
             throws Exception {
         DataFileEntity testDataEntity = (DataFileEntity) testDataTreeEntity.getObject();
-        if (testDataEntity == null) return null;
+        if (testDataEntity == null) {
+            return null;
+        }
 
         String testDataId = testDataEntity.getIdForDisplay();
 
@@ -290,7 +300,9 @@ public class QSearchQueryBuilder {
      */
     public static QSearchQuery getTestDataFolderReferenceQuery(FolderEntity folderEntity, IProject groovyProject)
             throws Exception {
-        if (folderEntity == null) return null;
+        if (folderEntity == null) {
+            return null;
+        }
 
         String folderId = folderEntity.getIdForDisplay() + "/";
 
@@ -335,14 +347,17 @@ public class QSearchQueryBuilder {
     public static QSearchQuery getKeywordReferenceQuery(KeywordTreeEntity keywordTreeEntity, IProject groovyProject)
             throws Exception {
         IFile keywordFile = (IFile) ((ICompilationUnit) keywordTreeEntity.getObject()).getResource();
-        if (keywordFile == null) return null;
+        if (keywordFile == null) {
+            return null;
+        }
+
         PackageTreeEntity parentPackageTreeEntity = (PackageTreeEntity) keywordTreeEntity.getParent();
         IPackageFragment packageFragment = (IPackageFragment) parentPackageTreeEntity.getObject();
 
         String packageName = packageFragment.getElementName().isEmpty() ? "" : packageFragment.getElementName() + "\\.";
 
-        String searchText = CUSTOM_KEYWORD_REGEX_PREFIX + packageName
-                + FilenameUtils.getBaseName(keywordFile.getName()) + "(\\.)" + JAVA_LEGAL_NAME_REGEX + "\\'";
+        String searchText = CUSTOM_KEYWORD_REGEX_PREFIX + packageName + FilenameUtils.getBaseName(keywordFile.getName())
+                + "(\\.)" + JAVA_LEGAL_NAME_REGEX + "\\'";
         boolean isCaseSensitive = true;
         boolean isRegExSearch = true;
 
@@ -362,7 +377,10 @@ public class QSearchQueryBuilder {
      */
     public static QSearchQuery getPackageReferenceQuery(PackageTreeEntity packageTreeEntity, IProject groovyProject)
             throws Exception {
-        if (packageTreeEntity == null) return null;
+        if (packageTreeEntity == null) {
+            return null;
+        }
+        
         IPackageFragment packageFragment = (IPackageFragment) packageTreeEntity.getObject();
 
         String packageName = packageFragment.getElementName().isEmpty() ? "" : packageFragment.getElementName() + "\\.";

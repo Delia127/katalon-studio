@@ -1,13 +1,16 @@
 package com.kms.katalon.core.main;
 
+import static com.kms.katalon.core.constants.StringConstants.DF_CHARSET;
+
 import java.io.File;
 import java.io.IOException;
 import java.security.AccessController;
 import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Stack;
 
 import org.apache.commons.io.FileUtils;
@@ -16,22 +19,27 @@ import org.codehaus.groovy.ast.MethodNode;
 import org.codehaus.groovy.control.CompilationFailedException;
 
 import com.kms.katalon.core.annotation.SetUp;
+import com.kms.katalon.core.annotation.SetupTestCase;
 import com.kms.katalon.core.annotation.TearDown;
 import com.kms.katalon.core.annotation.TearDownIfError;
 import com.kms.katalon.core.annotation.TearDownIfFailed;
 import com.kms.katalon.core.annotation.TearDownIfPassed;
+import com.kms.katalon.core.annotation.TearDownTestCase;
 import com.kms.katalon.core.constants.StringConstants;
+import com.kms.katalon.core.context.internal.ExecutionEventManager;
+import com.kms.katalon.core.context.internal.ExecutionListenerEvent;
+import com.kms.katalon.core.context.internal.InternalTestCaseContext;
 import com.kms.katalon.core.driver.internal.DriverCleanerCollector;
 import com.kms.katalon.core.logging.ErrorCollector;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.logging.KeywordLogger.KeywordStackElement;
 import com.kms.katalon.core.logging.LogLevel;
+import com.kms.katalon.core.logging.model.TestStatus;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testcase.TestCase;
 import com.kms.katalon.core.testcase.TestCaseBinding;
 import com.kms.katalon.core.testcase.TestCaseFactory;
-import com.kms.katalon.core.testcase.Variable;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 
 import groovy.lang.Binding;
@@ -60,18 +68,32 @@ public class TestCaseExecutor {
 
     private TestCaseBinding testCaseBinding;
 
+    private ExecutionEventManager eventManager;
+
     private boolean doCleanUp;
 
-    public TestCaseExecutor(String testCaseId, TestCaseBinding testCaseBinding, ScriptEngine engine,
-            boolean doCleanUp) {
-        this.testCaseBinding = testCaseBinding;
-        this.engine = engine;
-        this.testCase = TestCaseFactory.findTestCase(testCaseId);
-        this.doCleanUp = doCleanUp;
+    private InternalTestCaseContext testCaseContext;
+
+    private TestSuiteExecutor testSuiteExecutor;
+
+    public void setTestSuiteExecutor(TestSuiteExecutor testSuiteExecutor) {
+        this.testSuiteExecutor = testSuiteExecutor;
     }
 
-    public TestCaseExecutor(String testCaseId, TestCaseBinding testCaseBinding, ScriptEngine engine) {
-        this(testCaseId, testCaseBinding, engine, false);
+    public TestCaseExecutor(TestCaseBinding testCaseBinding, ScriptEngine engine, ExecutionEventManager eventManager,
+            InternalTestCaseContext testCaseContext, boolean doCleanUp) {
+        this.testCaseBinding = testCaseBinding;
+        this.engine = engine;
+        this.testCase = TestCaseFactory.findTestCase(testCaseBinding.getTestCaseId());
+        this.doCleanUp = doCleanUp;
+        this.eventManager = eventManager;
+
+        this.testCaseContext = testCaseContext;
+    }
+
+    public TestCaseExecutor(TestCaseBinding testCaseBinding, ScriptEngine engine, ExecutionEventManager eventManager,
+            InternalTestCaseContext testCaseContext) {
+        this(testCaseBinding, engine, eventManager, testCaseContext, false);
     }
 
     private void preExecution() {
@@ -149,25 +171,85 @@ public class TestCaseExecutor {
         errorCollector.getErrors().addAll(0, parentErrors);
     }
 
+    @SuppressWarnings("unchecked")
     public TestResult execute(FailureHandling flowControl) {
-        preExecution();
+        try {
+            preExecution();
 
-        logger.startTest(testCase.getTestCaseId(), getTestCaseProperties(testCaseBinding, testCase, flowControl),
-                keywordStack);
+            logger.startTest(testCase.getTestCaseId(), getTestCaseProperties(testCaseBinding, testCase, flowControl),
+                    keywordStack);
 
-        accessMainPhase();
+            if (!processScriptPreparationPhase()) {
+                return testCaseResult;
+            }
 
-        logger.endTest(testCase.getTestCaseId(), null);
+            testCaseContext.setTestCaseStatus(testCaseResult.getTestStatus().getStatusValue().name());
 
-        postExecution();
+            testCaseContext.setTestCaseVariables(variableBinding.getVariables());
+
+            if (testCaseContext.isMainTestCase()) {
+                eventManager.publicEvent(ExecutionListenerEvent.BEFORE_TEST_CASE, new Object[] { testCaseContext });
+            }
+
+            testCaseResult = invokeTestSuiteMethod(SetupTestCase.class.getName(), StringConstants.LOG_SETUP_ACTION,
+                    false, testCaseResult);
+            if (ErrorCollector.getCollector().containsErrors()) {
+                logger.logError(testCaseResult.getMessage());
+                return testCaseResult;
+            }
+
+            accessMainPhase();
+
+            invokeTestSuiteMethod(TearDownTestCase.class.getName(), StringConstants.LOG_TEAR_DOWN_ACTION, true,
+                    testCaseResult);
+
+            return testCaseResult;
+        } finally {
+            testCaseContext.setTestCaseStatus(testCaseResult.getTestStatus().getStatusValue().name());
+
+            if (testCaseContext.isMainTestCase()) {
+                eventManager.publicEvent(ExecutionListenerEvent.AFTER_TEST_CASE, new Object[] { testCaseContext });
+            }
+
+            logger.endTest(testCase.getTestCaseId(), null);
+
+            postExecution();
+        }
+    }
+
+    private TestResult invokeTestSuiteMethod(String methodName, String actionType, boolean ignoredIfFailed,
+            TestResult testCaseResult) {
+        if (testSuiteExecutor != null) {
+            ErrorCollector errorCollector = ErrorCollector.getCollector();
+            List<Throwable> coppiedError = errorCollector.getCoppiedErrors();
+            errorCollector.clearErrors();
+
+            testSuiteExecutor.invokeEachTestCaseMethod(methodName, actionType, ignoredIfFailed);
+
+            if (!ignoredIfFailed && errorCollector.containsErrors()) {
+                coppiedError.add(errorCollector.getFirstError());
+            }
+
+            errorCollector.clearErrors();
+            errorCollector.getErrors().addAll(coppiedError);
+
+            if (errorCollector.containsErrors() && ignoredIfFailed) {
+                Throwable firstError = errorCollector.getFirstError();
+                TestStatus testStatus = new TestStatus();
+                TestStatusValue errorType = ErrorCollector.isErrorFailed(firstError) ? TestStatusValue.FAILED
+                        : TestStatusValue.ERROR;
+                testStatus.setStatusValue(errorType);
+                String errorMessage = ExceptionsUtil.getMessageForThrowable(firstError);
+                testStatus.setStackTrace(errorMessage);
+                testCaseResult.setTestStatus(testStatus);
+
+                return testCaseResult;
+            }
+        }
         return testCaseResult;
     }
 
     private void accessMainPhase() {
-        if (!processScriptPreparationPhase()) {
-            return;
-        }
-
         if (!processSetupPhase()) {
             return;
         }
@@ -189,14 +271,14 @@ public class TestCaseExecutor {
             errorCollector.addError(e);
         }
 
-        if (doCleanUp) {
-            cleanUp();
-        }
-
         if (errorCollector.containsErrors()) {
             onExecutionError(errorCollector.getFirstError());
         } else {
             onExecutionComplete();
+        }
+
+        if (doCleanUp) {
+            cleanUp();
         }
     }
 
@@ -205,19 +287,19 @@ public class TestCaseExecutor {
     }
 
     private void cleanUp() {
-        DriverCleanerCollector.getInstance().cleanDriversAfterRunningTestCase();
+        DriverCleanerCollector.getInstance().cleanDrivers();
     }
 
     private Object runScript(File scriptFile)
             throws ResourceException, ScriptException, IOException, ClassNotFoundException {
-        return engine.runScriptAsRawText(FileUtils.readFileToString(scriptFile),
+        return engine.runScriptAsRawText(FileUtils.readFileToString(scriptFile, DF_CHARSET),
                 scriptFile.toURI().toURL().toExternalForm(), variableBinding);
     }
 
     protected void runMethod(File scriptFile, String methodName)
             throws ResourceException, ScriptException, ClassNotFoundException, IOException {
         engine.changeConfigForExecutingScript();
-        engine.runScriptMethodAsRawText(FileUtils.readFileToString(scriptFile),
+        engine.runScriptMethodAsRawText(FileUtils.readFileToString(scriptFile, DF_CHARSET),
                 scriptFile.toURI().toURL().toExternalForm(), methodName, variableBinding);
     }
 
@@ -233,43 +315,62 @@ public class TestCaseExecutor {
         return testProperties;
     }
 
+    /**
+     * Returns DEFAULT test case variables and their values.
+     */
+    private Map<String, Object> getBindedValues() {
+        Map<String, Object> bindedValues = testCaseBinding.getBindedValues();
+        return bindedValues != null ? bindedValues : Collections.emptyMap();
+    }
+
     private Binding collectTestCaseVariables() {
         Binding variableBinding = new Binding();
         engine.changeConfigForCollectingVariable();
 
         logger.logInfo(StringConstants.MAIN_LOG_INFO_START_EVALUATE_VARIABLE);
-
-        if (testCaseBinding.getBindedValues() != null) {
-            for (Entry<String, Object> entry : testCaseBinding.getBindedValues().entrySet()) {
-                logger.logInfo(MessageFormat.format(StringConstants.MAIN_LOG_INFO_VARIABLE_NAME_X_IS_SET_TO_Y,
-                        entry.getKey(), entry.getValue()));
-                variableBinding.setVariable(entry.getKey(), entry.getValue());
-            }
-        }
-
-        for (Variable testCaseVariable : testCase.getVariables()) {
-            if (variableBinding.hasVariable(testCaseVariable.getName())) {
-                continue;
+        testCase.getVariables().stream().forEach(testCaseVariable -> {
+            String variableName = testCaseVariable.getName();
+            if (getBindedValues().containsKey(variableName)) {
+                Object variableValue = testCaseBinding.getBindedValues().get(variableName);
+                logVariableValue(variableName, variableValue, testCaseVariable.isMasked(),
+                        StringConstants.MAIN_LOG_INFO_VARIABLE_NAME_X_IS_SET_TO_Y);
+                variableBinding.setVariable(variableName, variableValue);
+                return;
             }
 
             try {
                 String defaultValue = StringUtils.defaultIfEmpty(testCaseVariable.getDefaultValue(),
                         StringConstants.NULL_AS_STRING);
                 Object defaultValueObject = engine.runScriptWithoutLogging(defaultValue, null);
-                logger.logInfo(
-                        MessageFormat.format(StringConstants.MAIN_LOG_INFO_VARIABLE_NAME_X_IS_SET_TO_Y_AS_DEFAULT,
-                                testCaseVariable.getName(), defaultValueObject));
-                variableBinding.setVariable(testCaseVariable.getName(), defaultValueObject);
+                logVariableValue(variableName, defaultValueObject, testCaseVariable.isMasked(),
+                        StringConstants.MAIN_LOG_INFO_VARIABLE_NAME_X_IS_SET_TO_Y_AS_DEFAULT);
+                variableBinding.setVariable(variableName, defaultValueObject);
             } catch (ExceptionInInitializerError e) {
                 logger.logWarning(MessageFormat.format(StringConstants.MAIN_LOG_MSG_SET_TEST_VARIABLE_ERROR_BECAUSE_OF,
-                        testCaseVariable.getName(), e.getCause().getMessage()));
+                        variableName, e.getCause().getMessage()));
             } catch (Exception e) {
                 logger.logWarning(MessageFormat.format(StringConstants.MAIN_LOG_MSG_SET_TEST_VARIABLE_ERROR_BECAUSE_OF,
-                        testCaseVariable.getName(), e.getMessage()));
+                        variableName, e.getMessage()));
             }
-        }
-
+        });
+        getBindedValues().entrySet()
+                .stream()
+                .filter(entry -> !variableBinding.hasVariable(entry.getKey()))
+                .forEach(entry -> {
+                    String variableName = entry.getKey();
+                    Object variableValue = entry.getValue();
+                    variableBinding.setProperty(variableName, variableValue);
+                    logVariableValue(variableName, variableValue, false,
+                            StringConstants.MAIN_LOG_INFO_VARIABLE_NAME_X_IS_SET_TO_Y);
+                });
         return variableBinding;
+    }
+
+    private void logVariableValue(String variableName, Object value, boolean isMasked, String message) {
+        String objectAsString = Objects.toString(value);
+        String loggedText = isMasked ? StringUtils.repeat("*", objectAsString.length())
+                : Objects.toString(objectAsString);
+        logger.logInfo(MessageFormat.format(message, variableName, loggedText));
     }
 
     private void logError(Throwable t, String message) {
@@ -296,18 +397,19 @@ public class TestCaseExecutor {
         logger.logInfo(methodNodeWrapper.getStartMessage());
         int count = 1;
         for (MethodNode method : methodList) {
-            runMethod(method.getName(), count++, methodNodeWrapper.isIgnoredIfFailed());
+            runMethod(method.getName(), methodNodeWrapper.getActionType(), count++,
+                    methodNodeWrapper.isIgnoredIfFailed());
         }
     }
 
-    private void runMethod(String methodName, int index, boolean ignoreIfFailed) {
+    private void runMethod(String methodName, String actionType, int index, boolean ignoreIfFailed) {
         Stack<KeywordStackElement> keywordStack = new Stack<KeywordStackElement>();
         Map<String, String> startKeywordAttributeMap = new HashMap<String, String>();
         startKeywordAttributeMap.put(StringConstants.XML_LOG_STEP_INDEX, String.valueOf(index));
         if (ignoreIfFailed) {
             startKeywordAttributeMap.put(StringConstants.XML_LOG_IS_IGNORED_IF_FAILED, String.valueOf(ignoreIfFailed));
         }
-        logger.startKeyword(methodName, startKeywordAttributeMap, keywordStack);
+        logger.startKeyword(methodName, actionType, startKeywordAttributeMap, keywordStack);
         try {
             runMethod(getScriptFile(), methodName);
             endAllUnfinishedKeywords(keywordStack);
@@ -323,7 +425,7 @@ public class TestCaseExecutor {
             logger.logError(message);
             errorCollector.addError(e);
         } finally {
-            logger.endKeyword(methodName, null, keywordStack);
+            logger.endKeyword(methodName, actionType, Collections.emptyMap(), keywordStack);
         }
     }
 

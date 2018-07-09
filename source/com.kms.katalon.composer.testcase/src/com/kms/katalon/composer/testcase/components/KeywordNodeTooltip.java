@@ -49,7 +49,7 @@ public class KeywordNodeTooltip {
 
     private String text = "";
 
-    private int preferedWith = 600;
+    private int preferedWidth = 600;
 
     private int preferedHeight = 200;
 
@@ -86,10 +86,6 @@ public class KeywordNodeTooltip {
     private void initComponents(Composite parent) {
         Composite composite = new Composite(parent, SWT.NONE);
         GridLayout layout = new GridLayout();
-        layout.marginRight = -5;
-        layout.marginBottom = 0;
-        layout.marginLeft = -5;
-        layout.marginRight = 0;
         layout.marginWidth = 0;
         layout.marginHeight = 0;
         layout.horizontalSpacing = 0;
@@ -101,8 +97,11 @@ public class KeywordNodeTooltip {
         composite.setForeground(parent.getDisplay().getSystemColor(SWT.COLOR_INFO_FOREGROUND));
         composite.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
 
-        javaDocContent = new StyledText(composite, SWT.WRAP | SWT.V_SCROLL);
-        javaDocContent.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        javaDocContent = new StyledText(composite, SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
+        GridData gdJavaDocContent = new GridData(SWT.FILL, SWT.FILL, true, true);
+        gdJavaDocContent.widthHint = preferedWidth;
+        gdJavaDocContent.heightHint = preferedHeight - TOOLBAR_DEFAULT_HEIGHT;
+        javaDocContent.setLayoutData(gdJavaDocContent);
         javaDocContent.setLeftMargin(20);
         javaDocContent.setTopMargin(5);
 
@@ -117,7 +116,6 @@ public class KeywordNodeTooltip {
         gd = new GridData();
         gd.horizontalAlignment = SWT.FILL;
         gd.heightHint = TOOLBAR_DEFAULT_HEIGHT;
-        toolBar.getLayout();
         gd.verticalAlignment = SWT.FILL;
         toolBar.setLayoutData(gd);
         toolBar.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
@@ -125,12 +123,6 @@ public class KeywordNodeTooltip {
         new ToolItem(toolBar, SWT.SEPARATOR);
         openKeywordDescToolItem = new ToolItem(toolBar, SWT.NONE);
         openKeywordDescToolItem.setImage(ImageConstants.IMG_KEYWORD_WIKI);
-
-        gd = new GridData();
-        gd.horizontalAlignment = SWT.FILL;
-        gd.widthHint = preferedWith;
-        gd.heightHint = preferedHeight - TOOLBAR_DEFAULT_HEIGHT;
-        javaDocContent.setLayoutData(gd);
 
         Listener listener = new Listener() {
 
@@ -203,9 +195,9 @@ public class KeywordNodeTooltip {
     }
 
     private void createTooltip() {
-        tip = new Shell(control.getShell(), SWT.ON_TOP | SWT.TOOL);
-        FillLayout fl = new FillLayout();
-        tip.setLayout(fl);
+        tip = new Shell(control.getShell(), SWT.ON_TOP | SWT.TOOL | SWT.RESIZE);
+        tip.setLayout(new FillLayout());
+        tip.setMinimumSize(preferedWidth / 2, preferedHeight / 2);
         initComponents(tip);
     }
 
@@ -223,7 +215,7 @@ public class KeywordNodeTooltip {
 
     public void setPreferedSize(int w, int h) {
         if (w > 0) {
-            preferedWith = w;
+            preferedWidth = w;
         }
         if (h > 0) {
             preferedHeight = h;

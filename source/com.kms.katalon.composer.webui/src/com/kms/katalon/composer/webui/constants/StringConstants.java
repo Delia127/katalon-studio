@@ -20,6 +20,7 @@ public class StringConstants extends GlobalStringConstants {
 	
 	//WebUiSettingsPreferencePage
     public static final String PREF_LBL_DEFAULT_PAGE_LOAD_TIMEOUT = ComposerWebuiMessageConstants.PREF_LBL_DEFAULT_PAGE_LOAD_TIMEOUT;
+    public static final String PREF_LBL_CUSTOM_PAGE_LOAD_TIMEOUT = ComposerWebuiMessageConstants.PREF_LBL_CUSTOM_PAGE_LOAD_TIMEOUT;
     public static final String PREF_LBL_ENABLE_DEFAULT_PAGE_LOAD_TIMEOUT = ComposerWebuiMessageConstants.PREF_LBL_ENABLE_DEFAULT_PAGE_LOAD_TIMEOUT;
     public static final String PREF_LBL_IGNORE_DEFAULT_PAGE_LOAD_TIMEOUT_EXCEPTION = ComposerWebuiMessageConstants.PREF_LBL_IGNORE_DEFAULT_PAGE_LOAD_TIMEOUT_EXCEPTION;
 	public static final String PREF_ERROR_MSG_VAL_MUST_BE_AN_INT_BIGGER_FROM_X = ComposerWebuiMessageConstants.PREF_ERROR_MSG_VAL_MUST_BE_AN_INT_BIGGER_FROM_X;

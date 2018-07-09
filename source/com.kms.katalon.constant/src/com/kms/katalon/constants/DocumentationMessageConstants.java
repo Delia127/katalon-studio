@@ -16,6 +16,8 @@ public class DocumentationMessageConstants extends NLS {
     public static String DIALOG_GENERATE_COMMAND;
 
     public static String DIALOG_OBJECT_SPY_WEB_UI;
+    
+    public static String DIALOG_OBJECT_SPY_WEB_UI_SELECTION_METHOD;
 
     public static String DIALOG_OBJECT_SPY_MOBILE;
 
@@ -72,6 +74,8 @@ public class DocumentationMessageConstants extends NLS {
     public static String TEST_CASE_VARIABLE;
 
     public static String TEST_CASE_SCRIPT;
+    
+    public static String TEST_CASE_PROPERTIES;
 
     public static String TEST_DATA_CSV;
 
@@ -88,6 +92,11 @@ public class DocumentationMessageConstants extends NLS {
     public static String TEST_SUITE_COLLECTION;
 
     public static String TEST_SUITE_MAIN;
+    
+    public static String SETTINGS_KATALON_ANALYTICS;
+
+	public static String SETTINGS_WEBLOCATORS;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, DocumentationMessageConstants.class);

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin>
    <extension-point id="delete" name="com.kms.katalon.composer.explorer" schema="schema/delete.exsd"/>
+   <extension-point id="label" name="com.kms.katalon.composer.explorer" schema="schema/label.exsd"/>
 
    <extension
          id="com.kms.katalon.composer.explorer.fragment"

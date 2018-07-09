@@ -4,14 +4,8 @@ import com.kms.katalon.core.driver.internal.IDriverCleaner;
 import com.kms.katalon.core.webui.driver.DriverFactory;
 
 public class WebUiDriverCleaner implements IDriverCleaner {
-
     @Override
-    public void cleanDriverAfterRunningTestCase() {
-        cleanDriverAfterRunningTestSuite();
-    }
-
-    @Override
-    public void cleanDriverAfterRunningTestSuite() {
+    public void cleanDrivers() {
         DriverFactory.closeWebDriver();
     }
 }

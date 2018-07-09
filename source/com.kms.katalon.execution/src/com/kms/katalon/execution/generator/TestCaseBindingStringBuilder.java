@@ -47,7 +47,10 @@ public class TestCaseBindingStringBuilder {
     }
 
     private String getDeclarationWithTestCaseName() {
-        return new StringBuilder("new TestCaseBinding('").append(getTestCaseBindingName()).append("', ").toString();
+        return new StringBuilder("new TestCaseBinding('")
+                .append(getTestCaseBindingName()).append("', '")
+                .append(testCaseExecutedEntity.getSourceId()).append("', ")
+                .toString();
     }
 
     public String build() {

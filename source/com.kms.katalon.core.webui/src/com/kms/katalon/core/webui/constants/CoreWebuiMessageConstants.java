@@ -171,6 +171,8 @@ public class CoreWebuiMessageConstants extends NLS {
 
     public static String KW_LOG_INFO_FINDING_WEB_ELEMENT_W_ID_SUCCESS;
 
+    public static String KW_LOG_INFO_FINDING_WEB_ELEMENT_WITH_X_BY_Y_FAIL_TRY_AGAIN;
+
     public static String KW_EXC_WEB_ELEMENT_W_ID_DOES_NOT_HAVE_SATISFY_PROP;
 
     public static String KW_LOG_PASSED_WEB_ELEMT_W_ID_IS_NOT_PRESENT_AFTER;
@@ -244,6 +246,14 @@ public class CoreWebuiMessageConstants extends NLS {
     public static String KW_MSG_CANNOT_CLICK_ON_OBJ_X;
 
     public static String KW_MSG_CANNOT_CLICK_ON_OBJ;
+    
+    public static String KW_LOG_INFO_CLICKING_ON_OBJ_OFFSET_X_Y;
+    
+    public static String KW_LOG_PASSED_OBJ_CLICKED_OFFSET_X_Y;
+    
+    public static String KW_MSG_CANNOT_CLICK_ON_OBJ_X_OFFSET_Y_Z;
+    
+    public static String KW_MSG_CANNOT_CLICK_ON_OBJ_OFFSET;
 
     public static String KW_LOG_INFO_SUBMITTING_ON_FORM_CONTAINING_OBJ;
 
@@ -268,6 +278,14 @@ public class CoreWebuiMessageConstants extends NLS {
     public static String KW_MSG_CANNOT_RIGHT_CLICK_ON_OBJ_X;
 
     public static String KW_MSG_CANNOT_RIGHT_CLICK_ON_OBJ;
+    
+    public static String KW_LOG_INFO_RIGHT_CLICKING_ON_OBJ_OFFSET_X_Y;
+    
+    public static String KW_LOG_PASSED_OBJ_IS_RIGHT_CLICKED_ON_OFFSET_X_Y;
+    
+    public static String KW_MSG_CANNOT_RIGHT_CLICK_ON_OBJ_X_OFFSET_Y_Z;
+    
+    public static String KW_MSG_CANNOT_RIGHT_CLICK_ON_OBJ_OFFSET;
 
     public static String KW_LOG_INFO_MOVING_MOUSE_OVER_OBJ;
 
@@ -276,6 +294,14 @@ public class CoreWebuiMessageConstants extends NLS {
     public static String KW_MSG_CANNOT_MOVE_MOUSE_OVER_OBJ_X;
 
     public static String KW_MSG_CANNOT_MOVE_MOUSE_OVER_OBJ;
+    
+    public static String KW_LOG_INFO_MOVING_MOUSE_OVER_OBJ_OFFSET_X_Y;
+    
+    public static String KW_LOG_PASSED_OBJ_IS_HOVERED_OFFSET_X_Y;
+    
+    public static String KW_MSG_CANNOT_MOVE_MOUSE_OVER_OBJ_X_OFFSET_Y_Z;
+    
+    public static String KW_MSG_CANNOT_MOVE_MOUSE_OVER_OBJ_OFFSET;
 
     public static String KW_LOG_INFO_SENDING_KEYS_TO_OBJ;
 
@@ -328,10 +354,16 @@ public class CoreWebuiMessageConstants extends NLS {
     public static String KW_LOG_INFO_CLEARING_OBJ_TXT;
 
     public static String KW_LOG_INFO_SETTING_OBJ_TXT_TO_VAL;
+    
+    public static String KW_LOG_INFO_SETTING_OBJ_TXT_TO_ENCRYPTED_VAL;
 
     public static String KW_LOG_PASSED_TXT_IS_SET_ON_OBJ;
+    
+    public static String KW_LOG_PASSED_ENCRYPTED_TXT_IS_SET_ON_OBJ;
 
     public static String KW_MSG_CANNOT_SET_TXT_X_OF_OBJ_Y;
+    
+    public static String KW_MSG_CANNOT_SET_ENCRYPTED_TEXT_FOR_OBJECT;
 
     public static String KW_MSG_CANNOT_SET_TXT;
 
@@ -959,6 +991,69 @@ public class CoreWebuiMessageConstants extends NLS {
     public static String KW_LOG_JQUERY_NOT_READY;
 
     public static String KW_MSG_JQUERY_NOT_USED;
+    
+    //Verify Options Present
+    public static String KW_MSG_TXT_OPTIONS_PRESENT;
+
+    public static String KW_MSG_TXT_OPTIONS_NOT_PRESENT;
+
+    public static String KW_MSG_TXT_OPTIONS_NOT_PRESENT_REASON;
+    
+    //Action delay
+    public static String KW_MSG_ACTION_DELAY_X;
+
+    // VerifyElementKeyword
+    public static String KW_MSG_ACTUAL_ELEMENT_TXT_NOT_MATCHED_EXPECTED_TXT;
+
+    public static String KW_LOG_ACTUAL_ELEMENT_TXT_MATCHED_EXPECTED_TXT;
+
+    public static String KW_MSG_VERIFY_ELEMENT_TEXT_FAILED;
+
+    // DeselectOptionByLabelKeyword, SelectOptionByLabelKeyword, DeselectOptionByValueKeyword, SelectOptionByValueKeyword
+    public static String KW_MSG_NO_OPTION_MATCHED;
+
+    public static String MSG_FAILED_WEB_ELEMENT_X_IS_NOT_SHADOW_ROOT;
+
+    public static String MSG_INFO_WEB_ELEMENT_HAVE_PARENT_SHADOW_ROOT;
+
+    // VerifyAllLinksOnCurrentPageAccessibleKeyword
+    public static String KW_LOG_PASSED_ALL_LINKS_ON_PAGE_ARE_ACCESSIBLE;
+
+    public static String KW_LOG_FAILED_SOME_LINKS_ON_PAGE_ARE_INACCESSIBLE;
+
+    public static String KW_MSG_UNABLE_TO_VERIFY_ALL_LINKS_ON_PAGE_ARE_ACCESSIBLE;
+
+    // VerifyLinksAccessibleKeyword
+    public static String KW_LOG_PASSED_ALL_LINKS_ARE_ACCESSIBLE;
+
+    public static String KW_LOG_FAILED_FOUND_X_INACCESSIBLE_LINKS;
+
+    public static String KW_MSG_UNABLE_TO_VERIFY_LINKS_ARE_ACCESSIBLE;
+
+    // GetAllLinksOnCurrentPageKeyword
+    public static String KW_LOG_WARNING_NO_PAGE_OPEN;
+
+    public static String KW_LOG_PASSED_FOUND_X_UNIQUE_LINKS_ON_PAGE;
+
+    public static String KW_MSG_UNABLE_TO_GET_ALL_LINKS_ON_PAGE;
+
+    public static String KW_LOG_INFO_FINDING_ALL_LINKS_ON_PAGE;
+
+    public static String KW_LOG_INFO_FOUND_X_ELEMENTS;
+
+    public static String KW_LOG_ERROR_X_IS_AN_INVALID_URL;
+
+    // ExecuteJavascriptKeyword
+    public static String KW_MSG_WEBDRIVER_DOES_NOT_SUPPORT_JS;
+
+    public static String KW_MSG_UNABLE_TO_EXECUTE_JS;
+
+    public static String KW_LOG_PASSED_EXECUTE_JS_SUCESSFULLY;
+    
+    // ClearTextKeyword
+    public static String KW_LOG_PASSED_OBJ_TXT_IS_CLEARED;
+
+    public static String KW_MSG_UNABLE_TO_CLEAR_OBJ_TEXT;
 
     static {
         // initialize resource bundle

@@ -53,6 +53,8 @@ public class FolderFileServiceManager {
             initRootFolder(FileServiceConstant.getKeywordRootFolderLocation(project.getFolderLocation()));
             initRootFolder(FileServiceConstant.getReportRootFolderLocation(project.getFolderLocation()));
             initRootFolder(FileServiceConstant.getCheckpointRootFolderLocation(project.getFolderLocation()));
+            initRootFolder(FileServiceConstant.getTestListenerRootFolderLocation(project.getFolderLocation()));
+            initRootFolder(FileServiceConstant.getProfileFolderLocation(project.getFolderLocation()));
         }
     }
 
@@ -113,7 +115,8 @@ public class FolderFileServiceManager {
 
     public static FolderEntity getReportRoot(ProjectEntity project) throws Exception {
         if (project != null) {
-            FolderEntity folder = getFolder(FileServiceConstant.getReportRootFolderLocation(project.getFolderLocation()));
+            FolderEntity folder = getFolder(FileServiceConstant.getReportRootFolderLocation(project.getFolderLocation()),
+                    project);
             if (folder != null) {
                 folder.setProject(project);
                 return folder;
@@ -132,6 +135,22 @@ public class FolderFileServiceManager {
             return null;
         }
 
+        folder.setProject(project);
+        return folder;
+    }
+
+    public static FolderEntity getTestListenerRoot(ProjectEntity project) throws Exception {
+        if (project == null) {
+            return null;
+        }
+
+        FolderEntity folder = getFolder(
+                FileServiceConstant.getTestListenerRootFolderLocation(project.getFolderLocation()));
+        if (folder == null) {
+            return null;
+        }
+
+        folder.setFolderType(FolderType.TESTLISTENER);
         folder.setProject(project);
         return folder;
     }
@@ -181,6 +200,10 @@ public class FolderFileServiceManager {
         return null;
     }
 
+    public static FolderEntity getFolder(String path, ProjectEntity project) throws Exception {
+        return EntityFileServiceManager.getFolder(new File(path));
+    }
+    
     public static List<FileEntity> getChildren(FolderEntity folder) throws Exception {
         return EntityFileServiceManager.getChildren(folder, FileEntity.class);
     }
@@ -552,12 +575,29 @@ public class FolderFileServiceManager {
 
     public static void refreshFolderScriptReferences(String oldFolderId, FolderEntity folder) throws CoreException,
             IOException {
-        new TestArtifactScriptRefactor(folder.getFolderType(), oldFolderId, false).updateReferenceForProject(
+        new TestArtifactScriptRefactor(folder.getFolderType(), oldFolderId, false, false, false).updateReferenceForProject(
         		folder.getIdForDisplay() + StringConstants.ENTITY_ID_SEPARATOR, folder.getProject());
     }
 
     public static FolderEntity saveFolder(FolderEntity folder) throws Exception {
         EntityService.getInstance().saveIntergratedFolderMetadataEntity(folder);
         return folder;
+    }
+
+    public static FolderEntity getProfileRoot(ProjectEntity project) throws DALException {
+        try {
+            FolderEntity folder = getFolder(FileServiceConstant.getProfileFolderLocation(project.getFolderLocation()),
+                    project);
+
+            if (folder != null) {
+                folder.setProject(project);
+                folder.setFolderType(FolderType.PROFILE);
+                return folder;
+            }
+
+            return null;
+        } catch (Exception e) {
+            throw new DALException(e);
+        }
     }
 }

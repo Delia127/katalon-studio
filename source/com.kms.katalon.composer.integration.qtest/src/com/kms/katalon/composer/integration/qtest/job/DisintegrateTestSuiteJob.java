@@ -6,10 +6,12 @@ import java.util.List;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.MessageDialog;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.util.StatusUtil;
+import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
@@ -52,9 +54,10 @@ public class DisintegrateTestSuiteJob extends QTestJob {
                     QTestIntegrationUtil.updateFileIntegratedEntity(testSuite,
                             QTestIntegrationTestSuiteManager.getIntegratedEntityByTestSuiteList(qTestSuites));
                     TestSuiteController.getInstance().updateTestSuite(testSuite);
-                    EventBrokerSingleton.getInstance().getEventBroker()
-                            .post(EventConstants.TEST_SUITE_UPDATED, new Object[] { testSuite.getId(), testSuite });
-
+                    getEventBroker().post(EventConstants.TEST_SUITE_UPDATED,
+                            new Object[] { testSuite.getId(), testSuite });
+                    getEventBroker().post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY,
+                            TreeEntityUtil.getTestSuiteTreeEntity(testSuite, projectEntity));
                 } catch (QTestInvalidFormatException e) {
                     MessageDialog.openError(null, StringConstants.WARN,
                             MessageFormat.format(StringConstants.JOB_MSG_TEST_SUITE_INVALID_FORMAT, testSuiteId));
@@ -63,12 +66,15 @@ public class DisintegrateTestSuiteJob extends QTestJob {
                     LoggerSingleton.logError(e);
                     return StatusUtil.getErrorStatus(getClass(), e);
                 }
-
             }
             return Status.OK_STATUS;
         } finally {
             monitor.done();
         }
+    }
+
+    private IEventBroker getEventBroker() {
+        return EventBrokerSingleton.getInstance().getEventBroker();
     }
 
 }

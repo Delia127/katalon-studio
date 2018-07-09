@@ -3,7 +3,6 @@ package com.kms.katalon.core.mobile.keyword.builtin
 import groovy.transform.CompileStatic
 import io.appium.java_client.AppiumDriver
 import io.appium.java_client.MobileElement
-import io.appium.java_client.NetworkConnectionSetting
 import io.appium.java_client.android.AndroidDriver
 import io.appium.java_client.android.AndroidKeyCode
 import io.appium.java_client.ios.IOSDriver
@@ -45,6 +44,7 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 
 @Action(value = "pinchToZoomOutAtPosition")
 public class PinchToZoomOutAtPositionKeyword extends MobileAbstractKeyword {
@@ -67,9 +67,9 @@ public class PinchToZoomOutAtPositionKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public void pinchToZoomOutAtPosition(Number x, Number y, Number offset, FailureHandling flowControl) throws StepFailedException {
-        KeywordMain.runKeyword({
+        MobileKeywordMain.runKeyword({
             MobileGestureCommonHelper.pinchToZoomOut(x, y, offset)
-        }, flowControl, (x != null && y != null && offset != null) ?
+        }, flowControl, true, (x != null && y != null && offset != null) ?
         MessageFormat.format(StringConstants.KW_LOG_FAILED_PINCH_AT_X_Y_WITH_OFFSET_Z, x, y, offset) : StringConstants.KW_LOG_FAILED_PINCH_AT_POSITION )
     }
 }

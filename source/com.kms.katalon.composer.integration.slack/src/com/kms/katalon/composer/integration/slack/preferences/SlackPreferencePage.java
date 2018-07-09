@@ -132,6 +132,7 @@ public class SlackPreferencePage extends FieldEditorPreferencePageWithHelp {
         asUser = new BooleanFieldEditor(SlackPreferenceConstants.SLACK_AS_USER, StringConstants.PREF_LBL_SLACK_AS_USER,
                 fieldsetSlack);
         asUser.getDescriptionControl(fieldsetSlack).setToolTipText(StringConstants.PREF_LBL_SLACK_AS_USER_DESC);
+        asUser.fillIntoGrid(fieldsetSlack, 2);
 
         username = new StringFieldEditor(SlackPreferenceConstants.SLACK_USERNAME,
                 StringConstants.PREF_LBL_SLACK_USERNAME, fieldsetSlack);

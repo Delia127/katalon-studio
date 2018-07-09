@@ -27,6 +27,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.objectspy.element.HTMLRawElement;
 import com.kms.katalon.objectspy.util.HTMLElementUtil;
+import com.kms.katalon.objectspy.util.WebElementUtils;
 import com.kms.katalon.objectspy.websocket.messages.AddonMessage;
 import com.kms.katalon.objectspy.websocket.messages.BrowserInfoMessageData;
 
@@ -175,8 +176,9 @@ public class AddonSocket {
 
     private void addNewElement(String value) {
         try {
+            // Note that, the web socket is used for Firefox plugin only
             EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.OBJECT_SPY_HTML_ELEMENT_CAPTURED,
-                    HTMLElementUtil.buildHTMLElement(value));
+                    WebElementUtils.buildWebElement(value));
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }

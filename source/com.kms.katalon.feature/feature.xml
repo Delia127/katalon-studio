@@ -260,7 +260,7 @@
       <import plugin="org.eclipse.jdt.debug.ui" version="3.3.0" match="compatible"/>
       <import plugin="org.eclipse.jdt.junit.runtime" version="3.4.100" match="compatible"/>
       <import plugin="org.eclipse.jdt.junit.core" version="3.6.0" match="compatible"/>
-      <import plugin="org.junit" version="3.8.2" match="greaterOrEqual"/>
+      <import plugin="org.junit" version="4.12.0" match="compatible"/>
       <import plugin="org.eclipse.core.resources" version="3.8.100" match="compatible"/>
       <import plugin="org.eclipse.equinox.simpleconfigurator.manipulator" version="2.0.0" match="compatible"/>
       <import plugin="org.eclipse.equinox.frameworkadmin" version="2.0.0" match="compatible"/>
@@ -322,7 +322,6 @@
       <import plugin="org.eclipse.core.net" version="1.2.200" match="greaterOrEqual"/>
       <import plugin="com.kms.katalon.composer.webui"/>
       <import plugin="com.kms.katalon.support.testing.katserver" version="1.0.0" match="greaterOrEqual"/>
-      <import plugin="com.kms.katalon.jbrowser"/>
       <import plugin="org.codehaus.groovy" version="1.8.9" match="greaterOrEqual"/>
    </requires>
 
@@ -1174,7 +1173,7 @@
          id="org.junit"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="4.12.0"/>
 
    <plugin
          id="org.eclipse.update.configurator"
@@ -1548,13 +1547,6 @@
          unpack="false"/>
 
    <plugin
-         id="io.appium.java-client"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.apache.xerces.impl"
          download-size="0"
          install-size="0"
@@ -1731,13 +1723,6 @@
 
    <plugin
          id="com.kms.katalon.core.mobile"
-         download-size="0"
-         install-size="0"
-         version="1.0.0.qualifier"
-         unpack="false"/>
-
-   <plugin
-         id="com.kms.katalon.code.refactoring"
          download-size="0"
          install-size="0"
          version="1.0.0.qualifier"
@@ -2064,13 +2049,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.apache.commons.httpclient"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.tukaani.xz"
          download-size="0"
          install-size="0"
@@ -2096,13 +2074,6 @@
          download-size="0"
          install-size="0"
          version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="com.kms.katalon.jbrowser"
-         download-size="0"
-         install-size="0"
-         version="1.0.0.qualifier"
          unpack="false"/>
 
    <plugin
@@ -2232,17 +2203,122 @@
          unpack="false"/>
 
    <plugin
-         id="dom4j"
+         id="com.kms.katalon.composer.mobile.recorder"
+         download-size="0"
+         install-size="0"
+         version="1.0.0.qualifier"
+         unpack="false"/>
+
+   <plugin
+         id="com.google.oauth-client.google-oauth-client"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="com.kms.katalon.composer.mobile.recorder"
+         id="com.google.http-client.google-http-client"
          download-size="0"
          install-size="0"
-         version="1.0.0.qualifier"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="atu.testrecorder.screen-recorder"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.kms.katalon.composer.integration.analytics"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.kms.katalon.integration.analytics"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.fasterxml.jackson.core.jackson-databind"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.fasterxml.jackson.core.jackson-annotations"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.google.guava"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.jasper.glassfish"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.beanshell.bsh"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.ant.launcher"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.kms.katalon.composer.testlistener"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.kms.katalon.util"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.kms.katalon.selenium.ide"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="com.kms.katalon.application"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.apache.commons.compress"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
          unpack="false"/>
 
 </feature>

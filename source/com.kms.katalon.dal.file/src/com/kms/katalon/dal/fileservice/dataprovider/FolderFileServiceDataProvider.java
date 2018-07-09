@@ -4,11 +4,15 @@ import java.util.Collections;
 import java.util.List;
 
 import com.kms.katalon.dal.IFolderDataProvider;
+import com.kms.katalon.dal.exception.DALException;
+import com.kms.katalon.dal.fileservice.manager.EntityFileServiceManager;
 import com.kms.katalon.dal.fileservice.manager.FolderFileServiceManager;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.testcase.TestCaseEntity;
+import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 
 public class FolderFileServiceDataProvider implements IFolderDataProvider {
 
@@ -79,6 +83,15 @@ public class FolderFileServiceDataProvider implements IFolderDataProvider {
     }
 
     @Override
+    public FolderEntity getTestListenerRoot(ProjectEntity project) throws Exception {
+        return FolderFileServiceManager.getTestListenerRoot(project);
+    }
+
+    public static List<TestSuiteEntity> getChildTestSuitesOfFolder(FolderEntity folder) throws Exception {
+        return EntityFileServiceManager.getChildren(folder, TestSuiteEntity.class);
+    }
+
+    @Override
     public FolderEntity copyFolder(FolderEntity folder, FolderEntity destinationFolder) throws Exception {
         return FolderFileServiceManager.copyFolder(folder, destinationFolder);
     }
@@ -101,5 +114,15 @@ public class FolderFileServiceDataProvider implements IFolderDataProvider {
     @Override
     public String getAvailableFolderName(FolderEntity parentFolder, String name) throws Exception {
         return FolderFileServiceManager.getAvailableFolderName(parentFolder, name);
+    }
+
+    @Override
+    public List<TestCaseEntity> getTestCaseChildren(FolderEntity parentFolder) throws Exception {
+        return FolderFileServiceManager.getChildTestCasesOfFolder(parentFolder);
+    }
+
+    @Override
+    public FolderEntity getProfileRoot(ProjectEntity project) throws DALException {
+        return FolderFileServiceManager.getProfileRoot(project);
     }
 }

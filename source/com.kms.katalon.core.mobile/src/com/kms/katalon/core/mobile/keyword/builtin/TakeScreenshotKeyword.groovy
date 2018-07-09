@@ -3,7 +3,6 @@ package com.kms.katalon.core.mobile.keyword.builtin
 import groovy.transform.CompileStatic
 import io.appium.java_client.AppiumDriver
 import io.appium.java_client.MobileElement
-import io.appium.java_client.NetworkConnectionSetting
 import io.appium.java_client.android.AndroidDriver
 import io.appium.java_client.android.AndroidKeyCode
 import io.appium.java_client.ios.IOSDriver
@@ -45,6 +44,7 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 
 @Action(value = "takeScreenshot")
 public class TakeScreenshotKeyword extends MobileAbstractKeyword {
@@ -80,14 +80,14 @@ public class TakeScreenshotKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public String takeScreenshot(String fileName, FailureHandling flowControl) throws StepFailedException {
-        return KeywordMain.runKeyword({
+        return MobileKeywordMain.runKeyword({
             AppiumDriver<?> driver = getAnyAppiumDriver()
             String context = driver.getContext()
             try {
                 internalSwitchToNativeContext(driver)
                 File tempFile = driver.getScreenshotAs(OutputType.FILE)
                 if (!tempFile.exists()) {
-                    KeywordMain.stepFailed(StringConstants.KW_MSG_UNABLE_TO_TAKE_SCREENSHOT, flowControl, null)
+                    MobileKeywordMain.stepFailed(StringConstants.KW_MSG_UNABLE_TO_TAKE_SCREENSHOT, flowControl, null, true)
                     return
                 }
                 try{
@@ -95,13 +95,15 @@ public class TakeScreenshotKeyword extends MobileAbstractKeyword {
                     FileUtils.forceDelete(tempFile)
                 } catch (Exception e) {
                     logger.logWarning(e.getMessage())
-                    // do nothing
+                    return null;
                 }
-                logger.logPassed(StringConstants.KW_LOG_PASSED_SCREENSHOT_IS_TAKEN)
+                Map<String, String> attributes = new HashMap<>()
+                attributes.put(StringConstants.XML_LOG_ATTACHMENT_PROPERTY, fileName);
+                logger.logPassed(StringConstants.KW_LOG_PASSED_SCREENSHOT_IS_TAKEN, attributes)
                 return fileName
             } finally {
                 driver.context(context)
             }
-        }, flowControl, StringConstants.KW_MSG_UNABLE_TO_TAKE_SCREENSHOT)
+        }, flowControl, false, StringConstants.KW_MSG_UNABLE_TO_TAKE_SCREENSHOT)
     }
 }

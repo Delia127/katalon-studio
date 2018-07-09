@@ -3,7 +3,6 @@ package com.kms.katalon.core.mobile.keyword.builtin
 import groovy.transform.CompileStatic
 import io.appium.java_client.AppiumDriver
 import io.appium.java_client.MobileElement
-import io.appium.java_client.NetworkConnectionSetting
 import io.appium.java_client.android.AndroidDriver
 import io.appium.java_client.android.AndroidKeyCode
 import io.appium.java_client.ios.IOSDriver
@@ -46,6 +45,7 @@ import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
 import com.kms.katalon.core.mobile.keyword.internal.MobileDriverFactory
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 
 @Action(value = "getDeviceOSVersion")
 public class GetDeviceOSVersionKeyword extends MobileAbstractKeyword {
@@ -65,10 +65,10 @@ public class GetDeviceOSVersionKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public String getDeviceOSVersion(FailureHandling flowControl) throws StepFailedException {
-        return KeywordMain.runKeyword({
+        return MobileKeywordMain.runKeyword({
             String osVersion = MobileDriverFactory.getDeviceOSVersion()
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_DEVICE_OS_VER_IS, osVersion))
             return osVersion
-        }, flowControl, StringConstants.KW_MSG_CANNOT_GET_OS_VER)
+        }, flowControl, true, StringConstants.KW_MSG_CANNOT_GET_OS_VER)
     }
 }

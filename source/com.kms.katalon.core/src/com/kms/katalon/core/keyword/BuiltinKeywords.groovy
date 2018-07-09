@@ -320,29 +320,33 @@ public class BuiltinKeywords {
     /**
      * Call and execute another test case
      * @param calledTestCase
-     *      represent a test case
+     *      represents a test case
      * @param binding
-     *      map object contain variables bindings for the called test case
+     *      contains variables bindings for the called test case. 
+     *      If the <code>binding<code> parameter is null, default values of all variables are used.
      * @param flowControl
+     * @return returned value of called test case
      * @throws Exception
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
-    public static Object callTestCase(TestCase calledTestCase, Map<String, Object> binding, FailureHandling flowControl) throws Exception {
+    public static Object callTestCase(TestCase calledTestCase, Map binding, FailureHandling flowControl) throws Exception {
         return (Object)KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_BUILT_IN, "callTestCase", calledTestCase, binding, flowControl)
     }
 
     /**
      * Call and execute another test case
      * @param calledTestCase
-     *      represent a test case
+     *      represents a test case
      * @param binding
-     *      map object contain variables bindings for the called test case
+     *      contains variables bindings for the called test case. 
+     *      If the <code>binding<code> parameter is null, default values of all variables are used.
+     * @return returned value of called test case      
      * @throws Exception
      */
     @CompileStatic
     @Keyword(keywordObject = StringConstants.KW_CATEGORIZE_UTILITIES)
-    public static Object callTestCase(TestCase calledTestCase, Map<String, Object> binding) throws Exception {
+    public static Object callTestCase(TestCase calledTestCase, Map binding) throws Exception {
         return (Object)KeywordExecutor.executeKeywordForPlatform(KeywordExecutor.PLATFORM_BUILT_IN, "callTestCase", calledTestCase, binding)
     }
 

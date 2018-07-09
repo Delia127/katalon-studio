@@ -3,7 +3,6 @@ package com.kms.katalon.core.mobile.keyword.builtin
 import groovy.transform.CompileStatic
 import io.appium.java_client.AppiumDriver
 import io.appium.java_client.MobileElement
-import io.appium.java_client.NetworkConnectionSetting
 import io.appium.java_client.android.AndroidDriver
 import io.appium.java_client.android.AndroidKeyCode
 import io.appium.java_client.ios.IOSDriver
@@ -45,6 +44,7 @@ import com.kms.katalon.core.model.FailureHandling
 import com.kms.katalon.core.testobject.TestObject
 import com.kms.katalon.core.mobile.keyword.*
 import com.kms.katalon.core.mobile.keyword.internal.MobileAbstractKeyword
+import com.kms.katalon.core.mobile.keyword.internal.MobileKeywordMain
 
 @Action(value = "tapAtPosition")
 public class TapAtPositionKeyword extends MobileAbstractKeyword {
@@ -66,9 +66,9 @@ public class TapAtPositionKeyword extends MobileAbstractKeyword {
 
     @CompileStatic
     public void tapAtPosition(Number x, Number y, FailureHandling flowControl) throws StepFailedException {
-        KeywordMain.runKeyword({
+        MobileKeywordMain.runKeyword({
             MobileElementCommonHelper.tapAtPosition(x, y)
-        }, flowControl, (x != null && y != null) ?
+        }, flowControl, true, (x != null && y != null) ?
         MessageFormat.format(StringConstants.KW_LOG_FAILED_TAPPED_AT_X_Y, [x, y] as Object[]) : StringConstants.KW_LOG_FAILED_TAPPED_AT_POSITION )
     }
 }

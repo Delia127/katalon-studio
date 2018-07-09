@@ -24,6 +24,7 @@ import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
@@ -33,8 +34,10 @@ import com.kms.katalon.composer.components.impl.control.GifCLabel;
 import com.kms.katalon.composer.components.impl.wizard.AbstractWizardPage;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.integration.qtest.constant.ComposerIntegrationQtestMessageConstants;
 import com.kms.katalon.composer.integration.qtest.constant.ImageConstants;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
+import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.integration.qtest.QTestIntegrationAuthenticationManager;
 import com.kms.katalon.integration.qtest.credential.IQTestToken;
 import com.kms.katalon.integration.qtest.credential.impl.QTestCredentialImpl;
@@ -43,15 +46,14 @@ import com.kms.katalon.integration.qtest.exception.QTestException;
 import com.kms.katalon.integration.qtest.setting.QTestSettingStore;
 import com.kms.katalon.integration.qtest.setting.QTestVersion;
 
-import org.eclipse.swt.widgets.Combo;
-
-public class AuthenticationWizardPage extends AbstractWizardPage {
+public class AuthenticationWizardPage extends AbstractWizardPage implements QTestWizardPage {
 
     // Fields
     private IQTestToken fToken;
     private String fServerUrl;
     private String fUsername;
     private String fPassword;
+    private boolean fEncryptionEnabled;
     private QTestVersion fVersion;
    
     private boolean isDirty;
@@ -75,6 +77,7 @@ public class AuthenticationWizardPage extends AbstractWizardPage {
     private Composite stepAreaComposite;
     private Label lblVersion;
     private Combo cbbQTestVersion;
+    private Button chckEncryptAuthentication;
     
     public AuthenticationWizardPage() {
         isDirty = false;
@@ -83,6 +86,7 @@ public class AuthenticationWizardPage extends AbstractWizardPage {
         fUsername = "";
         fPassword = "";
         fServerUrl = "https://";
+        fEncryptionEnabled = false;
         fVersion = QTestVersion.getLastest();
     }
 
@@ -151,12 +155,23 @@ public class AuthenticationWizardPage extends AbstractWizardPage {
         Label lblPassword = new Label(authenticationComposite, SWT.NONE);
         lblPassword.setText(StringConstants.CM_PASSWORD);
 
-        txtPassword = new Text(authenticationComposite, SWT.BORDER);
-        txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        Composite passwordComposite = new Composite(authenticationComposite, SWT.NONE);
+        passwordComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+        GridLayout glPassword = new GridLayout(2, false);
+        glPassword.marginWidth = 0;
+        glPassword.marginHeight = 0;
+        passwordComposite.setLayout(glPassword);
 
-        btnShowPassword = new Button(authenticationComposite, SWT.CHECK);
+        txtPassword = new Text(passwordComposite, SWT.BORDER);
+        txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        
+        btnShowPassword = new Button(passwordComposite, SWT.CHECK);
         btnShowPassword.setText(StringConstants.WZ_P_AUTHENTICATION_SHOW_PASSWORD);
-        new Label(authenticationComposite, SWT.NONE);
+        
+        chckEncryptAuthentication = new Button(authenticationComposite, SWT.CHECK);
+        chckEncryptAuthentication.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 2, 1));
+        chckEncryptAuthentication
+                .setText(ComposerIntegrationQtestMessageConstants.WZ_P_AUTHENTICATION_ENCRYPT_AUTHENTICATION_DATA);
 
         Composite connectionComposite = new Composite(authenticationComposite, SWT.NONE);
         GridLayout glConectionComposite = new GridLayout(2, false);
@@ -190,13 +205,14 @@ public class AuthenticationWizardPage extends AbstractWizardPage {
         txtServerURL.setText(fServerUrl);
         txtUsername.setText(fUsername);
         txtPassword.setText(fPassword);
+        chckEncryptAuthentication.setSelection(fEncryptionEnabled);
         cbbQTestVersion.select(fVersion.ordinal());
 
         setConnectedStatus(lblStatusText, canFlipToNextPage());
 
         btnConnect.setEnabled(!canFlipToNextPage());
         btnShowPassword.setSelection(isPasswordShowed);
-        updatePasswordField();
+        maskPasswordField();
         setConnectingCompositeVisible(false);
     }
 
@@ -204,7 +220,7 @@ public class AuthenticationWizardPage extends AbstractWizardPage {
     public void registerControlModifyListeners() {
         btnShowPassword.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
-                updatePasswordField();
+                maskPasswordField();
             }
         });
 
@@ -212,6 +228,14 @@ public class AuthenticationWizardPage extends AbstractWizardPage {
         txtUsername.addModifyListener(modifyTextListener);
         txtPassword.addModifyListener(modifyTextListener);
         cbbQTestVersion.addModifyListener(modifyTextListener);
+        chckEncryptAuthentication.addSelectionListener(new SelectionAdapter() {
+            
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                // TODO Auto-generated method stub
+                fEncryptionEnabled = chckEncryptAuthentication.getSelection();
+            }
+        });
 
         stepAreaComposite.addDisposeListener(new DisposeListener() {
 
@@ -285,7 +309,9 @@ public class AuthenticationWizardPage extends AbstractWizardPage {
 
                             return Status.OK_STATUS;
                         } catch (QTestAPIConnectionException ex) {
-                            setConnectedStatus(ex.getMessage(), false);
+                            setConnectedStatus(
+                                    ComposerIntegrationQtestMessageConstants.WZ_P_AUTHENTICATION_MGS_BAD_CREDENTIALS,
+                                    false);
                             return Status.OK_STATUS;
                         } catch (QTestException ex) {
                             setConnectedStatus(StringConstants.WZ_P_AUTHENTICATION_MGS_CONNECT_FAILED, false);
@@ -346,12 +372,12 @@ public class AuthenticationWizardPage extends AbstractWizardPage {
         btnConnect.setEnabled(!isConnectingCompositeVisible);
     }
 
-    private void updatePasswordField() {
+    private void maskPasswordField() {
         if (btnShowPassword.getSelection()) {
             // show password
             txtPassword.setEchoChar('\0');
         } else {
-            txtPassword.setEchoChar('*');
+            txtPassword.setEchoChar(GlobalStringConstants.CR_ECO_PASSWORD.charAt(0));
         }
     }
 
@@ -368,9 +394,20 @@ public class AuthenticationWizardPage extends AbstractWizardPage {
         sharedData.put(QTestSettingStore.PASSWORD_PROPERTY, fPassword);
         sharedData.put(QTestSettingStore.TOKEN_PROPERTY, fToken);
         sharedData.put(QTestSettingStore.QTEST_VERSION_PROPERTY, fVersion);
+        sharedData.put(QTestSettingStore.ENABLE_ENCRYPTION_PROPERTY, fEncryptionEnabled);
 
         lblStatusText = lblConnectedStatus.getText();
         isPasswordShowed = btnShowPassword.getSelection();
         return sharedData;
+    }
+
+    @Override
+    public String getStepIndexAsString() {
+        return "1";
+    }
+
+    @Override
+    public boolean isChild() {
+        return false;
     }
 }

@@ -2,6 +2,7 @@ package com.kms.katalon.composer.components.dialogs;
 
 import java.text.MessageFormat;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
 import org.eclipse.jface.viewers.DialogCellEditor;
 import org.eclipse.swt.SWT;
@@ -10,6 +11,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Shell;
 
 import com.kms.katalon.composer.components.constants.StringConstants;
 
@@ -17,9 +19,15 @@ public abstract class AbstractDialogCellEditor extends DialogCellEditor implemen
     protected String defaultContent;
     protected Composite editor;
     protected boolean isEditorClosed;
+    private Composite parent;
+    
+    public AbstractDialogCellEditor(Composite parent) {
+        this(parent, StringUtils.EMPTY);
+    }
 
     public AbstractDialogCellEditor(Composite parent, String defaultContent) {
         super(parent, SWT.NONE);
+        this.parent = parent;
         this.isEditorClosed = false;
         this.defaultContent = defaultContent;
     }
@@ -124,5 +132,9 @@ public abstract class AbstractDialogCellEditor extends DialogCellEditor implemen
     
     public void applyEditingValue() {
         fireApplyEditorValue();
+    }
+    
+    protected Shell getParentShell() {
+        return parent.getShell();
     }
 }

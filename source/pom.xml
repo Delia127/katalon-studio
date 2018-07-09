@@ -14,7 +14,6 @@
 	</prerequisites>
 
 	<modules>
-		<module>com.kms.katalon.code.refactoring</module>
 		<module>com.kms.katalon.composer.checkpoint</module>
 		<module>com.kms.katalon.composer.codeassist</module>
 		<module>com.kms.katalon.composer.components.impl</module>
@@ -25,6 +24,7 @@
 		<module>com.kms.katalon.composer.folder</module>
 		<module>com.kms.katalon.composer.global</module>
 		<module>com.kms.katalon.composer.import</module>
+		<module>com.kms.katalon.composer.integration.analytics</module>
 		<module>com.kms.katalon.composer.integration.qtest</module>
 		<module>com.kms.katalon.composer.integration.jira</module>
 		<module>com.kms.katalon.composer.integration.slack</module>
@@ -43,6 +43,7 @@
 		<module>com.kms.katalon.composer.search</module>
 		<module>com.kms.katalon.composer.testcase</module>
 		<module>com.kms.katalon.composer.testdata</module>
+		<module>com.kms.katalon.composer.testlistener</module>
 		<module>com.kms.katalon.composer.testsuite.collection</module>
 		<module>com.kms.katalon.composer.testsuite</module>
 		<module>com.kms.katalon.composer.util</module>
@@ -67,18 +68,21 @@
 		<module>com.kms.katalon.execution</module>
 		<module>com.kms.katalon.feature</module>
 		<module>com.kms.katalon.groovy</module>
+		<module>com.kms.katalon.integration.analytics</module>
 		<module>com.kms.katalon.integration.qtest</module>
 		<module>com.kms.katalon.integration.kobiton</module>
 		<module>com.kms.katalon.integration.jira</module>
 		<module>com.kms.katalon.jasper</module>
 		<module>com.kms.katalon.logging</module>
 		<module>com.kms.katalon.preferences</module>
+		<module>com.kms.katalon.util</module>
 		<module>com.kms.katalon.product</module>
 		<module>com.kms.katalon.selenium-standalone</module>
-		<module>com.kms.katalon.jbrowser</module>
 		<module>com.kms.katalon.target</module>
+		<module>com.kms.katalon.application</module>
 		<module>com.kms.katalon</module>
 		<module>com.kms.katalon.support.testing.katserver</module>
+		<module>com.kms.katalon.selenium.ide</module>
 	</modules>
 
 	<properties>
@@ -87,9 +91,10 @@
 		<maven-compiler.version>3.1</maven-compiler.version>
 		<maven-resources-plugin.version>2.6</maven-resources-plugin.version>
 
-		<eclipse_repo_url>http://download.eclipse.org/eclipse/updates/4.6/</eclipse_repo_url>
-		<eclipse_orbit_repo_url>http://download.eclipse.org/tools/orbit/downloads/drops/R20140525021250/repository/</eclipse_orbit_repo_url>
-		<egit_repo_url>http://download.eclipse.org/egit/updates-4.4.1/</egit_repo_url>
+		<!-- <eclipse_update_site>http://192.168.35.33:9998</eclipse_update_site> -->
+		<eclipse_update_site>http://download.eclipse.org</eclipse_update_site>
+		<eclipse_repo_url>${eclipse_update_site}/eclipse/updates/4.6/</eclipse_repo_url>
+		<egit_repo_url>${eclipse_update_site}/egit/updates-4.4.1/</egit_repo_url>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -110,12 +115,6 @@
 		<repository>
 			<id>eclipse_repo</id>
 			<url>${eclipse_repo_url}</url>
-			<layout>p2</layout>
-		</repository>
-
-		<repository>
-			<id>eclipse_orbit_repo</id>
-			<url>${eclipse_orbit_repo_url}</url>
 			<layout>p2</layout>
 		</repository>
 
@@ -169,6 +168,16 @@
 						</artifact>
 					</target>
 					<environments>
+						<environment>
+							<os>linux</os>
+							<ws>gtk</ws>
+							<arch>x86</arch>
+						</environment>
+						<environment>
+							<os>linux</os>
+							<ws>gtk</ws>
+							<arch>x86_64</arch>
+						</environment>
 						<environment>
 							<os>win32</os>
 							<ws>win32</ws>

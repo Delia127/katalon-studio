@@ -7,11 +7,11 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 public class LogUtil {
-    
+
     private LogUtil() {
-        //Disable default constructor
+        // Disable default constructor
     }
-    
+
     public static void printOutputLine(String message) {
         println(LogManager.getOutputLogger(), message, LogMode.CONSOLE);
     }
@@ -27,14 +27,14 @@ public class LogUtil {
     public static void logError(Throwable t) {
         logError(t, "");
     }
-
-    public static void logError(final Throwable t, final String message) {
+    
+    private static void writeError(final LogMode logMode, final Throwable t, final String message) {
         final SystemLogger errorLogger = LogManager.getErrorLogger();
 
         logSync(new Callable<Object>() {
             @Override
             public Object call() throws Exception {
-                errorLogger.changeMode(LogMode.LOG);
+                errorLogger.changeMode(logMode);
 
                 errorLogger.println();
                 errorLogger.println(new Date().toString());
@@ -49,6 +49,20 @@ public class LogUtil {
                 return null;
             }
         }, errorLogger);
+    }
+
+    public static void printAndLogError(final Throwable t) {
+        writeError(LogMode.CONSOLE, t, "");
+        writeError(LogMode.LOG, t, "");
+    }
+
+    public static void printAndLogError(final Throwable t, final String message) {
+        writeError(LogMode.CONSOLE, t, message);
+        writeError(LogMode.LOG, t, message);
+    }
+
+    public static void logError(final Throwable t, final String message) {
+        writeError(LogMode.LOG, t, message);
     }
 
     public static void println(final SystemLogger logger, final String line, final LogMode mode) {

@@ -9,13 +9,19 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.webui.recorder.action.HTMLAction;
 import com.kms.katalon.composer.webui.recorder.action.HTMLActionMapping;
-import com.kms.katalon.objectspy.element.HTMLElement;
+import com.kms.katalon.composer.webui.recorder.action.HTMLActionParamValueType;
+import com.kms.katalon.entity.repository.WebElementPropertyEntity;
+import com.kms.katalon.objectspy.element.WebElement;
 import com.kms.katalon.objectspy.util.HTMLElementUtil;
+import com.kms.katalon.objectspy.util.WebElementUtils;
 
 public class HTMLActionJsonParser {
     public static class HTMLActionJson {
+        private static final int KEYCODE_ENTER = 13;
+
         public static final String ACTION_DATA_NEW_VALUE_KEY = "newValue";
 
         public static final String ACTION_DATA_OLD_VALUE_KEY = "oldValue";
@@ -27,8 +33,6 @@ public class HTMLActionJsonParser {
         public static final String ACTION_WINDOW_ID_KEY = "windowId";
 
         public static final String SWITCH_TO_WINDOW_ACTION_KEY = "switchToWindow";
-
-        public static final String SUBMIT_ACTION_KEY = "submit";
 
         public static final String DOUBLE_CLICK_ACTION_KEY = "doubleClick";
 
@@ -56,10 +60,15 @@ public class HTMLActionJsonParser {
 
         public static final String ACTION_KEY = "action";
 
+        public static final String SEND_KEYS_ACTION_KEY = "sendKeys";
+
         private JsonObject actionObject;
+
         private String actionName;
+
         private String actionData;
-        private HTMLElement element;
+
+        private WebElement element;
 
         public HTMLActionJson(JsonObject jsonObject) throws UnsupportedEncodingException {
             init(jsonObject);
@@ -76,7 +85,7 @@ public class HTMLActionJsonParser {
             }
             actionData = getActionData(actionObject);
             if (!actionName.equals(NAVIGATE_ACTION_KEY)) {
-                element = HTMLElementUtil.buildHTMLElement(jsonObject, false);
+                element = WebElementUtils.buildWebElement(jsonObject, false);
             }
             if (isSelectOrDeselectAction(actionObject, actionName, element)) {
                 JsonObject actionDataObject = actionObject.get(ACTION_DATA_KEY).getAsJsonObject();
@@ -97,8 +106,9 @@ public class HTMLActionJsonParser {
             }
         }
 
-        private static boolean isSelectOrDeselectAction(JsonObject actionObject, String actionName, HTMLElement element) {
-            return element != null && element.getType().toLowerCase().equals(ELEMENT_TYPE_SELECT)
+        private static boolean isSelectOrDeselectAction(JsonObject actionObject, String actionName,
+                WebElement element) {
+            return element != null && element.getTag().toLowerCase().equals(ELEMENT_TYPE_SELECT)
                     && actionName.equals(INPUT_CHANGE_ACTION_KEY) && actionObject.get(ACTION_DATA_KEY).isJsonObject();
         }
 
@@ -144,42 +154,56 @@ public class HTMLActionJsonParser {
         }
 
         private static HTMLActionMapping buildActionMapping(String recordedActionName, String actionData,
-                HTMLElement targetElement) {
+                WebElement targetElement) {
             switch (recordedActionName) {
-            case NAVIGATE_ACTION_KEY:
-                return new HTMLActionMapping(HTMLAction.Navigate, actionData, targetElement);
-            case INPUT_CHANGE_ACTION_KEY:
-                switch (targetElement.getType().toLowerCase()) {
-                case ELEMENT_TYPE_INPUT:
-                    if (targetElement.getTypeAttribute() == null) {
-                        return new HTMLActionMapping(HTMLAction.SetText, actionData, targetElement);
+                case NAVIGATE_ACTION_KEY:
+                    return new HTMLActionMapping(HTMLAction.Navigate, actionData, targetElement);
+                case INPUT_CHANGE_ACTION_KEY:
+                    switch (targetElement.getTag().toLowerCase()) {
+                        case ELEMENT_TYPE_INPUT:
+                            WebElementPropertyEntity typeProp = targetElement.getProperty("type");
+                            if (typeProp == null) {
+                                return new HTMLActionMapping(HTMLAction.SetText, actionData, targetElement);
+                            }
+                            switch (typeProp.getValue().toLowerCase()) {
+                                case ELEMENT_TYPE_INPUT_CHECKBOX:
+                                    return new HTMLActionMapping(
+                                            isActionDataTrue(actionData) ? HTMLAction.Check : HTMLAction.Uncheck,
+                                            actionData, targetElement);
+                            }
+                            return new HTMLActionMapping(HTMLAction.SetText, actionData, targetElement);
+                        case ELEMENT_TYPE_TEXTAREA:
+                            return new HTMLActionMapping(HTMLAction.SetText, actionData, targetElement);
                     }
-                    switch (targetElement.getTypeAttribute().toLowerCase()) {
-                    case ELEMENT_TYPE_INPUT_CHECKBOX:
-                        return new HTMLActionMapping(isActionDataTrue(actionData) ? HTMLAction.Check
-                                : HTMLAction.Uncheck, actionData, targetElement);
+                case SELECT_ACTION_KEY:
+                    return new HTMLActionMapping(HTMLAction.Select, actionData, targetElement);
+                case DESELECT_ACTION_KEY:
+                    return new HTMLActionMapping(HTMLAction.Deselect, actionData, targetElement);
+                case MOUSE_CLICK_ACTION_KEY:
+                    if (actionData == null) {
+                        return null;
                     }
-                    return new HTMLActionMapping(HTMLAction.SetText, actionData, targetElement);
-                case ELEMENT_TYPE_TEXTAREA:
-                    return new HTMLActionMapping(HTMLAction.SetText, actionData, targetElement);
-                }
-            case SELECT_ACTION_KEY:
-                return new HTMLActionMapping(HTMLAction.Select, actionData, targetElement);
-            case DESELECT_ACTION_KEY:
-                return new HTMLActionMapping(HTMLAction.Deselect, actionData, targetElement);
-            case MOUSE_CLICK_ACTION_KEY:
-                switch (actionData) {
-                case MOUSE_CLICK_ACTION_DATA_LEFT_CLICK:
-                    return new HTMLActionMapping(HTMLAction.LeftClick, "", targetElement);
-                case MOUSE_CLICK_ACTION_DATA_RIGHT_CLICK:
-                    return new HTMLActionMapping(HTMLAction.RightClick, "", targetElement);
-                }
-            case DOUBLE_CLICK_ACTION_KEY:
-                return new HTMLActionMapping(HTMLAction.DoubleClick, actionData, targetElement);
-            case SUBMIT_ACTION_KEY:
-                return new HTMLActionMapping(HTMLAction.Submit, actionData, targetElement);
-            case SWITCH_TO_WINDOW_ACTION_KEY:
-                return new HTMLActionMapping(HTMLAction.SwitchToWindow, actionData, targetElement);
+                    switch (actionData) {
+                        case MOUSE_CLICK_ACTION_DATA_LEFT_CLICK:
+                            return new HTMLActionMapping(HTMLAction.LeftClick, "", targetElement);
+                        case MOUSE_CLICK_ACTION_DATA_RIGHT_CLICK:
+                            return new HTMLActionMapping(HTMLAction.RightClick, "", targetElement);
+                    }
+                case DOUBLE_CLICK_ACTION_KEY:
+                    return new HTMLActionMapping(HTMLAction.DoubleClick, actionData, targetElement);
+                case SEND_KEYS_ACTION_KEY:
+                    int keyCode = Integer.parseInt(actionData);
+                    // Only handle enter key for now
+                    if (keyCode != KEYCODE_ENTER) {
+                        return null;
+                    }
+                    final HTMLActionMapping htmlActionMapping = new HTMLActionMapping(HTMLAction.SendKeys, actionData,
+                            targetElement);
+                    htmlActionMapping.getData()[0] = HTMLActionParamValueType.newInstance(InputValueType.Keys,
+                            HTMLActionUtil.convertToExpressionWrapper("Keys.chord(Keys.ENTER)"));
+                    return htmlActionMapping;
+                case SWITCH_TO_WINDOW_ACTION_KEY:
+                    return new HTMLActionMapping(HTMLAction.SwitchToWindow, actionData, targetElement);
             }
             return null;
         }
@@ -189,8 +213,8 @@ public class HTMLActionJsonParser {
         }
     }
 
-    public static HTMLActionMapping parseJsonIntoHTMLActionMapping(String jsonString) throws JsonSyntaxException,
-            UnsupportedEncodingException {
+    public static HTMLActionMapping parseJsonIntoHTMLActionMapping(String jsonString)
+            throws JsonSyntaxException, UnsupportedEncodingException {
         JsonParser jsonParser = new JsonParser();
         JsonElement jsonElement = jsonParser.parse(HTMLElementUtil.decodeURIComponent(jsonString));
         if (!(jsonElement instanceof JsonObject)) {

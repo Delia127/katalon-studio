@@ -20,6 +20,8 @@ import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.custom.parser.GlobalVariableParser;
 
 public class GroovyConstants {
+    public static final String DF_CHARSET = "UTF-8";
+
     public static final String GROOVY_FILE_EXTENSION = ".groovy";
 
     public static final String CUSTOM_KEYWORD_LIB_FILE_NAME = "CustomKeywords";

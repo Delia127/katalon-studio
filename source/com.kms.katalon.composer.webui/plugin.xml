@@ -9,21 +9,6 @@
       </fragment>
    </extension>
    
-   <extension
-         point="com.kms.katalon.preferences.PreferencePages">
-      <page
-            class="com.kms.katalon.composer.webui.execution.preferences.WebUiExecutionPreferencePage"
-            id="com.kms.katalon.composer.webui"
-            category="com.kms.katalon.composer.execution"
-            name="Web UI">
-      </page>
-   </extension>
-   <extension
-         point="org.eclipse.core.runtime.preferences">
-      <initializer
-            class="com.kms.katalon.composer.webui.execution.preferences.WebUIExecutionPreferenceDefaultValueInitializer">
-      </initializer>
-   </extension>
    
    <extension
          point="com.kms.katalon.preferences.ProjectSettingPages">
@@ -67,13 +52,19 @@
             category="com.kms.katalon.composer.execution.settings.default.1"
             class="com.kms.katalon.composer.webui.setting.RemoteWebPreferencePage"
             id="com.kms.katalon.composer.execution.settings.default.1.6"
-            name="Remote Web">
+            name="Remote">
       </page>
        <page
              category="com.kms.katalon.composer.execution.settings.default.1"
              class="com.kms.katalon.composer.webui.setting.HeadlessPreferencePage"
              id="com.kms.katalon.composer.execution.settings.default.1.7"
-             name="Headless">
+             name="Chrome (headless)">
+       </page>
+       <page
+             category="com.kms.katalon.composer.execution.settings.default.1"
+             class="com.kms.katalon.composer.webui.setting.FirefoxHeadlessPreferencePage"
+             id="com.kms.katalon.composer.execution.settings.default.1.8"
+             name="Firefox (headless)">
        </page>
    </extension>
 	<extension
@@ -119,9 +110,35 @@
      </client>
   </extension>
   <extension
-        point="com.kms.katalon.composer.testsuite.collection.testSuiteExecutionItem">
+        point="com.kms.katalon.composer.execution.driverConnectorEditor">
+     <client
+           driver.connector.editor="com.kms.katalon.composer.webui.component.contributor.FirefoxHeadlessDriverEditorContributor">
+     </client>
+  </extension>
+  <extension
+        point="com.kms.katalon.composer.execution.tetSuiteExecutionItem">
      <client
            item="com.kms.katalon.composer.webui.execution.testsuite.WebDesktopExecutionGroup">
      </client>
+  </extension>
+  <extension
+        point="com.kms.katalon.preferences.ProjectSettingPages">
+     <page
+           class="com.kms.katalon.composer.webui.setting.TestDesignPerferencePage"
+           id="com.kms.katalon.composer.webui.setting.testdesign"
+           name="Test Design">
+     </page>
+     <page
+           category="com.kms.katalon.composer.webui.setting.testdesign"
+           class="com.kms.katalon.composer.webui.setting.WebLocatorsPerferencePage"
+           id="com.kms.katalon.composer.webui.setting.testdesign.1"
+           name="Web Locators">
+     </page>
+     <page
+           category="com.kms.katalon.composer.webui.setting.testdesign"
+           class="com.kms.katalon.composer.testcase.preferences.TestCaseSettingPage"
+           id="com.kms.katalon.composer.testcase.settings"
+           name="Test Case">
+     </page>
   </extension>
 </plugin>

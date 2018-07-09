@@ -1,6 +1,5 @@
 package com.kms.katalon.execution.mobile.configuration.providers;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,9 +18,6 @@ import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
 import com.kms.katalon.execution.mobile.exception.MobileSetupException;
 
 public class MobileDeviceProvider {
-    private static final String L_FLAG = "-l";
-
-    private static final String IDEVICE_ID_COMMAND = "idevice_id";
 
     private static final String ANDROID_ADB_DEVICES_COMMAND = "devices";
 
@@ -43,8 +39,8 @@ public class MobileDeviceProvider {
     private MobileDeviceProvider() {
     }
 
-    public static List<AndroidDeviceInfo> getAndroidDevices() throws MobileSetupException, IOException,
-            InterruptedException {
+    public static List<AndroidDeviceInfo> getAndroidDevices()
+            throws MobileSetupException, IOException, InterruptedException {
         AndroidDeviceInfo.makeAllAndroidSDKBinaryExecutable();
         String[] getDevicesCommand = new String[] { AndroidDeviceInfo.getADBPath(), ANDROID_ADB_DEVICES_COMMAND };
         List<String> deviceIds = new ArrayList<String>();
@@ -65,15 +61,15 @@ public class MobileDeviceProvider {
         }
         return androidDeviceInfos;
     }
-    
+
     public static List<IosDeviceInfo> getIosSimulators() throws IOException, InterruptedException {
         if (!isRunningOnMacOSX()) {
             return Collections.emptyList();
         }
         List<IosDeviceInfo> iosDevices = new ArrayList<IosDeviceInfo>();
         Map<String, String> iosAdditionalEnvironmentVariables = IosDeviceInfo.getIosAdditionalEnvironmentVariables();
-        List<String> simulatorsList = ConsoleCommandExecutor.runConsoleCommandAndCollectResults(
-                GET_SIMULATOR_LIST_COMMAND, iosAdditionalEnvironmentVariables);
+        List<String> simulatorsList = ConsoleCommandExecutor
+                .runConsoleCommandAndCollectResults(GET_SIMULATOR_LIST_COMMAND, iosAdditionalEnvironmentVariables);
         String currentOsVersion = null;
         for (String simulatorLine : simulatorsList) {
             if (isIosSimulatorVersionLine(simulatorLine)) {
@@ -95,14 +91,8 @@ public class MobileDeviceProvider {
         if (!isRunningOnMacOSX()) {
             return Collections.emptyList();
         }
-        IosDeviceInfo.makeAllIMobileDeviceBinaryExecutable();
-        IosDeviceInfo.makeIosDeployExecutable();
-        IosDeviceInfo.makeDeviceConsoleExecutable();
-        List<IosDeviceInfo> iosDevices = new ArrayList<IosDeviceInfo>();
-        String[] getDeviceIdsCommand = {
-                IosDeviceInfo.getIMobileDeviceDirectoryAsString() + File.separator + IDEVICE_ID_COMMAND, L_FLAG };
-        List<String> deviceIds = ConsoleCommandExecutor.runConsoleCommandAndCollectResults(getDeviceIdsCommand,
-                IosDeviceInfo.getIosAdditionalEnvironmentVariables());
+        List<IosDeviceInfo> iosDevices = new ArrayList<>();
+        List<String> deviceIds = IosDeviceInfo.executeCommand("./idevice_id -l");
 
         for (String deviceId : deviceIds) {
             iosDevices.add(new IosDeviceInfo(deviceId));
@@ -122,9 +112,10 @@ public class MobileDeviceProvider {
 
     private static String getCurrentIOSVersion(String simulatorLine) {
         int prefixLength = IOS_SIMULATOR_OS_VERSION_STRING_PREFIX.length();
-        String versionString = simulatorLine.substring(
-                simulatorLine.indexOf(IOS_SIMULATOR_OS_VERSION_STRING_PREFIX) + prefixLength,
-                simulatorLine.lastIndexOf(IOS_SIMULATOR_OS_VERSION_STRING_PREFIX)).trim();
+        String versionString = simulatorLine
+                .substring(simulatorLine.indexOf(IOS_SIMULATOR_OS_VERSION_STRING_PREFIX) + prefixLength,
+                        simulatorLine.lastIndexOf(IOS_SIMULATOR_OS_VERSION_STRING_PREFIX))
+                .trim();
         String[] versionStringParts = versionString.split(" ");
         if (versionStringParts.length == 2) {
             return versionStringParts[1];
@@ -136,8 +127,8 @@ public class MobileDeviceProvider {
         return Platform.getOS().equals(Platform.OS_MACOSX);
     }
 
-    public static MobileDeviceInfo getDevice(MobileDriverType mobileDriverType, String deviceId) throws IOException,
-            InterruptedException, MobileSetupException {
+    public static MobileDeviceInfo getDevice(MobileDriverType mobileDriverType, String deviceId)
+            throws IOException, InterruptedException, MobileSetupException {
         switch (mobileDriverType) {
             case ANDROID_DRIVER:
                 return getAndroidDevice(deviceId);
@@ -147,8 +138,8 @@ public class MobileDeviceProvider {
         return null;
     }
 
-    public static AndroidDeviceInfo getAndroidDevice(String deviceId) throws MobileSetupException, IOException,
-            InterruptedException {
+    public static AndroidDeviceInfo getAndroidDevice(String deviceId)
+            throws MobileSetupException, IOException, InterruptedException {
         for (AndroidDeviceInfo androidDeviceInfo : getAndroidDevices()) {
             if (StringUtils.equals(androidDeviceInfo.getDeviceId(), deviceId)) {
                 return androidDeviceInfo;
@@ -157,9 +148,14 @@ public class MobileDeviceProvider {
         return null;
     }
 
-    public static IosDeviceInfo getIosDevice(String deviceId) throws MobileSetupException, IOException,
-            InterruptedException {
+    public static IosDeviceInfo getIosDevice(String deviceId)
+            throws MobileSetupException, IOException, InterruptedException {
         for (IosDeviceInfo iosDeviceInfo : getIosDevices()) {
+            if (StringUtils.equals(iosDeviceInfo.getDeviceId(), deviceId)) {
+                return iosDeviceInfo;
+            }
+        }
+        for (IosDeviceInfo iosDeviceInfo : getIosSimulators()) {
             if (StringUtils.equals(iosDeviceInfo.getDeviceId(), deviceId)) {
                 return iosDeviceInfo;
             }

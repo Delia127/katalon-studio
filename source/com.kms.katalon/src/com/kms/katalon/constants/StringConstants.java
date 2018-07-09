@@ -41,7 +41,7 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String PA_LBL_FAQ_DESCRIPTION = MessageConstants.PA_LBL_FAQ_DESCRIPTION;
 
-    public static final String PA_URL_FAQ = MessageConstants.PA_URL_FAQ;
+    public static final String PA_LBL_FAQ_URL = MessageConstants.PA_URL_FAQ;
 
     public static final String PA_LBL_GETTING_STARTED = MessageConstants.PA_LBL_GETTING_STARTED;
 
@@ -51,13 +51,17 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String PA_URL_GETTING_STARTED = MessageConstants.PA_URL_GETTING_STARTED;
 
-    public static final String PA_LBL_ARTICLES = MessageConstants.PA_LBL_ARTICLES;
+    public static final String PA_LBL_USER_GUIDE = MessageConstants.PA_LBL_USER_GUIDE;
+    
+    public static final String PA_LBL_BUSINESS_SUPPORT = MessageConstants.PA_LBL_BUSINESS_SUPPORT;
 
     public static final String PA_TOOLTIP_ARTICLES = MessageConstants.PA_TOOLTIP_ARTICLES;
 
     public static final String PA_LBL_ARTICLES_DESCRIPTION = MessageConstants.PA_LBL_ARTICLES_DESCRIPTION;
 
-    public static final String PA_URL_ARTICLES_STARTED = MessageConstants.PA_URL_ARTICLES_STARTED;
+    public static final String PA_LBL_USER_GUIDE_URL = MessageConstants.PA_URL_USER_GUIDE;
+    
+    public static final String URL_KATALON_SUPPORT_SERVICE = MessageConstants.URL_KATALON_SUPPORT_SERVICE;
 
     public static final String PA_LBL_RECENT_PROJECT = MessageConstants.PA_LBL_RECENT_PROJECT;
 
@@ -96,6 +100,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIALOG_OFFLINE_TITLE = MessageConstants.DIALOG_OFFLINE_TITLE;
 
     public static final String BTN_CLOSE_TILE = MessageConstants.BTN_CLOSE_TILE;
+    
+    public static final String LINK_ACTIVATION_LINK = MessageConstants.LINK_ACTIVATION_LINK;
 
     public static final String LBL_ACTIVATE_CODE = MessageConstants.LBL_ACTIVATE_CODE;
 

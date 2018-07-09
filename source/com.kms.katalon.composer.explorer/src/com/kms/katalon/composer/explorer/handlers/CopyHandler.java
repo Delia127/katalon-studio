@@ -52,7 +52,9 @@ public class CopyHandler extends CommonExplorerHandler {
 
                 // Not allow to copy Root Folders
                 // Not allow keyword package from copy
-                if (!(treeEntity.isRemoveable()) || treeEntity instanceof PackageTreeEntity) {
+                if (treeEntity.getParent() == null 
+                        || treeEntity instanceof PackageTreeEntity || 
+                        StringUtils.isEmpty(treeEntity.getCopyTag())) {
                     return false;
                 }
 

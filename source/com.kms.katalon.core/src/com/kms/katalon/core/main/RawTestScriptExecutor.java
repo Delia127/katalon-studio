@@ -3,6 +3,8 @@ package com.kms.katalon.core.main;
 import java.io.File;
 import java.io.IOException;
 
+import com.kms.katalon.core.context.internal.ExecutionEventManager;
+import com.kms.katalon.core.context.internal.InternalTestCaseContext;
 import com.kms.katalon.core.testcase.TestCaseBinding;
 
 import groovy.util.ResourceException;
@@ -10,15 +12,15 @@ import groovy.util.ScriptException;
 
 public class RawTestScriptExecutor extends TestCaseExecutor {
     private String rawScript;
-    
-    public RawTestScriptExecutor(String rawScript, String testCaseId, TestCaseBinding testCaseBinding,
-            ScriptEngine engine) {
-        this(rawScript, testCaseId, testCaseBinding, engine, false);
+
+    public RawTestScriptExecutor(String rawScript, TestCaseBinding testCaseBinding,
+            ScriptEngine engine, ExecutionEventManager eventManager, InternalTestCaseContext testCaseContext) {
+        this(rawScript, testCaseBinding, engine, eventManager, testCaseContext, false);
     }
 
-    public RawTestScriptExecutor(String rawScript, String testCaseId, TestCaseBinding testCaseBinding,
-            ScriptEngine engine, boolean doCleanUp) {
-        super(testCaseId, testCaseBinding, engine, doCleanUp);
+    public RawTestScriptExecutor(String rawScript, TestCaseBinding testCaseBinding,
+            ScriptEngine engine, ExecutionEventManager eventManager, InternalTestCaseContext testCaseContext, boolean doCleanUp) {
+        super(testCaseBinding, engine, eventManager, testCaseContext, doCleanUp);
         this.rawScript = rawScript;
     }
 

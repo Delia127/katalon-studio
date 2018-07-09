@@ -13,6 +13,7 @@ import com.kms.katalon.composer.execution.launcher.IDEObservableParentLauncher;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.core.logging.XmlLogRecord;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
+import com.kms.katalon.entity.report.ReportCollectionEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity.ExecutionMode;
 import com.kms.katalon.execution.entity.TestSuiteCollectionExecutedEntity;
 import com.kms.katalon.execution.launcher.ReportableLauncher;
@@ -32,8 +33,9 @@ public class IDETestSuiteCollectionLauncher extends TestSuiteCollectionLauncher 
     private List<XmlLogRecord> logRecords;
 
     public IDETestSuiteCollectionLauncher(TestSuiteCollectionExecutedEntity executedEntity,
-            LauncherManager parentManager, List<SubIDELauncher> subLaunchers, ExecutionMode executionMode) {
-        super(executedEntity, parentManager, subLaunchers, executionMode);
+            LauncherManager parentManager, List<ReportableLauncher> subLaunchers, ExecutionMode executionMode,
+            ReportCollectionEntity reportCollection) {
+        super(executedEntity, parentManager, subLaunchers, executionMode, reportCollection);
         this.observed = false;
 
         logRecords = new ArrayList<>();
@@ -117,6 +119,12 @@ public class IDETestSuiteCollectionLauncher extends TestSuiteCollectionLauncher 
     protected void onUpdateResult(TestStatusValue testStatusValue) {
         super.onUpdateResult(testStatusValue);
         getEventBroker().post(EventConstants.JOB_REFRESH, null);
+    }
+    
+    @Override
+    protected void onNewLauncherAdded() {
+        getEventBroker().post(EventConstants.JOB_REFRESH, null);
+        getEventBroker().send(EventConstants.CONSOLE_LOG_RESET, getId());
     }
 
     @Override

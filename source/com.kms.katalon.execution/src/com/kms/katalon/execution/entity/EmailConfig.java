@@ -1,9 +1,11 @@
 package com.kms.katalon.execution.entity;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.kms.katalon.core.setting.ReportFormatType;
 import com.kms.katalon.execution.util.MailUtil;
 import com.kms.katalon.execution.util.MailUtil.MailSecurityProtocolType;
 
@@ -25,7 +27,17 @@ public class EmailConfig {
 
     private String signature = "";
 
+    private String subject = "";
+
+    private String htmlMessage = "";
+
+    private String cc = "";
+
+    private String bcc = "";
+
     private boolean sendAttachment = false;
+    
+    private List<ReportFormatType> attachmentOptions;
 
     public void setSendAttachment(boolean sendAttachment) {
         this.sendAttachment = sendAttachment;
@@ -109,5 +121,48 @@ public class EmailConfig {
 
     public String[] getTos() {
         return tos.toArray(new String[tos.size()]);
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
+    public String getHtmlMessage() {
+        return htmlMessage;
+    }
+
+    public void setHtmlMessage(String htmlMessage) {
+        this.htmlMessage = htmlMessage;
+    }
+
+    public String getCc() {
+        return cc;
+    }
+
+    public void setCc(String cc) {
+        this.cc = cc;
+    }
+
+    public String getBcc() {
+        return bcc;
+    }
+
+    public void setBcc(String bcc) {
+        this.bcc = bcc;
+    }
+
+    public List<ReportFormatType> getAttachmentOptions() {
+        if (attachmentOptions == null) {
+            attachmentOptions = new ArrayList<>();
+        }
+        return attachmentOptions;
+    }
+
+    public void setAttachmentOptions(List<ReportFormatType> attachmentOptions) {
+        this.attachmentOptions = attachmentOptions;
     }
 }

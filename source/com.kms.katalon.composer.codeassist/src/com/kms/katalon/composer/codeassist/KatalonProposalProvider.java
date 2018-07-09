@@ -9,7 +9,6 @@ import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.ast.AnnotationNode;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.MethodNode;
-import org.codehaus.groovy.ast.stmt.BlockStatement;
 import org.codehaus.groovy.eclipse.codeassist.processors.IProposalProvider;
 import org.codehaus.groovy.eclipse.codeassist.proposals.IGroovyProposal;
 import org.codehaus.groovy.eclipse.codeassist.requestor.ContentAssistContext;
@@ -41,9 +40,6 @@ public class KatalonProposalProvider implements IProposalProvider {
     @Override
     public List<IGroovyProposal> getStatementAndExpressionProposals(ContentAssistContext context,
             ClassNode completionType, boolean isStatic, Set<ClassNode> categories) {
-        if (context.completionNode instanceof BlockStatement) {
-            return Collections.emptyList();
-        }
         List<IGroovyProposal> groovyProposals = new ArrayList<>();
         String completionExpression = StringUtils.trimToEmpty(context.completionExpression);
 

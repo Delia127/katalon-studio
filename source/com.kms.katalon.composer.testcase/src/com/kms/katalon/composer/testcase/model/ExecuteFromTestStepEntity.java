@@ -18,7 +18,7 @@ public class ExecuteFromTestStepEntity {
     }
 
     public void setRawScript(String rawScript) {
-        this.rawScript = rawScript;
+        this.rawScript = rawScript.replace("\\", "\\\\");
     }
 
     public TestCaseEntity getTestCase() {

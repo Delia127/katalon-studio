@@ -7,6 +7,10 @@ public class EventConstants {
     // Workspace events
     public static final String WORKSPACE_CREATED = "WORKSPACE/CREATED";
 
+    public static final String WORKSPACE_CLOSED = "WORKSPACE/CLOSE";
+    
+    public static final String ACTIVATION_CHECKED = "ACTIVATION/CHECKED";
+
     // Project Events
     public static final String PROJECT_ALL = "PROJECT/*";
 
@@ -23,6 +27,12 @@ public class EventConstants {
     public static final String PROJECT_UPDATED = "PROJECT/UPDATED";
 
     public static final String PROJECT_SAVE_SESSION = "PROJECT/SAVE_SESSION";
+
+    public static final String PROJECT_OPEN_LATEST = "PROJECT/OPEN_LATEST";
+
+    public static final String PROJECT_RESTORE_SESSION = "PROJECT/RESTORE_SESSION";
+
+    public static final String PROJECT_RESTORE_SESSION_COMPLETED = "PROJECT/RESTORE_SESSION_COMPLETED";
 
     public static final String PROJECT_SETTINGS = "PROJECT/SETTINGS";
 
@@ -106,12 +116,19 @@ public class EventConstants {
 
     public static final String TESTCASE_ADD_STEP_CALL_TESTCASE = "TESTCASE/ADD_STEP/CALL_TESTCASE";
 
-    // TestRun Events
+    public static final String TESTCASE_RECENT_KEYWORD_ADDED = "TESTCASE/RECENT_KEYWORD_ADDED";
+
+    public static final String TESTCASE_RECENT_OBJECT_ADDED = "TESTCASE/RECENT_OBJECT_ADDED";
+
+    // Test Suite Collection Events
     public static final String TEST_SUITE_COLLECTION_NEW = "TEST_SUITE_COLLECTION/NEW";
 
     public static final String TEST_SUITE_COLLECTION_OPEN = "TEST_SUITE_COLLECTION/OPEN";
 
     public static final String TEST_SUITE_COLLECTION_UPDATED = "TEST_SUITE_COLLECTION/UPDATED";
+
+    // Test Listener Events
+    public static final String TEST_LISTENER_NEW = "TEST_LISTENER/NEW";
 
     // TestSuite Events
     public static final String TEST_SUITE = "TESTSUITE/*";
@@ -211,10 +228,22 @@ public class EventConstants {
     // Recorder Events
     public static final String RECORDER_HTML_ACTION_CAPTURED = "RECORDER/HTML_ACTION_CAPTURED";
 
+    public static final String RECORDER_ACTION_SELECTED = "RECORDER/ACTION_SELECTED";
+
+    public static final String RECORDER_ACTION_OBJECT_REORDERED = "RECORDER/ACTION_OBJECT_REORDERED";
+
     // Global Variable Events
     public static final String GLOBAL_VARIABLE_REFRESH = "GLOBAL_VARIABLE/REFRESH";
 
     public static final String GLOBAL_VARIABLE_SHOW_REFERENCES = "GLOBAL_VARIABLE/SHOW_REFERENCES";
+
+    public static final String EXECUTION_PROFILE_CREATED = "EXECUTION_PROFILE/CREATED";
+
+    public static final String EXECUTION_PROFILE_UPDATED = "EXECUTION_PROFILE/UPDATED";
+
+    public static final String EXECUTION_PROFILE_RENAMED = "EXECUTION_PROFILE/RENAMED";
+
+    public static final String EXECUTION_PROFILE_DELETED = "EXECUTION_PROFILE/DELETED";
 
     // Checkpoint Events
     public static final String CHECKPOINT_NEW = "CHECKPOINT/NEW";
@@ -247,4 +276,8 @@ public class EventConstants {
 
     public static final String KATALON_GENERATE_COMMAND = "KATALON/GENERATE_COMMAND";
 
+    public static final String SETTINGS_PAGE_CHANGE = "SETTINGS/PAGE_CHANGE";
+    
+    // Execution Profile Event
+    public static final String PROFILE_SELECTED_PROIFE_CHANGED = "PROFILE/SELECTED_PROFILE_CHANGE";
 }

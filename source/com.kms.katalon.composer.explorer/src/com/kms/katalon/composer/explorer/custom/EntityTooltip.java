@@ -3,7 +3,6 @@ package com.kms.katalon.composer.explorer.custom;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.jface.util.Policy;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ViewerCell;
@@ -11,27 +10,23 @@ import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 
-import com.kms.katalon.composer.explorer.constants.StringConstants;
 import com.kms.katalon.composer.components.impl.control.CustomColumnViewer;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.components.tree.TooltipPropertyDescription;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.explorer.constants.StringConstants;
 
 public class EntityTooltip extends ColumnViewerToolTipSupport {
 
     private CustomColumnViewer viewer;
-
-    /**
-     * @see {@link ColumnViewerToolTipSupport#VIEWER_CELL_KEY}
-     */
-    private static final String VIEWER_CELL_KEY = Policy.JFACE + "_VIEWER_CELL_KEY"; //$NON-NLS-1$
 
     private EntityTooltip(CustomColumnViewer viewer) {
         super((ColumnViewer) viewer, ToolTip.RECREATE, false);
@@ -41,11 +36,16 @@ public class EntityTooltip extends ColumnViewerToolTipSupport {
     public static EntityTooltip createFor(CustomColumnViewer viewer) {
         return new EntityTooltip(viewer);
     }
+    
+    @Override
+    protected Composite createToolTipContentArea(Event event, Composite parent) {
+        return internalCreateViewerToolTipContentArea(event, parent);
+    }
 
     /**
      * @wbp.parser.entryPoint
      */
-    protected Composite createViewerToolTipContentArea(Event event, ViewerCell cell, Composite parent) {
+    private Composite internalCreateViewerToolTipContentArea(Event event, Composite parent) {
         Composite result = new Composite(parent, SWT.NONE);
         result.setBackground(getBackgroundColor(event));
         result.setBackgroundMode(SWT.INHERIT_FORCE);
@@ -61,7 +61,7 @@ public class EntityTooltip extends ColumnViewerToolTipSupport {
         glProperties.horizontalSpacing = 10;
         propertiesComposite.setLayout(glProperties);
 
-        createPropertiesControls(propertiesComposite, cell);
+        createPropertiesControls(propertiesComposite, getCell(event));
 
         Composite bottomComposite = new Composite(result, SWT.NONE);
         GridLayout glBottom = new GridLayout();
@@ -115,15 +115,16 @@ public class EntityTooltip extends ColumnViewerToolTipSupport {
 
     @Override
     protected boolean shouldCreateToolTip(Event event) {
-        if (!super.shouldCreateToolTip(event)) {
-            return false;
-        }
-        ViewerCell cell = (ViewerCell) getData(VIEWER_CELL_KEY);
+        ViewerCell cell = getCell(event);
         if (cell != null) {
             ITreeEntity treeEntity = getTreeEntity(cell);
             List<TooltipPropertyDescription> tooltipDescriptions = treeEntity.getTooltipDescriptions();
             return tooltipDescriptions != null && !tooltipDescriptions.isEmpty();
         }
         return false;
+    }
+
+    private ViewerCell getCell(Event event) {
+        return viewer.getCell(new Point(event.x, event.y));
     }
 }

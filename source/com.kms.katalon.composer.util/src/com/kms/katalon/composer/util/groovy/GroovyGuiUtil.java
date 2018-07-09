@@ -39,6 +39,10 @@ public class GroovyGuiUtil {
         return GroovyCompilationHelper.createGroovyType(parentPackage, typeName, false, ImportType.KEYWORD_IMPORTS);
     }
 
+    public static ICompilationUnit createGroovyScriptForCustomKeywordFromTemplate(IPackageFragment parentPackage, String typeName, String template) throws CoreException {
+        return GroovyCompilationHelper.createGroovyTypeFromString(parentPackage, typeName, template);
+    }
+    
     public static ICompilationUnit getGroovyScriptForTestCase(TestCaseEntity testCase) throws CoreException,
             IOException {
         getTestCaseScriptFolder(testCase);
@@ -71,6 +75,14 @@ public class GroovyGuiUtil {
         }
 
         return JavaCore.createCompilationUnitFrom(scriptFile);
+    }
+    
+    public static void addContentToTestCase(TestCaseEntity testCase, String content) throws Exception {
+        ICompilationUnit unit = getGroovyScriptForTestCase(testCase);
+        if (unit == null) {
+            return;
+        }
+        FileUtils.writeStringToFile(unit.getResource().getLocation().toFile(), content, java.nio.charset.Charset.forName("UTF-8"));
     }
 
     public static URLClassLoader getProjectClasLoader(ProjectEntity projectEntity) throws MalformedURLException,

@@ -9,21 +9,13 @@ import java.util.concurrent.Executors;
 import org.eclipse.core.filesystem.IFileInfo;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.ui.basic.MTrimmedWindow;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.lifecycle.PostContextCreate;
 import org.eclipse.e4.ui.workbench.modeling.ISaveHandler;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.resource.FontDescriptor;
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.search.ui.NewSearchUI;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IWorkbenchCommandConstants;
 import org.eclipse.ui.IWorkbenchPartReference;
@@ -35,6 +27,10 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.addons.CommandBindingRemover;
+import com.kms.katalon.application.RunningMode;
+import com.kms.katalon.application.usagetracking.UsageActionTrigger;
+import com.kms.katalon.application.usagetracking.UsageInfoCollector;
+import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.handlers.CloseHandler;
@@ -45,19 +41,17 @@ import com.kms.katalon.composer.handlers.SearchHandler;
 import com.kms.katalon.composer.handlers.WorkbenchSaveHandler;
 import com.kms.katalon.composer.initializer.CommandBindingInitializer;
 import com.kms.katalon.composer.initializer.ContentAssistProposalInitializer;
-import com.kms.katalon.console.utils.VersionUtil;
+import com.kms.katalon.composer.initializer.DefaultTextFontInitializer;
+import com.kms.katalon.composer.initializer.DisplayInitializer;
+import com.kms.katalon.composer.initializer.GeneralSettingInitializer;
+import com.kms.katalon.composer.initializer.ProblemViewImageInitializer;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
-import com.kms.katalon.constants.MessageConstants;
-import com.kms.katalon.constants.PreferenceConstants;
-import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
-import com.kms.katalon.usagetracking.UsageInfoCollector;
 import com.kms.katalon.util.ComposerActivationInfoCollector;
 
 @SuppressWarnings("restriction")
 public class LifeCycleManager {
-    private static final String DF_TEXT_FONT = "Courier New";
 
     private void startUpGUIMode() throws Exception {
         refreshAllProjects();
@@ -108,9 +102,8 @@ public class LifeCycleManager {
 
             @Override
             public void partClosed(IWorkbenchPartReference partRef) {
-                EventBrokerSingleton.getInstance()
-                        .getEventBroker()
-                        .post(EventConstants.ECLIPSE_EDITOR_CLOSED, partRef.getPart(true));
+                EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.ECLIPSE_EDITOR_CLOSED,
+                        partRef.getPart(true));
             }
 
             @Override
@@ -121,6 +114,7 @@ public class LifeCycleManager {
                 }
                 if (IdConstants.GROOVY_EDITOR_URI.equals(partRef.getId())) {
                     EventUtil.post(EventConstants.PROPERTIES_ENTITY, null);
+                    new CommandBindingInitializer().resetDeleteKeyBinding();
                 }
             }
 
@@ -132,29 +126,14 @@ public class LifeCycleManager {
         new CommandBindingInitializer().setup();
         new CommandBindingRemover().setup();
         new ContentAssistProposalInitializer().setup();
+        new ProblemViewImageInitializer().setup();
+        new DefaultTextFontInitializer().setup();
+        new DisplayInitializer().setup();
+        new GeneralSettingInitializer().setup();
     }
 
     private void setupPreferences() {
         setupResourcePlugin();
-        setupWorkbenchPlugin();
-    }
-
-    private void setupWorkbenchPlugin() {
-        ScopedPreferenceStore store = PreferenceStoreManager.getPreferenceStore(IdConstants.WORKBENCH_WINDOW_ID);
-
-        if (store.getBoolean(PreferenceConstants.PREF_FIRST_TIME_SETUP_COMPLETED)) {
-            return;
-        }
-
-        int fontSize = (Platform.OS_MACOSX.equals(Platform.getOS())) ? 15 : 11;
-        FontData defaultFont = FontDescriptor.createFrom(DF_TEXT_FONT, fontSize, SWT.NORMAL).getFontData()[0];
-        store.setValue(JFaceResources.TEXT_FONT, defaultFont.toString());
-        store.setValue(PreferenceConstants.PREF_FIRST_TIME_SETUP_COMPLETED, true);
-        try {
-            store.save();
-        } catch (IOException e) {
-            logError(e);
-        }
     }
 
     private void setupResourcePlugin() {
@@ -199,60 +178,30 @@ public class LifeCycleManager {
             public void handleEvent(Event event) {
                 try {
                     startUpGUIMode();
-                    if (VersionUtil.isInternalBuild()) {
-                        return;
+
+                    if (checkActivation(eventBroker)) {
+                        eventBroker.post(EventConstants.ACTIVATION_CHECKED, null);
                     }
-                    if (!(ComposerActivationInfoCollector.checkActivation())) {
-                        eventBroker.send(EventConstants.PROJECT_CLOSE, null);
-                        PlatformUI.getWorkbench().close();
-                        return;
-                    }
-                    alertNewVersion();
-                    startCollectUsageInfo();
 
                 } catch (Exception e) {
                     logError(e);
                 }
             }
-        });
-    }
 
-    private void alertNewVersion() {
-        IPreferenceStore prefStore = PlatformUI.getPreferenceStore();
-        boolean checkNewVersion = prefStore.contains(PreferenceConstants.GENERAL_AUTO_CHECK_NEW_VERSION)
-                ? prefStore.getBoolean(PreferenceConstants.GENERAL_AUTO_CHECK_NEW_VERSION) : true;
-        if (!checkNewVersion) {
-            return;
-        }
-        Executors.newSingleThreadExecutor().submit(new Runnable() {
-
-            @Override
-            public void run() {
-                if (!VersionUtil.hasNewVersion()) {
-                    return;
+            private boolean checkActivation(final IEventBroker eventBroker) {
+                if (VersionUtil.isInternalBuild()) {
+                    return true;
                 }
-                Display.getDefault().syncExec(new Runnable() {
+                if (!(ComposerActivationInfoCollector.checkActivation())) {
+                    eventBroker.send(EventConstants.PROJECT_CLOSE, null);
+                    PlatformUI.getWorkbench().close();
+                    return false;
+                }
 
-                    @Override
-                    public void run() {
-                        boolean wantDownload = MessageDialog.openConfirm(null,
-                                MessageConstants.DIA_UPDATE_NEW_VERSION_TITLE,
-                                MessageConstants.DIA_UPDATE_NEW_VERSION_MESSAGE);
-                        if (wantDownload) {
-                            VersionUtil.gotoDownloadPage();
-                        }
-                    }
-
-                });
-            }
-        });
-    }
-
-    private void startCollectUsageInfo() {
-        Executors.newSingleThreadExecutor().submit(new Runnable() {
-            @Override
-            public void run() {
-                UsageInfoCollector.colllect();
+                Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector
+                        .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.OPEN_APPLICATION,
+                                RunningMode.GUI)));
+                return true;
             }
         });
     }

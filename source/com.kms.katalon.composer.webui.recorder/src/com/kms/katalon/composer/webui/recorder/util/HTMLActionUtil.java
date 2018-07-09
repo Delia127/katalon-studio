@@ -4,6 +4,9 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.EqualsBuilder;
+
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ClassNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
@@ -34,9 +37,10 @@ import com.kms.katalon.custom.keyword.KeywordClass;
 import com.kms.katalon.custom.keyword.KeywordMethod;
 import com.kms.katalon.custom.keyword.KeywordParameter;
 import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.groovy.util.GroovyStringUtil;
-import com.kms.katalon.objectspy.element.HTMLElement;
-import com.kms.katalon.objectspy.element.HTMLPageElement;
+import com.kms.katalon.objectspy.element.WebElement;
+import com.kms.katalon.objectspy.element.WebPage;
 import com.kms.katalon.objectspy.util.HTMLElementUtil;
 
 public class HTMLActionUtil {
@@ -60,8 +64,8 @@ public class HTMLActionUtil {
         }
 
         KeywordMethod method = null;
-        for (KeywordMethod declareMethod : KeywordController.getInstance().getBuiltInKeywords(
-                action.getMappedKeywordClassSimpleName())) {
+        for (KeywordMethod declareMethod : KeywordController.getInstance()
+                .getBuiltInKeywords(action.getMappedKeywordClassSimpleName())) {
             if (declareMethod.getName().equals(action.getMappedKeywordMethod())) {
                 method = declareMethod;
                 break;
@@ -86,8 +90,8 @@ public class HTMLActionUtil {
             Class<?> argumentClass = method.getParameters()[i].getType();
             ExpressionWrapper generatedExression = null;
             if (argumentClass.getName().equals(TestObject.class.getName())) {
-                generatedExression = AstEntityInputUtil.createNewFindTestObjectMethodCall((createdTestObject != null)
-                        ? createdTestObject.getIdForDisplay() : null, parentClassNode);
+                generatedExression = AstEntityInputUtil.createNewFindTestObjectMethodCall(
+                        (createdTestObject != null) ? createdTestObject.getIdForDisplay() : null, parentClassNode);
             } else if (argumentClass.getName().equals(FailureHandling.class.getName())) {
                 generatedExression = AstKeywordsInputUtil.getNewFailureHandlingPropertyExpression(null);
             } else {
@@ -106,23 +110,51 @@ public class HTMLActionUtil {
             return false;
         }
         if (actionMapping.getAction() == HTMLAction.Navigate
-                && (existingActionMappings.size() > 0 || (actionMapping.getData().length == 0 || String.valueOf(
-                        actionMapping.getData()[0].getValue()).equals(ABOUT_BLANK)))) {
+                && (existingActionMappings.size() > 0 || (actionMapping.getData().length == 0
+                        || String.valueOf(actionMapping.getData()[0].getValue()).equals(ABOUT_BLANK)))) {
             return false;
         }
-        if (actionMapping.getAction().getName().equals(HTMLActionJson.DOUBLE_CLICK_ACTION_KEY)
-                && existingActionMappings.size() >= 2) {
-            HTMLActionMapping actionOffset_1 = existingActionMappings.get(existingActionMappings.size() - 1);
-            HTMLActionMapping actionOffset_2 = existingActionMappings.get(existingActionMappings.size() - 2);
-            if (actionOffset_1.getAction().getName().equals(HTMLActionJson.MOUSE_CLICK_ACTION_KEY)
-                    && actionOffset_2.getAction().getName().equals(HTMLActionJson.MOUSE_CLICK_ACTION_KEY)
-                    && actionOffset_1.getTargetElement().equals(actionMapping.getTargetElement())
-                    && actionOffset_2.getTargetElement().equals(actionMapping.getTargetElement())) {
-                existingActionMappings.remove(actionOffset_1);
-                existingActionMappings.remove(actionOffset_2);
-            }
+        if (actionMapping.getAction() == HTMLAction.DoubleClick && existingActionMappings.size() >= 2) {
+            checkAndUpdateDoubleClick(actionMapping, existingActionMappings);
+        }
+        if (actionMapping.getAction() == HTMLAction.SetText) {
+            return checkAndUpdateSetText(actionMapping, existingActionMappings);
         }
         return true;
+    }
+
+    private static void checkAndUpdateDoubleClick(HTMLActionMapping actionMapping,
+            List<HTMLActionMapping> existingActionMappings) {
+        HTMLActionMapping actionOffset_1 = existingActionMappings.get(existingActionMappings.size() - 1);
+        HTMLActionMapping actionOffset_2 = existingActionMappings.get(existingActionMappings.size() - 2);
+        if (actionOffset_1.getAction() == HTMLAction.LeftClick && actionOffset_2.getAction() == HTMLAction.LeftClick
+                && areElementsEqual(actionOffset_1.getTargetElement(), actionMapping.getTargetElement())
+                && areElementsEqual(actionOffset_2.getTargetElement(), actionMapping.getTargetElement())) {
+            existingActionMappings.remove(actionOffset_1);
+            existingActionMappings.remove(actionOffset_2);
+        }
+    }
+
+    private static boolean checkAndUpdateSetText(HTMLActionMapping actionMapping,
+            List<HTMLActionMapping> existingActionMappings) {
+        if (existingActionMappings.isEmpty()) {
+            return true;
+        }
+        HTMLActionMapping lastAction = existingActionMappings.get(existingActionMappings.size() - 1);
+        if (lastAction.getAction() != HTMLAction.SetText
+                || !areElementsEqual(lastAction.getTargetElement(), actionMapping.getTargetElement())) {
+            return true;
+        }
+        existingActionMappings.remove(lastAction);
+        return true;
+    }
+
+    private static boolean areElementsEqual(WebElement elm1, WebElement elm2) {
+        return new EqualsBuilder().append(elm1.getType(), elm2.getType())
+                .append(elm1.getTag(), elm2.getTag())
+                .append(elm1.hasProperty(), elm2.hasProperty())
+                .append(elm1.getXpath(), elm2.getXpath())
+                .isEquals();
     }
 
     public static HTMLActionMapping createNewSwitchToWindowAction(String windowTitle) {
@@ -133,14 +165,17 @@ public class HTMLActionUtil {
     }
 
     public static String getPageTitleForAction(HTMLActionMapping actionMapping) {
-        HTMLElement element = actionMapping.getTargetElement();
-        while (!(element == null) && !(element instanceof HTMLPageElement)) {
-            element = element.getParentElement();
+        WebElement element = actionMapping.getTargetElement();
+        while (!(element == null) && !(element instanceof WebPage)) {
+            element = element.getParent();
         }
         if (element != null) {
-            return ((HTMLPageElement) element).getAttributes().get(HTMLElementUtil.PAGE_TITLE_KEY);
+            WebElementPropertyEntity pageTitle = element.getProperty(HTMLElementUtil.PAGE_TITLE_KEY);
+            if (pageTitle != null) {
+                return pageTitle.getValue();
+            }
         }
-        return null;
+        return StringUtils.EMPTY;
     }
 
     public static List<IHTMLAction> getAllHTMLActions() {
@@ -253,7 +288,8 @@ public class HTMLActionUtil {
                     ? existingParamDatas[i] : null;
 
             if (!isAssignableFromScript(existingParamData, action.getParams()[i])) {
-                InputValueEditorProvider valueType = AstInputValueTypeOptionsProvider.getAssignableValueType(action.getParams()[i].getClazz());
+                InputValueEditorProvider valueType = AstInputValueTypeOptionsProvider
+                        .getAssignableValueType(action.getParams()[i].getClazz());
                 if (valueType != null) {
                     existingParamData = HTMLActionParamValueType.newInstance(valueType);
                 }

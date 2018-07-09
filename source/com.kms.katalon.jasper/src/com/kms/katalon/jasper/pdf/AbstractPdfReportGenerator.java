@@ -6,6 +6,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.kms.katalon.core.logging.model.ILogRecord;
+import com.kms.katalon.core.util.internal.JarUtil;
+import com.kms.katalon.internal.jasper.classpath.JasperClasspathManager;
+import com.kms.katalon.jasper.pdf.exception.JasperReportException;
+
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
@@ -14,11 +19,6 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.design.JRAbstractJavaCompiler;
-
-import com.kms.katalon.core.logging.model.ILogRecord;
-import com.kms.katalon.internal.jasper.classpath.JasperClasspathManager;
-import com.kms.katalon.internal.jasper.util.ResourceUtil;
-import com.kms.katalon.jasper.pdf.exception.JasperReportException;
 
 public abstract class AbstractPdfReportGenerator {
     private static final String TPL_DIR = "resources/template/pdf/";
@@ -82,7 +82,7 @@ public abstract class AbstractPdfReportGenerator {
         thread.setContextClassLoader(this.getClass().getClassLoader());
         try {
             JasperClasspathManager.getInstance().modifySystemProperties();
-            JasperReport jasperReport = JasperCompileManager.compileReport(ResourceUtil.getResourceAsInputStream(
+            JasperReport jasperReport = JasperCompileManager.compileReport(JarUtil.getResourceAsInputStream(
                     getClass(), getPrimaryTemplateLocation()));
 
             JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, getReportParams(),

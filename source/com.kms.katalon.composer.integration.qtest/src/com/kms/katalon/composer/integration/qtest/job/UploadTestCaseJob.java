@@ -8,6 +8,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -17,6 +18,7 @@ import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.dialogs.SynchronizedConfirmationDialog;
 import com.kms.katalon.composer.components.impl.dialogs.YesNoAllOptions;
 import com.kms.katalon.composer.components.impl.util.StatusUtil;
+import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.qtest.QTestIntegrationUtil;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
@@ -166,7 +168,7 @@ public class UploadTestCaseJob extends QTestJob {
                 .getParentFolder());
 
         // Returns if this test case under qTest root module.
-        if (qTestParentModule == null || qTestParentModule.getParentId() <= 0) {
+        if (qTestParentModule == null || qTestParentModule.getId() <= 0) {
             return;
         }
 
@@ -194,7 +196,7 @@ public class UploadTestCaseJob extends QTestJob {
             qTestTestCase = createNewQTestCase(qTestProject, qTestParentModule, testCaseEntity);
         }
 
-        if (qTestTestCase.getVersionId() == 0) {
+        if (qTestTestCase.getVersionId() <= 0) {
             qTestTestCase.setVersionId(QTestIntegrationTestCaseManager.getTestCaseVersionId(credential,
                     qTestProject.getId(), qTestTestCase.getId()));
         }
@@ -205,8 +207,14 @@ public class UploadTestCaseJob extends QTestJob {
         TestCaseController.getInstance().updateTestCase(testCaseEntity);
         uploadedEntities.add(testCaseEntity);
 
-        EventBrokerSingleton.getInstance().getEventBroker()
-                .post(EventConstants.TESTCASE_UPDATED, new Object[] { testCaseEntity.getId(), testCaseEntity });
+        getEventBroker().post(EventConstants.TESTCASE_UPDATED,
+                new Object[] { testCaseEntity.getId(), testCaseEntity });
+        getEventBroker().post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY,
+                TreeEntityUtil.getTestCaseTreeEntity(testCaseEntity, projectEntity));
+    }
+
+    private IEventBroker getEventBroker() {
+        return EventBrokerSingleton.getInstance().getEventBroker();
     }
 
     private QTestTestCase createNewQTestCase(QTestProject qTestProject, QTestModule qTestParentModule,

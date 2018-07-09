@@ -5,6 +5,7 @@ import java.io.File;
 import org.apache.commons.io.FilenameUtils;
 
 import com.kms.katalon.dal.IProjectDataProvider;
+import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.dal.fileservice.EntityService;
 import com.kms.katalon.dal.fileservice.FileServiceConstant;
 import com.kms.katalon.dal.fileservice.manager.ProjectFileServiceManager;
@@ -18,12 +19,12 @@ public class ProjectFileServiceDataProvider implements IProjectDataProvider {
 	}
 
 	@Override
-	public ProjectEntity getProject(String projectValue) throws Exception {
+	public ProjectEntity openProject(String projectValue) throws Exception {
 		return ProjectFileServiceManager.openProject(projectValue);
 	}
 
 	@Override
-	public ProjectEntity getProjectWithoutClasspath(String projectValue) throws Exception {
+	public ProjectEntity openProjectWithoutClasspath(String projectValue) throws Exception {
 		return ProjectFileServiceManager.openProjectWithoutClasspath(projectValue);
 	}
 
@@ -79,5 +80,19 @@ public class ProjectFileServiceDataProvider implements IProjectDataProvider {
             }
         }
         return null;
+    }
+
+    @Override
+    public ProjectEntity getProject(String projectFileLocation) throws DALException {
+        try {
+            return (ProjectEntity) EntityService.getInstance().getEntityByPath(projectFileLocation);
+        } catch (Exception e) {
+            throw new DALException(e);
+        }
+    }
+
+    @Override
+    public ProjectEntity newProjectEntity(String name, String description, String projectLocation, boolean legacy) throws DALException {
+        return ProjectFileServiceManager.newProjectEntity(name, description, projectLocation, legacy);
     }
 }

@@ -57,7 +57,7 @@ public class CallTestCaseKeyword extends AbstractKeyword {
 
                 logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_STARTING_TO_CALL_TC, calledTestCase.getTestCaseId()))
                 TestResult result = TestCaseMain.runTestCase(calledTestCase.getTestCaseId(), new TestCaseBinding(
-                        calledTestCase.getTestCaseId(), binding), flowControl)
+                        calledTestCase.getTestCaseId(), binding), flowControl, false, false)
                 switch (result.getTestStatus().getStatusValue()) {
                     case TestStatus.TestStatusValue.FAILED:
                         throw new StepFailedException(MessageFormat.format(StringConstants.KW_MSG_CALL_TC_FAILED, calledTestCase.getTestCaseId()))

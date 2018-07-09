@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.integration.qtest.report;
 
+import static com.kms.katalon.integration.qtest.QTestIntegrationTestSuiteManager.getQTestSuiteListByIntegratedEntity;
+
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,7 +32,6 @@ import com.kms.katalon.execution.integration.ReportIntegrationContribution;
 import com.kms.katalon.integration.qtest.QTestIntegrationReportManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestCaseManager;
 import com.kms.katalon.integration.qtest.QTestIntegrationTestSuiteManager;
-import static com.kms.katalon.integration.qtest.QTestIntegrationTestSuiteManager.getQTestSuiteListByIntegratedEntity;
 import com.kms.katalon.integration.qtest.credential.IQTestCredential;
 import com.kms.katalon.integration.qtest.entity.QTestLog;
 import com.kms.katalon.integration.qtest.entity.QTestLogUploadedPreview;
@@ -302,14 +303,7 @@ public class QTestIntegrationReporter implements ReportIntegrationContribution {
                 continue;
             }
 
-            TestCaseLogRecord testCaseLogRecord = (TestCaseLogRecord) logRecord;
-
-            if (!QTestIntegrationReportManager.isAvailableForSendingResult(testCaseLogRecord.getStatus()
-                    .getStatusValue(), projectEntity.getFolderLocation())) {
-                continue;
-            }
-
-            uploadTestCaseResult(testSuite, projectIntegratedEntity, testCaseLogRecord, suiteLog);
+            uploadTestCaseResult(testSuite, projectIntegratedEntity, (TestCaseLogRecord) logRecord, suiteLog);
         }
     }
 

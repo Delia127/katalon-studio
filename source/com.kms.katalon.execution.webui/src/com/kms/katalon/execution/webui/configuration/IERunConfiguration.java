@@ -9,12 +9,17 @@ import com.kms.katalon.execution.webui.driver.IEDriverConnector;
 
 public class IERunConfiguration extends WebUiRunConfiguration {
     public IERunConfiguration(String projectDir) throws IOException {
-        super(projectDir, new IEDriverConnector(projectDir + File.separator
-                + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME));
+        super(projectDir, new IEDriverConnector(
+                projectDir + File.separator + PropertySettingStoreUtil.INTERNAL_SETTING_ROOT_FOLDER_NAME));
     }
 
     @Override
     public IRunConfiguration cloneConfig() throws IOException {
         return new IERunConfiguration(projectDir);
+    }
+
+    @Override
+    public boolean allowsRecording() {
+        return true;
     }
 }

@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -72,6 +73,13 @@ public class MobileDriverFactory {
      */
     public static String getRemoteWebDriverServerUrl() {
         return RunConfiguration.getDriverSystemProperty(MOBILE_DRIVER_PROPERTY, "remoteWebDriverUrl");
+    }
+
+    /**
+     * @return the remote web driver type if running Mobile keyword on cloud services
+     */
+    public static String getRemoteWebDriverType() {
+        return RunConfiguration.getDriverSystemProperty(MOBILE_DRIVER_PROPERTY, "browserType");
     }
 
     /**
@@ -206,9 +214,14 @@ public class MobileDriverFactory {
                 capabilities.setCapability(MobileCapabilityType.PLATFORM_VERSION, getDeviceOSVersion());
             }
         } else if (driverPreferences != null && osType == MobileDriverType.ANDROID_DRIVER) {
+            capabilities.setCapability("autoGrantPermissions", true);
             capabilities.merge(
                     convertPropertiesMaptoDesireCapabilities(driverPreferences, MobileDriverType.ANDROID_DRIVER));
             capabilities.setPlatform(Platform.ANDROID);
+            capabilities.setCapability("autoGrantPermissions", true);
+            if (isUsingAndroid7OrBigger()) {
+                capabilities.setCapability(MobileCapabilityType.AUTOMATION_NAME, AppiumDriverManager.UIAUTOMATOR2);
+            }
         }
         capabilities.setCapability(MobileCapabilityType.DEVICE_NAME, deviceName);
         capabilities.setCapability(MobileCapabilityType.APP, appFile);
@@ -219,6 +232,25 @@ public class MobileDriverFactory {
         capabilities.setCapability(NO_RESET, !uninstallAfterCloseApp);
         capabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, 1800);
         return capabilities;
+    }
+
+    public static boolean isUsingAndroid7OrBigger() {
+        try {
+            String osVersion = getDeviceOSVersion();
+            if (StringUtils.isEmpty(osVersion)) {
+                return false;
+            }
+            final String[] splitParts = osVersion.split("\\.");
+            if (splitParts == null || splitParts.length == 0) {
+                return false;
+            }
+            String osVersionMajor = splitParts[0];
+            Number androidVersion = NumberUtils.createNumber(osVersionMajor);
+            return androidVersion.intValue() >= 7;
+        } catch (NumberFormatException e) {
+            // Exception happened, ignore
+        }
+        return false;
     }
 
     private static boolean isUsingExistingDriver() {
@@ -258,10 +290,16 @@ public class MobileDriverFactory {
             output.println(getMobileDriverType().toString());
             output.println(RunConfiguration.getLogFolderPath());
             DriverType executedDriver = getExecutedDriver();
-            if (executedDriver == MobileDriverType.ANDROID_DRIVER) {
-                output.println(getDeviceManufacturer() + " " + getDeviceModel() + " " + getDeviceOSVersion());
-            } else if (executedDriver == MobileDriverType.IOS_DRIVER) {
+            if (getRemoteWebDriverServerUrl() != null) {
+                output.println(getRemoteWebDriverType());
                 output.println(getDeviceName() + " " + getDeviceOSVersion());
+            } else {
+                output.println("");
+                if (executedDriver == MobileDriverType.ANDROID_DRIVER) {
+                    output.println(getDeviceManufacturer() + " " + getDeviceModel() + " " + getDeviceOSVersion());
+                } else if (executedDriver == MobileDriverType.IOS_DRIVER) {
+                    output.println(getDeviceName() + " " + getDeviceOSVersion());
+                }
             }
             output.flush();
         } catch (Exception e) {

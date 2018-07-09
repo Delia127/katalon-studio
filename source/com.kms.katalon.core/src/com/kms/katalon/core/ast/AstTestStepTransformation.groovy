@@ -1,7 +1,5 @@
 package com.kms.katalon.core.ast;
 
-import groovy.transform.CompileStatic
-
 import org.apache.commons.lang.StringUtils
 import org.codehaus.groovy.ast.ASTNode
 import org.codehaus.groovy.ast.AnnotationNode
@@ -15,6 +13,7 @@ import org.codehaus.groovy.ast.expr.Expression
 import org.codehaus.groovy.ast.expr.MapEntryExpression
 import org.codehaus.groovy.ast.expr.MapExpression
 import org.codehaus.groovy.ast.expr.MethodCallExpression
+import org.codehaus.groovy.ast.expr.PropertyExpression
 import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.ast.stmt.CaseStatement
 import org.codehaus.groovy.ast.stmt.CatchStatement
@@ -33,8 +32,12 @@ import org.codehaus.groovy.transform.ASTTransformation
 import org.codehaus.groovy.transform.GroovyASTTransformation
 
 import com.kms.katalon.core.constants.StringConstants
+import com.kms.katalon.core.context.internal.ExecutionEventManager
+import com.kms.katalon.core.context.internal.ExecutionListenerEvent
 import com.kms.katalon.core.keyword.BuiltinKeywords
 import com.kms.katalon.core.logging.KeywordLogger
+
+import groovy.transform.CompileStatic
 
 @CompileStatic
 @GroovyASTTransformation(phase = CompilePhase.SEMANTIC_ANALYSIS)
@@ -228,6 +231,7 @@ public class AstTestStepTransformation implements ASTTransformation {
     @CompileStatic
     public void visit(BlockStatement blockStatement, Stack<Statement> deferedStatements, int nestedLevel) {
         int index = 0;
+        int statementIndex = 0;
         Map<Statement, Integer> indexMap = getIndexMapForBlockStatement(blockStatement);
         if (deferedStatements != null) {
             Stack<Statement> copyDeferedStatements = (Stack<Statement>) deferedStatements.clone();
@@ -248,23 +252,30 @@ public class AstTestStepTransformation implements ASTTransformation {
             }
 
             String keywordName = getKeywordNameForStatement(statement);
+            String description = StringUtils.EMPTY;
             boolean isStatementDisabledFlag = false;
             if (!(statement instanceof BlockStatement)) {
                 if (!commentStatementsStack.isEmpty()) {
                     Statement descriptionStatement = commentStatementsStack.pop();
                     isStatementDisabledFlag |= isStatementDisabled(descriptionStatement);
-                    String commentContent = getComment(descriptionStatement);
+                    String commentContent = description = getComment(descriptionStatement);
                     blockStatement.getStatements().add(index, new ExpressionStatement(createNewAddDescriptionMethodCall(commentContent)));
                     index += (popCommentStatements(commentStatementsStack, blockStatement, index, indexMap, nestedLevel) + 1);
                 }
-                blockStatement.getStatements().add(index, new ExpressionStatement(createNewStartKeywordMethodCall(keywordName, statement, indexMap, nestedLevel)));
-                index++;
+                
+                def keywordInfo = [index, description, keywordName]
+                List<Statement> tempStatementList = new ArrayList<>();
+                tempStatementList.add(createBeforeTestStepMethodCall(keywordInfo))
+                tempStatementList.add(new ExpressionStatement(createNewStartKeywordMethodCall(keywordName, statement, indexMap, nestedLevel)));
+                tempStatementList.add(createAfterTestStepMethodCall(keywordInfo))
+                blockStatement.getStatements().addAll(index, tempStatementList);
+                index += 3;
             }
             isStatementDisabledFlag |= isStatementDisabled(statement);
             if (isStatementDisabledFlag) {
                 statementList.set(statementList.indexOf(statement), createNewNotRunLogMethodCallStatement(keywordName));
             } else {
-                visit(statement, new Stack<Statement>(), indexMap, nestedLevel + 1);
+                visit(statement, new Stack<>(), indexMap, nestedLevel + 1);
             }
             index++;
         }
@@ -363,6 +374,51 @@ public class AstTestStepTransformation implements ASTTransformation {
         MethodCallExpression methodCall = new MethodCallExpression(loggerGetInstanceMethodCall,
                 StringConstants.LOG_START_KEYWORD_METHOD, new ArgumentListExpression(expressionArguments))
         return methodCall
+    }
+    
+    private ExpressionStatement createBeforeTestStepMethodCall(def keywordInfo) {
+        List<Expression> expressionArguments = new ArrayList<Expression>();
+        MethodCallExpression executionManagerMethodCall = new MethodCallExpression(
+                new ClassExpression(new ClassNode(ExecutionEventManager.class)),
+                "getInstance",
+                new ArgumentListExpression(expressionArguments));
+
+        expressionArguments = new ArrayList<Expression>();
+        expressionArguments.add(new PropertyExpression(
+                new ClassExpression(new ClassNode(ExecutionListenerEvent.class)),
+                new ConstantExpression("BEFORE_TEST_STEP")))
+        List<Expression> injectedArguments = new ArrayList()
+        for (info in keywordInfo) {
+            injectedArguments.add(new ConstantExpression(info))
+        }
+        expressionArguments.addAll(injectedArguments)
+
+        MethodCallExpression methodCall = new MethodCallExpression(executionManagerMethodCall,
+                "publicEvent", new ArgumentListExpression(expressionArguments))
+        return new ExpressionStatement(methodCall)
+    }
+
+    private ExpressionStatement createAfterTestStepMethodCall(def keywordInfo) {
+        List<Expression> expressionArguments = new ArrayList<Expression>();
+        MethodCallExpression executionManagerMethodCall = new MethodCallExpression(
+                new ClassExpression(new ClassNode(ExecutionEventManager.class)),
+                "getInstance",
+                new ArgumentListExpression(expressionArguments));
+
+        expressionArguments = new ArrayList<Expression>();
+        expressionArguments.add(new PropertyExpression(
+                new ClassExpression(new ClassNode(ExecutionListenerEvent.class)),
+                new ConstantExpression("AFTER_TEST_STEP")))
+        List<Expression> injectedArguments = new ArrayList()
+        
+        for (info in keywordInfo) {
+            injectedArguments.add(new ConstantExpression(info))
+        }
+        expressionArguments.addAll(injectedArguments)
+
+        MethodCallExpression methodCall = new MethodCallExpression(executionManagerMethodCall,
+                "publicEvent", new ArgumentListExpression(expressionArguments))
+        return new ExpressionStatement(methodCall)
     }
 
     @CompileStatic

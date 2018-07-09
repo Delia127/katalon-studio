@@ -29,17 +29,18 @@ public class ComposerMobileMessageConstants extends NLS {
 
     public static String WARNING_TITLE;
 
-    public static String MSG_NO_APPIUM;
+    // AndroidDeviceSelectionDialog
+    public static String DIA_MSG_NO_DEVICES_CONNECTED;
 
-    public static String MSG_NO_NODEJS;
+    public static String DIA_LNK_TROUBLESHOOT;
 
-    public static String MSG_NO_APPIUM_AND_NODEJS;
+    public static String DIA_LBL_TROUBLESHOOT;
 
-    public static String MSG_FAILED_DETECT_NODEJS;
+    public static String DIA_LBL_LOADING_DEVICES;
 
-    public static String LINK;
-
-    public static String MAC_DEFAULT_NODEJS_LOCATION;
+    public static String DIA_TITLE_ANDROID_DEVICES;
+    
+    public static String DIA_TITLE_IOS_DEVICES;
 
     static {
         // initialize resource bundle

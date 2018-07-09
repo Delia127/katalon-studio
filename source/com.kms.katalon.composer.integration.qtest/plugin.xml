@@ -69,5 +69,12 @@
             class="com.kms.katalon.composer.integration.qtest.preference.QTestPreferenceDefaultValueInitializer">
       </initializer>
    </extension>
+   <extension
+         point="com.kms.katalon.composer.explorer.label">
+          <client
+            product="com.kms.katalon.composer.integration.qtest.QTestIntegrationContribution"
+            decorator="com.kms.katalon.composer.integration.qtest.view.QTestIntegrationEntityLabelDecorator">
+      		</client>
+   </extension>
 
 </plugin>

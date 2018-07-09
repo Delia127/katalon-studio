@@ -17,8 +17,8 @@ import org.supercsv.prefs.CsvPreference;
 import com.kms.katalon.core.logging.model.ILogRecord;
 import com.kms.katalon.core.logging.model.TestStatus;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
-import com.kms.katalon.core.util.internal.DateUtil;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
+import com.kms.katalon.core.util.internal.DateUtil;
 
 public class CsvWriter {
 
@@ -64,6 +64,11 @@ public class CsvWriter {
 
     public static void writeCsvReport(TestSuiteLogRecord suiteLog, File file, List<ILogRecord> filteredTestCaseRecords)
             throws IOException {
+        writeCsvReport(suiteLog, file, filteredTestCaseRecords, true);
+    }
+
+    public static void writeCsvReport(TestSuiteLogRecord suiteLog, File file, List<ILogRecord> filteredTestCaseRecords,
+            boolean stepsIncluded) throws IOException {
         ICsvListWriter csvWriter = new CsvListWriter(new FileWriter(file), CsvPreference.STANDARD_PREFERENCE);
 
         try {
@@ -82,6 +87,9 @@ public class CsvWriter {
                 writeRecord(csvWriter, testLog, browser);
 
                 // Test steps
+                if (!stepsIncluded) {
+                    continue;
+                }
                 for (ILogRecord step : testLog.getChildRecords()) {
                     writeRecord(csvWriter, step, browser);
                 }

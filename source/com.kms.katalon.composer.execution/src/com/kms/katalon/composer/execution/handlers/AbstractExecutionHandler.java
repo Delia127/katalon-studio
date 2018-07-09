@@ -34,11 +34,16 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.PlatformUI;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.application.RunningMode;
+import com.kms.katalon.application.usagetracking.UsageActionTrigger;
+import com.kms.katalon.application.usagetracking.UsageInfoCollector;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.execution.ExecutionProfileManager;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.exceptions.JobCancelException;
 import com.kms.katalon.composer.execution.jobs.ExecuteTestCaseJob;
@@ -52,6 +57,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.Entity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
+import com.kms.katalon.execution.configuration.AbstractRunConfiguration;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.exception.ExecutionException;
@@ -150,25 +156,26 @@ public abstract class AbstractExecutionHandler {
         MPartStack composerStack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID,
                 application);
         MPart selectedPart = (MPart) composerStack.getSelectedElement();
-        if (partService.saveAll(true) && partService.getDirtyParts().isEmpty()) {
+        if (saveAllParts() && isAnyPartDirty()) {
             String partElementId = selectedPart.getElementId();
             // check the selected part is a test case or test suite part
             if (partElementId.startsWith(IdConstants.TEST_CASE_PARENT_COMPOSITE_PART_ID_PREFIX)
                     && selectedPart.getObject() instanceof TestCaseCompositePart) {
                 TestCaseCompositePart testCaseCompositePart = (TestCaseCompositePart) selectedPart.getObject();
                 try {
-                    if (testCaseCompositePart.isTestCaseEmpty()) {
-                        MessageDialog.openInformation(Display.getCurrent().getActiveShell(),
-                                StringConstants.HAND_TITLE_INFORMATION,
-                                StringConstants.HAND_INFO_MSG_NO_TEST_STEP_IN_TEST_CASE);
-                        return null;
-                    }
-                    return testCaseCompositePart.getOriginalTestCase();
+                    testCaseCompositePart.validateScriptErrors();
                 } catch (Exception e) {
                     MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
                             StringConstants.HAND_ERROR_MSG_ERROR_IN_SCRIPT);
                     return null;
                 }
+                if (testCaseCompositePart.isTestCaseEmpty()) {
+                    MessageDialog.openInformation(Display.getCurrent().getActiveShell(),
+                            StringConstants.HAND_TITLE_INFORMATION,
+                            StringConstants.HAND_INFO_MSG_NO_TEST_STEP_IN_TEST_CASE);
+                    return null;
+                }
+                return testCaseCompositePart.getOriginalTestCase();
             } else if (partElementId.startsWith(IdConstants.TESTSUITE_CONTENT_PART_ID_PREFIX)
                     && selectedPart.getObject() instanceof TestSuiteCompositePart) {
                 TestSuiteCompositePart testSuiteComposite = (TestSuiteCompositePart) selectedPart.getObject();
@@ -186,17 +193,31 @@ public abstract class AbstractExecutionHandler {
         return null;
     }
 
+    protected static boolean isAnyPartDirty() {
+        return PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getDirtyEditors().length == 0
+                && partService.getDirtyParts().isEmpty();
+    }
+
+    protected static boolean saveAllParts() {
+        return PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().saveAllEditors(false)
+                && partService.saveAll(false);
+    }
+
     protected abstract IRunConfiguration getRunConfigurationForExecution(String projectDir)
             throws IOException, ExecutionException, InterruptedException;
 
     public void execute(LaunchMode launchMode) throws Exception {
         String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
 
-        IRunConfiguration runConfiguration = getRunConfigurationForExecution(projectDir);
-        if (runConfiguration == null) {
-            return;
-        }
-        execute(launchMode, runConfiguration);
+        try {
+            AbstractRunConfiguration runConfiguration = (AbstractRunConfiguration) getRunConfigurationForExecution(
+                    projectDir);
+            if (runConfiguration == null) {
+                return;
+            }
+            runConfiguration.setExecutionProfile(ExecutionProfileManager.getInstance().getSelectedProfile());
+            execute(launchMode, runConfiguration);
+        } catch (InterruptedException ignored) {}
     }
 
     protected void execute(LaunchMode launchMode, IRunConfiguration runConfiguration) throws Exception {
@@ -291,6 +312,9 @@ public abstract class AbstractExecutionHandler {
                     });
 
                     return Status.CANCEL_STATUS;
+                } finally {
+                    UsageInfoCollector.collect(
+                            UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.RUN_SCRIPT, RunningMode.GUI));
                 }
             }
         };

@@ -12,6 +12,8 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.composer.objectrepository.constant.ObjectEventConstants;
 import com.kms.katalon.composer.objectrepository.part.TestObjectPart;
@@ -34,7 +36,21 @@ public class PropertyNameEditingSupport extends EditingSupport {
 
     @Override
     protected CellEditor getCellEditor(Object element) {
-        return new TextCellEditor(viewer.getTable());
+    	return  new CustomTextCellEditor(viewer.getTable());
+    }
+    
+    private class CustomTextCellEditor extends TextCellEditor {
+    	
+        public CustomTextCellEditor(Composite parent) {
+            super(parent);
+        }
+
+        @Override
+        public LayoutData getLayoutData() {
+            LayoutData result = super.getLayoutData();
+            result.minimumHeight = viewer.getTable().getItemHeight();
+            return result;
+        }
     }
 
     @Override

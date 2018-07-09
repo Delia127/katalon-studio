@@ -3,10 +3,10 @@ package com.kms.katalon.composer.webui.execution.testsuite;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.kms.katalon.composer.testsuite.collection.execution.provider.TestExecutionConfigurationProvider;
-import com.kms.katalon.composer.testsuite.collection.execution.provider.TestExecutionDriverEntry;
-import com.kms.katalon.composer.testsuite.collection.execution.provider.TestExecutionGroup;
-import com.kms.katalon.composer.testsuite.collection.execution.provider.TestExecutionItem;
+import com.kms.katalon.composer.execution.collection.provider.TestExecutionConfigurationProvider;
+import com.kms.katalon.composer.execution.collection.provider.TestExecutionDriverEntry;
+import com.kms.katalon.composer.execution.collection.provider.TestExecutionGroup;
+import com.kms.katalon.composer.execution.collection.provider.TestExecutionItem;
 import com.kms.katalon.composer.webui.constants.ImageConstants;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 
@@ -47,9 +47,13 @@ public class WebDesktopExecutionGroup implements TestExecutionGroup {
                     ImageConstants.IMG_URL_16_IE));
             providers.add(TestExecutionDriverEntry.from(getName(), WebUIDriverType.SAFARI_DRIVER,
                     ImageConstants.IMG_URL_16_SAFARI));
-            providers.add(new RemoteExecutionDriverEntry(getName()));
+            providers.add(TestExecutionDriverEntry.from(getName(), WebUIDriverType.EDGE_DRIVER, 
+                    ImageConstants.IMG_URL_16_EDGE));
             providers.add(TestExecutionDriverEntry.from(getName(), WebUIDriverType.HEADLESS_DRIVER,
-                    ImageConstants.IMG_URL_16_HEADLESS));
+                    ImageConstants.IMG_URL_16_CHROME_HEADLESS));
+            providers.add(TestExecutionDriverEntry.from(getName(), WebUIDriverType.FIREFOX_HEADLESS_DRIVER,
+                    ImageConstants.IMG_URL_16_FIREFOX_HEADLESS));
+            providers.add(new RemoteExecutionDriverEntry(getName()));
         }
         return providers;
     }

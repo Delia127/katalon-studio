@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,8 @@ import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.network.ProxyInformation;
+import com.kms.katalon.core.setting.VideoRecorderSetting;
+import com.kms.katalon.core.util.internal.JsonUtil;
 
 /**
  * Provides access to execution properties and settings
@@ -28,6 +31,9 @@ import com.kms.katalon.core.network.ProxyInformation;
  */
 @SuppressWarnings("unchecked")
 public class RunConfiguration {
+
+    public static final String REPORT_FOLDER_PATH_PROPERTY = "reportFolder";
+
     public static final String LOG_FILE_PATH_PROPERTY = StringConstants.CONF_PROPERTY_LOG_FILE_PATH;
 
     public static final String TIMEOUT_PROPERTY = StringConstants.CONF_PROPERTY_TIMEOUT;
@@ -73,8 +79,14 @@ public class RunConfiguration {
     public static final String SESSION_SERVER_PORT = StringConstants.CONF_SESSION_SERVER_PORT;
 
     public static final String EXCUTION_DEFAULT_FAILURE_HANDLING = StringConstants.CONF_PROPERTY_DEFAULT_FAILURE_HANDLING;
-    
+
     public static final String PROXY_PROPERTY = StringConstants.CONF_PROPERTY_PROXY;
+
+    public static final String TERMINATE_DRIVER_AFTER_TEST_CASE = "terminateDriverAfterTestCase";
+
+    public static final String TERMINATE_DRIVER_AFTER_TEST_SUITE = "terminateDriverAfterTestSuite";
+
+    public static final String EXECUTION_PROFILE_PROPERTY = "executionProfile";
 
     private static String settingFilePath;
 
@@ -440,5 +452,55 @@ public class RunConfiguration {
         }
         Gson gson = new Gson();
         return gson.fromJson((String) generalProperties.get(PROXY_PROPERTY), ProxyInformation.class);
+    }
+
+    public static boolean shouldTerminateDriverAfterTestCase() {
+        Map<String, Object> generalProperties = getExecutionGeneralProperties();
+        if (generalProperties == null) {
+            return false;
+        }
+        return (boolean) generalProperties.getOrDefault(TERMINATE_DRIVER_AFTER_TEST_CASE, false);
+    }
+
+    public static boolean shouldTerminateDriverAfterTestSuite() {
+        Map<String, Object> generalProperties = getExecutionGeneralProperties();
+        if (generalProperties == null) {
+            return false;
+        }
+        return (boolean) generalProperties.getOrDefault(TERMINATE_DRIVER_AFTER_TEST_SUITE, false);
+    }
+
+    /**
+     * Returns name of selected execution profile. Default value is 'default' profile.
+     * 
+     * @since 5.4
+     */
+    public static String getExecutionProfile() {
+        Map<String, Object> generalProperties = getExecutionGeneralProperties();
+        if (generalProperties == null) {
+            return "default";
+        }
+        return (String) generalProperties.getOrDefault(EXECUTION_PROFILE_PROPERTY, "default");
+    }
+
+    private static Map<String, Object> getReportProperties() {
+        Map<String, Object> generalProperties = getExecutionGeneralProperties();
+        if (generalProperties == null) {
+            return Collections.emptyMap();
+        }
+        return (Map<String, Object>) generalProperties.getOrDefault(StringConstants.CONF_PROPERTY_REPORT,
+                Collections.emptyMap());
+    }
+
+    public static String getReportFolder() {
+        return (String) getReportProperties().getOrDefault(REPORT_FOLDER_PATH_PROPERTY, StringUtils.EMPTY);
+    }
+
+    public static VideoRecorderSetting getRecorderSetting() {
+        return JsonUtil
+                .fromJson(
+                        JsonUtil.toJson(getReportProperties()
+                                .getOrDefault(StringConstants.CONF_PROPERTY_VIDEO_RECORDER_OPTION, StringUtils.EMPTY)),
+                        VideoRecorderSetting.class);
     }
 }

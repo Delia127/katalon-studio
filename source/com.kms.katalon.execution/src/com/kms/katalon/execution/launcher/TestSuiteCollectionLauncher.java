@@ -3,7 +3,11 @@ package com.kms.katalon.execution.launcher;
 import java.io.IOException;
 import java.util.List;
 
+import com.kms.katalon.controller.ReportController;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
+import com.kms.katalon.dal.exception.DALException;
+import com.kms.katalon.entity.report.ReportCollectionEntity;
+import com.kms.katalon.entity.report.ReportItemDescription;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity.ExecutionMode;
 import com.kms.katalon.execution.entity.TestSuiteCollectionExecutedEntity;
 import com.kms.katalon.execution.launcher.listener.LauncherEvent;
@@ -17,7 +21,7 @@ import com.kms.katalon.logging.LogUtil;
 
 public class TestSuiteCollectionLauncher extends BasicLauncher implements LauncherListener {
 
-    protected List<? extends ReportableLauncher> subLaunchers;
+    protected List<ReportableLauncher> subLaunchers;
 
     private LauncherResult result;
 
@@ -31,14 +35,18 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
 
     private ExecutionMode executionMode;
 
+    private ReportCollectionEntity reportCollection;
+
     public TestSuiteCollectionLauncher(TestSuiteCollectionExecutedEntity executedEntity, LauncherManager parentManager,
-            List<? extends ReportableLauncher> subLaunchers, ExecutionMode executionMode) {
+            List<ReportableLauncher> subLaunchers, ExecutionMode executionMode,
+            ReportCollectionEntity reportCollection) {
         this.subLauncherManager = new TestSuiteCollectionLauncherManager();
         this.subLaunchers = subLaunchers;
         this.result = new LauncherResult(executedEntity.getTotalTestCases());
         this.parentManager = parentManager;
         this.executedEntity = executedEntity;
         this.executionMode = executionMode;
+        this.reportCollection = reportCollection;
         addListenerForChildren(subLaunchers);
     }
 
@@ -102,12 +110,13 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
 
     @Override
     public void stop() {
-        if (watchDog.isAlive()) {
+        setStatus(LauncherStatus.TERMINATED);
+
+        if (watchDog != null && watchDog.isAlive()) {
             watchDog.interrupt();
         }
-        subLauncherManager.stopAllLauncher();
 
-        setStatus(LauncherStatus.TERMINATED);
+        subLauncherManager.stopAllLauncher();
 
         postExecution();
     }
@@ -156,6 +165,45 @@ public class TestSuiteCollectionLauncher extends BasicLauncher implements Launch
             }
             super.schedule();
         }
+
+        @Override
+        public void addLauncher(ILauncher subLauncher) {
+            addNewLauncher((SubLauncher) subLauncher);
+            super.addLauncher(subLauncher);
+        }
+    }
+
+    private void addNewLauncher(SubLauncher subLauncher) {
+        ReportableLauncher subReportableLauncher = (ReportableLauncher) subLauncher;
+
+        if (this.subLaunchers.contains(subReportableLauncher)) {
+            return;
+        }
+        this.subLaunchers.add(subReportableLauncher);
+        subReportableLauncher.addListener(this);
+
+        ILauncherResult subLauncherResult = subLauncher.getResult();
+        LauncherResult newResult = new LauncherResult(
+                result.getTotalTestCases() + subLauncherResult.getTotalTestCases());
+        newResult.setNumPasses(result.getNumPasses() + subLauncherResult.getNumPasses());
+        newResult.setNumFailures(result.getNumFailures() + subLauncherResult.getNumFailures());
+        newResult.setNumIncomplete(result.getNumIncomplete() + subLauncherResult.getNumIncomplete());
+        newResult.setNumErrors(result.getNumErrors() + subLauncherResult.getNumErrors());
+        result = newResult;
+
+        reportCollection.getReportItemDescriptions()
+                .add(ReportItemDescription.from(subReportableLauncher.getReportEntity().getIdForDisplay(),
+                        subLauncher.getRunConfigurationDescription()));
+        try {
+            ReportController.getInstance().updateReportCollection(reportCollection);
+        } catch (DALException e) {
+            LogUtil.logError(e);
+        }
+        onNewLauncherAdded();
+    }
+
+    protected void onNewLauncherAdded() {
+        // Children may override this
     }
 
     @Override

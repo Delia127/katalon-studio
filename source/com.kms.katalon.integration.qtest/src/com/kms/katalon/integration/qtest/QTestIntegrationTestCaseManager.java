@@ -10,9 +10,6 @@ import java.util.Map;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.qas.api.internal.util.json.JsonArray;
 import org.qas.api.internal.util.json.JsonException;
 import org.qas.api.internal.util.json.JsonObject;
@@ -60,7 +57,7 @@ public class QTestIntegrationTestCaseManager {
      * {@link IntegratedType#TESTCASE}
      * 
      * @param integratedEntity
-     *            qTest {@link IntegratedEntity} of a {@link TestCaseEntity}
+     * qTest {@link IntegratedEntity} of a {@link TestCaseEntity}
      * @return
      */
     public static QTestTestCase getQTestTestCaseByIntegratedEntity(IntegratedEntity integratedEntity) {
@@ -70,7 +67,8 @@ public class QTestIntegrationTestCaseManager {
 
         Map<String, String> properties = integratedEntity.getProperties();
 
-        if (properties == null) return null;
+        if (properties == null)
+            return null;
 
         String id = properties.get(QTestEntity.ID_FIELD);
         String name = properties.get(QTestEntity.NAME_FIELD);
@@ -112,8 +110,8 @@ public class QTestIntegrationTestCaseManager {
      * @param projectDir
      * @throws QTestException
      */
-    public static void deleteTestCaseOnQTest(QTestTestCase qTestTC, QTestProject qTestProject, IQTestCredential credential)
-            throws QTestException {
+    public static void deleteTestCaseOnQTest(QTestTestCase qTestTC, QTestProject qTestProject,
+            IQTestCredential credential) throws QTestException {
         if (qTestProject == null) {
             throw new QTestUnauthorizedException(QTestMessageConstants.QTEST_PROJECT_NOT_FOUND);
         }
@@ -148,12 +146,12 @@ public class QTestIntegrationTestCaseManager {
      * @param name
      * @param description
      * @param credential
-     *            qTest credential
+     * qTest credential
      * @return
      * @throws QTestException
      */
     public static QTestTestCase addTestCase(QTestProject qTestProject, long parentId, String name, String description,
-           IQTestCredential credential) throws QTestException {
+            IQTestCredential credential) throws QTestException {
         String serverUrl = credential.getServerUrl();
         String accessToken = credential.getToken().getAccessTokenHeader();
         if (!QTestIntegrationAuthenticationManager.validateToken(accessToken)) {
@@ -179,8 +177,10 @@ public class QTestIntegrationTestCaseManager {
             // Unable to get field value;
         }
 
-        TestCase testCase = new TestCase().withName(name).withDescription(getUploadedDescription(description))
-                .withParentId(parentId).withFieldValues(fieldValues);
+        TestCase testCase = new TestCase().withName(name)
+                .withDescription(getUploadedDescription(description))
+                .withParentId(parentId)
+                .withFieldValues(fieldValues);
         CreateTestCaseRequest request = new CreateTestCaseRequest().withProjectId(projectId).withTestCase(testCase);
 
         TestCase testCaseResult = testDesignService.createTestCase(request);
@@ -194,11 +194,11 @@ public class QTestIntegrationTestCaseManager {
      * Updates the given <code>testCase</code> (type, assigned to,...) on qTest server
      * 
      * @param credential
-     *            qTest credential
+     * qTest credential
      * @param qTestProject
      * @param testCase
      * @throws QTestException
-     *             thrown if system cannot send request or the response is invalid JSON format
+     * thrown if system cannot send request or the response is invalid JSON format
      */
     @SuppressWarnings("unused")
     private static void updateTestCase(IQTestCredential credential, QTestProject qTestProject, QTestTestCase testCase)
@@ -241,7 +241,8 @@ public class QTestIntegrationTestCaseManager {
      * @return formated description
      */
     public static String getUploadedDescription(String description) {
-        if (description == null) return "";
+        if (description == null)
+            return "";
         StringBuilder descriptionBuilder = new StringBuilder();
         String[] stringLines = description.split("\n");
         for (String stringLine : stringLines) {
@@ -255,19 +256,21 @@ public class QTestIntegrationTestCaseManager {
      * 
      * @param projectId
      * @param credential
-     *            qTest credential
+     * qTest credential
      * @return
      * @throws QTestException
-     *             thrown if system cannot send request or the response is invalid JSON format.
+     * thrown if system cannot send request or the response is invalid JSON format.
      */
-    private static JsonArray getTestCaseFieldJsonArray(long projectId, IQTestCredential credential) throws QTestException {
+    private static JsonArray getTestCaseFieldJsonArray(long projectId, IQTestCredential credential)
+            throws QTestException {
         String serverUrl = credential.getServerUrl();
 
         String url = serverUrl + "/api/v3/projects/" + Long.toString(projectId) + "/settings/test-cases/fields";
 
         String response = QTestAPIRequestHelper.sendGetRequestViaAPI(url, credential.getToken());
         try {
-            if (response == null || response.isEmpty()) return null;
+            if (response == null || response.isEmpty())
+                return null;
             JsonArray responseJsonArray = new JsonArray(response);
 
             return responseJsonArray;
@@ -319,13 +322,13 @@ public class QTestIntegrationTestCaseManager {
      * Supporting method for {@link #getListSteps(String, long, QTestTestCase)}
      * 
      * @param credential
-     *            qTest credential
+     * qTest credential
      * @param projectId
      * @param qTestId
      * @param qTestVersionId
      * @return
      * @throws QTestUnauthorizedException
-     * @throws QTestInvalidFormatException 
+     * @throws QTestInvalidFormatException
      */
     private static TestCase getTestCaseFromQTest(IQTestCredential credential, long projectId, long qTestId,
             long qTestVersionId) throws QTestUnauthorizedException, QTestInvalidFormatException {
@@ -339,7 +342,8 @@ public class QTestIntegrationTestCaseManager {
             testDesignService.setEndpoint(credential.getServerUrl());
 
             GetTestCaseRequest getTestCaseRequest = new GetTestCaseRequest().withProjectId(projectId)
-                    .withTestCaseId(qTestId).withTestCaseVersion(qTestVersionId);
+                    .withTestCaseId(qTestId)
+                    .withTestCaseVersion(qTestVersionId);
 
             return testDesignService.getTestCase(getTestCaseRequest);
         } catch (Exception ex) {
@@ -353,7 +357,7 @@ public class QTestIntegrationTestCaseManager {
      * @param qTestProject
      * @param testCase
      * @param credential
-     *            qTest credential
+     * qTest credential
      * @return
      * @throws QTestIOException
      */
@@ -361,7 +365,7 @@ public class QTestIntegrationTestCaseManager {
             throws QTestIOException {
 
         try {
-            String url = QTestSettingStore.getServerUrl(projectDir);
+            String url = QTestSettingStore.getServerUrl(QTestSettingStore.isEncryptionEnabled(projectDir), projectDir);
 
             return new URL(url + "/p/" + Long.toString(qTestProject.getId()) + "/portal/project#id="
                     + Long.toString(testCase.getId()) + "&object=" + QTestTestCase.getType() + "&tab=testdesign");
@@ -374,29 +378,38 @@ public class QTestIntegrationTestCaseManager {
      * Gets versionId of the {@link QTestTestCase} that's id equal with the given <code>testCaseId</code>
      * 
      * @param credential
-     *            qTest credential
+     * qTest credential
      * @param projectId
      * @param testCaseId
      * @return versionId
      * @throws QTestException
-     *             thrown if system cannot send request or user's authentication is invalid.
+     * thrown if system cannot send request or user's authentication is invalid.
      * @see {@link QTestTestCase#getVersionId()}
      */
-    public static long getTestCaseVersionId(IQTestCredential credential, long projectId, long testCaseId) throws QTestException {
-        String token = credential.getToken().getAccessTokenHeader();
+    public static long getTestCaseVersionId(IQTestCredential credential, long projectId, long testCaseId)
+            throws QTestException {
+        String serverUrl = credential.getServerUrl();
 
-        if (!QTestIntegrationAuthenticationManager.validateToken(token)) {
+        if (!QTestIntegrationAuthenticationManager.validateToken(credential.getToken().getAccessTokenHeader())) {
             throw new QTestUnauthorizedException(QTestMessageConstants.QTEST_EXC_INVALID_TOKEN);
         }
+        String url = serverUrl + "/api/v3/projects/" + Long.toString(projectId) + "/test-cases/"
+                + Long.toString(testCaseId) + "/versions";
 
-        String url = "/p/" + Long.toString(projectId) + "/portal/project/testdesign/testcase/testcase?testcaseId="
-                + Long.toString(testCaseId);
+        String result = QTestAPIRequestHelper.sendGetRequestViaAPI(url, credential.getToken());
+        try {
+            JsonArray childrenJsonArray = new JsonArray(result);
 
-        String response = QTestHttpRequestHelper.sendGetRequest(credential, url);
+            int versionSize = childrenJsonArray.length();
+            if (versionSize == 0) {
+                return 0L;
+            }
 
-        Document htmlDocument = Jsoup.parse(response);
-        Element testCaseVersionIdElement = htmlDocument.getElementById("qas-testdesign-testcase-testcase-propTcvId");
-        return Long.valueOf(testCaseVersionIdElement.text());
+            JsonObject childJsonObject = childrenJsonArray.getJsonObject(versionSize - 1);
+            return childJsonObject.getLong("test_case_version_id");
+        } catch (JsonException ex) {
+            throw QTestInvalidFormatException.createInvalidJsonFormatException(result);
+        }
     }
 
     /**
@@ -419,8 +432,8 @@ public class QTestIntegrationTestCaseManager {
             // replace <p> and </p> to empty strings because the returned
             // description
             // from qTest includes them
-            String description = StringEscapeUtils.unescapeHtml(testCaseFromQTest.getDescription().replace("<p>", "")
-                    .replace("</p>", ""));
+            String description = StringEscapeUtils
+                    .unescapeHtml(testCaseFromQTest.getDescription().replace("<p>", "").replace("</p>", ""));
             testCase.setDescription(description);
         }
 
@@ -429,7 +442,8 @@ public class QTestIntegrationTestCaseManager {
         testDesignService.setEndpoint(credential.getServerUrl());
 
         ListTestStepRequest testStepRequest = new ListTestStepRequest().withProjectId(projectId)
-                .withTestCaseId(testCase.getId()).withTestCaseVersion(testCase.getVersionId());
+                .withTestCaseId(testCase.getId())
+                .withTestCaseVersion(testCase.getVersionId());
         List<TestStep> result = testDesignService.listTestStep(testStepRequest);
 
         List<QTestStep> qTestSteps = new ArrayList<QTestStep>();

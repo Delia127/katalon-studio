@@ -28,15 +28,18 @@ import com.kms.katalon.core.annotation.Keyword;
 import com.kms.katalon.custom.factory.CustomMethodNodeFactory;
 
 public class CustomKeywordParser {
-    
+
     private static final String CUSTOM_KEYWORDS_FILE_NAME = "CustomKeywords.groovy";
+
     private final static String TEMPLATE_CLASS_NAME = IdConstants.KATALON_CUSTOM_BUNDLE_ID
             + ".generation.CustomKeywordTemplate";
+
     private final static String GENERATED_KEYWORD_METHOD_NAME = "generateCustomKeywordFile";
+
     private static CustomKeywordParser _instance;
-    
+
     private static List<MethodNode> methodNodes = new ArrayList<MethodNode>();
-    
+
     private CustomKeywordParser() {
     }
 
@@ -54,7 +57,7 @@ public class CustomKeywordParser {
             parseCustomKeywordFile(file, libFolder, false);
         }
 
-        generateCustomKeywordLibFile(libFolder);        
+        generateCustomKeywordLibFile(libFolder);
     }
 
     public List<Method> parseAllCustomKeywordsIntoAst(URLClassLoader classLoader, IFolder srcfolder) throws Exception {
@@ -109,8 +112,11 @@ public class CustomKeywordParser {
     public void parseCustomKeywordFile(IFile file, IFolder libFolder, boolean generateLibFile) throws Exception {
         try {
             GroovyCompilationUnit unit = (GroovyCompilationUnit) JavaCore.createCompilationUnitFrom(file);
+            String filePath = file.getFullPath().toOSString();
+            CustomMethodNodeFactory.getInstance().removeMethodNodes(filePath);
             for (ClassNode classNode : unit.getModuleNode().getClasses()) {
-                CustomMethodNodeFactory.getInstance().addMethodNodes(classNode.getName(), classNode.getMethods());
+                CustomMethodNodeFactory.getInstance().addMethodNodes(classNode.getName(), classNode.getMethods(),
+                        filePath);
             }
         } catch (Exception e) {
             // do nothing
@@ -124,9 +130,12 @@ public class CustomKeywordParser {
             throws Exception {
         try {
             if (file instanceof GroovyCompilationUnit) {
+                String filePath = file.getPath().toOSString();
                 GroovyCompilationUnit unit = (GroovyCompilationUnit) file;
+                CustomMethodNodeFactory.getInstance().removeMethodNodes(filePath);
                 for (ClassNode classNode : unit.getModuleNode().getClasses()) {
-                    CustomMethodNodeFactory.getInstance().addMethodNodes(classNode.getName(), classNode.getMethods());
+                    CustomMethodNodeFactory.getInstance().addMethodNodes(classNode.getName(), classNode.getMethods(),
+                            filePath);
                 }
             }
         } catch (Exception e) {
@@ -145,10 +154,7 @@ public class CustomKeywordParser {
     }
 
     public void removeMethodNodesCustomKeywordFile(IFile file, IFolder libFolder) throws Exception {
-        GroovyCompilationUnit unit = (GroovyCompilationUnit) JavaCore.createCompilationUnitFrom(file);
-        for (ClassNode classNode : unit.getModuleNode().getClasses()) {
-            CustomMethodNodeFactory.getInstance().removeMethodNodes(classNode.getName());
-        }
+        CustomMethodNodeFactory.getInstance().removeMethodNodes(file.getFullPath().toOSString());
         generateCustomKeywordLibFile(libFolder);
     }
 
@@ -192,7 +198,7 @@ public class CustomKeywordParser {
         object.invokeMethod(GENERATED_KEYWORD_METHOD_NAME, new Object[] { file });
 
         iFile.refreshLocal(IResource.DEPTH_ZERO, null);
-        
+
         // After generated CustomKeywords.groovy proxy class, parse and list out all its methods for later reuse
         loadAllCustomKeywordProxyMethods(libFolder);
     }

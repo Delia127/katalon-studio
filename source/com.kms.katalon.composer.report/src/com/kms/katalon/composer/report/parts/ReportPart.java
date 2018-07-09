@@ -3,14 +3,16 @@ package com.kms.katalon.composer.report.parts;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -50,6 +52,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -61,6 +64,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -71,6 +75,7 @@ import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -83,6 +88,7 @@ import com.kms.katalon.composer.report.integration.ReportComposerIntegrationFact
 import com.kms.katalon.composer.report.lookup.LogRecordLookup;
 import com.kms.katalon.composer.report.parts.integration.ReportTestCaseIntegrationViewBuilder;
 import com.kms.katalon.composer.report.parts.integration.TestCaseLogDetailsIntegrationView;
+import com.kms.katalon.composer.report.provider.HyperlinkTestCaseVideoLabelProvider;
 import com.kms.katalon.composer.report.provider.ReportPartTestCaseLabelProvider;
 import com.kms.katalon.composer.report.provider.ReportTestCaseTableViewer;
 import com.kms.katalon.composer.report.provider.ReportTestCaseTableViewerFilter;
@@ -101,6 +107,8 @@ import com.kms.katalon.core.util.internal.DateUtil;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.util.ExecutionUtil;
+import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
+import com.kms.katalon.integration.analytics.report.AnalyticsReportService;
 
 public class ReportPart implements EventHandler, IComposerPartEvent {
 
@@ -131,13 +139,15 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
             btnFilterTestCaseIncomplete;
 
     private ToolItem btnShowHideTestCaseDetails;
+    
+    private ToolItem btnUploadToAnalytics;
 
     private TableViewer runDataTable, executionSettingTable;
 
     private ReportPartTestLogView testLogView;
 
     // Fields
-    private Map<String, TestCaseLogDetailsIntegrationView> integratingCompositeMap;
+    private TreeMap<String, TestCaseLogDetailsIntegrationView> integratingCompositeMap;
 
     private int selectedTestCaseRecordIndex;
 
@@ -156,14 +166,16 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     private SashForm sashFormSummary;
 
     private Composite compositeTestCaseFilterSelection;
+    
+    private AnalyticsReportService analyticsReportService = new AnalyticsReportService();
 
     private final class MapDataKeyLabelProvider extends ColumnLabelProvider {
         @Override
         public String getText(Object element) {
             if (element instanceof Entry) {
-                return String.valueOf(((Entry<?, ?>) element).getKey());
+                return ObjectUtils.toString(((Entry<?, ?>) element).getKey());
             }
-            return "";
+            return StringConstants.EMPTY;
         }
     }
 
@@ -182,7 +194,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
             if (element instanceof Entry) {
                 return ((Entry<?, ?>) element).getKey();
             }
-            return null;
+            return StringConstants.EMPTY;
         }
 
         @Override
@@ -200,9 +212,9 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         @Override
         public String getText(Object element) {
             if (element instanceof Entry) {
-                return String.valueOf(((Entry<?, ?>) element).getValue());
+                return ObjectUtils.toString(((Entry<?, ?>) element).getValue());
             }
-            return "";
+            return StringConstants.EMPTY;
         }
     }
 
@@ -219,9 +231,9 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         @Override
         protected Object getValue(Object element) {
             if (element instanceof Entry) {
-                return ((Entry<?, ?>) element).getValue();
+                return ObjectUtils.toString(((Entry<?, ?>) element).getValue());
             }
-            return null;
+            return StringConstants.EMPTY;
         }
 
         @Override
@@ -410,7 +422,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
             if (report == null) {
                 return;
             }
-            
+
             new ProgressMonitorDialog(shell).run(true, true, new IRunnableWithProgress() {
                 @Override
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
@@ -474,7 +486,17 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
             txtRunTime.setText(styleStringElapsed.getString());
             txtRunTime.setStyleRanges(styleStringElapsed.getStyleRanges());
 
-            integratingCompositeMap = new LinkedHashMap<String, TestCaseLogDetailsIntegrationView>();
+            integratingCompositeMap = new TreeMap<String, TestCaseLogDetailsIntegrationView>(new Comparator<String>() {
+                @Override
+                public int compare(String productA, String productB) {
+                    return reportIntegrationFactory().getPreferredOrder(productA)
+                            - reportIntegrationFactory().getPreferredOrder(productB);
+                }
+
+                private ReportComposerIntegrationFactory reportIntegrationFactory() {
+                    return ReportComposerIntegrationFactory.getInstance();
+                }
+            });
 
             for (Entry<String, ReportTestCaseIntegrationViewBuilder> builderEntry : ReportComposerIntegrationFactory
                     .getInstance().getIntegrationViewMap().entrySet()) {
@@ -562,6 +584,9 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         spacer.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
         ToolBar tbShowHideDetails = new ToolBar(compositeTestCaseFilterSelection, SWT.FLAT | SWT.RIGHT);
+        
+        createKatalonAnalyticsMenu(tbShowHideDetails);
+        
         btnShowHideTestCaseDetails = new ToolItem(tbShowHideDetails, SWT.NONE);
         btnShowHideTestCaseDetails.setText(BTN_SHOW_TEST_CASE_DETAILS);
         btnShowHideTestCaseDetails.setImage(ImageManager.getImage(IImageKeys.MOVE_LEFT_16));
@@ -590,6 +615,56 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         updateStatusSearchLabel();
     }
 
+    private void createKatalonAnalyticsMenu(ToolBar toolBar) {
+        btnUploadToAnalytics = new ToolItem(toolBar, SWT.DROP_DOWN);
+        btnUploadToAnalytics.setText(ComposerReportMessageConstants.BTN_KATALON_ANALYTICS);
+        btnUploadToAnalytics.setImage(ImageManager.getImage(IImageKeys.KATALON_ANALYTICS_16));
+        btnUploadToAnalytics.setEnabled(analyticsReportService.isIntegrationEnabled());
+        
+        Menu uploadMenu = new Menu(btnUploadToAnalytics.getParent().getShell());
+        MenuItem newMenuItem = new MenuItem(uploadMenu, SWT.PUSH);
+        newMenuItem.setText("Upload");
+        newMenuItem.setID(0);
+        newMenuItem.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                try {
+                    new ProgressMonitorDialog(shell).run(true, true, new IRunnableWithProgress() {
+                        @Override
+                        public void run(IProgressMonitor monitor) {
+                            try {
+                                monitor.beginTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS, 2);
+                                monitor.subTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS_SENDING);
+                                analyticsReportService.upload(testSuiteLogRecord.getLogFolder());
+                                monitor.worked(1);
+                                monitor.subTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS_SUCCESSFULLY);
+                                monitor.worked(2);
+                            } catch (AnalyticsApiExeception ex) {
+                                LoggerSingleton.logError(ex);
+                                MultiStatusErrorDialog.showErrorDialog(ex, ComposerReportMessageConstants.REPORT_ERROR_MSG_UNABLE_TO_UPLOAD_REPORT, ex.getMessage());
+                            }
+                        }
+                    });
+                } catch (InvocationTargetException | InterruptedException ex) {
+                    LoggerSingleton.logError(ex);
+                    MultiStatusErrorDialog.showErrorDialog(ex, ComposerReportMessageConstants.REPORT_ERROR_MSG_UNABLE_TO_UPLOAD_REPORT, ex.getMessage());
+                }
+            }
+        });
+        
+        btnUploadToAnalytics.setData(uploadMenu);
+        btnUploadToAnalytics.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Rectangle rect = btnUploadToAnalytics.getBounds();
+                Point pt = btnUploadToAnalytics.getParent().toDisplay(new Point(rect.x, rect.y));
+                uploadMenu.setLocation(pt.x, pt.y + rect.height);
+                uploadMenu.setVisible(true);
+                uploadMenu.setVisible(true);
+            }
+        });
+    }
+    
     private void filterTestLogBySearchedText() {
         if (txtTestCaseSearch.getText().isEmpty()) {
             isSearching = false;
@@ -638,6 +713,12 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         tblclmnTCName.setText("Name");
         tableViewerColumnName.setLabelProvider(new ReportPartTestCaseLabelProvider());
         tclCompositeTestCaseTableDetails.setColumnData(tblclmnTCName, new ColumnWeightData(80, 0));
+
+        TableViewerColumn tableViewerColumnVideo = new TableViewerColumn(testCaseTableViewer, SWT.NONE);
+        TableColumn tblclmnTCVideo= tableViewerColumnVideo.getColumn();
+        tblclmnTCVideo.setText("Video");
+        tableViewerColumnVideo.setLabelProvider(new HyperlinkTestCaseVideoLabelProvider(this));
+        tclCompositeTestCaseTableDetails.setColumnData(tblclmnTCVideo, new ColumnWeightData(0, 50));
 
         createIntegrationColumns(tclCompositeTestCaseTableDetails);
 

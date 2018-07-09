@@ -42,6 +42,11 @@ public class CTreeViewer extends TreeViewer implements CustomColumnViewer {
     }
 
     @Override
+    public ViewerCell getCell(Point point) {
+        return super.getCell(point);
+    }
+
+    @Override
     public TypeCheckedStyleCellLabelProvider<?> getCellLabelProvider(int columnIndex) {
         return new CellLayoutColumnViewerHelper(this).getCellLabelProvider(columnIndex);
     }

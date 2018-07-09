@@ -12,7 +12,11 @@ import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.wizard.IWizardPage;
 import com.kms.katalon.composer.integration.qtest.constant.StringConstants;
 
-public class FinishPage implements IWizardPage {
+public class FinishPage implements IWizardPage, QTestWizardPage {
+    @Override
+    public String getStepIndexAsString() {
+        return "5";
+    }
 
     @Override
     public String getTitle() {
@@ -58,5 +62,15 @@ public class FinishPage implements IWizardPage {
     @Override
     public Map<String, Object> storeControlStates() {
         return null;
+    }
+
+    @Override
+    public boolean autoFlip() {
+        return false;
+    }
+    
+    @Override
+    public boolean isChild() {
+        return false;
     }
 }

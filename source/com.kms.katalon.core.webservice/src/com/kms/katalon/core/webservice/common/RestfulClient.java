@@ -13,18 +13,30 @@ import javax.net.ssl.SSLContext;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.testobject.TestObjectProperty;
+import com.kms.katalon.core.testobject.impl.HttpTextBodyContent;
+import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
+import com.kms.katalon.core.webservice.helper.WebServiceCommonHelper;
 import com.kms.katalon.core.webservice.support.UrlEncoder;
 
 public class RestfulClient extends BasicRequestor {
 
-    private static final String DEFAULT_USER_AGENT = "Katalon Studio";
+    private static final String SSL = RequestHeaderConstants.SSL;
 
-    private static final String HTTP_USER_AGENT = "User-Agent";
-    
+    private static final String HTTPS = RequestHeaderConstants.HTTPS;
+
+    private static final String DEFAULT_USER_AGENT = GlobalStringConstants.APP_NAME;
+
+    private static final String HTTP_USER_AGENT = RequestHeaderConstants.USER_AGENT;
+
+    private static final String GET = RequestHeaderConstants.GET;
+
+    private static final String DELETE = RequestHeaderConstants.DELETE;
+
     public RestfulClient(String projectDir, ProxyInformation proxyInfomation) {
         super(projectDir, proxyInfomation);
     }
@@ -32,9 +44,9 @@ public class RestfulClient extends BasicRequestor {
     @Override
     public ResponseObject send(RequestObject request) throws Exception {
         ResponseObject responseObject;
-        if ("GET".equalsIgnoreCase(request.getRestRequestMethod())) {
+        if (GET.equalsIgnoreCase(request.getRestRequestMethod())) {
             responseObject = sendGetRequest(request);
-        } else if ("DELETE".equalsIgnoreCase(request.getRestRequestMethod())) {
+        } else if (DELETE.equalsIgnoreCase(request.getRestRequestMethod())) {
             responseObject = sendDeleteRequest(request);
         } else {
             // POST, PUT are technically the same
@@ -44,8 +56,8 @@ public class RestfulClient extends BasicRequestor {
     }
 
     private ResponseObject sendGetRequest(RequestObject request) throws Exception {
-        if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith("https")) {
-            SSLContext sc = SSLContext.getInstance("SSL");
+        if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith(HTTPS)) {
+            SSLContext sc = SSLContext.getInstance(SSL);
             sc.init(null, getTrustManagers(), new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
         }
@@ -55,23 +67,21 @@ public class RestfulClient extends BasicRequestor {
 
         URL url = new URL(request.getRestUrl());
         HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection(getProxy());
-        if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith("https")) {
-            ((HttpsURLConnection) httpConnection).setHostnameVerifier(getHostnameVerifier());
+        if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith(HTTPS)) {
+            //((HttpsURLConnection) httpConnection).setHostnameVerifier(getHostnameVerifier());
         }
         httpConnection.setRequestMethod(request.getRestRequestMethod());
 
         // Default if not set
         httpConnection.setRequestProperty(HTTP_USER_AGENT, DEFAULT_USER_AGENT);
-        for (TestObjectProperty property : request.getHttpHeaderProperties()) {
-            httpConnection.setRequestProperty(property.getName(), property.getValue());
-        }
+        setHttpConnectionHeaders(httpConnection, request);
 
         return response(httpConnection);
     }
 
     private ResponseObject sendPostRequest(RequestObject request) throws Exception {
-        if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith("https")) {
-            SSLContext sc = SSLContext.getInstance("SSL");
+        if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith(HTTPS)) {
+            SSLContext sc = SSLContext.getInstance(SSL);
             sc.init(null, getTrustManagers(), new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
         }
@@ -81,21 +91,19 @@ public class RestfulClient extends BasicRequestor {
 
         URL url = new URL(request.getRestUrl());
         HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection(getProxy());
-        if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith("https")) {
-            ((HttpsURLConnection) httpConnection).setHostnameVerifier(getHostnameVerifier());
+        if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith(HTTPS)) {
+            //((HttpsURLConnection) httpConnection).setHostnameVerifier(getHostnameVerifier());
         }
         httpConnection.setRequestMethod(request.getRestRequestMethod());
 
         // Default if not set
         httpConnection.setRequestProperty(HTTP_USER_AGENT, DEFAULT_USER_AGENT);
-        for (TestObjectProperty property : request.getHttpHeaderProperties()) {
-            httpConnection.setRequestProperty(property.getName(), property.getValue());
-        }
+        setHttpConnectionHeaders(httpConnection, request);
         httpConnection.setDoOutput(true);
 
         // Send post request
         OutputStream os = httpConnection.getOutputStream();
-        os.write((request.getHttpBody() == null ? "" : request.getHttpBody()).getBytes());
+        request.getBodyContent().writeTo(os);
         os.flush();
         os.close();
 
@@ -103,8 +111,8 @@ public class RestfulClient extends BasicRequestor {
     }
 
     private ResponseObject sendDeleteRequest(RequestObject request) throws Exception {
-        if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith("https")) {
-            SSLContext sc = SSLContext.getInstance("SSL");
+        if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith(HTTPS)) {
+            SSLContext sc = SSLContext.getInstance(SSL);
             sc.init(null, getTrustManagers(), new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
         }
@@ -114,16 +122,14 @@ public class RestfulClient extends BasicRequestor {
 
         URL url = new URL(request.getRestUrl());
         HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection(getProxy());
-        if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith("https")) {
-            ((HttpsURLConnection) httpConnection).setHostnameVerifier(getHostnameVerifier());
+        if (StringUtils.defaultString(request.getRestUrl()).toLowerCase().startsWith(HTTPS)) {
+            //((HttpsURLConnection) httpConnection).setHostnameVerifier(getHostnameVerifier());
         }
 
         httpConnection.setRequestMethod(request.getRestRequestMethod());
         // Default if not set
         httpConnection.setRequestProperty(HTTP_USER_AGENT, DEFAULT_USER_AGENT);
-        for (TestObjectProperty property : request.getHttpHeaderProperties()) {
-            httpConnection.setRequestProperty(property.getName(), property.getValue());
-        }
+        setHttpConnectionHeaders(httpConnection, request);
 
         return response(httpConnection);
     }
@@ -143,8 +149,8 @@ public class RestfulClient extends BasicRequestor {
         }
         if (!StringUtils.isEmpty(paramString.toString())) {
             URL url = new URL(request.getRestUrl());
-            request.setRestUrl(request.getRestUrl() + (StringUtils.isEmpty(url.getQuery()) ? "?" : "&")
-                    + paramString.toString());
+            request.setRestUrl(
+                    request.getRestUrl() + (StringUtils.isEmpty(url.getQuery()) ? "?" : "&") + paramString.toString());
         }
     }
 
@@ -153,25 +159,43 @@ public class RestfulClient extends BasicRequestor {
             return null;
         }
 
+        long startTime = System.currentTimeMillis();
         int statusCode = conn.getResponseCode();
+        long waitingTime = System.currentTimeMillis() - startTime;
+        long contentDownloadTime = 0L;
         StringBuffer sb = new StringBuffer();
 
         char[] buffer = new char[1024];
-        try (InputStream inputStream = (statusCode >= 400) ? conn.getErrorStream() : conn.getInputStream();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
-            int len = 0;
-            while ((len = reader.read(buffer)) != -1) {
-                sb.append(buffer, 0, len);
+        long bodyLength = 0L;
+        try (InputStream inputStream = (statusCode >= 400) ? conn.getErrorStream() : conn.getInputStream()) {
+            if (inputStream != null) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                int len = 0;
+                startTime = System.currentTimeMillis();
+                while ((len = reader.read(buffer)) != -1) {
+                    contentDownloadTime += System.currentTimeMillis() - startTime;
+                    sb.append(buffer, 0, len);
+                    bodyLength += len;
+                    startTime = System.currentTimeMillis();
+                }
             }
         }
+
+        long headerLength = WebServiceCommonHelper.calculateHeaderLength(conn);
 
         ResponseObject responseObject = new ResponseObject(sb.toString());
         responseObject.setContentType(conn.getContentType());
         responseObject.setHeaderFields(conn.getHeaderFields());
         responseObject.setStatusCode(statusCode);
-
+        responseObject.setResponseBodySize(bodyLength);
+        responseObject.setResponseHeaderSize(headerLength);
+        responseObject.setWaitingTime(waitingTime);
+        responseObject.setContentDownloadTime(contentDownloadTime);
+        
+        setBodyContent(conn, sb, responseObject);
         conn.disconnect();
 
         return responseObject;
     }
+
 }

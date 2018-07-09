@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.execution.preferences;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
 
@@ -49,22 +50,6 @@ public class ComposerGenerateCommandPreferenceDefaultValueInitializer extends Ab
         IPreferenceStore store = PreferenceStoreManager
                 .getPreferenceStore(ComposerGenerateCommandPreferenceDefaultValueInitializer.class);
         store.setDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_SUITE_ID, DEFAULT_SUITE_ID);
-        store.setDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_BROWSER, DEFAULT_BROWSER);
-        store.setDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_REMOTE_WEB_DRIVER_TYPE,
-                DEFAULT_REMOTE_WEB_DRIVER_TYPE);
-        store.setDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_REMOTE_WEB_DRIVER_URL,
-                DEFAULT_REMOTE_WEB_DRIVER_URL);
-        store.setDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_MOBILE_DEVICE, DEFAULT_MOBILE_DEVICE);
-        store.setDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_CUSTOM_EXECUTION, DEFAULT_CUSTOM_EXECUTION);
-        store.setDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_REPORT_OUTPUT_LOCATION,
-                DEFAULT_REPORT_OUTPUT_LOCATION);
-        store.setDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_REPORT_USE_RELATIVE_PATH,
-                DEFAULT_REPORT_USE_RELATIVE_PATH);
-        store.setDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_REPORT_OUTPUT_NAME, DEFAULT_REPORT_OUTPUT_NAME);
-        store.setDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_POST_EXECUTION_SEND_REPORT,
-                DEFAULT_POST_EXECUTION_SEND_REPORT);
-        store.setDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_POST_EXECUTION_RECIPIENTS,
-                DEFAULT_POST_EXECUTION_RECIPIENTS);
         store.setDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_DISPLAY_CONSOLE_LOG,
                 DEFAULT_DISPLAY_CONSOLE_LOG);
         store.setDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_NO_CLOSE_CONSOLE_LOG,
@@ -74,6 +59,8 @@ public class ComposerGenerateCommandPreferenceDefaultValueInitializer extends Ab
                 DEFAULT_RETRY_FOR_FAILED_TEST_CASES);
         store.setDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_UPDATE_STATUS_TIME_INTERVAL,
                 DEFAULT_UPDATE_STATUS_TIME_INTERVAL);
+        store.setDefault(GenerateCommandPreferenceConstants.GEN_COMMAND_CONFIGURATION_DESCRIPTION,
+                StringUtils.EMPTY);
     }
 
 }

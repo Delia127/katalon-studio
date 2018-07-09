@@ -61,6 +61,7 @@ public class CheckboxTreeSelectionHelper {
     private void init() {
 
         viewer.addCheckStateListener(new ICheckStateListener() {
+            @Override
             public void checkStateChanged(final CheckStateChangedEvent event) {
 
                 Object node = event.getElement();
@@ -198,6 +199,35 @@ public class CheckboxTreeSelectionHelper {
      */
     public List<Object> getGrayedElements() {
         return Arrays.asList(viewer.getGrayedElements());
+    }
+
+    public void checkAllItems() {
+        Object input = viewer.getInput();
+
+        if (input == null) {
+            return;
+        }
+
+        List<?> inputList = null;
+        if (input != null && input.getClass().isArray()) {
+            inputList = Arrays.asList((Object[]) input);
+        } else if (input != null && input instanceof List<?>) {
+            inputList = (List<?>) input;
+        } else {
+            return;
+        }
+
+        for (Object item : (List<?>) inputList) {
+            checkItem(item);
+        }
+    }
+
+    public void checkItem(Object item) {
+        viewer.setChecked(item, true);
+        List<Object> descendants = getDescendants(item);
+        for (Object node : descendants) {
+            viewer.setChecked(node, true);
+        }
     }
 
     public void checkAllItemInTree(List<HTMLPageElement> elements) {

@@ -1,11 +1,17 @@
 package com.kms.katalon.core.testobject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class TestObject {
+import org.apache.commons.lang.StringUtils;
+
+public class TestObject implements SelectorCollector {
 
     private TestObject parentObject; // Typically is parent Frame
+
+    private boolean isParentObjectShadowRoot;
 
     private List<TestObjectProperty> properties;
 
@@ -15,13 +21,18 @@ public class TestObject {
 
     private boolean useRelativeImagePath;
 
+    private SelectorMethod selectorMethod = SelectorMethod.BASIC;
+    
+    private Map<SelectorMethod, String> selectorCollection;
+
     public TestObject(String objectId) {
-        properties = new ArrayList<TestObjectProperty>();
+        this.properties = new ArrayList<TestObjectProperty>();
+        this.selectorCollection = new HashMap<>();
         this.objectId = objectId;
     }
 
     public TestObject() {
-        properties = new ArrayList<TestObjectProperty>();
+        this(StringUtils.EMPTY);
     }
 
     /**
@@ -171,6 +182,14 @@ public class TestObject {
         this.parentObject = parentObject;
     }
 
+    public boolean isParentObjectShadowRoot() {
+        return isParentObjectShadowRoot;
+    }
+
+    public void setParentObjectShadowRoot(boolean isParentObjectShadowRoot) {
+        this.isParentObjectShadowRoot = isParentObjectShadowRoot;
+    }
+
     /**
      * Get the path of the image this test object contains
      * 
@@ -210,6 +229,24 @@ public class TestObject {
 
     @Override
     public String toString() {
-        return "TestObject - " + getObjectId();
+        return "TestObject - '" + getObjectId() + "'";
+    }
+
+    public SelectorMethod getSelectorMethod() {
+        return selectorMethod;
+    }
+
+
+    public void setSelectorMethod(SelectorMethod selectorMethod) {
+        this.selectorMethod = selectorMethod;
+    }
+
+
+    public void setSelectorValue(SelectorMethod selectorMethod, String selectorValue) {
+        selectorCollection.put(selectorMethod, selectorValue);
+    }
+
+    public Map<SelectorMethod, String> getSelectorCollection() {
+        return selectorCollection;
     }
 }

@@ -70,7 +70,7 @@ public class TypeOnImageKeyword extends WebUIAbstractKeyword {
 
     @CompileStatic
     public void typeOnImage(TestObject to, String text, FailureHandling flowControl) {
-        String imagePath = null
+        String imagePath = to.getImagePath()
         WebUIKeywordMain.runKeyword({
             WebUiCommonHelper.checkTestObjectParameter(to)
             if (imagePath == null || imagePath.equals("")) {
@@ -80,10 +80,8 @@ public class TypeOnImageKeyword extends WebUIAbstractKeyword {
                 throw new IllegalArgumentException(StringConstants.COMM_EXC_TEXT_IS_NULL)
             }
             logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_TYPING_ON_IMG_X, imagePath))
-            // Relative path?
             if (to.getUseRelativeImagePath()) {
-                String currentDirFilePath = new File(RunConfiguration.getProjectDir()).getAbsolutePath()
-                imagePath = currentDirFilePath + File.separator + imagePath
+                imagePath = PathUtil.relativeToAbsolutePath(imagePath, RunConfiguration.getProjectDir())
             }
             screenUtil.typeOnImage(imagePath, text)
             logger.logPassed(MessageFormat.format(StringConstants.KW_LOG_PASSED_TYPED_ON_IMG_X, imagePath))

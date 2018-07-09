@@ -16,7 +16,6 @@ Require-Bundle: com.kms.katalon.entity;bundle-version="1.0.0",
  com.kms.katalon.constant,
  org.apache.commons.lang,
  org.apache.commons.io,
- io.appium.java-client,
  com.kms.katalon.controller,
  org.eclipse.e4.ui.workbench,
  com.kms.katalon.composer.components.impl,
@@ -41,13 +40,22 @@ Require-Bundle: com.kms.katalon.entity;bundle-version="1.0.0",
  com.kms.katalon.composer.folder,
  com.kms.katalon.preferences,
  com.kms.katalon.composer.mobile,
- com.kms.katalon.composer.resources
+ com.kms.katalon.composer.resources,
+ com.kms.katalon.integration.kobiton,
+ org.apache.httpcomponents.httpcore,
+ org.apache.httpcomponents.httpclient,
+ com.kms.katalon.execution.webui,
+ com.kms.katalon.core.webui,
+ org.apache.commons.lang3
 Bundle-ClassPath: .
-Export-Package: com.kms.katalon.composer.mobile.objectspy.dialog,
+Export-Package: com.kms.katalon.composer.mobile.objectspy.components,
+ com.kms.katalon.composer.mobile.objectspy.dialog,
  com.kms.katalon.composer.mobile.objectspy.element,
  com.kms.katalon.composer.mobile.objectspy.element.impl,
  com.kms.katalon.composer.mobile.objectspy.element.tree,
- com.kms.katalon.composer.mobile.objectspy.preferences,
- com.kms.katalon.composer.mobile.objectspy.util
-Import-Package: com.kms.katalon.composer.mobile.util
+ com.kms.katalon.composer.mobile.objectspy.preferences, 
+ com.kms.katalon.composer.mobile.objectspy.util,
+ com.kms.katalon.composer.mobile.objectspy.viewer
+Import-Package: com.kms.katalon.composer.handlers,
+ com.kms.katalon.composer.mobile.util
 

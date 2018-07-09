@@ -161,6 +161,8 @@ public class ComposerTestcaseMessageConstants extends NLS {
 
     public static String PA_TAB_INTEGRATION;
 
+    public static String PA_TAB_PROPERTIES;
+
     public static String PA_ERROR_MSG_PLS_FIX_ERROR_IN_SCRIPT;
 
     public static String PARSING_SCRIPT_PROGRESS_NAME;
@@ -182,6 +184,8 @@ public class ComposerTestcaseMessageConstants extends NLS {
     public static String PA_BTN_TIP_MOVE_UP;
 
     public static String PA_BTN_TIP_MOVE_DOWN;
+
+    public static String PA_BTN_TIP_RECENT;
 
     public static String PA_COL_INDEX;
 
@@ -242,8 +246,6 @@ public class ComposerTestcaseMessageConstants extends NLS {
     public static String PREF_MANUAL_LBL_LINE_WIDTH;
 
     public static String PREF_MANUAL_MSG_UNABLE_TO_UPDATE;
-
-    public static String TITLE_DLD_WARN_REFRESH_TEST_CASE_HAVE_UNSAVED_CHANGES;
 
     public static String TREE_ASSERT_STATEMENT;
 
@@ -328,8 +330,6 @@ public class ComposerTestcaseMessageConstants extends NLS {
     public static String EDI_TITLE_TEST_DATA_BROWSER;
     
     public static String MENU_OPEN;
-
-    public static String MSG_DLD_WARN_REFRESH_TEST_CASE_HAVE_UNSAVED_CHANGES;
     
     public static String LABEL_PARAMETER_LIST;
 
@@ -348,7 +348,25 @@ public class ComposerTestcaseMessageConstants extends NLS {
     public static String OBJECT_VARIABLE_TABLE_COL_VALUE;
 
     public static String OBJECT_VARIABLE_TABLE_COL_VALUE_TYPE;
+    
+    //TestCaseVariablePart
+    public static String PA_COL_MASKED;
+    
+    public static String PA_COL_MASKED_TOOLTIP;
 
+    //Text Encryption Dialog
+    public static String DIA_TITLE_TEXT_ENCRYPTION;
+    
+    public static String LBL_RAW_TEXT;
+    
+    public static String LBL_ENCRYPTED_TEXT;
+    
+    public static String BTN_INSERT;
+    
+    public static String BTN_COPY_AND_CLOSE;
+    
+    public static String BTN_CANCEL;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerTestcaseMessageConstants.class);

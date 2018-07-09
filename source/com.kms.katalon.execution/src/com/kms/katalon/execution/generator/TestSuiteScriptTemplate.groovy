@@ -35,13 +35,6 @@ import com.kms.katalon.groovy.util.GroovyStringUtil
 public class TestSuiteScriptTemplate {
     private static final String tpl ='''<% importNames.each { %>import <%= it %>
 <% } %>
-
-<% testCaseIds.eachWithIndex { item, index -> %>
-def static runTestCase_<%= index %>() {
-    TestCaseMain.runTestCase('<%= item %>', <%= testCaseBindings.get(index) %>, FailureHandling.STOP_ON_FAILURE)
-}
-<% } %>
-
 Map<String, String> suiteProperties = new HashMap<String, String>();
 
 <% configProperties.each { k, v -> %>
@@ -56,15 +49,7 @@ RunConfiguration.setExecutionSettingFile("<%= executionConfigFilePath %>")
 
 TestCaseMain.beforeStart()
 
-KeywordLogger.getInstance().startSuite('<%= testSuite.getName() %>', suiteProperties)
-
-(0..<%= testCaseIds.size() - 1 %>).each {
-    "<%= trigger %>"()
-}
-
-<%= isQuitDriversAfterRun ? "DriverCleanerCollector.getInstance().cleanDriversAfterRunningTestSuite()" : "" %>
-
-KeywordLogger.getInstance().endSuite('<%= testSuite.getName() %>', null)
+TestCaseMain.startTestSuite('<%= testSuite.getIdForDisplay() %>', suiteProperties, <%=  testCaseBindings %>)
 '''
     private static final String STATIC = "static";
 
@@ -89,7 +74,8 @@ KeywordLogger.getInstance().endSuite('<%= testSuite.getName() %>', null)
             RunConfiguration.class.getName(),
             buildStaticImportName(TestCaseFactory.class.getName(), METHOD_FIND_TEST_CASE),
             buildStaticImportName(ObjectRepository.class.getName(), METHOD_FIND_TEST_OBJECT),
-            buildStaticImportName(TestDataFactory.class.getName(), METHOD_FIND_TEST_DATA)
+            buildStaticImportName(TestDataFactory.class.getName(), METHOD_FIND_TEST_DATA),
+            "internal.GlobalVariable as GlobalVariable"
         ]
 
         def driverCleaners = []
@@ -114,7 +100,8 @@ KeywordLogger.getInstance().endSuite('<%= testSuite.getName() %>', null)
             "configProperties" : ExecutionUtil.escapeGroovy(testSuiteExecutedEntity.getAttributes()),
             "executionConfigFilePath" : GroovyStringUtil.escapeGroovy(runConfig.getExecutionSetting().getSettingFilePath()),
             "driverCleaners" : driverCleaners,
-            "isQuitDriversAfterRun" : ExecutionUtil.isQuitDriversAfterExecuting(),
+            "isQuitDriversAfterTestCase" : ExecutionUtil.isQuitDriversAfterExecutingTestCase(),
+            "isQuitDriversAfterRun" : ExecutionUtil.isQuitDriversAfterExecutingTestSuite(),
             "trigger": 'runTestCase_${it}'
         ]
 

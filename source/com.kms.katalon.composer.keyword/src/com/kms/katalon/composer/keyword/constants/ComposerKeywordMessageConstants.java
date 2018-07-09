@@ -58,6 +58,12 @@ public class ComposerKeywordMessageConstants extends NLS {
     public static String HAND_ERROR_MSG_EXCEED_PKG_NAME_LENGTH;
 
     public static String HAND_ERROR_MSG_EXCEED_CLASS_NAME_LENGTH;
+    
+    public static String DIA_LBL_GENERATE_SAMPLE_FOR_WEB;
+    
+    public static String DIA_LBL_GENERATE_SAMPLE_FOR_MOBILE;
+    
+    public static String DIA_LBL_GENERATE_SAMPLE_FOR_API;
 
     static {
         // initialize resource bundle

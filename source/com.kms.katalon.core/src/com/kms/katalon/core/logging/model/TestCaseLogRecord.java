@@ -10,6 +10,7 @@ public class TestCaseLogRecord extends AbstractLogRecord {
 
     public TestCaseLogRecord(String name) {
         super(name);
+        setType(ILogRecord.LOG_TYPE_TEST_CASE);
     }
 
     /**
@@ -40,13 +41,13 @@ public class TestCaseLogRecord extends AbstractLogRecord {
 
     @Override
     public TestStatus getStatus() {
-        TestStatus testStatus = super.getStatus(); 
+        TestStatus testStatus = super.getStatus();
 
         if (isInterrupted()) {
             testStatus.setStatusValue(TestStatusValue.INCOMPLETE);
             return testStatus;
         }
-        
+
         if (getChildRecords().length == 0) {
             testStatus.setStatusValue(TestStatusValue.PASSED);
             if (childRecords.size() > 0) {

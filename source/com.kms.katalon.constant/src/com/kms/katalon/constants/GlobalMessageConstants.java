@@ -96,8 +96,12 @@ public class GlobalMessageConstants extends NLS {
     public static String REPORT;
 
     public static String CHECKPOINT;
+    
+    public static String TEST_LISTENER;
 
     public static String OBJECT_SPY;
+
+    public static String WEB_RECORDER;
 
     public static String RUN;
 
@@ -114,6 +118,8 @@ public class GlobalMessageConstants extends NLS {
     public static String IMAGE;
 
     public static String DESCRIPTION;
+
+    public static String SUMMARY;
 
     public static String INFORMATION;
 
@@ -163,6 +169,10 @@ public class GlobalMessageConstants extends NLS {
 
     public static String ROOT_FOLDER_NAME_CHECKPOINT;
 
+    public static String ROOT_FOLDER_NAME_PROFILES;
+
+    public static String ROOT_FOLDER_NAME_TEST_LISTENER;
+
     public static String FILE_NAME_GLOBAL_VARIABLE;
 
     public static String NULL;
@@ -194,6 +204,18 @@ public class GlobalMessageConstants extends NLS {
     public static String CREATED_DATE;
 
     public static String MODIFIED_DATE;
+
+    public static String RECENT;
+    
+    public static String OBJECT_FOLDER;
+
+    public static String ELAPSED;
+
+    public static String SIZE;
+    
+    public static String APPIUM_INSTALLATION_GUIDE_MSG;
+
+    public static String URL_TROUBLESHOOTING_MOBILE_TESTING;
 
     static {
         // initialize resource bundle

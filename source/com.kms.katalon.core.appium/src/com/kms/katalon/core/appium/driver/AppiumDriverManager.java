@@ -33,6 +33,7 @@ import com.kms.katalon.core.driver.DriverType;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.util.ConsoleCommandExecutor;
+import com.kms.katalon.core.util.internal.ProcessUtil;
 
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.ios.IOSDriver;
@@ -45,6 +46,8 @@ public class AppiumDriverManager {
     public static final String WDA_LOCAL_PORT = "wdaLocalPort";
 
     public static final String REAL_DEVICE_LOGGER = "realDeviceLogger";
+
+    public static final String UIAUTOMATOR2 = "uiautomator2";
 
     public static final String XCUI_TEST = "XCUITest";
 
@@ -164,7 +167,7 @@ public class AppiumDriverManager {
         KeywordLogger.getInstance().logInfo(MSG_START_IOS_WEBKIT_SUCCESS + freePort);
     }
 
-    private static boolean isAppiumServerStarted(int timeToWait) {
+    public static boolean isAppiumServerStarted(int timeToWait) {
         if (localStorageAppiumServer.get() == null) {
             return false;
         }
@@ -222,11 +225,11 @@ public class AppiumDriverManager {
     }
 
     private static boolean isAndroidDriverType(DriverType driverType) {
-        return StringUtils.equals(AppiumStringConstants.ANDROID, driverType.toString());
+        return driverType != null && StringUtils.equals(AppiumStringConstants.ANDROID, driverType.toString());
     }
 
     private static boolean isIOSDriverType(DriverType driverType) {
-        return StringUtils.equals(AppiumStringConstants.IOS, driverType.toString());
+        return driverType != null && StringUtils.equals(AppiumStringConstants.IOS, driverType.toString());
     }
 
     public static void startAppiumServerJS(int timeout, Map<String, String> environmentVariables)
@@ -271,8 +274,11 @@ public class AppiumDriverManager {
         }
         ProcessBuilder pb = new ProcessBuilder(cmdList.toArray(new String[cmdList.size()]));
         pb.environment().putAll(environmentVariables);
-        pb.redirectOutput(new File(RunConfiguration.getAppiumLogFilePath()));
+
+        final String appiumLogFilePath = RunConfiguration.getAppiumLogFilePath();
+        pb.redirectOutput(new File(appiumLogFilePath));
         localStorageAppiumServer.set(pb.start());
+        new Thread(AppiumOutputStreamHandler.create(appiumLogFilePath, System.out)).start();
     }
 
     private static File findNodeInCurrentFileSystem() {
@@ -412,33 +418,56 @@ public class AppiumDriverManager {
     @SuppressWarnings("rawtypes")
     public static AppiumDriver<?> createMobileDriver(DriverType driverType, DesiredCapabilities capabilities,
             URL appiumServerUrl) throws MobileDriverInitializeException {
-        int time = 0;
-        long currentMilis = System.currentTimeMillis();
-        int timeOut = RunConfiguration.getTimeOut();
-        while (time < timeOut) {
-            try {
-                AppiumDriver<?> driver = null;
-                if (isIOSDriverType(driverType)) {
-                    driver = new IOSDriver(appiumServerUrl, capabilities);
-                } else if (isAndroidDriverType(driverType)) {
-                    driver = new SwipeableAndroidDriver(appiumServerUrl, capabilities);
+        try {
+            int time = 0;
+            long currentMilis = System.currentTimeMillis();
+            int timeOut = RunConfiguration.getTimeOut();
+            while (time < timeOut) {
+                try {
+                    AppiumDriver<?> driver = null;
+                    if (isIOSDriverType(driverType)) {
+                        driver = new IOSDriver(appiumServerUrl, capabilities);
+                    } else if (isAndroidDriverType(driverType)) {
+                        driver = new SwipeableAndroidDriver(appiumServerUrl, capabilities);
+                    }
+                    if (driver == null) {
+                        throw new MobileDriverInitializeException(MessageFormat
+                                .format(AppiumStringConstants.CANNOT_START_MOBILE_DRIVER_INVALID_TYPE, driver));
+                    }
+                    localStorageAppiumDriver.set(driver);
+                    new AppiumRequestService(appiumServerUrl.toString()).logAppiumInfo();
+
+                    int timeout = RunConfiguration.getTimeOut();
+                    if (timeout >= 0) {
+                        driver.manage().timeouts().implicitlyWait(timeout, TimeUnit.SECONDS);
+                    }
+                    return driver;
+                } catch (UnreachableBrowserException e) {
+                    long newMilis = System.currentTimeMillis();
+                    time += ((newMilis - currentMilis) / 1000);
+                    currentMilis = newMilis;
+                    continue;
                 }
-                if (driver == null) {
-                    throw new MobileDriverInitializeException(MessageFormat
-                            .format(AppiumStringConstants.CANNOT_START_MOBILE_DRIVER_INVALID_TYPE, driver));
-                }
-                localStorageAppiumDriver.set(driver);
-                new AppiumRequestService(appiumServerUrl.toString()).logAppiumInfo();
-                return driver;
-            } catch (UnreachableBrowserException e) {
-                long newMilis = System.currentTimeMillis();
-                time += ((newMilis - currentMilis) / 1000);
-                currentMilis = newMilis;
-                continue;
             }
+            throw new MobileDriverInitializeException(
+                    MessageFormat.format(AppiumStringConstants.CANNOT_CONNECT_TO_APPIUM_AFTER_X, timeOut));
+        } finally {
+            logMobileRunData();
         }
-        throw new MobileDriverInitializeException(
-                MessageFormat.format(AppiumStringConstants.CANNOT_CONNECT_TO_APPIUM_AFTER_X, timeOut));
+    }
+
+    private static void logMobileRunData() {
+        KeywordLogger logger = KeywordLogger.getInstance();
+        if (logger != null) {
+            logger.logRunData(EXECUTED_DEVICE_ID, getDeviceId(StringConstants.CONF_PROPERTY_MOBILE_DRIVER));
+            logger.logRunData(EXECUTED_DEVICE_NAME, getDeviceName(StringConstants.CONF_PROPERTY_MOBILE_DRIVER));
+            logger.logRunData(EXECUTED_DEVICE_MODEL, getDeviceModel(StringConstants.CONF_PROPERTY_MOBILE_DRIVER));
+            logger.logRunData(EXECUTED_DEVICE_MANUFACTURER,
+                    getDeviceManufacturer(StringConstants.CONF_PROPERTY_MOBILE_DRIVER));
+            logger.logRunData(EXECUTED_DEVICE_OS, getDeviceOS(StringConstants.CONF_PROPERTY_MOBILE_DRIVER));
+            logger.logRunData(EXECUTED_DEVICE_OS_VERSON,
+                    getDeviceOSVersion(StringConstants.CONF_PROPERTY_MOBILE_DRIVER));
+        }
     }
 
     public static void closeDriver() {
@@ -452,20 +481,37 @@ public class AppiumDriverManager {
     }
 
     public static void quitServer() {
-        KeywordLogger.getInstance().logInfo("quitServer");
         if (localStorageAppiumServer.get() != null && localStorageAppiumServer.get().isAlive()) {
-            localStorageAppiumServer.get().destroy();
-            localStorageAppiumServer.set(null);
+            try {
+                ProcessUtil.terminateProcess(localStorageAppiumServer.get());
+            } catch (ReflectiveOperationException | IOException e) {
+                KeywordLogger.getInstance().logInfo("Error when trying to stop Appium Server: " + e.getMessage());
+            } finally {
+                localStorageAppiumServer.set(null);
+            }
         }
         if (localStorageWebProxyProcess.get() != null) {
-            localStorageWebProxyProcess.get().destroy();
-            localStorageWebProxyProcess.set(null);
+            try {
+                ProcessUtil.terminateProcess(localStorageWebProxyProcess.get());
+            } catch (ReflectiveOperationException | IOException e) {
+                KeywordLogger.getInstance().logInfo("Error when trying to stop Web Proxy Server: " + e.getMessage());
+            } finally {
+                localStorageWebProxyProcess.set(null);
+            }
         }
     }
 
     public static AppiumDriver<?> getDriver() throws StepFailedException {
         verifyWebDriverIsOpen();
         return localStorageAppiumDriver.get();
+    }
+
+    public static Process getAppiumSeverProcess() {
+        return localStorageAppiumServer.get();
+    }
+
+    public static Process getIosWebKitProcess() {
+        return localStorageWebProxyProcess.get();
     }
 
     private static void verifyWebDriverIsOpen() throws StepFailedException {

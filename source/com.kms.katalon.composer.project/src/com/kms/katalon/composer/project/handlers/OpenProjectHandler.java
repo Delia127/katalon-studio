@@ -9,7 +9,7 @@ import javax.inject.Named;
 
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -98,6 +98,15 @@ public class OpenProjectHandler {
         doOpenProject(shell, projectPk, sync, eventBroker, partService, modelService, application);
     }
 
+    @Inject
+    @Optional
+    private void restoreOpenProjectEventHandler(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
+            @UIEventTopic(EventConstants.PROJECT_OPEN_LATEST) final String projectPk) throws InvocationTargetException,
+            InterruptedException {
+        doOpenProject(shell, projectPk, sync, eventBroker, partService, modelService, application);
+        eventBroker.post(EventConstants.PROJECT_RESTORE_SESSION, null);
+    }
+
     public static void doOpenProject(Shell shell, final String projectPk, final UISynchronize syncService,
             final IEventBroker eventBrokerService, EPartService partService, final EModelService modelService,
             final MApplication application) throws InvocationTargetException, InterruptedException {
@@ -109,10 +118,11 @@ public class OpenProjectHandler {
             public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                 try {
                     monitor.beginTask(StringConstants.HAND_OPENING_PROJ, 10);
+                    SubMonitor progress = SubMonitor.convert(monitor, 10);
                     monitor.worked(1);
                     monitor.subTask(StringConstants.HAND_LOADING_PROJ);
                     final ProjectEntity project = ProjectController.getInstance().openProjectForUI(projectPk,
-                            new SubProgressMonitor(monitor, 7, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK));
+                            progress.newChild(7, SubMonitor.SUPPRESS_SUBTASK));
                     monitor.subTask(StringConstants.HAND_REFRESHING_EXPLORER);
                     syncService.syncExec(new Runnable() {
                         @Override
@@ -133,6 +143,7 @@ public class OpenProjectHandler {
                     monitor.worked(1);
                     LauncherManager.refresh();
                     eventBrokerService.post(EventConstants.JOB_REFRESH, null);
+                    eventBrokerService.post(EventConstants.CONSOLE_LOG_RESET, null);
                     monitor.worked(1);
 
                     TimeUnit.SECONDS.sleep(1);

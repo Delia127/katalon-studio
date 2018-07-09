@@ -1,7 +1,11 @@
 package com.kms.katalon.core.setting;
 
+
 import java.io.File;
 import java.io.IOException;
+import java.security.GeneralSecurityException;
+
+import com.kms.katalon.util.CryptoUtil;
 
 public class BundleSettingStore {
     private String bundleId;
@@ -20,8 +24,8 @@ public class BundleSettingStore {
     }
 
     protected File getPropertyFile() throws IOException {
-        File file = new File(projectDir, parentSettingFolder + File.separator + bundleId
-                + PropertySettingStoreUtil.PROPERTY_FILE_EXENSION);
+        File file = new File(projectDir,
+                parentSettingFolder + File.separator + bundleId + PropertySettingStoreUtil.PROPERTY_FILE_EXENSION);
         if (!file.exists()) {
             file.createNewFile();
         }
@@ -41,8 +45,8 @@ public class BundleSettingStore {
     }
 
     private Object getValue(String key, Class<?> castType, Object defaultValueIfNotDefined) throws IOException {
-        Object storedValue = PropertySettingStoreUtil.getValue(PropertySettingStoreUtil.getPropertyValue(key,
-                getPropertyFile()));
+        Object storedValue = PropertySettingStoreUtil
+                .getValue(PropertySettingStoreUtil.getPropertyValue(key, getPropertyFile()));
         if (castType != null && castType.isInstance(storedValue)) {
             return storedValue;
         }
@@ -60,5 +64,17 @@ public class BundleSettingStore {
 
     public String getString(String key, String defaultValue) throws IOException {
         return (String) getValue(key, String.class, defaultValue);
+    }
+
+    public String getStringProperty(String key, String defaultValue, boolean shouldDecrypt)
+            throws GeneralSecurityException, IOException {
+        String storedValue = getString(key, defaultValue);
+        return shouldDecrypt ? CryptoUtil.decode(CryptoUtil.getDefault(storedValue)) : storedValue;
+    }
+    
+    public void setStringProperty(String key, String rawValue, boolean shouldEncrypt)
+            throws GeneralSecurityException, IOException {
+        String storedValue = shouldEncrypt ? CryptoUtil.encode(CryptoUtil.getDefault(rawValue)) : rawValue;
+        setProperty(key, storedValue);
     }
 }

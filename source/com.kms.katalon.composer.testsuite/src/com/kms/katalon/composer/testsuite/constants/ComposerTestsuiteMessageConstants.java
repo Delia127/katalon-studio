@@ -67,6 +67,10 @@ public class ComposerTestsuiteMessageConstants extends NLS {
 
     public static String HAND_ERROR_MSG_UNABLE_TO_RENAME_TEST_SUITE;
 
+    public static String LBL_SET_TEST_DATA;
+
+    public static String LBL_SET_TYPE;
+
     public static String LIS_TITLE_TEST_DATA_BROWSER;
 
     public static String LIS_ERROR_MSG_UNABLE_TO_ADD_TEST_DATA;
@@ -76,6 +80,8 @@ public class ComposerTestsuiteMessageConstants extends NLS {
     public static String LIS_INFO_SELECT_A_TEST_CASE;
 
     public static String PA_TAB_MAIN;
+    
+    public static String PA_TAB_SCRIPT;
 
     public static String PA_TAB_INTEGRATION;
 
@@ -160,6 +166,8 @@ public class ComposerTestsuiteMessageConstants extends NLS {
     public static String BTN_SHOW_DATA_BINDING;
 
     public static String BTN_HIDE_DATA_BINDING;
+
+    public static String TOOLTIP_MAP_ALL;
 
     static {
         // initialize resource bundle

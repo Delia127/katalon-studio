@@ -1,7 +1,5 @@
 package com.kms.katalon.composer.execution.menu;
 
-import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,10 +19,10 @@ import com.kms.katalon.composer.components.menu.MenuFactory;
 import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.helper.ConstantsHelper;
-import com.kms.katalon.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
 import com.kms.katalon.execution.session.ExecutionSession;
 import com.kms.katalon.execution.session.ExecutionSessionSocketServer;
+import com.kms.katalon.execution.setting.ExecutionDefaultSettingStore;
 
 @SuppressWarnings("restriction")
 public abstract class AbstractExecutionMenuContribution {
@@ -47,7 +45,7 @@ public abstract class AbstractExecutionMenuContribution {
         }
     }
 
-    private void aboutToShowWithExisting(List<MMenuElement> menuItems, List<ExecutionSession> exisingDrivers) {
+    protected void aboutToShowWithExisting(List<MMenuElement> menuItems, List<ExecutionSession> exisingDrivers) {
         MMenu executionMenu = createExecutionMenu();
 
         MHandledMenuItem defaultMenuItem = createDefaultMenuItem();
@@ -82,11 +80,11 @@ public abstract class AbstractExecutionMenuContribution {
 
     protected MMenu createExecutionMenu() {
         String menuLabel = getMenuLabel();
-        String defaultItemLabel = getPreferenceStore(ExecutionPreferenceConstants.EXECUTION_QUALIFIER)
-                .getString(ExecutionPreferenceConstants.EXECUTION_DEFAULT_CONFIGURATION);
+        String defaultItemLabel = ExecutionDefaultSettingStore.getStore().getExecutionConfiguration();
         if (defaultItemLabel.equals(menuLabel)) {
             menuLabel += ExecutionHandledMenuItem.DEFAULT_LABEL;
         }
+
         MMenu executionMenu = MenuFactory.createPopupMenu(menuLabel, ConstantsHelper.getApplicationURI());
         executionMenu.setIconURI(getIconUri());
         executionMenu.setTooltip(null);

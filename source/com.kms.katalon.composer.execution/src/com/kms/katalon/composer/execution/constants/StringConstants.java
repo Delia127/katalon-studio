@@ -3,6 +3,9 @@ package com.kms.katalon.composer.execution.constants;
 import com.kms.katalon.constants.GlobalStringConstants;
 
 public class StringConstants extends GlobalStringConstants {
+    
+    //MailSettingsPage
+    public static final String EMAIL_TEMPLATE_PAGE_ID = "com.kms.katalon.composer.execution.page.emailTemplate";
 
     // TestExecutionAddon
     public static final String KATALON_COMPOSER_EXECUTION_BUNDLE_URI = "bundleclass://com.kms.katalon.composer.execution/";
@@ -83,8 +86,6 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String PA_LBL_START = ComposerExecutionMessageConstants.PA_LBL_START;
 
-    public static final String PA_LBL_END = ComposerExecutionMessageConstants.PA_LBL_END;
-
     public static final String PA_LBL_ELAPSED_TIME = ComposerExecutionMessageConstants.PA_LBL_ELAPSED_TIME;
 
     public static final String PA_LBL_MESSAGE = MESSAGE + ":";
@@ -135,8 +136,6 @@ public class StringConstants extends GlobalStringConstants {
     public static final String TRACE_WARN_MSG_UNABLE_TO_OPEN_KEYWORD_FILE = ComposerExecutionMessageConstants.TRACE_WARN_MSG_UNABLE_TO_OPEN_KEYWORD_FILE;
 
     // ExecutionPreferencePage
-    public static final String PREF_GRP_DEFAULT_EXECUTION_CONFIG = ComposerExecutionMessageConstants.PREF_GRP_DEFAULT_EXECUTION_CONFIG;
-
     public static final String PREF_LBL_DEFAULT_IMPLICIT_TIMEOUT = ComposerExecutionMessageConstants.PREF_LBL_DEFAULT_IMPLICIT_TIMEOUT;
 
     public static final String PREF_GRP_POST_EXECUTION_OPTIONS = ComposerExecutionMessageConstants.PREF_GRP_POST_EXECUTION_OPTIONS;
@@ -166,7 +165,7 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String PREF_LBL_SIGNATURE = ComposerExecutionMessageConstants.PREF_LBL_SIGNATURE;
 
-    public static final String PREF_LBL_SEND_ATTACHMENT = ComposerExecutionMessageConstants.PREF_LBL_SEND_ATTACHMENT;
+    public static final String PREF_LBL_INCLUDE_ATTACHMENT = ComposerExecutionMessageConstants.PREF_LBL_INCLUDE_ATTACHMENT;
 
     public static final String PREF_GROUP_LBL_EXECUTION_MAIL = ComposerExecutionMessageConstants.PREF_GROUP_LBL_EXECUTION_MAIL;
 

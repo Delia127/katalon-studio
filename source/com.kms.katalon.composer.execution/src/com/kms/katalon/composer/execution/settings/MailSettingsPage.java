@@ -2,19 +2,23 @@ package com.kms.katalon.composer.execution.settings;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URISyntaxException;
+import java.security.GeneralSecurityException;
 import java.text.MessageFormat;
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.VerifyEvent;
@@ -25,21 +29,23 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.dialogs.MessageDialogWithLink;
 import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
-import com.kms.katalon.composer.components.impl.dialogs.AddMailRecipientDialog;
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.constants.DocumentationMessageConstants;
+import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.controller.TestSuiteController;
+import com.kms.katalon.core.setting.ReportFormatType;
 import com.kms.katalon.execution.entity.EmailConfig;
 import com.kms.katalon.execution.setting.EmailSettingStore;
 import com.kms.katalon.execution.util.MailUtil;
@@ -56,20 +62,34 @@ public class MailSettingsPage extends PreferencePageWithHelp {
 
     private EmailSettingStore store;
 
-    private Text txtHost, txtPort, txtUsername, txtPassword, txtSignature;
+    private Text txtHost, txtPort, txtUsername, txtPassword;
 
     private Combo comboProtocol;
 
     private Button btnChkAttachment;
 
-    private ListViewer listViewerRecipients;
+    private Text txtRecipients, txtSubject, txtCc, txtBcc;
 
-    private Button btnAddRecipient, btnDeleteRecipient, btnClearRecipient;
+    private Link lnkEditTemplate;
+
+    private Button btnSendTestEmail;
+
+    private EmailConfigValidator validator;
+
+    private Group grpReportFormatOptions;
+
+    private Composite attachmentOptionsComposite;
+
+    private Map<ReportFormatType, Button> formatOptionCheckboxes;
+
+    private Button chckEncrypt;
 
     public MailSettingsPage() {
         super();
         noDefaultButton();
         store = new EmailSettingStore(ProjectController.getInstance().getCurrentProject());
+        validator = new EmailConfigValidator();
+        formatOptionCheckboxes = new HashMap<>();
     }
 
     public EmailSettingStore getSettingStore() {
@@ -84,6 +104,12 @@ public class MailSettingsPage extends PreferencePageWithHelp {
 
         createPostExecuteGroup(container);
 
+        createReportFormatGroup(container);
+
+        createSendTestEmailButton(container);
+
+        registerControlListers();
+
         updateInput();
 
         return container;
@@ -92,18 +118,145 @@ public class MailSettingsPage extends PreferencePageWithHelp {
     private void updateInput() {
         try {
             EmailSettingStore settingStore = getSettingStore();
-            txtHost.setText(settingStore.getHost());
-            txtPort.setText(settingStore.getPort());
-            txtUsername.setText(settingStore.getUsername());
-            txtPassword.setText(settingStore.getPassword());
-            txtSignature.setText(settingStore.getSignature());
-            comboProtocol.setText(settingStore.getProtocol());
+            boolean encrytionEnabled = settingStore.isEncryptionEnabled();
+            chckEncrypt.setSelection(encrytionEnabled);
+            txtHost.setText(settingStore.getHost(encrytionEnabled));
+            txtPort.setText(settingStore.getPort(encrytionEnabled));
+            txtUsername.setText(settingStore.getUsername(encrytionEnabled));
+            txtPassword.setText(settingStore.getPassword(encrytionEnabled));
+            comboProtocol.setText(settingStore.getProtocol(encrytionEnabled));
             btnChkAttachment.setSelection(settingStore.isAddAttachment());
-            listViewerRecipients
-                    .setInput(TestSuiteController.getInstance().mailRcpStringToArray(settingStore.getRecipients()));
-        } catch (IOException e) {
+            updateReportFormatOptionsStatus();
+
+            txtRecipients.setText(settingStore.getRecipients(encrytionEnabled));
+            txtCc.setText(settingStore.getEmailCc());
+            txtBcc.setText(settingStore.getEmailBcc());
+            txtSubject.setText(settingStore.getEmailSubject());
+
+            settingStore.getReportFormatOptions().forEach(format -> {
+                formatOptionCheckboxes.get(format).setSelection(true);
+            });
+        } catch (IOException | GeneralSecurityException e) {
             LoggerSingleton.logError(e);
         }
+    }
+
+    private void registerControlListers() {
+        lnkEditTemplate.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.SETTINGS_PAGE_CHANGE,
+                        StringConstants.EMAIL_TEMPLATE_PAGE_ID);
+            }
+        });
+
+        btnSendTestEmail.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                EmailConfig emailConfig = new EmailConfig();
+                emailConfig.setFrom(txtUsername.getText());
+                emailConfig.setUsername(txtUsername.getText());
+                emailConfig.setHost(txtHost.getText());
+                emailConfig.setPassword(txtPassword.getText());
+                emailConfig.setPort(txtPort.getText());
+                emailConfig.setSecurityProtocol(MailSecurityProtocolType.valueOf(comboProtocol.getText()));
+                emailConfig.addRecipients(txtRecipients.getText());
+                emailConfig.setSubject(txtSubject.getText());
+                emailConfig.setCc(txtCc.getText());
+                emailConfig.setBcc(txtBcc.getText());
+                emailConfig.setAttachmentOptions(getSelectedAttachmentOptions());
+                try {
+                    emailConfig.setHtmlMessage(getSettingStore().getEmailHTMLTemplate());
+                } catch (IOException | URISyntaxException ex) {
+                    LoggerSingleton.logError(ex);
+                }
+                sendTestEmail(emailConfig);
+            }
+        });
+
+        txtPort.addVerifyListener(new VerifyListener() {
+
+            @Override
+            public void verifyText(VerifyEvent e) {
+                e.doit = StringUtils.isNumeric(e.text);
+                if (e.doit) {
+                    setValidationAndEnableSendEmail("port", StringUtils.isNotEmpty(e.text));
+                }
+            }
+        });
+
+        txtHost.addModifyListener(new ModifyListener() {
+            @Override
+            public void modifyText(ModifyEvent e) {
+                setValidationAndEnableSendEmail("host", StringUtils.isNotEmpty(txtHost.getText()));
+            }
+        });
+
+        txtPassword.addModifyListener(new ModifyListener() {
+            @Override
+            public void modifyText(ModifyEvent e) {
+                setValidationAndEnableSendEmail("password", StringUtils.isNotEmpty(txtPassword.getText()));
+            }
+        });
+
+        txtUsername.addModifyListener(new ModifyListener() {
+            @Override
+            public void modifyText(ModifyEvent e) {
+                setValidationAndEnableSendEmail("username", validator.isValidEmail(txtUsername.getText()));
+            }
+        });
+
+        txtRecipients.addModifyListener(new ModifyListener() {
+            @Override
+            public void modifyText(ModifyEvent e) {
+                setValidationAndEnableSendEmail("recipients", validator.isValidListEmail(txtRecipients.getText()));
+            }
+        });
+
+        txtCc.addModifyListener(new ModifyListener() {
+            @Override
+            public void modifyText(ModifyEvent e) {
+                String text = txtCc.getText();
+                setValidationAndEnableSendEmail("cc", StringUtils.isBlank(text) || validator.isValidEmail(text));
+            }
+        });
+
+        txtBcc.addModifyListener(new ModifyListener() {
+            @Override
+            public void modifyText(ModifyEvent e) {
+                String text = txtBcc.getText();
+                setValidationAndEnableSendEmail("bcc", StringUtils.isBlank(text) || validator.isValidEmail(text));
+            }
+        });
+
+        btnChkAttachment.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                updateReportFormatOptionsStatus();
+            }
+        });
+    }
+
+    private List<ReportFormatType> getSelectedAttachmentOptions() {
+        return formatOptionCheckboxes.entrySet()
+                .stream()
+                .filter(e -> e.getValue().getSelection())
+                .map(e -> e.getKey())
+                .collect(Collectors.toList());
+    }
+
+    private void updateReportFormatOptionsStatus() {
+        ControlUtils.recursiveSetEnabled(attachmentOptionsComposite, btnChkAttachment.getSelection());
+    }
+
+    private void setValidationAndEnableSendEmail(String property, boolean validated) {
+        validator.setValidation(property, validated);
+        btnSendTestEmail.setEnabled(validator.isValidated());
+    }
+
+    @Override
+    protected void performApply() {
+        super.performApply();
     }
 
     @Override
@@ -112,139 +265,91 @@ public class MailSettingsPage extends PreferencePageWithHelp {
             return super.performOk();
         }
         try {
+            boolean encrytionEnabled = chckEncrypt.getSelection();
+
             EmailSettingStore settingStore = getSettingStore();
-            settingStore.setHost(txtHost.getText());
-            settingStore.setPort(txtPort.getText());
-            settingStore.setUsername(txtUsername.getText());
-            settingStore.setPassword(txtPassword.getText());
-            settingStore.setSignature(txtSignature.getText());
-            settingStore.setProtocol(comboProtocol.getText());
+            settingStore.enableAuthenticationEncryption(encrytionEnabled);
+            settingStore.setHost(txtHost.getText(), encrytionEnabled);
+            settingStore.setPort(txtPort.getText(), encrytionEnabled);
+            settingStore.setUsername(txtUsername.getText(), encrytionEnabled);
+            settingStore.setPassword(txtPassword.getText(), encrytionEnabled);
+            settingStore.setProtocol(comboProtocol.getText(), encrytionEnabled);
             settingStore.setIsAddAttachment(btnChkAttachment.getSelection());
-            settingStore.setRecipients(
-                    TestSuiteController.getInstance().arrayMailRcpToString(listViewerRecipients.getList().getItems()));
+            settingStore.setEmailSubject(txtSubject.getText());
+            settingStore.setEmailCc(txtCc.getText());
+            settingStore.setEmailBcc(txtBcc.getText());
+            settingStore.setRecipients(txtRecipients.getText(), encrytionEnabled);
+            settingStore.setReportFormatOptions(getSelectedAttachmentOptions());
             return super.performOk();
-        } catch (IOException e) {
+        } catch (IOException | GeneralSecurityException e) {
             LoggerSingleton.logError(e);
             return false;
         }
     }
 
     private void createPostExecuteGroup(Composite container) {
-        Group postExecuteGroup = createGroup(container, StringConstants.PREF_GROUP_LBL_EXECUTION_MAIL, 2, 1,
-                GridData.FILL_BOTH);
-        createLabel(postExecuteGroup, StringConstants.PREF_LBL_REPORT_RECIPIENTS);
+        Group postExecuteGroup = createGroup(container, ComposerExecutionMessageConstants.PREF_GROUP_LBL_EXECUTION_MAIL,
+                2, 1, GridData.FILL_HORIZONTAL);
 
-        createCompositeRecipients(postExecuteGroup);
+        txtRecipients = createTextFieldWithLabel(postExecuteGroup,
+                ComposerExecutionMessageConstants.PREF_LBL_REPORT_RECIPIENTS,
+                ComposerExecutionMessageConstants.PREF_TXT_PH_RECIPIENTS, 1);
 
-        createLabel(postExecuteGroup, StringConstants.PREF_LBL_SIGNATURE);
-        txtSignature = new Text(postExecuteGroup, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.WRAP);
-        GridData gridDataTxtSignature = new GridData(GridData.FILL, GridData.FILL, true, true, 1, 1);
-        gridDataTxtSignature.heightHint = 60;
-        txtSignature.setLayoutData(gridDataTxtSignature);
+        txtCc = createTextFieldWithLabel(postExecuteGroup, ComposerExecutionMessageConstants.PREF_LBL_CC,
+                StringUtils.EMPTY, 1);
 
-        createLabel(postExecuteGroup, "");
+        txtBcc = createTextFieldWithLabel(postExecuteGroup, ComposerExecutionMessageConstants.PREF_LBL_BCC,
+                StringUtils.EMPTY, 1);
 
-        Composite actionSpacer = createCompositeWithNoMargin(postExecuteGroup, 2, 1);
+        txtSubject = createTextFieldWithLabel(postExecuteGroup, ComposerExecutionMessageConstants.PREF_LBL_SUBJECT,
+                StringUtils.EMPTY, 1);
 
-        btnChkAttachment = new Button(actionSpacer, SWT.CHECK);
-        btnChkAttachment.setLayoutData(new GridData(GridData.FILL, SWT.CENTER, true, false, 1, 1));
-        btnChkAttachment.setText(StringConstants.PREF_LBL_SEND_ATTACHMENT);
+        Label lblBody = new Label(postExecuteGroup, SWT.NONE);
+        lblBody.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+        lblBody.setText(ComposerExecutionMessageConstants.PREF_LBL_BODY);
 
-        Composite testSpacer = createCompositeWithNoMargin(actionSpacer, 1, 1);
-        testSpacer.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, true, false, 1, 1));
-
-        Button testButton = new Button(testSpacer, SWT.PUSH);
-        testButton.setLayoutData(new GridData(GridData.FILL, SWT.TOP, true, false, 1, 1));
-        testButton.setText(StringConstants.PREF_LBL_SEND_TEST_EMAIL);
-        testButton.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                final EmailConfig conf = buildTestEmailConfig();
-                if (conf == null) {
-                    return;
-                }
-                sendTestEmail(conf);
-            }
-        });
+        lnkEditTemplate = new Link(postExecuteGroup, SWT.NONE);
+        lnkEditTemplate.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+        lnkEditTemplate.setText(String.format("<a>%s</a>", ComposerExecutionMessageConstants.PREF_LNK_EDIT_TEMPLATE));
     }
 
-    private void createCompositeRecipients(Composite parent) {
-        Composite compositeRecipients = createCompositeWithNoMargin(parent, 2, 1);
+    private void createReportFormatGroup(Composite container) {
+        grpReportFormatOptions = new Group(container, SWT.NONE);
+        grpReportFormatOptions.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+        grpReportFormatOptions.setText(ComposerExecutionMessageConstants.PREF_LBL_REPORT_FORMAT);
 
-        listViewerRecipients = new ListViewer(compositeRecipients, SWT.BORDER | SWT.V_SCROLL | SWT.MULTI);
-        GridData gdListMailRcp = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
-        gdListMailRcp.heightHint = 70;
-        listViewerRecipients.getList().setLayoutData(gdListMailRcp);
-        listViewerRecipients.setContentProvider(ArrayContentProvider.getInstance());
+        GridLayout reportFormatLayout = new GridLayout(1, true);
+        reportFormatLayout.marginLeft = 0;
+        reportFormatLayout.marginRight = 0;
+        reportFormatLayout.marginHeight = 5;
+        grpReportFormatOptions.setLayout(reportFormatLayout);
 
-        Composite compositeRecipientsButtons = new Composite(compositeRecipients, SWT.NONE);
+        btnChkAttachment = new Button(grpReportFormatOptions, SWT.CHECK);
+        btnChkAttachment.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        btnChkAttachment.setText(ComposerExecutionMessageConstants.PREF_LBL_INCLUDE_ATTACHMENT);
 
-        GridData gridDataCompositeRecipients = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
-        compositeRecipientsButtons.setLayoutData(gridDataCompositeRecipients);
+        attachmentOptionsComposite = new Composite(grpReportFormatOptions, SWT.NONE);
+        attachmentOptionsComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+        GridLayout attachmentsLayout = new GridLayout(1, true);
+        attachmentsLayout.marginLeft = 15;
+        attachmentsLayout.marginRight = 0;
+        attachmentsLayout.marginHeight = 0;
+        attachmentOptionsComposite.setLayout(attachmentsLayout);
 
-        GridLayout glCompositeMailRcpButtons = new GridLayout(1, false);
-        glCompositeMailRcpButtons.marginWidth = 0;
-        glCompositeMailRcpButtons.marginHeight = 0;
-        compositeRecipientsButtons.setLayout(glCompositeMailRcpButtons);
+        for (ReportFormatType formatType : ReportFormatType.values()) {
+            Button btnFormmatingType = new Button(attachmentOptionsComposite, SWT.CHECK);
+            btnFormmatingType.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+            btnFormmatingType.setText(formatType.toString());
+            btnFormmatingType.setData(formatType);
 
-        btnAddRecipient = new Button(compositeRecipientsButtons, SWT.FLAT);
-        btnAddRecipient.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        btnAddRecipient.setText(ComposerExecutionMessageConstants.LBL_SETT_RECIPIENT_ADD);
-        btnAddRecipient.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                addRecipient();
-            }
-        });
-
-        btnDeleteRecipient = new Button(compositeRecipientsButtons, SWT.FLAT);
-        btnDeleteRecipient.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-        btnDeleteRecipient.setText(ComposerExecutionMessageConstants.LBL_SETT_RECIPIENT_DEL);
-        btnDeleteRecipient.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                deleteSelectedRecipients();
-            }
-        });
-
-        btnClearRecipient = new Button(compositeRecipientsButtons, SWT.FLAT);
-        btnClearRecipient.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-        btnClearRecipient.setText(ComposerExecutionMessageConstants.LBL_SETT_RECIPIENT_CLR);
-        btnClearRecipient.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                clearRecipients();
-            }
-        });
-    }
-
-    private void deleteSelectedRecipients() {
-        Object[] emails = ((IStructuredSelection) listViewerRecipients.getSelection()).toArray();
-        if (emails.length > 0) {
-            listViewerRecipients.remove(emails);
+            formatOptionCheckboxes.put(formatType, btnFormmatingType);
         }
     }
 
-    private void addRecipient() {
-        AddMailRecipientDialog addMailDialog = new AddMailRecipientDialog(Display.getDefault().getActiveShell(),
-                listViewerRecipients.getList().getItems());
-        addMailDialog.open();
-        if (addMailDialog.getReturnCode() != Dialog.OK) {
-            return;
-        }
-
-        String[] emails = addMailDialog.getEmails();
-        if (emails.length > 0) {
-            listViewerRecipients.add(addMailDialog.getEmails());
-
-        }
-    }
-
-    private void clearRecipients() {
-        if (listViewerRecipients.getList().getItemCount() <= 0) {
-            return;
-        }
-        listViewerRecipients.setInput(new String[0]);
+    private void createSendTestEmailButton(Composite parent) {
+        btnSendTestEmail = new Button(parent, SWT.PUSH);
+        btnSendTestEmail.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+        btnSendTestEmail.setText(ComposerExecutionMessageConstants.PREF_LBL_SEND_TEST_EMAIL);
     }
 
     private void createServerGroup(Composite container) {
@@ -253,19 +358,6 @@ public class MailSettingsPage extends PreferencePageWithHelp {
 
         txtHost = createTextFieldWithLabel(serverGroup, StringConstants.PREF_LBL_HOST, MAIL_CONFIG_HOST_HINT, 1);
         txtPort = createTextFieldWithLabel(serverGroup, StringConstants.PREF_LBL_PORT, MAIL_CONFIG_PORT_HINT, 1);
-        txtPort.addVerifyListener(new VerifyListener() {
-
-            @Override
-            public void verifyText(VerifyEvent e) {
-                final String oldString = txtPort.getText();
-                final String newString = oldString.substring(0, e.start) + e.text + oldString.substring(e.end);
-                try {
-                    Integer.parseInt(newString);
-                } catch (NumberFormatException ex) {
-                    e.doit = false;
-                }
-            }
-        });
 
         txtUsername = createTextFieldWithLabel(serverGroup, StringConstants.PREF_LBL_USERNAME,
                 MAIL_CONFIG_USERNAME_HINT, 1);
@@ -277,6 +369,10 @@ public class MailSettingsPage extends PreferencePageWithHelp {
         comboProtocol = new Combo(serverGroup, SWT.READ_ONLY);
         comboProtocol.setLayoutData(new GridData(SWT.LEFT, GridData.FILL, false, true, 1, 1));
         comboProtocol.setItems(MailSecurityProtocolType.getStringValues());
+
+        chckEncrypt = new Button(serverGroup, SWT.CHECK);
+        chckEncrypt.setLayoutData(new GridData(GridData.FILL, GridData.CENTER, true, false, 4, 1));
+        chckEncrypt.setText(ComposerExecutionMessageConstants.PREF_CHECK_ENABLE_AUTHENTICATION_ENCRYPTION);
     }
 
     private void sendTestEmail(final EmailConfig conf) {
@@ -323,9 +419,7 @@ public class MailSettingsPage extends PreferencePageWithHelp {
         createLabel(parent, labelText);
 
         Text txtField = new Text(parent, SWT.SINGLE | SWT.BORDER);
-        GridData gridData = new GridData(GridData.FILL, GridData.FILL, true, true, hspan, 1);
-        gridData.widthHint = 70;
-        gridData.heightHint = 20;
+        GridData gridData = new GridData(GridData.FILL, GridData.CENTER, true, false, hspan, 1);
         txtField.setLayoutData(gridData);
         txtField.setMessage(hintText);
         return txtField;
@@ -333,24 +427,14 @@ public class MailSettingsPage extends PreferencePageWithHelp {
 
     private void createLabel(Composite parent, String labelText) {
         Label label = new Label(parent, SWT.NONE);
-        label.setLayoutData(new GridData(SWT.LEFT, GridData.CENTER, false, true, 1, 1));
+        label.setLayoutData(new GridData(SWT.LEFT, GridData.CENTER, false, false, 1, 1));
         label.setText(labelText);
     }
 
     private Composite createComposite(Composite parent, int numColumns, int horizontalSpan) {
         Composite container = new Composite(parent, SWT.NONE);
-        container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, horizontalSpan, 1));
+        container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, horizontalSpan, 1));
         container.setLayout(new GridLayout(numColumns, false));
-        return container;
-    }
-
-    private Composite createCompositeWithNoMargin(Composite parent, int numColumns, int horizontalSpan) {
-        Composite container = new Composite(parent, SWT.NONE);
-        container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true, horizontalSpan, 1));
-        GridLayout layout = new GridLayout(numColumns, false);
-        layout.marginWidth = 0;
-        layout.marginHeight = 0;
-        container.setLayout(layout);
         return container;
     }
 
@@ -365,64 +449,58 @@ public class MailSettingsPage extends PreferencePageWithHelp {
         return g;
     }
 
-    private EmailConfig buildTestEmailConfig() {
-        String[] mailRecipients = getRecipients(
-                TestSuiteController.getInstance().arrayMailRcpToString(listViewerRecipients.getList().getItems()));
-        if (mailRecipients.length <= 0) {
-            MessageDialog.openWarning(getShell(), StringConstants.WARN, StringConstants.WARN_EMPTY_RECIPIENTS);
-            return null;
-        }
-
-        if (txtHost.getText().isEmpty()) {
-            MessageDialog.openWarning(getShell(), StringConstants.WARN, StringConstants.WARN_EMPTY_HOST);
-            return null;
-        }
-
-        if (txtPort.getText().isEmpty()) {
-            MessageDialog.openWarning(getShell(), StringConstants.WARN, StringConstants.WARN_EMPTY_PORT);
-            return null;
-        } else {
-            try {
-                Integer.valueOf(txtPort.getText());
-            } catch (NumberFormatException e) {
-                MessageDialog.openWarning(getShell(), StringConstants.WARN, StringConstants.WARN_INVALID_PORT);
-                return null;
-            }
-        }
-
-        if (txtUsername.getText().isEmpty()) {
-            MessageDialog.openWarning(getShell(), StringConstants.WARN, StringConstants.WARN_EMPTY_USERNAME);
-            return null;
-        }
-
-        if (txtPassword.getText().isEmpty()) {
-            MessageDialog.openWarning(getShell(), StringConstants.WARN, StringConstants.WARN_EMPTY_PASSWORD);
-            return null;
-        }
-
-        EmailConfig conf = new EmailConfig();
-        conf.addRecipients(Arrays.asList(mailRecipients));
-        conf.setHost(txtHost.getText());
-        conf.setPort(txtPort.getText());
-        conf.setFrom(txtUsername.getText());
-        conf.setSecurityProtocol(MailSecurityProtocolType.valueOf(comboProtocol.getText()));
-        conf.setUsername(txtUsername.getText());
-        conf.setPassword(txtPassword.getText());
-        conf.setSendAttachment(false);
-        return conf;
-    }
-
-    private static String[] getRecipients(String reportRecipients) {
-        return StringUtils.split(reportRecipients.trim(), ";");
-    }
-    
     @Override
     protected boolean hasDocumentation() {
         return true;
     }
-    
+
     @Override
     protected String getDocumentationUrl() {
         return DocumentationMessageConstants.SETTINGS_EMAIL;
+    }
+
+    private class EmailConfigValidator {
+        private Map<String, Boolean> validation;
+
+        private static final String EMAIL_TEXT_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+                + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+
+        public EmailConfigValidator() {
+            validation = new HashMap<>();
+            validation.put("host", false);
+            validation.put("port", false);
+            validation.put("username", false);
+            validation.put("password", false);
+            validation.put("recipients", false);
+            validation.put("cc", true);
+            validation.put("bcc", true);
+        }
+
+        private boolean isValidated() {
+            return !(validation.entrySet().parallelStream().filter(field -> !field.getValue()).count() > 0);
+        }
+
+        public void setValidation(String key, boolean value) {
+            validation.put(key, value);
+        }
+
+        public boolean isValidEmail(String email) {
+            if (StringUtils.isBlank(email)) {
+                return false;
+            }
+            return Pattern.matches(EMAIL_TEXT_PATTERN, email.trim());
+        }
+
+        public boolean isValidListEmail(String lstEmail) {
+            if (StringUtils.isBlank(lstEmail)) {
+                return false;
+            }
+            for (String email : lstEmail.trim().split(MailUtil.EMAIL_SEPARATOR)) {
+                if (!Pattern.matches(EMAIL_TEXT_PATTERN, email.trim())) {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 }

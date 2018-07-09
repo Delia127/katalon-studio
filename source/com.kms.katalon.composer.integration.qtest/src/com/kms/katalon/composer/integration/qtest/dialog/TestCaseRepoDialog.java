@@ -231,7 +231,7 @@ public class TestCaseRepoDialog extends Dialog {
 
     @Override
     protected Point getInitialSize() {
-        return new Point(500, 200);
+        return new Point(500, super.getInitialSize().y);
     }
 
     @Override
@@ -285,7 +285,7 @@ public class TestCaseRepoDialog extends Dialog {
         try {
             String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
             QTestModule moduleRoot = QTestIntegrationFolderManager.getModuleRoot(
-                    QTestSettingCredential.getCredential(projectDir), qTestProject.getId());
+                    QTestSettingCredential.getCredential(projectDir), qTestProject);
             TestCaseRootSelectionDialog testCaseRootSelectionDialog = new TestCaseRootSelectionDialog(Display
                     .getDefault().getActiveShell(), moduleRoot, true);
             testCaseRootSelectionDialog.setProjectDir(projectDir);
@@ -349,5 +349,10 @@ public class TestCaseRepoDialog extends Dialog {
         } else {
             getButton(OK).setEnabled(true);
         }
+    }
+
+    @Override
+    protected void setShellStyle(int newShellStyle) {
+        super.setShellStyle(newShellStyle | SWT.RESIZE);
     }
 }

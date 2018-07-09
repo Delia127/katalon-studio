@@ -21,6 +21,7 @@ import org.eclipse.core.internal.resources.ModelObjectWriter;
 import org.eclipse.core.internal.resources.Project;
 import org.eclipse.core.internal.resources.ProjectDescription;
 import org.eclipse.core.resources.FileInfoMatcherDescription;
+import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -52,6 +53,7 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.FrameworkUtil;
 
+import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.core.appium.driver.AppiumDriverManager;
 import com.kms.katalon.core.keyword.internal.IKeywordContributor;
@@ -60,7 +62,6 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.groovy.constant.GroovyConstants;
-import com.kms.katalon.jbrowser.JBrowserTempClass;
 import com.kms.katalon.selenium.TempClass;
 
 import groovy.lang.GroovyClassLoader;
@@ -186,6 +187,11 @@ public class GroovyUtil {
             boolean isNew, IProgressMonitor monitor) throws CoreException, IOException, BundleException {
         IProject groovyProject = getGroovyProject(projectEntity);
         groovyProject.refreshLocal(IResource.DEPTH_ONE, monitor);
+        
+        IFolder listenerSourceFolder = groovyProject.getFolder("Test Listeners");
+        if (!listenerSourceFolder.exists()) {
+            listenerSourceFolder.create(true, true, null);
+        }
 
         IFolder keywordSourceFolder = groovyProject.getFolder(KEYWORD_SOURCE_FOLDER_NAME);
         if (!keywordSourceFolder.exists()) {
@@ -215,6 +221,11 @@ public class GroovyUtil {
         IFolder outputParentFolder = groovyProject.getFolder(OUTPUT_FOLDER_NAME);
         if (!outputParentFolder.exists()) {
             outputParentFolder.create(true, true, null);
+        }
+        
+        IFolder outputListenerFolder = outputParentFolder.getFolder("listener");
+        if (!outputListenerFolder.exists()) {
+            outputListenerFolder.create(true, true, null);
         }
 
         IFolder outputKeywordFolder = outputParentFolder.getFolder(KEYWORD_OUTPUT_FOLDER_NAME);
@@ -250,8 +261,10 @@ public class GroovyUtil {
         entries.add(JavaCore.newSourceEntry(keywordPackageRoot.getPath(), new Path[] {}, new Path[] {},
                 outputKeywordFolder.getFullPath()));
 
-        // initTestCaseFolder(javaProject, testCaseRootFolder,
-        // testCaseSourceFolder, outputTestCaseFolder, entries);
+        // add source and output folder to classpath
+        IPackageFragmentRoot listenerPackageRoot = javaProject.getPackageFragmentRoot(listenerSourceFolder);
+        entries.add(JavaCore.newSourceEntry(listenerPackageRoot.getPath(), new Path[] {}, new Path[] {},
+                outputListenerFolder.getFullPath()));
 
         IPackageFragmentRoot keywordLibPackageRoot = javaProject.getPackageFragmentRoot(keywordLibFolder);
         entries.add(JavaCore.newSourceEntry(keywordLibPackageRoot.getPath(), new Path[] {}, new Path[] {},
@@ -287,8 +300,20 @@ public class GroovyUtil {
         // Add class path for external jars
         File driversDir = driversFolder.getRawLocation().toFile();
         for (File jarFile : driversDir.listFiles()) {
+            IClasspathEntry oldEntry = null;
             if (jarFile.isFile() && jarFile.getName().endsWith(".jar")) {
-                addJarFileToClasspath(jarFile, entries);
+                for (IClasspathEntry e : javaProject.getRawClasspath()) {
+                    if (e.getEntryKind() == IClasspathEntry.CPE_LIBRARY 
+                            && e.getPath().toFile().getAbsolutePath().equals(jarFile.getAbsolutePath())) {
+                        oldEntry = e;
+                        break;
+                    }
+                }
+                if (oldEntry != null) {
+                    addJarFileToClasspath(jarFile, oldEntry, entries);
+                } else {
+                    addJarFileToClasspath(jarFile, entries);
+                }
             }
         }
 
@@ -301,8 +326,9 @@ public class GroovyUtil {
         addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle(IdConstants.KATALON_CORE_BUNDLE_ID));
 
         addClassPathOfCoreBundleToJavaProject(entries, FrameworkUtil.getBundle(TempClass.class));
-        addClassPathOfCoreBundleToJavaProject(entries, FrameworkUtil.getBundle(JBrowserTempClass.class));
-        addClassPathOfCoreBundleToJavaProject(entries, FrameworkUtil.getBundle(AppiumDriverManager.class));
+        addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle("com.kms.katalon.core.appium"));
+        addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle("com.kms.katalon.constant"));
+        addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle("com.kms.katalon.util"));
         for (IKeywordContributor contributor : KeywordContributorCollection.getKeywordContributors()) {
             Bundle coreBundle = FrameworkUtil.getBundle(contributor.getClass());
             addClassPathOfCoreBundleToJavaProject(entries, coreBundle);
@@ -416,6 +442,18 @@ public class GroovyUtil {
             }
         }
     }
+    
+    private static void addJarFileToClasspath(File jarFile, IClasspathEntry oldEntry, List<IClasspathEntry> entries) {
+        if (checkRequiredBundleLocation(jarFile, entries)) {
+            IClasspathEntry entry = JavaCore.newLibraryEntry(new Path(jarFile.getAbsolutePath()), 
+                    oldEntry.getSourceAttachmentPath(), 
+                    oldEntry.getSourceAttachmentRootPath(), 
+                    oldEntry.getAccessRules(), oldEntry.getExtraAttributes(), oldEntry.isExported());
+            if (entry != null && !entries.contains(entry)) {
+                entries.add(entry);
+            }
+        }
+    }
 
     /**
      * Adds the given <code>jarFile</code> if it is valid and isn't in the given <code>entries</code>. Also adds javadoc
@@ -507,6 +545,9 @@ public class GroovyUtil {
 
         IProjectDescription projectDescription = groovyProject.getDescription();
         projectDescription.setNatureIds(new String[] { GROOVY_NATURE, JavaCore.NATURE_ID });
+        org.eclipse.core.resources.ICommand[] commands = new ICommand[] { projectDescription.newCommand()};
+        commands[0].setBuilderName(org.eclipse.jdt.core.JavaCore.BUILDER_ID);
+        projectDescription.setBuildSpec(commands);
         groovyProject.setDescription(projectDescription, monitor);
         groovyProject.refreshLocal(IResource.DEPTH_ZERO, monitor);
     }
@@ -733,7 +774,10 @@ public class GroovyUtil {
             scriptFile.getLocation().toFile().createNewFile();
             scriptFile.refreshLocal(IResource.DEPTH_ZERO, null);
         }
-        scriptFile.setContents(new ByteArrayInputStream(updatedTestCase.getScriptContents()), true, false, null);
+        byte[] scriptContents = updatedTestCase.getScriptContents();
+        if (scriptContents != null) {
+            scriptFile.setContents(new ByteArrayInputStream(scriptContents), true, false, null);
+        }
     }
 
     public static void updateTestCaseFolderDeleted(FolderEntity folder, FolderEntity testCaseRootProject)
@@ -782,8 +826,8 @@ public class GroovyUtil {
         if (!scriptFile.exists()) {
             return;
         }
-        try (StringReader stringReader = new StringReader(FileUtils.readFileToString(scriptFile))) {
-            testCase.setScriptContents(IOUtils.toByteArray(stringReader));
+        try (StringReader stringReader = new StringReader(FileUtils.readFileToString(scriptFile, GlobalStringConstants.DF_CHARSET))) {
+            testCase.setScriptContents(IOUtils.toByteArray(stringReader, GlobalStringConstants.DF_CHARSET));
         }
     }
 

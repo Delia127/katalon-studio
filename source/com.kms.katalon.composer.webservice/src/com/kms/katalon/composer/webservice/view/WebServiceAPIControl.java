@@ -1,18 +1,20 @@
 package com.kms.katalon.composer.webservice.view;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
+import com.kms.katalon.composer.webservice.constants.ImageConstants;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 
@@ -26,54 +28,47 @@ public class WebServiceAPIControl extends Composite {
 
     private Text txtRequestURL;
 
-    private Button btnSend;
+    private ToolItem btnSend;
 
     private GridData layoutData;
 
-    public WebServiceAPIControl(Composite parent, boolean isSOAP) {
+    private boolean sendingState;
+
+    public WebServiceAPIControl(Composite parent, boolean isSOAP, String url) {
         super(parent, SWT.NONE);
-        createControl();
+        createControl(url);
         setInput(isSOAP);
     }
 
-    private void createControl() {
-        GridLayout gridLayout = new GridLayout(2, false);
+    private void createControl(String url) {
+        GridLayout gridLayout = new GridLayout(3, false);
         gridLayout.marginHeight = 0;
         gridLayout.marginWidth = 0;
         gridLayout.verticalSpacing = 0;
         setLayout(gridLayout);
         setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-        Composite fieldsComposite = new Composite(this, SWT.BORDER);
-        GridLayout glFieldsComp = new GridLayout(3, false);
-        glFieldsComp.marginHeight = 0;
-        glFieldsComp.marginWidth = 0;
-        glFieldsComp.verticalSpacing = 0;
-        fieldsComposite.setLayout(glFieldsComp);
-        fieldsComposite.setBackground(ColorUtil.getWhiteBackgroundColor());
-        GridData gdFieldsComp = new GridData(SWT.FILL, SWT.FILL, true, true);
-        gdFieldsComp.heightHint = DEFAULT_HEIGHT;
-        fieldsComposite.setLayoutData(gdFieldsComp);
-
-        cbRequestMethod = new CCombo(fieldsComposite, SWT.FLAT | SWT.READ_ONLY);
-        GridData gdRequestMethod = new GridData(SWT.CENTER, SWT.CENTER, false, false);
+        cbRequestMethod = new CCombo(this, SWT.BORDER | SWT.READ_ONLY);
+        cbRequestMethod.setBackground(ColorUtil.getWhiteBackgroundColor());
+        GridData gdRequestMethod = new GridData(SWT.FILL, SWT.CENTER, false, false);
         gdRequestMethod.widthHint = 100;
+        gdRequestMethod.heightHint = 22;
         cbRequestMethod.setLayoutData(gdRequestMethod);
 
-        Label separator = new Label(fieldsComposite, SWT.SEPARATOR | SWT.VERTICAL);
-        GridData gdSeparator = new GridData(SWT.CENTER, SWT.CENTER, false, true);
-        gdSeparator.heightHint = 18;
-        separator.setLayoutData(gdSeparator);
-
-        txtRequestURL = new Text(fieldsComposite, SWT.NONE);
-        txtRequestURL.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
+        txtRequestURL = new Text(this, SWT.BORDER);
+        GridData gdRequestURL = new GridData(SWT.FILL, SWT.CENTER, true, true);
+        gdRequestURL.heightHint = 20;
+        txtRequestURL.setLayoutData(gdRequestURL);
         txtRequestURL.setMessage(StringConstants.PA_LBL_URL);
-
-        btnSend = new Button(this, SWT.FLAT);
-        btnSend.setText(ComposerWebserviceMessageConstants.BTN_SEND_TEST_REQUEST);
-        GridData gdBtnSend = new GridData(SWT.CENTER, SWT.FILL, false, true);
-        gdBtnSend.widthHint = 100;
-        btnSend.setLayoutData(gdBtnSend);
+        if (!StringUtils.trim(url).isEmpty()) {
+            txtRequestURL.setText(url);
+        }
+      
+        ToolBar toolbar = new ToolBar(this, SWT.RIGHT | SWT.RIGHT);
+        btnSend = new ToolItem(toolbar, SWT.FLAT);
+        setSendButtonState(false);
+        toolbar.setLayoutData(new GridData(SWT.CENTER, SWT.RIGHT, false, true));
+        // gdBtnSend.widthHint = 100;
     }
 
     public void addRequestMethodModifyListener(ModifyListener modifyListener) {
@@ -139,13 +134,29 @@ public class WebServiceAPIControl extends Composite {
         return txtRequestURL;
     }
 
-    public Button getSendControl() {
+    public ToolItem getSendControl() {
         return btnSend;
     }
 
     @Override
     protected void checkSubclass() {
         // Disable the check that prevents subclassing of SWT components
+    }
+
+    public void setSendButtonState(boolean sendingState) {
+        this.sendingState = sendingState;
+        if (this.sendingState) {
+            btnSend.setToolTipText(StringConstants.STOP);
+            btnSend.setImage(ImageConstants.IMG_24_STOP);
+        } else {
+            btnSend.setToolTipText(ComposerWebserviceMessageConstants.BTN_SEND_TEST_REQUEST);
+            btnSend.setImage(ImageConstants.IMG_24_PLAY);
+        }
+        btnSend.getParent().update();
+    }
+
+    public boolean getSendingState() {
+        return sendingState;
     }
 
 }

@@ -17,6 +17,7 @@ import com.kms.katalon.execution.entity.IExecutedEntity;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
 import com.kms.katalon.execution.setting.ExecutionSettingStore;
 import com.kms.katalon.execution.setting.TestCaseSettingStore;
+import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.logging.LogUtil;
 
 public class DefaultExecutionSetting implements IExecutionSetting {
@@ -50,6 +51,8 @@ public class DefaultExecutionSetting implements IExecutionSetting {
         generalProperties.put(StringConstants.CONF_PROPERTY_REPORT, getReportProperties());
         generalProperties.put(RunConfiguration.EXCUTION_DEFAULT_FAILURE_HANDLING, getDefaultFailureHandlingSetting());
         generalProperties.put(RunConfiguration.PROXY_PROPERTY, getJsonProxyInformation());
+        generalProperties.put(RunConfiguration.TERMINATE_DRIVER_AFTER_TEST_CASE, ExecutionUtil.isQuitDriversAfterExecutingTestCase());
+        generalProperties.put(RunConfiguration.TERMINATE_DRIVER_AFTER_TEST_SUITE, ExecutionUtil.isQuitDriversAfterExecutingTestSuite());
         if (executedEntity != null) {
             generalProperties.put(RunConfiguration.EXECUTION_TEST_DATA_INFO_PROPERTY, executedEntity.getCollectedDataInfo());
         }
@@ -59,8 +62,11 @@ public class DefaultExecutionSetting implements IExecutionSetting {
     private Map<String, Object> getReportProperties() {
         Map<String, Object> reportProps = new HashMap<String, Object>();
         try {
-            reportProps.put(StringConstants.CONF_PROPERTY_SCREEN_CAPTURE_OPTION, new ExecutionSettingStore(
-                    getCurrentProject()).getScreenCaptureOption());
+            ExecutionSettingStore reportSettings = new ExecutionSettingStore(
+                    getCurrentProject());
+            reportProps.put(RunConfiguration.REPORT_FOLDER_PATH_PROPERTY, getFolderPath());
+            reportProps.put(StringConstants.CONF_PROPERTY_SCREEN_CAPTURE_OPTION, reportSettings.getScreenCaptureOption());
+            reportProps.put(StringConstants.CONF_PROPERTY_VIDEO_RECORDER_OPTION, reportSettings.getVideoRecorderSetting());
         } catch (IOException e) {
             LogUtil.logError(e);
         }

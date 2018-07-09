@@ -7,7 +7,7 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.ui.PlatformUI;
 
 public class SaveAllHandler {
-    
+
     @CanExecute
     private boolean canExecute(@Optional EPartService partService) {
         if (partService != null) {
@@ -16,7 +16,6 @@ public class SaveAllHandler {
         return false;
     }
 
-    
     @Execute
     void execute(EPartService partService) {
         partService.saveAll(false);

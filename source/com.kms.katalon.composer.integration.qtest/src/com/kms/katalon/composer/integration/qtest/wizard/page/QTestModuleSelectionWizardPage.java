@@ -43,24 +43,40 @@ import com.kms.katalon.integration.qtest.entity.QTestModule;
 import com.kms.katalon.integration.qtest.entity.QTestProject;
 import com.kms.katalon.integration.qtest.exception.QTestException;
 
-public class QTestModuleSelectionWizardPage extends AbstractWizardPage {
-
+public class QTestModuleSelectionWizardPage extends AbstractWizardPage implements QTestWizardPage {
     private TreeViewer treeViewer;
+
     private Label lblHeader;
+
     private Label lblStatus;
 
     private QTestModule moduleRoot;
+
     private QTestModule selectedModule;
 
     private QTestProject fQTestProject;
 
     private Composite composite;
+
     private Composite connectingComposite;
+
     private GifCLabel connectingLabel;
+
     private InputStream inputStream;
+
     private Composite headerComposite;
 
     public QTestModuleSelectionWizardPage() {
+    }
+
+    @Override
+    public String getStepIndexAsString() {
+        return "3.1";
+    }
+
+    @Override
+    public boolean isChild() {
+        return true;
     }
 
     @Override
@@ -136,8 +152,8 @@ public class QTestModuleSelectionWizardPage extends AbstractWizardPage {
                             }
                         });
 
-                        moduleRoot = QTestIntegrationFolderManager.getModuleRoot(
-                                SetupWizardDialog.getCredential(sharedData), qTestProject.getId());
+                        moduleRoot = QTestIntegrationFolderManager
+                                .getModuleRoot(SetupWizardDialog.getCredential(sharedData), qTestProject);
 
                         moduleRoot = QTestIntegrationFolderManager.updateModuleViaAPI(
                                 SetupWizardDialog.getCredential(sharedData), qTestProject.getId(), moduleRoot);
@@ -155,12 +171,14 @@ public class QTestModuleSelectionWizardPage extends AbstractWizardPage {
                                 treeViewer.expandAll();
                                 composite.layout(true, true);
 
-                                if (selectedModule != null) {
-                                    treeViewer.setSelection(new StructuredSelection(selectedModule));
+                                if (selectedModule == null) {
+                                    selectedModule = moduleRoot;
                                 }
                                 setConnectingCompositeVisible(false);
+                                treeViewer.setSelection(new StructuredSelection(selectedModule));
+                                updateTreeViewerSelection();
                             } catch (IllegalStateException | IllegalArgumentException | SWTException e) {
-                                //Display is disposed
+                                // Display is disposed
                             }
                         }
                     });
@@ -170,9 +188,9 @@ public class QTestModuleSelectionWizardPage extends AbstractWizardPage {
                     UISynchronizeService.syncExec(new Runnable() {
                         @Override
                         public void run() {
-                            MultiStatusErrorDialog.showErrorDialog(e, MessageFormat.format(
-                                    StringConstants.WZ_P_MODULE_MSG_GET_MODULES_FAILED, qTestProject.getName()), e
-                                    .getMessage());
+                            MultiStatusErrorDialog.showErrorDialog(e, MessageFormat
+                                    .format(StringConstants.WZ_P_MODULE_MSG_GET_MODULES_FAILED, qTestProject.getName()),
+                                    e.getMessage());
                         }
                     });
                     return Status.CANCEL_STATUS;
@@ -191,8 +209,7 @@ public class QTestModuleSelectionWizardPage extends AbstractWizardPage {
             try {
                 inputStream = ImageConstants.URL_16_LOADING.openStream();
                 connectingLabel.setGifImage(inputStream);
-            } catch (IOException ex) {
-            } finally {
+            } catch (IOException ex) {} finally {
                 closeQuietlyWithLog(inputStream);
                 inputStream = null;
             }
@@ -214,9 +231,9 @@ public class QTestModuleSelectionWizardPage extends AbstractWizardPage {
                 updateTreeViewerSelection();
             }
         });
-        
+
         composite.addDisposeListener(new DisposeListener() {
-            
+
             @Override
             public void widgetDisposed(DisposeEvent e) {
                 closeQuietlyWithLog(inputStream);

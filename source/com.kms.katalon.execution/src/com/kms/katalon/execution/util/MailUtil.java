@@ -4,28 +4,32 @@ import static org.apache.commons.lang.StringUtils.split;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.text.MessageFormat;
+import java.net.URISyntaxException;
+import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.activation.FileDataSource;
+
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.EmailAttachment;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
-import org.apache.commons.mail.ImageHtmlEmail;
-import org.apache.commons.mail.resolver.DataSourceUrlResolver;
 
-import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
+import com.kms.katalon.core.setting.ReportFormatType;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.execution.constants.ExecutionMessageConstants;
 import com.kms.katalon.execution.entity.EmailConfig;
 import com.kms.katalon.execution.setting.EmailSettingStore;
+import com.kms.katalon.execution.setting.EmailVariableBinding;
+import com.kms.katalon.groovy.util.GroovyStringUtil;
+import com.kms.katalon.jasper.pdf.TestSuitePdfGenerator;
 import com.kms.katalon.logging.LogUtil;
 
 import net.lingala.zip4j.core.ZipFile;
@@ -33,7 +37,11 @@ import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
 
 public class MailUtil {
+    private static final long EMAIL_WARNING_SIZE = 10 * 1024 * 1024L;
+
     private static final int EMAIL_TIMEOUT = 600000;
+
+    public static final String EMAIL_SEPARATOR = ";";
 
     public enum MailSecurityProtocolType {
         None, SSL, TLS;
@@ -48,18 +56,6 @@ public class MailUtil {
         }
     }
 
-    public static final String EMAIL_SEPARATOR = ";";
-
-    private static final String SUBJECT = "Katalon Summary Report";
-
-    private static final String EMAIL_HTML_TEMPLATE = "<html><head><style type=\"text/css\">body'{'margin:0;padding:0;min-width:100%;background-color:#f5f7fa;font-family:Tahoma,Droid Sans,Verdana,sans-serif;color:#60666d;font-size:14;font-style:normal;'}'table'{'border-collapse:collapse;border-spacing:0;margin:0 auto 24px;font-size:14;'}'td'{'padding:5px;word-break:break-word;word-wrap:break-word;vertical-align:middle;'}'.border td'{'border:1px solid #dddee1;'}'</style></head><body><center style=\"padding-bottom:24px\"><table width=\"600\" style=\"width:600px\"><tbody><tr height=\"101\" style=\"padding-top:24px;padding-bottom:24px\"><td width=\"50%\" style=\"width:50%;padding:0\"><img style=\"width: 150px;\" src=\"https://www.katalon.com/wp-content/themes/katalon/images/logo-katalon.png\" alt=\"KATALON LOGO\" /></td><td width=\"50%\" valign=\"middle\" style=\"width:50%;vertical-align:middle;padding:0\"><h2 style=\"margin:0;font-size:18px;color:#04a0dc;text-align:right\">Test Suite Execution Report</h2></td></tr><tr style=\"background-color:#fff\"><td style=\"border:1px solid #dddee1;padding:24px;word-break:break-word;word-wrap:break-word\" colspan=\"2\"><p>Dear Sir/Madam,<br><br>Your test suite has just finished its execution. Here is the summary report.</p><table class=\"border\" width=\"100%\" border=\"1\" bgcolor=\"#f5f7fa\" style=\"width:100%;background-color:#f5f7fa;border:1px solid #dddee1\"><tbody><tr><td width=\"24%\" style=\"width:24%\">Host Name</td><td colspan=\"3\" class=\"border\">{0}</td></tr><tr><td>Operating System</td><td colspan=\"3\">{1}</td></tr><tr><td class=\"border\">Browser</td><td colspan=\"3\">{2}</td></tr><tr><td>Test Suite</td><td colspan=\"3\">{3}</td></tr><tr><td>Result</td><td width=\"25%\" style=\"width:25%;color:green\">Passed: {4}</td><td width=\"25%\" style=\"width:25%;color:red\">Failed: {5}</td><td width=\"25%\" style=\"width:25%;color:red\">Error: {6}</td></tr></tbody></table><p>{7}<br><br>This email was sent automatically by Katalon System. Please do not reply.<br><br>Thanks,<br>{8}</p></td></tr></tbody></table></center></body></html>";
-
-    private static final String EMAIL_TEXT_TEMPLATE = "Dear Sir/Madam,\n\nHere is the summary of test suite execution.\n\nHost Name:\t\t\t{0}\nOperating System:\t\t\t{1}\nBrowser:\t\t\t{2}\nTest Suite:\t\t\t{3}\nResult\t\t\tPassed: {4}\t\tFailed: {5}\t\tError: {6}\n\n{7}\n\nThis email was sent automatically by Katalon System. Please do not reply.\n\nThanks,\n{8}";
-
-    private static final String EMAIL_TEST_TEMPLATE = "This is a test email from Katalon.";
-
-    private static final String EMAIL_TEST_SUBJECT = "Katalon Test Email";
-
     public static String[][] getMailSecurityProtocolTypeArrayValues() {
         MailSecurityProtocolType[] allSecurityProtocolTypes = MailSecurityProtocolType.values();
         String[][] arrayValues = new String[allSecurityProtocolTypes.length][2];
@@ -71,20 +67,33 @@ public class MailUtil {
     }
 
     public static void sendTestMail(EmailConfig conf) throws Exception {
-        ImageHtmlEmail email = initEmail(conf, EMAIL_TEST_SUBJECT);
-        email.setMsg(EMAIL_TEST_TEMPLATE);
+        HtmlEmail email = initEmail(conf);
+        email.setHtmlMsg("<html>"
+                + GroovyStringUtil.evaluate(conf.getHtmlMessage(), EmailVariableBinding.getTestEmailVariables())
+                + "</html>");
         email.send();
     }
 
-    private static ImageHtmlEmail initEmail(EmailConfig conf, String subject) throws EmailException {
-        ImageHtmlEmail email = new ImageHtmlEmail();
+    private static HtmlEmail initEmail(EmailConfig conf) throws EmailException {
+        HtmlEmail email = new HtmlEmail();
+        email.setCharset("utf-8");
         email.setHostName(conf.getHost());
         email.setFrom(conf.getFrom(), "");
+        email.setSubject(conf.getSubject());
+
+        String cc = conf.getCc();
+        if (StringUtils.isNotEmpty(cc)) {
+            email.addCc(StringUtils.split(cc, EMAIL_SEPARATOR));
+        }
+        String bcc = conf.getBcc();
+        if (StringUtils.isNotEmpty(bcc)) {
+            email.addBcc(StringUtils.split(bcc, EMAIL_SEPARATOR));
+        }
         email.addTo(conf.getTos());
-        email.setSubject(subject);
+        email.setSubject(conf.getSubject());
         email.setSocketConnectionTimeout(EMAIL_TIMEOUT);
         email.setSocketTimeout(EMAIL_TIMEOUT);
-        
+
         email.setAuthenticator(new DefaultAuthenticator(conf.getUsername(), conf.getPassword()));
         switch (conf.getSecurityProtocol()) {
             case SSL:
@@ -100,84 +109,79 @@ public class MailUtil {
         return email;
     }
 
-    public static void sendSummaryMail(EmailConfig conf, File csvFile, File logFolder,
-            List<Object[]> suitesSummaryForEmail) throws Exception {
+    public static void sendSummaryMail(EmailConfig conf, TestSuiteLogRecord suiteLogRecord,
+            EmailVariableBinding variableBinding) throws Exception {
         if (conf == null || !conf.canSend()) {
             return;
         }
 
-        ImageHtmlEmail email = initEmail(conf, SUBJECT);
-
-        String emailMsg = "You can now go to your test project to view the execution report.";
-
+        HtmlEmail email = initEmail(conf);
+        EmailAttachment attachment = null;
+        File attachedFile = null;
         if (conf.isSendAttachmentEnable()) {
-            // Attachment
-            if (csvFile != null && csvFile.exists()) {
-                attachSummary(email, csvFile);
-            }
-            if (logFolder != null && logFolder.exists()) {
-                attach(email, logFolder);
-            }
+            attachment = attach(conf.getAttachmentOptions(), suiteLogRecord);
+            attachedFile = new File(attachment.getURL().toURI());
+            email.attach(
+                    new FileDataSource(attachedFile), 
+                    attachment.getName(),
+                    attachment.getDescription(),
+                    attachment.getDisposition());
         }
 
-        String suiteName = (String) suitesSummaryForEmail.get(0)[0];
-        Integer passed = (Integer) suitesSummaryForEmail.get(0)[1];
-        Integer failed = (Integer) suitesSummaryForEmail.get(0)[2];
-        Integer error = (Integer) suitesSummaryForEmail.get(0)[3];
-        // Integer incomplete = (Integer) suitesSummaryForEmail.get(0)[4];
-        String hostName = ObjectUtils.toString(suitesSummaryForEmail.get(0)[5]);
-        String os = ObjectUtils.toString(suitesSummaryForEmail.get(0)[6]);
-        String browser = ObjectUtils.toString(suitesSummaryForEmail.get(0)[7]);
-
-        // Prepare email message
-        String htmlMessage = MessageFormat.format(EMAIL_HTML_TEMPLATE, hostName, os, browser, suiteName, passed, failed,
-                error, emailMsg, conf.getSignature());
-        String textMessage = MessageFormat.format(EMAIL_TEXT_TEMPLATE, hostName, os, browser, suiteName, passed, failed,
-                error, emailMsg, conf.getSignature());
-
-        // Define the base URL to resolve relative resource locations
-        URL url = new URL("http://katalon.kms-technology.com");
-        email.setDataSourceResolver(new DataSourceUrlResolver(url));
-
         // Set HTML formatted message
-        email.setHtmlMsg(htmlMessage);
+        email.setHtmlMsg("<html>" + GroovyStringUtil.evaluate(conf.getHtmlMessage(), variableBinding.getVariables())
+                + "</html>");
 
-        // Set fallback text email message
-        email.setTextMsg(textMessage);
-
-        email.send();
+        try {
+            email.send();
+        } finally {
+            if (attachment != null) {
+                try {
+                    FileUtils.forceDelete(attachedFile);
+                } catch (IOException e) {
+                    LogUtil.logError(e);
+                }
+            }
+        }
     }
 
-    private static void attach(HtmlEmail email, File folder) throws Exception {
+    private static EmailAttachment attach(List<ReportFormatType> attachmentOptions, TestSuiteLogRecord suiteLogRecord)
+            throws Exception {
+        File logFolder = new File(suiteLogRecord.getLogFolder());
         // Zip html report with its dependencies
-        File tmpReportDir = new File(System.getProperty("java.io.tmpdir"), folder.getName());
+        File tmpReportDir = new File(System.getProperty("java.io.tmpdir"), logFolder.getName());
         if (tmpReportDir.exists()) {
             tmpReportDir.delete();
         }
         tmpReportDir.mkdir();
-        for (File f : folder.listFiles()) {
-            if (f.getName().endsWith(".html") || f.getName().endsWith(".csv")) {
+        for (File f : logFolder.listFiles()) {
+            String fileName = f.getName();
+            if (fileName.endsWith(".html") && attachmentOptions.contains(ReportFormatType.HTML)
+                    || fileName.endsWith(".csv") && attachmentOptions.contains(ReportFormatType.CSV)
+                    || (fileName.endsWith(".log") || fileName.endsWith(".meta")
+                            || fileName.endsWith("execution.properties"))
+                            && attachmentOptions.contains(ReportFormatType.LOG)) {
                 FileUtils.copyFileToDirectory(f, tmpReportDir);
             }
         }
+
+        if (attachmentOptions.contains(ReportFormatType.PDF)) {
+            TestSuitePdfGenerator generator = new TestSuitePdfGenerator(suiteLogRecord);
+            generator.exportToPDF(new File(tmpReportDir, logFolder.getName() + ".pdf").getAbsolutePath());
+        }
+
         File zipFile = zip(tmpReportDir.getAbsolutePath(), tmpReportDir.getName());
+
+        if (zipFile.length() > EMAIL_WARNING_SIZE) {
+            LogUtil.printOutputLine(ExecutionMessageConstants.MSG_EMAIL_ATTACHMENT_EXCEEDS_SIZE);
+        }
         // Create the attachment
         EmailAttachment attachment = new EmailAttachment();
         attachment.setName(zipFile.getName());
         attachment.setURL(zipFile.toURI().toURL());
         attachment.setDisposition(EmailAttachment.ATTACHMENT);
-        // add the attachment
-        email.attach(attachment);
-    }
 
-    private static void attachSummary(HtmlEmail email, File file) throws Exception {
-        // Create the attachment
-        EmailAttachment attachment = new EmailAttachment();
-        attachment.setName(file.getName());
-        attachment.setURL(file.toURI().toURL());
-        attachment.setDisposition(EmailAttachment.ATTACHMENT);
-        // add the attachment
-        email.attach(attachment);
+        return attachment;
     }
 
     private static File zip(String directory, String zipName) throws Exception {
@@ -222,18 +226,24 @@ public class MailUtil {
         }
         EmailSettingStore store = new EmailSettingStore(project);
         try {
+            boolean encryptionEnabled = store.isEncryptionEnabled();
             EmailConfig conf = new EmailConfig();
-            conf.setHost(store.getHost());
-            conf.setPort(store.getPort());
-            conf.setFrom(store.getUsername());
-            conf.setSecurityProtocol(MailSecurityProtocolType.valueOf(store.getProtocol()));
-            conf.setUsername(store.getUsername());
-            conf.setPassword(store.getPassword());
+            conf.setHost(store.getHost(encryptionEnabled));
+            conf.setPort(store.getPort(encryptionEnabled));
+            conf.setFrom(store.getUsername(encryptionEnabled));
+            conf.setSecurityProtocol(MailSecurityProtocolType.valueOf(store.getProtocol(encryptionEnabled)));
+            conf.setUsername(store.getUsername(encryptionEnabled));
+            conf.setPassword(store.getPassword(encryptionEnabled));
             conf.setSignature(store.getSignature());
             conf.setSendAttachment(store.isAddAttachment());
-            conf.addRecipients(splitRecipientsString(store.getRecipients()));
+            conf.setCc(store.getEmailCc());
+            conf.setBcc(store.getEmailBcc());
+            conf.addRecipients(splitRecipientsString(store.getRecipients(encryptionEnabled)));
+            conf.setSubject(store.getEmailSubject());
+            conf.setHtmlMessage(store.getEmailHTMLTemplate());
+            conf.setAttachmentOptions(store.getReportFormatOptions());
             return conf;
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException | GeneralSecurityException e) {
             LogUtil.logError(e);
             return null;
         }

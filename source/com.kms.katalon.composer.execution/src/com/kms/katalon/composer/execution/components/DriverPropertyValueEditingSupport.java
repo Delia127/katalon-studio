@@ -29,7 +29,7 @@ public class DriverPropertyValueEditingSupport extends EditingSupport {
             return new ListPropertyValueCellEditor(tableViewer.getTable());
         case Dictionary:
             return new MapPropertyValueCellEditor(tableViewer.getTable());
-        case Integer:
+        case Number:
         case String:
             return new TextCellEditor(tableViewer.getTable());
         }
@@ -51,7 +51,7 @@ public class DriverPropertyValueEditingSupport extends EditingSupport {
         case List:
         case Dictionary:
             return ((Entry<?, ?>) element).getValue();
-        case Integer:
+        case Number:
         case String:
             return String.valueOf(((Entry<?, ?>) element).getValue());
         }
@@ -74,9 +74,9 @@ public class DriverPropertyValueEditingSupport extends EditingSupport {
                 }
             }
             break;
-        case Integer:
+        case Number:
             try {
-                property.setValue(Integer.valueOf(String.valueOf(value)));
+                property.setValue(Double.valueOf(String.valueOf(value)));
             } catch (NumberFormatException e) {
                 // not a number, so not setting value
             }

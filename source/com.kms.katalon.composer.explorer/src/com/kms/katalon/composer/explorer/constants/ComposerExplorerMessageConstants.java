@@ -28,6 +28,8 @@ public class ComposerExplorerMessageConstants extends NLS {
     public static String LIS_ERROR_MSG_CANNOT_MOVE_THE_SELECTION;
 
     public static String LIS_ERROR_MSG_CANNOT_MOVE_INTO_DIFF_REGION;
+    
+    public static String LIS_ERROR_MSG_CANNOT_MOVE_TO_SUBFOLDER;
 
     public static String TOOLTIP_MESSAGE_PROPERTIES_ENTITY;
     

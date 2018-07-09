@@ -10,6 +10,8 @@ public interface IWizardPage {
     boolean canFlipToNextPage();
     
     boolean canFinish();
+    
+    boolean autoFlip();
 
     void createStepArea(Composite parent);
 

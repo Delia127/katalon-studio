@@ -21,6 +21,6 @@ public class KobitonStringConstants {
 
     public static final String KOBITON_API_GET_KEYS = "/v1/users/keys";
 
-    public static final String KOBITON_API_GET_FAVORITE_DEVICES = "/v1/devices/favorites";
-
+    public static final String KOBITON_API_GET_ALL_DEVICES = "/v1/devices";
+    public static final String KOBITON_API_GET_APPLICATION = "/v1/apps";
 }

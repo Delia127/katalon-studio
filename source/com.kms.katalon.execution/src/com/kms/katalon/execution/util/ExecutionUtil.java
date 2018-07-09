@@ -1,7 +1,5 @@
 package com.kms.katalon.execution.util;
 
-import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -27,21 +25,21 @@ import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
+import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.collector.RunConfigurationCollector;
 import com.kms.katalon.execution.configuration.IDriverConnector;
 import com.kms.katalon.execution.configuration.IExecutionSetting;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.configuration.contributor.IRunConfigurationContributor;
-import com.kms.katalon.execution.constants.ExecutionPreferenceConstants;
 import com.kms.katalon.execution.entity.DefaultRerunSetting;
 import com.kms.katalon.execution.entity.IExecutedEntity;
 import com.kms.katalon.execution.entity.TestCaseExecutedEntity;
 import com.kms.katalon.execution.entity.TestSuiteExecutedEntity;
 import com.kms.katalon.execution.launcher.result.ILauncherResult;
+import com.kms.katalon.execution.setting.ExecutionDefaultSettingStore;
 import com.kms.katalon.groovy.util.GroovyStringUtil;
 import com.kms.katalon.logging.LogUtil;
-import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class ExecutionUtil {
     private static final String BIT = "bit";
@@ -72,12 +70,12 @@ public class ExecutionUtil {
         return System.getProperty(OS_NAME_PROPERTY) + " " + System.getProperty(OS_ARCHITECTURE_PROPERTY) + BIT;
     }
 
-    private static ScopedPreferenceStore getStore() {
-        return getPreferenceStore(ExecutionPreferenceConstants.EXECUTION_QUALIFIER);
+    private static ExecutionDefaultSettingStore getStore() {
+        return ExecutionDefaultSettingStore.getStore();
     }
 
     public static IRunConfigurationContributor getDefaultExecutionConfiguration() {
-        String selectedRunConfiguration = getStore().getString(ExecutionPreferenceConstants.EXECUTION_DEFAULT_CONFIGURATION);
+        String selectedRunConfiguration = getStore().getExecutionConfiguration();
         IRunConfigurationContributor[] allBuiltinRunConfigurationContributor = RunConfigurationCollector.getInstance()
                 .getAllBuiltinRunConfigurationContributors();
         for (IRunConfigurationContributor runConfigurationContributor : allBuiltinRunConfigurationContributor) {
@@ -89,15 +87,19 @@ public class ExecutionUtil {
     }
 
     public static int getDefaultImplicitTimeout() {
-        return getStore().getInt(ExecutionPreferenceConstants.EXECUTION_DEFAULT_TIMEOUT);
+        return getStore().getElementTimeout();
     }
 
     public static boolean openReportAfterExecuting() {
-        return getStore().getBoolean(ExecutionPreferenceConstants.EXECUTION_OPEN_REPORT_AFTER_EXECUTING);
+        return getStore().isPostExecOpenReport();
     }
-    
-    public static boolean isQuitDriversAfterExecuting() {
-        return getStore().getBoolean(ExecutionPreferenceConstants.EXECUTION_QUIT_DRIVERS_AFTER_EXECUTING);
+
+    public static boolean isQuitDriversAfterExecutingTestCase() {
+        return getStore().isPostTestCaseExecQuitDriver();
+    }
+
+    public static boolean isQuitDriversAfterExecutingTestSuite() {
+        return getStore().isPostTestSuiteExecQuitDriver();
     }
 
     public static Map<String, Object> escapeGroovy(Map<String, Object> propertiesMap) {
@@ -110,12 +112,16 @@ public class ExecutionUtil {
     }
 
     public static Map<String, Object> getExecutionProperties(IExecutionSetting executionSetting,
-            Map<String, IDriverConnector> driverConnectors) {
+            Map<String, IDriverConnector> driverConnectors, ExecutionProfileEntity executionProfile) {
         Map<String, Object> propertyMap = new LinkedHashMap<String, Object>();
 
         Map<String, Object> executionProperties = new LinkedHashMap<String, Object>();
 
-        executionProperties.put(RunConfiguration.EXECUTION_GENERAL_PROPERTY, executionSetting.getGeneralProperties());
+        Map<String, Object> generalProperties = executionSetting.getGeneralProperties();
+        if (executionProfile != null) {
+            generalProperties.put(RunConfiguration.EXECUTION_PROFILE_PROPERTY, executionProfile.getName());
+        }
+        executionProperties.put(RunConfiguration.EXECUTION_GENERAL_PROPERTY, generalProperties);
 
         executionProperties.put(RunConfiguration.EXECUTION_DRIVER_PROPERTY,
                 getDriverExecutionProperties(driverConnectors));
@@ -153,8 +159,8 @@ public class ExecutionUtil {
                 continue;
             }
             driverSystemProperties.put(kwDriverConnector.getKey(), kwDriverConnector.getValue().getSystemProperties());
-            driverPerferencesProperties.put(kwDriverConnector.getKey(), kwDriverConnector.getValue()
-                    .getUserConfigProperties());
+            driverPerferencesProperties.put(kwDriverConnector.getKey(),
+                    kwDriverConnector.getValue().getUserConfigProperties());
         }
 
         driverProperties.put(RunConfiguration.EXECUTION_SYSTEM_PROPERTY, driverSystemProperties);

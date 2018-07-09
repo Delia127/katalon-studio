@@ -3,7 +3,7 @@
 <schema targetNamespace="com.kms.katalon.composer.execution" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
       <appinfo>
-         <meta.schema plugin="com.kms.katalon.composer.execution" id="driverConnectorEditor" name="com.kms.katalon.composer.execution.driver.connector.editor"/>
+         <meta.schema plugin="com.kms.katalon.composer.execution" id="driverConnectorEditor" name="Driver Connector"/>
       </appinfo>
       <documentation>
          [Enter description of this extension point.]

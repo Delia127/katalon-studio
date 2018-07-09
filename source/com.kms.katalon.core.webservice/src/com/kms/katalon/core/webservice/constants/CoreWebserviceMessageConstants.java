@@ -47,6 +47,16 @@ public class CoreWebserviceMessageConstants extends NLS {
     
     public static String MSG_NO_SERVICE_OPERATION;
 
+    // VerifyResponseStatusCodeKeyword
+    public static String KW_LOG_PASSED_VERIFY_RESPONSE_STATUS_CODE_SUCCESSFULLY;
+
+    public static String KW_LOG_FAILED_STATUS_CODE_DOES_NOT_MATCH;
+
+    public static String KW_MSG_UNABLE_TO_VERIFY_RESPONSE_STATUS_CODE;
+
+    // VerifyResponseStatusCodeInRangeKeyword
+    public static String KW_LOG_FAILED_STATUS_CODE_DOES_NOT_MATCH_IN_EXPECTED_RANGE;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, CoreWebserviceMessageConstants.class);

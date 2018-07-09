@@ -10,9 +10,10 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.osgi.framework.BundleException;
 
+import com.kms.katalon.activation.dialog.LinuxNotSupportedDialog;
+import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.application.ApplicationSingleton;
 import com.kms.katalon.console.addons.MacOSAddon;
-import com.kms.katalon.console.utils.ApplicationInfo;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.logging.LogUtil;
 import com.kms.katalon.support.testing.katserver.KatServer;
@@ -52,9 +53,7 @@ public class Application implements IApplication {
 
         switch (runningModeParam) {
             case CONSOLE:
-                // hide splash screen
-                context.applicationRunning();
-                return com.kms.katalon.console.application.Application.runConsole(appArgs);
+                return runConsole(context, appArgs);
             case SELFTEST:
                 return runSelfTest();
             case GUI:
@@ -64,6 +63,17 @@ public class Application implements IApplication {
                 return IApplication.EXIT_OK;
         }
 
+    }
+
+    private Object runConsole(IApplicationContext context, final String[] appArgs) {
+        try {
+            // hide splash screen
+            context.applicationRunning();
+            return com.kms.katalon.console.application.Application.runConsole(appArgs);
+        } catch (Error e) {
+            LogUtil.logError(e);
+            return resolve();
+        }
     }
 
     private void preRunInit() {
@@ -97,14 +107,30 @@ public class Application implements IApplication {
     private int internalRunGUI() {
         Display display = PlatformUI.createDisplay();
         try {
+            if (Platform.OS_LINUX.equals(Platform.getOS())) {
+                LinuxNotSupportedDialog dialog = new LinuxNotSupportedDialog(display.getActiveShell());
+                dialog.open();
+                return PlatformUI.RETURN_OK;
+            }
             return PlatformUI.createAndRunWorkbench(display, new ApplicationWorkbenchAdvisor());
         } catch (Exception e) {
             LogUtil.logError(e);
+        } catch (Error e) {
+            LogUtil.logError(e);
+            return resolve();
         } finally {
             ApplicationSession.close();
             display.dispose();
         }
         return PlatformUI.RETURN_OK;
+    }
+
+    private int resolve() {
+        MetadataCorruptedResolver resolver = new MetadataCorruptedResolver();
+        if (!resolver.isMetaFolderCorrupted()) {
+            return PlatformUI.RETURN_UNSTARTABLE;
+        }
+        return resolver.resolve() ? PlatformUI.RETURN_RESTART : PlatformUI.RETURN_UNSTARTABLE;
     }
 
     public enum RunningModeParam {

@@ -3,7 +3,10 @@ package com.kms.katalon.composer.testcase.ast.editors;
 import org.codehaus.groovy.ast.MethodNode;
 import org.eclipse.swt.widgets.Composite;
 
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.editors.ComboBoxCellEditorWithContentProposal;
+import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
 import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
@@ -30,19 +33,21 @@ public class KeywordComboBoxCellEditorWithContentProposal extends ComboBoxCellEd
             int selectedIndex = (int) super.doGetValue();
             Object selectedItem = items[selectedIndex];
             String newMethodName = getMethodName(selectedItem);
-            MethodCallExpressionWrapper newMethodCall = new MethodCallExpressionWrapper(keywordClassAliasName,
-                    newMethodName, parentStatement);
-            generateArguments(newMethodCall);
-            return newMethodCall;
+            return createNewKeywordExpression(keywordClassAliasName, newMethodName, parentStatement);
         } catch (Exception ex) {
+            LoggerSingleton.logError(ex);
             return null;
         }
     }
 
-    protected void generateArguments(MethodCallExpressionWrapper newMethodCall) {
-        AstKeywordsInputUtil.generateBuiltInKeywordArguments(newMethodCall);
+    protected MethodCallExpressionWrapper createNewKeywordExpression(String keywordClass, String newMethodName,
+            StatementWrapper parentStatement) {
+        ASTNodeWrapper currentInput = parentStatement.getInput();
+        ArgumentListExpressionWrapper currentArguments = currentInput instanceof MethodCallExpressionWrapper
+                ? ((MethodCallExpressionWrapper) currentInput).getArguments() : null;
+        return AstKeywordsInputUtil.generateBuiltInKeywordExpression(keywordClass, newMethodName, currentArguments, parentStatement);
     }
-    
+
     @Override
     protected void doSetValue(Object value) {
         if (!(value instanceof MethodCallExpressionWrapper)) {
@@ -76,6 +81,4 @@ public class KeywordComboBoxCellEditorWithContentProposal extends ComboBoxCellEd
         return null;
     }
 
-    
-    
 }

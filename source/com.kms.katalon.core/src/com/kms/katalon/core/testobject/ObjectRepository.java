@@ -2,13 +2,17 @@ package com.kms.katalon.core.testobject;
 
 import static com.kms.katalon.core.constants.StringConstants.ID_SEPARATOR;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -20,6 +24,8 @@ import org.dom4j.io.SAXReader;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.logging.KeywordLogger;
+import com.kms.katalon.core.testobject.impl.HttpTextBodyContent;
+import com.kms.katalon.core.testobject.internal.impl.HttpBodyContentReader;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 
 public class ObjectRepository {
@@ -47,6 +53,16 @@ public class ObjectRepository {
     private static final String PROPERTY_IS_SELECTED = "isSelected";
 
     private static final String[] PARENT_FRAME_ATTRS = new String[] { "ref_element", "parent_frame" };
+
+    private static final String PARENT_SHADOW_ROOT_ATTRIBUTE = "ref_element_is_shadow_root";
+
+    private static final String PROPERTY_SELECTOR_METHOD = "selectorMethod";
+
+    private static final String PROPERTY_SELECTOR_COLLECTION = "selectorCollection";
+
+    private static final String PROPERTY_ENTRY = "entry";
+
+    private static final String PROPERTY_KEY = "key";
 
     /**
      * Returns test object id of a its relative id.
@@ -96,19 +112,7 @@ public class ObjectRepository {
      * @see {@link #findTestObject(String, Map) findTestObject} for parameterizing test object
      */
     public static TestObject findTestObject(String testObjectRelativeId) {
-        if (testObjectRelativeId == null) {
-            logger.logWarning(StringConstants.TO_LOG_WARNING_TEST_OBJ_NULL);
-            return null;
-        }
-        String testObjectId = getTestObjectId(testObjectRelativeId);
-        logger.logInfo(MessageFormat.format(StringConstants.TO_LOG_INFO_FINDING_TEST_OBJ_W_ID, testObjectId));
-        File objectFile = new File(RunConfiguration.getProjectDir(), testObjectId + WEBELEMENT_FILE_EXTENSION);
-        if (!objectFile.exists()) {
-            logger.logWarning(
-                    MessageFormat.format(StringConstants.TO_LOG_WARNING_TEST_OBJ_DOES_NOT_EXIST, testObjectId));
-            return null;
-        }
-        return readTestObjectFile(testObjectId, objectFile);
+        return findTestObject(testObjectRelativeId, Collections.emptyMap());
     }
 
     /**
@@ -133,32 +137,37 @@ public class ObjectRepository {
      * 
      * @return an instance of {@link TestObject} or <code>null</code> if test object id is null
      */
-    public static TestObject findTestObject(String testObjectRelativeId, Map<Object, Object> variables) {
-        TestObject testObject = findTestObject(testObjectRelativeId);
-        if (testObject == null || variables == null || variables.isEmpty()) {
-            return testObject;
+    public static TestObject findTestObject(String testObjectRelativeId, Map<String, Object> variables) {
+        if (testObjectRelativeId == null) {
+            logger.logWarning(StringConstants.TO_LOG_WARNING_TEST_OBJ_NULL);
+            return null;
         }
-        Map<String, Object> variablesStringMap = new HashMap<String, Object>();
-        variables.entrySet()
-                .stream()
-                .forEach(entry -> variablesStringMap.put(String.valueOf(entry.getKey()), entry.getValue()));
-
-        StrSubstitutor strSubtitutor = new StrSubstitutor(variablesStringMap);
-        testObject.getProperties().parallelStream().forEach(
-                objectProperty -> objectProperty.setValue(strSubtitutor.replace(objectProperty.getValue())));
-        return testObject;
+        String testObjectId = getTestObjectId(testObjectRelativeId);
+        logger.logInfo(MessageFormat.format(StringConstants.TO_LOG_INFO_FINDING_TEST_OBJ_W_ID, testObjectId));
+        File objectFile = new File(RunConfiguration.getProjectDir(), testObjectId + WEBELEMENT_FILE_EXTENSION);
+        if (!objectFile.exists()) {
+            logger.logWarning(
+                    MessageFormat.format(StringConstants.TO_LOG_WARNING_TEST_OBJ_DOES_NOT_EXIST, testObjectId));
+            return null;
+        }
+        return readTestObjectFile(testObjectId, objectFile, RunConfiguration.getProjectDir(), variables);
     }
 
-    public static TestObject readTestObjectFile(String testObjectId, File objectFile) {
+    public static TestObject readTestObjectFile(String testObjectId, File objectFile, String projectDir) {
+        return readTestObjectFile(testObjectId, objectFile, projectDir, Collections.emptyMap());
+    }
+
+    public static TestObject readTestObjectFile(String testObjectId, File objectFile, String projectDir,
+            Map<String, Object> variables) {
         try {
             Element rootElement = new SAXReader().read(objectFile).getRootElement();
             String elementName = rootElement.getName();
             if (WEB_ELEMENT_TYPE_NAME.equals(elementName)) {
-                return findWebUIObject(testObjectId, rootElement);
+                return findWebUIObject(testObjectId, rootElement, variables);
             }
 
             if (WEB_SERVICES_TYPE_NAME.equals(elementName)) {
-                return findRequestObject(testObjectId, rootElement);
+                return findRequestObject(testObjectId, rootElement, projectDir, variables);
             }
             return null;
         } catch (DocumentException e) {
@@ -168,13 +177,39 @@ public class ObjectRepository {
         }
     }
 
-    private static TestObject findWebUIObject(String testObjectId, Element element) {
+    private static TestObject findWebUIObject(String testObjectId, Element element, Map<String, Object> variables) {
         TestObject testObject = new TestObject(testObjectId);
+
         // For image
-        String imagePath = element.elementText("imagePath");
-        boolean useRalativeImagePath = Boolean.parseBoolean(element.elementText("useRalativeImagePath"));
-        testObject.setImagePath(imagePath);
-        testObject.setUseRelativeImagePath(useRalativeImagePath);
+        Element imagePathElement = element.element("imagePath");
+        if (imagePathElement != null) {
+            String imagePath = imagePathElement.getText();
+            testObject.setImagePath(imagePath);
+        }
+
+        Element relativeImagePathElement = element.element("useRalativeImagePath");
+        if (relativeImagePathElement != null) {
+            String useRelavitePathString = relativeImagePathElement.getText();
+            testObject.setUseRelativeImagePath(Boolean.parseBoolean(useRelavitePathString));
+        }
+
+        Element dfSelectorMethodElement = element.element(PROPERTY_SELECTOR_METHOD);
+        if (dfSelectorMethodElement != null) {
+            testObject.setSelectorMethod(SelectorMethod.valueOf(dfSelectorMethodElement.getText()));
+        }
+
+        Element propertySelectorCollection = element.element(PROPERTY_SELECTOR_COLLECTION);
+        if (propertySelectorCollection != null) {
+            List<?> selectorEntry = propertySelectorCollection.elements(PROPERTY_ENTRY);
+            if (selectorEntry != null) {
+                selectorEntry.forEach(entry -> {
+                    Element selectorMethodElement = ((Element) entry);
+                    SelectorMethod entryKey = SelectorMethod.valueOf(selectorMethodElement.elementText(PROPERTY_KEY));
+                    String entryValue = selectorMethodElement.elementText(PROPERTY_VALUE);
+                    testObject.setSelectorValue(entryKey, entryValue);
+                });
+            }
+        }
 
         for (Object propertyElementObject : element.elements(WEB_ELEMENT_PROPERTY_NODE_NAME)) {
             TestObjectProperty objectProperty = new TestObjectProperty();
@@ -196,39 +231,89 @@ public class ObjectRepository {
             if (Arrays.asList(PARENT_FRAME_ATTRS).contains(propertyName) && isPropertySelected) {
                 TestObject parentObject = findTestObject(propertyValue);
                 testObject.setParentObject(parentObject);
+            } else if (PARENT_SHADOW_ROOT_ATTRIBUTE.equals(propertyName)) {
+                testObject.setParentObjectShadowRoot(true);
             } else {
                 testObject.addProperty(objectProperty);
             }
+        }
+
+        if (testObject == null || variables == null || variables.isEmpty()) {
+            return testObject;
+        }
+        Map<String, Object> variablesStringMap = new HashMap<String, Object>();
+        for (Entry<String, Object> entry : variables.entrySet()) {
+            variablesStringMap.put(String.valueOf(entry.getKey()), entry.getValue());
+        }
+
+        StrSubstitutor strSubtitutor = new StrSubstitutor(variablesStringMap);
+        for (TestObjectProperty objectProperty : testObject.getProperties()) {
+            objectProperty.setValue(strSubtitutor.replace(objectProperty.getValue()));
         }
 
         return testObject;
     }
 
     @SuppressWarnings("unchecked")
-    private static RequestObject findRequestObject(String requestObjectId, Element reqElement) {
+    private static RequestObject findRequestObject(String requestObjectId, Element reqElement, String projectDir,
+            Map<String, Object> variables) {
         RequestObject requestObject = new RequestObject(requestObjectId);
         requestObject.setName(reqElement.elementText("name"));
 
         String serviceType = reqElement.elementText("serviceType");
         requestObject.setServiceType(serviceType);
 
+        StrSubstitutor substitutor = new StrSubstitutor(variables);
         if ("SOAP".equals(serviceType)) {
             requestObject.setWsdlAddress(reqElement.elementText("wsdlAddress"));
             requestObject.setSoapRequestMethod(reqElement.elementText("soapRequestMethod"));
             requestObject.setSoapServiceFunction(reqElement.elementText("soapServiceFunction"));
             requestObject.setSoapBody(reqElement.elementText("soapBody"));
         } else if ("RESTful".equals(serviceType)) {
-            requestObject.setRestUrl(reqElement.elementText("restUrl"));
-            requestObject.setRestRequestMethod(reqElement.elementText("restRequestMethod"));
+            requestObject.setRestUrl(substitutor.replace(reqElement.elementText("restUrl")));
+            String requestMethod = reqElement.elementText("restRequestMethod");
+            requestObject.setRestRequestMethod(requestMethod);
             requestObject.setRestParameters(parseProperties(reqElement.elements("restParameters")));
-            requestObject.setHttpHeaderProperties(parseProperties(reqElement.elements("httpHeaderProperties")));
+            requestObject
+                    .setHttpHeaderProperties(parseProperties(reqElement.elements("httpHeaderProperties"), substitutor));
             requestObject.setHttpBody(reqElement.elementText("httpBody"));
+
+            String httpBodyType = reqElement.elementText("httpBodyType");
+            if (StringUtils.isBlank(httpBodyType)) {
+                // migrated from 5.3.1 (KAT-3200)
+                httpBodyType = "text";
+                String body = reqElement.elementText("httpBody");
+                HttpTextBodyContent httpBodyContent = new HttpTextBodyContent(body);
+                requestObject.setBodyContent(httpBodyContent);
+            } else if (isBodySupported(requestObject)) {
+                String httpBodyContent = reqElement.elementText("httpBodyContent");
+                HttpBodyContent bodyContent = HttpBodyContentReader.fromSource(httpBodyType, httpBodyContent,
+                        projectDir, substitutor);
+                requestObject.setBodyContent(bodyContent);
+
+                // Backward compatible with 5.3.1
+                ByteArrayOutputStream outstream = new ByteArrayOutputStream();
+                try {
+                    bodyContent.writeTo(outstream);
+                    requestObject.setHttpBody(outstream.toString());
+                } catch (IOException ignored) {
+                }
+            }
         }
 
         return requestObject;
     }
 
+    private static boolean isBodySupported(RequestObject requestObject) {
+        String restRequestMethod = requestObject.getRestRequestMethod();
+        return !("GET".contains(restRequestMethod) || "DELETE".equals(restRequestMethod));
+    }
+
     private static List<TestObjectProperty> parseProperties(List<Object> objects) {
+        return parseProperties(objects, new StrSubstitutor());
+    }
+
+    private static List<TestObjectProperty> parseProperties(List<Object> objects, StrSubstitutor substitutor) {
         List<TestObjectProperty> props = new ArrayList<TestObjectProperty>();
         for (Object propertyElementObject : objects) {
             TestObjectProperty objectProperty = new TestObjectProperty();
@@ -239,9 +324,9 @@ public class ObjectRepository {
             String propertyValue = propertyElement.elementText(PROPERTY_VALUE);
             boolean isPropertySelected = Boolean.valueOf(propertyElement.elementText(PROPERTY_IS_SELECTED));
 
-            objectProperty.setName(propertyName);
+            objectProperty.setName(substitutor.replace(propertyName));
             objectProperty.setCondition(propertyCondition);
-            objectProperty.setValue(propertyValue);
+            objectProperty.setValue(substitutor.replace(propertyValue));
             objectProperty.setActive(isPropertySelected);
 
             props.add(objectProperty);

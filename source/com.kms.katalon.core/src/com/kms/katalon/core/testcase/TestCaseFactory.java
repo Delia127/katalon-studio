@@ -34,11 +34,15 @@ public class TestCaseFactory {
 
     private static final String DESCRIPTION_NODE_NAME = "description";
 
+    private static final String TAG_NODE_NAME = "tag";
+
     private static final String VARIABLE_NODE_NAME = "variable";
 
     private static final String VARIABLE_NAME_PROPERTY = "name";
 
     private static final String VARIABLE_DEFAULTVALUE_PROPERTY = "defaultValue";
+
+    private static final String VARIABLE_MASKED_PROPERTY = "masked";
 
     /**
      * Finds {@link TestCase} by its id or relative id
@@ -72,12 +76,16 @@ public class TestCaseFactory {
             Element rootElement = document.getRootElement();
             TestCase testCase = new TestCase(testCaseId);
             testCase.setDescription(rootElement.element(DESCRIPTION_NODE_NAME).getText());
+            testCase.setTag(rootElement.element(TAG_NODE_NAME).getText());
             List<Variable> variables = new ArrayList<Variable>();
             for (Object variableObject : rootElement.elements(VARIABLE_NODE_NAME)) {
                 Element variableElement = (Element) variableObject;
                 Variable variable = new Variable();
                 variable.setName(variableElement.elementText(VARIABLE_NAME_PROPERTY));
                 variable.setDefaultValue(variableElement.elementText(VARIABLE_DEFAULTVALUE_PROPERTY));
+                String maskValueAsText = variableElement.elementText(VARIABLE_MASKED_PROPERTY);
+                variable.setMasked(StringUtils.isNotEmpty(maskValueAsText) ? Boolean.valueOf(maskValueAsText)
+                        : variable.isMasked());
                 variables.add(variable);
             }
             testCase.setVariables(variables);

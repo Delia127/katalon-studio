@@ -3,6 +3,7 @@ package com.kms.katalon.execution.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.kms.katalon.entity.report.ReportTestCaseEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 
 public class TestCaseExecutedEntity extends ExecutedEntity {
@@ -59,4 +60,16 @@ public class TestCaseExecutedEntity extends ExecutedEntity {
         return 1;
     }
 
+    public List<ReportTestCaseEntity> reportTestCases() {
+        List<ReportTestCaseEntity> reportTestCases = new ArrayList<>();
+        
+        for (int loop = 0; loop < loopTimes; loop++) {
+            ReportTestCaseEntity reportItems = new ReportTestCaseEntity();
+            String testCaseName = (loop == 0) ? getSourceName() : String.format("%s - Iteration %d", getSourceName(), loop);
+            reportItems.setTestCaseName(testCaseName);
+            reportItems.setTestCaseId(getSourceId());
+            reportTestCases.add(reportItems);
+        }
+        return reportTestCases;
+    }
 }

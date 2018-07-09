@@ -44,11 +44,15 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.JIRA_INACTIVE_16);
         ImageManager.registerImage(IImageKeys.KEYWORD_WIKI_16);
         ImageManager.registerImage(IImageKeys.KOBITON_16);
+        ImageManager.registerImage(IImageKeys.KATALON_ANALYTICS_16);
         ImageManager.registerImage(IImageKeys.NEW_PROJECT_16);
         ImageManager.registerImage(IImageKeys.OPEN_PROJECT_16);
         ImageManager.registerImage(IImageKeys.PROGRESS_16);
         ImageManager.registerImage(IImageKeys.QTEST_ACTIVE_16);
         ImageManager.registerImage(IImageKeys.QTEST_INACTIVE_16);
+        ImageManager.registerImage(IImageKeys.QTEST_TEST_CASE_16);
+        ImageManager.registerImage(IImageKeys.QTEST_FOLDER_16);
+        ImageManager.registerImage(IImageKeys.QTEST_TEST_SUITE_16);
         ImageManager.registerImage(IImageKeys.QUIT_16);
         ImageManager.registerImage(IImageKeys.SEARCH_16);
         ImageManager.registerImage(IImageKeys.TAB_INTEGRATION_16);
@@ -80,6 +84,14 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.UNDO_16);
         ImageManager.registerImage(IImageKeys.REDO_16);
         ImageManager.registerImage(IImageKeys.HELP_16);
+        ImageManager.registerImage(IImageKeys.SAMPLE_WEB_UI_16);
+        ImageManager.registerImage(IImageKeys.SAMPLE_MOBILE_16);
+        ImageManager.registerImage(IImageKeys.SAMPLE_WEB_SERVICE_16);
+        ImageManager.registerImage(IImageKeys.VIDEO_16);
+        ImageManager.registerImage(IImageKeys.IMPORT_16);
+        ImageManager.registerImage(IImageKeys.CHECK_16);
+        ImageManager.registerImage(IImageKeys.FIT_SCREEN_16);
+        ImageManager.registerImage(IImageKeys.FULL_SIZE_16);
     }
 
     private void registerSubToolbarImages() {
@@ -107,6 +119,9 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.TERMINATE_16);
         ImageManager.registerImage(IImageKeys.TREE_16);
         ImageManager.registerImage(IImageKeys.WATCH_16);
+        ImageManager.registerImage(IImageKeys.UNWATCH_16);
+        ImageManager.registerImage(IImageKeys.MAP_ALL_16);
+        ImageManager.registerImage(IImageKeys.RECENT_16);
 
         // Sub-toolbar disabled icons
         ImageManager.registerImage(IImageKeys.CLEAR_DISABLED_16);
@@ -158,6 +173,14 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.IMG_TEST_OBJECT_16);
         ImageManager.registerImage(IImageKeys.LBL_TEST_OBJECT_16);
         ImageManager.registerImage(IImageKeys.LNK_TEST_OBJECT_16);
+        ImageManager.registerImage(IImageKeys.WS_POST_METHOD_16);
+        ImageManager.registerImage(IImageKeys.WS_GET_METHOD_16);
+        ImageManager.registerImage(IImageKeys.WS_PUT_METHOD_16);
+        ImageManager.registerImage(IImageKeys.WS_DELETE_METHOD_16);
+        ImageManager.registerImage(IImageKeys.WS_SOAP12_METHOD_16);
+        ImageManager.registerImage(IImageKeys.WS_SOAP_METHOD_16);
+        ImageManager.registerImage(IImageKeys.WS_SOAP_GET_METHOD_16);
+        ImageManager.registerImage(IImageKeys.WS_SOAP_POST_METHOD_16);
         ImageManager.registerImage(IImageKeys.RBT_TEST_OBJECT_16);
         ImageManager.registerImage(IImageKeys.TXT_TEST_OBJECT_16);
 
@@ -170,6 +193,8 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.TEST_CASE_16);
         ImageManager.registerImage(IImageKeys.TEST_DATA_16);
         ImageManager.registerImage(IImageKeys.KEYWORD_16);
+        ImageManager.registerImage(IImageKeys.PROFILE_FOLDER_ENTITY_16);
+        ImageManager.registerImage(IImageKeys.PROFILE_ENTITY_16);
     }
 
     private void registerTestCaseStepImages() {
@@ -205,7 +230,7 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.NEW_TEST_SUITE_COLLECTION_24);
         ImageManager.registerImage(IImageKeys.NEW_WS_TEST_OBJECT_24);
         ImageManager.registerImage(IImageKeys.PLAY_24);
-        ImageManager.registerImage(IImageKeys.RECORD_24);
+        ImageManager.registerImage(IImageKeys.RECORD_WEB_24);
         ImageManager.registerImage(IImageKeys.REDO_24);
         ImageManager.registerImage(IImageKeys.SAVE_24);
         ImageManager.registerImage(IImageKeys.SAVE_ALL_24);
@@ -215,6 +240,7 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.WEB_OBJECT_SPY_24);
         ImageManager.registerImage(IImageKeys.SAVE_16);
         ImageManager.registerImage(IImageKeys.SAVE_ALL_16);
+        ImageManager.registerImage(IImageKeys.PROFILE_16);
 
         // Toolbar disabled icons
         ImageManager.registerImage(IImageKeys.BUG_DISABLED_24);
@@ -264,8 +290,10 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.ANDROID_16);
         ImageManager.registerImage(IImageKeys.APPLE_16);
         ImageManager.registerImage(IImageKeys.CHROME_16);
+        ImageManager.registerImage(IImageKeys.CHROME_HEADLESS_16);
         ImageManager.registerImage(IImageKeys.EDGE_16);
         ImageManager.registerImage(IImageKeys.FIREFOX_16);
+        ImageManager.registerImage(IImageKeys.FIREFOX_HEADLESS_16);
         ImageManager.registerImage(IImageKeys.IE_16);
         ImageManager.registerImage(IImageKeys.REMOTE_16);
         ImageManager.registerImage(IImageKeys.SAFARI_16);
@@ -290,18 +318,29 @@ public class ImageProcessor {
     }
 
     private void registerWelcomeImages() {
-        ImageManager.registerImage(IImageKeys.START_PAGE_BACKGROUND);
-        ImageManager.registerImage(IImageKeys.FAQ_100);
-        ImageManager.registerImage(IImageKeys.GETTING_STARTED_100);
-        ImageManager.registerImage(IImageKeys.HOW_TO_ARTICLES_100);
-        ImageManager.registerImage(IImageKeys.NEW_PROJECT_32);
-        ImageManager.registerImage(IImageKeys.OPEN_PROJECT_32);
-        ImageManager.registerImage(IImageKeys.RECENT_PROJECT_32);
-        ImageManager.registerImage(IImageKeys.KATALON_LOGO_67);
-        ImageManager.registerImage(IImageKeys.RECENT_PROJECT_FILE_16);
-        ImageManager.registerImage(IImageKeys.SAMPLE_WEB_UI_PROJECT_100);
-        ImageManager.registerImage(IImageKeys.SAMPLE_MOBILE_PROJECT_100);
-        ImageManager.registerImage(IImageKeys.SAMPLE_WEB_SERVICES_PROJECT_100);
+        ImageManager.registerImage(IImageKeys.FAQ_34);
+        ImageManager.registerImage(IImageKeys.USER_GUIDE_34);
+        ImageManager.registerImage(IImageKeys.TUTORIAL_34);
+        ImageManager.registerImage(IImageKeys.BUSINESS_SUPPORT_34);
+        ImageManager.registerImage(IImageKeys.KATALON_LOGO_202);
+        ImageManager.registerImage(IImageKeys.RECENT_PROJECT_FILE_29);
+        ImageManager.registerImage(IImageKeys.SAMPLE_WEB_UI_PROJECT_72);
+        ImageManager.registerImage(IImageKeys.SAMPLE_MOBILE_PROJECT_72);
+        ImageManager.registerImage(IImageKeys.SAMPLE_WEB_SERVICES_PROJECT_72);
+        ImageManager.registerImage(IImageKeys.SAMPLE_MORE_72);
+        ImageManager.registerImage(IImageKeys.SCREEN_SHOT_LOG_VIEWER);
+        ImageManager.registerImage(IImageKeys.SCREEN_SHOT_RECORD);
+        ImageManager.registerImage(IImageKeys.SCREEN_SHOT_RUN);
+        ImageManager.registerImage(IImageKeys.GRADIENT_LINE_SEPARATOR);
+        ImageManager.registerImage(IImageKeys.STEP_1_36);
+        ImageManager.registerImage(IImageKeys.STEP_2_36);
+        ImageManager.registerImage(IImageKeys.STEP_3_36);
+        ImageManager.registerImage(IImageKeys.TAB_FIRST_INACTIVE);
+        ImageManager.registerImage(IImageKeys.TAB_FIRST_ACTIVE);
+        ImageManager.registerImage(IImageKeys.TAB_MIDDLE_INACTIVE);
+        ImageManager.registerImage(IImageKeys.TAB_MIDDLE_ACTIVE);
+        ImageManager.registerImage(IImageKeys.TAB_LAST_INACTIVE);
+        ImageManager.registerImage(IImageKeys.TAB_LAST_ACTIVE);
     }
 
     private void registerIntroImages() {

@@ -32,7 +32,9 @@ public class LogRecordTreeViewerLabelProvider extends StyledCellLabelProvider {
                         return ImageConstants.IMG_16_LOGVIEW_FAILED;
                     } else if (resultLevel == LogLevel.ERROR) {
                         return ImageConstants.IMG_16_LOGVIEW_ERROR;
-                    }  else if (resultLevel == LogLevel.NOT_RUN) {
+                    } else if (resultLevel == LogLevel.WARNING) {
+                        return ImageConstants.IMG_16_LOGVIEW_WARNING;
+                    } else if (resultLevel == LogLevel.NOT_RUN) {
                         // TODO: Re-factor for removing else if ( change to switch maybe )
                         return ImageConstants.IMG_16_LOGVIEW_NOT_RUN;
                     }

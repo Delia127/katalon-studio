@@ -6,6 +6,7 @@ import java.util.List;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.swt.widgets.Composite;
 
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.testcase.ast.editors.KeywordComboBoxCellEditorWithContentProposal;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
@@ -13,11 +14,15 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.ExpressionWrappe
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
 import com.kms.katalon.composer.testcase.model.InputParameter;
 import com.kms.katalon.composer.testcase.model.InputValueType;
+import com.kms.katalon.composer.testcase.preferences.StoredKeyword;
+import com.kms.katalon.composer.testcase.preferences.TestCasePreferenceDefaultValueInitializer;
 import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
 import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
 import com.kms.katalon.composer.testcase.util.AstValueUtil;
 import com.kms.katalon.composer.testcase.util.TestCaseEntityUtil;
+import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.KeywordController;
+import com.kms.katalon.custom.keyword.KeywordClass;
 import com.kms.katalon.custom.keyword.KeywordMethod;
 import com.kms.katalon.custom.keyword.KeywordParameter;
 
@@ -214,5 +219,19 @@ public class AstBuiltInKeywordTreeTableNode extends AstAbstractKeywordTreeTableN
                 getBuiltInKWClassSimpleName(), getKeywordName(),
                 methodCall.getArguments().getArgumentListParameterTypes());
         return keywordMethod;
+    }
+    
+    @Override
+    public boolean setItem(Object item) {
+        try {
+            return super.setItem(item);
+        } finally {
+            KeywordClass keywordClass = KeywordController.getInstance()
+                    .getBuiltInKeywordClassByName(getBuiltInKWClassAliasName());
+            TestCasePreferenceDefaultValueInitializer.addNewRecentKeywords(
+                    new StoredKeyword(keywordClass.getName(), getKeywordName(), false));
+            EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.TESTCASE_RECENT_KEYWORD_ADDED,
+                    null);
+        }
     }
 }

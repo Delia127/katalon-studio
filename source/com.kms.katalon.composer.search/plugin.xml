@@ -14,7 +14,7 @@
             class="com.kms.katalon.composer.search.view.QSearchPage"
             enabled="true"
             id="com.kms.katalon.composer.search.page"
-            label="Q Search"
+            label="Search"
             tabPosition="0">
       </page>
    </extension>

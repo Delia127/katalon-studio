@@ -29,7 +29,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
+import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.mobile.objectspy.element.MobileElement;
@@ -42,16 +44,19 @@ import com.kms.katalon.composer.mobile.recorder.utils.MobileElementConverter;
 import com.kms.katalon.composer.mobile.util.MobileUtil;
 import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
+import com.kms.katalon.composer.testcase.handlers.NewTestCaseHandler;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
 import com.kms.katalon.composer.testcase.parts.TestCaseCompositePart;
 import com.kms.katalon.composer.testcase.parts.TestCasePart;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
-import com.kms.katalon.execution.mobile.device.MobileDeviceInfo;
+import com.kms.katalon.entity.testcase.TestCaseEntity;
 
 public class OpenMobileRecorderHandler {
     private MobileRecorderDialog recorderDialog;
@@ -102,53 +107,70 @@ public class OpenMobileRecorderHandler {
             if (this.activeShell == null) {
                 this.activeShell = activeShell;
             }
-
-            if (!isRecorderDialogRunning()) {
-                MPart selectedPart = getSelectedPart();
-                if (selectedPart == null) {
-                    return false;
-                }
-                final TestCaseCompositePart testCaseCompositePart = (TestCaseCompositePart) selectedPart.getObject();
-                boolean isVerified = verifyTestCase(testCaseCompositePart);
-                if (!isVerified) {
-                    return false;
-                }
-
-                recorderDialog = new MobileRecorderDialog(activeShell);
-                int responseCode = recorderDialog.open();
-                if (responseCode != Window.OK) {
-                    return false;
-                }
-                exportRecordedActionsToScripts(recorderDialog.getRecordedActions(),
-                        recorderDialog.getTargetFolderEntity(), recorderDialog.getSelectDeviceInfo(),
-                        testCaseCompositePart);
+            TestCaseCompositePart testCaseCompositePart = getSelectedTestCasePart();
+            if (testCaseCompositePart != null && !verifyTestCase(testCaseCompositePart)) {
+                return false;
             }
-
-            if (!recorderDialog.isCanceledBeforeOpening() && recorderDialog.getShell() != null) {
-                recorderDialog.getShell().forceActive();
+            recorderDialog = new MobileRecorderDialog(activeShell);
+            if (recorderDialog.open() != Window.OK) {
+                return false;
             }
+            if (testCaseCompositePart == null) {
+                testCaseCompositePart = createNewTestCase();
+            }
+            exportRecordedActionsToScripts(recorderDialog.getRecordedActions(), recorderDialog.getTargetFolderEntity(),
+                    recorderDialog.getCurrentMobileDriverType(), testCaseCompositePart);
             return true;
         } catch (Exception e) {
             LoggerSingleton.logError(e);
-            if (isRecorderDialogRunning()) {
-                recorderDialog.dispose();
-                recorderDialog.close();
-            }
             MessageDialog.openError(activeShell, MobileRecorderStringConstants.ERROR, e.getMessage());
             return false;
         }
     }
 
+    private TestCaseCompositePart createNewTestCase() throws Exception {
+        TestCaseEntity testCase = NewTestCaseHandler.doCreateNewTestCase(
+                new FolderTreeEntity(FolderController.getInstance()
+                        .getTestCaseRoot(ProjectController.getInstance().getCurrentProject()), null),
+                EventBrokerSingleton.getInstance().getEventBroker());
+        if (testCase == null) {
+            return null;
+        }
+
+        return getTestCasePartByTestCase(testCase);
+    }
+
+    private TestCaseCompositePart getTestCasePartByTestCase(TestCaseEntity testCase) throws Exception {
+        MPart selectedPart = (MPart) modelService.find(EntityPartUtil.getTestCaseCompositePartId(testCase.getId()),
+                application);
+        if (selectedPart == null || !(selectedPart.getObject() instanceof TestCaseCompositePart)) {
+            return null;
+        }
+        return (TestCaseCompositePart) selectedPart.getObject();
+    }
+
+    private TestCaseCompositePart getSelectedTestCasePart() {
+        MPart selectedPart = getSelectedPart();
+        if (selectedPart == null || !(selectedPart.getObject() instanceof TestCaseCompositePart)) {
+            return null;
+        }
+        final TestCaseCompositePart testCaseCompositePart = (TestCaseCompositePart) selectedPart.getObject();
+        return testCaseCompositePart;
+    }
+
     private void exportRecordedActionsToScripts(List<MobileActionMapping> recordedActions,
-            FolderTreeEntity targetFolderTreeEntity, MobileDeviceInfo mobileDeviceInfo,
+            FolderTreeEntity targetFolderTreeEntity, MobileDriverType mobileDriverType,
             TestCaseCompositePart testCaseCompositePart) {
+        if (testCaseCompositePart == null) {
+            return;
+        }
         Job job = new Job(MobileRecoderMessagesConstants.MSG_TASK_GENERATE_SCRIPT) {
             @Override
             protected IStatus run(IProgressMonitor monitor) {
                 try {
                     final TestCasePart testCasePart = testCaseCompositePart.getChildTestCasePart();
                     final List<StatementWrapper> generatedStatementWrappers = generateStatementWrappersFromRecordedActions(
-                            recordedActions, testCasePart, targetFolderTreeEntity, mobileDeviceInfo, monitor);
+                            recordedActions, testCasePart, targetFolderTreeEntity, mobileDriverType, monitor);
                     UISynchronizeService.syncExec(new Runnable() {
                         @Override
                         public void run() {
@@ -156,6 +178,7 @@ public class OpenMobileRecorderHandler {
                                 testCasePart.addDefaultImports();
                                 testCasePart.addStatements(generatedStatementWrappers, NodeAddType.InserAfter);
                                 testCaseCompositePart.refreshScript();
+                                testCaseCompositePart.save();
                             } catch (Exception e) {
                                 LoggerSingleton.logError(e);
                             }
@@ -172,7 +195,8 @@ public class OpenMobileRecorderHandler {
                         @Override
                         public void run() {
                             MessageDialog.openError(Display.getCurrent().getActiveShell(),
-                                    MobileRecorderStringConstants.ERROR, MobileRecoderMessagesConstants.MSG_ERR_CANNOT_GENERATE_TEST_STEPS);
+                                    MobileRecorderStringConstants.ERROR,
+                                    MobileRecoderMessagesConstants.MSG_ERR_CANNOT_GENERATE_TEST_STEPS);
                             LoggerSingleton.logError(e);
                         }
                     });
@@ -207,7 +231,7 @@ public class OpenMobileRecorderHandler {
     }
 
     private WebElementEntity addRecordedElement(MobileElement element, FolderEntity parentFolder,
-            MobileDeviceInfo deviceInfo, Map<MobileElement, WebElementEntity> entitySavedMap) throws Exception {
+            MobileDriverType mobileDriverType, Map<MobileElement, WebElementEntity> entitySavedMap) throws Exception {
         if (element == null) {
             return null;
         }
@@ -215,14 +239,14 @@ public class OpenMobileRecorderHandler {
             return entitySavedMap.get(element);
         }
         WebElementEntity importedElement = ObjectRepositoryController.getInstance().importWebElement(
-                new MobileElementConverter().convert(element, parentFolder, deviceInfo), parentFolder);
+                new MobileElementConverter().convert(element, parentFolder, mobileDriverType), parentFolder);
         entitySavedMap.put(element, importedElement);
         return importedElement;
     }
 
     private List<StatementWrapper> generateStatementWrappersFromRecordedActions(
             List<MobileActionMapping> recordedActions, TestCasePart testCasePart,
-            FolderTreeEntity folderSelectionResult, MobileDeviceInfo deviceInfo, IProgressMonitor monitor)
+            FolderTreeEntity folderSelectionResult, MobileDriverType mobileDriverType, IProgressMonitor monitor)
             throws Exception {
         Map<MobileElement, WebElementEntity> entitySavedMap = new HashMap<>();
         FolderEntity targetFolder = folderSelectionResult.getObject();
@@ -232,8 +256,8 @@ public class OpenMobileRecorderHandler {
         ASTNodeWrapper mainClassNode = testCasePart.getTreeTableInput().getMainClassNode();
         List<StatementWrapper> resultStatementWrappers = new ArrayList<StatementWrapper>();
         for (MobileActionMapping action : recordedActions) {
-            WebElementEntity createdTestObject = addRecordedElement(action.getTargetElement(), targetFolder, deviceInfo,
-                    entitySavedMap);
+            WebElementEntity createdTestObject = addRecordedElement(action.getTargetElement(), targetFolder,
+                    mobileDriverType, entitySavedMap);
             StatementWrapper generatedStatementWrapper = MobileActionUtil.generateMobileTestStep(action,
                     createdTestObject, mainClassNode);
             monitor.worked(1);
@@ -244,15 +268,7 @@ public class OpenMobileRecorderHandler {
 
     @CanExecute
     public boolean canExecute() {
-        if (ProjectController.getInstance().getCurrentProject() == null) {
-            return false;
-        }
-
-        MPart selectedPart = getSelectedPart();
-        if (selectedPart == null) {
-            return false;
-        }
-        return selectedPart.getElementId().startsWith(IdConstants.TEST_CASE_PARENT_COMPOSITE_PART_ID_PREFIX);
+        return ProjectController.getInstance().getCurrentProject() != null;
     }
 
     protected MPart getSelectedPart() {
@@ -262,9 +278,5 @@ public class OpenMobileRecorderHandler {
             return null;
         }
         return (MPart) composerStack.getSelectedElement();
-    }
-
-    public boolean isRecorderDialogRunning() {
-        return recorderDialog != null && !recorderDialog.isDisposed();
     }
 }

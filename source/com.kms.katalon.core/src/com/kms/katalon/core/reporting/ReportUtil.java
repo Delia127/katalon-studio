@@ -15,15 +15,22 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.StringBuilderWriter;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
+import com.google.gson.GsonBuilder;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.logging.TestSuiteXMLLogParser;
 import com.kms.katalon.core.logging.XMLLoggerParser;
@@ -31,10 +38,12 @@ import com.kms.katalon.core.logging.XMLParserException;
 import com.kms.katalon.core.logging.XmlLogRecord;
 import com.kms.katalon.core.logging.model.ILogRecord;
 import com.kms.katalon.core.logging.model.MessageLogRecord;
+import com.kms.katalon.core.logging.model.TestStatus;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.core.reporting.template.ResourceLoader;
 import com.kms.katalon.core.testdata.reader.CsvWriter;
+import com.kms.katalon.core.util.internal.DateUtil;
 
 public class ReportUtil {
 
@@ -116,7 +125,12 @@ public class ReportUtil {
 
     public static void writeLogRecordToCSVFile(TestSuiteLogRecord suiteLogEntity, File destFile,
             List<ILogRecord> filteredTestCases) throws IOException {
-        CsvWriter.writeCsvReport(suiteLogEntity, destFile, filteredTestCases);
+        writeLogRecordToCSVFile(suiteLogEntity, destFile, filteredTestCases, true);
+    }
+
+    public static void writeLogRecordToCSVFile(TestSuiteLogRecord suiteLogEntity, File destFile,
+            List<ILogRecord> filteredTestCases, boolean stepsIncluded) throws IOException {
+        CsvWriter.writeCsvReport(suiteLogEntity, destFile, filteredTestCases, stepsIncluded);
     }
 
     public static void writeLogRecordToFiles(TestSuiteLogRecord suiteLogEntity, File logFolder) throws Exception {
@@ -127,9 +141,154 @@ public class ReportUtil {
 
         writeSimpleHTMLReport(suiteLogEntity, logFolder);
 
+        writeJsonReport(suiteLogEntity, logFolder);
+
+        writeJUnitReport(suiteLogEntity, logFolder);
+    }
+
+    public static void writeLogRecordToJUnitFile(String logFolder) throws Exception {
+        TestSuiteLogRecord testSuiteLogRecord = generate(logFolder);
+        if (testSuiteLogRecord != null) {
+            writeJUnitReport(testSuiteLogRecord, new File(logFolder));
+        }
+    }
+
+    public static void writeJUnitReport(TestSuiteLogRecord suiteLogEntity, File logFolder)
+            throws JAXBException, IOException {
+        JUnitReportObjectFactory factory = new JUnitReportObjectFactory();
+
+        String testSuiteName = suiteLogEntity.getName();
+        String totalPass = suiteLogEntity.getTotalPassedTestCases() + "";
+        String totalError = suiteLogEntity.getTotalErrorTestCases() + "";
+        String totalFailure = suiteLogEntity.getTotalFailedTestCases() + "";
+        String duration = ((suiteLogEntity.getEndTime() - suiteLogEntity.getStartTime()) / 1000) + "";
+
+        JUnitProperties properties = factory.createProperties();
+        List<JUnitProperty> propertyList = properties.getProperty();
+        propertyList.add(new JUnitProperty("deviceName", suiteLogEntity.getDeviceName()));
+        propertyList.add(new JUnitProperty("devicePlatform", suiteLogEntity.getDevicePlatform()));
+        propertyList.add(new JUnitProperty("logFolder", StringEscapeUtils.escapeJava(suiteLogEntity.getLogFolder())));
+        propertyList.add(new JUnitProperty("logFiles", factory.sanitizeReportLogs(suiteLogEntity)));
+        propertyList.add(new JUnitProperty("attachments", factory.sanitizeReportAttachments(suiteLogEntity)));
+        suiteLogEntity.getRunData().forEach((name, value) -> propertyList.add(new JUnitProperty(name, value)));
+
+        JUnitTestSuite ts = factory.createTestSuite();
+        ts.setProperties(properties);
+        ts.setId(suiteLogEntity.getId());
+        ts.setName(testSuiteName);
+        ts.setHostname(suiteLogEntity.getHostName());
+        ts.setTime(duration);
+        ts.setTimestamp(DateUtil.getDateTimeFormatted(suiteLogEntity.getStartTime()));
+        ts.setSystemOut(suiteLogEntity.getSystemOutMsg().trim());
+        ts.setSystemErr(suiteLogEntity.getSystemErrorMsg().trim());
+
+        // tests: The total number of tests in the suite, required
+        ts.setTests(totalPass);
+        // errors: The total number of tests in the suite that error
+        ts.setErrors(totalError);
+        // failures: The total number of tests in the suite that failed
+        ts.setFailures(totalFailure);
+
+        Arrays.asList(suiteLogEntity.getChildRecords()).stream().forEach(item -> {
+            JUnitTestCase tc = factory.createTestCase();
+            tc.setClassname(item.getId());
+            tc.setName(item.getName());
+
+            TestStatus status = item.getStatus();
+            TestStatusValue statusValue = status.getStatusValue();
+            String statusName = statusValue.name();
+            String message = StringUtils.removeStart(item.getMessage(),
+                    item.getName() + " " + statusName + " because (of) ");
+            tc.setStatus(statusName);
+            if (TestStatusValue.ERROR == statusValue) {
+                JUnitError error = factory.createError();
+                error.setType(statusName);
+                error.setMessage(message);
+                tc.getError().add(error);
+            }
+            if (TestStatusValue.FAILED == statusValue) {
+                JUnitFailure failure = factory.createFailure();
+                failure.setType(statusName);
+                failure.setMessage(message);
+                tc.getFailure().add(failure);
+            }
+
+            tc.getSystemOut().add(item.getSystemOutMsg().trim());
+            tc.getSystemErr().add(item.getSystemErrorMsg().trim());
+            ts.getTestcase().add(tc);
+        });
+
+        // This is a single test suite. Thus, the info for the test suites is the same as test suite
+        JUnitTestSuites tss = factory.createTestSuites();
+        // errors: total number of tests with error result from all test suite
+        tss.setErrors(totalError);
+        // failures: total number of failed tests from all test suite
+        tss.setFailures(totalFailure);
+        // tests: total number of successful tests from all test suite
+        tss.setTests(totalPass);
+        // time: in seconds to execute all test suites
+        tss.setTime(duration);
+        // name
+        tss.setName(testSuiteName);
+
+        tss.getTestsuite().add(ts);
+
+        JAXBContext context = JAXBContext
+                .newInstance(new Class[] { JUnitError.class, JUnitFailure.class, JUnitProperties.class,
+                        JUnitProperty.class, JUnitTestCase.class, JUnitTestSuites.class, JUnitTestSuite.class });
+        Marshaller marshaller = context.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        marshaller.marshal(tss, new File(logFolder, "JUnit_Report.xml"));
+    }
+
+    public static void writeJsonReport(TestSuiteLogRecord suiteLogEntity, File logFolder) throws IOException {
+        List<String> excludedFieldNames = Arrays.asList(suiteLogEntity.getJsonExcludedFields());
+        ExclusionStrategy excludeFields = new ExclusionStrategy() {
+
+            @Override
+            public boolean shouldSkipField(FieldAttributes paramFieldAttributes) {
+                return excludedFieldNames.size() == 0 ? false
+                        : excludedFieldNames.contains(paramFieldAttributes.getName());
+            }
+
+            @Override
+            public boolean shouldSkipClass(Class<?> paramClass) {
+                return false;
+            }
+        };
+        String json = new GsonBuilder().addSerializationExclusionStrategy(excludeFields)
+                .create()
+                .toJson(suiteLogEntity);
+        FileUtils.writeStringToFile(new File(logFolder, "JSON_Report.json"), json, StringConstants.DF_CHARSET);
+    }
+
+    public static void writeTSCollectionHTMLReport(String reportTitle, String tsReportsJson, File destDir)
+            throws IOException, URISyntaxException {
+        StringBuilder htmlSb = new StringBuilder();
+        readFileToStringBuilder(ResourceLoader.HTML_COLLECTION_INDEX_TEMPLATE, htmlSb);
+        String template = htmlSb.toString();
+        template = StringUtils.replace(template, "REPORT_TITLE", reportTitle);
+        template = StringUtils.replace(template, "TEST_SUITE_REPORT_LIST", tsReportsJson);
+        FileUtils.writeStringToFile(new File(destDir, "index.html"), template, StringConstants.DF_CHARSET);
+
+        htmlSb = new StringBuilder();
+        readFileToStringBuilder(ResourceLoader.HTML_COLLECTION_FRAME_TEMPLATE, htmlSb);
+        template = htmlSb.toString();
+        template = StringUtils.replace(template, "REPORT_TITLE", reportTitle);
+        template = StringUtils.replace(template, "TEST_SUITE_REPORT_LIST", tsReportsJson);
+        FileUtils.writeStringToFile(new File(destDir, "index-frame-view.html"), template, StringConstants.DF_CHARSET);
     }
 
     public static void writeHtmlReport(TestSuiteLogRecord suiteLogEntity, File logFolder)
+            throws IOException, URISyntaxException {
+        StringBuilder htmlSb = prepareHtmlContent(suiteLogEntity);
+
+        // Write main HTML Report
+        FileUtils.writeStringToFile(new File(logFolder, logFolder.getName() + ".html"), htmlSb.toString(),
+                StringConstants.DF_CHARSET);
+    }
+
+    private static StringBuilder prepareHtmlContent(TestSuiteLogRecord suiteLogEntity)
             throws IOException, URISyntaxException {
         List<String> strings = new ArrayList<String>();
 
@@ -140,9 +299,15 @@ public class ReportUtil {
         readFileToStringBuilder(ResourceLoader.HTML_TEMPLATE_FILE, htmlSb);
         htmlSb.append(generateVars(strings, suiteLogEntity, sbModel));
         readFileToStringBuilder(ResourceLoader.HTML_TEMPLATE_CONTENT, htmlSb);
+        return htmlSb;
+    }
 
-        // Write main HTML Report
-        FileUtils.writeStringToFile(new File(logFolder, logFolder.getName() + ".html"), htmlSb.toString());
+    public static void writeHtmlReportAppendHashCodeToName(TestSuiteLogRecord suiteLogEntity, File logFolder,
+            int reportDirLocationHashCode) throws IOException, URISyntaxException {
+        StringBuilder htmlSb = prepareHtmlContent(suiteLogEntity);
+
+        FileUtils.writeStringToFile(new File(logFolder, logFolder.getName() + reportDirLocationHashCode + ".html"),
+                htmlSb.toString(), StringConstants.DF_CHARSET);
     }
 
     public static void writeCSVReport(TestSuiteLogRecord suiteLogEntity, File logFolder) throws IOException {
@@ -164,7 +329,8 @@ public class ReportUtil {
         readFileToStringBuilder(ResourceLoader.HTML_TEMPLATE_FILE, simpleHtmlSb);
         simpleHtmlSb.append(generateVars(simpleStrings, suiteLogEntity, simpleSbModel));
         readFileToStringBuilder(ResourceLoader.HTML_TEMPLATE_CONTENT, simpleHtmlSb);
-        FileUtils.writeStringToFile(new File(logFolder, "Report.html"), simpleHtmlSb.toString());
+        FileUtils.writeStringToFile(new File(logFolder, "Report.html"), simpleHtmlSb.toString(),
+                StringConstants.DF_CHARSET);
     }
 
     public static void writeLogRecordToHTMLFile(TestSuiteLogRecord suiteLogEntity, File destFile,
@@ -192,7 +358,7 @@ public class ReportUtil {
         readFileToStringBuilder(ResourceLoader.HTML_TEMPLATE_FILE, htmlSb);
         htmlSb.append(generateVars(strings, suiteLogEntity, sbModel));
         readFileToStringBuilder(ResourceLoader.HTML_TEMPLATE_CONTENT, htmlSb);
-        FileUtils.writeStringToFile(destFile, htmlSb.toString());
+        FileUtils.writeStringToFile(destFile, htmlSb.toString(), StringConstants.DF_CHARSET);
     }
 
     public static List<XmlLogRecord> getAllLogRecords(String logFolder)

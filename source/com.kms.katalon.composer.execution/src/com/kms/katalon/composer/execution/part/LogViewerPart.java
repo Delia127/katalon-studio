@@ -1,11 +1,15 @@
 package com.kms.katalon.composer.execution.part;
 
 import static com.kms.katalon.composer.components.log.LoggerSingleton.logError;
+import static com.kms.katalon.core.constants.StringConstants.LOG_START_SUITE;
+import static com.kms.katalon.core.constants.StringConstants.LOG_START_TEST;
 import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.LogRecord;
 
@@ -25,16 +29,19 @@ import org.eclipse.e4.ui.model.application.ui.menu.MDirectToolItem;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenu;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuElement;
 import org.eclipse.e4.ui.model.application.ui.menu.MToolBarElement;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.StyledString;
@@ -43,10 +50,14 @@ import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
@@ -62,6 +73,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
@@ -73,6 +85,7 @@ import org.osgi.service.event.EventHandler;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.execution.constants.ComposerExecutionMessageConstants;
 import com.kms.katalon.composer.execution.constants.ComposerExecutionPreferenceConstants;
 import com.kms.katalon.composer.execution.constants.ImageConstants;
 import com.kms.katalon.composer.execution.constants.StringConstants;
@@ -84,12 +97,20 @@ import com.kms.katalon.composer.execution.provider.LogRecordTreeViewer;
 import com.kms.katalon.composer.execution.provider.LogRecordTreeViewerContentProvider;
 import com.kms.katalon.composer.execution.provider.LogRecordTreeViewerLabelProvider;
 import com.kms.katalon.composer.execution.provider.LogTableViewer;
-import com.kms.katalon.composer.execution.provider.LogTableViewerFilter;
+import com.kms.katalon.composer.execution.provider.LogTreeViewerFilter;
+import com.kms.katalon.composer.execution.provider.LogViewerFilter;
+import com.kms.katalon.composer.execution.trace.ArtifactStyleRangeMatcher;
+import com.kms.katalon.composer.execution.trace.CheckpointStyleRangeMatcher;
 import com.kms.katalon.composer.execution.trace.LogExceptionNavigator;
+import com.kms.katalon.composer.execution.trace.StyleRangeMatcher;
+import com.kms.katalon.composer.execution.trace.TestDataStyleRangeMatcher;
+import com.kms.katalon.composer.execution.trace.TestObjectStyleRangeMatcher;
 import com.kms.katalon.composer.execution.tree.ILogParentTreeNode;
 import com.kms.katalon.composer.execution.tree.ILogTreeNode;
+import com.kms.katalon.composer.execution.util.TestCaseEditorUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.core.logging.LogLevel;
 import com.kms.katalon.core.logging.XMLLoggerParser;
 import com.kms.katalon.core.logging.XmlLogRecord;
@@ -105,6 +126,8 @@ import com.kms.katalon.execution.logging.LogExceptionFilter;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class LogViewerPart implements EventHandler, LauncherListener {
+
+    private static final int RIGHT_CLICK = 3;
 
     private static final int AFTER_STATUS_MENU_INDEX = 1;
 
@@ -125,7 +148,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
     private Label lblNumTestcases, lblNumFailures, lblNumPasses, lblNumErrors;
 
     private Composite parentComposite;
-    
+
     private IDEObservableLauncher rootLauncherWatched;
 
     private List<IDEObservableLauncher> launchersWatched;
@@ -138,10 +161,14 @@ public class LogViewerPart implements EventHandler, LauncherListener {
 
     private LogRecordTreeViewer treeViewer;
 
-    private StyledText txtStartTime, txtEndTime, txtEslapedTime, txtMessage;
+    private StyledText txtStartTime, txtName, txtEslapedTime, txtMessage;
 
+    // For log table viewer
     private ToolItem btnShowAllLogs, btnShowInfoLogs, btnShowPassedLogs, btnShowFailedLogs, btnShowErrorLogs,
             btnShowWarningLogs, btnShowNotRunLogs;
+
+    // For log tree viewer
+    private ToolItem tltmFilterFailedLogs;
 
     private List<XmlLogRecord> currentRecords;
 
@@ -155,6 +182,14 @@ public class LogViewerPart implements EventHandler, LauncherListener {
 
     private LogLoadingJob loadingJob;
 
+    private static final List<StyleRangeMatcher> ARTIFACT_MATCHERS;
+
+    static {
+        ARTIFACT_MATCHERS = Arrays.asList(new TestObjectStyleRangeMatcher(),
+                new TestDataStyleRangeMatcher(),
+                new CheckpointStyleRangeMatcher());
+    }
+
     private void initToolItemsStatus(MPart mpart) {
         for (MToolBarElement toolbarElement : mpart.getToolbar().getChildren()) {
             if (!(toolbarElement instanceof MDirectToolItem)) {
@@ -163,17 +198,20 @@ public class LogViewerPart implements EventHandler, LauncherListener {
             MDirectToolItem toolItem = (MDirectToolItem) toolbarElement;
             switch (toolItem.getElementId()) {
                 case IdConstants.LOG_VIEWER_TOOL_ITEM_TREE_ID:
-                    toolItem.setSelected(preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE));
+                    toolItem.setSelected(preferenceStore
+                            .getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE));
                     break;
                 case IdConstants.LOG_VIEWER_TOOL_ITEM_PIN_ID:
-                    toolItem.setSelected(preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_PIN_LOG));
+                    toolItem.setSelected(
+                            preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_PIN_LOG));
                     break;
             }
         }
     }
 
     private void updateMenuStatus(MPart mpart) {
-        boolean isShowLogAsTree = preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE);
+        boolean isShowLogAsTree = preferenceStore
+                .getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE);
         for (MMenu menu : mpart.getMenus()) {
             if (!IdConstants.LOG_VIEWER_MENU_TREEVIEW.equals(menu.getElementId())) {
                 menu.setVisible(true);
@@ -186,7 +224,8 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                     if (childElement instanceof MDirectMenuItem
                             && IdConstants.LOG_VIEWER_MENU_ITEM_WORD_WRAP.equals(childElement.getElementId())) {
                         MDirectMenuItem wordWrapElement = (MDirectMenuItem) childElement;
-                        wordWrapElement.setSelected(preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_ENABLE_WORD_WRAP));
+                        wordWrapElement.setSelected(preferenceStore
+                                .getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_ENABLE_WORD_WRAP));
                     }
                 }
             } else {
@@ -215,7 +254,8 @@ public class LogViewerPart implements EventHandler, LauncherListener {
     private void createLogViewerControl(Composite parent) {
         disposeChildrenFromIndex(parent, AFTER_STATUS_MENU_INDEX);
 
-        boolean showLogsAsTree = preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE);
+        boolean showLogsAsTree = preferenceStore
+                .getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE);
 
         if (showLogsAsTree) {
             createTreeCompositeContainer(parent);
@@ -242,8 +282,8 @@ public class LogViewerPart implements EventHandler, LauncherListener {
         eventBroker.subscribe(EventConstants.EXPLORER_RELOAD_INPUT, this);
         eventBroker.subscribe(EventConstants.CONSOLE_LOG_WORD_WRAP, this);
 
-        PlatformUI.getWorkbench().getActiveWorkbenchWindow().getPages()[0].addPostSelectionListener(
-                IConsoleConstants.ID_CONSOLE_VIEW, new ISelectionListener() {
+        PlatformUI.getWorkbench().getActiveWorkbenchWindow().getPages()[0]
+                .addPostSelectionListener(IConsoleConstants.ID_CONSOLE_VIEW, new ISelectionListener() {
 
                     @Override
                     public void selectionChanged(IWorkbenchPart part, ISelection selection) {
@@ -305,6 +345,21 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                 }
             }
         });
+
+        tltmFilterFailedLogs = new ToolItem(toolBar, SWT.CHECK);
+        tltmFilterFailedLogs.setData(StringConstants.ID,
+                ComposerExecutionPreferenceConstants.EXECUTION_TREE_VIEW_SHOW_FAILED_LOGS);
+        tltmFilterFailedLogs.setToolTipText(ComposerExecutionMessageConstants.PA_TOOLTIP_SHOW_FAILED_STEPS_ONLY0);
+        tltmFilterFailedLogs.setImage(ImageConstants.IMG_16_LOGVIEW_FAILED);
+
+        tltmFilterFailedLogs.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                performFilterLogs(tltmFilterFailedLogs, preferenceStore, treeViewer);
+            }
+        });
+
+        updateTreeToolbarItems();
     }
 
     private boolean isLaunchersWatchedValid() {
@@ -326,6 +381,8 @@ public class LogViewerPart implements EventHandler, LauncherListener {
 
         treeViewer = new LogRecordTreeViewer(compositeTreeDetails, SWT.BORDER);
         treeViewer.setContentProvider(new LogRecordTreeViewerContentProvider());
+        treeViewer.addFilter(new LogTreeViewerFilter());
+
         ColumnViewerToolTipSupport.enableFor(treeViewer, ToolTip.NO_RECREATE);
 
         TreeViewerColumn treeViewerColumn = new TreeViewerColumn(treeViewer, SWT.NONE);
@@ -334,6 +391,80 @@ public class LogViewerPart implements EventHandler, LauncherListener {
         treeViewerColumn.setLabelProvider(new LogRecordTreeViewerLabelProvider());
 
         treeColumnLayout.setColumnData(treeColumn, new ColumnWeightData(95, treeColumn.getWidth()));
+
+        treeViewer.getTree().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseDown(MouseEvent e) {
+                if (e.button != RIGHT_CLICK) {
+                    return;
+                }
+                Tree tree = treeViewer.getTree();
+                Menu oldMenu = tree.getMenu();
+                if (oldMenu != null) {
+                    oldMenu.dispose();
+                }
+                Menu treeMenu = new Menu(tree);
+
+                IStructuredSelection selection = treeViewer.getStructuredSelection();
+                if (isFirstSelectionParentNode(selection)) {
+                    ILogParentTreeNode treeNode = (ILogParentTreeNode) selection.getFirstElement();
+                    if (isMainStep(treeNode)) {
+                        addGotoStepMenuItem(treeMenu);
+                    }
+                }
+                tree.setMenu(treeMenu);
+                treeMenu.setVisible(true);
+            }
+
+            private void addGotoStepMenuItem(Menu treeMenu) {
+                MenuItem stepNavigationMenuItem = new MenuItem(treeMenu, SWT.PUSH);
+                stepNavigationMenuItem.setText(ComposerExecutionMessageConstants.MENU_ITEM_NAVIGATE_TEST_CASE_STEP);
+                stepNavigationMenuItem.addSelectionListener(new SelectionAdapter() {
+                    @Override
+                    public void widgetSelected(SelectionEvent e) {
+                        navigateToStep((ILogParentTreeNode) treeViewer.getStructuredSelection().getFirstElement());
+                    }
+                });
+            }
+
+            private boolean isFirstSelectionParentNode(IStructuredSelection selection) {
+                return selection != null && selection.size() == 1
+                        && selection.getFirstElement() instanceof ILogParentTreeNode;
+            }
+
+            private void navigateToStep(ILogParentTreeNode treeNode) {
+                ILogParentTreeNode parent = treeNode.getParent();
+                String testCaseId = parent.getMessage();
+                TestCaseEntity testCaseEntity = null;
+                try {
+                    testCaseEntity = TestCaseController.getInstance().getTestCaseByDisplayId(testCaseId);
+                } catch (Exception e) {
+                    MessageDialog.openWarning(null, StringConstants.WARN_TITLE, MessageFormat
+                            .format(ComposerExecutionMessageConstants.DIA_WARN_TEST_CASE_NOT_FOUND, testCaseId));
+                }
+
+                try {
+                    TestCaseEditorUtil.navigateToTestStep(testCaseEntity, treeNode.getIndex());
+                } catch (Exception e) {
+                    MessageDialog.openWarning(null, StringConstants.WARN_TITLE, e.getMessage());
+                }
+            }
+
+            private boolean isMainStep(ILogParentTreeNode treeNode) {
+                ILogParentTreeNode parent = treeNode.getParent();
+                if (parent == null) {
+                    return false;
+                }
+                if (!parent.getLogRecord().getMessage().startsWith(LOG_START_TEST)) {
+                    return false;
+                }
+                ILogParentTreeNode grandParent = parent.getParent();
+                if (grandParent == null) {
+                    return true;
+                }
+                return grandParent.getLogRecord().getMessage().startsWith(LOG_START_SUITE);
+            }
+        });
     }
 
     private void createTreeCompositeContainer(Composite parent) {
@@ -436,7 +567,6 @@ public class LogViewerPart implements EventHandler, LauncherListener {
             LogLevel resultLevel = LogLevel.valueOf(logParentTreeNode.getResult().getLevel());
             if (resultLevel == LogLevel.FAILED || resultLevel == LogLevel.ERROR) {
                 StringBuilder messageBuilder = new StringBuilder(result.getMessage());
-
                 List<StyleRange> styleRanges = new ArrayList<StyleRange>();
                 if (result.getExceptions() != null) {
                     messageBuilder.append("\n");
@@ -449,11 +579,12 @@ public class LogViewerPart implements EventHandler, LauncherListener {
 
                             String exceptionLogString = exceptionLogEntry.toString();
                             if (LogExceptionFilter.isTestCaseScript(exceptionLogEntry.getClassName())) {
-                                TestCaseEntity testCase = LogExceptionFilter.getTestCaseByLogException(exceptionLogEntry);
+                                TestCaseEntity testCase = LogExceptionFilter
+                                        .getTestCaseByLogException(exceptionLogEntry);
                                 if (testCase != null) {
                                     String testCaseId = testCase.getIdForDisplay();
-                                    exceptionLogString = exceptionLogEntry.toString().replace(
-                                            exceptionLogEntry.getClassName(), testCaseId);
+                                    exceptionLogString = exceptionLogEntry.toString()
+                                            .replace(exceptionLogEntry.getClassName(), testCaseId);
                                 }
                             }
 
@@ -472,14 +603,6 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                 txtMessage.setText(messageBuilder.toString());
                 if (styleRanges.size() > 0) {
                     txtMessage.setStyleRanges(styleRanges.toArray(new StyleRange[0]));
-
-                    while (txtMessage.getListeners(SWT.MouseDown).length > 1) {
-                        txtMessage.removeListener(
-                                SWT.MouseDown,
-                                txtMessage.getListeners(SWT.MouseDown)[txtMessage.getListeners(SWT.MouseDown).length - 1]);
-                    }
-
-                    txtMessage.addListener(SWT.MouseDown, mouseDownListener);
                 }
             } else {
                 txtMessage.setText(result.getMessage());
@@ -495,16 +618,33 @@ public class LogViewerPart implements EventHandler, LauncherListener {
         public void handleEvent(org.eclipse.swt.widgets.Event event) {
             try {
                 int offset = txtMessage.getOffsetAtLocation(new Point(event.x, event.y));
-                StyleRange style = txtMessage.getStyleRangeAtOffset(offset);
-                if (style != null && style.underline && style.underlineStyle == SWT.UNDERLINE_LINK) {
-                    XmlLogRecordException logException = (XmlLogRecordException) style.data;
+                StyleRange style = null;
+                for (StyleRange range : txtMessage.getStyleRanges()) {
+                    if (range.start <= offset && range.start + range.length >= offset) {
+                        style = range;
+                        break;
+                    }
+                }
+                if (style == null || !style.underline || style.underlineStyle != SWT.UNDERLINE_LINK) {
+                    return;
+                }
+                Object styleData = style.data;
+                if (styleData instanceof XmlLogRecordException) {
+                    XmlLogRecordException logException = (XmlLogRecordException) styleData;
                     navigateScriptByLogExpcetion(logException);
+                    return;
+                }
+                if (styleData instanceof ArtifactStyleRangeMatcher) {
+                    ArtifactStyleRangeMatcher matcher = (ArtifactStyleRangeMatcher) styleData;
+                    matcher.onClick(txtMessage.getText(), style);
                 }
             } catch (IllegalArgumentException e) {
                 // no character under event.x, event.y
             }
         }
     };
+
+    private LogPropertyDialog dialog;
 
     private void showTreeLogProperties() throws Exception {
         StructuredSelection selection = (StructuredSelection) treeViewer.getSelection();
@@ -517,13 +657,8 @@ public class LogViewerPart implements EventHandler, LauncherListener {
             if (logTreeNode instanceof ILogParentTreeNode) {
                 ILogParentTreeNode logParentTreeNode = (ILogParentTreeNode) logTreeNode;
 
-                txtStartTime.setText(logParentTreeNode.getRecordStart().toString());
-                if (logParentTreeNode.getRecordEnd() != null) {
-                    txtEndTime.setText(logParentTreeNode.getRecordEnd().toString());
-                } else {
-                    txtEndTime.setText(StringConstants.EMPTY);
-                }
-
+                txtStartTime.setText(logParentTreeNode.getRecordStart().getLogTimeString());
+                txtName.setText(logParentTreeNode.getMessage());
                 txtEslapedTime.setText(logParentTreeNode.getFullElapsedTime());
                 StyledString styledString = new StyledString(txtEslapedTime.getText(), StyledString.COUNTER_STYLER);
                 txtEslapedTime.setStyleRanges(styledString.getStyleRanges());
@@ -532,10 +667,16 @@ public class LogViewerPart implements EventHandler, LauncherListener {
 
             } else {
                 txtStartTime.setText(StringConstants.EMPTY);
-                txtEndTime.setText(StringConstants.EMPTY);
                 txtEslapedTime.setText(StringConstants.EMPTY);
                 txtMessage.setText(logTreeNode.getMessage());
+                txtName.setText(StringConstants.EMPTY);
             }
+            String message = txtMessage.getText();
+            ARTIFACT_MATCHERS.forEach(matcher -> {
+                matcher.getStyleRanges(message).forEach(styleRange -> {
+                    txtMessage.setStyleRange(styleRange);
+                });
+            });
         }
     }
 
@@ -548,43 +689,67 @@ public class LogViewerPart implements EventHandler, LauncherListener {
     }
 
     private void createTreeNodePropertiesComposite(SashForm sashForm) {
-        Composite compositeTreeNodeProperties = new Composite(sashForm, SWT.BORDER);
-        compositeTreeNodeProperties.setLayout(new GridLayout(2, false));
-        compositeTreeNodeProperties.setBackground(ColorUtil.getWhiteBackgroundColor());
+        ScrolledComposite scrolledComposite = new ScrolledComposite(sashForm, SWT.H_SCROLL | SWT.V_SCROLL);
+        scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        scrolledComposite.setLayout(new GridLayout());
+        scrolledComposite.setExpandHorizontal(true);
+        scrolledComposite.setExpandVertical(true);
+
+        final Color whiteBackgroundColor = ColorUtil.getWhiteBackgroundColor();
+        scrolledComposite.setBackground(whiteBackgroundColor);
+
+        Composite compositeTreeNodeProperties = new Composite(scrolledComposite, SWT.BORDER);
+        compositeTreeNodeProperties.setLayout(new GridLayout(4, false));
+        compositeTreeNodeProperties.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        compositeTreeNodeProperties.setBackground(whiteBackgroundColor);
+        scrolledComposite.setContent(compositeTreeNodeProperties);
+
+        Label lblName = new Label(compositeTreeNodeProperties, SWT.NONE);
+        lblName.setFont(JFaceResources.getFontRegistry().getBold(""));
+        lblName.setText(ComposerExecutionMessageConstants.PA_LBL_NAME);
+        lblName.setBackground(whiteBackgroundColor);
+
+        txtName = new StyledText(compositeTreeNodeProperties, SWT.BORDER);
+        txtName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
+        txtName.setEditable(false);
 
         Label lblLogStart = new Label(compositeTreeNodeProperties, SWT.NONE);
         lblLogStart.setFont(JFaceResources.getFontRegistry().getBold(""));
         lblLogStart.setText(StringConstants.PA_LBL_START);
+        lblLogStart.setBackground(whiteBackgroundColor);
 
         txtStartTime = new StyledText(compositeTreeNodeProperties, SWT.BORDER);
-        txtStartTime.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        final GridData layoutDataStartTime = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+        layoutDataStartTime.minimumWidth = 200;
+        layoutDataStartTime.widthHint = 200;
+        txtStartTime.setLayoutData(layoutDataStartTime);
         txtStartTime.setEditable(false);
-
-        Label lblLogEnd = new Label(compositeTreeNodeProperties, SWT.NONE);
-        lblLogEnd.setFont(JFaceResources.getFontRegistry().getBold(""));
-        lblLogEnd.setText(StringConstants.PA_LBL_END);
-
-        txtEndTime = new StyledText(compositeTreeNodeProperties, SWT.BORDER);
-        txtEndTime.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        txtEndTime.setEditable(false);
 
         Label lblLogRunTime = new Label(compositeTreeNodeProperties, SWT.NONE);
         lblLogRunTime.setFont(JFaceResources.getFontRegistry().getBold(""));
         lblLogRunTime.setText(StringConstants.PA_LBL_ELAPSED_TIME);
+        lblLogRunTime.setBackground(whiteBackgroundColor);
 
         txtEslapedTime = new StyledText(compositeTreeNodeProperties, SWT.BORDER);
-        txtEslapedTime.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+        final GridData layoutDataElapsedTime = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
+        layoutDataElapsedTime.minimumWidth = 200;
+        layoutDataElapsedTime.widthHint = 200;
+        txtEslapedTime.setLayoutData(layoutDataElapsedTime);
         txtEslapedTime.setEditable(false);
 
         Label lblMessage = new Label(compositeTreeNodeProperties, SWT.NONE);
         lblMessage.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
         lblMessage.setFont(JFaceResources.getFontRegistry().getBold(""));
         lblMessage.setText(StringConstants.PA_LBL_MESSAGE);
+        lblMessage.setBackground(whiteBackgroundColor);
 
         txtMessage = new StyledText(compositeTreeNodeProperties, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI);
-        txtMessage.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        txtMessage.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
         txtMessage.setEditable(false);
+        txtMessage.addListener(SWT.MouseDown, mouseDownListener);
         setWrapTxtMessage();
+
+        scrolledComposite.setMinSize(compositeTreeNodeProperties.computeSize(SWT.DEFAULT, SWT.DEFAULT));
     }
 
     private void createStatusComposite(Composite container) {
@@ -681,7 +846,8 @@ public class LogViewerPart implements EventHandler, LauncherListener {
         btnShowErrorLogs.setImage(ImageConstants.IMG_16_LOGVIEW_ERROR);
 
         btnShowWarningLogs = new ToolItem(toolBar, SWT.CHECK);
-        btnShowWarningLogs.setData(StringConstants.ID, ComposerExecutionPreferenceConstants.EXECUTION_SHOW_WARNING_LOGS);
+        btnShowWarningLogs.setData(StringConstants.ID,
+                ComposerExecutionPreferenceConstants.EXECUTION_SHOW_WARNING_LOGS);
         btnShowWarningLogs.setText(StringConstants.PA_TIP_WARNING);
         btnShowWarningLogs.setToolTipText(StringConstants.PA_TIP_WARNING);
         btnShowWarningLogs.setImage(ImageConstants.IMG_16_LOGVIEW_WARNING);
@@ -711,28 +877,48 @@ public class LogViewerPart implements EventHandler, LauncherListener {
     }
 
     private void performFilterTableLogs(ToolItem button) {
+        performFilterLogs(button, preferenceStore, tableViewer);
+    }
+
+    private void performFilterLogs(ToolItem button, ScopedPreferenceStore preferenceStore, ColumnViewer viewer) {
         String prefId = (String) button.getData(StringConstants.ID);
         if (isBlank(prefId)) {
             return;
         }
+        updatePreferenceValue(preferenceStore, prefId, button.getSelection());
+        viewer.refresh();
+    }
 
+    private void updatePreferenceValue(ScopedPreferenceStore preferenceStore, String preferenceKey,
+            final boolean value) {
         try {
-            preferenceStore.setValue(prefId, button.getSelection());
+            preferenceStore.setValue(preferenceKey, value);
             preferenceStore.save();
-            tableViewer.refresh();
         } catch (IOException e) {
             logError(e);
         }
     }
 
     private void updateTableButtons() {
-        btnShowAllLogs.setSelection(preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_ALL_LOGS));
-        btnShowInfoLogs.setSelection(preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_INFO_LOGS));
-        btnShowPassedLogs.setSelection(preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_PASSED_LOGS));
-        btnShowFailedLogs.setSelection(preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_FAILED_LOGS));
-        btnShowErrorLogs.setSelection(preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_ERROR_LOGS));
-        btnShowWarningLogs.setSelection(preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_WARNING_LOGS));
-        btnShowNotRunLogs.setSelection(preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_NOT_RUN_LOGS));
+        btnShowAllLogs
+                .setSelection(preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_ALL_LOGS));
+        btnShowInfoLogs.setSelection(
+                preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_INFO_LOGS));
+        btnShowPassedLogs.setSelection(
+                preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_PASSED_LOGS));
+        btnShowFailedLogs.setSelection(
+                preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_FAILED_LOGS));
+        btnShowErrorLogs.setSelection(
+                preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_ERROR_LOGS));
+        btnShowWarningLogs.setSelection(
+                preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_WARNING_LOGS));
+        btnShowNotRunLogs.setSelection(
+                preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_NOT_RUN_LOGS));
+    }
+
+    private void updateTreeToolbarItems() {
+        tltmFilterFailedLogs.setSelection(
+                preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_TREE_VIEW_SHOW_FAILED_LOGS));
     }
 
     private void createTableCompositeDetails(Composite container) {
@@ -793,7 +979,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                 return StringConstants.EMPTY;
             }
         });
-        tableViewer.addFilter(new LogTableViewerFilter());
+        tableViewer.addFilter(new LogViewerFilter());
 
         table.addListener(SWT.EraseItem, new Listener() {
             public void handleEvent(org.eclipse.swt.widgets.Event event) {
@@ -844,6 +1030,9 @@ public class LogViewerPart implements EventHandler, LauncherListener {
     }
 
     private void showRecordProperties() {
+        if (dialog != null && dialog.isOpen()) {
+            return;
+        }
         int index = table.getSelectionIndex();
 
         if (index == -1) {
@@ -852,7 +1041,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
 
         TableItem selectedItem = table.getItem(index);
         XmlLogRecord selectedRecord = (XmlLogRecord) selectedItem.getData();
-        LogPropertyDialog dialog = new LogPropertyDialog(table.getDisplay().getActiveShell(), selectedRecord);
+        dialog = new LogPropertyDialog(table.getDisplay().getActiveShell(), selectedRecord);
         dialog.open();
     }
 
@@ -877,8 +1066,8 @@ public class LogViewerPart implements EventHandler, LauncherListener {
 
                 final int numExecuted = result.getExecutedTestCases();
                 progressBar.setSelection(numExecuted * INCREMENT);
-                lblNumTestcases.setText(Integer.toString(numExecuted) + "/"
-                        + Integer.toString(result.getTotalTestCases()));
+                lblNumTestcases
+                        .setText(Integer.toString(numExecuted) + "/" + Integer.toString(result.getTotalTestCases()));
                 // update
                 lblNumPasses.setText(Integer.toString(result.getNumPasses()));
                 lblNumFailures.setText(Integer.toString(result.getNumFailures()));
@@ -919,7 +1108,8 @@ public class LogViewerPart implements EventHandler, LauncherListener {
         isBusy = true;
 
         try {
-            boolean showLogsAsTree = preferenceStore.getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE);
+            boolean showLogsAsTree = preferenceStore
+                    .getBoolean(ComposerExecutionPreferenceConstants.EXECUTION_SHOW_LOGS_AS_TREE);
 
             if (showLogsAsTree) {
                 treeViewer.addRecords(records);
@@ -938,10 +1128,10 @@ public class LogViewerPart implements EventHandler, LauncherListener {
     private synchronized void changeObservedLauncher(final Event event) throws Exception {
         final LauncherListener launcherListener = this;
         new Thread(new Runnable() {
-            private void getWatchedLauncherFromEvent() {
+            private IDEObservableLauncher getWatchedLauncherFromEvent() {
                 Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
                 if (!(object instanceof String)) {
-                    return;
+                    return null;
                 }
 
                 String launcherId = (String) object;
@@ -949,16 +1139,9 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                     if (!launcher.getId().equals(launcherId)) {
                         continue;
                     }
-                    if (launcher instanceof IDEObservableParentLauncher) {
-                        rootLauncherWatched = (IDEObservableParentLauncher) launcher;
-                        launchersWatched.addAll(((IDEObservableParentLauncher) rootLauncherWatched).getSubLaunchers());
-                        return;
-                    }
-                    if (launcher instanceof IDEObservableLauncher) {
-                        rootLauncherWatched = (IDEObservableLauncher) launcher;
-                        launchersWatched.add(rootLauncherWatched);
-                    }
+                    return (IDEObservableLauncher) launcher;
                 }
+                return null;
             }
 
             @Override
@@ -967,19 +1150,30 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                     return;
                 }
                 waitForNotBusy();
-
+                IDEObservableLauncher watchedLauncher = getWatchedLauncherFromEvent();
+                if (watchedLauncher != null && watchedLauncher.equals(rootLauncherWatched)) {
+                    launchersWatched = ((IDEObservableParentLauncher) rootLauncherWatched).getSubLaunchers();
+                    return;
+                }
                 currentRecords.clear();
                 clearWatchedLaunchers(launcherListener);
 
                 loadingLogCanceled = false;
-                getWatchedLauncherFromEvent();
+                rootLauncherWatched = watchedLauncher;
+                if (rootLauncherWatched == null) {
+                    launchersWatched = new ArrayList<>();
+                } else {
+                    if (rootLauncherWatched instanceof IDEObservableParentLauncher) {
+                        launchersWatched = ((IDEObservableParentLauncher) rootLauncherWatched).getSubLaunchers();
+                    } else {
+                        launchersWatched.add(rootLauncherWatched);
+                    }
+                }
                 if (launchersWatched != null && !launchersWatched.isEmpty()) {
                     selectedLauncherWatchedIndex = 0;
                 }
                 refreshPart(launcherListener);
             }
-
-            
 
             private void clearWatchedLaunchers(final LauncherListener launcherListener) {
                 selectedLauncherWatchedIndex = -1;
@@ -994,7 +1188,7 @@ public class LogViewerPart implements EventHandler, LauncherListener {
             }
         }).start();
     }
-    
+
     private void refreshPart(final LauncherListener launcherListener) {
         sync.syncExec(new Runnable() {
 
@@ -1128,9 +1322,8 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                 });
                 break;
             case UPDATE_RESULT:
-                if (launcherWatched != null
-                        && StringUtils.defaultIfEmpty(launcherWatched.getId(), "").equals(
-                                notifiedObject.getLauncherId())) {
+                if (launcherWatched != null && StringUtils.defaultIfEmpty(launcherWatched.getId(), "")
+                        .equals(notifiedObject.getLauncherId())) {
                     updateProgressBar();
                 }
                 break;
@@ -1138,11 +1331,11 @@ public class LogViewerPart implements EventHandler, LauncherListener {
                 break;
         }
     }
-    
+
     public List<IDEObservableLauncher> getLaunchersWatched() {
         return launchersWatched;
     }
-    
+
     public void changeSelectedLaucherWatchedById(String launcherId) {
         if (StringUtils.isEmpty(launcherId)) {
             return;

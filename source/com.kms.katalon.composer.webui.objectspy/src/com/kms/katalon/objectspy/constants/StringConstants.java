@@ -10,9 +10,9 @@ public class StringConstants extends GlobalStringConstants {
 
     public static final String DIA_TITLE_OBJ_SPY = ObjectspyMessageConstants.DIA_TITLE_OBJ_SPY;
 
-    public static final String DIA_LBL_NAME = NAME;
+    public static final String DIA_LBL_NAME = ObjectspyMessageConstants.DIA_LBL_OBJECT_NAME;
 
-    public static final String DIA_LBL_TAG = TAG;
+    public static final String DIA_LBL_TAG = ObjectspyMessageConstants.DIA_LBL_HTML_TAG;
 
     public static final String DIA_MENU_CONTEXT_VERIFY = ObjectspyMessageConstants.DIA_MENU_CONTEXT_VERIFY;
 
@@ -79,6 +79,8 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_TOOLITEM_HIGHLIGHT = ObjectspyMessageConstants.DIA_TOOLITEM_HIGHLIGHT;
 
     public static final String DIA_TOOLITEM_TIP_HIGHLIGHT = ObjectspyMessageConstants.DIA_TOOLITEM_TIP_HIGHLIGHT;
+    
+    public static final String TOOLTIP_CAPTURED_OBJECTS_HELP = ObjectspyMessageConstants.TOOLTIP_CAPTURED_OBJECTS_HELP;
 
     // CheckboxTreeSelectionHelper
     public static final String TREE_ERROR_MSG_CONTENT_PROVIDER_IS_REQUIRED = ObjectspyMessageConstants.TREE_ERROR_MSG_CONTENT_PROVIDER_IS_REQUIRED;

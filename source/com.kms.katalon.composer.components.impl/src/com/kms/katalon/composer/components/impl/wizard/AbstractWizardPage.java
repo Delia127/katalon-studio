@@ -70,4 +70,9 @@ public abstract class AbstractWizardPage implements IWizardPage {
             LoggerSingleton.logError(e);
         }
     }
+    
+    @Override
+    public boolean autoFlip() {
+        return false;
+    }
 }

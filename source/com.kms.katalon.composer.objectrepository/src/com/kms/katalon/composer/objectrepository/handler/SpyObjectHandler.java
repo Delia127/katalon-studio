@@ -4,11 +4,13 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.osgi.service.event.Event;
@@ -23,22 +25,22 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.repository.WebElementEntity;
-import com.kms.katalon.objectspy.dialog.ObjectSpyDialog;
+import com.kms.katalon.objectspy.dialog.NewObjectSpyDialog;
 
 public class SpyObjectHandler {
 
     @Inject
     private IEventBroker eventBroker;
 
-    private ObjectSpyDialog objectSpyDialog;
+    private NewObjectSpyDialog objectSpyDialog;
 
     @PostConstruct
     public void registerAddToObjectSpyEvent() {
         eventBroker.subscribe(EventConstants.OBJECT_SPY_TEST_OBJECT_ADDED, new EventServiceAdapter() {
-            
+
             @Override
             public void handleEvent(Event event) {
-                openDialogAndAddObject(Display.getCurrent().getActiveShell(), getObjects(event)); 
+                openDialogAndAddObject(Display.getCurrent().getActiveShell(), getObjects(event));
             }
         });
         eventBroker.subscribe(EventConstants.OBJECT_SPY_WEB, new EventHandler() {
@@ -61,8 +63,11 @@ public class SpyObjectHandler {
     private void openDialogAndAddObject(Shell activeShell, Object[] selectedObjects) {
         try {
             if (objectSpyDialog == null || objectSpyDialog.isDisposed()) {
-                objectSpyDialog = new ObjectSpyDialog(activeShell, LoggerSingleton.getInstance().getLogger(), eventBroker);
+                Shell shell = getShell(activeShell);
+                objectSpyDialog = new NewObjectSpyDialog(shell, LoggerSingleton.getInstance().getLogger(), eventBroker);
                 objectSpyDialog.setBlockOnOpen(false);
+            } else {
+                objectSpyDialog.getShell().forceActive();
             }
             objectSpyDialog.open();
             if (selectedObjects != null) {
@@ -76,6 +81,17 @@ public class SpyObjectHandler {
             LoggerSingleton.logError(e);
             MessageDialog.openError(activeShell, StringConstants.ERROR_TITLE, e.getMessage());
         }
+    }
+
+    private Shell getShell(Shell activeShell) {
+        if (Platform.OS_WIN32.equals(Platform.getOS())) {
+            return null;
+        }
+        Shell shell = new Shell();
+        Rectangle activeShellSize = activeShell.getBounds();
+        shell.setLocation((activeShellSize.width - shell.getBounds().width) / 2,
+                (activeShellSize.height - shell.getBounds().height) / 2);
+        return shell;
     }
 
     @CanExecute

@@ -19,8 +19,10 @@ public class GeneralPreferencePage extends PreferencePage {
     private Button radioAutoRestorePrevSession;
 
     private Button radioAutoCleanPrevSession;
-    
+
     private Button chkCheckNewVersion;
+
+    private Button chkShowHelpAtStartUp;
 
     private Composite parentComposite;
 
@@ -42,11 +44,13 @@ public class GeneralPreferencePage extends PreferencePage {
 
         radioAutoCleanPrevSession = new Button(prevSession, SWT.RADIO);
         radioAutoCleanPrevSession.setText(StringConstants.PAGE_RADIO_AUTO_CLEAN_PREV_SESSION);
-        
+
+        chkShowHelpAtStartUp = new Button(parentComposite, SWT.CHECK);
+        chkShowHelpAtStartUp.setText(MessageConstants.PAGE_PREF_SHOW_HELP_AT_START_UP);
+
         chkCheckNewVersion = new Button(parentComposite, SWT.CHECK);
         chkCheckNewVersion.setText(MessageConstants.PAGE_PREF_AUTO_CHECK_NEW_VERSION_TITLE);
-        
-        
+
         initialize();
 
         return parentComposite;
@@ -65,29 +69,39 @@ public class GeneralPreferencePage extends PreferencePage {
         radioAutoCleanPrevSession.setSelection(!autoRestore);
 
         boolean setCheckNewVersion = prefStore.contains(PreferenceConstants.GENERAL_AUTO_CHECK_NEW_VERSION);
-        chkCheckNewVersion.setSelection(setCheckNewVersion
-                ? prefStore.getBoolean(PreferenceConstants.GENERAL_AUTO_CHECK_NEW_VERSION) : true);
+        chkCheckNewVersion.setSelection(
+                setCheckNewVersion ? prefStore.getBoolean(PreferenceConstants.GENERAL_AUTO_CHECK_NEW_VERSION) : true);
         if (!setCheckNewVersion) {
             prefStore.setDefault(PreferenceConstants.GENERAL_AUTO_CHECK_NEW_VERSION, true);
         }
+
+        if (!prefStore.contains(PreferenceConstants.GENERAL_SHOW_HELP_AT_START_UP)) {
+            prefStore.setDefault(PreferenceConstants.GENERAL_SHOW_HELP_AT_START_UP, true);
+        }
+        chkShowHelpAtStartUp.setSelection(prefStore.getBoolean(PreferenceConstants.GENERAL_SHOW_HELP_AT_START_UP));
     }
 
     @Override
     protected void performDefaults() {
-        if (parentComposite == null) return;
+        if (parentComposite == null)
+            return;
         getPreferenceStore().setToDefault(PreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION);
         getPreferenceStore().setToDefault(PreferenceConstants.GENERAL_AUTO_CHECK_NEW_VERSION);
+        getPreferenceStore().setToDefault(PreferenceConstants.GENERAL_SHOW_HELP_AT_START_UP);
         initialize();
         super.performDefaults();
     }
 
     @Override
     protected void performApply() {
-        if (parentComposite == null) return;
+        if (parentComposite == null)
+            return;
         getPreferenceStore().setValue(PreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION,
                 radioAutoRestorePrevSession.getSelection());
         getPreferenceStore().setValue(PreferenceConstants.GENERAL_AUTO_CHECK_NEW_VERSION,
                 chkCheckNewVersion.getSelection());
+        getPreferenceStore().setValue(PreferenceConstants.GENERAL_SHOW_HELP_AT_START_UP,
+                chkShowHelpAtStartUp.getSelection());
     }
 
     @Override

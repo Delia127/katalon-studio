@@ -2,6 +2,7 @@
 <fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_UTvs0EO5EeS6w-5VfP-05A">
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_m_3NsEO5EeS6w-5VfP-05A" featurename="addons" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="application:Addon" xmi:id="_4QavgEO5EeS6w-5VfP-05A" elementId="com.kms.katalon.execution.addon.inject" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.addons.TestExecutionAddon"/>
+    <elements xsi:type="application:Addon" xmi:id="_1vyYwJaoEeepvdgZQhYc4Q" elementId="com.kms.katalon.composer.execution.addon.0" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.addons.TestExecutionInjectionAddon"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_Kg0kwEO6EeS6w-5VfP-05A" featurename="commands" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Command" xmi:id="_4raZwG74EeSqyYL0pZQV2Q" elementId="com.kms.katalon.composer.execution.command.stopAllExecute" commandName="" description="Stop All Executing Script"/>
@@ -33,41 +34,6 @@
     <elements xsi:type="commands:Handler" xmi:id="_wsI-gAq_EeaDX_I50SXsNA" elementId="com.kms.katalon.composer.execution.handler.skipAllBreakpoints" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.debug.handler.SkipAllBreakpointHandler" command="_tNjTwAh6EeaOHID5tXhDTg"/>
     <elements xsi:type="commands:Handler" xmi:id="_UauoQArIEea7RfDmXOohVw" elementId="com.kms.katalon.composer.execution.handler.removeAllBreakpoints" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.debug.handler.RemoveAllBreakpointHandler" command="_tecPcAh6EeaOHID5tXhDTg"/>
     <elements xsi:type="commands:Handler" xmi:id="_kQ14kKWYEeaK56tdv0zM1g" elementId="com.kms.katalon.composer.execution.handler.existing" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.handlers.ExistingExecutionHandler" command="_hk86EKWYEeaK56tdv0zM1g"/>
-  </fragments>
-  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_2siakEO8EeS6w-5VfP-05A" featurename="children" parentElementId="com.kms.katalon.composer.toolbar" positionInList="">
-    <elements xsi:type="menu:ToolBarSeparator" xmi:id="_42ZHIDRtEeem58Ih33kujQ" elementId="com.kms.katalon.composer.execution.toolbarseparator.0">
-      <persistedState key="index" value="10"/>
-    </elements>
-    <elements xsi:type="menu:HandledToolItem" xmi:id="_hGFVQGZHEeSy97efZ7yHrA" elementId="com.kms.katalon.composer.execution.handledtoolitem.run" label="Run" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/play_24.png" tooltip="" command="_1Vr3wEvpEeWSR5dl8TkM5g">
-      <persistedState key="index" value="11"/>
-      <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/play_disabled_24.png"/>
-      <tags>FORCE_TEXT</tags>
-      <tags>Opaque</tags>
-      <menu xmi:id="_h1k4gGZHEeSy97efZ7yHrA" elementId="com.kms.katalon.composer.execution.menu.run" label="Run "/>
-      <parameters xmi:id="_Fzs6IKy-Eea0DeEFhXaQmQ" elementId="com.kms.katalon.composer.webui.parameter.safari.runParam" name="com.kms.katalon.composer.execution.runMode" value="run"/>
-    </elements>
-    <elements xsi:type="menu:HandledToolItem" xmi:id="_h09mMOJWEeSyVPtKyNklew" elementId="com.kms.katalon.composer.execution.handledtoolitem.debug" label="Debug" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/bug_24.png" tooltip="" command="_Z3Hl4OJWEeSyVPtKyNklew">
-      <persistedState key="index" value="12"/>
-      <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/bug_disabled_24.png"/>
-      <tags>FORCE_TEXT</tags>
-      <tags>Opaque</tags>
-      <menu xmi:id="_lev64OJXEeSyVPtKyNklew" elementId="com.kms.katalon.composer.execution.menu.debug" label="Debug"/>
-      <parameters xmi:id="_IL-ZEKy-Eea0DeEFhXaQmQ" elementId="com.kms.katalon.composer.webui.parameter.safari.runParam" name="com.kms.katalon.composer.execution.runMode" value="debug"/>
-    </elements>
-    <elements xsi:type="menu:HandledToolItem" xmi:id="_yvXSEG74EeSqyYL0pZQV2Q" elementId="com.kms.katalon.composer.execution.handledtoolitem.stop" label="Stop" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/stop_24.png" tooltip="" command="_4raZwG74EeSqyYL0pZQV2Q">
-      <persistedState key="index" value="13"/>
-      <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/stop_disabled_24.png"/>
-      <tags>FORCE_TEXT</tags>
-      <tags>Opaque</tags>
-    </elements>
-    <elements xsi:type="menu:ToolBarSeparator" xmi:id="_L2CzcOdzEeWhlq_ETXxxuQ" elementId="com.kms.katalon.composer.execution.toolbarseparator.1">
-      <persistedState key="index" value="14"/>
-    </elements>
-    <elements xsi:type="menu:HandledToolItem" xmi:id="_PgTesOdzEeWhlq_ETXxxuQ" elementId="com.kms.katalon.composer.execution.handledtoolitem.generatecommand" label="Build CMD" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/terminal_24.png" tooltip="" command="_V2XzcOd0EeWhlq_ETXxxuQ">
-      <persistedState key="index" value="15"/>
-      <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/terminal_disabled_24.png"/>
-      <tags>FORCE_TEXT</tags>
-    </elements>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_6fOqMHCMEeSG_-6adg2jcw" featurename="children" parentElementId="com.kms.katalon.partstack.console">
     <elements xsi:type="basic:Part" xmi:id="_BxJYoHCNEeSG_-6adg2jcw" elementId="com.kms.katalon.partstack.console.log" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.part.LogViewerPart" label="Log Viewer" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/log/log_16.png">
@@ -103,5 +69,40 @@
       <children xsi:type="menu:HandledMenuItem" xmi:id="_KhKNMAh6EeaOHID5tXhDTg" elementId="com.kms.katalon.composer.execution.handledmenuitem.debug.skipAllBreakPoints" label="Skip All Breakpoints" iconURI="platform:/plugin/org.eclipse.debug.ui/icons/full/elcl16/skip_brkp.gif" tooltip="" type="Check" command="_tNjTwAh6EeaOHID5tXhDTg"/>
       <children xsi:type="menu:HandledMenuItem" xmi:id="_Kp4rYAh6EeaOHID5tXhDTg" elementId="com.kms.katalon.composer.execution.handledmenuitem.debug.removeAllBreakPoints" label="Remove All Breakpoints" iconURI="platform:/plugin/org.eclipse.debug.ui/icons/full/elcl16/rem_all_co.gif" tooltip="" command="_tecPcAh6EeaOHID5tXhDTg"/>
     </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_N_DHgAC0Eeil_8R9R-MGdw" featurename="children" parentElementId="com.kms.katalon.composer.toolbar.execution">
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_PgTesOdzEeWhlq_ETXxxuQ" elementId="com.kms.katalon.composer.execution.handledtoolitem.generatecommand" label="Build CMD" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/terminal_24.png" tooltip="" command="_V2XzcOd0EeWhlq_ETXxxuQ">
+      <persistedState key="index" value="0"/>
+      <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/terminal_disabled_24.png"/>
+      <tags>FORCE_TEXT</tags>
+    </elements>
+    <elements xsi:type="menu:ToolBarSeparator" xmi:id="_L2CzcOdzEeWhlq_ETXxxuQ" elementId="com.kms.katalon.composer.execution.toolbarseparator.1">
+      <persistedState key="index" value="1"/>
+    </elements>
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_hGFVQGZHEeSy97efZ7yHrA" elementId="com.kms.katalon.composer.execution.handledtoolitem.run" label="Run" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/play_24.png" tooltip="" command="_1Vr3wEvpEeWSR5dl8TkM5g">
+      <persistedState key="index" value="2"/>
+      <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/play_disabled_24.png"/>
+      <tags>FORCE_TEXT</tags>
+      <tags>Opaque</tags>
+      <menu xmi:id="_h1k4gGZHEeSy97efZ7yHrA" elementId="com.kms.katalon.composer.execution.menu.run" label="Run "/>
+      <parameters xmi:id="_Fzs6IKy-Eea0DeEFhXaQmQ" elementId="com.kms.katalon.composer.webui.parameter.safari.runParam" name="com.kms.katalon.composer.execution.runMode" value="run"/>
+    </elements>
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_h09mMOJWEeSyVPtKyNklew" elementId="com.kms.katalon.composer.execution.handledtoolitem.debug" label="Debug" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/bug_24.png" tooltip="" command="_Z3Hl4OJWEeSyVPtKyNklew">
+      <persistedState key="index" value="3"/>
+      <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/bug_disabled_24.png"/>
+      <tags>FORCE_TEXT</tags>
+      <tags>Opaque</tags>
+      <menu xmi:id="_lev64OJXEeSyVPtKyNklew" elementId="com.kms.katalon.composer.execution.menu.debug" label="Debug"/>
+      <parameters xmi:id="_IL-ZEKy-Eea0DeEFhXaQmQ" elementId="com.kms.katalon.composer.webui.parameter.safari.runParam" name="com.kms.katalon.composer.execution.runMode" value="debug"/>
+    </elements>
+    <elements xsi:type="menu:HandledToolItem" xmi:id="_yvXSEG74EeSqyYL0pZQV2Q" elementId="com.kms.katalon.composer.execution.handledtoolitem.stop" label="Stop" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/stop_24.png" tooltip="" command="_4raZwG74EeSqyYL0pZQV2Q">
+      <persistedState key="index" value="4"/>
+      <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/toolbar/stop_disabled_24.png"/>
+      <tags>FORCE_TEXT</tags>
+      <tags>Opaque</tags>
+    </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_8hLLIAWEEeiwwLBO_0k_Ig" featurename="children" parentElementId="com.kms.katalon.trimbar" positionInList="before:com.kms.katalon.composer.toolbar.switcher">
+    <elements xsi:type="menu:ToolControl" xmi:id="_AwhgcAWFEeiwwLBO_0k_Ig" elementId="com.kms.katalon.composer.toolbar.executionGroup" contributionURI="bundleclass://com.kms.katalon.composer.execution/com.kms.katalon.composer.execution.toolbar.ExecutionToolControl"/>
   </fragments>
 </fragment:ModelFragments>

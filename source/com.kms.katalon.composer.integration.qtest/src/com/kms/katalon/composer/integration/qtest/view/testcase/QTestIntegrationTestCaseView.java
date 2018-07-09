@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
+import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.impl.util.DesktopUtils;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
@@ -54,11 +55,13 @@ public class QTestIntegrationTestCaseView extends AbstractTestCaseIntegrationVie
 
     private Button btnNavigate;
 
+    private Composite container;
+
     /**
      * @wbp.parser.entryPoint
      */
     public Composite createContainer(Composite parent) {
-        Composite container = new Composite(parent, SWT.NONE);
+        container = new Composite(parent, SWT.NONE);
         GridLayout glContainer = new GridLayout(1, false);
         glContainer.marginWidth = 0;
         glContainer.marginHeight = 0;
@@ -224,6 +227,11 @@ public class QTestIntegrationTestCaseView extends AbstractTestCaseIntegrationVie
         }
 
         reloadView();
+
+        if (qTestTestCase == null) {
+            ControlUtils.recursiveSetEnabled(container, false);
+            return;
+        }
     }
 
     private void reloadView() {

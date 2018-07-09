@@ -1,16 +1,19 @@
 package com.kms.katalon.composer.testcase.ast.dialogs;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
@@ -21,6 +24,8 @@ import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -39,6 +44,8 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.dialogs.ISelectionStatusValidator;
 import org.osgi.framework.FrameworkUtil;
 
+import com.kms.katalon.composer.components.impl.control.Dropdown;
+import com.kms.katalon.composer.components.impl.control.DropdownGroup;
 import com.kms.katalon.composer.components.impl.control.ImageButton;
 import com.kms.katalon.composer.components.impl.dialogs.TreeEntitySelectionDialog;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
@@ -60,19 +67,25 @@ import com.kms.katalon.composer.testcase.groovy.ast.expressions.MapEntryExpressi
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MapExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.model.InputValueType;
+import com.kms.katalon.composer.testcase.preferences.RecentObjectStorage;
+import com.kms.katalon.composer.testcase.preferences.TestCasePreferenceDefaultValueInitializer;
 import com.kms.katalon.composer.testcase.providers.AstInputTypeLabelProvider;
 import com.kms.katalon.composer.testcase.providers.AstInputValueLabelProvider;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueColumnSupport;
 import com.kms.katalon.composer.testcase.support.AstInputBuilderValueTypeColumnSupport;
 import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
 import com.kms.katalon.composer.testcase.util.AstInputValueTypeOptionsProvider;
+import com.kms.katalon.constants.GlobalMessageConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 
 public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implements IAstDialogBuilder {
+    private static final int TOOL_ITEM_SIZE = 50;
+
     private static final InputValueType[] defaultInputValueTypes = { InputValueType.Variable,
             InputValueType.GlobalVariable };
 
@@ -130,6 +143,8 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
             layoutExecutionInfo();
         }
     };
+
+    private ToolItem recentTestObjectItem;
 
     public TestObjectBuilderDialog(Shell parentShell, ExpressionWrapper objectExpressionWrapper,
             boolean haveOtherTypes) {
@@ -192,22 +207,136 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
                 createSelectedTreeEntityHierachy(selectedWebElement.getParentFolder(), objectRepositoryRoot)));
     }
 
-    @Override
-    protected Control createDialogArea(Composite parent) {
-        parent.setLayoutData(new GridData(GridData.FILL_BOTH));
-        parent.setLayout(new GridLayout(1, false));
+    private void createTopCompiste(Composite parent) {
+        Composite topComposite = new Composite(parent, SWT.NONE);
+        topComposite.setLayout(new GridLayout(2, false));
+        topComposite.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
-        if (haveOtherTypes) {
-            comboComposite = new Composite(parent, SWT.NONE);
-            comboComposite.setLayout(new GridLayout(2, false));
-            Label comboLabel = new Label(comboComposite, SWT.NONE);
-            comboLabel.setText(StringConstants.DIA_LBL_OBJ_TYPE);
+        comboComposite = new Composite(topComposite, SWT.NONE);
+        comboComposite.setLayout(new GridLayout(2, false));
+        Label comboLabel = new Label(comboComposite, SWT.NONE);
+        comboLabel.setText(StringConstants.DIA_LBL_OBJ_TYPE);
 
-            combo = new Combo(comboComposite, SWT.DROP_DOWN);
-            combo.setItems(TEST_OBJECT_TABS);
+        combo = new Combo(comboComposite, SWT.DROP_DOWN);
+        combo.setItems(TEST_OBJECT_TABS);
+
+        comboComposite.setVisible(haveOtherTypes);
+
+        final ToolBar topToolbar = new ToolBar(topComposite, SWT.FLAT | SWT.RIGHT);
+        topToolbar.setTextDirection(SWT.LEFT_TO_RIGHT);
+        topToolbar.setLayoutData(new GridData(SWT.RIGHT, SWT.FILL, false, true));
+        GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).grab(true, false).applyTo(topToolbar);
+        recentTestObjectItem = new ToolItem(topToolbar, SWT.DROP_DOWN);
+        recentTestObjectItem.setText(GlobalMessageConstants.RECENT);
+        recentTestObjectItem.setImage(ImageConstants.IMG_16_RECENT);
+
+        recentTestObjectDropdown = new Dropdown(getShell());
+        createRecentDropdownItem();
+        recentTestObjectDropdown.resizeToFitContent();
+        recentTestObjectDropdown.setVisible(false);
+
+        recentTestObjectItem.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Rectangle bounds = recentTestObjectItem.getBounds();
+                Point recentTestObjectItemLocation = topToolbar.toDisplay(new Point(bounds.x, bounds.y));
+                recentTestObjectDropdown.setLocation(recentTestObjectItemLocation.x,
+                        recentTestObjectItemLocation.y + bounds.height);
+                recentTestObjectDropdown.setVisible(true);
+            }
+        });
+
+        setTestObjectItemState();
+    }
+
+    private void createRecentDropdownItem() {
+        RecentObjectStorage recentObjectStorage = getRecentObjectStorage();
+        List<String> recentFolderIds = recentObjectStorage.getRecentFolderIds();
+        if (!recentFolderIds.isEmpty()) {
+            DropdownGroup recentFolderDropdownGrp = recentTestObjectDropdown
+                    .addDropdownGroupItem(GlobalMessageConstants.OBJECT_FOLDER, ImageConstants.IMG_16_FOLDER);
+            recentFolderIds.forEach(recentFolderId -> {
+                createRecentFolderItem(recentFolderDropdownGrp, recentFolderId);
+            });
         }
 
-        final Composite stackComposite = new Composite(parent, SWT.NONE);
+        List<String> recentObjectIds = recentObjectStorage.getRecentObjectIds();
+        if (!recentObjectIds.isEmpty()) {
+            DropdownGroup recentObjectDropdownGrp = recentTestObjectDropdown
+                    .addDropdownGroupItem(GlobalMessageConstants.TEST_OBJECT, ImageConstants.IMG_16_TEST_OBJECT);
+            recentObjectIds.forEach(recentTestObjectId -> {
+                createRecentTestObjectItem(recentObjectDropdownGrp, recentTestObjectId);
+            });
+        }
+    }
+
+    private String getToolItemName(String rawName) {
+        return StringUtils.substring(rawName, 0, TOOL_ITEM_SIZE);
+    }
+
+    private void createRecentTestObjectItem(DropdownGroup recentObjectDropdownGrp, String recentTestObjectId) {
+        try {
+            WebElementEntity testObject = ObjectRepositoryController.getInstance()
+                    .getWebElementByDisplayPk(recentTestObjectId);
+
+            WebElementTreeEntity webElementTreeEntity = TreeEntityUtil.getWebElementTreeEntity(testObject,
+                    getCurrentProject());
+
+            ToolItem toolItem = recentObjectDropdownGrp.addItem(getToolItemName(testObject.getName()),
+                    webElementTreeEntity.getImage(), new SelectionAdapter() {
+                        @Override
+                        public void widgetSelected(SelectionEvent e) {
+                            try {
+                                getTreeViewer().setSelection(new StructuredSelection(webElementTreeEntity));
+                            } catch (Exception ignored) {}
+                        }
+                    });
+            toolItem.setToolTipText(recentTestObjectId);
+        } catch (Exception ignored) {}
+    }
+
+    private void createRecentFolderItem(DropdownGroup recentFolderDropdownGrp, String recentFolderId) {
+        try {
+            FolderEntity folder = FolderController.getInstance().getFolderByDisplayId(getCurrentProject(),
+                    recentFolderId);
+
+            final FolderTreeEntity folderTreeEntity = TreeEntityUtil.getWebElementFolderTreeEntity(folder,
+                    getCurrentProject());
+
+            ToolItem toolItem = recentFolderDropdownGrp.addItem(getToolItemName(folder.getName()),
+                    folderTreeEntity.getImage(), new SelectionAdapter() {
+                        @Override
+                        public void widgetSelected(SelectionEvent e) {
+                            try {
+                                TreeViewer treeViewer = getTreeViewer();
+                                treeViewer.setSelection(new StructuredSelection(folderTreeEntity));
+                                treeViewer.setExpandedState(folderTreeEntity, true);
+                            } catch (Exception ignored) {}
+                        }
+                    });
+            toolItem.setToolTipText(recentFolderId);
+        } catch (Exception ignored) {}
+    }
+
+    private Dropdown recentTestObjectDropdown;
+
+    private void setTestObjectItemState() {
+        recentTestObjectItem.setEnabled(!getRecentObjectStorage().isEmpty());
+    }
+
+    private RecentObjectStorage getRecentObjectStorage() {
+        return TestCasePreferenceDefaultValueInitializer.getRecentObjectStorage(getCurrentProject());
+    }
+
+    @Override
+    protected Control createDialogArea(Composite parent) {
+        Composite container = new Composite(parent, SWT.NONE);
+        container.setLayout(new GridLayout(1, false));
+
+        createTopCompiste(container);
+
+        final Composite stackComposite = new Composite(container, SWT.NONE);
         applyDialogFont(stackComposite);
         stackLayout = new StackLayout();
         stackComposite.setLayout(stackLayout);
@@ -256,7 +385,7 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         }
 
         refresh();
-        return stackComposite;
+        return container;
     }
 
     private void createVariableComposite() {
@@ -504,7 +633,8 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         });
 
         variableTableViewer.setContentProvider(new ArrayContentProvider());
-        variableTableViewer.setInput(variableMaps.getMapEntryExpressions());
+        variableTableViewer
+                .setInput(variableMaps != null ? variableMaps.getMapEntryExpressions() : Collections.emptyMap());
         layoutExecutionInfo();
     }
 
@@ -521,6 +651,14 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
                 compositeVariables.layout(true, true);
                 compositeVariables.getParent().layout();
                 redrawBtnExpandExecutionInfo();
+                showSelectedTestObject();
+            }
+
+            private void showSelectedTestObject() {
+                IStructuredSelection selection = getTreeViewer().getStructuredSelection();
+                if (selection != null) {
+                    getTreeViewer().getTree().showSelection();
+                }
             }
         });
     }
@@ -693,6 +831,7 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         btnOK.addSelectionListener(new SelectionListener() {
             @Override
             public void widgetSelected(SelectionEvent e) {
+                okPressed();
                 _instance.close();
             }
 
@@ -746,4 +885,20 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
     public String getDialogTitle() {
         return StringConstants.DIA_TITLE_TEST_OBJ_INPUT;
     }
+
+    private ProjectEntity getCurrentProject() {
+        return ProjectController.getInstance().getCurrentProject();
+    }
+
+    protected void okPressed() {
+        try {
+            super.okPressed();
+        } finally {
+            try {
+                TestCasePreferenceDefaultValueInitializer.addRecentObject(
+                        ProjectController.getInstance().getCurrentProject(),
+                        (WebElementEntity) ((WebElementTreeEntity) getFirstResult()).getObject());
+            } catch (Exception ignored) {}
+        }
+    };
 }

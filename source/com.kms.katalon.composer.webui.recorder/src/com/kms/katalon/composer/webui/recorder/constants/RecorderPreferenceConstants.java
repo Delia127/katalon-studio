@@ -6,5 +6,9 @@ public interface RecorderPreferenceConstants {
     public static final String WEBUI_RECORDER_QUALIFIER = "com.kms.katalon.composer.webui.recorder";
 
     public static final String WEBUI_RECORDER_DEFAULT_BROWSER = "recorder.defaultBrowser";
+    
+    public static final String WEBUI_RECORDER_DEFAULT_URL = "recorder.defaultURL";
+
+    public static final String WEBUI_RECORDER_PIN_WINDOW = "recorder.pinWindow";
 
 }

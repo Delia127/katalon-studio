@@ -143,6 +143,19 @@ public class ComposerComponentsImplMessageConstants extends NLS {
 
     public static String COMMAND_NAME_TEST_SUITE_COLLECTION;
 
+    // MissingMobileDriverWarningDialog
+    public static String LINK;
+
+    public static String SETUP_LINK;
+
+    public static String VIEW_LBL_MATCH_COND;
+
+    public static String VIEW_LBL_ADD_PROPERTY;
+
+    public static String VIEW_WARN_MSG_PROPERTY_CANNOT_BE_BLANK;
+    
+    public static String BTN_CHOOSE_A_FILE;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerComponentsImplMessageConstants.class);

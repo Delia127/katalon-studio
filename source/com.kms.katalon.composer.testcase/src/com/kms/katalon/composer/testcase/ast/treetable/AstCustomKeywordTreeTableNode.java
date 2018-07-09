@@ -7,13 +7,19 @@ import org.codehaus.groovy.ast.MethodNode;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.swt.widgets.Composite;
 
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.testcase.ast.editors.KeywordComboBoxCellEditorWithContentProposal;
+import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
 import com.kms.katalon.composer.testcase.model.InputParameter;
+import com.kms.katalon.composer.testcase.preferences.StoredKeyword;
+import com.kms.katalon.composer.testcase.preferences.TestCasePreferenceDefaultValueInitializer;
 import com.kms.katalon.composer.testcase.util.AstEntityInputUtil;
 import com.kms.katalon.composer.testcase.util.AstKeywordsInputUtil;
+import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.KeywordController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.model.FailureHandling;
@@ -32,6 +38,11 @@ public class AstCustomKeywordTreeTableNode extends AstAbstractKeywordTreeTableNo
     }
 
     @Override
+    public String getInputTooltipText() {
+        return super.getInputTooltipText();
+    }
+
+    @Override
     public String getItemText() {
         return KeywordController.getInstance().getRawCustomKeywordName(methodCall.getMethodAsString());
     }
@@ -47,10 +58,15 @@ public class AstCustomKeywordTreeTableNode extends AstAbstractKeywordTreeTableNo
         return new KeywordComboBoxCellEditorWithContentProposal(parent, parentStatement, getClassName(),
                 keywordMethodArray, keywordMethodArray, tooltips) {
             @Override
-            protected void generateArguments(MethodCallExpressionWrapper newMethodCall) {
-                AstKeywordsInputUtil.generateCustomKeywordArguments(newMethodCall);
+            protected MethodCallExpressionWrapper createNewKeywordExpression(String keywordClass, String newMethodName,
+                    StatementWrapper parentStatement) {
+                ASTNodeWrapper currentInput = parentStatement.getInput();
+                ArgumentListExpressionWrapper currentArguments = currentInput instanceof MethodCallExpressionWrapper
+                        ? ((MethodCallExpressionWrapper) currentInput).getArguments() : null;
+                return AstKeywordsInputUtil.generateCustomKeywordExpression(keywordClass, newMethodName,
+                        currentArguments, parentStatement);
             }
-            
+
             @Override
             protected String getKeywordName(MethodCallExpressionWrapper methodCall) {
                 return KeywordController.getInstance().getRawCustomKeywordName(methodCall.getMethodAsString());
@@ -163,5 +179,17 @@ public class AstCustomKeywordTreeTableNode extends AstAbstractKeywordTreeTableNo
             return super.setFailureHandlingValue(failureHandling);
         }
         return false;
+    }
+
+    @Override
+    public boolean setItem(Object item) {
+        try {
+            return super.setItem(item);
+        } finally {
+            TestCasePreferenceDefaultValueInitializer
+                    .addNewRecentKeywords(new StoredKeyword(getClassName(), getKeywordName(), true));
+            EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.TESTCASE_RECENT_KEYWORD_ADDED,
+                    null);
+        }
     }
 }

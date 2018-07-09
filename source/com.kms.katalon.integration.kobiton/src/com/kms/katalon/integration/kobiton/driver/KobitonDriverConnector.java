@@ -54,7 +54,7 @@ public class KobitonDriverConnector extends RemoteWebDriverConnector {
         return apiKey;
     }
 
-    public void setToken(String apiKey) {
+    public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
     }
 
@@ -76,7 +76,7 @@ public class KobitonDriverConnector extends RemoteWebDriverConnector {
     @Override
     public Map<String, Object> getSystemProperties() {
         Map<String, Object> systemProperties = super.getSystemProperties();
-        systemProperties.putAll(kobitonDevice.toDesireCapabilitiesMap());
+        systemProperties.putAll(kobitonDevice.getSystemPropertiesMap());
         return systemProperties;
     }
 }
