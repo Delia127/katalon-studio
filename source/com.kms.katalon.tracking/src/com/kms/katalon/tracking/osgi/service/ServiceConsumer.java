@@ -9,7 +9,6 @@ public class ServiceConsumer {
     
     public synchronized static void setA(IProjectStatisticsCollector collector) {
         projectStatisticsCollector = collector;
-        System.out.println("ahihi");
     }
     
     public synchronized static void unsetA(IProjectStatisticsCollector collector) {
