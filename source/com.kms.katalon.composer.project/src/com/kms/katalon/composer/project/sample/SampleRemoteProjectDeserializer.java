@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.samples;
+package com.kms.katalon.composer.project.sample;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -11,7 +11,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.kms.katalon.composer.samples.SampleRemoteProject.ProjectType;
+import com.kms.katalon.composer.project.sample.SampleRemoteProject.ProjectType;
 
 public class SampleRemoteProjectDeserializer implements JsonDeserializer<SampleRemoteProject> {
 
