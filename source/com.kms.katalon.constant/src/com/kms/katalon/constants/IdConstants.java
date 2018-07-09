@@ -168,6 +168,8 @@ public interface IdConstants {
     public static final String NEW_REMOTE_PROJECT_COMMAND_PARAMETER_ID = "com.kms.katalon.composer.project.command.newRemoteProject.parameters.project";
 
     // Bundle
+    public static final String KATALON_GENERAL_BUNDLE_ID = "com.kms.katalon";
+
     public static final String KATALON_LOGGING_BUNDLE_ID = "com.kms.katalon.logging";
 
     public static final String KATALON_CUSTOM_BUNDLE_ID = "com.kms.katalon.custom";
