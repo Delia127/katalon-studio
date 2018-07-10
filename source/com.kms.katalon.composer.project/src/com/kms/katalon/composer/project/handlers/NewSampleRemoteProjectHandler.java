@@ -15,6 +15,7 @@ import com.kms.katalon.composer.project.sample.SampleRemoteProject;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.core.util.internal.JsonUtil;
+import com.kms.katalon.entity.project.ProjectEntity;
 
 public class NewSampleRemoteProjectHandler {
 
@@ -38,8 +39,9 @@ public class NewSampleRemoteProjectHandler {
         if (dialog.open() != NewSampleRemoteProjectDialog.OK) {
             return;
         }
-        String projectLocation = dialog.getSelectedProjectLocation();
-        eventBroker.post(EventConstants.GIT_CLONE_REMOTE_PROJECT, new Object[] { sampleProject, projectLocation });
+
+        ProjectEntity projectEntity = dialog.getProjectInfo();
+        eventBroker.post(EventConstants.GIT_CLONE_REMOTE_PROJECT, new Object[] { sampleProject, projectEntity });
     }
 
 }

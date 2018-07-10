@@ -55,6 +55,7 @@ import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 
 @SuppressWarnings("restriction")
@@ -67,6 +68,8 @@ public class CloneRemoteProjectHandler {
     private boolean shouldHandleProjectOpenAfterClone = false;
 
     private File destinationFolder = null;
+    
+    private ProjectEntity projectInfo;
 
     @Inject
     EPartService partService;
@@ -87,9 +90,9 @@ public class CloneRemoteProjectHandler {
                         Object[] objects = getObjects(event);
 
                         SampleRemoteProject sample = (SampleRemoteProject) objects[0];
-                        String projectLocation = (String) objects[1];
+                        projectInfo = (ProjectEntity) objects[1];
 
-                        File workdir = new File(projectLocation);
+                        File workdir = new File(projectInfo.getFolderLocation(), projectInfo.getName());
                         workdir.mkdirs();
 
                         Job job = new Job("Cloning remote project") {
@@ -188,9 +191,10 @@ public class CloneRemoteProjectHandler {
             }
         }
 
-        try {
+        try {            
+            ProjectEntity project = ProjectController.getInstance().updateProjectInfo(projectFile, projectInfo);
             shouldHandleProjectOpenAfterClone = true;
-            OpenProjectHandler.doOpenProject(null, projectFile.getAbsolutePath(),
+            OpenProjectHandler.doOpenProject(null, project.getLocation(),
                     UISynchronizeService.getInstance().getSync(), EventBrokerSingleton.getInstance().getEventBroker(),
                     PartServiceSingleton.getInstance().getPartService(),
                     ModelServiceSingleton.getInstance().getModelService(),
