@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.samples;
+package com.kms.katalon.composer.project.sample;
 
 import java.util.Map;
 

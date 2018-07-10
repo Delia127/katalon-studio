@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.samples;
+package com.kms.katalon.composer.project.sample;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,15 +19,10 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.graphics.ImageDataProvider;
-import org.eclipse.swt.widgets.Display;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.kms.katalon.constants.ImageConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
 import com.kms.katalon.integration.analytics.providers.HttpClientProxyBuilder;
@@ -37,15 +32,27 @@ public class SampleRemoteProjectProvider {
     private static final String SAMPLE_REMOTE_PROJECT_DESCRIPTION_URL =
             "http://download.katalon.com/resources/sample_projects.json";
 
+    private static List<SampleRemoteProject> cachedProjects;
+
+    public static List<SampleRemoteProject> getCachedProjects() {
+        if (cachedProjects == null) { 
+            return Collections.emptyList();
+        }
+        return cachedProjects;
+    }
+
     public List<SampleRemoteProject> getSampleProjects() {
         try {
             String sampleProjectsJson = IOUtils.toString(getInputStream(SAMPLE_REMOTE_PROJECT_DESCRIPTION_URL));
             Gson gson = new GsonBuilder()
                     .registerTypeAdapter(SampleRemoteProject.class, new SampleRemoteProjectDeserializer()).create();
             Type type = new TypeToken<List<SampleRemoteProject>>() {}.getType();
-            return new ArrayList<>(gson.fromJson(sampleProjectsJson, type));
+            cachedProjects = new ArrayList<>(gson.fromJson(sampleProjectsJson, type));
+            
+            return cachedProjects;
         } catch (IOException | URISyntaxException | GeneralSecurityException e) {
-            return Collections.emptyList();
+            cachedProjects = Collections.emptyList();
+            return cachedProjects;
         }
     }
 
@@ -63,27 +70,6 @@ public class SampleRemoteProjectProvider {
                 return null;
             }
         }));
-    }
-
-    public Image getThumbnail(Display display, SampleRemoteProject project) {
-        Map<Integer, Image> allImages = project.getThumbnails()
-                .entrySet()
-                .stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, e -> {
-                    try {
-                        return new Image(display, getInputStream(e.getValue()));
-                    } catch (URISyntaxException | IOException | GeneralSecurityException e1) {
-                        return ImageConstants.IMG_SAMPLE_REMOTE;
-                    }
-                }));
-        ImageDataProvider dateProvider = new ImageDataProvider() {
-
-            @Override
-            public ImageData getImageData(int zoom) {
-                return allImages.getOrDefault(allImages.get(zoom), allImages.get(100)).getImageData();
-            }
-        };
-        return new Image(display, dateProvider);
     }
 
     public InputStream getInputStream(String url) throws URISyntaxException, IOException, GeneralSecurityException {
