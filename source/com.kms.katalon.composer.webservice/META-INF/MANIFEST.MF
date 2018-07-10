@@ -54,5 +54,12 @@ Require-Bundle: com.kms.katalon.composer.explorer,
  org.apache.commons.lang3,
  com.kms.katalon,
  org.apache.httpcomponents.httpclient,
+ com.kms.katalon.composer.util,
+ com.kms.katalon.groovy,
+ org.codehaus.groovy.eclipse.ui,
+ org.eclipse.jdt.groovy.core,
+ org.eclipse.jdt.core,
  com.google.gson,
- com.kms.katalon.util
+ com.kms.katalon.util,
+ com.kms.katalon.composer.testcase,
+ com.kms.katalon.tracking

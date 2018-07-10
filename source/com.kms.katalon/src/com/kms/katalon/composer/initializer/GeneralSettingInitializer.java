@@ -8,7 +8,6 @@ public class GeneralSettingInitializer implements ApplicationInitializer {
     public void setup() {
         GeneralPreferenceDefaultValueInitializer defaultValueInitializer = new GeneralPreferenceDefaultValueInitializer();
         defaultValueInitializer.applyDefaultValues();
-        defaultValueInitializer.save();
     }
 
 }

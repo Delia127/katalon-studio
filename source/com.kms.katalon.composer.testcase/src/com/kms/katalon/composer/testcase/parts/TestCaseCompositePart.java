@@ -69,7 +69,7 @@ import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
 import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
-import com.kms.katalon.composer.parts.MultipleTabsCompositePart;
+import com.kms.katalon.composer.parts.SavableCompositePart;
 import com.kms.katalon.composer.testcase.actions.KatalonFormatAction;
 import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
 import com.kms.katalon.composer.testcase.constants.ImageConstants;
@@ -94,9 +94,10 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.groovy.util.GroovyUtil;
+import com.kms.katalon.tracking.service.Trackings;
 
 @SuppressWarnings("restriction")
-public class TestCaseCompositePart implements EventHandler, MultipleTabsCompositePart, IComposerPartEvent {
+public class TestCaseCompositePart implements EventHandler, SavableCompositePart, IComposerPartEvent {
 
     public static final int CHILD_TEST_CASE_EDITOR_PART_INDEX = 1;
 
@@ -173,6 +174,8 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
     private ScriptNodeWrapper scriptNode;
 
     private boolean parsingFailed;
+
+    private boolean disposed;
 
     public boolean isInitialized() {
         return isInitialized;
@@ -316,10 +319,16 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
                             return;
                         }
 
-                        if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_EDITOR_PART_INDEX
-                                && childTestCasePart.isManualScriptChanged()) {
-                            setChildEditorContents(scriptNode);
+                        if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_EDITOR_PART_INDEX) {
+                            Trackings.trackOpenObject("testCaseScript");
+                            if (childTestCasePart.isManualScriptChanged()) {
+                                setChildEditorContents(scriptNode);
+                            }
                             return;
+                        }
+                        
+                        if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_VARIABLE_PART_INDEX) {
+                            Trackings.trackOpenObject("testCaseVariable");
                         }
 
                         if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_PROPERTIES_PART_INDEX) {
@@ -735,7 +744,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
         childTestCaseVariablesPart.loadVariables();
         TestCaseTreeTableInput treeTableInput = childTestCasePart.getTreeTableInput();
         if (treeTableInput != null) {
-            treeTableInput.reloadTestCaseVariables();
+            treeTableInput.reloadTestCaseVariables(childTestCasePart.getVariables());
         }
         updatePart(testCase);
         childTestCaseIntegrationPart.loadInput();
@@ -766,6 +775,11 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
         MPartStack mStackPart = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
         mStackPart.getChildren().remove(compositePart);
         eventBroker.unsubscribe(this);
+        disposed = true;
+    }
+    
+    public boolean isDisposed() {
+        return disposed;
     }
 
     @PreDestroy
@@ -822,7 +836,7 @@ public class TestCaseCompositePart implements EventHandler, MultipleTabsComposit
         if (childTestCasePart.getTreeTableInput() == null) {
             setScriptContentToManual();
         }
-        childTestCasePart.getTreeTableInput().reloadTestCaseVariables();
+        childTestCasePart.getTreeTableInput().reloadTestCaseVariables(childTestCasePart.getVariables());
         childTestCaseIntegrationPart.loadInput();
 
         updateDirty();

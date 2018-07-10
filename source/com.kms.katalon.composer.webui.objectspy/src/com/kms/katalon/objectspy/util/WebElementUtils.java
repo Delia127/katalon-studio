@@ -458,9 +458,9 @@ public class WebElementUtils {
     }
 
     public static TestObject buildTestObject(WebElement webElement) {
-        TestObject testObject = new TestObject();
+        TestObject testObject = new TestObject(webElement.getScriptId());
         WebFrame parentFrame = webElement.getParent();
-        if (parentFrame != null) {
+        if (parentFrame != null && !(parentFrame instanceof WebPage)) {
             TestObject parent = buildTestObject(parentFrame);
             testObject.setParentObject(parent);
         }

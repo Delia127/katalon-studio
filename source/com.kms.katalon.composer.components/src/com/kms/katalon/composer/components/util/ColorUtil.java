@@ -44,6 +44,8 @@ public class ColorUtil {
     private static final String TOOLBAR_BACKGROUND_COLOR = "#e8e8e8";
 
     private static final String COMPOSITE_HEADER_BACKGROUND_COLOR = "#43515a";
+    
+    private static final String DISABLED_TEXT_COLOR = "#bdbdbd";
 
     private static Display display = Display.getCurrent();
 
@@ -121,6 +123,10 @@ public class ColorUtil {
     // #ec5c51
     public static Color getErrorLogBackgroundColor() {
         return getColor(ERROR_LOG_BACKGROUND_COLOR);
+    }
+
+    public static Color getRunningLogBackgroundColor() {
+        return getColor(WARNING_LOG_BACKGROUND_COLOR);
     }
 
     public static Color getWarningLogBackgroundColor() {
@@ -201,6 +207,10 @@ public class ColorUtil {
 
     public static Color getToolBarBackgroundColor() {
         return getColor(TOOLBAR_BACKGROUND_COLOR);
+    }
+    
+    public static Color getDisabledTextColor() {
+        return getColor(DISABLED_TEXT_COLOR);
     }
 
 }

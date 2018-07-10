@@ -22,6 +22,8 @@ public interface IImageKeys {
     public static final String USER_GUIDE_34 = "welcome/user_guide_34.png"; //$NON-NLS-1$
 
     public static final String TUTORIAL_34 = "welcome/tutorial_34.png"; //$NON-NLS-1$
+    
+    public static final String BUSINESS_SUPPORT_34 ="welcome/business_support_34.png";
 
     public static final String KATALON_LOGO_202 = "welcome/logo_202.png"; //$NON-NLS-1$
 
@@ -60,6 +62,10 @@ public interface IImageKeys {
     public static final String TAB_LAST_INACTIVE = "welcome/tab_last_inactive.png"; //$NON-NLS-1$
 
     public static final String TAB_LAST_ACTIVE = "welcome/tab_last_active.png"; //$NON-NLS-1$
+    
+    public static final String SAMPLE_REMOTE_PROJECT_72 = "welcome/sample_remote_project.png"; //$NON-NLS-1$
+
+    public static final String GITHUB_LOGO_55 = "welcome/github_logo_55.png"; //$NON-NLS-1$
     // End Welcome
 
     // For Dialog
@@ -608,5 +614,19 @@ public interface IImageKeys {
     public static final String FULL_SIZE_16 = "full_size_16.png"; //$NON-NLS-1$
     
     // End Common
+    
+    // Conflict status
+    public static final String CONFLICT_ELEMENT_STATUS_16 = "element_conflict_16.png"; //$NON-NLS-1$
+
+    public static final String NEW_ELEMENT_STATUS_16 = "element_new_16.png";
+    
+    // Recorder
+    public static final String START_RECORDING_24 = "recorder/start_recording_24.png"; //$NON-NLS-1$
+
+    public static final String PAUSE_RECORDING_24 = "recorder/pause_recording_24.png"; //$NON-NLS-1$
+
+    public static final String RESUME_RECORDING_24 = "recorder/resume_recording_24.png"; //$NON-NLS-1$
+
+    public static final String STOP_RECORDING_24 = "recorder/stop_recording_24.png"; //$NON-NLS-1$
 
 }

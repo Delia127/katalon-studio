@@ -24,6 +24,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.dal.exception.FilePathTooLongException;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class NewFolderHandler {
 
@@ -93,6 +94,9 @@ public class NewFolderHandler {
         FolderTreeEntity newFolderTreeEntity = new FolderTreeEntity(newEntity, parentTreeEntity);
         eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
         eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, newFolderTreeEntity);
+        
+        Trackings.trackCreatingObject("folder");
+        
         return newFolderTreeEntity;
     }
 

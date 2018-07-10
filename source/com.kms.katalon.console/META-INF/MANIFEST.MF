@@ -22,7 +22,10 @@ Require-Bundle: org.eclipse.equinox.app,
  org.eclipse.jdt.launching,
  com.kms.katalon.custom,
  com.kms.katalon.core,
- com.kms.katalon.application
+ com.kms.katalon.application,
+ org.greenrobot.eventbus,
+ com.kms.katalon.tracking,
+ com.kms.katalon.entity
 Export-Package: com.kms.katalon.console.addons,
  com.kms.katalon.console.application,
  com.kms.katalon.console.constants

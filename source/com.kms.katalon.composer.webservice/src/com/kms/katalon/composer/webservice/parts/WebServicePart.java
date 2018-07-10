@@ -16,24 +16,32 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.http.impl.EnglishReasonPhraseCatalog;
+import org.codehaus.groovy.eclipse.editor.GroovyEditor;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
+import org.eclipse.e4.ui.model.application.ui.basic.MCompositePart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.services.IStylingEngine;
-import org.eclipse.e4.ui.workbench.IPresentationEngine;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.bindings.keys.IKeyLookup;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentCommand;
+import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.jface.text.source.CompositeRuler;
 import org.eclipse.jface.text.source.LineNumberRulerColumn;
 import org.eclipse.jface.text.source.SourceViewer;
@@ -47,13 +55,12 @@ import org.eclipse.jface.window.DefaultToolTip;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.ControlAdapter;
-import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MenuDetectEvent;
@@ -69,7 +76,6 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.program.Program;
@@ -86,11 +92,16 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.eclipse.text.edits.MalformedTreeException;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IFileEditorInput;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
+import com.kms.katalon.composer.components.controls.ToolBarForMPart;
+import com.kms.katalon.composer.components.impl.control.DropdownToolItemSelectionListener;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
@@ -101,14 +112,18 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.parts.SavableCompositePart;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
+import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
+import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
 import com.kms.katalon.composer.webservice.components.MirrorEditor;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
 import com.kms.katalon.composer.webservice.support.PropertyNameEditingSupport;
 import com.kms.katalon.composer.webservice.support.PropertyValueEditingSupport;
 import com.kms.katalon.composer.webservice.view.ParameterTable;
+import com.kms.katalon.composer.webservice.view.WSRequestPartUI;
 import com.kms.katalon.composer.webservice.view.WebServiceAPIControl;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
@@ -117,20 +132,26 @@ import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.util.internal.Base64;
 import com.kms.katalon.core.webservice.common.PrivateKeyReader;
+import com.kms.katalon.core.webservice.common.ScriptSnippet;
+import com.kms.katalon.core.webservice.common.VerificationScriptSnippetFactory;
 import com.kms.katalon.core.webservice.constants.RequestHeaderConstants;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
+import com.kms.katalon.execution.webservice.VerificationScriptExecutor;
 
-public abstract class WebServicePart implements EventHandler, IComposerPartEvent {
-
+public abstract class WebServicePart implements SavableCompositePart, EventHandler, IComposerPartEvent {
+    
     protected static final String WS_BUNDLE_NAME = FrameworkUtil.getBundle(WebServicePart.class).getSymbolicName();
 
     private static final Font FONT_COURIER_NEW_12 = new Font(Display.getCurrent(), "Courier New", 12, SWT.NORMAL);
 
+    private static final Font FONT_CONSOLAS_10 = new Font(Display.getCurrent(), "Consolas", 10, SWT.NORMAL);
+    
     protected static final String TAB_SPACE = "    ";
 
     private static final char RAW_PASSWORD_CHAR_MASK = '\0';
@@ -192,11 +213,15 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
     private static final String RSA_SHA1 = RequestHeaderConstants.SIGNATURE_METHOD_RSA_SHA1;
 
     private static final String HMAC_SHA1 = RequestHeaderConstants.SIGNATURE_METHOD_HMAC_SHA1;
+    
+    private static final String SHOW_SNIPPETS = ComposerWebserviceMessageConstants.SHOW_SNIPPETS;
+    
+    private static final String HIDE_SNIPPETS = ComposerWebserviceMessageConstants.HIDE_SNIPPETS;
 
     protected static final String OAUTH_1_0 = RequestHeaderConstants.AUTHORIZATION_TYPE_OAUTH_1_0;
-
+    
     private static final int MIN_PART_WIDTH = 400;
-
+    
     @Inject
     protected MApplication application;
 
@@ -208,9 +233,12 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
 
     @Inject
     protected IStylingEngine styleEngine;
+    
+    @Inject
+    protected EPartService partService;
 
-    protected MPart mPart;
-
+    protected MCompositePart mPart;
+    
     protected WebServiceRequestEntity originalWsObject;
 
     protected ScrolledComposite sComposite;
@@ -244,6 +272,8 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
     protected CTabItem tabHeaders;
 
     protected CTabItem tabBody;
+    
+    protected CTabItem tabVerification;
 
     protected Composite responseComposite;
 
@@ -268,66 +298,137 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
     protected CCombo ccbOAuth1SignatureMethod;
 
     protected List<WebElementPropertyEntity> oauth1Headers = new ArrayList<WebElementPropertyEntity>();
-
+    
+    protected List<ScriptSnippet> verificationScriptSnippets = new ArrayList<>();
+    
+    protected ScriptSnippet verificationScriptImport;
+    
     @Inject
     protected MDirtyable dirtyable;
 
     private Label lblStatusCodeDetails, lblReponseTimeDetails, lblReponseLengthDetails;
 
     protected Composite responseBodyComposite;
+    
+    protected GroovyEditor verificationScriptEditor;
+    
+    protected Composite parent;
+    
+    protected Text txtVerificationLog;
 
+    private MPart scriptEditorPart;
+    
+    private WSRequestPartUI ui;
+    
+    public WebServiceRequestEntity getOriginalWsObject() {
+        return originalWsObject;
+    }
+
+    public void setOriginalWsObject(WebServiceRequestEntity originalWsObject) {
+        this.originalWsObject = originalWsObject;
+    }
+    
     private Composite responseMessageComposite;
 
+    protected Label lblVerificationResultStatus;
+
+    private Composite verificationResultComposite;
+
     @PostConstruct
-    public void createComposite(Composite parent, MPart part) {
+    public void createComposite(Composite parent, MCompositePart part) {
         this.mPart = part;
         new HelpToolBarForMPart(part, DocumentationMessageConstants.TEST_OBJECT_WEB_SERVICES);
         this.originalWsObject = (WebServiceRequestEntity) part.getObject();
+        this.parent = parent;
+        
+        verificationScriptSnippets = VerificationScriptSnippetFactory.getSnippets();
+        verificationScriptImport = VerificationScriptSnippetFactory.getSnippetImport();
+    }
+    
+    public Composite getComposite() {
+        return parent;
+    }
+    
+    public void initComponents(WSRequestPartUI wsRequestPartUI) {
+        this.ui = wsRequestPartUI;
+        
+        new ToolBarForVerificationPart(ui.getVerificationPart());
+        
+        scriptEditorPart = ui.getScriptEditorPart();
+        verificationScriptEditor = (GroovyEditor)GroovyEditorUtil.getEditor(scriptEditorPart);
+        if (StringUtils.isBlank(originalWsObject.getVerificationScript())) {
+            insertImportsForVerificationScript();
+        }
+       
+        Composite apiControlsPartComposite = ui.getApiControlsPartComposite();
+        Composite apiControlsPartInnerComposite = new Composite(apiControlsPartComposite, SWT.NONE);
+        apiControlsPartInnerComposite.setLayout(new GridLayout());
+        
+        createAPIControls(apiControlsPartInnerComposite);
+        
+        createParamsComposite(apiControlsPartInnerComposite);
+        
+        createTabsComposite();
+        
+        createSnippetComposite();
+        
+//        Composite verificationToolbarPartComposite = ui.getVerificationToolbarPartComposite();
+//        Composite verificationToolbarPartInnerComposite = new Composite(verificationToolbarPartComposite, SWT.NONE);
+//        verificationToolbarPartInnerComposite.setLayout(new GridLayout());
+//        createVerificationToolbarComposite(verificationToolbarPartInnerComposite);
+        
+        Composite responsePartComposite = ui.getResponsePartComposite();
+        Composite responsePartInnerComposite = new Composite(responsePartComposite, SWT.NONE);
 
-        parent.setLayout(new FillLayout());
-
-        sComposite = new ScrolledComposite(parent, SWT.NONE);
-        sComposite.setExpandHorizontal(true);
-        sComposite.setExpandVertical(true);
-        sComposite.setBackground(ColorUtil.getCompositeBackgroundColor());
-        sComposite.setBackgroundMode(SWT.INHERIT_DEFAULT);
-        sComposite.addControlListener(new ControlAdapter() {
-            @Override
-            public void controlResized(ControlEvent e) {
-                sComposite.setMinSize(mainComposite.computeSize(MIN_PART_WIDTH, SWT.DEFAULT));
-            }
-        });
-
-        mainComposite = new SashForm(sComposite, SWT.HORIZONTAL);
-        mainComposite.setLayout(new FillLayout());
-
-        sComposite.setContent(mainComposite);
-
-        Composite leftComposite = new Composite(mainComposite, SWT.NONE);
-        leftComposite.setLayout(new GridLayout());
-
-        createAPIControls(leftComposite);
-
-        createParamsComposite(leftComposite);
-
-        createTabsComposite(leftComposite);
-
-        Composite rightComposite = new Composite(mainComposite, SWT.NONE);
         GridLayout glResponse = new GridLayout(2, false);
         glResponse.marginWidth = glResponse.marginHeight = 0;
-        rightComposite.setLayout(glResponse);
-
-        Label separator = new Label(rightComposite, SWT.SEPARATOR | SWT.SHADOW_IN | SWT.VERTICAL);
+        responsePartInnerComposite.setLayout(glResponse);
+        
+        Label separator = new Label(responsePartInnerComposite, SWT.SEPARATOR | SWT.SHADOW_IN | SWT.VERTICAL);
         separator.setLayoutData(new GridData(GridData.FILL_VERTICAL));
-
-        createResponseComposite(rightComposite);
+        
+        createResponseComposite(responsePartInnerComposite);
+        
         responseComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
         populateDataToUI();
-
-        dirtyable.setDirty(false);
-
         registerListeners();
     }
+    
+    private void insertImportsForVerificationScript() {
+        StringBuilder importBuilder = new StringBuilder()
+                .append(verificationScriptImport.getScript())
+                .append("\n");
+
+        insertVerificationScript(0, importBuilder.toString());
+    }
+    
+    private void insertVerificationScript(int offset, String script) {
+        try {
+            GroovyEditorUtil.insertScript(verificationScriptEditor, offset, script);
+        } catch (MalformedTreeException e) {
+            LoggerSingleton.logError(e);
+        } catch (BadLocationException e) {
+            LoggerSingleton.logError(e);
+        }
+    }
+    
+    protected String getVerificationScript() {
+        IEditorInput input = verificationScriptEditor.getEditorInput();
+        IDocument document = verificationScriptEditor.getDocumentProvider().getDocument(input);
+        if (document != null) {
+            String script = document.get();
+            return script;
+        } else {
+            return StringUtils.EMPTY;
+        }
+    }
+    
+    protected void executeVerificationScript(ResponseObject responseObject) throws Exception {
+        String verificationScript = getVerificationScript();
+        VerificationScriptExecutor executor = new VerificationScriptExecutor();
+        executor.execute(originalWsObject.getId(), verificationScript, responseObject);
+    }
+
 
     protected void createAPIControls(Composite parent) {
         String endPoint = isSOAP() ? originalWsObject.getWsdlAddress() : originalWsObject.getRestUrl();
@@ -360,7 +461,35 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
                 setDirty();
             }
         });
+        
+        wsApiControl.addSendSelectionListener(new DropdownToolItemSelectionListener() {
+            
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+                if (event.detail == SWT.ARROW) {
+                    showDropdown(event);
+                } else {
+                    sendRequest(false);
+                }
+            }
+
+            @Override
+            protected Menu getMenu() {
+                return wsApiControl.getSendMenu();
+            }
+            
+        });
+        
+        wsApiControl.addSendAndVerifySelectionListener(new SelectionAdapter() {
+            
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+                sendRequest(true);
+            }
+        });
     }
+
+    protected abstract void sendRequest(boolean runVerificationScript);
 
     protected abstract void createParamsComposite(Composite parent);
 
@@ -383,10 +512,11 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
         return toolbar;
     }
 
-    protected void createTabsComposite(Composite parent) {
-        CTabFolder tabFolder = new CTabFolder(parent, SWT.NONE);
+    protected void createTabsComposite() {
+        CTabFolder tabFolder = ui.getTabFolder();
         tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-        styleEngine.setId(parent, "DefaultCTabFolder");
+        styleEngine.setId(tabFolder.getParent(), "DefaultCTabFolder");
+//        styleEngine.setId(parent, "DefaultCTabFolder");
 
         addTabAuthorization(tabFolder);
         addTabHeaders(tabFolder);
@@ -396,9 +526,69 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
         tabFolder.setSelection(0);
     }
 
-    private void addTabVerification(CTabFolder tabFolder) {
-        CTabItem verificationTab = null;
-        createTab(tabFolder, verificationTab, "Verification");
+    private void createSnippetComposite() {
+  
+//        FontData[] fontData = parent.getFont().getFontData();
+//        fontData[0].setHeight(8);
+//        parent.setFont(new Font(Display.getCurrent(), fontData));
+//        parent.setLayout(new GridLayout(2, false));
+        Composite snippetPartComposite = ui.getSnippetPartComposite();
+        
+        Composite snippetPartInnerComposite = new Composite(snippetPartComposite, SWT.NONE);
+        snippetPartInnerComposite.setLayout(new GridLayout(2, false));
+        
+        int fontSize = Platform.getOS().equals(Platform.OS_MACOSX) ? 11 : 9;
+        
+        Label separator = new Label(snippetPartInnerComposite, SWT.SEPARATOR | SWT.SHADOW_IN | SWT.VERTICAL);
+        separator.setLayoutData(new GridData(GridData.FILL_VERTICAL));
+        
+        Composite snippetComposite = new Composite(snippetPartInnerComposite, SWT.NONE);
+        snippetComposite.setLayout(new GridLayout());
+        snippetComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        
+        Label lblInstruction = new Label(snippetComposite, SWT.WRAP);
+        lblInstruction.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        ControlUtils.setFontSize(lblInstruction, fontSize);
+        lblInstruction.setText(ComposerWebserviceMessageConstants.LBL_VERIFICATION_INSTRUCTION);
+        
+        CLabel lblSnippetHeading = new CLabel(snippetComposite, SWT.NONE);
+        lblSnippetHeading.setTopMargin(10);
+        ControlUtils.setFontSize(lblSnippetHeading, fontSize);
+        ControlUtils.setFontToBeBold(lblSnippetHeading);
+        lblSnippetHeading.setText(ComposerWebserviceMessageConstants.LBL_SNIPPET_HEADING);
+        
+        ScrolledComposite scrolledComposite = new ScrolledComposite(snippetComposite, SWT.H_SCROLL | SWT.V_SCROLL);
+        scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        scrolledComposite.setBackground(parent.getBackground());
+        
+        Composite composite = new Composite(scrolledComposite, SWT.NONE);
+        composite.setLayout(new GridLayout());
+        composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        composite.setBackground(parent.getBackground());
+        
+        Color snippetLblColor = new Color(composite.getDisplay(), 0, 0, 255);
+        for (ScriptSnippet snippet : verificationScriptSnippets) {
+            CLabel lblSnippet = new CLabel(composite, SWT.WRAP);
+            ControlUtils.setFontSize(lblSnippet, fontSize);
+            lblSnippet.setForeground(snippetLblColor);
+            lblSnippet.setText(snippet.getName());
+            lblSnippet.setCursor(Display.getCurrent().getSystemCursor(SWT.CURSOR_HAND));
+            lblSnippet.setBackground(parent.getBackground());
+            lblSnippet.setBottomMargin(5);
+            lblSnippet.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+            lblSnippet.addListener(SWT.MouseDown, e -> {
+                IEditorInput editorInput = verificationScriptEditor.getEditorInput();
+                IDocument document = verificationScriptEditor.getDocumentProvider().getDocument(editorInput);
+                
+                StringBuilder scriptBuilder = new StringBuilder("\n").append(snippet.getScript()).append("\n");
+                
+                insertVerificationScript(document.getLength(), scriptBuilder.toString());
+            });
+        }
+        snippetLblColor.dispose();
+        
+        composite.setSize(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+        scrolledComposite.setContent(composite);
     }
 
     protected CTabItem createTab(CTabFolder parent, CTabItem tab, String title) {
@@ -413,10 +603,10 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
     }
 
     protected void addTabAuthorization(CTabFolder parent) {
-        tabAuthorization = createTab(parent, tabAuthorization, ComposerWebserviceMessageConstants.TAB_AUTHORIZATION);
-        Composite tabComposite = (Composite) tabAuthorization.getControl();
+        tabAuthorization = ui.getAuthorizationTab();
 
-        Composite formComposite = new Composite(tabComposite, SWT.NONE);
+        Composite authorizationPartComposite = ui.getAuthorizationPartComposite();
+        Composite formComposite = new Composite(authorizationPartComposite, SWT.NONE);
         formComposite.setLayout(new GridLayout(2, false));
         GridData gdForm = new GridData(SWT.LEFT, SWT.FILL, true, true, 1, 1);
         gdForm.widthHint = 400;
@@ -653,9 +843,11 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
     }
 
     protected void addTabHeaders(CTabFolder parent) {
-        tabHeaders = createTab(parent, tabHeaders, StringConstants.PA_LBL_HTTP_HEADER);
-        Composite tabComposite = (Composite) tabHeaders.getControl();
-        ToolBar toolbar = createAddRemoveToolBar(tabComposite, new SelectionAdapter() {
+        tabHeaders = ui.getHeadersTab();
+        Composite headersPartComposite = ui.getHeadersPartComposite();
+        Composite headersPartInnerComposite = new Composite(headersPartComposite, SWT.NONE);
+        headersPartInnerComposite.setLayout(new GridLayout());
+        ToolBar toolbar = createAddRemoveToolBar(headersPartInnerComposite, new SelectionAdapter() {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -669,7 +861,7 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
             }
         });
 
-        tblHeaders = createKeyValueTable(tabComposite, true);
+        tblHeaders = createKeyValueTable(headersPartInnerComposite, true);
         tblHeaders.setInput(httpHeaders);
         tblHeaders.addSelectionChangedListener(new ISelectionChangedListener() {
 
@@ -681,7 +873,11 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
     }
 
     protected void addTabBody(CTabFolder parent) {
-        tabBody = createTab(parent, tabBody, StringConstants.PA_LBL_HTTP_BODY);
+        tabBody = ui.getBodyTab();
+    }
+    
+    protected void addTabVerification(CTabFolder parent) {
+        tabVerification = ui.getVerificationTab();
     }
 
     protected void createResponseComposite(Composite parent) {
@@ -719,6 +915,8 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
         createResponseBody(reponseDetailsTabFolder);
 
         createResponseHeader(reponseDetailsTabFolder);
+        
+        createResponseVerificationResult(reponseDetailsTabFolder);
 
 //        CTabItem responseVerificationLogTab = new CTabItem(reponseDetailsTabFolder, SWT.NONE);
 //        responseVerificationLogTab.setText(ComposerWebserviceMessageConstants.TAB_VERIFICATION_LOG);
@@ -748,6 +946,34 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
         GridLayout glBody = new GridLayout();
         glBody.marginWidth = glBody.marginHeight = 0;
         responseBodyComposite.setLayout(glBody);
+    }
+    
+    private void createResponseVerificationResult(CTabFolder responseDetailsTabFolder) {
+        CTabItem verificationResultTab = new CTabItem(responseDetailsTabFolder, SWT.NONE);
+        verificationResultTab.setText(ComposerWebserviceMessageConstants.LBL_RESPONSE_VERIFICATION_LOG);
+        
+        verificationResultComposite = new Composite(responseDetailsTabFolder, SWT.NONE);
+        verificationResultTab.setControl(verificationResultComposite);
+        
+        GridLayout glVerificationResult = new GridLayout();
+        glVerificationResult.marginWidth = glVerificationResult.marginHeight = 0;
+        verificationResultComposite.setLayout(glVerificationResult);
+        
+        Composite resultStatusComposite = new Composite(verificationResultComposite, SWT.NONE);
+        GridLayout glResultStatus = new GridLayout(2, false);
+        resultStatusComposite.setLayout(glResultStatus);
+        
+        Label lblVerificationResult = new Label(resultStatusComposite, SWT.NONE);
+        lblVerificationResult.setText(ComposerWebserviceMessageConstants.LBL_RESPONSE_VERIFICATION_RESULT);
+        
+        lblVerificationResultStatus = new Label(resultStatusComposite, SWT.NONE);
+        lblVerificationResultStatus.setForeground(ColorUtil.getTextWhiteColor());
+        
+        txtVerificationLog = new Text(verificationResultComposite, SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
+        txtVerificationLog.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        txtVerificationLog.setEditable(false);
+        txtVerificationLog.setBackground(ColorUtil.getWhiteBackgroundColor());
+        txtVerificationLog.setFont(FONT_CONSOLAS_10);
     }
 
     private void createResponseStatusComposite() {
@@ -845,6 +1071,14 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
             return ColorUtil.getWarningLogBackgroundColor();
         }
         return ColorUtil.getErrorLogBackgroundColor();
+    }
+    
+    protected void clearPreviousResponse() {
+        mirrorEditor.setText("");
+        
+        txtVerificationLog.setText("");
+        
+        lblVerificationResultStatus.setText("");
     }
 
     protected ParameterTable createKeyValueTable(Composite containerComposite, boolean isHttpHeader) {
@@ -1065,6 +1299,36 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
     protected void registerListeners() {
         eventBroker.subscribe(EventConstants.TEST_OBJECT_UPDATED, this);
         eventBroker.subscribe(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, this);
+        eventBroker.subscribe(EventConstants.WS_VERIFICATION_LOG_UPDATED, this);
+        eventBroker.subscribe(EventConstants.WS_VERIFICATION_EXECUTION_FINISHED, this);
+        
+        IFileEditorInput editorInput = (IFileEditorInput) verificationScriptEditor.getEditorInput();
+        verificationScriptEditor.getDocumentProvider()
+            .getDocument(editorInput)
+            .addDocumentListener(new IDocumentListener() {
+                @Override
+                public void documentChanged(DocumentEvent event) {
+                   GroovyEditorUtil.showProblems(verificationScriptEditor);
+                   WebServicePart.this.dirtyable.setDirty(true);
+                }
+    
+                @Override
+                public void documentAboutToBeChanged(DocumentEvent event) {
+                    // TODO Auto-generated method stub
+                }
+            });
+        
+//        verificationScriptEditor.addPropertyListener(new IPropertyListener() {
+//            @Override
+//            public void propertyChanged(Object source, int propId) {
+//                if (source instanceof GroovyEditor && propId == ISaveablePart.PROP_DIRTY) {
+//                    if (verificationScriptEditor.isDirty()) {
+//                        WebServicePart.this.dirtyable.setDirty(true);
+//                        tabVerification.setText(StringConstants.PA_LBL_VERIFICATION);
+//                    } 
+//                }
+//            }
+//        });
     }
 
     @Override
@@ -1132,6 +1396,40 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
                 LoggerSingleton.logError(e);
             }
         }
+        
+        if (EventConstants.WS_VERIFICATION_LOG_UPDATED.equals(event.getTopic())) {
+            Object[] data = (Object[]) eventData;
+            String testObjectId = (String) data[0];
+            String logLine = (String) data[1];
+            if (originalWsObject.getId().equals(testObjectId)) {
+                txtVerificationLog.append(logLine + "\n");
+            }
+        }
+        
+        if (EventConstants.WS_VERIFICATION_EXECUTION_FINISHED.equals(event.getTopic())) {
+            Object[] data = (Object[]) eventData;
+            String testObjectId = (String) data[0];
+            TestStatusValue testStatusValue = (TestStatusValue) data[1];
+            if (originalWsObject.getId().equals(testObjectId)) {
+                setVerificationResultStatus(testStatusValue);
+            }
+        }
+    }
+    
+    private void setVerificationResultStatus(TestStatusValue value) {
+        lblVerificationResultStatus.setText(value.toString());
+        lblVerificationResultStatus.setBackground(getBackgroundColorForVerificationResultStatus(value));
+        verificationResultComposite.layout(true, true);
+    }
+
+    private Color getBackgroundColorForVerificationResultStatus(TestStatusValue value) {
+        if (TestStatusValue.PASSED.equals(value)) {
+            return ColorUtil.getPassedLogBackgroundColor();
+        } else if (TestStatusValue.WARNING.equals(value)) {
+            return ColorUtil.getWarningLogBackgroundColor();
+        } else {
+            return ColorUtil.getErrorLogBackgroundColor();
+        }
     }
 
     private void dispose() {
@@ -1150,7 +1448,9 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
     @Persist
     public void save() {
         try {
+            saveVerificationScript();
             preSaving();
+
             ObjectRepositoryController.getInstance().updateTestObject(originalWsObject);
             eventBroker.post(EventConstants.TEST_OBJECT_UPDATED,
                     new Object[] { originalWsObject.getId(), originalWsObject });
@@ -1160,6 +1460,16 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
             LoggerSingleton.logError(e);
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE, e.getMessage());
         }
+    }
+    
+    private void saveVerificationScript() {        
+        IEditorInput input = verificationScriptEditor.getEditorInput();
+        IDocument document = verificationScriptEditor.getDocumentProvider().getDocument(input);
+        if (document != null) {
+            String script = document.get();
+            originalWsObject.setVerificationScript(script);
+        }
+        GroovyEditorUtil.saveEditor(scriptEditorPart);
     }
 
     public WebServiceRequestEntity getWSRequestObject() {
@@ -1203,7 +1513,19 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
     @Override
     @PreDestroy
     public void onClose() {
+        deleteTempScriptFile();
+        try {
+            GroovyEditorUtil.clearEditorProblems(verificationScriptEditor);
+        } catch (CoreException e) {
+            LoggerSingleton.logError(e);
+        }
         EventUtil.post(EventConstants.PROPERTIES_ENTITY, null);
+    }
+    
+    private void deleteTempScriptFile() {
+        IFileEditorInput input = (IFileEditorInput) verificationScriptEditor.getEditorInput();
+        IFile tempScriptFile = input.getFile();
+        tempScriptFile.getRawLocation().toFile().delete();
     }
 
     private WebElementPropertyEntity createBasicAuthHeaderElement() {
@@ -1340,7 +1662,9 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
         if (StringUtils.isBlank(authType)) {
             ccbAuthType.select(0);
         }
-        sComposite.setMinSize(mainComposite.computeSize(MIN_PART_WIDTH, SWT.DEFAULT));
+        
+        ui.getAuthorizationPartComposite().layout(true, true);
+//        sComposite.setMinSize(mainComposite.computeSize(MIN_PART_WIDTH, SWT.DEFAULT));
     }
 
     public void updateIconURL(String imageURL) {
@@ -1357,4 +1681,45 @@ public abstract class WebServicePart implements EventHandler, IComposerPartEvent
         dirtyable.setDirty(dirty);
     }
 
+    @Override
+    public List<MPart> getChildParts() {
+        return Arrays.asList(
+                    ui.getApiControlsPart(), 
+                    ui.getHeadersPart(), 
+                    ui.getAuthorizationPart(), 
+                    ui.getBodyPart(), 
+                    ui.getScriptEditorPart(),
+                    ui.getSnippetPart(),
+                    ui.getResponsePart()
+                );
+    }
+    
+    private class ToolBarForVerificationPart extends ToolBarForMPart {
+
+        public ToolBarForVerificationPart(MPart part) {
+            super(part);
+            ToolItem toolItem = new ToolItem(this, SWT.PUSH);
+            toolItem.setImage(null);
+            toolItem.setText(HIDE_SNIPPETS);
+            toolItem.addSelectionListener(new SelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    MPart snippetPart = ui.getSnippetPart();
+                    if (HIDE_SNIPPETS.equals(toolItem.getText())) {
+                        partService.hidePart(snippetPart, false);
+
+                        toolItem.setText(SHOW_SNIPPETS);
+                    } else {
+                        partService.activate(snippetPart);
+                        createSnippetComposite();
+
+                        toolItem.setText(HIDE_SNIPPETS);
+
+                        ui.getVerificationPartComposite().layout(true, true);
+                    }
+                }
+            });
+        }
+
+    }
 }

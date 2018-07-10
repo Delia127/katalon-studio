@@ -40,7 +40,10 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.greenrobot.eventbus.EventBus;
 
+import com.kms.katalon.application.usagetracking.TrackingEvent;
+import com.kms.katalon.application.usagetracking.UsageActionTrigger;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
@@ -68,6 +71,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestSuiteCollectionController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.core.application.Application;
+import com.kms.katalon.core.event.EventBusSingleton;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.dal.exception.DALException;
@@ -85,6 +89,7 @@ import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class GenerateCommandDialog extends AbstractDialog {
 
@@ -755,11 +760,13 @@ public class GenerateCommandDialog extends AbstractDialog {
         try {
             GeneratedCommandDialog generatedCommandDialog = new GeneratedCommandDialog(getShell(), generateCommand());
             generatedCommandDialog.open();
+            
+            Trackings.trackGenerateCmd();
         } catch (Exception e) {
             MessageDialog.openWarning(getShell(), StringConstants.WARN_TITLE, e.getMessage());
         }
     }
-
+    
     private void savePropertyFile(String fileLocation) throws Exception {
         if (isBlank(fileLocation)) {
             throw new Exception(StringConstants.DIA_MSG_PLS_SPECIFY_FILE_LOCATION);

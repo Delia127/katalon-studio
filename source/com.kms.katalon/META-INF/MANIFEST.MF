@@ -9,6 +9,7 @@ Bundle-Localization: plugin
 Export-Package: com.kms.katalon.composer.components,
  com.kms.katalon.composer.handlers,
  com.kms.katalon.composer.parts,
+ com.kms.katalon.composer.samples,
  com.kms.katalon.constants,
  com.kms.katalon.core.application
 Require-Bundle: org.eclipse.e4.core.di,
@@ -66,7 +67,11 @@ Require-Bundle: org.eclipse.e4.core.di,
  org.apache.commons.compress,
  com.kms.katalon.core.webui,
  com.kms.katalon.core.appium,
- com.kms.katalon.util
+ com.kms.katalon.util,
+ org.greenrobot.eventbus,
+ com.kms.katalon.tracking,
+ org.jsoup,
+ com.kms.katalon.integration.analytics
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Import-Package: 
