@@ -270,6 +270,18 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         updateDataStore();
         return super.performOk();
     }
+    
+    @Override
+    public boolean performCancel() {
+        try {
+            analyticsSettingStore.enableIntegration(isIntegratedSuccessfully());
+            IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
+            eventBroker.post(EventConstants.IS_INTEGRATED, isIntegratedSuccessfully());
+        } catch (IOException e) {
+            LoggerSingleton.logError(e);
+        }
+        return super.performCancel();
+    }
 
     @Override
     public void propertyChange(PropertyChangeEvent event) {
@@ -327,6 +339,8 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             if(!StringUtils.isEmpty(preferenceEmail) && !StringUtils.isEmpty(preferencePassword)){
                 txtEmail.setText(CryptoUtil.decode(CryptoUtil.getDefault(preferenceEmail)));
                 txtPassword.setText(CryptoUtil.decode(CryptoUtil.getDefault(preferencePassword)));
+                // empty preference store password
+                preferenceStore.setValue(ActivationPreferenceConstants.ACTIVATION_INFO_PASSWORD, StringUtils.EMPTY);
             }
             
         } catch (IOException | GeneralSecurityException e) {
@@ -362,7 +376,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     private boolean isIntegratedSuccessfully() {
         boolean isAnalyticsIntegrated = enableAnalyticsIntegration.getSelection();
-        if (isAnalyticsIntegrated && teams != null) {
+        if (isAnalyticsIntegrated && !teams.isEmpty()) {
             return true;
         } else {
             return false;

@@ -81,7 +81,6 @@ import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
-import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
@@ -777,6 +776,17 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
             tokenInfo[0] = AnalyticsApiProvider.getToken(serverUrl, analyticsEmail, analyticsPassword,
                     new ProgressMonitorDialog(shell), analyticsSettingStore);
         }
+        
+        // in case the stored credential info is wrong, token is null => prompt the user to re-enter info and re-get token
+        if (tokenInfo[0] == null){
+            AuthenticationDialog authenticationDialog = new AuthenticationDialog(shell, true);
+            int resultCode = authenticationDialog.open();
+            if (resultCode == AuthenticationDialog.CANCEL_ID) {
+                return;
+            }
+            tokenInfo[0] = authenticationDialog.getTokenInfo();
+            authenticationDialogOpened = true;
+        }
 
         teams = AnalyticsApiProvider.getTeams(serverUrl, analyticsEmail, analyticsPassword, tokenInfo[0],
                 new ProgressMonitorDialog(shell));
@@ -796,7 +806,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                     analyticsSettingStore.enableIntegration(false);
                     return;
                 }
-            } else if (authenticationDialogOpened) {
+            } else if (projectCount == 0 && teamCount == 1 && authenticationDialogOpened) {
                 // create default project and upload
                 createDefaultProject(analyticsSettingStore, serverUrl, teams.get(0), tokenInfo[0]);
                 analyticsSettingStore.enableIntegration(true);
@@ -813,11 +823,15 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                     return;
                 }
             }
-            Program.launch(
-                    ComposerReportMessageConstants.KA_HOMEPAGE + "teamId=" + analyticsSettingStore.getTeam().getId()
-                            + "&projectId=" + analyticsSettingStore.getProject().getId() + "&type=EXECUTION&token="
-                            + tokenInfo[0].getAccess_token());
-
+            if(analyticsSettingStore.getProject() != null && analyticsSettingStore.getTeam() != null){
+                Program.launch(
+                        ComposerReportMessageConstants.KA_HOMEPAGE + "teamId=" + analyticsSettingStore.getTeam().getId()
+                                + "&projectId=" + analyticsSettingStore.getProject().getId() + "&type=EXECUTION&token="
+                                + tokenInfo[0].getAccess_token());
+            } else {
+                analyticsSettingStore.enableIntegration(false);
+                return;
+            }
         } catch (Exception ex) {
             LoggerSingleton.logError(ex);
             MessageDialog.openError(Display.getCurrent().getActiveShell(), ComposerAnalyticsStringConstants.ERROR,
@@ -848,16 +862,15 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                         monitor.worked(1);
                     } catch (AnalyticsApiExeception | IOException ex) {
                         LoggerSingleton.logError(ex);
-                        MultiStatusErrorDialog.showErrorDialog(ex,
-                                ComposerReportMessageConstants.REPORT_ERROR_MSG_UNABLE_TO_UPLOAD_REPORT,
-                                ex.getMessage());
+                        MessageDialog.openError(Display.getCurrent().getActiveShell(), ComposerAnalyticsStringConstants.ERROR,
+                                ComposerReportMessageConstants.REPORT_ERROR_MSG_UNABLE_TO_UPLOAD_REPORT);
                     }
                 }
             });
         } catch (InvocationTargetException | InterruptedException ex) {
             LoggerSingleton.logError(ex);
-            MultiStatusErrorDialog.showErrorDialog(ex,
-                    ComposerReportMessageConstants.REPORT_ERROR_MSG_UNABLE_TO_UPLOAD_REPORT, ex.getMessage());
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), ComposerAnalyticsStringConstants.ERROR,
+                    ComposerReportMessageConstants.REPORT_ERROR_MSG_UNABLE_TO_UPLOAD_REPORT);
         }
     }
 
@@ -878,16 +891,15 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
                         monitor.worked(2);
                     } catch (AnalyticsApiExeception ex) {
                         LoggerSingleton.logError(ex);
-                        MultiStatusErrorDialog.showErrorDialog(ex,
-                                ComposerReportMessageConstants.REPORT_ERROR_MSG_UNABLE_TO_UPLOAD_REPORT,
-                                ex.getMessage());
+                        MessageDialog.openError(Display.getCurrent().getActiveShell(), ComposerAnalyticsStringConstants.ERROR,
+                                ComposerReportMessageConstants.REPORT_ERROR_MSG_UNABLE_TO_UPLOAD_REPORT);
                     }
                 }
             });
-        } catch (InvocationTargetException | InterruptedException ex) {
+        } catch (Exception ex) {
             LoggerSingleton.logError(ex);
-            MultiStatusErrorDialog.showErrorDialog(ex,
-                    ComposerReportMessageConstants.REPORT_ERROR_MSG_UNABLE_TO_UPLOAD_REPORT, ex.getMessage());
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), ComposerAnalyticsStringConstants.ERROR,
+                    ComposerReportMessageConstants.REPORT_ERROR_MSG_UNABLE_TO_UPLOAD_REPORT);
         }
     }
 

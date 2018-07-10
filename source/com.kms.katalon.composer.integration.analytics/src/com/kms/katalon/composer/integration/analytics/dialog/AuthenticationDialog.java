@@ -145,6 +145,8 @@ public class AuthenticationDialog extends Dialog {
         }
 
         gdLblPassword.exclude = !showPassword;
+        serverUrl.setEnabled(showPassword);
+        email.setEnabled(showPassword);
         lblPassword.setVisible(showPassword);
         gdPassword.exclude = !showPassword;
         password.setVisible(showPassword);
