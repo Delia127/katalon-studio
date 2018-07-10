@@ -67,12 +67,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
-import org.greenrobot.eventbus.EventBus;
 import org.osgi.framework.Bundle;
 import org.osgi.service.event.EventHandler;
 
-import com.kms.katalon.application.usagetracking.TrackingEvent;
-import com.kms.katalon.application.usagetracking.UsageActionTrigger;
 import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.control.Dropdown;
@@ -122,7 +119,6 @@ import com.kms.katalon.constants.GlobalMessageConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.core.event.EventBusSingleton;
 import com.kms.katalon.core.model.FailureHandling;
 import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.core.util.internal.JsonUtil;
@@ -757,7 +753,9 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         Menu addMenu = new Menu(tltmAddStep.getParent().getShell());
         tltmAddStep.setData(addMenu);
         TestCaseMenuUtil.fillActionMenu(TreeTableMenuItemConstants.AddAction.Add, selectionListener, addMenu,
-                new int[] { TreeTableMenuItemConstants.METHOD_MENU_ITEM_ID });
+                new int[] { TreeTableMenuItemConstants.METHOD_MENU_ITEM_ID,
+                        TreeTableMenuItemConstants.getBuildInKeywordID("Mobile"),
+                        TreeTableMenuItemConstants.getBuildInKeywordID("WS") });
 
         tltmRecent = new ToolItem(toolbar, SWT.DROP_DOWN);
         tltmRecent.setText(ComposerTestcaseMessageConstants.PA_BTN_TIP_RECENT);
