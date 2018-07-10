@@ -111,7 +111,7 @@ class KURecorder {
                 }
                 this.window.removeEventListener("message", listener, false);
             }
-            register.call(this);
+            unregister.call(this);
         } else {
             function unregister() {
                 var listener = function (event) {
@@ -119,7 +119,7 @@ class KURecorder {
                 }
                 this.window.detachEvent("message", listener);
             }
-            register.call(this);
+            unregister.call(this);
         }
         this.rec_removeInfoDiv();
         this.rec_clearHoverElement();
