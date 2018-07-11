@@ -556,7 +556,7 @@ public class TestSuitePartTestCaseView {
         kaComposite.setLayout(new GridLayout(1, false));
         
         btnViewHistory = new Button(kaComposite, SWT.NONE);
-        btnViewHistory.setText("View Execution History");
+        btnViewHistory.setText(ComposerTestcaseMessageConstants.BTN_TESTCASEHISTORY);
         btnViewHistory.setVisible(analyticsReportService.isIntegrationEnabled());
         btnViewHistory.addSelectionListener(new SelectionAdapter() {
             @Override

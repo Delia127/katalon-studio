@@ -260,18 +260,18 @@ public class ActivationDialog extends Dialog {
     
     public void setInitialKASettings() {
         ScopedPreferenceStore preferenceStore = getPreferenceStore();
-        try {
-            String email = CryptoUtil.encode(CryptoUtil.getDefault(txtUserName.getText()));
-            String password =  CryptoUtil.encode(CryptoUtil.getDefault(txtPassword.getText()));
-            preferenceStore.setValue(ActivationPreferenceConstants.ACTIVATION_INFO_EMAIL,
-                    email);
-            preferenceStore.setValue(ActivationPreferenceConstants.ACTIVATION_INFO_PASSWORD,
-                   password);
-        } catch (UnsupportedEncodingException e1) {
-            e1.printStackTrace();
-        } catch (GeneralSecurityException e1) {
-            e1.printStackTrace();
-        }        
+
+            String email;
+            try {
+                email = CryptoUtil.encode(CryptoUtil.getDefault(txtUserName.getText()));
+                String password =  CryptoUtil.encode(CryptoUtil.getDefault(txtPassword.getText()));
+                preferenceStore.setValue(ActivationPreferenceConstants.ACTIVATION_INFO_EMAIL,
+                        email);
+                preferenceStore.setValue(ActivationPreferenceConstants.ACTIVATION_INFO_PASSWORD,
+                       password);
+            } catch (UnsupportedEncodingException | GeneralSecurityException e1) {
+                LoggerSingleton.logError(e1);
+            }
 
         try {
             preferenceStore.save();

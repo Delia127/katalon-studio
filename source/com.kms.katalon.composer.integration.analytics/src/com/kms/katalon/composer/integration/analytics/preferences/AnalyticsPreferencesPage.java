@@ -256,13 +256,13 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         }
         if (cbbTeams.getSelectionIndex() == -1){
             MessageDialog.openError(Display.getCurrent().getActiveShell(), ComposerAnalyticsStringConstants.ERROR,
-                    ComposerIntegrationAnalyticsMessageConstants.MUST_CONNECT_SUCCESSFULLY);
+                    ComposerIntegrationAnalyticsMessageConstants.REPORT_MSG_MUST_CONNECT_SUCCESSFULLY);
             return false;
         }
         
         if (StringUtils.isEmpty(txtEmail.getText()) || StringUtils.isEmpty(txtPassword.getText()) || StringUtils.isEmpty(txtServerUrl.getText())){
             MessageDialog.openError(Display.getCurrent().getActiveShell(), ComposerAnalyticsStringConstants.ERROR,
-                    ComposerIntegrationAnalyticsMessageConstants.MUST_ENTER_REQUIRED_INFORMATION);
+                    ComposerIntegrationAnalyticsMessageConstants.REPORT_MSG_MUST_ENTER_REQUIRED_INFORMATION);
             return false;
         }
             
@@ -376,11 +376,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     private boolean isIntegratedSuccessfully() {
         boolean isAnalyticsIntegrated = enableAnalyticsIntegration.getSelection();
-        if (isAnalyticsIntegrated && !teams.isEmpty()) {
-            return true;
-        } else {
-            return false;
-        }
+        return isAnalyticsIntegrated && !teams.isEmpty();
     }
 
     private void updateDataStore() {
@@ -423,7 +419,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                 String password = txtPassword.getText();
                 if (StringUtils.isEmpty(serverUrl) || StringUtils.isEmpty(email)|| StringUtils.isEmpty(password)){
                     MessageDialog.openError(Display.getCurrent().getActiveShell(), ComposerAnalyticsStringConstants.ERROR,
-                            ComposerIntegrationAnalyticsMessageConstants.MUST_ENTER_REQUIRED_INFORMATION);
+                            ComposerIntegrationAnalyticsMessageConstants.REPORT_MSG_MUST_ENTER_REQUIRED_INFORMATION);
                     return;
                 }
                 cbbTeams.setItems();

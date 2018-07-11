@@ -15,6 +15,7 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
@@ -41,6 +42,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
 import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
 import com.kms.katalon.integration.analytics.constants.IntegrationAnalyticsMessages;
@@ -72,6 +74,8 @@ public class AnalyticsApiProvider {
     private static final String OAUTH2_CLIENT_ID = "kit_uploader";
 
     private static final String OAUTH2_CLIENT_SECRET = "kit_uploader";
+    
+    private static AnalyticsTokenInfo tokenInfo;
 
     public static AnalyticsTokenInfo requestToken(String serverUrl, String email, String password)
             throws AnalyticsApiExeception {
@@ -170,7 +174,7 @@ public class AnalyticsApiProvider {
         } catch (InvocationTargetException exception) {
             final Throwable cause = exception.getCause();
             if (cause instanceof AnalyticsApiExeception) {
-                MessageDialog.openError(monitorDialog.getShell(), IntegrationAnalyticsMessages.ERROR,
+                MessageDialog.openError(monitorDialog.getShell(), GlobalStringConstants.ERROR,
                         cause.getMessage());
             } else {
                 LoggerSingleton.logError(cause);
@@ -208,7 +212,7 @@ public class AnalyticsApiProvider {
         } catch (InvocationTargetException exception) {
             final Throwable cause = exception.getCause();
             if (cause instanceof AnalyticsApiExeception) {
-                MessageDialog.openError(monitorDialog.getShell(), IntegrationAnalyticsMessages.ERROR,
+                MessageDialog.openError(monitorDialog.getShell(), GlobalStringConstants.ERROR,
                         cause.getMessage());
             } else {
                 LoggerSingleton.logError(cause);
@@ -222,7 +226,6 @@ public class AnalyticsApiProvider {
     public static AnalyticsTokenInfo getToken(String serverUrl, String email, String password,
             ProgressMonitorDialog monitorDialog, AnalyticsSettingStore settingStore) {
 
-        final AnalyticsTokenInfo[] tokenInfo = new AnalyticsTokenInfo[1];
         try {
             boolean encryptionEnabled = true;
             monitorDialog.run(true, false, new IRunnableWithProgress() {
@@ -230,15 +233,15 @@ public class AnalyticsApiProvider {
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                     try {
                         monitor.beginTask(IntegrationAnalyticsMessages.MSG_DLG_PRG_CONNECTING_TO_SERVER, 2);
-                        tokenInfo[0] = AnalyticsApiProvider.requestToken(serverUrl, email, password);
-                        settingStore.setToken(tokenInfo[0].getAccess_token(), encryptionEnabled);
+                        tokenInfo = AnalyticsApiProvider.requestToken(serverUrl, email, password);
+                        settingStore.setToken(tokenInfo.getAccess_token(), encryptionEnabled);
                         monitor.worked(1);
                     } catch (Exception e) {
                         throw new InvocationTargetException(e);
                     }
                 }
             });
-            return tokenInfo[0];
+            return tokenInfo;
         } catch (Exception ex) {
             // show error dialog
             LoggerSingleton.logError(ex);
@@ -248,7 +251,7 @@ public class AnalyticsApiProvider {
             } catch (IOException | GeneralSecurityException e) {
                 LoggerSingleton.logError(e);
             }
-            MessageDialog.openError(monitorDialog.getShell(), IntegrationAnalyticsMessages.ERROR,
+            MessageDialog.openError(monitorDialog.getShell(), GlobalStringConstants.ERROR,
                     IntegrationAnalyticsMessages.MSG_REQUEST_TOKEN_ERROR);
         }
         return null;
@@ -260,9 +263,8 @@ public class AnalyticsApiProvider {
         return names;
     }
 
-    public static List<String> getTeamNames(List<AnalyticsTeam> projects) {
-        List<String> names = new ArrayList<>();
-        projects.forEach(p -> names.add(p.getName()));
+    public static List<String> getTeamNames(List<AnalyticsTeam> teams) {
+        List<String> names = teams.stream().map(t -> t.getName()).collect(Collectors.toList());
         return names;
     }
 
@@ -277,6 +279,7 @@ public class AnalyticsApiProvider {
                     AnalyticsProject p = projects.get(i);
                     if (p.getId() == storedProject.getId()) {
                         selectionIndex = i;
+                        return selectionIndex;
                     }
                 }
             }
