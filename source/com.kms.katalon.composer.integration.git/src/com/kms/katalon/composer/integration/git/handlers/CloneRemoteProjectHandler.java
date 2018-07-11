@@ -57,6 +57,7 @@ import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.tracking.service.Trackings;
 
 @SuppressWarnings("restriction")
 public class CloneRemoteProjectHandler {
@@ -91,6 +92,8 @@ public class CloneRemoteProjectHandler {
 
                         SampleRemoteProject sample = (SampleRemoteProject) objects[0];
                         projectInfo = (ProjectEntity) objects[1];
+                        
+                        Trackings.trackCreatingSampleProject(sample.getName());
 
                         File workdir = new File(projectInfo.getFolderLocation(), projectInfo.getName());
                         workdir.mkdirs();
