@@ -345,9 +345,8 @@ public class WelcomeRightPart extends Composite {
                                     if (dialog.open() != NewSampleRemoteProjectDialog.OK) {
                                         return;
                                     }
-                                    String projectLocation = dialog.getSelectedProjectLocation();
                                     eventBroker.post(EventConstants.GIT_CLONE_REMOTE_PROJECT,
-                                            new Object[] { sample, projectLocation });
+                                            new Object[] { sample, dialog.getProjectInfo() });
                                 }
                             });
                     composites.add(latestComposite);
