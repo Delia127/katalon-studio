@@ -213,13 +213,7 @@ public class RecordHandler {
                                     testCasePart.addStatements(children, NodeAddType.Add, true);
                                     testCasePart.addVariables(variables);
                                 } else {
-                                    BlockStatementWrapper block = testCaseCompositePart.getChildTestCasePart()
-                                            .getTreeTableInput()
-                                            .getMainClassNode()
-                                            .getRunMethod()
-                                            .getBlock();
-                                    block.clearStaments();
-                                    // append generated steps at the end of test case's steps
+                                    testCasePart.clearStatements();
                                     testCasePart.addStatements(children, NodeAddType.Add, true);
                                     testCasePart.deleteVariables(Arrays.asList(testCasePart.getVariables()));
                                     testCasePart.addVariables(variables);

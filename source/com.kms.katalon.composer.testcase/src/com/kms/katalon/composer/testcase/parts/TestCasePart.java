@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.testcase.parts;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -204,6 +205,15 @@ public class TestCasePart extends CPart implements EventHandler, ITestCasePart {
             LoggerSingleton.logError(e);
         }
         return false;
+    }
+
+    public void clearStatements() {
+        getTreeTableInput().getMainClassNode().getRunMethod().getBlock().clearStaments();
+        try {
+            getTreeTableInput().reloadTreeTableNodes();
+        } catch (InvocationTargetException | InterruptedException e) {
+            LoggerSingleton.logError(e);
+        }
     }
 
     public void addStatements(List<StatementWrapper> statements, NodeAddType addType) {
