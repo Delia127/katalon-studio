@@ -9,11 +9,12 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
-import org.eclipse.ui.PlatformUI;
 
+import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.constants.StringConstants;
+import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 
 public class GeneralPreferencePage extends PreferencePage {
     private Button radioAutoRestorePrevSession;
@@ -59,7 +60,7 @@ public class GeneralPreferencePage extends PreferencePage {
     @Override
     public IPreferenceStore getPreferenceStore() {
         // Use public workbench preferences
-        return PlatformUI.getPreferenceStore();
+        return PreferenceStoreManager.getPreferenceStore(IdConstants.KATALON_GENERAL_BUNDLE_ID);
     }
 
     private void initialize() {

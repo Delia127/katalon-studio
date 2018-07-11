@@ -8,6 +8,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -70,6 +71,7 @@ import com.kms.katalon.composer.integration.git.components.wizards.CustomSourceB
 import com.kms.katalon.composer.integration.git.constants.GitStringConstants;
 import com.kms.katalon.composer.keyword.constants.GitEventConstants;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.tracking.service.Trackings;
 
 @SuppressWarnings("restriction")
 public class CustomGitCloneWizard extends Wizard {
@@ -232,6 +234,7 @@ public class CustomGitCloneWizard extends Wizard {
      * @throws Exception 
      */
     protected boolean performClone(GitRepositoryInfo gitRepositoryInfo) throws Exception {
+        Trackings.trackImportKeywords("git");
         URIish uri = new URIish(gitRepositoryInfo.getCloneUri());
         UserPasswordCredentials credentials = gitRepositoryInfo.getCredentials();
         setWindowTitle(NLS.bind(UIText.GitCloneWizard_jobName, uri.toString()));
@@ -466,7 +469,10 @@ public class CustomGitCloneWizard extends Wizard {
                 if (!event.getResult().isOK()) {
                     return;
                 }
-                EventBrokerSingleton.getInstance().getEventBroker().post(GitEventConstants.KEYWORD_CLONE_FINISHED, destination);
+                HashMap<String, String> repInfo = new HashMap<>();
+                repInfo.put(GitEventConstants.REPO_URL, repositoryInfo.getCloneUri());
+                repInfo.put(GitEventConstants.COMMIT_ID, validSource.getHEAD().getObjectId().getName());
+                EventBrokerSingleton.getInstance().getEventBroker().post(GitEventConstants.KEYWORD_CLONE_FINISHED, repInfo);
             }
         });
         job.setUser(true);

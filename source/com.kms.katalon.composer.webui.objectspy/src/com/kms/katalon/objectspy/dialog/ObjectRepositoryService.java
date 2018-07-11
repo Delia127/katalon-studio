@@ -23,11 +23,11 @@ import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.objectspy.dialog.SaveToObjectRepositoryDialog.ConflictOptions;
 import com.kms.katalon.objectspy.dialog.SaveToObjectRepositoryDialog.SaveToObjectRepositoryDialogResult;
+import com.kms.katalon.objectspy.element.ConflictWebElementWrapper;
 import com.kms.katalon.objectspy.element.WebElement;
 import com.kms.katalon.objectspy.element.WebElement.WebElementType;
 import com.kms.katalon.objectspy.element.WebFrame;
 import com.kms.katalon.objectspy.element.WebPage;
-import com.kms.katalon.objectspy.element.ConflictWebElementWrapper;
 import com.kms.katalon.objectspy.util.WebElementUtils;
 
 public class ObjectRepositoryService {
@@ -48,8 +48,13 @@ public class ObjectRepositoryService {
                 }
             }
         }
-
-        return new SaveActionResult(testObjectIds, newSelectionOnExplorer);
+        
+        int savedObjectCount = dialogResult.getEntitySavedMap().size();
+        if (!dialogResult.isCreateFolderAsPageNameAllowed()) {
+            savedObjectCount -= dialogResult.getAllSelectedPages().size();
+        }
+        
+        return new SaveActionResult(testObjectIds, newSelectionOnExplorer, savedObjectCount);
     }
 
     private Set<ITreeEntity> addNonConflictedWebElement(WebPage pageElement, WebElement selectedWebElement, SaveToObjectRepositoryDialogResult dialogResult) throws Exception {
@@ -142,7 +147,7 @@ public class ObjectRepositoryService {
         ConflictOptions selectedConflictOption = dialogResult.getSelectedConflictOption();
         Map<WebElement, FileEntity> entitySavedMap = dialogResult.getEntitySavedMap();
         
-        WebElement newWebElement = ((ConflictWebElementWrapper) wrapElement).getOriginalWebElement();
+        WebElement newWebElement = ((ConflictWebElementWrapper) wrapElement).getOriginalWebElement().clone();
 
         // Build destination folder path.
         String folderPath = ProjectController.getInstance().getCurrentProject().getFolderLocation() + File.separator
@@ -172,25 +177,24 @@ public class ObjectRepositoryService {
                             WebElementUtils.convertWebElementToTestObject(newWebElement, null, conflictedFolderEntity),
                             conflictedFolderEntity);
 
-                    entitySavedMap.put(newWebElement, importedWebElement);
+                    entitySavedMap.put(wrapElement.getOriginalWebElement(), importedWebElement);
                     break;
 
                 case REPLACE_EXISTING_OBJECT:
                     oldWebElementEntity.setWebElementProperties(newWebElement.getProperties());
-                    entitySavedMap.put(newWebElement, oldWebElementEntity);
+                    entitySavedMap.put(wrapElement.getOriginalWebElement(), oldWebElementEntity);
                     break;
 
                 case MERGE_CHANGE_TO_EXISTING_OBJECT:
-                    Set<WebElementPropertyEntity> mergedProperties = new LinkedHashSet();
+                    Set<WebElementPropertyEntity> mergedProperties = new LinkedHashSet<>();
                     mergedProperties.addAll(newWebElement.getProperties());
-                    
                     //uncheck all properties of old web element.
                     for(WebElementPropertyEntity wProperty: oldWebElementEntity.getWebElementProperties()) {
                         wProperty.setIsSelected(false);
                     }
                     mergedProperties.addAll(oldWebElementEntity.getWebElementProperties());
                     oldWebElementEntity.setWebElementProperties(new ArrayList<>(mergedProperties));
-                    entitySavedMap.put(newWebElement, oldWebElementEntity);
+                    entitySavedMap.put(wrapElement.getOriginalWebElement(), oldWebElementEntity);
                     break;
 
                 default:
@@ -215,11 +219,15 @@ public class ObjectRepositoryService {
         List<Object[]> updatedTestObjectIds;
 
         Set<ITreeEntity> newSelectionOnExplorer;
+        
+        int savedObjectCount;
 
         public SaveActionResult(List<Object[]> updatedTestObjectIds,
-                Set<ITreeEntity> newSelectionOnExplorer) {
+                Set<ITreeEntity> newSelectionOnExplorer,
+                int savedObjectCount) {
             this.updatedTestObjectIds = updatedTestObjectIds;
             this.newSelectionOnExplorer = newSelectionOnExplorer;
+            this.savedObjectCount = savedObjectCount;
         }
 
         public List<Object[]> getUpdatedTestObjectIds() {
@@ -228,6 +236,10 @@ public class ObjectRepositoryService {
 
         public Set<ITreeEntity> getNewSelectionOnExplorer() {
             return newSelectionOnExplorer;
+        }
+        
+        public int getSavedObjectCount() {
+            return savedObjectCount;
         }
     }
 

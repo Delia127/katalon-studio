@@ -59,7 +59,6 @@ import com.kms.katalon.objectspy.constants.StringConstants;
 import com.kms.katalon.objectspy.element.ConflictWebElementWrapper;
 import com.kms.katalon.objectspy.element.WebElement;
 import com.kms.katalon.objectspy.element.WebElement.WebElementType;
-import com.kms.katalon.objectspy.element.WebFrame;
 import com.kms.katalon.objectspy.element.WebPage;
 import com.kms.katalon.objectspy.element.tree.CheckboxTreeSelectionHelper;
 import com.kms.katalon.objectspy.element.tree.ConflictStatusWebElementLabelProvider;
@@ -105,6 +104,8 @@ public class SaveToObjectRepositoryDialog extends TreeEntitySelectionDialog {
     private CheckboxTreeSelectionHelper checkboxSelectionHelper = null;
 
     private final int HIGHLIGHTED_LENGTH = "Highlighted".length();
+    
+    private int selectedHtmlElementCount = 0;
     
     public SaveToObjectRepositoryDialog(Shell parentShell, boolean isCheckable, List<WebPage> pages,
             Object[] expandedHTMLElements) {
@@ -455,6 +456,8 @@ public class SaveToObjectRepositoryDialog extends TreeEntitySelectionDialog {
                         MessageDialog.openWarning(getParentShell(), StringConstants.WARN,
                                 StringConstants.DIA_MSG_PLS_SELECT_ELEMENT);
                         return;
+                    } else {
+                        selectedHtmlElementCount = checkedHTMLElements.length;
                     }
 
                     removeUncheckedElements(wrapConflictStatusPages);
@@ -561,7 +564,7 @@ public class SaveToObjectRepositoryDialog extends TreeEntitySelectionDialog {
     public SaveToObjectRepositoryDialogResult getDialogResult() throws Exception {
         SaveToObjectRepositoryDialogResult dialogResult = new SaveToObjectRepositoryDialogResult(
                 createFolderAsPageNameAllowed, getClonePages(), (FolderTreeEntity) getFirstResult(),
-                selectedConflictOptions);
+                selectedConflictOptions, selectedHtmlElementCount);
         return dialogResult;
     }
 
@@ -599,14 +602,17 @@ public class SaveToObjectRepositoryDialog extends TreeEntitySelectionDialog {
         private ConflictOptions selectedConflictOption;
 
         private Map<WebElement, FileEntity> entitySavedMap;
+        
+        private int selectedHtmlElementCount;
 
         public SaveToObjectRepositoryDialogResult(boolean createFolderAsPageNameAllowed, List<ConflictWebElementWrapper> selectedPages,
-                FolderTreeEntity selectedParentFolder, ConflictOptions selectedConflictOption) {
+                FolderTreeEntity selectedParentFolder, ConflictOptions selectedConflictOption, int selectedHtmlElementCount) {
 
             this.createFolderAsPageNameAllowed = createFolderAsPageNameAllowed;
             this.selectedParentFolder = selectedParentFolder;
             this.allSelectedPages = selectedPages;
             this.selectedConflictOption = selectedConflictOption;
+            this.selectedHtmlElementCount = selectedHtmlElementCount;
             entitySavedMap = new HashMap<>();
         }
 
@@ -628,6 +634,10 @@ public class SaveToObjectRepositoryDialog extends TreeEntitySelectionDialog {
 
         public Map<WebElement, FileEntity> getEntitySavedMap() {
             return entitySavedMap;
+        }
+        
+        public int getSelectedHtmlElementCount() {
+            return selectedHtmlElementCount;
         }
     }
 }

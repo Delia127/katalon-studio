@@ -7,16 +7,12 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.ui.di.UISynchronize;
-import org.greenrobot.eventbus.EventBus;
 
-import com.kms.katalon.application.usagetracking.TrackingEvent;
-import com.kms.katalon.application.usagetracking.UsageActionTrigger;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.exceptions.JobCancelException;
 import com.kms.katalon.composer.execution.handlers.AbstractExecutionHandler;
 import com.kms.katalon.composer.execution.launcher.IDELauncher;
-import com.kms.katalon.core.event.EventBusSingleton;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.execution.configuration.IRunConfiguration;
 import com.kms.katalon.execution.entity.TestCaseExecutedEntity;
@@ -24,6 +20,7 @@ import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class ExecuteTestCaseJob extends Job {
     protected final UISynchronize sync;
@@ -60,7 +57,7 @@ public class ExecuteTestCaseJob extends Job {
 
             startLauncher();
             
-            sendEventsForTracking();
+            Trackings.trackExecuteTestCase(launchMode.toString());
             
             monitor.worked(1);
 
@@ -82,11 +79,6 @@ public class ExecuteTestCaseJob extends Job {
 //            UsageInfoCollector
 //                    .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.RUN_SCRIPT, RunningMode.GUI));
         }
-    }
-    
-    private void sendEventsForTracking() {
-        EventBus eventBus = EventBusSingleton.getInstance().getEventBus();
-        eventBus.post(new TrackingEvent(UsageActionTrigger.EXECUTE_TEST_CASE, launchMode.toString()));
     }
 
     protected void startLauncher() {

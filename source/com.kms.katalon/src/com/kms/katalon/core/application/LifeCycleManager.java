@@ -4,6 +4,8 @@ import static com.kms.katalon.composer.components.log.LoggerSingleton.logError;
 import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
 
 import java.io.IOException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.core.filesystem.IFileInfo;
 import org.eclipse.core.resources.IProject;
@@ -27,7 +29,7 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.addons.CommandBindingRemover;
-import com.kms.katalon.application.RunningMode;
+import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
@@ -41,12 +43,13 @@ import com.kms.katalon.composer.initializer.CommandBindingInitializer;
 import com.kms.katalon.composer.initializer.ContentAssistProposalInitializer;
 import com.kms.katalon.composer.initializer.DefaultTextFontInitializer;
 import com.kms.katalon.composer.initializer.DisplayInitializer;
-import com.kms.katalon.composer.initializer.GeneralSettingInitializer;
 import com.kms.katalon.composer.initializer.ProblemViewImageInitializer;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
-import com.kms.katalon.tracking.facade.TrackingFacade;
+import com.kms.katalon.tracking.core.TrackingManager;
+import com.kms.katalon.tracking.service.Trackings;
 import com.kms.katalon.util.ComposerActivationInfoCollector;
 
 @SuppressWarnings("restriction")
@@ -128,7 +131,6 @@ public class LifeCycleManager {
         new ProblemViewImageInitializer().setup();
         new DefaultTextFontInitializer().setup();
         new DisplayInitializer().setup();
-        new GeneralSettingInitializer().setup();
         
         EventBus.builder().installDefaultEventBus();
     }
@@ -180,8 +182,7 @@ public class LifeCycleManager {
                 try {
                     startUpGUIMode();
             
-                    TrackingFacade trackingFacade = new TrackingFacade();
-                    trackingFacade.init(RunningMode.GUI);
+                    scheduleCollectingStatistics();
                     
                     if (checkActivation(eventBroker)) {
                         eventBroker.post(EventConstants.ACTIVATION_CHECKED, null);
@@ -208,6 +209,14 @@ public class LifeCycleManager {
 //                sendEventForTracking();
                 
                 return true;
+            }
+            
+            private void scheduleCollectingStatistics() {
+                int trackingTime = TrackingManager.getInstance().getTrackingTime();
+                Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
+                    Trackings.trackProjectStatistics(ProjectController.getInstance().getCurrentProject(), 
+                            !ActivationInfoCollector.isActivated(), "gui");
+                }, trackingTime, trackingTime, TimeUnit.SECONDS);
             }
         });
     }

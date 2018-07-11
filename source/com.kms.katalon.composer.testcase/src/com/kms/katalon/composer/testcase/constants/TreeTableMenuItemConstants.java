@@ -57,6 +57,10 @@ public class TreeTableMenuItemConstants {
 	public static final int METHOD_MENU_ITEM_ID = 72;
 	
 	public static final int CHANGE_FAILURE_HANDLING_MENU_ITEM_ID = 128;
+	
+	public static final int RUN_FROM_THIS_STEP_ID = 256;
+	public static final int RUN_SELECTED_STEPS_ID = 257;
+
 	public static final String FAILURE_HANDLING_KEY = "FAILURE_HANDLING_KEY";
 
 	public static final String ASSERT_STATEMENT_MENU_ITEM_LABEL = StringConstants.TREE_ASSERT_STATEMENT;
@@ -104,6 +108,10 @@ public class TreeTableMenuItemConstants {
 	
 	public static boolean isBuildInKeywordID(int id) {
 	    return (id >= BUILTIN_KEYWORD_MENU_ITEM_ID) && (id < BUILTIN_KEYWORD_MENU_ITEM_ID + keywordClassOffsets.size());
+	}
+	
+	public static int getBuildInKeywordID(String aliasName) {
+	    return BUILTIN_KEYWORD_MENU_ITEM_ID + keywordClassOffsets.get(aliasName);
 	}
 	
 	public static String getContributingClassName(int id) {

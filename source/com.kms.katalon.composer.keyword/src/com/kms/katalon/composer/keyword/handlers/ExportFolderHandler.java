@@ -1,6 +1,9 @@
 package com.kms.katalon.composer.keyword.handlers;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -29,6 +32,7 @@ import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class ExportFolderHandler {
 
@@ -65,6 +69,7 @@ public class ExportFolderHandler {
 
             File exportedFolder = new File(selectedOutputPath);
             if (exportedFolder != null && exportedFolder.exists() && exportedFolder.isDirectory()) {
+                Trackings.trackExportKeywords();
                 exportKeywordsDirectory(shell, selectedObjects[0], exportedFolder);
             }
 
@@ -83,37 +88,51 @@ public class ExportFolderHandler {
         execute(Display.getCurrent().getActiveShell());
     }
 
-    private void exportKeywordsDirectory(Shell shell, Object selectedTreeEntity, File exportedFolder) throws Exception {
+    private void exportKeywordsDirectory(Shell shell, Object selectedTreeEntity, File selectedExportFolder) throws Exception {
         ITreeEntity keywordRootFolder = new FolderTreeEntity(
                 FolderController.getInstance().getKeywordRoot(ProjectController.getInstance().getCurrentProject()),
                 null);
         
         // Destination folder
-        FolderEntity outputFolder = FolderController.getInstance().getFolder(exportedFolder.getAbsolutePath());
-        outputFolder.setFolderType(FolderType.KEYWORD);
-        outputFolder.setName(exportedFolder.getName());
-        FolderEntity parentFolder = FolderController.getInstance()
-                .getFolder(exportedFolder.getParentFile().getAbsolutePath());
-        parentFolder.setName(exportedFolder.getParentFile().getAbsolutePath());
-        outputFolder.setParentFolder(parentFolder);
-
+        FolderEntity outputFolder = null;
+        FolderEntity parentOutputFolder = null;;
         FolderEntity sourceFolder = null;
-
+        String exportedFolderPath = "";
+        boolean isExportPackageLevel = selectedTreeEntity instanceof PackageTreeEntity;
+        
         // Source folder
-        if (selectedTreeEntity instanceof PackageTreeEntity) {
+        if (isExportPackageLevel) {
             String packageName = ((PackageTreeEntity) selectedTreeEntity).getPackageName();
+            exportedFolderPath = selectedExportFolder.getAbsolutePath() + File.separator + packageName.substring(0,packageName.indexOf(DOT_DILIMETER));
+            Path outputFolderPath = createFolderTreeBasePackageName(selectedExportFolder, packageName);
+            outputFolder = FolderController.getInstance().getFolder(outputFolderPath.toString());
+            outputFolder.setFolderType(FolderType.KEYWORD);
+            outputFolder.setName(outputFolderPath.getFileName().toString());
+            
+            parentOutputFolder = FolderController.getInstance().getFolder(outputFolderPath.getParent().toString());
+            parentOutputFolder.setName(outputFolderPath.getParent().toString());
+            
             String path = FolderController.getInstance()
                     .getKeywordRoot(ProjectController.getInstance().getCurrentProject())
                     .getLocation() + File.separator + packageName.replace(DOT_DILIMETER, File.separator);
 
             sourceFolder = FolderController.getInstance().getFolder(path);
             sourceFolder.setFolderType(FolderType.KEYWORD);
-            sourceFolder.setName(packageName.substring(packageName.lastIndexOf(DOT_DILIMETER) + 1, packageName.length()));       
+            sourceFolder.setName(packageName.substring(packageName.lastIndexOf(DOT_DILIMETER) + 1, packageName.length()));
             sourceFolder.setParentFolder(FolderController.getInstance().getFolder(new File(path).getParent()));
-        } else {
-                sourceFolder = (FolderEntity)keywordRootFolder.getObject();
-        }
 
+        } else {
+            outputFolder = FolderController.getInstance().getFolder(selectedExportFolder.getAbsolutePath());
+            outputFolder.setFolderType(FolderType.KEYWORD);
+            outputFolder.setName(selectedExportFolder.getName());
+            
+            exportedFolderPath = outputFolder.getLocation();
+            parentOutputFolder = FolderController.getInstance().getFolder(selectedExportFolder.getParentFile().getAbsolutePath());
+            parentOutputFolder.setName(selectedExportFolder.getParentFile().getAbsolutePath());
+            sourceFolder = (FolderEntity) keywordRootFolder.getObject();
+        }
+        
+        outputFolder.setParentFolder(parentOutputFolder);
         FolderEntity copiedFolder = FolderController.getInstance().copyFolder(sourceFolder, outputFolder);
 
         eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, keywordRootFolder);
@@ -125,12 +144,26 @@ public class ExportFolderHandler {
         String osName = System.getProperty("os.name");
         String finalCommand = "";
         
+        String appendOpenExportFolderPath = "";
+        if (!isExportPackageLevel) {
+            appendOpenExportFolderPath = File.separator + copiedFolder.getName();
+        }
+        
         if (osName == null || osName.toLowerCase().contains("win")) {
-            finalCommand = OPEN_CONTAINING_FOLDER_WINDOW_CMD + outputFolder.getLocation() + File.separator + copiedFolder.getName();
+            finalCommand = OPEN_CONTAINING_FOLDER_WINDOW_CMD + exportedFolderPath + appendOpenExportFolderPath ;
         } else {
-            finalCommand = OPEN_CONTAINING_FOLDER_MACOS_CMD + outputFolder.getLocation() + File.separator + copiedFolder.getName();
+            finalCommand = OPEN_CONTAINING_FOLDER_MACOS_CMD + exportedFolderPath + appendOpenExportFolderPath;
         }
         
         Runtime.getRuntime().exec(finalCommand);
+    }
+    
+    private Path createFolderTreeBasePackageName(File parentFolder, String packageName) throws Exception {
+        //remove the last level folder.
+        packageName = packageName.substring(0, packageName.lastIndexOf(DOT_DILIMETER));
+        String relativePath = packageName.replace(DOT_DILIMETER, File.separator);
+        String absolutePath = parentFolder.getAbsolutePath() + File.separator + relativePath;
+        Path path = Paths.get(absolutePath);
+        return Files.createDirectories(path);
     }
 }

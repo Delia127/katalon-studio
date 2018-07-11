@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ASCII"?>
-<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_kki10FroEeaUtN11XiUV6w">
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_kki10FroEeaUtN11XiUV6w">
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_uHaoUFrqEeaUtN11XiUV6w" featurename="handlers" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Handler" xmi:id="_UL4QkGT0EeaO3oYZQbbJmA" elementId="com.kms.katalon.composer.integration.git.handler.clone" contributionURI="bundleclass://com.kms.katalon.composer.integration.git/com.kms.katalon.composer.integration.git.handlers.CloneHandler" command="_STUzgGT0EeaO3oYZQbbJmA"/>
     <elements xsi:type="commands:Handler" xmi:id="_0Uq0wFrqEeaUtN11XiUV6w" elementId="com.kms.katalon.composer.integration.git.handler.shareProject" contributionURI="bundleclass://com.kms.katalon.composer.integration.git/com.kms.katalon.composer.integration.git.handlers.ShareProjectHandler" command="_8Ep_QFrqEeaUtN11XiUV6w"/>
@@ -37,5 +37,8 @@
         <children xsi:type="menu:DynamicMenuContribution" xmi:id="_URKw0KWNEeaLl490YPKYoA" elementId="com.kms.katalon.composer.integration.git.dynamicmenucontribution.0" contributionURI="bundleclass://com.kms.katalon.composer.integration.git/com.kms.katalon.composer.integration.git.menu.GitMenuContribution"/>
       </menu>
     </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_ps-FAH3EEeirDbljXFbzBA" featurename="addons" parentElementId="com.kms.katalon.composer.application">
+    <elements xsi:type="application:Addon" xmi:id="_scniIH3EEeirDbljXFbzBA" elementId="com.kms.katalon.composer.integration.git.addon.dependencyInjection" contributionURI="bundleclass://com.kms.katalon.composer.integration.git/com.kms.katalon.composer.integration.git.addon.GitDependencyInjectionAddon"/>
   </fragments>
 </fragment:ModelFragments>

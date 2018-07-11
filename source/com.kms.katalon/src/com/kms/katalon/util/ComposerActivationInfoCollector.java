@@ -19,6 +19,7 @@ import com.kms.katalon.composer.intro.FunctionsIntroductionFinishDialog;
 import com.kms.katalon.composer.project.constants.CommandId;
 import com.kms.katalon.core.event.EventBusSingleton;
 import com.kms.katalon.logging.LogUtil;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class ComposerActivationInfoCollector extends ActivationInfoCollector {
 
@@ -37,7 +38,7 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
         // Send anonymous info for the first time using
 //        Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector.collect(
 //                UsageInfoCollector.getAnonymousUsageInfo(UsageActionTrigger.OPEN_FIRST_TIME, RunningMode.GUI)));
-        sendEventForTrackingFirstTimeOpen();
+        Trackings.trackOpenFirstTime();
         
         int result = new ActivationDialog(null).open();
         if (result == Window.CANCEL) {
@@ -45,11 +46,6 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
         }
         showFunctionsIntroductionForTheFirstTime();
         return true;
-    }
-    
-    private static void sendEventForTrackingFirstTimeOpen() {
-        EventBus eventBus = EventBusSingleton.getInstance().getEventBus();
-        eventBus.post(new TrackingEvent(UsageActionTrigger.OPEN_FIRST_TIME, null));
     }
 
     private static void showFunctionsIntroductionForTheFirstTime() {

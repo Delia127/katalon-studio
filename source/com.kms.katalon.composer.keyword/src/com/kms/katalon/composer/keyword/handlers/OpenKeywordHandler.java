@@ -23,6 +23,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.keyword.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.groovy.constant.GroovyConstants;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class OpenKeywordHandler {
 
@@ -64,6 +65,7 @@ public class OpenKeywordHandler {
                  if (editor != null) {
                      formatEditor(editor);
                  }
+                 Trackings.trackOpenObject("keyword");
             } catch (Exception e) {
                 LoggerSingleton.logError(e);
                 MessageDialog.openError(null, StringConstants.ERROR_TITLE,

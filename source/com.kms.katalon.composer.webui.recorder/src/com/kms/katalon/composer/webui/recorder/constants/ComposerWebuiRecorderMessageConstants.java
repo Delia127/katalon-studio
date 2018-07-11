@@ -91,6 +91,34 @@ public class ComposerWebuiRecorderMessageConstants extends NLS {
 
     public static String PREF_LBL_PIN_RECORDER_WINDOW;
 
+    public static String DIA_ITEM_MOVE_UP;
+
+    public static String DIA_ITEM_MOVE_DOWN;
+
+    public static String DIA_TOOLTIP_START_RECORDING;
+
+    public static String DIA_TOOLTIP_PAUSE_RECORDING;
+
+    public static String DIA_TOOLTIP_RESUME_RECORDING;
+
+    public static String DIA_TOOLTIP_STOP_RECORDING;
+
+    public static String DIA_ITEM_RUN_ALL_STEPS;
+
+    public static String DIA_ITEM_RUN_SELECTED_STEPS;
+
+    public static String DIA_ITEM_RUN_FROM_HERE;
+
+    public static String DIA_ITEM_RUN_FROM_SELECTED_STEP;
+
+    public static String JOB_RUNNING_RECORDED_STEPS;
+
+    public static String DIA_CONFIRM_CONTINUE_RECORDING;
+
+    public static String DIA_CONFIRM_ACCEPT_CONTINUE_RECORDING;
+
+    public static String DIA_CONFIRM_DECLINE_CONTINUE_RECORDING;
+
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerWebuiRecorderMessageConstants.class);

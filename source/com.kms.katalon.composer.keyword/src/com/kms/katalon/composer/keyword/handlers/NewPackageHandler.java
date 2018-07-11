@@ -40,6 +40,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.groovy.util.GroovyUtil;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class NewPackageHandler {
 
@@ -112,6 +113,8 @@ public class NewPackageHandler {
                     if (monitor.isCanceled()) {
                         throw new InterruptedException();
                     }
+                    
+                    Trackings.trackCreatingObject("package");
 
                     eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
                     // remove any working copy of child complicationUnit that exists in the current package

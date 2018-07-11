@@ -89,6 +89,7 @@ import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.util.ExecutionUtil;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class GenerateCommandDialog extends AbstractDialog {
 
@@ -760,17 +761,12 @@ public class GenerateCommandDialog extends AbstractDialog {
             GeneratedCommandDialog generatedCommandDialog = new GeneratedCommandDialog(getShell(), generateCommand());
             generatedCommandDialog.open();
             
-            sendEventForTracking();
+            Trackings.trackGenerateCmd();
         } catch (Exception e) {
             MessageDialog.openWarning(getShell(), StringConstants.WARN_TITLE, e.getMessage());
         }
     }
     
-    private void sendEventForTracking() {
-        EventBus eventBus = EventBusSingleton.getInstance().getEventBus();
-        eventBus.post(new TrackingEvent(UsageActionTrigger.GENERATE_CMD, null));
-    }
-
     private void savePropertyFile(String fileLocation) throws Exception {
         if (isBlank(fileLocation)) {
             throw new Exception(StringConstants.DIA_MSG_PLS_SPECIFY_FILE_LOCATION);

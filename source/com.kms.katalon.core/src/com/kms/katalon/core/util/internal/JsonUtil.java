@@ -2,6 +2,7 @@ package com.kms.katalon.core.util.internal;
 
 import java.lang.reflect.Type;
 import java.text.MessageFormat;
+import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -95,5 +96,11 @@ public class JsonUtil {
     public static JsonObject toJsonObject(Object src) {
         Gson gson = new Gson();
         return gson.toJsonTree(src).getAsJsonObject();
+    }
+    
+    public static void mergeJsonObject(JsonObject src, JsonObject dst) {
+        for (Map.Entry<String, JsonElement> entry : src.entrySet()) {
+            dst.add(entry.getKey(), entry.getValue());
+        }
     }
 }

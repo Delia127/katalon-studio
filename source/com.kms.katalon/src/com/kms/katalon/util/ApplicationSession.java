@@ -6,16 +6,15 @@ import java.io.File;
 
 import org.eclipse.core.runtime.Platform;
 
+import com.kms.katalon.composer.preferences.GeneralPreferenceDefaultValueInitializer;
 import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class ApplicationSession {
 
-    private static final String ORG_ECLIPSE_UI_PLUGIN_ID = "org.eclipse.ui";
-
     public static void clean() {
-        ScopedPreferenceStore prefStore = getEclipseUIPreferenceStore();
+        ScopedPreferenceStore prefStore = getStore();
         if (prefStore == null) {
             return;
         }
@@ -41,15 +40,15 @@ public class ApplicationSession {
     }
 
     public static void close() {
-        ScopedPreferenceStore prefStore = getEclipseUIPreferenceStore();
+        ScopedPreferenceStore prefStore = getStore();
         if (prefStore == null) {
             return;
         }
         prefStore.setValue(PreferenceConstants.GENERAL_APP_CLOSE_SUDDENLY, false);
     }
 
-    private static ScopedPreferenceStore getEclipseUIPreferenceStore() {
-        return getPreferenceStore(ORG_ECLIPSE_UI_PLUGIN_ID);
+    public static ScopedPreferenceStore getStore() {
+        return getPreferenceStore(GeneralPreferenceDefaultValueInitializer.class);
     }
 
 }

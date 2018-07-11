@@ -14,6 +14,7 @@ import com.kms.katalon.core.logging.KeywordLogger;
 import com.kms.katalon.core.logging.KeywordLogger.KeywordStackElement;
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 import com.kms.katalon.core.model.FailureHandling;
+import com.kms.katalon.core.testcase.TestCaseBinding;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 
 import groovy.lang.Binding;
@@ -37,8 +38,21 @@ public class WSVerificationExecutor {
 
     private boolean doCleanUp;
 
+    private TestCaseBinding testCaseBinding;
 
+
+    public WSVerificationExecutor(String verificationScript,
+            ScriptEngine engine,
+            ExecutionEventManager eventManager,
+            boolean doCleanUp) {
+        
+        this.engine = engine;
+        this.doCleanUp = doCleanUp;
+        this.script = verificationScript;
+    }
+    
     public WSVerificationExecutor(
+            TestCaseBinding testCaseBinding,
             String verificationScript,
             ScriptEngine engine,
             ExecutionEventManager eventManager,
@@ -47,6 +61,7 @@ public class WSVerificationExecutor {
         this.engine = engine;
         this.doCleanUp = doCleanUp;
         this.script = verificationScript;
+        this.testCaseBinding = testCaseBinding;
     }
     
     private void preExecution() {
@@ -126,7 +141,7 @@ public class WSVerificationExecutor {
 
     private Object runScript(String script)
             throws ResourceException, ScriptException, IOException, ClassNotFoundException {
-        return engine.runScriptAsRawText(script, "WSVerification" + System.currentTimeMillis(), new Binding());
+        return engine.runScriptAsRawText(script, "WSVerification" + System.currentTimeMillis(), new Binding(testCaseBinding.getBindedValues()));
     }
 
     private void logError(Throwable t, String message) {

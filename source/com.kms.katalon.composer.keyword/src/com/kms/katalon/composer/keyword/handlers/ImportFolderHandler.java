@@ -1,9 +1,14 @@
 package com.kms.katalon.composer.keyword.handlers;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Deque;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -12,6 +17,7 @@ import javax.inject.Named;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -29,15 +35,24 @@ import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.keyword.dialogs.DuplicatedImportDialog;
-import com.kms.katalon.composer.keyword.logging.UpdatedKeywordObject;
-import com.kms.katalon.composer.keyword.logging.UpdatedKeywordObject.ACTION_TYPE;
+import com.kms.katalon.composer.keyword.logging.ChangeFile;
+import com.kms.katalon.composer.keyword.logging.ChangeFile.FileStatus;
+import com.kms.katalon.composer.keyword.logging.GitKeywordObject;
+import com.kms.katalon.composer.keyword.logging.GitKeywordObject.ActionType;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.util.internal.JsonUtil;
+import com.kms.katalon.core.util.internal.PathUtil;
 import com.kms.katalon.entity.folder.FolderEntity;
+import com.kms.katalon.tracking.service.Trackings;
+import com.kms.katalon.util.FileHashUtil;
 
 public class ImportFolderHandler {
+
+    private final String TIMESTAMP_FORMAT = "hh:mm:ss - dd/MM/yyyy";
+
     @Inject
     IEventBroker eventBroker;
 
@@ -61,12 +76,14 @@ public class ImportFolderHandler {
 
             File importedFolder = new File(selectedFolder);
             if (importedFolder != null && importedFolder.exists() && importedFolder.isDirectory()) {
-                copyFilesToKeywordsDirectory(shell, importedFolder, false);
+                Trackings.trackImportKeywords("folder");
+                copyFilesToKeywordsDirectory(shell, importedFolder, StringUtils.EMPTY, StringUtils.EMPTY);
             }
 
-            ITreeEntity keywordRootFolder = new FolderTreeEntity(FolderController.getInstance()
-                    .getKeywordRoot(ProjectController.getInstance().getCurrentProject()), null);
-            
+            ITreeEntity keywordRootFolder = new FolderTreeEntity(
+                    FolderController.getInstance().getKeywordRoot(ProjectController.getInstance().getCurrentProject()),
+                    null);
+
             eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, keywordRootFolder);
             eventBroker.post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, keywordRootFolder);
             eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, keywordRootFolder);
@@ -87,27 +104,36 @@ public class ImportFolderHandler {
         execute(Display.getCurrent().getActiveShell());
     }
 
-    public void copyFilesToKeywordsDirectory(Shell shell, File importedFolder, boolean forGit)
+    public void copyFilesToKeywordsDirectory(Shell shell, File importedFolder, String commitId, String repoUrl)
             throws Exception {
 
         FolderEntity keywordRootFolder = FolderController.getInstance()
                 .getKeywordRoot(ProjectController.getInstance().getCurrentProject());
         List<File> groovyFiles = listAllGroovyFiles(importedFolder.getAbsolutePath());
-        List<UpdatedKeywordObject> modifiedFiles = new ArrayList<UpdatedKeywordObject>();
 
         int decisionAppliedToAll = -1;
+
+        DateFormat dateFormat = new SimpleDateFormat(TIMESTAMP_FORMAT);
+        GitKeywordObject keywordObject = new GitKeywordObject(repoUrl, commitId,
+                dateFormat.format(System.currentTimeMillis()));
+        keywordObject.setType(ActionType.KEYWORD_IMPORT);
+
         for (File groovyFile : groovyFiles) {
             StringBuilder destinationKeywordFolder = new StringBuilder(keywordRootFolder.getLocation());
             destinationKeywordFolder.append(File.separator);
             String absolutePath = groovyFile.getAbsolutePath();
-            if (forGit) {
+            if (StringUtils.isNotEmpty(repoUrl)) {
                 destinationKeywordFolder.append(absolutePath.substring(
                         absolutePath.indexOf(importedFolder.getName()) + importedFolder.getName().length() + 1,
                         absolutePath.length()));
             } else {
                 destinationKeywordFolder.append(
-                        absolutePath.substring(absolutePath.indexOf(importedFolder.getName()) + importedFolder.getName().length(), absolutePath.length()));
+                        absolutePath.substring(absolutePath.indexOf(importedFolder.getName()), absolutePath.length()));
             }
+            
+            String relativePath = PathUtil.absoluteToRelativePath(destinationKeywordFolder.toString(),
+                    ProjectController.getInstance().getCurrentProject().getFolderLocation());
+
             if (new File(destinationKeywordFolder.toString()).exists()) {
                 // Open popup with the file name
                 DuplicatedImportDialog duplicatedDialog = new DuplicatedImportDialog(shell, groovyFile.getName());
@@ -119,31 +145,37 @@ public class ImportFolderHandler {
                     }
                 }
 
+                FileStatus fileStatus = FileStatus.SKIP_KEEP_OLD_FILE;
                 if (decision == IDialogConstants.OK_ID) {
+                    fileStatus = FileStatus.OVERWRITE;
                     FileUtils.copyFile(groovyFile, new File(destinationKeywordFolder.toString()));
-                    modifiedFiles.add(new UpdatedKeywordObject(absolutePath, ACTION_TYPE.OVERWRITE));
                 }
 
                 if (decision == DuplicatedImportDialog.KEEP_BOTH_ID) {
+                    fileStatus = FileStatus.CREATE_DUPLICATE;
                     destinationKeywordFolder.replace(destinationKeywordFolder.indexOf(groovyFile.getName()),
                             destinationKeywordFolder.length(),
                             findAvailableName(new File(destinationKeywordFolder.toString()), 0));
-
                     FileUtils.copyFile(groovyFile, new File(destinationKeywordFolder.toString()));
-                    modifiedFiles.add(new UpdatedKeywordObject(absolutePath, ACTION_TYPE.CREATE_DUPLICATE));
                 }
+                
+                keywordObject.addChangeFile(
+                        new ChangeFile(relativePath, FileHashUtil.hash(absolutePath, "MD5"), fileStatus));
 
-                // Skip - contines with the other file.
                 if (decision == IDialogConstants.SKIP_ID) {
-                    modifiedFiles.add(new UpdatedKeywordObject(absolutePath, ACTION_TYPE.SKIP_KEEP_OLD_FILE));
+                    fileStatus = FileStatus.SKIP_KEEP_OLD_FILE;
                     continue;
                 }
+                
+            } else {
+                keywordObject.addChangeFile(
+                        new ChangeFile(relativePath, FileHashUtil.hash(absolutePath, "MD5"), FileStatus.NEW));
             }
 
             FileUtils.copyFile(groovyFile, new File(destinationKeywordFolder.toString()));
         }
-        if (forGit) {
-            writeActionToFile(modifiedFiles);
+        if (StringUtils.isNotEmpty(repoUrl)) {
+            writeActionToFile(keywordObject);
         }
     }
 
@@ -186,19 +218,43 @@ public class ImportFolderHandler {
         return findAvailableName(new File(path.toString()), timesOfDuplicate);
     }
 
-    private void writeActionToFile(List<UpdatedKeywordObject> updatedFiles) {
+    private void writeActionToFile(GitKeywordObject updatedObj) {
         try {
-            String internalSettingPath = ProjectController.getInstance().getCurrentProject().getFolderLocation() + File.separator + ProjectController.getInstance().getInternalSettingDir();
-            File file = new File(internalSettingPath, "modified_keyword_log.properties");
-            if (!file.exists()) {
+            String internalSettingPath = ProjectController.getInstance().getCurrentProject().getFolderLocation()
+                    + File.separator + ProjectController.getInstance().getInternalSettingDir();
+            File file = new File(internalSettingPath, "extraLib.properties");
+            String output = "";
+
+            if (file.exists()) {
+                String currentContent = new String(Files.readAllBytes(file.toPath()));
+                List<GitKeywordObject> currentContentLst = new ArrayList<>(
+                        Arrays.asList(JsonUtil.fromJson(currentContent, GitKeywordObject[].class)));
+                Iterator<GitKeywordObject> currentObjIterator = currentContentLst.iterator();
+                boolean foundCurrentFile = false;
+
+                while (currentObjIterator.hasNext()) {
+                    GitKeywordObject obj = currentObjIterator.next();
+                    if (Objects.equals(obj.getGitUrl(), updatedObj.getGitUrl())) {
+                        obj.setListChangeFiles(updatedObj.getChangeFiles());
+                        obj.setType(updatedObj.getType());
+                        obj.setCommitId(updatedObj.getCommitId());
+                        obj.setTimeStamp(updatedObj.getTimestamp());
+                        foundCurrentFile = true;
+                    }
+                }
+                // append to last json list.
+                if (!foundCurrentFile) {
+                    currentContentLst.add(updatedObj);
+                }
+                output = JsonUtil.toJson(currentContentLst);
+
+            } else {
                 file.createNewFile();
+                GitKeywordObject[] firstGitObj = { updatedObj };
+                output = JsonUtil.toJson(firstGitObj);
             }
-            StringBuilder parseText = new StringBuilder();
-            for (UpdatedKeywordObject updatedKeywordObject : updatedFiles) {
-                parseText.append(updatedKeywordObject.buildSingleRow());
-                
-            }
-            FileUtils.writeStringToFile(file, parseText.toString());
+
+            FileUtils.writeStringToFile(file, output);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }

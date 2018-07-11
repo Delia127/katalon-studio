@@ -13,10 +13,12 @@ import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.osgi.framework.FrameworkUtil;
 
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.PackageTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.keyword.constants.StringConstants;
 import com.kms.katalon.composer.keyword.handlers.ExportFolderHandler;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
@@ -52,10 +54,17 @@ public class ExportKeyWordsPopupMenuContribution {
             }
 
             Object selectedObject = selectedObjects[0];
-
-            if ((selectedObject instanceof FolderTreeEntity
+            
+            FolderEntity keywordRootFolder = FolderController.getInstance().getKeywordRoot(ProjectController.getInstance().getCurrentProject());
+           
+            boolean isKeywordFolderSelected = (selectedObject instanceof FolderTreeEntity
                     && ((FolderTreeEntity) selectedObject).getObject() instanceof FolderEntity
-                    && FolderType.KEYWORD.equals(((FolderTreeEntity) selectedObject).getObject().getFolderType()))) {
+                    && FolderType.KEYWORD.equals(((FolderTreeEntity) selectedObject).getObject().getFolderType()));
+            
+            boolean isPackageLevelSelected =  ((selectedObject instanceof PackageTreeEntity) 
+                    && ((PackageTreeEntity) selectedObject).getParent().getObject().equals(keywordRootFolder));
+
+            if (isKeywordFolderSelected || isPackageLevelSelected) {
 
                 MDirectMenuItem importMenu = getExportMenu();
                 importMenu.setContributionURI(CM_EXPORT_COMPOSER_BUNDLE_URI + ExportFolderHandler.class.getName());

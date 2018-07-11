@@ -68,6 +68,10 @@ public class BlockStatementWrapper extends StatementWrapper {
         statement.setParent(this);
         statements.add(statement);
     }
+    
+    public void clearStaments() {
+        statements = new ArrayList<>();
+    }
 
     public boolean addStatement(StatementWrapper statement, int index) {
         if (statement == null || index < 0 || index > statements.size()) {

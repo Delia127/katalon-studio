@@ -26,7 +26,6 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.composer.webservice.constants.TextContentType;
 import com.kms.katalon.composer.webservice.editor.DocumentReadyHandler;
-import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
 
@@ -81,6 +80,8 @@ public class MirrorEditor extends Composite {
             public void completed(ProgressEvent event) {
                 documentReady = true;
                 onDocumentReady();
+                
+                browser.evaluate("document.addEventListener('contextmenu', function(e) { e.preventDefault();});");
             }
 
             @Override
