@@ -13,6 +13,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
+
+import javax.lang.model.element.VariableElement;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -143,6 +146,10 @@ public class ObjectRepository {
      * @return an instance of {@link TestObject} or <code>null</code> if test object id is null
      */
     public static TestObject findTestObject(String testObjectRelativeId, Map<String, Object> variables) {
+        return findTestObject(RunConfiguration.getProjectDir(), testObjectRelativeId, variables);
+    }
+    
+    public static TestObject findTestObject(String projectDir, String testObjectRelativeId, Map<String, Object> variables) {
         if (testObjectRelativeId == null) {
             logger.logWarning(StringConstants.TO_LOG_WARNING_TEST_OBJ_NULL);
             return null;
@@ -158,13 +165,13 @@ public class ObjectRepository {
             return testObjectsCached.get(testObjectRelativeId);
         }
 
-        File objectFile = new File(RunConfiguration.getProjectDir(), testObjectId + WEBELEMENT_FILE_EXTENSION);
+        File objectFile = new File(projectDir, testObjectId + WEBELEMENT_FILE_EXTENSION);
         if (!objectFile.exists()) {
             logger.logWarning(
                     MessageFormat.format(StringConstants.TO_LOG_WARNING_TEST_OBJ_DOES_NOT_EXIST, testObjectId));
             return null;
         }
-        return readTestObjectFile(testObjectId, objectFile, RunConfiguration.getProjectDir(), variables);
+        return readTestObjectFile(testObjectId, objectFile, projectDir, variables);
     }
 
     private static Map<String, TestObject> getCapturedTestObjects() {
@@ -295,8 +302,17 @@ public class ObjectRepository {
 
         String serviceType = reqElement.elementText("serviceType");
         requestObject.setServiceType(serviceType);
+        
 
-        StrSubstitutor substitutor = new StrSubstitutor(variables);
+        List<Object> variableElements = reqElement.elements("variables");
+        Map<String, Object> requestVariables = variables;
+        if (variableElements != null) {
+            Map<String, Object> defaultVariables = parseRequestObjectVariables(variableElements);
+            requestVariables = mergeRequestObjectVariables(defaultVariables, variables);
+        }
+        
+        StrSubstitutor substitutor = new StrSubstitutor(requestVariables);
+        
         if ("SOAP".equals(serviceType)) {
             requestObject.setWsdlAddress(reqElement.elementText("wsdlAddress"));
             requestObject.setSoapRequestMethod(reqElement.elementText("soapRequestMethod"));
@@ -331,13 +347,30 @@ public class ObjectRepository {
 //                    requestObject.setHttpBody(outstream.toString());
 //                } catch (IOException ignored) {
 //                }
+                
+                String verificationScript = reqElement.elementText("verificationScript");
+                requestObject.setVerificationScript(verificationScript);
             }
+            
+            requestObject.setVariables(requestVariables);
         }
 
-        String verificationScript = reqElement.elementText("verificationScript");
-        requestObject.setVerificationScript(verificationScript);
-
         return requestObject;
+    }
+
+    private static Map<String, Object> parseRequestObjectVariables(List<Object> elements) {
+        Map<String, Object> variableMap = elements.stream()
+            .collect(Collectors.toMap(element -> ((Element) element).elementText("name"),
+                   element -> ((Element) element).elementText("defaultValue")));
+        return variableMap;
+    }
+    
+    public static Map<String, Object> mergeRequestObjectVariables(Map<String, Object> defaultVariables,
+            Map<String, Object> customVariables) {
+        Map<String, Object> mergedVariables = new HashMap<>();
+        mergedVariables.putAll(defaultVariables);
+        mergedVariables.putAll(customVariables);
+        return mergedVariables;
     }
 
     private static boolean isBodySupported(RequestObject requestObject) {

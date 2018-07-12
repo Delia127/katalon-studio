@@ -103,6 +103,7 @@ public class WSVerificationExecutor {
 
             return testResult;
         } finally {
+        
             logger.endTest("Verification", Collections.emptyMap());
 
             postExecution();

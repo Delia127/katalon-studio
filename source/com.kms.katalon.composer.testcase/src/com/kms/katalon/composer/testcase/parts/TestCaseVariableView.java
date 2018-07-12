@@ -77,10 +77,10 @@ public class TestCaseVariableView implements TableActionOperator {
 
     private List<VariableEntity> variables = new ArrayList<>();
 
-    private ITestCasePart testCasePart;
+    private IVariablePart variablePart;
     
-    public TestCaseVariableView(ITestCasePart testCasePart) {
-        this.testCasePart = testCasePart;
+    public TestCaseVariableView(IVariablePart variablePart) {
+        this.variablePart = variablePart;
     }
 
     public Composite createComponents(Composite parent) {
@@ -484,6 +484,6 @@ public class TestCaseVariableView implements TableActionOperator {
 
     @Override
     public void setDirty(boolean dirty) {
-        testCasePart.setDirty(dirty);
+        variablePart.setDirty(dirty);
     }
 }

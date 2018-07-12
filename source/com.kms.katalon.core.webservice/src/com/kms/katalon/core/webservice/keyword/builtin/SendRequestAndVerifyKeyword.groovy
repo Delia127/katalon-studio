@@ -10,6 +10,7 @@ import com.kms.katalon.core.logging.model.TestStatus
 import com.kms.katalon.core.main.TestCaseMain
 import com.kms.katalon.core.main.TestResult
 import com.kms.katalon.core.model.FailureHandling
+import com.kms.katalon.core.testcase.TestCaseBinding
 import com.kms.katalon.core.testobject.RequestObject
 import com.kms.katalon.core.testobject.ResponseObject
 import com.kms.katalon.core.webservice.common.ServiceRequestFactory
@@ -17,6 +18,7 @@ import com.kms.katalon.core.webservice.constants.StringConstants
 import com.kms.katalon.core.webservice.helper.WebServiceCommonHelper
 import com.kms.katalon.core.webservice.keyword.internal.WebserviceAbstractKeyword
 import com.kms.katalon.core.webservice.verification.WSResponseManager
+
 import groovy.transform.CompileStatic
 
 @Action(value = "sendRequestAndVerify")
@@ -45,7 +47,8 @@ public class SendRequestAndVerifyKeyword extends WebserviceAbstractKeyword {
             logger.logInfo(StringConstants.KW_LOG_INFO_VERIFICATION_START)
             String verificationScript = request.getVerificationScript()
             WSResponseManager.getInstance().setCurrentResponse(responseObject)
-            TestResult result = TestCaseMain.runWSVerificationScript(verificationScript, flowControl, true)
+            TestResult result = TestCaseMain.runWSVerificationScript(createTestCaseBinding(request),
+                verificationScript, flowControl, true)
             switch(result.getTestStatus().getStatusValue()) {
                 case TestStatus.TestStatusValue.FAILED:
                     throw new StepFailedException(StringConstants.KW_LOG_VERIFICATION_STEP_FAILED)
@@ -66,5 +69,11 @@ public class SendRequestAndVerifyKeyword extends WebserviceAbstractKeyword {
             return (ResponseObject) object
         }
         return null
+    }
+    
+    private TestCaseBinding createTestCaseBinding(RequestObject requestObject) {
+        Map<String, Object> variables = new HashMap<String, Object>()
+        TestCaseBinding testCaseBinding = new TestCaseBinding(requestObject.getName(), variables);
+        return testCaseBinding;
     }
 }

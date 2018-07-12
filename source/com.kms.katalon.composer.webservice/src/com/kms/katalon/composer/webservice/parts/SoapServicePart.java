@@ -6,6 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -61,6 +62,8 @@ import com.kms.katalon.composer.webservice.view.xml.XMLConfiguration;
 import com.kms.katalon.composer.webservice.view.xml.XMLPartitionScanner;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.WebServiceController;
+import com.kms.katalon.core.testobject.ObjectRepository;
+import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.core.webservice.common.BasicRequestor;
@@ -218,8 +221,12 @@ public class SoapServicePart extends WebServicePart {
 
                         String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
 
+                        WebServiceRequestEntity requestEntity = getWSRequestObject();
+                        
+                        RequestObject requestObject = (RequestObject) ObjectRepository.findTestObject(projectDir,
+                                requestEntity.getIdForDisplay(), Collections.emptyMap());
                         final ResponseObject responseObject = WebServiceController.getInstance()
-                                .sendRequest(getWSRequestObject(), projectDir, ProxyPreferences.getProxyInformation());
+                                .sendRequest(requestObject, projectDir, ProxyPreferences.getProxyInformation());
 
                         if (monitor.isCanceled()) {
                             return;
@@ -237,7 +244,7 @@ public class SoapServicePart extends WebServicePart {
                         });
 
                         if (runVerificationScript) {
-                            executeVerificationScript(responseObject);
+                            executeVerificationScript(requestObject.getVerificationScript(), responseObject);
                         }
                     } catch (Exception e) {
                         throw new InvocationTargetException(e);

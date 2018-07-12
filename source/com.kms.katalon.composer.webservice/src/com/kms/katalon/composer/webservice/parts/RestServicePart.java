@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -46,6 +47,8 @@ import com.kms.katalon.composer.webservice.util.WebServiceUtil;
 import com.kms.katalon.composer.webservice.view.ExpandableComposite;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.WebServiceController;
+import com.kms.katalon.core.testobject.ObjectRepository;
+import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
@@ -116,9 +119,9 @@ public class RestServicePart extends WebServicePart {
         clearPreviousResponse();
         
         String requestURL = wsApiControl.getRequestURL().trim();
-        if (isInvalidURL(requestURL)) {
-            return;
-        }
+//        if (isInvalidURL(requestURL)) {
+//            return;
+//        }
 
         if (wsApiControl.getSendingState()) {
             progress.getProgressMonitor().setCanceled(true);
@@ -144,8 +147,11 @@ public class RestServicePart extends WebServicePart {
                                 .getCurrentProject()
                                 .getFolderLocation();
                         
+                        WebServiceRequestEntity requestEntity = getWSRequestObject();
+                        
+                        RequestObject requestObject = (RequestObject) ObjectRepository.findTestObject(projectDir, requestEntity.getIdForDisplay(), Collections.emptyMap());
                         ResponseObject responseObject = WebServiceController.getInstance().sendRequest(
-                                getWSRequestObject(), projectDir, ProxyPreferences.getProxyInformation());
+                                requestObject, projectDir, ProxyPreferences.getProxyInformation());
 
                         if (monitor.isCanceled()) {
                             return;
@@ -166,7 +172,7 @@ public class RestServicePart extends WebServicePart {
                         });
                        
                         if (runVerificationScript) {
-                            executeVerificationScript(responseObject);
+                            executeVerificationScript(requestObject.getVerificationScript(), responseObject);
                         }
                     } catch (Exception e) {
                         throw new InvocationTargetException(e);

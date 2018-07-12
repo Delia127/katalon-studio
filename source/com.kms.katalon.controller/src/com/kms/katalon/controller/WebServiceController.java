@@ -34,6 +34,11 @@ public class WebServiceController extends EntityController {
     public ResponseObject sendRequest(WebServiceRequestEntity entity, String projectDir,
             ProxyInformation proxyInformation) throws Exception {
         RequestObject requestObject = getRequestObject(entity, projectDir);
+        return sendRequest(requestObject, projectDir, proxyInformation);
+    }
+    
+    public ResponseObject sendRequest(RequestObject requestObject, String projectDir,
+            ProxyInformation proxyInformation) throws Exception  {
         return ServiceRequestFactory.getInstance(requestObject, projectDir, proxyInformation).send(requestObject);
     }
 }
