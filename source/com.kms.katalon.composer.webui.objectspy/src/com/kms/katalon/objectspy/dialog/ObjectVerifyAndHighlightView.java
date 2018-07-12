@@ -210,7 +210,26 @@ public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEven
                     
                     //scroll to first element
                     org.openqa.selenium.WebElement firstElement = webElements.get(0);
-                    jsExecutor.executeScript("arguments[0].scrollIntoView(true);", firstElement);
+                    boolean isInViewPort = (Boolean)((JavascriptExecutor)webDriver).executeScript(
+                            "var elem = arguments[0],                 " +
+                            "  box = elem.getBoundingClientRect(),    " +
+                            "  cx = box.left + box.width / 2,         " +
+                            "  cy = box.top + box.height / 2,         " +
+                            "  e = document.elementFromPoint(cx, cy); " +
+                            "for (; e; e = e.parentElement) {         " +
+                            "  if (e === elem)                        " +
+                            "    return true;                         " +
+                            "}                                        " +
+                            "return false;                            "
+                            , firstElement);
+                    if (!isInViewPort) {
+                            jsExecutor.executeScript("arguments[0].scrollIntoView({" +
+                                                       " behavior: 'auto',         " + 
+                                                       " block: 'center',          " +
+                                                       " inline: 'center'          " +
+                                                       " });                       "
+                            , firstElement);
+                    }
                     
                     // highlight all elements
                     String highlightJS = getHighlightJS();

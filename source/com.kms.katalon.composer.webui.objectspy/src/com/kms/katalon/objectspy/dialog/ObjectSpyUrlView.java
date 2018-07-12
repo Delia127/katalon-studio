@@ -17,6 +17,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -38,9 +39,13 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.greenrobot.eventbus.EventBus;
 import org.openqa.selenium.WebDriver;
 import org.osgi.framework.Bundle;
 
+import com.kms.katalon.application.usagetracking.TrackingEvent;
+import com.kms.katalon.application.usagetracking.UsageActionTrigger;
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.control.Dropdown;
 import com.kms.katalon.composer.components.impl.control.DropdownGroup;
 import com.kms.katalon.composer.components.impl.control.DropdownItemSelectionListener;
@@ -48,6 +53,7 @@ import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.event.EventBusSingleton;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.execution.classpath.ClassPathResolver;
 import com.kms.katalon.objectspy.constants.ImageConstants;
@@ -67,6 +73,7 @@ import com.kms.katalon.objectspy.websocket.AddonSocketServer;
 import com.kms.katalon.objectspy.websocket.messages.StartInspectAddonMessage;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
+import com.kms.katalon.tracking.service.Trackings;
 import com.kms.katalon.util.listener.EventListener;
 import com.kms.katalon.util.listener.EventManager;
 import com.sun.jna.platform.win32.User32;
@@ -196,6 +203,8 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
             startInspectSession(browser);
 
             invoke(ObjectSpyEvent.SELENIUM_SESSION_STARTED, session);
+//            sendEventForTracking();
+            Trackings.trackSpy("web");
         } catch (final IEAddonNotInstalledException e) {
             stop();
             showMessageForMissingIEAddon();
@@ -213,6 +222,11 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
 
     private void startBrowser() {
         startObjectSpy(defaultBrowser, isInstant);
+    }
+    
+    private void sendEventForTracking() {
+        EventBus eventBus = EventBusSingleton.getInstance().getEventBus();
+        eventBus.post(new TrackingEvent(UsageActionTrigger.SPY, "web"));
     }
 
     public void startServerWithPort(int port) throws Exception {
@@ -494,6 +508,8 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
         Win32Helper.switchFocusToBrowser(browser);
         currentInstantSocket.sendMessage(new StartInspectAddonMessage());
         invoke(ObjectSpyEvent.ADDON_SESSION_STARTED, currentInstantSocket);
+//        sendEventForTracking();
+        Trackings.trackSpy("web");
     }
 
     protected void runInstantIE() throws Exception {

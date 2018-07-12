@@ -25,6 +25,11 @@ public class InstallUpdateConfirmationDialog extends AbstractDialog {
         lblInfo.setText(MessageConstants.DIA_LBL_UPDATE_ALREADY_TO_INSTALL);
         return container;
     }
+    
+    @Override
+    protected void setShellStyle(int arg) {
+        super.setShellStyle(arg | SWT.CLOSE | SWT.TITLE | SWT.RESIZE);
+    }
 
     @Override
     protected void registerControlModifyListeners() {

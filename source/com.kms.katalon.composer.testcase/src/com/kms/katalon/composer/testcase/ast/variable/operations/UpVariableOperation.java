@@ -12,11 +12,11 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 
-import com.kms.katalon.composer.testcase.parts.TestCaseVariablePart;
+import com.kms.katalon.composer.testcase.parts.TableActionOperator;
 import com.kms.katalon.entity.variable.VariableEntity;
 
 public class UpVariableOperation extends AbstractOperation {
-    private TestCaseVariablePart testCaseVariablePart;
+    private TableActionOperator testCaseVariablePart;
 
     private TableViewer tableViewer;
 
@@ -24,11 +24,11 @@ public class UpVariableOperation extends AbstractOperation {
     
     private int moveIndex = -1;
 
-    public UpVariableOperation(TestCaseVariablePart testCaseVariablePart) {
+    public UpVariableOperation(TableActionOperator testCaseVariablePart) {
         this(UpVariableOperation.class.getName(), testCaseVariablePart);
     }
     
-    public UpVariableOperation(String label, TestCaseVariablePart testCaseVariablePart) {
+    public UpVariableOperation(String label, TableActionOperator testCaseVariablePart) {
         super(label);
         this.testCaseVariablePart = testCaseVariablePart;
         this.tableViewer = testCaseVariablePart.getTableViewer();

@@ -1,28 +1,39 @@
 package com.kms.katalon.objectspy.dialog;
 
-import static com.kms.katalon.objectspy.constants.ObjectSpyPreferenceConstants.WEBUI_DIA_CREATE_FOLDER_AS_PAGE_NAME;
-
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.custom.StyleRange;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
@@ -38,16 +49,20 @@ import com.kms.katalon.composer.folder.dialogs.NewFolderDialog;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.objectspy.constants.ObjectSpyPreferenceConstants;
+import com.kms.katalon.objectspy.constants.ObjectspyMessageConstants;
 import com.kms.katalon.objectspy.constants.StringConstants;
+import com.kms.katalon.objectspy.element.ConflictWebElementWrapper;
 import com.kms.katalon.objectspy.element.WebElement;
-import com.kms.katalon.objectspy.element.WebFrame;
+import com.kms.katalon.objectspy.element.WebElement.WebElementType;
 import com.kms.katalon.objectspy.element.WebPage;
 import com.kms.katalon.objectspy.element.tree.CheckboxTreeSelectionHelper;
-import com.kms.katalon.objectspy.element.tree.WebElementLabelProvider;
-import com.kms.katalon.objectspy.element.tree.WebElementTreeContentProvider;
-import com.kms.katalon.objectspy.util.WebElementUtils;
+import com.kms.katalon.objectspy.element.tree.ConflictStatusWebElementLabelProvider;
+import com.kms.katalon.objectspy.element.tree.ResolveConflictWebElementTreeContentProvider;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
@@ -66,31 +81,65 @@ public class SaveToObjectRepositoryDialog extends TreeEntitySelectionDialog {
 
     private FolderTreeEntity rootFolderTreeEntity;
 
-    private List<WebPage> pages;
-
-    private Button btnPageAsFolder;
+    private List<ConflictWebElementWrapper> wrapConflictStatusPages;
 
     private ScopedPreferenceStore store;
 
     private boolean modified;
 
-    private boolean createFolderAsPageNameAllowed;
+    private Button btnAddNewObject, btnReplaceObject, btnMergeObject, btnPageAsFolder;
+
+    private StyledText conflictDesciptionLabel;
 
     private SashForm form;
 
+    private Composite radioGroup;
+
+    private boolean createFolderAsPageNameAllowed;
+
+    private ConflictOptions selectedConflictOptions;
+
+    private ResolveConflictWebElementTreeContentProvider leftTreeContentProvider;
+
+    private CheckboxTreeSelectionHelper checkboxSelectionHelper = null;
+
+    private final int HIGHLIGHTED_LENGTH = "Highlighted".length();
+    
+    private int selectedHtmlElementCount = 0;
+    
     public SaveToObjectRepositoryDialog(Shell parentShell, boolean isCheckable, List<WebPage> pages,
             Object[] expandedHTMLElements) {
         super(parentShell, new EntityLabelProvider(), new FolderProvider(),
                 new EntityViewerFilter(new FolderProvider()));
         this.isCheckable = isCheckable;
-        this.pages = pages;
+        this.wrapConflictStatusPages = convertToConflictWebPageWrapper(pages);
         this.store = PreferenceStoreManager.getPreferenceStore(this.getClass());
+        this.leftTreeContentProvider = new ResolveConflictWebElementTreeContentProvider(true);
         setShellStyle(SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.RESIZE);
         setTitle(StringConstants.TITLE_ADD_TO_OBJECT_DIALOG);
         setAllowMultiple(false);
         refresh();
     }
 
+    private List<ConflictWebElementWrapper> convertToConflictWebPageWrapper(List<WebPage> inputPages) {
+        List<ConflictWebElementWrapper> conflictPages = new ArrayList<>();
+        List<WebPage> flatPages = flattenWebPages(inputPages);
+
+        for (WebPage webPage : flatPages) {
+            ConflictWebElementWrapper webPageWrapper = new ConflictWebElementWrapper(webPage, false);
+            List<ConflictWebElementWrapper> childListWrapper = new ArrayList<>();
+
+            for (WebElement webElement : webPage.getChildren()) {
+                ConflictWebElementWrapper childWrapper = new ConflictWebElementWrapper(webElement, false);
+                childWrapper.setParent(webPageWrapper);
+                childListWrapper.add(childWrapper);
+            }
+            webPageWrapper.setChildren(childListWrapper);
+            conflictPages.add(webPageWrapper);
+        }
+        return conflictPages;
+    }
+    
     private void refresh() {
         ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
         if (currentProject != null) {
@@ -120,9 +169,11 @@ public class SaveToObjectRepositoryDialog extends TreeEntitySelectionDialog {
 
         createRightPanel(form);
 
-        updateInput();
+        createConflictOptionsPanel(composite);
 
-        registerControlModifyListeners();
+        registerConflictOptionsPanelListeners();
+
+        updateInput();
 
         return composite;
     }
@@ -141,22 +192,16 @@ public class SaveToObjectRepositoryDialog extends TreeEntitySelectionDialog {
     }
 
     private void updateInput() {
-        createFolderAsPageNameAllowed = store.getBoolean(WEBUI_DIA_CREATE_FOLDER_AS_PAGE_NAME);
+        createFolderAsPageNameAllowed = store
+                .getBoolean(ObjectSpyPreferenceConstants.WEBUI_DIA_CREATE_FOLDER_AS_PAGE_NAME);
         btnPageAsFolder.setSelection(createFolderAsPageNameAllowed);
 
         modified = false;
-    }
-
-    private void registerControlModifyListeners() {
-        btnPageAsFolder.addSelectionListener(new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                createFolderAsPageNameAllowed = btnPageAsFolder.getSelection();
-                store.setValue(WEBUI_DIA_CREATE_FOLDER_AS_PAGE_NAME, createFolderAsPageNameAllowed);
-                modified = true;
-            }
-        });
+        selectedConflictOptions = Enum.valueOf(ConflictOptions.class,
+                store.getString(ObjectSpyPreferenceConstants.WEBUI_DIA_CONFLICT_OPTION));
+        btnAddNewObject.setSelection(selectedConflictOptions == ConflictOptions.CREATE_NEW_OBJECT);
+        btnMergeObject.setSelection(selectedConflictOptions == ConflictOptions.MERGE_CHANGE_TO_EXISTING_OBJECT);
+        btnReplaceObject.setSelection(selectedConflictOptions == ConflictOptions.REPLACE_EXISTING_OBJECT);
     }
 
     private void createRightPanel(Composite parent) {
@@ -167,7 +212,14 @@ public class SaveToObjectRepositoryDialog extends TreeEntitySelectionDialog {
         label.setLayoutData(new GridData(SWT.HORIZONTAL));
 
         treeViewer = createTreeViewer(objectRepositoryComposite);
+        treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                reloadStatusCheckboxViewTree();
+            }
+
+        });
         treeViewer.expandToLevel(rootFolderTreeEntity, 1);
         GridData data = new GridData(GridData.FILL_BOTH);
         data.widthHint = convertWidthInCharsToPixels(fWidth);
@@ -177,6 +229,19 @@ public class SaveToObjectRepositoryDialog extends TreeEntitySelectionDialog {
         treeWidget.setLayoutData(data);
         treeWidget.setFont(parent.getFont());
         treeWidget.setEnabled(true);
+    }
+
+    private void reloadStatusCheckboxViewTree() {
+        // Get current status
+        CheckboxTreeViewer checkboxViewer = (CheckboxTreeViewer) htmlElementTreeViewer;
+        Object[] checkedlst = checkboxViewer.getCheckedElements();
+
+        checkConflictObjects(wrapConflictStatusPages, createFolderAsPageNameAllowed);
+
+        // Reset the status
+        htmlElementTreeViewer.setInput(wrapConflictStatusPages);
+        checkboxViewer.setCheckedElements(checkedlst);
+        htmlElementTreeViewer.expandAll();
     }
 
     private void createLeftPanel(Composite parent) {
@@ -193,25 +258,26 @@ public class SaveToObjectRepositoryDialog extends TreeEntitySelectionDialog {
         btnPageAsFolder.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         btnPageAsFolder.setText(StringConstants.DIA_CHCK_BTN_CREATE_FOLDER_AS_PAGE_NAME);
 
-        WebElementTreeContentProvider contentProvider = new WebElementTreeContentProvider();
-        CheckboxTreeSelectionHelper checkboxSelectionHelper = null;
+        leftTreeContentProvider.setCreatedNewFolderAsPageName(
+                store.getBoolean(ObjectSpyPreferenceConstants.WEBUI_DIA_CREATE_FOLDER_AS_PAGE_NAME));
         if (isCheckable) {
             htmlElementTreeViewer = new CheckboxTreeViewer(htmlObjectTreeComposite, SWT.BORDER | SWT.MULTI);
             checkboxSelectionHelper = CheckboxTreeSelectionHelper.attach((CheckboxTreeViewer) htmlElementTreeViewer,
-                    contentProvider);
+                    leftTreeContentProvider);
         } else {
             htmlElementTreeViewer = new TreeViewer(htmlObjectTreeComposite, SWT.BORDER | SWT.MULTI);
         }
         htmlElementTreeViewer.getTree().setLayoutData(new GridData(GridData.FILL_BOTH));
-        htmlElementTreeViewer.setContentProvider(contentProvider);
-        htmlElementTreeViewer.setLabelProvider(new WebElementLabelProvider());
+        htmlElementTreeViewer.setContentProvider(leftTreeContentProvider);
+        htmlElementTreeViewer.setLabelProvider(new ConflictStatusWebElementLabelProvider());
 
         ColumnViewerToolTipSupport.enableFor(htmlElementTreeViewer, ToolTip.NO_RECREATE);
-        htmlElementTreeViewer.setInput(pages);
+        htmlElementTreeViewer.setInput(wrapConflictStatusPages);
         htmlElementTreeViewer.expandAll();
+
         if (checkboxSelectionHelper != null) {
             // TODO Double check this function
-            checkboxSelectionHelper.checkAllItems();
+            checkboxSelectionHelper.setCheckAllItems(true);
         }
     }
 
@@ -227,6 +293,104 @@ public class SaveToObjectRepositoryDialog extends TreeEntitySelectionDialog {
             treeViewer.setExpandedState(element, true);
         }
         treeViewer.getControl().setRedraw(true);
+    }
+
+    private void createConflictOptionsPanel(Composite parent) {
+        parent.setBackgroundMode(SWT.INHERIT_FORCE);
+        conflictDesciptionLabel = new StyledText(parent, SWT.NONE);
+        conflictDesciptionLabel.setText(StringConstants.DIA_MSG_RESOLVE_CONFLICT_DES);
+        conflictDesciptionLabel.setLayoutData(new GridData(SWT.HORIZONTAL));
+
+        Color red = Display.getCurrent().getSystemColor(SWT.COLOR_RED);
+        StyleRange styleRange = new StyleRange();
+        styleRange.start = 0;
+        styleRange.length = HIGHLIGHTED_LENGTH;
+        styleRange.foreground = red;
+        conflictDesciptionLabel.setStyleRange(styleRange);
+        conflictDesciptionLabel.setBackground(conflictDesciptionLabel.getParent().getBackground());
+
+        radioGroup = new Composite(parent, SWT.NONE);
+        GridLayout gridLayout = new GridLayout();
+        gridLayout.marginLeft = 20;
+        radioGroup.setLayout(gridLayout);
+
+        btnMergeObject = new Button(radioGroup, SWT.RADIO);
+        btnMergeObject.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+        btnMergeObject.setText(ObjectspyMessageConstants.DIA_MSG_RADIO_MERGE);
+
+        btnAddNewObject = new Button(radioGroup, SWT.RADIO);
+        btnAddNewObject.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+        btnAddNewObject.setText(ObjectspyMessageConstants.DIA_MSG_RADIO_DUPLICATE);
+
+        btnReplaceObject = new Button(radioGroup, SWT.RADIO);
+        btnReplaceObject.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+        btnReplaceObject.setText(ObjectspyMessageConstants.DIA_MSG_RADIO_REPLACE);
+    }
+
+    private void setConflictOptionPanelEnable(boolean enabled) {
+        btnMergeObject.setEnabled(enabled);
+        btnAddNewObject.setEnabled(enabled);
+        btnReplaceObject.setEnabled(enabled);
+        if (!enabled) {
+            Color red = Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
+            StyleRange styleRange = new StyleRange();
+            styleRange.start = 0;
+            styleRange.length = conflictDesciptionLabel.getText().length();
+            styleRange.foreground = red;
+
+            conflictDesciptionLabel.setBackground(conflictDesciptionLabel.getParent().getBackground());
+            conflictDesciptionLabel.setStyleRange(styleRange);
+        } else {
+            Color red = Display.getCurrent().getSystemColor(SWT.COLOR_RED);
+            StyleRange styleRange = new StyleRange();
+            styleRange.start = 0;
+            styleRange.length = HIGHLIGHTED_LENGTH;
+            styleRange.foreground = red;
+            conflictDesciptionLabel.setStyleRange(styleRange);
+            conflictDesciptionLabel.setBackground(conflictDesciptionLabel.getParent().getBackground());
+        }
+    }
+
+    private void registerConflictOptionsPanelListeners() {
+        btnPageAsFolder.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                createFolderAsPageNameAllowed = btnPageAsFolder.getSelection();
+                leftTreeContentProvider.setCreatedNewFolderAsPageName(createFolderAsPageNameAllowed);
+
+                reloadStatusCheckboxViewTree();
+                if (createFolderAsPageNameAllowed) {
+                    checkboxSelectionHelper.setCheckAllItems(true);
+                }
+                store.setValue(ObjectSpyPreferenceConstants.WEBUI_DIA_CREATE_FOLDER_AS_PAGE_NAME,
+                        createFolderAsPageNameAllowed);
+                modified = true;
+            }
+        });
+
+        SelectionListener selectionListener = new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                btnAddNewObject.setSelection(e.widget == btnAddNewObject);
+                btnMergeObject.setSelection(e.widget == btnMergeObject);
+                btnReplaceObject.setSelection(e.widget == btnReplaceObject);
+                selectedConflictOptions = getSelectedConflictOption();
+                store.setValue(ObjectSpyPreferenceConstants.WEBUI_DIA_CONFLICT_OPTION,
+                        selectedConflictOptions.toString());
+                modified = true;
+            }
+        };
+
+        btnAddNewObject.addSelectionListener(selectionListener);
+        btnReplaceObject.addSelectionListener(selectionListener);
+        btnMergeObject.addSelectionListener(selectionListener);
+    }
+
+    private ConflictOptions getSelectedConflictOption() {
+        return btnAddNewObject.getSelection() ? ConflictOptions.CREATE_NEW_OBJECT : (btnMergeObject.getSelection()
+                ? ConflictOptions.MERGE_CHANGE_TO_EXISTING_OBJECT : ConflictOptions.REPLACE_EXISTING_OBJECT);
     }
 
     /*
@@ -292,9 +456,13 @@ public class SaveToObjectRepositoryDialog extends TreeEntitySelectionDialog {
                         MessageDialog.openWarning(getParentShell(), StringConstants.WARN,
                                 StringConstants.DIA_MSG_PLS_SELECT_ELEMENT);
                         return;
+                    } else {
+                        selectedHtmlElementCount = checkedHTMLElements.length;
                     }
-                    removeUncheckedElements(pages);
+
+                    removeUncheckedElements(wrapConflictStatusPages);
                 }
+
                 setReturnCode(IDialogConstants.OK_ID);
                 close();
             }
@@ -302,6 +470,51 @@ public class SaveToObjectRepositoryDialog extends TreeEntitySelectionDialog {
         });
 
         createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
+    }
+
+    /**
+     * Flatten and just check duplicate object level.
+     */
+    private boolean checkConflictObjects(List<ConflictWebElementWrapper> newPages, boolean createFolderAsPageNameAllowed) {
+        boolean foundConflict = false;
+        try {
+            for (ConflictWebElementWrapper wrapPage : newPages) {
+                for (ConflictWebElementWrapper webElement : wrapPage.getChildren()) {
+                    if (webElement.getType() == WebElementType.PAGE)
+                        continue;
+                    
+                    if (webElement instanceof ConflictWebElementWrapper) {
+                        ConflictWebElementWrapper wrapElement = (ConflictWebElementWrapper) webElement;
+                        WebElement originalWebElement = wrapElement.getOriginalWebElement();
+
+                    FolderTreeEntity selectedParentFolder = (FolderTreeEntity) getFirstResult();
+                    String fileRelativePath = selectedParentFolder.getObject().getRelativePath() + File.separator;
+
+                    if (createFolderAsPageNameAllowed) {
+                        fileRelativePath = fileRelativePath + StringUtils.trim(wrapPage.getOriginalWebElement().getName()) + File.separator
+                                + StringUtils.trim(originalWebElement.getName());
+                    } else {
+                        fileRelativePath += StringUtils.trim(originalWebElement.getName());
+                    }
+
+                    WebElementEntity hitWebElementEntity = ObjectRepositoryController.getInstance()
+                            .getWebElementByDisplayPk(fileRelativePath);
+                    if (hitWebElementEntity != null) {
+                        foundConflict = true;
+                    }
+                    wrapElement.setIsConflicted(hitWebElementEntity != null);
+                    wrapPage.setIsConflicted(hitWebElementEntity != null);
+                  
+                }
+                }
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(getParentShell(), StringConstants.ERROR, e.getMessage());
+        }
+
+        setConflictOptionPanelEnable(foundConflict);
+        return foundConflict;
     }
 
     private void updatePreferenceStore() {
@@ -325,62 +538,106 @@ public class SaveToObjectRepositoryDialog extends TreeEntitySelectionDialog {
         return new Point(600, 600);
     }
 
-    private void removeUncheckedElements(List<? extends WebElement> elementList) {
+    public enum ConflictOptions {
+        CREATE_NEW_OBJECT, REPLACE_EXISTING_OBJECT, MERGE_CHANGE_TO_EXISTING_OBJECT
+    }
+
+    private void removeUncheckedElements(List<ConflictWebElementWrapper> elementList) {
         int i = 0;
         while (i < elementList.size()) {
-            WebElement childElement = elementList.get(i);
+            ConflictWebElementWrapper childElement = elementList.get(i);
             if (!(((CheckboxTreeViewer) htmlElementTreeViewer).getChecked(childElement)
                     || ((CheckboxTreeViewer) htmlElementTreeViewer).getGrayed(childElement))) {
-                elementList.remove(i);
-            } else {
-                if (childElement instanceof WebFrame) {
-                    removeUncheckedElements(((WebFrame) childElement).getChildren());
+                if (createFolderAsPageNameAllowed || !(childElement.getType() == WebElementType.PAGE)) {
+                    elementList.remove(i);
+                    continue;
                 }
-                i++;
+            } else {
+                if (childElement.getType() == WebElementType.FRAME || childElement.getType() == WebElementType.PAGE) {
+                    removeUncheckedElements(((ConflictWebElementWrapper) childElement).getChildren());
+                }
             }
+            i++;
         }
     }
 
-    public List<WebPage> getWebPages() {
-        return pages;
+    public SaveToObjectRepositoryDialogResult getDialogResult() throws Exception {
+        SaveToObjectRepositoryDialogResult dialogResult = new SaveToObjectRepositoryDialogResult(
+                createFolderAsPageNameAllowed, getClonePages(), (FolderTreeEntity) getFirstResult(),
+                selectedConflictOptions, selectedHtmlElementCount);
+        return dialogResult;
     }
 
-    public SaveToObjectRepositoryDialogResult getDialogResult() {
-        return new SaveToObjectRepositoryDialogResult((FolderTreeEntity) getFirstResult(),
-                createFolderAsPageNameAllowed);
+    public FolderTreeEntity getSelectedParentFolderResult() {
+        return (FolderTreeEntity) getFirstResult();
+    }
+
+    public List<ConflictWebElementWrapper> getClonePages() {
+        return wrapConflictStatusPages.stream().map(page -> page.softClone()).collect(Collectors.toList());
+    }
+
+    private List<WebPage> flattenWebPages(List<WebPage> webPages) {
+        List<WebPage> flatPages = new ArrayList<>();
+        for (WebPage webPage : webPages) {
+            WebPage fPage = new WebPage(webPage.getName());
+
+            List<WebElement> flattenChilds = new ArrayList<>();
+            for (WebElement webElement : webPage.getChildren()) {
+                flattenChilds.add(webElement);
+            }
+            fPage.setChildren(flattenChilds);
+            flatPages.add(fPage);
+        }
+        return flatPages;
     }
 
     public class SaveToObjectRepositoryDialogResult {
+
         private final boolean createFolderAsPageNameAllowed;
+
+        private final List<ConflictWebElementWrapper> allSelectedPages;
 
         private final FolderTreeEntity selectedParentFolder;
 
-        public SaveToObjectRepositoryDialogResult(FolderTreeEntity selectedParentFolder,
-                boolean createFolderAsPageNameAllowed) {
+        private ConflictOptions selectedConflictOption;
+
+        private Map<WebElement, FileEntity> entitySavedMap;
+        
+        private int selectedHtmlElementCount;
+
+        public SaveToObjectRepositoryDialogResult(boolean createFolderAsPageNameAllowed, List<ConflictWebElementWrapper> selectedPages,
+                FolderTreeEntity selectedParentFolder, ConflictOptions selectedConflictOption, int selectedHtmlElementCount) {
+
             this.createFolderAsPageNameAllowed = createFolderAsPageNameAllowed;
             this.selectedParentFolder = selectedParentFolder;
+            this.allSelectedPages = selectedPages;
+            this.selectedConflictOption = selectedConflictOption;
+            this.selectedHtmlElementCount = selectedHtmlElementCount;
+            entitySavedMap = new HashMap<>();
+        }
+
+        public boolean isCreateFolderAsPageNameAllowed() {
+            return createFolderAsPageNameAllowed;
+        }
+
+        public List<ConflictWebElementWrapper> getAllSelectedPages() {
+            return allSelectedPages;
         }
 
         public FolderTreeEntity getSelectedParentFolder() {
             return selectedParentFolder;
         }
 
-        public FolderTreeEntity createTreeFolderForPageElement(WebPage pageElement) throws Exception {
-            if (createFolderAsPageNameAllowed) {
-                return new FolderTreeEntity(createFolderForPageElement(pageElement), selectedParentFolder);
-            }
-            return selectedParentFolder;
+        public ConflictOptions getSelectedConflictOption() {
+            return selectedConflictOption;
         }
 
-        public FolderEntity createFolderForPageElement(WebPage pageElement) throws Exception {
-            FolderEntity parentFolder = (getSelectedParentFolder()).getObject();
-            return createFolderAsPageNameAllowed ? newPageWebElementAsFolder(parentFolder, pageElement) : parentFolder;
+        public Map<WebElement, FileEntity> getEntitySavedMap() {
+            return entitySavedMap;
         }
-
-        private FolderEntity newPageWebElementAsFolder(FolderEntity parentFolder, WebPage pageElement)
-                throws Exception {
-            return ObjectRepositoryController.getInstance().importWebElementFolder(
-                    WebElementUtils.convertWebPageToFolder(pageElement, parentFolder), parentFolder);
+        
+        public int getSelectedHtmlElementCount() {
+            return selectedHtmlElementCount;
         }
     }
 }

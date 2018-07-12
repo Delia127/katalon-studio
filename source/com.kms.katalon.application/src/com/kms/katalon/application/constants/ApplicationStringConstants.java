@@ -13,6 +13,8 @@ public class ApplicationStringConstants extends GlobalStringConstants {
 
     public static final String REQUEST_CODE_PROP_NAME = "activatedRequestCode";
 
+    public static final String UPDATED_VERSION_PROP_NAME = "updatedVersion";
+
     // Proxy Configuration
     public static final String PROXY_OPTION = "proxy.option";
 

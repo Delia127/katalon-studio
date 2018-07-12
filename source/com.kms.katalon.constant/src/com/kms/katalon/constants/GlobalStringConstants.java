@@ -151,6 +151,10 @@ public class GlobalStringConstants {
     // Tool-bar
     public static final String FOLDER = GlobalMessageConstants.FOLDER;
 
+    public static final String JAR = GlobalMessageConstants.JAR;
+
+    public static final String GIT = GlobalMessageConstants.GIT;
+
     public static final String PACKAGE = GlobalMessageConstants.PACKAGE;
 
     public static final String DEFAULT_PACKAGE_NAME = GlobalMessageConstants.DEFAULT_PACKAGE_NAME;
@@ -307,4 +311,9 @@ public class GlobalStringConstants {
     public static final String CREATED_DATE = GlobalMessageConstants.CREATED_DATE;
 
     public static final String MODIFIED_DATE = GlobalMessageConstants.MODIFIED_DATE;
+
+    public static final String APPIUM_INSTALLATION_GUIDE_MSG = GlobalMessageConstants.APPIUM_INSTALLATION_GUIDE_MSG;
+    
+    public static final String URL_TROUBLESHOOTING_MOBILE_TESTING = GlobalMessageConstants.URL_TROUBLESHOOTING_MOBILE_TESTING;
+
 }

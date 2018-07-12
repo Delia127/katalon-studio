@@ -374,7 +374,7 @@
 									<rightPen lineWidth="0.0"/>
 								</box>
 								<textElement verticalAlignment="Top" markup="styled">
-									<font size="9"/>
+									<font fontName="DejaVu Sans" size="9"/>
 									<paragraph rightIndent="0"/>
 								</textElement>
 								<textFieldExpression><![CDATA[($F{description}.isEmpty() ? $F{name} : $F{description}) + System.lineSeparator() + System.lineSeparator() + "<style forecolor='#0099FF'>" + $F{message} + "</style>"]]></textFieldExpression>

@@ -443,7 +443,7 @@ public class DriverFactory {
         }
     }
 
-    private static String getWebDriverServerUrl(RemoteWebDriver remoteWebDriver) {
+    public static String getWebDriverServerUrl(RemoteWebDriver remoteWebDriver) {
         CommandExecutor commandExecutor = remoteWebDriver.getCommandExecutor();
         if (commandExecutor instanceof HttpCommandExecutor) {
             return ((HttpCommandExecutor) commandExecutor).getAddressOfRemoteServer().toString();

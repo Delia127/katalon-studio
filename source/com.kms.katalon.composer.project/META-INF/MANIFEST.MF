@@ -31,11 +31,21 @@ Require-Bundle: org.eclipse.e4.core.di,
  javax.inject,
  com.kms.katalon.application,
  com.kms.katalon.composer.util,
- com.kms.katalon.dal
+ com.kms.katalon.dal,
+ com.kms.katalon.core,
+ org.greenrobot.eventbus,
+ com.kms.katalon.tracking,
+ org.apache.commons.lang3,
+ com.google.gson,
+ com.kms.katalon.integration.analytics,
+ org.apache.httpcomponents.httpclient,
+ org.apache.httpcomponents.httpcore
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: javax.annotation;version="1.2.0"
 Export-Package: com.kms.katalon.composer.project.constants,
+ com.kms.katalon.composer.project.dialog,
  com.kms.katalon.composer.project.handlers,
  com.kms.katalon.composer.project.menu,
+ com.kms.katalon.composer.project.sample,
  com.kms.katalon.composer.project.template,
  com.kms.katalon.composer.project.views

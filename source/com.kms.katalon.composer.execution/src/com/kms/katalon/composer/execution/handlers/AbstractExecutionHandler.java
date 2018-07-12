@@ -38,9 +38,6 @@ import org.eclipse.ui.PlatformUI;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
-import com.kms.katalon.application.RunningMode;
-import com.kms.katalon.application.usagetracking.UsageActionTrigger;
-import com.kms.katalon.application.usagetracking.UsageInfoCollector;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.execution.ExecutionProfileManager;
@@ -64,6 +61,7 @@ import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
+import com.kms.katalon.tracking.service.Trackings;
 
 @SuppressWarnings("restriction")
 public abstract class AbstractExecutionHandler {
@@ -140,6 +138,7 @@ public abstract class AbstractExecutionHandler {
     @Execute
     public void execute(ParameterizedCommand command) {
         try {
+            LaunchMode launchMode = getLaunchMode(command);
             execute(getLaunchMode(command));
         } catch (ExecutionException e) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR, e.getMessage());
@@ -281,6 +280,8 @@ public abstract class AbstractExecutionHandler {
                         LauncherManager launcherManager = LauncherManager.getInstance();
                         ILauncher launcher = new IDELauncher(launcherManager, runConfig, launchMode);
                         launcherManager.addLauncher(launcher);
+                        
+                        trackTestSuiteExecution(launchMode, runConfig);
 
                         monitor.worked(1);
 
@@ -313,13 +314,17 @@ public abstract class AbstractExecutionHandler {
 
                     return Status.CANCEL_STATUS;
                 } finally {
-                    UsageInfoCollector.collect(
-                            UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.RUN_SCRIPT, RunningMode.GUI));
+//                    UsageInfoCollector.collect(
+//                            UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.RUN_SCRIPT, RunningMode.GUI));
                 }
             }
         };
         job.setUser(true);
         job.schedule();
+    }
+    
+    private void trackTestSuiteExecution(LaunchMode launchMode, IRunConfiguration runConfig) {
+        Trackings.trackExecuteTestSuiteInGuiMode(launchMode.toString());
     }
 
     /**

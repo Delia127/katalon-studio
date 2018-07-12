@@ -5,24 +5,24 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
+import org.greenrobot.eventbus.EventBus;
 
-import com.kms.katalon.application.RunningMode;
-import com.kms.katalon.application.usagetracking.UsageActionTrigger;
-import com.kms.katalon.application.usagetracking.UsageInfoCollector;
+import com.kms.katalon.application.utils.ActivationInfoCollector;
+import com.kms.katalon.core.event.EventBusSingleton;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.execution.collector.ConsoleOptionCollector;
 import com.kms.katalon.execution.console.entity.ConsoleOption;
 import com.kms.katalon.execution.console.entity.ConsoleOptionContributor;
 import com.kms.katalon.execution.console.entity.LauncherOptionParser;
-import com.kms.katalon.execution.console.entity.TestSuiteLauncherOptionParser;
 import com.kms.katalon.execution.console.entity.TestSuiteCollectionLauncherOptionParser;
+import com.kms.katalon.execution.console.entity.TestSuiteLauncherOptionParser;
 import com.kms.katalon.execution.constants.StringConstants;
 import com.kms.katalon.execution.exception.InvalidConsoleArgumentException;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
+import com.kms.katalon.tracking.service.Trackings;
 
 import joptsimple.OptionSet;
 
@@ -69,11 +69,29 @@ public class ConsoleExecutor {
 
         LauncherManager launcherManager = LauncherManager.getInstance();
         launcherManager.addLauncher(launcherOption.getConsoleLauncher(projectEntity, launcherManager));
-
-        Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector
-                .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.RUN_SCRIPT, RunningMode.CONSOLE)));
+        
+        trackExecution(launcherOption);
+        
+//        Executors.newSingleThreadExecutor().submit(() -> {
+//            if (ActivationInfoCollector.isActivated()) {
+//                UsageInfoCollector.collect(
+//                        UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.RUN_SCRIPT, RunningMode.CONSOLE));
+//            } else {
+//                UsageInfoCollector.collect(
+//                        UsageInfoCollector.getAnonymousUsageInfo(UsageActionTrigger.RUN_SCRIPT, RunningMode.CONSOLE));
+//            }
+//        });
     }
 
+    private void trackExecution(LauncherOptionParser launcherOption) {
+        EventBus eventBus = EventBusSingleton.getInstance().getEventBus();
+        if (launcherOption instanceof TestSuiteLauncherOptionParser) {
+            Trackings.trackExecuteTestSuiteInConsoleMode(!ActivationInfoCollector.isActivated());
+        } else if (launcherOption instanceof TestSuiteCollectionLauncherOptionParser) {
+            Trackings.trackExecuteTestSuiteCollectionInConsoleMode(!ActivationInfoCollector.isActivated());
+        }
+    }
+    
     private void setValueForOptionalOptions(List<ConsoleOptionContributor> optionContributors, OptionSet optionSet)
             throws Exception {
         for (ConsoleOptionContributor contributor : optionContributors) {

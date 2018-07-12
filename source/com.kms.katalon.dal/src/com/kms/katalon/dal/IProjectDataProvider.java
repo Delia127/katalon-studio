@@ -35,4 +35,6 @@ public interface IProjectDataProvider {
 	public String getInternalSettingFolder();
 
     File getProjectFile(String folderLocation);
+
+    ProjectEntity updateProjectEntity(File projectFile, ProjectEntity newInfo) throws DALException;
 }
