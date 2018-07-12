@@ -322,7 +322,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 invoke(ObjectSpyEvent.SELENIUM_SESSION_STARTED, session);
             }
             if (!isPauseRecording) {
-                recordStepsView.addSimpleKeyword("openBrowser");
+                recordStepsView.addSimpleKeyword("openBrowser", true);
             }
 
             tltmPauseAndResume.setEnabled(true);
@@ -1293,7 +1293,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     public void stop() {
         try {
             if (!isPauseRecording) {
-                recordStepsView.addSimpleKeyword("closeBrowser");
+                recordStepsView.addSimpleKeyword("closeBrowser", false);
             }
             stopServer();
             stopRecordSession();
