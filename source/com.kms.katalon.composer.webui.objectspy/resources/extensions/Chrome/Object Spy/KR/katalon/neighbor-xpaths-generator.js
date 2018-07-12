@@ -147,8 +147,8 @@ neighborXpathsGenerator.getUsefulNeighbors = function (clickedElement, explicitP
  * return either 'preceding' or 'following' depends on wether neighbor appears before or after clicked element  
 **/
 neighborXpathsGenerator.getRelativePrefix = function (clickedElement, neighbor) {
-    var elementPath = neighborXpathsGenerator.getIndexPath(clickedElement);
-    var neighborPath = neighborXpathsGenerator.getIndexPath(neighbor);
+    var elementPath = getIndexPath(clickedElement);
+    var neighborPath = getIndexPath(neighbor);
     for (var i = 0; i < Math.max(elementPath.length, neighborPath.length); i++) {
         if (elementPath[i] != neighborPath[i]) {
             return (elementPath[i] - neighborPath[i] < 0) ? 'preceding' : 'following';
@@ -323,29 +323,7 @@ neighborXpathsGenerator.usefulElement = function (element) {
     );
 }
 
-/**
- * @param: DOM element
- * @param: Path so far
- * @return: Array of index representing the position of the current element
- * among all children of its parent
-**/
-neighborXpathsGenerator.getIndexPath = function (domNode, bits) {
-    bits = bits ? bits : [];
-    var c = 0;
-    var p = domNode.parentNode;
-    if (p) {
-        // This is the important difference from getAbsoluteXPath
-        var els = p.children;
 
-        if (els.length > 1) {
-            while (els[c] !== domNode) c++;
-        }
-
-        bits.push(c);
-        return neighborXpathsGenerator.getIndexPath(p, bits);
-    }
-    return bits.reverse();
-}
 
 /**
  * @param: DOM element
@@ -379,7 +357,7 @@ neighborXpathsGenerator.getIndexPathsFromMatrix = function (matrix) {
     for (var i = 0; i < matrix.length; i++) {
         var thisElement = matrix[i];
         if (thisElement) {
-            indexPaths.push({ element: thisElement, indexPath: neighborXpathsGenerator.getIndexPath(thisElement) });
+            indexPaths.push({ element: thisElement, indexPath: getIndexPath(thisElement) });
         }
     }
     return indexPaths;

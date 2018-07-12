@@ -212,3 +212,21 @@ function getElementInfo(element) {
 function isInTopWindow() {
     return window.location === window.parent.location;
 }
+
+function getIndexPath (domNode, bits) {
+    bits = bits ? bits : [];
+    var c = 0;
+    var p = domNode.parentNode;
+    if (p) {
+        // This is the important difference from getAbsoluteXPath
+        var els = p.children;
+
+        if (els.length > 1) {
+            while (els[c] !== domNode) c++;
+        }
+
+        bits.push(c);
+        return getIndexPath(p, bits);
+    }
+    return bits.reverse();
+}
