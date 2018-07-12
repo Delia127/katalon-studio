@@ -2,8 +2,9 @@ node {
     stage('Check out') {
 	// FIXME: Workaround since checkout process in local is too slow 
 	sh '''
+	    echo $USER
 	    if [ ! -f "Jenkinsfile" ]; then
-                cp -rf "/Users/katalon/Katalon Studio/katalon/" . | true
+                cp -rf "$HOME/katalon/" . | true
             fi
 	''' 
         checkout scm
