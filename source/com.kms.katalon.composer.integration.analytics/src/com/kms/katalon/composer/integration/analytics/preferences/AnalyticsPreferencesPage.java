@@ -59,7 +59,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     private Button enableAnalyticsIntegration;
 
-    private Button cbxAutoSubmit, cbxAttachScreenshot, cbxAttachLog, cbxAttachCaptureVideo;
+    private Button cbxAutoSubmit, cbxAttachScreenshot, cbxAttachCaptureVideo;
 
     private Text txtServerUrl, txtEmail, txtPassword;
 
@@ -217,9 +217,9 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         cbxAttachScreenshot.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         cbxAttachScreenshot.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_TEST_RESULT_ATTACH_SCREENSHOT);
 
-        cbxAttachLog = new Button(attachComposite, SWT.CHECK);
-        cbxAttachLog.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-        cbxAttachLog.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_TEST_RESULT_ATTACH_LOG);
+//        cbxAttachLog = new Button(attachComposite, SWT.CHECK);
+//        cbxAttachLog.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+//        cbxAttachLog.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_TEST_RESULT_ATTACH_LOG);
 
         cbxAttachCaptureVideo = new Button(attachComposite, SWT.CHECK);
         cbxAttachCaptureVideo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -329,7 +329,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             txtServerUrl.setText(analyticsSettingStore.getServerEndpoint(encryptionEnabled));
             cbxAutoSubmit.setSelection(analyticsSettingStore.isAutoSubmit());
             cbxAttachScreenshot.setSelection(analyticsSettingStore.isAttachScreenshot());
-            cbxAttachLog.setSelection(analyticsSettingStore.isAttachLog());
             cbxAttachCaptureVideo.setSelection(analyticsSettingStore.isAttachCapturedVideos());
             
             ScopedPreferenceStore preferenceStore = PreferenceStoreManager.getPreferenceStore(ActivationPreferenceConstants.ACTIVATION_INFO_STORAGE);
@@ -367,10 +366,12 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         cbbProjects.setEnabled(isAnalyticsIntegrated);
         btnCreate.setEnabled(isAnalyticsIntegrated);
         cbxAutoSubmit.setEnabled(isAnalyticsIntegrated);
+        cbxAutoSubmit.setSelection(isAnalyticsIntegrated);
         cbxAttachScreenshot.setEnabled(isAnalyticsIntegrated);
-        cbxAttachLog.setEnabled(isAnalyticsIntegrated);
+        cbxAttachScreenshot.setSelection(isAnalyticsIntegrated);
         cbxAttachCaptureVideo.setEnabled(isAnalyticsIntegrated);
         chckEncrypt.setEnabled(isAnalyticsIntegrated);
+        chckEncrypt.setSelection(isAnalyticsIntegrated);
         chckShowPassword.setEnabled(isAnalyticsIntegrated);
     }
 
@@ -392,7 +393,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                     cbbProjects.getSelectionIndex() != -1 ? projects.get(cbbProjects.getSelectionIndex()) : null);
             analyticsSettingStore.setAutoSubmit(cbxAutoSubmit.getSelection());
             analyticsSettingStore.setAttachScreenshot(cbxAttachScreenshot.getSelection());
-            analyticsSettingStore.setAttachLog(cbxAttachLog.getSelection());
+            analyticsSettingStore.setAttachLog(enableAnalyticsIntegration.getSelection());
             analyticsSettingStore.setAttachCapturedVideos(cbxAttachCaptureVideo.getSelection());
             
             IEventBroker eventBroker = EventBrokerSingleton.getInstance().getEventBroker();
