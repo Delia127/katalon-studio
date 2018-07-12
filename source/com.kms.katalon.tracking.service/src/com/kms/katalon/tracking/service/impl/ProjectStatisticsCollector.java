@@ -336,11 +336,11 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
     private boolean isKobitonIntegrated() {
         return KobitonPreferencesProvider.isKobitonIntegrationEnabled();
     }
-    
+
     private boolean isqTestIntegrated() {
         return QTestSettingStore.isIntegrationActive(project.getFolderLocation());
     }
-    
+
     private boolean isSlackIntegrated() {
         return SlackUtil.getInstance().isSlackEnabled();
     }

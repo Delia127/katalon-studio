@@ -26,9 +26,9 @@ public class QTestIntegrationActivationCheckHandler {
         boolean activated = true;
         int result = new QTestActivationDialog(null).open();
         if (result == Window.CANCEL) {
-            activated = true;
+            activated = false;
         }
-        
+
         eventBroker.send(EventConstants.ACTIVATION_QTEST_INTEGRATION_CHECK_COMPLETED, activated);
     }
 

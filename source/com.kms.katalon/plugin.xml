@@ -25,11 +25,11 @@
 		</property>
          <property
                name="windowImages"
-               value="platform:/plugin/com.kms.katalon.product/icons/branding_16.png,platform:/plugin/com.kms.katalon.product/icons/branding_32.png,platform:/plugin/com.kms.katalon.product/icons/branding_48.png,platform:/plugin/com.kms.katalon.product/icons/branding_64.png,platform:/plugin/com.kms.katalon.product/icons/branding_128.png,platform:/plugin/com.kms.katalon.product/icons/branding_256.png">
+               value="icons/branding_16.png,icons/branding_32.png,icons/branding_48.png,icons/branding_64.png,icons/branding_128.png,icons/branding_256.png">
          </property>
          <property
                name="aboutImage"
-               value="platform:/plugin/com.kms.katalon.product/icons/branding_128.png">
+               value="icons/branding_128.png">
          </property>
          <property
                name="aboutText"
