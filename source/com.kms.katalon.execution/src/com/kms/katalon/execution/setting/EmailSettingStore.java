@@ -169,7 +169,7 @@ public class EmailSettingStore extends BundleSettingStore {
     }
 
     public void setEmailBcc(String bcc) throws IOException {
-        setProperty(ExecutionPreferenceConstants.MAIL_CONFIG_CC, StringUtils.defaultString(bcc));
+        setProperty(ExecutionPreferenceConstants.MAIL_CONFIG_BCC, StringUtils.defaultString(bcc));
     }
 
     public List<ReportFormatType> getReportFormatOptions() throws IOException {

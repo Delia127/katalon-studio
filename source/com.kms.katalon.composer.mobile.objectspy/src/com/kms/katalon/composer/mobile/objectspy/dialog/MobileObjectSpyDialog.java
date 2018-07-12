@@ -66,6 +66,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Widget;
 
 import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
+import com.kms.katalon.composer.components.dialogs.MessageDialogWithLink;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.dialogs.ProgressMonitorDialogWithThread;
@@ -99,6 +100,7 @@ import com.kms.katalon.core.mobile.driver.MobileDriverType;
 import com.kms.katalon.core.mobile.keyword.internal.GUIObject;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class MobileObjectSpyDialog extends Dialog implements MobileElementInspectorDialog, MobileAppDialog {
 
@@ -643,6 +645,7 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
                     FolderTreeEntity folderTreeEntity = dialog.getSelectedFolderTreeEntity();
                     FolderEntity folder = folderTreeEntity.getObject();
                     List<ITreeEntity> newTreeEntities = addElementsToRepository(folderTreeEntity, folder);
+                    Trackings.trackSaveSpy("mobile", newTreeEntities.size());
                     removeSelectedCapturedElements(
                             capturedObjectsTableViewer.getAllCheckedElements().toArray(new CapturedMobileElement[0]));
                     updateExplorerState(folderTreeEntity, newTreeEntities);
@@ -1003,14 +1006,20 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
             // If no exception, application has been successful started, enable more features
             btnCapture.setEnabled(true);
             btnStop.setEnabled(true);
+            
+            // send event for tracking
+            Trackings.trackSpy("mobile");
         } catch (InvocationTargetException | InterruptedException ex) {
             // If user intentionally cancel the progress, don't need to show error message
             if (ex instanceof InvocationTargetException) {
                 Throwable targetException = ((InvocationTargetException) ex).getTargetException();
                 String message = (targetException instanceof java.util.concurrent.ExecutionException)
                         ? targetException.getCause().getMessage() : targetException.getMessage();
-                MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
-                        StringConstants.DIA_ERROR_MSG_CANNOT_START_APP_ON_CURRENT_DEVICE + ": " + message);
+
+                MessageDialogWithLink.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
+                        StringConstants.DIA_ERROR_MSG_CANNOT_START_APP_ON_CURRENT_DEVICE + ": " + message
+                                + "\n<a href=\"" + StringConstants.URL_TROUBLESHOOTING_MOBILE_TESTING + "\">"
+                                + StringConstants.APPIUM_INSTALLATION_GUIDE_MSG + "</a>");
                 LoggerSingleton.logError(targetException);
             }
 
@@ -1085,7 +1094,9 @@ public class MobileObjectSpyDialog extends Dialog implements MobileElementInspec
         } catch (IOException e) {
             LoggerSingleton.logError(e);
         }
-        return super.close();
+        boolean result = super.close();
+        Trackings.trackCloseSpy("mobile");
+        return result;
     }
 
     @Override

@@ -4,10 +4,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import com.kms.katalon.core.testobject.impl.HttpFileBodyContent;
+import com.kms.katalon.core.testobject.impl.HttpFormDataBodyContent;
+import com.kms.katalon.core.testobject.impl.HttpTextBodyContent;
+import com.kms.katalon.core.testobject.impl.HttpUrlEncodedBodyContent;
+
 /**
  * Represents the body content of a HTTP message (request/response).
  * 
  * @since 5.4
+ * @see HttpTextBodyContent
+ * @see HttpFileBodyContent
+ * @see HttpFormDataBodyContent
+ * @see HttpUrlEncodedBodyContent
  *
  */
 public interface HttpBodyContent {

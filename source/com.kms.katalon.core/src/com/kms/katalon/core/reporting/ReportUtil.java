@@ -259,7 +259,7 @@ public class ReportUtil {
         String json = new GsonBuilder().addSerializationExclusionStrategy(excludeFields)
                 .create()
                 .toJson(suiteLogEntity);
-        FileUtils.writeStringToFile(new File(logFolder, "JSON_Report.json"), json);
+        FileUtils.writeStringToFile(new File(logFolder, "JSON_Report.json"), json, StringConstants.DF_CHARSET);
     }
 
     public static void writeTSCollectionHTMLReport(String reportTitle, String tsReportsJson, File destDir)
@@ -269,14 +269,14 @@ public class ReportUtil {
         String template = htmlSb.toString();
         template = StringUtils.replace(template, "REPORT_TITLE", reportTitle);
         template = StringUtils.replace(template, "TEST_SUITE_REPORT_LIST", tsReportsJson);
-        FileUtils.writeStringToFile(new File(destDir, "index.html"), template);
+        FileUtils.writeStringToFile(new File(destDir, "index.html"), template, StringConstants.DF_CHARSET);
 
         htmlSb = new StringBuilder();
         readFileToStringBuilder(ResourceLoader.HTML_COLLECTION_FRAME_TEMPLATE, htmlSb);
         template = htmlSb.toString();
         template = StringUtils.replace(template, "REPORT_TITLE", reportTitle);
         template = StringUtils.replace(template, "TEST_SUITE_REPORT_LIST", tsReportsJson);
-        FileUtils.writeStringToFile(new File(destDir, "index-frame-view.html"), template);
+        FileUtils.writeStringToFile(new File(destDir, "index-frame-view.html"), template, StringConstants.DF_CHARSET);
     }
 
     public static void writeHtmlReport(TestSuiteLogRecord suiteLogEntity, File logFolder)
@@ -284,7 +284,8 @@ public class ReportUtil {
         StringBuilder htmlSb = prepareHtmlContent(suiteLogEntity);
 
         // Write main HTML Report
-        FileUtils.writeStringToFile(new File(logFolder, logFolder.getName() + ".html"), htmlSb.toString());
+        FileUtils.writeStringToFile(new File(logFolder, logFolder.getName() + ".html"), htmlSb.toString(),
+                StringConstants.DF_CHARSET);
     }
 
     private static StringBuilder prepareHtmlContent(TestSuiteLogRecord suiteLogEntity)
@@ -300,12 +301,13 @@ public class ReportUtil {
         readFileToStringBuilder(ResourceLoader.HTML_TEMPLATE_CONTENT, htmlSb);
         return htmlSb;
     }
-    
-    public static void writeHtmlReportAppendHashCodeToName(TestSuiteLogRecord suiteLogEntity, File logFolder, int reportDirLocationHashCode)
-            throws IOException, URISyntaxException {
+
+    public static void writeHtmlReportAppendHashCodeToName(TestSuiteLogRecord suiteLogEntity, File logFolder,
+            int reportDirLocationHashCode) throws IOException, URISyntaxException {
         StringBuilder htmlSb = prepareHtmlContent(suiteLogEntity);
 
-        FileUtils.writeStringToFile(new File(logFolder, logFolder.getName() + reportDirLocationHashCode + ".html"), htmlSb.toString());
+        FileUtils.writeStringToFile(new File(logFolder, logFolder.getName() + reportDirLocationHashCode + ".html"),
+                htmlSb.toString(), StringConstants.DF_CHARSET);
     }
 
     public static void writeCSVReport(TestSuiteLogRecord suiteLogEntity, File logFolder) throws IOException {
@@ -327,7 +329,8 @@ public class ReportUtil {
         readFileToStringBuilder(ResourceLoader.HTML_TEMPLATE_FILE, simpleHtmlSb);
         simpleHtmlSb.append(generateVars(simpleStrings, suiteLogEntity, simpleSbModel));
         readFileToStringBuilder(ResourceLoader.HTML_TEMPLATE_CONTENT, simpleHtmlSb);
-        FileUtils.writeStringToFile(new File(logFolder, "Report.html"), simpleHtmlSb.toString());
+        FileUtils.writeStringToFile(new File(logFolder, "Report.html"), simpleHtmlSb.toString(),
+                StringConstants.DF_CHARSET);
     }
 
     public static void writeLogRecordToHTMLFile(TestSuiteLogRecord suiteLogEntity, File destFile,
@@ -355,7 +358,7 @@ public class ReportUtil {
         readFileToStringBuilder(ResourceLoader.HTML_TEMPLATE_FILE, htmlSb);
         htmlSb.append(generateVars(strings, suiteLogEntity, sbModel));
         readFileToStringBuilder(ResourceLoader.HTML_TEMPLATE_CONTENT, htmlSb);
-        FileUtils.writeStringToFile(destFile, htmlSb.toString());
+        FileUtils.writeStringToFile(destFile, htmlSb.toString(), StringConstants.DF_CHARSET);
     }
 
     public static List<XmlLogRecord> getAllLogRecords(String logFolder)

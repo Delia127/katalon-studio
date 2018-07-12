@@ -8,8 +8,15 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.MessageFormat;
 
+import org.apache.commons.io.IOUtils;
+
 import com.kms.katalon.core.testobject.HttpBodyContent;
 
+/**
+ * Represents the body content of a HTTP message (request/response) that obtains content from a {@link File}.
+ * 
+ * @since 5.4
+ */
 public class HttpFileBodyContent implements HttpBodyContent {
     private static final int BUFFER_SIZE = 1024;
 
@@ -50,8 +57,9 @@ public class HttpFileBodyContent implements HttpBodyContent {
 
     @Override
     public void writeTo(OutputStream outstream) throws IOException {
-        try (InputStream inputStream = getInputStream()) {
-
+        InputStream inputStream = null;
+        try {
+            inputStream = getInputStream();
             int nRead;
             byte[] data = new byte[BUFFER_SIZE];
 
@@ -59,6 +67,10 @@ public class HttpFileBodyContent implements HttpBodyContent {
                 outstream.write(data, 0, nRead);
             }
             outstream.flush();
+        } finally {
+            if (inputStream != null) {
+                IOUtils.closeQuietly(inputStream);
+            }
         }
     }
 }

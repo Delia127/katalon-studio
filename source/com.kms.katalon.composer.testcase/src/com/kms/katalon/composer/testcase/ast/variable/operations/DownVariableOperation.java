@@ -1,9 +1,9 @@
 package com.kms.katalon.composer.testcase.ast.variable.operations;
 
-import com.kms.katalon.composer.testcase.parts.TestCaseVariablePart;
+import com.kms.katalon.composer.testcase.parts.TableActionOperator;
 
 public class DownVariableOperation extends UpVariableOperation {
-    public DownVariableOperation(TestCaseVariablePart testCaseVariablePart) {
+    public DownVariableOperation(TableActionOperator testCaseVariablePart) {
         super(DownVariableOperation.class.getName(), testCaseVariablePart);
     }
 

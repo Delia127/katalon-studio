@@ -96,4 +96,10 @@ public class StringConstants extends GlobalStringConstants {
     public static final String DIA_BTN_NEW_FOLDER = ComposerMobileObjectspyMessageConstants.DIA_BTN_NEW_FOLDER;
 
     public static final String DIA_TITLE_FOLDER_BROWSER = ComposerMobileObjectspyMessageConstants.DIA_TITLE_FOLDER_BROWSER;
+    
+    public static final String MSG_NO_DEVICES = ComposerMobileObjectspyMessageConstants.MSG_NO_DEVICES;
+    
+    public static final String MSG_WRAPPED_NO_DEVICES_TROUBLESHOOTING_GUIDE = ComposerMobileObjectspyMessageConstants.MSG_WRAPPED_NO_DEVICES_TROUBLESHOOTING_GUIDE;
+    
+    public static final String NO_DEVICES_TROUBLESHOOTING_GUIDE_LINK = ComposerMobileObjectspyMessageConstants.NO_DEVICES_TROUBLESHOOTING_GUIDE_LINK;
 }

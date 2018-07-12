@@ -3,6 +3,8 @@ package com.kms.katalon.core.logging.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import com.kms.katalon.core.logging.model.TestStatus.TestStatusValue;
 
 public class TestCaseLogRecord extends AbstractLogRecord {
@@ -33,6 +35,7 @@ public class TestCaseLogRecord extends AbstractLogRecord {
         List<ILogRecord> resultRecords = new ArrayList<ILogRecord>();
         for (ILogRecord logRecord : childRecords) {
             if (logRecord instanceof TestStepLogRecord) {
+                logRecord.setDescription(StringEscapeUtils.unescapeJava(logRecord.getDescription()));
                 resultRecords.add(logRecord);
             }
         }

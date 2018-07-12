@@ -21,6 +21,7 @@ import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class NewExecutionProfileHandler extends ExecutionProfileTreeRootCatcher {
     @Inject
@@ -49,6 +50,8 @@ public class NewExecutionProfileHandler extends ExecutionProfileTreeRootCatcher 
             String newName = dialog.getNewName();
             ExecutionProfileEntity newProfile = GlobalVariableController.getInstance().newExecutionProfile(newName, project);
             eventBroker.post(EventConstants.EXECUTION_PROFILE_CREATED, newName);
+            
+            Trackings.trackCreatingObject("profile");
 
             ProfileTreeEntity newProfileTree = new ProfileTreeEntity(newProfile, profileTreeFolder);
             eventBroker.post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, profileTreeFolder);

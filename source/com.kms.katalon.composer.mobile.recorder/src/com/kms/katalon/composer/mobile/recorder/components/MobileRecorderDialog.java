@@ -66,6 +66,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 
+import com.kms.katalon.composer.components.dialogs.MessageDialogWithLink;
 import com.kms.katalon.composer.components.impl.control.CTreeViewer;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
@@ -110,6 +111,7 @@ import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.core.testobject.TestObjectProperty;
 import com.kms.katalon.execution.mobile.constants.StringConstants;
 import com.kms.katalon.integration.kobiton.entity.KobitonApplication;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class MobileRecorderDialog extends AbstractDialog implements MobileElementInspectorDialog, MobileAppDialog {
     private static final int DIALOG_MARGIN_OFFSET = 5;
@@ -161,7 +163,9 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
         } catch (IOException e) {
             LoggerSingleton.logError(e);
         }
-        return super.close();
+        boolean result = super.close();
+        Trackings.trackCloseRecord("mobile", "cancel", 0);
+        return result;
     }
 
     @Override
@@ -283,7 +287,12 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
             return;
         }
         targetFolderEntity = dialog.getSelectedFolderTreeEntity();
+        
+        int recordedActionCount = getRecordedActions().size();
+        
         super.okPressed();
+        
+        Trackings.trackCloseRecord("mobile", "ok", recordedActionCount);
     }
 
     public List<MobileActionMapping> getRecordedActions() {
@@ -837,14 +846,16 @@ public class MobileRecorderDialog extends AbstractDialog implements MobileElemen
             targetElementChanged(null);
             recordedActions.add(buildStartAppActionMapping());
             actionTableViewer.refresh();
+            
+            //send event for tracking
+            Trackings.trackRecord("mobile");
         } catch (InvocationTargetException | InterruptedException ex) {
             // If user intentionally cancel the progress, don't need to show error message
             if (ex instanceof InvocationTargetException) {
                 Throwable targetException = ((InvocationTargetException) ex).getTargetException();
                 String message = (targetException instanceof java.util.concurrent.ExecutionException)
                         ? targetException.getCause().getMessage() : targetException.getMessage();
-                MessageDialog.openError(Display.getCurrent().getActiveShell(), MobileRecorderStringConstants.ERROR,
-                        MobileRecoderMessagesConstants.MSG_ERR_CANNOT_START_APP + message);
+                MessageDialogWithLink.openError(Display.getCurrent().getActiveShell(), MobileRecorderStringConstants.ERROR, MobileRecoderMessagesConstants.MSG_ERR_CANNOT_START_APP + ": " + message + "\n<a href=\"" + MobileRecorderStringConstants.URL_TROUBLESHOOTING_MOBILE_TESTING + "\">" + MobileRecorderStringConstants.APPIUM_INSTALLATION_GUIDE_MSG + "</a>");
             }
 
             // Enable start button and show error dialog if application cannot start

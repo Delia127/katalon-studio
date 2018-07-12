@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="IProjectStatisticsCollector">
+   <implementation class="com.kms.katalon.tracking.service.impl.ProjectStatisticsCollector"/>
+   <service>
+      <provide interface="com.kms.katalon.tracking.osgi.service.IProjectStatisticsCollector"/>
+   </service>
+</scr:component>

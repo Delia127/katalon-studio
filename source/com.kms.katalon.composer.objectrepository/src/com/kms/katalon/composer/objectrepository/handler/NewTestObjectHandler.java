@@ -35,6 +35,7 @@ import com.kms.katalon.entity.dal.exception.FilePathTooLongException;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.repository.WebElementEntity;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class NewTestObjectHandler {
 	@Inject
@@ -106,6 +107,8 @@ public class NewTestObjectHandler {
                         StringConstants.HAND_ERROR_MSG_UNABLE_TO_CREATE_TEST_OBJ);
                 return;
             }
+            
+            Trackings.trackCreatingObject("testObject");
 
             eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
             eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, new WebElementTreeEntity(webElement,

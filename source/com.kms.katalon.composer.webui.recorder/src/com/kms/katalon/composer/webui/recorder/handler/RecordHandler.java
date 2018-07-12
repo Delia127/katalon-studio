@@ -1,13 +1,13 @@
 package com.kms.katalon.composer.webui.recorder.handler;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -35,11 +35,10 @@ import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.testcase.groovy.ast.ASTNodeWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.ScriptNodeWrapper;
-import com.kms.katalon.composer.testcase.groovy.ast.expressions.ArgumentListExpressionWrapper;
-import com.kms.katalon.composer.testcase.groovy.ast.expressions.ConstantExpressionWrapper;
-import com.kms.katalon.composer.testcase.groovy.ast.expressions.MethodCallExpressionWrapper;
-import com.kms.katalon.composer.testcase.groovy.ast.statements.ExpressionStatementWrapper;
+import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
+import com.kms.katalon.composer.testcase.groovy.ast.statements.BlockStatementWrapper;
 import com.kms.katalon.composer.testcase.groovy.ast.statements.StatementWrapper;
 import com.kms.katalon.composer.testcase.handlers.NewTestCaseHandler;
 import com.kms.katalon.composer.testcase.model.TestCaseTreeTableInput.NodeAddType;
@@ -48,21 +47,19 @@ import com.kms.katalon.composer.testcase.parts.TestCasePart;
 import com.kms.katalon.composer.webui.recorder.action.HTMLActionMapping;
 import com.kms.katalon.composer.webui.recorder.constants.StringConstants;
 import com.kms.katalon.composer.webui.recorder.dialog.RecorderDialog;
-import com.kms.katalon.composer.webui.recorder.util.HTMLActionUtil;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.FolderController;
-import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
-import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
+import com.kms.katalon.entity.variable.VariableEntity;
 import com.kms.katalon.objectspy.dialog.SaveToObjectRepositoryDialog.SaveToObjectRepositoryDialogResult;
 import com.kms.katalon.objectspy.element.WebElement;
 import com.kms.katalon.objectspy.element.WebFrame;
 import com.kms.katalon.objectspy.element.WebPage;
-import com.kms.katalon.objectspy.util.WebElementUtils;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class RecordHandler {
 
@@ -74,8 +71,6 @@ public class RecordHandler {
 
     @Inject
     private IEventBroker eventBroker;
-
-    private Map<WebElement, FileEntity> entitySavedMap;
 
     @Inject
     private UISynchronize sync;
@@ -104,16 +99,36 @@ public class RecordHandler {
     @Execute
     public void execute() {
         Shell shell = null;
+        Shell activeShell = Display.getCurrent().getActiveShell();
+        if (activeShell == null) {
+            return;
+        }
         try {
             TestCaseCompositePart testCaseCompositePart = getSelectedTestCasePart();
             if (testCaseCompositePart != null && !verifyTestCase(testCaseCompositePart)) {
                 return;
             }
-            if (recordDialog == null || recordDialog.isDisposed()) {
-                shell = getShell(Display.getCurrent().getActiveShell());
-                recordDialog = new RecorderDialog(shell, LoggerSingleton.getInstance().getLogger(), eventBroker);
-            }
 
+            List<? extends ASTNodeWrapper> wrapper = new ArrayList<>();
+            List<VariableEntity> variables = new ArrayList<>();
+            TestCaseEntity testCaseEntity = null;
+            if (testCaseCompositePart != null) {
+                String scriptContent = StringUtils.defaultString(testCaseCompositePart.getScriptContent());
+
+                wrapper = GroovyWrapperParser.parseGroovyScriptIntoNodeWrapper(scriptContent)
+                        .getRunMethod()
+                        .getBlock()
+                        .getAstChildren();
+                testCaseEntity = testCaseCompositePart.getTestCase();
+                variables = testCaseCompositePart.getTestCase().clone().getVariables();
+            }
+            if (recordDialog == null || recordDialog.isDisposed()) {
+                shell = getShell(activeShell);
+                recordDialog = new RecorderDialog(shell, testCaseEntity, wrapper, variables);
+            } else {
+                recordDialog.getShell().forceActive();
+                return;
+            }
             int responseCode = recordDialog.open();
             if (responseCode != Window.OK) {
                 return;
@@ -121,28 +136,32 @@ public class RecordHandler {
             final SaveToObjectRepositoryDialogResult folderSelectionResult = recordDialog.getTargetFolderTreeEntity();
             final List<HTMLActionMapping> recordedActions = recordDialog.getActions();
             final List<WebPage> recordedElements = recordDialog.getElements();
-            if (testCaseCompositePart == null) {
+            boolean shouldOverride = true;
+            if (testCaseCompositePart == null || testCaseCompositePart.isDisposed()) {
                 testCaseCompositePart = createNewTestCase();
+                shouldOverride = false;
             }
-            doGenerateTestScripts(testCaseCompositePart, folderSelectionResult, recordedActions, recordedElements);
+            doGenerateTestScripts(testCaseCompositePart, folderSelectionResult, recordedActions, recordedElements,
+                    recordDialog.getScriptWrapper(), recordDialog.getVariables(), shouldOverride);
         } catch (Exception e) {
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), StringConstants.ERROR_TITLE,
+            MessageDialog.openError(activeShell, StringConstants.ERROR_TITLE,
                     StringConstants.HAND_ERROR_MSG_CANNOT_GEN_TEST_STEPS);
             LoggerSingleton.logError(e);
         } finally {
-             if (shell != null && !shell.isDisposed()) {
-                 shell.dispose();
-             }
+            if (shell != null && !shell.isDisposed()) {
+                shell.dispose();
+            }
         }
     }
-    
+
     private Shell getShell(Shell activeShell) {
         if (Platform.OS_WIN32.equals(Platform.getOS())) {
             return null;
         }
         Shell shell = new Shell();
         Rectangle activeShellSize = activeShell.getBounds();
-        shell.setLocation((activeShellSize.width - shell.getBounds().width) / 2, (activeShellSize.height - shell.getBounds().height) / 2);
+        shell.setLocation((activeShellSize.width - shell.getBounds().width) / 2,
+                (activeShellSize.height - shell.getBounds().height) / 2);
         return shell;
     }
 
@@ -160,7 +179,8 @@ public class RecordHandler {
 
     private void doGenerateTestScripts(final TestCaseCompositePart testCaseCompositePart,
             final SaveToObjectRepositoryDialogResult folderSelectionResult,
-            final List<HTMLActionMapping> recordedActions, final List<WebPage> recordedElements) {
+            final List<HTMLActionMapping> recordedActions, final List<WebPage> recordedElements,
+            final ScriptNodeWrapper wrapper, final VariableEntity[] variables, final boolean shouldOverride) {
         if (testCaseCompositePart == null) {
             return;
         }
@@ -174,14 +194,31 @@ public class RecordHandler {
                 try {
                     monitor.beginTask(StringConstants.JOB_GENERATE_SCRIPT_MESSAGE,
                             recordedActions.size() + recordedElements.size());
-                    final List<StatementWrapper> generatedStatementWrappers = generateStatementWrappersFromRecordedActions(
-                            recordedActions, recordedElements, testCasePart, folderSelectionResult, monitor);
+
+                    addRecordedElements(recordedElements, folderSelectionResult, monitor);
                     sync.syncExec(new Runnable() {
+                        @SuppressWarnings("unchecked")
                         @Override
                         public void run() {
                             try {
-                                testCasePart.addDefaultImports();
-                                testCasePart.addStatements(generatedStatementWrappers, NodeAddType.InserAfter);
+                                List<StatementWrapper> children = (List<StatementWrapper>) wrapper.getBlock()
+                                        .getAstChildren();
+                                if (children.isEmpty()) {
+                                    return;
+                                }
+                                if (!shouldOverride) {
+                                    testCasePart.addDefaultImports();
+                                    testCasePart.getTreeTableInput().getMainClassNode().addImport(Keys.class);
+
+                                    // append generated steps at the end of test case's steps
+                                    testCasePart.addStatements(children, NodeAddType.Add, true);
+                                    testCasePart.addVariables(variables);
+                                } else {
+                                    testCasePart.clearStatements();
+                                    testCasePart.addStatements(children, NodeAddType.Add, true);
+                                    testCasePart.deleteVariables(Arrays.asList(testCasePart.getVariables()));
+                                    testCasePart.addVariables(variables);
+                                }
                                 testCaseCompositePart.refreshScript();
                                 testCaseCompositePart.save();
                             } catch (Exception e) {
@@ -190,10 +227,13 @@ public class RecordHandler {
                         }
                     });
 
-                    FolderTreeEntity targetFolderTreeEntity = folderSelectionResult.getSelectedParentFolder();
-                    eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, targetFolderTreeEntity.getParent());
-                    eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, targetFolderTreeEntity);
-                    eventBroker.send(EventConstants.EXPLORER_EXPAND_TREE_ENTITY, targetFolderTreeEntity);
+                    if (folderSelectionResult != null) {
+                        FolderTreeEntity targetFolderTreeEntity = folderSelectionResult.getSelectedParentFolder();
+                        eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY,
+                                targetFolderTreeEntity.getParent());
+                        eventBroker.send(EventConstants.EXPLORER_SET_SELECTED_ITEM, targetFolderTreeEntity);
+                        eventBroker.send(EventConstants.EXPLORER_EXPAND_TREE_ENTITY, targetFolderTreeEntity);
+                    }
 
                     return Status.OK_STATUS;
                 } catch (final Exception e) {
@@ -257,100 +297,40 @@ public class RecordHandler {
         return true;
     }
 
-    private void addRecordedElement(WebElement element, FolderEntity parentFolder, WebElementEntity refElement)
-            throws Exception {
-        WebElementEntity importedElement = ObjectRepositoryController.getInstance().importWebElement(
-                WebElementUtils.convertWebElementToTestObject(element, refElement, parentFolder), parentFolder);
-        entitySavedMap.put(element, importedElement);
-        if (element instanceof WebFrame) {
-            for (WebElement childElement : ((WebFrame) element).getChildren()) {
-                addRecordedElement(childElement, parentFolder, importedElement);
-            }
-        }
-    }
-
     private void addRecordedElements(List<WebPage> recordedElements,
             SaveToObjectRepositoryDialogResult folderSelectionResult, IProgressMonitor monitor) throws Exception {
-        entitySavedMap = new HashMap<>();
-        for (WebElement pageElement : recordedElements) {
-            FolderEntity importedFolder = folderSelectionResult.createFolderForPageElement((WebPage) pageElement);
-            entitySavedMap.put(pageElement, importedFolder);
+        for (WebPage pageElement : recordedElements) {
+            FolderEntity importedFolder = (FolderEntity) folderSelectionResult.getEntitySavedMap().get(pageElement);
+            pageElement.setFolderAlias(importedFolder);
             for (WebElement childElement : ((WebFrame) pageElement).getChildren()) {
-                addRecordedElement(childElement, importedFolder, null);
+                addRecordedElement(childElement, importedFolder, folderSelectionResult);
             }
             monitor.worked(1);
         }
     }
 
-    private List<StatementWrapper> generateStatementWrappersFromRecordedActions(List<HTMLActionMapping> recordedActions,
-            List<WebPage> recordedElements, TestCasePart testCasePart,
-            SaveToObjectRepositoryDialogResult folderSelectionResult, IProgressMonitor monitor) throws Exception {
-        monitor.subTask(StringConstants.JOB_ADDING_OBJECT);
-        addRecordedElements(recordedElements, folderSelectionResult, monitor);
-
-        monitor.subTask(StringConstants.JOB_GENERATE_STATEMENT_MESSAGE);
-        List<StatementWrapper> resultStatementWrappers = new ArrayList<StatementWrapper>();
-
-        ScriptNodeWrapper mainClassNode = testCasePart.getTreeTableInput().getMainClassNode();
-        
-        addAdditionalImports(mainClassNode);
-        // add open browser keyword
-        String webUiKwAliasName = HTMLActionUtil.getWebUiKeywordClass().getAliasName();
-        MethodCallExpressionWrapper methodCallExpressionWrapper = new MethodCallExpressionWrapper(webUiKwAliasName,
-                "openBrowser", mainClassNode);
-        ArgumentListExpressionWrapper arguments = methodCallExpressionWrapper.getArguments();
-        arguments.addExpression(new ConstantExpressionWrapper(""));
-
-        resultStatementWrappers.add(new ExpressionStatementWrapper(methodCallExpressionWrapper));
-
-        // add switch to window keyword if action in another window
-        recordedActions = addSwitchToWindowKeyword(recordedActions);
-
-        for (HTMLActionMapping action : recordedActions) {
-            WebElementEntity createdTestObject = null;
-            if (action.getTargetElement() != null
-                    && entitySavedMap.get(action.getTargetElement()) instanceof WebElementEntity) {
-                createdTestObject = (WebElementEntity) entitySavedMap.get(action.getTargetElement());
+    private void addRecordedElement(WebElement element, FolderEntity parentFolder,
+            SaveToObjectRepositoryDialogResult folderSelectionResult) throws Exception {
+        // Replace test object name with it's linked WebElementEntity
+        FileEntity entity = folderSelectionResult.getEntitySavedMap().entrySet().stream().filter(e -> {
+            WebElement savedElement = e.getKey();
+            WebPage savedRoot = savedElement.getRoot();
+            if (savedRoot == null) {
+                return false;
             }
-            StatementWrapper generatedStatementWrapper = HTMLActionUtil.generateWebUiTestStep(action, createdTestObject,
-                    mainClassNode);
-            if (generatedStatementWrapper != null) {
-                resultStatementWrappers.add(generatedStatementWrapper);
-            }
-            monitor.worked(1);
+            WebPage root = element.getRoot();
+            return savedElement.getName().equals(element.getName()) && root != null
+                    && savedRoot.getName().equals(root.getName());
+        }).map(e -> e.getValue()).findFirst().orElse(null);
+        // If the entity doesn't exist that means user doesn't want to create new WebElementEntity
+        if (entity != null) {
+            element.setName(entity.getName());
         }
-
-        // add close browser keyword
-        methodCallExpressionWrapper = new MethodCallExpressionWrapper(webUiKwAliasName, "closeBrowser", mainClassNode);
-        arguments = methodCallExpressionWrapper.getArguments();
-        resultStatementWrappers.add(new ExpressionStatementWrapper(methodCallExpressionWrapper));
-
-        return resultStatementWrappers;
-    }
-
-    private void addAdditionalImports(ScriptNodeWrapper mainClassNode) {
-        mainClassNode.addImport(Keys.class);
-    }
-
-    private List<HTMLActionMapping> addSwitchToWindowKeyword(List<HTMLActionMapping> recordedActions) {
-        List<HTMLActionMapping> newActions = new ArrayList<HTMLActionMapping>();
-        String currentWindowId = null;
-        for (HTMLActionMapping action : recordedActions) {
-            String newId = action.getWindowId();
-            if (newId != null) {
-                if (currentWindowId == null) {
-                    currentWindowId = newId;
-                } else if (!newId.equals(currentWindowId)) {
-                    HTMLActionMapping switchToWindowAction = HTMLActionUtil
-                            .createNewSwitchToWindowAction(HTMLActionUtil.getPageTitleForAction(action));
-                    newActions.add(switchToWindowAction);
-                    currentWindowId = newId;
-                }
-            } else {
-                currentWindowId = "";
+        if (element instanceof WebFrame) {
+            for (WebElement childElement : ((WebFrame) element).getChildren()) {
+                addRecordedElement(childElement, parentFolder, folderSelectionResult);
             }
-            newActions.add(action);
         }
-        return newActions;
     }
+
 }

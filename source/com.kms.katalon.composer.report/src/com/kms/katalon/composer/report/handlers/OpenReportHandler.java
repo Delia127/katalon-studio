@@ -19,6 +19,7 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.composer.report.constants.ComposerReportMessageConstants;
 import com.kms.katalon.composer.report.constants.ImageConstants;
 import com.kms.katalon.composer.report.constants.StringConstants;
 import com.kms.katalon.composer.report.parts.ReportPart;
@@ -28,59 +29,62 @@ import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.result.LauncherStatus;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class OpenReportHandler {
-	private static final String REPORT_PART_URI = "bundleclass://com.kms.katalon.composer.report/"
-			+ ReportPart.class.getName();
+    private static final String REPORT_PART_URI = "bundleclass://com.kms.katalon.composer.report/"
+            + ReportPart.class.getName();
 
-	@Inject
-	MApplication application;
+    @Inject
+    MApplication application;
 
-	@Inject
-	EPartService partService;
+    @Inject
+    EPartService partService;
 
-	@Inject
-	EModelService modelService;
+    @Inject
+    EModelService modelService;
 
-	@Inject
-	private IEclipseContext context;
+    @Inject
+    private IEclipseContext context;
 
-	// @Inject
-	@PostConstruct
-	public void registerEventHandler(IEventBroker eventBroker) {
-		eventBroker.subscribe(EventConstants.EXPLORER_OPEN_SELECTED_ITEM, new EventHandler() {
-			@Override
-			public void handleEvent(Event event) {
-				Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-				if (object != null && object instanceof ReportEntity) {
-					excute((ReportEntity) object);
-				}
-			}
-		});
-	}
+    // @Inject
+    @PostConstruct
+    public void registerEventHandler(IEventBroker eventBroker) {
+        eventBroker.subscribe(EventConstants.EXPLORER_OPEN_SELECTED_ITEM, new EventHandler() {
+            @Override
+            public void handleEvent(Event event) {
+                Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
+                if (object != null && object instanceof ReportEntity) {
+                    excute((ReportEntity) object);
+                }
+            }
+        });
+    }
 
-	@Inject
-	@Optional
-	private void getNotifications(@UIEventTopic(EventConstants.REPORT_OPEN) ReportEntity entity) {
-		excute(entity);
-	}
+    @Inject
+    @Optional
+    private void getNotifications(@UIEventTopic(EventConstants.REPORT_OPEN) ReportEntity entity) {
+        excute(entity);
+    }
 
-	public void excute(ReportEntity report) {
-		try {
-		    if (report == null || StringUtils.isBlank(report.getId())) {
-		        return;
-		    }
-		    
-		    // Check the launcher of this report is ended or not
-            ILauncher currentLauncher = LauncherManager.getInstance().getLauncher(report.getName());
-            if (currentLauncher != null && currentLauncher.getStatus().compareTo(LauncherStatus.TERMINATED) < 0) {
+    public void excute(ReportEntity report) {
+        try {
+            if (report == null || StringUtils.isBlank(report.getId())) {
                 return;
             }
-            
+
+            // Check the launcher of this report is ended or not
+            ILauncher currentLauncher = LauncherManager.getInstance().getLauncher(report.getName());
+            if (currentLauncher != null && currentLauncher.getStatus().compareTo(LauncherStatus.TERMINATED) < 0) {
+                MessageDialog.openWarning(Display.getCurrent().getActiveShell(), StringConstants.WARN,
+                        ComposerReportMessageConstants.HAND_WARN_MSG_EXECUTION_IS_RUNNING);
+                return;
+            }
+
             String partId = IdConstants.REPORT_CONTENT_PART_ID_PREFIX + "(" + report.getId() + ")";
-            MPartStack stack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID,
-                    application);
+            MPartStack stack = (MPartStack) modelService.find(IdConstants.COMPOSER_CONTENT_PARTSTACK_ID, application);
             MPart mPart = (MPart) modelService.find(partId, application);
+            boolean alreadyOpened = true;
             if (mPart == null) {
                 mPart = modelService.createModelElement(MPart.class);
                 mPart.setElementId(partId);
@@ -90,15 +94,20 @@ public class OpenReportHandler {
                 mPart.setIconURI(ImageConstants.URL_16_REPORT);
                 mPart.setTooltip(report.getIdForDisplay());
                 stack.getChildren().add(mPart);
+                alreadyOpened = false;
             }
             context.set(ReportEntity.class, report);
             partService.activate(mPart);
-            
+
             stack.setSelectedElement(mPart);
-		} catch (Exception e) {
-			LoggerSingleton.logError(e);
-			MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error",
-					StringConstants.HAND_ERROR_MSG_UNABLE_TO_OPEN_REPORT + " (" + e.getMessage() + ")");
-		}
-	}
+            
+            if (!alreadyOpened) {
+                Trackings.trackOpenObject("report");
+            }
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error",
+                    StringConstants.HAND_ERROR_MSG_UNABLE_TO_OPEN_REPORT + " (" + e.getMessage() + ")");
+        }
+    }
 }

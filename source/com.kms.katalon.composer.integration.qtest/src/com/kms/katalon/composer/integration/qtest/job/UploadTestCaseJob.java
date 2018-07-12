@@ -168,7 +168,7 @@ public class UploadTestCaseJob extends QTestJob {
                 .getParentFolder());
 
         // Returns if this test case under qTest root module.
-        if (qTestParentModule == null || qTestParentModule.getParentId() <= 0) {
+        if (qTestParentModule == null || qTestParentModule.getId() <= 0) {
             return;
         }
 

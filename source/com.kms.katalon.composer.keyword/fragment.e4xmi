@@ -6,10 +6,20 @@
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_2KeX0D-1EeSqW-o8jtXO1g" featurename="commands" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Command" xmi:id="_2KeX0T-1EeSqW-o8jtXO1g" elementId="com.kms.katalon.composer.keyword.command.add" commandName="" description="New Keyword"/>
     <elements xsi:type="commands:Command" xmi:id="_ojWuwEIOEeSPr8gi-fpUXw" elementId="com.kms.katalon.composer.package.command.add" commandName="" description="New Package"/>
+    <elements xsi:type="commands:Command" xmi:id="_PXTsQF8tEeik14jXU-tU4w" elementId="com.kms.katalon.composer.keyword.command.importfolder" commandName="ImportFolder" description="Import Folder"/>
+    <elements xsi:type="commands:Command" xmi:id="_5S_OgF_yEeintYngWAF35w" elementId="com.kms.katalon.composer.keyword.command.importgit" commandName="ImportGit" description="Import Git"/>
+    <elements xsi:type="commands:Command" xmi:id="_866-gF_yEeintYngWAF35w" elementId="com.kms.katalon.composer.keyword.command.importjar" commandName="ImportJar" description="Import Jar"/>
+    <elements xsi:type="commands:Command" xmi:id="_zKfREGMlEeiqcrEdLNJZww" elementId="com.kms.katalon.composer.keyword.command.exportjar" commandName="ExportJar" description="Export Jar"/>
+    <elements xsi:type="commands:Command" xmi:id="_YagWMGR_Eeic6ZTVd_CcGw" elementId="com.kms.katalon.composer.keyword.command.exportFolder" commandName="ExportFolder" description="Export Folder"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_5zvkkD-1EeSqW-o8jtXO1g" featurename="handlers" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Handler" xmi:id="_5zvkkT-1EeSqW-o8jtXO1g" elementId="com.kms.katalon.composer.keyword.handler.addkeyword" contributionURI="bundleclass://com.kms.katalon.composer.keyword/com.kms.katalon.composer.keyword.handlers.NewKeywordHandler" command="_2KeX0T-1EeSqW-o8jtXO1g"/>
     <elements xsi:type="commands:Handler" xmi:id="_sy5RUEIOEeSPr8gi-fpUXw" elementId="com.kms.katalon.composer.keyword.handler.addpackage" contributionURI="bundleclass://com.kms.katalon.composer.keyword/com.kms.katalon.composer.keyword.handlers.NewPackageHandler" command="_ojWuwEIOEeSPr8gi-fpUXw"/>
+    <elements xsi:type="commands:Handler" xmi:id="_CWr5IF8uEeik14jXU-tU4w" elementId="com.kms.katalon.composer.keyword.handler.importfolder" contributionURI="bundleclass://com.kms.katalon.composer.keyword/com.kms.katalon.composer.keyword.handlers.ImportFolderHandler" command="_PXTsQF8tEeik14jXU-tU4w"/>
+    <elements xsi:type="commands:Handler" xmi:id="_OUw0sF8uEeik14jXU-tU4w" elementId="com.kms.katalon.composer.keyword.handler.importjar" contributionURI="bundleclass://com.kms.katalon.composer.keyword/com.kms.katalon.composer.keyword.handlers.ImportJarHandler" command="_866-gF_yEeintYngWAF35w"/>
+    <elements xsi:type="commands:Handler" xmi:id="_OwJwMF8uEeik14jXU-tU4w" elementId="com.kms.katalon.composer.keyword.handler.importgit" contributionURI="bundleclass://com.kms.katalon.composer.keyword/com.kms.katalon.composer.keyword.handlers.ImportGitHandler" command="_5S_OgF_yEeintYngWAF35w"/>
+    <elements xsi:type="commands:Handler" xmi:id="_xEEFMGMnEeiqcrEdLNJZww" elementId="com.kms.katalon.composer.keyword.handler.exportJar" contributionURI="bundleclass://com.kms.katalon.composer.keyword/com.kms.katalon.composer.keyword.handlers.ExportFolderHandler" command="_zKfREGMlEeiqcrEdLNJZww"/>
+    <elements xsi:type="commands:Handler" xmi:id="_d7D0sGR_Eeic6ZTVd_CcGw" elementId="com.kms.katalon.composer.keyword.handler.exportFolder" contributionURI="bundleclass://com.kms.katalon.composer.keyword/com.kms.katalon.composer.keyword.handlers.ExportFolderHandler" command="_YagWMGR_Eeic6ZTVd_CcGw"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="__11C0D-1EeSqW-o8jtXO1g" featurename="children" parentElementId="com.kms.katalon.menu.submenu.new" positionInList="index:7">
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_vMV08EIOEeSPr8gi-fpUXw" elementId="com.kms.katalon.menu.submenu.new.package" label="Package" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/package_16.png" tooltip="" command="_ojWuwEIOEeSPr8gi-fpUXw"/>
@@ -26,5 +36,35 @@
     <elements xsi:type="menu:HandledMenuItem" xmi:id="_0cRKcNuzEeaEL7_gfQD4GQ" elementId="com.kms.katalon.composer.toolbar.handledtoolitem.new.keyword" label="Keyword" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/keyword_16.png" command="_2KeX0T-1EeSqW-o8jtXO1g">
       <persistedState key="index" value="9"/>
     </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_80JzgF_DEeintYngWAF35w" featurename="children" parentElementId="com.kms.katalon.composer.menu.file" positionInList="index:10">
+    <elements xsi:type="menu:Menu" xmi:id="_ADZWsF_EEeintYngWAF35w" elementId="com.kms.katalon.composer.menu.file.importKeywords" label="Import Keywords" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/keywords/import_keywords_16.png">
+      <persistedState key="index" value="0"/>
+      <persistedState key="e4_disabled_icon_image_key" value="platform:/plugin/com.kms.katalon.composer.resources/icons/keywords/import_keywords_disabled_16.png"/>
+      <tags>FORCE_TEXT</tags>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_80JzgV_DEeintYngWAF35w" elementId="com.kms.katalon.composer.menu.file.importKeywords.folder" label="Folder" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/folder_16.png" command="_PXTsQF8tEeik14jXU-tU4w">
+        <persistedState key="index" value="8"/>
+      </children>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_80Jzgl_DEeintYngWAF35w" elementId="com.kms.katalon.composer.menu.file.importKeywords.jar" visible="false" label="Jar" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/keywords/jar_16.png" command="_866-gF_yEeintYngWAF35w">
+        <persistedState key="index" value="9"/>
+      </children>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_80Jzg1_DEeintYngWAF35w" elementId="com.kms.katalon.composer.menu.file.importKeywords.git" label="Git" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/git_16.png" command="_5S_OgF_yEeintYngWAF35w">
+        <persistedState key="index" value="9"/>
+      </children>
+    </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_GhLfUGMuEeiqcrEdLNJZww" featurename="children" parentElementId="com.kms.katalon.composer.menu.file" positionInList="index:11">
+    <elements xsi:type="menu:Menu" xmi:id="_GhLfUWMuEeiqcrEdLNJZww" elementId="com.kms.katalon.composer.menu.file.exportKeywords" visible="false" label="Export Keywords" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/keywords/export_keywords_16.png">
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_GhLfUmMuEeiqcrEdLNJZww" elementId="com.kms.katalon.composer.menu.file.exportKeywords.folder" label="Folder" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/entity/folder_16.png" command="_YagWMGR_Eeic6ZTVd_CcGw">
+        <persistedState key="index" value="8"/>
+      </children>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_GhLfU2MuEeiqcrEdLNJZww" elementId="com.kms.katalon.composer.menu.file.exportKeywords.jar" visible="false" label="Jar" iconURI="platform:/plugin/com.kms.katalon.composer.resources/icons/keywords/jar_16.png" command="_zKfREGMlEeiqcrEdLNJZww">
+        <persistedState key="index" value="9"/>
+      </children>
+    </elements>
+  </fragments>
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_LAOzYGPEEei3nKJ_cjEIVQ" featurename="children" parentElementId="com.kms.katalon.composer.explorer.popupmenu" positionInList="index:1">
+    <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_tuIYAGPTEei3nKJ_cjEIVQ" elementId="com.kms.katalon.composer.explorer.popupmenu.export" label="Export" contributionURI="bundleclass://com.kms.katalon.composer.keyword/com.kms.katalon.composer.keyword.menu.ExportKeyWordsPopupMenuContribution"/>
+    <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_LAOzYWPEEei3nKJ_cjEIVQ" elementId="com.kms.katalon.composer.explorer.popupmenu.import" label="Import" contributionURI="bundleclass://com.kms.katalon.composer.keyword/com.kms.katalon.composer.keyword.menu.ImportKeyWordsPopupMenuContribution"/>
   </fragments>
 </fragment:ModelFragments>

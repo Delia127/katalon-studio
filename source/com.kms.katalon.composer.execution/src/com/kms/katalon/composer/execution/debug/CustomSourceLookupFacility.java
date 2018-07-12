@@ -301,6 +301,12 @@ public class CustomSourceLookupFacility
         }
     }
 
+    private boolean isNotSourceNotFoundEditor(String editorId) {
+        return !IDebugUIConstants.ID_COMMON_SOURCE_NOT_FOUND_EDITOR.equals(editorId)
+                && !IInternalDebugUIConstants.ID_SOURCE_NOT_FOUND_EDITOR.equals(editorId);
+    }
+    
+
     /**
      * Performs source lookup for the given artifact and returns the result.
      * 
@@ -319,7 +325,10 @@ public class CustomSourceLookupFacility
             if (!force) {
                 result = fLookupResults.get(key);
                 if (result != null) {
-                    return result;
+                    String editorId = result.getEditorId();
+                    if (editorId != null && isNotSourceNotFoundEditor(editorId)) {
+                        return result;
+                    }
                 }
             }
             result = new CustomSourceLookupResult(artifact, null, null, null);

@@ -67,6 +67,14 @@ public abstract class OpenFileEntityHandler<T extends FileEntity> implements Par
         partService.showPart(mPart, PartState.ACTIVATE);
         stack.setSelectedElement(mPart);
     }
+    
+    protected EModelService getModelService() {
+        return modelService;
+    }
+    
+    protected MApplication getApplication() {
+        return application;
+    }
 
     protected abstract Class<? extends T> getEntityType();
 

@@ -4,6 +4,12 @@ import java.io.IOException;
 import java.net.Proxy;
 import java.net.Socket;
 import java.net.URISyntaxException;
+import java.security.GeneralSecurityException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
@@ -27,7 +33,9 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.SSLContexts;
+import org.apache.http.ssl.TrustStrategy;
 
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.util.internal.ProxyUtil;
@@ -51,10 +59,23 @@ public class HttpClientProxyBuilder {
         return clientContext;
     }
 
-    public static HttpClientProxyBuilder create(ProxyInformation proxyInfo) throws URISyntaxException, IOException {
+    public static HttpClientProxyBuilder create(ProxyInformation proxyInfo)
+            throws URISyntaxException, IOException, GeneralSecurityException {
         Proxy proxy = ProxyUtil.getProxy(proxyInfo);
 
-        HttpClientBuilder clientBuilder = HttpClients.custom();
+        HttpClientBuilder clientBuilder = HttpClients.custom().setSSLHostnameVerifier(new HostnameVerifier() {
+
+            @Override
+            public boolean verify(String arg0, SSLSession arg1) {
+                return true;
+            }
+        }).setSSLContext(new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
+
+            @Override
+            public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+                return true;
+            }
+        }).build());
         HttpClientContext context = HttpClientContext.create();
         if (!Proxy.NO_PROXY.equals(proxy) || proxy.type() != Proxy.Type.DIRECT) {
             HttpHost httpHost = new HttpHost(proxyInfo.getProxyServerAddress(), proxyInfo.getProxyServerPort());
@@ -76,7 +97,7 @@ public class HttpClientProxyBuilder {
 
         return new HttpClientProxyBuilder(clientBuilder, context);
     }
-    
+
     private static CredentialsProvider createCredentialsProvider(HttpHost httpProxy, ProxyInformation proxyInfo) {
         CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
         String username = proxyInfo.getUsername();
@@ -87,7 +108,7 @@ public class HttpClientProxyBuilder {
         }
         return credentialsProvider;
     }
-    
+
     private static HttpClientConnectionManager getSystemConnectionManager(Proxy proxy) {
         Registry<ConnectionSocketFactory> reg = RegistryBuilder.<ConnectionSocketFactory> create()
                 .register("http", PlainConnectionSocketFactory.INSTANCE)

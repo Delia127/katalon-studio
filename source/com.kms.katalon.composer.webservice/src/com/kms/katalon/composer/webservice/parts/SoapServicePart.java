@@ -94,97 +94,6 @@ public class SoapServicePart extends WebServicePart {
             }
         });
 
-        wsApiControl.addSendSelectionListener(new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                if (dirtyable.isDirty()) {
-                    boolean isOK = MessageDialog.openConfirm(null, StringConstants.WARN,
-                            ComposerWebserviceMessageConstants.PART_MSG_DO_YOU_WANT_TO_SAVE_THE_CHANGES);
-                    if (!isOK) {
-                        return;
-                    }
-                    save();
-                }
-
-                // clear previous response
-                mirrorEditor.setText("");
-
-                String requestURL = wsApiControl.getRequestURL().trim();
-                if (isInvalidURL(requestURL)) {
-                    LoggerSingleton.logError("URL is invalid");
-                    MessageDialog.openError(null, StringConstants.ERROR, "URL is invalid");
-                    return;
-                }
-                
-                if (ccbOperation.getText().isEmpty()) {
-                    LoggerSingleton.logError("Service Function is empty");
-                    MessageDialog.openError(null, StringConstants.ERROR, "Service Function is empty");
-                    return;
-                }
-
-                if (wsApiControl.getSendingState()) {
-                    progress.getProgressMonitor().setCanceled(true);
-                    wsApiControl.setSendButtonState(false);
-                    return;
-                }
-
-                try {
-                    wsApiControl.setSendButtonState(true);
-                    progress = new ProgressMonitorDialogWithThread(Display.getCurrent().getActiveShell());
-                    progress.setOpenOnRun(false);
-                    displayResponseContentBasedOnSendingState(true);
-                    progress.run(true, true, new IRunnableWithProgress() {
-
-                        @Override
-                        public void run(IProgressMonitor monitor)
-                                throws InvocationTargetException, InterruptedException {
-                            try {
-                                monitor.beginTask(ComposerWebserviceMessageConstants.PART_MSG_SENDING_TEST_REQUEST,
-                                        IProgressMonitor.UNKNOWN);
-
-                                String projectDir = ProjectController.getInstance()
-                                        .getCurrentProject()
-                                        .getFolderLocation();
-
-                                final ResponseObject responseObject = WebServiceController.getInstance().sendRequest(
-                                        getWSRequestObject(), projectDir, ProxyPreferences.getProxyInformation());
-
-                                if (monitor.isCanceled()) {
-                                    return;
-                                }
-
-                                String bodyContent = responseObject.getResponseText();
-                                Display.getDefault().asyncExec(() -> {
-                                    setResponseStatus(responseObject);
-                                    mirrorEditor.setText(getPrettyHeaders(responseObject));
-                                    if (bodyContent == null) {
-                                        return;
-                                    }
-                                    soapResponseBodyEditor.setInput(responseObject);
-
-                                });
-                            } catch (Exception e) {
-                                throw new InvocationTargetException(e);
-                            } finally {
-                                UISynchronizeService.syncExec(() -> wsApiControl.setSendButtonState(false));
-                                monitor.done();
-                            }
-                        }
-                    });
-                } catch (InvocationTargetException ex) {
-                    Throwable target = ex.getTargetException();
-                    if (target == null) {
-                        return;
-                    }
-                    LoggerSingleton.logError(target);
-                    MultiStatusErrorDialog.showErrorDialog(
-                            ComposerWebserviceMessageConstants.PART_MSG_CANNOT_SEND_THE_TEST_REQUEST,
-                            target.getMessage(), ExceptionsUtil.getStackTraceForThrowable(target));
-                } catch (InterruptedException ignored) {}
-                displayResponseContentBasedOnSendingState(false);
-            }
-        });
         Composite operationComposite = new Composite(parent, SWT.NONE);
         GridLayout glOperation = new GridLayout(3, false);
         glOperation.marginWidth = 0;
@@ -260,6 +169,96 @@ public class SoapServicePart extends WebServicePart {
                 }
             }
         });
+    }
+    
+    @Override
+    protected void sendRequest(boolean runVerificationScript) {
+        if (dirtyable.isDirty()) {
+            boolean isOK = MessageDialog.openConfirm(null, StringConstants.WARN,
+                    ComposerWebserviceMessageConstants.PART_MSG_DO_YOU_WANT_TO_SAVE_THE_CHANGES);
+            if (!isOK) {
+                return;
+            }
+            save();
+        }
+
+        clearPreviousResponse();
+
+        String requestURL = wsApiControl.getRequestURL().trim();
+        if (isInvalidURL(requestURL)) {
+            LoggerSingleton.logError("URL is invalid");
+            MessageDialog.openError(null, StringConstants.ERROR, "URL is invalid");
+            return;
+        }
+
+        if (ccbOperation.getText().isEmpty()) {
+            LoggerSingleton.logError("Service Function is empty");
+            MessageDialog.openError(null, StringConstants.ERROR, "Service Function is empty");
+            return;
+        }
+
+        if (wsApiControl.getSendingState()) {
+            progress.getProgressMonitor().setCanceled(true);
+            wsApiControl.setSendButtonState(false);
+            return;
+        }
+
+        try {
+            wsApiControl.setSendButtonState(true);
+            progress = new ProgressMonitorDialogWithThread(Display.getCurrent().getActiveShell());
+            progress.setOpenOnRun(false);
+            displayResponseContentBasedOnSendingState(true);
+            progress.run(true, true, new IRunnableWithProgress() {
+
+                @Override
+                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                    try {
+                        monitor.beginTask(ComposerWebserviceMessageConstants.PART_MSG_SENDING_TEST_REQUEST,
+                                IProgressMonitor.UNKNOWN);
+
+                        String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
+
+                        final ResponseObject responseObject = WebServiceController.getInstance()
+                                .sendRequest(getWSRequestObject(), projectDir, ProxyPreferences.getProxyInformation());
+
+                        if (monitor.isCanceled()) {
+                            return;
+                        }
+
+                        String bodyContent = responseObject.getResponseText();
+                        Display.getDefault().asyncExec(() -> {
+                            setResponseStatus(responseObject);
+                            mirrorEditor.setText(getPrettyHeaders(responseObject));
+                            if (bodyContent == null) {
+                                return;
+                            }
+                            soapResponseBodyEditor.setInput(responseObject);
+
+                        });
+
+                        if (runVerificationScript) {
+                            executeVerificationScript(responseObject);
+                        }
+                    } catch (Exception e) {
+                        throw new InvocationTargetException(e);
+                    } finally {
+                        UISynchronizeService.syncExec(() -> wsApiControl.setSendButtonState(false));
+                        monitor.done();
+                    }
+                }
+            });
+        } catch (InvocationTargetException ex) {
+            Throwable target = ex.getTargetException();
+            if (target == null) {
+                return;
+            }
+            LoggerSingleton.logError(target);
+            MultiStatusErrorDialog.showErrorDialog(
+                    ComposerWebserviceMessageConstants.PART_MSG_CANNOT_SEND_THE_TEST_REQUEST, target.getMessage(),
+                    ExceptionsUtil.getStackTraceForThrowable(target));
+        } catch (InterruptedException ignored) {
+        }
+        displayResponseContentBasedOnSendingState(false);
     }
 
     @Override

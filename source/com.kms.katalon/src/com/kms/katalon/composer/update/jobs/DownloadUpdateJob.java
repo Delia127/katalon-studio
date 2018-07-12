@@ -13,6 +13,7 @@ import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.Job;
 
 import com.kms.katalon.composer.components.impl.util.PlatformUtil;
+import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.update.UpdateComponent;
 import com.kms.katalon.composer.update.UpdateException;
 import com.kms.katalon.composer.update.UpdateManager;
@@ -98,6 +99,8 @@ public class DownloadUpdateJob extends Job implements UpdateComponent {
             // Clean downloadDir
             FileUtils.cleanDirectory(downloadDir);
 
+            replaceUpdater(extractDir);
+
             return Status.OK_STATUS;
         } catch (IOException e) {
             return new Status(Status.ERROR, "com.kms.katalon", "Unable to download update file from Katalon server",
@@ -106,6 +109,18 @@ public class DownloadUpdateJob extends Job implements UpdateComponent {
             return new Status(Status.ERROR, "com.kms.katalon", "Unable to download update file from Katalon server", e);
         } finally {
             monitor.done();
+        }
+    }
+
+    private void replaceUpdater(File extractDir) {
+        try {
+            File newUpdaterDir = new File(extractDir, "resources/update/updater");
+            File oldUpdaterDir = getUpdateManager().getUpdateJar().getParentFile();
+            if (newUpdaterDir.exists() && newUpdaterDir.isDirectory()) {
+                FileUtils.copyDirectory(newUpdaterDir, oldUpdaterDir);
+            }
+        } catch (IOException e) {
+            LoggerSingleton.logError(e);
         }
     }
 
@@ -163,8 +178,7 @@ public class DownloadUpdateJob extends Job implements UpdateComponent {
             int nextWork = work - currentWork;
             if (nextWork > 0) {
                 monitor.worked(nextWork);
-                String subTaskName = MessageFormat.format("Downloading {0}...({1})", 
-                        fileInfo.getLocation(),
+                String subTaskName = MessageFormat.format("Downloading {0}...({1})", fileInfo.getLocation(),
                         FileUtils.byteCountToDisplaySize(speedInKps) + "/s");
                 monitor.subTask(subTaskName);
             }

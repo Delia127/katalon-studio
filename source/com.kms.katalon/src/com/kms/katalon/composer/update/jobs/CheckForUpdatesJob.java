@@ -26,8 +26,11 @@ import com.kms.katalon.core.util.internal.JsonUtil;
 
 public class CheckForUpdatesJob extends Job implements UpdateComponent {
 
-    public CheckForUpdatesJob() {
+    private boolean silenceMode;
+    
+    public CheckForUpdatesJob(boolean silenceMode) {
         super("Checking for Updates...");
+        this.silenceMode = silenceMode;
     }
 
     private CheckForUpdateResult updateResult;
@@ -54,9 +57,9 @@ public class CheckForUpdatesJob extends Job implements UpdateComponent {
 
             lastestUpdateVersion = JsonUtil.fromJson(outputStream.toString(), LastestVersionInfo.class);
             LastestVersionInfo localLatestVersion = updateManager.getLocalLatestVersion();
-            if (!LastestVersionInfo.isNewer(lastestUpdateVersion.getLatestVersion(),
+            if (!VersionUtil.isNewer(lastestUpdateVersion.getLatestVersion(),
                     VersionUtil.getCurrentVersion().getVersion())
-                    || isLatestVersionIgnored(lastestUpdateVersion, localLatestVersion)) {
+                    || isIgnoredInSilenceMode(lastestUpdateVersion, localLatestVersion)) {
                 updateResult = new CheckForUpdateResult();
                 updateResult.setUpdateResult(UpdateResultValue.UP_TO_DATE);
                 return Status.OK_STATUS;
@@ -107,6 +110,11 @@ public class CheckForUpdatesJob extends Job implements UpdateComponent {
             monitor.done();
         }
 
+    }
+
+    private boolean isIgnoredInSilenceMode(LastestVersionInfo lastestUpdateVersion,
+            LastestVersionInfo localLatestVersion) {
+        return silenceMode && isLatestVersionIgnored(lastestUpdateVersion, localLatestVersion);
     }
 
     private boolean isLatestVersionIgnored(LastestVersionInfo lastestUpdateVersion,

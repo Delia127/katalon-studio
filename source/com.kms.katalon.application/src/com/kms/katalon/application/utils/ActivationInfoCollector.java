@@ -5,7 +5,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Objects;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.Platform;
 
 import com.google.gson.JsonObject;
@@ -16,6 +18,7 @@ import com.kms.katalon.constants.UsagePropertyConstant;
 import com.kms.katalon.logging.LogUtil;
 
 public class ActivationInfoCollector {
+
     public static final String DEFAULT_HOST_NAME = "can.not.get.host.name";
 
     protected ActivationInfoCollector() {
@@ -27,12 +30,20 @@ public class ActivationInfoCollector {
             return false;
         }
         try {
+            String updatedVersion = ApplicationInfo
+                    .getAppProperty(ApplicationStringConstants.UPDATED_VERSION_PROP_NAME);
+            if (ApplicationInfo.versionNo().equals(getVersionNo(updatedVersion))) {
+                setActivatedVal();
+                return true;
+            }
+
             String[] activateParts = activatedVal.split("_");
             String oldVersion = new StringBuilder(activateParts[0]).reverse().toString();
             String curVersion = ApplicationInfo.versionNo().replaceAll("\\.", "");
             if (oldVersion.equals(curVersion) == false) {
                 return false;
             }
+
             int activatedHashVal = Integer.parseInt(activateParts[1]);
             return activatedHashVal == getHostNameHashValue();
         } catch (Exception ex) {
@@ -40,6 +51,7 @@ public class ActivationInfoCollector {
             return false;
         }
     }
+
     private static int getHostNameHashValue() throws Exception {
         String hostName = InetAddress.getLocalHost().getHostName();
         String ipAddress = InetAddress.getLocalHost().getHostAddress();
@@ -57,7 +69,6 @@ public class ActivationInfoCollector {
         // NOTE that StringEscapeUtils.escapeEcmaScript() will do the same as StringEscapeUtils.escapeJava()
         // and escape single quote (') and slash (/) also. But we do not want to escape slash in Java
         traits.addProperty("password", StringEscapeUtils.escapeJava(pass).replace("'", "\\'"));
-        
 
         JsonObject activationObject = new JsonObject();
         activationObject.addProperty("userId", userName);
@@ -79,7 +90,7 @@ public class ActivationInfoCollector {
         } catch (UnknownHostException ignored) {
             host = "unknown";
         }
-        
+
         traits.addProperty("host_name", host);
         traits.addProperty("os", Platform.getOS());
         traits.addProperty("os_type", osType);
@@ -141,11 +152,31 @@ public class ActivationInfoCollector {
     }
 
     private static void markActivated(String userName) throws Exception {
+        setActivatedVal();
+        ApplicationInfo.removeAppProperty(ApplicationStringConstants.REQUEST_CODE_PROP_NAME);
+        ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_EMAIL, userName, true);
+    }
+
+    private static void setActivatedVal() throws Exception {
         String activatedVal = Integer.toString(getHostNameHashValue());
         String curVersion = new StringBuilder(ApplicationInfo.versionNo().replaceAll("\\.", "")).reverse().toString();
-        ApplicationInfo.removeAppProperty(ApplicationStringConstants.REQUEST_CODE_PROP_NAME);
         ApplicationInfo.setAppProperty(ApplicationStringConstants.ACTIVATED_PROP_NAME, curVersion + "_" + activatedVal,
                 true);
-        ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_EMAIL, userName, true);
+    }
+
+    public static void markActivatedViaUpgradation(String versionNumber) {
+        ApplicationInfo.setAppProperty(ApplicationStringConstants.UPDATED_VERSION_PROP_NAME, 
+                getVersionNo(versionNumber), true);
+    }
+    
+    private static String getVersionNo(String versionNumber) {
+        if (versionNumber == null) {
+            return versionNumber;
+        }
+        String[] numbers = versionNumber.split("\\.");
+        while (numbers.length < 3) {
+            numbers = ArrayUtils.add(numbers, "0");
+        }
+        return StringUtils.join(ArrayUtils.subarray(numbers, 0, 3), ".");
     }
 }

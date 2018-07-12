@@ -35,7 +35,10 @@ Require-Bundle: com.kms.katalon.composer.mobile,
  org.eclipse.core.runtime,
  com.kms.katalon.composer.execution,
  com.kms.katalon.core,
- com.kms.katalon.integration.kobiton
+ com.kms.katalon.integration.kobiton,
+ org.greenrobot.eventbus,
+ com.kms.katalon.application,
+ com.kms.katalon.tracking
 Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
