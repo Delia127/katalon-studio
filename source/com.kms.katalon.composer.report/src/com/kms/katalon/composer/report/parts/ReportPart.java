@@ -769,6 +769,11 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         List<AnalyticsProject> projects = null;
 
         final HashMap<String, String> credentialInfo = getCredentialInfo(tokenInfo, analyticsSettingStore);
+        
+        if (credentialInfo == null) {
+        	return;
+        }
+        
         String analyticsEmail = credentialInfo.get("analyticsEmail");
         String analyticsPassword = credentialInfo.get("analyticsPassword");
         String serverUrl = credentialInfo.get("serverUrl");
