@@ -1,12 +1,5 @@
 node {
     stage('Check out') {
-	// FIXME: Workaround since checkout process in local is too slow 
-	sh '''
-	    echo $USER
-	    if [ ! -f "Jenkinsfile" ]; then
-                cp -rf "$HOME/katalon/" . | true
-            fi
-	''' 
         checkout scm
     }  
     stage('Build') {
@@ -30,7 +23,7 @@ node {
 
         if (env.BRANCH_NAME == 'release') {
                 sh '''
-                    sudo ./verify.sh ${JOB_BASE_NAME}
+                    sudo ./package.sh ${JOB_BASE_NAME}
                 '''
         }
     }
