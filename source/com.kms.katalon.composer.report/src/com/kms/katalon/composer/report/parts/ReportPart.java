@@ -801,7 +801,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         projects = AnalyticsApiProvider.getProjects(serverUrl, analyticsEmail, analyticsPassword, teams.get(0),
                 tokenInfo, new ProgressMonitorDialog(shell));
         projectCount = projects.size();
-        UploadSelectionDialog uploadSelectionDialog = new UploadSelectionDialog(shell, teams);
+        UploadSelectionDialog uploadSelectionDialog = new UploadSelectionDialog(shell, teams, projects);
 
         try {
             if (projectCount > 0 || teamCount > 1) {

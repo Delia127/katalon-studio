@@ -46,11 +46,12 @@ public class UploadSelectionDialog extends Dialog {
     private List<AnalyticsProject> projects;
     private AnalyticsSettingStore analyticsSettingStore;
 
-    public UploadSelectionDialog(Shell parentShell, List<AnalyticsTeam> teams) {
+    public UploadSelectionDialog(Shell parentShell, List<AnalyticsTeam> teams, List<AnalyticsProject> projects) {
         super(parentShell);
         analyticsSettingStore = new AnalyticsSettingStore(
                 ProjectController.getInstance().getCurrentProject().getFolderLocation());
         this.teams = teams;
+        this.projects = projects;
     }
 
     @Override
@@ -175,7 +176,23 @@ public class UploadSelectionDialog extends Dialog {
                 }
                 try {
                     analyticsSettingStore.setTeam(teams.get(cbbTeams.getSelectionIndex()));
-                    setProjectsBasedOnTeam(teams);
+                    AnalyticsTeam team = teams.get(AnalyticsApiProvider.getDefaultTeamIndex(analyticsSettingStore, teams));
+
+                    HashMap<String, String> info = null;
+                    try {
+                        info = getInfo(analyticsSettingStore.isEncryptionEnabled());
+                    } catch (IOException e1) {
+                        LoggerSingleton.logError(e1);
+                        return;
+                    }
+                    String serverUrl = info.get("serverUrl");
+                    String email = info.get("email");
+                    String password = info.get("password");
+                    AnalyticsTokenInfo tokenInfo = AnalyticsApiProvider.getToken(serverUrl, email, password,
+                            new ProgressMonitorDialog(getShell()), analyticsSettingStore);
+                    projects = AnalyticsApiProvider.getProjects(serverUrl, email, password, team, tokenInfo,
+                            new ProgressMonitorDialog(getShell()));
+                    setProjectsBasedOnTeam(teams, projects);
                 } catch (IOException ex) {
                     LoggerSingleton.logError(ex);
                     MultiStatusErrorDialog.showErrorDialog(ex, ComposerAnalyticsStringConstants.ERROR, ex.getMessage());
@@ -184,23 +201,8 @@ public class UploadSelectionDialog extends Dialog {
         });
     }
 
-    private void setProjectsBasedOnTeam(List<AnalyticsTeam> teams) {
-        AnalyticsTeam team = teams.get(AnalyticsApiProvider.getDefaultTeamIndex(analyticsSettingStore, teams));
-
-        HashMap<String, String> info = null;
-        try {
-            info = getInfo(analyticsSettingStore.isEncryptionEnabled());
-        } catch (IOException e) {
-            LoggerSingleton.logError(e);
-            return;
-        }
-        String serverUrl = info.get("serverUrl");
-        String email = info.get("email");
-        String password = info.get("password");
-        AnalyticsTokenInfo tokenInfo = AnalyticsApiProvider.getToken(serverUrl, email, password,
-                new ProgressMonitorDialog(getShell()), analyticsSettingStore);
-        projects = AnalyticsApiProvider.getProjects(serverUrl, email, password, team, tokenInfo,
-                new ProgressMonitorDialog(getShell()));
+    private void setProjectsBasedOnTeam(List<AnalyticsTeam> teams, List<AnalyticsProject> projects) {
+        
         if (projects != null && !projects.isEmpty()) {
             cbbProjects.setItems(AnalyticsApiProvider.getProjectNames(projects).toArray(new String[projects.size()]));
             cbbProjects.select(AnalyticsApiProvider.getDefaultProjectIndex(analyticsSettingStore, projects));
@@ -224,7 +226,7 @@ public class UploadSelectionDialog extends Dialog {
         try {
             cbbTeams.setItems(AnalyticsApiProvider.getTeamNames(teams).toArray(new String[teams.size()]));
             cbbTeams.select(AnalyticsApiProvider.getDefaultTeamIndex(analyticsSettingStore, teams));
-            setProjectsBasedOnTeam(teams);
+            setProjectsBasedOnTeam(teams, projects);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
             MultiStatusErrorDialog.showErrorDialog(e, ComposerAnalyticsStringConstants.ERROR, e.getMessage());
