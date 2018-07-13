@@ -223,40 +223,6 @@ public class AnalyticsApiProvider {
         return teams;
     }
 
-//    public static AnalyticsTokenInfo getToken(String serverUrl, String email, String password,
-//            ProgressMonitorDialog monitorDialog, AnalyticsSettingStore settingStore) {
-//
-//        try {
-//            boolean encryptionEnabled = true;
-//            monitorDialog.run(true, false, new IRunnableWithProgress() {
-//                @Override
-//                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-//                    try {
-//                        monitor.beginTask(IntegrationAnalyticsMessages.MSG_DLG_PRG_CONNECTING_TO_SERVER, 2);
-//                        tokenInfo = AnalyticsApiProvider.requestToken(serverUrl, email, password);
-//                        settingStore.setToken(tokenInfo.getAccess_token(), encryptionEnabled);
-//                        monitor.worked(1);
-//                    } catch (Exception e) {
-//                        throw new InvocationTargetException(e);
-//                    }
-//                }
-//            });
-//            return tokenInfo;
-//        } catch (Exception ex) {
-//            // show error dialog
-//            LoggerSingleton.logError(ex);
-//            try {
-//                settingStore.setPassword(StringUtils.EMPTY, true);
-//                settingStore.enableIntegration(false);
-//            } catch (IOException | GeneralSecurityException e) {
-//                LoggerSingleton.logError(e);
-//            }
-//            MessageDialog.openError(monitorDialog.getShell(), GlobalStringConstants.ERROR,
-//                    IntegrationAnalyticsMessages.MSG_REQUEST_TOKEN_ERROR);
-//        }
-//        return null;
-//    }
-    
     public static AnalyticsTokenInfo getToken(String serverUrl, String email, String password,
             ProgressMonitorDialog monitorDialog, AnalyticsSettingStore settingStore) {
 
@@ -304,7 +270,7 @@ public class AnalyticsApiProvider {
             if (storedProject != null && storedProject.getId() != null) {
                 for (int i = 0; i < projects.size(); i++) {
                     AnalyticsProject p = projects.get(i);
-                    if (p.getId() == storedProject.getId()) {
+                    if (storedProject.getId().equals(p.getId())) {
                         selectionIndex = i;
                         return selectionIndex;
                     }
