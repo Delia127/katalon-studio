@@ -17,6 +17,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -44,6 +45,7 @@ import org.osgi.framework.Bundle;
 
 import com.kms.katalon.application.usagetracking.TrackingEvent;
 import com.kms.katalon.application.usagetracking.UsageActionTrigger;
+import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.control.Dropdown;
 import com.kms.katalon.composer.components.impl.control.DropdownGroup;
 import com.kms.katalon.composer.components.impl.control.DropdownItemSelectionListener;
@@ -96,7 +98,7 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
 
     public static final String OBJECT_SPY_CHROME_ADDON_URL = "https://chrome.google.com/webstore/detail/katalon-utilities/ljdobmomdgdljniojadhoplhkpialdid"; //$NON-NLS-1$
 
-    public static final String OBJECT_SPY_FIREFOX_ADDON_URL = "https://addons.mozilla.org/en-US/firefox/addon/katalon-automation-record"; //$NON-NLS-1$
+    public static final String OBJECT_SPY_FIREFOX_ADDON_URL = "https://addons.mozilla.org/en-US/firefox/addon/katalon-object-spy"; //$NON-NLS-1$
 
     private Text txtStartUrl;
 
@@ -236,7 +238,7 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
             server.stop();
         }
         try {
-            server = new HTMLElementCaptureServer(port, logger, elementCollector, AddonSocket.class);
+            server = new HTMLElementCaptureServer(port, logger, elementCollector);
             server.start();
         } catch (BindException e) {
             MessageDialog.openError(shell, StringConstants.ERROR_TITLE,
@@ -320,7 +322,6 @@ public class ObjectSpyUrlView implements EventManager<ObjectSpyEvent> {
         DropdownGroup activeBrowser = dropdown.addDropdownGroupItem(StringConstants.MENU_ITEM_ACTIVE_BROWSERS,
                 ImageConstants.IMG_16_ACTIVE_BROWSER);
         addActiveBrowserItem(activeBrowser, WebUIDriverType.CHROME_DRIVER);
-        addActiveBrowserItem(activeBrowser, WebUIDriverType.FIREFOX_DRIVER);
 
         if (Platform.OS_WIN32.equals(Platform.getOS())) {
             addNewBrowserItem(newBrowser, WebUIDriverType.IE_DRIVER);

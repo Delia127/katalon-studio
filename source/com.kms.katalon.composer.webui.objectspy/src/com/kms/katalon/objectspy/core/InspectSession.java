@@ -80,10 +80,9 @@ public class InspectSession implements Runnable {
     protected static final String IE_ABSOLUTE_PATH = "C:\\Program Files\\Internet Explorer\\iexplore.exe";
 
     protected static final String IE_32BIT_ABSOLUTE_PATH = "C:\\Program Files (x86)\\Internet Explorer\\iexplore.exe";
-    
+
     protected static final String CHROME_EXTENSION_RELATIVE_PATH = File.separator + "Chrome" + File.separator
-            + OBJECT_SPY_ADD_ON_NAME + File.separator + "KR";
-    
+            + OBJECT_SPY_ADD_ON_NAME;
 
     protected static final String FIREFOX_ADDON_RELATIVE_PATH = File.separator + "Firefox" + File.separator
             + "objectspy.xpi";
@@ -108,7 +107,6 @@ public class InspectSession implements Runnable {
     private String startUrl;
 
     private boolean driverStarted = false;
-    
 
     public InspectSession(HTMLElementCaptureServer server, WebUIDriverType webUiDriverType,
             ProjectEntity currentProject, Logger logger) {
@@ -347,8 +345,7 @@ public class InspectSession implements Runnable {
     }
 
     protected String getChromeExtensionPath() {
-        //return CHROME_EXTENSION_RELATIVE_PATH;
-    	return CHROME_EXTENSION_RELATIVE_PATH;
+        return CHROME_EXTENSION_RELATIVE_PATH;
     }
 
     protected String getFirefoxExtensionPath() {

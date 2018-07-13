@@ -14,16 +14,15 @@ function treeHTML(element, object, currentWindow) {
             }
         }
     }
-    var text = element.textContent || element.innerText;
+    var text = getTextFromNode(element, true);
     if (text !== '') {
         object["attributes"]["text"] = text;
     }
 
-    var xpath = neighborXpathsGenerator.getXpathsByNeighbors(element, false)[0];
-	
-	if(xpath != null ) {
-        object['xpath'] = xpath
-    } else{
+    var xpath = createXPathFromElement(element);
+    if (xpath) {
+        object['xpath'] = xpath;
+    } else {
         object['xpath'] = '';
     }
 
