@@ -1,4 +1,4 @@
-package com.kms.katalon.composer.samples;
+package com.kms.katalon.composer.project.sample;
 
 import java.io.File;
 
@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Text;
 
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.project.constants.StringConstants;
+import com.kms.katalon.entity.project.ProjectEntity;
 
 public class NewSampleRemoteProjectDialog extends TitleAreaDialog {
     private static final String DEFAULT_PROJECT_LOCATION = System.getProperty("user.home") + File.separator
@@ -32,11 +33,17 @@ public class NewSampleRemoteProjectDialog extends TitleAreaDialog {
 
     private Text txtSourceURL;
 
+    private Text txtProjectName;
+
     private Text txtProjectLocation;
 
     private Button btnFolderChooser;
-    
-    private String selectedProjectLocation;
+
+    private ProjectEntity projectInfo;
+
+    public ProjectEntity getProjectInfo() {
+        return projectInfo;
+    }
 
     public NewSampleRemoteProjectDialog(Shell parentShell, SampleRemoteProject sampleProject) {
         super(parentShell);
@@ -53,23 +60,33 @@ public class NewSampleRemoteProjectDialog extends TitleAreaDialog {
                 if (path == null) {
                     return;
                 }
-                txtProjectLocation.setText(path);
+                String location = txtProjectLocation.getText();
+                if (location.isEmpty()) {
+                    txtProjectLocation.setText(path);
+                } else {
+                    txtProjectLocation.setText(path);
+                }
             }
         });
         
-        txtProjectLocation.addModifyListener(new ModifyListener() {
+        ModifyListener modifyListener = new ModifyListener() {
             
             @Override
-            public void modifyText(ModifyEvent event) {
+            public void modifyText(ModifyEvent arg0) {
                 String newLocation = txtProjectLocation.getText();
                 if (newLocation.isEmpty()) {
-                    setMessage("Project location cannot be empty.", 
-                            IMessageProvider.WARNING);
+                    setMessage("Project location cannot be empty.", IMessageProvider.WARNING);
                     getButton(OK).setEnabled(false);
                     return;
                 }
-                if (new File(newLocation).exists()) {
-                    setMessage("A project with the same name already exists in the selected location.", 
+                String newName = txtProjectName.getText();
+                if (newName.isEmpty()) {
+                    setMessage("Project name cannot be empty.", IMessageProvider.WARNING);
+                    getButton(OK).setEnabled(false);
+                    return;
+                }
+                if (new File(newLocation, newName).exists()) {
+                    setMessage("A project with the same name already exists in the selected location.",
                             IMessageProvider.ERROR);
                     getButton(OK).setEnabled(false);
                     return;
@@ -78,39 +95,42 @@ public class NewSampleRemoteProjectDialog extends TitleAreaDialog {
                     getButton(OK).setEnabled(true);
                 }
             }
-        });
+        };
+        txtProjectName.addModifyListener(modifyListener);
+        txtProjectLocation.addModifyListener(modifyListener);
     }
+
     private void setInfoMessage() {
-        setMessage("Please enter your project location", IMessageProvider.INFORMATION);
+        setMessage("Please enter your project information", IMessageProvider.INFORMATION);
     }
 
     protected void setInput() {
         txtSourceURL.setText(sampleProject.getSourceUrl());
-        String suggestedProjectLocation = getSuggestedName();
-        
-        txtProjectLocation.setText(suggestedProjectLocation);
-        txtProjectLocation.selectAll();
-        txtProjectLocation.forceFocus();
+        txtProjectLocation.setText(DEFAULT_PROJECT_LOCATION);
+
+        txtProjectName.setText(getSuggestedLocation(DEFAULT_PROJECT_LOCATION));
+        txtProjectName.selectAll();
+        txtProjectName.forceFocus();
 
         setInfoMessage();
     }
 
-    private String getSuggestedName() {
-        String suggestedProjectLocation = new File(DEFAULT_PROJECT_LOCATION, sampleProject.getName())
-                .getAbsolutePath();
+    private String getSuggestedLocation(String parentLocation) {
+        String name = sampleProject.getName();
+        String suggestedProjectLocation = new File(parentLocation, name).getAbsolutePath();
         if (!new File(suggestedProjectLocation).exists()) {
-            return suggestedProjectLocation;
+            return name;
         }
         int num = 1;
         while (true) {
-            String newSuggestedLocation = String.format("%s_%d", suggestedProjectLocation, num);
-            if (!new File(newSuggestedLocation).exists()) {
-                return newSuggestedLocation;
+            String newSuggestedName = String.format("%s_%d", name, num);
+            if (!new File(parentLocation, newSuggestedName).exists()) {
+                return newSuggestedName;
             }
             num++;
         }
     }
-    
+
     private String getProjectLocationInput() {
         if (txtProjectLocation == null || StringUtils.isBlank(txtProjectLocation.getText())) {
             return "";
@@ -125,7 +145,7 @@ public class NewSampleRemoteProjectDialog extends TitleAreaDialog {
     @Override
     protected Control createDialogArea(Composite parent) {
         Composite area = (Composite) super.createDialogArea(parent);
-        
+
         Composite container = new Composite(area, SWT.NONE);
         container.setLayoutData(new GridData(GridData.FILL_BOTH));
         GridLayout gridLayout = new GridLayout(2, false);
@@ -141,6 +161,12 @@ public class NewSampleRemoteProjectDialog extends TitleAreaDialog {
         txtSourceURL.setEditable(false);
         txtSourceURL.setBackground(ColorUtil.getDisabledItemBackgroundColor());
 
+        Label lblProjectName = new Label(container, SWT.NONE);
+        lblProjectName.setText("Project Name");
+
+        txtProjectName = new Text(container, SWT.BORDER);
+        txtProjectName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+
         Label lblProjectLocation = new Label(container, SWT.NONE);
         lblProjectLocation.setText("Project Location");
 
@@ -152,10 +178,10 @@ public class NewSampleRemoteProjectDialog extends TitleAreaDialog {
         locationControlsComposite.setLayout(glLocationControl);
         txtProjectLocation = new Text(locationControlsComposite, SWT.BORDER);
         txtProjectLocation.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-        
+
         btnFolderChooser = new Button(locationControlsComposite, SWT.NONE);
         btnFolderChooser.setText("Browse...");
-        
+
         setInput();
         registerControlModifyListeners();
         return container;
@@ -165,25 +191,23 @@ public class NewSampleRemoteProjectDialog extends TitleAreaDialog {
     protected Point getInitialSize() {
         return new Point(600, super.getInitialSize().y);
     }
-    
+
     @Override
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
         newShell.setText("Clone Remote Project");
     }
-    
+
     @Override
     protected void setShellStyle(int newShellStyle) {
         super.setShellStyle(newShellStyle | SWT.RESIZE);
     }
-    
+
     @Override
     protected void okPressed() {
-       this.selectedProjectLocation = txtProjectLocation.getText();
+        this.projectInfo = new ProjectEntity();
+        projectInfo.setName(txtProjectName.getText());
+        projectInfo.setFolderLocation(txtProjectLocation.getText());
         super.okPressed();
-    }
-
-    public String getSelectedProjectLocation() {
-        return selectedProjectLocation;
     }
 }

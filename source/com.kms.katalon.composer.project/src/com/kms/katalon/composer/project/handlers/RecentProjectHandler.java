@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.project.handlers;
 
+import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -24,6 +26,7 @@ import com.kms.katalon.constants.PreferenceConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
+import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 @SuppressWarnings("restriction")
 public class RecentProjectHandler {
@@ -62,7 +65,7 @@ public class RecentProjectHandler {
             if (recentProjects == null || recentProjects.isEmpty())
                 return;
 
-            if (PlatformUI.getPreferenceStore().getBoolean(PreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION)) {
+            if (getGeneralStore().getBoolean(PreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION)) {
                 // If the Tests Explorer part is minimized or hidden, we have to activate it.
                 // So that the tree entities can be loaded.
                 MPart explorerPart = partService.findPart(IdConstants.EXPLORER_PART_ID);
@@ -79,5 +82,9 @@ public class RecentProjectHandler {
         } catch (Exception e) {
             LoggerSingleton.logError(e);
         }
+    }
+    
+    public static ScopedPreferenceStore getGeneralStore() {
+        return getPreferenceStore(IdConstants.KATALON_GENERAL_BUNDLE_ID);
     }
 }

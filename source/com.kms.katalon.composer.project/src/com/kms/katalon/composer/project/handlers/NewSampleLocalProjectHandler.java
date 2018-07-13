@@ -20,15 +20,14 @@ import com.kms.katalon.composer.project.constants.ComposerProjectMessageConstant
 import com.kms.katalon.composer.project.template.SampleProjectProvider;
 import com.kms.katalon.composer.project.views.NewProjectDialog;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.tracking.service.Trackings;
 
-public class NewSampleProjectHandler {
+public class NewSampleLocalProjectHandler {
 
     public static final Map<String, String> DIALOG_TITLES;
-
-    private static final String SAMPLE_PROJECT_TYPE_PARAMETER_ID;
 
     static {
         DIALOG_TITLES = new HashMap<>();
@@ -38,9 +37,6 @@ public class NewSampleProjectHandler {
                 ComposerProjectMessageConstants.VIEW_TITLE_NEW_SAMPLE_MOBILE_PROJ);
         DIALOG_TITLES.put(SampleProjectProvider.SAMPLE_WEB_SERVICE,
                 ComposerProjectMessageConstants.VIEW_TITLE_NEW_SAMPLE_WS_PROJ);
-
-        SAMPLE_PROJECT_TYPE_PARAMETER_ID = "com.kms.katalon.composer.project.commandparameter.sample";
-
     }
 
     @Inject
@@ -49,7 +45,8 @@ public class NewSampleProjectHandler {
     @Execute
     public void execute(ParameterizedCommand command, @Named(IServiceConstants.ACTIVE_SHELL) Shell activeShell) {
         try {
-            String sampleProjectType = command.getCommand().getParameter(SAMPLE_PROJECT_TYPE_PARAMETER_ID).getName();
+            String sampleProjectType = (String) command.getParameterMap()
+                    .get(IdConstants.NEW_LOCAL_PROJECT_COMMAND_PARAMETER_TYPE_ID);
             doCreateNewSampleProject(activeShell, sampleProjectType, eventBroker);
         } catch (Exception e) {
             LoggerSingleton.logError(e);
@@ -70,7 +67,7 @@ public class NewSampleProjectHandler {
         SampleProjectProvider.getInstance().extractSampleWebUIProject(sampleProjectType, projectLocation);
         FileUtils.forceDelete(ProjectController.getInstance().getProjectFile(projectLocation));
 
-        ProjectEntity newProject = ProjectController.getInstance().newProjectEntity(projectName, projectDescription, 
+        ProjectEntity newProject = ProjectController.getInstance().newProjectEntity(projectName, projectDescription,
                 projectParentLocation, true);
         if (newProject == null) {
             return;
@@ -81,7 +78,7 @@ public class NewSampleProjectHandler {
         // Open created project
         eventBroker.send(EventConstants.PROJECT_OPEN, newProject.getId());
     }
-    
+
     private static void trackCreatingSampleProject(ProjectEntity project, String sampleProjectType) {
         Trackings.trackCreatingSampleProject(sampleProjectType, project.getUUID());
     }

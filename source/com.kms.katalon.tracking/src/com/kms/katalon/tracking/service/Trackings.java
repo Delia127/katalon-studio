@@ -123,6 +123,11 @@ public class Trackings {
                 "newObject", "type", "project", "sampleProjectType", sampleProjectType, "projectId", projectId);
     }
     
+    public static void trackCreatingSampleProject(String sampleProjectType) {
+        trackUserAction(
+                "newObject", "type", "project", "sampleProjectType", sampleProjectType);
+    }
+    
     public static void trackOpenObject(String objectType) {
         trackUserAction("openObject", "type", objectType);
     }

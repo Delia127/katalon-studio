@@ -50,6 +50,7 @@ public class ProjectStatisticsCollector implements IProjectStatisticsCollector {
     private ProjectStatistics statistics;
     
     public ProjectStatistics collect(ProjectEntity project) throws Exception {
+        
         this.project = project;
         
         statistics = new ProjectStatistics();
