@@ -264,7 +264,6 @@ public class AnalyticsApiProvider {
     public static int getDefaultProjectIndex(AnalyticsSettingStore analyticsSettingStore,
             List<AnalyticsProject> projects) {
         int selectionIndex = 0;
-
         try {
             AnalyticsProject storedProject = analyticsSettingStore.getProject();
             if (storedProject != null && storedProject.getId() != null) {
