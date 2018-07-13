@@ -9,12 +9,12 @@ import com.kms.katalon.objectspy.core.HTMLElementCaptureServer;
 
 @SuppressWarnings("restriction")
 public class HTMLElementRecorderServer extends HTMLElementCaptureServer {
-	public HTMLElementRecorderServer(Logger logger, RecorderDialog recorderDialog) {
-		this(0, logger, recorderDialog);
+	public HTMLElementRecorderServer(Logger logger, RecorderDialog recorderDialog, Class<?> socketClass) {
+		this(0, logger, recorderDialog, socketClass);
 	}
 	
-	public HTMLElementRecorderServer(int port, Logger logger, RecorderDialog recorderDialog) {
-        super(port, logger);
+	public HTMLElementRecorderServer(int port, Logger logger, RecorderDialog recorderDialog, Class<?> socketClass) {
+        super(port, logger, socketClass);
         addServlets(logger, recorderDialog, context);
     }
 	
