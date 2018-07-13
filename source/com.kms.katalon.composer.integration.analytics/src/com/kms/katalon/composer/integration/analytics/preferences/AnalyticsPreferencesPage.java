@@ -217,10 +217,6 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
         cbxAttachScreenshot.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         cbxAttachScreenshot.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_TEST_RESULT_ATTACH_SCREENSHOT);
 
-//        cbxAttachLog = new Button(attachComposite, SWT.CHECK);
-//        cbxAttachLog.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-//        cbxAttachLog.setText(ComposerIntegrationAnalyticsMessageConstants.LBL_TEST_RESULT_ATTACH_LOG);
-
         cbxAttachCaptureVideo = new Button(attachComposite, SWT.CHECK);
         cbxAttachCaptureVideo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         cbxAttachCaptureVideo
@@ -411,7 +407,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                 changeEnabled();
             }
         });
-
+        
         btnConnect.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -500,6 +496,13 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             @Override
             public void widgetSelected(SelectionEvent e) {
                 maskPasswordField();
+            }
+        });
+        
+        cbxAutoSubmit.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                cbxAttachScreenshot.setSelection(cbxAutoSubmit.getSelection());
             }
         });
 
