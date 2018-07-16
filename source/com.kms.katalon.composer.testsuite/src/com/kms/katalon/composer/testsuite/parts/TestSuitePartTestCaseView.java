@@ -557,13 +557,16 @@ public class TestSuitePartTestCaseView {
         
         btnViewHistory = new Button(kaComposite, SWT.NONE);
         btnViewHistory.setText(ComposerTestcaseMessageConstants.BTN_TESTCASEHISTORY);
-        btnViewHistory.setVisible(analyticsReportService.isIntegrationEnabled());
         btnViewHistory.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 try {
-                    Program.launch(createPath(analyticsSettingStore.getTeam(), analyticsSettingStore.getProject(), 
-                            testSuitePart.getTestSuite().getIdForDisplay(), analyticsSettingStore.getToken(true)));
+                	if (analyticsReportService.isIntegrationEnabled() && analyticsSettingStore.getProject() != null){
+                		 Program.launch(createPath(analyticsSettingStore.getTeam(), analyticsSettingStore.getProject(), 
+                                 testSuitePart.getTestSuite().getIdForDisplay(), analyticsSettingStore.getToken(true)));
+                	} else {
+                		Program.launch(ComposerTestcaseMessageConstants.KA_WELCOME_PAGE);
+                	}
                 } catch (IOException | GeneralSecurityException e1) {
                     LoggerSingleton.logError(e1);
                 }

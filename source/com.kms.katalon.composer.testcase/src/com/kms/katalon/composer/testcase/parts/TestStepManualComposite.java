@@ -213,15 +213,17 @@ public class TestStepManualComposite {
             spacer.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
             btnViewHistory = new Button(compositeTableButtons, SWT.NONE);
-            btnViewHistory.setText(ComposerTestcaseMessageConstants.BTN_TESTCASEHISTORY);
-            btnViewHistory.setVisible(analyticsReportService.isIntegrationEnabled());
-            
+            btnViewHistory.setText(ComposerTestcaseMessageConstants.BTN_TESTCASEHISTORY);            
             btnViewHistory.addSelectionListener(new SelectionAdapter() {
                 @Override
                 public void widgetSelected(SelectionEvent e) {
-                    try {
-                        Program.launch(createPath(analyticsSettingStore.getTeam(), analyticsSettingStore.getProject(), 
-                                parentPart.getTestCase().getIdForDisplay(), analyticsSettingStore.getToken(true)));
+                	try {
+                    	if (analyticsReportService.isIntegrationEnabled() && analyticsSettingStore.getProject() != null){
+                    		 Program.launch(createPath(analyticsSettingStore.getTeam(), analyticsSettingStore.getProject(), 
+                    				 parentPart.getTestCase().getIdForDisplay(), analyticsSettingStore.getToken(true)));
+                    	} else {
+                    		Program.launch(ComposerTestcaseMessageConstants.KA_WELCOME_PAGE);
+                    	}
                     } catch (IOException | GeneralSecurityException e1) {
                         LoggerSingleton.logError(e1);
                     }

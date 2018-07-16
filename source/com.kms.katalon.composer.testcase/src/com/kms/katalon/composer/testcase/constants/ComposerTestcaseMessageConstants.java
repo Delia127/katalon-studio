@@ -351,6 +351,8 @@ public class ComposerTestcaseMessageConstants extends NLS {
 
     public static String OBJECT_VARIABLE_TABLE_COL_VALUE_TYPE;
     
+    public static String KA_WELCOME_PAGE;
+    
     //TestCaseVariablePart
     public static String PA_COL_MASKED;
     
