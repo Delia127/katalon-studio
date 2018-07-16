@@ -244,7 +244,7 @@ KURecorder.addEventHandler('dragAndDrop', 'mouseup', function (event) {
                             setTimeout(function () { preventClickTwice = false; }, 30);
                         }
                     }
-                }.bind(this), 0);
+                }.bind(this), 200);
             }
         }
         delete this.mousedown;
