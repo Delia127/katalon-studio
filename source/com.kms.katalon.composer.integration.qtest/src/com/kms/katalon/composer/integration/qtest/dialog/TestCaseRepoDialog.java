@@ -99,6 +99,8 @@ public class TestCaseRepoDialog extends Dialog {
     protected Control createDialogArea(Composite parent) {
         container = (Composite) super.createDialogArea(parent);
         GridLayout gridLayout = (GridLayout) container.getLayout();
+        GridData gridData = (GridData) container.getLayoutData();
+        gridData.widthHint = 500;
         gridLayout.numColumns = 3;
 
         Label lblQTestProject = new Label(container, SWT.NONE);
@@ -227,11 +229,6 @@ public class TestCaseRepoDialog extends Dialog {
                 }
             }
         });
-    }
-
-    @Override
-    protected Point getInitialSize() {
-        return new Point(500, super.getInitialSize().y);
     }
 
     @Override
