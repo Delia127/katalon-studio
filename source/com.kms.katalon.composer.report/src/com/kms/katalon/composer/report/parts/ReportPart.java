@@ -702,8 +702,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         });
     }
 
-    private HashMap<String, String> getCredentialInfo(AnalyticsTokenInfo tokenInfo,
-            AnalyticsSettingStore analyticsSettingStore) {
+    private HashMap<String, String> getCredentialInfo(AnalyticsSettingStore analyticsSettingStore) {
         String authenticationDialogOpened = "false";
         ScopedPreferenceStore preferenceStore = getPreferenceStore();
         String preferenceEmail = preferenceStore.getString(ActivationPreferenceConstants.ACTIVATION_INFO_EMAIL);
@@ -768,7 +767,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         List<AnalyticsTeam> teams = null;
         List<AnalyticsProject> projects = null;
 
-        final HashMap<String, String> credentialInfo = getCredentialInfo(tokenInfo, analyticsSettingStore);
+        final HashMap<String, String> credentialInfo = getCredentialInfo(analyticsSettingStore);
         
         if (credentialInfo == null) {
         	return;
