@@ -6,7 +6,7 @@
          point="org.eclipse.core.runtime.products">
       <product
             name="com.kms.katalon.console.product"
-            application="com.kms.katalon.console.application">
+            application="com.kms.katalon.application">
          <property
                name="appName"
                value="com.kms.katalon.console.product">

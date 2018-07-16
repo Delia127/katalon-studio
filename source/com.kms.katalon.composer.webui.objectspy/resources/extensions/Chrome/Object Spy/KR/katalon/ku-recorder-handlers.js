@@ -222,6 +222,7 @@ KURecorder.addEventHandler('dragAndDrop', 'mouseup', function (event) {
             if (this.mousedown) {
                 var mouseDownTemp = this.mousedown;
                 var mouseDownTempTarget = this.mousedown.target;
+                var currentURL = this.window.document.URL;
                 this.waitUntilDoubleClickIsConfirmed = setTimeout(function (){
                     if (mouseDownTempTarget !== event.target && !(x + y)) {
                         var x = event.clientX - this.mouseDownTemp.clientX;
@@ -236,14 +237,14 @@ KURecorder.addEventHandler('dragAndDrop', 'mouseup', function (event) {
                             if (!preventClickTwice) {
                                 var clickType = this.rec_getMouseButton(event);
                                 if (this.rec_isElementMouseUpEventRecordable(event.target, clickType)) {
-                                    this.processOnClickTarget(event.target, clickType);
+                                    this.processOnClickTarget(event.target, clickType, currentURL);
                                 }
                                 preventClickTwice = true;
                             }
                             setTimeout(function () { preventClickTwice = false; }, 30);
                         }
                     }
-                }.bind(this), 200);
+                }.bind(this), 0);
             }
         }
         delete this.mousedown;

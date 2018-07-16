@@ -67,7 +67,6 @@ Recorder.addEventHandler('type', 'input', function (event) {
 // © Jie-Lin You, SideeX Team
 var preventClickTwice = false;
 Recorder.addEventHandler('clickAt', 'click', function (event) {
-    console.log("click captured in Recorder " + document.contains(event.target));
     if (event.button == 0 && !preventClick && event.isTrusted) {
         if (!preventClickTwice) {
             var top = event.pageY,
@@ -239,7 +238,6 @@ Recorder.addEventHandler('sendKeys', 'keydown', function (event) {
 
 // © Shuo-Heng Shih, SideeX Team
 Recorder.addEventHandler('dragAndDrop', 'mousedown', function (event) {
-    console.log("mousedown capturing in Record " + document.contains(event.target));
     var self = this;
     if (event.clientX < window.document.documentElement.clientWidth && event.clientY < window.document.documentElement.clientHeight) {
         this.mousedown = event;
@@ -271,7 +269,6 @@ Recorder.addEventHandler('dragAndDrop', 'mousedown', function (event) {
 // © Shuo-Heng Shih, SideeX Team
 var preventAutomaticClick = false;
 Recorder.addEventHandler('dragAndDrop', 'mouseup', function (event) {
-    console.log("mouseup capturing in Record " + document.contains(event.target));
     clearTimeout(this.selectMouseup);
     if (!preventAutomaticClick) {
         

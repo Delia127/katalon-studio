@@ -17,12 +17,12 @@
 
 var master = {};
 var clickEnabled = true;
-
+    
 function openPanel(tab) {
 
     let contentWindowId = tab.windowId;
     if (master[contentWindowId] != undefined) {
-        chrome.windows.update(master[contentWindowId], {
+        browser.windows.update(master[contentWindowId], {
             focused: true
         }).catch(function(e) {
             master[contentWindowId] == undefined;
@@ -39,8 +39,8 @@ function openPanel(tab) {
     }, 1000);
 
     var f = function(height, width) {
-    chrome.windows.create({
-        url: chrome.runtime.getURL("panel/index.html"),
+    browser.windows.create({
+        url: browser.runtime.getURL("panel/index.html"),
         type: "popup",
         height: height,
         width: width
@@ -53,7 +53,7 @@ function openPanel(tab) {
                     clearInterval(interval);
                 }
 
-                chrome.tabs.query({
+                browser.tabs.query({
                     active: true,
                     windowId: panelWindowInfo.id,
                     status: "complete"
@@ -73,7 +73,7 @@ function openPanel(tab) {
             }, 200);
         });
     }).then(function bridge(panelWindowInfo){
-        return chrome.tabs.sendMessage(panelWindowInfo.tabs[0].id, {
+        return browser.tabs.sendMessage(panelWindowInfo.tabs[0].id, {
             selfWindowId: panelWindowInfo.id,
             commWindowId: contentWindowId
         });
@@ -85,70 +85,70 @@ function openPanel(tab) {
     getWindowSize(f);
 }
 
-chrome.browserAction.onClicked.addListener(openPanel);
+browser.browserAction.onClicked.addListener(openPanel);
 
-chrome.windows.onRemoved.addListener(function(windowId) {
+browser.windows.onRemoved.addListener(function(windowId) {
     let keys = Object.keys(master);
     for (let key of keys) {
         if (master[key] === windowId) {
             delete master[key];
             if (keys.length === 1) {
-                chrome.contextMenus.removeAll();
+                browser.contextMenus.removeAll();
             }
         }
     }
 });
 
 function createMenus() {
-    chrome.contextMenus.create({
+    browser.contextMenus.create({
         id: "verifyText",
         title: "verifyText",
         documentUrlPatterns: ["<all_urls>"],
         contexts: ["all"]
     });
-    chrome.contextMenus.create({
+    browser.contextMenus.create({
         id: "verifyTitle",
         title: "verifyTitle",
         documentUrlPatterns: ["<all_urls>"],
         contexts: ["all"]
     });
-    chrome.contextMenus.create({
+    browser.contextMenus.create({
         id: "verifyValue",
         title: "verifyValue",
         documentUrlPatterns: ["<all_urls>"],
         contexts: ["all"]
     });
-    chrome.contextMenus.create({
+    browser.contextMenus.create({
         id: "assertText",
         title: "assertText",
         documentUrlPatterns: ["<all_urls>"],
         contexts: ["all"]
     });
-    chrome.contextMenus.create({
+    browser.contextMenus.create({
         id: "assertTitle",
         title: "assertTitle",
         documentUrlPatterns: ["<all_urls>"],
         contexts: ["all"]
     });
-    chrome.contextMenus.create({
+    browser.contextMenus.create({
         id: "assertValue",
         title: "assertValue",
         documentUrlPatterns: ["<all_urls>"],
         contexts: ["all"]
     });
-    chrome.contextMenus.create({
+    browser.contextMenus.create({
         id: "storeText",
         title: "storeText",
         documentUrlPatterns: ["<all_urls>"],
         contexts: ["all"]
     });
-    chrome.contextMenus.create({
+    browser.contextMenus.create({
         id: "storeTitle",
         title: "storeTitle",
         documentUrlPatterns: ["<all_urls>"],
         contexts: ["all"]
     });
-    chrome.contextMenus.create({
+    browser.contextMenus.create({
         id: "storeValue",
         title: "storeValue",
         documentUrlPatterns: ["<all_urls>"],
@@ -157,18 +157,18 @@ function createMenus() {
 }
 
 var port;
-chrome.contextMenus.onClicked.addListener(function(info, tab) {
+browser.contextMenus.onClicked.addListener(function(info, tab) {
     port.postMessage({ cmd: info.menuItemId });
 });
 
-chrome.runtime.onConnect.addListener(function(m) {
+browser.runtime.onConnect.addListener(function(m) {
     port = m;
 });
 
 /* KAT-BEGIN remove showing sideex docs
-chrome.runtime.onInstalled.addListener(function(details) {
+browser.runtime.onInstalled.addListener(function(details) {
     if (details.reason == "install" || details.reason == "update") {
-        chrome.tabs.create({url: "http://sideex.org"});
+        browser.tabs.create({url: "http://sideex.org"});
     }
 })
 KAT-END */

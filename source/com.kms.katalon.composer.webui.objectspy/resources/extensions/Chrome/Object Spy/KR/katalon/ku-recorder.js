@@ -282,7 +282,7 @@ class KURecorder {
         this.rec_infoDiv.appendChild(this.rec_elementInfoDiv);
     }
 
-    checkForNavigateAction () {
+    checkForNavigateAction (currentURL) {
         if (this.rec_navigateActionRecorded) {
             return;
         }
@@ -291,7 +291,7 @@ class KURecorder {
         }
         var action = {};
         action["actionName"] = "navigate";
-        action["actionData"] = this.window.document.URL;
+        action["actionData"] = currentURL || this.window.document.URL;
         this.rec_sendData(action, this.window.document);
         this.rec_navigateActionRecorded = true;
     }
@@ -410,8 +410,8 @@ class KURecorder {
         }
     }
 
-    processOnClickTarget (selectedElement, clickType) {
-        this.checkForNavigateAction();
+    processOnClickTarget (selectedElement, clickType, currentURL) {
+        this.checkForNavigateAction(currentURL);
         var action = {};
         action["actionName"] = 'click';
         action["actionData"] = clickType;
