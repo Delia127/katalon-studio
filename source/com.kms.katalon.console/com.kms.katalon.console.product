@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="com.kms.katalon.console.product" uid="com.kms.katalon.console.product" id="com.kms.katalon.console.product" application="com.kms.katalon.application" version="1.0.0.qualifier" useFeatures="true" includeLaunchers="true">
+<product name="com.kms.katalon.console.product" uid="com.kms.katalon.console.product" id="com.kms.katalon.console.product" application="com.kms.katalon.console.application" version="1.0.0.qualifier" useFeatures="true" includeLaunchers="true">
 
    <configIni use="default">
    </configIni>
