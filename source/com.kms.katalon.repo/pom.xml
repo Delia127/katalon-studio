@@ -243,7 +243,7 @@
                                     <id>org.apache.ant:ant-launcher:1.9.6</id>
                                 </artifact>
                                 <artifact>
-                                    <id>com.auth0:java-jwt:3.3.0</id>
+                                    <id>com.auth0:java-jwt:3.4.0</id>
                                 </artifact>
 								<artifact>
 									<id>org.greenrobot:eventbus:3.1.1</id>

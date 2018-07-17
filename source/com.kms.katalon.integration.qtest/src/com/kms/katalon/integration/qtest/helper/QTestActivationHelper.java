@@ -1,6 +1,9 @@
 package com.kms.katalon.integration.qtest.helper;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.net.InetAddress;
+import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
@@ -8,40 +11,38 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.EncodedKeySpec;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.Base64;
 import java.util.Objects;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.google.api.client.util.PemReader;
 import com.google.gson.JsonObject;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.application.utils.ServerAPICommunicationUtil;
 import com.kms.katalon.core.util.internal.JsonUtil;
-import com.kms.katalon.integration.qtest.activation.response.ResponseActivation;
 import com.kms.katalon.integration.qtest.constants.QTestMessageConstants;
 import com.kms.katalon.integration.qtest.constants.QTestStringConstants;
 import com.kms.katalon.logging.LogUtil;
-import com.kms.katalon.util.ComposerActivationInfoCollector;
+import com.kms.katalon.util.CryptoUtil;
 
 public class QTestActivationHelper {
 
-    public static boolean qTestactivate(String activationCode, StringBuilder errorMessage) {
+    public static boolean activate(String activationCode, String requestCode, StringBuilder errorMessage) {
         try {
-            String requestCode = ComposerActivationInfoCollector.genRequestActivationInfo();
             RSAPublicKey publicKey = (RSAPublicKey) getPublicKey();
             Algorithm algorithm = Algorithm.RSA256(publicKey, null);
 
             JWTVerifier verifier = JWT.require(algorithm)
                     .withIssuer(QTestStringConstants.KMS_SIGNED_THE_TOKEN_ISSUER)
-                    .withClaim(QTestStringConstants.REQUEST_CODE_PAYLOAD_PROPERTY, requestCode)
-                    .withClaim(QTestStringConstants.IS_OFFLINE_ACTIVATION_CODE_PAYLOAY_PROPERTY, Boolean.TRUE)
-                    .acceptExpiresAt(0)
+                    .withClaim(QTestStringConstants.PAYLOAD_PROP_REQUEST_CODE, requestCode)
+                    .withClaim(QTestStringConstants.PAYLOAD_PROP_IS_OFFLINE, Boolean.TRUE)
                     .build();
 
             verifier.verify(activationCode);
@@ -60,16 +61,19 @@ public class QTestActivationHelper {
         return false;
     }
 
-    public static boolean qTestOnlineActivate(String qTestUserName, String qTestCode, StringBuilder errorMessage) {
+    public static boolean qTestOnlineActivate(String username, String activationCode, StringBuilder errorMessage) {
         try {
             JsonObject activationObject = new JsonObject();
-            activationObject.addProperty(QTestStringConstants.USERNAME, StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(qTestUserName)));
-            activationObject.addProperty(QTestStringConstants.ACTIVATIONCODE, StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(qTestCode)));
-            String result = ServerAPICommunicationUtil.put("/api/qtest-licenses/activate", activationObject.toString());
+            activationObject.addProperty(QTestStringConstants.USERNAME,
+                    StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(username)));
+            activationObject.addProperty(QTestStringConstants.REQUEST_PROP_ACTIVATION_CODE,
+                    StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(activationCode)));
+            String result = ServerAPICommunicationUtil.post("/api/qtest-licenses/activate", activationObject.toString());
 
             ResponseActivation responeOb = JsonUtil.fromJson(result, ResponseActivation.class);
 
             if (ResponseActivation.VERIFIED_SUCCESS.equalsIgnoreCase(responeOb.getVerified())) {
+                markActivated(activationCode);
                 return true;
             }
 
@@ -85,10 +89,33 @@ public class QTestActivationHelper {
             errorMessage.append(QTestMessageConstants.ONLINE_ACTIVATION_INTERNAL_SERVER_ERROR_MSG_ERROR);
             return false;
         }
-
     }
 
-    private static void getErrorMessage(StringBuilder errorMessage, String errorResponse) throws Exception {
+    public static ActivationStatus checkActivationStatus() {
+        try {
+            String activationCode = getApplicationActivationCode();
+
+            if (StringUtils.isEmpty(activationCode)) {
+                return ActivationStatus.NOT_ACTIVATED;
+            }
+
+            RSAPublicKey publicKey = (RSAPublicKey) getPublicKey();
+            Algorithm algorithm = Algorithm.RSA256(publicKey, null);
+
+            JWTVerifier verifier = JWT.require(algorithm)
+                    .withIssuer(QTestStringConstants.KMS_SIGNED_THE_TOKEN_ISSUER)
+                    .build();
+            verifier.verify(activationCode);
+
+            return ActivationStatus.VALIDATED;
+        } catch (TokenExpiredException tkExpiredException) {
+            return ActivationStatus.EXPIRED;
+        } catch (IOException | GeneralSecurityException e) {
+            return ActivationStatus.NOT_ACTIVATED;
+        }
+    }
+
+    private static void getErrorMessage(StringBuilder errorMessage, String errorResponse) {
         switch (errorResponse) {
             case ResponseActivation.LICENSE_ALREADY_ACTIVATED_FAIL_MSG:
                 errorMessage.append(QTestMessageConstants.ONLINE_ACTIVATION_LICENSE_ALREADY_ACTIVTED_MSG_ERR);
@@ -104,7 +131,7 @@ public class QTestActivationHelper {
         }
     }
 
-    private static int getHostNameHashValue() throws Exception {
+    private static int getHostNameHashValue() throws IOException {
         String hostName = InetAddress.getLocalHost().getHostName();
         String ipAddress = InetAddress.getLocalHost().getHostAddress();
 
@@ -115,23 +142,42 @@ public class QTestActivationHelper {
         return Objects.hash(hostName);
     }
 
-    private static void markActivated(String activationCode) throws Exception {
+    private static void markActivated(String activationCode) throws IOException, GeneralSecurityException {
         String activatedVal = Integer.toString(getHostNameHashValue());
         String curVersion = new StringBuilder(ApplicationInfo.versionNo().replaceAll("\\.", "")).reverse().toString();
         ApplicationInfo.setAppProperty(ApplicationStringConstants.ACTIVATED_PROP_NAME, curVersion + "_" + activatedVal,
                 true);
-        ApplicationInfo.setAppProperty(ApplicationStringConstants.ACTIVATION_CODE, activationCode, true);
+        String encodedActivationCode = CryptoUtil
+                .encode(CryptoUtil.getDefault(Integer.toString(getHostNameHashValue()), activationCode));
+        ApplicationInfo.setAppProperty(QTestStringConstants.APP_PROP_ACTIVATION_CODE, encodedActivationCode, true);
+        ApplicationInfo.removeAppProperty(ApplicationStringConstants.APP_PROP_ACTIVATION_REQUEST_CODE);
     }
 
-    private static PublicKey getPublicKey() throws NoSuchAlgorithmException, InvalidKeySpecException {
+    private static String getApplicationActivationCode() throws IOException, GeneralSecurityException {
+        String encodedActivationCode = ApplicationInfo.getAppProperty(QTestStringConstants.APP_PROP_ACTIVATION_CODE);
+        if (encodedActivationCode != null) {
+            return CryptoUtil
+                    .decode(CryptoUtil.getDefault(Integer.toString(getHostNameHashValue()), encodedActivationCode));
+        }
+        return null;
+    }
+
+    private static PublicKey getPublicKey() throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
         PublicKey publicKey = null;
 
         KeyFactory kf = KeyFactory.getInstance("RSA");
         EncodedKeySpec keySpec = new X509EncodedKeySpec(
-                Base64.getDecoder().decode(QTestStringConstants.QTEST_ACTIVATION_PUBLIC_KEY));
+                readPemString(QTestStringConstants.QTEST_ACTIVATION_PUBLIC_KEY));
         publicKey = kf.generatePublic(keySpec);
 
         return publicKey;
     }
 
+    private static byte[] readPemString(String string) throws IOException {
+        return PemReader.readFirstSectionAndClose(new StringReader(string)).getBase64DecodedBytes();
+    }
+
+    public static enum ActivationStatus {
+        NOT_ACTIVATED, VALIDATED, EXPIRED
+    }
 }

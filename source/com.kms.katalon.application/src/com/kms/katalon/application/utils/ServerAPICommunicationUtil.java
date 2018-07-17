@@ -18,22 +18,16 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.core.runtime.Platform;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.kms.katalon.application.constants.ApplicationMessageConstants;
-import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.logging.LogUtil;
 
 public class ServerAPICommunicationUtil {
     private static final String DEVELOPMENT_URL_API = "https://backend-dev.katalon.com/api";
 
     private static final String PRODUCTION_URL_API = "https://update.katalon.com/api";
-    
-    private static final String PRODUCTION_QTEST_ACTIVATION_URL_API = "http://192.168.37.68:3000";
-    
-    private static final String DEVELOPMENT_QTEST_ACTIVATION_URL_API = "http://192.168.37.68:3000";
 
     private static final String POST = "POST";
 
@@ -74,7 +68,7 @@ public class ServerAPICommunicationUtil {
         LogUtil.printAndLogError(null, ApplicationMessageConstants.REQUEST_FAILED_AND_RETRY);
         HttpURLConnection connection = null;
         try {
-                connection = createConnection(method, getAPIUrl() + function, ApplicationProxyUtil.getRetryProxy());
+            connection = createConnection(method, getAPIUrl() + function, ApplicationProxyUtil.getRetryProxy());
             String result = sendAndReceiveData(connection, jsonData);
             LogUtil.printOutputLine(ApplicationMessageConstants.REQUEST_COMPLETED);
             return result;
@@ -93,18 +87,10 @@ public class ServerAPICommunicationUtil {
     }
     
     public static String getAPIUrl() {
-        boolean isQTestVersion = Platform.getBundle(IdConstants.QTEST_INTEGRATION_BUNDLE_ID) != null;
 
         if (VersionUtil.isInternalBuild()) {
-            if (isQTestVersion) {
-                return DEVELOPMENT_QTEST_ACTIVATION_URL_API;
-            }
             return DEVELOPMENT_URL_API;
-
         } else {
-            if (isQTestVersion) {
-                return PRODUCTION_QTEST_ACTIVATION_URL_API;
-            }
             return PRODUCTION_URL_API;
         }
     }

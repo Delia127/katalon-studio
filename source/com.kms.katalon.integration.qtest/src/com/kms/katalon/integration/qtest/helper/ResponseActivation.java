@@ -1,4 +1,4 @@
-package com.kms.katalon.integration.qtest.activation.response;
+package com.kms.katalon.integration.qtest.helper;
 
 public class ResponseActivation {
 

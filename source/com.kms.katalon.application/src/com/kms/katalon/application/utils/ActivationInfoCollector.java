@@ -149,7 +149,7 @@ public class ActivationInfoCollector {
 
     private static void markActivated(String userName) throws Exception {
         setActivatedVal();
-        ApplicationInfo.removeAppProperty(ApplicationStringConstants.REQUEST_CODE_PROP_NAME);
+        ApplicationInfo.removeAppProperty(ApplicationStringConstants.APP_PROP_ACTIVATION_REQUEST_CODE);
         ApplicationInfo.setAppProperty(ApplicationStringConstants.ARG_EMAIL, userName, true);
     }
 

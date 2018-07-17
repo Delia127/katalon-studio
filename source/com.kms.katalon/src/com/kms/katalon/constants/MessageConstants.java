@@ -109,7 +109,7 @@ public class MessageConstants extends NLS {
 
     public static String SEPARATE_LINK;
 
-    public static String DIALOG_TITLE;
+    public static String DIA_TITLE_KS_ACTIVATION;
 
     public static String BTN_CLEAR_TILE;
 
