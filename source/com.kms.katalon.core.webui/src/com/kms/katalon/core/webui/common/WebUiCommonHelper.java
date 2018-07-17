@@ -28,8 +28,7 @@ import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.exception.StepFailedException;
 import com.kms.katalon.core.helper.KeywordHelper;
@@ -61,29 +60,7 @@ public class WebUiCommonHelper extends KeywordHelper {
 
     private static KeywordLogger logger = KeywordLogger.getInstance();
     
-    // cache elements found with heuristic method
-    private static Cache<String, WebElement> webElementsCache;
-    
-    static {
-        final int MAX_AGE = 10;
-        webElementsCache = CacheBuilder.newBuilder()
-                .maximumSize(10) // to preserve memory
-                .expireAfterAccess(MAX_AGE, TimeUnit.MINUTES) // to preserve memory
-                .build();
-        Runnable task = new Runnable() {
-            
-            @Override
-            public void run() {
-                try {
-                    webElementsCache.cleanUp();
-                } catch (Exception ignored) {
-                    
-                }
-            }
-        };
-        ScheduledExecutorService scheduledPool = Executors.newSingleThreadScheduledExecutor();
-        scheduledPool.scheduleAtFixedRate(task, MAX_AGE, 1, TimeUnit.MINUTES);
-    }
+
 
     public static boolean isTextPresent(WebDriver webDriver, String text, boolean isRegex)
             throws WebDriverException, IllegalArgumentException {
@@ -697,24 +674,7 @@ public class WebUiCommonHelper extends KeywordHelper {
         try {
             WebDriver webDriver = DriverFactory.getWebDriver();
             
-            // get element from cache (in case element is found with heuristic method)
-            String key = getKeyForWebElementsCache(webDriver, testObject);
-            WebElement webElement = webElementsCache.getIfPresent(key);
-            if (webElement != null) {
-                try {
-                    webElement.getTagName(); // trigger Selenium's stale check
-                    logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_RETRIEVING_WEB_ELEMENT_FROM_CACHE, testObject.getObjectId()));
-                    return Arrays.asList(webElement);
-                } catch (Exception e) {
-                    // stale
-                    try {
-                        webElementsCache.invalidate(key);
-                    } catch (Exception ignored) {
-                        // never let heuristic method ruin the party
-                    }
-                }
-            }
-            
+                        
             final boolean objectInsideShadowDom = testObject.getParentObject() != null
                     && testObject.isParentObjectShadowRoot();
             By defaultLocator = null;
@@ -777,9 +737,6 @@ public class WebUiCommonHelper extends KeywordHelper {
             }
             // when normal method fails
             List<WebElement> webElements = findWebElementsUsingHeuristicMethod(webDriver, objectInsideShadowDom, testObject);
-            if (webElements != null && webElements.size() > 0) {
-                return webElements;
-            }
         } catch (TimeoutException e) {
             // timeOut, do nothing
         } catch (InterruptedException e) {
@@ -791,11 +748,7 @@ public class WebUiCommonHelper extends KeywordHelper {
         }
         return Collections.emptyList();
     }
-    
-    // generate key for webElementsCache
-    private static String getKeyForWebElementsCache(WebDriver webDriver, TestObject testObject) {
-        return webDriver.hashCode() + "-" + webDriver.getWindowHandle() + "-" + testObject.getObjectId();
-    }
+
 
     private static List<WebElement> findWebElementsUsingHeuristicMethod(
             WebDriver webDriver, 
@@ -811,10 +764,7 @@ public class WebUiCommonHelper extends KeywordHelper {
             return Collections.emptyList();
         }
         WebElement bestMatchElement = findBestMatchElement(webDriver, testObject, webElements);
-        
-        String key = getKeyForWebElementsCache(webDriver, testObject);
-        webElementsCache.put(key, bestMatchElement);
-        
+                        
         return Arrays.asList(bestMatchElement);
     }
 
