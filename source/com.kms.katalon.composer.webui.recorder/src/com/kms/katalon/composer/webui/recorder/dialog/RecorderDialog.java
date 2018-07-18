@@ -1726,7 +1726,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     @Override
     protected void setInput() {
         Boolean continueRecording = null;
-        if (testCaseEntity != null) {
+        if (testCaseEntity != null && nodeWrappers.size() > 0) {
             MessageDialog dialog = new MessageDialog(getShell(), StringConstants.CONFIRMATION, null,
                     MessageFormat.format(ComposerWebuiRecorderMessageConstants.DIA_CONFIRM_CONTINUE_RECORDING,
                             testCaseEntity.getName()),
