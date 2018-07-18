@@ -5,6 +5,7 @@ import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPre
 
 import java.io.IOException;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.core.filesystem.IFileInfo;
 import org.eclipse.core.resources.IProject;
@@ -23,13 +24,12 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.internal.ide.dialogs.IDEResourceInfoUtils;
+import org.greenrobot.eventbus.EventBus;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.addons.CommandBindingRemover;
-import com.kms.katalon.application.RunningMode;
-import com.kms.katalon.application.usagetracking.UsageActionTrigger;
-import com.kms.katalon.application.usagetracking.UsageInfoCollector;
+import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
@@ -43,11 +43,13 @@ import com.kms.katalon.composer.initializer.CommandBindingInitializer;
 import com.kms.katalon.composer.initializer.ContentAssistProposalInitializer;
 import com.kms.katalon.composer.initializer.DefaultTextFontInitializer;
 import com.kms.katalon.composer.initializer.DisplayInitializer;
-import com.kms.katalon.composer.initializer.GeneralSettingInitializer;
 import com.kms.katalon.composer.initializer.ProblemViewImageInitializer;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
+import com.kms.katalon.tracking.core.TrackingManager;
+import com.kms.katalon.tracking.service.Trackings;
 import com.kms.katalon.util.ComposerActivationInfoCollector;
 
 @SuppressWarnings("restriction")
@@ -129,7 +131,8 @@ public class LifeCycleManager {
         new ProblemViewImageInitializer().setup();
         new DefaultTextFontInitializer().setup();
         new DisplayInitializer().setup();
-        new GeneralSettingInitializer().setup();
+        
+        EventBus.builder().installDefaultEventBus();
     }
 
     private void setupPreferences() {
@@ -178,7 +181,9 @@ public class LifeCycleManager {
             public void handleEvent(Event event) {
                 try {
                     startUpGUIMode();
-
+            
+                    scheduleCollectingStatistics();
+                    
                     if (checkActivation(eventBroker)) {
                         eventBroker.post(EventConstants.ACTIVATION_CHECKED, null);
                     }
@@ -198,12 +203,21 @@ public class LifeCycleManager {
                     return false;
                 }
 
-                Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector
-                        .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.OPEN_APPLICATION,
-                                RunningMode.GUI)));
+//                Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector
+//                        .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.OPEN_APPLICATION,
+//                                RunningMode.GUI)));
+//                sendEventForTracking();
+                
                 return true;
+            }
+            
+            private void scheduleCollectingStatistics() {
+                int trackingTime = TrackingManager.getInstance().getTrackingTime();
+                Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
+                    Trackings.trackProjectStatistics(ProjectController.getInstance().getCurrentProject(), 
+                            !ActivationInfoCollector.isActivated(), "gui");
+                }, trackingTime, trackingTime, TimeUnit.SECONDS);
             }
         });
     }
-
 }

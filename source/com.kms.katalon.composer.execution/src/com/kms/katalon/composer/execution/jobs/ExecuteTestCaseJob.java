@@ -8,9 +8,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.ui.di.UISynchronize;
 
-import com.kms.katalon.application.RunningMode;
-import com.kms.katalon.application.usagetracking.UsageActionTrigger;
-import com.kms.katalon.application.usagetracking.UsageInfoCollector;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.execution.constants.StringConstants;
 import com.kms.katalon.composer.execution.exceptions.JobCancelException;
@@ -23,6 +20,7 @@ import com.kms.katalon.execution.exception.ExecutionException;
 import com.kms.katalon.execution.launcher.ILauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.launcher.model.LaunchMode;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class ExecuteTestCaseJob extends Job {
     protected final UISynchronize sync;
@@ -58,6 +56,9 @@ public class ExecuteTestCaseJob extends Job {
             validateJobProgressMonitor(monitor);
 
             startLauncher();
+            
+            Trackings.trackExecuteTestCase(launchMode.toString());
+            
             monitor.worked(1);
 
             return Status.OK_STATUS;
@@ -75,8 +76,8 @@ public class ExecuteTestCaseJob extends Job {
             return Status.CANCEL_STATUS;
         } finally {
             monitor.done();
-            UsageInfoCollector
-                    .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.RUN_SCRIPT, RunningMode.GUI));
+//            UsageInfoCollector
+//                    .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.RUN_SCRIPT, RunningMode.GUI));
         }
     }
 

@@ -119,3 +119,38 @@
 ##### Source code to follow-up:
 [ObjectSpy](https://github.com/kms-technology/katalon/tree/Release-5.3.0/source/com.kms.katalon.composer.webui.objectspy/src/com/kms/katalon/objectspy) and
 [Recorder](https://github.com/kms-technology/katalon/tree/Release-5.3.0/source/com.kms.katalon.composer.webui.recorder/src/com/kms/katalon/composer/webui/recorder)
+
+
+### Katalon Utility Addon
+- Katalon Utilities from Recorder, ObjectSpy and Katalon Recorder are now unified into one Katalon Utility, existing separately in those locations. 
+- Only tested on Chrome Browser.
+
+#### Changes compared to the previous version:
+- KS: Katalon Studio.
+- KU: Katalon Utility (Addon) - used to refer KU in both KS and KR.
+
+##### KU's location:
+- Location
+-- Chrome Object Spy location: /../com.kms.katalon.composer.webui.objectspy/resources/extensions/Chrome/Object Spy/KR
+-- Chrome Recorder location: /../com.kms.katalon.composer.webui.recorder/resources/extensions/Chrome/Recorder/KR
+- Source code to follow-up: [InspectSession](https://github.com/kms-technology/katalon/blob/merge-addon/source/com.kms.katalon.composer.webui.objectspy/src/com/kms/katalon/objectspy/core/InspectSession.java) and [RecordSession](https://github.com/kms-technology/katalon/blob/merge-addon/source/com.kms.katalon.composer.webui.recorder/src/com/kms/katalon/composer/webui/recorder/core/RecordSession.java)
+
+##### Functionalities:
+
+| Party | ClassName | Before | After |
+|-----------|-------------|----------------|--------------------------------------------------------------------------------------------------|
+| KS | [HTMLElementCaptureServer.java](https://github.com/kms-technology/katalon/blob/merge-addon/source/com.kms.katalon.composer.webui.objectspy/src/com/kms/katalon/objectspy/core/HTMLElementCaptureServer.java) [HTMLElementRecorderServer.java](https://github.com/kms-technology/katalon/blob/merge-addon/source/com.kms.katalon.composer.webui.recorder/src/com/kms/katalon/composer/webui/recorder/core/HTMLElementRecorderServer.java) | Start Selenium server | Start Selenium server with a socket endpoint |
+| KS | [AddonSocket.java](https://github.com/kms-technology/katalon/blob/merge-addon/source/com.kms.katalon.composer.webui.objectspy/src/com/kms/katalon/objectspy/websocket/AddonSocket.java) [RecorderAddonSocket.java](https://github.com/kms-technology/katalon/blob/merge-addon/source/com.kms.katalon.composer.webui.recorder/src/com/kms/katalon/composer/webui/recorder/websocket/RecorderAddonSocket.java) | Send REQUEST_BROWSER_INFO to on connection | Same. But if it receives another message *from KU* specifying that KU is in a WebDriver, then it will automatically send a message back *to KU* to starting recording or spying |
+| KU | background.js | Send broswer info, inject content scripts into tabs to avoid reloading | Same. But only inject content scripts if *chrome_init.variables.js* is not overrided ( which means it's in active mode and not in a WebDriver ). If *chrome_init_variables.js* is overrided, then it sends a message back to KS specifying that KU is in a WebDriver. |
+| KU | katalon/ku-recorder-handlers.js | Non-existent | Essentially like content/recorder-handlers.js, but sends recorded actions and elements to KS instead of to its own selenium-api |
+| KU | katalon/ku-recorders.js | Non-existent | Essentially like content/recorder.js, but with added capabilities from dom_recorder.js | 
+| KU | katalon/ku-locatorBuilder.js | Non-existent | Essentially content/locatorBuilders.js, but with added neighbor xpaths and can handle multiple locators returned by a *single* builder |
+| KU | chrome_variables_init.js | Non-existent | Now exist because we want to load KU in a ChromeDriver and this process requires a  chrome_variables.js to override. In case of active mode, this file will not be overwritten. Therefore this file contains the signature which if disappears (due to being overrided) will tell us that KU is being loaded in a WebDriver. |
+| KU | dom_recorder.js | Contains the main logic of how to record elements and actions | Now only attches ku_recorders.js | 
+
+##### Request from KU to KS: 
+*Request Message*
+
+| Name | Type | Description |
+|-----------|-------------|------------------------------------------------------------------------------------------------------------------|
+| SELENIUM_SOCKET | Constant | The message sent when chrome_init_variables.js is overrided to tell KS that KU is being loaded in a Webdriver |

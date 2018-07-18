@@ -69,5 +69,4 @@ public class TestCaseFileServiceDataProvider implements ITestCaseDataProvider {
     public List<TestSuiteEntity> getTestCaseReferences(TestCaseEntity testCase) throws Exception {
         return TestCaseFileServiceManager.getTestCaseReferences(testCase);
     }
-
 }

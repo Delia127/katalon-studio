@@ -3,6 +3,7 @@ package com.kms.katalon.composer.testcase.providers;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.ViewerCell;
+import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.graphics.Image;
 
 import com.kms.katalon.composer.components.util.ColorUtil;
@@ -68,10 +69,11 @@ public class AstTreeLabelProvider extends StyledCellLabelProvider {
             return;
         }
         columnIndex = cell.getColumnIndex();
-        cell.setText(getText(element));
+        String text = getText(element);
+        cell.setText(text);
         cell.setImage(getImage(element));
         if (isDisabledStatement(element)) {
-            handleDisableStatement(cell);
+            handleDisableStatement(cell, text);
         } else {
             handleDefaultStatement(cell);
         }
@@ -86,12 +88,20 @@ public class AstTreeLabelProvider extends StyledCellLabelProvider {
         return element instanceof AstStatementTreeTableNode && ((AstStatementTreeTableNode) element).isDisabled();
     }
 
-    private void handleDisableStatement(ViewerCell cell) {
-        cell.setBackground(ColorUtil.getDisabledItemBackgroundColor());
+    private void handleDisableStatement(ViewerCell cell, String text) {
+        if (StringUtils.isEmpty(text)) {
+            return;
+        }
+        StyleRange disableText = new StyleRange();
+        disableText.start = 0;
+        disableText.length = text.length();
+        disableText.foreground = ColorUtil.getDisabledTextColor();
+        cell.setStyleRanges(new StyleRange[] {  disableText });
     }
 
     private void handleDefaultStatement(ViewerCell cell) {
         cell.setBackground(null);
+        cell.setStyleRanges(new StyleRange[0]);
     }
 
     @Override

@@ -16,6 +16,7 @@ import com.kms.katalon.composer.components.constants.ComposerComponentsMessageCo
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class HelpToolItem extends ToolItem {
     private String documentationLink;
@@ -43,6 +44,7 @@ public class HelpToolItem extends ToolItem {
         }
         try {
             Desktop.getDesktop().browse(new URI(url));
+            Trackings.trackOpenHelp(url);
         } catch (IOException | URISyntaxException exception) {
             LoggerSingleton.logError(exception);
         }

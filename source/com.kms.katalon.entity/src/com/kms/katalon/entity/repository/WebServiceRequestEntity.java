@@ -56,6 +56,8 @@ public class WebServiceRequestEntity extends WebElementEntity {
 
     private List<WebElementPropertyEntity> restParameters;
     
+    private String verificationScript;
+
     private String migratedVersion;
 
     public String getSoapRequestMethod() {
@@ -185,5 +187,13 @@ public class WebServiceRequestEntity extends WebElementEntity {
 
     public void setMigratedVersion(String migratedVersion) {
         this.migratedVersion = migratedVersion;
+    }
+
+    public String getVerificationScript() {
+        return verificationScript;
+    }
+
+    public void setVerificationScript(String verificationScript) {
+        this.verificationScript = verificationScript;
     }
 }

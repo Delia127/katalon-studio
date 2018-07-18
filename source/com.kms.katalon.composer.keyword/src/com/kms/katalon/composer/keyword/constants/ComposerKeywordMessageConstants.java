@@ -64,7 +64,25 @@ public class ComposerKeywordMessageConstants extends NLS {
     public static String DIA_LBL_GENERATE_SAMPLE_FOR_MOBILE;
     
     public static String DIA_LBL_GENERATE_SAMPLE_FOR_API;
-
+    
+    public static String DIA_MSG_FILE_ALREADY_EXIST_WARN;
+    
+    public static String DIA_TITLE_KEYWORD;
+    
+    public static String DIA_BTN_APPLY_THIS_ACTION_TO_ALL;
+    
+    public static String DIA_BTN_OVERWRITE;
+    
+    public static String DIA_BTN_SKIP;
+    
+    public static String DIA_BTN_KEEP_BOTH;
+    
+    public static String MSG_IMPORT;
+    
+    public static String MSG_EXPORT;
+    
+    public static String MSG_CLASS_NAME_TITLE;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerKeywordMessageConstants.class);

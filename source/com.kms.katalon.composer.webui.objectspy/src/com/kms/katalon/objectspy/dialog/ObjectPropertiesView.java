@@ -496,8 +496,10 @@ public class ObjectPropertiesView extends Composite
         txtName.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {
-                if (webElement != null) {
-                    webElement.setName(txtName.getText());
+                String text = txtName.getText();
+                if (webElement != null && !webElement.getName().equals(text)) {
+                    webElement.setName(text);
+                    sendNameChangedEvent();
                     refreshCapturedObjectsTree();
                 }
             }
@@ -626,6 +628,10 @@ public class ObjectPropertiesView extends Composite
 
     private void sendPropertiesChangedEvent() {
         invoke(ObjectSpyEvent.ELEMENT_PROPERTIES_CHANGED, webElement);
+    }
+    
+    private void sendNameChangedEvent() {
+        invoke(ObjectSpyEvent.ELEMENT_NAME_CHANGED, webElement);
     }
 
     public void setRefreshCapturedObjectsTree(Runnable refreshTreeRunnable) {

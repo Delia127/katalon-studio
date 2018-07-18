@@ -19,6 +19,14 @@ public class ImageProcessor {
         registerEntityImages();
         registerSubToolbarImages();
         registerCommonImages();
+        registerRecorderImages();
+    }
+
+    private void registerRecorderImages() {
+        ImageManager.registerImage(IImageKeys.START_RECORDING_24);
+        ImageManager.registerImage(IImageKeys.PAUSE_RECORDING_24);
+        ImageManager.registerImage(IImageKeys.RESUME_RECORDING_24);
+        ImageManager.registerImage(IImageKeys.STOP_RECORDING_24);
     }
 
     private void registerCommonImages() {
@@ -92,6 +100,8 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.CHECK_16);
         ImageManager.registerImage(IImageKeys.FIT_SCREEN_16);
         ImageManager.registerImage(IImageKeys.FULL_SIZE_16);
+        ImageManager.registerImage(IImageKeys.CONFLICT_ELEMENT_STATUS_16);
+        ImageManager.registerImage(IImageKeys.NEW_ELEMENT_STATUS_16);
     }
 
     private void registerSubToolbarImages() {
@@ -341,6 +351,8 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.TAB_MIDDLE_ACTIVE);
         ImageManager.registerImage(IImageKeys.TAB_LAST_INACTIVE);
         ImageManager.registerImage(IImageKeys.TAB_LAST_ACTIVE);
+        ImageManager.registerImage(IImageKeys.SAMPLE_REMOTE_PROJECT_72);
+        ImageManager.registerImage(IImageKeys.GITHUB_LOGO_55);
     }
 
     private void registerIntroImages() {

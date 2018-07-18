@@ -1,24 +1,25 @@
 package com.kms.katalon.util;
 
 import java.util.Random;
-import java.util.concurrent.Executors;
 
 import org.eclipse.core.commands.common.CommandException;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.window.Window;
+import org.greenrobot.eventbus.EventBus;
 
 import com.kms.katalon.activation.dialog.ActivationDialog;
-import com.kms.katalon.application.RunningMode;
 import com.kms.katalon.application.constants.ApplicationStringConstants;
+import com.kms.katalon.application.usagetracking.TrackingEvent;
 import com.kms.katalon.application.usagetracking.UsageActionTrigger;
-import com.kms.katalon.application.usagetracking.UsageInfoCollector;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.ApplicationInfo;
 import com.kms.katalon.composer.components.impl.handler.CommandCaller;
 import com.kms.katalon.composer.intro.FunctionsIntroductionDialog;
 import com.kms.katalon.composer.intro.FunctionsIntroductionFinishDialog;
 import com.kms.katalon.composer.project.constants.CommandId;
+import com.kms.katalon.core.event.EventBusSingleton;
 import com.kms.katalon.logging.LogUtil;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class ComposerActivationInfoCollector extends ActivationInfoCollector {
 
@@ -35,8 +36,10 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
             return true;
         }
         // Send anonymous info for the first time using
-        Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector.collect(
-                UsageInfoCollector.getAnonymousUsageInfo(UsageActionTrigger.OPEN_FIRST_TIME, RunningMode.GUI)));
+//        Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector.collect(
+//                UsageInfoCollector.getAnonymousUsageInfo(UsageActionTrigger.OPEN_FIRST_TIME, RunningMode.GUI)));
+        Trackings.trackOpenFirstTime();
+        
         int result = new ActivationDialog(null).open();
         if (result == Window.CANCEL) {
             return false;

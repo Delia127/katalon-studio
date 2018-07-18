@@ -87,26 +87,26 @@ public class CustomSourceBranchPage extends WizardPage {
         setDescription(UIText.SourceBranchPage_description);
     }
 
-    List<Ref> getSelectedBranches() {
+    public List<Ref> getSelectedBranches() {
         Object[] checkedElements = refsViewer.getCheckedElements();
         Ref[] checkedRefs = new Ref[checkedElements.length];
         System.arraycopy(checkedElements, 0, checkedRefs, 0, checkedElements.length);
         return Arrays.asList(checkedRefs);
     }
 
-    List<Ref> getAvailableBranches() {
+    public List<Ref> getAvailableBranches() {
         return availableRefs;
     }
 
-    Ref getHEAD() {
+    public Ref getHEAD() {
         return head;
     }
 
-    boolean isSourceRepoEmpty() {
+    public boolean isSourceRepoEmpty() {
         return availableRefs.isEmpty();
     }
 
-    boolean isAllSelected() {
+    public boolean isAllSelected() {
         return availableRefs.size() == refsViewer.getCheckedElements().length;
     }
 

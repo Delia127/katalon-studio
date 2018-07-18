@@ -79,6 +79,10 @@ public class GlobalMessageConstants extends NLS {
 
     public static String FOLDER;
 
+    public static String GIT;
+
+    public static String JAR;
+
     public static String PACKAGE;
 
     public static String DEFAULT_PACKAGE_NAME;

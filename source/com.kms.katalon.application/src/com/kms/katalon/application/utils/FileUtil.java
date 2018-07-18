@@ -53,9 +53,13 @@ public class FileUtil {
     }
     
     public static boolean isFileCreateAfter(File file, Date time) throws IOException {
-        return time.getTime() < Files.readAttributes(file.toPath(), BasicFileAttributes.class)
-                .creationTime()
-                .toMillis();
+        if (time == null) {
+            return true;
+        } else {
+            return time.getTime() < Files.readAttributes(file.toPath(), BasicFileAttributes.class)
+                    .creationTime()
+                    .toMillis();
+        }
     }
 
     public static int countAllFiles(File folder, String suffix, Date origin) throws IOException {

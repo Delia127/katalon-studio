@@ -2,6 +2,7 @@ package com.kms.katalon.composer.components.impl.util;
 
 import java.util.concurrent.Callable;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
@@ -237,4 +238,10 @@ public class ControlUtils {
         return control != null && !control.isDisposed();
     }
 
+    public static String createMenuItemText(String name, String hotkey) {
+        if (StringUtils.isEmpty(hotkey)) {
+            return name;
+        }
+        return name + "\t" + hotkey; //$NON-NLS-1$
+    }
 }

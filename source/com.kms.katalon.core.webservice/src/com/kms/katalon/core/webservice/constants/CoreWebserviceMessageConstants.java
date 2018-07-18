@@ -1,6 +1,7 @@
 package com.kms.katalon.core.webservice.constants;
 
 import org.eclipse.osgi.util.NLS;
+import org.omg.CosNaming.NamingContextExtPackage.StringNameHelper;
 
 public class CoreWebserviceMessageConstants extends NLS {
     private static final String BUNDLE_NAME = "com.kms.katalon.core.webservice.constants.coreWebserviceMessages";
@@ -14,8 +15,12 @@ public class CoreWebserviceMessageConstants extends NLS {
     public static String KW_STR_NOT_FOUND_IN_RES;
 
     public static String KW_LOG_FAILED_CANNOT_SEND_REQUEST;
+    
+    public static String KW_LOG_FAILED_CANNOT_SEND_REQUEST_AND_VERIFY;
 
     public static String KW_LOG_PASSED_SEND_REQUEST_SUCCESS;
+    
+    public static String KW_LOG_PASSED_SEND_REQUEST_AND_VERIFY_SUCCESS;
 
     public static String KW_LOG_FAILED_CANNOT_VERIFY_ELEMENT_COUNT;
 
@@ -56,7 +61,15 @@ public class CoreWebserviceMessageConstants extends NLS {
 
     // VerifyResponseStatusCodeInRangeKeyword
     public static String KW_LOG_FAILED_STATUS_CODE_DOES_NOT_MATCH_IN_EXPECTED_RANGE;
+    
+    public static String KW_LOG_INFO_VERIFICATION_START;
+    
+    public static String KW_LOG_VERIFICATION_STEP_FAILED;
+    
+    public static String KW_LOG_VERIFICATION_STEP_FAILED_BECAUSE_OF_ERROR;
 
+    public static String KW_LOG_VERIFICATION_STEP_PASSED;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, CoreWebserviceMessageConstants.class);
