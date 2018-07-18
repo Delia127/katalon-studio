@@ -58,6 +58,8 @@ public class WebElementUtils {
     private static final String ELEMENT_PARENT_KEY = "parent";
 
     private static final String ELEMENT_PAGE_KEY = "page";
+    
+    private static final String ELEMENT_XPATHS_KEY = "xpaths";
 
     private static final String ELEMENT_ATTRIBUTES_KEY = "attributes";
 
@@ -134,7 +136,7 @@ public class WebElementUtils {
         properties.add(new WebElementPropertyEntity(ELEMENT_TAG_KEY, elementType));
         collectElementContents(elementJsonObject, properties);
         collectElementAttributes(elementJsonObject, properties);
-
+                
         String xpathString = getElementXpath(elementJsonObject);
         if (xpathString != null) {
             boolean hasPriorityProperty = properties.stream()
@@ -213,16 +215,47 @@ public class WebElementUtils {
                     PRIORITY_PROPERTIES.contains(propertyName)));
         }
     }
+    
+    private static void collectElementXpaths(JsonObject elementJsonObject,
+            List<WebElementPropertyEntity> properties) {
+        if (!isElementXpathsSet(elementJsonObject)) {
+            return;
+        }
+        for (Entry<String, JsonElement> entry : elementJsonObject.getAsJsonObject(ELEMENT_XPATHS_KEY).entrySet()) {
+
+            String xpathFinder = entry.getKey();
+            JsonElement xpath = entry.getValue();
+            
+            if (xpath instanceof JsonObject) {
+            	System.out.println(entry.getValue().getAsString());
+                properties.add(new WebElementPropertyEntity(xpathFinder, entry.getValue().getAsString(),
+                        PRIORITY_PROPERTIES.contains(xpathFinder)));
+             } else if (xpath instanceof JsonArray) {
+            	 for(JsonElement jsonElement : xpath.getAsJsonArray()){
+            		 System.out.println(jsonElement.getAsString());
+                     properties.add(new WebElementPropertyEntity(xpathFinder, jsonElement.getAsString(),
+                             PRIORITY_PROPERTIES.contains(xpathFinder)));
+            	 }
+             }          
+        }
+    }
 
     private static boolean isElementAttributesSet(JsonObject elementJsonObject) {
         return elementJsonObject.has(ELEMENT_ATTRIBUTES_KEY)
                 && elementJsonObject.get(ELEMENT_ATTRIBUTES_KEY).isJsonObject();
+    }
+    
+    private static boolean isElementXpathsSet(JsonObject elementJsonObject) {
+        return elementJsonObject.has(ELEMENT_XPATHS_KEY)
+                && elementJsonObject.get(ELEMENT_XPATHS_KEY).isJsonObject();
     }
 
     private static boolean isValidElementAttribute(Entry<String, JsonElement> attributeEntry) {
         return attributeEntry.getValue() != null && isNotBlank(attributeEntry.getValue().getAsString())
                 && !ELEMENT_ATTRIBUTES_STYLE_KEY.equals(attributeEntry.getKey());
     }
+    
+
 
     private static void collectElementContents(JsonObject elementJsonObject,
             List<WebElementPropertyEntity> properties) {

@@ -20,10 +20,19 @@ function treeHTML(element, object, currentWindow) {
     }
 
     var xpath = neighborXpathsGenerator.getXpathsByNeighbors(element, false)[0];
-    //var xpath = ku_locatorBuilders.build(element);
+    var xpaths = ku_locatorbuilders.buildAll(element);
 	
 	if(xpath != null ) {
-        object['xpath'] = xpath
+        object['xpath'] = xpath;
+        
+        if(xpaths != null){
+            object['xpaths'] = {};
+            for(var key in xpaths){
+                if(xpaths.hasOwnProperty(key)){
+                    object['xpaths'][key] = xpaths[key];
+                }
+            }
+        }
     } else{
         object['xpath'] = '';
     }
