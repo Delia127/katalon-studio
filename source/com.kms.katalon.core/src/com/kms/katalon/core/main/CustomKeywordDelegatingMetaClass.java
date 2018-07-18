@@ -17,11 +17,6 @@ import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyObject;
 import groovy.lang.MetaClass;
 
-import groovy.lang.DelegatingMetaClass;
-import groovy.lang.GroovyClassLoader;
-import groovy.lang.GroovyObject;
-import groovy.lang.MetaClass;
-
 public class CustomKeywordDelegatingMetaClass extends DelegatingMetaClass {
     private GroovyClassLoader groovyClassLoader;
 
