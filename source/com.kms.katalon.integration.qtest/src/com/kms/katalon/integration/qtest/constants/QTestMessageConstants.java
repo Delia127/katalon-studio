@@ -16,21 +16,10 @@ public class QTestMessageConstants extends GlobalStringConstants {
     public static final String QTEST_PROJECT_NOT_FOUND = "Cannot find qTest project. Please select a qTest project on qTest setting page.";
 
     // QTest Activation Dialog
-    public static final String QTEST_USERNAME_LABEL = "qTest Username";
-
-    public static final String QTEST_CODE_LABEL = "qTest Activation Code";
-
-    public static final String QTEST_ACTIVATION_PROMPT_ENTER_USERNAME_CODE = "Please use your qTest account to activate Katalon Studio.";
-
-    public static final String ACTIVATE_QTEST_CODE_LABEL = "qTest Offline Activation Code";
 
     public static final String EXPIRED_ACTIVATION_CODE_ERROR_MESSAGE = "Expired Activation Code. Please contact qTest for support!";
 
     public static final String INVALID_ACTIVATION_CODE_ERROR_MESSAGE = "Invalid Activation Code. Please contact qTest for support!";
-
-    public static final String OFFLINE_ACTIVATION_HINT = "Please send the request code below to qTest for an Offline Activation Code. Be prepared to provide your qTest account information and Request Code (below).";
-
-    public static final String REACTIVATION_EXPIRED_LICENSE_WARNING = "Katalon Studio license has been expired. Please contact qTest for license renewal.";
 
     public static final String ONLINE_ACTIVATION_LICENSE_ALREADY_ACTIVTED_MSG_ERR = "Your activation code has been used. Please use another activation code!";
 
