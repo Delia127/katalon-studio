@@ -1,6 +1,9 @@
 package com.kms.katalon.tracking.service;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.gson.JsonObject;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.logging.LogUtil;
@@ -14,12 +17,16 @@ public class Trackings {
     
     private static TrackingService trackingService = new TrackingService();
     
-    public static void trackOpenApplication(ProjectEntity project, boolean isAnonymous, String runningMode) {
-        trackUsageData(project, isAnonymous, runningMode, "openApplication");
+    public static void trackOpenApplication(boolean isAnonymous, String runningMode) {
+        trackAction("openApplication", isAnonymous, "runningMode", runningMode);
     }
     
     public static void trackProjectStatistics(ProjectEntity project, boolean isAnonymous, String runningMode) {
         trackUsageData(project, isAnonymous, runningMode, "collectStatistics");
+    }
+    
+    public static void trackOpenProject(ProjectEntity project) {
+        trackUsageData(project, false, "gui", "openProject");
     }
     
     private static void trackUsageData(ProjectEntity project, 
@@ -32,11 +39,7 @@ public class Trackings {
         }
         
         try {
-            IProjectStatisticsCollector collector = ServiceConsumer.getProjectStatisticsCollector();
-            
-            ProjectStatistics statistics = collector.collect(project);
-            
-            JsonObject statisticsObject = JsonUtil.toJsonObject(statistics);
+            JsonObject statisticsObject = collectProjectStatistics(project);
             
             JsonObject properties = new JsonObject();
             properties.addProperty("triggeredBy", triggeredBy);
@@ -55,7 +58,15 @@ public class Trackings {
         }
     }
     
-    
+    private static JsonObject collectProjectStatistics(ProjectEntity project) throws Exception {
+        IProjectStatisticsCollector collector = ServiceConsumer.getProjectStatisticsCollector();
+        
+        ProjectStatistics statistics = collector.collect(project);
+        
+        JsonObject statisticsObject = JsonUtil.toJsonObject(statistics);
+        
+        return statisticsObject;
+    }
     
     public static void trackOpenFirstTime() {
         TrackInfo trackInfo = TrackInfo
@@ -83,23 +94,23 @@ public class Trackings {
     }
     
     public static void trackExecuteTestCase(String launchMode) {
-        trackUserAction("execute", "objectType", "testCase", "launchMode", launchMode);
+        trackUserAction("executeTestCase", "launchMode", launchMode);
     }
     
     public static void trackExecuteTestSuiteInGuiMode(String launchMode) {
-        trackUserAction("execute", "objectType", "testSuite", "runningMode", "gui", "launchMode", launchMode);
+        trackUserAction("executeTestSuite", "runningMode", "gui", "launchMode", launchMode);
     }
     
     public static void trackExecuteTestSuiteInConsoleMode(boolean isAnonymous) {
-        trackAction("execute", isAnonymous, "objectType", "testSuite", "runningMode", "console");
+        trackAction("executeTestSuite", isAnonymous, "runningMode", "console");
     }
     
     public static void trackExecuteTestSuiteCollectionInGuiMode() {
-        trackUserAction("execute", "objectType", "testSuiteCollection", "runningMode", "gui");
+        trackUserAction("executeTestSuiteCollection", "runningMode", "gui");
     }
     
     public static void trackExecuteTestSuiteCollectionInConsoleMode(boolean isAnonymous) {
-        trackAction("execute", isAnonymous, "objectType", "testSuiteCollection", "runningMode", "console");
+        trackAction("executeTestSuiteCollection", isAnonymous, "runningMode", "console");
     }
     
     public static void trackGenerateCmd() {
@@ -111,29 +122,31 @@ public class Trackings {
     }
     
     public static void trackCreatingObject(String objectType) {
-        trackUserAction("newObject", "type", objectType);
+        String action = "new" + StringUtils.capitalize(objectType);
+        trackUserAction(action);
     }
     
     public static void trackCreatingProject() {
-        trackCreatingObject("project");
+        trackUserAction("newProject");
     }
     
     public static void trackCreatingSampleProject(String sampleProjectType, String projectId) {
         trackUserAction(
-                "newObject", "type", "project", "sampleProjectType", sampleProjectType, "projectId", projectId);
+                "newProject", "sampleProjectType", sampleProjectType, "projectId", projectId);
     }
     
     public static void trackCreatingSampleProject(String sampleProjectType) {
         trackUserAction(
-                "newObject", "type", "project", "sampleProjectType", sampleProjectType);
+                "newProject", "sampleProjectType", sampleProjectType);
     }
     
     public static void trackOpenObject(String objectType) {
-        trackUserAction("openObject", "type", objectType);
+        String action = "open" + StringUtils.capitalize(objectType);
+        trackUserAction(action);
     }
     
     public static void trackOpenHelp(String url) {
-        trackUserAction("openObject", "type", "help", "url", url);
+        trackUserAction("openHelp", "url", url);
     }
     
     public static void trackOpenSpy(String type) {
@@ -187,6 +200,12 @@ public class Trackings {
     private static void trackAction(String actionName, boolean isAnonymous, Object... properties) {
         JsonObject propertiesObject = new JsonObject();
         propertiesObject.addProperty("action", actionName);
+        
+        ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
+        if (currentProject != null) {
+            propertiesObject.addProperty("projectId", currentProject.getUUID());
+        }
+        
         if (properties != null) {
             JsonUtil.mergeJsonObject(createJsonObject(properties), propertiesObject);
         }

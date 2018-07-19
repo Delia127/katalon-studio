@@ -71,6 +71,8 @@ public class Application implements IApplication {
             if (!VersionUtil.isInternalBuild() && !checkConsoleActivation(arguments)) {
                 return LauncherResult.RETURN_CODE_PASSED;
             }
+            Trackings.trackOpenApplication(!ActivationInfoCollector.isActivated(), "console");
+            
             return ConsoleMain.launch(arguments);
         } catch (Exception e) {
             LogUtil.printAndLogError(e, ConsoleMessageConstants.ERR_CONSOLE_MODE);
