@@ -61,6 +61,8 @@ import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.viewer.CustomEditorActivationStrategy;
 import com.kms.katalon.composer.components.viewer.CustomTreeViewerFocusCellManager;
 import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
+import com.kms.katalon.composer.resources.constants.IImageKeys;
+import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.testcase.ast.dialogs.ClosureBuilderDialog;
 import com.kms.katalon.composer.testcase.ast.treetable.AstMethodTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
@@ -213,7 +215,8 @@ public class TestStepManualComposite {
             spacer.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
             btnViewHistory = new Button(compositeTableButtons, SWT.NONE);
-            btnViewHistory.setText(ComposerTestcaseMessageConstants.BTN_TESTCASEHISTORY);            
+            btnViewHistory.setText(ComposerTestcaseMessageConstants.BTN_TESTCASEHISTORY);
+            btnViewHistory.setImage(ImageManager.getImage(IImageKeys.KATALON_ANALYTICS_16));
             btnViewHistory.addSelectionListener(new SelectionAdapter() {
                 @Override
                 public void widgetSelected(SelectionEvent e) {
