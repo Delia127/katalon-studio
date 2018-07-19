@@ -398,6 +398,8 @@ public class ComposerTestcaseMessageConstants extends NLS {
     //Test Step Manual 
     public static String KA_HOMEPAGE;
     
+    public static String KA_HOMEPAGE_NOTOKEN;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerTestcaseMessageConstants.class);
