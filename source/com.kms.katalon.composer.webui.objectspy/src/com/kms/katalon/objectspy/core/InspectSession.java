@@ -277,7 +277,8 @@ public class InspectSession implements Runnable {
         }
         generateVariableInitFileForChrome(chromeExtensionFolder);
         ChromeOptions options = new ChromeOptions();
-        options.addArguments(LOAD_EXTENSION_CHROME_PREFIX + chromeExtensionFolder.getAbsolutePath());        
+        //TODO - Thanh: investigate why getAbsolutePath() suddenly stops working
+        options.addArguments(LOAD_EXTENSION_CHROME_PREFIX + chromeExtensionFolder.getCanonicalPath());
         DesiredCapabilities capabilities = new DesiredCapabilities();
         capabilities.setCapability(ChromeOptions.CAPABILITY, options);
         return capabilities;

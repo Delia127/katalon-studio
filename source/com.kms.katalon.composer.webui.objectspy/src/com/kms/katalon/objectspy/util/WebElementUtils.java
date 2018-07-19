@@ -136,7 +136,8 @@ public class WebElementUtils {
         properties.add(new WebElementPropertyEntity(ELEMENT_TAG_KEY, elementType));
         collectElementContents(elementJsonObject, properties);
         collectElementAttributes(elementJsonObject, properties);
-                
+        collectElementXpaths(elementJsonObject, properties);
+        
         String xpathString = getElementXpath(elementJsonObject);
         if (xpathString != null) {
             boolean hasPriorityProperty = properties.stream()
