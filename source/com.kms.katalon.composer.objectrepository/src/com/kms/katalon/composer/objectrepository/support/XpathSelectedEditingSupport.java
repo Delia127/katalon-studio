@@ -92,7 +92,8 @@ public class XpathSelectedEditingSupport extends EditingSupport {
         protected IStatus doSetItemValue(boolean itemValue) {
             xpath.setIsSelected(itemValue);
             viewer.refreshIsSelected();
-            viewer.update(xpath, null);
+            // TODO @Thanh : Why the hell the following line caused errors - investigate
+            //viewer.update(xpath, null);
             eventBroker.post(ObjectEventConstants.OBJECT_UPDATE_DIRTY, viewer);
             return Status.OK_STATUS;
         }

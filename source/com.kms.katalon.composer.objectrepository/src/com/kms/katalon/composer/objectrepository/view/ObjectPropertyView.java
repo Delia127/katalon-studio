@@ -804,11 +804,22 @@ public class ObjectPropertyView implements EventHandler {
 			txtSelectorEditor.setBackground(ColorUtil.getDisabledItemBackgroundColor());
 			return;
 		case XPATH:
-			TestObject testObject1 = buildTestObject(cloneTestObject);
-			txtSelectorEditor.setText(WebUiCommonHelper.getSelectorValue(testObject1));
+			cloneTestObject.getWebElementXpaths().forEach(e ->{
+				if(e.getIsSelected()){
+					String xpathToSet = e.getValue();
+					txtSelectorEditor.setText(xpathToSet);
+					txtSelectorEditor.setEditable(false);
+					txtSelectorEditor.setBackground(ColorUtil.getDisabledItemBackgroundColor());
+					return;
+				}
+			});		
+			
+			txtSelectorEditor.setText(
+					cloneTestObject.getSelectorCollection().getOrDefault(selectorMethod, StringConstants.EMPTY));
 			txtSelectorEditor.setEditable(false);
 			txtSelectorEditor.setBackground(ColorUtil.getDisabledItemBackgroundColor());
 			return;
+
 		default:
 			txtSelectorEditor.setText(
 					cloneTestObject.getSelectorCollection().getOrDefault(selectorMethod, StringConstants.EMPTY));
@@ -991,8 +1002,8 @@ public class ObjectPropertyView implements EventHandler {
 		radioXpath.setSelection(selectorMethod == WebElementSelectorMethod.XPATH);
 
 		onWebElementPropertyChanged();
-		showTableComposite(isAttributesMode);
-		showXpathTableComposite(selectorMethod == WebElementSelectorMethod.XPATH);
+		showComposite(compositeTable, isAttributesMode);
+		showComposite(xpathsCompositeTable, selectorMethod == WebElementSelectorMethod.XPATH);
 	}
 
 	private void refreshParentObjectComposite(Button rdoButton, ParentObjectType parentObjectType,
@@ -1803,6 +1814,12 @@ public class ObjectPropertyView implements EventHandler {
 			testObject.addProperty(prop.getName(), ConditionType.fromValue(prop.getMatchCondition()), prop.getValue(),
 					prop.getIsSelected());
 		});
+				
+		webElement.getWebElementXpaths().forEach(xpath -> {
+			testObject.addProperty(xpath.getName(), ConditionType.fromValue(xpath.getMatchCondition()), xpath.getValue(),
+					xpath.getIsSelected());
+		});
+		
 		testObject.setSelectorMethod(SelectorMethod.valueOf(webElement.getSelectorMethod().name()));
 		webElement.getSelectorCollection().entrySet().forEach(entry -> {
 			testObject.setSelectorValue(SelectorMethod.valueOf(entry.getKey().name()), entry.getValue());
@@ -1811,17 +1828,12 @@ public class ObjectPropertyView implements EventHandler {
 		return testObject;
 	}
 
-	private void showTableComposite(boolean isVisible) {
-		compositeTable.setVisible(isVisible);
-		((GridData) compositeTable.getLayoutData()).exclude = !isVisible;
-		compositeTable.getParent().layout();
+	private void showComposite(Composite composite, boolean isVisible) {
+		composite.setVisible(isVisible);
+		((GridData) composite.getLayoutData()).exclude = !isVisible;
+		composite.getParent().layout();
 	}
 
-	private void showXpathTableComposite(boolean isVisible) {
-		xpathsCompositeTable.setVisible(isVisible);
-		((GridData) xpathsCompositeTable.getLayoutData()).exclude = !isVisible;
-		xpathsCompositeTable.getParent().layout();
-	}
 
 	private enum ParentObjectType {
 		NO_PARENT, PARENT_IFRAME, PARENT_SHADOW_ROOT;

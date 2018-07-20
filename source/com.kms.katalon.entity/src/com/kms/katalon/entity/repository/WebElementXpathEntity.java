@@ -26,13 +26,13 @@ public class WebElementXpathEntity implements Serializable {
 
     public WebElementXpathEntity(String name, String value) {
         this.name = name;
-        this.value = value;
+        this.value = value.replace("xpath=", "");
         this.isSelected = true;
     }
     
     public WebElementXpathEntity(String name, String value, boolean isSelected) {
         this.name = name;
-        this.value = value;
+        this.value = value.replace("xpath=", "");
         this.isSelected = isSelected;
     }
 

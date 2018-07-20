@@ -179,20 +179,16 @@ class KURecorder {
             return;
         }
 
-        try
-        {            
-            var object = JSON.parse(event.data);
-            var action = {};
-            action["actionName"] = "goIntoFrame";
-            action["actionData"] = "";
-            var json = mapDOMForRecord(action, childFrame, window);
-            if (json) 
-                this.rec_setParentJson(object, json);            
-            this.rec_processObject(object);            
-        }catch (ex) {
-            console.error('data is not JSON');
-        }       
-
+        var object = JSON.parse(event.data);
+        var action = {};
+        action["actionName"] = "goIntoFrame";
+        action["actionData"] = "";
+        var json = mapDOMForRecord(action, childFrame, window);
+        if (json) 
+            this.rec_setParentJson(object, json);
+        
+        this.rec_processObject(object);
+        
     }
 
     rec_processObject (object) {

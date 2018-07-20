@@ -23,8 +23,7 @@ function treeHTML(element, object, currentWindow) {
     var xpaths = ku_locatorbuilders.buildAll(element);
 	
 	if(xpath != null ) {
-        object['xpath'] = xpath;
-        
+        object['xpath'] = xpath;        
         if(xpaths != null){
             object['xpaths'] = {};
             for(var key in xpaths){

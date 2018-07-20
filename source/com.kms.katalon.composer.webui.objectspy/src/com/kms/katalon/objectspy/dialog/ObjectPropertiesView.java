@@ -85,7 +85,7 @@ public class ObjectPropertiesView extends Composite
 
     private TableViewer tvProperty, tvXpath;
 
-    private TableViewerColumn cvXpath, cvCondition, cvValue, cvSelected;
+    private TableViewerColumn cvProperty, cvXpath, cvCondition, cvValue, cvSelected;
 
     private TableColumn cName, cCondition, cValue, cSelected;
 
@@ -110,6 +110,8 @@ public class ObjectPropertiesView extends Composite
     private Map<SelectorMethod, Button> selectorButtons = new HashMap<>();
 
     private Composite tableAndButtonsComposite;
+    
+    private Composite xpathTableComposite, tableComposite;
 
     private int lastHeight = -1;
 
@@ -278,7 +280,7 @@ public class ObjectPropertiesView extends Composite
     }
 
     private void createPropertyTable(Composite parent) {
-        Composite tableComposite = new Composite(parent, SWT.NONE);
+    	tableComposite = new Composite(parent, SWT.NONE);
         GridData ldTableComposite = new GridData(SWT.FILL, SWT.FILL, true, true);
         ldTableComposite.heightHint = 100;
         tableComposite.setLayoutData(ldTableComposite);
@@ -293,10 +295,10 @@ public class ObjectPropertiesView extends Composite
         tProperty.setLinesVisible(true);
         tvProperty.setInput(Collections.emptyList());
 
-        cvXpath = new TableViewerColumn(tvProperty, SWT.LEFT);
-        cName = cvXpath.getColumn();
+        cvProperty = new TableViewerColumn(tvProperty, SWT.LEFT);
+        cName = cvProperty.getColumn();
         cName.setText(StringConstants.DIA_COL_NAME);
-        cvXpath.setLabelProvider(new ColumnLabelProvider() {
+        cvProperty.setLabelProvider(new ColumnLabelProvider() {
 
             @Override
             public String getText(Object element) {
@@ -304,7 +306,7 @@ public class ObjectPropertiesView extends Composite
             }
         });
 
-        cvXpath.setEditingSupport(new EditingSupport(cvXpath.getViewer()) {
+        cvProperty.setEditingSupport(new EditingSupport(cvProperty.getViewer()) {
 
             @Override
             protected void setValue(Object element, Object value) {
@@ -493,7 +495,7 @@ public class ObjectPropertiesView extends Composite
     
     
     private void createXpathTable(Composite parent) {
-        Composite xpathTableComposite = new Composite(parent, SWT.NONE);
+        xpathTableComposite = new Composite(parent, SWT.NONE);
         GridData ldTableComposite = new GridData(SWT.FILL, SWT.FILL, true, true);
         ldTableComposite.heightHint = 100;
         xpathTableComposite.setLayoutData(ldTableComposite);
@@ -592,7 +594,8 @@ public class ObjectPropertiesView extends Composite
                     return;
                 }
                 ((WebElementXpathEntity) element).setIsSelected((boolean) value);
-                tvXpath.update(element, null);
+                // Same problem with XpathSelectedEditingSupport.java
+                //tvXpath.update(element, null);
                 sendPropertiesChangedEvent();
             }
 
@@ -618,6 +621,12 @@ public class ObjectPropertiesView extends Composite
         tableColumnLayout.setColumnData(cSelected, new ColumnWeightData(5, 30, false));
 
     }
+    
+	private void showComposite(Composite composite, boolean isVisible) {
+		composite.setVisible(isVisible);
+		((GridData) composite.getLayoutData()).exclude = !isVisible;
+		composite.getParent().layout();
+	}
     
 
     private boolean isWebElementProperty(Object element) {
@@ -654,7 +663,8 @@ public class ObjectPropertiesView extends Composite
                     return;
                 }
                 webElement.setSelectorMethod(SelectorMethod.ATTRIBUTES);
-                displayPropertiesTableComposite(true);
+                showComposite(tableComposite, true);
+                showComposite(xpathTableComposite, false);         
                 sendPropertiesChangedEvent();
             }
         });
@@ -667,7 +677,8 @@ public class ObjectPropertiesView extends Composite
                     return;
                 }
                 webElement.setSelectorMethod(SelectorMethod.XPATH);
-                displayPropertiesTableComposite(false);
+                showComposite(tableComposite, false);
+                showComposite(xpathTableComposite, true);                
                 sendPropertiesChangedEvent();
             }
         });
@@ -680,7 +691,8 @@ public class ObjectPropertiesView extends Composite
                     return;
                 }
                 webElement.setSelectorMethod(SelectorMethod.CSS);
-                displayPropertiesTableComposite(false);
+                showComposite(tableComposite, false);
+                showComposite(xpathTableComposite, false);       
                 sendPropertiesChangedEvent();
             }
         });
@@ -928,9 +940,11 @@ public class ObjectPropertiesView extends Composite
         List<WebElementPropertyEntity> properties = webElement == null ? Collections.emptyList() : getProperties();
         tvProperty.setInput(properties);
         if (webElement == null) {
-            displayPropertiesTableComposite(true);
+            showComposite(tableComposite, true);
+            showComposite(xpathTableComposite, false);          
         } else {
-            displayPropertiesTableComposite(webElement.getSelectorMethod() == SelectorMethod.ATTRIBUTES);
+            showComposite(tableComposite, webElement.getSelectorMethod() == SelectorMethod.ATTRIBUTES);
+            showComposite(xpathTableComposite, webElement.getSelectorMethod() == SelectorMethod.XPATH);  
         }
         cSelected.setText(getCheckboxIcon(isAllPropetyEnabled()));
         boolean hasProperty = !properties.isEmpty();
