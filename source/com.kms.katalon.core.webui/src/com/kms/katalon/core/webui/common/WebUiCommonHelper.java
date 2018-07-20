@@ -472,7 +472,7 @@ public class WebUiCommonHelper extends KeywordHelper {
     public static By buildLocator(TestObject to) {
         SelectorMethod selectorMethod = to.getSelectorMethod();
         switch (selectorMethod) {
-            case BASIC:
+            case ATTRIBUTES:
                 // Legacy locator
                 String cssLocatorValue = findActiveEqualsObjectProperty(to, CSS_LOCATOR_PROPERTY_NAME);
                 if (cssLocatorValue != null) {
@@ -491,13 +491,20 @@ public class WebUiCommonHelper extends KeywordHelper {
     public static String getSelectorValue(TestObject to) {
         SelectorMethod selectorMethod = to.getSelectorMethod();
         switch (selectorMethod) {
-            case BASIC:
+            case ATTRIBUTES:
                 String cssLocatorValue = findActiveEqualsObjectProperty(to, CSS_LOCATOR_PROPERTY_NAME);
                 if (cssLocatorValue != null) {
                     return cssLocatorValue;
                 }
                 XPathBuilder xpathBuilder = new XPathBuilder(to.getActiveProperties());
                 return xpathBuilder.build(); 
+            case XPATH:
+                String cssLocatorValue1 = findActiveEqualsObjectProperty(to, CSS_LOCATOR_PROPERTY_NAME);
+                if (cssLocatorValue1 != null) {
+                    return cssLocatorValue1;
+                }
+                XPathBuilder xpathBuilder1 = new XPathBuilder(to.getActiveProperties());
+                return xpathBuilder1.build(); 
             default:
                 return to.getSelectorCollection().get(selectorMethod);
         }

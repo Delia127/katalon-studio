@@ -32,6 +32,7 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebElementSelectorMethod;
+import com.kms.katalon.entity.repository.WebElementXpathEntity;
 import com.kms.katalon.entity.util.Util;
 import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
 import com.kms.katalon.objectspy.constants.StringConstants;
@@ -136,7 +137,9 @@ public class WebElementUtils {
         properties.add(new WebElementPropertyEntity(ELEMENT_TAG_KEY, elementType));
         collectElementContents(elementJsonObject, properties);
         collectElementAttributes(elementJsonObject, properties);
-        collectElementXpaths(elementJsonObject, properties);
+        
+        List<WebElementXpathEntity> xpaths = new ArrayList<>();
+        collectElementXpaths(elementJsonObject, xpaths);
         
         String xpathString = getElementXpath(elementJsonObject);
         if (xpathString != null) {
@@ -163,6 +166,8 @@ public class WebElementUtils {
         WebElement el = isFrame ? new WebFrame(newName) : new WebElement(newName);
         el.setParent(parentElement);
         el.setProperties(properties);
+        el.setXpaths(xpaths);
+
         return el;
     }
 
@@ -218,7 +223,7 @@ public class WebElementUtils {
     }
     
     private static void collectElementXpaths(JsonObject elementJsonObject,
-            List<WebElementPropertyEntity> properties) {
+            List<WebElementXpathEntity> xpaths) {
         if (!isElementXpathsSet(elementJsonObject)) {
             return;
         }
@@ -228,13 +233,11 @@ public class WebElementUtils {
             JsonElement xpath = entry.getValue();
             
             if (xpath instanceof JsonObject) {
-            	System.out.println(entry.getValue().getAsString());
-                properties.add(new WebElementPropertyEntity(xpathFinder, entry.getValue().getAsString(),
+                xpaths.add(new WebElementXpathEntity(xpathFinder, entry.getValue().getAsString(),
                         PRIORITY_PROPERTIES.contains(xpathFinder)));
              } else if (xpath instanceof JsonArray) {
             	 for(JsonElement jsonElement : xpath.getAsJsonArray()){
-            		 System.out.println(jsonElement.getAsString());
-                     properties.add(new WebElementPropertyEntity(xpathFinder, jsonElement.getAsString(),
+                     xpaths.add(new WebElementXpathEntity(xpathFinder, jsonElement.getAsString(),
                              PRIORITY_PROPERTIES.contains(xpathFinder)));
             	 }
              }          
@@ -308,10 +311,11 @@ public class WebElementUtils {
         newWebElement.setElementGuidId(Util.generateGuid());
         newWebElement.setProject(parentFolder.getProject());
         newWebElement.setWebElementProperties(new ArrayList<>(element.getProperties()));
+        newWebElement.setWebElementXpaths(new ArrayList<>(element.getXpaths()));
         newWebElement.setSelectorMethod(WebElementSelectorMethod.valueOf(element.getSelectorMethod().name()));
         element.getSelectorCollection().entrySet().forEach(entry -> {
             SelectorMethod selectorMethod = entry.getKey();
-            if (SelectorMethod.BASIC == selectorMethod) {
+            if (SelectorMethod.ATTRIBUTES == selectorMethod) {
                 return;
             }
             newWebElement.setSelectorValue(WebElementSelectorMethod.valueOf(selectorMethod.name()), entry.getValue());
@@ -423,6 +427,9 @@ public class WebElementUtils {
                 if (mappedWebElement.hasProperty()) {
                     replacedElement.setProperties(mappedWebElement.getProperties());
                 }
+                if (mappedWebElement.hasXpath()) {
+                    replacedElement.setXpaths(mappedWebElement.getXpaths());
+                }
                 elementsMap.put(entityId, replacedElement);
                 return replacedElement;
             } else {
@@ -450,11 +457,11 @@ public class WebElementUtils {
         WebElement element = isFrame ? new WebFrame(entityName) : new WebElement(entityName);
         element.setParent(parentFrameElement != null ? parentFrameElement : pageElement);
         element.setProperties(webElementEntity.getWebElementProperties());
-
+        element.setXpaths(webElementEntity.getWebElementXpaths());
         element.setSelectorMethod(SelectorMethod.valueOf(webElementEntity.getSelectorMethod().name()));
         webElementEntity.getSelectorCollection().entrySet().forEach(entry -> {
             WebElementSelectorMethod selectorMethod = entry.getKey();
-            if (WebElementSelectorMethod.BASIC == selectorMethod) {
+            if (WebElementSelectorMethod.ATTRIBUTES == selectorMethod) {
                 return;
             }
             element.setSelectorValue(SelectorMethod.valueOf(selectorMethod.name()), entry.getValue());
@@ -463,7 +470,7 @@ public class WebElementUtils {
         element.setSelectorMethod(SelectorMethod.valueOf(webElementEntity.getSelectorMethod().name()));
         webElementEntity.getSelectorCollection().entrySet().forEach(entry -> {
             WebElementSelectorMethod selectorMethod = entry.getKey();
-            if (WebElementSelectorMethod.BASIC == selectorMethod) {
+            if (WebElementSelectorMethod.ATTRIBUTES == selectorMethod) {
                 return;
             }
             element.setSelectorValue(SelectorMethod.valueOf(selectorMethod.name()), entry.getValue());
@@ -472,7 +479,7 @@ public class WebElementUtils {
         element.setSelectorMethod(SelectorMethod.valueOf(webElementEntity.getSelectorMethod().name()));
         webElementEntity.getSelectorCollection().entrySet().forEach(entry -> {
             WebElementSelectorMethod selectorMethod = entry.getKey();
-            if (WebElementSelectorMethod.BASIC == selectorMethod) {
+            if (WebElementSelectorMethod.ATTRIBUTES == selectorMethod) {
                 return;
             }
             element.setSelectorValue(SelectorMethod.valueOf(selectorMethod.name()), entry.getValue());
@@ -481,7 +488,7 @@ public class WebElementUtils {
         element.setSelectorMethod(SelectorMethod.valueOf(webElementEntity.getSelectorMethod().name()));
         webElementEntity.getSelectorCollection().entrySet().forEach(entry -> {
             WebElementSelectorMethod selectorMethod = entry.getKey();
-            if (WebElementSelectorMethod.BASIC == selectorMethod) {
+            if (WebElementSelectorMethod.ATTRIBUTES == selectorMethod) {
                 return;
             }
             element.setSelectorValue(SelectorMethod.valueOf(selectorMethod.name()), entry.getValue());
@@ -502,6 +509,12 @@ public class WebElementUtils {
             testObject.addProperty(prop.getName(), ConditionType.fromValue(prop.getMatchCondition()), prop.getValue(),
                     prop.getIsSelected());
         });
+        
+        webElement.getXpaths().forEach(xpath -> {
+            testObject.addProperty(xpath.getName(), ConditionType.fromValue(xpath.getMatchCondition()), xpath.getValue(),
+            		xpath.getIsSelected());
+        });
+        
         testObject.setSelectorMethod(webElement.getSelectorMethod());
         webElement.getSelectorCollection().entrySet().forEach(entry -> {
             testObject.setSelectorValue(entry.getKey(), entry.getValue());

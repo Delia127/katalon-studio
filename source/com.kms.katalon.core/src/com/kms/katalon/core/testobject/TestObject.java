@@ -21,7 +21,7 @@ public class TestObject implements SelectorCollector {
 
     private boolean useRelativeImagePath;
 
-    private SelectorMethod selectorMethod = SelectorMethod.BASIC;
+    private SelectorMethod selectorMethod = SelectorMethod.ATTRIBUTES;
     
     private Map<SelectorMethod, String> selectorCollection;
 

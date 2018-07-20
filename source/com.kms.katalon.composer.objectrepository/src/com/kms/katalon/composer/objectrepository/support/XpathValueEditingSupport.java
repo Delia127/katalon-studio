@@ -17,40 +17,25 @@ import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.composer.objectrepository.constant.ObjectEventConstants;
 import com.kms.katalon.composer.objectrepository.part.TestObjectPart;
-import com.kms.katalon.entity.repository.WebElementPropertyEntity;
+import com.kms.katalon.entity.repository.WebElementXpathEntity;
 
-public class PropertyNameEditingSupport extends EditingSupport {
-
+public class XpathValueEditingSupport extends EditingSupport {
     private TableViewer viewer;
 
     private IEventBroker eventBroker;
 
     private TestObjectPart testObjectPart;
-
-    public PropertyNameEditingSupport(TableViewer viewer, IEventBroker eventBroker, TestObjectPart testObjectPart) {
+    
+    public XpathValueEditingSupport(TableViewer viewer, IEventBroker eventBroker, TestObjectPart testObjectPart) {
         super(viewer);
         this.viewer = viewer;
         this.eventBroker = eventBroker;
         this.testObjectPart = testObjectPart;
     }
-
+    
     @Override
     protected CellEditor getCellEditor(Object element) {
-    	return  new CustomTextCellEditor(viewer.getTable());
-    }
-    
-    private class CustomTextCellEditor extends TextCellEditor {
-    	
-        public CustomTextCellEditor(Composite parent) {
-            super(parent);
-        }
-
-        @Override
-        public LayoutData getLayoutData() {
-            LayoutData result = super.getLayoutData();
-            result.minimumHeight = viewer.getTable().getItemHeight();
-            return result;
-        }
+        return new MultilineTextCellEditor(viewer.getTable());
     }
 
     @Override
@@ -60,39 +45,54 @@ public class PropertyNameEditingSupport extends EditingSupport {
 
     @Override
     protected Object getValue(Object element) {
-        if (element instanceof WebElementPropertyEntity) {
-            WebElementPropertyEntity property = (WebElementPropertyEntity) element;
-            return property.getName();
+        if (element instanceof WebElementXpathEntity) {
+        	WebElementXpathEntity property = (WebElementXpathEntity) element;
+            return property.getValue();
         }
         return StringUtils.EMPTY;
     }
 
     @Override
     protected void setValue(Object element, Object value) {
-        if (element instanceof WebElementPropertyEntity && value instanceof String) {
+        if (element instanceof WebElementXpathEntity && value instanceof String) {
             testObjectPart.executeOperation(
-                    new PropertyNameChangeOperation((WebElementPropertyEntity) element, (String) value));
+                    new XpathValueChangeOperation((WebElementXpathEntity) element, (String) value));
         }
     }
 
-    public class PropertyNameChangeOperation extends AbstractOperation {
+    private class MultilineTextCellEditor extends TextCellEditor {
 
-        private WebElementPropertyEntity property;
+        public MultilineTextCellEditor(Composite parent) {
+            super(parent, SWT.WRAP | SWT.MULTI | SWT.V_SCROLL | SWT.BORDER);
+        }
+
+        @Override
+        public LayoutData getLayoutData() {
+            LayoutData data = new LayoutData();
+            data.minimumHeight = 100;
+            data.verticalAlignment = SWT.TOP;
+            return data;
+        }
+    }
+
+    private class XpathValueChangeOperation extends AbstractOperation {
+
+        private WebElementXpathEntity xpath;
 
         private String value;
 
         private String oldValue;
 
-        public PropertyNameChangeOperation(WebElementPropertyEntity property, String value) {
-            super(PropertyNameChangeOperation.class.getName());
-            this.property = property;
-            this.oldValue = property.getName();
+        public XpathValueChangeOperation(WebElementXpathEntity xpath, String value) {
+            super(XpathValueChangeOperation.class.getName());
+            this.xpath = xpath;
+            this.oldValue = xpath.getValue();
             this.value = value;
         }
 
         @Override
         public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-            if (value.equals(StringUtils.EMPTY) || value.equals(oldValue)) {
+            if (value.equals(oldValue)) {
                 return Status.CANCEL_STATUS;
             }
             return doSetItemValue(value);
@@ -109,11 +109,10 @@ public class PropertyNameEditingSupport extends EditingSupport {
         }
 
         protected IStatus doSetItemValue(String itemValue) {
-            property.setName((String) itemValue);
-            viewer.update(property, null);
+            xpath.setValue((String) itemValue);
+            viewer.update(xpath, null);
             eventBroker.post(ObjectEventConstants.OBJECT_UPDATE_DIRTY, viewer);
             return Status.OK_STATUS;
         }
     }
-
 }

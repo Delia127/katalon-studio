@@ -8,6 +8,7 @@ import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
+import com.kms.katalon.entity.repository.WebElementXpathEntity;
 import com.kms.katalon.entity.util.Util;
 
 public class MobileElementUtil {
@@ -23,13 +24,13 @@ public class MobileElementUtil {
         newWebElement.setElementGuidId(Util.generateGuid());
         newWebElement.setProject(parentFolder.getProject());
         newWebElement.setWebElementProperties(new ArrayList<WebElementPropertyEntity>());
-
         for (Map.Entry<String, String> entry : element.getAttributes().entrySet()) {
             WebElementPropertyEntity webElementPropertyEntity = new WebElementPropertyEntity();
             webElementPropertyEntity.setName(entry.getKey());
             webElementPropertyEntity.setValue(entry.getValue());
             newWebElement.getWebElementProperties().add(webElementPropertyEntity);
         }
+        // TODO : populate WebElementXpaths
 
         if (refElement != null) {
             WebElementPropertyEntity webElementPropertyEntity = new WebElementPropertyEntity();

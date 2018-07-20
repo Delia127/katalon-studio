@@ -6,20 +6,32 @@ import org.eclipse.swt.widgets.Event;
 
 import com.kms.katalon.composer.objectrepository.constant.ImageConstants;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
+import com.kms.katalon.entity.repository.WebElementXpathEntity;
 
 public class IsSelectedColumnLabelProvider extends OwnerDrawLabelProvider {
     @Override
     protected void paint(Event event, Object element) {
-        if (element != null && element instanceof WebElementPropertyEntity) {
-            Image checkboxImage;
-            if (((WebElementPropertyEntity) element).getIsSelected()) {
-                checkboxImage = ImageConstants.IMG_16_CHECKBOX_CHECKED;
-            } else {
-                checkboxImage = ImageConstants.IMG_16_CHECKBOX_UNCHECKED;
-            }
-            event.gc.drawImage(checkboxImage, event.getBounds().x + 5, event.getBounds().y);
-        }
-
+        if (element != null){
+        	if(element instanceof WebElementPropertyEntity) {	        
+	            Image checkboxImage;
+	            if (((WebElementPropertyEntity) element).getIsSelected()) {
+	                checkboxImage = ImageConstants.IMG_16_CHECKBOX_CHECKED;
+	            } else {
+	                checkboxImage = ImageConstants.IMG_16_CHECKBOX_UNCHECKED;
+	            }
+	            event.gc.drawImage(checkboxImage, event.getBounds().x + 5, event.getBounds().y);
+        	}
+        	
+        	if(element instanceof WebElementXpathEntity) {	        
+	            Image checkboxImage;
+	            if (((WebElementXpathEntity) element).getIsSelected()) {
+	                checkboxImage = ImageConstants.IMG_16_CHECKBOX_CHECKED;
+	            } else {
+	                checkboxImage = ImageConstants.IMG_16_CHECKBOX_UNCHECKED;
+	            }
+	            event.gc.drawImage(checkboxImage, event.getBounds().x + 5, event.getBounds().y);
+        	}
+        }    
     }
 
     @Override

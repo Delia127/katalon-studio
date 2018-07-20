@@ -14,6 +14,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
+import com.kms.katalon.entity.repository.WebElementXpathEntity;
 
 public class WebElement implements XPathProvider {
 
@@ -40,8 +41,10 @@ public class WebElement implements XPathProvider {
     private WebFrame parent;
 
     private List<WebElementPropertyEntity> properties = new ArrayList<>();
+    
+    private List<WebElementXpathEntity> xpaths = new ArrayList<>();
 
-    private SelectorMethod selectorMethod = SelectorMethod.BASIC;
+    private SelectorMethod selectorMethod = SelectorMethod.ATTRIBUTES;
 
     private Map<SelectorMethod, String> selectorCollection = new HashMap<>();
     
@@ -133,6 +136,36 @@ public class WebElement implements XPathProvider {
 
     public boolean hasProperty() {
         return properties != null && properties.size() > 0;
+    }
+    
+    public List<WebElementXpathEntity> getXpaths() {
+        return xpaths;
+    }
+
+    public void setXpaths(List<WebElementXpathEntity> xpaths) {
+        this.xpaths = xpaths;
+    }
+
+    public void addXpath(WebElementXpathEntity xpath) {
+        xpaths.add(xpath);
+    }
+
+    public void addXpath(String name, String value) {
+        addXpath(new WebElementXpathEntity(name, value));
+    }
+
+    public WebElementXpathEntity getXpath(String name) {
+        Optional<WebElementXpathEntity> property = xpaths.stream()
+                .filter(prop -> prop.getName().equals(name))
+                .findFirst();
+        if (property.isPresent()) {
+            return property.get();
+        }
+        return null;
+    }
+
+    public boolean hasXpath() {
+        return xpaths != null && xpaths.size() > 0;
     }
 
     public boolean hasChild() {
