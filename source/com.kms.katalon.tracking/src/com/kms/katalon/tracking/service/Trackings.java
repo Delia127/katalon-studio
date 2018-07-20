@@ -27,6 +27,7 @@ public class Trackings {
     
     public static void trackOpenProject(ProjectEntity project) {
         trackUsageData(project, false, "gui", "openProject");
+        trackOpenObject("project");
     }
     
     private static void trackUsageData(ProjectEntity project, 
