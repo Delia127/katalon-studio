@@ -216,10 +216,15 @@ public class WebElement implements XPathProvider {
     public WebElement clone() {
         WebElement clone = softClone();
         List<WebElementPropertyEntity> cloneProperties = new ArrayList<>();
+        List<WebElementXpathEntity> cloneXpaths = new ArrayList<>();
         for (WebElementPropertyEntity webElementPropertyEntity : getProperties()) {
             cloneProperties.add(webElementPropertyEntity.clone());
         }
+        for (WebElementXpathEntity webElementXpathEntity : getXpaths()) {
+        	cloneXpaths.add(webElementXpathEntity.clone());
+        }
         clone.setProperties(cloneProperties);
+        clone.setXpaths(cloneXpaths);
         return clone;
     }
 
@@ -257,7 +262,6 @@ public class WebElement implements XPathProvider {
                 .append(this.getType(), that.getType())
                 .append(this.getTag(), that.getTag())
                 .append(this.hasProperty(), that.hasProperty())
-                .append(this.getXpath(), that.getXpath())
                 .isEquals();
     }
 

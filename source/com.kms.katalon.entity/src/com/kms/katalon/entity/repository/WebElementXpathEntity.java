@@ -92,8 +92,10 @@ public class WebElementXpathEntity implements Serializable {
             return false;
         }
         WebElementXpathEntity other = (WebElementXpathEntity) obj;
-        // compare on name only
-        return new EqualsBuilder().append(this.getName(), other.getName()).isEquals();
+        
+        // Compare BOTH names and values, otherwise it will causes very obscure behaviors
+        return new EqualsBuilder().append(this.getName(), other.getName())
+        		.append(this.getValue(), other.getValue()).isEquals();
     }
     
     public enum MATCH_CONDITION {

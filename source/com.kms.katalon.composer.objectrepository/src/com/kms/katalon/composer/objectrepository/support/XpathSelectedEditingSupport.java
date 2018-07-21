@@ -55,18 +55,18 @@ public class XpathSelectedEditingSupport extends EditingSupport {
     protected void setValue(Object element, Object value) {
         if (element instanceof WebElementXpathEntity && value instanceof Boolean) {
             testObjectPart.executeOperation(
-                    new XpathSelectChangeOperation((WebElementXpathEntity) element, (boolean) value));
+                    new XpathSelectionChangeOperation((WebElementXpathEntity) element, (boolean) value));
         }
     }
 
-    private class XpathSelectChangeOperation extends AbstractOperation {
+    private class XpathSelectionChangeOperation extends AbstractOperation {
 
         private WebElementXpathEntity xpath;
 
         private boolean value;
 
-        public XpathSelectChangeOperation(WebElementXpathEntity xpath, boolean value) {
-            super(XpathSelectChangeOperation.class.getName());
+        public XpathSelectionChangeOperation(WebElementXpathEntity xpath, boolean value) {
+            super(XpathSelectionChangeOperation.class.getName());
             this.xpath = xpath;
             this.value = value;
         }
@@ -92,8 +92,7 @@ public class XpathSelectedEditingSupport extends EditingSupport {
         protected IStatus doSetItemValue(boolean itemValue) {
             xpath.setIsSelected(itemValue);
             viewer.refreshIsSelected();
-            // TODO @Thanh : Why the hell the following line caused errors - investigate
-            //viewer.update(xpath, null);
+            viewer.update(xpath, null);
             eventBroker.post(ObjectEventConstants.OBJECT_UPDATE_DIRTY, viewer);
             return Status.OK_STATUS;
         }

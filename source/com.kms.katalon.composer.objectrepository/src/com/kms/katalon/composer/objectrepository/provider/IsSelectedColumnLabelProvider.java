@@ -21,8 +21,7 @@ public class IsSelectedColumnLabelProvider extends OwnerDrawLabelProvider {
 	            }
 	            event.gc.drawImage(checkboxImage, event.getBounds().x + 5, event.getBounds().y);
         	}
-        	
-        	if(element instanceof WebElementXpathEntity) {	        
+        	else if(element instanceof WebElementXpathEntity) {	        
 	            Image checkboxImage;
 	            if (((WebElementXpathEntity) element).getIsSelected()) {
 	                checkboxImage = ImageConstants.IMG_16_CHECKBOX_CHECKED;

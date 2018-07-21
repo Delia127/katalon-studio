@@ -355,14 +355,14 @@ public class ObjectPropertyView implements EventHandler {
 
 	private void createXpathsTableDetails(Composite parent) {
 
-		Composite compositeTableDetails = new Composite(parent, SWT.NONE);
-		compositeTableDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		Composite xpathCompositeTableDetails = new Composite(parent, SWT.NONE);
+		xpathCompositeTableDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		GridLayout glCompositeTableDetails = new GridLayout(1, false);
 		glCompositeTableDetails.marginWidth = 0;
 		glCompositeTableDetails.marginHeight = 0;
-		compositeTableDetails.setLayout(glCompositeTableDetails);
+		xpathCompositeTableDetails.setLayout(glCompositeTableDetails);
 
-		xpathTableViewer = new ObjectXpathsTableViewer(compositeTableDetails,
+		xpathTableViewer = new ObjectXpathsTableViewer(xpathCompositeTableDetails,
 				SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, eventBroker);
 
 		Table table = xpathTableViewer.getTable();
@@ -374,8 +374,8 @@ public class ObjectPropertyView implements EventHandler {
 
 		TableViewerColumn treeViewerColumnValue = new TableViewerColumn(xpathTableViewer, SWT.NONE);
 		TableColumn trclmnColumnValue = treeViewerColumnValue.getColumn();
-		trclmnColumnValue.setText(StringConstants.VIEW_COL_NAME);
-		trclmnColumnValue.setWidth(700);
+		trclmnColumnValue.setText(StringConstants.VIEW_COL_VALUE);
+		trclmnColumnValue.setWidth(350);
 		treeViewerColumnValue
 				.setEditingSupport(new XpathValueEditingSupport(xpathTableViewer, eventBroker, testObjectPart));
 		treeViewerColumnValue.setLabelProvider(new ColumnLabelProvider() {
@@ -683,7 +683,7 @@ public class ObjectPropertyView implements EventHandler {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				xpathTableViewer.setSelectedAll();
-				onWebElementPropertyChanged();
+				onWebElementXpathChanged();
 				setDirty(true);
 			}
 		});
@@ -803,21 +803,36 @@ public class ObjectPropertyView implements EventHandler {
 			txtSelectorEditor.setEditable(false);
 			txtSelectorEditor.setBackground(ColorUtil.getDisabledItemBackgroundColor());
 			return;
+		default:
+			txtSelectorEditor.setText(
+					cloneTestObject.getSelectorCollection().getOrDefault(selectorMethod, StringConstants.EMPTY));
+			txtSelectorEditor.setEditable(true);
+			txtSelectorEditor.setBackground(null);
+		}
+	}
+	
+	private void onWebElementXpathChanged() {
+		if (txtSelectorEditor.isDisposed()) {
+			return;
+		}
+		if (cloneTestObject == null) {
+			txtSelectorEditor.setEnabled(false);
+			txtSelectorEditor.setBackground(ColorUtil.getDisabledItemBackgroundColor());
+			txtSelectorEditor.setText(StringUtils.EMPTY);
+			return;
+		}
+		WebElementSelectorMethod selectorMethod = cloneTestObject.getSelectorMethod();
+		switch (selectorMethod) {
 		case XPATH:
 			cloneTestObject.getWebElementXpaths().forEach(e ->{
-				if(e.getIsSelected()){
+				if(e.getIsSelected() == true){
 					String xpathToSet = e.getValue();
 					txtSelectorEditor.setText(xpathToSet);
 					txtSelectorEditor.setEditable(false);
 					txtSelectorEditor.setBackground(ColorUtil.getDisabledItemBackgroundColor());
-					return;
+					e.setIsSelected(false);
 				}
-			});		
-			
-			txtSelectorEditor.setText(
-					cloneTestObject.getSelectorCollection().getOrDefault(selectorMethod, StringConstants.EMPTY));
-			txtSelectorEditor.setEditable(false);
-			txtSelectorEditor.setBackground(ColorUtil.getDisabledItemBackgroundColor());
+			});						
 			return;
 
 		default:
@@ -1002,6 +1017,7 @@ public class ObjectPropertyView implements EventHandler {
 		radioXpath.setSelection(selectorMethod == WebElementSelectorMethod.XPATH);
 
 		onWebElementPropertyChanged();
+		onWebElementXpathChanged();
 		showComposite(compositeTable, isAttributesMode);
 		showComposite(xpathsCompositeTable, selectorMethod == WebElementSelectorMethod.XPATH);
 	}
@@ -1158,8 +1174,12 @@ public class ObjectPropertyView implements EventHandler {
 		switch (topic) {
 		case ObjectEventConstants.OBJECT_UPDATE_DIRTY: {
 			if (object != null && object instanceof TableViewer) {
-				if (object.equals(tableViewer) || object.equals(xpathTableViewer)) {
+				if (object.equals(tableViewer)) {
 					onWebElementPropertyChanged();
+					dirtyable.setDirty(true);
+				}
+				else if(object.equals(xpathTableViewer)){
+					onWebElementXpathChanged();
 					dirtyable.setDirty(true);
 				}
 			}
@@ -1176,7 +1196,7 @@ public class ObjectPropertyView implements EventHandler {
 					}
 					trclmnColumnSelected.setImage(isSelectedColumnImageHeader);
 				}
-				if (!trclmnXpathColumnSelected.isDisposed() && object.equals(xpathTableViewer)) {
+				else if (!trclmnXpathColumnSelected.isDisposed() && object.equals(xpathTableViewer)) {
 					boolean isSelectedAll = xpathTableViewer.getIsSelectedAll();
 					Image isSelectedColumnImageHeader;
 					if (isSelectedAll) {
@@ -1260,7 +1280,6 @@ public class ObjectPropertyView implements EventHandler {
 			prop.setValue(propVal);
 			prop.setMatchCondition(condition);
 			prop.setIsSelected(true);
-
 			return prop;
 		}
 		return null;
@@ -1270,7 +1289,8 @@ public class ObjectPropertyView implements EventHandler {
 		if (prop == null) {
 			return false;
 		}
-		tableViewer.addRow(prop);
+		tableViewer.addRow(prop);		
+		refreshTestObjectProperties();
 		dirtyable.setDirty(true);
 		return true;
 	}
@@ -1280,6 +1300,7 @@ public class ObjectPropertyView implements EventHandler {
 			return false;
 		}
 		tableViewer.addRowsWithPosition(props);
+		refreshTestObjectProperties();
 		dirtyable.setDirty(true);
 		return true;
 	}
@@ -1289,6 +1310,7 @@ public class ObjectPropertyView implements EventHandler {
 			return false;
 		}
 		tableViewer.addRows(props);
+		refreshTestObjectProperties();
 		dirtyable.setDirty(true);
 		return true;
 	}
@@ -1298,6 +1320,7 @@ public class ObjectPropertyView implements EventHandler {
 			return false;
 		}
 		tableViewer.deleteRow(prop);
+		refreshTestObjectProperties();
 		dirtyable.setDirty(true);
 		return true;
 	}
@@ -1307,6 +1330,7 @@ public class ObjectPropertyView implements EventHandler {
 			return false;
 		}
 		tableViewer.deleteRows(props);
+		refreshTestObjectProperties();
 		dirtyable.setDirty(true);
 		return true;
 	}
@@ -1366,7 +1390,14 @@ public class ObjectPropertyView implements EventHandler {
 		}
 		return null;
 	}
-
+	
+	// This exists to update real-time user's changes on test object's atributes
+	private void refreshTestObjectProperties(){
+		List<WebElementPropertyEntity> webElementProperties = cloneTestObject.getWebElementProperties();
+		webElementProperties.clear();
+		webElementProperties.addAll(tableViewer.getInput());
+	}
+	
 	private void setParentObjectId(String parentObjectId) {
 		this.parentObjectId = parentObjectId;
 	}
@@ -1813,11 +1844,6 @@ public class ObjectPropertyView implements EventHandler {
 		webElement.getWebElementProperties().forEach(prop -> {
 			testObject.addProperty(prop.getName(), ConditionType.fromValue(prop.getMatchCondition()), prop.getValue(),
 					prop.getIsSelected());
-		});
-				
-		webElement.getWebElementXpaths().forEach(xpath -> {
-			testObject.addProperty(xpath.getName(), ConditionType.fromValue(xpath.getMatchCondition()), xpath.getValue(),
-					xpath.getIsSelected());
 		});
 		
 		testObject.setSelectorMethod(SelectorMethod.valueOf(webElement.getSelectorMethod().name()));

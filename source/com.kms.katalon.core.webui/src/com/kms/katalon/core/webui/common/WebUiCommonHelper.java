@@ -497,6 +497,7 @@ public class WebUiCommonHelper extends KeywordHelper {
                     return cssLocatorValue;
                 }
                 XPathBuilder xpathBuilder = new XPathBuilder(to.getActiveProperties());
+                System.out.println(xpathBuilder.build() + " is built ");
                 return xpathBuilder.build(); 
             case XPATH:
                 String cssLocatorValue1 = findActiveEqualsObjectProperty(to, CSS_LOCATOR_PROPERTY_NAME);

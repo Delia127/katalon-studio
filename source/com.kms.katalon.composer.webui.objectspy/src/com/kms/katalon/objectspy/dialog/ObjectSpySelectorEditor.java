@@ -114,9 +114,9 @@ public class ObjectSpySelectorEditor implements EventListener<ObjectSpyEvent>, E
                 return;
             case XPATH:
             	webElement.getXpaths().forEach(e ->{
-    				if(e.getIsSelected()){
+    				if(e.getIsSelected() == true){
     					String xpathToSet = e.getValue();
-    	                changeEditorStatus(xpathToSet, false);
+    	                changeEditorStatus(xpathToSet, false);    	                
     					return;
     				}
     			});	

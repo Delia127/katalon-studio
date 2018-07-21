@@ -20,6 +20,7 @@ import com.kms.katalon.composer.objectrepository.part.TestObjectPart;
 import com.kms.katalon.entity.repository.WebElementXpathEntity;
 
 public class XpathValueEditingSupport extends EditingSupport {
+	
     private TableViewer viewer;
 
     private IEventBroker eventBroker;

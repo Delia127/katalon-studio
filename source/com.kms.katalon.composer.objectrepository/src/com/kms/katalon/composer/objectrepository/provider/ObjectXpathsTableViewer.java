@@ -43,33 +43,33 @@ public class ObjectXpathsTableViewer extends TableViewer {
 
     }
 
-    public void addRow(WebElementXpathEntity property) {
-        data.add(property);
+    public void addRow(WebElementXpathEntity xpath) {
+        data.add(xpath);
         refreshIsSelected();
-        update(property, null);
+        update(xpath, null);
         refresh();
         xpathTable.setSelection(data.size() - 1);
         eventBroker.post(ObjectEventConstants.OBJECT_UPDATE_DIRTY, this);
     }
 
-    public void addRows(List<WebElementXpathEntity> props) {
+    public void addRows(List<WebElementXpathEntity> xpaths) {
         int lastIndex = data.size();
-        data.addAll(props);
+        data.addAll(xpaths);
         refreshIsSelected();
-        update(props, null);
+        update(xpaths, null);
         refresh();
         xpathTable.setSelection(lastIndex, data.size() - 1); 
         eventBroker.post(ObjectEventConstants.OBJECT_UPDATE_DIRTY, this);
     }
     
-    public void addRowsWithPosition(List<ObjectXpathTableRow> props) {
-        for (ObjectXpathTableRow row : props) {
+    public void addRowsWithPosition(List<ObjectXpathTableRow> xpaths) {
+        for (ObjectXpathTableRow row : xpaths) {
             data.add(row.getPosition(), row.getWebElementXpathEntity());
         }
         refreshIsSelected();
         refresh();
         xpathTable.deselectAll();
-        for (ObjectXpathTableRow row : props) {
+        for (ObjectXpathTableRow row : xpaths) {
             xpathTable.select(row.getPosition());
         }
         eventBroker.post(ObjectEventConstants.OBJECT_UPDATE_DIRTY, this);
