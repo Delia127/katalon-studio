@@ -48,13 +48,13 @@ import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.project.dialog.NewProjectDialog;
 import com.kms.katalon.composer.project.handlers.NewSampleLocalProjectHandler;
 import com.kms.katalon.composer.project.menu.ProjectParameterizedCommandBuilder;
 import com.kms.katalon.composer.project.sample.NewSampleRemoteProjectDialog;
 import com.kms.katalon.composer.project.sample.SampleRemoteProject;
 import com.kms.katalon.composer.project.sample.SampleRemoteProjectProvider;
 import com.kms.katalon.composer.project.template.SampleProjectProvider;
-import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.ImageConstants;
 import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.PreferenceConstants;
@@ -340,13 +340,9 @@ public class WelcomeRightPart extends Composite {
 
                                 @Override
                                 public void mouseUp(MouseEvent e) {
-                                    NewSampleRemoteProjectDialog dialog = new NewSampleRemoteProjectDialog(getShell(),
+                                    NewProjectDialog dialog = new NewProjectDialog(getShell(),
                                             sample);
-                                    if (dialog.open() != NewSampleRemoteProjectDialog.OK) {
-                                        return;
-                                    }
-                                    eventBroker.post(EventConstants.GIT_CLONE_REMOTE_PROJECT,
-                                            new Object[] { sample, dialog.getProjectInfo() });
+                                    dialog.open();
                                 }
                             });
                     composites.add(latestComposite);

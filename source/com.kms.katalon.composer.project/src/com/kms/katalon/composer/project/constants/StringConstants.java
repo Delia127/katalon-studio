@@ -154,5 +154,18 @@ public class StringConstants extends GlobalStringConstants {
     public static final String VIEW_LBL_API_TESTING = ComposerProjectMessageConstants.VIEW_LBL_API_TESTING;
 
     public static final String VIEW_LBL_NEW_PROJECT_WIZARD_TIP = ComposerProjectMessageConstants.VIEW_LBL_NEW_PROJECT_WIZARD_TIP;
+    
+    public static final String VIEW_OPTION_BLANK_PROJECT = ComposerProjectMessageConstants.VIEW_OPTION_BLANK_PROJECT;
+    
+    public static final String VIEW_OPTION_SAMPLE_PROJECT = ComposerProjectMessageConstants.VIEW_OPTION_SAMPLE_PROJECT;
+    
+    public static final String VIEW_LBL_SAMPLE_PROJECT = ComposerProjectMessageConstants.VIEW_LBL_SAMPLE_PROJECT;
+    
+    public static final String VIEW_LBL_REPOSITORY_URL = ComposerProjectMessageConstants.VIEW_LBL_REPOSITORY_URL;
 
+    public static final String SAMPLE_WEB_UI_PROJECT = ComposerProjectMessageConstants.SAMPLE_WEB_UI_PROJECT;
+    
+    public static final String SAMPLE_MOBILE_PROJECT = ComposerProjectMessageConstants.SAMPLE_MOBILE_PROJECT;
+    
+    public static final String SAMPLE_WEB_SERVICE_PROJECT = ComposerProjectMessageConstants.SAMPLE_WEB_SERVICE_PROJECT;
 }
