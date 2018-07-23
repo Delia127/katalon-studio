@@ -50,6 +50,8 @@ public class XpathSelectedEditingSupport extends EditingSupport {
         }
         return null;
     }
+    
+
 
     @Override
     protected void setValue(Object element, Object value) {
@@ -89,10 +91,13 @@ public class XpathSelectedEditingSupport extends EditingSupport {
             return doSetItemValue(!value);
         }
 
-        protected IStatus doSetItemValue(boolean itemValue) {
+        protected IStatus doSetItemValue(boolean itemValue) {	
+        	// Enforcing only one selection
+            viewer.getInput().forEach(e -> {
+            	e.setIsSelected(false);
+            });
             xpath.setIsSelected(itemValue);
-            viewer.refreshIsSelected();
-            viewer.update(xpath, null);
+            viewer.refresh();
             eventBroker.post(ObjectEventConstants.OBJECT_UPDATE_DIRTY, viewer);
             return Status.OK_STATUS;
         }

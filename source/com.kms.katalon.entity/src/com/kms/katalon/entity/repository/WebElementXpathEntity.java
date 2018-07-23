@@ -26,14 +26,19 @@ public class WebElementXpathEntity implements Serializable {
 
     public WebElementXpathEntity(String name, String value) {
         this.name = name;
-        this.value = value.replace("xpath=", "");
+        this.value = getCorrectForm(value);
         this.isSelected = true;
     }
     
     public WebElementXpathEntity(String name, String value, boolean isSelected) {
         this.name = name;
-        this.value = value.replace("xpath=", "");
+        this.value =  getCorrectForm(value);
         this.isSelected = isSelected;
+    }
+    
+    // Process any ill-formed value in the future, for now it's just one case
+    private String getCorrectForm(String value){
+    	return value.replace("xpath=", "");
     }
 
 

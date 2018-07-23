@@ -365,7 +365,7 @@ public class ObjectPropertyView implements EventHandler {
 		xpathTableViewer = new ObjectXpathsTableViewer(xpathCompositeTableDetails,
 				SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, eventBroker);
 
-		Table table = xpathTableViewer.getTable();
+		Table table = xpathTableViewer.getTable();		
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 		GridData gridDataTable = new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1);
@@ -682,9 +682,7 @@ public class ObjectPropertyView implements EventHandler {
 		trclmnXpathColumnSelected.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				xpathTableViewer.setSelectedAll();
-				onWebElementXpathChanged();
-				setDirty(true);
+				// Do nothing
 			}
 		});
 
@@ -824,17 +822,16 @@ public class ObjectPropertyView implements EventHandler {
 		WebElementSelectorMethod selectorMethod = cloneTestObject.getSelectorMethod();
 		switch (selectorMethod) {
 		case XPATH:
-			cloneTestObject.getWebElementXpaths().forEach(e ->{
-				if(e.getIsSelected() == true){
-					String xpathToSet = e.getValue();
-					txtSelectorEditor.setText(xpathToSet);
+			List<WebElementXpathEntity> xpathEntities = cloneTestObject.getWebElementXpaths();
+			for(WebElementXpathEntity wexe : xpathEntities){
+				if(wexe.getIsSelected() == true) {			
+					txtSelectorEditor.setText(wexe.getValue());
 					txtSelectorEditor.setEditable(false);
 					txtSelectorEditor.setBackground(ColorUtil.getDisabledItemBackgroundColor());
-					e.setIsSelected(false);
+					return;
 				}
-			});						
-			return;
-
+			}
+			break;
 		default:
 			txtSelectorEditor.setText(
 					cloneTestObject.getSelectorCollection().getOrDefault(selectorMethod, StringConstants.EMPTY));
@@ -1195,17 +1192,7 @@ public class ObjectPropertyView implements EventHandler {
 						isSelectedColumnImageHeader = ImageConstants.IMG_16_CHECKBOX_UNCHECKED;
 					}
 					trclmnColumnSelected.setImage(isSelectedColumnImageHeader);
-				}
-				else if (!trclmnXpathColumnSelected.isDisposed() && object.equals(xpathTableViewer)) {
-					boolean isSelectedAll = xpathTableViewer.getIsSelectedAll();
-					Image isSelectedColumnImageHeader;
-					if (isSelectedAll) {
-						isSelectedColumnImageHeader = ImageConstants.IMG_16_CHECKBOX_CHECKED;
-					} else {
-						isSelectedColumnImageHeader = ImageConstants.IMG_16_CHECKBOX_UNCHECKED;
-					}
-					trclmnXpathColumnSelected.setImage(isSelectedColumnImageHeader);
-				}
+				}		
 			}
 		}
 		case (EventConstants.TEST_OBJECT_UPDATED): {
@@ -1391,7 +1378,7 @@ public class ObjectPropertyView implements EventHandler {
 		return null;
 	}
 	
-	// This exists to update real-time user's changes on test object's atributes
+	// Called everytime users add or remove attributes
 	private void refreshTestObjectProperties(){
 		List<WebElementPropertyEntity> webElementProperties = cloneTestObject.getWebElementProperties();
 		webElementProperties.clear();
