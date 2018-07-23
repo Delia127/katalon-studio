@@ -509,6 +509,7 @@ public class ObjectPropertiesView extends Composite
 
         tvXpath = new TableViewer(xpathTableComposite,
                 SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+       		
         tvXpath.setContentProvider(ArrayContentProvider.getInstance());
         tXpath = tvXpath.getTable();
         tXpath.setHeaderVisible(true);
@@ -598,8 +599,11 @@ public class ObjectPropertiesView extends Composite
                 if (!canEdit(element)) {
                     return;
                 }
+                disableAllSelectedXpaths();
+                
                 ((WebElementXpathEntity) element).setIsSelected((boolean) value);
-                tvXpath.update(element, null);
+                
+                tvXpath.refresh();
                 sendPropertiesChangedEvent();
             }
 
@@ -640,6 +644,14 @@ public class ObjectPropertiesView extends Composite
                 && WebElementXpathEntity.class.getSimpleName().equals(element.getClass().getSimpleName());
     }
     
+    private void disableAllSelectedXpaths(){
+    	List<WebElementXpathEntity> xpaths = getXpaths();
+    	
+    	for(WebElementXpathEntity xpath : xpaths){
+    		xpath.setIsSelected(false);
+    	}
+    	
+    }
     
 
     private void addControlListeners() {
