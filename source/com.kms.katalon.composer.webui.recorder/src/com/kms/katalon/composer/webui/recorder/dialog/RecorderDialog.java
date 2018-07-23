@@ -125,7 +125,6 @@ import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
-import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebElementXpathEntity;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
@@ -1453,17 +1452,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         TreeViewer capturedTreeViewer = capturedObjectComposite.getTreeViewer();
         if (capturedTreeViewer.getTree().getItemCount() == 0) {
             return true;
-        }
-        
-        System.out.println("addElementToObjectRepository");
-        for(Object wee : capturedTreeViewer.getExpandedElements()){
-        	WebPage wp = (WebPage) wee;
-        	for(WebElement we : wp.getChildren()){
-        		for(WebElementXpathEntity xpath : we.getXpaths()){
-        			System.out.println(xpath.getValue());
-        		}
-        	}
-        }
+        }      
         
         SaveToObjectRepositoryDialog addToObjectRepositoryDialog = new SaveToObjectRepositoryDialog(shell, true,
                 getCloneCapturedObjects((List<WebPage>) capturedTreeViewer.getInput()),

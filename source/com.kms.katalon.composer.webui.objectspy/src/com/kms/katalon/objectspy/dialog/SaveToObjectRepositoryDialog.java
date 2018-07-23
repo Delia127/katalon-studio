@@ -131,15 +131,12 @@ public class SaveToObjectRepositoryDialog extends TreeEntitySelectionDialog {
     private List<ConflictWebElementWrapper> convertToConflictWebPageWrapper(List<WebPage> inputPages) {
         List<ConflictWebElementWrapper> conflictPages = new ArrayList<>();
         List<WebPage> flatPages = flattenWebPages(inputPages);
-        System.out.println("convertToConflictWebPageWrapper");
+        
         for (WebPage webPage : flatPages) {
             ConflictWebElementWrapper webPageWrapper = new ConflictWebElementWrapper(webPage, false);
             List<ConflictWebElementWrapper> childListWrapper = new ArrayList<>();
 
-            for (WebElement webElement : webPage.getChildren()) {
-            	for(WebElementXpathEntity path : webElement.getXpaths()){
-            		System.out.println(path.getValue());
-            	}
+            for (WebElement webElement : webPage.getChildren()) {            	
                 ConflictWebElementWrapper childWrapper = new ConflictWebElementWrapper(webElement, false);
                 childWrapper.setParent(webPageWrapper);
                 childListWrapper.add(childWrapper);
