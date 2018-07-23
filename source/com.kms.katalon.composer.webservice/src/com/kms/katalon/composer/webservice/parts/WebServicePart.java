@@ -115,7 +115,6 @@ import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.parts.SavableCompositePart;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
-import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
 import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
 import com.kms.katalon.composer.webservice.components.MirrorEditor;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
@@ -1526,6 +1525,12 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
         IFileEditorInput input = (IFileEditorInput) verificationScriptEditor.getEditorInput();
         IFile tempScriptFile = input.getFile();
         tempScriptFile.getRawLocation().toFile().delete();
+        
+        try {
+            tempScriptFile.delete(true, null);
+        } catch (CoreException e) {
+            LoggerSingleton.logError(e);
+        }
     }
 
     private WebElementPropertyEntity createBasicAuthHeaderElement() {
