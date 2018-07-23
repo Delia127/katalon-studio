@@ -89,6 +89,11 @@ public class WebElementEntity extends FileEntity {
         for (WebElementPropertyEntity webElementProperty : getWebElementProperties()) {
             newWebElement.getWebElementProperties().add(webElementProperty.clone());
         }
+        
+        newWebElement.getWebElementXpaths().clear();
+        for (WebElementXpathEntity webElementXpath : getWebElementXpaths()) {
+            newWebElement.getWebElementXpaths().add(webElementXpath.clone());
+        }
 
         newWebElement.setImagePath(getImagePath());
         newWebElement.setUseRalativeImagePath(getUseRalativeImagePath());

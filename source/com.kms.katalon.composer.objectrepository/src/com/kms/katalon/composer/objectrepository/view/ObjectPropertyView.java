@@ -68,6 +68,7 @@ import com.kms.katalon.composer.components.impl.control.CMenu;
 import com.kms.katalon.composer.components.impl.control.HotkeyActiveListener;
 import com.kms.katalon.composer.components.impl.control.ImageButton;
 import com.kms.katalon.composer.components.impl.dialogs.AddTestObjectPropertyDialog;
+import com.kms.katalon.composer.components.impl.dialogs.AddTestObjectXpathDialog;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.dialogs.TreeEntitySelectionDialog;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
@@ -131,9 +132,11 @@ public class ObjectPropertyView implements EventHandler {
 
 	private static final String[] FILTER_EXTS = { "*.gif; *.png; *.jpg" };
 
-	private ToolItem toolItemAdd, toolItemDelete, toolItemClear;
+	private ToolItem propertyToolItemAdd, propertyToolItemDelete, propertyToolItemClear;
 
-	private ObjectPropetiesTableViewer tableViewer;
+	private ToolItem xpathToolItemAdd, xpathToolItemDelete, xpathToolItemClear;
+
+	private ObjectPropetiesTableViewer propertyTableViewer;
 
 	private ObjectXpathsTableViewer xpathTableViewer;
 
@@ -152,18 +155,21 @@ public class ObjectPropertyView implements EventHandler {
 	private MDirtyable dirtyable;
 
 	private WebElementEntity originalTestObject, cloneTestObject;
+	
 
 	private boolean isSettingsExpanded = true;
 
 	private Label lblSettings;
 
-	private Composite compositeTable, xpathsCompositeTable;
+	private Composite propertyCompositeTable, xpathCompositeTable;
 
 	private Button btnBrowseParentObj, btnBrowseParentShadowRoot, rdoUseParentObject, rdoShadowRootParent, rdoNoParent;
 
 	private Composite compositeParentObject, compositeShadowRootParent, compositeSettingsDetails, compositeSettings;
 
-	private ObjectViewToolItemListener toolItemListener;
+	private ObjectViewPropertyToolListener propertyToolItemListener;
+	
+	private ObjectViewXpathToolListener xpathToolItemListener;	
 
 	private String parentObjectId = null;
 
@@ -186,7 +192,8 @@ public class ObjectPropertyView implements EventHandler {
 	public ObjectPropertyView(IEventBroker eventBroker, MDirtyable dt, TestObjectPart testObjectPart) {
 		this.eventBroker = eventBroker;
 		this.dirtyable = dt;
-		this.toolItemListener = new ObjectViewToolItemListener();
+		this.propertyToolItemListener = new ObjectViewPropertyToolListener();
+		this.xpathToolItemListener = new ObjectViewXpathToolListener();
 		this.testObjectPart = testObjectPart;
 		eventBroker.subscribe(ObjectEventConstants.OBJECT_UPDATE_DIRTY, this);
 		eventBroker.subscribe(ObjectEventConstants.OBJECT_UPDATE_IS_SELECTED_COLUMN_HEADER, this);
@@ -215,27 +222,50 @@ public class ObjectPropertyView implements EventHandler {
 		});
 	}
 
-	private void createTableToolbar(Composite parent) {
+	private void createPropertyTableToolbar(Composite parent) {
 		Composite compositeTableToolBar = new Composite(parent, SWT.NONE);
 		compositeTableToolBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		compositeTableToolBar.setLayout(new FillLayout(SWT.HORIZONTAL));
 
 		ToolBar tableToolbar = new ToolBar(compositeTableToolBar, SWT.FLAT | SWT.RIGHT);
 
-		toolItemAdd = new ToolItem(tableToolbar, SWT.NONE);
-		toolItemAdd.setText(StringConstants.VIEW_LBL_ADD);
-		toolItemAdd.setToolTipText(ComposerObjectRepositoryMessageConstants.VIEW_ITEM_TIP_ADD_NEW_PROPERTY);
-		toolItemAdd.setImage(ImageConstants.IMG_16_ADD);
+		propertyToolItemAdd = new ToolItem(tableToolbar, SWT.NONE);
+		propertyToolItemAdd.setText(StringConstants.VIEW_LBL_ADD);
+		propertyToolItemAdd.setToolTipText(ComposerObjectRepositoryMessageConstants.VIEW_ITEM_TIP_ADD_NEW_PROPERTY);
+		propertyToolItemAdd.setImage(ImageConstants.IMG_16_ADD);
 
-		toolItemDelete = new ToolItem(tableToolbar, SWT.NONE);
-		toolItemDelete.setText(StringConstants.VIEW_LBL_DELETE);
-		toolItemDelete.setToolTipText(StringConstants.VIEW_LBL_DELETE);
-		toolItemDelete.setImage(ImageConstants.IMG_16_REMOVE);
+		propertyToolItemDelete = new ToolItem(tableToolbar, SWT.NONE);
+		propertyToolItemDelete.setText(StringConstants.VIEW_LBL_DELETE);
+		propertyToolItemDelete.setToolTipText(StringConstants.VIEW_LBL_DELETE);
+		propertyToolItemDelete.setImage(ImageConstants.IMG_16_REMOVE);
 
-		toolItemClear = new ToolItem(tableToolbar, SWT.NONE);
-		toolItemClear.setText(StringConstants.VIEW_LBL_CLEAR);
-		toolItemClear.setToolTipText(StringConstants.VIEW_LBL_CLEAR);
-		toolItemClear.setImage(ImageConstants.IMG_16_CLEAR);
+		propertyToolItemClear = new ToolItem(tableToolbar, SWT.NONE);
+		propertyToolItemClear.setText(StringConstants.VIEW_LBL_CLEAR);
+		propertyToolItemClear.setToolTipText(StringConstants.VIEW_LBL_CLEAR);
+		propertyToolItemClear.setImage(ImageConstants.IMG_16_CLEAR);
+	}
+	
+	private void createXpathTableToolbar(Composite parent) {
+		Composite compositeTableToolBar = new Composite(parent, SWT.NONE);
+		compositeTableToolBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		compositeTableToolBar.setLayout(new FillLayout(SWT.HORIZONTAL));
+
+		ToolBar tableToolbar = new ToolBar(compositeTableToolBar, SWT.FLAT | SWT.RIGHT);
+
+		xpathToolItemAdd = new ToolItem(tableToolbar, SWT.NONE);
+		xpathToolItemAdd.setText(StringConstants.VIEW_LBL_ADD);
+		xpathToolItemAdd.setToolTipText(ComposerObjectRepositoryMessageConstants.VIEW_ITEM_TIP_ADD_NEW_PROPERTY);
+		xpathToolItemAdd.setImage(ImageConstants.IMG_16_ADD);
+
+		xpathToolItemDelete = new ToolItem(tableToolbar, SWT.NONE);
+		xpathToolItemDelete.setText(StringConstants.VIEW_LBL_DELETE);
+		xpathToolItemDelete.setToolTipText(StringConstants.VIEW_LBL_DELETE);
+		xpathToolItemDelete.setImage(ImageConstants.IMG_16_REMOVE);
+
+		xpathToolItemClear = new ToolItem(tableToolbar, SWT.NONE);
+		xpathToolItemClear.setText(StringConstants.VIEW_LBL_CLEAR);
+		xpathToolItemClear.setToolTipText(StringConstants.VIEW_LBL_CLEAR);
+		xpathToolItemClear.setImage(ImageConstants.IMG_16_CLEAR);
 	}
 
 	private void createSelectionMethodComposite(Composite parent) {
@@ -284,7 +314,7 @@ public class ObjectPropertyView implements EventHandler {
 
 	}
 
-	private void createTableDetails(Composite parent) {
+	private void createPropertyTableDetails(Composite parent) {
 		Composite compositeTableDetails = new Composite(parent, SWT.NONE);
 		compositeTableDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		GridLayout glCompositeTableDetails = new GridLayout(1, false);
@@ -292,22 +322,22 @@ public class ObjectPropertyView implements EventHandler {
 		glCompositeTableDetails.marginHeight = 0;
 		compositeTableDetails.setLayout(glCompositeTableDetails);
 
-		tableViewer = new ObjectPropetiesTableViewer(compositeTableDetails, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI,
+		propertyTableViewer = new ObjectPropetiesTableViewer(compositeTableDetails, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI,
 				eventBroker);
 
-		Table table = tableViewer.getTable();
+		Table table = propertyTableViewer.getTable();
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 		GridData gridDataTable = new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1);
 		gridDataTable.minimumHeight = 150;
 		table.setLayoutData(gridDataTable);
 
-		TableViewerColumn treeViewerColumnName = new TableViewerColumn(tableViewer, SWT.NONE);
+		TableViewerColumn treeViewerColumnName = new TableViewerColumn(propertyTableViewer, SWT.NONE);
 		TableColumn trclmnColumnName = treeViewerColumnName.getColumn();
 		trclmnColumnName.setText(StringConstants.VIEW_COL_NAME);
 		trclmnColumnName.setWidth(100);
 		treeViewerColumnName
-				.setEditingSupport(new PropertyNameEditingSupport(tableViewer, eventBroker, testObjectPart));
+				.setEditingSupport(new PropertyNameEditingSupport(propertyTableViewer, eventBroker, testObjectPart));
 		treeViewerColumnName.setLabelProvider(new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
@@ -315,12 +345,12 @@ public class ObjectPropertyView implements EventHandler {
 			}
 		});
 
-		TableViewerColumn treeViewerColumnCondition = new TableViewerColumn(tableViewer, SWT.NONE);
+		TableViewerColumn treeViewerColumnCondition = new TableViewerColumn(propertyTableViewer, SWT.NONE);
 		TableColumn trclmnColumnCondition = treeViewerColumnCondition.getColumn();
 		trclmnColumnCondition.setText(StringConstants.VIEW_COL_MATCH_COND);
 		trclmnColumnCondition.setWidth(150);
 		treeViewerColumnCondition
-				.setEditingSupport(new PropertyConditionEditingSupport(tableViewer, eventBroker, testObjectPart));
+				.setEditingSupport(new PropertyConditionEditingSupport(propertyTableViewer, eventBroker, testObjectPart));
 		treeViewerColumnCondition.setLabelProvider(new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
@@ -328,12 +358,12 @@ public class ObjectPropertyView implements EventHandler {
 			}
 		});
 
-		TableViewerColumn treeViewerColumnValue = new TableViewerColumn(tableViewer, SWT.NONE);
+		TableViewerColumn treeViewerColumnValue = new TableViewerColumn(propertyTableViewer, SWT.NONE);
 		TableColumn trclmnColumnValue = treeViewerColumnValue.getColumn();
 		trclmnColumnValue.setText(StringConstants.VIEW_COL_VALUE);
 		trclmnColumnValue.setWidth(350);
 		treeViewerColumnValue
-				.setEditingSupport(new PropertyValueEditingSupport(tableViewer, eventBroker, testObjectPart));
+				.setEditingSupport(new PropertyValueEditingSupport(propertyTableViewer, eventBroker, testObjectPart));
 		treeViewerColumnValue.setLabelProvider(new ColumnLabelProvider() {
 			@Override
 			public String getText(Object element) {
@@ -341,16 +371,16 @@ public class ObjectPropertyView implements EventHandler {
 			}
 		});
 
-		TableViewerColumn treeViewerColumnSelected = new TableViewerColumn(tableViewer, SWT.NONE);
+		TableViewerColumn treeViewerColumnSelected = new TableViewerColumn(propertyTableViewer, SWT.NONE);
 		treeViewerColumnSelected
-				.setEditingSupport(new PropertySelectedEditingSupport(tableViewer, eventBroker, testObjectPart));
+				.setEditingSupport(new PropertySelectedEditingSupport(propertyTableViewer, eventBroker, testObjectPart));
 		treeViewerColumnSelected.setLabelProvider(new IsSelectedColumnLabelProvider());
 
 		trclmnColumnSelected = treeViewerColumnSelected.getColumn();
 		trclmnColumnSelected.setText(StringConstants.VIEW_COL_CHKBOX);
 		trclmnColumnSelected.setWidth(150);
 
-		tableViewer.setContentProvider(ArrayContentProvider.getInstance());
+		propertyTableViewer.setContentProvider(ArrayContentProvider.getInstance());
 	}
 
 	private void createXpathsTableDetails(Composite parent) {
@@ -409,9 +439,9 @@ public class ObjectPropertyView implements EventHandler {
 	 * -----------------------------
 	 * </pre>
 	 */
-	private void createTableMenu() {
-		Table table = tableViewer.getTable();
-		CMenu menu = new CMenu(table, toolItemListener);
+	private void createPropertyTableMenu() {
+		Table table = propertyTableViewer.getTable();
+		CMenu menu = new CMenu(table, propertyToolItemListener);
 		table.setMenu(menu);
 
 		menu.createMenuItem(StringConstants.VIEW_LBL_ADD, HK_ADD);
@@ -419,7 +449,7 @@ public class ObjectPropertyView implements EventHandler {
 
 			@Override
 			public Boolean call() throws Exception {
-				return isAbleToDelete();
+				return isPropertyTableAbleToDelete();
 			}
 		});
 
@@ -429,7 +459,32 @@ public class ObjectPropertyView implements EventHandler {
 
 			@Override
 			public Boolean call() throws Exception {
-				return isAbleToClear();
+				return isPropertyTableAbleToClear();
+			}
+		});
+	}
+	
+	private void createXpathTableMenu() {
+		Table table = xpathTableViewer.getTable();
+		CMenu menu = new CMenu(table, xpathToolItemListener);
+		table.setMenu(menu);
+
+		menu.createMenuItem(StringConstants.VIEW_LBL_ADD, HK_ADD);
+		menu.createMenuItem(StringConstants.VIEW_LBL_DELETE, HK_DEL, new Callable<Boolean>() {
+
+			@Override
+			public Boolean call() throws Exception {
+				return isXpathTableAbleToDelete();
+			}
+		});
+
+		new MenuItem(menu, SWT.SEPARATOR);
+
+		menu.createMenuItem(StringConstants.VIEW_LBL_CLEAR, null, new Callable<Boolean>() {
+
+			@Override
+			public Boolean call() throws Exception {
+				return isXpathTableAbleToClear();
 			}
 		});
 	}
@@ -444,54 +499,61 @@ public class ObjectPropertyView implements EventHandler {
 		glCompositeObjectDetails.marginWidth = 10;
 		compositeObjectDetails.setLayout(glCompositeObjectDetails);
 
-		createSettingsComposite(compositeObjectDetails);
 
-		createObjectPropertiesComposite(compositeObjectDetails);
-
-		return compositeObjectDetails;
-	}
-
-	private void createObjectPropertiesComposite(Composite parent) {
-		Composite compositeTableHeader = new Composite(parent, SWT.NONE);
+		createSettingsComposite(compositeObjectDetails);		
+		createSelectionMethodComposite(compositeObjectDetails);
+		
+		
+		Composite compositeTableHeader = new Composite(compositeObjectDetails, SWT.NONE);
 		compositeTableHeader.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		compositeTableHeader.setLayout(new FillLayout(SWT.HORIZONTAL));
 
 		Label lblObjectProperties = new Label(compositeTableHeader, SWT.NONE);
 		lblObjectProperties.setText(StringConstants.VIEW_LBL_OBJ_PROPERTIES);
 		ControlUtils.setFontToBeBold(lblObjectProperties);
+		
+		
+		createObjectPropertiesComposite(compositeObjectDetails);
+		createObjectXpathsComposite(compositeObjectDetails);
+		
+		createSelectorEditor(compositeObjectDetails);
 
-		createSelectionMethodComposite(parent);
+		return compositeObjectDetails;
+	}
 
-		// TO-DO @Thanh: This is admittedly ugly - consider decoupling the logic
-		// here
-		createXpathsComposite(parent);
+	private void createObjectPropertiesComposite(Composite parent) {
 
-		compositeTable = new Composite(parent, SWT.NONE);
-		compositeTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		propertyCompositeTable = new Composite(parent, SWT.NONE);
+		propertyCompositeTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		GridLayout glCompositeTable = new GridLayout();
 		glCompositeTable.marginWidth = 0;
 		glCompositeTable.marginHeight = 0;
-		compositeTable.setLayout(glCompositeTable);
+		propertyCompositeTable.setLayout(glCompositeTable);
 
-		createTableToolbar(compositeTable);
+		createPropertyTableToolbar(propertyCompositeTable);
 
-		createTableDetails(compositeTable);
+		createPropertyTableDetails(propertyCompositeTable);
 
-		createTableMenu();
-
-		createSelectorEditor(parent);
+		createPropertyTableMenu();
+		
 
 	}
 
-	private void createXpathsComposite(Composite parent) {
-		xpathsCompositeTable = new Composite(parent, SWT.NONE);
-		xpathsCompositeTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+	private void createObjectXpathsComposite(Composite parent) {		
+		
+		xpathCompositeTable = new Composite(parent, SWT.NONE);
+		xpathCompositeTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		GridLayout glCompositeTable = new GridLayout();
 		glCompositeTable.marginWidth = 0;
 		glCompositeTable.marginHeight = 0;
-		xpathsCompositeTable.setLayout(glCompositeTable);
+		xpathCompositeTable.setLayout(glCompositeTable);
 
-		createXpathsTableDetails(xpathsCompositeTable);
+		createXpathTableToolbar(xpathCompositeTable);
+		
+		createXpathsTableDetails(xpathCompositeTable);
+		
+		createXpathTableMenu();
+
 	}
 
 	private void createSelectorEditor(Composite parent) {
@@ -664,16 +726,22 @@ public class ObjectPropertyView implements EventHandler {
 			}
 		});
 
-		toolItemClear.addSelectionListener(toolItemListener);
+		propertyToolItemClear.addSelectionListener(propertyToolItemListener);
 
-		toolItemDelete.addSelectionListener(toolItemListener);
+		propertyToolItemDelete.addSelectionListener(propertyToolItemListener);
 
-		toolItemAdd.addSelectionListener(toolItemListener);
+		propertyToolItemAdd.addSelectionListener(propertyToolItemListener);
+		
+		xpathToolItemClear.addSelectionListener(xpathToolItemListener);
+
+		xpathToolItemDelete.addSelectionListener(xpathToolItemListener);
+
+		xpathToolItemAdd.addSelectionListener(xpathToolItemListener);
 
 		trclmnColumnSelected.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				tableViewer.setSelectedAll();
+				propertyTableViewer.setSelectedAll();
 				onWebElementPropertyChanged();
 				setDirty(true);
 			}
@@ -968,8 +1036,8 @@ public class ObjectPropertyView implements EventHandler {
 			setParentObjectShadowRoot(isParentShadowRootProperty != null && isParentShadowRootProperty.getIsSelected());
 			refreshParentObjectComposites();
 
-			tableViewer.setInput(webElementProperties);
-			tableViewer.refresh();
+			propertyTableViewer.setInput(webElementProperties);
+			propertyTableViewer.refresh();
 
 			xpathTableViewer.setInput(webElementXpaths);
 			xpathTableViewer.refresh();
@@ -1008,15 +1076,15 @@ public class ObjectPropertyView implements EventHandler {
 
 	private void refreshLocatorMethod() {
 		WebElementSelectorMethod selectorMethod = cloneTestObject.getSelectorMethod();
-		boolean isAttributesMode = selectorMethod == WebElementSelectorMethod.ATTRIBUTES;
-		radioAttributes.setSelection(isAttributesMode);
+		radioAttributes.setSelection(selectorMethod == WebElementSelectorMethod.ATTRIBUTES);
 		radioCss.setSelection(selectorMethod == WebElementSelectorMethod.CSS);
 		radioXpath.setSelection(selectorMethod == WebElementSelectorMethod.XPATH);
 
 		onWebElementPropertyChanged();
 		onWebElementXpathChanged();
-		showComposite(compositeTable, isAttributesMode);
-		showComposite(xpathsCompositeTable, selectorMethod == WebElementSelectorMethod.XPATH);
+		
+		showComposite(propertyCompositeTable, selectorMethod == WebElementSelectorMethod.ATTRIBUTES);
+		showComposite(xpathCompositeTable, selectorMethod == WebElementSelectorMethod.XPATH);
 	}
 
 	private void refreshParentObjectComposite(Button rdoButton, ParentObjectType parentObjectType,
@@ -1030,19 +1098,19 @@ public class ObjectPropertyView implements EventHandler {
 	}
 
 	private boolean verifyObjectProperties() {
-		if (tableViewer.getInput() == null) {
+		if (propertyTableViewer.getInput() == null) {
 			return false;
 		}
-		for (int i = 0; i < tableViewer.getInput().size() - 1; i++) {
-			if (!(tableViewer.getInput().get(i) instanceof WebElementPropertyEntity)) {
+		for (int i = 0; i < propertyTableViewer.getInput().size() - 1; i++) {
+			if (!(propertyTableViewer.getInput().get(i) instanceof WebElementPropertyEntity)) {
 				continue;
 			}
-			for (int j = i + 1; j < tableViewer.getInput().size(); j++) {
-				if (!(tableViewer.getInput().get(j) instanceof WebElementPropertyEntity)) {
+			for (int j = i + 1; j < propertyTableViewer.getInput().size(); j++) {
+				if (!(propertyTableViewer.getInput().get(j) instanceof WebElementPropertyEntity)) {
 					continue;
 				}
-				if (tableViewer.getInput().get(i).equals(tableViewer.getInput().get(j))) {
-					WebElementPropertyEntity webElementProperty = tableViewer.getInput().get(i);
+				if (propertyTableViewer.getInput().get(i).equals(propertyTableViewer.getInput().get(j))) {
+					WebElementPropertyEntity webElementProperty = propertyTableViewer.getInput().get(i);
 					MessageDialog.openError(null, StringConstants.WARN_TITLE, MessageFormat
 							.format(StringConstants.VIEW_ERROR_REASON_OBJ_PROP_EXISTED, webElementProperty.getName()));
 					return false;
@@ -1053,9 +1121,9 @@ public class ObjectPropertyView implements EventHandler {
 	}
 
 	public void save() {
-		if (tableViewer.isCellEditorActive()) {
+		if (propertyTableViewer.isCellEditorActive()) {
 			// if table has a active cell, commit the current editing
-			tableViewer.getTable().forceFocus();
+			propertyTableViewer.getTable().forceFocus();
 		}
 
 		if (!verifyObjectProperties()) {
@@ -1065,7 +1133,7 @@ public class ObjectPropertyView implements EventHandler {
 		// prepare properties
 		final List<WebElementPropertyEntity> webElementProperties = cloneTestObject.getWebElementProperties();
 		webElementProperties.clear();
-		webElementProperties.addAll(tableViewer.getInput());
+		webElementProperties.addAll(propertyTableViewer.getInput());
 
 		ParentObjectType parentObjectType = getParentObjectType();
 		switch (parentObjectType) {
@@ -1171,7 +1239,7 @@ public class ObjectPropertyView implements EventHandler {
 		switch (topic) {
 		case ObjectEventConstants.OBJECT_UPDATE_DIRTY: {
 			if (object != null && object instanceof TableViewer) {
-				if (object.equals(tableViewer)) {
+				if (object.equals(propertyTableViewer)) {
 					onWebElementPropertyChanged();
 					dirtyable.setDirty(true);
 				}
@@ -1183,8 +1251,8 @@ public class ObjectPropertyView implements EventHandler {
 		}
 		case ObjectEventConstants.OBJECT_UPDATE_IS_SELECTED_COLUMN_HEADER: {
 			if (object != null && object instanceof TableViewer) {
-				if (!trclmnColumnSelected.isDisposed() && object.equals(tableViewer)) {
-					boolean isSelectedAll = tableViewer.getIsSelectedAll();
+				if (!trclmnColumnSelected.isDisposed() && object.equals(propertyTableViewer)) {
+					boolean isSelectedAll = propertyTableViewer.getIsSelectedAll();
 					Image isSelectedColumnImageHeader;
 					if (isSelectedAll) {
 						isSelectedColumnImageHeader = ImageConstants.IMG_16_CHECKBOX_CHECKED;
@@ -1216,7 +1284,7 @@ public class ObjectPropertyView implements EventHandler {
 		}
 	}
 
-	private class ObjectViewToolItemListener extends SelectionAdapter implements HotkeyActiveListener {
+	private class ObjectViewPropertyToolListener extends SelectionAdapter implements HotkeyActiveListener {
 
 		@SuppressWarnings("unchecked")
 		@Override
@@ -1224,14 +1292,14 @@ public class ObjectPropertyView implements EventHandler {
 			if (actionId == null) {
 				return;
 			}
-			switch (ActionId.parse(actionId)) {
+			switch (PropertyActionID.parse(actionId)) {
 			case ADD: {
 				testObjectPart.executeOperation(new AddPropertyOperation());
 				break;
 			}
 			case DELETE: {
 				testObjectPart.executeOperation(
-						new RemovePropertyOperation(((IStructuredSelection) tableViewer.getSelection()).toList()));
+						new RemovePropertyOperation(((IStructuredSelection) propertyTableViewer.getSelection()).toList()));
 				break;
 			}
 			case CLEAR: {
@@ -1250,6 +1318,42 @@ public class ObjectPropertyView implements EventHandler {
 			executeAction(((ToolItem) widget).getText());
 		}
 	}
+	
+	private class ObjectViewXpathToolListener extends SelectionAdapter implements HotkeyActiveListener {
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public void executeAction(String actionId) {
+			if (actionId == null) {
+				return;
+			}
+			switch (XpathActionID.parse(actionId)) {
+			case ADD: {
+				testObjectPart.executeOperation(new AddXpathOperation());
+				break;
+			}
+			case DELETE: {
+				testObjectPart.executeOperation(
+						new RemoveXpathOperation(((IStructuredSelection) xpathTableViewer.getSelection()).toList()));
+				break;
+			}
+			case CLEAR: {
+				testObjectPart.executeOperation(new ClearXpathOperation());
+				break;
+			}
+			}
+		}
+
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			Widget widget = e.widget;
+			if (!(widget instanceof ToolItem)) {
+				return;
+			}
+			executeAction(((ToolItem) widget).getText());
+		}
+	}
+	
 
 	private WebElementPropertyEntity openAddPropertyDialog() {
 		// set dialog's position is under btnAdd
@@ -1271,13 +1375,41 @@ public class ObjectPropertyView implements EventHandler {
 		}
 		return null;
 	}
+	
+	private WebElementXpathEntity openAddXpathDialog() {
+		Shell shell = Display.getCurrent().getActiveShell();
+		AddTestObjectXpathDialog dialog = new AddTestObjectXpathDialog(shell);
+
+		int code = dialog.open();
+		if (code == Window.OK) {
+			String propVal = dialog.getXpath();
+
+			WebElementXpathEntity prop = new WebElementXpathEntity();
+			prop.setValue(propVal);
+			prop.setIsSelected(true);
+			return prop;
+		}
+		return null;
+	}
+	
+	
 
 	private boolean addProperty(WebElementPropertyEntity prop) {
 		if (prop == null) {
 			return false;
 		}
-		tableViewer.addRow(prop);		
+		propertyTableViewer.addRow(prop);		
 		refreshTestObjectProperties();
+		dirtyable.setDirty(true);
+		return true;
+	}
+	
+	private boolean addXpath(WebElementXpathEntity xpath) {
+		if (xpath == null) {
+			return false;
+		}
+		xpathTableViewer.addRow(xpath);		
+		refreshTestObjectXpaths();
 		dirtyable.setDirty(true);
 		return true;
 	}
@@ -1286,8 +1418,18 @@ public class ObjectPropertyView implements EventHandler {
 		if (props == null || props.isEmpty()) {
 			return false;
 		}
-		tableViewer.addRowsWithPosition(props);
+		propertyTableViewer.addRowsWithPosition(props);
 		refreshTestObjectProperties();
+		dirtyable.setDirty(true);
+		return true;
+	}
+	
+	private boolean addXpathsWithPosition(List<ObjectXpathTableRow> xpaths) {
+		if (xpaths == null || xpaths.isEmpty()) {
+			return false;
+		}
+		xpathTableViewer.addRowsWithPosition(xpaths);
+		refreshTestObjectXpaths();
 		dirtyable.setDirty(true);
 		return true;
 	}
@@ -1296,8 +1438,18 @@ public class ObjectPropertyView implements EventHandler {
 		if (props == null || props.isEmpty()) {
 			return false;
 		}
-		tableViewer.addRows(props);
+		propertyTableViewer.addRows(props);
 		refreshTestObjectProperties();
+		dirtyable.setDirty(true);
+		return true;
+	}
+	
+	private boolean addXpaths(List<WebElementXpathEntity> xpaths) {
+		if (xpaths == null || xpaths.isEmpty()) {
+			return false;
+		}
+		xpathTableViewer.addRows(xpaths);
+		refreshTestObjectXpaths();
 		dirtyable.setDirty(true);
 		return true;
 	}
@@ -1306,8 +1458,18 @@ public class ObjectPropertyView implements EventHandler {
 		if (prop == null) {
 			return false;
 		}
-		tableViewer.deleteRow(prop);
+		propertyTableViewer.deleteRow(prop);
 		refreshTestObjectProperties();
+		dirtyable.setDirty(true);
+		return true;
+	}
+	
+	private boolean removeXpath(WebElementXpathEntity xpath) {
+		if (xpath == null) {
+			return false;
+		}
+		xpathTableViewer.deleteRow(xpath);
+		refreshTestObjectXpaths();
 		dirtyable.setDirty(true);
 		return true;
 	}
@@ -1316,27 +1478,45 @@ public class ObjectPropertyView implements EventHandler {
 		if (props == null || props.isEmpty()) {
 			return false;
 		}
-		tableViewer.deleteRows(props);
+		propertyTableViewer.deleteRows(props);
+		refreshTestObjectProperties();
+		dirtyable.setDirty(true);
+		return true;
+	}
+	
+	private boolean removeXpaths(List<WebElementXpathEntity> xpaths) {
+		if (xpaths == null || xpaths.isEmpty()) {
+			return false;
+		}
+		xpathTableViewer.deleteRows(xpaths);
 		refreshTestObjectProperties();
 		dirtyable.setDirty(true);
 		return true;
 	}
 
-	public boolean isAbleToDelete() {
-		return tableViewer.getTable().getSelection().length > 0;
+	public boolean isPropertyTableAbleToDelete() {
+		return propertyTableViewer.getTable().getSelection().length > 0;
 	}
 
-	public boolean isAbleToClear() {
-		return tableViewer.getInput() != null && tableViewer.getInput().size() > 0;
+	public boolean isPropertyTableAbleToClear() {
+		return propertyTableViewer.getInput() != null && propertyTableViewer.getInput().size() > 0;
+	}
+	
+	public boolean isXpathTableAbleToDelete() {
+		return xpathTableViewer.getTable().getSelection().length > 0;
 	}
 
-	public enum ActionId {
+	public boolean isXpathTableAbleToClear() {
+		return xpathTableViewer.getInput() != null && xpathTableViewer.getInput().size() > 0;
+	}
+
+	public enum PropertyActionID {
 		ADD(StringConstants.VIEW_LBL_ADD), DELETE(StringConstants.VIEW_LBL_DELETE), CLEAR(
 				StringConstants.VIEW_LBL_CLEAR);
 
 		private final String id;
 
-		private ActionId(final String id) {
+		private PropertyActionID(final String id) {
 			this.id = id;
 		}
 
@@ -1344,11 +1524,38 @@ public class ObjectPropertyView implements EventHandler {
 			return id;
 		}
 
-		public static ActionId parse(String id) {
+		public static PropertyActionID parse(String id) {
 			if (id == null) {
 				return null;
 			}
-			for (ActionId actionId : values()) {
+			for (PropertyActionID actionId : values()) {
+				if (actionId.getId().equals(id)) {
+					return actionId;
+				}
+			}
+			return null;
+		}
+	}
+	
+	public enum XpathActionID {
+		ADD(StringConstants.VIEW_LBL_ADD), DELETE(StringConstants.VIEW_LBL_DELETE), CLEAR(
+				StringConstants.VIEW_LBL_CLEAR);
+
+		private final String id;
+
+		private XpathActionID(final String id) {
+			this.id = id;
+		}
+
+		public String getId() {
+			return id;
+		}
+
+		public static XpathActionID parse(String id) {
+			if (id == null) {
+				return null;
+			}
+			for (XpathActionID actionId : values()) {
 				if (actionId.getId().equals(id)) {
 					return actionId;
 				}
@@ -1382,8 +1589,17 @@ public class ObjectPropertyView implements EventHandler {
 	private void refreshTestObjectProperties(){
 		List<WebElementPropertyEntity> webElementProperties = cloneTestObject.getWebElementProperties();
 		webElementProperties.clear();
-		webElementProperties.addAll(tableViewer.getInput());
+		webElementProperties.addAll(propertyTableViewer.getInput());
 	}
+	
+	// Called everytime users add or remove xpaths
+		private void refreshTestObjectXpaths(){
+			List<WebElementXpathEntity> webElementXpaths = cloneTestObject.getWebElementXpaths();
+			webElementXpaths.clear();
+			webElementXpaths.addAll(xpathTableViewer.getInput());
+		}
+	
+	
 	
 	private void setParentObjectId(String parentObjectId) {
 		this.parentObjectId = parentObjectId;
@@ -1430,7 +1646,7 @@ public class ObjectPropertyView implements EventHandler {
 		WebElementPropertyEntity property;
 
 		public AddPropertyOperation() {
-			super(AddPropertyOperation.class.getName());
+			super(AddXpathOperation.class.getName());
 		}
 
 		@Override
@@ -1464,10 +1680,10 @@ public class ObjectPropertyView implements EventHandler {
 		private List<ObjectPropertyTableRow> objectPropertyRows;
 
 		public RemovePropertyOperation(List<WebElementPropertyEntity> properties) {
-			super(RemovePropertyOperation.class.getName());
+			super(RemoveXpathOperation.class.getName());
 			objectPropertyRows = new ArrayList<>();
 			for (WebElementPropertyEntity entity : properties) {
-				objectPropertyRows.add(new ObjectPropertyTableRow(entity, tableViewer.getInput().indexOf(entity)));
+				objectPropertyRows.add(new ObjectPropertyTableRow(entity, propertyTableViewer.getInput().indexOf(entity)));
 			}
 		}
 
@@ -1501,9 +1717,9 @@ public class ObjectPropertyView implements EventHandler {
 		List<WebElementPropertyEntity> properties = new ArrayList<>();
 
 		public ClearPropertyOperation() {
-			super(ClearPropertyOperation.class.getName());
-			for (int i = 0; i < tableViewer.getInput().size(); ++i) {
-				properties.add(tableViewer.getInput().get(i));
+			super(ClearXpathOperation.class.getName());
+			for (int i = 0; i < propertyTableViewer.getInput().size(); ++i) {
+				properties.add(propertyTableViewer.getInput().get(i));
 			}
 		}
 
@@ -1512,13 +1728,13 @@ public class ObjectPropertyView implements EventHandler {
 			if (properties.isEmpty()) {
 				return Status.CANCEL_STATUS;
 			}
-			tableViewer.clear();
+			propertyTableViewer.clear();
 			return Status.OK_STATUS;
 		}
 
 		@Override
 		public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-			tableViewer.clear();
+			propertyTableViewer.clear();
 			return Status.OK_STATUS;
 		}
 
@@ -1530,6 +1746,114 @@ public class ObjectPropertyView implements EventHandler {
 			return Status.CANCEL_STATUS;
 		}
 	}
+	
+	private class AddXpathOperation extends AbstractOperation {
+
+		WebElementXpathEntity xpath;
+
+		public AddXpathOperation() {
+			super(AddXpathOperation.class.getName());
+		}
+
+		@Override
+		public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+			xpath = openAddXpathDialog();
+			if (addXpath(xpath)) {
+				return Status.OK_STATUS;
+			}
+			return Status.CANCEL_STATUS;
+		}
+
+		@Override
+		public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+			if (addXpath(xpath)) {
+				return Status.OK_STATUS;
+			}
+			return Status.CANCEL_STATUS;
+		}
+
+		@Override
+		public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+			if (removeXpath(xpath)) {
+				return Status.OK_STATUS;
+			}
+			return Status.CANCEL_STATUS;
+		}
+	}
+
+	private class RemoveXpathOperation extends AbstractOperation {
+
+		private List<ObjectXpathTableRow> objectXpathTableRows;
+
+		public RemoveXpathOperation(List<WebElementXpathEntity> properties) {
+			super(RemoveXpathOperation.class.getName());
+			objectXpathTableRows = new ArrayList<>();
+			for (WebElementXpathEntity entity : properties) {
+				objectXpathTableRows.add(new ObjectXpathTableRow(entity, xpathTableViewer.getInput().indexOf(entity)));
+			}
+		}
+
+		@Override
+		public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+			if (removeXpaths(getXpathListFromRows(objectXpathTableRows))) {
+				return Status.OK_STATUS;
+			}
+			return Status.CANCEL_STATUS;
+		}
+
+		@Override
+		public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+			if (removeXpaths(getXpathListFromRows(objectXpathTableRows))) {
+				return Status.OK_STATUS;
+			}
+			return Status.CANCEL_STATUS;
+		}
+
+		@Override
+		public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+			if (addXpathsWithPosition(objectXpathTableRows)) {
+				return Status.OK_STATUS;
+			}
+			return Status.CANCEL_STATUS;
+		}
+	}
+
+	private class ClearXpathOperation extends AbstractOperation {
+
+		List<WebElementXpathEntity> xpaths = new ArrayList<>();
+
+		public ClearXpathOperation() {
+			super(ClearXpathOperation.class.getName());
+			for (int i = 0; i < propertyTableViewer.getInput().size(); ++i) {
+				xpaths.add(xpathTableViewer.getInput().get(i));
+			}
+		}
+
+		@Override
+		public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+			if (xpaths.isEmpty()) {
+				return Status.CANCEL_STATUS;
+			}
+			xpathTableViewer.clear();
+			return Status.OK_STATUS;
+		}
+
+		@Override
+		public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+			propertyTableViewer.clear();
+			return Status.OK_STATUS;
+		}
+
+		@Override
+		public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+			if (addXpaths(xpaths)) {
+				return Status.OK_STATUS;
+			}
+			return Status.CANCEL_STATUS;
+		}
+	}
+	
+	
 
 	private class CheckNoParentObjectOperation extends AbstractOperation {
 		private String parentObjectId = null;
@@ -1569,6 +1893,8 @@ public class ObjectPropertyView implements EventHandler {
 			return Status.OK_STATUS;
 		}
 	}
+	
+	
 
 	private class CheckUseParentObjectOperation extends AbstractOperation {
 		private boolean isParentShadowRoot = false;
@@ -1813,6 +2139,14 @@ public class ObjectPropertyView implements EventHandler {
 			propertyEntities.add(row.getWebElementPropertyEntity());
 		}
 		return propertyEntities;
+	}
+	
+	private List<WebElementXpathEntity> getXpathListFromRows(List<ObjectXpathTableRow> objectXpathRows) {
+		List<WebElementXpathEntity> xpathEntities = new ArrayList<>();
+		for (ObjectXpathTableRow row : objectXpathRows) {
+			xpathEntities.add(row.getWebElementXpathEntity());
+		}
+		return xpathEntities;
 	}
 	
 	private TestObject buildTestObject(WebElementEntity webElement) {
