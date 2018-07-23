@@ -599,7 +599,7 @@ public class ObjectPropertiesView extends Composite
                 if (!canEdit(element)) {
                     return;
                 }
-                disableAllSelectedXpaths();
+                deselectAllXpaths();
                 
                 ((WebElementXpathEntity) element).setIsSelected((boolean) value);
                 
@@ -644,7 +644,9 @@ public class ObjectPropertiesView extends Composite
                 && WebElementXpathEntity.class.getSimpleName().equals(element.getClass().getSimpleName());
     }
     
-    private void disableAllSelectedXpaths(){
+
+    // Set all xpaths to de-selected state
+    private void deselectAllXpaths(){
     	List<WebElementXpathEntity> xpaths = getXpaths();
     	
     	for(WebElementXpathEntity xpath : xpaths){
