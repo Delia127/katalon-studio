@@ -17,4 +17,4 @@ cp -R "${VOLUME_DIR}/${MAC_APP}" /Applications
 echo "Installing ${PRODUCT_NAME} ... Done"
 
 echo "Verify package ..."
-"/Applications/${MAC_APP}/Contents/MacOS/katalon" --args -noSplash  -runMode=console -consoleLog -projectPath="${HOME}/Katalon Studio/TEST WEBUI/TEST WEBUI.prj" -retry=0 -testSuitePath="Test Suites/TS_RegressionTest" -executionProfile="default" -browserType="Chrome" --extra -katalon.buildLabel="${BRANCH}"
+"/Applications/${MAC_APP}/Contents/MacOS/katalon" --args -noSplash  -runMode=console -consoleLog -projectPath="${HOME}/KatalonStudio/TEST WEBUI/TEST WEBUI.prj" -retry=0 -testSuitePath="Test Suites/TS_RegressionTest" -executionProfile="default" -browserType="Chrome" --extra -katalon.buildLabel="${BRANCH}"
