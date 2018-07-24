@@ -4,7 +4,7 @@ BRANCH="$1"
 
 PRODUCT_NAME="Katalon Studio"
 VOLUME_DIR="/Volumes/${PRODUCT_NAME}"
-PACKAGE_DIR="${HOME}/Public/Katalon Studio/${BRANCH}"
+PACKAGE_DIR="${HOME}/Public/KatalonStudio/${BRANCH}"
 MAC_DMG="${PRODUCT_NAME}.dmg"
 MAC_APP="${PRODUCT_NAME}.app"
 
