@@ -60,6 +60,10 @@ public class ComposerWebuiMessageConstants extends NLS {
     public static String GRP_LBL_DEFAULT_SELECTED_PROPERTIES_FOR_CAPTURED_TEST_OBJECT;
 
     public static String COL_LBL_DETECT_OBJECT_BY;
+    
+    public static String LBL_XPATH_SELECTION_METHOD;
+    
+    public static String LBL_ATTRIBUTE_SELECTION_METHOD;
 
     static {
         // initialize resource bundle

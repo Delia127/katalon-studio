@@ -28,11 +28,14 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.ToolBar;
@@ -45,6 +48,7 @@ import com.kms.katalon.composer.webui.constants.ImageConstants;
 import com.kms.katalon.composer.webui.constants.StringConstants;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
 import com.kms.katalon.util.collections.Pair;
 
@@ -55,26 +59,38 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
     private static final String GRP_LBL_DEFAULT_SELECTED_PROPERTIES_FOR_CAPTURED_TEST_OBJECT = ComposerWebuiMessageConstants.GRP_LBL_DEFAULT_SELECTED_PROPERTIES_FOR_CAPTURED_TEST_OBJECT;
 
     private static final String COL_LBL_DETECT_OBJECT_BY = ComposerWebuiMessageConstants.COL_LBL_DETECT_OBJECT_BY;
+    
+    private static final String LBL_XPATH_SELECTION_METHOD = ComposerWebuiMessageConstants.LBL_XPATH_SELECTION_METHOD;
+    
+    private static final String LBL_ATTRIBUTE_SELECTION_METHOD = ComposerWebuiMessageConstants.LBL_ATTRIBUTE_SELECTION_METHOD;
 
     private WebUiExecutionSettingStore store;
 
     private Composite container;
+    
+    private Composite tablePropertyComposite;
 
-    ToolItem tiAdd, tiDelete, tiClear;
+    ToolItem tiPropertyAdd, tiPropertyDelete, tiPropertyClear;
 
-    private Table tProperty;
-
+    private Button radioXpath, radioAttribute;    
+    
+    private Table tProperty;        
+    
     private TableViewer tvProperty;
 
     private TableViewerColumn cvName, cvSelected;
-
+    
+    
     private TableColumn cName, cSelected;
 
     private List<Pair<String, Boolean>> defaultSelectingCapturedObjectProperties;
+    
+    private SelectorMethod defaultSelectingCapturedObjecSelectionMethods;
 
     public WebLocatorsPerferencePage() {
         store = new WebUiExecutionSettingStore(ProjectController.getInstance().getCurrentProject());
         defaultSelectingCapturedObjectProperties = Collections.emptyList();
+        defaultSelectingCapturedObjecSelectionMethods = SelectorMethod.XPATH;
         noDefaultAndApplyButton();
     }
 
@@ -98,6 +114,38 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
 
         return container;
     }
+    
+    private void createSelectionMethodComposite(Composite parent) {
+		Composite selectionMethodComposite = new Composite(parent, SWT.NONE);
+		selectionMethodComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		GridLayout glSelectionMethodComp = new GridLayout(3, false);
+		glSelectionMethodComp.marginHeight = 0;
+		glSelectionMethodComp.marginWidth = 0;
+		selectionMethodComposite.setLayout(glSelectionMethodComp);
+
+		Label lblSelectionMethod = new Label(selectionMethodComposite, SWT.NONE);
+		
+		lblSelectionMethod.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+
+
+		Composite radioSelectionComposite = new Composite(selectionMethodComposite, SWT.NONE);
+		radioSelectionComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+		GridLayout glRadioSelection = new GridLayout(3, false);
+		glRadioSelection.marginHeight = 0;
+		glRadioSelection.marginWidth = 0;
+		glRadioSelection.marginLeft = 10;
+		radioSelectionComposite.setLayout(glRadioSelection);
+
+		radioXpath = new Button(radioSelectionComposite, SWT.RADIO);
+		radioXpath.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+		radioXpath.setText(LBL_XPATH_SELECTION_METHOD);
+
+		radioAttribute = new Button(radioSelectionComposite, SWT.RADIO);
+		radioAttribute.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+		radioAttribute.setText(LBL_ATTRIBUTE_SELECTION_METHOD);
+	}
+    
+    
 
     private void createTestObjectLocatorSettings(Composite container) {
         Group locatorGroup = new Group(container, SWT.NONE);
@@ -108,35 +156,48 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
         Composite locatorContainer = new Composite(locatorGroup, SWT.NONE);
         locatorContainer.setLayout(new GridLayout());
         locatorContainer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
-        ToolBar tb = new ToolBar(locatorContainer, SWT.FLAT | SWT.RIGHT);
-        tiAdd = new ToolItem(tb, SWT.PUSH);
-        tiAdd.setText(StringConstants.ADD);
-        tiAdd.setImage(ImageConstants.IMG_16_ADD);
-
-        tiDelete = new ToolItem(tb, SWT.PUSH);
-        tiDelete.setText(StringConstants.DELETE);
-        tiDelete.setImage(ImageConstants.IMG_16_DELETE);
-        tiDelete.setEnabled(false);
-
-        tiClear = new ToolItem(tb, SWT.PUSH);
-        tiClear.setText(StringConstants.CLEAR);
-        tiClear.setImage(ImageConstants.IMG_16_CLEAR);
+        
+        createSelectionMethodComposite(locatorContainer);
 
         createPropertyTable(locatorContainer);
-    }
 
+    }
+    
+    private void createAttributeTableToolbar(Composite parent) {
+		Composite compositeTableToolBar = new Composite(parent, SWT.NONE);
+		compositeTableToolBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		compositeTableToolBar.setLayout(new FillLayout(SWT.HORIZONTAL));
+
+        ToolBar tb = new ToolBar(compositeTableToolBar, SWT.FLAT | SWT.RIGHT);
+        tiPropertyAdd = new ToolItem(tb, SWT.PUSH);
+        tiPropertyAdd.setText(StringConstants.ADD);
+        tiPropertyAdd.setImage(ImageConstants.IMG_16_ADD);
+
+        tiPropertyDelete = new ToolItem(tb, SWT.PUSH);
+        tiPropertyDelete.setText(StringConstants.DELETE);
+        tiPropertyDelete.setImage(ImageConstants.IMG_16_DELETE);
+        tiPropertyDelete.setEnabled(false);
+
+        tiPropertyClear = new ToolItem(tb, SWT.PUSH);
+        tiPropertyClear.setText(StringConstants.CLEAR);
+        tiPropertyClear.setImage(ImageConstants.IMG_16_CLEAR);
+	}
+    
+   
     @SuppressWarnings("unchecked")
     private void createPropertyTable(Composite parent) {
-        Composite tableComposite = new Composite(parent, SWT.NONE);
+        
+        createAttributeTableToolbar(parent);      
+        
+        tablePropertyComposite = new Composite(parent, SWT.NONE);
         GridData ldTableComposite = new GridData(SWT.FILL, SWT.FILL, true, true);
         ldTableComposite.minimumHeight = 70;
         ldTableComposite.heightHint = 380;
-        tableComposite.setLayoutData(ldTableComposite);
+        tablePropertyComposite.setLayoutData(ldTableComposite);
         TableColumnLayout tableColumnLayout = new TableColumnLayout();
-        tableComposite.setLayout(tableColumnLayout);
+        tablePropertyComposite.setLayout(tableColumnLayout);       
 
-        tvProperty = new TableViewer(tableComposite,
+        tvProperty = new TableViewer(tablePropertyComposite,
                 SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
         tvProperty.setContentProvider(ArrayContentProvider.getInstance());
         tProperty = tvProperty.getTable();
@@ -244,8 +305,11 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
 
         tableColumnLayout.setColumnData(cName, new ColumnWeightData(80, 100));
         tableColumnLayout.setColumnData(cSelected, new ColumnWeightData(20, 100));
+        showComposite(tablePropertyComposite, true);
     }
-
+    
+   
+    
     private String getCheckboxSymbol(boolean isChecked) {
         // Unicode symbols
         // Checked box: \u2611
@@ -254,7 +318,8 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
     }
 
     protected void registerListeners() {
-        tiAdd.addSelectionListener(new SelectionAdapter() {
+        tiPropertyAdd.addSelectionListener(new SelectionAdapter() {
+        	
 
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -265,7 +330,7 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
             }
 
         });
-        tiDelete.addSelectionListener(new SelectionAdapter() {
+        tiPropertyDelete.addSelectionListener(new SelectionAdapter() {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -284,7 +349,7 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
 
         });
 
-        tiClear.addSelectionListener(new SelectionAdapter() {
+        tiPropertyClear.addSelectionListener(new SelectionAdapter() {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -293,18 +358,37 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
             }
 
         });
+        
+        
 
         tvProperty.addSelectionChangedListener(new ISelectionChangedListener() {
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
                 StructuredSelection selection = (StructuredSelection) tvProperty.getSelection();
-                tiDelete.setEnabled(selection != null && selection.getFirstElement() != null);
+                tiPropertyDelete.setEnabled(selection != null && selection.getFirstElement() != null);
             }
         });
+
+        
+        radioAttribute.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				defaultSelectingCapturedObjecSelectionMethods = SelectorMethod.ATTRIBUTES;
+				showComposite(tablePropertyComposite, true);
+			}
+		});
+		
+		radioXpath.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				defaultSelectingCapturedObjecSelectionMethods = SelectorMethod.XPATH;
+				showComposite(tablePropertyComposite, false);
+			}
+		});
     }
 
     private void initialize() throws IOException {
-        setInputForCapturedObjectPropertySetting(store.getCapturedTestObjectLocators());
+        setInputForCapturedObjectPropertySetting(store.getCapturedTestObjectAttributeLocators());
     }
 
     private void setInputForCapturedObjectPropertySetting(List<Pair<String, Boolean>> input) {
@@ -312,14 +396,16 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
         tvProperty.setInput(defaultSelectingCapturedObjectProperties);
     }
 
+
     @Override
     protected void performDefaults() {
         if (container == null) {
             return;
         }
         try {
-            store.setDefaultCapturedTestObjectLocators();
-            setInputForCapturedObjectPropertySetting(store.getCapturedTestObjectLocators());
+            store.setDefaultCapturedTestObjectAttributeLocators();
+            store.setDefaultCapturedTestObjectSelectionMethods();
+            setInputForCapturedObjectPropertySetting(store.getCapturedTestObjectAttributeLocators());
         } catch (IOException e) {
             LoggerSingleton.logError(e);
         }
@@ -330,11 +416,15 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
         if (super.performOk() && isValid()) {
             if (tvProperty != null) {
                 try {
-                    List<Pair<String, Boolean>> emptyItems = defaultSelectingCapturedObjectProperties.stream()
+                    List<Pair<String, Boolean>> emptyPropertyItems = defaultSelectingCapturedObjectProperties.stream()
                             .filter(i -> i.getLeft().isEmpty())
                             .collect(Collectors.toList());
-                    defaultSelectingCapturedObjectProperties.removeAll(emptyItems);
-                    store.setCapturedTestObjectLocators(defaultSelectingCapturedObjectProperties);
+                    defaultSelectingCapturedObjectProperties.removeAll(emptyPropertyItems);
+                    store.setCapturedTestObjectAttributeLocators(defaultSelectingCapturedObjectProperties);
+                    
+                   
+                   store.setCapturedTestObjectSelectorMethod(defaultSelectingCapturedObjecSelectionMethods);
+                    
                 } catch (IOException e) {
                     LoggerSingleton.logError(e);
                 }
@@ -342,6 +432,13 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
         }
         return true;
     }
+    
+	private void showComposite(Composite composite, boolean isVisible) {
+		composite.setVisible(isVisible);
+		((GridData) composite.getLayoutData()).exclude = !isVisible;
+		composite.getParent().layout();
+	}
+	
 
 	@Override
 	protected boolean hasDocumentation() {

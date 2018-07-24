@@ -151,11 +151,22 @@ public class WebElementUtils {
         }
 
         // Change default selected properties by user settings
+        SelectorMethod selectorMethod = getCapturedTestObjectSelectorMethod();
+        
         Map<String, Boolean> customSettings = getCapturedTestObjectLocatorSettings().stream()
                 .collect(Collectors.toMap(Pair::getLeft, Pair::getRight));
         properties.stream().filter(i -> customSettings.get(i.getName()) != null).forEach(i -> {
             i.setIsSelected(customSettings.get(i.getName()));
         });
+        
+        
+        
+        // Because WebElement has xpath as the default SelectorMethod,
+        // we set the first xpath as selected in case the users don't actively choose
+        if(!xpaths.isEmpty() && xpaths.size() > 0){
+            xpaths.get(0).setIsSelected(true);
+
+        }
 
         WebFrame parentElement = getParentElement(elementJsonObject);
 
@@ -167,7 +178,9 @@ public class WebElementUtils {
         el.setParent(parentElement);
         el.setProperties(properties);
         el.setXpaths(xpaths);
-
+        el.setSelectorMethod(selectorMethod);
+                       
+        
         return el;
     }
 
@@ -175,10 +188,21 @@ public class WebElementUtils {
         WebUiExecutionSettingStore store = new WebUiExecutionSettingStore(
                 ProjectController.getInstance().getCurrentProject());
         try {
-            return store.getCapturedTestObjectLocators();
+            return store.getCapturedTestObjectAttributeLocators();
         } catch (IOException e) {
             LoggerSingleton.logError(e);
             return Collections.emptyList();
+        }
+    }
+    
+    private static SelectorMethod getCapturedTestObjectSelectorMethod() {
+        WebUiExecutionSettingStore store = new WebUiExecutionSettingStore(
+                ProjectController.getInstance().getCurrentProject());
+        try {
+            return store.getCapturedTestObjectSelectorMethod();
+        } catch (IOException e) {
+            LoggerSingleton.logError(e);
+            return SelectorMethod.XPATH;
         }
     }
 
@@ -233,12 +257,10 @@ public class WebElementUtils {
             JsonElement xpath = entry.getValue();
             
             if (xpath instanceof JsonObject) {
-                xpaths.add(new WebElementXpathEntity(xpathFinder, entry.getValue().getAsString(),
-                        PRIORITY_PROPERTIES.contains(xpathFinder)));
+                xpaths.add(new WebElementXpathEntity(xpathFinder, entry.getValue().getAsString(), false));
              } else if (xpath instanceof JsonArray) {
             	 for(JsonElement jsonElement : xpath.getAsJsonArray()){
-                     xpaths.add(new WebElementXpathEntity(xpathFinder, jsonElement.getAsString(),
-                             PRIORITY_PROPERTIES.contains(xpathFinder)));
+                     xpaths.add(new WebElementXpathEntity(xpathFinder, jsonElement.getAsString(), false));
             	 }
              }          
         }

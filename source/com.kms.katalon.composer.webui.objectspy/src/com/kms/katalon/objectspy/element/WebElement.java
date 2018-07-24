@@ -44,7 +44,7 @@ public class WebElement implements XPathProvider {
     
     private List<WebElementXpathEntity> xpaths = new ArrayList<>();
 
-    private SelectorMethod selectorMethod = SelectorMethod.ATTRIBUTES;
+    private SelectorMethod selectorMethod = SelectorMethod.XPATH;
 
     private Map<SelectorMethod, String> selectorCollection = new HashMap<>();
     
@@ -210,6 +210,7 @@ public class WebElement implements XPathProvider {
             clone.setSelectorValue(entry.getKey(), entry.getValue());
         });
         clone.setProperties(new ArrayList<>(getProperties()));
+        clone.setXpaths(new ArrayList<>(getXpaths()));
         return clone;
     }
     
