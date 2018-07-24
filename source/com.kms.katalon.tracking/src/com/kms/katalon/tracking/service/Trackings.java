@@ -131,9 +131,9 @@ public class Trackings {
         trackUserAction("newProject");
     }
     
-    public static void trackCreatingSampleProject(String sampleProjectType, String projectId) {
+    public static void trackCreatingSampleProject(String sampleProjectType, String newProjectId) {
         trackUserAction(
-                "newProject", "sampleProjectType", sampleProjectType, "projectId", projectId);
+                "newProject", "sampleProjectType", sampleProjectType, "newProjectId", newProjectId);
     }
     
     public static void trackCreatingSampleProject(String sampleProjectType) {
