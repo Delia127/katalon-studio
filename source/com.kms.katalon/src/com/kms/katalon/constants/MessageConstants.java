@@ -276,6 +276,8 @@ public class MessageConstants extends NLS {
     public static String DIA_BTN_NO_THANKS;
 
     public static String DIA_TITLE_KS_UPDATE;
+    
+    public static String MSG_FORUM_SEARCH;
 
     static {
         // initialize resource bundle
