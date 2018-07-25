@@ -1,5 +1,5 @@
 #!/bin/bash
-
+KATABUILD=/tmp/katabuild
 PACKAGE_FOLDER="source/com.kms.katalon.product/target/products"
 PRODUCT_NAME="Katalon Studio"
 
@@ -45,10 +45,9 @@ chmod +x "${CHROME_DRIVER_MAC}"
 chmod +x "${FF_DRIVER_MAC}"
 echo "Grant executed permission for Katalon and browser drivers ... Done"
 
-codesign --verbose --force --deep --sign "882430B8F5E2D87CD43C83630EA62B2C6DB643C9" --timestamp=none "${MAC_APP}"
+codesign --verbose --force --deep --sign "78C302D307C50192F47D826C5F577D3F4365EB49" --timestamp=none "${MAC_APP}"
 echo "Codesigning ... Done"
 
-chmod 777 ${PACKAGE_FOLDER}
 /usr/local/bin/dropdmg --config-name "Katalon Studio" "${MAC_APP}"
 echo "DMG packaging ... Done"
 rm -r "${MAC_APP}"
@@ -67,5 +66,8 @@ cp "${LINUX_64_FILE}" "${BRANCH_FOLDER}/"
 mv "${MAC_PACKAGE}" "${BRANCH_FOLDER}/"
 cp "${WINDOWS_32_FILE}" "${BRANCH_FOLDER}/"
 cp "${WINDOWS_64_FILE}" "${BRANCH_FOLDER}/"
- 
+mkdir -p $KATABUILD
+mount_smbfs //katabuild:[katalon2018]@192.168.34.7/Katalon/public $KATABUILD
+cp -Rf $DISTRIBUTION_FOLDER/* $KATABUILD/
+umount $KATABUILD
 echo "Distribute packages ... Done"
