@@ -129,6 +129,7 @@ import com.kms.katalon.integration.analytics.report.AnalyticsReportService;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
 import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
+import com.kms.katalon.tracking.service.Trackings;
 import com.kms.katalon.util.CryptoUtil;
 
 public class ReportPart implements EventHandler, IComposerPartEvent {
@@ -675,6 +676,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         accessKAMenuItem.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
+                Trackings.trackOpenKAIntegration("report");
                 if (analyticsReportService.isIntegrationEnabled()) {
                     // open KA web
                     String tokenInfo;
@@ -701,6 +703,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         uploadMenuItem.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
+                Trackings.trackOpenKAIntegration("report");
                 uploadToKA();
             }
         });

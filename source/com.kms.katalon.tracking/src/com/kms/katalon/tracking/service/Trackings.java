@@ -174,6 +174,10 @@ public class Trackings {
     public static void trackExportKeywords() {
         trackUserAction("exportKeywords");
     }
+    
+    public static void trackOpenKAIntegration(String objectType) {
+        trackUserAction("openKAIntegration", "type", objectType);
+    }
         
     private static void trackUserAction(String actionName, Object... properties) {
         trackAction(actionName, false, properties);
