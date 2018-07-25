@@ -533,7 +533,7 @@ public class WebElementUtils {
         });
         
         webElement.getXpaths().forEach(xpath -> {
-            testObject.addProperty(xpath.getName(), ConditionType.fromValue(xpath.getMatchCondition()), xpath.getValue(),
+            testObject.addXpath(xpath.getName(), ConditionType.fromValue(xpath.getMatchCondition()), xpath.getValue(),
             		xpath.getIsSelected());
         });
         

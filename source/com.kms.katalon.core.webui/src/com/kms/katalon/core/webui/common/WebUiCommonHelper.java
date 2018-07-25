@@ -552,6 +552,7 @@ public class WebUiCommonHelper extends KeywordHelper {
         return By.xpath(xpathBuilder.build(aggregationType));
     }
     
+    
     /**
      * Build locators, each corresponds to a single condition ("text" or "xpath")
      */
@@ -742,8 +743,8 @@ public class WebUiCommonHelper extends KeywordHelper {
                 timeCount += 0.5;
                 miliseconds = System.currentTimeMillis();
             }
-            // when normal method fails
-            List<WebElement> webElements = findWebElementsUsingHeuristicMethod(webDriver, objectInsideShadowDom, testObject);
+           
+            findWebElementsByOtherMethods(webDriver, objectInsideShadowDom, testObject);
         } catch (TimeoutException e) {
             // timeOut, do nothing
         } catch (InterruptedException e) {
@@ -754,6 +755,40 @@ public class WebUiCommonHelper extends KeywordHelper {
             }
         }
         return Collections.emptyList();
+    }
+    
+    private static void findWebElementsByOtherMethods(
+    		WebDriver webDriver, 
+    		boolean objectInsideShadowDom, 
+    		TestObject testObject){
+
+        List<WebElement> webElementsFoundByHeuristicMethod = findWebElementsUsingHeuristicMethod(webDriver, objectInsideShadowDom, testObject);
+        List<WebElement> webElementsFoundByTrialAndErrorMethod = findWebElementsUsingTrialAndErrorMethod(webDriver, objectInsideShadowDom, testObject);
+        
+    }
+    
+    private static List<WebElement> findWebElementsUsingTrialAndErrorMethod(
+    		WebDriver webDriver, 
+    		boolean objectInsideShadowDom, 
+    		TestObject testObject){
+    	
+    	if(objectInsideShadowDom){
+    		 return Collections.emptyList();
+    	}
+    	
+    	List<WebElement> webElements = new ArrayList<>();
+    	
+    	testObject.getXpaths().forEach(xpath ->{
+            By byXpath =  By.xpath(xpath.getValue());
+            List<WebElement> webElementsByThisXpath = webDriver.findElements(byXpath);
+            if(webElementsByThisXpath != null && !webElementsByThisXpath.isEmpty()){
+                logger.logInfo(MessageFormat.format(StringConstants.KW_LOG_INFO_FINDING_WEB_ELEMENT_USING_TRIAL_AND_ERROR_METHOD, testObject.getObjectId(), xpath.getValue()));
+            	webElements.addAll(webElementsByThisXpath);
+            }            
+    	});
+        logger.logInfo(StringConstants.KW_LOG_INFO_REPORT_FAILURE_WHEN_USING_TRIAL_AND_ERROR_METHOD);
+    	
+    	return webElements;
     }
 
 

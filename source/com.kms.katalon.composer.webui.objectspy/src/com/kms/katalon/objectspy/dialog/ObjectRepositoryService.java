@@ -21,6 +21,7 @@ import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
+import com.kms.katalon.entity.repository.WebElementXpathEntity;
 import com.kms.katalon.objectspy.dialog.SaveToObjectRepositoryDialog.ConflictOptions;
 import com.kms.katalon.objectspy.dialog.SaveToObjectRepositoryDialog.SaveToObjectRepositoryDialogResult;
 import com.kms.katalon.objectspy.element.ConflictWebElementWrapper;
@@ -182,6 +183,7 @@ public class ObjectRepositoryService {
 
                 case REPLACE_EXISTING_OBJECT:
                     oldWebElementEntity.setWebElementProperties(newWebElement.getProperties());
+                    oldWebElementEntity.setWebElementXpaths(newWebElement.getXpaths());
                     entitySavedMap.put(wrapElement.getOriginalWebElement(), oldWebElementEntity);
                     break;
 
@@ -194,6 +196,17 @@ public class ObjectRepositoryService {
                     }
                     mergedProperties.addAll(oldWebElementEntity.getWebElementProperties());
                     oldWebElementEntity.setWebElementProperties(new ArrayList<>(mergedProperties));
+                    
+                    Set<WebElementXpathEntity> mergedXpaths = new LinkedHashSet<>();
+                    mergedXpaths.addAll(newWebElement.getXpaths());
+                    //uncheck all xpaths of old web element.
+                    for(WebElementXpathEntity wXpath: oldWebElementEntity.getWebElementXpaths()) {
+                        wXpath.setIsSelected(false);
+                    }
+                    mergedXpaths.addAll(oldWebElementEntity.getWebElementXpaths());
+                    oldWebElementEntity.setWebElementXpaths(new ArrayList<>(mergedXpaths));
+                    
+                    
                     entitySavedMap.put(wrapElement.getOriginalWebElement(), oldWebElementEntity);
                     break;
 
