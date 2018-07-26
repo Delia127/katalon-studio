@@ -8,6 +8,8 @@ PACKAGE_DIR="${HOME}/Public/KatalonStudio/${BRANCH}"
 MAC_DMG="${PRODUCT_NAME}.dmg"
 MAC_APP="${PRODUCT_NAME}.app"
 
+
+mkdir -p $PACKAGE_DIR
 echo "Installing ${PRODUCT_NAME} ..."
 hdiutil unmount "${VOLUME_DIR}"
 hdiutil mount "${PACKAGE_DIR}/${MAC_DMG}"
