@@ -143,8 +143,7 @@ public class ObjectPropertiesView extends Composite
 
         createPropertyTable(tableAndButtonsComposite);
         
-        createXpathTable(tableAndButtonsComposite);
-        
+        createXpathTable(tableAndButtonsComposite);        
         
         showComposite(propertyTableComposite, false);
         

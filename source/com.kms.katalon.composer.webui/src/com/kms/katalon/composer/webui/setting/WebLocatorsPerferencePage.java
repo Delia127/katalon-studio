@@ -139,6 +139,7 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
 		radioXpath = new Button(radioSelectionComposite, SWT.RADIO);
 		radioXpath.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 		radioXpath.setText(LBL_XPATH_SELECTION_METHOD);
+		radioXpath.setSelection(true);
 
 		radioAttribute = new Button(radioSelectionComposite, SWT.RADIO);
 		radioAttribute.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
