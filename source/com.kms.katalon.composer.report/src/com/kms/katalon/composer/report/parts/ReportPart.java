@@ -1,9 +1,13 @@
 package com.kms.katalon.composer.report.parts;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -12,6 +16,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -56,6 +61,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
@@ -75,12 +81,15 @@ import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.composer.components.controls.HelpToolBarForMPart;
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
-import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.EntityPartUtil;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.part.IComposerPartEvent;
+import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
+import com.kms.katalon.composer.integration.analytics.constants.ComposerAnalyticsStringConstants;
+import com.kms.katalon.composer.integration.analytics.dialog.AuthenticationDialog;
+import com.kms.katalon.composer.integration.analytics.dialog.UploadSelectionDialog;
 import com.kms.katalon.composer.report.constants.ComposerReportMessageConstants;
 import com.kms.katalon.composer.report.constants.ImageConstants;
 import com.kms.katalon.composer.report.constants.StringConstants;
@@ -94,6 +103,8 @@ import com.kms.katalon.composer.report.provider.ReportTestCaseTableViewer;
 import com.kms.katalon.composer.report.provider.ReportTestCaseTableViewerFilter;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
+import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
+import com.kms.katalon.constants.ActivationPreferenceConstants;
 import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
@@ -104,17 +115,33 @@ import com.kms.katalon.core.logging.model.ILogRecord;
 import com.kms.katalon.core.logging.model.TestSuiteLogRecord;
 import com.kms.katalon.core.reporting.ReportUtil;
 import com.kms.katalon.core.util.internal.DateUtil;
+import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.report.ReportEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteEntity;
 import com.kms.katalon.execution.util.ExecutionUtil;
+import com.kms.katalon.integration.analytics.constants.AnalyticsStringConstants;
+import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
+import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
+import com.kms.katalon.integration.analytics.entity.AnalyticsTokenInfo;
 import com.kms.katalon.integration.analytics.exceptions.AnalyticsApiExeception;
+import com.kms.katalon.integration.analytics.providers.AnalyticsApiProvider;
 import com.kms.katalon.integration.analytics.report.AnalyticsReportService;
+import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
+import com.kms.katalon.preferences.internal.PreferenceStoreManager;
+import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
+import com.kms.katalon.util.CryptoUtil;
 
 public class ReportPart implements EventHandler, IComposerPartEvent {
 
     private static final String BTN_SHOW_TEST_CASE_DETAILS = ComposerReportMessageConstants.BTN_SHOW_TEST_CASE_DETAILS;
 
     private static final String BTN_HIDE_TEST_CASE_DETAILS = ComposerReportMessageConstants.BTN_HIDE_TEST_CASE_DETAILS;
+
+    private static AnalyticsTokenInfo tokenInfo;
+
+    private String analyticsEmail = null;
+
+    private String preferenceEmail = null;
 
     @Inject
     private IEventBroker eventBroker;
@@ -139,7 +166,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
             btnFilterTestCaseIncomplete;
 
     private ToolItem btnShowHideTestCaseDetails;
-    
+
     private ToolItem btnUploadToAnalytics;
 
     private TableViewer runDataTable, executionSettingTable;
@@ -166,8 +193,10 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     private SashForm sashFormSummary;
 
     private Composite compositeTestCaseFilterSelection;
-    
+
     private AnalyticsReportService analyticsReportService = new AnalyticsReportService();
+
+    private MenuItem uploadMenuItem;
 
     private final class MapDataKeyLabelProvider extends ColumnLabelProvider {
         @Override
@@ -584,9 +613,9 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         spacer.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
         ToolBar tbShowHideDetails = new ToolBar(compositeTestCaseFilterSelection, SWT.FLAT | SWT.RIGHT);
-        
+
         createKatalonAnalyticsMenu(tbShowHideDetails);
-        
+
         btnShowHideTestCaseDetails = new ToolItem(tbShowHideDetails, SWT.NONE);
         btnShowHideTestCaseDetails.setText(BTN_SHOW_TEST_CASE_DETAILS);
         btnShowHideTestCaseDetails.setImage(ImageManager.getImage(IImageKeys.MOVE_LEFT_16));
@@ -615,56 +644,290 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         updateStatusSearchLabel();
     }
 
+    private ScopedPreferenceStore getPreferenceStore() {
+        return PreferenceStoreManager.getPreferenceStore(ActivationPreferenceConstants.ACTIVATION_INFO_STORAGE);
+    }
+
     private void createKatalonAnalyticsMenu(ToolBar toolBar) {
+
+        AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
+                ProjectController.getInstance().getCurrentProject().getFolderLocation());
+        ScopedPreferenceStore preferenceStore = getPreferenceStore();
+
+        try {
+            analyticsEmail = analyticsSettingStore.getEmail(analyticsSettingStore.isEncryptionEnabled());
+            preferenceEmail = CryptoUtil.decode(CryptoUtil
+                    .getDefault(preferenceStore.getString(ActivationPreferenceConstants.ACTIVATION_INFO_EMAIL)));
+        } catch (IOException | GeneralSecurityException e2) {
+            LoggerSingleton.logError(e2);
+        }
+
         btnUploadToAnalytics = new ToolItem(toolBar, SWT.DROP_DOWN);
         btnUploadToAnalytics.setText(ComposerReportMessageConstants.BTN_KATALON_ANALYTICS);
         btnUploadToAnalytics.setImage(ImageManager.getImage(IImageKeys.KATALON_ANALYTICS_16));
-        btnUploadToAnalytics.setEnabled(analyticsReportService.isIntegrationEnabled());
-        
-        Menu uploadMenu = new Menu(btnUploadToAnalytics.getParent().getShell());
-        MenuItem newMenuItem = new MenuItem(uploadMenu, SWT.PUSH);
-        newMenuItem.setText("Upload");
-        newMenuItem.setID(0);
-        newMenuItem.addSelectionListener(new SelectionAdapter() {
+
+        Menu katalonAnalyticsMenu = new Menu(btnUploadToAnalytics.getParent().getShell());
+        MenuItem accessKAMenuItem = new MenuItem(katalonAnalyticsMenu, SWT.PUSH);
+        uploadMenuItem = new MenuItem(katalonAnalyticsMenu, SWT.PUSH);
+
+        accessKAMenuItem.setText(ComposerReportMessageConstants.BTN_ACCESSKA);
+        accessKAMenuItem.setID(0);
+        accessKAMenuItem.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                try {
-                    new ProgressMonitorDialog(shell).run(true, true, new IRunnableWithProgress() {
-                        @Override
-                        public void run(IProgressMonitor monitor) {
-                            try {
-                                monitor.beginTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS, 2);
-                                monitor.subTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS_SENDING);
-                                analyticsReportService.upload(testSuiteLogRecord.getLogFolder());
-                                monitor.worked(1);
-                                monitor.subTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS_SUCCESSFULLY);
-                                monitor.worked(2);
-                            } catch (AnalyticsApiExeception ex) {
-                                LoggerSingleton.logError(ex);
-                                MultiStatusErrorDialog.showErrorDialog(ex, ComposerReportMessageConstants.REPORT_ERROR_MSG_UNABLE_TO_UPLOAD_REPORT, ex.getMessage());
-                            }
+                if (analyticsReportService.isIntegrationEnabled()) {
+                    // open KA web
+                    String tokenInfo;
+                    try {
+                        tokenInfo = analyticsSettingStore.getToken(true);
+                        if (preferenceEmail.equals(analyticsEmail) && preferenceEmail != null) {
+                            Program.launch(ComposerTestcaseMessageConstants.KA_HOMEPAGE + "token=" + tokenInfo);
+                        } else {
+                            Program.launch(ComposerTestcaseMessageConstants.KA_HOMEPAGE_NOTOKEN);
                         }
-                    });
-                } catch (InvocationTargetException | InterruptedException ex) {
-                    LoggerSingleton.logError(ex);
-                    MultiStatusErrorDialog.showErrorDialog(ex, ComposerReportMessageConstants.REPORT_ERROR_MSG_UNABLE_TO_UPLOAD_REPORT, ex.getMessage());
+                    } catch (IOException | GeneralSecurityException e1) {
+                        LoggerSingleton.logError(e1);
+                    }
+                } else {
+                    // perform integrating
+                    startIntegrating(analyticsSettingStore);
                 }
             }
         });
-        
-        btnUploadToAnalytics.setData(uploadMenu);
+
+        uploadMenuItem.setText(ComposerTestcaseMessageConstants.BTN_UPLOAD);
+        uploadMenuItem.setID(1);
+        uploadMenuItem.setEnabled(analyticsReportService.isIntegrationEnabled());
+        uploadMenuItem.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                uploadToKA();
+            }
+        });
+
+        btnUploadToAnalytics.setData(katalonAnalyticsMenu);
         btnUploadToAnalytics.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 Rectangle rect = btnUploadToAnalytics.getBounds();
                 Point pt = btnUploadToAnalytics.getParent().toDisplay(new Point(rect.x, rect.y));
-                uploadMenu.setLocation(pt.x, pt.y + rect.height);
-                uploadMenu.setVisible(true);
-                uploadMenu.setVisible(true);
+                katalonAnalyticsMenu.setLocation(pt.x, pt.y + rect.height);
+                katalonAnalyticsMenu.setVisible(true);
+                katalonAnalyticsMenu.setVisible(true);
             }
         });
     }
-    
+
+    private HashMap<String, String> getCredentialInfo(AnalyticsSettingStore analyticsSettingStore) {
+        String authenticationDialogOpened = "false";
+        ScopedPreferenceStore preferenceStore = getPreferenceStore();
+        String preferenceEmail = preferenceStore.getString(ActivationPreferenceConstants.ACTIVATION_INFO_EMAIL);
+        String preferencePassword = preferenceStore.getString(ActivationPreferenceConstants.ACTIVATION_INFO_PASSWORD);
+        boolean encryptionEnabled = true;
+        HashMap<String, String> credentialInfo = new HashMap<String, String>();
+
+        try {
+            String serverUrl = analyticsSettingStore.getServerEndpoint(analyticsSettingStore.isEncryptionEnabled());
+            String analyticsEmail = analyticsSettingStore.getEmail(analyticsSettingStore.isEncryptionEnabled());
+            String analyticsPassword = analyticsSettingStore.getPassword(analyticsSettingStore.isEncryptionEnabled());
+
+            // if serverUrl is empty, get default
+            if (StringUtils.isEmpty(serverUrl)) {
+                serverUrl = AnalyticsStringConstants.ANALYTICS_SERVER_TARGET_ENDPOINT;
+            }
+
+            // set credentials from preference store to analytics setting store
+            if (StringUtils.isEmpty(analyticsPassword) && !StringUtils.isEmpty(preferencePassword)) {
+                analyticsEmail = CryptoUtil.decode(CryptoUtil.getDefault(preferenceEmail));
+                analyticsPassword = CryptoUtil.decode(CryptoUtil.getDefault(preferencePassword));
+
+                analyticsSettingStore.enableEncryption(encryptionEnabled);
+                analyticsSettingStore.setEmail(analyticsEmail, encryptionEnabled);
+                analyticsSettingStore.setPassword(analyticsPassword, encryptionEnabled);
+                analyticsSettingStore.setServerEndPoint(serverUrl, encryptionEnabled);
+                analyticsSettingStore.enableIntegration(true);
+
+                // empty preference store password
+                preferenceStore.setValue(ActivationPreferenceConstants.ACTIVATION_INFO_PASSWORD, StringUtils.EMPTY);
+            }
+
+            // no credentials -> get credentials by using pop up
+            if (StringUtils.isEmpty(analyticsPassword) || StringUtils.isEmpty(analyticsEmail)) {
+                AuthenticationDialog authenticationDialog = new AuthenticationDialog(shell, true);
+                int resultCode = authenticationDialog.open();
+                if (resultCode == AuthenticationDialog.CANCEL_ID) {
+                    return null;
+                }
+                tokenInfo = authenticationDialog.getTokenInfo();
+                authenticationDialogOpened = "true";
+                analyticsPassword = analyticsSettingStore.getPassword(analyticsSettingStore.isEncryptionEnabled());
+                analyticsEmail = analyticsSettingStore.getEmail(analyticsSettingStore.isEncryptionEnabled());
+            }
+
+            credentialInfo.put("analyticsEmail", analyticsEmail);
+            credentialInfo.put("analyticsPassword", analyticsPassword);
+            credentialInfo.put("serverUrl", serverUrl);
+            credentialInfo.put("authenticationDialogOpened", authenticationDialogOpened);
+            return credentialInfo;
+        } catch (IOException | GeneralSecurityException e) {
+            LoggerSingleton.logError(e);
+            ;
+        }
+        return null;
+    }
+
+    private void startIntegrating(AnalyticsSettingStore analyticsSettingStore) {
+
+        int teamCount = 1;
+        int projectCount = 0;
+        List<AnalyticsTeam> teams = null;
+        List<AnalyticsProject> projects = null;
+
+        final HashMap<String, String> credentialInfo = getCredentialInfo(analyticsSettingStore);
+
+        if (credentialInfo == null) {
+            return;
+        }
+
+        String analyticsEmail = credentialInfo.get("analyticsEmail");
+        String analyticsPassword = credentialInfo.get("analyticsPassword");
+        String serverUrl = credentialInfo.get("serverUrl");
+        Boolean authenticationDialogOpened = Boolean.valueOf(credentialInfo.get("authenticationDialogOpened"));
+
+        if (!StringUtils.isEmpty(analyticsPassword) && authenticationDialogOpened == false) {
+            tokenInfo = AnalyticsApiProvider.getToken(serverUrl, analyticsEmail, analyticsPassword,
+                    new ProgressMonitorDialog(shell), analyticsSettingStore);
+        }
+
+        // in case the stored credential info is wrong, token is null => prompt
+        // the user to re-enter info and re-get token
+        if (tokenInfo == null) {
+            AuthenticationDialog authenticationDialog = new AuthenticationDialog(shell, true);
+            int resultCode = authenticationDialog.open();
+            if (resultCode == AuthenticationDialog.CANCEL_ID) {
+                return;
+            }
+            tokenInfo = authenticationDialog.getTokenInfo();
+            authenticationDialogOpened = true;
+        }
+
+        teams = AnalyticsApiProvider.getTeams(serverUrl, analyticsEmail, analyticsPassword, tokenInfo,
+                new ProgressMonitorDialog(shell));
+        teamCount = teams.size();
+        projects = AnalyticsApiProvider.getProjects(serverUrl, analyticsEmail, analyticsPassword, teams.get(0),
+                tokenInfo, new ProgressMonitorDialog(shell));
+        projectCount = projects.size();
+        UploadSelectionDialog uploadSelectionDialog = new UploadSelectionDialog(shell, teams, projects);
+
+        try {
+            if (projectCount > 0 || teamCount > 1) {
+                analyticsSettingStore.enableIntegration(true);
+                int returnCode = uploadSelectionDialog.open();
+                if (returnCode == UploadSelectionDialog.UPLOAD_ID) {
+                    uploadToKA();
+                } else {
+                    analyticsSettingStore.enableIntegration(false);
+                    return;
+                }
+            } else if (projectCount == 0 && teamCount == 1 && authenticationDialogOpened) {
+                // create default project and upload
+                createDefaultProject(analyticsSettingStore, serverUrl, teams.get(0), tokenInfo);
+                analyticsSettingStore.enableIntegration(true);
+                uploadToKA();
+            } else {
+                AuthenticationDialog authenticationDialog = new AuthenticationDialog(shell, false);
+                int returnCode = authenticationDialog.open();
+                if (returnCode == AuthenticationDialog.CONNECT_ID) {
+                    createDefaultProject(analyticsSettingStore, serverUrl, teams.get(0), tokenInfo);
+                    analyticsSettingStore.enableIntegration(true);
+                    uploadToKA();
+                } else {
+                    analyticsSettingStore.enableIntegration(false);
+                    return;
+                }
+            }
+            if (analyticsSettingStore.getProject() != null && analyticsSettingStore.getTeam() != null) {
+                Program.launch(ComposerTestcaseMessageConstants.KA_HOMEPAGE + "teamId="
+                        + analyticsSettingStore.getTeam().getId() + "&projectId="
+                        + analyticsSettingStore.getProject().getId() + "&type=EXECUTION&token="
+                        + tokenInfo.getAccess_token());
+            } else {
+                analyticsSettingStore.enableIntegration(false);
+                return;
+            }
+        } catch (Exception ex) {
+            LoggerSingleton.logError(ex);
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), ComposerAnalyticsStringConstants.ERROR,
+                    ex.getMessage());
+            try {
+                analyticsSettingStore.enableIntegration(false);
+            } catch (IOException e1) {
+                LoggerSingleton.logError(e1);
+            }
+        }
+    }
+
+    private void createDefaultProject(AnalyticsSettingStore analyticsSettingStore, String serverUrl, AnalyticsTeam team,
+            AnalyticsTokenInfo tokenInfo) {
+        ProjectEntity project = ProjectController.getInstance().getCurrentProject();
+        String currentProjectName = project.getName();
+        try {
+            new ProgressMonitorDialog(shell).run(true, true, new IRunnableWithProgress() {
+                @Override
+                public void run(IProgressMonitor monitor) {
+                    try {
+                        monitor.beginTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS, 2);
+                        monitor.subTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS_SENDING);
+                        AnalyticsProject analyticsProject = AnalyticsApiProvider.createProject(serverUrl,
+                                currentProjectName, team, tokenInfo.getAccess_token());
+                        analyticsSettingStore.setProject(analyticsProject);
+                        analyticsSettingStore.setTeam(team);
+                        monitor.worked(1);
+                    } catch (AnalyticsApiExeception | IOException ex) {
+                        LoggerSingleton.logError(ex);
+                        MessageDialog.openError(Display.getCurrent().getActiveShell(),
+                                ComposerAnalyticsStringConstants.ERROR,
+                                ComposerReportMessageConstants.REPORT_ERROR_MSG_UNABLE_TO_UPLOAD_REPORT);
+                    }
+                }
+            });
+        } catch (InvocationTargetException | InterruptedException ex) {
+            LoggerSingleton.logError(ex);
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), ComposerAnalyticsStringConstants.ERROR,
+                    ComposerReportMessageConstants.REPORT_ERROR_MSG_UNABLE_TO_UPLOAD_REPORT);
+        }
+    }
+
+    private void uploadToKA() {
+        try {
+            new ProgressMonitorDialog(shell).run(true, true, new IRunnableWithProgress() {
+                @Override
+                public void run(IProgressMonitor monitor) {
+                    try {
+                        monitor.beginTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS, 2);
+                        monitor.subTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS_SENDING);
+                        analyticsReportService.upload(testSuiteLogRecord.getLogFolder());
+                        UISynchronizeService.syncExec(() -> {
+                            uploadMenuItem.setEnabled(analyticsReportService.isIntegrationEnabled());
+                        });
+                        monitor.worked(1);
+                        monitor.subTask(ComposerReportMessageConstants.REPORT_MSG_UPLOADING_TO_ANALYTICS_SUCCESSFULLY);
+                        monitor.worked(2);
+                    } catch (AnalyticsApiExeception ex) {
+                        LoggerSingleton.logError(ex);
+                        MessageDialog.openError(Display.getCurrent().getActiveShell(),
+                                ComposerAnalyticsStringConstants.ERROR,
+                                ComposerReportMessageConstants.REPORT_ERROR_MSG_UNABLE_TO_UPLOAD_REPORT);
+                    }
+                }
+            });
+        } catch (Exception ex) {
+            LoggerSingleton.logError(ex);
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), ComposerAnalyticsStringConstants.ERROR,
+                    ComposerReportMessageConstants.REPORT_ERROR_MSG_UNABLE_TO_UPLOAD_REPORT);
+        }
+    }
+
     private void filterTestLogBySearchedText() {
         if (txtTestCaseSearch.getText().isEmpty()) {
             isSearching = false;
@@ -715,7 +978,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         tclCompositeTestCaseTableDetails.setColumnData(tblclmnTCName, new ColumnWeightData(80, 0));
 
         TableViewerColumn tableViewerColumnVideo = new TableViewerColumn(testCaseTableViewer, SWT.NONE);
-        TableColumn tblclmnTCVideo= tableViewerColumnVideo.getColumn();
+        TableColumn tblclmnTCVideo = tableViewerColumnVideo.getColumn();
         tblclmnTCVideo.setText("Video");
         tableViewerColumnVideo.setLabelProvider(new HyperlinkTestCaseVideoLabelProvider(this));
         tclCompositeTestCaseTableDetails.setColumnData(tblclmnTCVideo, new ColumnWeightData(0, 50));
@@ -1050,6 +1313,7 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
     private void registerListeners() {
         eventBroker.subscribe(EventConstants.REPORT_UPDATED, this);
         eventBroker.subscribe(EventConstants.REPORT_RENAMED, this);
+        eventBroker.subscribe(EventConstants.IS_INTEGRATED, this);
     }
 
     public MPart getMPart() {
@@ -1109,6 +1373,9 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         if (event.getTopic().equals(EventConstants.REPORT_RENAMED)) {
             handleReportRenamed(event);
             return;
+        }
+        if (EventConstants.IS_INTEGRATED.equals(event.getTopic())) {
+            uploadMenuItem.setEnabled(analyticsReportService.isIntegrationEnabled());
         }
     }
 
