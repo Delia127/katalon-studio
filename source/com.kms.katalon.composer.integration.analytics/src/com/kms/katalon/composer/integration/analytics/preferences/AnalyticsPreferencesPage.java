@@ -247,15 +247,11 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     @Override
     public boolean performOk() {
-        boolean integrationEnabled = false;
-
-        try {
-            integrationEnabled = analyticsSettingStore.isIntegrationEnabled();
-            if (!integrationEnabled) {
-                return true;
-            }
-        } catch (IOException e) {
-            LoggerSingleton.logError(e);
+        boolean integrationEnabled = enableAnalyticsIntegration.getSelection();
+        
+        if (!integrationEnabled) {
+            updateDataStore();
+            return true;
         }
 
         if (!isInitialized()) {
