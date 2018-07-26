@@ -763,8 +763,7 @@ public class WebUiCommonHelper extends KeywordHelper {
     		TestObject testObject){
 
         List<WebElement> webElementsFoundByHeuristicMethod = findWebElementsUsingHeuristicMethod(webDriver, objectInsideShadowDom, testObject);
-        List<WebElement> webElementsFoundByTrialAndErrorMethod = findWebElementsUsingTrialAndErrorMethod(webDriver, objectInsideShadowDom, testObject);
-        
+        List<WebElement> webElementsFoundByTrialAndErrorMethod = findWebElementsUsingTrialAndErrorMethod(webDriver, objectInsideShadowDom, testObject);       
     }
     
     private static List<WebElement> findWebElementsUsingTrialAndErrorMethod(

@@ -115,7 +115,7 @@ public class ObjectPropertiesView extends Composite
 
     private Composite tableAndButtonsComposite;
     
-    private Composite xpathTableComposite, tableComposite;
+    private Composite xpathTableComposite, propertyTableComposite;
 
     private int lastHeight = -1;
 
@@ -144,12 +144,18 @@ public class ObjectPropertiesView extends Composite
         createPropertyTable(tableAndButtonsComposite);
         
         createXpathTable(tableAndButtonsComposite);
+        
+        
+        showComposite(propertyTableComposite, false);
+        
+        showComposite(xpathTableComposite, true);
 
         addControlListeners();
 
         enableControls();
 
         subscribeEvents();
+
     }
     
     
@@ -249,16 +255,17 @@ public class ObjectPropertiesView extends Composite
         rlRadioBtnComposite.marginBottom = 0;
         rlRadioBtnComposite.spacing = 5;
         rlRadioBtnComposite.fill = true;
-        radioBtnComposite.setLayout(rlRadioBtnComposite);
+        radioBtnComposite.setLayout(rlRadioBtnComposite);        
+
+        radioXpath = new Button(radioBtnComposite, SWT.FLAT | SWT.RADIO);
+        radioXpath.setText(RADIO_LABEL_XPATH);
+        selectorButtons.put(SelectorMethod.XPATH, radioXpath);
 
         radioAttributes = new Button(radioBtnComposite, SWT.FLAT | SWT.RADIO);
         radioAttributes.setText(RADIO_LABEL_ATTRIBUTES);
         radioAttributes.setSelection(true);
         selectorButtons.put(SelectorMethod.ATTRIBUTES, radioAttributes);
 
-        radioXpath = new Button(radioBtnComposite, SWT.FLAT | SWT.RADIO);
-        radioXpath.setText(RADIO_LABEL_XPATH);
-        selectorButtons.put(SelectorMethod.XPATH, radioXpath);
 
         radioCss = new Button(radioBtnComposite, SWT.FLAT | SWT.RADIO);
         radioCss.setText(RADIO_LABEL_CSS);
@@ -285,14 +292,14 @@ public class ObjectPropertiesView extends Composite
     }
 
     private void createPropertyTable(Composite parent) {
-    	tableComposite = new Composite(parent, SWT.NONE);
+    	propertyTableComposite = new Composite(parent, SWT.NONE);
         GridData ldTableComposite = new GridData(SWT.FILL, SWT.FILL, true, true);
         ldTableComposite.heightHint = 100;
-        tableComposite.setLayoutData(ldTableComposite);
+        propertyTableComposite.setLayoutData(ldTableComposite);
         TableColumnLayout tableColumnLayout = new TableColumnLayout();
-        tableComposite.setLayout(tableColumnLayout);
+        propertyTableComposite.setLayout(tableColumnLayout);
 
-        tvProperty = new TableViewer(tableComposite,
+        tvProperty = new TableViewer(propertyTableComposite,
                 SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
         tvProperty.setContentProvider(ArrayContentProvider.getInstance());
         tProperty = tvProperty.getTable();
@@ -495,7 +502,7 @@ public class ObjectPropertiesView extends Composite
         tableColumnLayout.setColumnData(cName, new ColumnWeightData(20, 100));
         tableColumnLayout.setColumnData(cCondition, new ColumnWeightData(20, 100));
         tableColumnLayout.setColumnData(cValue, new ColumnWeightData(50, 150));
-        tableColumnLayout.setColumnData(cSelected, new ColumnWeightData(5, 30, false));
+        tableColumnLayout.setColumnData(cSelected, new ColumnWeightData(5, 30, false));       
     }
     
     
@@ -625,6 +632,7 @@ public class ObjectPropertiesView extends Composite
 
         tableColumnLayout.setColumnData(cXpathValue, new ColumnWeightData(50, 150));
         tableColumnLayout.setColumnData(cXpathSelected, new ColumnWeightData(5, 30, false));
+
     }
     
 	private void showComposite(Composite composite, boolean isVisible) {
@@ -678,7 +686,7 @@ public class ObjectPropertiesView extends Composite
                     return;
                 }
                 webElement.setSelectorMethod(SelectorMethod.ATTRIBUTES);
-                showComposite(tableComposite, true);
+                showComposite(propertyTableComposite, true);
                 showComposite(xpathTableComposite, false);         
                 sendPropertiesChangedEvent();
             }
@@ -692,7 +700,7 @@ public class ObjectPropertiesView extends Composite
                     return;
                 }
                 webElement.setSelectorMethod(SelectorMethod.XPATH);
-                showComposite(tableComposite, false);
+                showComposite(propertyTableComposite, false);
                 showComposite(xpathTableComposite, true);                
                 sendPropertiesChangedEvent();
             }
@@ -706,7 +714,7 @@ public class ObjectPropertiesView extends Composite
                     return;
                 }
                 webElement.setSelectorMethod(SelectorMethod.CSS);
-                showComposite(tableComposite, false);
+                showComposite(propertyTableComposite, false);
                 showComposite(xpathTableComposite, false);       
                 sendPropertiesChangedEvent();
             }
@@ -956,10 +964,10 @@ public class ObjectPropertiesView extends Composite
         List<WebElementPropertyEntity> properties = webElement == null ? Collections.emptyList() : getProperties();
         tvProperty.setInput(properties);
         if (webElement == null) {
-            showComposite(tableComposite, true);
+            showComposite(propertyTableComposite, true);
             showComposite(xpathTableComposite, false);          
         } else {
-            showComposite(tableComposite, webElement.getSelectorMethod() == SelectorMethod.ATTRIBUTES);
+            showComposite(propertyTableComposite, webElement.getSelectorMethod() == SelectorMethod.ATTRIBUTES);
             showComposite(xpathTableComposite, webElement.getSelectorMethod() == SelectorMethod.XPATH);  
         }
         cSelected.setText(getCheckboxIcon(isAllPropetyEnabled()));
@@ -975,10 +983,10 @@ public class ObjectPropertiesView extends Composite
         List<WebElementXpathEntity> xpaths = webElement == null ? Collections.emptyList() : getXpaths();
         tvXpath.setInput(xpaths);
         if (webElement == null) {
-        	  showComposite(tableComposite, false);
+        	  showComposite(propertyTableComposite, false);
               showComposite(xpathTableComposite, true);     
         } else {
-	           showComposite(tableComposite, webElement.getSelectorMethod() == SelectorMethod.ATTRIBUTES);
+	           showComposite(propertyTableComposite, webElement.getSelectorMethod() == SelectorMethod.ATTRIBUTES);
 	           showComposite(xpathTableComposite, webElement.getSelectorMethod() == SelectorMethod.XPATH);                       
         }
         

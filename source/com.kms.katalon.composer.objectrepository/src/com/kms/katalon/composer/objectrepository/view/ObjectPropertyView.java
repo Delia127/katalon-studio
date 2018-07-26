@@ -398,7 +398,7 @@ public class ObjectPropertyView implements EventHandler {
 		Table table = xpathTableViewer.getTable();		
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
-		GridData gridDataTable = new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1);
+		GridData gridDataTable = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
 		gridDataTable.minimumHeight = 150;
 		table.setLayoutData(gridDataTable);
 
@@ -414,15 +414,6 @@ public class ObjectPropertyView implements EventHandler {
 				return ((WebElementXpathEntity) element).getValue();
 			}
 		});
-
-		TableViewerColumn treeViewerColumnSelected = new TableViewerColumn(xpathTableViewer, SWT.NONE);
-		treeViewerColumnSelected
-				.setEditingSupport(new XpathSelectedEditingSupport(xpathTableViewer, eventBroker, testObjectPart));
-		treeViewerColumnSelected.setLabelProvider(new IsSelectedColumnLabelProvider());
-
-		trclmnXpathColumnSelected = treeViewerColumnSelected.getColumn();
-		trclmnXpathColumnSelected.setText(StringConstants.VIEW_COL_CHKBOX);
-		trclmnXpathColumnSelected.setWidth(150);
 
 		xpathTableViewer.setContentProvider(ArrayContentProvider.getInstance());
 	}
@@ -508,11 +499,6 @@ public class ObjectPropertyView implements EventHandler {
 		compositeTableHeader.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		compositeTableHeader.setLayout(new FillLayout(SWT.HORIZONTAL));
 
-		Label lblObjectProperties = new Label(compositeTableHeader, SWT.NONE);
-		lblObjectProperties.setText(StringConstants.VIEW_LBL_OBJ_PROPERTIES);
-		ControlUtils.setFontToBeBold(lblObjectProperties);
-		
-		
 		createObjectPropertiesComposite(compositeObjectDetails);
 		createObjectXpathsComposite(compositeObjectDetails);
 		
@@ -529,6 +515,11 @@ public class ObjectPropertyView implements EventHandler {
 		glCompositeTable.marginWidth = 0;
 		glCompositeTable.marginHeight = 0;
 		propertyCompositeTable.setLayout(glCompositeTable);
+		
+		Label lblObjectProperties = new Label(propertyCompositeTable, SWT.NONE);
+		lblObjectProperties.setText(StringConstants.VIEW_LBL_OBJ_PROPERTIES);
+		ControlUtils.setFontToBeBold(lblObjectProperties);	
+		
 
 		createPropertyTableToolbar(propertyCompositeTable);
 
@@ -547,6 +538,10 @@ public class ObjectPropertyView implements EventHandler {
 		glCompositeTable.marginWidth = 0;
 		glCompositeTable.marginHeight = 0;
 		xpathCompositeTable.setLayout(glCompositeTable);
+		
+		Label lblObjectProperties = new Label(propertyCompositeTable, SWT.NONE);
+		lblObjectProperties.setText(StringConstants.VIEW_LBL_OBJ_XPATHS);
+		ControlUtils.setFontToBeBold(lblObjectProperties);	
 
 		createXpathTableToolbar(xpathCompositeTable);
 		
@@ -747,12 +742,12 @@ public class ObjectPropertyView implements EventHandler {
 			}
 		});
 
-		trclmnXpathColumnSelected.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				// Do nothing
-			}
-		});
+//		trclmnXpathColumnSelected.addSelectionListener(new SelectionAdapter() {
+//			@Override
+//			public void widgetSelected(SelectionEvent e) {
+//				// Do nothing
+//			}
+//		});
 
 		btnBrowseImage.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -870,10 +865,7 @@ public class ObjectPropertyView implements EventHandler {
 			txtSelectorEditor.setBackground(ColorUtil.getDisabledItemBackgroundColor());
 			return;
 		default:
-			txtSelectorEditor.setText(
-					cloneTestObject.getSelectorCollection().getOrDefault(selectorMethod, StringConstants.EMPTY));
-			txtSelectorEditor.setEditable(true);
-			txtSelectorEditor.setBackground(null);
+			break;
 		}
 	}
 	
@@ -894,17 +886,15 @@ public class ObjectPropertyView implements EventHandler {
 			for(WebElementXpathEntity wexe : xpathEntities){
 				if(wexe.getIsSelected() == true) {			
 					txtSelectorEditor.setText(wexe.getValue());
-					txtSelectorEditor.setEditable(false);
-					txtSelectorEditor.setBackground(ColorUtil.getDisabledItemBackgroundColor());
+					txtSelectorEditor.setEditable(true);
+					txtSelectorEditor.setBackground(ColorUtil.getWhiteBackgroundColor());
 					return;
 				}
 			}
 			break;
 		default:
-			txtSelectorEditor.setText(
-					cloneTestObject.getSelectorCollection().getOrDefault(selectorMethod, StringConstants.EMPTY));
-			txtSelectorEditor.setEditable(true);
-			txtSelectorEditor.setBackground(null);
+			break;
+			
 		}
 	}
 
@@ -1370,7 +1360,7 @@ public class ObjectPropertyView implements EventHandler {
 			prop.setName(propName);
 			prop.setValue(propVal);
 			prop.setMatchCondition(condition);
-			prop.setIsSelected(true);
+			prop.setIsSelected(false);
 			return prop;
 		}
 		return null;
@@ -1386,7 +1376,7 @@ public class ObjectPropertyView implements EventHandler {
 
 			WebElementXpathEntity prop = new WebElementXpathEntity();
 			prop.setValue(propVal);
-			prop.setIsSelected(true);
+			prop.setIsSelected(false);
 			return prop;
 		}
 		return null;

@@ -527,6 +527,7 @@ public class WebElementUtils {
             TestObject parent = buildTestObject(parentFrame);
             testObject.setParentObject(parent);
         }
+        
         webElement.getProperties().forEach(prop -> {
             testObject.addProperty(prop.getName(), ConditionType.fromValue(prop.getMatchCondition()), prop.getValue(),
                     prop.getIsSelected());
