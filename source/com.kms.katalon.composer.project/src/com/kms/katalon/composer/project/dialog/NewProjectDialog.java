@@ -19,6 +19,7 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
@@ -88,7 +89,7 @@ public class NewProjectDialog extends TitleAreaDialog {
     
     private String title;
     
-    private Combo cbSampleProjects;
+    private CCombo cbSampleProjects;
     
     private Text txtRepoUrl;
     
@@ -176,8 +177,10 @@ public class NewProjectDialog extends TitleAreaDialog {
         Label lblSampleProjects = new Label(container, SWT.NONE);
         lblSampleProjects.setText(StringConstants.VIEW_LBL_SAMPLE_PROJECT);
         
-        cbSampleProjects = new Combo(container, SWT.NONE);
+        cbSampleProjects = new CCombo(container, SWT.BORDER);
         cbSampleProjects.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        cbSampleProjects.setEditable(false);
+        cbSampleProjects.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
         
         Label lblRepoUrl = new Label(container, SWT.NONE);
         lblRepoUrl.setText(StringConstants.VIEW_LBL_REPOSITORY_URL);
