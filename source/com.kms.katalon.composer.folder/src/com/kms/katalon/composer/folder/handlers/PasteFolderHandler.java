@@ -28,6 +28,8 @@ import org.osgi.service.event.EventHandler;
 import com.kms.katalon.application.utils.EntityTrackingHelper;
 import com.kms.katalon.composer.components.impl.transfer.TreeEntityTransfer;
 import com.kms.katalon.composer.components.impl.tree.CheckpointTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.FeatureFolderTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.FeatureTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.PackageTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.ProfileTreeEntity;
@@ -43,6 +45,7 @@ import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.folder.constants.StringConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.CheckpointController;
+import com.kms.katalon.controller.FeatureController;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.GlobalVariableController;
 import com.kms.katalon.controller.ObjectRepositoryController;
@@ -52,6 +55,7 @@ import com.kms.katalon.controller.TestSuiteCollectionController;
 import com.kms.katalon.controller.TestSuiteController;
 import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.entity.checkpoint.CheckpointEntity;
+import com.kms.katalon.entity.file.FeatureEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.global.ExecutionProfileEntity;
@@ -167,6 +171,9 @@ public class PasteFolderHandler {
                 } else if (treeEntity instanceof ProfileTreeEntity
                         && targetFolder.getFolderType() == FolderType.PROFILE) {
                     copyExecutionProfile((ProfileTreeEntity) treeEntity, targetFolder);
+                } else if (treeEntity instanceof FeatureTreeEntity
+                        && targetFolder.getFolderType() == FolderType.FEATURE) {
+                    copyFeatureEntity((FeatureTreeEntity) treeEntity, targetFolder);
                 }
                 GroovyUtil.getGroovyProject(targetFolder.getProject()).refreshLocal(IResource.DEPTH_INFINITE, null);
             }
@@ -341,6 +348,13 @@ public class PasteFolderHandler {
         eventBroker.post(EventConstants.EXECUTION_PROFILE_CREATED, coppiedProfile.getName());
         
         lastPastedTreeEntity = new ProfileTreeEntity(coppiedProfile, profileTree.getParent());
+    }
+
+    private void copyFeatureEntity(FeatureTreeEntity treeEntity, FolderEntity targetFolder) throws Exception {
+        FeatureEntity coppiedFeature = FeatureController.getInstance().copyFeature(treeEntity.getObject(),
+                targetFolder);
+
+        lastPastedTreeEntity = new FeatureTreeEntity(coppiedFeature, (FeatureFolderTreeEntity) treeEntity.getParent());
     }
 
     private void moveTestCase(TestCaseEntity testCase, FolderEntity targetFolder) throws Exception {

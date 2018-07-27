@@ -11,13 +11,14 @@ import org.eclipse.jdt.core.IPackageFragment;
 
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.composer.components.impl.tree.CheckpointTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.FeatureFolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.KeywordTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.PackageTreeEntity;
-import com.kms.katalon.composer.components.impl.tree.ReportCollectionTreeEntity;
-import com.kms.katalon.composer.components.impl.tree.ReportTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.ProfileRootTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.ProfileTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.ReportCollectionTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.ReportTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestCaseTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestDataTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.TestListenerFolderTreeEntity;
@@ -461,6 +462,7 @@ public class TreeEntityUtil {
         FolderController folderController = FolderController.getInstance();
         treeEntities.add(new FolderTreeEntity(folderController.getTestCaseRoot(project), null));
         treeEntities.add(new FolderTreeEntity(folderController.getObjectRepositoryRoot(project), null));
+        treeEntities.add(new FeatureFolderTreeEntity(folderController.getFeatureRoot(project), null));
         treeEntities.add(new FolderTreeEntity(folderController.getTestSuiteRoot(project), null));
         treeEntities.add(new FolderTreeEntity(folderController.getTestDataRoot(project), null));
         treeEntities.add(new FolderTreeEntity(folderController.getCheckpointRoot(project), null));

@@ -77,6 +77,10 @@ public class EntityPartUtil {
         return IdConstants.EXECUTION_PROFILE_CONTENT_PART_ID_PREFIX + "(" + executionProfileId + ")";
     }
 
+    public static String getFeaturePartId(String featureId) {
+        return IdConstants.FEATURE_CONTENT_PART_ID_PREFIX + "(" + featureId + ")";
+    }
+
     public static void closePart(IEntity entity) {
 
         if (entity == null) {

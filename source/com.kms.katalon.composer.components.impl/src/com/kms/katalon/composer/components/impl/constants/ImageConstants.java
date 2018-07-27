@@ -99,6 +99,9 @@ public class ImageConstants {
     public static final Image IMG_16_TXT_TEST_OBJECT = ImageManager.getImage(IImageKeys.TXT_TEST_OBJECT_16);
 
     public static final Image IMG_16_WS_TEST_OBJECT = ImageManager.getImage(IImageKeys.WS_TEST_OBJECT_16);
+    
+    //FeatureTreeEntity
+    public static final Image IMG_16_FEATURE = ImageManager.getImage(IImageKeys.FEATURE_16);
 
     // Some common images
     public static final Image IMG_16_CHECKED = ImageManager.getImage(IImageKeys.CHECKBOX_CHECKED_16);

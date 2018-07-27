@@ -43,6 +43,8 @@ public interface IFolderDataProvider {
     
     public FolderEntity getProfileRoot(ProjectEntity project) throws DALException;
 
+    public FolderEntity getFeatureRoot(ProjectEntity project) throws DALException;
+
     public void refreshFolder(FolderEntity folder) throws Exception;
 
     /*

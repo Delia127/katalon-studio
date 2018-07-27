@@ -223,5 +223,9 @@ public class FolderController extends EntityController implements Serializable {
     public FolderEntity getProfileRoot(ProjectEntity project) throws DALException {
         return getDataProviderSetting().getFolderDataProvider().getProfileRoot(project);
     }
+    
+    public FolderEntity getFeatureRoot(ProjectEntity project) throws DALException {
+        return getDataProviderSetting().getFolderDataProvider().getFeatureRoot(project);
+    }
 
 }

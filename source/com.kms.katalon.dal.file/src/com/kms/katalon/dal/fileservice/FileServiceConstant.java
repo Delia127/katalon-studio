@@ -69,7 +69,11 @@ public class FileServiceConstant {
         return projectFolder + File.separator + GLOBAL_VARIABLE_FILE_NAME
                 + ExecutionProfileEntity.getGlobalVariableFileExtension();
     }
-    
+
+    public static String getFeatureRootFolderLocation(String projectFolder) {
+        return projectFolder + File.separator + GlobalMessageConstants.ROOT_FOLDER_NAME_FEATURES;
+    }
+
     public static String getProfileFolderLocation(String projectFolder) {
         return projectFolder + File.separator + "Profiles";
     }

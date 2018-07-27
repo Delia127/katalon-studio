@@ -5,6 +5,7 @@ import com.kms.katalon.dal.IDataFileDataProvider;
 import com.kms.katalon.dal.IEntityDataProvider;
 import com.kms.katalon.dal.IEntityNameProvider;
 import com.kms.katalon.dal.IExportDataProvider;
+import com.kms.katalon.dal.IFeatureDataProvider;
 import com.kms.katalon.dal.IFolderDataProvider;
 import com.kms.katalon.dal.IGlobalVariableDataProvider;
 import com.kms.katalon.dal.IImportDataProvider;
@@ -59,4 +60,5 @@ public interface IDataProviderSetting {
 
     public ITestListenerDataProvider getTestListenerDataProvider();
 
+    public IFeatureDataProvider getFeatureDataProvider();
 }

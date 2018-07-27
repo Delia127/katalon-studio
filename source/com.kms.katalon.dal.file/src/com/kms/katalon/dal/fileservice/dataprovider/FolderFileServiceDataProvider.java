@@ -125,4 +125,9 @@ public class FolderFileServiceDataProvider implements IFolderDataProvider {
     public FolderEntity getProfileRoot(ProjectEntity project) throws DALException {
         return FolderFileServiceManager.getProfileRoot(project);
     }
+
+    @Override
+    public FolderEntity getFeatureRoot(ProjectEntity project) throws DALException {
+        return FolderFileServiceManager.getFeatureRoot(project);
+    }
 }
