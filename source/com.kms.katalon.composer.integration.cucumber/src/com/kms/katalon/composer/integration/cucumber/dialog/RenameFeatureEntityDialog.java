@@ -87,6 +87,7 @@ public class RenameFeatureEntityDialog extends TitleAreaDialog {
         try {
             EntityNameController.getInstance().validateName(newName);
             setMessage("Rename Feature file", IMessageProvider.INFORMATION);
+            getButton(OK).setEnabled(true);
         } catch (Exception e) {
             setMessage(e.getMessage(), IMessageProvider.ERROR);
             getButton(OK).setEnabled(false);
