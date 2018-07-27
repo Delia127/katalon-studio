@@ -162,6 +162,7 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
 
         createPropertyTable(locatorContainer);
 
+
     }
     
     private void createAttributeTableToolbar(Composite parent) {
@@ -306,7 +307,6 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
 
         tableColumnLayout.setColumnData(cName, new ColumnWeightData(80, 100));
         tableColumnLayout.setColumnData(cSelected, new ColumnWeightData(20, 100));
-        showComposite(tablePropertyComposite, true);
     }
     
    

@@ -37,6 +37,8 @@ public class WebElement implements XPathProvider {
     private String name;
 
     private WebElementType type = WebElementType.ELEMENT;
+    
+    private String usefulNeighborText = "";
 
     private WebFrame parent;
 
@@ -69,6 +71,14 @@ public class WebElement implements XPathProvider {
 
     public WebElementType getType() {
         return type;
+    }
+    
+    public void setUsefulNeighborText(String text){
+    	this.usefulNeighborText = text;
+    }
+    
+    public String getUsefulNeighborText(){
+    	return this.usefulNeighborText;
     }
 
     public String getTag() {
@@ -225,6 +235,7 @@ public class WebElement implements XPathProvider {
         	cloneXpaths.add(webElementXpathEntity.clone());
         }
         clone.setProperties(cloneProperties);
+        clone.setUsefulNeighborText(getUsefulNeighborText());
         clone.setXpaths(cloneXpaths);
         return clone;
     }

@@ -31,6 +31,8 @@ function treeHTML(element, object, currentWindow) {
                     object['xpaths'][key] = xpaths[key];
                 }
             }
+            console.log(neighborXpathsGenerator.getUsefulNeighborsText(element)[0]);
+            object['neighbor_text'] = neighborXpathsGenerator.getUsefulNeighborsText(element)[0];
         }
     } else{
         object['xpath'] = '';

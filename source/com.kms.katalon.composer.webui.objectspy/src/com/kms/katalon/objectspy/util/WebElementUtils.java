@@ -61,6 +61,8 @@ public class WebElementUtils {
     private static final String ELEMENT_PAGE_KEY = "page";
     
     private static final String ELEMENT_XPATHS_KEY = "xpaths";
+    
+    private static final String ELEMENT_USEFUL_NEIGHBOR_TEXT = "neighbor_text";
 
     private static final String ELEMENT_ATTRIBUTES_KEY = "attributes";
 
@@ -89,7 +91,7 @@ public class WebElementUtils {
                 "placeholder", "selected", "src", "title", "type", "text", "linked_text" });
     }
 
-    public static String generateWebElementName(String elementType, List<WebElementPropertyEntity> properties) {
+    public static String generateWebElementName(String elementType, List<WebElementPropertyEntity> properties, String usefulNeighborText) {
         Map<String, String> propsMap = properties.stream()
                 .filter(p -> ELEMENT_TEXT_KEY.equals(p.getName()) || ELEMENT_NAME_KEY.equals(p.getName())
                         || ELEMENT_ID_KEY.equals(p.getName()) || ELEMENT_CLASS_KEY.equals(p.getName()))
@@ -100,7 +102,11 @@ public class WebElementUtils {
         }
         String name = propsMap.get(ELEMENT_NAME_KEY);
         if (name != null) {
-            return elementType + "_" + toValidFileName(name);
+        	if(usefulNeighborText.equals("")){
+                return elementType + "_" + toValidFileName(name);
+        	}else{
+                return elementType + "_" + toValidFileName(name) + "_" + toValidFileName(usefulNeighborText);
+        	}
         }
         String id = propsMap.get(ELEMENT_ID_KEY);
         if (id != null) {
@@ -167,19 +173,21 @@ public class WebElementUtils {
             xpaths.get(0).setIsSelected(true);
 
         }
-
+        String usefulNeighborText = getElementUsefulNeighborText(elementJsonObject);
         WebFrame parentElement = getParentElement(elementJsonObject);
 
-        String newName = generateWebElementName(elementType, properties);
+        String newName = generateWebElementName(elementType, properties, usefulNeighborText);
+
         if (newName.length() > NAME_LENGTH_LIMIT) {
             newName = newName.substring(0, NAME_LENGTH_LIMIT);
         }
+        
         WebElement el = isFrame ? new WebFrame(newName) : new WebElement(newName);
         el.setParent(parentElement);
         el.setProperties(properties);
         el.setXpaths(xpaths);
-        el.setSelectorMethod(selectorMethod);
-                       
+        el.setUsefulNeighborText(usefulNeighborText);
+        el.setSelectorMethod(selectorMethod);                      
         
         return el;
     }
@@ -244,6 +252,13 @@ public class WebElementUtils {
             properties.add(new WebElementPropertyEntity(propertyName, entry.getValue().getAsString(),
                     PRIORITY_PROPERTIES.contains(propertyName)));
         }
+    }
+    
+    private static String getElementUsefulNeighborText(JsonObject elementJsonObject){
+    	 if (elementJsonObject.has(ELEMENT_USEFUL_NEIGHBOR_TEXT) && elementJsonObject.get(ELEMENT_USEFUL_NEIGHBOR_TEXT).isJsonPrimitive()) {
+             return elementJsonObject.getAsJsonPrimitive(ELEMENT_USEFUL_NEIGHBOR_TEXT).getAsString();
+         }
+         return null;
     }
     
     private static void collectElementXpaths(JsonObject elementJsonObject,

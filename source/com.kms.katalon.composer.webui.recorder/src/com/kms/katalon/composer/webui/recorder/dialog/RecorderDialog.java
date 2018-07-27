@@ -1637,6 +1637,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
                 .append(elm1.getTag(), elm2.getTag())
                 .append(elm1.hasProperty(), elm2.hasProperty())
                 .append(elm1.getXpath(), elm2.getXpath())
+                .append(elm1.getName(), elm2.getName())
                 .isEquals();
     }
 
