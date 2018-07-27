@@ -86,4 +86,8 @@ public class ImageConstants {
 
     // ExecutionToolControl
     public static final Image IMG_PROFILE = ImageManager.getImage(IImageKeys.PROFILE_16);
+    
+    public static final Image FORUM_SEARCH_BOX = ImageManager.getImage(IImageKeys.FORUM_SEARCH_BOX);
+    
+    public static final Image FORUM_SEARCH_ICON = ImageManager.getImage(IImageKeys.FORUM_SEARCH_ICON);
 }

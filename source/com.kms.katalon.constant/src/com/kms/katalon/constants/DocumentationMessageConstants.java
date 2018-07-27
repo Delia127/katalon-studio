@@ -96,6 +96,8 @@ public class DocumentationMessageConstants extends NLS {
     public static String SETTINGS_KATALON_ANALYTICS;
 
 	public static String SETTINGS_WEBLOCATORS;
+	
+	public static String HELP_LABEL;
 
     static {
         // initialize resource bundle
