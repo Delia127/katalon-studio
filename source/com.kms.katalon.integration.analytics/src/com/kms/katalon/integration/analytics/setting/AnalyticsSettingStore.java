@@ -99,8 +99,8 @@ public class AnalyticsSettingStore extends BundleSettingStore {
     }
 
     public String getToken(boolean encryptionEnabled) throws IOException, GeneralSecurityException {
-        return getStringProperty(AnalyticsSettingStoreConstants.ANALYTICS_AUTHENTICATION_TOKEN,
-                StringUtils.EMPTY, encryptionEnabled);
+        return getStringProperty(AnalyticsSettingStoreConstants.ANALYTICS_AUTHENTICATION_TOKEN, StringUtils.EMPTY,
+                encryptionEnabled);
     }
 
     public void setToken(String token, boolean encryptionEnabled) throws IOException, GeneralSecurityException {
