@@ -344,12 +344,12 @@ public class ExternalLibratiesSettingPage extends PreferencePageWithHelp {
     }
 
     @Override
-    protected boolean hasDocumentation() {
+    public boolean hasDocumentation() {
         return true;
     }
 
     @Override
-    protected String getDocumentationUrl() {
+    public String getDocumentationUrl() {
         return DocumentationMessageConstants.SETTINGS_EXTERNAL_LIBRARIES;
     }
 }

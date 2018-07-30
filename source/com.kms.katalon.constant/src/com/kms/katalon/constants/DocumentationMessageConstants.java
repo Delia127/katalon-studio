@@ -96,6 +96,18 @@ public class DocumentationMessageConstants extends NLS {
     public static String SETTINGS_KATALON_ANALYTICS;
 
 	public static String SETTINGS_WEBLOCATORS;
+	
+	public static String PREFERENCE_PROXY;
+	
+	public static String SETTING_TEST_CASE;
+	
+	public static String SETTING_REPORT;
+	
+	public static String SETTING_NETWORK;
+	
+	public static String PREFERENCE_GENERAL;
+	
+	public static String NEW_CHECKPOINT;
 
     static {
         // initialize resource bundle
