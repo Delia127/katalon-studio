@@ -310,14 +310,13 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
 
         tableColumnLayout.setColumnData(cName, new ColumnWeightData(80, 100));
         tableColumnLayout.setColumnData(cSelected, new ColumnWeightData(20, 100));
-<<<<<<< HEAD
-=======
+
         // By default selection method is xpath, initialize() will override with user preferences appropriately
         showComposite(tablePropertyComposite, 
         		defaultSelectingCapturedObjecSelectionMethods != null && 
         		defaultSelectingCapturedObjecSelectionMethods == SelectorMethod.ATTRIBUTES
         		);
->>>>>>> origin/multiple-xpaths-handler
+
     }
     
    

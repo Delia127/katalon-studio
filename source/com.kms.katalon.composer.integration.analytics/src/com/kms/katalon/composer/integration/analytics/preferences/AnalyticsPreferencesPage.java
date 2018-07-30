@@ -258,11 +258,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
             updateDataStore();
             return true;
         }
-
-        if (!isInitialized()) {
-            return true;
-        }
-
+        
         if (cbbTeams.getSelectionIndex() == -1) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), ComposerAnalyticsStringConstants.ERROR,
                     ComposerIntegrationAnalyticsMessageConstants.REPORT_MSG_MUST_CONNECT_SUCCESSFULLY);
