@@ -316,7 +316,6 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
         		defaultSelectingCapturedObjecSelectionMethods != null && 
         		defaultSelectingCapturedObjecSelectionMethods == SelectorMethod.ATTRIBUTES
         		);
-
     }
     
    

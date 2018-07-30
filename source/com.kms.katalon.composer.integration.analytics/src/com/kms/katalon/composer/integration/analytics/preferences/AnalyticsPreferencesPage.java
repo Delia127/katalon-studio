@@ -394,6 +394,11 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
     }
 
     private boolean isIntegratedSuccessfully() {
+    	
+    	if(!isInitialized()){
+    		return false;
+    	}
+    	
         boolean isAnalyticsIntegrated = enableAnalyticsIntegration.getSelection();
         return isAnalyticsIntegrated && !teams.isEmpty();
     }
