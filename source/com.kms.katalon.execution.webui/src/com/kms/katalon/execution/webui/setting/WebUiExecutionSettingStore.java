@@ -165,6 +165,7 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
         if (str == null || str.isEmpty()) {
         	return SelectorMethod.XPATH;
         }
+        System.out.println(SelectorMethod.valueOf(str));
         return SelectorMethod.valueOf(str);
     }    
 }

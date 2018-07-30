@@ -80,6 +80,7 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
 
     private TableViewerColumn cvName, cvSelected;
     
+    private Composite compositeTableToolBar;
     
     private TableColumn cName, cSelected;
 
@@ -160,13 +161,17 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
         
         createSelectionMethodComposite(locatorContainer);
 
+        
+        createAttributeTableToolbar(locatorContainer);      
+        
+        
         createPropertyTable(locatorContainer);
 
 
     }
     
     private void createAttributeTableToolbar(Composite parent) {
-		Composite compositeTableToolBar = new Composite(parent, SWT.NONE);
+		compositeTableToolBar = new Composite(parent, SWT.NONE);
 		compositeTableToolBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		compositeTableToolBar.setLayout(new FillLayout(SWT.HORIZONTAL));
 
@@ -188,9 +193,7 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
    
     @SuppressWarnings("unchecked")
     private void createPropertyTable(Composite parent) {
-        
-        createAttributeTableToolbar(parent);      
-        
+
         tablePropertyComposite = new Composite(parent, SWT.NONE);
         GridData ldTableComposite = new GridData(SWT.FILL, SWT.FILL, true, true);
         ldTableComposite.minimumHeight = 70;
@@ -307,6 +310,14 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
 
         tableColumnLayout.setColumnData(cName, new ColumnWeightData(80, 100));
         tableColumnLayout.setColumnData(cSelected, new ColumnWeightData(20, 100));
+<<<<<<< HEAD
+=======
+        // By default selection method is xpath, initialize() will override with user preferences appropriately
+        showComposite(tablePropertyComposite, 
+        		defaultSelectingCapturedObjecSelectionMethods != null && 
+        		defaultSelectingCapturedObjecSelectionMethods == SelectorMethod.ATTRIBUTES
+        		);
+>>>>>>> origin/multiple-xpaths-handler
     }
     
    
@@ -375,6 +386,7 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				defaultSelectingCapturedObjecSelectionMethods = SelectorMethod.ATTRIBUTES;
+				showComposite(compositeTableToolBar, true);
 				showComposite(tablePropertyComposite, true);
 			}
 		});
@@ -383,6 +395,7 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				defaultSelectingCapturedObjecSelectionMethods = SelectorMethod.XPATH;
+				showComposite(compositeTableToolBar, false);
 				showComposite(tablePropertyComposite, false);
 			}
 		});
@@ -390,14 +403,30 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
 
     private void initialize() throws IOException {
         setInputForCapturedObjectPropertySetting(store.getCapturedTestObjectAttributeLocators());
+        setSelectionForCapturedObjectSelectionSetting(store.getCapturedTestObjectSelectorMethod());
     }
 
     private void setInputForCapturedObjectPropertySetting(List<Pair<String, Boolean>> input) {
         defaultSelectingCapturedObjectProperties = input;
         tvProperty.setInput(defaultSelectingCapturedObjectProperties);
     }
-
-
+    
+    private void setSelectionForCapturedObjectSelectionSetting(SelectorMethod defaultSelectionMethod) {
+    	defaultSelectingCapturedObjecSelectionMethods = defaultSelectionMethod;
+        switch(defaultSelectionMethod){
+	        case XPATH: 
+	        	radioXpath.setSelection(true);
+	        	radioAttribute.setSelection(false);
+	        	break;
+	        case ATTRIBUTES:
+	        	radioXpath.setSelection(false);
+	        	radioAttribute.setSelection(true);
+	        	break;
+	        default:
+	        	break;
+        }
+    }
+    
     @Override
     protected void performDefaults() {
         if (container == null) {
@@ -421,10 +450,8 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
                             .filter(i -> i.getLeft().isEmpty())
                             .collect(Collectors.toList());
                     defaultSelectingCapturedObjectProperties.removeAll(emptyPropertyItems);
-                    store.setCapturedTestObjectAttributeLocators(defaultSelectingCapturedObjectProperties);
-                    
-                   
-                   store.setCapturedTestObjectSelectorMethod(defaultSelectingCapturedObjecSelectionMethods);
+                    store.setCapturedTestObjectAttributeLocators(defaultSelectingCapturedObjectProperties);                
+                    store.setCapturedTestObjectSelectorMethod(defaultSelectingCapturedObjecSelectionMethods);
                     
                 } catch (IOException e) {
                     LoggerSingleton.logError(e);
@@ -436,10 +463,8 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
     
 	private void showComposite(Composite composite, boolean isVisible) {
 		composite.setVisible(isVisible);
-		((GridData) composite.getLayoutData()).exclude = !isVisible;
 		composite.getParent().layout();
 	}
-	
 
 	@Override
 	protected boolean hasDocumentation() {
