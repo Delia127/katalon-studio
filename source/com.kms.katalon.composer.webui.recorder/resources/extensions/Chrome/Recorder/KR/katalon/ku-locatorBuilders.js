@@ -57,7 +57,7 @@ KULocatorBuilders.prototype.build = function(e) {
     if (locators.length > 0) {
         return locators[0][0];
     } else {
-        return "LOCATOR_DETECTION_FAILED";
+        return null;
     }
 };
 
