@@ -38,7 +38,7 @@ public class ForumSearchToolControl implements EventHandler {
         
         Text txtSearch = new Text(canvas, SWT.NONE);
         txtSearch.setBounds(23, 4, 100, 15);
-        txtSearch.setMessage("Forum Search");
+        txtSearch.setMessage("Online Help");
         
         txtSearch.addListener(SWT.Traverse, new Listener() {
             @Override
