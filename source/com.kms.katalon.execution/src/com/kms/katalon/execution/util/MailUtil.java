@@ -244,6 +244,7 @@ public class MailUtil {
             conf.setSubject(store.getEmailSubject());
             conf.setHtmlMessage(store.getEmailHTMLTemplate());
             conf.setAttachmentOptions(store.getReportFormatOptions());
+            conf.setSendEmailTestFailedOnly(store.isSendEmailTestFailedOnly());
             return conf;
         } catch (IOException | URISyntaxException | GeneralSecurityException e) {
             LogUtil.logError(e);

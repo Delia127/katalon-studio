@@ -247,18 +247,15 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
 
     @Override
     public boolean performOk() {
-        boolean integrationEnabled = false;
-
-        try {
-            integrationEnabled = analyticsSettingStore.isIntegrationEnabled();
-            if (!integrationEnabled) {
-                return true;
-            }
-        } catch (IOException e) {
-            LoggerSingleton.logError(e);
-        }
 
         if (!isInitialized()) {
+            return true;
+        }
+        
+        boolean integrationEnabled = enableAnalyticsIntegration.getSelection();
+        
+        if (!integrationEnabled) {
+            updateDataStore();
             return true;
         }
 
@@ -323,6 +320,12 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                         analyticsSettingStore.getServerEndpoint(encryptionEnabled),
                         analyticsSettingStore.getEmail(encryptionEnabled), password,
                         new ProgressMonitorDialog(getShell()), analyticsSettingStore);
+                if (tokenInfo == null){
+                    txtEmail.setText(analyticsSettingStore.getEmail(encryptionEnabled));
+                    txtServerUrl.setText(analyticsSettingStore.getServerEndpoint(encryptionEnabled));
+                    maskPasswordField();
+                    return;
+                }
                 teams = AnalyticsApiProvider.getTeams(analyticsSettingStore.getServerEndpoint(encryptionEnabled),
                         analyticsSettingStore.getEmail(encryptionEnabled), password, tokenInfo,
                         new ProgressMonitorDialog(getShell()));
@@ -397,6 +400,9 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
     }
 
     private boolean isIntegratedSuccessfully() {
+        if (!isInitialized()) {
+            return false;
+        }
         boolean isAnalyticsIntegrated = enableAnalyticsIntegration.getSelection();
         return isAnalyticsIntegrated && !teams.isEmpty();
     }

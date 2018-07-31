@@ -80,6 +80,8 @@ public class MirrorEditor extends Composite {
             public void completed(ProgressEvent event) {
                 documentReady = true;
                 onDocumentReady();
+                
+                browser.evaluate("document.addEventListener('contextmenu', function(e) { e.preventDefault();});");
             }
 
             @Override

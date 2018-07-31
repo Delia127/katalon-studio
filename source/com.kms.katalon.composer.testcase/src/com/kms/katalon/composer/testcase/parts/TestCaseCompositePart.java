@@ -326,7 +326,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
                             }
                             return;
                         }
-                        
+
                         if (tabFolder.getSelectionIndex() == CHILD_TEST_CASE_VARIABLE_PART_INDEX) {
                             Trackings.trackOpenObject("testCaseVariable");
                         }
@@ -454,6 +454,15 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
         return false;
     }
 
+    public String getScriptContent() {
+        try {
+            return groovyEditor.getViewer().getDocument().get();
+        } catch (Exception e) {
+            LoggerSingleton.logError(e);
+            return StringUtils.EMPTY;
+        }
+    }
+
     public List<ASTNode> getAstNodesFromScript() throws Exception {
         if (groovyEditor != null) {
             return GroovyParser.parseGroovyScriptIntoAstNodes(groovyEditor.getViewer().getDocument().get());
@@ -500,7 +509,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
     public TestCasePart getChildTestCasePart() {
         return childTestCasePart;
     }
-    
+
     public void loadTreeTableInput() {
         setScriptContentToManual();
     }
@@ -777,7 +786,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
         eventBroker.unsubscribe(this);
         disposed = true;
     }
-    
+
     public boolean isDisposed() {
         return disposed;
     }
@@ -811,8 +820,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
                         .setElementId(newCompositePartId + IdConstants.TEST_CASE_GENERAL_PART_ID_SUFFIX);
                 childTestCaseVariablesPart.getMPart()
                         .setElementId(newCompositePartId + IdConstants.TEST_CASE_VARIABLES_PART_ID_SUFFIX);
-                getPropertiesPart()
-                        .setElementId(newCompositePartId + IdConstants.TEST_CASE_PROPERTIES_PART_ID_SUFFIX);
+                getPropertiesPart().setElementId(newCompositePartId + IdConstants.TEST_CASE_PROPERTIES_PART_ID_SUFFIX);
 
                 partService.hidePart(getChildCompatibilityPart(), true);
                 String testCaseEditorId = newCompositePartId + IdConstants.TEST_CASE_EDITOR_PART_ID_SUFFIX;
@@ -887,8 +895,7 @@ public class TestCaseCompositePart implements EventHandler, SavableCompositePart
 
     public void validateScriptErrors() throws Exception {
         try {
-            GroovyWrapperParser
-                    .parseGroovyScriptIntoNodeWrapper(groovyEditor.getViewer().getDocument().get());
+            GroovyWrapperParser.parseGroovyScriptIntoNodeWrapper(groovyEditor.getViewer().getDocument().get());
         } catch (Exception e) {
             GroovyEditorUtil.showProblems(groovyEditor);
             throw e;

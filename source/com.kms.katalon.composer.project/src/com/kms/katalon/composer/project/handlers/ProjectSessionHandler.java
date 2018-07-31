@@ -3,7 +3,7 @@ package com.kms.katalon.composer.project.handlers;
 import static com.kms.katalon.composer.components.impl.util.EntityPartUtil.getOpenedEntityIds;
 import static com.kms.katalon.composer.components.impl.util.TreeEntityUtil.getTreeEntityIds;
 import static com.kms.katalon.composer.components.log.LoggerSingleton.logError;
-import static org.eclipse.ui.PlatformUI.getPreferenceStore;
+import static com.kms.katalon.preferences.internal.PreferenceStoreManager.getPreferenceStore;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -38,10 +38,9 @@ import com.kms.katalon.composer.project.constants.ProjectPreferenceConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.PreferenceConstants;
-import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.util.internal.JsonUtil;
-import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.preferences.internal.PreferenceStoreManager;
+import com.kms.katalon.preferences.internal.ScopedPreferenceStore;
 
 public class ProjectSessionHandler {
 
@@ -60,9 +59,13 @@ public class ProjectSessionHandler {
     @Inject
     private UISynchronize sync;
 
+    public static ScopedPreferenceStore getGeneralStore() {
+        return getPreferenceStore(IdConstants.KATALON_GENERAL_BUNDLE_ID);
+    }
+
     @CanExecute
     public boolean canExecute() {
-        return getPreferenceStore().getBoolean(PreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION);
+        return getGeneralStore().getBoolean(PreferenceConstants.GENERAL_AUTO_RESTORE_PREVIOUS_SESSION);
     }
     
     @PostConstruct
@@ -179,10 +182,6 @@ public class ProjectSessionHandler {
     private String[] rememberOpenedEntities() throws Exception {
         List<String> openedEntityIds = getOpenedEntityIds(partService.getParts());
         return openedEntityIds.toArray(new String[0]);
-    }
-
-    private static ProjectEntity getProject() {
-        return ProjectController.getInstance().getCurrentProject();
     }
 
     private MPart getTestExplorerPart() {

@@ -7,6 +7,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -112,7 +113,7 @@ public class RecordHandler {
             List<VariableEntity> variables = new ArrayList<>();
             TestCaseEntity testCaseEntity = null;
             if (testCaseCompositePart != null) {
-                String scriptContent = new String(testCaseCompositePart.getOriginalTestCase().getScriptContents());
+                String scriptContent = StringUtils.defaultString(testCaseCompositePart.getScriptContent());
 
                 wrapper = GroovyWrapperParser.parseGroovyScriptIntoNodeWrapper(scriptContent)
                         .getRunMethod()
@@ -213,13 +214,7 @@ public class RecordHandler {
                                     testCasePart.addStatements(children, NodeAddType.Add, true);
                                     testCasePart.addVariables(variables);
                                 } else {
-                                    BlockStatementWrapper block = testCaseCompositePart.getChildTestCasePart()
-                                            .getTreeTableInput()
-                                            .getMainClassNode()
-                                            .getRunMethod()
-                                            .getBlock();
-                                    block.clearStaments();
-                                    // append generated steps at the end of test case's steps
+                                    testCasePart.clearStatements();
                                     testCasePart.addStatements(children, NodeAddType.Add, true);
                                     testCasePart.deleteVariables(Arrays.asList(testCasePart.getVariables()));
                                     testCasePart.addVariables(variables);

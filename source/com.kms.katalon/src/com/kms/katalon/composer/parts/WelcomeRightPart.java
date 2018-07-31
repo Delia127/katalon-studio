@@ -48,13 +48,13 @@ import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
-import com.kms.katalon.composer.project.handlers.NewSampleProjectHandler;
-import com.kms.katalon.composer.project.menu.RecentProjectParameterizedCommandBuilder;
+import com.kms.katalon.composer.project.dialog.NewProjectDialog;
+import com.kms.katalon.composer.project.handlers.NewSampleLocalProjectHandler;
+import com.kms.katalon.composer.project.menu.ProjectParameterizedCommandBuilder;
+import com.kms.katalon.composer.project.sample.NewSampleRemoteProjectDialog;
+import com.kms.katalon.composer.project.sample.SampleRemoteProject;
+import com.kms.katalon.composer.project.sample.SampleRemoteProjectProvider;
 import com.kms.katalon.composer.project.template.SampleProjectProvider;
-import com.kms.katalon.composer.samples.NewSampleRemoteProjectDialog;
-import com.kms.katalon.composer.samples.SampleRemoteProject;
-import com.kms.katalon.composer.samples.SampleRemoteProjectProvider;
-import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.ImageConstants;
 import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.PreferenceConstants;
@@ -340,14 +340,9 @@ public class WelcomeRightPart extends Composite {
 
                                 @Override
                                 public void mouseUp(MouseEvent e) {
-                                    NewSampleRemoteProjectDialog dialog = new NewSampleRemoteProjectDialog(getShell(),
+                                    NewProjectDialog dialog = new NewProjectDialog(getShell(),
                                             sample);
-                                    if (dialog.open() != NewSampleRemoteProjectDialog.OK) {
-                                        return;
-                                    }
-                                    String projectLocation = dialog.getSelectedProjectLocation();
-                                    eventBroker.post(EventConstants.GIT_CLONE_REMOTE_PROJECT,
-                                            new Object[] { sample, projectLocation });
+                                    dialog.open();
                                 }
                             });
                     composites.add(latestComposite);
@@ -423,7 +418,7 @@ public class WelcomeRightPart extends Composite {
                     @Override
                     public void mouseUp(MouseEvent e) {
                         try {
-                            NewSampleProjectHandler.doCreateNewSampleProject(Display.getCurrent().getActiveShell(),
+                            NewSampleLocalProjectHandler.doCreateNewSampleProject(Display.getCurrent().getActiveShell(),
                                     SampleProjectProvider.SAMPLE_WEB_UI,
                                     EventBrokerSingleton.getInstance().getEventBroker());
                         } catch (Exception ex) {
@@ -438,7 +433,7 @@ public class WelcomeRightPart extends Composite {
                     @Override
                     public void mouseUp(MouseEvent e) {
                         try {
-                            NewSampleProjectHandler.doCreateNewSampleProject(Display.getCurrent().getActiveShell(),
+                            NewSampleLocalProjectHandler.doCreateNewSampleProject(Display.getCurrent().getActiveShell(),
                                     SampleProjectProvider.SAMPLE_WEB_SERVICE,
                                     EventBrokerSingleton.getInstance().getEventBroker());
                         } catch (Exception ex) {
@@ -452,7 +447,7 @@ public class WelcomeRightPart extends Composite {
                     @Override
                     public void mouseUp(MouseEvent e) {
                         try {
-                            NewSampleProjectHandler.doCreateNewSampleProject(Display.getCurrent().getActiveShell(),
+                            NewSampleLocalProjectHandler.doCreateNewSampleProject(Display.getCurrent().getActiveShell(),
                                     SampleProjectProvider.SAMPLE_MOBILE,
                                     EventBrokerSingleton.getInstance().getEventBroker());
                         } catch (Exception ex) {
@@ -521,7 +516,7 @@ public class WelcomeRightPart extends Composite {
             gl.numColumns = recentProjects.size();
         }
 
-        final RecentProjectParameterizedCommandBuilder commandBuilder = new RecentProjectParameterizedCommandBuilder();
+        final ProjectParameterizedCommandBuilder commandBuilder = new ProjectParameterizedCommandBuilder();
         for (ProjectEntity project : recentProjects) {
             addProjectBlock(recentsProjectHolder, ImageConstants.IMG_RECENT_PROJECT_FILE,
                     StringUtils.abbreviate(project.getName(), 36),

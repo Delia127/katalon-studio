@@ -274,4 +274,9 @@ public class ProjectController extends EntityController {
     public ProjectEntity newProjectEntity(String name, String description, String location, boolean legacy) throws DALException {
         return getDataProviderSetting().getProjectDataProvider().newProjectEntity(name, description, location, legacy);
     }
+
+    public ProjectEntity updateProjectInfo(File projectFile, ProjectEntity newInfo) throws DALException {
+        return getDataProviderSetting().getProjectDataProvider().updateProjectEntity(projectFile, newInfo);
+    }
+    
 }
