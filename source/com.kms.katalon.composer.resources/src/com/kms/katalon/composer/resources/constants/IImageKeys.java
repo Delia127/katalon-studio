@@ -628,5 +628,9 @@ public interface IImageKeys {
     public static final String RESUME_RECORDING_24 = "recorder/resume_recording_24.png"; //$NON-NLS-1$
 
     public static final String STOP_RECORDING_24 = "recorder/stop_recording_24.png"; //$NON-NLS-1$
+    
+    public static final String FORUM_SEARCH_BOX = "search-box.png"; //$NON-NLS-1$
+    
+    public static final String FORUM_SEARCH_ICON = "search_13.png"; //$NON-NLS-1$
 
 }

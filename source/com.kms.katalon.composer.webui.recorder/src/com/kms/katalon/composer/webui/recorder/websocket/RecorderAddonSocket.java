@@ -25,6 +25,7 @@ public class RecorderAddonSocket extends AddonSocket {
 
             switch (key) {
                 case ELEMENT_ACTION_KEY:
+                	System.out.println(message);
                     addNewAction(message.substring(message.indexOf(EQUALS) + 1, message.length()));
                     break;
                 default:
@@ -34,7 +35,7 @@ public class RecorderAddonSocket extends AddonSocket {
             LoggerSingleton.logError(e);
         }
     }
-    
+        
     protected void seleniumSocketResponder(){
         sendMessage(new AddonMessage(AddonCommand.START_RECORD));
         System.out.println("WS: Start recording");        
