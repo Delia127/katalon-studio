@@ -726,7 +726,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     private void createStepButtons(Composite compositeSteps) {
         Composite compositeToolbars = new Composite(compositeSteps, SWT.NONE);
         compositeToolbars.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        GridLayout layout = new GridLayout(2, false);
+        GridLayout layout = new GridLayout(3, false);
         layout.marginWidth = 0;
         layout.marginHeight = 0;
         compositeToolbars.setLayout(layout);
@@ -780,9 +780,43 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         tltmDown.setText(StringConstants.DIA_ITEM_MOVE_DOWN);
         tltmDown.setImage(ImageConstants.IMG_16_MOVE_DOWN);
         tltmDown.addSelectionListener(selectionListener);
+        
+//        Composite helpComposite = new Composite(compositeToolbars, SWT.NONE);
+//        GridLayout glHelpComposite = new GridLayout(1, false);
+//        glHelpComposite.marginWidth = 0;
+//        helpComposite.setLayout(glHelpComposite);
+//        GridData gdHelpComposite = new GridData(GridData.HORIZONTAL_ALIGN_END);
+//        gdHelpComposite.widthHint = 24;
+//        helpComposite.setLayoutData(gdHelpComposite);
+        
+//        CLabel helpIcon = new CLabel(helpComposite, SWT.NONE);
+//        helpIcon.setImage(ImageManager.getImage(IImageKeys.HELP_16));
+//        helpIcon.setRightMargin(0);
+        
+        new HelpCompositeForDialog(compositeToolbars, "") {
+            @Override
+            protected GridData createGridData() {
+                GridData gridData = new GridData(SWT.RIGHT, SWT.CENTER, true, true);
+                gridData.widthHint = 32;
+                return gridData;
+            }
+            
+            @Override
+            protected GridLayout createLayout() {
+                GridLayout layout = new GridLayout();
+                layout.marginHeight = 0;
+                layout.marginBottom = 0;
+                layout.marginWidth = 0;
+                return layout;
+            }
+        };
 
         ToolBar playToolbar = new ToolBar(compositeToolbars, SWT.FLAT | SWT.RIGHT);
+        GridLayout glPlayToolbar = new GridLayout(1, false);
+        glPlayToolbar.marginWidth = 0;
+        playToolbar.setLayout(glPlayToolbar);
         playToolbar.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
+
         tltmPlay = new ToolItem(playToolbar, SWT.DROP_DOWN);
         tltmPlay.setImage(ImageConstants.IMG_24_PLAY);
         tltmPlay.addSelectionListener(selectionListener);
@@ -1411,7 +1445,22 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         bottomComposite.setLayout(layout);
         bottomComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-        new HelpCompositeForDialog(bottomComposite, DocumentationMessageConstants.DIALOG_RECORDER_WEB_UI);
+        new HelpCompositeForDialog(bottomComposite, DocumentationMessageConstants.DIALOG_RECORDER_WEB_UI) {
+            @Override
+            protected GridData createGridData() {
+                return new GridData(SWT.RIGHT, SWT.CENTER, true, false);
+            }
+
+            @Override
+            protected GridLayout createLayout() {
+                GridLayout layout = new GridLayout();
+                layout.marginHeight = 0;
+                layout.marginBottom = 0;
+                layout.marginWidth = 0;
+                return layout;
+            }
+        };
+        
         super.createButtonBar(bottomComposite);
 
         return bottomComposite;
