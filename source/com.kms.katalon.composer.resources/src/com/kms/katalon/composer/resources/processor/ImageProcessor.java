@@ -102,6 +102,8 @@ public class ImageProcessor {
         ImageManager.registerImage(IImageKeys.FULL_SIZE_16);
         ImageManager.registerImage(IImageKeys.CONFLICT_ELEMENT_STATUS_16);
         ImageManager.registerImage(IImageKeys.NEW_ELEMENT_STATUS_16);
+        ImageManager.registerImage(IImageKeys.FORUM_SEARCH_BOX);
+        ImageManager.registerImage(IImageKeys.FORUM_SEARCH_ICON);
     }
 
     private void registerSubToolbarImages() {

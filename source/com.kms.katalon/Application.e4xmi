@@ -161,6 +161,13 @@
         <tags>NoMove</tags>
       </children>
       <children xsi:type="menu:ToolControl" xmi:id="_-DNO4CSUEeWwuK4yOgypdw" elementId="com.kms.katalon.composer.toolbar.switcher" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.toolbar.PerspectiveSwitcher"/>
+      <children xsi:type="menu:ToolControl" xmi:id="_Ec3EoI_EEeifVM5dtK86vQ" elementId="com.kms.katalon.composer.toolbar.forumsearch" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.toolbar.ForumSearchToolControl"/>
+      <children xsi:type="menu:ToolBar" xmi:id="_vDJ6II_ZEeifVM5dtK86vQ" elementId="com.kms.katalon.composer.toolbar.support">
+        <tags>NoMove</tags>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_v1hLMI_ZEeifVM5dtK86vQ" elementId="com.kms.katalon.composer.toolbar.support.chatsupport" label="Community Discussion" iconURI="platform:/plugin/com.kms.katalon/icons/chat_support_24.png" command="_Wci7UI_aEeifVM5dtK86vQ">
+          <tags>FORCE_TEXT</tags>
+        </children>
+      </children>
     </trimBars>
     <trimBars xmi:id="_D8Z7cNa4EeS1ha7mm6JZag" elementId="com.kms.katalon.trimbar.right" side="Right">
       <children xsi:type="menu:ToolControl" xmi:id="_Fy2fsNa4EeS1ha7mm6JZag" elementId="com.kms.katalon.partstack.outline(com.kms.katalon.composer.window.main).(com.kms.katalon.composer.perspective.keyword)" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.addons.swt/org.eclipse.e4.ui.workbench.addons.minmax.TrimStack">
@@ -196,6 +203,7 @@
   <handlers xmi:id="_yY33IOBxEeejXLn7_j51hg" elementId="com.kms.katalon.handler.importSeleniumIde" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.ImportSeleniumIdeHandler" command="_2sDjkOBxEeejXLn7_j51hg"/>
   <handlers xmi:id="_dA0N8DdkEeiyIrMgpAUQAg" elementId="com.kms.katalon.handler.checkForUpdates" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.CheckForUpdatesHandler" command="_VC7xYDdkEeiyIrMgpAUQAg"/>
   <handlers xmi:id="_jkq6sFdcEeiRfOF4k51oXA" elementId="com.kms.katalon.handler.service" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.OpenSupportServicePageHandler" command="_CeYPQFdcEeiRfOF4k51oXA"/>
+  <handlers xmi:id="_jNSC4I_aEeifVM5dtK86vQ" elementId="com.kms.katalon.handler.chatSupport" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.handlers.ChatSupportHandler" command="_Wci7UI_aEeifVM5dtK86vQ"/>
   <bindingTables xmi:id="_GQOAAAONEeWmYfckKw0_5w" elementId="com.kms.katalon.bindingtable.window" bindingContext="_mWGB8AQqEeWyKYoESvUc1g">
     <bindings xmi:id="_RvI6YAONEeWmYfckKw0_5w" elementId="com.kms.katalon.keybinding.search" keySequence="M1+H" command="_N5ChkARIEeWyKYoESvUc1g">
       <tags>type:user</tags>
@@ -225,6 +233,7 @@
   <commands xmi:id="_2sDjkOBxEeejXLn7_j51hg" elementId="com.kms.katalon.command.importSeleniumIde" commandName="Import Selenium IDE"/>
   <commands xmi:id="_VC7xYDdkEeiyIrMgpAUQAg" elementId="com.kms.katalon.command.checkForUpdates" commandName="Check for Updates"/>
   <commands xmi:id="_CeYPQFdcEeiRfOF4k51oXA" elementId="com.kms.katalon.command.service" commandName="openSupportServicePageCommand"/>
+  <commands xmi:id="_Wci7UI_aEeifVM5dtK86vQ" elementId="com.kms.katalon.command.chatSupport" commandName="Chat Support"/>
   <addons xmi:id="_hQQH0hYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_hQQH0xYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_hQQH1BYMEeSUMbyEN2kbFQ" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>

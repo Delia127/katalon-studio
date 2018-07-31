@@ -194,6 +194,14 @@ public class Trackings {
         trackUserAction("exportKeywords");
     }
     
+    public static void trackForumSearch(String keyword) {
+        trackUserAction("forumSearch", "keyword", keyword);
+    }
+    
+    public static void trackQuickDiscussion() {
+        trackUserAction("quickDiscussion");
+    }
+    
     public static void trackOpenKAIntegration(String objectType) {
         trackUserAction("openKAIntegration", "type", objectType);
     }
