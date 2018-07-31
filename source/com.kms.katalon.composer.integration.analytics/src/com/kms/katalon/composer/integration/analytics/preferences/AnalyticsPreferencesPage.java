@@ -1,7 +1,6 @@
 package com.kms.katalon.composer.integration.analytics.preferences;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
@@ -324,6 +323,7 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                 if (tokenInfo == null){
                     txtEmail.setText(analyticsSettingStore.getEmail(encryptionEnabled));
                     txtServerUrl.setText(analyticsSettingStore.getServerEndpoint(encryptionEnabled));
+                    maskPasswordField();
                     return;
                 }
                 teams = AnalyticsApiProvider.getTeams(analyticsSettingStore.getServerEndpoint(encryptionEnabled),
