@@ -13,7 +13,7 @@ public class ChatSupportHandler extends AbstractHandler {
 
     @Override
     public void execute() {
-        Program.launch("https://gitter.im/katalon-studio/QuickSupport");
+        Program.launch("https://gitter.im/katalon-studio/Lobby");
         Trackings.trackQuickDiscussion();
     }
 
