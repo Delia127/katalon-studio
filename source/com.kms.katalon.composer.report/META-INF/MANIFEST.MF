@@ -35,13 +35,18 @@ Require-Bundle: org.eclipse.e4.core.contexts,
  com.kms.katalon.composer.resources,
  org.eclipse.e4.ui.services,
  org.apache.commons.lang3,
- com.kms.katalon.integration.analytics;bundle-version="1.0.0",
+ com.kms.katalon.integration.analytics,
  com.kms.katalon.composer.execution,
+ com.kms.katalon.util,
+ com.kms.katalon.composer.integration.analytics,
  com.kms.katalon.tracking
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Import-Package: javax.annotation;version="1.2.0",
+Import-Package: com.kms.katalon.application.constants,
+ com.kms.katalon.application.utils,
+ javax.annotation;version="1.2.0",
  javax.inject;version="1.0.0",
  org.apache.commons.lang;version="2.6.0"
 Bundle-ActivationPolicy: lazy
-Export-Package: com.kms.katalon.composer.report.lookup,
+Export-Package: com.kms.katalon.composer.report.constants,
+ com.kms.katalon.composer.report.lookup,
  com.kms.katalon.composer.report.parts.integration

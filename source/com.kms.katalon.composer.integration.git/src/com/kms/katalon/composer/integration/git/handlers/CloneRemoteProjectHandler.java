@@ -71,6 +71,8 @@ public class CloneRemoteProjectHandler {
     private File destinationFolder = null;
     
     private ProjectEntity projectInfo;
+    
+    private SampleRemoteProject sample;
 
     @Inject
     EPartService partService;
@@ -90,10 +92,8 @@ public class CloneRemoteProjectHandler {
                     public void handleEvent(Event event) {
                         Object[] objects = getObjects(event);
 
-                        SampleRemoteProject sample = (SampleRemoteProject) objects[0];
+                        sample = (SampleRemoteProject) objects[0];
                         projectInfo = (ProjectEntity) objects[1];
-                        
-                        Trackings.trackCreatingSampleProject(sample.getName());
 
                         File workdir = new File(projectInfo.getFolderLocation(), projectInfo.getName());
                         workdir.mkdirs();
@@ -197,6 +197,7 @@ public class CloneRemoteProjectHandler {
         try {            
             ProjectEntity project = ProjectController.getInstance().updateProjectInfo(projectFile, projectInfo);
             shouldHandleProjectOpenAfterClone = true;
+            Trackings.trackCreatingSampleProject(sample.getName(), project.getUUID());
             OpenProjectHandler.doOpenProject(null, project.getLocation(),
                     UISynchronizeService.getInstance().getSync(), EventBrokerSingleton.getInstance().getEventBroker(),
                     PartServiceSingleton.getInstance().getPartService(),
