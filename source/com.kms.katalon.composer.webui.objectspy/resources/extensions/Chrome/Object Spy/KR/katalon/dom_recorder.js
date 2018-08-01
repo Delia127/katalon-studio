@@ -1,6 +1,6 @@
 // TODO: Remove dom_recorder.js entirely ? 
-function startRecord() {
-    ku_recorder.attach();    
+function startRecord(version) {
+    ku_recorder.attach(version);    
     /* rec_setupEventListeners();
     rec_createInfoDiv();
 
