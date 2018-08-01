@@ -45,7 +45,9 @@ public class DocumentationMessageConstants extends NLS {
 
     public static String PREFERENCE_MOBILE_MACOS;
 
-    public static String TEST_CASE_INTEGRATION;
+    public static String TEST_CASE_INTEGRATION_QTEST;
+    
+    public static String TEST_CASE_INTEGRATION_JIRA;
 
     public static String TEST_SUITE_INTEGRATION;
 
