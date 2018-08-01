@@ -17,6 +17,7 @@ import com.kms.katalon.dal.exception.DALException;
 import com.kms.katalon.dal.fileservice.EntityService;
 import com.kms.katalon.dal.fileservice.FileServiceConstant;
 import com.kms.katalon.dal.fileservice.constants.StringConstants;
+import com.kms.katalon.dal.fileservice.dataprovider.SystemFileServiceDataProvider;
 import com.kms.katalon.dal.fileservice.dataprovider.setting.FileServiceDataProviderSetting;
 import com.kms.katalon.entity.checkpoint.CheckpointEntity;
 import com.kms.katalon.entity.dal.exception.DuplicatedFolderException;
@@ -40,7 +41,7 @@ public class FolderFileServiceManager {
     private static void initRootFolder(String folderPath) throws Exception {
         File rootFolder = new File(folderPath);
         if (!rootFolder.exists()) {
-            rootFolder.mkdir();
+            rootFolder.mkdirs();
         }
     }
 
@@ -56,7 +57,10 @@ public class FolderFileServiceManager {
             initRootFolder(FileServiceConstant.getCheckpointRootFolderLocation(projectFolderLocation));
             initRootFolder(FileServiceConstant.getTestListenerRootFolderLocation(projectFolderLocation));
             initRootFolder(FileServiceConstant.getProfileFolderLocation(projectFolderLocation));
-            initRootFolder(FileServiceConstant.getFeatureRootFolderLocation(projectFolderLocation));
+
+            initRootFolder(FileServiceConstant.getSourceFolderLocation(projectFolderLocation));
+            initRootFolder(FileServiceConstant.getGroovyScriptFolderLocation(projectFolderLocation));
+            initRootFolder(FileServiceConstant.getFeatureFolderLocation(projectFolderLocation));
         }
     }
 
@@ -169,13 +173,33 @@ public class FolderFileServiceManager {
         }
         try {
             FolderEntity folder = getFolder(
-                    FileServiceConstant.getFeatureRootFolderLocation(project.getFolderLocation()));
+                    FileServiceConstant.getFeatureFolderLocation(project.getFolderLocation()));
 
             if (folder == null) {
                 return null;
             }
 
             folder.setFolderType(FolderType.FEATURE);
+            folder.setProject(project);
+            return folder;
+        } catch (Exception e) {
+            throw new DALException(e);
+        }
+    }
+
+    public static FolderEntity getSourceRoot(ProjectEntity project) throws DALException {
+        if (project == null) {
+            return null;
+        }
+        try {
+            FolderEntity folder = getFolder(
+                    FileServiceConstant.getSourceFolderLocation(project.getFolderLocation()));
+
+            if (folder == null) {
+                return null;
+            }
+
+            folder.setFolderType(FolderType.INCLUDE);
             folder.setProject(project);
             return folder;
         } catch (Exception e) {
@@ -597,6 +621,8 @@ public class FolderFileServiceManager {
                 return EntityFileServiceManager.copyFolder(folder, destinationFolder);
             case KEYWORD:
                 return EntityFileServiceManager.copyKeywordFolder(folder, destinationFolder);
+            case INCLUDE:
+                return new SystemFileServiceDataProvider().copyFolder(folder, destinationFolder);
             default:
                 break;
         }

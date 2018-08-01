@@ -253,6 +253,8 @@ public class GlobalStringConstants {
 
     public static final String ROOT_FOLDER_NAME_TEST_LISTENER = GlobalMessageConstants.ROOT_FOLDER_NAME_TEST_LISTENER;
 
+    public static final String ROOT_FOLDER_NAME_FEATURES = GlobalMessageConstants.ROOT_FOLDER_NAME_FEATURES;
+
     public static final String FILE_NAME_GLOBAL_VARIABLE = GlobalMessageConstants.FILE_NAME_GLOBAL_VARIABLE;
     
     // Entity keyword

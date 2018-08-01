@@ -213,6 +213,11 @@ public class GroovyUtil {
             }
         }
 
+        IFolder sourceMainGroovy = groovyProject.getFolder("Include/scripts/groovy");
+        if (!sourceMainGroovy.exists()) {
+            sourceMainGroovy.create(true, true, null);
+        }
+
         IFolder driversFolder = groovyProject.getFolder(DRIVERS_FOLDER_NAME);
         if (!driversFolder.exists()) {
             driversFolder.create(true, true, null);
@@ -222,7 +227,7 @@ public class GroovyUtil {
         if (!outputParentFolder.exists()) {
             outputParentFolder.create(true, true, null);
         }
-        
+
         IFolder outputListenerFolder = outputParentFolder.getFolder("listener");
         if (!outputListenerFolder.exists()) {
             outputListenerFolder.create(true, true, null);
@@ -247,6 +252,11 @@ public class GroovyUtil {
             outputKWLibFolder.clearHistory(null);
         }
 
+        IFolder outputSourceMainGroovy = outputParentFolder.getFolder("include/scripts/groovy");
+        File outputSourceMainGroovyFolder = new File(outputSourceMainGroovy.getRawLocationURI());
+        outputSourceMainGroovyFolder.mkdirs();
+        outputSourceMainGroovy.refreshLocal(IResource.DEPTH_INFINITE, null);
+
         IJavaProject javaProject = JavaCore.create(groovyProject);
         javaProject.setOutputLocation(outputParentFolder.getFullPath(), null);
 
@@ -269,6 +279,10 @@ public class GroovyUtil {
         IPackageFragmentRoot keywordLibPackageRoot = javaProject.getPackageFragmentRoot(keywordLibFolder);
         entries.add(JavaCore.newSourceEntry(keywordLibPackageRoot.getPath(), new Path[] {}, new Path[] {},
                 outputKWLibFolder.getFullPath()));
+        
+        IPackageFragmentRoot sourceMainGroovyPackageRoot = javaProject.getPackageFragmentRoot(sourceMainGroovy);
+        entries.add(JavaCore.newSourceEntry(sourceMainGroovyPackageRoot.getPath(), new Path[] {}, new Path[] {},
+                outputSourceMainGroovy.getFullPath()));
 
         // add groovy plugin to classpath
         Bundle bundle = Platform.getBundle(GROOVY_BUNDLE_ID);
@@ -329,6 +343,7 @@ public class GroovyUtil {
         addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle("com.kms.katalon.core.appium"));
         addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle("com.kms.katalon.constant"));
         addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle("com.kms.katalon.util"));
+        addClassPathOfCoreBundleToJavaProject(entries, Platform.getBundle("org.eclipse.equinox.common"));
         for (IKeywordContributor contributor : KeywordContributorCollection.getKeywordContributors()) {
             Bundle coreBundle = FrameworkUtil.getBundle(contributor.getClass());
             addClassPathOfCoreBundleToJavaProject(entries, coreBundle);
@@ -570,12 +585,12 @@ public class GroovyUtil {
         return getGroovyProject(projectEntity).getFolder(KEYWORD_SOURCE_FOLDER_NAME);
     }
 
-    public static List<IPackageFragment> getAllPackageInKeywordFolder(ProjectEntity projectEntity)
+    public static List<IPackageFragment> getAllPackageInFolder(ProjectEntity projectEntity, String folderPath)
             throws JavaModelException {
         IProject groovyProject = getGroovyProject(projectEntity);
         List<IPackageFragment> packageFragments = new ArrayList<IPackageFragment>();
         IPackageFragmentRoot root = JavaCore.create(groovyProject).getPackageFragmentRoot(
-                groovyProject.getFolder(KEYWORD_SOURCE_FOLDER_NAME));
+                groovyProject.getFolder(folderPath));
         for (IJavaElement javaElement : root.getChildren()) {
             if (javaElement instanceof IPackageFragment) {
                 IPackageFragment packageFragment = (IPackageFragment) javaElement;

@@ -15,14 +15,14 @@ import org.osgi.service.event.Event;
 
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
-import com.kms.katalon.composer.components.impl.tree.FeatureFolderTreeEntity;
-import com.kms.katalon.composer.components.impl.tree.FeatureTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.SystemFileTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.integration.cucumber.dialog.RenameFeatureEntityDialog;
 import com.kms.katalon.constants.EventConstants;
-import com.kms.katalon.controller.FeatureController;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.entity.file.FeatureEntity;
+import com.kms.katalon.controller.SystemFileController;
+import com.kms.katalon.entity.file.SystemFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
@@ -39,37 +39,37 @@ public class RenameFeatureEntityHandler {
             @Override
             public void handleEvent(Event event) {
                 Object object = getObject(event);
-                if (object instanceof FeatureTreeEntity) {
-                    execute((FeatureTreeEntity) object);
+                if (object instanceof SystemFileTreeEntity) {
+                    execute((SystemFileTreeEntity) object);
                 }
             }
         });
     }
 
-    private void execute(FeatureTreeEntity testListenerTreeEntity) {
+    private void execute(SystemFileTreeEntity testListenerTreeEntity) {
         try {
-            FeatureController testListenerController = FeatureController.getInstance();
+            SystemFileController testListenerController = SystemFileController.getInstance();
 
-            FeatureFolderTreeEntity parentTreeFolder = (FeatureFolderTreeEntity) testListenerTreeEntity
+            FolderTreeEntity parentTreeFolder = (FolderTreeEntity) testListenerTreeEntity
                     .getParent();
-            FeatureEntity renamedFeature = testListenerTreeEntity.getObject();
+            SystemFileEntity renamedFile = testListenerTreeEntity.getObject();
             FolderEntity parentFolder = parentTreeFolder.getObject();
             RenameFeatureEntityDialog dialog = new RenameFeatureEntityDialog(parentShell,
                     testListenerTreeEntity.getObject(),
-                    testListenerController.getSiblingFeatures(renamedFeature, parentFolder));
+                    testListenerController.getSiblingFiles(renamedFile, parentFolder));
             if (dialog.open() != RenameFeatureEntityDialog.OK) {
                 return;
             }
             String newName = dialog.getNewName();
-            if (renamedFeature.getName().equals(newName)) {
+            if (renamedFile.getName().equals(newName)) {
                 return;
             }
 
             IFile iFile = GroovyUtil.getGroovyProject(ProjectController.getInstance().getCurrentProject())
-                    .getFile(Path.fromOSString(renamedFeature.getRelativePath()));
+                    .getFile(Path.fromOSString(renamedFile.getRelativePath()));
 
-            FeatureEntity newTestListener = testListenerController.renameFeature(newName,
-                    renamedFeature);
+            SystemFileEntity newTestListener = testListenerController.renameSystemFile(newName,
+                    renamedFile);
             testListenerTreeEntity.setObject(newTestListener);
 
             iFile.refreshLocal(IResource.DEPTH_ZERO, new NullProgressMonitor());

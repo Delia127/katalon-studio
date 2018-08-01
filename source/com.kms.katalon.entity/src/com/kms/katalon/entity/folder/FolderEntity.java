@@ -50,7 +50,8 @@ public class FolderEntity extends IntegratedFileEntity {
         CHECKPOINT("Checkpoint"),
         TESTLISTENER("Test listener"),
         PROFILE("Profiles"),
-        FEATURE("Feature");
+        FEATURE("Feature"),
+        INCLUDE("Source");
 
         private final String text;
 

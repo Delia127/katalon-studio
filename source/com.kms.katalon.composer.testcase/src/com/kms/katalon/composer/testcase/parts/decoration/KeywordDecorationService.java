@@ -36,6 +36,8 @@ public class KeywordDecorationService {
                     return ImageConstants.IMG_16_MOBILE;
                 case "WS":
                     return ImageConstants.IMG_16_WS;
+                case "CucumberKW":
+                    return ImageConstants.IMG_16_CUCUMBER;
             }
             return null;
         }
@@ -57,7 +59,7 @@ public class KeywordDecorationService {
         @Override
         public ExpressionStatementWrapper newStep(ASTNodeWrapper parentNode) {
             return AstKeywordsInputUtil.createBuiltInKeywordStatement(
-                    getKeywordContributor().getKeywordClass().getSimpleName(),
+                    getKeywordContributor().getAliasName(),
                     storedKeyword.getKeywordName(), parentNode);
         }
     }

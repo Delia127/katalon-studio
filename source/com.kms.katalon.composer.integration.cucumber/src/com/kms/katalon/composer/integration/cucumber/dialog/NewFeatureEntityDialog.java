@@ -10,6 +10,7 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -19,20 +20,24 @@ import org.eclipse.swt.widgets.Text;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.constants.GlobalMessageConstants;
 import com.kms.katalon.controller.EntityNameController;
-import com.kms.katalon.entity.file.FeatureEntity;
+import com.kms.katalon.entity.file.FileEntity;
 
 public class NewFeatureEntityDialog extends TitleAreaDialog {
 
-    private static final String NEW_TEST_LISTENER_NAME = "New Feature File";
+    private static final String NEW_FEATURE_FILE_NAME = "New Feature File";
+    private static final String FEATURE_FILE_EXTESION = "feature";
 
     private Text txtName;
 
-    private List<FeatureEntity> currentFeatures;
+    private List<FileEntity> currentFeatures;
 
-    private String newName;
+    private NewFeatureResult result;
 
-    public NewFeatureEntityDialog(Shell parentShell, List<FeatureEntity> currentFeatures) {
+    private Button chckGenerateSampleContent;
+
+    public NewFeatureEntityDialog(Shell parentShell, List<FileEntity> currentFeatures) {
         super(parentShell);
+        setShellStyle(SWT.RESIZE);
         this.currentFeatures = currentFeatures;
     }
 
@@ -57,6 +62,10 @@ public class NewFeatureEntityDialog extends TitleAreaDialog {
         gdTxtName.minimumWidth = 200;
         txtName.setLayoutData(gdTxtName);
 
+        chckGenerateSampleContent = new Button(container, SWT.CHECK);
+        chckGenerateSampleContent.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+        chckGenerateSampleContent.setText("Generate sample Feature template");
+
         setInput();
         registerControlModifyListeners();
 
@@ -74,9 +83,14 @@ public class NewFeatureEntityDialog extends TitleAreaDialog {
     }
 
     private void setInput() {
-        txtName.setText(getSuggestion(NEW_TEST_LISTENER_NAME));
-        txtName.selectAll();
-        txtName.forceFocus();
+        chckGenerateSampleContent.setSelection(true);
+        txtName.setText(getSuggestion(NEW_FEATURE_FILE_NAME, FEATURE_FILE_EXTESION));
+        int dotIndex = txtName.getText().indexOf(".");
+        if (dotIndex < 0) {
+            txtName.selectAll();
+        } else {
+            txtName.setSelection(0, dotIndex);
+        }
         setMessage("Create new Feature file", IMessageProvider.INFORMATION);
     }
 
@@ -84,19 +98,19 @@ public class NewFeatureEntityDialog extends TitleAreaDialog {
         return this.currentFeatures.parallelStream().filter(l -> l.getName().equals(newName)).findAny().isPresent();
     }
 
-    private String getSuggestion(String suggestion) {
-        String newName = suggestion;
+    private String getSuggestion(String suggestion, String extension) {
+        String newName = String.format("%s.%s", suggestion, extension);
         int index = 0;
 
         while (isNameDupplicated(newName)) {
             index += 1;
-            newName = String.format("%s %d", suggestion, index);
+            newName = String.format("%s %d.%s", suggestion, index, extension);
         }
         return newName;
     }
 
     private void checkNewName(String newName) {
-        if (isNameDupplicated(newName)) {
+        if (isNameDupplicated(newName)) { 
             setMessage(StringConstants.DIA_NAME_EXISTED, IMessageProvider.ERROR);
             getButton(OK).setEnabled(false);
             return;
@@ -105,6 +119,7 @@ public class NewFeatureEntityDialog extends TitleAreaDialog {
         try {
             EntityNameController.getInstance().validateName(newName);
             setMessage("Create new Feature file", IMessageProvider.INFORMATION);
+            getButton(OK).setEnabled(true);
         } catch (Exception e) {
             setMessage(e.getMessage(), IMessageProvider.ERROR);
             getButton(OK).setEnabled(false);
@@ -124,11 +139,30 @@ public class NewFeatureEntityDialog extends TitleAreaDialog {
 
     @Override
     protected void okPressed() {
-        this.newName = txtName.getText();
+        result = new NewFeatureResult(txtName.getText(), chckGenerateSampleContent.getSelection());
         super.okPressed();
     }
 
-    public String getNewName() {
-        return newName;
+    public NewFeatureResult getResult() {
+        return result;
+    }
+    
+    public class NewFeatureResult {
+        private final String newName;
+
+        private final boolean generateTemplateAllowed;
+
+        public NewFeatureResult(String newName, boolean generateTemplateAllowed) {
+            this.newName = newName;
+            this.generateTemplateAllowed = generateTemplateAllowed;
+        }
+
+        public boolean isGenerateTemplateAllowed() {
+            return generateTemplateAllowed;
+        }
+
+        public String getNewName() {
+            return newName;
+        }
     }
 }

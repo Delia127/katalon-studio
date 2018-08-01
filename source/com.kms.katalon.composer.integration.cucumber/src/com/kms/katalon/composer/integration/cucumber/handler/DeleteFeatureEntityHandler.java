@@ -9,32 +9,32 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 
 import com.kms.katalon.composer.components.event.EventBrokerSingleton;
-import com.kms.katalon.composer.components.impl.tree.FeatureTreeEntity;
+import com.kms.katalon.composer.components.impl.tree.SystemFileTreeEntity;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.explorer.handlers.deletion.IDeleteEntityHandler;
 import com.kms.katalon.constants.EventConstants;
-import com.kms.katalon.controller.FeatureController;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.entity.file.FeatureEntity;
+import com.kms.katalon.controller.SystemFileController;
+import com.kms.katalon.entity.file.SystemFileEntity;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
 public class DeleteFeatureEntityHandler implements IDeleteEntityHandler {
 
     @Override
     public Class<? extends ITreeEntity> entityType() {
-        return FeatureTreeEntity.class;
+        return SystemFileTreeEntity.class;
     }
 
     @Override
     public boolean execute(ITreeEntity treeEntity, IProgressMonitor monitor) {
-        if (!(treeEntity instanceof FeatureTreeEntity)) {
+        if (!(treeEntity instanceof SystemFileTreeEntity)) {
             return false;
         }
 
-        FeatureEntity featureEntity = null;
+        SystemFileEntity featureEntity = null;
         try {
-            featureEntity = (FeatureEntity) treeEntity.getObject();
+            featureEntity = (SystemFileEntity) treeEntity.getObject();
         } catch (Exception ignored) {}
         monitor.subTask(format("Deleting Feature file: ", featureEntity.getIdForDisplay()));
 
@@ -43,7 +43,7 @@ public class DeleteFeatureEntityHandler implements IDeleteEntityHandler {
                     .getFile(Path.fromOSString(featureEntity.getRelativePath()));
             iFile.refreshLocal(IResource.DEPTH_ZERO, new NullProgressMonitor());
             iFile.delete(true, new NullProgressMonitor());
-            FeatureController.getInstance().deleteFeature(featureEntity);
+            SystemFileController.getInstance().deleteFile(featureEntity);
             
             EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, treeEntity.getParent());
             return true;

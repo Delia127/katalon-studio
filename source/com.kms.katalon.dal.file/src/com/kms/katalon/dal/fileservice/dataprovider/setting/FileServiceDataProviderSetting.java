@@ -5,12 +5,12 @@ import com.kms.katalon.dal.IDataFileDataProvider;
 import com.kms.katalon.dal.IEntityDataProvider;
 import com.kms.katalon.dal.IEntityNameProvider;
 import com.kms.katalon.dal.IExportDataProvider;
-import com.kms.katalon.dal.IFeatureDataProvider;
 import com.kms.katalon.dal.IFolderDataProvider;
 import com.kms.katalon.dal.IGlobalVariableDataProvider;
 import com.kms.katalon.dal.IImportDataProvider;
 import com.kms.katalon.dal.IProjectDataProvider;
 import com.kms.katalon.dal.IReportDataProvider;
+import com.kms.katalon.dal.ISystemFileDataProvider;
 import com.kms.katalon.dal.ITestCaseDataProvider;
 import com.kms.katalon.dal.ITestListenerDataProvider;
 import com.kms.katalon.dal.ITestSuiteDataProvider;
@@ -21,12 +21,12 @@ import com.kms.katalon.dal.fileservice.dataprovider.DataFileFileServiceDataProvi
 import com.kms.katalon.dal.fileservice.dataprovider.EntityFileServiceDataProvider;
 import com.kms.katalon.dal.fileservice.dataprovider.EntityNameFileServiceDataProvider;
 import com.kms.katalon.dal.fileservice.dataprovider.ExportFileServiceDataProvider;
-import com.kms.katalon.dal.fileservice.dataprovider.FeatureFileServiceDataProvider;
 import com.kms.katalon.dal.fileservice.dataprovider.FolderFileServiceDataProvider;
 import com.kms.katalon.dal.fileservice.dataprovider.GlobalVariableFileServiceDataProvider;
 import com.kms.katalon.dal.fileservice.dataprovider.ImportFileServiceDataProvider;
 import com.kms.katalon.dal.fileservice.dataprovider.ProjectFileServiceDataProvider;
 import com.kms.katalon.dal.fileservice.dataprovider.ReportFileServiceDataProvider;
+import com.kms.katalon.dal.fileservice.dataprovider.SystemFileServiceDataProvider;
 import com.kms.katalon.dal.fileservice.dataprovider.TestCaseFileServiceDataProvider;
 import com.kms.katalon.dal.fileservice.dataprovider.TestListenerFileServiceDataProvider;
 import com.kms.katalon.dal.fileservice.dataprovider.TestSuiteCollectionFileServiceDataProvider;
@@ -136,8 +136,8 @@ public class FileServiceDataProviderSetting implements IDataProviderSetting {
     }
 
     @Override
-    public IFeatureDataProvider getFeatureDataProvider() {
-        return new FeatureFileServiceDataProvider();
+    public ISystemFileDataProvider getSystemFileDataProvider() {
+        return new SystemFileServiceDataProvider();
     }
 
 }

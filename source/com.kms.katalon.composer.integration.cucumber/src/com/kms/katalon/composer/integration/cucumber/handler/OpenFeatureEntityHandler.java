@@ -20,7 +20,7 @@ import org.osgi.service.event.EventHandler;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
-import com.kms.katalon.entity.file.FeatureEntity;
+import com.kms.katalon.entity.file.SystemFileEntity;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.groovy.util.GroovyUtil;
 
@@ -35,20 +35,22 @@ public class OpenFeatureEntityHandler {
             @Override
             public void handleEvent(Event event) {
                 Object object = event.getProperty(EventConstants.EVENT_DATA_PROPERTY_NAME);
-                if (object != null && object instanceof FeatureEntity) {
-                    openEditor((FeatureEntity) object);
+                if (object instanceof SystemFileEntity) {
+                    openEditor((SystemFileEntity) object);
                 }
-
             }
         });
     }
 
-    ITextEditor openEditor(FeatureEntity object) {
+    ITextEditor openEditor(SystemFileEntity object) {
         ProjectEntity currentProject = ProjectController.getInstance().getCurrentProject();
         IFile iFile = GroovyUtil.getGroovyProject(currentProject).getFile(Path.fromOSString(object.getRelativePath()));
         try {
             iFile.refreshLocal(IResource.DEPTH_ZERO, new NullProgressMonitor());
             IEditorDescriptor desc = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(iFile.getName());
+            if (desc == null) {
+                desc = PlatformUI.getWorkbench().getEditorRegistry().findEditor("org.eclipse.ui.DefaultTextEditor");
+            }
             return (ITextEditor) PlatformUI.getWorkbench()
                     .getActiveWorkbenchWindow()
                     .getActivePage()

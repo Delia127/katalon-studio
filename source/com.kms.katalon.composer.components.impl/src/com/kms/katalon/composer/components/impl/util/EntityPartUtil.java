@@ -5,12 +5,12 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.groovy.eclipse.editor.GroovyEditor;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor;
 import org.eclipse.ui.part.FileEditorInput;
 
@@ -209,14 +209,17 @@ public class EntityPartUtil {
             if (o instanceof CompatibilityEditor
                     && !StringUtils.startsWith(((CompatibilityEditor) o).getModel().getElementId(),
                             IdConstants.TEST_CASE_PARENT_COMPOSITE_PART_ID_PREFIX)) {
-                GroovyEditor editor = (GroovyEditor) ((CompatibilityEditor) o).getEditor();
-                String filePath = ((FileEditorInput) editor.getEditorInput()).getPath().toOSString();
-                String relativePath = PathUtil.absoluteToRelativePath(filePath,
-                        ProjectController.getInstance().getCurrentProject().getFolderLocation());
-                if (relativePath.startsWith(GlobalStringConstants.ROOT_FOLDER_NAME_TEST_LISTENER)) {
-                    ids.add(relativePath.replace(TestListenerEntity.FILE_EXTENSION, ""));
-                } else {
-                    ids.add(relativePath);
+                CompatibilityEditor editor = (CompatibilityEditor) o;
+                IEditorInput editorInput = editor.getEditor().getEditorInput();
+                if (editorInput instanceof FileEditorInput) {
+                    String filePath = ((FileEditorInput) editorInput).getPath().toOSString();
+                    String relativePath = PathUtil.absoluteToRelativePath(filePath,
+                            ProjectController.getInstance().getCurrentProject().getFolderLocation());
+                    if (relativePath.startsWith(GlobalStringConstants.ROOT_FOLDER_NAME_TEST_LISTENER)) {
+                        ids.add(relativePath.replace(TestListenerEntity.FILE_EXTENSION, ""));
+                    } else {
+                        ids.add(relativePath);
+                    }
                 }
             }
         }

@@ -17,7 +17,7 @@ public class KeywordContributorCollection {
     public static List<IKeywordContributor> getKeywordContributors() {
         return keywordContributors;
     }
-    
+
     public static IKeywordContributor getContributor(String keywordClassName) {
         Optional<IKeywordContributor> contributorOpt = keywordContributors.stream()
                 .filter(contributor -> Objects.equal(contributor.getKeywordClass().getName(), keywordClassName))

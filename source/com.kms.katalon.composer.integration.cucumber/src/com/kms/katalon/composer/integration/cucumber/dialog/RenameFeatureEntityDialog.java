@@ -19,20 +19,20 @@ import org.eclipse.swt.widgets.Text;
 import com.kms.katalon.composer.components.impl.constants.StringConstants;
 import com.kms.katalon.constants.GlobalMessageConstants;
 import com.kms.katalon.controller.EntityNameController;
-import com.kms.katalon.entity.file.FeatureEntity;
+import com.kms.katalon.entity.file.FileEntity;
 
 public class RenameFeatureEntityDialog extends TitleAreaDialog {
 
     private Text txtName;
 
-    private List<FeatureEntity> siblingFeatures;
+    private List<FileEntity> siblingFeatures;
 
     private String newName;
 
-    private FeatureEntity currentFeature;
+    private FileEntity currentFeature;
 
-    public RenameFeatureEntityDialog(Shell parentShell, FeatureEntity listenerEntity,
-            List<FeatureEntity> siblingListeners) {
+    public RenameFeatureEntityDialog(Shell parentShell, FileEntity listenerEntity,
+            List<FileEntity> siblingListeners) {
         super(parentShell);
         this.siblingFeatures = siblingListeners;
         this.currentFeature = listenerEntity;
@@ -68,7 +68,12 @@ public class RenameFeatureEntityDialog extends TitleAreaDialog {
 
     private void setInput() {
         txtName.setText(currentFeature.getName());
-        txtName.selectAll();
+        int dotIndex = txtName.getText().indexOf(".");
+        if (dotIndex < 0) {
+            txtName.selectAll();
+        } else {
+            txtName.setSelection(0, dotIndex);
+        }
         txtName.forceFocus();
         setMessage("Rename Feature file", IMessageProvider.INFORMATION);
     }

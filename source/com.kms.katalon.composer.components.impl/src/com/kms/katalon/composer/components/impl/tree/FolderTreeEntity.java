@@ -15,7 +15,9 @@ import com.kms.katalon.composer.components.impl.transfer.TreeEntityTransfer;
 import com.kms.katalon.composer.components.impl.util.TreeEntityUtil;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
 import com.kms.katalon.composer.components.tree.TooltipPropertyDescription;
+import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.controller.FolderController;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.file.FileEntity;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
@@ -37,7 +39,20 @@ public class FolderTreeEntity extends AbstractTreeEntity {
         if (folder.getFolderType() == FolderType.KEYWORD) {
             List<Object> childrenEntities = new ArrayList<Object>();
 
-            for (IPackageFragment packageFragment : GroovyUtil.getAllPackageInKeywordFolder(folder.getProject())) {
+            for (IPackageFragment packageFragment : GroovyUtil.getAllPackageInFolder(folder.getProject(),
+                    GlobalStringConstants.ROOT_FOLDER_NAME_KEYWORD)) {
+                if (packageFragment.exists()) {
+                    childrenEntities.add(new PackageTreeEntity(packageFragment, this));
+                }
+            }
+            return childrenEntities.toArray();
+        }
+        if (FolderController.getInstance().isSourceFolder(ProjectController.getInstance().getCurrentProject(),
+                folder)) {
+            List<Object> childrenEntities = new ArrayList<Object>();
+
+            for (IPackageFragment packageFragment : GroovyUtil.getAllPackageInFolder(folder.getProject(),
+                    folder.getRelativePath())) {
                 if (packageFragment.exists()) {
                     childrenEntities.add(new PackageTreeEntity(packageFragment, this));
                 }
@@ -77,6 +92,10 @@ public class FolderTreeEntity extends AbstractTreeEntity {
         if (StringConstants.ROOT_FOLDER_NAME_CHECKPOINT.equals(idForDisplay)) {
             return ImageConstants.IMG_16_FOLDER_CHECKPOINT;
         }
+        if (FolderController.getInstance().isSourceFolder(
+                ProjectController.getInstance().getCurrentProject(), folder)) {
+            return ImageConstants.IMG_16_FOLDER_SOURCE;
+        }
         return ImageConstants.IMG_16_FOLDER;
     }
 
@@ -88,13 +107,20 @@ public class FolderTreeEntity extends AbstractTreeEntity {
     @Override
     public boolean isRemoveable() throws Exception {
         final String idForDisplay = folder.getIdForDisplay();
-        return !(idForDisplay.equals(StringConstants.ROOT_FOLDER_NAME_TEST_CASE)
+        if (idForDisplay.equals(StringConstants.ROOT_FOLDER_NAME_TEST_CASE)
                 || idForDisplay.equals(StringConstants.ROOT_FOLDER_NAME_TEST_SUITE)
                 || idForDisplay.equals(StringConstants.ROOT_FOLDER_NAME_OBJECT_REPOSITORY)
                 || idForDisplay.equals(StringConstants.ROOT_FOLDER_NAME_DATA_FILE)
                 || idForDisplay.equals(StringConstants.ROOT_FOLDER_NAME_KEYWORD)
-                || idForDisplay.equals(StringConstants.ROOT_FOLDER_NAME_REPORT) 
-                || idForDisplay.equals(StringConstants.ROOT_FOLDER_NAME_CHECKPOINT));
+                || idForDisplay.equals(StringConstants.ROOT_FOLDER_NAME_REPORT)
+                || idForDisplay.equals(StringConstants.ROOT_FOLDER_NAME_CHECKPOINT)) {
+            return false;
+        }
+        if (FolderController.getInstance().isAncentorSystemFolder(ProjectController.getInstance().getCurrentProject(),
+                getObject())) {
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -112,7 +138,10 @@ public class FolderTreeEntity extends AbstractTreeEntity {
 
     @Override
     public Transfer getEntityTransfer() throws Exception {
-        return TreeEntityTransfer.getInstance();
+        if (isRemoveable()) {
+            return TreeEntityTransfer.getInstance();
+        }
+        return null;
     }
 
     @Override

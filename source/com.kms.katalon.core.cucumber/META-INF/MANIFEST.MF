@@ -1,0 +1,23 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Katalon Core API for Cucumber
+Bundle-SymbolicName: com.kms.katalon.core.cucumber;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: KMS
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: io.cucumber.core,
+ io.cucumber.datatable,
+ io.cucumber.datatable-dependencies,
+ io.cucumber.expressions,
+ io.cucumber.gherkin,
+ io.cucumber.html,
+ io.cucumber.java,
+ io.cucumber.tag-expressions,
+ io.cucumber.junit,
+ org.junit,
+ com.kms.katalon.core,
+ com.kms.katalon.custom,
+ org.eclipse.core.runtime,
+ org.codehaus.groovy,
+ org.apache.commons.io,
+ org.apache.commons.lang3

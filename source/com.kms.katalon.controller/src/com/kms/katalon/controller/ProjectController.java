@@ -71,7 +71,7 @@ public class ProjectController extends EntityController {
                 DataProviderState.getInstance().setCurrentProject(project);
                 GroovyUtil.initGroovyProject(project, FolderController.getInstance().getTestCaseRoot(project),
                         progress.newChild(40, SubMonitor.SUPPRESS_SUBTASK));
-                addRecentProject(project);
+                //addRecentProject(project);
                 GlobalVariableController.getInstance().generateGlobalVariableLibFile(project,
                         progress.newChild(20, SubMonitor.SUPPRESS_SUBTASK));
                 KeywordController.getInstance().parseAllCustomKeywords(project,
@@ -189,17 +189,6 @@ public class ProjectController extends EntityController {
     }
 
     public void saveRecentProjects(List<ProjectEntity> recentProjects) throws Exception {
-        ObjectOutputStream outputStream = null;
-        try {
-            outputStream = new ObjectOutputStream(new FileOutputStream(RECENT_PROJECT_FILE_LOCATION));
-            outputStream.writeObject(recentProjects);
-        } catch (Exception e) {
-            throw e;
-        } finally {
-            if (outputStream != null) {
-                outputStream.close();
-            }
-        }
     }
 
     public ProjectEntity getCurrentProject() {

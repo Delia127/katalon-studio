@@ -6,7 +6,7 @@
             class="cucumber.eclipse.editor.editors.Editor"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             extensions="feature"
-            icon="icons/cukes.gif"
+            icon="icons/feature_16.png"
             id="cucumber.eclipse.editor.editors.Editor"
             name="Editor">
       </editor>
@@ -123,21 +123,21 @@
          <command
                commandId="cucumber.eclipse.editor.formmater.pretty_formatter"
                helpContextId="cucumber.eclipse.editor.pretty_format_action_context"
-               icon="icons/cukes.gif"
+               icon="icons/feature_16.png"
                label="Pretty Format"
                style="push">
          </command>
          <command
                commandId="cucumber.eclipse.editor.navigation.findstep"
                helpContextId="cucumber.eclipse.editor.findsteps_action_context"
-               icon="icons/cukes.gif"
+               icon="icons/feature_16.png"
                label="Find Step"
                style="push">
          </command>
          <command
                commandId="cucumber.eclipse.editor.toggle.recalculate"
                helpContextId="cucumber.eclipse.editor.recalculate_action_context"
-               icon="icons/cukes.gif"
+               icon="icons/feature_16.png"
                label="Recalculate steps"
                style="push">
          </command>         
@@ -181,7 +181,7 @@
 </extension>
 <extension point="org.eclipse.debug.ui.launchConfigurationTypeImages">
     <launchConfigurationTypeImage
-        icon="icons/cukes.gif"
+        icon="icons/feature_16.png"
         configTypeID="cucumber.eclipse.launching.localCucumberFeature"
         id="cucumber.eclipse.launching.launchConfigurationTypeImage.localCucumberFeature">
     </launchConfigurationTypeImage>
@@ -296,7 +296,7 @@
     <wizard
           category="cucumber.eclipse.editor"
           class="cucumber.eclipse.editor.wizard.NewStepDefFileWizard"
-          icon="icons/cukes.gif"
+          icon="icons/feature_16.png"
           id="cucumber.eclipse.editor.wizard.NewFeatureFileWizard"
           name="Step-Definition class">
     </wizard>

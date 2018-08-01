@@ -1,6 +1,7 @@
 package cucumber.eclipse.steps.integration;
 
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.core.resources.IResource;
 
@@ -24,7 +25,11 @@ public class Step {
 	}
 	public void setText(String text) {
 		this.text = text;
-		this.compiledText = Pattern.compile(text);
+		try { 
+		    this.compiledText = Pattern.compile(text);
+		} catch (PatternSyntaxException ignored) {
+		    this.compiledText = Pattern.compile(Pattern.quote(text));
+		}
 	}
 	public IResource getSource() {
 		return source;

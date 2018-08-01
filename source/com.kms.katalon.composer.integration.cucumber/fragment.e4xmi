@@ -5,6 +5,7 @@
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_z9rnQJCFEeiATa7fYel7oA" featurename="commands" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Command" xmi:id="_20sQoJCFEeiATa7fYel7oA" elementId="com.kms.katalon.composer.integration.cucumber.command.new" commandName="New Feature File"/>
+    <elements xsi:type="commands:Command" xmi:id="_AE8bQKp1Eei7cZjqjHA2jQ" elementId="com.kms.katalon.composer.integration.cucumber.command.newEmpty" commandName="Empty"/>
   </fragments>
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_d_nYAJCGEeiATa7fYel7oA" featurename="handlers" parentElementId="com.kms.katalon.composer.application">
     <elements xsi:type="commands:Handler" xmi:id="_gBHVsJCGEeiATa7fYel7oA" elementId="com.kms.katalon.composer.integration.cucumber.handler.new" contributionURI="bundleclass://com.kms.katalon.composer.integration.cucumber/com.kms.katalon.composer.integration.cucumber.handler.NewFeatureEntityHandler" command="_20sQoJCFEeiATa7fYel7oA"/>

@@ -201,6 +201,10 @@ public interface IdConstants {
 
     // Groovy
     public static final String GROOVY_EDITOR_URI = "org.codehaus.groovy.eclipse.editor.GroovyEditor";
+    
+    public static final String CUCUMBER_EDITOR_ID = "cucumber.eclipse.editor.editors.Editor";
+
+    public static final String COMPABILITY_EDITOR_ID = "org.eclipse.e4.ui.compatibility.editor";
 
     // Log viewer part
     public static final String LOG_VIEWER_TOOL_ITEM_ALL_ID = "com.kms.katalon.composer.execution.logviewer.all";

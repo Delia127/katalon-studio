@@ -5,18 +5,21 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Image;
 
 import com.kms.katalon.composer.components.impl.constants.ImageConstants;
-import com.kms.katalon.composer.components.impl.transfer.TreeEntityTransfer;
-import com.kms.katalon.entity.file.FeatureEntity;
+import com.kms.katalon.entity.file.SystemFileEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 
-public class FeatureTreeEntity extends AbstractTreeEntity {
-
-    private static final long serialVersionUID = -5786885226138264998L;
-
+public class SystemFileTreeEntity extends AbstractTreeEntity {
+    private static final long serialVersionUID = -6134975225093034560L;
+    
     public static final String[] SEARCH_TAGS = new String[] { "id", "name" };
 
-    public FeatureTreeEntity(FeatureEntity entity, FeatureFolderTreeEntity parentTreeEntity) {
+    public SystemFileTreeEntity(SystemFileEntity entity, FolderTreeEntity parentTreeEntity) {
         super(entity, parentTreeEntity);
+    }
+    
+    @Override
+    public SystemFileEntity getObject() throws Exception {
+        return (SystemFileEntity) super.getObject();
     }
 
     @Override
@@ -26,17 +29,20 @@ public class FeatureTreeEntity extends AbstractTreeEntity {
 
     @Override
     public Image getImage() throws Exception {
-        return ImageConstants.IMG_16_FEATURE;
+        if (".feature".equals(getObject().getFileExtension())) {
+            return ImageConstants.IMG_16_FEATURE;
+        }
+        return null;
     }
 
     @Override
     public String getTypeName() throws Exception {
-        return getCopyTag();
+        return FolderType.INCLUDE.toString();
     }
 
     @Override
     public String getCopyTag() throws Exception {
-        return FolderType.FEATURE.toString();
+        return FolderType.INCLUDE.toString();
     }
 
     @Override
@@ -56,17 +62,17 @@ public class FeatureTreeEntity extends AbstractTreeEntity {
 
     @Override
     public Transfer getEntityTransfer() throws Exception {
-        return TreeEntityTransfer.getInstance();
+        return null;
     }
 
     @Override
     public String getKeyWord() throws Exception {
-        return "ft";
+        return "file";
     }
 
     @Override
     public String[] getSearchTags() throws Exception {
-        return SEARCH_TAGS;
+        return new String[0];
     }
 
     @Override
@@ -82,15 +88,11 @@ public class FeatureTreeEntity extends AbstractTreeEntity {
 
     @Override
     public Image getEntryImage() throws Exception {
-        return ImageConstants.IMG_16_FEATURE;
+        return getImage();
     }
 
     @Override
-    public void loadAllDescentdantEntities() throws Exception {}
-    
-    @Override
-    public FeatureEntity getObject() throws Exception {
-        return (FeatureEntity) super.getObject();
+    public void loadAllDescentdantEntities() throws Exception {
+        
     }
-
 }
