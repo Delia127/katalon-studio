@@ -264,9 +264,15 @@ function handleServerMessage(message) {
                     browserName : bowser.name
                 }
             }
+<<<<<<< HEAD
             if(jsonMessage.data){
                 version = jsonMessage.data.currentVersionString;
                 console.log(version);
+=======
+            var currentVersion = jsonMessage.data;
+            if(currentVersion){
+                // TODO: Do something with this info
+>>>>>>> version_protocol
             }
             clientSocket.send(JSON.stringify(message));
             // if window.activeSign does not exist then KU is being loaded within a WebDriver

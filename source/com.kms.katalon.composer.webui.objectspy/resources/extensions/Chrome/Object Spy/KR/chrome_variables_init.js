@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 
+=======
+>>>>>>> version_protocol
 katalonServerPort = '60982'
 katalonOnOffStatus = true
 spy_captureObjectHotKey = {"keyCode":192,"useAltKey":true,"useShiftKey":false,"useCtrlKey":false,"useMetaKey":false};
