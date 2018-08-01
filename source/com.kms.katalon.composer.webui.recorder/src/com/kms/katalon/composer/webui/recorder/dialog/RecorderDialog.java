@@ -781,19 +781,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         tltmDown.setImage(ImageConstants.IMG_16_MOVE_DOWN);
         tltmDown.addSelectionListener(selectionListener);
         
-//        Composite helpComposite = new Composite(compositeToolbars, SWT.NONE);
-//        GridLayout glHelpComposite = new GridLayout(1, false);
-//        glHelpComposite.marginWidth = 0;
-//        helpComposite.setLayout(glHelpComposite);
-//        GridData gdHelpComposite = new GridData(GridData.HORIZONTAL_ALIGN_END);
-//        gdHelpComposite.widthHint = 24;
-//        helpComposite.setLayoutData(gdHelpComposite);
-        
-//        CLabel helpIcon = new CLabel(helpComposite, SWT.NONE);
-//        helpIcon.setImage(ImageManager.getImage(IImageKeys.HELP_16));
-//        helpIcon.setRightMargin(0);
-        
-        new HelpCompositeForDialog(compositeToolbars, "") {
+        new HelpCompositeForDialog(compositeToolbars, DocumentationMessageConstants.RECORDER_RUN_STEPS) {
             @Override
             protected GridData createGridData() {
                 GridData gridData = new GridData(SWT.RIGHT, SWT.CENTER, true, true);

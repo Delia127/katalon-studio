@@ -108,6 +108,8 @@ public class DocumentationMessageConstants extends NLS {
 	public static String PREFERENCE_GENERAL;
 	
 	public static String NEW_CHECKPOINT;
+	
+	public static String RECORDER_RUN_STEPS;
 
     static {
         // initialize resource bundle
