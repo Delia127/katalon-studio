@@ -24,7 +24,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, callback) {
     }
     switch (request.action) {
     case START_ADDON:
-        start(request.runMode, request.data);
+        start(request.runMode, request.data, request.version);
         break;
     case STOP_ADDON:
         stop();
@@ -39,6 +39,7 @@ chrome.runtime.sendMessage({
 });
 
 function start(newRunMode, data, version) {
+    console.log("in Start" + version);
     switch (newRunMode) {
     case RUN_MODE_OBJECT_SPY:
         startObjectSpy(data);
@@ -64,7 +65,7 @@ function startObjectSpy(data) {
     });
 }
 
-function startRecorder() {
+function startRecorder(version) {
     if (runMode !== RUN_MODE_IDLE) {
         stop();
     }

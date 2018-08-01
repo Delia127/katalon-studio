@@ -31,6 +31,7 @@ import com.kms.katalon.objectspy.util.WebElementUtils;
 import com.kms.katalon.objectspy.websocket.messages.AddonMessage;
 import com.kms.katalon.objectspy.websocket.messages.BrowserInfoMessageData;
 import com.kms.katalon.objectspy.websocket.messages.StartInspectAddonMessage;
+import com.kms.katalon.objectspy.websocket.messages.KatalonVersionAddOnMessage;
 
 @ClientEndpoint
 @ServerEndpoint(value = "/")
@@ -72,7 +73,8 @@ public class AddonSocket {
         setupSession();
         socketServer = AddonSocketServer.getInstance();
         socketServer.addActiveSocket(this);
-        sendMessage(new AddonMessage(AddonCommand.REQUEST_BROWSER_INFO));               
+        // Request browser info AND send Katalon version to addon
+        sendMessage(new KatalonVersionAddOnMessage());               
     }
     
     protected void seleniumSocketResponder(){    	

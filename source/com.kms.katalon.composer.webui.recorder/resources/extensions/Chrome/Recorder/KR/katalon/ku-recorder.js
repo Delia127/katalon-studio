@@ -43,7 +43,7 @@ class KURecorder {
         if (this.attached) {
             return;
         }
-        this.elementKeyword = (version != '' ) ? 'element' : 'elementAction';
+        this.elementKeyword = (!version) ? 'element' : 'elementAction';
         this.attached = true;
         this.eventListeners = {};
         var self = this;
@@ -213,7 +213,7 @@ class KURecorder {
         if (!object) {
             return;
         }
-        var data = this.elementKeyword + encodeURIComponent(JSON.stringify(object));
+        var data = this.elementKeyword + '=' +  encodeURIComponent(JSON.stringify(object));
         if (detectChrome()) {
             chromePostData(url, data, function (response) {
                 if (response) {

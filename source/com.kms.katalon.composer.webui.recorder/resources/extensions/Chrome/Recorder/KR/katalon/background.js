@@ -255,10 +255,6 @@ function handleServerMessage(message) {
     }
     var jsonMessage = JSON.parse(message);
 
-    if(jsonMessage.version){
-        version = JsonMessage.version;
-    }
-    
     switch (jsonMessage.command) {
         case REQUEST_BROWSER_INFO:
             console.log("Sending browser info");
@@ -267,6 +263,9 @@ function handleServerMessage(message) {
                 data: {
                     browserName : bowser.name
                 }
+            }
+            if(jsonMessage.data){
+                version = jsonMessage.data.currentVersionString;
             }
             clientSocket.send(JSON.stringify(message));
             // if window.activeSign does not exist then KU is being loaded within a WebDriver
@@ -278,7 +277,7 @@ function handleServerMessage(message) {
             startAddon(RUN_MODE_OBJECT_SPY, jsonMessage.data, version);
             break;
         case START_RECORD:
-            startAddon(RUN_MODE_RECORDER, jsonMessage.data);
+            startAddon(RUN_MODE_RECORDER, jsonMessage.data, version);
             break;
         case HIGHLIGHT_OBJECT:
             if (!jsonMessage.data) {
@@ -323,6 +322,7 @@ function focusOnWindow() {
 function stopAddon() {
     runMode = RUN_MODE_IDLE;
     runData = {};
+    version = null;
     chrome.tabs.query({}, function (tabs) {
         for (i = 0; i < tabs.length; ++i) {
             chrome.tabs.sendMessage(tabs[i].id, {
