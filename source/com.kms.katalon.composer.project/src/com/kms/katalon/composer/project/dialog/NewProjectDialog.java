@@ -89,7 +89,7 @@ public class NewProjectDialog extends TitleAreaDialog {
     
     private String title;
     
-    private CCombo cbSampleProjects;
+    private Combo cbSampleProjects;
     
     private Text txtRepoUrl;
     
@@ -177,10 +177,8 @@ public class NewProjectDialog extends TitleAreaDialog {
         Label lblSampleProjects = new Label(container, SWT.NONE);
         lblSampleProjects.setText(StringConstants.VIEW_LBL_SAMPLE_PROJECT);
         
-        cbSampleProjects = new CCombo(container, SWT.BORDER);
+        cbSampleProjects = new Combo(container, SWT.BORDER | SWT.READ_ONLY);
         cbSampleProjects.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        cbSampleProjects.setEditable(false);
-        cbSampleProjects.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
         
         Label lblRepoUrl = new Label(container, SWT.NONE);
         lblRepoUrl.setText(StringConstants.VIEW_LBL_REPOSITORY_URL);
