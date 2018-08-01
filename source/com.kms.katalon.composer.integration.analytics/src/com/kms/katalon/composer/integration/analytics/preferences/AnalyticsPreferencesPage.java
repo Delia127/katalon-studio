@@ -320,6 +320,12 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
                         analyticsSettingStore.getServerEndpoint(encryptionEnabled),
                         analyticsSettingStore.getEmail(encryptionEnabled), password,
                         new ProgressMonitorDialog(getShell()), analyticsSettingStore);
+                if (tokenInfo == null){
+                    txtEmail.setText(analyticsSettingStore.getEmail(encryptionEnabled));
+                    txtServerUrl.setText(analyticsSettingStore.getServerEndpoint(encryptionEnabled));
+                    maskPasswordField();
+                    return;
+                }
                 teams = AnalyticsApiProvider.getTeams(analyticsSettingStore.getServerEndpoint(encryptionEnabled),
                         analyticsSettingStore.getEmail(encryptionEnabled), password, tokenInfo,
                         new ProgressMonitorDialog(getShell()));
@@ -566,12 +572,12 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
     }
 
     @Override
-    protected boolean hasDocumentation() {
+    public boolean hasDocumentation() {
         return true;
     }
 
     @Override
-    protected String getDocumentationUrl() {
+    public String getDocumentationUrl() {
         return DocumentationMessageConstants.SETTINGS_KATALON_ANALYTICS;
     }
 }

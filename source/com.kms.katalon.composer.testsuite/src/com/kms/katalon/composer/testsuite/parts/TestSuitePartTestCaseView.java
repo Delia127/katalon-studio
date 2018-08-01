@@ -92,6 +92,7 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.report.AnalyticsReportService;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class TestSuitePartTestCaseView {
     private static final String IS_RUN_COLUMN_HEADER = StringConstants.PA_COL_RUN;
@@ -568,6 +569,7 @@ public class TestSuitePartTestCaseView {
                 	} else {
                 		Program.launch(ComposerTestcaseMessageConstants.KA_WELCOME_PAGE);
                 	}
+                	Trackings.trackOpenKAIntegration("testSuite");
                 } catch (IOException | GeneralSecurityException e1) {
                     LoggerSingleton.logError(e1);
                 }

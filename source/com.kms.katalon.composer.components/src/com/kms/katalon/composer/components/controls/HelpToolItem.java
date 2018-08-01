@@ -22,10 +22,15 @@ public class HelpToolItem extends ToolItem {
     private String documentationLink;
 
     public HelpToolItem(ToolBar parent, String documentationLink) {
+        this(parent, documentationLink, "");
+    }
+    
+    public HelpToolItem(ToolBar parent, String documentationLink, String label) {
         super(parent, SWT.PUSH);
         this.documentationLink = documentationLink;
         setImage(ImageManager.getImage(IImageKeys.HELP_16));
         setToolTipText(ComposerComponentsMessageConstants.TOOLTIP_HELP_WITH_DOCUMENTATION);
+        setText(label);
         addSelectionListener(getSelectionListener());
     }
 

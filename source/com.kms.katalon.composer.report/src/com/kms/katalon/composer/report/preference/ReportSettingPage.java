@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -17,18 +16,20 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 
+import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.components.impl.util.ControlUtils;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.report.constants.ComposerReportMessageConstants;
 import com.kms.katalon.composer.report.constants.StringConstants;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.helper.screenrecorder.VideoFileFormat;
 import com.kms.katalon.core.helper.screenrecorder.VideoQuality;
-import com.kms.katalon.execution.setting.ExecutionSettingStore;
 import com.kms.katalon.core.setting.VideoRecorderSetting;
+import com.kms.katalon.execution.setting.ExecutionSettingStore;
 
-public class ReportSettingPage extends PreferencePage {
+public class ReportSettingPage extends PreferencePageWithHelp {
 
     private static final String[] VIDEO_FORMAT_ITEMS;
 
@@ -181,5 +182,15 @@ public class ReportSettingPage extends PreferencePage {
                     e.getMessage());
             return false;
         }
+    }
+    
+    @Override
+    public boolean hasDocumentation() {
+        return true;
+    };
+    
+    @Override
+    public String getDocumentationUrl() {
+        return DocumentationMessageConstants.SETTING_REPORT;
     }
 }
