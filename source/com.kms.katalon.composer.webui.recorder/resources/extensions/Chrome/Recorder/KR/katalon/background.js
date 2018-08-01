@@ -13,6 +13,8 @@ var runData = {};
 var curTabID = 0;
 var curWinID = 0;
 
+var version = null;
+
 chrome.tabs.onActivated.addListener(function(activeInfo) {
     if (clientSocket !== null) {
         return;
@@ -252,6 +254,11 @@ function handleServerMessage(message) {
         return;
     }
     var jsonMessage = JSON.parse(message);
+
+    if(jsonMessage.version){
+        version = JsonMessage.version;
+    }
+    
     switch (jsonMessage.command) {
         case REQUEST_BROWSER_INFO:
             console.log("Sending browser info");
@@ -266,10 +273,9 @@ function handleServerMessage(message) {
             if (!window.activeSign) {
                 clientSocket.send(SELENIUM_SOCKET + "=true");
             }
-
             break;
         case START_INSPECT:
-            startAddon(RUN_MODE_OBJECT_SPY, jsonMessage.data);
+            startAddon(RUN_MODE_OBJECT_SPY, jsonMessage.data, version);
             break;
         case START_RECORD:
             startAddon(RUN_MODE_RECORDER, jsonMessage.data);
@@ -281,9 +287,10 @@ function handleServerMessage(message) {
             highlightObject(jsonMessage.data);
             break;
     }
+
 }
 
-function startAddon(newRunMode, data) {
+function startAddon(newRunMode, data, vers) {
     runMode = newRunMode;
     runData = data;
     chrome.tabs.query({}, function (tabs) {
@@ -291,7 +298,8 @@ function startAddon(newRunMode, data) {
             chrome.tabs.sendMessage(tabs[i].id, {
                 action: START_ADDON,
                 runMode: newRunMode,
-                data: data
+                data: data,
+                version: (vers) ? vers : ''
             }, function () {
                 // nothing here
             });

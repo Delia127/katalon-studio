@@ -39,10 +39,11 @@ class KURecorder {
     }
 
     // This part of code is copyright by Software Freedom Conservancy(SFC)
-    attach() {
+    attach(version) {
         if (this.attached) {
             return;
         }
+        this.elementKeyword = (version != '' ) ? 'element' : 'elementAction';
         this.attached = true;
         this.eventListeners = {};
         var self = this;
@@ -212,7 +213,7 @@ class KURecorder {
         if (!object) {
             return;
         }
-        var data = 'elementAction=' + encodeURIComponent(JSON.stringify(object));
+        var data = this.elementKeyword + encodeURIComponent(JSON.stringify(object));
         if (detectChrome()) {
             chromePostData(url, data, function (response) {
                 if (response) {

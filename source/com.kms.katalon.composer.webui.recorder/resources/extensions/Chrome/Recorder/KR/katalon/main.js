@@ -35,16 +35,16 @@ chrome.runtime.onMessage.addListener(function(request, sender, callback) {
 chrome.runtime.sendMessage({
     action : CHECK_ADDON_START_STATUS
 }, function(response) {
-    start(response.runMode, response.data);
+    start(response.runMode, response.data, response.version);
 });
 
-function start(newRunMode, data) {
+function start(newRunMode, data, version) {
     switch (newRunMode) {
     case RUN_MODE_OBJECT_SPY:
         startObjectSpy(data);
         break;
     case RUN_MODE_RECORDER:
-        startRecorder();
+        startRecorder(version);
         break;
     case RUN_MODE_IDLE: 
         stop();
@@ -71,7 +71,7 @@ function startRecorder() {
     
     console.log("Starting Recorder")
     $('document').ready(function() {
-        startRecord();
+        startRecord(version);
         runMode = RUN_MODE_RECORDER;
     });
 }
