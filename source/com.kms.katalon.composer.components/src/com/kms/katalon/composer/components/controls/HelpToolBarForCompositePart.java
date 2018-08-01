@@ -1,13 +1,12 @@
 package com.kms.katalon.composer.components.controls;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 
-import com.kms.katalon.constants.DocumentationMessageConstants;
+import com.kms.katalon.composer.components.constants.ComposerComponentsMessageConstants;
 
 public abstract class HelpToolBarForCompositePart extends ToolBarForMPart {
 
@@ -20,7 +19,7 @@ public abstract class HelpToolBarForCompositePart extends ToolBarForMPart {
     }
 
     private void createControls() {
-        new HelpToolItem(this, "", DocumentationMessageConstants.HELP_LABEL) {
+        new HelpToolItem(this, "", ComposerComponentsMessageConstants.LABEL_HELP_WITH_DOCUMENTATION) {
             @Override
             protected SelectionListener getSelectionListener() {
                 return new SelectionAdapter() {

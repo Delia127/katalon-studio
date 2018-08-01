@@ -164,7 +164,7 @@
       <children xsi:type="menu:ToolControl" xmi:id="_Ec3EoI_EEeifVM5dtK86vQ" elementId="com.kms.katalon.composer.toolbar.forumsearch" contributionURI="bundleclass://com.kms.katalon/com.kms.katalon.composer.toolbar.ForumSearchToolControl"/>
       <children xsi:type="menu:ToolBar" xmi:id="_vDJ6II_ZEeifVM5dtK86vQ" elementId="com.kms.katalon.composer.toolbar.support">
         <tags>NoMove</tags>
-        <children xsi:type="menu:HandledToolItem" xmi:id="_v1hLMI_ZEeifVM5dtK86vQ" elementId="com.kms.katalon.composer.toolbar.support.chatsupport" label="Community Discussion" iconURI="platform:/plugin/com.kms.katalon/icons/chat_support_24.png" command="_Wci7UI_aEeifVM5dtK86vQ">
+        <children xsi:type="menu:HandledToolItem" xmi:id="_v1hLMI_ZEeifVM5dtK86vQ" elementId="com.kms.katalon.composer.toolbar.support.chatsupport" label="Community Chat" iconURI="platform:/plugin/com.kms.katalon/icons/chat_support_24.png" command="_Wci7UI_aEeifVM5dtK86vQ">
           <tags>FORCE_TEXT</tags>
         </children>
       </children>

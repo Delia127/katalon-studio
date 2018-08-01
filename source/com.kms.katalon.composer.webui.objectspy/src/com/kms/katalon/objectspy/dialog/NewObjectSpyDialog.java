@@ -39,14 +39,12 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
-import com.kms.katalon.composer.components.controls.HelpCompositeForDialog;
 import com.kms.katalon.composer.components.impl.tree.FolderTreeEntity;
 import com.kms.katalon.composer.components.impl.tree.WebElementTreeEntity;
 import com.kms.katalon.composer.components.impl.util.EventUtil;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.tree.ITreeEntity;
-import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.entity.folder.FolderEntity;
@@ -190,18 +188,6 @@ public class NewObjectSpyDialog extends Dialog
         bottomLayout.marginWidth = 0;
         bottomComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         bottomComposite.setLayout(bottomLayout);
-
-        new HelpCompositeForDialog(bottomComposite, DocumentationMessageConstants.DIALOG_OBJECT_SPY_WEB_UI) {
-
-            @Override
-            protected GridLayout createLayout() {
-                GridLayout layout = new GridLayout();
-                layout.marginHeight = 0;
-                layout.marginBottom = 5;
-                layout.marginWidth = 0;
-                return layout;
-            }
-        };
 
         verifyView = new ObjectVerifyAndHighlightView();
         verifyView.createVerifyAndHighlightView(bottomComposite, GridData.FILL_HORIZONTAL);
