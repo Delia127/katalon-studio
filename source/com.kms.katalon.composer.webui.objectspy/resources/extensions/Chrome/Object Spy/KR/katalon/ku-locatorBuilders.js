@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
+
+
+//only implement if no native implementation is available
+if (!Array.isArray) {
+    Array.isArray = function (obj) {
+        return Object.prototype.toString.call(obj) === '[object Array]';
+    }
+};
+
+
 function KULocatorBuilders(window) {
     this.window = window;
     //this.log = new Log("LocatorBuilders");
@@ -57,7 +67,7 @@ KULocatorBuilders.prototype.build = function(e) {
     if (locators.length > 0) {
         return locators[0][0];
     } else {
-        return null;
+        return "LOCATOR_DETECTION_FAILED";
     }
 };
 
@@ -66,7 +76,7 @@ KULocatorBuilders.prototype.buildAll = function(el) {
     var xpathLevel = 0;
     var maxLevel = 10;
     var buildWithResults;
-    var locators = [];
+    var locators = {};
     //this.log.debug("getLocator for element " + e);
     var coreLocatorStrategies = this.pageBot().locationStrategies;
     for (var i = 0; i < KULocatorBuilders.order.length; i++) {
@@ -75,13 +85,6 @@ KULocatorBuilders.prototype.buildAll = function(el) {
         //this.log.debug("trying " + finderName);
         try {
             buildWithResults = this.buildWith(finderName, e);
-
-            //only implement if no native implementation is available
-            if (!Array.isArray) {
-                Array.isArray = function (obj) {
-                    return Object.prototype.toString.call(obj) === '[object Array]';
-                }
-            };
 
             // If locator is an array then dump its element in a new array
             if (Array.isArray(buildWithResults)) {
@@ -128,11 +131,13 @@ KULocatorBuilders.prototype.buildAll = function(el) {
                     //TODO: Useful if a builder wants to capture a different element like a parent. Use the this.elementEquals
                     if (finderName != 'tac') {
                         var fe = this.findElement(thisLocator);
-                        if ((e == fe) || (coreLocatorStrategies[finderName] && coreLocatorStrategies[finderName].is_fuzzy_match && coreLocatorStrategies[finderName].is_fuzzy_match(fe, e))) {
-                            locators.push([thisLocator, finderName]);
+                        if ((e == fe) || (coreLocatorStrategies[finderName] && coreLocatorStrategies[finderName].is_fuzzy_match 
+                            && coreLocatorStrategies[finderName].is_fuzzy_match(fe, e))) {                            
+                            if(!locators[finderName]){
+                                locators[finderName] = [];
+                            }
+                            locators[finderName].push(thisLocator);
                         }
-                    } else {
-                        locators.splice(0, 0, [thisLocator, finderName]);
                     }
                 }
             }
@@ -574,3 +579,6 @@ KULocatorBuilders._preferredOrder = ['xpath:neighbor'];
 KULocatorBuilders.add('xpath:neighbor', function (e){
     return neighborXpathsGenerator.getXpathsByNeighbors(e, true);
 });
+
+// For common.js to use
+var ku_locatorbuilders = new KULocatorBuilders(window);
