@@ -98,7 +98,7 @@ public class WelcomePart {
         });
 
         container.setContent(mainComposite);
-        container.setMinSize(new Point(900, 1000));
+        container.setMinSize(new Point(900, 900));
         container.setExpandHorizontal(true);
         container.setExpandVertical(true);
 
