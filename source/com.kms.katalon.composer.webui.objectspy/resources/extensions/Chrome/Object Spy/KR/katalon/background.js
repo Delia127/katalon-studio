@@ -205,7 +205,8 @@ chrome.runtime.onMessage.addListener(function (request, sender, callback) {
     } else if (request.action == CHECK_ADDON_START_STATUS) {
         callback({
             runMode: runMode,
-            data: runData
+            data: runData,
+            version: version
         })
     }
 });
@@ -254,6 +255,7 @@ function handleServerMessage(message) {
         return;
     }
     var jsonMessage = JSON.parse(message);
+    var a = null;
 
     switch (jsonMessage.command) {
         case REQUEST_BROWSER_INFO:
@@ -261,12 +263,13 @@ function handleServerMessage(message) {
             var message = {
                 command: BROWSER_INFO,
                 data: {
-                    browserName : bowser.name
+                    browserName : bowser.name,
+                    version: (jsonMessage.data && jsonMessage.data.currentVersionString) ? jsonMessage.data.currentVersionString : ""
                 }
             }
-            if(jsonMessage.data){
-                version = jsonMessage.data.currentVersionString;
-            }
+
+            version = (jsonMessage.data && jsonMessage.data.currentVersionString) ? jsonMessage.data.currentVersionString : "";
+            
             clientSocket.send(JSON.stringify(message));
             // if window.activeSign does not exist then KU is being loaded within a WebDriver
             if (!window.activeSign) {
@@ -298,7 +301,7 @@ function startAddon(newRunMode, data, vers) {
                 action: START_ADDON,
                 runMode: newRunMode,
                 data: data,
-                version: (vers) ? vers : ''
+                version: vers
             }, function () {
                 // nothing here
             });
