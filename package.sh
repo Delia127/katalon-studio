@@ -45,7 +45,7 @@ chmod +x "${CHROME_DRIVER_MAC}"
 chmod +x "${FF_DRIVER_MAC}"
 echo "Grant executed permission for Katalon and browser drivers ... Done"
 
-codesign --verbose --force --deep --sign "78C302D307C50192F47D826C5F577D3F4365EB49" --timestamp=none "${MAC_APP}"
+codesign --verbose --force --deep --sign "163872300F0977FEE936BF83DAA5DCDD5CDA39FA" --timestamp=none "${MAC_APP}"
 echo "Codesigning ... Done"
 
 /usr/local/bin/dropdmg --config-name "Katalon Studio" "${MAC_APP}"
