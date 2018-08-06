@@ -30,6 +30,8 @@ public class ComposerComponentsMessageConstants extends NLS {
     public static String EDI_MSG_VALIDATOR_REQUIRE_MESSAGE;
 
     public static String TOOLTIP_HELP_WITH_DOCUMENTATION;
+    
+    public static String LABEL_HELP_WITH_DOCUMENTATION;
 
     static {
         // initialize resource bundle

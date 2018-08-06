@@ -115,7 +115,6 @@ import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.composer.parts.SavableCompositePart;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
-import com.kms.katalon.composer.testcase.groovy.ast.parser.GroovyWrapperParser;
 import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
 import com.kms.katalon.composer.webservice.components.MirrorEditor;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
@@ -551,11 +550,25 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
         ControlUtils.setFontSize(lblInstruction, fontSize);
         lblInstruction.setText(ComposerWebserviceMessageConstants.LBL_VERIFICATION_INSTRUCTION);
         
-        CLabel lblSnippetHeading = new CLabel(snippetComposite, SWT.NONE);
+        Composite headingComposite = new Composite(snippetComposite, SWT.NONE);
+        headingComposite.setLayout(new GridLayout(2, false));
+        
+       
+        CLabel lblSnippetHeading = new CLabel(headingComposite, SWT.NONE);
         lblSnippetHeading.setTopMargin(10);
+        lblSnippetHeading.setRightMargin(0);
         ControlUtils.setFontSize(lblSnippetHeading, fontSize);
         ControlUtils.setFontToBeBold(lblSnippetHeading);
         lblSnippetHeading.setText(ComposerWebserviceMessageConstants.LBL_SNIPPET_HEADING);
+        
+        CLabel lblHelp = new CLabel(headingComposite, SWT.NONE);
+        lblHelp.setImage(ImageManager.getImage(IImageKeys.HELP_16));
+        lblHelp.setCursor(Display.getCurrent().getSystemCursor(SWT.CURSOR_HAND));
+        lblHelp.setTopMargin(10);
+        lblHelp.setLeftMargin(0);
+        lblHelp.addListener(SWT.MouseDown, e -> {
+            Program.launch("https://docs.katalon.com/x/EwjR");
+        });
         
         ScrolledComposite scrolledComposite = new ScrolledComposite(snippetComposite, SWT.H_SCROLL | SWT.V_SCROLL);
         scrolledComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -1526,6 +1539,12 @@ public abstract class WebServicePart implements SavableCompositePart, EventHandl
         IFileEditorInput input = (IFileEditorInput) verificationScriptEditor.getEditorInput();
         IFile tempScriptFile = input.getFile();
         tempScriptFile.getRawLocation().toFile().delete();
+        
+        try {
+            tempScriptFile.delete(true, null);
+        } catch (CoreException e) {
+            LoggerSingleton.logError(e);
+        }
     }
 
     private WebElementPropertyEntity createBasicAuthHeaderElement() {

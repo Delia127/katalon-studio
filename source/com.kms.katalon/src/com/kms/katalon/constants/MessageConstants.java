@@ -244,6 +244,14 @@ public class MessageConstants extends NLS {
     public static String TAB_LBL_SAMPLE_PROJECTS;
 
     public static String TAB_LBL_GETTING_STARTED;
+    
+    public static String TAB_LBL_WEB_UI;
+    
+    public static String TAB_LBL_MOBILE;
+    
+    public static String TAB_LBL_API;
+    
+    public static String TAB_LBL_SCRIPTING;
 
     public static String RELEASE_NOTE_URL;
 
@@ -276,6 +284,30 @@ public class MessageConstants extends NLS {
     public static String DIA_BTN_NO_THANKS;
 
     public static String DIA_TITLE_KS_UPDATE;
+    
+    public static String MSG_FORUM_SEARCH;
+    
+    public static String URL_MOBILE_RECORD;
+    
+    public static String URL_MOBILE_CONFIG_AND_RECORD_STEP_WINDOWS;
+    
+    public static String URL_MOBILE_CONFIG_AND_RECORD_STEP_MAC;
+    
+    public static String URL_CREATE_WEB_SERVICE_REQUEST;
+    
+    public static String URL_TEST_WEB_SERVICE_REQUEST;
+    
+    public static String URL_API_EXECUTE_TEST_CASE;
+    
+    public static String URL_ADD_WEB_SERVICE_KEYWORD;
+    
+    public static String URL_SCRIPT_NEW_TEST_CASE;
+    
+    public static String URL_ADD_OR_IMPORT_KEYWORDS;
+    
+    public static String URL_CREATE_TEST_LISTENER;
+    
+    public static String URL_BUILD_CMD;
 
     static {
         // initialize resource bundle

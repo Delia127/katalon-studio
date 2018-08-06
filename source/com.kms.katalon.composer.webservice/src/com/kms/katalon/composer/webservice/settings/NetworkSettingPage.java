@@ -16,6 +16,7 @@ import com.kms.katalon.composer.components.dialogs.PreferencePageWithHelp;
 import com.kms.katalon.composer.components.impl.dialogs.MultiStatusErrorDialog;
 import com.kms.katalon.composer.webservice.constants.ComposerWebserviceMessageConstants;
 import com.kms.katalon.composer.webservice.constants.StringConstants;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.webservice.setting.SSLCertificateOption;
 import com.kms.katalon.core.webservice.setting.WebServiceSettingStore;
@@ -111,5 +112,15 @@ public class NetworkSettingPage extends PreferencePageWithHelp {
     @Override
     protected void performDefaults() {
         initializeInput();
+    }
+    
+    @Override
+    public boolean hasDocumentation() {
+        return true;
+    }
+    
+    @Override
+    public String getDocumentationUrl() {
+        return DocumentationMessageConstants.SETTING_NETWORK;
     }
 }

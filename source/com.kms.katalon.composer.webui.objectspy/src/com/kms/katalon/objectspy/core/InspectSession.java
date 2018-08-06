@@ -311,7 +311,7 @@ public class InspectSession implements Runnable {
             File firefoxExtensionFolder = FileUtil.getExtensionBuildFolder();
             File firefoxAddonExtracted = new File(firefoxExtensionFolder, FIREFOX_ADDON_FOLDER_RELATIVE_PATH);
             if (firefoxAddonExtracted.exists()) {
-               FileUtils.cleanDirectory(firefoxAddonExtracted);
+            	FileUtils.cleanDirectory(firefoxAddonExtracted);
             }
             File firefoxAddon = new File(extensionFolder.getAbsolutePath() + getFirefoxExtensionPath());
             ZipUtil.extract(firefoxAddon, firefoxAddonExtracted);

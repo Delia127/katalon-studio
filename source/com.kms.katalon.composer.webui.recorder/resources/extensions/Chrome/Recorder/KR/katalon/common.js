@@ -19,9 +19,14 @@ function treeHTML(element, object, currentWindow) {
         object["attributes"]["text"] = text;
     }
 
+<<<<<<< HEAD
     var xpath = neighborXpathsGenerator.getXpathsByNeighbors(element, false)[0];
     var xpaths = ku_locatorbuilders.buildAll(element);
 	
+=======
+    var xpath = createXPathFromElement(element);
+   // var xpath = ku_locatorBuilders.build(element);
+>>>>>>> Release-5.6.0
 	if(xpath != null ) {
         object['xpath'] = xpath;        
         if(xpaths != null){

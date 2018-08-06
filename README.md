@@ -154,3 +154,9 @@
 | Name | Type | Description |
 |-----------|-------------|------------------------------------------------------------------------------------------------------------------|
 | SELENIUM_SOCKET | Constant | The message sent when chrome_init_variables.js is overrided to tell KS that KU is being loaded in a Webdriver |
+
+### Tips and tricks when dealing with Eclipse glitches.
+- IF you ever find build errors despite running the local server for dependencies, then try different combinations of the followings:
+  + Project -> Clean.
+  + File -> Restart.
+  + Window -> Show View -> Package Explorer -> Ctrl + A to select everything and hit F5.

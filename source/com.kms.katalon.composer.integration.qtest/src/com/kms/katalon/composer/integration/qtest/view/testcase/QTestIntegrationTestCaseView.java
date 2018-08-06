@@ -27,6 +27,7 @@ import com.kms.katalon.composer.integration.qtest.handler.QTestUploadTestCaseHan
 import com.kms.katalon.composer.integration.qtest.job.UploadTestCaseJob;
 import com.kms.katalon.composer.integration.qtest.model.TestCaseRepo;
 import com.kms.katalon.composer.testcase.parts.integration.AbstractTestCaseIntegrationView;
+import com.kms.katalon.constants.DocumentationMessageConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.TestCaseController;
 import com.kms.katalon.entity.file.IntegratedFileEntity;
@@ -266,5 +267,15 @@ public class QTestIntegrationTestCaseView extends AbstractTestCaseIntegrationVie
 
     public void setTestCase(TestCaseEntity testCase) {
         this.testCaseEntity = testCase;
+    }
+    
+    @Override
+    public boolean hasDocumentation() {
+        return true;
+    }
+    
+    @Override
+    public String getDocumentationUrl() {
+        return DocumentationMessageConstants.TEST_CASE_INTEGRATION_QTEST;
     }
 }

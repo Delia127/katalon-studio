@@ -86,8 +86,10 @@ public class CloneRemoteProjectHandler {
                     public void handleEvent(Event event) {
                         Object[] objects = getObjects(event);
 
+
                         SampleRemoteProject sample = (SampleRemoteProject) objects[0];
                         String projectLocation = (String) objects[1];
+
 
                         File workdir = new File(projectLocation);
                         workdir.mkdirs();
@@ -190,7 +192,9 @@ public class CloneRemoteProjectHandler {
 
         try {
             shouldHandleProjectOpenAfterClone = true;
+
             OpenProjectHandler.doOpenProject(null, projectFile.getAbsolutePath(),
+
                     UISynchronizeService.getInstance().getSync(), EventBrokerSingleton.getInstance().getEventBroker(),
                     PartServiceSingleton.getInstance().getPartService(),
                     ModelServiceSingleton.getInstance().getModelService(),

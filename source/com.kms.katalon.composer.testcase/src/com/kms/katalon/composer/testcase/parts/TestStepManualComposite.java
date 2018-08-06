@@ -106,6 +106,7 @@ import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
 import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
 import com.kms.katalon.integration.analytics.report.AnalyticsReportService;
 import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class TestStepManualComposite {
     private ITestCasePart parentPart;
@@ -227,6 +228,7 @@ public class TestStepManualComposite {
                     	} else {
                     		Program.launch(ComposerTestcaseMessageConstants.KA_WELCOME_PAGE);
                     	}
+                    	Trackings.trackOpenKAIntegration("testCase");
                     } catch (IOException | GeneralSecurityException e1) {
                         LoggerSingleton.logError(e1);
                     }
