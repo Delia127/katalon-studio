@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-katalonServerPort = '52314'
-=======
 katalonServerPort = '51796'
 >>>>>>> Release-5.6.0
 katalonOnOffStatus = true

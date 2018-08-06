@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-katalonServerPort = '49222'
-=======
-katalonServerPort = '61725'
+katalonServerPort = '51796'
 >>>>>>> Release-5.6.0
 katalonOnOffStatus = true
 spy_captureObjectHotKey = {"keyCode":192,"useAltKey":true,"useShiftKey":false,"useCtrlKey":false,"useMetaKey":false};
