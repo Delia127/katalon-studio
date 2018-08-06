@@ -140,6 +140,7 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
 		radioXpath = new Button(radioSelectionComposite, SWT.RADIO);
 		radioXpath.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 		radioXpath.setText(LBL_XPATH_SELECTION_METHOD);
+		// Default setting
 		radioXpath.setSelection(true);
 
 		radioAttribute = new Button(radioSelectionComposite, SWT.RADIO);
@@ -188,6 +189,9 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
         tiPropertyClear = new ToolItem(tb, SWT.PUSH);
         tiPropertyClear.setText(StringConstants.CLEAR);
         tiPropertyClear.setImage(ImageConstants.IMG_16_CLEAR);
+        
+     // Default setting
+        showComposite(compositeTableToolBar, false);
 	}
     
    

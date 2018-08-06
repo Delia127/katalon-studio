@@ -1075,6 +1075,8 @@ public class ObjectPropertyView implements EventHandler {
 		
 		showComposite(propertyCompositeTable, selectorMethod == WebElementSelectorMethod.ATTRIBUTES);
 		showComposite(xpathCompositeTable, selectorMethod == WebElementSelectorMethod.XPATH);
+
+		
 	}
 
 	private void refreshParentObjectComposite(Button rdoButton, ParentObjectType parentObjectType,

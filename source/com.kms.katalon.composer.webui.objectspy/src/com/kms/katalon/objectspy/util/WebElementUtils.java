@@ -102,7 +102,7 @@ public class WebElementUtils {
         }
         String name = propsMap.get(ELEMENT_NAME_KEY);
         if (name != null) {
-        	if(usefulNeighborText.equals("")){
+        	if(usefulNeighborText == null || usefulNeighborText.equals("")){
                 return elementType + "_" + toValidFileName(name);
         	}else{
                 return elementType + "_" + toValidFileName(name) + "_" + toValidFileName(usefulNeighborText);

@@ -564,73 +564,8 @@ public class ObjectPropertiesView extends Composite
                 return isWebElementXpath(element);
             }
         });
-
-        cvXpathSelected = new TableViewerColumn(tvXpath, SWT.CENTER);
-        cXpathSelected = cvXpathSelected.getColumn();
-        cXpathSelected.setText(getCheckboxIcon(isAllXpathEnabled()));
-        cXpathSelected.setResizable(false);
-        cXpathSelected.pack();
-        cXpathSelected.addSelectionListener(new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                if (webElement == null || getXpaths() == null || getXpaths().isEmpty()) {
-                    return;
-                }
-                boolean isAllXpathEnabled = isAllXpathEnabled();
-                cXpathSelected.setText(getCheckboxIcon(!isAllXpathEnabled));
-                setAllXpath(!isAllXpathEnabled);
-                sendPropertiesChangedEvent();
-            }
-        });
-
-        cvXpathSelected.setLabelProvider(new CellLabelProvider() {
-
-            @Override
-            public void update(ViewerCell cell) {
-                Object xpath = cell.getElement();
-                if (!isWebElementXpath(xpath)) {
-                    return;
-                }
-                Boolean isSelected = ((WebElementXpathEntity) xpath).getIsSelected();
-                // cell.setFont(ControlUtils.getFontStyle(tProperty, SWT.NORMAL, 10));
-                cell.setText(getCheckboxIcon(isSelected));
-                cXpathSelected.setText(getCheckboxIcon(isAllXpathEnabled()));
-            }
-        });
-        cvXpathSelected.setEditingSupport(new EditingSupport(cvXpathSelected.getViewer()) {
-
-            @Override
-            protected void setValue(Object element, Object value) {
-                if (!canEdit(element)) {
-                    return;
-                }
-                deselectAllXpaths();
-                
-                ((WebElementXpathEntity) element).setIsSelected((boolean) value);
-                
-                tvXpath.refresh();
-                sendPropertiesChangedEvent();
-            }
-
-            @Override
-            protected Object getValue(Object element) {
-                return canEdit(element) && ((WebElementXpathEntity) element).getIsSelected();
-            }
-
-            @Override
-            protected CellEditor getCellEditor(Object element) {
-                return new CheckboxCellEditor();
-            }
-
-            @Override
-            protected boolean canEdit(Object element) {
-                return isWebElementXpath(element);
-            }
-        });
-
+        
         tableColumnLayout.setColumnData(cXpathValue, new ColumnWeightData(50, 150));
-        tableColumnLayout.setColumnData(cXpathSelected, new ColumnWeightData(5, 30, false));
 
     }
     
@@ -987,9 +922,8 @@ public class ObjectPropertiesView extends Composite
         } else {
 	           showComposite(propertyTableComposite, webElement.getSelectorMethod() == SelectorMethod.ATTRIBUTES);
 	           showComposite(xpathTableComposite, webElement.getSelectorMethod() == SelectorMethod.XPATH);                       
-        }
-        
-        cXpathSelected.setText(getCheckboxIcon(isAllXpathEnabled()));
+        }       
+       
         boolean hasXpath = !xpaths.isEmpty();
         btnDelete.setEnabled(hasXpath && hasXpathSelected());
         btnClear.setEnabled(hasXpath);
