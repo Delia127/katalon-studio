@@ -246,8 +246,8 @@ public class AnalyticsPreferencesPage extends FieldEditorPreferencePageWithHelp 
     }
 
     @Override
-    public boolean performOk() {    	
 
+    public boolean performOk() {    	
         if (!isInitialized()) {
             return true;
         }

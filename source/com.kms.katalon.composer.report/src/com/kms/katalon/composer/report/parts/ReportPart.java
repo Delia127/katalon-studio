@@ -139,9 +139,6 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
 
     private static AnalyticsTokenInfo tokenInfo;
 
-    private String analyticsEmail = null;
-
-    private String preferenceEmail = null;
 
     @Inject
     private IEventBroker eventBroker;
@@ -653,14 +650,14 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
         AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(
                 ProjectController.getInstance().getCurrentProject().getFolderLocation());
         ScopedPreferenceStore preferenceStore = getPreferenceStore();
-
-        try {
-            analyticsEmail = analyticsSettingStore.getEmail(analyticsSettingStore.isEncryptionEnabled());
-            preferenceEmail = CryptoUtil.decode(CryptoUtil
-                    .getDefault(preferenceStore.getString(ActivationPreferenceConstants.ACTIVATION_INFO_EMAIL)));
-        } catch (IOException | GeneralSecurityException e2) {
-            LoggerSingleton.logError(e2);
-        }
+//
+//        try {
+//            analyticsEmail = analyticsSettingStore.getEmail(analyticsSettingStore.isEncryptionEnabled());
+//            preferenceEmail = CryptoUtil.decode(CryptoUtil
+//                    .getDefault(preferenceStore.getString(ActivationPreferenceConstants.ACTIVATION_INFO_EMAIL)));
+//        } catch (IOException | GeneralSecurityException e2) {
+//            LoggerSingleton.logError(e2);
+//        }
 
         btnUploadToAnalytics = new ToolItem(toolBar, SWT.DROP_DOWN);
         btnUploadToAnalytics.setText(ComposerReportMessageConstants.BTN_KATALON_ANALYTICS);
@@ -677,10 +674,19 @@ public class ReportPart implements EventHandler, IComposerPartEvent {
             public void widgetSelected(SelectionEvent e) {
                 if (analyticsReportService.isIntegrationEnabled()) {
                     // open KA web
-                    String tokenInfo;
+                    String tokenInfo = null;
+                    String analyticsEmail = null;
+                    String preferenceEmail = null;
+                    try {
+                        analyticsEmail = analyticsSettingStore.getEmail(analyticsSettingStore.isEncryptionEnabled());
+                        preferenceEmail = CryptoUtil.decode(CryptoUtil
+                                .getDefault(preferenceStore.getString(ActivationPreferenceConstants.ACTIVATION_INFO_EMAIL)));
+                    } catch (IOException | GeneralSecurityException e2) {
+                        LoggerSingleton.logError(e2);
+                    }
                     try {
                         tokenInfo = analyticsSettingStore.getToken(true);
-                        if (preferenceEmail.equals(analyticsEmail) && preferenceEmail != null) {
+                        if (preferenceEmail.equals(analyticsEmail) && preferenceEmail != null && tokenInfo != null) {
                             Program.launch(ComposerTestcaseMessageConstants.KA_HOMEPAGE + "token=" + tokenInfo);
                         } else {
                             Program.launch(ComposerTestcaseMessageConstants.KA_HOMEPAGE_NOTOKEN);
