@@ -223,10 +223,11 @@ public class SoapServicePart extends WebServicePart {
 
                         WebServiceRequestEntity requestEntity = getWSRequestObject();
                         
-                        RequestObject requestObject = (RequestObject) ObjectRepository.findTestObject(projectDir,
-                                requestEntity.getIdForDisplay(), Collections.emptyMap());
-                        final ResponseObject responseObject = WebServiceController.getInstance()
-                                .sendRequest(requestObject, projectDir, ProxyPreferences.getProxyInformation());
+                        Map<String, String> evaluatedVariables = evaluateRequestVariables();
+
+                        ResponseObject responseObject = WebServiceController.getInstance().sendRequest(requestEntity,
+                                projectDir, ProxyPreferences.getProxyInformation(),
+                                Collections.<String, Object>unmodifiableMap(evaluatedVariables));
 
                         if (monitor.isCanceled()) {
                             return;
@@ -244,7 +245,7 @@ public class SoapServicePart extends WebServicePart {
                         });
 
                         if (runVerificationScript) {
-                            executeVerificationScript(requestObject.getVerificationScript(), responseObject);
+                            executeVerificationScript(responseObject);
                         }
                     } catch (Exception e) {
                         throw new InvocationTargetException(e);

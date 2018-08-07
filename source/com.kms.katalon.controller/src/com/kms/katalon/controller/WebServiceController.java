@@ -1,6 +1,7 @@
 package com.kms.katalon.controller;
 
 import java.io.File;
+import java.util.Map;
 
 import com.kms.katalon.core.network.ProxyInformation;
 import com.kms.katalon.core.testobject.ObjectRepository;
@@ -26,19 +27,15 @@ public class WebServiceController extends EntityController {
         return (WebServiceController) _instance;
     }
 
-    private RequestObject getRequestObject(WebServiceRequestEntity entity, String projectDir) {
+    private RequestObject getRequestObject(WebServiceRequestEntity entity, String projectDir,
+            Map<String, Object> variables) {
         return (RequestObject) ObjectRepository.readTestObjectFile(entity.getIdForDisplay(), new File(entity.getId()),
-                projectDir);
+                projectDir, variables);
     }
 
     public ResponseObject sendRequest(WebServiceRequestEntity entity, String projectDir,
-            ProxyInformation proxyInformation) throws Exception {
-        RequestObject requestObject = getRequestObject(entity, projectDir);
-        return sendRequest(requestObject, projectDir, proxyInformation);
-    }
-    
-    public ResponseObject sendRequest(RequestObject requestObject, String projectDir,
-            ProxyInformation proxyInformation) throws Exception  {
+            ProxyInformation proxyInformation, Map<String, Object> variables) throws Exception {
+        RequestObject requestObject = getRequestObject(entity, projectDir, variables);
         return ServiceRequestFactory.getInstance(requestObject, projectDir, proxyInformation).send(requestObject);
     }
 }

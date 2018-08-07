@@ -79,8 +79,18 @@ public class TestCaseVariableView implements TableActionOperator {
 
     private IVariablePart variablePart;
     
+    private InputValueType[] inputValueTypes = defaultInputValueTypes;
+    
     public TestCaseVariableView(IVariablePart variablePart) {
         this.variablePart = variablePart;
+    }
+    
+    public void setInputValueTypes(InputValueType[] inputValueTypes) {
+        this.inputValueTypes = inputValueTypes;
+    }
+    
+    public InputValueType[] getInputValueTypes() {
+        return inputValueTypes;
     }
 
     public Composite createComponents(Composite parent) {
@@ -209,7 +219,7 @@ public class TestCaseVariableView implements TableActionOperator {
 
         TableViewerColumn tableViewerColumnDefaultValueType = new TableViewerColumn(tableViewer, SWT.NONE);
         tableViewerColumnDefaultValueType.setEditingSupport(
-                new VariableDefaultValueTypeEditingSupport(tableViewer, this, defaultInputValueTypes));
+                new VariableDefaultValueTypeEditingSupport(tableViewer, this, inputValueTypes));
         TableColumn tblclmnDefaultValueType = tableViewerColumnDefaultValueType.getColumn();
         tblclmnDefaultValueType.setWidth(100);
         tblclmnDefaultValueType.setText(StringConstants.PA_COL_DEFAULT_VALUE_TYPE);

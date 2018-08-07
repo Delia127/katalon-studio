@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -117,6 +119,7 @@ import com.kms.katalon.composer.parts.SavableCompositePart;
 import com.kms.katalon.composer.resources.constants.IImageKeys;
 import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.testcase.constants.ComposerTestcaseMessageConstants;
+import com.kms.katalon.composer.testcase.model.InputValueType;
 import com.kms.katalon.composer.testcase.parts.IVariablePart;
 import com.kms.katalon.composer.testcase.parts.TestCaseVariableView;
 import com.kms.katalon.composer.util.groovy.GroovyEditorUtil;
@@ -146,6 +149,8 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.entity.variable.VariableEntity;
+import com.kms.katalon.execution.exception.ExecutionException;
+import com.kms.katalon.execution.webservice.VariableEvaluator;
 import com.kms.katalon.execution.webservice.VerificationScriptExecutor;
 
 public abstract class WebServicePart implements IVariablePart, SavableCompositePart, EventHandler, IComposerPartEvent {
@@ -225,6 +230,10 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
     protected static final String OAUTH_1_0 = RequestHeaderConstants.AUTHORIZATION_TYPE_OAUTH_1_0;
     
     private static final int MIN_PART_WIDTH = 400;
+    
+    private static final InputValueType[] variableInputValueTypes = { InputValueType.String, InputValueType.Number,
+            InputValueType.Boolean, InputValueType.Null, InputValueType.GlobalVariable, InputValueType.TestDataValue,
+            InputValueType.List, InputValueType.Map };
     
     @Inject
     protected MApplication application;
@@ -360,7 +369,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         
         new ToolBarForVerificationPart(ui.getVerificationPart());
         
-        new HelpToolBarForMPart(ui.getVariablePart(), "www.google.com");
+//        new HelpToolBarForMPart(ui.getVariablePart(), "www.google.com");
         
         scriptEditorPart = ui.getScriptEditorPart();
         verificationScriptEditor = (GroovyEditor)GroovyEditorUtil.getEditor(scriptEditorPart);
@@ -433,7 +442,8 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         }
     }
     
-    protected void executeVerificationScript(String verificationScript, ResponseObject responseObject) throws Exception {
+    protected void executeVerificationScript(ResponseObject responseObject) throws Exception {
+        String verificationScript = getVerificationScript();
         VerificationScriptExecutor executor = new VerificationScriptExecutor();
         executor.execute(originalWsObject.getId(), verificationScript, responseObject);
     }
@@ -500,8 +510,20 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
     protected abstract void sendRequest(boolean runVerificationScript);
     
-//    protected RequestObject getRequestObjectWithMappedVariables(WebServiceRequestEntity requestEntity) {
-//        
+    protected Map<String, String> evaluateRequestVariables() throws IOException, ExecutionException, InterruptedException,
+            java.util.concurrent.ExecutionException, TimeoutException {
+
+        WebServiceRequestEntity requestEntity = getWSRequestObject();
+        List<VariableEntity> variables = requestEntity.getVariables();
+        Map<String, String> variableMap = variables.stream()
+                .collect(Collectors.toMap(VariableEntity::getName, VariableEntity::getDefaultValue));
+
+        VariableEvaluator evaluator = new VariableEvaluator();
+        Map<String, String> evaluatedVariables = evaluator.evaluate(originalWsObject.getId(), variableMap);
+
+        return evaluatedVariables;
+    }
+
 
     protected abstract void createParamsComposite(Composite parent);
 
@@ -542,6 +564,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
         Composite variablePartComposite = ui.getVariablePartComposite();
         
         variableView = new TestCaseVariableView(this);
+        variableView.setInputValueTypes(variableInputValueTypes);
         variableView.createComponents(variablePartComposite);
         
         // hide "Masked" column
