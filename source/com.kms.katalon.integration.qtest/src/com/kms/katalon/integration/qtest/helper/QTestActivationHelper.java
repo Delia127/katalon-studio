@@ -64,11 +64,10 @@ public class QTestActivationHelper {
     public static boolean qTestOnlineActivate(String username, String activationCode, StringBuilder errorMessage) {
         try {
             JsonObject activationObject = new JsonObject();
-            activationObject.addProperty(QTestStringConstants.USERNAME,
-                    StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(username)));
-            activationObject.addProperty(QTestStringConstants.REQUEST_PROP_ACTIVATION_CODE,
-                    StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(activationCode)));
-            String result = ServerAPICommunicationUtil.post("/api/qtest-licenses/activate", activationObject.toString());
+            activationObject.addProperty(QTestStringConstants.USERNAME, username);
+            activationObject.addProperty(QTestStringConstants.REQUEST_PROP_ACTIVATION_CODE, activationCode);
+            String result = ServerAPICommunicationUtil.post("/qtest-licenses/activate",
+                    activationObject.toString());
 
             ResponseActivation responeOb = JsonUtil.fromJson(result, ResponseActivation.class);
 
