@@ -891,6 +891,32 @@ public class ObjectPropertyView implements EventHandler {
 					return;
 				}
 			}
+			txtSelectorEditor.setEditable(true);
+			txtSelectorEditor.setBackground(ColorUtil.getWhiteBackgroundColor());
+			txtSelectorEditor.setText(StringUtils.EMPTY);
+			break;
+		default:
+			break;
+			
+		}
+	}
+	
+	private void onWebElementCSSChanged() {
+		if (txtSelectorEditor.isDisposed()) {
+			return;
+		}
+		if (cloneTestObject == null) {
+			txtSelectorEditor.setEnabled(false);
+			txtSelectorEditor.setBackground(ColorUtil.getDisabledItemBackgroundColor());
+			txtSelectorEditor.setText(StringUtils.EMPTY);
+			return;
+		}
+		WebElementSelectorMethod selectorMethod = cloneTestObject.getSelectorMethod();
+		switch (selectorMethod) {
+		case CSS:
+			txtSelectorEditor.setEditable(true);
+			txtSelectorEditor.setBackground(ColorUtil.getWhiteBackgroundColor());
+			txtSelectorEditor.setText(StringUtils.EMPTY);
 			break;
 		default:
 			break;
@@ -1072,6 +1098,7 @@ public class ObjectPropertyView implements EventHandler {
 
 		onWebElementPropertyChanged();
 		onWebElementXpathChanged();
+		onWebElementCSSChanged();
 		
 		showComposite(propertyCompositeTable, selectorMethod == WebElementSelectorMethod.ATTRIBUTES);
 		showComposite(xpathCompositeTable, selectorMethod == WebElementSelectorMethod.XPATH);
@@ -1117,6 +1144,11 @@ public class ObjectPropertyView implements EventHandler {
 			// if table has a active cell, commit the current editing
 			propertyTableViewer.getTable().forceFocus();
 		}
+		
+		if(xpathTableViewer.isCellEditorActive()){
+			// if table has a active cell, commit the current editing
+			xpathTableViewer.getTable().forceFocus();
+		}
 
 		if (!verifyObjectProperties()) {
 			return;
@@ -1126,6 +1158,11 @@ public class ObjectPropertyView implements EventHandler {
 		final List<WebElementPropertyEntity> webElementProperties = cloneTestObject.getWebElementProperties();
 		webElementProperties.clear();
 		webElementProperties.addAll(propertyTableViewer.getInput());
+		
+		// prepare xpaths
+		final List<WebElementXpathEntity> webElementXpaths = cloneTestObject.getWebElementXpaths();
+		webElementXpaths.clear();
+		webElementXpaths.addAll(xpathTableViewer.getInput());
 
 		ParentObjectType parentObjectType = getParentObjectType();
 		switch (parentObjectType) {
@@ -1151,11 +1188,11 @@ public class ObjectPropertyView implements EventHandler {
 
 		// back-up
 		WebElementEntity temp = new WebElementEntity();
-		copyObjectProperties(originalTestObject, temp);
+		copyObjectCharacteristics(originalTestObject, temp);
 		try {
 			String pk = originalTestObject.getId();
 			String oldIdForDisplay = originalTestObject.getIdForDisplay();
-			copyObjectProperties(cloneTestObject, originalTestObject);
+			copyObjectCharacteristics(cloneTestObject, originalTestObject);
 
 			ObjectRepositoryController.getInstance().updateTestObject(originalTestObject);
 			changeOriginalTestObject(originalTestObject);
@@ -1171,11 +1208,11 @@ public class ObjectPropertyView implements EventHandler {
 			eventBroker.send(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, testObjectTreeEntity);
 			dirtyable.setDirty(false);
 		} catch (DuplicatedFileNameException dupplicatedEx) {
-			copyObjectProperties(temp, originalTestObject);
+			copyObjectCharacteristics(temp, originalTestObject);
 			MessageDialog.openWarning(null, StringConstants.WARN_TITLE,
 					MessageFormat.format(StringConstants.VIEW_ERROR_REASON_OBJ_EXISTED, dupplicatedEx.getMessage()));
 		} catch (Exception ex) {
-			copyObjectProperties(temp, originalTestObject);
+			copyObjectCharacteristics(temp, originalTestObject);
 			MultiStatusErrorDialog.showErrorDialog(ex, StringConstants.VIEW_ERROR_MSG_UNABLE_TO_SAVE_TEST_OBJ,
 					ex.toString());
 		}
@@ -1198,7 +1235,7 @@ public class ObjectPropertyView implements EventHandler {
 				.ifPresent(elementProperty -> webElementProperties.remove(elementProperty));
 	}
 
-	private void copyObjectProperties(WebElementEntity src, WebElementEntity des) {
+	private void copyObjectCharacteristics(WebElementEntity src, WebElementEntity des) {
 		des.setName(src.getName());
 		des.setParentFolder(src.getParentFolder());
 		des.setProject(src.getProject());
@@ -1207,6 +1244,9 @@ public class ObjectPropertyView implements EventHandler {
 
 		des.getWebElementProperties().clear();
 		des.getWebElementProperties().addAll(src.getWebElementProperties());
+		
+		des.getWebElementXpaths().clear();
+		des.getWebElementXpaths().addAll(src.getWebElementXpaths());
 
 		des.setImagePath(src.getImagePath());
 		des.setUseRalativeImagePath(src.getUseRalativeImagePath());
@@ -1237,6 +1277,9 @@ public class ObjectPropertyView implements EventHandler {
 				}
 				else if(object.equals(xpathTableViewer)){
 					onWebElementXpathChanged();
+					dirtyable.setDirty(true);
+				}else{
+					onWebElementCSSChanged();
 					dirtyable.setDirty(true);
 				}
 			}
