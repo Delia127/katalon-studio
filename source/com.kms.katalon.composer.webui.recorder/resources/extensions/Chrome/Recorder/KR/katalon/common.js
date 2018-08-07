@@ -1,3 +1,4 @@
+var ku_locatorBuilders = new KULocatorBuilders(window);
 //Recursively loop through DOM elements and assign properties to object
 function treeHTML(element, object, currentWindow) {
     if (!element) {
@@ -19,7 +20,7 @@ function treeHTML(element, object, currentWindow) {
         object["attributes"]["text"] = text;
     }
     var xpath = createXPathFromElement(element);
-   // var xpath = ku_locatorBuilders.build(element);
+    var xpaths = ku_locatorBuilders.buildAll(element);
    
 	if(xpath != null ) {
         object['xpath'] = xpath;        
