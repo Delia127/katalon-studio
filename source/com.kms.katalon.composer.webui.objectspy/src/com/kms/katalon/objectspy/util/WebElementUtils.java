@@ -159,20 +159,25 @@ public class WebElementUtils {
         // Change default selected properties by user settings
         SelectorMethod selectorMethod = getCapturedTestObjectSelectorMethod();
         
-        Map<String, Boolean> customSettings = getCapturedTestObjectLocatorSettings().stream()
+        Map<String, Boolean> customAttributeLocatorsSetting = getCapturedTestObjectAttributeLocatorSettings().stream()
                 .collect(Collectors.toMap(Pair::getLeft, Pair::getRight));
-        properties.stream().filter(i -> customSettings.get(i.getName()) != null).forEach(i -> {
-            i.setIsSelected(customSettings.get(i.getName()));
+        properties.stream().filter(i -> customAttributeLocatorsSetting.get(i.getName()) != null).forEach(i -> {
+            i.setIsSelected(customAttributeLocatorsSetting.get(i.getName()));
         });
-        
         
         
         // Because WebElement has xpath as the default SelectorMethod,
         // we set the first xpath as selected in case the users don't actively choose
         if(!xpaths.isEmpty() && xpaths.size() > 0){
             xpaths.get(0).setIsSelected(true);
-
         }
+        
+        Map<String, Boolean> customXpathLocatorsSetting = getCapturedTestObjectXpathLocatorSettings().stream()
+                .collect(Collectors.toMap(Pair::getLeft, Pair::getRight));
+        xpaths.stream().filter(i -> customXpathLocatorsSetting.get(i.getName()) != null).forEach(i -> {
+            i.setIsSelected(customXpathLocatorsSetting.get(i.getName()));
+        });
+
         String usefulNeighborText = getElementUsefulNeighborText(elementJsonObject);
         WebFrame parentElement = getParentElement(elementJsonObject);
 
@@ -192,11 +197,22 @@ public class WebElementUtils {
         return el;
     }
 
-    private static List<Pair<String, Boolean>> getCapturedTestObjectLocatorSettings() {
+    private static List<Pair<String, Boolean>> getCapturedTestObjectAttributeLocatorSettings() {
         WebUiExecutionSettingStore store = new WebUiExecutionSettingStore(
                 ProjectController.getInstance().getCurrentProject());
         try {
             return store.getCapturedTestObjectAttributeLocators();
+        } catch (IOException e) {
+            LoggerSingleton.logError(e);
+            return Collections.emptyList();
+        }
+    }
+    
+    private static List<Pair<String, Boolean>> getCapturedTestObjectXpathLocatorSettings() {
+        WebUiExecutionSettingStore store = new WebUiExecutionSettingStore(
+                ProjectController.getInstance().getCurrentProject());
+        try {
+            return store.getCapturedTestObjectXpathLocators();
         } catch (IOException e) {
             LoggerSingleton.logError(e);
             return Collections.emptyList();
