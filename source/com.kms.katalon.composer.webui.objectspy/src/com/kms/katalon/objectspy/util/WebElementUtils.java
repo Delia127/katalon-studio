@@ -165,8 +165,7 @@ public class WebElementUtils {
             i.setIsSelected(customSettings.get(i.getName()));
         });
         
-        
-        
+                
         // Because WebElement has xpath as the default SelectorMethod,
         // we set the first xpath as selected in case the users don't actively choose
         if(!xpaths.isEmpty() && xpaths.size() > 0){
