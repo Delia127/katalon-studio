@@ -1149,7 +1149,7 @@ public class ObjectPropertyView implements EventHandler {
 			// if table has a active cell, commit the current editing
 			xpathTableViewer.getTable().forceFocus();
 		}
-
+		
 		if (!verifyObjectProperties()) {
 			return;
 		}

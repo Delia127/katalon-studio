@@ -1,7 +1,6 @@
 package com.kms.katalon.composer.webui.setting;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -36,13 +35,10 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
@@ -360,7 +356,21 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
             public String getText(Object element) {
                 return ((Pair<String, Boolean>) element).getLeft();
             }
-        });      
+        });  
+        
+    	
+    	tvXpath.addSelectionChangedListener(new ISelectionChangedListener() {
+			  @Override
+			  public void selectionChanged(SelectionChangedEvent event) {
+			    IStructuredSelection selection = tvXpath.getStructuredSelection();
+			    Object firstElement = selection.getFirstElement();
+			    if(firstElement!=null){
+	    		    tvXpath.remove(firstElement);
+	    		    tvXpath.insert(firstElement, 0);
+			    }
+			    tvXpath.refresh();
+			  }
+    	}); 
 
         tableColumnLayout.setColumnData(cName, new ColumnWeightData(80, 100));
 
@@ -380,18 +390,9 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
     }
 
     protected void registerListeners() {
-    	
-    	tXpath.addListener(SWT.Selection,  new Listener(){
 
-			@Override
-			public void handleEvent(Event event) {
-				TableItem[] selections = tXpath.getSelection();
-			}
-    		
-    	});
     	
-        tiPropertyAdd.addSelectionListener(new SelectionAdapter() {
-        	
+        tiPropertyAdd.addSelectionListener(new SelectionAdapter() {        	
 
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -553,4 +554,6 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
     public String getDocumentationUrl() {
 		return DocumentationMessageConstants.SETTINGS_WEBLOCATORS;
 	}
+	
+	
 }
