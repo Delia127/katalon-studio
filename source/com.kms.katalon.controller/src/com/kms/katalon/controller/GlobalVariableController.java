@@ -54,7 +54,7 @@ public class GlobalVariableController extends EntityController {
             IFolder libFolder = GroovyUtil.getCustomKeywordLibFolder(project);
             GlobalVariableParser.getInstance().generateGlobalVariableLibFile(libFolder,
                     getAllGlobalVariableCollections(project));
-            libFolder.refreshLocal(IResource.DEPTH_ONE, monitor);
+            libFolder.refreshLocal(IResource.DEPTH_INFINITE, monitor);
         } finally {
             if (monitor != null) {
                 monitor.done();

@@ -53,7 +53,7 @@ import com.kms.katalon.selenium.firefox.FirefoxWebExtension;
 
 @SuppressWarnings("restriction")
 public class InspectSession implements Runnable {
-    private static final String FIREFOX_ADDON_UUID = "{932b2318-b453-4947-8d43-92ac9dcef9bf}";
+    private static final String FIREFOX_ADDON_UUID = "{91f05833-bab1-4fb1-b9e4-187091a4d75d}";
 
     private static final String HTTP = "http";
 
@@ -80,9 +80,10 @@ public class InspectSession implements Runnable {
     protected static final String IE_ABSOLUTE_PATH = "C:\\Program Files\\Internet Explorer\\iexplore.exe";
 
     protected static final String IE_32BIT_ABSOLUTE_PATH = "C:\\Program Files (x86)\\Internet Explorer\\iexplore.exe";
-
+    
     protected static final String CHROME_EXTENSION_RELATIVE_PATH = File.separator + "Chrome" + File.separator
-            + OBJECT_SPY_ADD_ON_NAME;
+            + OBJECT_SPY_ADD_ON_NAME + File.separator + "KR";
+    
 
     protected static final String FIREFOX_ADDON_RELATIVE_PATH = File.separator + "Firefox" + File.separator
             + "objectspy.xpi";
@@ -107,6 +108,7 @@ public class InspectSession implements Runnable {
     private String startUrl;
 
     private boolean driverStarted = false;
+    
 
     public InspectSession(HTMLElementCaptureServer server, WebUIDriverType webUiDriverType,
             ProjectEntity currentProject, Logger logger) {
@@ -308,7 +310,7 @@ public class InspectSession implements Runnable {
             File firefoxExtensionFolder = FileUtil.getExtensionBuildFolder();
             File firefoxAddonExtracted = new File(firefoxExtensionFolder, FIREFOX_ADDON_FOLDER_RELATIVE_PATH);
             if (firefoxAddonExtracted.exists()) {
-                return firefoxAddonExtracted;
+            	FileUtils.cleanDirectory(firefoxAddonExtracted);
             }
             File firefoxAddon = new File(extensionFolder.getAbsolutePath() + getFirefoxExtensionPath());
             ZipUtil.extract(firefoxAddon, firefoxAddonExtracted);
@@ -345,7 +347,8 @@ public class InspectSession implements Runnable {
     }
 
     protected String getChromeExtensionPath() {
-        return CHROME_EXTENSION_RELATIVE_PATH;
+        //return CHROME_EXTENSION_RELATIVE_PATH;
+    	return CHROME_EXTENSION_RELATIVE_PATH;
     }
 
     protected String getFirefoxExtensionPath() {

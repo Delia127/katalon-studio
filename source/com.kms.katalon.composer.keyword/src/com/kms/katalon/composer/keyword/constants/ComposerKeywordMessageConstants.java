@@ -81,6 +81,8 @@ public class ComposerKeywordMessageConstants extends NLS {
     
     public static String MSG_EXPORT;
     
+    public static String MSG_CLASS_NAME_TITLE;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, ComposerKeywordMessageConstants.class);

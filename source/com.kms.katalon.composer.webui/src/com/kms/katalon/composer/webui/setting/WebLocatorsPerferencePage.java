@@ -213,7 +213,7 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
                 }
                 Boolean isSelected = ((Pair<String, Boolean>) property).getRight();
                 FontDescriptor fontDescriptor = FontDescriptor.createFrom(cell.getFont());
-                Font font = fontDescriptor.setStyle(SWT.NORMAL).setHeight(10).createFont(tProperty.getDisplay());
+                Font font = fontDescriptor.setStyle(SWT.NORMAL).setHeight(13).createFont(tProperty.getDisplay());
                 cell.setFont(font);
                 cell.setText(getCheckboxSymbol(isSelected));
             }
@@ -344,12 +344,12 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
     }
 
 	@Override
-	protected boolean hasDocumentation() {
+    public boolean hasDocumentation() {
 		return true;
 	}
 
 	@Override
-	protected String getDocumentationUrl() {
+    public String getDocumentationUrl() {
 		return DocumentationMessageConstants.SETTINGS_WEBLOCATORS;
 	}
 }

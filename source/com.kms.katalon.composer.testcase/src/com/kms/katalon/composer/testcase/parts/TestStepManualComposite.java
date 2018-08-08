@@ -1,5 +1,7 @@
 package com.kms.katalon.composer.testcase.parts;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,8 +38,11 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
@@ -56,6 +61,8 @@ import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.viewer.CustomEditorActivationStrategy;
 import com.kms.katalon.composer.components.viewer.CustomTreeViewerFocusCellManager;
 import com.kms.katalon.composer.explorer.util.TransferTypeCollection;
+import com.kms.katalon.composer.resources.constants.IImageKeys;
+import com.kms.katalon.composer.resources.image.ImageManager;
 import com.kms.katalon.composer.testcase.ast.dialogs.ClosureBuilderDialog;
 import com.kms.katalon.composer.testcase.ast.treetable.AstMethodTreeTableNode;
 import com.kms.katalon.composer.testcase.ast.treetable.AstTreeTableNode;
@@ -90,9 +97,16 @@ import com.kms.katalon.composer.testcase.treetable.transfer.ScriptTransferData;
 import com.kms.katalon.composer.testcase.util.TestCaseMenuUtil;
 import com.kms.katalon.composer.testcase.views.FocusCellOwnerDrawForManualTestcase;
 import com.kms.katalon.constants.EventConstants;
+import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.model.FailureHandling;
+import com.kms.katalon.core.webservice.support.UrlEncoder;
 import com.kms.katalon.entity.testcase.TestCaseEntity;
 import com.kms.katalon.execution.session.ExecutionSession;
+import com.kms.katalon.integration.analytics.entity.AnalyticsProject;
+import com.kms.katalon.integration.analytics.entity.AnalyticsTeam;
+import com.kms.katalon.integration.analytics.report.AnalyticsReportService;
+import com.kms.katalon.integration.analytics.setting.AnalyticsSettingStore;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class TestStepManualComposite {
     private ITestCasePart parentPart;
@@ -104,6 +118,10 @@ public class TestStepManualComposite {
     private Tree childTableTree;
 
     private ToolItem tltmAddStep, tltmRemoveStep, tltmUp, tltmDown, tltmRecent;
+    
+    private Label spacer;
+    
+    private Button btnViewHistory;
 
     private TestCaseSelectionListener selectionListener;
 
@@ -112,6 +130,10 @@ public class TestStepManualComposite {
     private List<AstTreeTableNode> dragNodes;
 
     private CustomTreeViewerFocusCellManager focusCellManager;
+    
+    private AnalyticsReportService analyticsReportService = new AnalyticsReportService();
+    
+    private AnalyticsSettingStore analyticsSettingStore = new AnalyticsSettingStore(ProjectController.getInstance().getCurrentProject().getFolderLocation());
 
     private Menu recentMenu;
 
@@ -188,6 +210,31 @@ public class TestStepManualComposite {
 
             ToolBarManager toolBarManager = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
             toolbar = toolBarManager.createControl(compositeTableButtons);
+            toolbar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+
+            spacer = new Label(compositeTableButtons, SWT.None);
+            spacer.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+
+            btnViewHistory = new Button(compositeTableButtons, SWT.NONE);
+            btnViewHistory.setText(ComposerTestcaseMessageConstants.BTN_TESTCASEHISTORY);
+            btnViewHistory.setImage(ImageManager.getImage(IImageKeys.KATALON_ANALYTICS_16));
+            btnViewHistory.addSelectionListener(new SelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                	try {
+                    	if (analyticsReportService.isIntegrationEnabled() && analyticsSettingStore.getProject() != null){
+                    		 Program.launch(createPath(analyticsSettingStore.getTeam(), analyticsSettingStore.getProject(), 
+                    				 parentPart.getTestCase().getIdForDisplay(), analyticsSettingStore.getToken(true)));
+                    	} else {
+                    		Program.launch(ComposerTestcaseMessageConstants.KA_WELCOME_PAGE);
+                    	}
+                    	Trackings.trackOpenKAIntegration("testCase");
+                    } catch (IOException | GeneralSecurityException e1) {
+                        LoggerSingleton.logError(e1);
+                    }
+                }
+            });
+            
         } else { // for ClosureDialog
             ToolBarManager toolBarManager = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
             toolbar = toolBarManager.createControl(parent);
@@ -222,7 +269,7 @@ public class TestStepManualComposite {
         tltmDown.setText(StringConstants.PA_BTN_TIP_MOVE_DOWN);
         tltmDown.setImage(ImageConstants.IMG_16_MOVE_DOWN);
         tltmDown.addSelectionListener(selectionListener);
-
+        
         Composite compositeTable = new Composite(compositeSteps == null ? parent : compositeSteps, SWT.NONE);
         compositeTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
@@ -272,6 +319,15 @@ public class TestStepManualComposite {
             hookDragEvent();
             hookDropEvent();
         }
+    }
+    
+    private String createPath(AnalyticsTeam team, AnalyticsProject project, String path, String tokenInfo){
+        String result = "";
+        result = ComposerTestcaseMessageConstants.KA_HOMEPAGE+ "teamId=" + team.getId() +
+                "&projectId=" + project.getId() + "&type=TEST_CASE" + "&path=" + UrlEncoder.encode(path) +
+                "&token=" + tokenInfo;
+        return result;
+        
     }
 
     private void addTreeTableColumn(TreeViewer parent, TreeColumnLayout treeColumnLayout, String headerText, int width,

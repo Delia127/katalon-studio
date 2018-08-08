@@ -110,6 +110,10 @@ public class TreeTableMenuItemConstants {
 	    return (id >= BUILTIN_KEYWORD_MENU_ITEM_ID) && (id < BUILTIN_KEYWORD_MENU_ITEM_ID + keywordClassOffsets.size());
 	}
 	
+	public static int getBuildInKeywordID(String aliasName) {
+	    return BUILTIN_KEYWORD_MENU_ITEM_ID + keywordClassOffsets.get(aliasName);
+	}
+	
 	public static String getContributingClassName(int id) {
 	    if (isBuildInKeywordID(id)) {
 	        for (String className : keywordClassOffsets.keySet()) {

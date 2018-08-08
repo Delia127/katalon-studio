@@ -292,12 +292,12 @@ public class DatabasePreferencePage extends PreferencePageWithHelp {
     }
     
     @Override
-    protected boolean hasDocumentation() {
+    public boolean hasDocumentation() {
         return true;
     }
 
     @Override
-    protected String getDocumentationUrl() {
+    public String getDocumentationUrl() {
         return DocumentationMessageConstants.SETTINGS_DATABASE;
     }
 }
