@@ -164,8 +164,7 @@ public class WebElementUtils {
         properties.stream().filter(i -> customAttributeLocatorsSetting.get(i.getName()) != null).forEach(i -> {
             i.setIsSelected(customAttributeLocatorsSetting.get(i.getName()));
         });
-        
-        
+
         // Because WebElement has xpath as the default SelectorMethod,
         // we set the first xpath as selected in case the users don't actively choose
         if(!xpaths.isEmpty() && xpaths.size() > 0){

@@ -93,7 +93,6 @@ import com.kms.katalon.composer.objectrepository.support.PropertyNameEditingSupp
 import com.kms.katalon.composer.objectrepository.support.PropertySelectedEditingSupport;
 import com.kms.katalon.composer.objectrepository.support.PropertyValueEditingSupport;
 import com.kms.katalon.composer.objectrepository.support.XpathValueEditingSupport;
-import com.kms.katalon.composer.objectrepository.support.XpathSelectedEditingSupport;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.FolderController;
 import com.kms.katalon.controller.ObjectRepositoryController;
@@ -142,7 +141,7 @@ public class ObjectPropertyView implements EventHandler {
 
 	private ImageButton btnExpandIframeSetting;
 
-	private TableColumn trclmnColumnSelected, trclmnXpathColumnSelected;
+	private TableColumn trclmnColumnSelected;
 
 	private Text txtImage;
 
@@ -860,7 +859,9 @@ public class ObjectPropertyView implements EventHandler {
 		switch (selectorMethod) {
 		case ATTRIBUTES:
 			TestObject testObject = buildTestObject(cloneTestObject);
-			txtSelectorEditor.setText(WebUiCommonHelper.getSelectorValue(testObject));
+			String textToSet = WebUiCommonHelper.getSelectorValue(testObject);
+			textToSet = (textToSet == null ) ? StringUtils.EMPTY : textToSet;
+			txtSelectorEditor.setText(textToSet);
 			txtSelectorEditor.setEditable(false);
 			txtSelectorEditor.setBackground(ColorUtil.getDisabledItemBackgroundColor());
 			return;
@@ -881,19 +882,13 @@ public class ObjectPropertyView implements EventHandler {
 		}
 		WebElementSelectorMethod selectorMethod = cloneTestObject.getSelectorMethod();
 		switch (selectorMethod) {
-		case XPATH:
-			List<WebElementXpathEntity> xpathEntities = cloneTestObject.getWebElementXpaths();
-			for(WebElementXpathEntity wexe : xpathEntities){
-				if(wexe.getIsSelected() == true) {			
-					txtSelectorEditor.setText(wexe.getValue());
-					txtSelectorEditor.setEditable(true);
-					txtSelectorEditor.setBackground(ColorUtil.getWhiteBackgroundColor());
-					return;
-				}
-			}
+		case XPATH:			
+			TestObject testObject = buildTestObject(cloneTestObject);
+			String textToSet = WebUiCommonHelper.getSelectorValue(testObject);
+			textToSet = (textToSet == null ) ? StringUtils.EMPTY : textToSet;
+			txtSelectorEditor.setText(textToSet);
 			txtSelectorEditor.setEditable(true);
 			txtSelectorEditor.setBackground(ColorUtil.getWhiteBackgroundColor());
-			txtSelectorEditor.setText(StringUtils.EMPTY);
 			break;
 		default:
 			break;
@@ -914,9 +909,12 @@ public class ObjectPropertyView implements EventHandler {
 		WebElementSelectorMethod selectorMethod = cloneTestObject.getSelectorMethod();
 		switch (selectorMethod) {
 		case CSS:
+			TestObject testObject = buildTestObject(cloneTestObject);
+			String textToSet = WebUiCommonHelper.getSelectorValue(testObject);
+			textToSet = (textToSet == null ) ? StringUtils.EMPTY : textToSet;
+			txtSelectorEditor.setText(textToSet);
 			txtSelectorEditor.setEditable(true);
 			txtSelectorEditor.setBackground(ColorUtil.getWhiteBackgroundColor());
-			txtSelectorEditor.setText(StringUtils.EMPTY);
 			break;
 		default:
 			break;
@@ -1102,8 +1100,6 @@ public class ObjectPropertyView implements EventHandler {
 		
 		showComposite(propertyCompositeTable, selectorMethod == WebElementSelectorMethod.ATTRIBUTES);
 		showComposite(xpathCompositeTable, selectorMethod == WebElementSelectorMethod.XPATH);
-
-		
 	}
 
 	private void refreshParentObjectComposite(Button rdoButton, ParentObjectType parentObjectType,
@@ -2205,8 +2201,9 @@ public class ObjectPropertyView implements EventHandler {
 		testObject.setSelectorMethod(SelectorMethod.valueOf(webElement.getSelectorMethod().name()));
 		webElement.getSelectorCollection().entrySet().forEach(entry -> {
 			testObject.setSelectorValue(SelectorMethod.valueOf(entry.getKey().name()), entry.getValue());
-		});
+		});	
 
+		
 		return testObject;
 	}
 

@@ -520,12 +520,9 @@ public class WebUiCommonHelper extends KeywordHelper {
                 XPathBuilder xpathBuilder = new XPathBuilder(to.getActiveProperties());                
                 return xpathBuilder.build(); 
             case XPATH:
-                String cssLocatorValue1 = findActiveEqualsObjectProperty(to, CSS_LOCATOR_PROPERTY_NAME);
-                if (cssLocatorValue1 != null) {
-                    return cssLocatorValue1;
-                }
-                XPathBuilder xpathBuilder1 = new XPathBuilder(to.getActiveProperties());
-                return xpathBuilder1.build(); 
+            	return to.getSelectorCollection().get(selectorMethod);
+            case CSS:
+            	return to.getSelectorCollection().get(selectorMethod);
             default:
                 return to.getSelectorCollection().get(selectorMethod);
         }
