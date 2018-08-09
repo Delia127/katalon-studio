@@ -113,14 +113,15 @@ public class ObjectSpySelectorEditor implements EventListener<ObjectSpyEvent>, E
                 changeEditorStatus(WebUiCommonHelper.getSelectorValue(testObject), false);
                 return;
             case XPATH:
+            	
             	webElement.getXpaths().forEach(e ->{
     				if(e.getIsSelected() == true){
     					String xpathToSet = e.getValue();
-    	                changeEditorStatus(xpathToSet, false);    	                
+    	                changeEditorStatus(xpathToSet, true);    	                
     					return;
     				}
     			});	
-            	changeEditorStatus(webElement.getSelectorCollection().get(selectorMethod), false);
+            	changeEditorStatus(webElement.getSelectorCollection().get(selectorMethod), true);
             	return;
             default:
                 changeEditorStatus(webElement.getSelectorCollection().get(selectorMethod), true);
