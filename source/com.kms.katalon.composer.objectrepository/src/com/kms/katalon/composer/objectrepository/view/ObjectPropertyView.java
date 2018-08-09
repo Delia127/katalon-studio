@@ -310,7 +310,6 @@ public class ObjectPropertyView implements EventHandler {
 		radioCss = new Button(radioSelectionComposite, SWT.RADIO);
 		radioCss.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 		radioCss.setText(RADIO_LBL_CSS);
-
 	}
 
 	private void createPropertyTableDetails(Composite parent) {
@@ -404,7 +403,7 @@ public class ObjectPropertyView implements EventHandler {
 		TableViewerColumn treeViewerColumnValue = new TableViewerColumn(xpathTableViewer, SWT.NONE);
 		TableColumn trclmnColumnValue = treeViewerColumnValue.getColumn();
 		trclmnColumnValue.setText(StringConstants.VIEW_COL_VALUE);
-		trclmnColumnValue.setWidth(350);
+		trclmnColumnValue.setWidth(500);
 		treeViewerColumnValue
 				.setEditingSupport(new XpathValueEditingSupport(xpathTableViewer, eventBroker, testObjectPart));
 		treeViewerColumnValue.setLabelProvider(new ColumnLabelProvider() {

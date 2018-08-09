@@ -73,7 +73,7 @@ import com.kms.katalon.execution.util.SyntaxUtil;
 import com.kms.katalon.groovy.constant.GroovyConstants;
 import com.kms.katalon.tracking.service.Trackings;
 
-public class TestCaseVariablePart extends CPart implements TableActionOperator {
+public class TestCaseVariablePart extends CPart implements VariableTableActionOperator {
     private static final String DEFAULT_VARIABLE_NAME = "variable";
 
     private static final InputValueType[] defaultInputValueTypes = { InputValueType.String, InputValueType.Number,

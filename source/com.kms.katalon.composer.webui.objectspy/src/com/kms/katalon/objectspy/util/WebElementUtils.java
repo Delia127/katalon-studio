@@ -8,6 +8,8 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -155,28 +157,50 @@ public class WebElementUtils {
                     .isPresent();
             properties.add(new WebElementPropertyEntity(XPATH_KEY, xpathString, !hasPriorityProperty));
         }
+        
+        // Change default selected properties by user settings
+        Map<String, Boolean> customSettings = getCapturedTestObjectAttributeLocatorSettings().stream()
+                .collect(Collectors.toMap(Pair::getLeft, Pair::getRight));
+        properties.stream().filter(i -> customSettings.get(i.getName()) != null).forEach(i -> {
+            i.setIsSelected(customSettings.get(i.getName()));
+        });
 
         // Change default selected properties by user settings
         SelectorMethod selectorMethod = getCapturedTestObjectSelectorMethod();
         
-        Map<String, Boolean> customAttributeLocatorsSetting = getCapturedTestObjectAttributeLocatorSettings().stream()
-                .collect(Collectors.toMap(Pair::getLeft, Pair::getRight));
-        properties.stream().filter(i -> customAttributeLocatorsSetting.get(i.getName()) != null).forEach(i -> {
-            i.setIsSelected(customAttributeLocatorsSetting.get(i.getName()));
-        });
-
-        // Because WebElement has xpath as the default SelectorMethod,
-        // we set the first xpath as selected in case the users don't actively choose
+        List<String> capturedTestObjectXpaths = getCapturedTestObjectXpathLocatorSettings().stream()
+        		.map(o -> o.getLeft()).collect(Collectors.toList());
+        
+        Comparator<WebElementXpathEntity> comparator = new Comparator<WebElementXpathEntity>() {
+            public int compare(WebElementXpathEntity o1, WebElementXpathEntity o2) {
+                int p1 = capturedTestObjectXpaths.indexOf(o1.getName());
+                int p2 = capturedTestObjectXpaths.indexOf(o2.getName());
+                if (p1 == -1 && p2 != -1) {
+                    return 1;
+                }
+                if (p1 != -1 && p2 == -1) {
+                    return -1;
+                }
+                if (p1 != p2) {
+                    return p1 - p2;
+                }
+                return o1.getName().compareTo(o2.getName());
+            }
+        };
+        
+        Collections.sort(xpaths, comparator);
+        
+        for (Iterator<WebElementXpathEntity> it = xpaths.iterator(); it.hasNext(); ) {
+        	WebElementXpathEntity xpath = it.next();
+            if (capturedTestObjectXpaths.indexOf(xpath.getName()) == -1) {
+                it.remove();
+            }
+        }
+        
         if(!xpaths.isEmpty() && xpaths.size() > 0){
             xpaths.get(0).setIsSelected(true);
         }
         
-        Map<String, Boolean> customXpathLocatorsSetting = getCapturedTestObjectXpathLocatorSettings().stream()
-                .collect(Collectors.toMap(Pair::getLeft, Pair::getRight));
-        xpaths.stream().filter(i -> customXpathLocatorsSetting.get(i.getName()) != null).forEach(i -> {
-            i.setIsSelected(customXpathLocatorsSetting.get(i.getName()));
-        });
-
         String usefulNeighborText = getElementUsefulNeighborText(elementJsonObject);
         WebFrame parentElement = getParentElement(elementJsonObject);
 

@@ -9,12 +9,12 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 
-import com.kms.katalon.composer.testcase.parts.TableActionOperator;
+import com.kms.katalon.composer.testcase.parts.VariableTableActionOperator;
 import com.kms.katalon.entity.variable.VariableEntity;
 
 public class ChangeVariableMaskedOperation extends AbstractOperation {
 
-    private TableActionOperator testCaseVariablePart;
+    private VariableTableActionOperator testCaseVariablePart;
 
     private TableViewer tableViewer;
 
@@ -24,7 +24,7 @@ public class ChangeVariableMaskedOperation extends AbstractOperation {
 
     private boolean newMaskedValue;
 
-    public ChangeVariableMaskedOperation(TableActionOperator testCaseVariablePart, VariableEntity variableEntity,
+    public ChangeVariableMaskedOperation(VariableTableActionOperator testCaseVariablePart, VariableEntity variableEntity,
             boolean newMaskedValue) {
         super(ChangeVariableDescriptionOperation.class.getName());
         this.testCaseVariablePart = testCaseVariablePart;

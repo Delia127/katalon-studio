@@ -18,7 +18,6 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
@@ -26,6 +25,13 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DragSourceAdapter;
+import org.eclipse.swt.dnd.DragSourceEvent;
+import org.eclipse.swt.dnd.DropTargetAdapter;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
@@ -39,6 +45,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
@@ -88,6 +95,7 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
     private List<Pair<String, Boolean>> defaultSelectingCapturedObjectProperties;
     
     private List<Pair<String, Boolean>> defaultSelectingCapturedObjectXpaths;
+       
     
     private SelectorMethod defaultSelectingCapturedObjecSelectionMethods;
 
@@ -144,8 +152,6 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
 		radioXpath = new Button(radioSelectionComposite, SWT.RADIO);
 		radioXpath.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
 		radioXpath.setText(LBL_XPATH_SELECTION_METHOD);
-		// Default setting
-		radioXpath.setSelection(true);
 
 		radioAttribute = new Button(radioSelectionComposite, SWT.RADIO);
 		radioAttribute.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
@@ -196,9 +202,7 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
         tiPropertyClear = new ToolItem(tb, SWT.PUSH);
         tiPropertyClear.setText(StringConstants.CLEAR);
         tiPropertyClear.setImage(ImageConstants.IMG_16_CLEAR);
-        
-     // Default setting
-        showComposite(compositeTableToolBar, false);
+
 	}
     
    
@@ -322,11 +326,6 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
         tableColumnLayout.setColumnData(cName, new ColumnWeightData(80, 100));
         tableColumnLayout.setColumnData(cSelected, new ColumnWeightData(20, 100));
 
-        // By default selection method is xpath, initialize() will override with user preferences appropriately
-        showComposite(tablePropertyComposite, 
-        		defaultSelectingCapturedObjecSelectionMethods != null && 
-        		defaultSelectingCapturedObjecSelectionMethods == SelectorMethod.ATTRIBUTES
-        		);
     }
     
     @SuppressWarnings("unchecked")
@@ -343,6 +342,36 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
         tvXpath = new TableViewer(tableXpathComposite,
                 SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
         tvXpath.setContentProvider(ArrayContentProvider.getInstance());
+		
+		tvXpath.addDragSupport(DND.DROP_MOVE, new Transfer[] { TextTransfer.getInstance() },
+		        new DragSourceAdapter() {
+
+		            @Override
+		            public void dragSetData(DragSourceEvent event) {
+		                StructuredSelection selection = (StructuredSelection) tvXpath.getSelection();
+		                Pair<String,Boolean> xpath = ((Pair<String,Boolean>) selection.getFirstElement());
+		                event.data = String.valueOf(defaultSelectingCapturedObjectXpaths.indexOf(xpath));
+		            }
+		        });
+		tvXpath.addDropSupport(DND.DROP_MOVE, new Transfer[] { TextTransfer.getInstance() },
+		        new DropTargetAdapter(){        	
+		    		
+		            @Override
+		            public void drop(DropTargetEvent event) {
+		                Pair<String,Boolean> item = (Pair<String,Boolean>) ((TableItem) event.item).getData();
+		                int newIndex = defaultSelectingCapturedObjectXpaths.indexOf(item);
+		                String index = (String) event.data;
+		                if (index != null && newIndex >= 0) {
+		                    int indexVal = Integer.parseInt(index);
+		                    Pair<String, Boolean> xpath = defaultSelectingCapturedObjectXpaths.get(indexVal);
+		                    defaultSelectingCapturedObjectXpaths.remove(indexVal);
+		                    defaultSelectingCapturedObjectXpaths.add(newIndex, xpath);
+		                    tvXpath.setSelection(new StructuredSelection(xpath));
+		                    tvXpath.refresh();
+		                }
+		            }
+		    	});
+        
         tXpath = tvXpath.getTable();
         tXpath.setHeaderVisible(true);
         tXpath.setLinesVisible(true);
@@ -356,29 +385,10 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
             public String getText(Object element) {
                 return ((Pair<String, Boolean>) element).getLeft();
             }
-        });  
-        
-    	
-    	tvXpath.addSelectionChangedListener(new ISelectionChangedListener() {
-			  @Override
-			  public void selectionChanged(SelectionChangedEvent event) {
-			    IStructuredSelection selection = tvXpath.getStructuredSelection();
-			    Object firstElement = selection.getFirstElement();
-			    if(firstElement!=null){
-	    		    tvXpath.remove(firstElement);
-	    		    tvXpath.insert(firstElement, 0);
-			    }
-			    tvXpath.refresh();
-			  }
-    	}); 
+        });
 
         tableColumnLayout.setColumnData(cName, new ColumnWeightData(80, 100));
 
-        // By default selection method is xpath, initialize() will override with user preferences appropriately
-        showComposite(tableXpathComposite, 
-        		defaultSelectingCapturedObjecSelectionMethods != null && 
-        		defaultSelectingCapturedObjecSelectionMethods == SelectorMethod.XPATH
-        		);
     }
        
     
@@ -468,6 +478,20 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
         setInputForCapturedObjectPropertySetting(store.getCapturedTestObjectAttributeLocators());
         setSelectionForCapturedObjectSelectionSetting(store.getCapturedTestObjectSelectorMethod());
         setInputForCapturedObjectXpathSetting(store.getCapturedTestObjectXpathLocators());
+
+        showComposite(tablePropertyComposite, 
+        		store.getCapturedTestObjectSelectorMethod() != null && 
+        				store.getCapturedTestObjectSelectorMethod() == SelectorMethod.ATTRIBUTES
+        		);
+        
+
+        showComposite(tableXpathComposite, 
+        		store.getCapturedTestObjectSelectorMethod() != null && 
+        				store.getCapturedTestObjectSelectorMethod() == SelectorMethod.XPATH
+        		);
+        
+        radioXpath.setSelection(store.getCapturedTestObjectSelectorMethod() == SelectorMethod.XPATH);
+        radioAttribute.setSelection(store.getCapturedTestObjectSelectorMethod() == SelectorMethod.ATTRIBUTES);
     }
 
     private void setInputForCapturedObjectPropertySetting(List<Pair<String, Boolean>> input) {
