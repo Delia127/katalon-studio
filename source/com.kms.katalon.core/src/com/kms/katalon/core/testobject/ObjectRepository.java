@@ -2,6 +2,7 @@ package com.kms.katalon.core.testobject;
 
 import static com.kms.katalon.core.constants.StringConstants.ID_SEPARATOR;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -12,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -26,15 +26,10 @@ import com.google.common.reflect.TypeToken;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.logging.KeywordLogger;
-import com.kms.katalon.core.main.ScriptEngine;
 import com.kms.katalon.core.testobject.impl.HttpTextBodyContent;
 import com.kms.katalon.core.testobject.internal.impl.HttpBodyContentReader;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.core.util.internal.JsonUtil;
-
-import groovy.lang.Binding;
-import groovy.util.ResourceException;
-import groovy.util.ScriptException;
 
 public class ObjectRepository {
 
@@ -148,10 +143,6 @@ public class ObjectRepository {
      * @return an instance of {@link TestObject} or <code>null</code> if test object id is null
      */
     public static TestObject findTestObject(String testObjectRelativeId, Map<String, Object> variables) {
-        return findTestObject(RunConfiguration.getProjectDir(), testObjectRelativeId, variables);
-    }
-    
-    public static TestObject findTestObject(String projectDir, String testObjectRelativeId, Map<String, Object> variables) {
         if (testObjectRelativeId == null) {
             logger.logWarning(StringConstants.TO_LOG_WARNING_TEST_OBJ_NULL);
             return null;
@@ -167,75 +158,13 @@ public class ObjectRepository {
             return testObjectsCached.get(testObjectRelativeId);
         }
 
-        File objectFile = new File(projectDir, testObjectId + WEBELEMENT_FILE_EXTENSION);
+        File objectFile = new File(RunConfiguration.getProjectDir(), testObjectId + WEBELEMENT_FILE_EXTENSION);
         if (!objectFile.exists()) {
             logger.logWarning(
                     MessageFormat.format(StringConstants.TO_LOG_WARNING_TEST_OBJ_DOES_NOT_EXIST, testObjectId));
             return null;
         }
-        return internalReadTestObjectFile(testObjectId, objectFile, projectDir, variables);
-    }
-    
-    private static TestObject internalReadTestObjectFile(String testObjectId, File objectFile, String projectDir,
-            Map<String, Object> variables) {
-        try {
-            Element rootElement = new SAXReader().read(objectFile).getRootElement();
-            String elementName = rootElement.getName();
-            if (WEB_ELEMENT_TYPE_NAME.equals(elementName)) {
-                return findWebUIObject(testObjectId, rootElement, variables);
-            }
-
-            if (WEB_SERVICES_TYPE_NAME.equals(elementName)) {
-                Map<String, Object> collectedVariables = collectRequestObjectVariables(rootElement, variables);
-                return findRequestObject(testObjectId, rootElement, projectDir, collectedVariables);
-            }
-            return null;
-        } catch (DocumentException | ClassNotFoundException | IOException | ResourceException | ScriptException e) {
-            logger.logWarning(MessageFormat.format(StringConstants.TO_LOG_WARNING_CANNOT_GET_TEST_OBJECT_X_BECAUSE_OF_Y,
-                    testObjectId, ExceptionsUtil.getMessageForThrowable(e)));
-            return null;
-        }
-    }
-
-    private static Map<String, Object> collectRequestObjectVariables(Element reqElement, Map<String, Object> variables)
-            throws ClassNotFoundException, IOException, ResourceException, ScriptException {
-        List<Object> defaultVariableElements = reqElement.elements("variables");
-        Map<String, Object> requestVariables = variables;
-        if (defaultVariableElements != null) {
-            Map<String, String> defaultVariables = parseRequestDefaultVariables(defaultVariableElements); 
-            Map<String, Object> evaluatedVariables = evaluateRequestDefaultVariables(defaultVariables);
-            requestVariables = mergeRequestVariables(evaluatedVariables, variables);
-        }
-        
-        return requestVariables;
-    }
-    
-    private static Map<String, String> parseRequestDefaultVariables(List<Object> elements) {
-        Map<String, String> variableMap = elements.stream()
-            .collect(Collectors.toMap(element -> ((Element) element).elementText("name"),
-                   element -> ((Element) element).elementText("defaultValue")));
-        return variableMap;
-    }
-    
-    private static Map<String, Object> evaluateRequestDefaultVariables(Map<String, String> rawVariables) 
-            throws IOException, ClassNotFoundException, ResourceException, ScriptException {
-        ScriptEngine scriptEngine = ScriptEngine.getDefault(ObjectRepository.class.getClassLoader());
-        Map<String, Object> evaluatedVariables = new HashMap<>();
-        for (Map.Entry<String, String> variableEntry : rawVariables.entrySet()) {
-            String variableName = variableEntry.getKey();
-            String variableValue = variableEntry.getValue();
-            Object evaluatedValue = scriptEngine.runScriptWithoutLogging(variableValue, new Binding());
-            evaluatedVariables.put(variableName, evaluatedValue);
-        }       
-        return evaluatedVariables;
-    }
-    
-    public static Map<String, Object> mergeRequestVariables(Map<String, Object> defaultVariables,
-            Map<String, Object> customVariables) {
-        Map<String, Object> mergedVariables = new HashMap<>();
-        mergedVariables.putAll(defaultVariables);
-        mergedVariables.putAll(customVariables);
-        return mergedVariables;
+        return readTestObjectFile(testObjectId, objectFile, RunConfiguration.getProjectDir(), variables);
     }
 
     private static Map<String, TestObject> getCapturedTestObjects() {
@@ -366,9 +295,8 @@ public class ObjectRepository {
 
         String serviceType = reqElement.elementText("serviceType");
         requestObject.setServiceType(serviceType);
-        
+
         StrSubstitutor substitutor = new StrSubstitutor(variables);
-        
         if ("SOAP".equals(serviceType)) {
             requestObject.setWsdlAddress(reqElement.elementText("wsdlAddress"));
             requestObject.setSoapRequestMethod(reqElement.elementText("soapRequestMethod"));
@@ -403,13 +331,11 @@ public class ObjectRepository {
 //                    requestObject.setHttpBody(outstream.toString());
 //                } catch (IOException ignored) {
 //                }
-                
-                String verificationScript = reqElement.elementText("verificationScript");
-                requestObject.setVerificationScript(verificationScript);
             }
-            
-            requestObject.setVariables(variables);
         }
+
+        String verificationScript = reqElement.elementText("verificationScript");
+        requestObject.setVerificationScript(verificationScript);
 
         return requestObject;
     }
