@@ -537,9 +537,9 @@ public class ObjectPropertyView implements EventHandler {
 		glCompositeTable.marginHeight = 0;
 		xpathCompositeTable.setLayout(glCompositeTable);
 		
-		Label lblObjectProperties = new Label(propertyCompositeTable, SWT.NONE);
-		lblObjectProperties.setText(StringConstants.VIEW_LBL_OBJ_XPATHS);
-		ControlUtils.setFontToBeBold(lblObjectProperties);	
+		Label lblObjectXpaths = new Label(xpathCompositeTable, SWT.NONE);
+		lblObjectXpaths.setText(StringConstants.VIEW_LBL_OBJ_XPATHS);
+		ControlUtils.setFontToBeBold(lblObjectXpaths);	
 
 		createXpathTableToolbar(xpathCompositeTable);
 		
