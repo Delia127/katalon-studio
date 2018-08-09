@@ -113,6 +113,7 @@ public class ObjectSpySelectorEditor implements EventListener<ObjectSpyEvent>, E
                 changeEditorStatus(WebUiCommonHelper.getSelectorValue(testObject), false);
                 return;
             case XPATH:
+            	
             	webElement.getXpaths().forEach(e ->{
     				if(e.getIsSelected() == true){
     					String xpathToSet = e.getValue();
