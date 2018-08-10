@@ -33,7 +33,7 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
      */
     public static final String DEFAULT_SELECTING_CAPTURED_OBJECT_PROPERTIES = "id,true;name,true;alt,true;checked,true;form,true;href,true;placeholder,true;selected,true;src,true;title,true;type,true;text,true;linked_text,true";
     
-    public static final String DEFAULT_SELECTING_CAPTURED_OBJECT_XPATHS = "ui,true;link,true;dom:name,true;xpath:link,true;xpath:img,true;xpath:neighbor,true;xpath:attributes,true;xpath:idRelative,true;xpath:href,true;xpath:position,true";
+    public static final String DEFAULT_SELECTING_CAPTURED_OBJECT_XPATHS = "xpath:idRelative,true;dom:name,true;xpath:link,true;xpath:attributes,true;xpath:neighbor,true;xpath:href,true;xpath:img,true;xpath:position,true;";
     
     public static final String DEFAULT_SELECTING_CAPTURED_OBJECT_SELECTOR_METHOD = "XPATH";
     
