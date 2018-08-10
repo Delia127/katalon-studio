@@ -87,11 +87,11 @@ public class ObjectPropertiesView extends Composite
 
     private TableViewerColumn cvProperty, cvCondition, cvValue, cvSelected;
     
-    private TableViewerColumn cvXpathValue, cvXpathSelected;
+    private TableViewerColumn cvXpathName, cvXpathValue, cvXpathSelected;
 
     private TableColumn cName, cCondition, cValue, cSelected;
     
-    private TableColumn cXpathValue, cXpathSelected;
+    private TableColumn cXpathName, cXpathValue, cXpathSelected;
 
     private Text txtName;
 
@@ -521,7 +521,20 @@ public class ObjectPropertiesView extends Composite
         tXpath.setHeaderVisible(true);
         tXpath.setLinesVisible(true);
         tvXpath.setInput(Collections.emptyList());
+
+        
+        cvXpathName = new TableViewerColumn(tvXpath, SWT.LEFT);
+        cXpathName = cvXpathName.getColumn();
+        cXpathName.setText(StringConstants.DIA_COL_NAME);
+        cvXpathName.setLabelProvider(new ColumnLabelProvider() {
+
+            @Override
+            public String getText(Object element) {
+                return ((WebElementXpathEntity) element).getName();
+            }
+        });
        
+        
         cvXpathValue = new TableViewerColumn(tvXpath, SWT.LEFT);
         cXpathValue = cvXpathValue.getColumn();
         cXpathValue.setText(StringConstants.DIA_COL_VALUE);
@@ -565,6 +578,7 @@ public class ObjectPropertiesView extends Composite
             }
         });
         
+        tableColumnLayout.setColumnData(cXpathName, new ColumnWeightData(50, 150));
         tableColumnLayout.setColumnData(cXpathValue, new ColumnWeightData(50, 150));
 
     }

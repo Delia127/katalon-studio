@@ -399,6 +399,20 @@ public class ObjectPropertyView implements EventHandler {
 		GridData gridDataTable = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
 		gridDataTable.minimumHeight = 150;
 		table.setLayoutData(gridDataTable);
+		
+		TableViewerColumn treeViewerColumnName = new TableViewerColumn(xpathTableViewer, SWT.NONE);
+		TableColumn trclmnColumnName = treeViewerColumnName.getColumn();
+		trclmnColumnName.setText(StringConstants.VIEW_COL_NAME);
+		trclmnColumnName.setWidth(100);
+		treeViewerColumnName
+				.setEditingSupport(new PropertyNameEditingSupport(xpathTableViewer, eventBroker, testObjectPart));
+		treeViewerColumnName.setLabelProvider(new ColumnLabelProvider() {
+			@Override
+			public String getText(Object element) {
+				return ((WebElementXpathEntity) element).getName();
+			}
+		});
+
 
 		TableViewerColumn treeViewerColumnValue = new TableViewerColumn(xpathTableViewer, SWT.NONE);
 		TableColumn trclmnColumnValue = treeViewerColumnValue.getColumn();
