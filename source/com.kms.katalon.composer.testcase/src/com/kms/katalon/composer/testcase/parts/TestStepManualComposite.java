@@ -310,6 +310,8 @@ public class TestStepManualComposite {
                 if (childTableTree.getSelectionCount() == 1) {
                     TestCaseMenuUtil.generateExecuteFromTestStepSubMenu(menu, selectionListener);
 
+                    new MenuItem(menu, SWT.SEPARATOR);
+
                     // Add step add
                     TestCaseMenuUtil.addActionSubMenu(menu, TreeTableMenuItemConstants.AddAction.Add,
                             StringConstants.ADAP_MENU_CONTEXT_ADD, selectionListener);
@@ -352,18 +354,20 @@ public class TestStepManualComposite {
                         KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "V" }))); //$NON-NLS-1$
                 pasteMenuItem.addSelectionListener(selectionListener);
                 pasteMenuItem.setID(TreeTableMenuItemConstants.PASTE_MENU_ITEM_ID);
+                
+                new MenuItem(menu, SWT.SEPARATOR);
 
                 addFailureHandlingSubMenu(menu);
 
                 MenuItem disableMenuItem = new MenuItem(menu, SWT.PUSH);
                 disableMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_DISABLE,
-                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "D" }))); //$NON-NLS-1$
+                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "/" }))); //$NON-NLS-1$
                 disableMenuItem.addSelectionListener(selectionListener);
                 disableMenuItem.setID(TreeTableMenuItemConstants.DISABLE_MENU_ITEM_ID);
 
                 MenuItem enableMenuItem = new MenuItem(menu, SWT.PUSH);
                 enableMenuItem.setText(createMenuItemLabel(StringConstants.ADAP_MENU_CONTEXT_ENABLE,
-                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.M1_NAME, "E" }))); //$NON-NLS-1$
+                        KeyEventUtil.geNativeKeyLabel(new String[] { IKeyLookup.ALT_NAME, IKeyLookup.M1_NAME, "/" }))); //$NON-NLS-1$
                 enableMenuItem.addSelectionListener(selectionListener);
                 enableMenuItem.setID(TreeTableMenuItemConstants.ENABLE_MENU_ITEM_ID);
                 parentPart.createDynamicGotoMenu(menu);
@@ -407,7 +411,7 @@ public class TestStepManualComposite {
 
     /**
      * Add KeyListener to TreeTable.
-     * Handle Tab, Shift Tab, Delete, Ctrl + c, Ctrl + x, Ctrl + v, Ctrl + d, Ctrl + e for test steps
+     * Handle Tab, Shift Tab, Delete, Ctrl + c, Ctrl + x, Ctrl + v, Ctrl + /, Ctrl + Alt + / for test steps
      */
     private void addTreeTableKeyListener() {
         treeTable.getControl().addKeyListener(new KeyAdapter() {
@@ -439,15 +443,15 @@ public class TestStepManualComposite {
                         return;
                     }
 
-                    // Disable
-                    if (e.keyCode == 'd') {
-                        treeTableInput.disable();
-                        return;
+                    // Enable
+                    if (e.keyCode == '/' && ((e.stateMask & SWT.ALT) == SWT.ALT)) {
+                        treeTableInput.enable();
                     }
 
-                    // Enable
-                    if (e.keyCode == 'e') {
-                        treeTableInput.enable();
+                    // Disable
+                    if (e.keyCode == '/') {
+                        treeTableInput.disable();
+                        return;
                     }
                 }
             }

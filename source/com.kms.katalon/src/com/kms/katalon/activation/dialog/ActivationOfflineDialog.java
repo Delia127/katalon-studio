@@ -85,7 +85,7 @@ public class ActivationOfflineDialog extends Dialog {
         GridData gdActivationRequest = new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1);
         gdActivationRequest.heightHint = ControlUtils.DF_CONTROL_HEIGHT;
         txtActivationRequest.setLayoutData(gdActivationRequest);
-        txtActivationRequest.setText(ComposerActivationInfoCollector.genRequestActivationInfo());
+        txtActivationRequest.setText(ComposerActivationInfoCollector.getActivationRequestCode());
         txtActivationRequest.setBackground(ColorUtil.getDisabledItemBackgroundColor());
 
         new Label(body, SWT.NONE);

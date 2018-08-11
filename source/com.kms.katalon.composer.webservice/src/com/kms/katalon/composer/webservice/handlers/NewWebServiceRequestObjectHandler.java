@@ -37,6 +37,7 @@ import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.folder.FolderEntity.FolderType;
 import com.kms.katalon.entity.repository.WebElementEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class NewWebServiceRequestObjectHandler {
 
@@ -103,6 +104,8 @@ public class NewWebServiceRequestObjectHandler {
                         StringConstants.HAND_ERROR_MSG_UNABLE_TO_CREATE_NEW_REQ_OBJ);
                 return;
             }
+            
+            Trackings.trackCreatingObject("webServiceRequest");
 
             eventBroker.post(EventConstants.EXPLORER_REFRESH_TREE_ENTITY, parentTreeEntity);
             eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, new WebElementTreeEntity(requestEntity,

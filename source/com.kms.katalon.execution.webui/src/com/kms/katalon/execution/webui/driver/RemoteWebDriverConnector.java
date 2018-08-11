@@ -75,6 +75,11 @@ public class RemoteWebDriverConnector extends WebUiDriverConnector {
         driverProperties.remove(DriverFactory.REMOTE_WEB_DRIVER_URL);
         driverProperties.remove(DriverFactory.REMOTE_WEB_DRIVER_TYPE);
     }
+    
+    @Override
+    public Map<String, Object> getUserConfigProperties() {
+        return super.getUserConfigProperties();
+    }
 
     @Override
     public void saveUserConfigProperties() throws IOException {

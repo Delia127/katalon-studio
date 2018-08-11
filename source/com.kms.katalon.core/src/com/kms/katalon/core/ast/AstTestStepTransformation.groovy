@@ -6,17 +6,14 @@ import org.codehaus.groovy.ast.AnnotationNode
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.ImportNode
 import org.codehaus.groovy.ast.MethodNode
-import org.codehaus.groovy.ast.builder.AstBuilder
 import org.codehaus.groovy.ast.expr.ArgumentListExpression
 import org.codehaus.groovy.ast.expr.ClassExpression
 import org.codehaus.groovy.ast.expr.ConstantExpression
 import org.codehaus.groovy.ast.expr.Expression
-import org.codehaus.groovy.ast.expr.ListExpression
 import org.codehaus.groovy.ast.expr.MapEntryExpression
 import org.codehaus.groovy.ast.expr.MapExpression
 import org.codehaus.groovy.ast.expr.MethodCallExpression
 import org.codehaus.groovy.ast.expr.PropertyExpression
-import org.codehaus.groovy.ast.expr.VariableExpression
 import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.ast.stmt.CaseStatement
 import org.codehaus.groovy.ast.stmt.CatchStatement
@@ -31,7 +28,6 @@ import org.codehaus.groovy.ast.stmt.TryCatchStatement
 import org.codehaus.groovy.ast.stmt.WhileStatement
 import org.codehaus.groovy.control.CompilePhase
 import org.codehaus.groovy.control.SourceUnit
-import org.codehaus.groovy.runtime.metaclass.NewStaticMetaMethod
 import org.codehaus.groovy.transform.ASTTransformation
 import org.codehaus.groovy.transform.GroovyASTTransformation
 
@@ -245,7 +241,6 @@ public class AstTestStepTransformation implements ASTTransformation {
             }
         }
         List<Statement> statementList = blockStatement.getStatements();
-        List<Statement> newStatementList = new ArrayList();
         Stack<Statement> commentStatementsStack = new Stack<Statement>();
         while (index < statementList.size()) {
             Statement statement = statementList.get(index);
@@ -265,27 +260,25 @@ public class AstTestStepTransformation implements ASTTransformation {
                     isStatementDisabledFlag |= isStatementDisabled(descriptionStatement);
                     String commentContent = description = getComment(descriptionStatement);
                     blockStatement.getStatements().add(index, new ExpressionStatement(createNewAddDescriptionMethodCall(commentContent)));
-                    newStatementList.add(new ExpressionStatement(createNewAddDescriptionMethodCall(commentContent)));
                     index += (popCommentStatements(commentStatementsStack, blockStatement, index, indexMap, nestedLevel) + 1);
                 }
                 
-                def keywordInfo = [statementIndex, description, keywordName]
-                newStatementList.add(createBeforeTestStepMethodCall(keywordInfo))
-                newStatementList.add(new ExpressionStatement(createNewStartKeywordMethodCall(keywordName, statement, indexMap, nestedLevel)));
-                newStatementList.add((Statement) statement);
-                newStatementList.add(createAfterTestStepMethodCall(keywordInfo))
+                def keywordInfo = [index, description, keywordName]
+                List<Statement> tempStatementList = new ArrayList<>();
+                tempStatementList.add(createBeforeTestStepMethodCall(keywordInfo))
+                tempStatementList.add(new ExpressionStatement(createNewStartKeywordMethodCall(keywordName, statement, indexMap, nestedLevel)));
+                tempStatementList.add(createAfterTestStepMethodCall(keywordInfo))
+                blockStatement.getStatements().addAll(index, tempStatementList);
+                index += 3;
             }
             isStatementDisabledFlag |= isStatementDisabled(statement);
             if (isStatementDisabledFlag) {
-                newStatementList.set(newStatementList.indexOf(statement), createNewNotRunLogMethodCallStatement(keywordName));
+                statementList.set(statementList.indexOf(statement), createNewNotRunLogMethodCallStatement(keywordName));
             } else {
                 visit(statement, new Stack<>(), indexMap, nestedLevel + 1);
-                statementIndex++
             }
             index++;
         }
-        blockStatement.getStatements().clear();
-        blockStatement.getStatements().addAll(newStatementList);
     }
     
     @CompileStatic

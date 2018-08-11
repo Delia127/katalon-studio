@@ -1,5 +1,6 @@
 package com.kms.katalon.composer.testcase.parts;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -206,9 +207,26 @@ public class TestCasePart extends CPart implements EventHandler, ITestCasePart {
         return false;
     }
 
+    public void clearStatements() {
+        getTreeTableInput().getMainClassNode().getRunMethod().getBlock().clearStaments();
+        try {
+            getTreeTableInput().reloadTreeTableNodes();
+        } catch (InvocationTargetException | InterruptedException e) {
+            LoggerSingleton.logError(e);
+        }
+    }
+
     public void addStatements(List<StatementWrapper> statements, NodeAddType addType) {
         getTreeTableInput().addNewAstObjects(statements, getTreeTableInput().getSelectedNode(), addType);
     }
+    
+    public void addStatements(List<StatementWrapper> statements, NodeAddType addType, boolean commitEditting) {
+        getTreeTableInput().addNewAstObjects(statements, getTreeTableInput().getSelectedNode(), addType);
+        if (commitEditting) {
+            getTestCaseTreeTable().applyEditorValue();
+        }
+    }
+
 
     @Override
     public TestCaseEntity getTestCase() {
@@ -321,6 +339,8 @@ public class TestCasePart extends CPart implements EventHandler, ITestCasePart {
                 eventBroker.send(openEventName, webElementEntity);
             }
         };
+
+        new MenuItem(menu, SWT.SEPARATOR);
         if (testObjects.size() == 1) {
             handleWhenSelectOnlyOne(menu, testObjects.get(0), openTestCase, openTestObject);
             return;

@@ -8,14 +8,14 @@ import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.widgets.Composite;
 
 import com.kms.katalon.composer.testcase.ast.variable.operations.ChangeVariableNameOperation;
-import com.kms.katalon.composer.testcase.parts.TestCaseVariablePart;
+import com.kms.katalon.composer.testcase.parts.TableActionOperator;
 import com.kms.katalon.entity.variable.VariableEntity;
 
 public class VariableNameEditingSupport extends EditingSupport {
     
-    private TestCaseVariablePart variablesPart;
+    private TableActionOperator variablesPart;
     
-    public VariableNameEditingSupport(ColumnViewer viewer, TestCaseVariablePart variablesPart) {
+    public VariableNameEditingSupport(ColumnViewer viewer, TableActionOperator variablesPart) {
         super(viewer);
         this.variablesPart = variablesPart;
     }

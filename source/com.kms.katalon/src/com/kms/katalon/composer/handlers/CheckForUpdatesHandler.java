@@ -4,14 +4,21 @@ import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+
 import org.eclipse.core.commands.common.CommandException;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
+import org.osgi.service.event.Event;
 
+import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.VersionUtil;
+import com.kms.katalon.composer.components.impl.event.EventServiceAdapter;
 import com.kms.katalon.composer.components.impl.handler.CommandCaller;
 import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
@@ -23,14 +30,40 @@ import com.kms.katalon.composer.update.jobs.CheckForUpdatesJob;
 import com.kms.katalon.composer.update.jobs.CheckForUpdatesJob.CheckForUpdateResult;
 import com.kms.katalon.composer.update.jobs.DownloadUpdateJob;
 import com.kms.katalon.composer.update.models.LastestVersionInfo;
+import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.constants.GlobalStringConstants;
 import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.StringConstants;
+import com.kms.katalon.core.appium.driver.AppiumDriverManager;
+import com.kms.katalon.core.webui.util.WebDriverCleanerUtil;
 
 public class CheckForUpdatesHandler implements UpdateComponent {
 
     private static final long DIALOG_CLOSED_DELAY_MILLIS = 500L;
+
+    @Inject
+    private IEventBroker eventBroker;
+
+    private boolean shouldWaitUntilProjectOpended = false;
+
+    @PostConstruct
+    private void registerEventHandler() {
+        eventBroker.subscribe(EventConstants.PROJECT_OPEN_LATEST, new EventServiceAdapter() {
+
+            @Override
+            public void handleEvent(Event event) {
+                shouldWaitUntilProjectOpended = true;
+            }
+        });
+        eventBroker.subscribe(EventConstants.PROJECT_RESTORE_SESSION_COMPLETED, new EventServiceAdapter() {
+
+            @Override
+            public void handleEvent(Event event) {
+                shouldWaitUntilProjectOpended = false;
+            }
+        });
+    }
 
     @Execute
     public void execute() {
@@ -38,7 +71,7 @@ public class CheckForUpdatesHandler implements UpdateComponent {
     }
 
     public void checkForUpdate(boolean silenceMode) {
-        CheckForUpdatesJob job = new CheckForUpdatesJob();
+        CheckForUpdatesJob job = new CheckForUpdatesJob(silenceMode);
         job.setUser(!silenceMode);
         job.addJobChangeListener(new JobChangeAdapter() {
             @Override
@@ -47,6 +80,12 @@ public class CheckForUpdatesHandler implements UpdateComponent {
                     return;
                 }
                 CheckForUpdateResult newUpdateResult = job.getUpdateResult();
+                while (shouldWaitUntilProjectOpended) {
+                    // wait until project opened
+                    try {
+                        Thread.sleep(DIALOG_CLOSED_DELAY_MILLIS);
+                    } catch (InterruptedException ignored) {}
+                }
                 switch (newUpdateResult.getUpdateResult()) {
                     case NEW_UPDATE_FOUND:
                         Executors.newSingleThreadExecutor().submit(() -> {
@@ -149,22 +188,28 @@ public class CheckForUpdatesHandler implements UpdateComponent {
         InstallUpdateConfirmationDialog dialog = new InstallUpdateConfirmationDialog(
                 Display.getCurrent().getActiveShell());
         if (dialog.open() == InstallUpdateConfirmationDialog.OK) {
+            final String latestVersion = newUpdateResult.getLatestVersionInfo().getLatestVersion();
             try {
                 Thread t = new Thread(() -> {
-                    // start Katalon Updater
-                    UpdaterLauncher updaterLauncher;
                     try {
-                        updaterLauncher = new UpdaterLauncher(newUpdateResult.getLatestVersionInfo().getLatestVersion(),
+                        // Clean driver
+                        WebDriverCleanerUtil.cleanup();
+                        AppiumDriverManager.cleanup();
+                        
+
+                        // start Katalon Updater
+                        UpdaterLauncher updaterLauncher = new UpdaterLauncher(latestVersion,
                                 newUpdateResult.getCurrentAppInfo().getVersion());
 
                         updaterLauncher.startUpdaterLauncher();
                     } catch (IOException | InterruptedException e) {
-
+                        LoggerSingleton.logError(e);
                     }
                 });
                 t.setDaemon(true);
                 t.start();
 
+                ActivationInfoCollector.markActivatedViaUpgradation(latestVersion);
                 // quit Katalon
                 new CommandCaller().call(IdConstants.QUIT_COMMAND_ID);
             } catch (CommandException e) {

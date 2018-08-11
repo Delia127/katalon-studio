@@ -85,6 +85,8 @@
 		<module>com.kms.katalon</module>
 		<module>com.kms.katalon.support.testing.katserver</module>
 		<module>com.kms.katalon.selenium.ide</module>
+		<module>com.kms.katalon.tracking</module>
+		<module>com.kms.katalon.tracking.service</module>
 	</modules>
 
 	<properties>

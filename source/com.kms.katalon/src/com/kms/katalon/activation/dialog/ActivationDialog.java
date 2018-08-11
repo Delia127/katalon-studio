@@ -252,7 +252,7 @@ public class ActivationDialog extends Dialog {
     @Override
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
-        newShell.setText(StringConstants.DIALOG_TITLE);
+        newShell.setText(MessageConstants.DIA_TITLE_KS_ACTIVATION);
         newShell.setImage(ImageConstants.KATALON_IMAGE);
     }
 

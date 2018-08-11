@@ -46,7 +46,10 @@ Require-Bundle: com.kms.katalon.core;bundle-version="1.0.0",
  org.eclipse.jetty.http,
  com.kms.katalon.selenium-standalone,
  org.eclipse.egit.ui,
- com.kms.katalon.util
+ com.kms.katalon.util,
+ org.greenrobot.eventbus,
+ com.kms.katalon.application,
+ com.kms.katalon.tracking
 Export-Package: com.kms.katalon.objectspy.components,
  com.kms.katalon.objectspy.constants,
  com.kms.katalon.objectspy.core,

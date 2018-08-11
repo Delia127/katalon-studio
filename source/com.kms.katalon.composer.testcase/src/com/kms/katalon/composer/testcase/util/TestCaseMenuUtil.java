@@ -1,9 +1,13 @@
 package com.kms.katalon.composer.testcase.util;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
@@ -38,6 +42,17 @@ public class TestCaseMenuUtil {
         fillActionMenu(addAction, selectionListener, actionMenu);
 
         return actionMenuItem;
+    }
+
+    public static void fillActionMenu(AddAction addAction, SelectionListener selectionListener, Menu actionMenu,
+            int[] excludes) {
+        fillActionMenu(addAction, selectionListener, actionMenu);
+        Set<Integer> excludeIds = new HashSet<>(Arrays.asList(ArrayUtils.toObject(excludes)));
+        for (MenuItem item : actionMenu.getItems()) {
+            if (excludeIds.contains(item.getID())) {
+                item.dispose();
+            }
+        }
     }
 
     public static void fillActionMenu(AddAction addAction, SelectionListener selectionListener, Menu actionMenu) {

@@ -133,7 +133,7 @@ public class TestSuiteRepoDialog extends Dialog {
 
     @Override
     protected Point getInitialSize() {
-        return new Point(500, 165);
+        return new Point(500, super.getInitialSize().y);
     }
 
     @Override
@@ -277,4 +277,8 @@ public class TestSuiteRepoDialog extends Dialog {
         return qTestProjectsMap;
     }
 
+    @Override
+    protected void setShellStyle(int newShellStyle) {
+        super.setShellStyle(newShellStyle | SWT.RESIZE);
+    }
 }

@@ -141,6 +141,18 @@ public class QTestIntegrationFolderManager {
 
         return folderIntegratedEntity;
     }
+    
+    public static IntegratedEntity getFolderIntegratedEntityByQTestProject(QTestProject qTestProject) {
+        IntegratedEntity folderIntegratedEntity = new IntegratedEntity();
+
+        folderIntegratedEntity.setProductName(QTestStringConstants.PRODUCT_NAME);
+        folderIntegratedEntity.setType(IntegratedType.FOLDER);
+
+        folderIntegratedEntity.getProperties().put(QTestEntity.ID_FIELD, Long.toString(qTestProject.getId()));
+        folderIntegratedEntity.getProperties().put(QTestEntity.NAME_FIELD, qTestProject.getName());
+
+        return folderIntegratedEntity;
+    }
 
     /**
      * Creates new {@link QTestModule} by using qTest SDK.

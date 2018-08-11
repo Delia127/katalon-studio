@@ -18,11 +18,13 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 
 import com.kms.katalon.composer.components.impl.dialogs.ProgressMonitorDialogWithThread;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
@@ -48,6 +50,8 @@ public class KobitonAppComposite extends Composite {
     private List<KobitonApplication> kobitonApps = new ArrayList<>();
     
     private KobitonDevice selectDevice = null;
+
+    private Link linkLabel;
 
     public KobitonAppComposite(Composite parent, MobileAppDialog parentDialog, int style) {
         super(parent, style);
@@ -89,13 +93,26 @@ public class KobitonAppComposite extends Composite {
             }
         });
         
+        
+        linkLabel = new Link(this, SWT.NONE);
+        linkLabel.setText(
+                StringConstants.MSG_NO_DEVICES + " <a href=\"" + StringConstants.NO_DEVICES_TROUBLESHOOTING_GUIDE_LINK
+                        + "\">" + StringConstants.MSG_WRAPPED_NO_DEVICES_TROUBLESHOOTING_GUIDE + "</a>");
+
+        linkLabel.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                Program.launch(e.text);
+            }
+        });
+
         Composite appFileChooserComposite = new Composite(this, SWT.NONE);
         appFileChooserComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         GridLayout glAppFileChooserComposite = new GridLayout(2, false);
         glAppFileChooserComposite.marginHeight = 0;
         glAppFileChooserComposite.marginWidth = 0;
         appFileChooserComposite.setLayout(glAppFileChooserComposite);
-        
+
         Label appFileLabel = new Label(appFileChooserComposite, SWT.NONE);
         appFileLabel.setText(StringConstants.DIA_LBL_APP_FILE);
 
@@ -274,6 +291,7 @@ public class KobitonAppComposite extends Composite {
                             cbbKobitonDevices.setItems(devices.toArray(new String[] {}));
                             cbbKobitonDevices.select(Math.max(0, devices.indexOf(cbbKobitonDevices.getText())));
                         }
+                        setLinkLabelVisible(devices.isEmpty());
                     }
                 });
 
@@ -281,5 +299,12 @@ public class KobitonAppComposite extends Composite {
             }
         };
         new ProgressMonitorDialogWithThread(Display.getDefault().getActiveShell()).run(true, true, runnable);
+    }
+    
+    private void setLinkLabelVisible(boolean visible) {
+        linkLabel.setVisible(visible);
+        ((GridData) linkLabel.getLayoutData()).exclude = !visible;
+        linkLabel.pack();
+        linkLabel.getParent().layout(true, true);
     }
 }

@@ -25,6 +25,7 @@ import com.kms.katalon.controller.EntityNameController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.folder.FolderEntity;
 import com.kms.katalon.entity.testsuite.TestSuiteCollectionEntity;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class NewTestSuiteCollectionHandler extends TestSuiteTreeRootCatcher {
     @Inject
@@ -62,6 +63,9 @@ public class NewTestSuiteCollectionHandler extends TestSuiteTreeRootCatcher {
             }
             TestSuiteCollectionTreeEntity newTreeEntity = new TestSuiteCollectionTreeEntity(testRunEntity,
                     parentTreeFolder);
+            
+            Trackings.trackCreatingObject("testSuiteCollection");
+            
             eventBroker.send(EventConstants.EXPLORER_REFRESH_SELECTED_ITEM, parentTreeFolder);
             eventBroker.post(EventConstants.EXPLORER_SET_SELECTED_ITEM, newTreeEntity);
             eventBroker.post(EventConstants.TEST_SUITE_COLLECTION_OPEN, testRunEntity.getIdForDisplay());

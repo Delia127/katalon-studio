@@ -1325,10 +1325,6 @@ public class GroovyWrapperParser {
     }
 
     public static ExpressionWrapper parseGroovyScriptAndGetFirstExpression(String scriptContent) {
-        return parseGroovyScriptAndGetFirstExpression(scriptContent, null);
-    }
-
-    public static ExpressionWrapper parseGroovyScriptAndGetFirstExpression(String scriptContent, String testCaseId) {
         ScriptNodeWrapper script;
         try {
             script = parseGroovyScriptIntoNodeWrapper(scriptContent);

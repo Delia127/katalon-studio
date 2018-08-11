@@ -156,8 +156,20 @@ public interface IdConstants {
     public static final String OPEN_RECENT_PROJECT_COMMAND_ID = "com.kms.katalon.composer.project.command.openrecentproject";
 
     public static final String OPEN_RECENT_PROJECT_COMMAND_PARAMETER_ID = "com.kms.katalon.composer.project.command.openrecentproject.parameters.project";
+    
+    // New Sample Local Project Command id
+    public static final String NEW_LOCAL_PROJECT_COMMAND_ID = "com.kms.katalon.composer.project.command.newLocalProject";
+
+    public static final String NEW_LOCAL_PROJECT_COMMAND_PARAMETER_TYPE_ID = "com.kms.katalon.composer.project.command.newLocalProject.parameters.project";
+
+    // New Sample Remote Project Command id
+    public static final String NEW_REMOTE_PROJECT_COMMAND_ID = "com.kms.katalon.composer.project.command.newRemoteProject";
+
+    public static final String NEW_REMOTE_PROJECT_COMMAND_PARAMETER_ID = "com.kms.katalon.composer.project.command.newRemoteProject.parameters.project";
 
     // Bundle
+    public static final String KATALON_GENERAL_BUNDLE_ID = "com.kms.katalon";
+
     public static final String KATALON_LOGGING_BUNDLE_ID = "com.kms.katalon.logging";
 
     public static final String KATALON_CUSTOM_BUNDLE_ID = "com.kms.katalon.custom";
@@ -267,4 +279,6 @@ public interface IdConstants {
     public static final String COMPOSER_PARTSTACK_EXPLORER_ID = "com.kms.katalon.composer.partstack.explorer";
 
     public static final String COMPOSER_PARTSTACK_LEFT_OUTLINE_ID = "com.kms.katalon.partstack.left.outline";
+
+    public static final String QTEST_INTEGRATION_BUNDLE_ID = "com.kms.katalon.composer.integration.qtest";
 }

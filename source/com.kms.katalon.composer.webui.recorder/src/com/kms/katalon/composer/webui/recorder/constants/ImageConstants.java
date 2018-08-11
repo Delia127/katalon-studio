@@ -10,7 +10,11 @@ public class ImageConstants {
     // RecorderDialog
     public static final Image IMG_24_RECORD = ImageManager.getImage(IImageKeys.RECORD_WEB_24);
 
-    public static final Image IMG_24_PAUSE = ImageManager.getImage(IImageKeys.PAUSE_24);
+    public static final Image IMG_24_PAUSE_RECORDING = ImageManager.getImage(IImageKeys.PAUSE_RECORDING_24);
+
+    public static final Image IMG_24_STOP_RECORDING = ImageManager.getImage(IImageKeys.STOP_RECORDING_24);
+
+    public static final Image IMG_24_RESUME_RECORDING = ImageManager.getImage(IImageKeys.RESUME_RECORDING_24);
 
     public static final Image IMG_24_STOP = ImageManager.getImage(IImageKeys.STOP_24);
 
@@ -26,7 +30,6 @@ public class ImageConstants {
 
     public static final Image IMG_16_UNWATCH = ImageManager.getImage(IImageKeys.UNWATCH_16);
 
-    // RecorderDialog
     public static final Image IMG_16_CHROME = ImageManager.getImage(IImageKeys.CHROME_16);
 
     public static final Image IMG_16_FIREFOX = ImageManager.getImage(IImageKeys.FIREFOX_16);
@@ -39,4 +42,13 @@ public class ImageConstants {
 
     public static final Image IMG_24_IE = ImageManager.getImage(IImageKeys.IE_24);
 
+    public static final Image IMG_16_RECENT = ImageManager.getImage(IImageKeys.RECENT_16);
+
+    public static final Image IMG_16_MOVE_UP = ImageManager.getImage(IImageKeys.MOVE_UP_16);
+    
+    public static final Image IMG_16_MOVE_DOWN = ImageManager.getImage(IImageKeys.MOVE_DOWN_16);
+    
+    public static final Image IMG_16_PLAY = ImageManager.getImage(IImageKeys.PLAY_16);
+    
+    public static final Image IMG_16_STOP = ImageManager.getImage(IImageKeys.STOP_16);
 }
