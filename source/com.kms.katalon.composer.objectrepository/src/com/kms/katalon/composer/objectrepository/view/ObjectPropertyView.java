@@ -542,7 +542,7 @@ public class ObjectPropertyView implements EventHandler {
 
 	}
 
-	private void createObjectXpathsComposite(Composite parent) {		
+	private void createObjectXpathsComposite(Composite parent) {
 		
 		xpathCompositeTable = new Composite(parent, SWT.NONE);
 		xpathCompositeTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));

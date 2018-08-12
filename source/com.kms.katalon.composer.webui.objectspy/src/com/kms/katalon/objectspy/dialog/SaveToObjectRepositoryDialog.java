@@ -114,8 +114,11 @@ public class SaveToObjectRepositoryDialog extends TreeEntitySelectionDialog {
         super(parentShell, new EntityLabelProvider(), new FolderProvider(),
                 new EntityViewerFilter(new FolderProvider()));
         List<WebPage> tmpPages = new ArrayList<>();
+        
         for(Object wp : expandedHTMLElements){
-        	tmpPages.add((WebPage) wp );
+        	if(wp instanceof WebPage){
+            	tmpPages.add((WebPage) wp );
+        	}
         }
         
         this.isCheckable = isCheckable;
