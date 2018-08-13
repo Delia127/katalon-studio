@@ -116,7 +116,11 @@ public class WebElementUtils {
         }
         String cssClass = propsMap.get(ELEMENT_CLASS_KEY);
         if (cssClass != null) {
-            return elementType + "_" + toValidFileName(cssClass);
+        	if(usefulNeighborText == null || usefulNeighborText.equals("")){
+                return elementType + "_" + toValidFileName(cssClass);
+        	}else{
+                return elementType + "_" + toValidFileName(usefulNeighborText) + "_" +  toValidFileName(cssClass) ;
+        	}
         }
         return elementType;
     }
