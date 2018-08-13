@@ -58,6 +58,8 @@ public class ComposerWebuiMessageConstants extends NLS {
     public static String MSG_PROPERTY_NAME_IS_EXISTED;
 
     public static String GRP_LBL_DEFAULT_SELECTED_PROPERTIES_FOR_CAPTURED_TEST_OBJECT;
+    
+    public static String GRP_LBL_DEFAULT_XPATHS_USAGE_TIPS;
 
     public static String COL_LBL_DETECT_OBJECT_BY;
     

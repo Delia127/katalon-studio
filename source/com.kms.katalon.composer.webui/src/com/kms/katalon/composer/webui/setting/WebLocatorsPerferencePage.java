@@ -65,7 +65,9 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
     private static final String MSG_PROPERTY_NAME_IS_EXISTED = ComposerWebuiMessageConstants.MSG_PROPERTY_NAME_IS_EXISTED;
 
     private static final String GRP_LBL_DEFAULT_SELECTED_PROPERTIES_FOR_CAPTURED_TEST_OBJECT = ComposerWebuiMessageConstants.GRP_LBL_DEFAULT_SELECTED_PROPERTIES_FOR_CAPTURED_TEST_OBJECT;
-
+    
+    private static final String GRP_LBL_DEFAULT_XPATHS_USAGE_TIPS = ComposerWebuiMessageConstants.GRP_LBL_DEFAULT_XPATHS_USAGE_TIPS;
+    
     private static final String COL_LBL_DETECT_OBJECT_BY = ComposerWebuiMessageConstants.COL_LBL_DETECT_OBJECT_BY;
     
     private static final String LBL_XPATH_SELECTION_METHOD = ComposerWebuiMessageConstants.LBL_XPATH_SELECTION_METHOD;
@@ -73,6 +75,8 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
     private static final String LBL_ATTRIBUTE_SELECTION_METHOD = ComposerWebuiMessageConstants.LBL_ATTRIBUTE_SELECTION_METHOD;
 
     private WebUiExecutionSettingStore store;
+    
+    private Group locatorGroup;
 
     private Composite container;
     
@@ -161,8 +165,7 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
     
 
     private void createTestObjectLocatorSettings(Composite container) {
-        Group locatorGroup = new Group(container, SWT.NONE);
-        locatorGroup.setText(GRP_LBL_DEFAULT_SELECTED_PROPERTIES_FOR_CAPTURED_TEST_OBJECT);
+        locatorGroup = new Group(container, SWT.NONE);        
         locatorGroup.setLayout(new GridLayout());
         locatorGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
 
@@ -457,6 +460,7 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				defaultSelectingCapturedObjecSelectionMethods = SelectorMethod.ATTRIBUTES;
+				locatorGroup.setText(GRP_LBL_DEFAULT_SELECTED_PROPERTIES_FOR_CAPTURED_TEST_OBJECT);
 				showComposite(compositeTableToolBar, true);
 				showComposite(tablePropertyComposite, true);
 				showComposite(tableXpathComposite, false);
@@ -467,6 +471,7 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				defaultSelectingCapturedObjecSelectionMethods = SelectorMethod.XPATH;
+				locatorGroup.setText(GRP_LBL_DEFAULT_XPATHS_USAGE_TIPS);
 				showComposite(compositeTableToolBar, false);
 				showComposite(tablePropertyComposite, false);
 				showComposite(tableXpathComposite, true);
@@ -475,10 +480,19 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
     }
 
     private void initialize() throws IOException {
+    	// Set guidance text
+    	if(store.getCapturedTestObjectSelectorMethod() != null){
+    		if(store.getCapturedTestObjectSelectorMethod() == SelectorMethod.ATTRIBUTES){
+        		locatorGroup.setText(GRP_LBL_DEFAULT_SELECTED_PROPERTIES_FOR_CAPTURED_TEST_OBJECT);
+    		}else if(store.getCapturedTestObjectSelectorMethod() == SelectorMethod.XPATH){
+    			locatorGroup.setText(GRP_LBL_DEFAULT_XPATHS_USAGE_TIPS);
+    		}
+    	}
+    	    	
         setInputForCapturedObjectPropertySetting(store.getCapturedTestObjectAttributeLocators());
         setSelectionForCapturedObjectSelectionSetting(store.getCapturedTestObjectSelectorMethod());
         setInputForCapturedObjectXpathSetting(store.getCapturedTestObjectXpathLocators());
-
+        
         showComposite(tablePropertyComposite, 
         		store.getCapturedTestObjectSelectorMethod() != null && 
         				store.getCapturedTestObjectSelectorMethod() == SelectorMethod.ATTRIBUTES
@@ -489,6 +503,9 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
         		store.getCapturedTestObjectSelectorMethod() != null && 
         				store.getCapturedTestObjectSelectorMethod() == SelectorMethod.XPATH
         		);
+        
+        showComposite(compositeTableToolBar, store.getCapturedTestObjectSelectorMethod() != null && 
+				store.getCapturedTestObjectSelectorMethod() == SelectorMethod.ATTRIBUTES);
         
         radioXpath.setSelection(store.getCapturedTestObjectSelectorMethod() == SelectorMethod.XPATH);
         radioAttribute.setSelection(store.getCapturedTestObjectSelectorMethod() == SelectorMethod.ATTRIBUTES);
