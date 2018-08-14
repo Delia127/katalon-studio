@@ -76,5 +76,6 @@ Require-Bundle: org.eclipse.e4.core.contexts,
  com.kms.katalon.composer.components,
  org.greenrobot.eventbus,
  com.kms.katalon.composer.components.impl,
- com.kms.katalon.tracking
+ com.kms.katalon.tracking,
+ com.kms.katalon.core.webservice
 Bundle-Activator: com.kms.katalon.execution.addon.ExecutionBundleActivator
