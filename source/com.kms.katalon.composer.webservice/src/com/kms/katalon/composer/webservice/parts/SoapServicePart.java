@@ -6,6 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -61,6 +62,8 @@ import com.kms.katalon.composer.webservice.view.xml.XMLConfiguration;
 import com.kms.katalon.composer.webservice.view.xml.XMLPartitionScanner;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.controller.WebServiceController;
+import com.kms.katalon.core.testobject.ObjectRepository;
+import com.kms.katalon.core.testobject.RequestObject;
 import com.kms.katalon.core.testobject.ResponseObject;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.core.webservice.common.BasicRequestor;
@@ -218,8 +221,13 @@ public class SoapServicePart extends WebServicePart {
 
                         String projectDir = ProjectController.getInstance().getCurrentProject().getFolderLocation();
 
-                        final ResponseObject responseObject = WebServiceController.getInstance()
-                                .sendRequest(getWSRequestObject(), projectDir, ProxyPreferences.getProxyInformation());
+                        WebServiceRequestEntity requestEntity = getWSRequestObject();
+                        
+                        Map<String, String> evaluatedVariables = evaluateRequestVariables();
+
+                        ResponseObject responseObject = WebServiceController.getInstance().sendRequest(requestEntity,
+                                projectDir, ProxyPreferences.getProxyInformation(),
+                                Collections.<String, Object>unmodifiableMap(evaluatedVariables));
 
                         if (monitor.isCanceled()) {
                             return;
