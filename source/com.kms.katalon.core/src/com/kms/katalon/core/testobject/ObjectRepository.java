@@ -348,18 +348,23 @@ public class ObjectRepository {
     }
     
     @SuppressWarnings("unchecked")
-    public static RequestObject findRequestObject(String requestObjectId, File objectFile) 
-            throws ClassNotFoundException, IOException, ResourceException, ScriptException, DocumentException {
-        Element reqElement = new SAXReader().read(objectFile).getRootElement();
-        
-        List<Object> variableElements = reqElement.elements("variables");
-        Map<String, Object> variables = Collections.emptyMap();
-        if (variableElements != null) {
-            Map<String, String> rawVariables = parseRequestObjectVariables(variableElements);
-            variables = evaluateVariables(rawVariables);
+    public static RequestObject findRequestObject(String requestObjectId, File objectFile) {
+        try {
+            Element reqElement = new SAXReader().read(objectFile).getRootElement();
+            
+            List<Object> variableElements = reqElement.elements("variables");
+            Map<String, Object> variables = Collections.emptyMap();
+            if (variableElements != null) {
+                Map<String, String> rawVariables = parseRequestObjectVariables(variableElements);
+                variables = evaluateVariables(rawVariables);
+            }
+            
+            return findRequestObject(requestObjectId, reqElement, RunConfiguration.getProjectDir(), variables);
+        } catch (Exception e) {
+            logger.logWarning(MessageFormat.format(StringConstants.TO_LOG_WARNING_CANNOT_GET_TEST_OBJECT_X_BECAUSE_OF_Y,
+                    requestObjectId, ExceptionsUtil.getMessageForThrowable(e)));
+            return null;
         }
-        
-        return findRequestObject(requestObjectId, reqElement, RunConfiguration.getProjectDir(), variables);
     }
 
     private static Map<String, String> parseRequestObjectVariables(List<Object> elements) {

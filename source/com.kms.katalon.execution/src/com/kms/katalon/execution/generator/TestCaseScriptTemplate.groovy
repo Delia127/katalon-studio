@@ -34,7 +34,6 @@ RunConfiguration.setExecutionSettingFile('<%= executionConfigFilePath %>')
 
 TestCaseMain.beforeStart()
 <% if (!wsVerificationScript.isEmpty()) { %>
-        WSVerificationExecutionSettingInitializer.initSettingForWebServiceRequestVerification()
         TestCaseMain.runWSVerificationScript(<%= testCaseBinding %>, '<%= wsVerificationScript %>', FailureHandling.STOP_ON_FAILURE, true)
 <% } else if (rawScript == null) { %>
         TestCaseMain.runTestCase('<%= testCaseId %>', <%= testCaseBinding %>, FailureHandling.STOP_ON_FAILURE <%= isQuitDriversAfterRun ? ", true" : "" %>, <%= isQuitDriversAfterRun %>)
@@ -53,8 +52,7 @@ TestCaseMain.beforeStart()
             TestCaseBinding.class.getName(),
             DriverCleanerCollector.class.getName(),
             FailureHandling.class.getName(),
-            RunConfiguration.class.getName(),
-            "com.kms.katalon.core.webservice.verification.WSVerificationExecutionSettingInitializer"
+            RunConfiguration.class.getName()
         ]
 
 
