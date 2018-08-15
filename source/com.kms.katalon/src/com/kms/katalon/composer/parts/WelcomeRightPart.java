@@ -366,8 +366,8 @@ public class WelcomeRightPart extends Composite {
         });
         
         tabWebUi = createTestingTypeTab(MessageConstants.TAB_LBL_WEB_UI);
-        tabMobile = createTestingTypeTab(MessageConstants.TAB_LBL_MOBILE);
         tabApi = createTestingTypeTab(MessageConstants.TAB_LBL_API);
+        tabMobile = createTestingTypeTab(MessageConstants.TAB_LBL_MOBILE);
         tabScripting = createTestingTypeTab(MessageConstants.TAB_LBL_SCRIPTING);
     }
     
