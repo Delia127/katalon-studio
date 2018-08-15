@@ -25,9 +25,11 @@ import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.logging.LogUtil;
 
 public class ServerAPICommunicationUtil {
-    private static final String DEVELOPMENT_URL_API = "https://backend-dev.katalon.com/api";
+    public static final String DEVELOPMENT_URL_API = "https://backend-dev.katalon.com/api";
 
     private static final String PRODUCTION_URL_API = "https://update.katalon.com/api";
+    
+    public static final String STAGING_URL_API = "https://wp-dev.katalon.com/wp-admin/admin-ajax.php";
 
     private static final String POST = "POST";
 
@@ -35,6 +37,49 @@ public class ServerAPICommunicationUtil {
 
     public static String post(String function, String jsonData) throws IOException, GeneralSecurityException {
         return invoke(POST, function, jsonData);
+    }
+
+    public static String invokeFormEncoded(String apiUrl, String method, String data)
+            throws IOException, GeneralSecurityException {
+        HttpURLConnection connection = null;
+        try {
+            connection = createConnection(method, apiUrl, ApplicationProxyUtil.getProxy());
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            String result = sendAndReceiveData(connection, data);
+            LogUtil.printOutputLine(ApplicationMessageConstants.REQUEST_COMPLETED);
+            return result;
+        } catch (Exception ex) {
+            LogUtil.logError(ex);
+            return retryInvokeFormEncoded(apiUrl, method, data);
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+    }
+    
+    public static String retryInvokeFormEncoded(String apiUrl, String method, String data)
+            throws IOException, GeneralSecurityException {
+        LogUtil.printAndLogError(null, ApplicationMessageConstants.REQUEST_FAILED_AND_RETRY);
+        HttpURLConnection connection = null;
+        try {
+            connection = createConnection(method, apiUrl, ApplicationProxyUtil.getRetryProxy());
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            String result = sendAndReceiveData(connection, data);
+            LogUtil.printOutputLine(ApplicationMessageConstants.REQUEST_COMPLETED);
+            return result;
+        } catch (IOException e) {
+            LogUtil.logError(e);
+            throw e;
+        } catch (URISyntaxException e) {
+            LogUtil.printAndLogError(null, ApplicationMessageConstants.REQUEST_FAILED);
+            LogUtil.logError(e);
+            return StringUtils.EMPTY;
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
     }
 
     public static String invoke(String method, String function, String jsonData)
