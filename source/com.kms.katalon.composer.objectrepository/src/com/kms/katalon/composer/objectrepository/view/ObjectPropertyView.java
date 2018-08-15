@@ -314,7 +314,7 @@ public class ObjectPropertyView implements EventHandler {
 
 	private void createPropertyTableDetails(Composite parent) {
 		Composite compositeTableDetails = new Composite(parent, SWT.NONE);
-		compositeTableDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		compositeTableDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 		GridLayout glCompositeTableDetails = new GridLayout(1, false);
 		glCompositeTableDetails.marginWidth = 0;
 		glCompositeTableDetails.marginHeight = 0;
@@ -384,7 +384,7 @@ public class ObjectPropertyView implements EventHandler {
 	private void createXpathsTableDetails(Composite parent) {
 
 		Composite xpathCompositeTableDetails = new Composite(parent, SWT.NONE);
-		xpathCompositeTableDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		xpathCompositeTableDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 		GridLayout glCompositeTableDetails = new GridLayout(1, false);
 		glCompositeTableDetails.marginWidth = 0;
 		glCompositeTableDetails.marginHeight = 0;
@@ -494,7 +494,7 @@ public class ObjectPropertyView implements EventHandler {
 
 	private Composite createTestObjectDetailsComposite(Composite parent) {
 		Composite compositeObjectDetails = new Composite(parent, SWT.NONE);
-		compositeObjectDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		compositeObjectDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 
 		GridLayout glCompositeObjectDetails = new GridLayout(1, false);
 		glCompositeObjectDetails.verticalSpacing = 15;
@@ -532,7 +532,6 @@ public class ObjectPropertyView implements EventHandler {
 		lblObjectProperties.setText(StringConstants.VIEW_LBL_OBJ_PROPERTIES);
 		ControlUtils.setFontToBeBold(lblObjectProperties);	
 		
-
 		createPropertyTableToolbar(propertyCompositeTable);
 
 		createPropertyTableDetails(propertyCompositeTable);
@@ -555,7 +554,7 @@ public class ObjectPropertyView implements EventHandler {
 		lblObjectXpaths.setText(StringConstants.VIEW_LBL_OBJ_XPATHS);
 		ControlUtils.setFontToBeBold(lblObjectXpaths);	
 
-		createXpathTableToolbar(xpathCompositeTable);
+		//createXpathTableToolbar(xpathCompositeTable);
 		
 		createXpathsTableDetails(xpathCompositeTable);
 		
@@ -565,7 +564,7 @@ public class ObjectPropertyView implements EventHandler {
 
 	private void createSelectorEditor(Composite parent) {
 		Composite c = new Composite(parent, SWT.NONE);
-		c.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		c.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		GridLayout layout = new GridLayout();
 		layout.marginHeight = 0;
 		layout.marginWidth = 0;
@@ -576,7 +575,7 @@ public class ObjectPropertyView implements EventHandler {
 		lblSelectorEditor.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
 		txtSelectorEditor = new StyledText(c, SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
-		GridData gdSelectorEditor = new GridData(SWT.FILL, SWT.FILL, true, true);
+		GridData gdSelectorEditor = new GridData(SWT.FILL, SWT.FILL, true, false);
 		gdSelectorEditor.heightHint = 100;
 		txtSelectorEditor.setLayoutData(gdSelectorEditor);
 	}
@@ -739,11 +738,11 @@ public class ObjectPropertyView implements EventHandler {
 
 		propertyToolItemAdd.addSelectionListener(propertyToolItemListener);
 		
-		xpathToolItemClear.addSelectionListener(xpathToolItemListener);
-
-		xpathToolItemDelete.addSelectionListener(xpathToolItemListener);
-
-		xpathToolItemAdd.addSelectionListener(xpathToolItemListener);
+//		xpathToolItemClear.addSelectionListener(xpathToolItemListener);
+//
+//		xpathToolItemDelete.addSelectionListener(xpathToolItemListener);
+//
+//		xpathToolItemAdd.addSelectionListener(xpathToolItemListener);
 
 		trclmnColumnSelected.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -2212,10 +2211,12 @@ public class ObjectPropertyView implements EventHandler {
 		});
 		
 		testObject.setSelectorMethod(SelectorMethod.valueOf(webElement.getSelectorMethod().name()));
-		webElement.getSelectorCollection().entrySet().forEach(entry -> {
-			testObject.setSelectorValue(SelectorMethod.valueOf(entry.getKey().name()), entry.getValue());
-		});	
-
+		
+		if(webElement.getSelectorCollection() != null){
+			webElement.getSelectorCollection().entrySet().forEach(entry -> {
+				testObject.setSelectorValue(SelectorMethod.valueOf(entry.getKey().name()), entry.getValue());
+			});	
+		}
 		
 		return testObject;
 	}

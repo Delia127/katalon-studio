@@ -36,6 +36,7 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
@@ -102,6 +103,8 @@ public class ObjectPropertiesView extends Composite
     private Label lblHelp;
 
     private Composite radioBtnComposite;
+    
+    private Composite compositeAttributeToolbar;
 
     private ToolBar toolbar;
 
@@ -139,7 +142,7 @@ public class ObjectPropertiesView extends Composite
         ldTableAndButtons.marginHeight = 0;
         tableAndButtonsComposite.setLayout(ldTableAndButtons);
 
-        createToolbarButtons(tableAndButtonsComposite);
+        createAttributeToolbarButtons(tableAndButtonsComposite);
 
         createPropertyTable(tableAndButtonsComposite);
         
@@ -148,6 +151,8 @@ public class ObjectPropertiesView extends Composite
         showComposite(propertyTableComposite, false);
         
         showComposite(xpathTableComposite, true);
+        
+        showComposite(compositeAttributeToolbar, false);
 
         addControlListeners();
 
@@ -254,15 +259,15 @@ public class ObjectPropertiesView extends Composite
         rlRadioBtnComposite.marginBottom = 0;
         rlRadioBtnComposite.spacing = 5;
         rlRadioBtnComposite.fill = true;
-        radioBtnComposite.setLayout(rlRadioBtnComposite);        
+        radioBtnComposite.setLayout(rlRadioBtnComposite);
 
         radioXpath = new Button(radioBtnComposite, SWT.FLAT | SWT.RADIO);
         radioXpath.setText(RADIO_LABEL_XPATH);
+        radioXpath.setSelection(true);
         selectorButtons.put(SelectorMethod.XPATH, radioXpath);
 
         radioAttributes = new Button(radioBtnComposite, SWT.FLAT | SWT.RADIO);
-        radioAttributes.setText(RADIO_LABEL_ATTRIBUTES);
-        radioAttributes.setSelection(true);
+        radioAttributes.setText(RADIO_LABEL_ATTRIBUTES);        
         selectorButtons.put(SelectorMethod.ATTRIBUTES, radioAttributes);
 
 
@@ -271,8 +276,12 @@ public class ObjectPropertiesView extends Composite
         selectorButtons.put(SelectorMethod.CSS, radioCss);
     }
 
-    private void createToolbarButtons(Composite parent) {
-        toolbar = new ToolBar(parent, SWT.FLAT | SWT.WRAP | SWT.RIGHT);
+    private void createAttributeToolbarButtons(Composite parent) {
+		compositeAttributeToolbar = new Composite(parent, SWT.NONE);
+		compositeAttributeToolbar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		compositeAttributeToolbar.setLayout(new GridLayout(3, true));
+		
+        toolbar = new ToolBar(compositeAttributeToolbar, SWT.FLAT | SWT.WRAP | SWT.RIGHT);
         toolbar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
         btnAdd = new ToolItem(toolbar, SWT.FLAT);
@@ -633,9 +642,11 @@ public class ObjectPropertiesView extends Composite
                 if (webElement == null || !radioAttributes.getSelection()) {
                     return;
                 }
+                enableControls();
                 webElement.setSelectorMethod(SelectorMethod.ATTRIBUTES);
                 showComposite(propertyTableComposite, true);
                 showComposite(xpathTableComposite, false);         
+                showComposite(compositeAttributeToolbar, true);
                 sendPropertiesChangedEvent();
             }
         });
@@ -647,9 +658,11 @@ public class ObjectPropertiesView extends Composite
                 if (webElement == null || !radioXpath.getSelection()) {
                     return;
                 }
+                disableControls();
                 webElement.setSelectorMethod(SelectorMethod.XPATH);
                 showComposite(propertyTableComposite, false);
-                showComposite(xpathTableComposite, true);                
+                showComposite(xpathTableComposite, true);      
+                showComposite(compositeAttributeToolbar, false);
                 sendPropertiesChangedEvent();
             }
         });
@@ -664,6 +677,7 @@ public class ObjectPropertiesView extends Composite
                 webElement.setSelectorMethod(SelectorMethod.CSS);
                 showComposite(propertyTableComposite, false);
                 showComposite(xpathTableComposite, false);       
+                showComposite(compositeAttributeToolbar, false);
                 sendPropertiesChangedEvent();
             }
         });
@@ -892,6 +906,13 @@ public class ObjectPropertiesView extends Composite
         if (isReady(txtName)) {
             txtName.setEditable(isEnabled);
         }
+    }
+    
+    private void disableControls(){
+    	
+        btnAdd.setEnabled(false);
+        btnDelete.setEnabled(false);
+        btnClear.setEnabled(false);
     }
 
     public void refreshTable(WebElement selectedElement) {
