@@ -301,7 +301,8 @@ public class SignupDialog extends AbstractDialog {
             throw new ActivationErrorException(errorMessageBuilder.toString());
         }
 
-        Program.launch(signupResponseBody.getDataOptions().getLink());
+        // TODO: KAT-3523 Should enable if needed for further tracking
+        // Program.launch(signupResponseBody.getDataOptions().getLink());
     }
 
     private static class ActivationErrorException extends Exception {
