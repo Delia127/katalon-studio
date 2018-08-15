@@ -156,7 +156,7 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
 
     private MapExpressionWrapper variableMaps = null;
     
-    private WebElementEntity initialSelectedWebElement = null;
+    private WebElementEntity initialSelectedTestObject = null;
     
     private WebElementEntity selectedWebElement = null;
     
@@ -195,7 +195,7 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         }
         refreshSelectionTree();
 
-        if (initialSelectedWebElement instanceof WebServiceRequestEntity) {
+        if (initialSelectedTestObject instanceof WebServiceRequestEntity) {
             List<MapEntryExpressionWrapper> variables = variableMaps.getMapEntryExpressions();
             initialRequestVariables = variables.stream()
                 .map(variable -> {
@@ -254,7 +254,7 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         setInitialSelection(new WebElementTreeEntity(selectedWebElement,
                 createSelectedTreeEntityHierachy(selectedWebElement.getParentFolder(), objectRepositoryRoot)));
         
-        initialSelectedWebElement = selectedWebElement;
+        initialSelectedTestObject = selectedWebElement;
     }
 
     private void createTopCompiste(Composite parent) {
@@ -484,7 +484,7 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         glCompositeExecution.marginHeight = 0;
         glCompositeExecution.marginWidth = 0;
         compositeVariables.setLayout(glCompositeExecution);
-        compositeVariables.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        compositeVariables.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
 
         Composite compositeExecutionCompositeHeader = new Composite(compositeVariables, SWT.NONE);
         compositeExecutionCompositeHeader.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
@@ -510,7 +510,7 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         btnExpandVariablesComposite.addListener(SWT.MouseDown, layoutExecutionCompositeListener);
         
         compositeVariablesDetails = new Composite(compositeVariables, SWT.NONE);
-        compositeVariablesDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+        compositeVariablesDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
         compositeVariablesDetailsLayout = new StackLayout();
         compositeVariablesDetails.setLayout(compositeVariablesDetailsLayout);
         
@@ -529,16 +529,17 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         }
           
         if (entity instanceof WebServiceRequestEntity) {
-            showVariablesCompositeForWebServiceRequestEntity((WebServiceRequestEntity) entity);
+            showVariablesCompositeForWebServiceObject((WebServiceRequestEntity) entity);
         } else {
-            showVariablesCompositeForWebElementEntity(entity);
+            showVariablesCompositeForTestObject(entity);
         }
         compositeVariablesDetails.getParent().layout(true, true);
     }
     
-    private void showVariablesCompositeForWebServiceRequestEntity(WebServiceRequestEntity requestEntity) {
+    private void showVariablesCompositeForWebServiceObject(WebServiceRequestEntity requestEntity) {
         List<VariableEntity> variables = new ArrayList<>();
-        if (initialSelectedWebElement == requestEntity) {
+        if (initialSelectedTestObject == requestEntity
+                && !initialRequestVariables.isEmpty()) {
             variables = initialRequestVariables.stream()
                 .map(VariableEntity::clone)
                 .collect(Collectors.toList());
@@ -555,9 +556,9 @@ public class TestObjectBuilderDialog extends TreeEntitySelectionDialog implement
         compositeVariablesDetailsLayout.topControl = webServiceVariablesComposite;
     }
     
-    private void showVariablesCompositeForWebElementEntity(WebElementEntity entity) {
+    private void showVariablesCompositeForTestObject(WebElementEntity entity) {
         variableMaps.clearExpressions();
-        if (initialSelectedWebElement == entity) {
+        if (initialSelectedTestObject == entity) {
             List<MapEntryExpressionWrapper> variableMapEntries = initialVariableMapEntries.stream()
                     .map(MapEntryExpressionWrapper::clone)
                     .collect(Collectors.toList());
