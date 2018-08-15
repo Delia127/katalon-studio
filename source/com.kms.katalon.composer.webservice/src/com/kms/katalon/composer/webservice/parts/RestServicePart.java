@@ -53,6 +53,7 @@ import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
+import com.kms.katalon.tracking.service.Trackings;
 import com.kms.katalon.util.URLBuilder;
 import com.kms.katalon.util.collections.NameValuePair;
 
@@ -129,6 +130,7 @@ public class RestServicePart extends WebServicePart {
         }
 
         try {
+            Trackings.trackTestWebServiceObject(runVerificationScript);
             wsApiControl.setSendButtonState(true);
             progress = new ProgressMonitorDialogWithThread(Display.getCurrent().getActiveShell());
             progress.setOpenOnRun(false);

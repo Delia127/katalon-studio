@@ -332,7 +332,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             tltmStop.setEnabled(true);
             resume();
             resetInput();
-            Trackings.trackRecord("web");
+            Trackings.trackWebRecord(selectedBrowser, isInstant);
         } catch (final IEAddonNotInstalledException e) {
             stop();
             showMessageForMissingIEAddon();
