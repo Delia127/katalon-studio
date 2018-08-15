@@ -20,6 +20,7 @@ import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 
 import com.kms.katalon.constants.ImageConstants;
+import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.core.webservice.support.UrlEncoder;
 import com.kms.katalon.tracking.service.Trackings;
 
@@ -38,7 +39,7 @@ public class ForumSearchToolControl implements EventHandler {
         
         Text txtSearch = new Text(canvas, SWT.NONE);
         txtSearch.setBounds(23, 4, 100, 15);
-        txtSearch.setMessage("Online Help");
+        txtSearch.setMessage(StringConstants.MSG_FORUM_SEARCH);
         
         txtSearch.addListener(SWT.Traverse, new Listener() {
             @Override
