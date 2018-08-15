@@ -84,7 +84,9 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
 
     ToolItem tiPropertyAdd, tiPropertyDelete, tiPropertyClear;
 
-    private Button radioXpath, radioAttribute;    
+    private Button radioXpath, radioAttribute;
+
+	private Button resetDefault;    
     
     private Table tProperty, tXpath;        
     
@@ -92,7 +94,9 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
 
     private TableViewerColumn cvPropertyName, cvPropertySelected, cvXpathName;
     
-    private Composite compositeTableToolBar;
+    private Composite compositeAttributeTableToolBar;
+    
+    private Composite compositeXpathTableToolBar;
     
     private TableColumn cName, cSelected;
 
@@ -174,13 +178,12 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
         locatorContainer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         
         createSelectionMethodComposite(locatorContainer);
-
         
         createAttributeTableToolbar(locatorContainer);      
         
-        
-        createPropertyTable(locatorContainer);
-        
+        createXpathTableToolbar(locatorContainer);
+                
+        createPropertyTable(locatorContainer);        
         
         createXpathTable(locatorContainer);
 
@@ -188,11 +191,11 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
     }
     
     private void createAttributeTableToolbar(Composite parent) {
-		compositeTableToolBar = new Composite(parent, SWT.NONE);
-		compositeTableToolBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-		compositeTableToolBar.setLayout(new FillLayout(SWT.HORIZONTAL));
+		compositeAttributeTableToolBar = new Composite(parent, SWT.NONE);
+		compositeAttributeTableToolBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		compositeAttributeTableToolBar.setLayout(new FillLayout(SWT.HORIZONTAL));
 
-        ToolBar tb = new ToolBar(compositeTableToolBar, SWT.FLAT | SWT.RIGHT);
+        ToolBar tb = new ToolBar(compositeAttributeTableToolBar, SWT.FLAT | SWT.RIGHT);
         tiPropertyAdd = new ToolItem(tb, SWT.PUSH);
         tiPropertyAdd.setText(StringConstants.ADD);
         tiPropertyAdd.setImage(ImageConstants.IMG_16_ADD);
@@ -206,6 +209,16 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
         tiPropertyClear.setText(StringConstants.CLEAR);
         tiPropertyClear.setImage(ImageConstants.IMG_16_CLEAR);
 
+	}
+    
+    private void createXpathTableToolbar(Composite parent) {
+		compositeXpathTableToolBar = new Composite(parent, SWT.NONE);
+		compositeXpathTableToolBar.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		compositeXpathTableToolBar.setLayout(new GridLayout(1, false));
+
+		resetDefault = new Button(compositeXpathTableToolBar, SWT.WRAP);
+		resetDefault.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+		resetDefault.setText(StringConstants.RESET_DEFAULT);    	
 	}
     
    
@@ -341,7 +354,7 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
         tableXpathComposite.setLayoutData(ldTableComposite);
         TableColumnLayout tableColumnLayout = new TableColumnLayout();
         tableXpathComposite.setLayout(tableColumnLayout);       
-
+    
         tvXpath = new TableViewer(tableXpathComposite,
                 SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
         tvXpath.setContentProvider(ArrayContentProvider.getInstance());
@@ -461,7 +474,8 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
 			public void widgetSelected(SelectionEvent e) {
 				defaultSelectingCapturedObjecSelectionMethods = SelectorMethod.ATTRIBUTES;
 				locatorGroup.setText(GRP_LBL_DEFAULT_SELECTED_PROPERTIES_FOR_CAPTURED_TEST_OBJECT);
-				showComposite(compositeTableToolBar, true);
+				showComposite(compositeAttributeTableToolBar, true);
+				showComposite(compositeXpathTableToolBar, false);
 				showComposite(tablePropertyComposite, true);
 				showComposite(tableXpathComposite, false);
 			}
@@ -472,9 +486,22 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
 			public void widgetSelected(SelectionEvent e) {
 				defaultSelectingCapturedObjecSelectionMethods = SelectorMethod.XPATH;
 				locatorGroup.setText(GRP_LBL_DEFAULT_XPATHS_USAGE_TIPS);
-				showComposite(compositeTableToolBar, false);
+				showComposite(compositeAttributeTableToolBar, false);
+				showComposite(compositeXpathTableToolBar, true);
 				showComposite(tablePropertyComposite, false);
 				showComposite(tableXpathComposite, true);
+			}
+		});
+		
+		resetDefault.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				try {
+					setInputForCapturedObjectXpathSetting(store.getDefaultCapturedObjectXpathLocators());
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		});
     }
@@ -493,7 +520,7 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
         setSelectionForCapturedObjectSelectionSetting(store.getCapturedTestObjectSelectorMethod());
         setInputForCapturedObjectXpathSetting(store.getCapturedTestObjectXpathLocators());
         
-        showComposite(tablePropertyComposite, 
+        showComposite(tablePropertyComposite,
         		store.getCapturedTestObjectSelectorMethod() != null && 
         				store.getCapturedTestObjectSelectorMethod() == SelectorMethod.ATTRIBUTES
         		);
@@ -504,7 +531,7 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
         				store.getCapturedTestObjectSelectorMethod() == SelectorMethod.XPATH
         		);
         
-        showComposite(compositeTableToolBar, store.getCapturedTestObjectSelectorMethod() != null && 
+        showComposite(compositeAttributeTableToolBar, store.getCapturedTestObjectSelectorMethod() != null && 
 				store.getCapturedTestObjectSelectorMethod() == SelectorMethod.ATTRIBUTES);
         
         radioXpath.setSelection(store.getCapturedTestObjectSelectorMethod() == SelectorMethod.XPATH);

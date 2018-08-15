@@ -5,6 +5,8 @@ import org.eclipse.osgi.util.NLS;
 public class ComposerWebuiMessageConstants extends NLS {
     private static final String BUNDLE_NAME = "com.kms.katalon.composer.webui.constants.composerWebuiMessages";
 
+	public static String RESET_DEFAULT;
+
     public static String DIA_REMOTE_SERVER_URL_TITLE;
 
     public static String DIA_REMOTE_SERVER_URL_MESSAGE;

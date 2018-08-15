@@ -117,6 +117,11 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
                         DEFAULT_SELECTING_CAPTURED_OBJECT_XPATHS));
     }
     
+    public List<Pair<String,Boolean>> getDefaultCapturedObjectXpathLocators() throws IOException{
+    	 return parseStringBooleanString(
+                 getString(DEFAULT_SELECTING_CAPTURED_OBJECT_XPATHS, DEFAULT_SELECTING_CAPTURED_OBJECT_XPATHS));
+    }
+    
     public void setDefaultCapturedTestObjectXpathLocators() throws IOException {
         setProperty(WebUiExecutionSettingConstants.WEBUI_DEFAULT_SELECTING_CAPTURED_OBJECT_XPATHS,
         		DEFAULT_SELECTING_CAPTURED_OBJECT_XPATHS);
