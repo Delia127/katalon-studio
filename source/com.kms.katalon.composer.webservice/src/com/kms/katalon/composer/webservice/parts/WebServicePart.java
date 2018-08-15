@@ -511,8 +511,7 @@ public abstract class WebServicePart implements IVariablePart, SavableCompositeP
 
     protected abstract void sendRequest(boolean runVerificationScript);
     
-    protected Map<String, String> evaluateRequestVariables() throws IOException, ExecutionException, InterruptedException,
-            java.util.concurrent.ExecutionException, TimeoutException {
+    protected Map<String, String> evaluateRequestVariables() throws Exception {
 
         WebServiceRequestEntity requestEntity = getWSRequestObject();
         List<VariableEntity> variables = requestEntity.getVariables();

@@ -15,18 +15,24 @@ import java.util.concurrent.TimeoutException;
 import org.apache.commons.io.FileUtils;
 
 import com.kms.katalon.composer.components.log.LoggerSingleton;
+import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.entity.project.ProjectEntity;
 import com.kms.katalon.entity.testcase.WSVerificationTestCaseEntity;
 import com.kms.katalon.execution.configuration.VariableEvaluationRunConfiguration;
 import com.kms.katalon.execution.entity.WSVerificationTestCaseExecutedEntity;
-import com.kms.katalon.execution.exception.ExecutionException;
-import com.kms.katalon.execution.generator.VariableEvaluationScriptTemplate;
 import com.kms.katalon.execution.launcher.VerificationScriptLauncher;
 import com.kms.katalon.execution.launcher.manager.LauncherManager;
 import com.kms.katalon.execution.util.ExecutionProfileStore;
 
+import groovy.lang.GroovyObject;
+
 public class VariableEvaluator {
+    
+    private static final String EVALUATION_SCRIPT_TEMPLATE_CLASS = IdConstants.KATALON_EXECUTION_BUNDLE_ID
+            + ".generator.VariableEvaluationScriptTemplate";
+    
+    private static final String GENERATE_EVALUATION_SCRIPT_METHOD = "generateEvaluationScript";
 
     private static final String TEST_CASE_ID_PREFIX = "Variable-Eval_";
 
@@ -42,16 +48,14 @@ public class VariableEvaluator {
 
     private Map<String, String> evaluatedVariables;
 
-    public Map<String, String> evaluate(String testObjectId, Map<String, String> variables) throws IOException, ExecutionException,
-        InterruptedException, java.util.concurrent.ExecutionException, TimeoutException {
+    public Map<String, String> evaluate(String testObjectId, Map<String, String> variables) throws Exception {
         
         evaluatedVariables = new HashMap<>();
         
         File resultFile = createResultFile();
 
-        String evaluationScript = (String) VariableEvaluationScriptTemplate
-                .generateEvaluationScript(resultFile.getAbsolutePath(), variables);
-
+        String evaluationScript = generateEvaluationScript(resultFile, variables);
+        
         testCaseEntity = createTestCaseEntity(evaluationScript);
 
         VariableEvaluationRunConfiguration runConfig = new VariableEvaluationRunConfiguration();
@@ -71,6 +75,15 @@ public class VariableEvaluator {
         waitForEvaluationFinished(resultFile);
         
         return evaluatedVariables;
+    }
+    
+    private String generateEvaluationScript(File resultFile, Map<String, String> variables) 
+            throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+        Class clazz = Class.forName(EVALUATION_SCRIPT_TEMPLATE_CLASS);
+        GroovyObject object = (GroovyObject) clazz.newInstance();
+        String script = (String) object.invokeMethod(GENERATE_EVALUATION_SCRIPT_METHOD, 
+                new Object[] {resultFile.getAbsolutePath(), variables});
+        return script;
     }
 
     private void waitForEvaluationFinished(File resultFile) 
