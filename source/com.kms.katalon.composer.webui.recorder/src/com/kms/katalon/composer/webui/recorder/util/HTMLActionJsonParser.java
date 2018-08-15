@@ -182,8 +182,10 @@ public class HTMLActionJsonParser {
                             return new HTMLActionMapping(HTMLAction.SetText, actionData, targetElement);
                         case ELEMENT_TYPE_TEXTAREA:
                             return new HTMLActionMapping(HTMLAction.SetText, actionData, targetElement);
-                    }                    
-                   
+                        default:                        	
+                        	break;
+                    }             
+                    break;                   
                 case SELECT_ACTION_KEY:
                     return new HTMLActionMapping(HTMLAction.Select, actionData, targetElement);
                 case DESELECT_ACTION_KEY:

@@ -520,7 +520,11 @@ public class WebUiCommonHelper extends KeywordHelper {
                 XPathBuilder xpathBuilder = new XPathBuilder(to.getActiveProperties());                
                 return xpathBuilder.build(); 
             case XPATH:
-            	return to.getSelectorCollection().get(selectorMethod);
+            	String ret =  to.getSelectorCollection().get(selectorMethod);
+            	if(ret == null || ret.isEmpty()){
+            		ret = to.getActiveXpaths().get(0).getValue();
+            	}
+            	return ret;
             case CSS:
             	return to.getSelectorCollection().get(selectorMethod);
             default:

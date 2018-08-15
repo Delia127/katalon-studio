@@ -219,7 +219,7 @@ public class WebElementUtils {
         el.setProperties(properties);
         el.setXpaths(xpaths);
         el.setUsefulNeighborText(usefulNeighborText);
-        el.setSelectorMethod(selectorMethod);                      
+        el.setSelectorMethod(selectorMethod);
         
         return el;
     }
