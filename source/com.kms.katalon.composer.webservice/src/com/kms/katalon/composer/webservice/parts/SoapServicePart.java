@@ -70,6 +70,7 @@ import com.kms.katalon.core.webservice.common.BasicRequestor;
 import com.kms.katalon.entity.repository.WebElementPropertyEntity;
 import com.kms.katalon.entity.repository.WebServiceRequestEntity;
 import com.kms.katalon.execution.preferences.ProxyPreferences;
+import com.kms.katalon.tracking.service.Trackings;
 
 public class SoapServicePart extends WebServicePart {
 
@@ -207,6 +208,7 @@ public class SoapServicePart extends WebServicePart {
         }
 
         try {
+            Trackings.trackTestWebServiceObject(runVerificationScript);
             wsApiControl.setSendButtonState(true);
             progress = new ProgressMonitorDialogWithThread(Display.getCurrent().getActiveShell());
             progress.setOpenOnRun(false);

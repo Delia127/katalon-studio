@@ -56,7 +56,6 @@ public class SaveHandler extends AbstractHandler {
                 }
             }
 
-            Trackings.trackSave();
 //            Executors.newSingleThreadExecutor().submit(() -> UsageInfoCollector
 //                    .collect(UsageInfoCollector.getActivatedUsageInfo(UsageActionTrigger.SAVE_ALL, RunningMode.GUI)));
 
