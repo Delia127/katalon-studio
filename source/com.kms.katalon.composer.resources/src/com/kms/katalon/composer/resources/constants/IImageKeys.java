@@ -392,7 +392,7 @@ public interface IImageKeys {
 
     public static final String KEYWORD_16 = "entity/keyword_16.png"; //$NON-NLS-1$
     
-    public static final String PROFILE_FOLDER_ENTITY_16 = "entity/profile_16.png"; //$NON-NLS-1$
+    public static final String PROFILE_FOLDER_ENTITY_16 = "entity/profile_16@1x.png"; //$NON-NLS-1$
     
     public static final String PROFILE_ENTITY_16 = "entity/entity_global_variable_16.png"; //$NON-NLS-1$
     // End Entity
