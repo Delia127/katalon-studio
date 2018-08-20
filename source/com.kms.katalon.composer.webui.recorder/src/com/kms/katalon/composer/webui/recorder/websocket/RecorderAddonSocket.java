@@ -44,6 +44,7 @@ public class RecorderAddonSocket extends AddonSocket {
     private void addNewAction(String value) {
         try {
             HTMLActionMapping actionMapping = HTMLActionJsonParser.parseJsonIntoHTMLActionMapping(value);
+            System.out.println(actionMapping.getAction());
             EventBrokerSingleton.getInstance().getEventBroker().post(EventConstants.RECORDER_HTML_ACTION_CAPTURED,
                     actionMapping);
         } catch (JsonSyntaxException | UnsupportedEncodingException e) {

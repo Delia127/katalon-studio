@@ -147,7 +147,6 @@ public class HTMLActionJsonParser {
         }
 
         public HTMLActionMapping buildActionMapping() {
-        	System.out.println("buildActionMapping outer");
             HTMLActionMapping newActionMapping = buildActionMapping(actionName, actionData, element);
             if (actionObject.has(ACTION_WINDOW_ID_KEY)) {
                 newActionMapping.setWindowId(actionObject.get(ACTION_WINDOW_ID_KEY).getAsString());
@@ -157,16 +156,13 @@ public class HTMLActionJsonParser {
 
         private static HTMLActionMapping buildActionMapping(String recordedActionName, String actionData,
                 WebElement targetElement) {
-        	System.out.println("----------------------------------------------");
-        	System.out.println("recordedActionName=" + recordedActionName);
             switch (recordedActionName) {
                 case NAVIGATE_ACTION_KEY:
                     return new HTMLActionMapping(HTMLAction.Navigate, actionData, targetElement);
-                case INPUT_CHANGE_ACTION_KEY:             
+                case INPUT_CHANGE_ACTION_KEY:
                 	// TODO: Refactor contentEditable into a separate case
                 	 WebElementPropertyEntity contentEditability = targetElement.getProperty("contenteditable");
                      if(contentEditability != null && contentEditability.getValue().equals("true")){
-                    	 System.out.println("Typing into content editable");
                     	 return new HTMLActionMapping(HTMLAction.SetText, actionData, targetElement);
                      }
                      
@@ -175,7 +171,6 @@ public class HTMLActionJsonParser {
                         case ELEMENT_TYPE_INPUT:
                             WebElementPropertyEntity typeProp = targetElement.getProperty("type");
                             if (typeProp == null) {
-                            	System.out.println("Typing into pure input");
                                 return new HTMLActionMapping(HTMLAction.SetText, actionData, targetElement);
                             }
                             switch (typeProp.getValue().toLowerCase()) {
@@ -184,13 +179,10 @@ public class HTMLActionJsonParser {
                                             isActionDataTrue(actionData) ? HTMLAction.Check : HTMLAction.Uncheck,
                                             actionData, targetElement);
                             }
-                            System.out.println("Typing into input");
-                            System.out.println("data=" + actionData);
                             return new HTMLActionMapping(HTMLAction.SetText, actionData, targetElement);
                         case ELEMENT_TYPE_TEXTAREA:
-                        	System.out.println("Typing into textarea");
                             return new HTMLActionMapping(HTMLAction.SetText, actionData, targetElement);
-                        default:                        	
+                        default:
                         	break;
                     }
                     break;                   
@@ -216,7 +208,6 @@ public class HTMLActionJsonParser {
                     if (keyCode != KEYCODE_ENTER) {
                         return null;
                     }
-                    System.out.println("sending keys");
                     final HTMLActionMapping htmlActionMapping = new HTMLActionMapping(HTMLAction.SendKeys, actionData,
                             targetElement);
                     htmlActionMapping.getData()[0] = HTMLActionParamValueType.newInstance(InputValueType.Keys,

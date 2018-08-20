@@ -25,12 +25,9 @@ KURecorder.addEventHandler('type', 'change', function (event) {
         // END
         var tagName = event.target.tagName.toLowerCase();
         var type = event.target.type;
-        var key = event.keyCode;
         if ('input' == tagName && KURecorder.inputTypes.indexOf(type) >= 0) {
             if (event.target.value.length > 0) {
-                if(key != 13){
                     this.processOnChangeTarget(event.target);
-                }
 
                 // © Chen-Chieh Ping, SideeX Team
                 if (enterTarget != null) {
@@ -62,6 +59,7 @@ KURecorder.addEventHandler('type', 'change', function (event) {
 KURecorder.addEventHandler('type', 'input', function (event) {
     //console.log(event.target);
     typeTarget = event.target;
+    var key = event.keyCode;
     this.processOnInputChangeTarget(typeTarget);
 });
 
@@ -102,12 +100,12 @@ var enterTarget = null;
 var enterValue = null;
 var tabCheck = null;
 KURecorder.addEventHandler('sendKeys', 'keydown', function (event) {
-    if (event.target.tagName) {  f
+    if (event.target.tagName) {
         var key = event.keyCode;
         var tagName = event.target.tagName.toLowerCase();
         var type = event.target.type;
         if (tagName == 'input' && KURecorder.inputTypes.indexOf(type) >= 0) {
-            if (key == 13) {
+            if (key == 13) {               
                 enterTarget = event.target;
                 enterValue = enterTarget.value;
                 var tempTarget = event.target.parentElement;
@@ -140,7 +138,7 @@ KURecorder.addEventHandler('sendKeys', 'keydown', function (event) {
                         if (typeTarget.value.length > 0) {
                             this.processOnChangeTarget(typeTarget);
                             // © Chen-Chieh Ping, SideeX Team
-                            if (enterTarget != null) {                                
+                            if (enterTarget != null) {
                                 var tempTarget = typeTarget.parentElement;
                                 var formChk = tempTarget.tagName.toLowerCase();
                                 while (formChk != 'form' && formChk != 'body') {
