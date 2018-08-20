@@ -95,6 +95,7 @@ public class TestCaseVariableView implements VariableTableActionOperator {
 
     public Composite createComponents(Composite parent) {
         final Composite container = new Composite(parent, SWT.NONE);
+        container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         container.setLayout(new GridLayout(1, false));
 
         Composite compositeToolbar = new Composite(container, SWT.NONE);

@@ -324,7 +324,7 @@ public abstract class AbstractExecutionHandler {
     }
     
     private void trackTestSuiteExecution(LaunchMode launchMode, IRunConfiguration runConfig) {
-        Trackings.trackExecuteTestSuiteInGuiMode(launchMode.toString());
+        Trackings.trackExecuteTestSuiteInGuiMode(launchMode.toString(), runConfig.getName());
     }
 
     /**
