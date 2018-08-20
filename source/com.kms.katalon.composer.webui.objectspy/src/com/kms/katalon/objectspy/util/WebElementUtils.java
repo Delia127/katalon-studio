@@ -107,12 +107,12 @@ public class WebElementUtils {
         	if(usefulNeighborText == null || usefulNeighborText.equals("")){
                 return elementType + "_" + toValidFileName(name);
         	}else{
-                return elementType + "_" + toValidFileName(name) + "_" + toValidFileName(usefulNeighborText);
+                return elementType + "_" + toValidFileName(usefulNeighborText) + "_" + toValidFileName(name);
         	}
         }
         String id = propsMap.get(ELEMENT_ID_KEY);
         if (id != null) {
-            return elementType + "_" + toValidFileName(id);
+            return elementType + "_" + toValidFileName(usefulNeighborText) + "_" + toValidFileName(id);
         }
         String cssClass = propsMap.get(ELEMENT_CLASS_KEY);
         if (cssClass != null) {
@@ -209,11 +209,11 @@ public class WebElementUtils {
         WebFrame parentElement = getParentElement(elementJsonObject);
 
         String newName = generateWebElementName(elementType, properties, usefulNeighborText);
-
+        
         if (newName.length() > NAME_LENGTH_LIMIT) {
             newName = newName.substring(0, NAME_LENGTH_LIMIT);
         }
-        
+     
         WebElement el = isFrame ? new WebFrame(newName) : new WebElement(newName);
         el.setParent(parentElement);
         el.setProperties(properties);
