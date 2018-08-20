@@ -40,13 +40,17 @@ public class ServerAPICommunicationUtil {
     }
 
     public static String invokeFormEncoded(String apiUrl, String method, String data)
-            throws IOException, GeneralSecurityException {
+            throws IOException, GeneralSecurityException, RequestException {
         HttpURLConnection connection = null;
         try {
             connection = createConnection(method, apiUrl, ApplicationProxyUtil.getProxy());
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             String result = sendAndReceiveData(connection, data);
             LogUtil.printOutputLine(ApplicationMessageConstants.REQUEST_COMPLETED);
+            int statusCode = connection.getResponseCode();
+            if (statusCode == 403 || statusCode == 502 || statusCode == 503) {
+                throw new RequestException("Request failed with status code: " + statusCode);
+            }
             return result;
         } catch (Exception ex) {
             LogUtil.logError(ex);
@@ -59,7 +63,7 @@ public class ServerAPICommunicationUtil {
     }
     
     public static String retryInvokeFormEncoded(String apiUrl, String method, String data)
-            throws IOException, GeneralSecurityException {
+            throws IOException, GeneralSecurityException, RequestException {
         LogUtil.printAndLogError(null, ApplicationMessageConstants.REQUEST_FAILED_AND_RETRY);
         HttpURLConnection connection = null;
         try {
@@ -67,6 +71,10 @@ public class ServerAPICommunicationUtil {
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             String result = sendAndReceiveData(connection, data);
             LogUtil.printOutputLine(ApplicationMessageConstants.REQUEST_COMPLETED);
+            int statusCode = connection.getResponseCode();
+            if (statusCode == 403 || statusCode == 502 || statusCode == 503) {
+                throw new RequestException("Request failed with status code: " + statusCode);
+            }
             return result;
         } catch (IOException e) {
             LogUtil.logError(e);
@@ -80,6 +88,11 @@ public class ServerAPICommunicationUtil {
                 connection.disconnect();
             }
         }
+    }
+    
+    public interface Response {
+        int getStatusCode();
+        String getResponseBody();
     }
 
     public static String invoke(String method, String function, String jsonData)

@@ -34,13 +34,16 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.annotations.SerializedName;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
+import com.kms.katalon.application.utils.RequestException;
 import com.kms.katalon.application.utils.ServerAPICommunicationUtil;
+import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
 import com.kms.katalon.constants.MessageConstants;
 import com.kms.katalon.constants.StringConstants;
 import com.kms.katalon.core.util.internal.JsonUtil;
+import com.kms.katalon.logging.LogUtil;
 
 public class SignupDialog extends AbstractDialog {
 
@@ -48,6 +51,10 @@ public class SignupDialog extends AbstractDialog {
             Pattern.CASE_INSENSITIVE);
 
     public static final int REQUEST_ACTIVATION_CODE = 1000;
+    
+    private static final String STAGING_URL = "https://wp-dev.katalon.com";
+    
+    private static final String PRODUCTION_URL = "https://www.katalon.com";
 
     private Text txtUsername;
 
@@ -252,11 +259,17 @@ public class SignupDialog extends AbstractDialog {
                 createAccount(authenticationInfo);
 
                 UISynchronizeService.syncExec(() -> SignupDialog.super.okPressed());
-            } catch (IOException | GeneralSecurityException | ActivationErrorException e) {
+            } catch (IOException | GeneralSecurityException | ActivationErrorException | RequestException e) {
                 UISynchronizeService.syncExec(() -> {
                     setProgressMessage(e.getMessage(), true);
                     getButton(OK).setEnabled(true);
                 });
+                
+                try {
+                    Program.launch(getSignUpUrlWithRedirectLink(getActivationUrl()));
+                } catch (UnsupportedEncodingException e1) {
+                    LogUtil.logError(e1);
+                }
             }
         });
         thread.start();
@@ -277,7 +290,7 @@ public class SignupDialog extends AbstractDialog {
     }
 
     private void createAccount(AuthenticationInfo authenticationInfo)
-            throws IOException, GeneralSecurityException, ActivationErrorException {
+            throws IOException, GeneralSecurityException, ActivationErrorException, RequestException {
         setSyncMessage(MessageConstants.SignupDialog_MSG_CREATING_NEW_ACCOUNT, false);
 
         String token = ServerAPICommunicationUtil.invokeFormEncoded(ServerAPICommunicationUtil.STAGING_URL_API, "GET",
@@ -426,6 +439,22 @@ public class SignupDialog extends AbstractDialog {
                 }
             }
             return signupResponse;
+        }
+    }
+    
+    private String getActivationUrl() {
+        return getSiteUrl() + "/activation";
+    }
+    
+    private String getSignUpUrlWithRedirectLink(String redirectLink) throws UnsupportedEncodingException {
+        return getSiteUrl() + "/sign-up?redirect=" + URLEncoder.encode(redirectLink, "utf-8");
+    }
+    
+    private String getSiteUrl() {
+        if (VersionUtil.isInternalBuild()) {
+            return STAGING_URL;
+        } else {
+            return PRODUCTION_URL;
         }
     }
 }
