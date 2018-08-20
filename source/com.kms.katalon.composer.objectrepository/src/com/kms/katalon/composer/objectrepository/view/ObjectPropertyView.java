@@ -5,6 +5,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 
@@ -2213,12 +2214,15 @@ public class ObjectPropertyView implements EventHandler {
 		testObject.setSelectorMethod(SelectorMethod.valueOf(webElement.getSelectorMethod().name()));
 		
 		
-		if(webElement.getSelectorCollection() != null){
-			webElement.getSelectorCollection().entrySet().forEach(entry -> {
-				System.out.println(SelectorMethod.valueOf(entry.getKey().name()));
-				testObject.setSelectorValue(SelectorMethod.valueOf(entry.getKey().name()), entry.getValue());
-			});	
+		if(webElement.getSelectorCollection() != null && !webElement.getSelectorCollection().isEmpty()){			
+			for(Entry<WebElementSelectorMethod,String> entry: webElement.getSelectorCollection().entrySet()){
+				if(entry!=null){
+					testObject.setSelectorValue(SelectorMethod.valueOf(entry.getKey().name()), entry.getValue());
+				}
+			}
 		}
+		
+		
 		
 		return testObject;
 	}

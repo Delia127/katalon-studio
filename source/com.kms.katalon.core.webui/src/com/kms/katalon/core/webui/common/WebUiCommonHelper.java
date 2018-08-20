@@ -522,7 +522,7 @@ public class WebUiCommonHelper extends KeywordHelper {
                 return xpathBuilder.build(); 
             case XPATH:
             	String ret =  to.getSelectorCollection().get(selectorMethod);
-            	if(ret == null || ret.isEmpty()){
+            	if(ret == null || ret.isEmpty()){	
             		if(to.getActiveXpaths() != null && !to.getActiveXpaths().isEmpty()){
                 		ret = to.getActiveXpaths().get(0).getValue();
             		}else{
