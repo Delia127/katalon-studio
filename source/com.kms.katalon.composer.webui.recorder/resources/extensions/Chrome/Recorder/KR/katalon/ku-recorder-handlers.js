@@ -247,6 +247,16 @@ KURecorder.addEventHandler('dragAndDrop', 'mouseup', function (event) {
                     // this.record("mouseUpAt", this.ku_locatorBuilders.buildAll(event.target), targetRelateX + ',' + targetRelateY);
                 }
             }
+            var clickType = this.rec_getMouseButton(this.selectMousedown);
+            var action = {};
+            this.checkForNavigateAction(currentURL);
+            action["actionName"] = 'click';
+            action["actionData"] = clickType;
+            var jsonObject = mapDOMForRecord(action, this.selectMousedown.target, window); 
+            var self = this;
+            if (this.rec_isElementMouseUpEventRecordable(this.selectMousedown.target, clickType)) {
+                self.rec_processObject(jsonObject);
+            }
         } else {
             delete this.clickLocator;
             delete this.mouseup;
