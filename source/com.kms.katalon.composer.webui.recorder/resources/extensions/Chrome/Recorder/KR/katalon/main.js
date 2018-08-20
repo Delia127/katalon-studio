@@ -56,7 +56,7 @@ function startObjectSpy(data) {
     if (runMode !== RUN_MODE_IDLE) {
         stop();
     }
-    console.log("Starting Object Spy")
+    console.log("Starting Object Spy");
     $('document').ready(function() {
         startInspection(data);
         startGetRequestSchedule();
@@ -69,7 +69,7 @@ function startRecorder(version) {
         stop();
     }
     
-    console.log("Starting Recorder")
+    console.log("Starting Recorder 2");
     $('document').ready(function() {
         startRecord(version);
         runMode = RUN_MODE_RECORDER;

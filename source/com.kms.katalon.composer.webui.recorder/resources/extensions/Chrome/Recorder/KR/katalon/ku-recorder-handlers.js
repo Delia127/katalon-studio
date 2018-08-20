@@ -25,17 +25,32 @@ KURecorder.addEventHandler('type', 'change', function (event) {
         // END
         var tagName = event.target.tagName.toLowerCase();
         var type = event.target.type;
+        var key = event.keyCode;
         if ('input' == tagName && KURecorder.inputTypes.indexOf(type) >= 0) {
             if (event.target.value.length > 0) {
-                this.processOnChangeTarget(event.target);
+                if(key != 13){
+                    this.processOnChangeTarget(event.target);
+                }
 
                 // © Chen-Chieh Ping, SideeX Team
                 if (enterTarget != null) {
-                    this.processOnSendKeyTarget(enterTarget);
+                    var tempTarget = event.target.parentElement;
+                    var formChk = tempTarget.tagName.toLowerCase();
+                    while (formChk != 'form' && formChk != 'body') {
+                        tempTarget = tempTarget.parentElement;
+                        formChk = tempTarget.tagName.toLowerCase();
+                    }
+                    if (formChk == 'form' && (tempTarget.hasAttribute("id") 
+                        || tempTarget.hasAttribute("name")) && (!tempTarget.hasAttribute("onsubmit"))) {
+                        
+                    } else
+                        this.processOnSendKeyTarget(enterTarget);
                     enterTarget = null;
                 }
                 // END
             }
+            else
+                this.processOnChangeTarget(event.target);
         } else if ('textarea' == tagName) {
             this.processOnChangeTarget(event.target);
         }
@@ -87,7 +102,7 @@ var enterTarget = null;
 var enterValue = null;
 var tabCheck = null;
 KURecorder.addEventHandler('sendKeys', 'keydown', function (event) {
-    if (event.target.tagName) {
+    if (event.target.tagName) {  f
         var key = event.keyCode;
         var tagName = event.target.tagName.toLowerCase();
         var type = event.target.type;
@@ -105,7 +120,16 @@ KURecorder.addEventHandler('sendKeys', 'keydown', function (event) {
                     enterTarget = null;
                     preventType = true;
                 } else if (focusValue == enterTarget.value) {
-                    this.processOnSendKeyTarget(enterTarget);
+                    while (formChk != 'form' && formChk != 'body') {
+                        tempTarget = tempTarget.parentElement;
+                        formChk = tempTarget.tagName.toLowerCase();
+                    }
+                    if (formChk == 'form' && (tempTarget.hasAttribute("id") 
+                        || tempTarget.hasAttribute("name")) && (!tempTarget.hasAttribute("onsubmit"))) {
+
+                    }else{
+                        this.processOnSendKeyTarget(enterTarget);
+                    }                        
                     enterTarget = null;
                 }
                 if (typeTarget.tagName && !preventType && (typeLock = 1)) {
@@ -115,10 +139,19 @@ KURecorder.addEventHandler('sendKeys', 'keydown', function (event) {
                     if ('input' == tagName && KURecorder.inputTypes.indexOf(type) >= 0) {
                         if (typeTarget.value.length > 0) {
                             this.processOnChangeTarget(typeTarget);
-
                             // © Chen-Chieh Ping, SideeX Team
-                            if (enterTarget != null) {
-                                this.processOnSendKeyTarget(enterTarget);
+                            if (enterTarget != null) {                                
+                                var tempTarget = typeTarget.parentElement;
+                                var formChk = tempTarget.tagName.toLowerCase();
+                                while (formChk != 'form' && formChk != 'body') {
+                                    tempTarget = tempTarget.parentElement;
+                                    formChk = tempTarget.tagName.toLowerCase();
+                                }
+                                if (formChk == 'form' && (tempTarget.hasAttribute("id") 
+                                    || tempTarget.hasAttribute("name")) && (!tempTarget.hasAttribute("onsubmit"))) {
+                                    
+                                } else
+                                    this.processOnSendKeyTarget(enterTarget);
                                 enterTarget = null;
                             }
                             // END
