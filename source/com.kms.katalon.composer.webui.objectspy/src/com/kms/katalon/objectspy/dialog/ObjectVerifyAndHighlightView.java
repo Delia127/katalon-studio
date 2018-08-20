@@ -307,7 +307,7 @@ public class ObjectVerifyAndHighlightView implements EventListener<ObjectSpyEven
         SelectorMethod selectorMethod = webElement.getSelectorMethod();
         String selectorValue = webElement.getSelectorCollection().get(selectorMethod);
         switch (selectorMethod) {
-            case ATTRIBUTES:
+            case BASIC:
                 TestObject testObject = WebElementUtils.buildTestObject(webElement);
                 return WebUiCommonHelper.buildLocator(testObject);
             case CSS:

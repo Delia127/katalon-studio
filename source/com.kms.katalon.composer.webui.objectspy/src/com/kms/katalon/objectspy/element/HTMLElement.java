@@ -24,7 +24,7 @@ public class HTMLElement implements SelectorCollector, XPathProvider {
     private static final String XPATH_FIND_BY_TEXT = TEXT_METHOD + "()=''{0}''";
     private static final String XPATH_EXPRESSION = "//{0}[{1}]";
     
-    private SelectorMethod selectorMethod = SelectorMethod.ATTRIBUTES;
+    private SelectorMethod selectorMethod = SelectorMethod.BASIC;
     
     private Map<SelectorMethod, String> selectorCollection = new HashMap<>();
 

@@ -472,7 +472,7 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
         radioAttribute.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				defaultSelectingCapturedObjecSelectionMethods = SelectorMethod.ATTRIBUTES;
+				defaultSelectingCapturedObjecSelectionMethods = SelectorMethod.BASIC;
 				locatorGroup.setText(GRP_LBL_DEFAULT_SELECTED_PROPERTIES_FOR_CAPTURED_TEST_OBJECT);
 				showComposite(compositeAttributeTableToolBar, true);
 				showComposite(compositeXpathTableToolBar, false);
@@ -509,7 +509,7 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
     private void initialize() throws IOException {
     	// Set guidance text
     	if(store.getCapturedTestObjectSelectorMethod() != null){
-    		if(store.getCapturedTestObjectSelectorMethod() == SelectorMethod.ATTRIBUTES){
+    		if(store.getCapturedTestObjectSelectorMethod() == SelectorMethod.BASIC){
         		locatorGroup.setText(GRP_LBL_DEFAULT_SELECTED_PROPERTIES_FOR_CAPTURED_TEST_OBJECT);
     		}else if(store.getCapturedTestObjectSelectorMethod() == SelectorMethod.XPATH){
     			locatorGroup.setText(GRP_LBL_DEFAULT_XPATHS_USAGE_TIPS);
@@ -522,7 +522,7 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
         
         showComposite(tablePropertyComposite,
         		store.getCapturedTestObjectSelectorMethod() != null && 
-        				store.getCapturedTestObjectSelectorMethod() == SelectorMethod.ATTRIBUTES
+        				store.getCapturedTestObjectSelectorMethod() == SelectorMethod.BASIC
         		);
         
 
@@ -532,10 +532,10 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
         		);
         
         showComposite(compositeAttributeTableToolBar, store.getCapturedTestObjectSelectorMethod() != null && 
-				store.getCapturedTestObjectSelectorMethod() == SelectorMethod.ATTRIBUTES);
+				store.getCapturedTestObjectSelectorMethod() == SelectorMethod.BASIC);
         
         radioXpath.setSelection(store.getCapturedTestObjectSelectorMethod() == SelectorMethod.XPATH);
-        radioAttribute.setSelection(store.getCapturedTestObjectSelectorMethod() == SelectorMethod.ATTRIBUTES);
+        radioAttribute.setSelection(store.getCapturedTestObjectSelectorMethod() == SelectorMethod.BASIC);
     }
 
     private void setInputForCapturedObjectPropertySetting(List<Pair<String, Boolean>> input) {
@@ -555,7 +555,7 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
 	        	radioXpath.setSelection(true);
 	        	radioAttribute.setSelection(false);
 	        	break;
-	        case ATTRIBUTES:
+	        case BASIC:
 	        	radioXpath.setSelection(false);
 	        	radioAttribute.setSelection(true);
 	        	break;

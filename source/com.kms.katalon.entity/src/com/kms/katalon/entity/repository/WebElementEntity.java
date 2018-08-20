@@ -36,7 +36,7 @@ public class WebElementEntity extends FileEntity {
 
     private boolean useRalativeImagePath;
 
-    private WebElementSelectorMethod selectorMethod = WebElementSelectorMethod.ATTRIBUTES;
+    private WebElementSelectorMethod selectorMethod = WebElementSelectorMethod.BASIC;
 
     private Map<WebElementSelectorMethod, String> selectorCollection;
 

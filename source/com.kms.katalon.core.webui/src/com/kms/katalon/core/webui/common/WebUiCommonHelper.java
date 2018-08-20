@@ -18,6 +18,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
@@ -486,7 +487,7 @@ public class WebUiCommonHelper extends KeywordHelper {
     public static By buildLocator(TestObject to) {
         SelectorMethod selectorMethod = to.getSelectorMethod();
         switch (selectorMethod) {
-            case ATTRIBUTES:
+            case BASIC:
                 // Legacy locator
                 String cssLocatorValue = findActiveEqualsObjectProperty(to, CSS_LOCATOR_PROPERTY_NAME);
                 if (cssLocatorValue != null) {
@@ -512,7 +513,7 @@ public class WebUiCommonHelper extends KeywordHelper {
     public static String getSelectorValue(TestObject to) {
         SelectorMethod selectorMethod = to.getSelectorMethod();
         switch (selectorMethod) {
-            case ATTRIBUTES:
+            case BASIC:
                 String cssLocatorValue = findActiveEqualsObjectProperty(to, CSS_LOCATOR_PROPERTY_NAME);
                 if (cssLocatorValue != null) {
                     return cssLocatorValue;
@@ -522,7 +523,11 @@ public class WebUiCommonHelper extends KeywordHelper {
             case XPATH:
             	String ret =  to.getSelectorCollection().get(selectorMethod);
             	if(ret == null || ret.isEmpty()){
-            		ret = to.getActiveXpaths().get(0).getValue();
+            		if(to.getActiveXpaths() != null && !to.getActiveXpaths().isEmpty()){
+                		ret = to.getActiveXpaths().get(0).getValue();
+            		}else{
+            			ret = StringUtils.EMPTY;
+            		}
             	}
             	return ret;
             case CSS:

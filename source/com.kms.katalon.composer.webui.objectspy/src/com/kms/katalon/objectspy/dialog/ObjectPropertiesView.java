@@ -268,7 +268,7 @@ public class ObjectPropertiesView extends Composite
 
         radioAttributes = new Button(radioBtnComposite, SWT.FLAT | SWT.RADIO);
         radioAttributes.setText(RADIO_LABEL_ATTRIBUTES);        
-        selectorButtons.put(SelectorMethod.ATTRIBUTES, radioAttributes);
+        selectorButtons.put(SelectorMethod.BASIC, radioAttributes);
 
 
         radioCss = new Button(radioBtnComposite, SWT.FLAT | SWT.RADIO);
@@ -643,7 +643,7 @@ public class ObjectPropertiesView extends Composite
                     return;
                 }
                 enableControls();
-                webElement.setSelectorMethod(SelectorMethod.ATTRIBUTES);
+                webElement.setSelectorMethod(SelectorMethod.BASIC);
                 showComposite(propertyTableComposite, true);
                 showComposite(xpathTableComposite, false);         
                 showComposite(compositeAttributeToolbar, true);
@@ -936,7 +936,7 @@ public class ObjectPropertiesView extends Composite
             showComposite(propertyTableComposite, true);
             showComposite(xpathTableComposite, false);          
         } else {
-            showComposite(propertyTableComposite, webElement.getSelectorMethod() == SelectorMethod.ATTRIBUTES);
+            showComposite(propertyTableComposite, webElement.getSelectorMethod() == SelectorMethod.BASIC);
             showComposite(xpathTableComposite, webElement.getSelectorMethod() == SelectorMethod.XPATH);  
         }
         cSelected.setText(getCheckboxIcon(isAllPropetyEnabled()));
@@ -955,7 +955,7 @@ public class ObjectPropertiesView extends Composite
         	  showComposite(propertyTableComposite, false);
               showComposite(xpathTableComposite, true);     
         } else {
-	           showComposite(propertyTableComposite, webElement.getSelectorMethod() == SelectorMethod.ATTRIBUTES);
+	           showComposite(propertyTableComposite, webElement.getSelectorMethod() == SelectorMethod.BASIC);
 	           showComposite(xpathTableComposite, webElement.getSelectorMethod() == SelectorMethod.XPATH);                       
         }       
        

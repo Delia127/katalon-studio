@@ -88,7 +88,7 @@ public class CloneRemoteProjectHandler {
 
 
                         SampleRemoteProject sample = (SampleRemoteProject) objects[0];
-                        String projectLocation = (String) objects[1];
+                        String projectLocation = ((ProjectEntity) objects[1]).getLocation();
 
 
                         File workdir = new File(projectLocation);

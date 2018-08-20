@@ -395,7 +395,7 @@ public class WebElementUtils {
         newWebElement.setSelectorMethod(WebElementSelectorMethod.valueOf(element.getSelectorMethod().name()));
         element.getSelectorCollection().entrySet().forEach(entry -> {
             SelectorMethod selectorMethod = entry.getKey();
-            if (SelectorMethod.ATTRIBUTES == selectorMethod) {
+            if (SelectorMethod.BASIC == selectorMethod) {
                 return;
             }
             newWebElement.setSelectorValue(WebElementSelectorMethod.valueOf(selectorMethod.name()), entry.getValue());
@@ -541,7 +541,7 @@ public class WebElementUtils {
         element.setSelectorMethod(SelectorMethod.valueOf(webElementEntity.getSelectorMethod().name()));
         webElementEntity.getSelectorCollection().entrySet().forEach(entry -> {
             WebElementSelectorMethod selectorMethod = entry.getKey();
-            if (WebElementSelectorMethod.ATTRIBUTES == selectorMethod) {
+            if (WebElementSelectorMethod.BASIC == selectorMethod) {
                 return;
             }
             element.setSelectorValue(SelectorMethod.valueOf(selectorMethod.name()), entry.getValue());
@@ -550,7 +550,7 @@ public class WebElementUtils {
         element.setSelectorMethod(SelectorMethod.valueOf(webElementEntity.getSelectorMethod().name()));
         webElementEntity.getSelectorCollection().entrySet().forEach(entry -> {
             WebElementSelectorMethod selectorMethod = entry.getKey();
-            if (WebElementSelectorMethod.ATTRIBUTES == selectorMethod) {
+            if (WebElementSelectorMethod.BASIC == selectorMethod) {
                 return;
             }
             element.setSelectorValue(SelectorMethod.valueOf(selectorMethod.name()), entry.getValue());
@@ -559,7 +559,7 @@ public class WebElementUtils {
         element.setSelectorMethod(SelectorMethod.valueOf(webElementEntity.getSelectorMethod().name()));
         webElementEntity.getSelectorCollection().entrySet().forEach(entry -> {
             WebElementSelectorMethod selectorMethod = entry.getKey();
-            if (WebElementSelectorMethod.ATTRIBUTES == selectorMethod) {
+            if (WebElementSelectorMethod.BASIC == selectorMethod) {
                 return;
             }
             element.setSelectorValue(SelectorMethod.valueOf(selectorMethod.name()), entry.getValue());
@@ -568,7 +568,7 @@ public class WebElementUtils {
         element.setSelectorMethod(SelectorMethod.valueOf(webElementEntity.getSelectorMethod().name()));
         webElementEntity.getSelectorCollection().entrySet().forEach(entry -> {
             WebElementSelectorMethod selectorMethod = entry.getKey();
-            if (WebElementSelectorMethod.ATTRIBUTES == selectorMethod) {
+            if (WebElementSelectorMethod.BASIC == selectorMethod) {
                 return;
             }
             element.setSelectorValue(SelectorMethod.valueOf(selectorMethod.name()), entry.getValue());

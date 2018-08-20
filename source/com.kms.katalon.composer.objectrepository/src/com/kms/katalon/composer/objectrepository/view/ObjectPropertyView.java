@@ -825,7 +825,7 @@ public class ObjectPropertyView implements EventHandler {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				testObjectPart.executeOperation(new ChangeSelectorMethodOperation(WebElementSelectorMethod.ATTRIBUTES));
+				testObjectPart.executeOperation(new ChangeSelectorMethodOperation(WebElementSelectorMethod.BASIC));
 				setDirty(true);
 			}
 		});
@@ -869,7 +869,7 @@ public class ObjectPropertyView implements EventHandler {
 		}
 		WebElementSelectorMethod selectorMethod = cloneTestObject.getSelectorMethod();
 		switch (selectorMethod) {
-		case ATTRIBUTES:
+		case BASIC:
 			TestObject testObject = buildTestObject(cloneTestObject);
 			String textToSet = WebUiCommonHelper.getSelectorValue(testObject);
 			textToSet = (textToSet == null ) ? StringUtils.EMPTY : textToSet;
@@ -1102,7 +1102,7 @@ public class ObjectPropertyView implements EventHandler {
 
 	private void refreshLocatorMethod() {
 		WebElementSelectorMethod selectorMethod = cloneTestObject.getSelectorMethod();
-		radioAttributes.setSelection(selectorMethod == WebElementSelectorMethod.ATTRIBUTES);
+		radioAttributes.setSelection(selectorMethod == WebElementSelectorMethod.BASIC);
 		radioCss.setSelection(selectorMethod == WebElementSelectorMethod.CSS);
 		radioXpath.setSelection(selectorMethod == WebElementSelectorMethod.XPATH);
 
@@ -1110,7 +1110,7 @@ public class ObjectPropertyView implements EventHandler {
 		onWebElementXpathChanged();
 		onWebElementCSSChanged();
 		
-		showComposite(propertyCompositeTable, selectorMethod == WebElementSelectorMethod.ATTRIBUTES);
+		showComposite(propertyCompositeTable, selectorMethod == WebElementSelectorMethod.BASIC);
 		showComposite(xpathCompositeTable, selectorMethod == WebElementSelectorMethod.XPATH);
 	}
 
@@ -2212,8 +2212,10 @@ public class ObjectPropertyView implements EventHandler {
 		
 		testObject.setSelectorMethod(SelectorMethod.valueOf(webElement.getSelectorMethod().name()));
 		
+		
 		if(webElement.getSelectorCollection() != null){
 			webElement.getSelectorCollection().entrySet().forEach(entry -> {
+				System.out.println(SelectorMethod.valueOf(entry.getKey().name()));
 				testObject.setSelectorValue(SelectorMethod.valueOf(entry.getKey().name()), entry.getValue());
 			});	
 		}

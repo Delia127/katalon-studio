@@ -108,7 +108,7 @@ public class ObjectSpySelectorEditor implements EventListener<ObjectSpyEvent>, E
         txtSelector.setEnabled(true);
         SelectorMethod selectorMethod = webElement.getSelectorMethod();
         switch (selectorMethod) {
-            case ATTRIBUTES:
+            case BASIC:
                 TestObject testObject = WebElementUtils.buildTestObject(webElement);
                 changeEditorStatus(WebUiCommonHelper.getSelectorValue(testObject), false);
                 return;
