@@ -310,7 +310,6 @@ public class WebElementUtils {
             return;
         }
         for (Entry<String, JsonElement> entry : elementJsonObject.getAsJsonObject(ELEMENT_XPATHS_KEY).entrySet()) {
-
             String xpathFinder = entry.getKey();
             JsonElement xpath = entry.getValue();
             
@@ -320,7 +319,7 @@ public class WebElementUtils {
             	 for(JsonElement jsonElement : xpath.getAsJsonArray()){
                      xpaths.add(new WebElementXpathEntity(xpathFinder, jsonElement.getAsString(), false));
             	 }
-             }          
+             }
         }
     }
 

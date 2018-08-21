@@ -293,7 +293,7 @@ KURecorder.addEventHandler('dragAndDrop', 'mouseup', function (event) {
                     // this.record("mouseUp", this.ku_locatorBuilders.buildAll(event.target), '');    
                     else if (mouseDownTempTarget === event.target) {
                         var self = this;
-                        if (event.button == 0 && !preventClick && event.isTrusted) {
+                        if (!preventClick && event.isTrusted) {
                             if (!preventClickTwice) {                                
                                 if (this.rec_isElementMouseUpEventRecordable(event.target, clickType)) {
                                     self.rec_processObject(jsonObject);
