@@ -120,6 +120,7 @@ import com.kms.katalon.constants.IdConstants;
 import com.kms.katalon.controller.ObjectRepositoryController;
 import com.kms.katalon.controller.ProjectController;
 import com.kms.katalon.core.model.FailureHandling;
+import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.core.testobject.TestObject;
 import com.kms.katalon.core.util.internal.JsonUtil;
 import com.kms.katalon.core.webui.driver.WebUIDriverType;
@@ -243,6 +244,8 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     private TestCaseEntity testCaseEntity;
     
     private boolean isOkPressed = false;
+    
+    private boolean isUsingIE = false;
 
     /**
      * Create the dialog.
@@ -304,8 +307,8 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
 
     private void startBrowser() {
         startBrowser(false);
-    }
-
+    }    
+    
     private void startBrowser(boolean isInstant) {
         if (!BrowserUtil.isBrowserInstalled(selectedBrowser)) {
             MessageDialog.openError(getShell(), StringConstants.ERROR_TITLE,
@@ -313,13 +316,18 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             return;
         }
         try {
+        	
             if (selectedBrowser == WebUIDriverType.IE_DRIVER) {
+            	isUsingIE = true;
                 checkIEAddon();
+            }else{
+            	isUsingIE = false;
             }
+            
             if (isInstant) {
                 startInstantSession();
                 invoke(ObjectSpyEvent.ADDON_SESSION_STARTED, currentInstantSocket);
-            } else {
+            } else {            	
                 startServer();
                 startRecordSession(selectedBrowser);
                 invoke(ObjectSpyEvent.SELENIUM_SESSION_STARTED, session);
@@ -1410,7 +1418,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     private void stopRecordSession() {
         if (session != null && session.isRunning()) {
             session.stop();
-        }
+        }    	
     }
 
     /**
@@ -1566,6 +1574,10 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
         }
         WebElement targetElement = newAction.getTargetElement();
         if (targetElement != null) {
+        	
+        	if(isUsingIE == true){
+        		targetElement.setSelectorMethod(SelectorMethod.BASIC);
+        	}
             addNewElement(targetElement, newAction);
         }
         recordedActions.add(newAction);
