@@ -1,7 +1,14 @@
 package com.kms.katalon.controller;
 
+import java.io.File;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.resources.IFolder;
@@ -55,6 +62,14 @@ public class GlobalVariableController extends EntityController {
             GlobalVariableParser.getInstance().generateGlobalVariableLibFile(libFolder,
                     getAllGlobalVariableCollections(project));
             libFolder.refreshLocal(IResource.DEPTH_INFINITE, monitor);
+            File globalVariableClassFile = new File(project.getFolderLocation(), "bin/lib/internal/GlobalVariable.class");
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            executor.invokeAll(Arrays.asList(() -> {
+                while (!globalVariableClassFile.exists()) {
+                    Thread.sleep(300);
+                }
+                return null;
+            }), 2, TimeUnit.SECONDS);
         } finally {
             if (monitor != null) {
                 monitor.done();
