@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.net.URLEncoder;
+import java.net.UnknownHostException;
 import java.security.GeneralSecurityException;
 import java.util.regex.Pattern;
 
@@ -17,7 +18,6 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -240,7 +240,7 @@ public class SignupDialog extends AbstractDialog {
 
     @Override
     public String getDialogTitle() {
-        return "Create an account";
+        return MessageConstants.SignupDialog_DIA_TITLE;
     }
 
     @Override
@@ -252,6 +252,11 @@ public class SignupDialog extends AbstractDialog {
                 createAccount(authenticationInfo);
 
                 UISynchronizeService.syncExec(() -> SignupDialog.super.okPressed());
+            } catch (UnknownHostException e) {
+                UISynchronizeService.syncExec(() -> {
+                    setProgressMessage(MessageConstants.SignupDialog_MSG_NETWORK_ERROR, true);
+                    getButton(OK).setEnabled(true);
+                });
             } catch (IOException | GeneralSecurityException | ActivationErrorException e) {
                 UISynchronizeService.syncExec(() -> {
                     setProgressMessage(e.getMessage(), true);
