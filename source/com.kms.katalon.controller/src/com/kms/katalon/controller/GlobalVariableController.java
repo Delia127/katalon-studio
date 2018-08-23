@@ -9,6 +9,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.resources.IFolder;
@@ -62,19 +63,29 @@ public class GlobalVariableController extends EntityController {
             GlobalVariableParser.getInstance().generateGlobalVariableLibFile(libFolder,
                     getAllGlobalVariableCollections(project));
             libFolder.refreshLocal(IResource.DEPTH_INFINITE, monitor);
-            File globalVariableClassFile = new File(project.getFolderLocation(), "bin/lib/internal/GlobalVariable.class");
-            ExecutorService executor = Executors.newSingleThreadExecutor();
-            executor.invokeAll(Arrays.asList(() -> {
-                while (!globalVariableClassFile.exists()) {
-                    Thread.sleep(300);
-                }
-                return null;
-            }), 2, TimeUnit.SECONDS);
+            waitForGlobalVariableClassFileAvailable(project);
         } finally {
             if (monitor != null) {
                 monitor.done();
             }
         }
+    }
+    
+    private void waitForGlobalVariableClassFileAvailable(ProjectEntity project) throws InterruptedException {
+        File globalVariableClassFile = new File(project.getFolderLocation(), "bin/lib/internal/GlobalVariable.class");
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Callable<Object> callable = new Callable<Object>() {
+
+            @Override
+            public Object call() throws Exception {
+                while (!globalVariableClassFile.exists()) {
+                    Thread.sleep(300);
+                }
+                return null;
+           }
+        };
+            
+        executor.invokeAll(Arrays.asList(callable), 2, TimeUnit.SECONDS);
     }
 
     public void deleteExecutionProfile(ExecutionProfileEntity profile) throws DALException {
