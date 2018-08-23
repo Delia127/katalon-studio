@@ -59,6 +59,8 @@ public class ProjectStatistics {
     private boolean qTestIntegrated = false;
     
     private boolean remoteWebDriverConfigured = false;
+    
+    private String defaultTestCaseView;
 
     public String getProjectId() {
         return projectId;
@@ -290,5 +292,13 @@ public class ProjectStatistics {
 
     public void setRemoteWebDriverConfigured(boolean remoteWebDriverConfigured) {
         this.remoteWebDriverConfigured = remoteWebDriverConfigured;
+    }
+
+    public String getDefaultTestCaseView() {
+        return defaultTestCaseView;
+    }
+
+    public void setDefaultTestCaseView(String defaultTestCaseView) {
+        this.defaultTestCaseView = defaultTestCaseView;
     }
 }
