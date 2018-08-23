@@ -28,7 +28,9 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Listener;
@@ -36,7 +38,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.Widget;
 
-import com.kms.katalon.composer.components.log.LoggerSingleton;
 import com.kms.katalon.composer.testcase.ast.treetable.AstBuiltInKeywordTreeTableNode;
 import com.kms.katalon.composer.testcase.util.KeywordURLUtil;
 
@@ -382,7 +383,8 @@ public class TooltipCCombo extends CCombo {
                 Point size = this.list.getSize();
                 Point loc = this.list.getParent().getLocation();
                 // force tooltip show next right of list items
-                tooltip.setPreferedSize(600, size.y);
+                Point tooltipSize = calculateBestSizeForTooltip();
+                tooltip.setPreferedSize(tooltipSize.x, tooltipSize.y);
                 this.tooltip.setKeywordURL(KeywordURLUtil.getKeywordDescriptionURI(classKeywordName, list.getItem(index)));
                 this.tooltip.show(new Point(loc.x + size.x - 2, loc.y));
                 // set the selection idx
@@ -391,6 +393,16 @@ public class TooltipCCombo extends CCombo {
                 this.tooltip.hide();
                 previousSelectionIdx = -1;
             }
+        }
+        
+        private Point calculateBestSizeForTooltip() {
+            Point listSize = this.list.getSize();
+            Point listLocation = this.list.getParent().getLocation();
+            Rectangle displayBounds = Display.getCurrent().getBounds();
+            
+            int availableWidth = displayBounds.width - (listLocation.x + listSize.x + 2);
+
+            return new Point(Math.min(availableWidth, 600), listSize.y);
         }
 
         /**

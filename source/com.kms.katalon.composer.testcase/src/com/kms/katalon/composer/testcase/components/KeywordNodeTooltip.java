@@ -14,6 +14,7 @@ import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.internal.DPIUtil;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -83,6 +84,7 @@ public class KeywordNodeTooltip {
         return tip;
     }
 
+    @SuppressWarnings("restriction")
     private void initComponents(Composite parent) {
         Composite composite = new Composite(parent, SWT.NONE);
         GridLayout layout = new GridLayout();
@@ -99,11 +101,14 @@ public class KeywordNodeTooltip {
 
         javaDocContent = new StyledText(composite, SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
         GridData gdJavaDocContent = new GridData(SWT.FILL, SWT.FILL, true, true);
-        gdJavaDocContent.widthHint = preferedWidth;
-        gdJavaDocContent.heightHint = preferedHeight - TOOLBAR_DEFAULT_HEIGHT;
-        javaDocContent.setLayoutData(gdJavaDocContent);
         javaDocContent.setLeftMargin(20);
         javaDocContent.setTopMargin(5);
+        gdJavaDocContent.widthHint = DPIUtil.autoScaleUp(preferedWidth 
+                - javaDocContent.getVerticalBar().getSize().x 
+                - javaDocContent.getLeftMargin()
+                - 2); //borders
+        gdJavaDocContent.heightHint = preferedHeight - TOOLBAR_DEFAULT_HEIGHT;
+        javaDocContent.setLayoutData(gdJavaDocContent);
 
         Label lbl = new Label(composite, SWT.SEPARATOR | SWT.SHADOW_OUT | SWT.HORIZONTAL);
         GridData gd = new GridData();
@@ -225,7 +230,8 @@ public class KeywordNodeTooltip {
     public void show(Point p) {
         hide();
         createTooltip();
-        tip.setLocation(getLocation(p));
+//        tip.setLocation(getLocation(p));
+        tip.setLocation(p);
         if (currentTooltip != null && currentTooltip != this) {
             currentTooltip.hide();
         }
