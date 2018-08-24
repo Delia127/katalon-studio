@@ -1223,7 +1223,11 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     }
 
     private void addNewBrowserItem(DropdownGroup newBrowserGroup, WebUIDriverType webUIDriverType) {
-        newBrowserGroup.addItem(webUIDriverType.toString(), getWebUIDriverDropdownImage(webUIDriverType),
+        String itemText = webUIDriverType == WebUIDriverType.CHROME_DRIVER ? 
+                webUIDriverType.toString() + StringConstants.RECOMMENDED_BROWSER_POSTFIX :
+                webUIDriverType.toString();
+                
+        newBrowserGroup.addItem(itemText, getWebUIDriverDropdownImage(webUIDriverType),
                 new SelectionAdapter() {
 
                     @Override
