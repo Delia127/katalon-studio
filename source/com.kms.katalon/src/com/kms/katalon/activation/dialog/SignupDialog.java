@@ -285,12 +285,12 @@ public class SignupDialog extends AbstractDialog {
             throws IOException, GeneralSecurityException, ActivationErrorException {
         setSyncMessage(MessageConstants.SignupDialog_MSG_CREATING_NEW_ACCOUNT, false);
 
-        String token = ServerAPICommunicationUtil.invokeFormEncoded(ServerAPICommunicationUtil.STAGING_URL_API, "GET",
-                getUrlEncodedRequestTokenBody());
+        String token = ServerAPICommunicationUtil.invokeFormEncoded(ServerAPICommunicationUtil.getWebUrl(),
+                "GET", getUrlEncodedRequestTokenBody());
 
         String signupBody = getUrlEncodedSignupBody(token, authenticationInfo);
-        String signupResponse = ServerAPICommunicationUtil.invokeFormEncoded(ServerAPICommunicationUtil.STAGING_URL_API,
-                "POST", signupBody);
+        String signupResponse = ServerAPICommunicationUtil.invokeFormEncoded(
+                ServerAPICommunicationUtil.getWebUrl(), "POST", signupBody);
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(SignupResponseBody.class, new SignupResponseBodyJsonDeserializer()).create();
         SignupResponseBody signupResponseBody = gson.fromJson(signupResponse, SignupResponseBody.class);
