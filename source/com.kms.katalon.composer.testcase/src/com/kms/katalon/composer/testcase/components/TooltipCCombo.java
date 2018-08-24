@@ -377,7 +377,7 @@ public class TooltipCCombo extends CCombo {
                 return;
             }
             String text = this.textLookup.get(index);
-            if (list.isVisible() && index >= 0 && index < this.list.getItemCount() && StringUtils.isNotEmpty(classKeywordName) && StringUtils.isNotEmpty(text)) {
+            if (list.isVisible() && index >= 0 && index < this.list.getItemCount() && StringUtils.isNotEmpty(classKeywordName)) {
                 this.tooltip.setText(text);
                 // calculate the location
                 Point size = this.list.getSize();
@@ -398,7 +398,7 @@ public class TooltipCCombo extends CCombo {
         private Point calculateBestSizeForTooltip() {
             Point listSize = this.list.getSize();
             Point listLocation = this.list.getParent().getLocation();
-            Rectangle displayBounds = Display.getCurrent().getBounds();
+            Rectangle displayBounds = Display.getCurrent().getClientArea();
             
             int availableWidth = displayBounds.width - (listLocation.x + listSize.x + 2);
 
