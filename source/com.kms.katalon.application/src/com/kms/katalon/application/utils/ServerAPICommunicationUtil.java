@@ -4,10 +4,12 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
 
 import javax.net.ssl.HostnameVerifier;
@@ -29,7 +31,9 @@ public class ServerAPICommunicationUtil {
 
     private static final String PRODUCTION_URL_API = "https://update.katalon.com/api";
     
-    public static final String STAGING_URL_API = "https://wp-dev.katalon.com/wp-admin/admin-ajax.php";
+    public static final String DEVELOPMENT_WEB_URL = "https://wp-dev.katalon.com";
+
+    public static final String PRODUCTION_WEB_URL = "https://katalon.com";
 
     private static final String POST = "POST";
 
@@ -39,11 +43,11 @@ public class ServerAPICommunicationUtil {
         return invoke(POST, function, jsonData);
     }
 
-    public static String invokeFormEncoded(String apiUrl, String method, String data)
+    public static String invokeFormEncoded(String endpoint, String method, String data)
             throws IOException, GeneralSecurityException, RequestException {
         HttpURLConnection connection = null;
         try {
-            connection = createConnection(method, apiUrl, ApplicationProxyUtil.getProxy());
+            connection = createConnection(method, endpoint, ApplicationProxyUtil.getProxy());
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             String result = sendAndReceiveData(connection, data);
             LogUtil.printOutputLine(ApplicationMessageConstants.REQUEST_COMPLETED);
@@ -54,7 +58,7 @@ public class ServerAPICommunicationUtil {
             return result;
         } catch (Exception ex) {
             LogUtil.logError(ex);
-            return retryInvokeFormEncoded(apiUrl, method, data);
+            return retryInvokeFormEncoded(endpoint, method, data);
         } finally {
             if (connection != null) {
                 connection.disconnect();
@@ -62,12 +66,12 @@ public class ServerAPICommunicationUtil {
         }
     }
     
-    public static String retryInvokeFormEncoded(String apiUrl, String method, String data)
+    public static String retryInvokeFormEncoded(String endpoint, String method, String data)
             throws IOException, GeneralSecurityException, RequestException {
         LogUtil.printAndLogError(null, ApplicationMessageConstants.REQUEST_FAILED_AND_RETRY);
         HttpURLConnection connection = null;
         try {
-            connection = createConnection(method, apiUrl, ApplicationProxyUtil.getRetryProxy());
+            connection = createConnection(method, endpoint, ApplicationProxyUtil.getRetryProxy());
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             String result = sendAndReceiveData(connection, data);
             LogUtil.printOutputLine(ApplicationMessageConstants.REQUEST_COMPLETED);
@@ -141,6 +145,25 @@ public class ServerAPICommunicationUtil {
             return DEVELOPMENT_URL_API;
         }
         return PRODUCTION_URL_API;
+    }
+
+    public static String getWebUrl() {
+        if (VersionUtil.isInternalBuild()) {
+            return DEVELOPMENT_WEB_URL;
+        }
+        return PRODUCTION_WEB_URL;
+    }
+    
+    public static String getSignupAPIUrl() {
+        return getWebUrl() + "/wp-admin/admin-ajax.php";
+    }
+    
+    public static String getSignupUrlWithActivationRedirectLink() throws UnsupportedEncodingException {
+        return getWebUrl() + "/sign-up?redirect=" + URLEncoder.encode(getActivationUrl(), "utf-8");
+    }
+    
+    public static String getActivationUrl() {
+        return getWebUrl() + "/activation";
     }
 
     public static String getInformation(String url, JsonObject jsonObject) {
@@ -244,5 +267,4 @@ public class ServerAPICommunicationUtil {
             }
         };
     }
-
 }

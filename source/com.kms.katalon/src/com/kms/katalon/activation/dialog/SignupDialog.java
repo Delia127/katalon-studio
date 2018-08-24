@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.net.URLEncoder;
+import java.net.UnknownHostException;
 import java.security.GeneralSecurityException;
 import java.util.regex.Pattern;
 
@@ -36,7 +37,6 @@ import com.google.gson.annotations.SerializedName;
 import com.kms.katalon.application.utils.ActivationInfoCollector;
 import com.kms.katalon.application.utils.RequestException;
 import com.kms.katalon.application.utils.ServerAPICommunicationUtil;
-import com.kms.katalon.application.utils.VersionUtil;
 import com.kms.katalon.composer.components.impl.dialogs.AbstractDialog;
 import com.kms.katalon.composer.components.services.UISynchronizeService;
 import com.kms.katalon.composer.components.util.ColorUtil;
@@ -51,10 +51,6 @@ public class SignupDialog extends AbstractDialog {
             Pattern.CASE_INSENSITIVE);
 
     public static final int REQUEST_ACTIVATION_CODE = 1000;
-    
-    private static final String STAGING_URL = "https://wp-dev.katalon.com";
-    
-    private static final String PRODUCTION_URL = "https://www.katalon.com";
 
     private Text txtUsername;
 
@@ -247,7 +243,7 @@ public class SignupDialog extends AbstractDialog {
 
     @Override
     public String getDialogTitle() {
-        return "Create an account";
+        return MessageConstants.SignupDialog_DIA_TITLE;
     }
 
     @Override
@@ -259,6 +255,12 @@ public class SignupDialog extends AbstractDialog {
                 createAccount(authenticationInfo);
 
                 UISynchronizeService.syncExec(() -> SignupDialog.super.okPressed());
+
+            } catch (UnknownHostException e) {
+                UISynchronizeService.syncExec(() -> {
+                    setProgressMessage(MessageConstants.SignupDialog_MSG_NETWORK_ERROR, true);
+                    getButton(OK).setEnabled(true);
+                });
             } catch (IOException | GeneralSecurityException | ActivationErrorException | RequestException e) {
                 UISynchronizeService.syncExec(() -> {
                     setProgressMessage(e.getMessage(), true);
@@ -266,9 +268,9 @@ public class SignupDialog extends AbstractDialog {
                 });
                 
                 try {
-                    Program.launch(getSignUpUrlWithRedirectLink(getActivationUrl()));
-                } catch (UnsupportedEncodingException e1) {
-                    LogUtil.logError(e1);
+                    Program.launch(ServerAPICommunicationUtil.getSignupUrlWithActivationRedirectLink());
+                } catch (UnsupportedEncodingException uee) {
+                    LogUtil.logError(uee);
                 }
             }
         });
@@ -293,12 +295,12 @@ public class SignupDialog extends AbstractDialog {
             throws IOException, GeneralSecurityException, ActivationErrorException, RequestException {
         setSyncMessage(MessageConstants.SignupDialog_MSG_CREATING_NEW_ACCOUNT, false);
 
-        String token = ServerAPICommunicationUtil.invokeFormEncoded(ServerAPICommunicationUtil.STAGING_URL_API, "GET",
-                getUrlEncodedRequestTokenBody());
+        String token = ServerAPICommunicationUtil.invokeFormEncoded(ServerAPICommunicationUtil.getSignupAPIUrl(),
+                "GET", getUrlEncodedRequestTokenBody());
 
         String signupBody = getUrlEncodedSignupBody(token, authenticationInfo);
-        String signupResponse = ServerAPICommunicationUtil.invokeFormEncoded(ServerAPICommunicationUtil.STAGING_URL_API,
-                "POST", signupBody);
+        String signupResponse = ServerAPICommunicationUtil.invokeFormEncoded(
+                ServerAPICommunicationUtil.getSignupAPIUrl(), "POST", signupBody);
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(SignupResponseBody.class, new SignupResponseBodyJsonDeserializer()).create();
         SignupResponseBody signupResponseBody = gson.fromJson(signupResponse, SignupResponseBody.class);
@@ -439,22 +441,6 @@ public class SignupDialog extends AbstractDialog {
                 }
             }
             return signupResponse;
-        }
-    }
-    
-    private String getActivationUrl() {
-        return getSiteUrl() + "/activation";
-    }
-    
-    private String getSignUpUrlWithRedirectLink(String redirectLink) throws UnsupportedEncodingException {
-        return getSiteUrl() + "/sign-up?redirect=" + URLEncoder.encode(redirectLink, "utf-8");
-    }
-    
-    private String getSiteUrl() {
-        if (VersionUtil.isInternalBuild()) {
-            return STAGING_URL;
-        } else {
-            return PRODUCTION_URL;
         }
     }
 }
