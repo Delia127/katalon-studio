@@ -478,6 +478,7 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
 				showComposite(compositeXpathTableToolBar, false);
 				showComposite(tablePropertyComposite, true);
 				showComposite(tableXpathComposite, false);
+				resetDefault.setVisible(false);
 			}
 		});
 		
@@ -490,6 +491,7 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
 				showComposite(compositeXpathTableToolBar, true);
 				showComposite(tablePropertyComposite, false);
 				showComposite(tableXpathComposite, true);
+				resetDefault.setVisible(true);
 			}
 		});
 		
@@ -511,8 +513,10 @@ public class WebLocatorsPerferencePage extends PreferencePageWithHelp {
     	if(store.getCapturedTestObjectSelectorMethod() != null){
     		if(store.getCapturedTestObjectSelectorMethod() == SelectorMethod.BASIC){
         		locatorGroup.setText(GRP_LBL_DEFAULT_SELECTED_PROPERTIES_FOR_CAPTURED_TEST_OBJECT);
+        		resetDefault.setVisible(false);
     		}else if(store.getCapturedTestObjectSelectorMethod() == SelectorMethod.XPATH){
     			locatorGroup.setText(GRP_LBL_DEFAULT_XPATHS_USAGE_TIPS);
+    			resetDefault.setVisible(true);
     		}
     	}
     	    	
