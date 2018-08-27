@@ -261,9 +261,14 @@ public class SignupDialog extends AbstractDialog {
                     setProgressMessage(MessageConstants.SignupDialog_MSG_NETWORK_ERROR, true);
                     getButton(OK).setEnabled(true);
                 });
-            } catch (IOException | GeneralSecurityException | ActivationErrorException | RequestException e) {
+            } catch (IOException | GeneralSecurityException | ActivationErrorException e) {
                 UISynchronizeService.syncExec(() -> {
                     setProgressMessage(e.getMessage(), true);
+                    getButton(OK).setEnabled(true);
+                });    
+            } catch (RequestException e) {
+                UISynchronizeService.syncExec(() -> {
+                    setProgressMessage(MessageConstants.SignupDialog_MSG_SIGNUP_REQUEST_FAILED, true);
                     getButton(OK).setEnabled(true);
                 });
                 

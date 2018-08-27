@@ -349,6 +349,8 @@ public class MessageConstants extends NLS {
     public static String SignupDialog_MSG_ACTIVATING_NEW_ACCOUNT;
     
     public static String SignupDialog_MSG_NETWORK_ERROR;
+    
+    public static String SignupDialog_MSG_SIGNUP_REQUEST_FAILED;
 
     //SignupSurveyDialog
     public static String SignupSurveyDialog_DIA_TITLE;
