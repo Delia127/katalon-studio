@@ -44,7 +44,7 @@ public class ComposerActivationInfoCollector extends ActivationInfoCollector {
         if (result == Window.CANCEL) {
             return false;
         }
-        showFunctionsIntroductionForTheFirstTime();
+//        showFunctionsIntroductionForTheFirstTime();
         return true;
     }
 
