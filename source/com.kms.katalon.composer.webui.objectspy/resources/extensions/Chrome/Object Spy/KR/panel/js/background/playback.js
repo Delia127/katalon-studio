@@ -62,19 +62,19 @@ window.onload = function() {
     var referContainer=document.getElementById("refercontainer");
     var logContainer=document.getElementById("logcontainer");
     var saveLogButton=document.getElementById("save-log");
-    
-    
+
+
     saveLogButton.addEventListener("click",savelog);
     referContainer.style.display="none";
     $('#command-command').on('input change', function() {
         scrape(document.getElementById("command-command").value);
     });
-   
+
     suitePlus.addEventListener("mouseover", mouseOnSuiteTitleIcon);
     suitePlus.addEventListener("mouseout", mouseOutSuiteTitleIcon);
     suiteOpen.addEventListener("mouseover", mouseOnSuiteTitleIcon);
     suiteOpen.addEventListener("mouseout", mouseOutSuiteTitleIcon);
-    
+
     var logLi=document.getElementById("history-log");
     var referenceLi=document.getElementById("reference-log");
     var logState=true;
@@ -87,7 +87,7 @@ window.onload = function() {
     logLi.addEventListener("mouseout",function(){
         if(logState)
             logLi.firstChild.style.color="#333333";
-        else 
+        else
             logLi.firstChild.style.color="#818181"
     })
     referenceLi.addEventListener("mouseover",function(){
@@ -96,14 +96,14 @@ window.onload = function() {
     referenceLi.addEventListener("mouseout",function(){
         if(referenceState)
             referenceLi.firstChild.style.color="#333333";
-        else 
+        else
             referenceLi.firstChild.style.color="#818181"
     })
-    
-    logLi.addEventListener("click",function(){       
+
+    logLi.addEventListener("click",function(){
         if(logState==false){
             document.getElementById("clear-log").parentElement.style.display="inline";
-           
+
             logContainer.style.display="inline";
             referContainer.style.display="none";
             logLi.firstChild.style.color="#333333";
@@ -115,7 +115,7 @@ window.onload = function() {
     referenceLi.addEventListener("click",function(){
         if(referenceState==false){
             document.getElementById("clear-log").parentElement.style.display="none";
-           
+
             scrape(document.getElementById("command-command").value);
             referContainer.style.display="inline";
             logContainer.style.display="none";
@@ -133,7 +133,7 @@ window.onload = function() {
 
         isRecording = !isRecording;
         if (isRecording) {
-            bg_recorder.attach();
+            recorder.attach();
             notificationCount = 0;
             // KAT-BEGIN focus on window when recording
             if (contentWindowId) {
@@ -152,7 +152,7 @@ window.onload = function() {
             // KAT-END
         }
         else {
-            bg_recorder.detach();
+            recorder.detach();
             browser.tabs.query({windowId: extCommand.getContentWindowId(), url: "<all_urls>"})
             .then(function(tabs) {
                 for(let tab of tabs) {
@@ -170,7 +170,7 @@ window.onload = function() {
         emptyNode(document.getElementById("logcontainer"));
         document.getElementById("result-runs").textContent = "0";
         document.getElementById("result-failures").textContent = "0";
-        bg_recorder.detach();
+        recorder.detach();
         initAllSuite();
         setCaseScrollTop(getSelectedCase());
         // KAT-BEGIN focus on window when playing test case
@@ -198,7 +198,7 @@ window.onload = function() {
         emptyNode(document.getElementById("logcontainer"));
         document.getElementById("result-runs").textContent = "0";
         document.getElementById("result-failures").textContent = "0";
-        bg_recorder.detach();
+        recorder.detach();
         initAllSuite();
         // KAT-BEGIN focus on window when playing test suite
         if (contentWindowId) {
@@ -214,7 +214,7 @@ window.onload = function() {
         emptyNode(document.getElementById("logcontainer"));
         document.getElementById("result-runs").textContent = "0";
         document.getElementById("result-failures").textContent = "0";
-        bg_recorder.detach();
+        recorder.detach();
         initAllSuite();
         // KAT-BEGIN focus on window when playing test suite
         if (contentWindowId) {
@@ -228,7 +228,7 @@ window.onload = function() {
     selectElementButton.addEventListener("click",function(){
         var button = document.getElementById("selectElementButton");
         if (isSelecting) {
-            isSelecting = false; 
+            isSelecting = false;
             // KAT-BEGIN hide button label and remove active class
             // button.textContent = "Select";
             button.classList.remove("active");
@@ -258,7 +258,7 @@ window.onload = function() {
             if (tabs.length === 0) {
                 console.log("No match tabs");
                 isSelecting = false;
-                // KAT-BEGIN hide button label and add active class 
+                // KAT-BEGIN hide button label and add active class
                 // button.textContent = "Select";
                 button.classList.remove("active");
                 // KAT-END
@@ -522,7 +522,7 @@ function executeCommand(index) {
         if (commandName !== '#') {
             sideex_log.info("Executing: | " + commandName + " | " + commandTarget + " | " + commandValue + " |");
         }
-    }	
+    }
 
     initializePlayingProgress(true);
 
@@ -570,7 +570,7 @@ function initializePlayingProgress(isDbclick) {
     blockStack = [];
 
     disableClick();
-    
+
     isRecording = false;
     isPlaying = true;
 
@@ -658,7 +658,7 @@ function executionLoop() {
             return (extCommand["do" + upperCase](commandTarget, commandValue))
                .then(function() {
                     setColor(currentPlayingCommandIndex + 1, "success");
-               }).then(executionLoop); 
+               }).then(executionLoop);
         } else {
             return doPreparation()
                .then(doPrePageWait)
@@ -672,7 +672,7 @@ function executionLoop() {
 }
 
 function delay(t) {
-    return new Promise(function(resolve) { 
+    return new Promise(function(resolve) {
         setTimeout(resolve, t)
     });
  }
@@ -695,7 +695,7 @@ document.addEventListener("dblclick", function(event) {
     while (temp.tagName.toLowerCase() != "body") {
         if (/records-(\d)+/.test(temp.id)) {
             var index = temp.id.split("-")[1];
-            bg_recorder.detach();
+            recorder.detach();
             executeCommand(index);
         }
         if (temp.id == "command-grid") {
@@ -766,7 +766,7 @@ function catchPlayingError(reason) {
             setColor(currentPlayingCommandIndex + 1, "fail");
         }
         setColor(currentTestCaseId, "fail");
-        // KAT-BEGIN 
+        // KAT-BEGIN
         // document.getElementById("result-failures").textContent = parseInt(document.getElementById("result-failures").textContent) + 1;
         // KAT-END
         logEndTime();
@@ -972,9 +972,9 @@ function doCommand() {
                 lastBlock = blockStack[blockStack.length - 1];
             }
             // check if this block is skipped
-            var skipped = lastBlock && 
-                    (lastBlock.dummy || 
-                    (lastBlock.isCsv && lastBlock.done) || 
+            var skipped = lastBlock &&
+                    (lastBlock.dummy ||
+                    (lastBlock.isLoadVars && lastBlock.done) ||
                     (lastBlock.isIf && !lastBlock.condition) ||
                     (lastBlock.isWhile && !lastBlock.condition));
             // normal command: just skipped
@@ -1087,12 +1087,14 @@ function doCommand() {
             }
             if (commandName === 'loadVars') {
                 // parse once
-                var data = parseCsv(commandTarget);
+                var parsedData = parseData(commandTarget);
+                var data = parsedData.data;
                 var block = {
-                    isCsv: true,
+                    isLoadVars: true,
                     index: currentPlayingCommandIndex,
                     currentLine: 0, // line of data
                     data: data,
+                    type: parsedData.type,
                     done: data.length == 0 // done if empty file
                 };
                 blockStack.push(block);
@@ -1165,7 +1167,7 @@ function doCommand() {
             }
             if (commandName === 'storeCsv') {
                 var tokens = commandTarget.split(',');
-                var csvValue = parseCsv(tokens[0])[parseInt(tokens[1])][tokens[2]];
+                var csvValue = parseData(tokens[0]).data[parseInt(tokens[1])][tokens[2]];
                 sideex_log.info("Store '" + csvValue + "' into '" + commandValue + "'");
                 declaredVars[commandValue] = csvValue;
                 return {

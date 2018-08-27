@@ -532,7 +532,7 @@ div.test-suite-title {
  #result-container label {
     font-weight: 500;
     text-transform: none;
-} 
+}
 
 .width_3_quarter {
     display: flex;
@@ -1118,7 +1118,7 @@ p.test-case-title {
 }
 
 #variablecontainer {
-    /* background: linear-gradient(to bottom, #D4D4D4, #D4D4D4) 30% 0/1px 100% no-repeat, 
+    /* background: linear-gradient(to bottom, #D4D4D4, #D4D4D4) 30% 0/1px 100% no-repeat,
                 repeating-linear-gradient(to bottom, #fff, #fff 30px, #f7f7f7 30px, #f7f7f7 60px); */
     height: 100%;
 }
@@ -1156,7 +1156,7 @@ img.thumbnail {
     z-index: -1;
     width: 10000px;
     height: 10000px;
-    background: linear-gradient(to bottom, #D4D4D4, #D4D4D4) 30% 0/1px 100% no-repeat, 
+    background: linear-gradient(to bottom, #D4D4D4, #D4D4D4) 30% 0/1px 100% no-repeat,
     repeating-linear-gradient(to bottom, #fff, #fff 30px, #f7f7f7 30px, #f7f7f7 60px);
 } */
 
@@ -1527,4 +1527,8 @@ a.katalon-link {
 
 #command-grid-menu {
     z-index: 99999;
+}
+
+.submit_link .sub_btn {
+    display: inline-flex;
 }

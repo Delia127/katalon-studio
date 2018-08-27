@@ -20,7 +20,7 @@ var selfWindowId = -1;
 var contentWindowId;
 var notificationCount = 0;
 
-var bg_recorder = new BackgroundRecorder();
+var recorder = new BackgroundRecorder();
 
 /* flags */
 var isRecording = false;
@@ -89,7 +89,7 @@ function handleMessage(message, sender, sendResponse) {
     }
     if (message.cancelSelectTarget) {
         var button = document.getElementById("selectElementButton");
-        isSelecting = false; 
+        isSelecting = false;
         // KAT-BEGIN hide button label
         // button.textContent = "Select";
         button.classList.remove("active");
@@ -113,8 +113,8 @@ browser.runtime.onMessage.addListener(function contentWindowIdListener(message) 
         selfWindowId = message.selfWindowId;
         contentWindowId = message.commWindowId;
         extCommand.setContentWindowId(contentWindowId);
-        bg_recorder.setOpenedWindow(contentWindowId);
-        bg_recorder.setSelfWindowId(selfWindowId);
+        recorder.setOpenedWindow(contentWindowId);
+        recorder.setSelfWindowId(selfWindowId);
         browser.runtime.onMessage.removeListener(contentWindowIdListener);
     }
 })
@@ -127,7 +127,7 @@ function notification(command, target, value) {
         "type": "basic",
         "iconUrl": "/katalon/images/branding_48.png",
         "title": "Command Recorded",
-        "message": "command: " + String(command) + "\ntarget: " + tacPreprocess(String(target[0][0])) + "\nvalue: " + String(value) 
+        "message": "command: " + String(command) + "\ntarget: " + tacPreprocess(String(target[0][0])) + "\nvalue: " + String(value)
     });
 
     setTimeout(function() {

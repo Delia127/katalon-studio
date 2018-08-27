@@ -39,6 +39,7 @@ chrome.runtime.sendMessage({
 });
 
 function start(newRunMode, data, version) {
+    console.log("in Start" + version);
     switch (newRunMode) {
     case RUN_MODE_OBJECT_SPY:
         startObjectSpy(data);
@@ -56,7 +57,7 @@ function startObjectSpy(data) {
     if (runMode !== RUN_MODE_IDLE) {
         stop();
     }
-    console.log("Starting Object Spy");
+    console.log("Starting Object Spy")
     $('document').ready(function() {
         startInspection(data);
         startGetRequestSchedule();
@@ -69,7 +70,7 @@ function startRecorder(version) {
         stop();
     }
     
-    console.log("Starting Recorder 2");
+    console.log("Starting Recorder")
     $('document').ready(function() {
         startRecord(version);
         runMode = RUN_MODE_RECORDER;

@@ -19,6 +19,7 @@ function treeHTML(element, object, currentWindow) {
     if (text !== '') {
         object["attributes"]["text"] = text;
     }
+
     var xpath = createXPathFromElement(element);
     var xpaths = ku_locatorBuilders.buildAll(element);
    

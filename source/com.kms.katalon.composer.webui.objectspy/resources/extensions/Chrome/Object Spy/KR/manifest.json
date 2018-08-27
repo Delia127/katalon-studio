@@ -2,7 +2,7 @@
     "description": "Best Selenium IDE record, play, debug app. Exports Selenium WebDriver code. Provides reports, logs, screenshots. Fast & extensible.",
     "manifest_version": 2,
     "name": "Katalon Recorder (Selenium IDE for Chrome)",
-    "version": "3.5.7",
+    "version": "3.6.7",
     "homepage_url":"https://www.katalon.com/",
     "icons":
     {
@@ -39,7 +39,7 @@
         },
         {
             "matches": ["<all_urls>"],
-            "js": ["content/bowser.js", "content/atoms.js", "content/utils.js", "content/selenium-commandhandlers.js", "content/selenium-browserbot.js", 
+            "js": ["content/bowser.js", "content/atoms.js", "content/utils.js", "content/selenium-commandhandlers.js", "content/selenium-browserbot.js",
                     "common/escape.js", "content/selenium-api.js","content/neighbor-xpaths-generator.js",
                     "content/locatorBuilders.js", "content/recorder.js", "content/recorder-handlers.js", "content/command-receiver.js",
                    "content/targetSelecter.js", "content/sizzle.js", "content/kar.js"],
@@ -50,9 +50,9 @@
             "all_frames": true,
             "matches": ["<all_urls>"],
             "match_about_blank": true,
-            "js": ["katalon/jquery-3.2.1.min.js", "katalon/jquery.color.js", "katalon/neighbor-xpaths-generator.js", "katalon/constants.js",
-                "katalon/chrome_common.js", "katalon/chrome_variables_default.js", "chrome_variables_init.js", 
-                "katalon/ku-locatorBuilders.js", "katalon/common.js", "katalon/record_common.js", "katalon/chrome_setup.js", "katalon/dom_inspector.js", 
+            "js": ["katalon/bowser.js", "katalon/jquery-3.2.1.min.js", "katalon/jquery.color.js", "katalon/neighbor-xpaths-generator.js", "katalon/constants.js",
+                "katalon/chrome_common.js", "katalon/chrome_variables_default.js", "chrome_variables_init.js",
+                "katalon/ku-locatorBuilders.js", "katalon/common.js", "katalon/record_common.js", "katalon/chrome_setup.js", "katalon/dom_inspector.js",
                 "katalon/dom_collector.js", "katalon/ku-recorder.js", "katalon/ku-recorder-handlers.js",
                 "katalon/dom_recorder.js", "katalon/process_element.js", "katalon/main.js"]
         },
@@ -73,7 +73,7 @@
     "browser_action":
     {
         "default_icon": "katalon/images/branding_16.png",
-        "default_title": "(T) Katalon Automation Recorder"
+        "default_title": "Katalon Recorder"
     },
 
     "web_accessible_resources": ["page/prompt.js", "page/runScript.js"],

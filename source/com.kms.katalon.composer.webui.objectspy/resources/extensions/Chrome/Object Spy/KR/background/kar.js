@@ -14,19 +14,22 @@ chrome.runtime.onInstalled.addListener(function(details) {
     if (details.reason === 'install') {
         _gaq.push(['_trackEvent', 'app', 'install']);
         _gaq.push(['_trackEvent', 'app', 'open-landing-page']);
-        //chrome.tabs.create({'url': 'https://www.katalon.com/automation-recorder'});
+        // chrome.tabs.create({'url': 'https://www.katalon.com/automation-recorder'});
+        //chrome.tabs.create({'url': 'https://www.katalon.com'});
     } else if (details.reason === 'update') {
         _gaq.push(['_trackEvent', 'app', 'update']);
         var previousVersion = details.previousVersion;
         var previousMajorVersion = previousVersion.substring(0, previousVersion.indexOf('.'));
         if (previousMajorVersion === '1') {
             _gaq.push(['_trackEvent', 'app', 'open-landing-page']);
-            //chrome.tabs.create({'url': 'https://www.katalon.com/automation-recorder'});
+            // chrome.tabs.create({'url': 'https://www.katalon.com/automation-recorder'});
+            //chrome.tabs.create({'url': 'https://www.katalon.com'});
         }
     }
 });
 
-chrome.runtime.setUninstallURL('https://www.surveymonkey.com/r/katalon-recorder');
+// chrome.runtime.setUninstallURL('https://www.surveymonkey.com/r/katalon-recorder');
+chrome.runtime.setUninstallURL('https://www.katalon.com');
 // KAT-END
 
 // KAT-BEGIN save last window size
@@ -52,7 +55,6 @@ function getWindowSize(callback) {
 // KAT-END
 
 var attachedTabs = {};
-var version = "1.2";
 
 function onDetach(debuggeeId) {
     var tabId = debuggeeId.tabId;
@@ -138,8 +140,8 @@ function doSendSpecialKeys(request, sendResponse, debuggeeId, frameId) {
                                 "Input.dispatchKeyEvent",
                                 {
                                     type: 'rawKeyDown',
-                                    windowsVirtualKeyCode: keyCode, 
-                                    nativeVirtualKeyCode : keyCode, 
+                                    windowsVirtualKeyCode: keyCode,
+                                    nativeVirtualKeyCode : keyCode,
                                     macCharCode: keyCode,
                                     key: keyboardEventKey,
                                     code: keyboardEventCode,
@@ -154,8 +156,8 @@ function doSendSpecialKeys(request, sendResponse, debuggeeId, frameId) {
                                             "Input.dispatchKeyEvent",
                                             {
                                                 type: 'keyUp',
-                                                windowsVirtualKeyCode: keyCode, 
-                                                nativeVirtualKeyCode : keyCode, 
+                                                windowsVirtualKeyCode: keyCode,
+                                                nativeVirtualKeyCode : keyCode,
                                                 macCharCode: keyCode,
                                                 key: keyboardEventKey,
                                                 code: keyboardEventCode,
@@ -260,7 +262,7 @@ function doActionOnNode(frameId, debuggeeId, sendResponse, request, f) {
 }
 
 function doAttachDebugger(sendResponse, debuggeeId, f) {
-    chrome.debugger.attach(debuggeeId, version, function() {
+    chrome.debugger.attach(debuggeeId, "1.2", function() {
         if (chrome.runtime.lastError) {
             doDetach(sendResponse, debuggeeId, chrome.runtime.lastError);
         } else {
