@@ -18,7 +18,6 @@ import com.kms.katalon.core.webservice.constants.StringConstants
 import com.kms.katalon.core.webservice.helper.WebServiceCommonHelper
 import com.kms.katalon.core.webservice.keyword.internal.WebserviceAbstractKeyword
 import com.kms.katalon.core.webservice.verification.WSResponseManager
-
 import groovy.transform.CompileStatic
 
 @Action(value = "sendRequestAndVerify")
@@ -46,7 +45,9 @@ public class SendRequestAndVerifyKeyword extends WebserviceAbstractKeyword {
             
             logger.logInfo(StringConstants.KW_LOG_INFO_VERIFICATION_START)
             String verificationScript = request.getVerificationScript()
+            WSResponseManager.getInstance().setRequestObjectId(request.getObjectId())
             WSResponseManager.getInstance().setCurrentResponse(responseObject)
+            
             TestResult result = TestCaseMain.runWSVerificationScript(createTestCaseBinding(request),
                 verificationScript, flowControl, true)
             switch(result.getTestStatus().getStatusValue()) {

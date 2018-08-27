@@ -2,7 +2,6 @@ package com.kms.katalon.core.testobject;
 
 import static com.kms.katalon.core.constants.StringConstants.ID_SEPARATOR;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -13,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -26,10 +26,15 @@ import com.google.common.reflect.TypeToken;
 import com.kms.katalon.core.configuration.RunConfiguration;
 import com.kms.katalon.core.constants.StringConstants;
 import com.kms.katalon.core.logging.KeywordLogger;
+import com.kms.katalon.core.main.ScriptEngine;
 import com.kms.katalon.core.testobject.impl.HttpTextBodyContent;
 import com.kms.katalon.core.testobject.internal.impl.HttpBodyContentReader;
 import com.kms.katalon.core.util.internal.ExceptionsUtil;
 import com.kms.katalon.core.util.internal.JsonUtil;
+
+import groovy.lang.Binding;
+import groovy.util.ResourceException;
+import groovy.util.ScriptException;
 
 public class ObjectRepository {
 
@@ -209,7 +214,7 @@ public class ObjectRepository {
             return null;
         }
     }
-
+  
     private static TestObject findWebUIObject(String testObjectId, Element element, Map<String, Object> variables) {
         TestObject testObject = new TestObject(testObjectId);
 
@@ -333,13 +338,55 @@ public class ObjectRepository {
 //                }
             }
         }
+        
+        requestObject.setVariables(variables);
 
         String verificationScript = reqElement.elementText("verificationScript");
         requestObject.setVerificationScript(verificationScript);
 
         return requestObject;
     }
+    
+    @SuppressWarnings("unchecked")
+    public static RequestObject findRequestObject(String requestObjectId, File objectFile) {
+        try {
+            Element reqElement = new SAXReader().read(objectFile).getRootElement();
+            
+            List<Object> variableElements = reqElement.elements("variables");
+            Map<String, Object> variables = Collections.emptyMap();
+            if (variableElements != null) {
+                Map<String, String> rawVariables = parseRequestObjectVariables(variableElements);
+                variables = evaluateVariables(rawVariables);
+            }
+            
+            return findRequestObject(requestObjectId, reqElement, RunConfiguration.getProjectDir(), variables);
+        } catch (Exception e) {
+            logger.logWarning(MessageFormat.format(StringConstants.TO_LOG_WARNING_CANNOT_GET_TEST_OBJECT_X_BECAUSE_OF_Y,
+                    requestObjectId, ExceptionsUtil.getMessageForThrowable(e)));
+            return null;
+        }
+    }
 
+    private static Map<String, String> parseRequestObjectVariables(List<Object> elements) {
+        Map<String, String> variableMap = elements.stream()
+            .collect(Collectors.toMap(element -> ((Element) element).elementText("name"),
+                   element -> ((Element) element).elementText("defaultValue")));
+        return variableMap;
+    }
+    
+    private static Map<String, Object> evaluateVariables(Map<String, String> rawVariables) 
+            throws IOException, ClassNotFoundException, ResourceException, ScriptException {
+        ScriptEngine scriptEngine = ScriptEngine.getDefault(ObjectRepository.class.getClassLoader());
+        Map<String, Object> evaluatedVariables = new HashMap<>();
+        for (Map.Entry<String, String> variableEntry : rawVariables.entrySet()) {
+            String variableName = variableEntry.getKey();
+            String variableValue = variableEntry.getValue();
+            Object evaluatedValue = scriptEngine.runScriptWithoutLogging(variableValue, new Binding());
+            evaluatedVariables.put(variableName, evaluatedValue);
+        }       
+        return evaluatedVariables;
+    }
+    
     private static boolean isBodySupported(RequestObject requestObject) {
         String restRequestMethod = requestObject.getRestRequestMethod();
         return !("GET".contains(restRequestMethod) || "DELETE".equals(restRequestMethod));

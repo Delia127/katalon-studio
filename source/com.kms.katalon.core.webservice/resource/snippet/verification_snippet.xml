@@ -7,6 +7,7 @@
 <![CDATA[
 import static org.assertj.core.api.Assertions.*
 
+import com.kms.katalon.core.testobject.RequestObject
 import com.kms.katalon.core.testobject.ResponseObject
 import com.kms.katalon.core.webservice.keyword.WSBuiltInKeywords as WS
 import com.kms.katalon.core.webservice.verification.WSResponseManager
@@ -31,6 +32,17 @@ ResponseObject response = WSResponseManager.getInstance().getCurrentResponse()
 <script>
 <![CDATA[
 GlobalVariable.variable
+]]>
+</script>
+</snippet>
+
+<snippet>
+<name>Get a variable from current request</name>
+<script>
+<![CDATA[
+RequestObject request = WSResponseManager.getInstance().getCurrentRequest()
+def variables = request.getVariables()
+def url = variables.get('url')
 ]]>
 </script>
 </snippet>

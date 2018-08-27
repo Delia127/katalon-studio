@@ -332,7 +332,7 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
             tltmStop.setEnabled(true);
             resume();
             resetInput();
-            Trackings.trackRecord("web");
+            Trackings.trackWebRecord(selectedBrowser, isInstant);
         } catch (final IEAddonNotInstalledException e) {
             stop();
             showMessageForMissingIEAddon();
@@ -1223,7 +1223,11 @@ public class RecorderDialog extends AbstractDialog implements EventHandler, Even
     }
 
     private void addNewBrowserItem(DropdownGroup newBrowserGroup, WebUIDriverType webUIDriverType) {
-        newBrowserGroup.addItem(webUIDriverType.toString(), getWebUIDriverDropdownImage(webUIDriverType),
+        String itemText = webUIDriverType == WebUIDriverType.CHROME_DRIVER ? 
+                webUIDriverType.toString() + StringConstants.RECOMMENDED_BROWSER_POSTFIX :
+                webUIDriverType.toString();
+                
+        newBrowserGroup.addItem(itemText, getWebUIDriverDropdownImage(webUIDriverType),
                 new SelectionAdapter() {
 
                     @Override
