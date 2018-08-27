@@ -2,6 +2,7 @@ package com.kms.katalon.composer.project.dialog;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -53,8 +54,10 @@ import com.kms.katalon.composer.project.sample.SampleRemoteProjectProvider;
 import com.kms.katalon.composer.project.template.SampleProjectProvider;
 import com.kms.katalon.constants.EventConstants;
 import com.kms.katalon.controller.ProjectController;
+import com.kms.katalon.core.testobject.SelectorMethod;
 import com.kms.katalon.entity.dal.exception.FilePathTooLongException;
 import com.kms.katalon.entity.project.ProjectEntity;
+import com.kms.katalon.execution.webui.setting.WebUiExecutionSettingStore;
 import com.kms.katalon.tracking.service.Trackings;
 
 public class NewProjectDialog extends TitleAreaDialog {
@@ -493,9 +496,11 @@ public class NewProjectDialog extends TitleAreaDialog {
             handleCreatingBlankProject();
         }
         
+        setDefaultSelectorMethod();
+                
         super.okPressed();
     }
-
+    
     private void handleCreatingSampleRemoteProject(SampleRemoteProject sampleRemoteProject) {
         String projectName = getProjectName();
         String projectLocation = getProjectLocation();
@@ -508,6 +513,20 @@ public class NewProjectDialog extends TitleAreaDialog {
         
         EventBrokerSingleton.getInstance().getEventBroker()
             .post(EventConstants.GIT_CLONE_REMOTE_PROJECT, new Object[] { sampleRemoteProject, projectEntity });
+    }
+    
+    /*
+     * This method exists from 5.7 onward - it will explicitly assign a default SelectorMethod of XPATH 
+     * to newly created projects so that we can load default SelectorMethod for old and new projects appropriately
+     */
+    private void setDefaultSelectorMethod(){
+    	WebUiExecutionSettingStore store = WebUiExecutionSettingStore.getStore();
+    	try {
+			store.setCapturedTestObjectSelectorMethod(SelectorMethod.XPATH);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
     
     private void handleCreatingSampleBuiltInProject(SampleBuiltInProject sampleBuiltInProject) {

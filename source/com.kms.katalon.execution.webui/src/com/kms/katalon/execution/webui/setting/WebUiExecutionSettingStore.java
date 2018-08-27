@@ -35,7 +35,7 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
     
     public static final String DEFAULT_SELECTING_CAPTURED_OBJECT_XPATHS = "xpath:idRelative,true;dom:name,true;xpath:link,true;xpath:attributes,true;xpath:neighbor,true;xpath:href,true;xpath:img,true;xpath:position,true;";
     
-    public static final String DEFAULT_SELECTING_CAPTURED_OBJECT_SELECTOR_METHOD = "XPATH";
+    public static final String DEFAULT_SELECTING_CAPTURED_OBJECT_SELECTOR_METHOD = "BASIC";
     
     
     public static WebUiExecutionSettingStore getStore() {
@@ -186,7 +186,7 @@ public class WebUiExecutionSettingStore extends BundleSettingStore {
     
     private SelectorMethod parseSelectorMethodString(String str) {
         if (str == null || str.isEmpty()) {
-        	return SelectorMethod.XPATH;
+        	return SelectorMethod.BASIC;
         }
         System.out.println(SelectorMethod.valueOf(str));
         return SelectorMethod.valueOf(str);

@@ -257,7 +257,7 @@ public class WebElementUtils {
             return store.getCapturedTestObjectSelectorMethod();
         } catch (IOException e) {
             LoggerSingleton.logError(e);
-            return SelectorMethod.XPATH;
+            return SelectorMethod.BASIC;
         }
     }
 
