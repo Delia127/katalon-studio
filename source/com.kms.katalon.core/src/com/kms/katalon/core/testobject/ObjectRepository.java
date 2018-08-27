@@ -303,10 +303,11 @@ public class ObjectRepository {
 
         StrSubstitutor substitutor = new StrSubstitutor(variables);
         if ("SOAP".equals(serviceType)) {
-            requestObject.setWsdlAddress(reqElement.elementText("wsdlAddress"));
+            requestObject.setWsdlAddress(substitutor.replace(reqElement.elementText("wsdlAddress")));
             requestObject.setSoapRequestMethod(reqElement.elementText("soapRequestMethod"));
             requestObject.setSoapServiceFunction(reqElement.elementText("soapServiceFunction"));
-            requestObject.setSoapBody(reqElement.elementText("soapBody"));
+            requestObject.setHttpHeaderProperties(parseProperties(reqElement.elements("httpHeaderProperties"), substitutor));
+            requestObject.setSoapBody(substitutor.replace(reqElement.elementText("soapBody")));
         } else if ("RESTful".equals(serviceType)) {
             requestObject.setRestUrl(substitutor.replace(reqElement.elementText("restUrl")));
             String requestMethod = reqElement.elementText("restRequestMethod");
