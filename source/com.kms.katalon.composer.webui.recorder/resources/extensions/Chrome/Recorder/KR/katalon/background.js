@@ -77,7 +77,16 @@ function processXHTTPAction(request, callback) {
         return;
     }
     console.log(request.data);
-    clientSocket.send(request.data);
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        try{
+            var object = request.data.obj;
+            var keyword = request.data.keyword;
+            object['action']['windowId'] = tabs[0].id;
+            clientSocket.send(keyword + "=" +  encodeURIComponent(JSON.stringify(object)));
+        } catch(e){
+            console.log(e);
+        }        
+    });
     callback();
     return true; // prevents the callback from being called too early on
 }

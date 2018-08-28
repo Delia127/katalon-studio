@@ -213,7 +213,7 @@ class KURecorder {
         if (!object) {
             return;
         }
-        var data = this.elementKeyword + '=' +  encodeURIComponent(JSON.stringify(object));
+        var data = { keyword : this.elementKeyword, obj : object };
         if (detectChrome()) {
             chromePostData(url, data, function (response) {
                 if (response) {

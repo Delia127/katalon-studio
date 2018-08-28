@@ -72,7 +72,8 @@ KURecorder.addEventHandler('type', 'input', function (event) {
 // © Jie-Lin You, SideeX Team
 var preventClickTwice = false;
 KURecorder.addEventHandler('clickAt', 'click', function(event) {
-    if (event.button == 0 && !preventClick && event.isTrusted) {
+    console.log("1");
+    if (!preventClick && event.isTrusted) {
         if (!preventClickTwice) {
             var top = event.pageY,
                 left = event.pageX;
@@ -84,7 +85,9 @@ KURecorder.addEventHandler('clickAt', 'click', function(event) {
             } while (element);
             var target = event.target;
             var currentURL = this.window.document.URL;
+            console.log("2");
             var clickType = this.rec_getMouseButton(event);
+            console.log(clickType);
             if(this.rec_isElementMouseUpEventRecordable(target, clickType)){
                 this.processOnClickTarget(target, clickType, currentURL);
             }
@@ -329,7 +332,14 @@ KURecorder.addEventHandler('dragAndDrop', 'mouseup', function (event) {
                 // this.record("mouseDown", this.locatorBuilders.buildAll(this.mousedown.target), '');
                 // this.record("mouseUp", this.locatorBuilders.buildAll(event.target), '');
             } else if (this.mousedown && this.mousedown.target === event.target) {
+                // Click handler won't handle right click
                 var self = this;
+                var target = event.target;
+                var currentURL = this.window.document.URL;
+                var clickType = this.rec_getMouseButton(event);
+                if(clickType == 'right'){
+                    this.processOnClickTarget(target, clickType, currentURL);
+                }
                 // var target = this.locatorBuilders.buildAll(this.mousedown.target);
                 // setTimeout(function() {
                 //     if (!self.clickLocator)

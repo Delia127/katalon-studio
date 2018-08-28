@@ -315,7 +315,7 @@ public class ObjectPropertyView implements EventHandler {
 
 	private void createPropertyTableDetails(Composite parent) {
 		Composite compositeTableDetails = new Composite(parent, SWT.NONE);
-		compositeTableDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+		compositeTableDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		GridLayout glCompositeTableDetails = new GridLayout(1, false);
 		glCompositeTableDetails.marginWidth = 0;
 		glCompositeTableDetails.marginHeight = 0;
@@ -327,7 +327,7 @@ public class ObjectPropertyView implements EventHandler {
 		Table table = propertyTableViewer.getTable();
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
-		GridData gridDataTable = new GridData(SWT.FILL, SWT.FILL, true, false, 3, 1);
+		GridData gridDataTable = new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1);
 		gridDataTable.minimumHeight = 150;
 		table.setLayoutData(gridDataTable);
 
@@ -385,7 +385,7 @@ public class ObjectPropertyView implements EventHandler {
 	private void createXpathsTableDetails(Composite parent) {
 
 		Composite xpathCompositeTableDetails = new Composite(parent, SWT.NONE);
-		xpathCompositeTableDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
+		xpathCompositeTableDetails.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 		GridLayout glCompositeTableDetails = new GridLayout(1, false);
 		glCompositeTableDetails.marginWidth = 0;
 		glCompositeTableDetails.marginHeight = 0;
@@ -397,7 +397,7 @@ public class ObjectPropertyView implements EventHandler {
 		Table table = xpathTableViewer.getTable();		
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
-		GridData gridDataTable = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
+		GridData gridDataTable = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
 		gridDataTable.minimumHeight = 150;
 		table.setLayoutData(gridDataTable);
 		
