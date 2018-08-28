@@ -4,10 +4,12 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
 
 import javax.net.ssl.HostnameVerifier;
@@ -25,9 +27,13 @@ import com.kms.katalon.application.constants.ApplicationMessageConstants;
 import com.kms.katalon.logging.LogUtil;
 
 public class ServerAPICommunicationUtil {
-    private static final String DEVELOPMENT_URL_API = "https://backend-dev.katalon.com/api";
+    public static final String DEVELOPMENT_URL_API = "https://backend-dev.katalon.com/api";
 
     private static final String PRODUCTION_URL_API = "https://update.katalon.com/api";
+    
+    public static final String DEVELOPMENT_WEB_URL = "https://wp-dev.katalon.com";
+
+    public static final String PRODUCTION_WEB_URL = "https://katalon.com";
 
     private static final String POST = "POST";
 
@@ -35,6 +41,62 @@ public class ServerAPICommunicationUtil {
 
     public static String post(String function, String jsonData) throws IOException, GeneralSecurityException {
         return invoke(POST, function, jsonData);
+    }
+
+    public static String invokeFormEncoded(String endpoint, String method, String data)
+            throws IOException, GeneralSecurityException, RequestException {
+        HttpURLConnection connection = null;
+        try {
+            connection = createConnection(method, endpoint, ApplicationProxyUtil.getProxy());
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            String result = sendAndReceiveData(connection, data);
+            LogUtil.printOutputLine(ApplicationMessageConstants.REQUEST_COMPLETED);
+            int statusCode = connection.getResponseCode();
+            if (statusCode == 403 || statusCode == 502 || statusCode == 503) {
+                throw new RequestException("Request failed with status code: " + statusCode);
+            }
+            return result;
+        } catch (Exception ex) {
+            LogUtil.logError(ex);
+            return retryInvokeFormEncoded(endpoint, method, data);
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+    }
+    
+    public static String retryInvokeFormEncoded(String endpoint, String method, String data)
+            throws IOException, GeneralSecurityException, RequestException {
+        LogUtil.printAndLogError(null, ApplicationMessageConstants.REQUEST_FAILED_AND_RETRY);
+        HttpURLConnection connection = null;
+        try {
+            connection = createConnection(method, endpoint, ApplicationProxyUtil.getRetryProxy());
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            String result = sendAndReceiveData(connection, data);
+            LogUtil.printOutputLine(ApplicationMessageConstants.REQUEST_COMPLETED);
+            int statusCode = connection.getResponseCode();
+            if (statusCode == 403 || statusCode == 502 || statusCode == 503) {
+                throw new RequestException("Request failed with status code: " + statusCode);
+            }
+            return result;
+        } catch (IOException e) {
+            LogUtil.logError(e);
+            throw e;
+        } catch (URISyntaxException e) {
+            LogUtil.printAndLogError(null, ApplicationMessageConstants.REQUEST_FAILED);
+            LogUtil.logError(e);
+            return StringUtils.EMPTY;
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+    }
+    
+    public interface Response {
+        int getStatusCode();
+        String getResponseBody();
     }
 
     public static String invoke(String method, String function, String jsonData)
@@ -83,6 +145,25 @@ public class ServerAPICommunicationUtil {
             return DEVELOPMENT_URL_API;
         }
         return PRODUCTION_URL_API;
+    }
+
+    public static String getWebUrl() {
+        if (VersionUtil.isInternalBuild()) {
+            return DEVELOPMENT_WEB_URL;
+        }
+        return PRODUCTION_WEB_URL;
+    }
+    
+    public static String getSignupAPIUrl() {
+        return getWebUrl() + "/wp-admin/admin-ajax.php";
+    }
+    
+    public static String getSignupUrlWithActivationRedirectLink() throws UnsupportedEncodingException {
+        return getWebUrl() + "/sign-up?redirect=" + URLEncoder.encode(getActivationUrl(), "utf-8");
+    }
+    
+    public static String getActivationUrl() {
+        return getWebUrl() + "/activation";
     }
 
     public static String getInformation(String url, JsonObject jsonObject) {
@@ -186,5 +267,4 @@ public class ServerAPICommunicationUtil {
             }
         };
     }
-
 }
